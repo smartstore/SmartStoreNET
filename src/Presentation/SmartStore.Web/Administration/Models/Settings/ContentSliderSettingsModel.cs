@@ -1,5 +1,4 @@
 ﻿using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Localization;
 using System;
 ﻿using System.Collections.Generic;
@@ -11,6 +10,7 @@ using Telerik.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.ContentSlider;
 using SmartStore.Admin.Models.Stores;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.ContentSlider
 {

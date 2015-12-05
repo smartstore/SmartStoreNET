@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Models.Media;
-using SmartStore.Core;
-using SmartStore.Core.Domain.Directory;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Catalog
 {

@@ -53,14 +53,12 @@ namespace SmartStore.Core.Packaging
 	/// </summary>
 	internal class PluginReferenceRepository : ExtensionReferenceRepository
 	{
-		private readonly IPluginFinder _pluginFinder;
 		private readonly IList<PluginDescriptor> _descriptors;
 
 		public PluginReferenceRepository(IProjectSystem project, IPackageRepository sourceRepository, IPluginFinder pluginFinder)
 			: base(project, sourceRepository)
 		{
-			_pluginFinder = pluginFinder;
-			_descriptors = _pluginFinder.GetPluginDescriptors().ToList();
+			_descriptors = pluginFinder.GetPluginDescriptors().ToList();
 		}
 
 		public override IQueryable<IPackage> GetPackages()
@@ -83,14 +81,12 @@ namespace SmartStore.Core.Packaging
 	/// </summary>
 	internal class ThemeReferenceRepository : ExtensionReferenceRepository
 	{
-		private readonly IThemeRegistry _themeRegistry;
 		private readonly ICollection<ThemeManifest> _themeManifests;
 
 		public ThemeReferenceRepository(IProjectSystem project, IPackageRepository sourceRepository, IThemeRegistry themeRegistry)
 			: base(project, sourceRepository)
 		{
-			_themeRegistry = themeRegistry;
-			_themeManifests = _themeRegistry.GetThemeManifests(true);
+			_themeManifests = themeRegistry.GetThemeManifests(true);
 		}
 
 		public override IQueryable<IPackage> GetPackages()

@@ -18,7 +18,6 @@ namespace SmartStore.Core.Infrastructure
         /// <summary>
         /// Initialize components and plugins in the SmartStore environment.
         /// </summary>
-        /// <param name="config">Config</param>
         void Initialize();
 
         T Resolve<T>(string name = null) where T : class;

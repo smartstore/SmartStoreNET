@@ -52,7 +52,7 @@ namespace SmartStore.Utilities
 
 			if (contentEncoded != null)
 			{
-				item.ElementExtensions.Add("encoded", SmartSyndicationFeed.UrlPurlContent, contentEncoded.RemoveInvalidXmlChars().EmptyNull());
+				item.ElementExtensions.Add("encoded", UrlPurlContent, contentEncoded.RemoveInvalidXmlChars().EmptyNull());
 			}
 
 			return item;

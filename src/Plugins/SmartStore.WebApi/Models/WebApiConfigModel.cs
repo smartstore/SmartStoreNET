@@ -1,5 +1,5 @@
 ﻿using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.WebApi;
 
 namespace SmartStore.WebApi.Models

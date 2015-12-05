@@ -9,7 +9,7 @@ namespace SmartStore
     {
         public static void AddAttributes(this HtmlTextWriter writer, IDictionary<string, object> attributes)
         {
-            if (attributes.Any<KeyValuePair<string, object>>())
+            if (attributes.Any())
             {
                 foreach (var pair in attributes)
                 {

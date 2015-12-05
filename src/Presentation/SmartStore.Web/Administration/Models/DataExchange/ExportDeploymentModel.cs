@@ -5,7 +5,7 @@ using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.DataExchange;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.DataExchange
 {

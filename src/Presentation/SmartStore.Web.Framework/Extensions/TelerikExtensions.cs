@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
@@ -27,6 +28,7 @@ namespace SmartStore.Web.Framework
 
 	public static class TelerikExtensions
 	{
+		[SuppressMessage("ReSharper", "Mvc.AreaNotResolved")]
 		public static GridBuilder<T> PreserveGridState<T>(this GridBuilder<T> builder) where T : class
 		{
 			var grid = builder.ToComponent();

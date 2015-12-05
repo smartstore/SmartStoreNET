@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Payments
 {

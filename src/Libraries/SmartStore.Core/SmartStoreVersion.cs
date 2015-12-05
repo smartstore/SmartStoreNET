@@ -9,7 +9,6 @@ namespace SmartStore.Core
     public static class SmartStoreVersion
     {
         private static readonly Version s_infoVersion = new Version("1.0.0.0");
-        private static readonly Version s_version = Assembly.GetExecutingAssembly().GetName().Version;
         private static readonly List<Version> s_breakingChangesHistory = new List<Version> 
         { 
             // IMPORTANT: Add app versions from low to high

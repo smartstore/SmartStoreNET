@@ -27,18 +27,18 @@ namespace SmartStore
 
 			const int BuffSize = 32768;
 			bool result = true;
-			int len = 0;
 			Stream dstStream = null;
 			byte[] buffer = new Byte[BuffSize];
 
 			try 
             {
-				using (dstStream = File.OpenWrite(path)) 
-                {
+				using (dstStream = File.OpenWrite(path))
+				{
+					int len;
 					while ((len = srcStream.Read(buffer, 0, BuffSize)) > 0)
 						dstStream.Write(buffer, 0, len);
 				}
-			}
+            }
 			catch 
             {
 				result = false;

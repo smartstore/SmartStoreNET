@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Catalog
 {

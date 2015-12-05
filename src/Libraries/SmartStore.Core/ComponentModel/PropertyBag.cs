@@ -181,7 +181,7 @@ namespace SmartStore.ComponentModel
                 writer.WriteStartElement("item");
 
                 writer.WriteStartElement("key");
-                writer.WriteString(key as string);
+                writer.WriteString(key);
                 writer.WriteEndElement();
 
                 writer.WriteStartElement("value");

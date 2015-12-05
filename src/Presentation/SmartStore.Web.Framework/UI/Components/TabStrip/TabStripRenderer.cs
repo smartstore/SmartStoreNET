@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Web.UI;
 using System.Web.Mvc;
 using System.Web.Routing;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -17,7 +18,8 @@ namespace SmartStore.Web.Framework.UI
         { 
         }
 
-        protected override void WriteHtmlCore(HtmlTextWriter writer)
+	    [SuppressMessage("ReSharper", "Mvc.AreaNotResolved")]
+	    protected override void WriteHtmlCore(HtmlTextWriter writer)
 		{
 			var tab = base.Component;
 			var hasContent = tab.Items.Any(x => x.Content != null || x.Ajax);

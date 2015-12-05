@@ -4,6 +4,7 @@ using SmartStore.Core.Fakes;
 using SmartStore.Web.Framework.Controllers;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.MVC.Tests.Framework.Controllers
 {

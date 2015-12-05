@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Caching;
-using SmartStore.Core.Fakes;
 
 namespace SmartStore.Core.Caching
 {
     
     public partial class AspNetCache : ICache
     {
-        private const string REGION_NAME = "$$SmartStoreNET$$";
+        private const string RegionName = "$$SmartStoreNET$$";
 
         public IEnumerable<KeyValuePair<string, object>> Entries
         {
@@ -22,9 +21,9 @@ namespace SmartStore.Core.Caching
 
 				return from entry in HttpRuntime.Cache.Cast<DictionaryEntry>()
                        let key = entry.Key.ToString()
-                       where key.StartsWith(REGION_NAME)
+                       where key.StartsWith(RegionName)
                        select new KeyValuePair<string, object>(
-                           key.Substring(REGION_NAME.Length),
+                           key.Substring(RegionName.Length),
                            entry.Value);
             }
         }
@@ -72,7 +71,7 @@ namespace SmartStore.Core.Caching
 
         public static string BuildKey(string key)
         {
-            return key.HasValue() ? REGION_NAME + key : null;
+            return key.HasValue() ? RegionName + key : null;
         }
 
 		public bool IsSingleton

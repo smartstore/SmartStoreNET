@@ -37,7 +37,7 @@ using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Pdf;
-using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Common;

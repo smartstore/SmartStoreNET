@@ -38,6 +38,7 @@ using SmartStore.Services.Shipping;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
 using Telerik.Web.Mvc;

@@ -4,24 +4,26 @@ using System.Linq;
 using System.Reflection;
 using System.Collections;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SmartStore
 {
     public static class TypeExtensions
     {
-        private static Type[] s_predefinedTypes;
-        private static Type[] s_predefinedGenericTypes;
-
-        static TypeExtensions()
-        {
-            s_predefinedTypes = new Type[] { typeof(string), typeof(decimal), typeof(DateTime), typeof(TimeSpan), typeof(Guid) };
-            s_predefinedGenericTypes = new Type[] { typeof(Nullable<>) };
-        }
+        private static readonly Type[] s_predefinedTypes = new Type[] { typeof(string), typeof(decimal), typeof(DateTime), typeof(TimeSpan), typeof(Guid) };
+		private static readonly Type[] s_predefinedGenericTypes = new Type[] { typeof(Nullable<>) };
 
         public static string AssemblyQualifiedNameWithoutVersion(this Type type)
         {
-            string[] strArray = type.AssemblyQualifiedName.Split(new char[] { ',' });
-            return string.Format("{0}, {1}", strArray[0], strArray[1]);
+			Guard.ArgumentNotNull(() => type);
+
+	        if (type.AssemblyQualifiedName != null)
+	        {
+		        var strArray = type.AssemblyQualifiedName.Split(new char[] { ',' });
+		        return string.Format("{0}, {1}", strArray[0], strArray[1]);
+	        }
+
+	        return null;
         }
 
         public static bool IsSequenceType(this Type seqType)
@@ -214,15 +216,15 @@ namespace SmartStore
             return type.GetGenericArguments()[0];
         }
 
-        /// <summary>
-        /// Returns single attribute from the type
-        /// </summary>
-        /// <typeparam name="T">Attribute to use</typeparam>
-        /// <param name="target">Attribute provider</param>
-        ///<param name="inherit"><see cref="MemberInfo.GetCustomAttributes(Type,bool)"/></param>
-        /// <returns><em>Null</em> if the attribute is not found</returns>
-        /// <exception cref="InvalidOperationException">If there are 2 or more attributes</exception>
-        public static TAttribute GetAttribute<TAttribute>(this ICustomAttributeProvider target, bool inherits) where TAttribute : Attribute
+		/// <summary>
+		/// Returns single attribute from the type
+		/// </summary>
+		/// <typeparam name="TAttribute">Attribute to use</typeparam>
+		/// <param name="target">Attribute provider</param>
+		///<param name="inherits"><see cref="MemberInfo.GetCustomAttributes(Type,bool)"/></param>
+		/// <returns><em>Null</em> if the attribute is not found</returns>
+		/// <exception cref="InvalidOperationException">If there are 2 or more attributes</exception>
+		public static TAttribute GetAttribute<TAttribute>(this ICustomAttributeProvider target, bool inherits) where TAttribute : Attribute
         {
             if (target.IsDefined(typeof(TAttribute), inherits))
             {
@@ -242,15 +244,15 @@ namespace SmartStore
             return target.IsDefined(typeof(TAttribute), inherits);
         }
 
-        /// <summary>
-        /// Given a particular MemberInfo, return the custom attributes of the
-        /// given type on that member.
-        /// </summary>
-        /// <typeparam name="TAttribute">Type of attribute to retrieve.</typeparam>
-        /// <param name="member">The member to look at.</param>
-        /// <param name="inherits">True to include attributes inherited from base classes.</param>
-        /// <returns>Array of found attributes.</returns>
-        public static TAttribute[] GetAttributes<TAttribute>(this ICustomAttributeProvider target, bool inherits) where TAttribute : Attribute
+		/// <summary>
+		/// Given a particular MemberInfo, return the custom attributes of the
+		/// given type on that member.
+		/// </summary>
+		/// <typeparam name="TAttribute">Type of attribute to retrieve.</typeparam>
+		/// <param name="target">The member to look at.</param>
+		/// <param name="inherits">True to include attributes inherited from base classes.</param>
+		/// <returns>Array of found attributes.</returns>
+		public static TAttribute[] GetAttributes<TAttribute>(this ICustomAttributeProvider target, bool inherits) where TAttribute : Attribute
         {
             if (target.IsDefined(typeof(TAttribute), inherits))
             {
@@ -296,7 +298,8 @@ namespace SmartStore
             return attributes.ToArray();
         }
 
-        internal static IEnumerable<TAttribute> SortAttributesIfPossible<TAttribute>(IEnumerable<TAttribute> attributes)
+	    [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
+	    internal static IEnumerable<TAttribute> SortAttributesIfPossible<TAttribute>(IEnumerable<TAttribute> attributes)
             where TAttribute : Attribute
         {
             if (typeof(IOrdered).IsAssignableFrom(typeof(TAttribute)))
@@ -351,7 +354,7 @@ namespace SmartStore
                 }
             }
             Type[] ifaces = seqType.GetInterfaces();
-            if (ifaces != null && ifaces.Length > 0)
+            if (ifaces.Length > 0)
             {
                 foreach (Type iface in ifaces)
                 {

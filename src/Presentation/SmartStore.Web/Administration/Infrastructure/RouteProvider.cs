@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using SmartStore.Web.Framework.Mvc.Routes;
+using SmartStore.Web.Framework.Routing;
 
 namespace SmartStore.Admin.Infrastructure
 {

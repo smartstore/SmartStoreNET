@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -50,8 +51,9 @@ namespace SmartStore.ComponentModel
 
 		/// <summary>
 		/// Initializes a <see cref="FastProperty"/>.
-		/// This constructor does not cache the helper. For caching, use <see cref="GetProperties(object)"/>.
+		/// This constructor does not cache the helper. For caching, use <see cref="GetProperties(object, PropertyCachingStrategy)"/>.
 		/// </summary>
+		[SuppressMessage("ReSharper", "VirtualMemberCallInContructor")]
 		public FastProperty(PropertyInfo property)
 		{
 			Guard.ArgumentNotNull(() => property);
@@ -169,7 +171,7 @@ namespace SmartStore.ComponentModel
 		/// on the specified type.
 		/// </para>
 		/// <para>
-		/// <see cref="GetVisibleProperties"/> excludes properties defined on base types that have been
+		/// <see cref="GetVisibleProperties(object, PropertyCachingStrategy)"/> excludes properties defined on base types that have been
 		/// hidden by definitions using the <c>new</c> keyword.
 		/// </para>
 		/// </summary>
@@ -191,7 +193,7 @@ namespace SmartStore.ComponentModel
 		/// on the specified type.
 		/// </para>
 		/// <para>
-		/// <see cref="GetVisibleProperties"/> excludes properties defined on base types that have been
+		/// <see cref="GetVisibleProperties(Type, PropertyCachingStrategy)"/> excludes properties defined on base types that have been
 		/// hidden by definitions using the <c>new</c> keyword.
 		/// </para>
 		/// </summary>
@@ -434,17 +436,20 @@ namespace SmartStore.ComponentModel
 			return (Action<object, object>)callPropertySetterDelegate;
 		}
 
-		/// <summary>
-		/// Given an object, adds each instance property with a public get method as a key and its
-		/// associated value to a dictionary.
-		///
-		/// If the object is already an <see cref="IDictionary{string, object}"/> instance, then a copy
-		/// is returned.
-		/// </summary>
-		/// <remarks>
-		/// The implementation of FastProperty will cache the property accessors per-type. This is
-		/// faster when the the same type is used multiple times with ObjectToDictionary.
-		/// </remarks>
+		///  <summary>
+		///  Given an object, adds each instance property with a public get method as a key and its
+		///  associated value to a dictionary.
+		/// 
+		///  If the object is already an <see>
+		///          <cref>IDictionary{string, object}</cref>
+		///      </see>
+		///      instance, then a copy
+		///  is returned.
+		///  </summary>
+		///  <remarks>
+		///  The implementation of FastProperty will cache the property accessors per-type. This is
+		///  faster when the the same type is used multiple times with ObjectToDictionary.
+		///  </remarks>
 		public static IDictionary<string, object> ObjectToDictionary(object value, Func<string, string> keySelector = null)
 		{
 			var dictionary = value as IDictionary<string, object>;

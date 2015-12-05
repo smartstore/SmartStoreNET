@@ -12,7 +12,7 @@ namespace SmartStore.Core.Caching
 	{
 		public static T Get<T>(this ICacheManager cacheManager, string key)
 		{
-			return cacheManager.Get<T>(key, () => { return default(T); });
+			return cacheManager.Get(key, () => default(T));
 		}
 	}
 
@@ -24,7 +24,7 @@ namespace SmartStore.Core.Caching
 		// Wwe put a special string into cache if value is null,
 		// otherwise our 'Contains()' would always return false,
 		// which is bad if we intentionally wanted to save NULL values.
-		private const string FAKE_NULL = "__[NULL]__";
+		private const string FakeNull = "__[NULL]__";
 
 		public CacheManager(Func<Type, ICache> fn)
         {
@@ -58,7 +58,7 @@ namespace SmartStore.Core.Caching
 		{
 			var value = _cache.Get(key);
 
-			if (value.Equals(FAKE_NULL))
+			if (value.Equals(FakeNull))
 				return default(T);
 
 			return (T)_cache.Get(key);
@@ -70,7 +70,7 @@ namespace SmartStore.Core.Caching
 
 			using (EnterWriteLock())
 			{
-				_cache.Set(key, value ?? FAKE_NULL, cacheTime);
+				_cache.Set(key, value ?? FakeNull, cacheTime);
 			}
 		}
 

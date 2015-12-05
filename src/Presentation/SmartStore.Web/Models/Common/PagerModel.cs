@@ -1,7 +1,4 @@
-﻿using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Localization;
-
-namespace SmartStore.Web.Models.Common
+﻿namespace SmartStore.Web.Models.Common
 {
     #region Classes
 

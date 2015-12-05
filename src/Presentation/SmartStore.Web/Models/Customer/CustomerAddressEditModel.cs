@@ -1,4 +1,4 @@
-﻿using SmartStore.Web.Framework.Mvc;
+﻿using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Models.Customer

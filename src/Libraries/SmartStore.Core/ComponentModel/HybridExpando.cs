@@ -102,7 +102,7 @@ namespace SmartStore.ComponentModel
             Initialize(instance);
         }
         
-        protected virtual void Initialize(object instance)
+        protected void Initialize(object instance)
         {
             _instance = instance;
             if (instance != null)
@@ -320,7 +320,7 @@ namespace SmartStore.ComponentModel
 		/// <summary>
 		/// Returns all properties 
 		/// </summary>
-		/// <param name="includeProperties"></param>
+		/// <param name="includeInstanceProperties"></param>
 		/// <returns></returns>
 		public IEnumerable<KeyValuePair<string, object>> GetProperties(bool includeInstanceProperties = false)
         {

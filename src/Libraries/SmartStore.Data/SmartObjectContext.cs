@@ -12,14 +12,12 @@ using SmartStore.Data.Migrations;
 using SmartStore.Data.Setup;
 
 namespace SmartStore.Data
-{
-	
+{	
 	/// <summary>
     /// Object context
     /// </summary>
 	public class SmartObjectContext : ObjectContextBase
     {
-
 		static SmartObjectContext()
 		{
 			var initializer = new MigrateDatabaseInitializer<SmartObjectContext, MigrationsConfiguration>

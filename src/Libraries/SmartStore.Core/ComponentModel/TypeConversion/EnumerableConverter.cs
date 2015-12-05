@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 
 namespace SmartStore.ComponentModel
 {
+	[SuppressMessage("ReSharper", "CanBeReplacedWithTryCastAndCheckForNull")]
 	public class EnumerableConverter<T> : TypeConverterBase
 	{
 		private readonly Func<IEnumerable<T>, object> _activator;
@@ -21,6 +23,7 @@ namespace SmartStore.ComponentModel
 			_activator = CreateSequenceActivator(sequenceType);
         }
 
+		[SuppressMessage("ReSharper", "RedundantLambdaSignatureParentheses")]
 		private static Func<IEnumerable<T>, object> CreateSequenceActivator(Type sequenceType)
 		{
 			// Default is IEnumerable<T>
@@ -134,7 +137,7 @@ namespace SmartStore.ComponentModel
 		{
 			if (!String.IsNullOrEmpty(input))
 			{
-				char splitChar = ',';
+				var splitChar = ',';
 
 				if (input.IndexOf(splitChar) < 0)
 				{
@@ -149,6 +152,7 @@ namespace SmartStore.ComponentModel
 				}
 
 				var result = input.Split(new char[] { splitChar }, StringSplitOptions.RemoveEmptyEntries);
+				// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
 				Array.ForEach(result, s => s.Trim());
 				return result;
 			}

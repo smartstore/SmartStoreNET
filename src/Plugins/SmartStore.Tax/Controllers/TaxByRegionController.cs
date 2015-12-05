@@ -9,6 +9,8 @@ using SmartStore.Tax.Services;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Tax.Controllers

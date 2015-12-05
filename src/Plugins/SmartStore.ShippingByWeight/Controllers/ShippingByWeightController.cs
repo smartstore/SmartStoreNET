@@ -8,6 +8,8 @@ using SmartStore.ShippingByWeight.Domain;
 using SmartStore.ShippingByWeight.Models;
 using SmartStore.ShippingByWeight.Services;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.ShippingByWeight.Controllers

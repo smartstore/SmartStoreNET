@@ -393,7 +393,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<int>("StockQuantity", _stockQuantity);
+				return this.GetMergedDataValue("StockQuantity", _stockQuantity);
 			}
 			set
 			{

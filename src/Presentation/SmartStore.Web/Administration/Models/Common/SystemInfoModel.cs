@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
 using SmartStore.Utilities;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Common
 {

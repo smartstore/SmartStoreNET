@@ -4,7 +4,7 @@ using SmartStore.GoogleMerchantCenter.Domain;
 using SmartStore.GoogleMerchantCenter.Models;
 using SmartStore.GoogleMerchantCenter.Services;
 using SmartStore.Web.Framework.Events;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.GoogleMerchantCenter
 {

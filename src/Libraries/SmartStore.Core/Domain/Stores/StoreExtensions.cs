@@ -17,16 +17,12 @@ namespace SmartStore.Core.Domain.Stores
 				throw new ArgumentNullException("store");
 
 			var parsedValues = new List<string>();
-			if (!String.IsNullOrEmpty(store.Hosts))
+			if (!string.IsNullOrEmpty(store.Hosts))
 			{
-				string[] hosts = store.Hosts.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-				foreach (string host in hosts)
-				{
-					var tmp = host.Trim();
-					if (!String.IsNullOrEmpty(tmp))
-						parsedValues.Add(tmp);
-				}
+				var hosts = store.Hosts.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+				parsedValues.AddRange(hosts.Select(host => host.Trim()).Where(tmp => !string.IsNullOrEmpty(tmp)));
 			}
+
 			return parsedValues.ToArray();
 		}
 

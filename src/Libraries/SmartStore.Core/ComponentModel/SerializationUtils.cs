@@ -34,19 +34,13 @@
 using System;
 using System.IO;
 using System.Text;
-//using System.Reflection;
-
 using System.Xml;
 using System.Xml.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
-using System.Runtime.Serialization;
 
 namespace SmartStore.ComponentModel
 {
-
-    // Serialization specific code
-
     internal static class SerializationUtils
     {
         /// <summary>
@@ -193,25 +187,25 @@ namespace SmartStore.ComponentModel
             return true;
         }
 
-
-        /// <summary>
-        /// Serializes an object instance to a file.
-        /// </summary>
-        /// <param name="instance">the object instance to serialize</param>
-        /// <param name="Filename"></param>
-        /// <param name="BinarySerialization">determines whether XML serialization or binary serialization is used</param>
-        /// <returns></returns>
-        public static bool SerializeObject(object instance, out byte[] resultBuffer, bool throwExceptions = false)
+	    /// <summary>
+	    /// Serializes an object instance to a file.
+	    /// </summary>
+	    /// <param name="instance">the object instance to serialize</param>
+	    /// <param name="resultBuffer"></param>
+	    /// <param name="throwExceptions"></param>
+	    /// <returns></returns>
+	    public static bool SerializeObject(object instance, out byte[] resultBuffer, bool throwExceptions = false)
         {
             bool retVal = true;
+		    resultBuffer = null;
 
-            MemoryStream ms = null;
+			var ms = new MemoryStream();
             try
             {
-                BinaryFormatter serializer = new BinaryFormatter();
-                ms = new MemoryStream();
+                var serializer = new BinaryFormatter();
                 serializer.Serialize(ms, instance);
-            }
+				resultBuffer = ms.ToArray();
+			}
             catch (Exception ex)
             {
                 Debug.Write("SerializeObject failed with : " + ex.GetBaseException().Message, "West Wind");
@@ -222,11 +216,8 @@ namespace SmartStore.ComponentModel
             }
             finally
             {
-                if (ms != null)
-                    ms.Close();
+				ms.Close();
             }
-
-            resultBuffer = ms.ToArray();
 
             return retVal;
         }

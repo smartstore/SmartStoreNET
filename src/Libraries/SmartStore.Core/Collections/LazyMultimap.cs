@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace SmartStore.Collections
@@ -10,25 +11,22 @@ namespace SmartStore.Collections
 	/// </summary>
 	public class LazyMultimap<T> : Multimap<int, T>
 	{
-		private Func<int[], Multimap<int, T>> _load;
-		private List<int> _loaded;			// to avoid database round trips with empty results
+		private readonly Func<int[], Multimap<int, T>> _load;
+		private readonly List<int> _loaded;			// to avoid database round trips with empty results
 		private List<int> _collect;
-		private int _roundTripCount;
+		//private int _roundTripCount;
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		/// <param name="load"><para>int[]</para> keys like Entity.Id, <para>Multimap<int, T>></para> delegate to load data</param>
+		/// <param name="load"><para>int[]</para> keys like Entity.Id, <para>Multimap{int, T}></para> delegate to load data</param>
 		/// <param name="collect">Keys of eager loaded data</param>
 		public LazyMultimap(Func<int[], Multimap<int, T>> load, IEnumerable<int> collect = null)
 		{
 			_load = load;
 			_loaded = new List<int>();
 
-			if (collect == null)
-				_collect = new List<int>();
-			else
-				_collect = new List<int>(collect);
+			_collect = collect == null ? new List<int>() : new List<int>(collect);
 		}
 
 		protected virtual void Load(IEnumerable<int> keys)
@@ -44,8 +42,7 @@ namespace SmartStore.Collections
 
 				if (loadKeys.Any())
 				{
-					++_roundTripCount;
-
+					//++_roundTripCount;
 					//Debug.WriteLine("Round trip {0} of {1}: {2}", _roundTripCount, typeof(T).Name, string.Join(",", loadKeys.OrderBy(x => x)));
 
 					var items = _load(loadKeys);
@@ -92,6 +89,7 @@ namespace SmartStore.Collections
 		/// Collect keys for combined loading
 		/// </summary>
 		/// <param name="keys">Data keys</param>
+		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 		public virtual void Collect(IEnumerable<int> keys)
 		{
 			if (keys != null && keys.Any())
@@ -116,7 +114,7 @@ namespace SmartStore.Collections
 		{
 			_loaded.Clear();
 			_collect.Clear();
-			_roundTripCount = 0;
+			//_roundTripCount = 0;
 
 			base.Clear();
 		}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.IO;
 using SmartStore.Core.Logging;
@@ -14,6 +15,7 @@ namespace SmartStore.Core.Packaging
 		void Restore(DirectoryInfo backupfolder, DirectoryInfo existingFolder);
 	}
 
+	[SuppressMessage("ReSharper", "NotAccessedField.Local")]
 	public class FolderUpdater : IFolderUpdater
 	{
 		public class FolderContent
@@ -83,6 +85,7 @@ namespace SmartStore.Core.Packaging
 			return new FolderContent { Folder = folder, Files = files };
 		}
 
+		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 		private void GetFolderContent(DirectoryInfo folder, string prefix, List<string> files, IEnumerable<Wildcard> ignores)
 		{
 			if (!folder.Exists)

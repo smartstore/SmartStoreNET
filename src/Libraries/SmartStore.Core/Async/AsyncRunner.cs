@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Web.Hosting;
 using Autofac;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Utilities;
 
 namespace SmartStore.Core.Async
 {
@@ -23,9 +22,9 @@ namespace SmartStore.Core.Async
 		}
 
 		/// <summary>
-		/// Executes an async Task<T> method which has a void return value synchronously
+		/// Executes an async Task method which has a void return value synchronously
 		/// </summary>
-		/// <param name="func">Task<T> method to execute</param>
+		/// <param name="func">Task method to execute</param>
 		public static void RunSync(Func<Task> func)
 		{
 			var oldContext = SynchronizationContext.Current;
@@ -53,10 +52,10 @@ namespace SmartStore.Core.Async
 		}
 
 		/// <summary>
-		/// Executes an async Task<T> method which has a T return type synchronously
+		/// Executes an async Task method which has a TResult return type synchronously
 		/// </summary>
-		/// <typeparam name="T">Return Type</typeparam>
-		/// <param name="func">Task<T> method to execute</param>
+		/// <typeparam name="TResult">Return Type</typeparam>
+		/// <param name="func">Task method to execute</param>
 		/// <returns></returns>
 		public static TResult RunSync<TResult>(Func<Task<TResult>> func)
 		{
@@ -120,7 +119,7 @@ namespace SmartStore.Core.Async
 
 			var t = Task.Factory.StartNew(() => {
 				var accessor = EngineContext.Current.ContainerManager.ScopeAccessor;
-				using (var scope = accessor.BeginContextAwareScope())
+				using (accessor.BeginContextAwareScope())
 				{
 					action(accessor.GetLifetimeScope(null), ct);
 				}
@@ -143,7 +142,7 @@ namespace SmartStore.Core.Async
 			var t = Task.Factory.StartNew((o) =>
 			{
 				var accessor = EngineContext.Current.ContainerManager.ScopeAccessor;
-				using (var scope = accessor.BeginContextAwareScope())
+				using (accessor.BeginContextAwareScope())
 				{
 					action(accessor.GetLifetimeScope(null), ct, o);
 				}
@@ -192,7 +191,7 @@ namespace SmartStore.Core.Async
 			var t = Task.Factory.StartNew(() =>
 			{
 				var accessor = EngineContext.Current.ContainerManager.ScopeAccessor;
-				using (var scope = accessor.BeginContextAwareScope())
+				using (accessor.BeginContextAwareScope())
 				{
 					return function(accessor.GetLifetimeScope(null), ct);
 				}
@@ -215,7 +214,7 @@ namespace SmartStore.Core.Async
 			var t = Task.Factory.StartNew((o) =>
 			{
 				var accessor = EngineContext.Current.ContainerManager.ScopeAccessor;
-				using (var scope = accessor.BeginContextAwareScope())
+				using (accessor.BeginContextAwareScope())
 				{
 					return function(accessor.GetLifetimeScope(null), ct, o);
 				}
@@ -229,10 +228,11 @@ namespace SmartStore.Core.Async
 
 		private class ExclusiveSynchronizationContext : SynchronizationContext
 		{
-			private bool done;
+			private bool _done;
+			readonly AutoResetEvent _workItemsWaiting = new AutoResetEvent(false);
+			readonly Queue<Tuple<SendOrPostCallback, object>> _items = new Queue<Tuple<SendOrPostCallback, object>>();
+
 			public Exception InnerException { get; set; }
-			readonly AutoResetEvent workItemsWaiting = new AutoResetEvent(false);
-			readonly Queue<Tuple<SendOrPostCallback, object>> items = new Queue<Tuple<SendOrPostCallback, object>>();
 
 			public override void Send(SendOrPostCallback d, object state)
 			{
@@ -241,28 +241,28 @@ namespace SmartStore.Core.Async
 
 			public override void Post(SendOrPostCallback d, object state)
 			{
-				lock (items)
+				lock (_items)
 				{
-					items.Enqueue(Tuple.Create(d, state));
+					_items.Enqueue(Tuple.Create(d, state));
 				}
-				workItemsWaiting.Set();
+				_workItemsWaiting.Set();
 			}
 
 			public void EndMessageLoop()
 			{
-				Post(_ => done = true, null);
+				Post(_ => _done = true, null);
 			}
 
 			public void BeginMessageLoop()
 			{
-				while (!done)
+				while (!_done)
 				{
 					Tuple<SendOrPostCallback, object> task = null;
-					lock (items)
+					lock (_items)
 					{
-						if (items.Count > 0)
+						if (_items.Count > 0)
 						{
-							task = items.Dequeue();
+							task = _items.Dequeue();
 						}
 					}
 					if (task != null)
@@ -275,7 +275,7 @@ namespace SmartStore.Core.Async
 					}
 					else
 					{
-						workItemsWaiting.WaitOne();
+						_workItemsWaiting.WaitOne();
 					}
 				}
 			}
@@ -290,8 +290,8 @@ namespace SmartStore.Core.Async
 
 	internal class BackgroundWorkHost : IRegisteredObject
 	{
-		private CancellationTokenSource _shutdownCancellationTokenSource = new CancellationTokenSource();
-		private int _numRunningWorkItems = 0;
+		private readonly CancellationTokenSource _shutdownCancellationTokenSource = new CancellationTokenSource();
+		private int _numRunningWorkItems;
 		
 		public BackgroundWorkHost()
 		{

@@ -3,7 +3,7 @@ using System.Web.Mvc;
 using System.Web.Mvc.Routing.Constraints;
 using System.Web.Routing;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Mvc.Routes;
+using SmartStore.Web.Framework.Routing;
 
 namespace SmartStore.Web.Infrastructure
 {

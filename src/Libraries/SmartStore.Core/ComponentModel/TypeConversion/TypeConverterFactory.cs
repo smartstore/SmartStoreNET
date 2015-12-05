@@ -21,8 +21,8 @@ namespace SmartStore.ComponentModel
 			_typeConverters.TryAdd(typeof(DateTime), new DateTimeConverter());
 			_typeConverters.TryAdd(typeof(TimeSpan), new TimeSpanConverter());
 			_typeConverters.TryAdd(typeof(bool), new BooleanConverter(
-				new string[] { "yes", "y", "on", "wahr" },
-				new string[] { "no", "n", "off", "falsch" }));
+				new [] { "yes", "y", "on", "wahr" },
+				new [] { "no", "n", "off", "falsch" }));
 
 			ITypeConverter converter = new ShippingOptionConverter(true);
 			_typeConverters.TryAdd(typeof(IList<ShippingOption>), converter);

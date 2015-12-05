@@ -2,6 +2,7 @@
 using SmartStore.DevTools.Models;
 using SmartStore.Services;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.DevTools.Controllers

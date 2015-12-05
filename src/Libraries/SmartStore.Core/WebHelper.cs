@@ -1,5 +1,6 @@
 using System;
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -16,8 +17,8 @@ namespace SmartStore.Core
 
     public partial class WebHelper : IWebHelper
     {
-		private static bool? s_optimizedCompilationsEnabled = null;
-		private static AspNetHostingPermissionLevel? s_trustLevel = null;
+		private static bool? s_optimizedCompilationsEnabled;
+		private static AspNetHostingPermissionLevel? s_trustLevel;
 		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static readonly Regex s_htmlPathPattern = new Regex(@"(?<=(?:href|src)=(?:""|'))(?!https?://)(?<url>[^(?:""|')]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 		private static readonly Regex s_cssPathPattern = new Regex(@"url\('(?<url>.+)'\)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
@@ -78,7 +79,7 @@ namespace SmartStore.Core
                 bool appPathPossiblyAppended;
                 string storeHost = GetStoreHost(useSsl, out appPathPossiblyAppended).TrimEnd('/');
 
-                string rawUrl = string.Empty;
+                string rawUrl;
                 if (appPathPossiblyAppended)
                 {
                     string temp = _httpContext.Request.AppRelativeCurrentExecutionFilePath.TrimStart('~');
@@ -137,7 +138,8 @@ namespace SmartStore.Core
             return result;
         }
 
-        private string GetHostPart(string url)
+	    [SuppressMessage("ReSharper", "UnusedMember.Local")]
+	    private string GetHostPart(string url)
         {
             var uri = new Uri(url);
             var host = uri.GetComponents(UriComponents.Scheme | UriComponents.Host, UriFormat.Unescaped);
@@ -395,7 +397,7 @@ namespace SmartStore.Core
             {
 				if (_httpContext.Request.RequestType == "GET")
 				{
-					if (String.IsNullOrEmpty(redirectUrl))
+					if (string.IsNullOrEmpty(redirectUrl))
 					{
 						redirectUrl = GetThisPageUrl(true);
 					}
@@ -411,7 +413,8 @@ namespace SmartStore.Core
             }
         }
 
-        private bool TryWriteWebConfig()
+	    [SuppressMessage("ReSharper", "UnusedMember.Local")]
+	    private bool TryWriteWebConfig()
         {
             try
             {
@@ -426,7 +429,8 @@ namespace SmartStore.Core
             }
         }
 
-        private bool TryWriteGlobalAsax()
+	    [SuppressMessage("ReSharper", "UnusedMember.Local")]
+	    private bool TryWriteGlobalAsax()
         {
             try
             {
@@ -493,7 +497,7 @@ namespace SmartStore.Core
 
 				//determine maximum
 				foreach (AspNetHostingPermissionLevel trustLevel in
-						new AspNetHostingPermissionLevel[] {
+						new [] {
                                 AspNetHostingPermissionLevel.Unrestricted,
                                 AspNetHostingPermissionLevel.High,
                                 AspNetHostingPermissionLevel.Medium,
@@ -570,6 +574,7 @@ namespace SmartStore.Core
 		/// <summary>
 		/// Prepends protocol and host to the given (relative) url
 		/// </summary>
+		[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
 		public static string GetAbsoluteUrl(string url, HttpRequestBase request)
 		{
 			Guard.ArgumentNotEmpty(() => url);
@@ -590,15 +595,8 @@ namespace SmartStore.Core
 				url = VirtualPathUtility.ToAbsolute(url);
 			}
 
-			url = String.Format("{0}://{1}{2}", request.Url.Scheme, request.Url.Authority, url);
+			url = string.Format("{0}://{1}{2}", request.Url.Scheme, request.Url.Authority, url);
 			return url;
 		}
-
-        private class StoreHost
-        {
-            public string Host { get; set; }
-            public bool ExpectingDirtySecurityChannelMove { get; set; }
-        }
-
     }
 }

@@ -1,5 +1,5 @@
-﻿using SmartStore.Web.Framework.Mvc;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Common
 {

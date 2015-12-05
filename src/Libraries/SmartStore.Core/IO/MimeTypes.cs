@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security;
 using System.Text;
@@ -24,13 +25,14 @@ namespace SmartStore.Core.IO
         /// </summary>
         /// <param name="mimeType">The mime type</param>
         /// <returns>The corresponding file extension (without dot)</returns>
+        [SuppressMessage("ReSharper", "RedundantAssignment")]
         public static string MapMimeTypeToExtension(string mimeType)
         {
             if (mimeType.IsEmpty())
                 return null;
 
 			return _mimeMap.GetOrAdd(mimeType, k => {
-				string result = null;
+				string result;
 
 				try
 				{

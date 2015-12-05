@@ -32,6 +32,7 @@ namespace SmartStore
 		/// Changes the object state to unchanged
 		/// </summary>
 		/// <typeparam name="TEntity">Type of entity</typeparam>
+		/// <param name="ctx"></param>
 		/// <param name="entity">The entity instance</param>
 		/// <returns>true on success, false on failure</returns>
 		public static bool SetToUnchanged<TEntity>(this IDbContext ctx, TEntity entity) where TEntity : BaseEntity

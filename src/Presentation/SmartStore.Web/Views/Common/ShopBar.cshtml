@@ -11,7 +11,7 @@
             <div class="shopbar-tool pull-left" id="shopbar-cart">
                 <a class="shopbar-button clearfix" data-target="shopbar-flyout-cart" href="@Url.RouteUrl("ShoppingCart")" data-summary-href='@Url.Action("ShoppingCartSummary", "ShoppingCart")'>
                     <figure class="shopbar-button-icon pull-left">
-                        <i data-icon="8" class="sm-icon-x"></i>
+	                    <i class="fa fa-shopping-basket"></i>
                         <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.ShoppingCartItems == 0 ? "hide" : "")' data-bind-to="TotalProducts">@Model.ShoppingCartItems</span>
                     </figure>
                     <span class="shopbar-button-label pull-left">
@@ -34,7 +34,7 @@
         <div class="shopbar-tool pull-right loaded" id="shopbar-account">
 			<a class='shopbar-button clearfix@(!Model.IsAuthenticated ? " no-drop" : "")' data-target="shopbar-flyout-account" href="@accountUrl" rel="nofollow">
 				<figure class="shopbar-button-icon pull-left">
-					<i class="sm-icon-user-5"></i>
+					<i class="fa fa-user"></i>
 				</figure>
 				<span class="shopbar-button-label pull-left">
 					@if (Model.IsAuthenticated)
@@ -68,7 +68,7 @@
             <div class="shopbar-tool pull-right" id="shopbar-wishlist">
                 <a class="shopbar-button clearfix" data-target="shopbar-flyout-wishlist" href="@Url.RouteUrl("Wishlist")" data-summary-href='@Url.Action("ShoppingCartSummary", "ShoppingCart", new { isWishlist = true })'>
                     <figure class="shopbar-button-icon pull-left">
-                        <i class="sm-icon-gift-2"></i>
+						<i class="fa fa-heart-o"></i>
                         <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.WishlistItems == 0 ? "hide" : "")' data-bind-to="TotalProducts">@Model.WishlistItems</span>
                     </figure>
                     <span class="shopbar-button-label pull-left">
@@ -91,7 +91,7 @@
             <div class="shopbar-tool pull-right" id="shopbar-compare">
                 <a class="shopbar-button clearfix" data-target="shopbar-flyout-compare" href="@Url.Action("CompareProducts", "Catalog")" data-summary-href='@Url.Action("CompareSummary", "Catalog")'>
                     <figure class="shopbar-button-icon pull-left">
-                        <i class="sm-icon-loop-alt2"></i>
+						<i class="fa fa-file-text"></i>
                         <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.CompareItems == 0 ? "hide" : "")' data-bind-to="Count">@Model.CompareItems</span>
                     </figure>
                     <span class="shopbar-button-label pull-left">

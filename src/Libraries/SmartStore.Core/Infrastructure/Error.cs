@@ -75,7 +75,7 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static Exception InvalidOperation(string message, params object[] args)
         {
-            return Error.InvalidOperation(message, null, args);
+            return InvalidOperation(message, null, args);
         }
 
         [DebuggerStepThrough]

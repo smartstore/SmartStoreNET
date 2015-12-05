@@ -13,6 +13,7 @@ using SmartStore.Services.Security;
 using System.Dynamic;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {

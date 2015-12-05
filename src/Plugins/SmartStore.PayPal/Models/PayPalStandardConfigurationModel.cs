@@ -1,6 +1,6 @@
 ﻿using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.PayPal.Models
 {

@@ -4,6 +4,8 @@ using System.Web.Mvc;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Services;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Caching;
 using SmartStore.WebApi.Models;

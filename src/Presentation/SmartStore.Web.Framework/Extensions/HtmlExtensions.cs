@@ -14,11 +14,11 @@ using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Utilities;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework
 {

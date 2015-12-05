@@ -41,8 +41,10 @@ using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -962,10 +964,10 @@ namespace SmartStore.Admin.Controllers
 
             gridModel.Total = products.TotalCount;
 
-            return new JsonResult
-            {
-                Data = gridModel
-            };
+			return new JsonResult
+			{
+				Data = gridModel
+			};
         }
 
         [HttpPost, ActionName("List")]
@@ -1006,7 +1008,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[ValidateInput(false)]
         public ActionResult Create(ProductModel model, bool continueEditing, FormCollection form)
         {
@@ -1096,7 +1098,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[ValidateInput(false)]
         public ActionResult Edit(ProductModel model, bool continueEditing, FormCollection form)
         {
@@ -2427,7 +2429,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[ValidateInput(false)]
-		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		public ActionResult BundleItemEditPopup(string btnId, string formId, bool continueEditing, ProductBundleItemModel model, FormCollection form)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))

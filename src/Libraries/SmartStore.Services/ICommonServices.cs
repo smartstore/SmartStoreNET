@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -11,6 +10,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
 using Autofac;
+using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services
 {	
@@ -77,6 +77,11 @@ namespace SmartStore.Services
 		}
 
 		IStoreService StoreService
+		{
+			get;
+		}
+
+		IDateTimeHelper DateTimeHelper
 		{
 			get;
 		}

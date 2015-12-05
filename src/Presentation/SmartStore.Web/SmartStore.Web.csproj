@@ -339,6 +339,7 @@
     <Compile Include="Models\Catalog\ManufacturerModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerNavigationModel.cs" />
     <Compile Include="Models\Catalog\ProductDetailsModel.cs" />
+    <Compile Include="Models\CheckoutBillingAddressModel.cs" />
     <Compile Include="Models\Checkout\CheckoutShippingAddressModel.cs" />
     <Compile Include="Models\Checkout\CheckoutProgressModel.cs" />
     <Compile Include="Models\Checkout\CheckoutBillingAddressModel.cs" />
@@ -908,7 +909,6 @@
     <Content Include="Content\filemanager\LICENSE.txt" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
-    <Content Include="Content\fonts\Fontastic.svg" />
     <Content Include="App_GlobalResources\MvcLocalization.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MvcLocalization.de.Designer.cs</LastGenOutput>
@@ -918,10 +918,6 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="Content\files\ExportImport\placeholder" />
-    <Content Include="Content\fonts\fontawesome-webfont.eot" />
-    <Content Include="Content\fonts\fontawesome-webfont.ttf" />
-    <Content Include="Content\fonts\fontawesome-webfont.woff" />
-    <Content Include="Content\fonts\FontAwesome.otf" />
     <Content Include="Content\bootstrap\custom\datetimepicker.less" />
     <Content Include="Content\filemanager\asp_net\main.ashx" />
     <Content Include="Content\filemanager\conf.json" />
@@ -943,11 +939,11 @@
     <Content Include="Config\Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="Content\fonts\raw\fonts\Fontastic.svg" />
-    <None Include="Content\fonts\raw\index.html" />
-    <None Include="Content\fonts\raw\license.txt" />
-    <None Include="Content\fonts\raw\lte-ie7.js" />
-    <None Include="Content\fonts\raw\style.css" />
+    <Content Include="Content\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\fonts\FontAwesome.otf" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\image-gallery\css\blueimp-gallery-custom.css" />
     <Content Include="Content\image-gallery\css\blueimp-gallery-indicator.css" />
@@ -1521,14 +1517,6 @@
     <Content Include="Content\Images\flags\za.png" />
     <Content Include="Content\Images\flags\zm.png" />
     <Content Include="Content\Images\flags\zw.png" />
-    <None Include="Content\fonts\raw\fonts\Fontastic.eot" />
-    <None Include="Content\fonts\raw\fonts\Fontastic.ttf" />
-    <None Include="Content\fonts\raw\fonts\Fontastic.woff" />
-    <Content Include="Content\fonts\Fontastic.eot" />
-    <Content Include="Content\fonts\fontastic.less" />
-    <Content Include="Content\fonts\Fontastic.ttf" />
-    <Content Include="Content\fonts\Fontastic.woff" />
-    <None Include="Content\fonts\raw\IcoMoon Session.json" />
     <Content Include="Content\jquery.pnotify.default.css" />
     <Content Include="Content\jquery.pnotify.default.icons.css" />
     <Content Include="Content\bootstrap\custom\scrollbutton.less" />

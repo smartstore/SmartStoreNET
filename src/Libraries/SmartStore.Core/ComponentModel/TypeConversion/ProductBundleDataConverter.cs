@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.ComponentModel
 {
+	[SuppressMessage("ReSharper", "TryCastAlwaysSucceeds")]
 	public class ProductBundleDataConverter : TypeConverterBase
 	{
 		private readonly bool _forList;
@@ -35,7 +37,7 @@ namespace SmartStore.ComponentModel
 			{
 				object result = null;
 				string str = value as string;
-				if (!String.IsNullOrEmpty(str))
+				if (!string.IsNullOrEmpty(str))
 				{
 					try
 					{

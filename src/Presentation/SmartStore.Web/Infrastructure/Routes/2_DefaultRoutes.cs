@@ -6,9 +6,9 @@ using System.Reflection;
 using System.Linq;
 using SmartStore.Web.Controllers;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Mvc.Routes;
 using SmartStore.Web.Framework.Seo;
 using System.Collections.Generic;
+using SmartStore.Web.Framework.Routing;
 
 namespace SmartStore.Web.Infrastructure
 {

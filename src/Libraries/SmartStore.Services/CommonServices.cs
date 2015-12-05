@@ -11,6 +11,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
 using Autofac;
+using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services
 {
@@ -29,7 +30,8 @@ namespace SmartStore.Services
 		private readonly Lazy<IPermissionService> _permissions;
 		private readonly Lazy<ISettingService> _settings;
 		private readonly Lazy<IStoreService> _storeService;
-		
+		private readonly Lazy<IDateTimeHelper> _dateTimeHelper;
+
 		public CommonServices(
 			IComponentContext container,
             Func<string, Lazy<ICacheManager>> cache,
@@ -43,7 +45,8 @@ namespace SmartStore.Services
 			Lazy<INotifier> notifier,
 			Lazy<IPermissionService> permissions,
 			Lazy<ISettingService> settings,
-			Lazy<IStoreService> storeService)
+			Lazy<IStoreService> storeService,
+			Lazy<IDateTimeHelper> dateTimeHelper)
 		{
 			this._container = container;
 			this._cache = cache("static");
@@ -58,6 +61,7 @@ namespace SmartStore.Services
 			this._permissions = permissions;
 			this._settings = settings;
 			this._storeService = storeService;
+			this._dateTimeHelper = dateTimeHelper;
 		}
 
 		public IComponentContext Container
@@ -162,6 +166,14 @@ namespace SmartStore.Services
 			get
 			{
 				return _storeService.Value;
+			}
+		}
+
+		public IDateTimeHelper DateTimeHelper
+		{
+			get
+			{
+				return _dateTimeHelper.Value;
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace SmartStore.ComponentModel
 {
+	[SuppressMessage("ReSharper", "CanBeReplacedWithTryCastAndCheckForNull")]
 	public class BooleanConverter : TypeConverterBase
 	{
 		private readonly HashSet<string> _trueValues;
@@ -66,7 +68,7 @@ namespace SmartStore.ComponentModel
 					}
 				}
 
-				str = (str ?? string.Empty).Trim();
+				str = (str.NullEmpty() ?? string.Empty).Trim();
 				if (_trueValues.Contains(str))
 				{
 					return true;

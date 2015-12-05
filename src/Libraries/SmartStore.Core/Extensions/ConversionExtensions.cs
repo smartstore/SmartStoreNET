@@ -101,8 +101,8 @@ namespace SmartStore
         {
 			Guard.ArgumentIsEnumType(typeof(T), "T");
 
-			T result = defaultValue;
-			if (CommonHelper.TryConvert<T>(value, out result))
+			T result;
+			if (CommonHelper.TryConvert(value, out result))
 			{
 				return result;
 			}
@@ -113,7 +113,7 @@ namespace SmartStore
         public static int ToInt(this string value, int defaultValue = 0)
         {
             int result;
-			if (CommonHelper.TryConvert<int>(value, out result))
+			if (CommonHelper.TryConvert(value, out result))
 			{
 				return result;
 			}
@@ -124,7 +124,7 @@ namespace SmartStore
         public static float ToFloat(this string value, float defaultValue = 0)
         {
             float result;
-			if (CommonHelper.TryConvert<float>(value, out result))
+			if (CommonHelper.TryConvert(value, out result))
 			{
 				return result;
 			}
@@ -135,7 +135,7 @@ namespace SmartStore
         public static bool ToBool(this string value, bool defaultValue = false)
         {
             bool result;
-			if (CommonHelper.TryConvert<bool>(value, out result))
+			if (CommonHelper.TryConvert(value, out result))
 			{
 				return result;
 			}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
@@ -18,6 +19,7 @@ namespace SmartStore.Utilities
 		/// <param name="convertNonWesternChars">A value indicating whether non western chars should be converted</param>
 		/// <param name="allowUnicodeCharsInUrls">A value indicating whether Unicode chars are allowed</param>
 		/// <returns>Result</returns>
+		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
 		public static string GetSeName(string name, bool convertNonWesternChars, bool allowUnicodeCharsInUrls)
 		{
 			if (String.IsNullOrEmpty(name))
@@ -32,7 +34,7 @@ namespace SmartStore.Utilities
 			}
 
 			var sb = new StringBuilder();
-			foreach (char c in name.ToCharArray())
+			foreach (char c in name)
 			{
 				string c2 = c.ToString();
 				if (convertNonWesternChars)

@@ -7,6 +7,7 @@ using SmartStore.Shipping.Domain;
 using SmartStore.Shipping.Models;
 using SmartStore.Shipping.Services;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Shipping.Controllers

@@ -139,7 +139,7 @@
     width: 1px;
     background-color: rgba(0,0,0, .15);
     margin: 8px;
-	padding: none;
+	padding: 0;
 	
     border-right: 1px solid @shopBarBackgroundColor;
 	.no-rgba & { 
@@ -172,8 +172,6 @@
 	position: relative;
 	display: inline-block;
 	margin: 2px 4px 0 0;
-	width: 24px;
-	height: 24px;
 	
 	span.label {
 		position: absolute; 
@@ -185,19 +183,18 @@
 	}
 }
 
-.shopbar-tool [class^="sm-icon-"] {
+.shopbar-button-icon .fa {
 	display: inline-block;
-	width: 24px;
-	height: 24px;
-	font-size: 24px;
+	font-size: 24px !important;
 	font-style: normal;
-	margin-top: 5px;
+	line-height: 28px;
+	vertical-align: middle;
 	
 	color: @shopBarIconColor;
 	.transition(color .1s linear);
 }
 
-.shopbar-button:hover [class^="sm-icon-"] {
+.shopbar-button:hover .shopbar-button-icon .fa {
 	color: darken(@shopBarIconColor, 22%);
 }
 

@@ -1,9 +1,6 @@
 ﻿@model ActivityLogSearchModel
 @using Telerik.Web.Mvc;
-@{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    
-    //page title
+@{   
     ViewBag.Title = T("Admin.Configuration.ActivityLog.ActivityLog").Text;
 }
 @using (Html.BeginForm())
@@ -14,14 +11,18 @@
             @T("Admin.Configuration.ActivityLog.ActivityLog")
         </div>
         <div class="options">
-            <a href="@Url.Action("ClearAll")" class="btn btn-primary">
-				<i class="fa fa-repeat"></i>&nbsp;@T("Admin.Common.Clear")
-			</a>
+			<button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn">
+				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.DeleteSelected")
+			</button>
+            <button type="submit" name="clearall" value="clearall" class="btn btn-danger">
+				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.DeleteAll")
+			</button>
         </div>
     </div>
-    <p>
-    </p>
-    <table style="width: 100%">
+
+    <p></p>
+
+    <table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CreatedOnFrom)
@@ -51,7 +52,7 @@
                 @Html.SmartLabelFor(model => model.ActivityLogTypeId)
             </td>
             <td class="adminData">
-                @Html.DropDownList("ActivityLogTypeId", Model.ActivityLogType)
+                @Html.DropDownListFor(ModelBase => ModelBase.ActivityLogTypeId, Model.ActivityLogType, T("Common.Unspecified"))
             </td>
         </tr>
         <tr>
@@ -66,52 +67,115 @@
             </td>
         </tr>
     </table>
+
 	<p></p>
+
     <table class="adminContent">
         <tr>
             <td>
                 @(Html.Telerik().Grid<ActivityLogModel>()
-						.Name("activityLog-grid")
-						.DataKeys(x =>
-						{
-							x.Add(y => y.Id).RouteKey("Id");
-						})
-						.ClientEvents(events => events.OnDataBinding("onDataBinding"))
-						.Columns(columns =>
-						{
-							columns.Bound(x => x.ActivityLogTypeName);
-							columns.Bound(x => x.CustomerId)
-								.Template(x => Html.ActionLink(x.CustomerEmail, "Edit", "Customer", new { id = x.CustomerId }, new { }))
-								.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
-							columns.Bound(x => x.Comment);
-							columns.Bound(x => x.CreatedOn)
-								.Width(180);
-							columns.Command(commands =>
-							{
-								commands.Delete().Localize(T);
-							}).Width(90);
-						})
-						.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-						.DataBinding(dataBinding =>
-						{
-							dataBinding.Ajax().Select("ListLogs", "ActivityLog")
-								.Delete("AcivityLogDelete", "ActivityLog");
-						})
-						.PreserveGridState()
-						.EnableCustomBinding(true))
+					.Name("activityLog-grid")
+					.DataKeys(x =>
+					{
+						x.Add(y => y.Id).RouteKey("Id");
+					})
+					.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.Id)
+							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+							.Title("<input id='mastercheckbox' type='checkbox'/>")
+							.Width(50)
+							.HtmlAttributes(new { style = "text-align:center" })
+							.HeaderHtmlAttributes(new { style = "text-align:center" });
+						columns.Bound(x => x.ActivityLogTypeName);
+						columns.Bound(x => x.CustomerId)
+							.Template(x => Html.ActionLink(x.CustomerEmail, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
+						columns.Bound(x => x.Comment);
+						columns.Bound(x => x.CreatedOn)
+							.Width(180);
+					})
+					.DataBinding(dataBinding =>
+					{
+						dataBinding.Ajax()
+							.Select("ListActivityLogs", "ActivityLog");
+					})
+					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+					.PreserveGridState()
+					.EnableCustomBinding(true))
             </td>
         </tr>
     </table>
+
     <script type="text/javascript">
+		var selectedIds = [];
 
         $(document).ready(function () {
 
             $('#btnSearch').click(function () {
-                var grid = $('#activityLog-grid').data('tGrid');
-                grid.currentPage = 1; //new search. Set page size to 1
-                grid.ajaxRequest();
+            	refreshGrid();
                 return false;
             });
+
+        	//"delete selected" button
+            $('#delete-selected').click(function (e) {
+            	e.preventDefault();
+
+            	var postData = {
+            		selectedIds: selectedIds
+            	};
+
+            	$.ajax({
+            		cache: false,
+            		type: "POST",
+            		url: "@(Url.Action("DeleteSelected", "ActivityLog"))",
+            		data: postData,
+            		complete: function (data) {
+            			refreshGrid();
+            		},
+            		error:function (xhr, ajaxOptions, thrownError){
+            			alert(thrownError);
+            		},
+            		traditional: true
+				});
+				return false;
+            });
+
+        	$('#mastercheckbox').click(function () {
+        		$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+        	});
+
+        	//wire up checkboxes. 
+        	$(document).on('change', '#activityLog-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
+        		var $check = $(this);
+        		if ($check.is(":checked") == true) {
+        			var checked = jQuery.inArray($check.val(), selectedIds);
+        			if (checked == -1) {
+        				//add id to selectedIds.  
+        				selectedIds.push($check.val());
+        			}
+        		}
+        		else {
+        			var checked = jQuery.inArray($check.val(), selectedIds);
+        			if (checked > -1) {
+        				//remove id from selectedIds.  
+        				selectedIds = $.grep(selectedIds, function (item, index) {
+        					return item != $check.val();
+        				});
+        			}
+        		}
+        		updateMasterCheckbox();
+        	});
+
+        	function refreshGrid() {
+        		var grid = $('#activityLog-grid').data('tGrid');
+        		grid.currentPage = 1; //new search. Set page size to 1
+        		grid.ajaxRequest();
+        		//clear selected checkboxes
+        		$('.checkboxGroups').attr('checked', false).change();
+        		selectedIds = [];
+        	}
         });
 
         function onDataBinding(e) {
@@ -124,5 +188,21 @@
             e.data = searchModel;
         }
 
+		function onDataBound(e) {
+			$('#activityLog-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+				var currentId = $(this).val();
+				var checked = jQuery.inArray(currentId, selectedIds);
+				//set checked based on if current checkbox's value is in selectedIds.  
+				$(this).attr('checked', checked > -1);
+			});
+
+			updateMasterCheckbox();
+		}
+
+		function updateMasterCheckbox() {
+			var numChkBoxes = $('#log-grid input[type=checkbox][id!=mastercheckbox]').length;
+			var numChkBoxesChecked = $('#log-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+			$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+		}
    </script>    
 }

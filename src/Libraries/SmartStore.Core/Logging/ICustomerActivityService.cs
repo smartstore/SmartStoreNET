@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
 
 namespace SmartStore.Core.Logging
 {
-    /// <summary>
-    /// Customer activity service interface
-    /// </summary>
-    public partial interface ICustomerActivityService
+	/// <summary>
+	/// Customer activity service interface
+	/// </summary>
+	public partial interface ICustomerActivityService
     {
         /// <summary>
         /// Inserts an activity log type item
@@ -84,10 +83,11 @@ namespace SmartStore.Core.Logging
         /// <param name="activityLogTypeId">Activity log type identifier</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+		/// <param name="email">Customer email</param>
         /// <returns>Activity log collection</returns>
         IPagedList<ActivityLog> GetAllActivities(DateTime? createdOnFrom,
             DateTime? createdOnTo, int? customerId,
-            int activityLogTypeId, int pageIndex, int pageSize);
+            int activityLogTypeId, int pageIndex, int pageSize, string email = null);
 
         /// <summary>
         /// Gets an activity log item
@@ -96,9 +96,16 @@ namespace SmartStore.Core.Logging
         /// <returns>Activity log item</returns>
         ActivityLog GetActivityById(int activityLogId);
 
-        /// <summary>
-        /// Clears activity log
-        /// </summary>
-        void ClearAllActivities();
+		/// <summary>
+		/// Gets activity logs be identifier
+		/// </summary>
+		/// <param name="activityLogIds">Activity log identifiers</param>
+		/// <returns>List of activity logs</returns>
+		IList<ActivityLog> GetActivityByIds(int[] activityLogIds);
+
+		/// <summary>
+		/// Clears activity log
+		/// </summary>
+		void ClearAllActivities();
     }
 }

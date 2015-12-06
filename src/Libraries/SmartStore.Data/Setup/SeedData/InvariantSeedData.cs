@@ -73,16 +73,22 @@ namespace SmartStore.Data.Setup
             var seName = GetSeName("company-logo");
             var imgCompanyLogo = _ctx.Set<Picture>().Where(x => x.SeoFilename == seName).FirstOrDefault();
 
+            var currency = _ctx.Set<Currency>().FirstOrDefault(x => x.CurrencyCode == "BRL");
+            if (currency == null)
+                currency = _ctx.Set<Currency>().First();
+
             var entities = new List<Store>()
             {
                 new Store()
                 {
                     Name = "Think Store",
                     Url = "http://www.thinkam.net/",
-                    Hosts = "thinkam.net,www.thinkam.net",
+                    Hosts = "www.thinkam.net",
                     SslEnabled = false,
                     DisplayOrder = 1,
-                    LogoPictureId = imgCompanyLogo.Id
+                    LogoPictureId = imgCompanyLogo.Id,
+                    PrimaryStoreCurrencyId = currency.Id,
+                    PrimaryExchangeRateCurrencyId = currency.Id
                 }
             };
             this.Alter(entities);
@@ -267,6 +273,7 @@ namespace SmartStore.Data.Setup
             var entities = new List<Currency>()
             {
                 CreateCurrency("en-US", published: true, rate: 1M, order: 0),
+                CreateCurrency("pt-BR", published: true, rate: 1M, order: 1),
                 CreateCurrency("en-GB", published: true, rate: 0.61M, order: 5),
                 CreateCurrency("en-AU", published: true, rate: 0.94M, order: 10),
                 CreateCurrency("en-CA", published: true, rate: 0.98M, order: 15),

@@ -10,7 +10,7 @@ namespace SmartStore.Core.Domain.Seo
 		{
 			PageTitleSeparator = ". ";
 			PageTitleSeoAdjustment = PageTitleSeoAdjustment.PagenameAfterStorename;
-			DefaultTitle = "Your store";
+			DefaultTitle = "Think Store";
 			DefaultMetaKeywords = "";
 			DefaultMetaDescription = "";
 			AllowUnicodeCharsInUrls = true;

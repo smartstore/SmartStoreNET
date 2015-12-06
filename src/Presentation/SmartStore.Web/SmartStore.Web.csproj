@@ -282,6 +282,7 @@
     <Compile Include="Infrastructure\DefaultBundles.cs" />
     <Compile Include="Infrastructure\DefaultWidgetSelector.cs" />
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
+    <Compile Include="Infrastructure\Installation\PtBRSeedData.cs" />
     <Compile Include="Infrastructure\Routes\2_DefaultRoutes.cs" />
     <Compile Include="Infrastructure\Routes\3_GenericRoutes.cs" />
     <Compile Include="Infrastructure\Installation\DeDESeedData.cs" />
@@ -451,10 +452,13 @@
     <Content Include="App_Data\Localization\App\de\head.txt" />
     <Content Include="App_Data\Localization\App\en\all.smres.xml" />
     <Content Include="App_Data\Localization\App\en\head.txt" />
+    <Content Include="App_Data\Localization\App\pt\all.smres.xml" />
+    <Content Include="App_Data\Localization\App\pt\head.txt" />
     <Content Include="App_Data\Localization\Installation\installation.de.xml" />
     <Content Include="App_Data\Localization\Installation\installation.en.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="App_Data\Localization\Installation\installation.pt.xml" />
     <Content Include="Content\2012.2.607\Default\editor.png" />
     <Content Include="Content\2012.2.607\Default\imagebrowser.png" />
     <Content Include="Content\2012.2.607\Default\loading.gif" />
@@ -964,6 +968,7 @@
     <Content Include="Content\image-gallery\js\blueimp-gallery.js" />
     <Content Include="Content\Images\default-image.jpg" />
     <Content Include="Content\Images\grippy.png" />
+    <Content Include="Content\Images\logo.png" />
     <Content Include="Content\Images\sad.png" />
     <Content Include="Content\Images\smartstore.net-200-black.png" />
     <Content Include="Content\Images\smartstore.net-200-white.png" />

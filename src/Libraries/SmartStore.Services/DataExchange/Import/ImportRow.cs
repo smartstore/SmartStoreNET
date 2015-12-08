@@ -14,7 +14,7 @@ namespace SmartStore.Services.DataExchange.Import
 		private bool _initialized = false;
 		private T _entity;
 		private string _entityDisplayName;
-		private int _position;
+		private readonly int _position;
 		private bool _isNew;
 		private ImportRowInfo _rowInfo;
 
@@ -130,15 +130,9 @@ namespace SmartStore.Services.DataExchange.Import
 					}
 					else
 					{
-						if (value.ToString().ToUpper().Equals("NULL"))
-						{
-							// prop is set "explicitly" to null.
-							converted = default(TProp);
-						}
-						else
-						{
-							converted = value.Convert<TProp>(_segmenter.Culture);
-						}
+						converted = value.ToString().ToUpper().Equals("NULL") 
+							? default(TProp) 
+							: value.Convert<TProp>(_segmenter.Culture);
 					}
 
 					fastProp.SetValue(target, converted);

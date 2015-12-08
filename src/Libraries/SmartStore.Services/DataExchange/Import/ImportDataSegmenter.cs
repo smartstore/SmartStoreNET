@@ -12,12 +12,14 @@ namespace SmartStore.Services.DataExchange.Import
 	{
 		private const int BATCHSIZE = 100;
 
-		private IDataTable _table;
+		private readonly IDataTable _table;
 		private ImportRow<T>[] _currentBatch;
-		private IPageable _pageable;
+		private readonly IPageable _pageable;
 		private bool _bof;
 		private CultureInfo _culture;
 		private ColumnMap _columnMap;
+
+		private readonly IDictionary<string, string[]> _columnIndexes = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
 
 		public ImportDataSegmenter(IDataTable table)
 		{
@@ -94,6 +96,42 @@ namespace SmartStore.Services.DataExchange.Import
 		{
 			return _table.HasColumn(_columnMap.GetMappedName(name, index));
 		}
+
+		/// <summary>
+		/// Returns an array of exisiting index names for a column
+		/// </summary>
+		/// <param name="name">The name of the columns without index qualification</param>
+		/// <returns>An array of index names</returns>
+		/// <remarks>
+		/// If following columns exist in source: Attr[Color], Attr[Size]
+		/// This method returns: <code>string[] { "Color", "Size" }</code> 
+		/// </remarks>
+		public string[] GetColumnIndexes(string name)
+		{
+			string[] indexes;
+
+			if (!_columnIndexes.TryGetValue(name, out indexes))
+			{
+				var startsWith = name + "[";
+
+				var columns1 = _columnMap.Mappings
+					.Where(x => x.Key.StartsWith(startsWith, StringComparison.OrdinalIgnoreCase))
+					.Select(x => x.Key);
+
+				var columns2 = _table.Columns
+					.Where(x => x.Name.StartsWith(startsWith, StringComparison.OrdinalIgnoreCase))
+					.Select(x => x.Name);
+
+				indexes = columns1.Concat(columns2)
+					.Distinct(StringComparer.OrdinalIgnoreCase)
+					.Select(x => x.Substring(x.IndexOf("[", StringComparison.OrdinalIgnoreCase) + 1).TrimEnd(']'))
+					.ToArray();
+
+				_columnIndexes[name] = indexes;
+			}
+
+			return indexes;
+		} 
 
 		public void Reset()
 		{

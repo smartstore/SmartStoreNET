@@ -45,8 +45,6 @@ namespace SmartStore.Services.DataExchange.Export
 			_localizationService = localizationService;
 		}
 
-		#region Export profiles
-
 		public virtual ExportProfile InsertExportProfile(
 			string providerSystemName,
 			string name,
@@ -340,7 +338,5 @@ namespace SmartStore.Services.DataExchange.Export
 
 			_eventPublisher.EntityDeleted(deployment);
 		}
-
-		#endregion
 	}
 }

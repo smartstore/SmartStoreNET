@@ -181,6 +181,7 @@
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\CustomerRoleController.cs" />
     <Compile Include="Controllers\ExportController.cs" />
+    <Compile Include="Controllers\ImportController.cs" />
     <Compile Include="Controllers\QuantityUnitController.cs" />
     <Compile Include="Controllers\DeliveryTimeController.cs" />
     <Compile Include="Controllers\DiscountController.cs" />
@@ -252,6 +253,7 @@
     <Compile Include="Models\Common\SystemInfoModel.cs" />
     <Compile Include="Models\DataExchange\ExportDeploymentModel.cs" />
     <Compile Include="Models\DataExchange\ExportFilterModel.cs" />
+    <Compile Include="Models\DataExchange\ImportProfileModel.cs" />
     <Compile Include="Models\DataExchange\ProfileInfoForProviderModel.cs" />
     <Compile Include="Models\DataExchange\ExportPreviewModel.cs" />
     <Compile Include="Models\DataExchange\ExportProjectionModel.cs" />
@@ -374,6 +376,7 @@
     <Compile Include="Validators\Common\GenericAttributeValidator.cs" />
     <Compile Include="Validators\ContentSlider\ContentSliderValidator.cs" />
     <Compile Include="Validators\DataExchange\ExportDeplomentValidator.cs" />
+    <Compile Include="Validators\DataExchange\ImportProfileValidator.cs" />
     <Compile Include="Validators\DataExchange\ExportProfileValidator.cs" />
     <Compile Include="Validators\Directory\DeliveryTimeValidator.cs" />
     <Compile Include="Validators\Messages\NewsLetterSubscriptionValidator.cs" />
@@ -533,6 +536,7 @@
     <Content Include="Views\UrlRecord\NamesPerEntity.cshtml" />
     <Content Include="Views\Export\ProfileFileCount.cshtml" />
     <Content Include="Views\Export\ProfileFileDetails.cshtml" />
+    <Content Include="Views\Import\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

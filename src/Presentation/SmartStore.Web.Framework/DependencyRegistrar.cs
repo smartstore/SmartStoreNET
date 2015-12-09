@@ -247,6 +247,7 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<ExportProfileService>().As<IExportProfileService>().InstancePerRequest();
 			builder.RegisterType<DataExporter>().As<IDataExporter>().InstancePerRequest();
+			builder.RegisterType<ImportProfileService>().As<IImportProfileService>().InstancePerRequest();
 
 			builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
 			builder.RegisterType<UAParserUserAgent>().As<IUserAgent>().InstancePerRequest();

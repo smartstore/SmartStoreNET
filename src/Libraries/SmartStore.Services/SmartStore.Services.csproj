@@ -184,8 +184,12 @@
     <Compile Include="DataExchange\Excel\ExcelDataReader.cs" />
     <Compile Include="DataExchange\Events\RowExportingEvent.cs" />
     <Compile Include="DataExchange\ExportConfigurationInfo.cs" />
+    <Compile Include="DataExchange\Import\DataImportTask.cs" />
     <Compile Include="DataExchange\Import\DataTable\IDataTable.cs" />
     <Compile Include="DataExchange\Import\DataTable\LightweightDataTable.cs" />
+    <Compile Include="DataExchange\Import\ImportExtensions.cs" />
+    <Compile Include="DataExchange\Import\ImportProfileService.cs" />
+    <Compile Include="DataExchange\Import\IImportProfileService.cs" />
     <Compile Include="DataExchange\Import\ImportMessage.cs" />
     <Compile Include="DataExchange\Import\ImportModeFlags.cs" />
     <Compile Include="DataExchange\Import\ImportProgressInfo.cs" />

@@ -157,7 +157,7 @@ else
 					url: dialog.attr('data-urldelete'),
 					ask: dialog.find('.modal-ask-delete').text(),
 					callbackSuccess: function (resp) {
-						refreshGrid(forExport);
+						refreshGrid();
 					}
 				});
 				return false;

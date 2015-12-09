@@ -15,7 +15,24 @@
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "manufacturer-edit", this.Html, this.Model));
 })
 @helper TabInfo()
-    { 
+{ 
+	if (Model.Id != 0)
+	{
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Id)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(model => model.Id)
+					@Html.ValidationMessageFor(model => model.Id)
+				</td>
+			</tr>
+		</table>
+
+		<p></p>
+	}
+
     @(Html.LocalizedEditor<ManufacturerModel, ManufacturerLocalizedModel>("manufacturer-info-localized",
                 @<table class="adminContent">
                     <tr>
@@ -63,7 +80,8 @@
                         </td>
                     </tr>
                 </table>
-            ))
+))
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">

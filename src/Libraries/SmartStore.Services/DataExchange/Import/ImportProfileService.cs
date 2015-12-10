@@ -73,6 +73,10 @@ namespace SmartStore.Services.DataExchange.Import
 			if (profile == null)
 				throw new ArgumentNullException("profile");
 
+			profile.FolderName = profile.FolderName
+				.ToValidPath()
+				.Truncate(_dataExchangeSettings.MaxFileNameLength);
+
 			_importProfileRepository.Update(profile);
 
 			_eventPublisher.EntityUpdated(profile);
@@ -83,7 +87,8 @@ namespace SmartStore.Services.DataExchange.Import
 			if (profile == null)
 				throw new ArgumentNullException("profile");
 
-			int scheduleTaskId = profile.SchedulingTaskId;
+			var scheduleTaskId = profile.SchedulingTaskId;
+			var folder = profile.GetImportFolder();
 
 			_importProfileRepository.Delete(profile);
 
@@ -91,6 +96,11 @@ namespace SmartStore.Services.DataExchange.Import
 			_scheduleTaskService.DeleteTask(scheduleTask);
 
 			_eventPublisher.EntityDeleted(profile);
+
+			if (System.IO.Directory.Exists(folder))
+			{
+				FileSystemHelper.ClearDirectory(folder, true);
+			}
 		}
 
 		public virtual IQueryable<ImportProfile> GetImportProfiles(bool? enabled = null)

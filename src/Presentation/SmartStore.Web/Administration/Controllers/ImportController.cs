@@ -65,7 +65,12 @@ namespace SmartStore.Admin.Controllers
 
 				model.ExistingFileNames = profile.GetImportFiles()
 					.Select(x => Path.GetFileName(x))
+					.OrderBy(x => x)
 					.ToList();
+			}
+			else
+			{
+				model.ExistingFileNames = new List<string>();
 			}
 
 			if (forEdit)
@@ -115,12 +120,14 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing"), FormValueRequired("save", "save-continue")]
-		public ActionResult Create(ImportProfileModel model, ImportEntityType entityType)
+		public ActionResult Create(ImportProfileModel model)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
-			if (!System.IO.File.Exists(model.TempImportFile))
+			string[] tempFiles = model.TempImportFiles.SplitSafe("|");
+
+			if (tempFiles.Length == 0)
 			{
 				ModelState.AddModelError("ImportFiles", T("Admin.DataExchange.Import.MissingImportFile"));
 			}
@@ -131,9 +138,12 @@ namespace SmartStore.Admin.Controllers
 				if (profile != null && profile.Id != 0)
 				{
 					var folder = profile.GetImportFolder(true, true);
-					var destPath = Path.Combine(folder, Path.GetFileName(model.TempImportFile));
+					var tempDir = FileSystemHelper.TempDir();
 
-					FileSystemHelper.Copy(model.TempImportFile, destPath, true, true);
+					foreach (var file in tempFiles)
+					{
+						FileSystemHelper.Copy(Path.Combine(tempDir, file), Path.Combine(folder, file), true, true);
+					}
 
 					return RedirectToAction("Edit", new { id = profile.Id });
 				}
@@ -178,8 +188,11 @@ namespace SmartStore.Admin.Controllers
 
 			profile.Name = model.Name;
 			profile.FolderName = model.FolderName;
+			profile.EntityType = model.EntityType;
 			profile.Enabled = model.Enabled;
-
+			profile.Skip = model.Skip;
+			profile.Take = model.Take;
+			profile.Cleanup = model.Cleanup;
 
 			_importService.UpdateImportProfile(profile);
 
@@ -218,8 +231,8 @@ namespace SmartStore.Admin.Controllers
 		public JsonResult FileUpload(int id)
 		{
 			var success = false;
-			string error = null;
-			string tempFile = null;
+			string tempFile = "";
+			string fileList = "";
 
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 			{
@@ -228,28 +241,44 @@ namespace SmartStore.Admin.Controllers
 				{
 					if (id == 0)
 					{
-						tempFile = Path.Combine(FileSystemHelper.TempDir(), postedFile.FileName);
-						FileSystemHelper.Delete(tempFile);
+						var path = Path.Combine(FileSystemHelper.TempDir(), postedFile.FileName);
+						FileSystemHelper.Delete(path);
+
+						success = postedFile.Stream.ToFile(path);
+
+						if (success)
+							tempFile = postedFile.FileName;
 					}
 					else
 					{
+						var profile = _importService.GetImportProfileById(id);
+						if (profile != null)
+						{
+							var folder = profile.GetImportFolder(true, true);
+							var destFile = Path.Combine(folder, Path.GetFileName(postedFile.FileName));
+
+							success = postedFile.Stream.ToFile(destFile);
+
+							if (success)
+							{
+								var model = new ImportProfileModel();
+								PrepareProfileModel(model, profile, false);
+
+								fileList = this.RenderPartialViewToString("_ImportFileList", model);
+							}
+						}
 					}
-
-					success = postedFile.Stream.ToFile(tempFile);
-
-					if (!success)
-						error = T("Admin.Common.UploadFileFailed");
 				}
+
+				if (!success)
+					NotifyError(T("Admin.Common.UploadFileFailed"));
 			}
 			else
 			{
-				error = T("Admin.AccessDenied.Description");
+				NotifyError(T("Admin.AccessDenied.Description"));
 			}
 
-			if (error.HasValue())
-				NotifyError(error, true);
-
-			return Json(new { success = success, tempFile = tempFile });
+			return Json(new { success = success, tempFile = tempFile, fileList = fileList });
 		}
 
 		[HttpPost]
@@ -287,7 +316,7 @@ namespace SmartStore.Admin.Controllers
 			return result;
 		}
 
-		public ActionResult DownloadExportFile(int id, string name)
+		public ActionResult DownloadImportFile(int id, string name)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
@@ -307,6 +336,25 @@ namespace SmartStore.Admin.Controllers
 			result.FileDownloadName = Path.GetFileName(path);
 
 			return result;
+		}
+
+		public ActionResult DeleteImportFile(int id, string name)
+		{
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			{
+				var profile = _importService.GetImportProfileById(id);
+				if (profile != null)
+				{
+					var path = Path.Combine(profile.GetImportFolder(true), name);
+					FileSystemHelper.Delete(path);
+
+					var model = new ImportProfileModel();
+					PrepareProfileModel(model, profile, false);
+
+					return PartialView("_ImportFileList", model);
+				}
+			}
+			return new EmptyResult();
 		}
 	}
 }

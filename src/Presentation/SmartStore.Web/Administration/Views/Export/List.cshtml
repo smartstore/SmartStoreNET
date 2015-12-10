@@ -157,7 +157,6 @@ else
 					url: dialog.attr('data-urldelete'),
 					ask: dialog.find('.modal-ask-delete').text(),
 					callbackSuccess: function (resp) {
-						refreshGrid();
 					}
 				});
 				return false;
@@ -232,12 +231,6 @@ else
 
 		// selected provider changed
 		$(document).on('change', 'select[name="ProviderSystemName"]', toggleProviderDescription);
-
-		function refreshGrid() {
-			setTimeout(function () {
-				$('#export-profile-list').data('tGrid').ajaxRequest();
-			}, 500);
-		}
 
 		function showPrimaryButton(display) {
 			var button = $('#export-profile-dialog').find('.btn-primary').toggle(display);

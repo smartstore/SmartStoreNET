@@ -210,6 +210,10 @@ namespace SmartStore.Services.DataExchange.Export
 			if (profile == null)
 				throw new ArgumentNullException("profile");
 
+			profile.FolderName = profile.FolderName
+				.ToValidPath()
+				.Truncate(_dataExchangeSettings.MaxFileNameLength);
+
 			_exportProfileRepository.Update(profile);
 
 			_eventPublisher.EntityUpdated(profile);

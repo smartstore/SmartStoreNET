@@ -539,6 +539,8 @@
     <Content Include="Views\Import\List.cshtml" />
     <Content Include="Views\Import\Create.cshtml" />
     <Content Include="Views\Import\_CreateOrUpdate.cshtml" />
+    <Content Include="Views\Import\Edit.cshtml" />
+    <Content Include="Views\Import\_ImportFileList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

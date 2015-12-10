@@ -48,7 +48,13 @@
 						@profile.EntityTypeName
 					</td>
 					<td>
-						@(string.Join("<br />", profile.ExistingFileNames))
+						@foreach (var fileName in profile.ExistingFileNames)
+						{
+							<div>
+								@Html.IconForFileExtension(Path.GetExtension(fileName), false)
+								<a href="@Url.Action("DownloadImportFile", new { id = profile.Id, name = fileName })" download>@fileName</a>
+							</div>
+						}
 					</td>
 					<td>
 						<div class="last-run-info">

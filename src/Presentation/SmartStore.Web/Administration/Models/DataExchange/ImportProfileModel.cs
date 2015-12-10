@@ -45,7 +45,7 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public ScheduleTaskModel TaskModel { get; set; }
 		public bool LogFileExists { get; set; }
-		public string TempImportFile { get; set; }
+		public string TempImportFiles { get; set; }
 		public string EntityTypeName { get; set; }
 	}
 }

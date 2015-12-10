@@ -7,7 +7,7 @@
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.HiddenFor(model => model.TempImportFile)
+@Html.HiddenFor(model => model.TempImportFiles)
 
 <table class="adminContent">
 	<tr>
@@ -37,6 +37,28 @@
 			</div>
 
 		</td>
+	</tr>
+	<tr id="ImportFileListContainer" class="@(Model.ExistingFileNames.Count > 0 ? "" : "hide")">
+		<td class="adminTitle">
+			&nbsp;
+		</td>
+		<td id="ImportFileList" class="adminData">
+			@Html.Partial("_ImportFileList", Model)
+		</td>
+	</tr>
+	@if (Model.ScheduleTaskId > 0)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ScheduleTaskId)
+			</td>
+			<td class="adminData">
+				@Html.Action("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, area = "admin" })
+			</td>
+		</tr>
+	}
+	<tr>
+		<td colspan="2">&nbsp;</td>
 	</tr>
 	<tr>
 		<td class="adminTitle">
@@ -114,8 +136,25 @@
 			dataType: 'json',
 			acceptFileTypes: /(\.|\/)(csv|xls|xlsx)$/i,
 			done: function (e, data) {
-				if (data.result.success && data.result.tempFile.length > 0) {
-					$('input[name=TempImportFile]').val(data.result.tempFile);
+				if (data.result.success) {
+					$('#ImportFileListContainer').show();
+
+					if (!_.isEmpty(data.result.tempFile)) {
+						var fileInput = $('input[name=TempImportFiles]'),
+							files = fileInput.val();
+
+						if (_.isEmpty(files))
+							files = data.result.tempFile;
+						else
+							files += '|' + data.result.tempFile;							
+
+						fileInput.val(files);
+						$('#ImportFileList').html(files.replace('|', ', '));
+					}
+
+					if (!_.isEmpty(data.result.fileList)) {
+						$('#ImportFileList').html(data.result.fileList);
+					}
 				}
 			}
 		});

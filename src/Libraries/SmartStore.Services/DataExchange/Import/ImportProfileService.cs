@@ -29,10 +29,9 @@ namespace SmartStore.Services.DataExchange.Import
 			_dataExchangeSettings = dataExchangeSettings;
 		}
 
-		public virtual ImportProfile InsertImportProfile(string name, string entityType)
+		public virtual ImportProfile InsertImportProfile(string name, ImportEntityType entityType)
 		{
 			Guard.ArgumentNotEmpty(() => name);
-			Guard.ArgumentNotEmpty(() => entityType);
 
 			var task = new ScheduleTask
 			{

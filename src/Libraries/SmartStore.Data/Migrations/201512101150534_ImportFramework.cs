@@ -16,7 +16,7 @@ namespace SmartStore.Data.Migrations
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(nullable: false, maxLength: 100),
                         FolderName = c.String(nullable: false, maxLength: 100),
-                        EntityType = c.String(nullable: false, maxLength: 100),
+                        EntityTypeId = c.Int(nullable: false),
                         Enabled = c.Boolean(nullable: false),
                         Skip = c.Int(nullable: false),
                         Take = c.Int(nullable: false),
@@ -59,13 +59,14 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-			builder.AddOrUpdate("Common.Files", "Files", "Dateien");
-
 			builder.AddOrUpdate("Admin.Common.RecordsSkip",
 				"Skip",
 				"Überspringen",
 				"Specifies the number of records to be skipped.",
 				"Legt die Anzahl der zu überspringenden Datensätze fest.");
+
+			builder.AddOrUpdate("Admin.Common.ImportFile", "Import file", "Importdatei");
+			builder.AddOrUpdate("Admin.Common.ImportFiles", "Import files", "Importdateien");
 
 			builder.AddOrUpdate("Admin.Common.RecordsTake",
 				"Limit",
@@ -76,10 +77,6 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Import.NoProfiles",
 				"There were no import profiles found.",
 				"Es wurden keine Importprofile gefunden.");
-
-			builder.AddOrUpdate("Admin.DataExchange.Import.FolderName.Validate",
-				"Please enter a valid folder name.",
-				"Bitte einen gültigen Ordnernamen eingeben.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.Name",
 				"Name of profile",
@@ -98,6 +95,19 @@ namespace SmartStore.Data.Migrations
 				"Zum Schluss aufräumen",
 				"Specifies whether to delete import files after an import.",
 				"Legt fest, ob die Importdateien nach einem Import gelöscht werden sollen.");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportEntityType.Product", "Product", "Produkt");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportEntityType.Customer", "Customer", "Kunde");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportEntityType.NewsLetterSubscription", "Newsletter Subscribers", "Newsletter Abonnenten");
+
+			builder.AddOrUpdate("Admin.DataExchange.Import.FileUpload",
+				"Upload import file...",
+				"Importdatei hochladen...");
+
+			builder.AddOrUpdate("Admin.DataExchange.Import.MissingImportFile",
+				"Please upload an import file.",
+				"Bitte laden Sie eine Importdatei hoch.");
+
 
 			builder.Delete(
 				"Admin.DataExchange.Export.LastExecution",

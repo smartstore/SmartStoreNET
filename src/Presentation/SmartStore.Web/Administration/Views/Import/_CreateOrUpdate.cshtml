@@ -1,0 +1,124 @@
+﻿@using SmartStore.Admin.Models.DataExchange;
+@model ImportProfileModel
+@{
+	Html.AddScriptParts("~/bundles/fileupload");
+	Html.AddCssFileParts("~/css/fileupload");
+}
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.TempImportFile)
+
+<table class="adminContent">
+	<tr>
+		<td class="adminTitle">
+			&nbsp;
+		</td>
+		<td class="adminData">
+
+			<div id="ImportFileUploader" class="fileupload">
+				<span class="btn btn-primary fileinput-button">
+					<i class="fa fa-upload"></i>
+					<span>@T("Admin.DataExchange.Import.FileUpload")</span>
+					<input id="ImportFileUpload" type="file" name="importfile" />
+				</span>
+
+				<button class="btn btn-warning cancel">
+					<i class="fa fa-times"></i>
+					<span>@T("Common.Fileuploader.Cancel")</span>
+				</button>
+
+				<div class="span5 fileupload-progress fade">
+					<div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+						<div class="bar" style="width:0%;"></div>
+					</div>
+					<div class="progress-extended">&nbsp;</div>
+				</div>
+			</div>
+
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Name)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.Name)
+			@Html.ValidationMessageFor(x => x.Name)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.EntityType)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(x => x.EntityType, Model.AvailableEntityTypes)
+			@Html.ValidationMessageFor(x => x.EntityType)
+		</td>
+	</tr>
+	@if (Model.Id != 0)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.FolderName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.FolderName)
+				@Html.ValidationMessageFor(x => x.FolderName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Enabled)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Enabled)
+				@Html.ValidationMessageFor(x => x.Enabled)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Skip)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Skip)
+				@Html.ValidationMessageFor(x => x.Skip)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Take)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Take)
+				@Html.ValidationMessageFor(x => x.Take)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Cleanup)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Cleanup)
+				@Html.ValidationMessageFor(x => x.Cleanup)
+			</td>
+		</tr>
+	}
+</table>
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		$('#ImportFileUploader').fileupload({
+			url: '@Url.Action("FileUpload", new { id = Model.Id })',
+			dataType: 'json',
+			acceptFileTypes: /(\.|\/)(csv|xls|xlsx)$/i,
+			done: function (e, data) {
+				if (data.result.success && data.result.tempFile.length > 0) {
+					$('input[name=TempImportFile]').val(data.result.tempFile);
+				}
+			}
+		});
+
+	});
+</script>

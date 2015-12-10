@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using SmartStore.Core.Domain;
+using SmartStore.Core.Domain.DataExchange;
 
 namespace SmartStore.Services.DataExchange.Import
 {
@@ -11,7 +12,7 @@ namespace SmartStore.Services.DataExchange.Import
 		/// <param name="name">Profile name</param>
 		/// <param name="entityType"></param>
 		/// <returns>Inserted import profile</returns>
-		ImportProfile InsertImportProfile(string name, string entityType);
+		ImportProfile InsertImportProfile(string name, ImportEntityType entityType);
 
 		/// <summary>
 		/// Updates an import profile

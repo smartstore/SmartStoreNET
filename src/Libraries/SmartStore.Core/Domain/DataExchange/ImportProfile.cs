@@ -1,4 +1,5 @@
-﻿using SmartStore.Core.Domain.Tasks;
+﻿using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Core.Domain
 {
@@ -15,9 +16,24 @@ namespace SmartStore.Core.Domain
 		public string FolderName { get; set; }
 
 		/// <summary>
-		/// The type of the entity
+		/// The identifier of the entity type
 		/// </summary>
-		public string EntityType { get; set; }
+		public int EntityTypeId { get; set; }
+
+		/// <summary>
+		/// The entity type
+		/// </summary>
+		public ImportEntityType EntityType
+		{
+			get
+			{
+				return (ImportEntityType)EntityTypeId;
+			}
+			set
+			{
+				EntityTypeId = (int)value;
+			}
+		}
 
 		/// <summary>
 		/// Whether the profile is enabled

@@ -12,7 +12,7 @@
         @T("Common.Import")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary import-profile-button"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
     </div>
 </div>
 
@@ -28,7 +28,7 @@
 				<th>@T("Admin.DataExchange.Import.Name")</th>
 				<th class="centered">@T("Common.Enabled")</th>
 				<th>@T("Admin.Common.Entity")</th>
-				<th>@T("Common.Files")</th>
+				<th>@T("Admin.Common.ImportFiles")</th>
 				<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
 				<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
 				<th>@T("Admin.Common.Actions")</th>
@@ -45,10 +45,10 @@
 						@Html.SymbolForBool(profile.Enabled)
 					</td>
 					<td>
-						@profile.EntityType.NaIfEmpty()
+						@profile.EntityTypeName
 					</td>
 					<td>
-						@(string.Join("<br />", profile.FileNames))
+						@(string.Join("<br />", profile.ExistingFileNames))
 					</td>
 					<td>
 						<div class="last-run-info">

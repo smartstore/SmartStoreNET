@@ -6,12 +6,16 @@ using System.Web.Mvc;
 using SmartStore.Admin.Extensions;
 using SmartStore.Admin.Models.DataExchange;
 using SmartStore.Core.Domain;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.IO;
 using SmartStore.Services;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Helpers;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Tasks;
+using SmartStore.Utilities;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -42,20 +46,32 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareProfileModel(ImportProfileModel model, ImportProfile profile, bool forEdit)
 		{
-			model.Id = profile.Id;
-			model.Name = profile.Name;
-			model.FolderName = profile.FolderName;
-			model.FileNames = profile.GetImportFiles();
-			model.EntityType = profile.EntityType;
-			model.Enabled = profile.Enabled;
-			model.Skip = profile.Skip;
-			model.Take = profile.Take;
-			model.Cleanup = profile.Cleanup;
-			model.ScheduleTaskId = profile.SchedulingTaskId;
-			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
-			model.IsTaskRunning = profile.ScheduleTask.IsRunning;
-			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
-			model.LogFileExists = System.IO.File.Exists(profile.GetImportLogPath());
+			if (profile != null)
+			{
+				model.Id = profile.Id;
+				model.Name = profile.Name;
+				model.FolderName = profile.FolderName;
+				model.EntityType = profile.EntityType;
+				model.Enabled = profile.Enabled;
+				model.Skip = profile.Skip;
+				model.Take = profile.Take;
+				model.Cleanup = profile.Cleanup;
+				model.ScheduleTaskId = profile.SchedulingTaskId;
+				model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
+				model.IsTaskRunning = profile.ScheduleTask.IsRunning;
+				model.IsTaskEnabled = profile.ScheduleTask.Enabled;
+				model.LogFileExists = System.IO.File.Exists(profile.GetImportLogPath());
+				model.EntityTypeName = profile.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
+
+				model.ExistingFileNames = profile.GetImportFiles()
+					.Select(x => Path.GetFileName(x))
+					.ToList();
+			}
+
+			if (forEdit)
+			{
+				model.AvailableEntityTypes = ImportEntityType.Product.ToSelectList(false).ToList();
+			}
 		}
 
 		#endregion
@@ -84,6 +100,46 @@ namespace SmartStore.Admin.Controllers
 				model.Add(profileModel);
 			}
 
+			return View(model);
+		}
+
+		public ActionResult Create()
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+				return AccessDeniedView();
+
+			var model = new ImportProfileModel();
+			PrepareProfileModel(model, null, true);
+
+			return View(model);
+		}
+
+		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing"), FormValueRequired("save", "save-continue")]
+		public ActionResult Create(ImportProfileModel model, ImportEntityType entityType)
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+				return AccessDeniedView();
+
+			if (!System.IO.File.Exists(model.TempImportFile))
+			{
+				ModelState.AddModelError("ImportFiles", T("Admin.DataExchange.Import.MissingImportFile"));
+			}
+			else if (ModelState.IsValid)
+			{
+				var profile = _importService.InsertImportProfile(model.Name, model.EntityType);
+
+				if (profile != null && profile.Id != 0)
+				{
+					var folder = profile.GetImportFolder(true, true);
+					var destPath = Path.Combine(folder, Path.GetFileName(model.TempImportFile));
+
+					FileSystemHelper.Copy(model.TempImportFile, destPath, true, true);
+
+					return RedirectToAction("Edit", new { id = profile.Id });
+				}
+			}
+
+			PrepareProfileModel(model, null, true);
 			return View(model);
 		}
 
@@ -156,6 +212,44 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			return RedirectToAction("Edit", new { id = profile.Id });
+		}
+
+		[HttpPost]
+		public JsonResult FileUpload(int id)
+		{
+			var success = false;
+			string error = null;
+			string tempFile = null;
+
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			{
+				var postedFile = Request.ToPostedFileResult();
+				if (postedFile != null)
+				{
+					if (id == 0)
+					{
+						tempFile = Path.Combine(FileSystemHelper.TempDir(), postedFile.FileName);
+						FileSystemHelper.Delete(tempFile);
+					}
+					else
+					{
+					}
+
+					success = postedFile.Stream.ToFile(tempFile);
+
+					if (!success)
+						error = T("Admin.Common.UploadFileFailed");
+				}
+			}
+			else
+			{
+				error = T("Admin.AccessDenied.Description");
+			}
+
+			if (error.HasValue())
+				NotifyError(error, true);
+
+			return Json(new { success = success, tempFile = tempFile });
 		}
 
 		[HttpPost]

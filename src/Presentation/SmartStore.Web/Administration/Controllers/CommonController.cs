@@ -28,6 +28,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -65,7 +66,8 @@ namespace SmartStore.Admin.Controllers
         private readonly Lazy<SecuritySettings> _securitySettings;
 		private readonly Lazy<IMenuPublisher> _menuPublisher;
         private readonly Lazy<IPluginFinder> _pluginFinder;
-        private readonly IGenericAttributeService _genericAttributeService;
+		private readonly Lazy<IImportProfileService> _importProfileService;
+		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly ICommonServices _services;
 		private readonly Func<string, ICacheManager> _cache;
 
@@ -91,7 +93,8 @@ namespace SmartStore.Admin.Controllers
 			Lazy<SecuritySettings> securitySettings,
 			Lazy<IMenuPublisher> menuPublisher,
             Lazy<IPluginFinder> pluginFinder,
-            IGenericAttributeService genericAttributeService,
+			Lazy<IImportProfileService> importProfileService,
+			IGenericAttributeService genericAttributeService,
 			ICommonServices services,
 			Func<string, ICacheManager> cache)
         {
@@ -110,6 +113,7 @@ namespace SmartStore.Admin.Controllers
             this._securitySettings = securitySettings;
             this._menuPublisher = menuPublisher;
 			this._pluginFinder = pluginFinder;
+			this._importProfileService = importProfileService;
             this._genericAttributeService = genericAttributeService;
 			this._services = services;
 			this._cache = cache;
@@ -920,7 +924,23 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-            return View(model);
+			// clear unreferenced profile folders
+			var importProfileFolders = _importProfileService.Value.GetImportProfiles()
+				.Select(x => x.FolderName)
+				.ToList();
+
+			var infoImportProfiles = new DirectoryInfo(CommonHelper.MapPath("~/App_Data/ImportProfiles"));
+
+			foreach (var infoSubFolder in infoImportProfiles.GetDirectories())
+			{
+				if (!importProfileFolders.Contains(infoSubFolder.Name))
+				{
+					FileSystemHelper.ClearDirectory(infoSubFolder.FullName, true);
+					++model.DeleteExportedFiles.NumberOfDeletedFolders;
+				}
+			}
+
+			return View(model);
         }
 
         [HttpPost, ActionName("Maintenance"), ValidateInput(false)]

@@ -914,6 +914,7 @@
       <LastGenOutput>MvcLocalization.de.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="App_Data\ua-parser.regexes.yaml" />
     <None Include="Config\BundleTransformer.Configuration.xsd">
       <SubType>Designer</SubType>
     </None>

@@ -9,6 +9,7 @@ using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.IO;
 using SmartStore.Services;
+using SmartStore.Services.DataExchange.Csv;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -48,6 +49,8 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (profile != null)
 			{
+				var extension = Path.GetExtension(profile.FileName);
+
 				model.Id = profile.Id;
 				model.Name = profile.Name;
 				model.FileName = profile.FileName;
@@ -65,6 +68,20 @@ namespace SmartStore.Admin.Controllers
 				model.ExistingFileNames = profile.GetImportFiles()
 					.Select(x => Path.GetFileName(x))
 					.ToList();
+
+				if (extension.IsCaseInsensitiveEqual(".csv"))
+				{
+					if (profile.FileTypeConfiguration.HasValue())
+					{
+						var converter = new CsvConfigurationConverter();
+						var config = converter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration);
+						model.CsvConfiguration = new CsvConfigurationModel(config);
+					}
+					else
+					{
+						model.CsvConfiguration = new CsvConfigurationModel(CsvConfiguration.ExcelFriendlyConfiguration);
+					}
+				}
 			}
 			else
 			{
@@ -159,7 +176,6 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var model = new ImportProfileModel();
-
 			PrepareProfileModel(model, profile, true);
 
 			return View(model);
@@ -167,7 +183,7 @@ namespace SmartStore.Admin.Controllers
 
 		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[FormValueRequired("save", "save-continue")]
-		public ActionResult Edit(ImportProfileModel model, bool continueEditing)
+		public ActionResult Edit(ImportProfileModel model, bool continueEditing, FormCollection form)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
@@ -178,18 +194,32 @@ namespace SmartStore.Admin.Controllers
 
 			if (ModelState.IsValid)
 			{
+				var extension = Path.GetExtension(profile.FileName);
+
 				profile.Name = model.Name;
 				profile.EntityType = model.EntityType;
 				profile.Enabled = model.Enabled;
 				profile.Skip = model.Skip;
 				profile.Take = model.Take;
 
+				if (extension.IsCaseInsensitiveEqual(".csv") && model.CsvConfiguration != null)
+				{
+					CsvConfiguration config = model.CsvConfiguration.Clone();
+
+					var converter = new CsvConfigurationConverter();
+					profile.FileTypeConfiguration = converter.ConvertTo(config);
+				}
+
 				_importService.UpdateImportProfile(profile);
 
 				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+
+				return (continueEditing ? RedirectToAction("Edit", new { id = profile.Id }) : RedirectToAction("List"));
 			}
 
-			return (continueEditing ? RedirectToAction("Edit", new { id = profile.Id }) : RedirectToAction("List"));
+			PrepareProfileModel(model, profile, true);
+
+			return View(model);
 		}
 
 		[HttpPost, ActionName("Delete")]
@@ -245,9 +275,9 @@ namespace SmartStore.Admin.Controllers
 						var profile = _importService.GetImportProfileById(id);
 						if (profile != null)
 						{
-							var requiredExtension = Path.GetExtension(profile.FileName);
+							var extension = Path.GetExtension(profile.FileName);
 
-							if (postedFile.FileExtension.IsCaseInsensitiveEqual(requiredExtension))
+							if (postedFile.FileExtension.IsCaseInsensitiveEqual(extension))
 							{
 								var folder = profile.GetImportFolder(true, true);
 								var destFile = Path.Combine(folder, Path.GetFileName(postedFile.FileName));
@@ -264,7 +294,7 @@ namespace SmartStore.Admin.Controllers
 							}
 							else
 							{
-								NotifyError(T("Admin.Common.FileTypeMustEqual", requiredExtension.Substring(1).ToUpper()));
+								NotifyError(T("Admin.Common.FileTypeMustEqual", extension.Substring(1).ToUpper()));
 							}
 						}
 					}

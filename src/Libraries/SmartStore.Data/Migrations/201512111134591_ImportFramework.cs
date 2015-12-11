@@ -67,6 +67,7 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Common.ImportFile", "Import file", "Importdatei");
 			builder.AddOrUpdate("Admin.Common.ImportFiles", "Import files", "Importdateien");
+			builder.AddOrUpdate("Admin.Common.CsvConfiguration", "CSV Configuration", "CSV Konfiguration");
 
 			builder.AddOrUpdate("Admin.Common.RecordsTake",
 				"Limit",
@@ -99,6 +100,62 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Import.MissingImportFile",
 				"Please upload an import file.",
 				"Bitte laden Sie eine Importdatei hoch.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Csv.QuoteAllFields",
+				"Quote all fields",
+				"Alle Felder in Anführungszeichen",
+				"Specifies whether to set quotation marks around all field values.",
+				"Legt fest, ob die Werte aller Felder in Anführungszeichen gestellt werden sollen.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Csv.TrimValues",
+				"Trim values",
+				"Überflüssige Leerzeichen entfernen",
+				"Specifies whether to remove space characters at start and end of a field value.",
+				"Legt fest, ob Leerzeichen am Anfang und am Ende eines Feldwertes entfernt werden sollen.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Csv.SupportsMultiline",
+				"Supports multilines",
+				"Mehrzeilen erlaubt",
+				"Specifies whether field values with multilines are supported.",
+				"Legt fest, ob mehrzeilige Feldwerte unterstützt werden.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Csv.Delimiter",
+				"Delimiter",
+				"Trennzeichen",
+				"Specifies the field separator.",
+				"Legt das zu verwendende Trennzeichen für die Felder fest.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Csv.Quote",
+				"Quote character",
+				"Anführungszeichen",
+				"Spacifies the quotation character.",
+				"Legt das zu verwendende Anführungszeichen fest.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Csv.Escape",
+				"Inner quote character",
+				"Inneres Anführungszeichen",
+				"Specifies the inner quote character used for escaping.",
+				"Legt das innere Anführungszeichen (Escaping) fest.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Csv.Delimiter.Validation",
+				"Please enter a valid delimiter.",
+				"Geben Sie bitte ein gültiges Trennzeichen ein.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Csv.Quote.Validation",
+				"Please enter a valid quote character.",
+				"Geben Sie bitte ein gültiges Anführungszeichen ein.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Csv.Escape.Validation",
+				"Please enter a valid inner quote character (escaping).",
+				"Geben Sie bitte ein gültiges, inneres Anführungszeichen (Escaping) ein.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Csv.EscapeDelimiter.Validation",
+				"Delimiter and inner quote character cannot be equal in CSV files.",
+				"Trennzeichen und inneres Anführungszeichen können in CSV Dateien nicht gleich sein.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Csv.QuoteDelimiter.Validation",
+				"Delimiter and quote character cannot be equal in CSV files.",
+				"Trennzeichen und Anführungszeichen können in CSV Dateien nicht gleich sein.");
 
 
 			builder.Delete(

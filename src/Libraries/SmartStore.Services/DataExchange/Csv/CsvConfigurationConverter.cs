@@ -32,6 +32,11 @@ namespace SmartStore.Services.DataExchange.Csv
 			return base.ConvertFrom(culture, value);
 		}
 
+		public T ConvertFrom<T>(string value)
+		{
+			return (T)ConvertFrom(CultureInfo.InvariantCulture, value);
+		}
+
 		public override object ConvertTo(CultureInfo culture, string format, object value, Type to)
 		{
 			if (to == typeof(string))
@@ -47,6 +52,11 @@ namespace SmartStore.Services.DataExchange.Csv
 			}
 
 			return base.ConvertTo(culture, format, value, to);
+		}
+
+		public string ConvertTo(object value)
+		{
+			return (string)ConvertTo(CultureInfo.InvariantCulture, null, value, typeof(string));
 		}
 	}
 }

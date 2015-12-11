@@ -110,6 +110,15 @@
 	}
 </table>
 
+@if (Model.CsvConfiguration != null)
+{
+	var viewData = new ViewDataDictionary();
+	viewData.Add("ShowGroupCaption", true);
+	viewData.TemplateInfo.HtmlFieldPrefix = "CsvConfiguration";
+	viewData.ModelState.Merge(ViewData.ModelState);
+	@Html.Partial("CsvConfiguration", Model.CsvConfiguration, viewData)
+}
+
 <script type="text/javascript">
 	jQuery(document).ready(function () {
 

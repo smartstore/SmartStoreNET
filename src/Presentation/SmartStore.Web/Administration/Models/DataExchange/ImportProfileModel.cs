@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Tasks;
@@ -18,11 +16,6 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string Name { get; set; }
 
 		public string FileName { get; set; }
-
-		public string FileExtension
-		{
-			get { return Path.GetExtension(FileName); }
-		}
 
 		[SmartResourceDisplayName("Admin.Common.ImportFiles")]
 		public List<string> ExistingFileNames { get; set; }
@@ -49,5 +42,7 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public ScheduleTaskModel TaskModel { get; set; }
 		public bool LogFileExists { get; set; }
+
+		public CsvConfigurationModel CsvConfiguration { get; set; }
 	}
 }

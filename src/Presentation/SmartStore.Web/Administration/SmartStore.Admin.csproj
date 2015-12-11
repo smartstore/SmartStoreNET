@@ -251,6 +251,7 @@
     <Compile Include="Models\Common\MaintenanceModel.cs" />
     <Compile Include="Models\Common\SystemWarningModel.cs" />
     <Compile Include="Models\Common\SystemInfoModel.cs" />
+    <Compile Include="Models\DataExchange\CsvConfigurationModel.cs" />
     <Compile Include="Models\DataExchange\ExportDeploymentModel.cs" />
     <Compile Include="Models\DataExchange\ExportFilterModel.cs" />
     <Compile Include="Models\DataExchange\ImportProfileModel.cs" />
@@ -376,6 +377,7 @@
     <Compile Include="Validators\Common\GenericAttributeValidator.cs" />
     <Compile Include="Validators\ContentSlider\ContentSliderValidator.cs" />
     <Compile Include="Validators\DataExchange\ExportDeplomentValidator.cs" />
+    <Compile Include="Validators\DataExchange\CsvConfigurationValidator.cs" />
     <Compile Include="Validators\DataExchange\ImportProfileValidator.cs" />
     <Compile Include="Validators\DataExchange\ExportProfileValidator.cs" />
     <Compile Include="Validators\Directory\DeliveryTimeValidator.cs" />
@@ -541,6 +543,7 @@
     <Content Include="Views\Import\_CreateOrUpdate.cshtml" />
     <Content Include="Views\Import\Edit.cshtml" />
     <Content Include="Views\Import\_ImportFileList.cshtml" />
+    <Content Include="Views\Shared\CsvConfiguration.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

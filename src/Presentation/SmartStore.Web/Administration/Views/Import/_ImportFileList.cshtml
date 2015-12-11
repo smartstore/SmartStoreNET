@@ -6,30 +6,11 @@
 		@Html.IconForFileExtension(Path.GetExtension(fileName), false)
 		<a href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
 
-		&nbsp;
-		<button type="button" data-filename="@fileName" class="btn btn-mini import-file-delete">
-			<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
-		</button>
+		@if(!fileName.IsCaseInsensitiveEqual(Model.FileName))
+		{
+			<button type="button" data-filename="@fileName" class="btn btn-mini btn-right import-file-delete">
+				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+			</button>
+		}
 	</p>
 }
-<script type="text/javascript">
-	jQuery(document).ready(function () {
-
-		// delete import file
-		$('#ImportFileList').on('click', '.import-file-delete', function (e) {
-			e.preventDefault();
-			var url = '@Url.Action("DeleteImportFile", new { id = Model.Id })';
-
-			$({}).doAjax({
-				type: 'POST',
-				url: url + '?name=' + encodeURIComponent($(this).attr('data-filename')),
-				ask: '@T("Admin.Common.AreYouSure")',
-				callbackSuccess: function (resp) {
-					if (!_.isEmpty(resp))
-						$('#ImportFileList').html(resp);
-				}
-			});
-			return false;
-		});
-	});
-</script>

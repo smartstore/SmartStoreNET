@@ -16,6 +16,11 @@ namespace SmartStore.Core.Domain
 		public string FolderName { get; set; }
 
 		/// <summary>
+		/// The name of the initially uploaded import file
+		/// </summary>
+		public string FileName { get; set; }
+
+		/// <summary>
 		/// The identifier of the entity type
 		/// </summary>
 		public int EntityTypeId { get; set; }
@@ -59,11 +64,6 @@ namespace SmartStore.Core.Domain
 		/// Mapping of import columns
 		/// </summary>
 		public string ColumnMapping { get; set; }
-
-		/// <summary>
-		/// Whether to delete import files after import
-		/// </summary>
-		public bool Cleanup { get; set; }
 
 		/// <summary>
 		/// The scheduling task identifier

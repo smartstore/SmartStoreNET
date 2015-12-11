@@ -29,8 +29,9 @@ namespace SmartStore.Services.DataExchange.Import
 			_dataExchangeSettings = dataExchangeSettings;
 		}
 
-		public virtual ImportProfile InsertImportProfile(string name, ImportEntityType entityType)
+		public virtual ImportProfile InsertImportProfile(string fileName, string name, ImportEntityType entityType)
 		{
+			Guard.ArgumentNotEmpty(() => fileName);
 			Guard.ArgumentNotEmpty(() => name);
 
 			var task = new ScheduleTask
@@ -49,6 +50,7 @@ namespace SmartStore.Services.DataExchange.Import
 			var profile = new ImportProfile
 			{
 				Name = name,
+				FileName = fileName,
 				EntityType = entityType,
 				Enabled = true,
 				SchedulingTaskId = task.Id
@@ -72,10 +74,6 @@ namespace SmartStore.Services.DataExchange.Import
 		{
 			if (profile == null)
 				throw new ArgumentNullException("profile");
-
-			profile.FolderName = profile.FolderName
-				.ToValidPath()
-				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 
 			_importProfileRepository.Update(profile);
 

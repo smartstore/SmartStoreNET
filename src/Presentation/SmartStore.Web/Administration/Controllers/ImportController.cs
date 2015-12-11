@@ -50,12 +50,11 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.Id = profile.Id;
 				model.Name = profile.Name;
-				model.FolderName = profile.FolderName;
+				model.FileName = profile.FileName;
 				model.EntityType = profile.EntityType;
 				model.Enabled = profile.Enabled;
 				model.Skip = profile.Skip;
 				model.Take = profile.Take;
-				model.Cleanup = profile.Cleanup;
 				model.ScheduleTaskId = profile.SchedulingTaskId;
 				model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
 				model.IsTaskRunning = profile.ScheduleTask.IsRunning;
@@ -65,7 +64,6 @@ namespace SmartStore.Admin.Controllers
 
 				model.ExistingFileNames = profile.GetImportFiles()
 					.Select(x => Path.GetFileName(x))
-					.OrderBy(x => x)
 					.ToList();
 			}
 			else
@@ -116,6 +114,8 @@ namespace SmartStore.Admin.Controllers
 			var model = new ImportProfileModel();
 			PrepareProfileModel(model, null, true);
 
+			model.Name = T("Common.Import");
+
 			return View(model);
 		}
 
@@ -125,25 +125,21 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
-			string[] tempFiles = model.TempImportFiles.SplitSafe("|");
+			var importFile = Path.Combine(FileSystemHelper.TempDir(), model.FileName);
 
-			if (tempFiles.Length == 0)
+			if (model.FileName.IsEmpty() || !System.IO.File.Exists(importFile))
 			{
-				ModelState.AddModelError("ImportFiles", T("Admin.DataExchange.Import.MissingImportFile"));
+				ModelState.AddModelError("", T("Admin.DataExchange.Import.MissingImportFile"));
 			}
 			else if (ModelState.IsValid)
 			{
-				var profile = _importService.InsertImportProfile(model.Name, model.EntityType);
+				var profile = _importService.InsertImportProfile(model.FileName, model.Name, model.EntityType);
 
 				if (profile != null && profile.Id != 0)
 				{
-					var folder = profile.GetImportFolder(true, true);
-					var tempDir = FileSystemHelper.TempDir();
+					var importFileDestination = Path.Combine(profile.GetImportFolder(true, true), model.FileName);
 
-					foreach (var file in tempFiles)
-					{
-						FileSystemHelper.Copy(Path.Combine(tempDir, file), Path.Combine(folder, file), true, true);
-					}
+					FileSystemHelper.Copy(importFile, importFileDestination, true, true);
 
 					return RedirectToAction("Edit", new { id = profile.Id });
 				}
@@ -180,23 +176,18 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
-			if (!ModelState.IsValid)
+			if (ModelState.IsValid)
 			{
-				PrepareProfileModel(model, profile, true);
-				return View(model);
+				profile.Name = model.Name;
+				profile.EntityType = model.EntityType;
+				profile.Enabled = model.Enabled;
+				profile.Skip = model.Skip;
+				profile.Take = model.Take;
+
+				_importService.UpdateImportProfile(profile);
+
+				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 			}
-
-			profile.Name = model.Name;
-			profile.FolderName = model.FolderName;
-			profile.EntityType = model.EntityType;
-			profile.Enabled = model.Enabled;
-			profile.Skip = model.Skip;
-			profile.Take = model.Take;
-			profile.Cleanup = model.Cleanup;
-
-			_importService.UpdateImportProfile(profile);
-
-			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
 			return (continueEditing ? RedirectToAction("Edit", new { id = profile.Id }) : RedirectToAction("List"));
 		}

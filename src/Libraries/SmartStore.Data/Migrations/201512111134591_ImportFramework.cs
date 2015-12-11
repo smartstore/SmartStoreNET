@@ -16,13 +16,13 @@ namespace SmartStore.Data.Migrations
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(nullable: false, maxLength: 100),
                         FolderName = c.String(nullable: false, maxLength: 100),
+                        FileName = c.String(nullable: false, maxLength: 400),
                         EntityTypeId = c.Int(nullable: false),
                         Enabled = c.Boolean(nullable: false),
                         Skip = c.Int(nullable: false),
                         Take = c.Int(nullable: false),
                         FileTypeConfiguration = c.String(),
                         ColumnMapping = c.String(),
-                        Cleanup = c.Boolean(nullable: false),
                         SchedulingTaskId = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
@@ -83,18 +83,6 @@ namespace SmartStore.Data.Migrations
 				"Name des Profils",
 				"Specifies the name of the import profile.",
 				"Legt den Namen des Importprofils fest.");
-
-			builder.AddOrUpdate("Admin.DataExchange.Import.FolderName",
-				"Folder name",
-				"Ordnername",
-				"Specifies the name of the folder where the import files are saved.",
-				"Legt den Namen des Ordners fest, in den die Importdateien gespeichert werden.");
-
-			builder.AddOrUpdate("Admin.DataExchange.Import.Cleanup",
-				"Clean up at the end",
-				"Zum Schluss aufräumen",
-				"Specifies whether to delete import files after an import.",
-				"Legt fest, ob die Importdateien nach einem Import gelöscht werden sollen.");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportEntityType.Product", "Product", "Produkt");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportEntityType.Customer", "Customer", "Kunde");

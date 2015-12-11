@@ -9,10 +9,11 @@ namespace SmartStore.Services.DataExchange.Import
 		/// <summary>
 		/// Inserts an import profile
 		/// </summary>
+		/// <param name="fileName">Name of the import file</param>
 		/// <param name="name">Profile name</param>
 		/// <param name="entityType"></param>
 		/// <returns>Inserted import profile</returns>
-		ImportProfile InsertImportProfile(string name, ImportEntityType entityType);
+		ImportProfile InsertImportProfile(string fileName, string name, ImportEntityType entityType);
 
 		/// <summary>
 		/// Updates an import profile

@@ -99,32 +99,6 @@ else
 <script type="text/javascript">
 	jQuery(document).ready(function () {
 
-		// button clicked
-		$(document).on('click', '.import-profile-button', function (e) {
-			e.preventDefault();
-			var isDelete = $(this).hasClass('import-profile-delete');
-
-			if (isDelete) {
-				$({}).doAjax({
-					type: 'POST',
-					url: dialog.attr('data-urldelete'),
-					ask: dialog.find('.modal-ask-delete').text(),
-					callbackSuccess: function (resp) {
-						refreshGrid();
-					}
-				});
-				return false;
-			}
-
-			return false;
-		});
-
-		function refreshGrid() {
-			setTimeout(function () {
-				$('#import-profile-list').data('tGrid').ajaxRequest();
-			}, 500);
-		}
-
 		// start task
 		$(document).on('click', '.btn-run-task', function (e) {
 			e.preventDefault();

@@ -118,13 +118,12 @@ else
 	</div>
 }
 
-<div id="export-profile-dialog" class="modal modal-large hide fade" tabindex="-1" data-urldelete="@Url.Action("Delete")" data-profile="@T("Common.Profile")">
+<div id="export-profile-dialog" class="modal modal-large hide fade" tabindex="-1" data-profile="@T("Common.Profile")">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal"><b>x</b></button>
 		<h4 class="caption"></h4>
 	</div>
 	<div class="modal-body"></div>
-	<div class="modal-ask-delete hide">@T("Admin.Common.DeleteConfirmation")</div>
 	<div class="modal-footer">
 		<button class="btn btn-primary">@T("Common.OK")</button>
 		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
@@ -149,18 +148,6 @@ else
 		// show profile dialog
 		$(document).on('click', '.export-profile-button', function (e) {
 			e.preventDefault();
-			var isDelete = $(this).hasClass('export-profile-delete');
-
-			if (isDelete) {
-				$({}).doAjax({
-					type: 'POST',
-					url: dialog.attr('data-urldelete'),
-					ask: dialog.find('.modal-ask-delete').text(),
-					callbackSuccess: function (resp) {
-					}
-				});
-				return false;
-			}
 
 			dialog.find('.modal-body').empty();
 			dialog.find('.caption').text(dialog.attr('data-profile') + ' - ' + $.trim($(this).text()));

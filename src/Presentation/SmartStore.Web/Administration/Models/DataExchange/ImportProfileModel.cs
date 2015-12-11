@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Tasks;
@@ -12,17 +14,22 @@ namespace SmartStore.Admin.Models.DataExchange
 	[Validator(typeof(ImportProfileValidator))]
 	public partial class ImportProfileModel : EntityModelBase
 	{
-		[SmartResourceDisplayName("Admin.Common.ImportFiles")]
-		public List<string> ExistingFileNames { get; set; }
-
 		[SmartResourceDisplayName("Admin.DataExchange.Import.Name")]
 		public string Name { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.Import.FolderName")]
-		public string FolderName { get; set; }
+		public string FileName { get; set; }
+
+		public string FileExtension
+		{
+			get { return Path.GetExtension(FileName); }
+		}
+
+		[SmartResourceDisplayName("Admin.Common.ImportFiles")]
+		public List<string> ExistingFileNames { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Entity")]
 		public ImportEntityType EntityType { get; set; }
+		public string EntityTypeName { get; set; }
 		public List<SelectListItem> AvailableEntityTypes { get; set; }
 
 		[SmartResourceDisplayName("Common.Enabled")]
@@ -34,9 +41,6 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Common.RecordsTake")]
 		public int Take { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.Import.Cleanup")]
-		public bool Cleanup { get; set; }
-
 		[SmartResourceDisplayName("Common.Execution")]
 		public int ScheduleTaskId { get; set; }
 		public string ScheduleTaskName { get; set; }
@@ -45,7 +49,5 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public ScheduleTaskModel TaskModel { get; set; }
 		public bool LogFileExists { get; set; }
-		public string TempImportFiles { get; set; }
-		public string EntityTypeName { get; set; }
 	}
 }

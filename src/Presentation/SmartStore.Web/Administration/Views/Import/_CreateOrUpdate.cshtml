@@ -7,10 +7,10 @@
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.HiddenFor(model => model.TempImportFiles)
+@Html.HiddenFor(model => model.FileName)
 
 <table class="adminContent">
-	<tr>
+	<tr id="ImportFileUploadContainer">
 		<td class="adminTitle">
 			&nbsp;
 		</td>
@@ -82,15 +82,6 @@
 	{
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.FolderName)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.FolderName)
-				@Html.ValidationMessageFor(x => x.FolderName)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Enabled)
 			</td>
 			<td class="adminData">
@@ -116,21 +107,13 @@
 				@Html.ValidationMessageFor(x => x.Take)
 			</td>
 		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Cleanup)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.Cleanup)
-				@Html.ValidationMessageFor(x => x.Cleanup)
-			</td>
-		</tr>
 	}
 </table>
 
 <script type="text/javascript">
 	jQuery(document).ready(function () {
 
+		// upload import file
 		$('#ImportFileUploader').fileupload({
 			url: '@Url.Action("FileUpload", new { id = Model.Id })',
 			dataType: 'json',
@@ -140,16 +123,9 @@
 					$('#ImportFileListContainer').show();
 
 					if (!_.isEmpty(data.result.tempFile)) {
-						var fileInput = $('input[name=TempImportFiles]'),
-							files = fileInput.val();
-
-						if (_.isEmpty(files))
-							files = data.result.tempFile;
-						else
-							files += '|' + data.result.tempFile;							
-
-						fileInput.val(files);
-						$('#ImportFileList').html(files.replace('|', ', '));
+						$('input[name=FileName]').val(data.result.tempFile);
+						$('#ImportFileList').html(data.result.tempFile);
+						$('#ImportFileUploadContainer').hide();		// just one initial file to specify the file type
 					}
 
 					if (!_.isEmpty(data.result.fileList)) {
@@ -157,6 +133,23 @@
 					}
 				}
 			}
+		});
+
+		// delete import file
+		$('#ImportFileList').on('click', '.import-file-delete', function (e) {
+			e.preventDefault();
+			var url = '@Url.Action("DeleteImportFile", new { id = Model.Id })';
+
+			$({}).doAjax({
+				type: 'POST',
+				url: url + '?name=' + encodeURIComponent($(this).attr('data-filename')),
+				ask: '@T("Admin.Common.AreYouSure")',
+				callbackSuccess: function (resp) {
+					if (!_.isEmpty(resp))
+						$('#ImportFileList').html(resp);
+				}
+			});
+			return false;
 		});
 
 	});

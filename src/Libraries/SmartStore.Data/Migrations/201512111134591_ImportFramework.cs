@@ -74,6 +74,10 @@ namespace SmartStore.Data.Migrations
 				"Specifies the maximum number of records to be processed.",
 				"Legt die maximale Anzahl der zu verarbeitenden Datensätze fest.");
 
+			builder.AddOrUpdate("Admin.Common.FileTypeMustEqual",
+				"The file must be of the type {0}.",
+				"Die Datei muss vom Typ {0} sein.");
+
 			builder.AddOrUpdate("Admin.DataExchange.Import.NoProfiles",
 				"There were no import profiles found.",
 				"Es wurden keine Importprofile gefunden.");

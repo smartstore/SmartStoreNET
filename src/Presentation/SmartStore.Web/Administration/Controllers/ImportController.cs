@@ -245,17 +245,26 @@ namespace SmartStore.Admin.Controllers
 						var profile = _importService.GetImportProfileById(id);
 						if (profile != null)
 						{
-							var folder = profile.GetImportFolder(true, true);
-							var destFile = Path.Combine(folder, Path.GetFileName(postedFile.FileName));
+							var requiredExtension = Path.GetExtension(profile.FileName);
 
-							success = postedFile.Stream.ToFile(destFile);
-
-							if (success)
+							if (postedFile.FileExtension.IsCaseInsensitiveEqual(requiredExtension))
 							{
-								var model = new ImportProfileModel();
-								PrepareProfileModel(model, profile, false);
+								var folder = profile.GetImportFolder(true, true);
+								var destFile = Path.Combine(folder, Path.GetFileName(postedFile.FileName));
 
-								fileList = this.RenderPartialViewToString("_ImportFileList", model);
+								success = postedFile.Stream.ToFile(destFile);
+
+								if (success)
+								{
+									var model = new ImportProfileModel();
+									PrepareProfileModel(model, profile, false);
+
+									fileList = this.RenderPartialViewToString("_ImportFileList", model);
+								}
+							}
+							else
+							{
+								NotifyError(T("Admin.Common.FileTypeMustEqual", requiredExtension.Substring(1).ToUpper()));
 							}
 						}
 					}

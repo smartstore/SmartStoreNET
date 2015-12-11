@@ -210,6 +210,30 @@ namespace SmartStore.Utilities
 		}
 
 		/// <summary>
+		/// Creates a non existing directory name
+		/// </summary>
+		/// <param name="directoryPath">Path of a directory</param>
+		/// <param name="defaultName">Default name for directory. <c>null</c> to use a guid.</param>
+		/// <returns>Non existing directory name</returns>
+		public static string CreateNonExistingDirectoryName(string directoryPath, string defaultName)
+		{
+			if (defaultName.IsEmpty())
+				defaultName = Guid.NewGuid().ToString();
+
+			if (directoryPath.IsEmpty() || !Directory.Exists(directoryPath))
+				return defaultName;
+
+			var newName = defaultName;
+
+			for (int i = 1; i < 999999 && Directory.Exists(Path.Combine(directoryPath, newName)); ++i)
+			{
+				newName = defaultName + i.ToString();
+			}
+
+			return newName;
+		}
+
+		/// <summary>
 		/// Safe way to count files in a directory
 		/// </summary>
 		/// <param name="directoryPath">A directory path</param>

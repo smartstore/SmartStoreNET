@@ -110,6 +110,9 @@ namespace SmartStore.Services.DataExchange.Import
 			if (ctx.Request.Profile == null || !ctx.Request.Profile.Enabled)
 				return;
 
+			if (ctx.Request.CustomerId == 0)
+				ctx.Request.CustomerId = _services.WorkContext.CurrentCustomer.Id;
+
 			var logPath = ctx.Request.Profile.GetImportLogPath();
 
 			FileSystemHelper.Delete(logPath);

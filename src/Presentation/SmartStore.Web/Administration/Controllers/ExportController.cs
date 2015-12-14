@@ -975,20 +975,20 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult Execute(int id, string selectedIds)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			var customer = _services.WorkContext.CurrentCustomer;
+
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports, customer))
 				return AccessDeniedView();
 
 			var profile = _exportService.GetExportProfileById(id);
 			if (profile == null)
 				return RedirectToAction("List");
 
-			Dictionary<string, string> taskParams = null;
+			var taskParams = new Dictionary<string, string>();
+			taskParams.Add("CurrentCustomerId", customer.Id.ToString());
 
 			if (selectedIds.HasValue())
-			{
-				taskParams = new Dictionary<string, string>();
 				taskParams.Add("SelectedIds", selectedIds);
-			}
 
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 

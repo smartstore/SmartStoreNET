@@ -30,6 +30,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
@@ -63,7 +64,7 @@ namespace SmartStore.Services.DataExchange.Export
         private readonly Lazy<IProductService> _productService;
 		private readonly Lazy<IOrderService> _orderService;
 		private readonly Lazy<IManufacturerService> _manufacturerService;
-		private readonly Lazy<ICustomerService> _customerService;
+		private readonly ICustomerService _customerService;
 		private readonly Lazy<IAddressService> _addressService;
 		private readonly Lazy<ICountryService> _countryService;
         private readonly Lazy<IShipmentService> _shipmentService;
@@ -102,7 +103,7 @@ namespace SmartStore.Services.DataExchange.Export
 			Lazy<IProductService> productService,
 			Lazy<IOrderService> orderService,
 			Lazy<IManufacturerService> manufacturerService,
-			Lazy<ICustomerService> customerService,
+			ICustomerService customerService,
 			Lazy<IAddressService> addressService,
 			Lazy<ICountryService> countryService,
 			Lazy<IShipmentService> shipmentService,
@@ -199,6 +200,30 @@ namespace SmartStore.Services.DataExchange.Export
 			catch { }
 		}
 
+		private bool HasPermission(DataExporterContext ctx)
+		{
+			if (ctx.Request.CustomerId == 0)
+				ctx.Request.CustomerId = _services.WorkContext.CurrentCustomer.Id;
+
+			var customer = _customerService.GetCustomerById(ctx.Request.CustomerId);
+
+			if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Product ||
+				ctx.Request.Provider.Value.EntityType == ExportEntityType.Category ||
+				ctx.Request.Provider.Value.EntityType == ExportEntityType.Manufacturer)
+				return _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog, customer);
+
+			if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Customer)
+				return _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomers, customer);
+
+			if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Order)
+				return _services.Permissions.Authorize(StandardPermissionProvider.ManageOrders, customer);
+
+			if (ctx.Request.Provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
+				return _services.Permissions.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers, customer);
+
+			return true;
+		}
+
 		private void DetachAllEntitiesAndClear(DataExporterContext ctx)
 		{
 			try
@@ -285,8 +310,8 @@ namespace SmartStore.Services.DataExchange.Export
 						entities =>
 						{
 							ctx.OrderExportContext = new OrderExportContext(entities,
-								x => _customerService.Value.GetCustomersByIds(x),
-								x => _customerService.Value.GetRewardPointsHistoriesByCustomerIds(x),
+								x => _customerService.GetCustomersByIds(x),
+								x => _customerService.GetRewardPointsHistoriesByCustomerIds(x),
 								x => _addressService.Value.GetAddressByIds(x),
 								x => _orderService.Value.GetOrderItemsByOrderIds(x),
 								x => _shipmentService.Value.GetShipmentsByOrderIds(x)
@@ -839,13 +864,16 @@ namespace SmartStore.Services.DataExchange.Export
 			// Init base things that are even required for preview. Init all other things (regular export) in ExportCoreOuter.
 			List<Store> result = null;
 
+			if (ctx.Request.CustomerId == 0)
+				ctx.Request.CustomerId = _services.WorkContext.CurrentCustomer.Id;
+
 			if (ctx.Projection.CurrencyId.HasValue)
 				ctx.ContextCurrency = _currencyService.Value.GetCurrencyById(ctx.Projection.CurrencyId.Value);
 			else
 				ctx.ContextCurrency = _services.WorkContext.WorkingCurrency;
 
 			if (ctx.Projection.CustomerId.HasValue)
-				ctx.ContextCustomer = _customerService.Value.GetCustomerById(ctx.Projection.CustomerId.Value);
+				ctx.ContextCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId.Value);
 			else
 				ctx.ContextCustomer = _services.WorkContext.CurrentCustomer;
 
@@ -1045,9 +1073,10 @@ namespace SmartStore.Services.DataExchange.Export
 				try
 				{
 					if (!ctx.Request.Provider.IsValid())
-					{
 						throw new SmartException("Export aborted because the export provider is not valid");
-					}
+
+					if (!HasPermission(ctx))
+						throw new SmartException("You do not have permission to perform the selected export");
 
 					foreach (var item in ctx.Request.CustomData)
 					{
@@ -1297,6 +1326,9 @@ namespace SmartStore.Services.DataExchange.Export
 			var ctx = new DataExporterContext(request, cancellation.Token, true);
 
 			var unused = Init(ctx, totalRecords);
+
+			if (!HasPermission(ctx))
+				throw new SmartException("You do not have permission to perform the selected export");
 
 			using (var segmenter = CreateSegmenter(ctx, pageIndex))
 			{

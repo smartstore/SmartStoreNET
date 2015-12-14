@@ -89,6 +89,11 @@ namespace SmartStore.Data.Migrations
 				"Specifies the name of the import profile.",
 				"Legt den Namen des Importprofils fest.");
 
+			builder.AddOrUpdate("Admin.DataExchange.Import.ProgressInfo",
+				"{0} of {1} records processed",
+				"{0} von {1} Datensätzen verarbeitet");
+
+
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportEntityType.Product", "Product", "Produkt");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportEntityType.Customer", "Customer", "Kunde");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportEntityType.NewsLetterSubscription", "Newsletter Subscribers", "Newsletter Abonnenten");
@@ -161,7 +166,10 @@ namespace SmartStore.Data.Migrations
 			builder.Delete(
 				"Admin.DataExchange.Export.LastExecution",
 				"Admin.DataExchange.Export.Offset",
-				"Admin.DataExchange.Export.Limit"
+				"Admin.DataExchange.Export.Limit",
+				"Admin.Promotions.NewsLetterSubscriptions.ImportEmailsSuccess",
+				"Admin.Common.ImportFromCsv",
+				"Admin.Common.CsvFile"
 			);
 		}
 	}

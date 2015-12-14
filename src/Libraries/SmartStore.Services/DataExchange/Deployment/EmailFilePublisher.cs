@@ -4,7 +4,6 @@ using System.Linq;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Email;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Messages;
@@ -26,10 +25,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 
 		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)
 		{
-			var emailAccountService = EngineContext.Current.Resolve<IEmailAccountService>();
-			var queuedEmailService = EngineContext.Current.Resolve<IQueuedEmailService>();
-
-			var emailAccount = emailAccountService.GetEmailAccountById(deployment.EmailAccountId);
+			var emailAccount = _emailAccountService.GetEmailAccountById(deployment.EmailAccountId);
 			var smtpContext = new SmtpContext(emailAccount);
 			var count = 0;
 
@@ -39,6 +35,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 				{
 					From = emailAccount.Email,
 					FromName = emailAccount.DisplayName,
+					SendManually = true,
 					To = email,
 					Subject = deployment.EmailSubject.NaIfEmpty(),
 					CreatedOnUtc = DateTime.UtcNow,
@@ -58,7 +55,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 					});
 				}
 
-				queuedEmailService.InsertQueuedEmail(queuedEmail);
+				_queuedEmailService.InsertQueuedEmail(queuedEmail);
 				++count;
 			}
 

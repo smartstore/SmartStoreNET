@@ -193,7 +193,7 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				if (!ctx.IsPreview && message.HasValue())
 				{
-					ctx.Request.ProgressMessageSetter.Invoke(message);
+					ctx.Request.ProgressValueSetter.Invoke(0, 0, message);
 				}
 			}
 			catch { }
@@ -401,7 +401,7 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 			catch (Exception exception)
 			{
-				ctx.ExecuteContext.Abort = ExportAbortion.Hard;
+				ctx.ExecuteContext.Abort = DataExchangeAbortion.Hard;
 				ctx.Log.Error("The provider failed at the {0} method: {1}".FormatInvariant(method, exception.ToAllMessages()), exception);
 				ctx.Result.LastError = exception.ToString();
 			}
@@ -414,7 +414,7 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 			}
 
-			return (ctx.ExecuteContext.Abort != ExportAbortion.Hard);
+			return (ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard);
 		}
 
 		private void Deploy(DataExporterContext ctx, string zipPath)
@@ -914,7 +914,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private void ExportCoreInner(DataExporterContext ctx, Store store)
 		{
-			if (ctx.ExecuteContext.Abort != ExportAbortion.None)
+			if (ctx.ExecuteContext.Abort != DataExchangeAbortion.None)
 				return;
 
 			int fileIndex = 0;
@@ -966,7 +966,7 @@ namespace SmartStore.Services.DataExchange.Export
 					ctx.Log.Information("There are no records to export");
 				}
 
-				while (ctx.ExecuteContext.Abort == ExportAbortion.None && segmenter.HasData)
+				while (ctx.ExecuteContext.Abort == DataExchangeAbortion.None && segmenter.HasData)
 				{
 					segmenter.RecordPerSegmentCount = 0;
 					ctx.ExecuteContext.RecordsSucceeded = 0;
@@ -986,7 +986,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 					if (CallProvider(ctx, null, "Execute", path))
 					{
-						ctx.Log.Information("Provider reports {0} successful exported record(s)".FormatInvariant(ctx.ExecuteContext.RecordsSucceeded));
+						ctx.Log.Information("Provider reports {0} successfully exported record(s)".FormatInvariant(ctx.ExecuteContext.RecordsSucceeded));
 
 						// create info for deployment list in profile edit
 						if (ctx.IsFileBasedExport)
@@ -1010,7 +1010,7 @@ namespace SmartStore.Services.DataExchange.Export
 					DetachAllEntitiesAndClear(ctx);
 				}
 
-				if (ctx.ExecuteContext.Abort != ExportAbortion.Hard)
+				if (ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard)
 				{
 					// always call OnExecuted
 					if (ctx.ExecuteContext.ExtraDataStreams.Count == 0)
@@ -1106,7 +1106,7 @@ namespace SmartStore.Services.DataExchange.Export
 						stores.ForEach(x => ExportCoreInner(ctx, x));
 					}
 
-					if (!ctx.IsPreview && ctx.ExecuteContext.Abort != ExportAbortion.Hard)
+					if (!ctx.IsPreview && ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard)
 					{
 						if (ctx.IsFileBasedExport)
 						{
@@ -1156,7 +1156,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 					try
 					{
-						if (ctx.IsFileBasedExport && ctx.ExecuteContext.Abort != ExportAbortion.Hard && ctx.Request.Profile.Cleanup)
+						if (ctx.IsFileBasedExport && ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard && ctx.Request.Profile.Cleanup)
 						{
 							FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
 						}
@@ -1193,7 +1193,7 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 			}
 
-			if (ctx.IsPreview || ctx.ExecuteContext.Abort == ExportAbortion.Hard)
+			if (ctx.IsPreview || ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard)
 				return;
 
 			// post process order entities

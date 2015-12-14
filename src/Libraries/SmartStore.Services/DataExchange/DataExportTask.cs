@@ -38,11 +38,6 @@ namespace SmartStore.Services.DataExchange.Export
 				ctx.SetProgress(val, max, msg, true);
 			};
 
-			request.ProgressMessageSetter = delegate(string msg)
-			{
-				ctx.SetProgress(null, msg, true);
-			};
-
 			if (ctx.Parameters.ContainsKey("SelectedIds"))
 			{
 				request.EntitiesToExport = ctx.Parameters["SelectedIds"]

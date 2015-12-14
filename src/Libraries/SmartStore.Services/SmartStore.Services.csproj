@@ -184,9 +184,13 @@
     <Compile Include="DataExchange\Excel\ExcelDataReader.cs" />
     <Compile Include="DataExchange\Events\RowExportingEvent.cs" />
     <Compile Include="DataExchange\ExportConfigurationInfo.cs" />
+    <Compile Include="DataExchange\Import\DataImporter.cs" />
+    <Compile Include="DataExchange\Import\IEntityImporter.cs" />
+    <Compile Include="DataExchange\Import\Internal\DataImporterContext.cs" />
     <Compile Include="DataExchange\Import\DataImportTask.cs" />
     <Compile Include="DataExchange\Import\DataTable\IDataTable.cs" />
     <Compile Include="DataExchange\Import\DataTable\LightweightDataTable.cs" />
+    <Compile Include="DataExchange\Import\IDataImporter.cs" />
     <Compile Include="DataExchange\Import\ImportExtensions.cs" />
     <Compile Include="DataExchange\Import\ImportProfileService.cs" />
     <Compile Include="DataExchange\Import\IImportProfileService.cs" />
@@ -225,6 +229,7 @@
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
     <Compile Include="Media\MediaExtensions.cs" />
     <Compile Include="Media\TransientMediaClearTask.cs" />
+    <Compile Include="Messages\Importer\NewsLetterSubscriptionImporter.cs" />
     <Compile Include="Messages\QueuedMessagesClearTask.cs" />
     <Compile Include="Messages\QueuingEmailEvent.cs" />
     <Compile Include="Messages\QueuingEmailEventConsumer.cs" />

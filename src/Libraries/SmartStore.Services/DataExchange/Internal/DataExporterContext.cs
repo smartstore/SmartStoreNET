@@ -47,7 +47,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 
 			if (!IsPreview)
 			{
-				ExecuteContext.ProgressMessageSetter = Request.ProgressMessageSetter;
+				ExecuteContext.ProgressValueSetter = Request.ProgressValueSetter;
 			}
 		}
 

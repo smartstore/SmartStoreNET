@@ -176,7 +176,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 				writer.WriteElementString("link", "http://base.google.com/base/");
 				writer.WriteElementString("description", "Information about products");
 
-				while (context.Abort == ExportAbortion.None && context.Segmenter.ReadNextSegment())
+				while (context.Abort == DataExchangeAbortion.None && context.Segmenter.ReadNextSegment())
 				{
 					var segment = context.Segmenter.CurrentSegment;
 
@@ -185,7 +185,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 					foreach (dynamic product in segment)
 					{
-						if (context.Abort != ExportAbortion.None)
+						if (context.Abort != DataExchangeAbortion.None)
 							break;
 
 						Product entity = product.Entity;

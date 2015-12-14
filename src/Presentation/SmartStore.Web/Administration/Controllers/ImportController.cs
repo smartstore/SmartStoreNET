@@ -71,20 +71,15 @@ namespace SmartStore.Admin.Controllers
 
 				if (extension.IsCaseInsensitiveEqual(".csv"))
 				{
-					if (profile.FileTypeConfiguration.HasValue())
-					{
-						var converter = new CsvConfigurationConverter();
-						var config = converter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration);
-						model.CsvConfiguration = new CsvConfigurationModel(config);
-					}
-					else
-					{
-						model.CsvConfiguration = new CsvConfigurationModel(CsvConfiguration.ExcelFriendlyConfiguration);
-					}
+					var converter = new CsvConfigurationConverter();
+					var config = converter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration);
+
+					model.CsvConfiguration = new CsvConfigurationModel(config ?? CsvConfiguration.ExcelFriendlyConfiguration);
 				}
 			}
 			else
 			{
+				model.Name = model.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
 				model.ExistingFileNames = new List<string>();
 			}
 
@@ -130,8 +125,6 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new ImportProfileModel();
 			PrepareProfileModel(model, null, true);
-
-			model.Name = T("Common.Import");
 
 			return View(model);
 		}
@@ -314,14 +307,19 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult Execute(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			var customer = _services.WorkContext.CurrentCustomer;
+
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports, customer))
 				return AccessDeniedView();
 
 			var profile = _importService.GetImportProfileById(id);
 			if (profile == null)
 				return RedirectToAction("List");
 
-			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, null);
+			var taskParams = new Dictionary<string, string>();
+			taskParams.Add("CurrentCustomerId", customer.Id.ToString());
+
+			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 
 			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
 

@@ -34,7 +34,10 @@ namespace SmartStore.Services.DataExchange.Csv
 
 		public T ConvertFrom<T>(string value)
 		{
-			return (T)ConvertFrom(CultureInfo.InvariantCulture, value);
+			if (value.HasValue())
+				return (T)ConvertFrom(CultureInfo.InvariantCulture, value);
+
+			return default(T);
 		}
 
 		public override object ConvertTo(CultureInfo culture, string format, object value, Type to)

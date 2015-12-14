@@ -126,7 +126,7 @@
 		$('#ImportFileUploader').fileupload({
 			url: '@Url.Action("FileUpload", new { id = Model.Id })',
 			dataType: 'json',
-			acceptFileTypes: /(\.|\/)(csv|xls|xlsx)$/i,
+			acceptFileTypes: /(\.|\/)(csv|xlsx)$/i,
 			done: function (e, data) {
 				if (data.result.success) {
 					$('#ImportFileListContainer').show();

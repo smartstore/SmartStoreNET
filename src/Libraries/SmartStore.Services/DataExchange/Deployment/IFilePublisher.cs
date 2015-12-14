@@ -11,7 +11,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 
 	public class ExportDeploymentContext
 	{
-		public TraceLogger Log { get; set; }
+		public ILogger Log { get; set; }
 
 		public string[] DeploymentFiles { get; set; }
 

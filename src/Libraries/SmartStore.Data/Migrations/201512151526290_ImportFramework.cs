@@ -178,7 +178,20 @@ namespace SmartStore.Data.Migrations
 				"Admin.DataExchange.Export.Limit",
 				"Admin.Promotions.NewsLetterSubscriptions.ImportEmailsSuccess",
 				"Admin.Common.ImportFromCsv",
-				"Admin.Common.CsvFile"
+				"Admin.Common.CsvFile",
+
+				"Admin.Common.ImportFromExcel",
+				"Admin.Common.ExcelFile",
+				"Admin.Common.ImportFromExcel.InProgress",
+				"Admin.Common.ImportFromExcel.LastResultTitle",
+				"Admin.Common.ImportFromExcel.ProcessedCount",
+				"Admin.Common.ImportFromExcel.QuickStats",
+				"Admin.Common.ImportFromExcel.ActiveSince",
+				"Admin.Common.ImportFromExcel.CancelPrompt",
+				"Admin.Common.ImportFromExcel.Cancel",
+				"Admin.Common.ImportFromExcel.Cancelled",
+				"Admin.Common.ImportFromExcel.DownloadReport",
+				"Admin.Common.ImportFromExcel.NoReportAvailable"
 			);
 		}
 	}

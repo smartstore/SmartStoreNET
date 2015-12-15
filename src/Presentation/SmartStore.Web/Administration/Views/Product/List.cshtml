@@ -1,7 +1,6 @@
 ﻿@model ProductListModel
 @using Telerik.Web.Mvc.UI
 @{
-    var trueTemplate = "#if (Published) {# <img src='" + Url.Content("~/Administration/Themes/SmartStore/Content/images/checkmark.png") + "' /> #} #";
 	var allString = T("Admin.Common.All").Text;
     
     ViewBag.Title = T("Admin.Catalog.Products.Manage").Text;
@@ -23,10 +22,6 @@
 			<button type="submit" id="delete-selected" class="btn btn-danger">
 				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete.Selected")
 			</button>
-
-            <a id="importexcel" href="#importexcel-window" class="btn" role="button">
-				<i class="fa fa-arrow-circle-o-up"></i>&nbsp;@T("Admin.Common.ImportFromExcel")
-			</a>
 
 			@Html.Widget("admin_button_toolbar_after")
         </div>
@@ -312,157 +307,3 @@
         }
     </script>  
 }
-@*import products form*@
-@{Html.SmartStore().Window()
-        .Name("importexcel-window")
-        .Title(T("Admin.Common.ImportFromExcel").Text)
-        .Content(@<text>
-			@using (Html.BeginForm("ImportExcel", "Product", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
-            {
-				<div id="importexcel-last-result-summary" class="alert hide">
-
-				</div>
-
-				<div id="importexcel-upload" class="control-group">
-					<label class="control-label" for="importfile">@T("Admin.Common.ExcelFile"):</label>
-					<div class="controls">
-						<input type="file" id="importfile" name="importfile" />
-					</div>
-				</div>
-				
-				<div id="importexcel-progress" class="hide">
-					<div class="progress progress-warning progress-striped active">
-						<div class="bar iep-bar" style="width: 0%;"></div>
-					</div>
-					<div class="iep-info muted">
-						@Html.Raw(T("Admin.Common.ImportFromExcel.ProcessedCount").ToString().FormatInvariant("<strong class='iep-processed'>0</strong>", "<strong class='iep-records'>0</strong>"))
-						@Html.Raw(T("Admin.Common.ImportFromExcel.ActiveSince").ToString().FormatCurrent("<span class='iep-elapsed'></span>"))
-					</div>
-					<div class="iep-info muted">
-						@(Html.Raw(T("Admin.Common.ImportFromExcel.QuickStats").ToString().FormatInvariant(
-							"<span class='iep-new'>0</span>", 
-							"<span class='iep-modified'>0</span>",
-							"<span class='iep-warnings'>0</span>",
-							"<span class='iep-errors'>0</span>")))
-					</div>
-				</div>
-            }
-
-            </text>)
-        .FooterContent(@<text>
-            <button id="importexcelsubmit" type="submit" data-action="import" class="btn btn-primary">@T("Admin.Common.ImportFromExcel")</button>
-            <a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Close")</a>
-        </text>)
-        .Modal(true)
-        .Visible(false)
-        .Render();
-}
-
-<script type="text/javascript">
-    $(document).ready(function () {
-		
-    	var importProgressIntervall;
-    	var firstProgressCheck = true;
-    	var importRunning = true;
-		
-    	$('#importexcel').on('click', function (e) {
-    		e.preventDefault();
-    		var btn = $(this);
-
-    		if (!btn.data('initialized')) {
-    			checkImportProgress(false);
-    			btn.data('initialized', true);
-    		}
-
-    		$(btn.attr('href')).modal('toggle');
-    	});
-
-    	function checkImportProgress(async) {
-    		$.ajax({
-    			url: '@Url.Action("ImportExcelProgress", "Product")',
-    			dataType: "json",
-    			async: _.isBoolean(async) ? async : !firstProgressCheck,
-    			type: "POST",
-    			cache: false,
-				global: false,
-    			success: function (data, status) {
-    				var btn = $('#importexcelsubmit');
-
-    				if (data.LastResultSummary)
-    				{
-    					$('#importexcel-last-result-summary')
-							.html(data.LastResultSummary + "&nbsp;<a href='@Url.Action("ImportExcelDownloadReport", "Product")'>@T("Admin.Common.ImportFromExcel.DownloadReport")</a>")
-							.removeClass("alert-success alert-error")
-							.addClass(data.LastResultClass)
-							.removeClass("hide");
-    				}
-
-    				if (data.NoRunningTask) {
-    					window.clearInterval(importProgressIntervall);
-    					$('#importexcel-upload').show();
-    					$('#importexcel-progress').hide();
-    					if (btn.data('action') == 'cancel') {
-    						btn.removeClass("btn-danger")
-								.addClass("btn-primary")
-								.data('action', 'import')
-								.text('@T("Admin.Common.ImportFromExcel")');
-    					}
-    				}
-    				else {
-    					$('#importexcel-upload').hide();
-    					$('#importexcel-progress').show();
-    					if (btn.data('action') == 'import') {
-    						btn.removeClass("btn-primary")
-								.addClass("btn-danger")
-								.data('action', 'cancel')
-								.text('@T("Admin.Common.ImportFromExcel.Cancel")');
-    					}
-
-    					updateProgress(data.Progress);
-
-    					// start the checkprogress interval
-    					if (firstProgressCheck)
-    						importProgressIntervall = window.setInterval(checkImportProgress, 2000);
-    				}
-    			},
-    			error: function () {
-    				console.error(arguments[0].responseText);
-    			},
-    			complete: function () {
-    				firstProgressCheck = false;
-    			}
-    		});
-    	}
-
-    	function updateProgress(data) {
-    		var el = $('#importexcel-progress');
-    		var percent = Math.round(data.ProcessedPercent) + '%';
-    		el.find('.iep-bar').css('width', percent).text(percent);
-    		el.find('.iep-processed').text(data.TotalProcessed);
-    		el.find('.iep-records').text(data.TotalRecords);
-    		el.find('.iep-elapsed').text(_.formatTime(data.ElapsedTime.TotalSeconds));
-    		el.find('.iep-new').text(data.NewRecords);
-    		el.find('.iep-modified').text(data.ModifiedRecords);
-    		el.find('.iep-warnings').text(data.TotalWarnings);
-    		el.find('.iep-errors').text(data.TotalErrors);
-
-    		importRunning = true;
-    	}
-
-    	$("#importexcelsubmit").click(function (e) {
-    		e.preventDefault();
-
-    		var btn = $(this);
-    		var win = $('#importexcel-window');
-
-    		if (btn.data('action') == 'import') {
-    			win.find("form").submit();
-    		}
-    		else {
-    			if (window.confirm('@T("Admin.Common.ImportFromExcel.CancelPrompt")')) {
-    				setLocation('@Url.Action("ImportExcelCancel", "Product")');
-    			}
-    		}
-        });
-    });
-</script>

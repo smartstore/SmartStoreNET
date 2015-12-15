@@ -5,7 +5,6 @@ using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Messages;
-using SmartStore.Core.Logging;
 using SmartStore.Services.DataExchange.Import;
 
 namespace SmartStore.Services.Messages.Importer
@@ -36,6 +35,8 @@ namespace SmartStore.Services.Messages.Importer
 				var segmenter = new ImportDataSegmenter<NewsLetterSubscription>(context.DataTable);
 				segmenter.Culture = CultureInfo.CurrentCulture;
 
+				context.Result.TotalRecords = segmenter.TotalRows;
+
 				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 				{
 					var batch = segmenter.CurrentBatch;
@@ -46,13 +47,9 @@ namespace SmartStore.Services.Messages.Importer
 
 					foreach (var row in batch)
 					{
-						string id = null;
-
 						try
 						{
 							var email = row.GetDataValue<string>("Email");
-							id = email;
-
 							var active = row.GetDataValue<bool>("Active");
 							var storeId = row.GetDataValue<int>("StoreId");
 
@@ -61,19 +58,19 @@ namespace SmartStore.Services.Messages.Importer
 
 							if (email.IsEmpty())
 							{
-								context.Log.Warning("Skipped empty email address".FormatInvariant(email));
+								context.Result.AddWarning("Skipped empty email address", row.GetRowInfo(), "Email");
 								continue;
 							}
 
 							if (email.Length > 255)
 							{
-								context.Log.Warning("Skipped email address '{0}' because it exceeds the maximum allowed length of 255".FormatInvariant(email));
+								context.Result.AddWarning("Skipped email address '{0}'. It exceeds the maximum allowed length of 255".FormatInvariant(email), row.GetRowInfo(), "Email");
 								continue;
 							}
 
 							if (!email.IsEmail())
 							{
-								context.Log.Warning("Skipped invalid email address '{0}'".FormatInvariant(email));
+								context.Result.AddWarning("Skipped invalid email address '{0}'".FormatInvariant(email), row.GetRowInfo(), "Email");
 								continue;
 							}
 
@@ -93,14 +90,14 @@ namespace SmartStore.Services.Messages.Importer
 								};
 
 								toAdd.Add(subscription);
-								++context.RecordsAdded;
+								++context.Result.NewRecords;
 							}
 							else
 							{
 								subscription.Active = active;
 
 								toUpdate.Add(subscription);
-								++context.RecordsUpdated;
+								++context.Result.ModifiedRecords;
 							}
 
 							// insert new subscribers
@@ -116,7 +113,7 @@ namespace SmartStore.Services.Messages.Importer
 						}
 						catch (Exception exception)
 						{
-							context.RecordException(exception, id.NaIfEmpty());
+							context.Result.AddError(exception.ToAllMessages(), row.GetRowInfo());
 						}
 					}
 				}

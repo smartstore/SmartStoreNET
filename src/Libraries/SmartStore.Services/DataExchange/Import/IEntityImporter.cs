@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
-using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
-using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.DataExchange.Import
 {
@@ -32,9 +31,8 @@ namespace SmartStore.Services.DataExchange.Import
 
 			CustomerId = customerId;
 			CustomProperties = new Dictionary<string, object>();
+			Result = new ImportResult();
 		}
-
-		public ILogger Log { get; internal set; }
 
 		public IDataTable DataTable { get; internal set; }
 
@@ -45,9 +43,7 @@ namespace SmartStore.Services.DataExchange.Import
 		/// </summary>
 		public Dictionary<string, object> CustomProperties { get; private set; }
 
-		public int RecordsAdded { get; set; }
-		public int RecordsUpdated { get; set; }
-		public int RecordsFailed { get; set; }
+		public ImportResult Result { get; set; }
 
 		public DataExchangeAbortion Abort
 		{
@@ -66,18 +62,10 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public bool IsMaxFailures
 		{
-			get { return RecordsFailed > 11; }
-		}
-
-		/// <summary>
-		/// Processes an exception that occurred while importing a record
-		/// </summary>
-		/// <param name="exception">Exception</param>
-		public void RecordException(Exception exception, string id)
-		{
-			++RecordsFailed;
-
-			Log.Error("Error while processing record with id {0}: {1}".FormatInvariant(id, exception.ToAllMessages()), exception);
+			get
+			{
+				return Result.Messages.Count(x => x.MessageType == ImportMessageType.Error) > 11;
+			}
 		}
 
 		public void SetProgress(int value, int maximum)

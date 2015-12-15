@@ -22,12 +22,16 @@ namespace SmartStore.Services.DataExchange.Import
 			var profile = _importProfileService.GetImportProfileById(profileId);
 
 			var request = new DataImportRequest(profile);
-			request.CustomerId = ctx.Parameters["CurrentCustomerId"].ToInt();       // do not use built-in background tasks customer
 
 			request.ProgressValueSetter = delegate (int val, int max, string msg)
 			{
 				ctx.SetProgress(val, max, msg, true);
 			};
+
+			if (ctx.Parameters.ContainsKey("CurrentCustomerId"))
+			{
+				request.CustomerId = ctx.Parameters["CurrentCustomerId"].ToInt();       // do not use built-in background tasks customer
+			}
 
 			_importer.Import(request, ctx.CancellationToken);
 		}

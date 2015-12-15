@@ -203,7 +203,7 @@ namespace SmartStore.Services.DataExchange.Export
 		private bool HasPermission(DataExporterContext ctx)
 		{
 			if (ctx.Request.CustomerId == 0)
-				ctx.Request.CustomerId = _services.WorkContext.CurrentCustomer.Id;
+				ctx.Request.CustomerId = _services.WorkContext.CurrentCustomer.Id;	// fallback to background task system customer
 
 			var customer = _customerService.GetCustomerById(ctx.Request.CustomerId);
 
@@ -390,7 +390,7 @@ namespace SmartStore.Services.DataExchange.Export
 		private bool CallProvider(DataExporterContext ctx, string streamId, string method, string path)
 		{
 			if (method != "Execute" && method != "OnExecuted")
-				throw new SmartException("Unknown export method {0}".FormatInvariant(method.NaIfEmpty()));
+				throw new SmartException("Unknown export method {0}.".FormatInvariant(method.NaIfEmpty()));
 
 			try
 			{
@@ -417,7 +417,7 @@ namespace SmartStore.Services.DataExchange.Export
 						using (_rwLock.GetWriteLock())
 						using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
 						{
-							ctx.Log.Information("Creating file " + path);
+							ctx.Log.Information("Creating file {0}.".FormatInvariant(path));
 
 							ctx.ExecuteContext.DataStream.CopyTo(fileStream);
 						}
@@ -427,7 +427,7 @@ namespace SmartStore.Services.DataExchange.Export
 			catch (Exception exception)
 			{
 				ctx.ExecuteContext.Abort = DataExchangeAbortion.Hard;
-				ctx.Log.Error("The provider failed at the {0} method: {1}".FormatInvariant(method, exception.ToAllMessages()), exception);
+				ctx.Log.Error("The provider failed at the {0} method: {1}.".FormatInvariant(method, exception.ToAllMessages()), exception);
 				ctx.Result.LastError = exception.ToString();
 			}
 			finally
@@ -986,12 +986,12 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				if (segmenter == null)
 				{
-					throw new SmartException("Unsupported entity type '{0}'".FormatInvariant(ctx.Request.Provider.Value.EntityType.ToString()));
+					throw new SmartException("Unsupported entity type '{0}'.".FormatInvariant(ctx.Request.Provider.Value.EntityType.ToString()));
 				}
 
 				if (segmenter.TotalRecords <= 0)
 				{
-					ctx.Log.Information("There are no records to export");
+					ctx.Log.Information("There are no records to export.");
 				}
 
 				while (ctx.ExecuteContext.Abort == DataExchangeAbortion.None && segmenter.HasData)
@@ -1014,7 +1014,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 					if (CallProvider(ctx, null, "Execute", path))
 					{
-						ctx.Log.Information("Provider reports {0} successfully exported record(s)".FormatInvariant(ctx.ExecuteContext.RecordsSucceeded));
+						ctx.Log.Information("Provider reports {0} successfully exported record(s).".FormatInvariant(ctx.ExecuteContext.RecordsSucceeded));
 
 						// create info for deployment list in profile edit
 						if (ctx.IsFileBasedExport)
@@ -1030,10 +1030,10 @@ namespace SmartStore.Services.DataExchange.Export
 					ctx.EntityIdsPerSegment.Clear();
 
 					if (ctx.ExecuteContext.IsMaxFailures)
-						ctx.Log.Warning("Export aborted. The maximum number of failures has been reached");
+						ctx.Log.Warning("Export aborted. The maximum number of failures has been reached.");
 
 					if (ctx.CancellationToken.IsCancellationRequested)
-						ctx.Log.Warning("Export aborted. A cancellation has been requested");
+						ctx.Log.Warning("Export aborted. A cancellation has been requested.");
 
 					DetachAllEntitiesAndClear(ctx);
 				}
@@ -1072,20 +1072,20 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				try
 				{
+					ctx.Log = logger;
+					ctx.ExecuteContext.Log = logger;
+					ctx.ProgressInfo = T("Admin.DataExchange.Export.ProgressInfo");
+
 					if (!ctx.Request.Provider.IsValid())
-						throw new SmartException("Export aborted because the export provider is not valid");
+						throw new SmartException("Export aborted because the export provider is not valid.");
 
 					if (!HasPermission(ctx))
-						throw new SmartException("You do not have permission to perform the selected export");
+						throw new SmartException("You do not have permission to perform the selected export.");
 
 					foreach (var item in ctx.Request.CustomData)
 					{
 						ctx.ExecuteContext.CustomProperties.Add(item.Key, item.Value);
 					}
-
-					ctx.Log = logger;
-					ctx.ExecuteContext.Log = logger;
-					ctx.ProgressInfo = T("Admin.DataExchange.Export.ProgressInfo");
 
 					if (ctx.Request.Profile.ProviderConfigData.HasValue())
 					{
@@ -1203,11 +1203,11 @@ namespace SmartStore.Services.DataExchange.Export
 						ctx.ProductTemplates.Clear();
 						ctx.Countries.Clear();
 						ctx.Languages.Clear();
-						ctx.Stores.Clear();
 						ctx.QuantityUnits.Clear();
 						ctx.DeliveryTimes.Clear();
 						ctx.CategoryPathes.Clear();
 						ctx.Categories.Clear();
+						ctx.Stores.Clear();
 
 						ctx.Request.CustomData.Clear();
 

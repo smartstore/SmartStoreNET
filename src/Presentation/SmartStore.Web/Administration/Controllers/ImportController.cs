@@ -307,17 +307,14 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult Execute(int id)
 		{
-			var customer = _services.WorkContext.CurrentCustomer;
-
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports, customer))
-				return AccessDeniedView();
+			// permissions checked internally by DataImporter
 
 			var profile = _importService.GetImportProfileById(id);
 			if (profile == null)
 				return RedirectToAction("List");
 
 			var taskParams = new Dictionary<string, string>();
-			taskParams.Add("CurrentCustomerId", customer.Id.ToString());
+			taskParams.Add("CurrentCustomerId", _services.WorkContext.CurrentCustomer.Id.ToString());
 
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 

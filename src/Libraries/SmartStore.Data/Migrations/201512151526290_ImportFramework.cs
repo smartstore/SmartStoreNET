@@ -16,7 +16,7 @@ namespace SmartStore.Data.Migrations
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(nullable: false, maxLength: 100),
                         FolderName = c.String(nullable: false, maxLength: 100),
-                        FileName = c.String(nullable: false, maxLength: 400),
+                        FileTypeId = c.Int(nullable: false),
                         EntityTypeId = c.Int(nullable: false),
                         Enabled = c.Boolean(nullable: false),
                         Skip = c.Int(nullable: false),
@@ -89,6 +89,12 @@ namespace SmartStore.Data.Migrations
 				"Specifies the name of the import profile.",
 				"Legt den Namen des Importprofils fest.");
 
+			builder.AddOrUpdate("Admin.DataExchange.Import.FileType",
+				"File type",
+				"Dateityp",
+				"The file type of the import file(s).",
+				"Der Dateityp der Importdatei(en).");
+
 			builder.AddOrUpdate("Admin.DataExchange.Import.ProgressInfo",
 				"{0} of {1} records processed",
 				"{0} von {1} Datensätzen verarbeitet");
@@ -97,6 +103,9 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportEntityType.Product", "Product", "Produkt");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportEntityType.Customer", "Customer", "Kunde");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportEntityType.NewsLetterSubscription", "Newsletter Subscribers", "Newsletter Abonnenten");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportFileType.CSV", "Delimiter separated values (.csv)", "Trennzeichen getrennte Werte (.csv)");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportFileType.XLSX", "Excel (.xlsx)", "Excel  (.xlsx)");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.FileUpload",
 				"Upload import file...",

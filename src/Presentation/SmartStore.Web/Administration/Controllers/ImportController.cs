@@ -49,11 +49,9 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (profile != null)
 			{
-				var extension = Path.GetExtension(profile.FileName);
-
 				model.Id = profile.Id;
 				model.Name = profile.Name;
-				model.FileName = profile.FileName;
+				model.FileType = profile.FileType;
 				model.EntityType = profile.EntityType;
 				model.Enabled = profile.Enabled;
 				model.Skip = profile.Skip;
@@ -69,7 +67,7 @@ namespace SmartStore.Admin.Controllers
 					.Select(x => Path.GetFileName(x))
 					.ToList();
 
-				if (extension.IsCaseInsensitiveEqual(".csv"))
+				if (profile.FileType == ImportFileType.CSV || profile.FileType == ImportFileType.XLSX)
 				{
 					var converter = new CsvConfigurationConverter();
 					var config = converter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration);
@@ -86,6 +84,7 @@ namespace SmartStore.Admin.Controllers
 			if (forEdit)
 			{
 				model.AvailableEntityTypes = ImportEntityType.Product.ToSelectList(false).ToList();
+				model.AvailableFileTypes = ImportFileType.CSV.ToSelectList(false).ToList();
 			}
 		}
 
@@ -135,19 +134,19 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
-			var importFile = Path.Combine(FileSystemHelper.TempDir(), model.FileName);
+			var importFile = Path.Combine(FileSystemHelper.TempDir(), model.TempFileName.EmptyNull());
 
-			if (model.FileName.IsEmpty() || !System.IO.File.Exists(importFile))
+			if (!System.IO.File.Exists(importFile))
 			{
 				ModelState.AddModelError("", T("Admin.DataExchange.Import.MissingImportFile"));
 			}
 			else if (ModelState.IsValid)
 			{
-				var profile = _importService.InsertImportProfile(model.FileName, model.Name, model.EntityType);
+				var profile = _importService.InsertImportProfile(model.TempFileName, model.Name, model.EntityType);
 
 				if (profile != null && profile.Id != 0)
 				{
-					var importFileDestination = Path.Combine(profile.GetImportFolder(true, true), model.FileName);
+					var importFileDestination = Path.Combine(profile.GetImportFolder(true, true), model.TempFileName);
 
 					FileSystemHelper.Copy(importFile, importFileDestination, true, true);
 
@@ -187,15 +186,13 @@ namespace SmartStore.Admin.Controllers
 
 			if (ModelState.IsValid)
 			{
-				var extension = Path.GetExtension(profile.FileName);
-
 				profile.Name = model.Name;
 				profile.EntityType = model.EntityType;
 				profile.Enabled = model.Enabled;
 				profile.Skip = model.Skip;
 				profile.Take = model.Take;
 
-				if (extension.IsCaseInsensitiveEqual(".csv") && model.CsvConfiguration != null)
+				if (profile.FileType == ImportFileType.CSV || profile.FileType == ImportFileType.XLSX)
 				{
 					CsvConfiguration config = model.CsvConfiguration.Clone();
 
@@ -268,27 +265,27 @@ namespace SmartStore.Admin.Controllers
 						var profile = _importService.GetImportProfileById(id);
 						if (profile != null)
 						{
-							var extension = Path.GetExtension(profile.FileName);
+							//var extension = Path.GetExtension(profile.FileType);
 
-							if (postedFile.FileExtension.IsCaseInsensitiveEqual(extension))
-							{
-								var folder = profile.GetImportFolder(true, true);
-								var destFile = Path.Combine(folder, Path.GetFileName(postedFile.FileName));
+							//if (postedFile.FileExtension.IsCaseInsensitiveEqual(extension))
+							//{
+							//	var folder = profile.GetImportFolder(true, true);
+							//	var destFile = Path.Combine(folder, Path.GetFileName(postedFile.FileName));
 
-								success = postedFile.Stream.ToFile(destFile);
+							//	success = postedFile.Stream.ToFile(destFile);
 
-								if (success)
-								{
-									var model = new ImportProfileModel();
-									PrepareProfileModel(model, profile, false);
+							//	if (success)
+							//	{
+							//		var model = new ImportProfileModel();
+							//		PrepareProfileModel(model, profile, false);
 
-									fileList = this.RenderPartialViewToString("_ImportFileList", model);
-								}
-							}
-							else
-							{
-								NotifyError(T("Admin.Common.FileTypeMustEqual", extension.Substring(1).ToUpper()));
-							}
+							//		fileList = this.RenderPartialViewToString("_ImportFileList", model);
+							//	}
+							//}
+							//else
+							//{
+							//	NotifyError(T("Admin.Common.FileTypeMustEqual", extension.Substring(1).ToUpper()));
+							//}
 						}
 					}
 				}

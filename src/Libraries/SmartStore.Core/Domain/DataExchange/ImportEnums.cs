@@ -9,4 +9,10 @@
 		Customer,
 		NewsLetterSubscription
 	}
+
+	public enum ImportFileType
+	{
+		CSV = 0,
+		XLSX
+	}
 }

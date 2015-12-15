@@ -16,9 +16,24 @@ namespace SmartStore.Core.Domain
 		public string FolderName { get; set; }
 
 		/// <summary>
-		/// The name of the initially uploaded import file
+		/// The identifier of the file type
 		/// </summary>
-		public string FileName { get; set; }
+		public int FileTypeId { get; set; }
+
+		/// <summary>
+		/// The file type
+		/// </summary>
+		public ImportFileType FileType
+		{
+			get
+			{
+				return (ImportFileType)FileTypeId;
+			}
+			set
+			{
+				FileTypeId = (int)value;
+			}
+		}
 
 		/// <summary>
 		/// The identifier of the entity type

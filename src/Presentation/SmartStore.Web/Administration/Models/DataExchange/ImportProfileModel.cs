@@ -15,7 +15,9 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Import.Name")]
 		public string Name { get; set; }
 
-		public string FileName { get; set; }
+		[SmartResourceDisplayName("Admin.DataExchange.Import.FileType")]
+		public ImportFileType FileType { get; set; }
+		public List<SelectListItem> AvailableFileTypes { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.ImportFiles")]
 		public List<string> ExistingFileNames { get; set; }
@@ -42,6 +44,7 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public ScheduleTaskModel TaskModel { get; set; }
 		public bool LogFileExists { get; set; }
+		public string TempFileName { get; set; }
 
 		public CsvConfigurationModel CsvConfiguration { get; set; }
 	}

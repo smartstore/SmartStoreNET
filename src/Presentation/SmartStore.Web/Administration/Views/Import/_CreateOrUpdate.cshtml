@@ -7,7 +7,7 @@
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@Html.HiddenFor(model => model.FileName)
+@Html.HiddenFor(model => model.TempFileName)
 
 <table class="adminContent">
 	<tr id="ImportFileUploadContainer">
@@ -82,6 +82,15 @@
 	{
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.FileType)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.FileType, Model.AvailableFileTypes)
+				@Html.ValidationMessageFor(x => x.FileType)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Enabled)
 			</td>
 			<td class="adminData">
@@ -132,7 +141,7 @@
 					$('#ImportFileListContainer').show();
 
 					if (!_.isEmpty(data.result.tempFile)) {
-						$('input[name=FileName]').val(data.result.tempFile);
+						$('input[name=TempFileName]').val(data.result.tempFile);
 						$('#ImportFileList').html(data.result.tempFile);
 						$('#ImportFileUploadContainer').hide();		// just one initial file to specify the file type
 					}

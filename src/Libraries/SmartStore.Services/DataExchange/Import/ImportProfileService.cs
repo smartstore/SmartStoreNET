@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
@@ -50,11 +51,15 @@ namespace SmartStore.Services.DataExchange.Import
 			var profile = new ImportProfile
 			{
 				Name = name,
-				FileName = fileName,
 				EntityType = entityType,
 				Enabled = true,
 				SchedulingTaskId = task.Id
 			};
+
+			if (Path.GetExtension(fileName).IsCaseInsensitiveEqual(".xlsx"))
+				profile.FileType = ImportFileType.XLSX;
+			else
+				profile.FileType = ImportFileType.CSV;
 
 			profile.FolderName = SeoHelper.GetSeName(name, true, false)
 				.ToValidPath()

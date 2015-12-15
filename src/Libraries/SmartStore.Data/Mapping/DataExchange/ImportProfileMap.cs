@@ -12,10 +12,10 @@ namespace SmartStore.Data.Mapping.DataExchange
 
 			this.Property(x => x.Name).IsRequired().HasMaxLength(100);
 			this.Property(x => x.FolderName).IsRequired().HasMaxLength(100);
-			this.Property(x => x.FileName).IsRequired().HasMaxLength(400);
 			this.Property(x => x.FileTypeConfiguration).IsMaxLength();
 			this.Property(x => x.ColumnMapping).IsMaxLength();
 
+			this.Ignore(x => x.FileType);
 			this.Ignore(x => x.EntityType);
 
 			this.HasRequired(x => x.ScheduleTask)

@@ -6,11 +6,8 @@
 		@Html.IconForFileExtension(Path.GetExtension(fileName), false)
 		<a href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
 
-		@if(!fileName.IsCaseInsensitiveEqual(Model.FileName))
-		{
-			<button type="button" data-filename="@fileName" class="btn btn-mini btn-right import-file-delete">
-				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
-			</button>
-		}
+		<button type="button" data-filename="@fileName" class="btn btn-mini btn-right import-file-delete">
+			<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+		</button>
 	</p>
 }

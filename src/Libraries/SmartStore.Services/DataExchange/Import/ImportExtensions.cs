@@ -30,22 +30,16 @@ namespace SmartStore.Services.DataExchange.Import
 		/// <returns>List of file paths</returns>
 		public static List<string> GetImportFiles(this ImportProfile profile)
 		{
-			var result = new List<string>();
-			var folder = profile.GetImportFolder(true);
+			var importFolder = profile.GetImportFolder(true);
 
-			if (System.IO.Directory.Exists(folder))
+			if (System.IO.Directory.Exists(importFolder))
 			{
-				var initialImportFile = Path.Combine(folder, profile.FileName);
-
-				result.Add(initialImportFile);
-
-				result.AddRange(System.IO.Directory.EnumerateFiles(folder, "*", SearchOption.TopDirectoryOnly)
-					.Where(x => !x.IsCaseInsensitiveEqual(initialImportFile))
+				return System.IO.Directory.EnumerateFiles(importFolder, "*", SearchOption.TopDirectoryOnly)
 					.OrderBy(x => x)
-					.ToList());
+					.ToList();
 			}
 
-			return result;
+			return new List<string>();
 		}
 
 		/// <summary>

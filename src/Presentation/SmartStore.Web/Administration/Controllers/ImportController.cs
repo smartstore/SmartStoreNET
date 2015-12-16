@@ -242,6 +242,7 @@ namespace SmartStore.Admin.Controllers
 		public JsonResult FileUpload(int id)
 		{
 			var success = false;
+			string error = null;
 			string tempFile = "";
 			string fileList = "";
 
@@ -265,38 +266,44 @@ namespace SmartStore.Admin.Controllers
 						var profile = _importService.GetImportProfileById(id);
 						if (profile != null)
 						{
-							//var extension = Path.GetExtension(profile.FileType);
+							var files = profile.GetImportFiles();
+							if (files.Any())
+							{
+								var extension = Path.GetExtension(files.First());
 
-							//if (postedFile.FileExtension.IsCaseInsensitiveEqual(extension))
-							//{
-							//	var folder = profile.GetImportFolder(true, true);
-							//	var destFile = Path.Combine(folder, Path.GetFileName(postedFile.FileName));
+								if (!postedFile.FileExtension.IsCaseInsensitiveEqual(extension))
+									error = T("Admin.Common.FileTypeMustEqual", extension.Substring(1).ToUpper());
+							}
 
-							//	success = postedFile.Stream.ToFile(destFile);
+							if (!error.HasValue())
+							{
+								var folder = profile.GetImportFolder(true, true);
+								var destFile = Path.Combine(folder, Path.GetFileName(postedFile.FileName));
 
-							//	if (success)
-							//	{
-							//		var model = new ImportProfileModel();
-							//		PrepareProfileModel(model, profile, false);
+								success = postedFile.Stream.ToFile(destFile);
 
-							//		fileList = this.RenderPartialViewToString("_ImportFileList", model);
-							//	}
-							//}
-							//else
-							//{
-							//	NotifyError(T("Admin.Common.FileTypeMustEqual", extension.Substring(1).ToUpper()));
-							//}
+								if (success)
+								{
+									var model = new ImportProfileModel();
+									PrepareProfileModel(model, profile, false);
+
+									fileList = this.RenderPartialViewToString("_ImportFileList", model);
+								}
+							}
 						}
 					}
 				}
 
 				if (!success)
-					NotifyError(T("Admin.Common.UploadFileFailed"));
+					error = T("Admin.Common.UploadFileFailed");
 			}
 			else
 			{
-				NotifyError(T("Admin.AccessDenied.Description"));
+				error = T("Admin.AccessDenied.Description");
 			}
+
+			if (error.HasValue())
+				NotifyError(error);
 
 			return Json(new { success = success, tempFile = tempFile, fileList = fileList });
 		}

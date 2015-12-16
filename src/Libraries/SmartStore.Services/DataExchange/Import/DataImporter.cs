@@ -6,16 +6,23 @@ using System.Threading;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Catalog.Importer;
+using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Customers.Importer;
 using SmartStore.Services.DataExchange.Csv;
 using SmartStore.Services.DataExchange.Import.Internal;
+using SmartStore.Services.Directory;
+using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages.Importer;
@@ -39,6 +46,7 @@ namespace SmartStore.Services.DataExchange.Import
 		private readonly Lazy<IRepository<ProductCategory>> _productCategoryRepository;
 		private readonly Lazy<IRepository<UrlRecord>> _urlRecordRepository;
 		private readonly Lazy<IRepository<Product>> _productRepository;
+		private readonly Lazy<IRepository<Customer>> _customerRepository;
 
 		private readonly Lazy<ILanguageService> _languageService;
 		private readonly Lazy<ILocalizedEntityService> _localizedEntityService;
@@ -48,8 +56,15 @@ namespace SmartStore.Services.DataExchange.Import
 		private readonly Lazy<IProductService> _productService;
 		private readonly Lazy<IUrlRecordService> _urlRecordService;
 		private readonly Lazy<IStoreMappingService> _storeMappingService;
+		private readonly Lazy<IGenericAttributeService> _genericAttributeService;
+		private readonly Lazy<IAffiliateService> _affiliateService;
+		private readonly Lazy<ICountryService> _countryService;
+		private readonly Lazy<IStateProvinceService> _stateProvinceService;
 
 		private readonly Lazy<SeoSettings> _seoSettings;
+		private readonly Lazy<CustomerSettings> _customerSettings;
+		private readonly Lazy<DateTimeSettings> _dateTimeSettings;
+		private readonly Lazy<ForumSettings> _forumSettings;
 
 		public DataImporter(
 			ICommonServices services,
@@ -60,6 +75,7 @@ namespace SmartStore.Services.DataExchange.Import
 			Lazy<IRepository<ProductCategory>> productCategoryRepository,
 			Lazy<IRepository<UrlRecord>> urlRecordRepository,
 			Lazy<IRepository<Product>> productRepository,
+			Lazy<IRepository<Customer>> customerRepository,
 			Lazy<ILanguageService> languageService,
 			Lazy<ILocalizedEntityService> localizedEntityService,
 			Lazy<IPictureService> pictureService,
@@ -68,7 +84,14 @@ namespace SmartStore.Services.DataExchange.Import
 			Lazy<IProductService> productService,
 			Lazy<IUrlRecordService> urlRecordService,
 			Lazy<IStoreMappingService> storeMappingService,
-			Lazy<SeoSettings> seoSettings)
+			Lazy<IGenericAttributeService> genericAttributeService,
+			Lazy<IAffiliateService> affiliateService,
+			Lazy<ICountryService> countryService,
+			Lazy<IStateProvinceService> stateProvinceService,
+			Lazy<SeoSettings> seoSettings,
+			Lazy<CustomerSettings> customerSettings,
+			Lazy<DateTimeSettings> dateTimeSettings,
+			Lazy<ForumSettings> forumSettings)
 		{
 			_services = services;
 			_customerService = customerService;
@@ -78,6 +101,8 @@ namespace SmartStore.Services.DataExchange.Import
 			_productCategoryRepository = productCategoryRepository;
 			_urlRecordRepository = urlRecordRepository;
 			_productRepository = productRepository;
+			_customerRepository = customerRepository;
+
 			_languageService = languageService;
 			_localizedEntityService = localizedEntityService;
 			_pictureService = pictureService;
@@ -86,7 +111,15 @@ namespace SmartStore.Services.DataExchange.Import
 			_productService = productService;
 			_urlRecordService = urlRecordService;
 			_storeMappingService = storeMappingService;
+			_genericAttributeService = genericAttributeService;
+			_affiliateService = affiliateService;
+			_countryService = countryService;
+			_stateProvinceService = stateProvinceService;
+
 			_seoSettings = seoSettings;
+			_customerSettings = customerSettings;
+			_dateTimeSettings = dateTimeSettings;
+			_forumSettings = forumSettings;
 
 			T = NullLocalizer.Instance;
 		}
@@ -97,9 +130,6 @@ namespace SmartStore.Services.DataExchange.Import
 
 		private bool HasPermission(DataImporterContext ctx)
 		{
-			if (ctx.Request.CustomerId == 0)
-				ctx.Request.CustomerId = _services.WorkContext.CurrentCustomer.Id;  // fallback to background task system customer
-
 			var customer = _customerService.GetCustomerById(ctx.Request.CustomerId);
 
 			if (ctx.Request.Profile.EntityType == ImportEntityType.Product)
@@ -226,9 +256,6 @@ namespace SmartStore.Services.DataExchange.Import
 			if (ctx.Request.Profile == null || !ctx.Request.Profile.Enabled)
 				return;
 
-			if (ctx.Request.CustomerId == 0)
-				ctx.Request.CustomerId = _services.WorkContext.CurrentCustomer.Id;
-
 			var logPath = ctx.Request.Profile.GetImportLogPath();
 
 			FileSystemHelper.Delete(logPath);
@@ -238,6 +265,11 @@ namespace SmartStore.Services.DataExchange.Import
 				try
 				{
 					ctx.Log = logger;
+
+					if (ctx.Request.CustomerId == 0)
+						ctx.Request.CustomerId = _services.WorkContext.CurrentCustomer.Id;  // fallback to system background task customer
+
+					ctx.ExecuteContext.CustomerId = ctx.Request.CustomerId;
 
 					var files = ctx.Request.Profile.GetImportFiles();
 
@@ -268,6 +300,17 @@ namespace SmartStore.Services.DataExchange.Import
 					}
 					else if (ctx.Request.Profile.EntityType == ImportEntityType.Customer)
 					{
+						ctx.Importer = new CustomerImporter(
+							_services,
+							_customerRepository.Value,
+							_genericAttributeService.Value,
+							_customerService,
+							_affiliateService.Value,
+							_countryService.Value,
+							_stateProvinceService.Value,
+							_customerSettings.Value,
+							_dateTimeSettings.Value,
+							_forumSettings.Value);
 					}
 					else if (ctx.Request.Profile.EntityType == ImportEntityType.NewsLetterSubscription)
 					{

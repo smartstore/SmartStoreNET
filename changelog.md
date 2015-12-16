@@ -28,6 +28,7 @@
 * #722 System > SEO Names: Implement editing of an UrlRecord
 * Admin > System > System Info shows used application memory (RAM)
 * Added option to make VATIN mandatory during customer registration
+* Customer import
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

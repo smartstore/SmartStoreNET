@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 using SmartStore.Core.Domain.DataExchange;
@@ -21,7 +20,6 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public ImportExecuteContext(
 			CancellationToken cancellation,
-			int customerId,
 			ProgressValueSetter progressValueSetter,
 			string progressInfo)
 		{
@@ -29,14 +27,13 @@ namespace SmartStore.Services.DataExchange.Import
 			_progressValueSetter = progressValueSetter;
 			_progressInfo = progressInfo;
 
-			CustomerId = customerId;
 			CustomProperties = new Dictionary<string, object>();
 			Result = new ImportResult();
 		}
 
 		public IDataTable DataTable { get; internal set; }
 
-		public int CustomerId { get; private set; }
+		public int CustomerId { get; internal set; }
 
 		/// <summary>
 		/// Use this dictionary for any custom data required along the import

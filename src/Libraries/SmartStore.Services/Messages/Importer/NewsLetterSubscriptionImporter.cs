@@ -33,7 +33,6 @@ namespace SmartStore.Services.Messages.Importer
 			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
 				var segmenter = new ImportDataSegmenter<NewsLetterSubscription>(context.DataTable);
-				segmenter.Culture = CultureInfo.CurrentCulture;
 
 				context.Result.TotalRecords = segmenter.TotalRows;
 

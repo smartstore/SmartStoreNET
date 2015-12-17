@@ -67,7 +67,7 @@ namespace SmartStore.Admin.Controllers
 					.Select(x => Path.GetFileName(x))
 					.ToList();
 
-				if (profile.FileType == ImportFileType.CSV || profile.FileType == ImportFileType.XLSX)
+				if (profile.FileType == ImportFileType.CSV)
 				{
 					var converter = new CsvConfigurationConverter();
 					var config = converter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration);
@@ -192,7 +192,7 @@ namespace SmartStore.Admin.Controllers
 				profile.Skip = model.Skip;
 				profile.Take = model.Take;
 
-				if (profile.FileType == ImportFileType.CSV || profile.FileType == ImportFileType.XLSX)
+				if (profile.FileType == ImportFileType.CSV && model.CsvConfiguration != null)
 				{
 					CsvConfiguration config = model.CsvConfiguration.Clone();
 
@@ -293,14 +293,14 @@ namespace SmartStore.Admin.Controllers
 						}
 					}
 				}
-
-				if (!success)
-					error = T("Admin.Common.UploadFileFailed");
 			}
 			else
 			{
 				error = T("Admin.AccessDenied.Description");
 			}
+
+			if (!success && error.IsEmpty())
+				error = T("Admin.Common.UploadFileFailed");
 
 			if (error.HasValue())
 				NotifyError(error);

@@ -1,4 +1,5 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
+@using SmartStore.Core.Domain.DataExchange;
 @model ImportProfileModel
 @{
 	Html.AddScriptParts("~/bundles/fileupload");
@@ -119,10 +120,11 @@
 	}
 </table>
 
+<p></p>
+
 @if (Model.CsvConfiguration != null)
 {
 	var viewData = new ViewDataDictionary();
-	viewData.Add("ShowGroupCaption", true);
 	viewData.TemplateInfo.HtmlFieldPrefix = "CsvConfiguration";
 	viewData.ModelState.Merge(ViewData.ModelState);
 	@Html.Partial("CsvConfiguration", Model.CsvConfiguration, viewData)

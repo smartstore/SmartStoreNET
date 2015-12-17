@@ -118,7 +118,9 @@ namespace SmartStore.Services.DataExchange.Import
 				query = query.Where(x => x.Enabled == enabled.Value);
 			}
 
-			query = query.OrderBy(x => x.Name);
+			query = query
+				.OrderBy(x => x.EntityTypeId)
+				.ThenBy(x => x.Name);
 
 			return query;
 		}

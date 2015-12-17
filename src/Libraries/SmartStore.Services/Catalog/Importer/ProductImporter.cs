@@ -361,7 +361,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return _rsUrlRecord.Context.SaveChanges();
 		}
 
-		private int ProcessProducts(ImportExecuteContext context, ImportRow<Product>[] batch)
+		private int ProcessProducts(ImportExecuteContext context, ImportRow<Product>[] batch, DateTime utcNow)
 		{
 			_rsProduct.AutoCommitEnabled = true;
 
@@ -507,9 +507,9 @@ namespace SmartStore.Services.Catalog.Importer
 					_storeMappingService.SaveStoreMappings(product, storeIds.ToArray());
 				}
 
-				row.SetProperty(context.Result, product, (x) => x.CreatedOnUtc, DateTime.UtcNow);
+				row.SetProperty(context.Result, product, (x) => x.CreatedOnUtc, utcNow);
 
-				product.UpdatedOnUtc = DateTime.UtcNow;
+				product.UpdatedOnUtc = utcNow;
 
 				if (row.IsTransient)
 				{
@@ -540,7 +540,7 @@ namespace SmartStore.Services.Catalog.Importer
 			using (var scope = new DbContextScope(ctx: _rsProduct.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
 				var segmenter = new ImportDataSegmenter<Product>(context.DataTable);
-				segmenter.Culture = CultureInfo.CurrentUICulture;
+				var utcNow = DateTime.UtcNow;
 
 				context.Result.TotalRecords = segmenter.TotalRows;
 
@@ -558,7 +558,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					try
 					{
-						ProcessProducts(context, batch);
+						ProcessProducts(context, batch, utcNow);
 					}
 					catch (Exception exception)
 					{

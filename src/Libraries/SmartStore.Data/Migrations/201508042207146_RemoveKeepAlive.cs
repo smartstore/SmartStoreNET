@@ -10,7 +10,7 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
-			if (HostingEnvironment.IsHosted)
+			if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
 			{
 				Sql("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.Services.Common.KeepAliveTask, SmartStore.Services'");
 			}

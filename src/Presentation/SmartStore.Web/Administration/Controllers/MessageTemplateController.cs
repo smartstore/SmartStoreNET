@@ -171,6 +171,7 @@ namespace SmartStore.Admin.Controllers
 				Data = messageTemplates.Select(x => x.ToModel()),
 				Total = messageTemplates.Count
 			};
+
             return new JsonResult
             {
                 Data = gridModel

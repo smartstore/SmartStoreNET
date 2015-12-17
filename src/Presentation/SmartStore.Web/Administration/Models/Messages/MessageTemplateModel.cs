@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using FluentValidation.Attributes;
+using Newtonsoft.Json;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Messages;
 using SmartStore.Collections;
@@ -23,7 +24,7 @@ namespace SmartStore.Admin.Models.Messages
         }
 
         [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AllowedTokens")]
-        [ScriptIgnore]
+        [ScriptIgnore, JsonIgnore]
         public TreeNode<string> TokensTree { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Name")]

@@ -5,7 +5,6 @@
 @{
     Layout = "~/Views/Shared/_Root.cshtml";
 
-    //title
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
 }
 <div class="page checkout-page">
@@ -17,7 +16,8 @@
             @Html.Widget("mobile_checkout_completed_top")
             <div class="body">
                 <strong>
-                    @T("Checkout.YourOrderHasBeenSuccessfullyProcessed")</strong>
+					@T("Checkout.OrderHasBeenReceived")
+				</strong>
                 <p>
                     @T("Checkout.OrderNumber"): @Model.OrderNumber
                 </p>

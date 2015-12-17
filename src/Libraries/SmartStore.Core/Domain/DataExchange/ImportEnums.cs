@@ -1,4 +1,6 @@
-﻿namespace SmartStore.Core.Domain.DataExchange
+﻿using System;
+
+namespace SmartStore.Core.Domain.DataExchange
 {
 	/// <summary>
 	/// Supported entity types
@@ -14,5 +16,12 @@
 	{
 		CSV = 0,
 		XLSX
+	}
+
+	[Flags]
+	public enum ImportModeFlags
+	{
+		Insert = 1,
+		Update = 2
 	}
 }

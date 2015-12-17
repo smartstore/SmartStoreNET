@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.DataExchange.Import;
 
 namespace SmartStore.Services.Localization
 {
-    /// <summary>
-    /// Localization manager interface
-    /// </summary>
-    public partial interface ILocalizationService
+	/// <summary>
+	/// Localization manager interface
+	/// </summary>
+	public partial interface ILocalizationService
     {
 		void ClearCache();
 

@@ -1,29 +1,28 @@
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
-using System.Text.RegularExpressions;
-using System.Collections.Concurrent;
-using System.Web.Mvc;
-using System.Collections;
-using SmartStore.Services.DataExchange.Import;
 
 namespace SmartStore.Services.Localization
 {
-    /// <summary>
-    /// Provides information about localization
-    /// </summary>
-    public partial class LocalizationService : ILocalizationService
+	/// <summary>
+	/// Provides information about localization
+	/// </summary>
+	public partial class LocalizationService : ILocalizationService
     {
         #region Constants
         private const string LOCALESTRINGRESOURCES_ALL_KEY = "SmartStore.lsr.all-{0}";

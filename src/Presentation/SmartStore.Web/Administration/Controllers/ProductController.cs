@@ -23,7 +23,6 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Helpers;
@@ -110,7 +109,6 @@ namespace SmartStore.Admin.Controllers
             ITaxCategoryService taxCategoryService,
 			IProductTagService productTagService,
             ICopyProductService copyProductService,
-			IImportManager importManager,
             ICustomerActivityService customerActivityService,
             IPermissionService permissionService,
 			IAclService aclService,

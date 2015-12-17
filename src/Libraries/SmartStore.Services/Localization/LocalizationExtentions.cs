@@ -1,18 +1,18 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Xml;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
-using System.Xml;
 using SmartStore.Utilities;
-using SmartStore.Services.DataExchange.Import;
-using SmartStore.ComponentModel;
 
 namespace SmartStore.Services.Localization
 {
-    public static class LocalizationExtentions
+	public static class LocalizationExtentions
     {
 		/// <summary>
         /// Get localized property of an entity

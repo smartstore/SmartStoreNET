@@ -335,7 +335,6 @@ namespace SmartStore.Services.DataExchange.Import
 							_urlRecordRepository.Value,
 							_pictureRepository.Value,
 							_services,
-							_categoryService.Value,
 							_urlRecordService.Value,
 							_categoryTemplateService.Value,
 							_storeMappingService.Value,

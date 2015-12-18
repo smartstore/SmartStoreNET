@@ -19,7 +19,6 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly IRepository<UrlRecord> _urlRecordRepository;
 		private readonly IRepository<Picture> _pictureRepository;
 		private readonly ICommonServices _services;
-		private readonly ICategoryService _categoryService;
 		private readonly IUrlRecordService _urlRecordService;
 		private readonly ICategoryTemplateService _categoryTemplateService;
 		private readonly IStoreMappingService _storeMappingService;
@@ -30,7 +29,6 @@ namespace SmartStore.Services.Catalog.Importer
 			IRepository<UrlRecord> urlRecordRepository,
 			IRepository<Picture> pictureRepository,
 			ICommonServices services,
-			ICategoryService categoryService,
 			IUrlRecordService urlRecordService,
 			ICategoryTemplateService categoryTemplateService,
 			IStoreMappingService storeMappingService,
@@ -40,7 +38,6 @@ namespace SmartStore.Services.Catalog.Importer
 			_urlRecordRepository = urlRecordRepository;
 			_pictureRepository = pictureRepository;
 			_services = services;
-			_categoryService = categoryService;
 			_urlRecordService = urlRecordService;
 			_categoryTemplateService = categoryTemplateService;
 			_storeMappingService = storeMappingService;
@@ -107,13 +104,49 @@ namespace SmartStore.Services.Catalog.Importer
 			return _urlRecordRepository.Context.SaveChanges();
 		}
 
+		private int ProcessParentMappings(ImportExecuteContext context,
+			ImportRow<Category>[] batch,
+			Dictionary<int, ImportCategoryMapping> oldToNewId)
+		{
+			object key1, key2;
+
+			foreach (var row in batch)
+			{
+				if (row.DataRow.TryGetValue("Id", out key1) &&
+					row.Segmenter.HasDataColumn("ParentCategoryId") && row.DataRow.TryGetValue("ParentCategoryId", out key2))
+				{
+					var id = key1.ToString().ToInt();
+					var parentId = key2.ToString().ToInt(-1);
+
+					if (id != 0 && parentId != -1 && oldToNewId.ContainsKey(id) && oldToNewId.ContainsKey(parentId))
+					{
+						// only touch hierarchical data if child and parent were inserted
+						if (oldToNewId[id].Inserted && oldToNewId[parentId].Inserted && oldToNewId[id].NewId != 0)
+						{
+							var category = _categoryRepository.GetById(oldToNewId[id].NewId);
+							if (category != null)
+							{
+								category.ParentCategoryId = oldToNewId[parentId].NewId;
+							}
+						}
+					}
+				}
+			}
+
+			var num = _categoryRepository.Context.SaveChanges();
+
+			return num;
+		}
+
 		private int ProcessCategories(ImportExecuteContext context,
 			ImportRow<Category>[] batch,
 			DateTime utcNow,
-			List<int> allCategoryTemplateIds)
+			List<int> allCategoryTemplateIds,
+			Dictionary<int, ImportCategoryMapping> oldToNewId)
 		{
 			_categoryRepository.AutoCommitEnabled = true;
 
+			object key;
 			Category lastInserted = null;
 			Category lastUpdated = null;
 			var defaultTemplateId = allCategoryTemplateIds.First();
@@ -121,12 +154,16 @@ namespace SmartStore.Services.Catalog.Importer
 			foreach (var row in batch)
 			{
 				Category category = null;
-				object key;
+				var id = 0;
 
 				// try get by int ID
-				if (row.DataRow.TryGetValue("Id", out key) && key.ToString().ToInt() > 0)
+				if (row.DataRow.TryGetValue("Id", out key))
 				{
-					category = _categoryService.GetCategoryById(key.ToString().ToInt());
+					id = key.ToString().ToInt();
+					if (id != 0)
+					{
+						category = _categoryRepository.GetById(id);
+					}
 				}
 
 				if (category == null)
@@ -160,7 +197,6 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, category, (x) => x.MetaKeywords);
 				row.SetProperty(context.Result, category, (x) => x.MetaDescription);
 				row.SetProperty(context.Result, category, (x) => x.MetaTitle);
-				row.SetProperty(context.Result, category, (x) => x.ParentCategoryId);   // TODO: hierachical data in batch processing?
 				row.SetProperty(context.Result, category, (x) => x.PageSize, 12);
 				row.SetProperty(context.Result, category, (x) => x.AllowCustomersToSelectPageSize, true);
 				row.SetProperty(context.Result, category, (x) => x.PageSizeOptions);
@@ -196,6 +232,11 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, category, (x) => x.CreatedOnUtc, utcNow);
 				category.UpdatedOnUtc = utcNow;
 
+				if (id != 0 && !oldToNewId.ContainsKey(id))
+				{
+					oldToNewId.Add(id, new ImportCategoryMapping { Inserted = row.IsTransient });
+				}
+
 				if (row.IsTransient)
 				{
 					_categoryRepository.Insert(category);
@@ -211,6 +252,17 @@ namespace SmartStore.Services.Catalog.Importer
 			// commit whole batch at once
 			var num = _categoryRepository.Context.SaveChanges();
 
+			// get new category ids
+			foreach (var row in batch)
+			{
+				if (row.DataRow.TryGetValue("Id", out key))
+				{
+					var id = key.ToString().ToInt();
+					if (id != 0 && oldToNewId.ContainsKey(id))
+						oldToNewId[id].NewId = row.Entity.Id;
+				}
+			}
+
 			// Perf: notify only about LAST insertion and update
 			if (lastInserted != null)
 				_services.EventPublisher.EntityInserted(lastInserted);
@@ -222,6 +274,8 @@ namespace SmartStore.Services.Catalog.Importer
 
 		public void Execute(ImportExecuteContext context)
 		{
+			var oldToNewId = new Dictionary<int, ImportCategoryMapping>();
+
 			var allCategoryTemplateIds = _categoryTemplateService.GetAllCategoryTemplates()
 				.Select(x => x.Id)
 				.ToList();
@@ -244,7 +298,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 					try
 					{
-						ProcessCategories(context, batch, utcNow, allCategoryTemplateIds);
+						ProcessCategories(context, batch, utcNow, allCategoryTemplateIds, oldToNewId);
 					}
 					catch (Exception exception)
 					{
@@ -276,7 +330,36 @@ namespace SmartStore.Services.Catalog.Importer
 						}
 					}
 				}
+
+				// map parent id of inserted categories
+				if (oldToNewId.Any())
+				{
+					segmenter.Reset();
+
+					while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
+					{
+						var batch = segmenter.CurrentBatch;
+
+						_categoryRepository.Context.DetachAll(false);
+
+						try
+						{
+							ProcessParentMappings(context, batch, oldToNewId);
+						}
+						catch (Exception exception)
+						{
+							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessParentMappings");
+						}
+					}
+				}
 			}
 		}
+	}
+
+
+	internal class ImportCategoryMapping
+	{
+		public int NewId { get; set; }
+		public bool Inserted { get; set; }
 	}
 }

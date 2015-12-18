@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Localization;
@@ -41,18 +42,21 @@ namespace SmartStore.Services.DataExchange.Import
 		private readonly ICustomerService _customerService;
 
 		private readonly Lazy<IRepository<NewsLetterSubscription>> _subscriptionRepository;
+		private readonly Lazy<IRepository<Picture>> _pictureRepository;
 		private readonly Lazy<IRepository<ProductPicture>> _productPictureRepository;
 		private readonly Lazy<IRepository<ProductManufacturer>> _productManufacturerRepository;
 		private readonly Lazy<IRepository<ProductCategory>> _productCategoryRepository;
 		private readonly Lazy<IRepository<UrlRecord>> _urlRecordRepository;
 		private readonly Lazy<IRepository<Product>> _productRepository;
 		private readonly Lazy<IRepository<Customer>> _customerRepository;
+		private readonly Lazy<IRepository<Category>> _categoryRepository;
 
 		private readonly Lazy<ILanguageService> _languageService;
 		private readonly Lazy<ILocalizedEntityService> _localizedEntityService;
 		private readonly Lazy<IPictureService> _pictureService;
 		private readonly Lazy<IManufacturerService> _manufacturerService;
 		private readonly Lazy<ICategoryService> _categoryService;
+		private readonly Lazy<ICategoryTemplateService> _categoryTemplateService;
 		private readonly Lazy<IProductService> _productService;
 		private readonly Lazy<IUrlRecordService> _urlRecordService;
 		private readonly Lazy<IStoreMappingService> _storeMappingService;
@@ -70,17 +74,20 @@ namespace SmartStore.Services.DataExchange.Import
 			ICommonServices services,
 			ICustomerService customerService,
 			Lazy<IRepository<NewsLetterSubscription>> subscriptionRepository,
+			Lazy<IRepository<Picture>> pictureRepository,
 			Lazy<IRepository<ProductPicture>> productPictureRepository,
 			Lazy<IRepository<ProductManufacturer>> productManufacturerRepository,
 			Lazy<IRepository<ProductCategory>> productCategoryRepository,
 			Lazy<IRepository<UrlRecord>> urlRecordRepository,
 			Lazy<IRepository<Product>> productRepository,
 			Lazy<IRepository<Customer>> customerRepository,
+			Lazy<IRepository<Category>> categoryRepository,
 			Lazy<ILanguageService> languageService,
 			Lazy<ILocalizedEntityService> localizedEntityService,
 			Lazy<IPictureService> pictureService,
 			Lazy<IManufacturerService> manufacturerService,
 			Lazy<ICategoryService> categoryService,
+			Lazy<ICategoryTemplateService> categoryTemplateService,
 			Lazy<IProductService> productService,
 			Lazy<IUrlRecordService> urlRecordService,
 			Lazy<IStoreMappingService> storeMappingService,
@@ -96,18 +103,21 @@ namespace SmartStore.Services.DataExchange.Import
 			_services = services;
 			_customerService = customerService;
 			_subscriptionRepository = subscriptionRepository;
+			_pictureRepository = pictureRepository;
 			_productPictureRepository = productPictureRepository;
 			_productManufacturerRepository = productManufacturerRepository;
 			_productCategoryRepository = productCategoryRepository;
 			_urlRecordRepository = urlRecordRepository;
 			_productRepository = productRepository;
 			_customerRepository = customerRepository;
+			_categoryRepository = categoryRepository;
 
 			_languageService = languageService;
 			_localizedEntityService = localizedEntityService;
 			_pictureService = pictureService;
 			_manufacturerService = manufacturerService;
 			_categoryService = categoryService;
+			_categoryTemplateService = categoryTemplateService;
 			_productService = productService;
 			_urlRecordService = urlRecordService;
 			_storeMappingService = storeMappingService;
@@ -320,6 +330,16 @@ namespace SmartStore.Services.DataExchange.Import
 					}
 					else if (ctx.Request.Profile.EntityType == ImportEntityType.Category)
 					{
+						ctx.Importer = new CategoryImporter(
+							_categoryRepository.Value,
+							_urlRecordRepository.Value,
+							_pictureRepository.Value,
+							_services,
+							_categoryService.Value,
+							_urlRecordService.Value,
+							_categoryTemplateService.Value,
+							_storeMappingService.Value,
+							_seoSettings.Value);
 					}
 					else
 					{

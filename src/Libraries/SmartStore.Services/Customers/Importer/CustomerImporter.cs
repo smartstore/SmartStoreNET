@@ -197,7 +197,12 @@ namespace SmartStore.Services.Customers.Importer
 
 				if (customer == null)
 				{
-					customer = new Customer();
+					customer = new Customer
+					{
+						CustomerGuid = new Guid(),
+						AffiliateId = 0,
+						Active = true					
+					};
 				}
 				else
 				{
@@ -205,7 +210,6 @@ namespace SmartStore.Services.Customers.Importer
 				}
 
 				var email = row.GetDataValue<string>("Email");
-				var affiliateId = row.GetDataValue<int>("AffiliateId");
 				var isGuest = row.GetDataValue<bool>("IsGuest");
 				var isRegistered = row.GetDataValue<bool>("IsRegistered");
 				var isAdmin = row.GetDataValue<bool>("IsAdministrator");
@@ -231,10 +235,13 @@ namespace SmartStore.Services.Customers.Importer
 				row.SetProperty(context.Result, customer, (x) => x.CreatedOnUtc, utcNow);
 				row.SetProperty(context.Result, customer, (x) => x.LastActivityDateUtc, utcNow);
 
-				if (affiliateId != 0 && allAffiliateIds.Contains(affiliateId))
+				if (row.DataRow.TryGetValue("AffiliateId", out key))
 				{
-					row.SetProperty(context.Result, customer, (x) => x.AffiliateId, affiliateId);
+					int affiliateId = key.ToString().ToInt();
+					if (affiliateId > 0 && allAffiliateIds.Contains(affiliateId))
+						customer.AffiliateId = affiliateId;
 				}
+
 
 				UpsertRole(row, guestRole, SystemCustomerRoleNames.Guests, isGuest);
 				UpsertRole(row, registeredRole, SystemCustomerRoleNames.Registered, isRegistered);

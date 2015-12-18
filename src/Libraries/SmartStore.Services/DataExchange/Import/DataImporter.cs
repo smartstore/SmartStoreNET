@@ -132,7 +132,7 @@ namespace SmartStore.Services.DataExchange.Import
 		{
 			var customer = _customerService.GetCustomerById(ctx.Request.CustomerId);
 
-			if (ctx.Request.Profile.EntityType == ImportEntityType.Product)
+			if (ctx.Request.Profile.EntityType == ImportEntityType.Product || ctx.Request.Profile.EntityType == ImportEntityType.Category)
 				return _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog, customer);
 
 			if (ctx.Request.Profile.EntityType == ImportEntityType.Customer)
@@ -317,6 +317,9 @@ namespace SmartStore.Services.DataExchange.Import
 						ctx.Importer = new NewsLetterSubscriptionImporter(
 							_services,
 							_subscriptionRepository.Value);
+					}
+					else if (ctx.Request.Profile.EntityType == ImportEntityType.Category)
+					{
 					}
 					else
 					{

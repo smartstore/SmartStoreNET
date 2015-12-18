@@ -371,24 +371,22 @@ namespace SmartStore.Services.Catalog.Importer
 			foreach (var row in batch)
 			{
 				Product product = null;
-
 				object key;
-				var dataRow = row.DataRow;
 
 				// try get by int ID
-				if (dataRow.TryGetValue("Id", out key) && key.ToString().ToInt() > 0)
+				if (row.DataRow.TryGetValue("Id", out key) && key.ToString().ToInt() > 0)
 				{
 					product = _productService.GetProductById(key.ToString().ToInt());
 				}
 
 				// try get by SKU
-				if (product == null && dataRow.TryGetValue("SKU", out key))
+				if (product == null && row.DataRow.TryGetValue("SKU", out key))
 				{
 					product = _productService.GetProductBySku(key.ToString());
 				}
 
 				// try get by GTIN
-				if (product == null && dataRow.TryGetValue("Gtin", out key))
+				if (product == null && row.DataRow.TryGetValue("Gtin", out key))
 				{
 					product = _productService.GetProductByGtin(key.ToString());
 				}
@@ -404,7 +402,7 @@ namespace SmartStore.Services.Catalog.Importer
 					product = new Product();
 				}
 
-				string name = row.GetDataValue<string>("Name");
+				var name = row.GetDataValue<string>("Name");
 
 				row.Initialize(product, name);
 
@@ -508,7 +506,6 @@ namespace SmartStore.Services.Catalog.Importer
 				}
 
 				row.SetProperty(context.Result, product, (x) => x.CreatedOnUtc, utcNow);
-
 				product.UpdatedOnUtc = utcNow;
 
 				if (row.IsTransient)
@@ -587,7 +584,7 @@ namespace SmartStore.Services.Catalog.Importer
 						}
 						catch (Exception exception)
 						{
-							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessSeoSlugs");
+							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessSlugs");
 						}
 						finally
 						{

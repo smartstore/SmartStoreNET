@@ -166,6 +166,7 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Catalog\Importer\CategoryImporter.cs" />
     <Compile Include="Catalog\Importer\ProductImporter.cs" />
     <Compile Include="Catalog\PriceCalculationContext.cs" />
     <Compile Include="Common\IUserAgent.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -8,6 +9,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Events;
 using SmartStore.Services.DataExchange.Import;
+using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 
@@ -22,6 +24,7 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly IUrlRecordService _urlRecordService;
 		private readonly ICategoryTemplateService _categoryTemplateService;
 		private readonly IStoreMappingService _storeMappingService;
+		private readonly IPictureService _pictureService;
 		private readonly SeoSettings _seoSettings;
 
 		public CategoryImporter(
@@ -32,6 +35,7 @@ namespace SmartStore.Services.Catalog.Importer
 			IUrlRecordService urlRecordService,
 			ICategoryTemplateService categoryTemplateService,
 			IStoreMappingService storeMappingService,
+			IPictureService pictureService,
 			SeoSettings seoSettings)
 		{
 			_categoryRepository = categoryRepository;
@@ -41,6 +45,7 @@ namespace SmartStore.Services.Catalog.Importer
 			_urlRecordService = urlRecordService;
 			_categoryTemplateService = categoryTemplateService;
 			_storeMappingService = storeMappingService;
+			_pictureService = pictureService;
 			_seoSettings = seoSettings;
 		}
 
@@ -147,8 +152,10 @@ namespace SmartStore.Services.Catalog.Importer
 			_categoryRepository.AutoCommitEnabled = true;
 
 			object key;
+			Picture picture = null;
 			Category lastInserted = null;
 			Category lastUpdated = null;
+			var equalPictureId = 0;
 			var defaultTemplateId = allCategoryTemplateIds.First();
 
 			foreach (var row in batch)
@@ -216,18 +223,31 @@ namespace SmartStore.Services.Catalog.Importer
 						category.CategoryTemplateId = templateId;
 				}
 
-				if (row.DataRow.TryGetValue("PictureId", out key))
-				{
-					int pictureId = key.ToString().ToInt();
-					if (pictureId > 0 && _pictureRepository.TableUntracked.Any(x => x.Id == pictureId))
-						category.PictureId = pictureId;
-				}
-
 				var storeIds = row.GetDataValue<List<int>>("StoreIds");
 				if (storeIds != null && storeIds.Any())
 				{
 					_storeMappingService.SaveStoreMappings(category, storeIds.ToArray());
 				}
+
+				if (row.DataRow.TryGetValue("PictureThumbPath", out key))
+				{
+					var thumbPath = key.ToString();
+					if (thumbPath.HasValue() && File.Exists(thumbPath))
+					{
+						var pictures = new List<Picture>();
+						if (category.PictureId.HasValue && (picture = _pictureRepository.GetById(category.PictureId.Value)) != null)
+							pictures.Add(picture);
+
+						var pictureBinary = _pictureService.FindEqualPicture(thumbPath, pictures, out equalPictureId);
+
+						if (pictureBinary != null && pictureBinary.Length > 0 &&
+							(picture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, false, false)) != null)
+						{
+							category.PictureId = picture.Id;
+						}
+					}
+				}
+
 
 				row.SetProperty(context.Result, category, (x) => x.CreatedOnUtc, utcNow);
 				category.UpdatedOnUtc = utcNow;

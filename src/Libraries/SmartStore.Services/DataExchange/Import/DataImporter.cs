@@ -327,6 +327,7 @@ namespace SmartStore.Services.DataExchange.Import
 							_urlRecordService.Value,
 							_categoryTemplateService.Value,
 							_storeMappingService.Value,
+							_pictureService.Value,
 							_seoSettings.Value);
 					}
 					else

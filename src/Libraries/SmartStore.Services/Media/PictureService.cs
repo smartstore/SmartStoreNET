@@ -154,17 +154,21 @@ namespace SmartStore.Services.Media
             }
         }
 
-		public byte[] FindEqualPicture(string path, IEnumerable<Picture> productPictures, out int equalPictureId)
+		#endregion
+
+		#region Methods
+
+		public byte[] FindEqualPicture(string path, IEnumerable<Picture> pictures, out int equalPictureId)
 		{
-			return FindEqualPicture(File.ReadAllBytes(path), productPictures, out equalPictureId);
+			return FindEqualPicture(File.ReadAllBytes(path), pictures, out equalPictureId);
 		}
 
-		public byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> productPictures, out int equalPictureId)
+		public byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> pictures, out int equalPictureId)
 		{
 			equalPictureId = 0;
 			try
 			{
-				foreach (var picture in productPictures)
+				foreach (var picture in pictures)
 				{
 					var otherPictureBinary = LoadPictureBinary(picture);
 
@@ -187,11 +191,7 @@ namespace SmartStore.Services.Media
 			}
 		}
 
-        #endregion
-
-        #region Methods
-
-        public virtual string GetPictureSeName(string name)
+		public virtual string GetPictureSeName(string name)
         {
             return SeoHelper.GetSeName(name, true, false);
         }

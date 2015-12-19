@@ -19,11 +19,11 @@ namespace SmartStore.Services.Catalog.Importer
 {
 	public class ProductImporter : IEntityImporter
 	{
-		private readonly IRepository<ProductPicture> _rsProductPicture;
-		private readonly IRepository<ProductManufacturer> _rsProductManufacturer;
-		private readonly IRepository<ProductCategory> _rsProductCategory;
-		private readonly IRepository<UrlRecord> _rsUrlRecord;
-		private readonly IRepository<Product> _rsProduct;
+		private readonly IRepository<ProductPicture> _productPictureRepository;
+		private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
+		private readonly IRepository<ProductCategory> _productCategoryRepository;
+		private readonly IRepository<UrlRecord> _urlRecordRepository;
+		private readonly IRepository<Product> _productRepository;
 		private readonly ICommonServices _services;
 		private readonly ILanguageService _languageService;
 		private readonly ILocalizedEntityService _localizedEntityService;
@@ -36,11 +36,11 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly SeoSettings _seoSettings;
 
 		public ProductImporter(
-			IRepository<ProductPicture> rsProductPicture,
-			IRepository<ProductManufacturer> rsProductManufacturer,
-			IRepository<ProductCategory> rsProductCategory,
-			IRepository<UrlRecord> rsUrlRecord,
-			IRepository<Product> rsProduct,
+			IRepository<ProductPicture> productPictureRepository,
+			IRepository<ProductManufacturer> productManufacturerRepository,
+			IRepository<ProductCategory> productCategoryRepository,
+			IRepository<UrlRecord> urlRecordRepository,
+			IRepository<Product> productRepository,
 			ICommonServices services,
 			ILanguageService languageService,
 			ILocalizedEntityService localizedEntityService,
@@ -52,11 +52,11 @@ namespace SmartStore.Services.Catalog.Importer
 			IStoreMappingService storeMappingService,
 			SeoSettings seoSettings)
 		{
-			_rsProductPicture = rsProductPicture;
-			_rsProductManufacturer = rsProductManufacturer;
-			_rsProductCategory = rsProductCategory;
-			_rsUrlRecord = rsUrlRecord;
-			_rsProduct = rsProduct;
+			_productPictureRepository = productPictureRepository;
+			_productManufacturerRepository = productManufacturerRepository;
+			_productCategoryRepository = productCategoryRepository;
+			_urlRecordRepository = urlRecordRepository;
+			_productRepository = productRepository;
 			_services = services;
 			_languageService = languageService;
 			_localizedEntityService = localizedEntityService;
@@ -82,34 +82,38 @@ namespace SmartStore.Services.Catalog.Importer
 
 		private void ProcessProductPictures(ImportExecuteContext context, ImportRow<Product>[] batch)
 		{
-			// true, cause pictures must be saved and assigned an id
-			// prior adding a mapping.
-			_rsProductPicture.AutoCommitEnabled = true;
+			// true, cause pictures must be saved and assigned an id prior adding a mapping.
+			_productPictureRepository.AutoCommitEnabled = true;
 
 			ProductPicture lastInserted = null;
-			int equalPictureId = 0;
+			var equalPictureId = 0;
 
 			foreach (var row in batch)
 			{
-				var pictures = new string[]
-				{
- 					row.GetDataValue<string>("Picture1"),
-					row.GetDataValue<string>("Picture2"),
-					row.GetDataValue<string>("Picture3")
-				};
+				var count = -1;
+				var thumbPaths = row.GetDataValue<List<string>>("PictureThumbPaths");
 
-				int i = 0;
-				try
+				if (thumbPaths == null)
+					continue;
+
+				foreach (var path in thumbPaths.Where(x => x.HasValue() && File.Exists(x)))
 				{
-					for (i = 0; i < pictures.Length; i++)
+					try
 					{
-						var picture = pictures[i];
+						var currentProductPictures = _productPictureRepository.TableUntracked.Expand(x => x.Picture)
+							.Where(x => x.ProductId == row.Entity.Id)
+							.ToList();
 
-						if (picture.IsEmpty() || !File.Exists(picture))
-							continue;
+						var currentPictures = currentProductPictures
+							.Select(x => x.Picture)
+							.ToList();
 
-						var currentPictures = _rsProductPicture.TableUntracked.Expand(x => x.Picture).Where(x => x.ProductId == row.Entity.Id).Select(x => x.Picture).ToList();
-						var pictureBinary = _pictureService.FindEqualPicture(picture, currentPictures, out equalPictureId);
+						if (count == -1)
+						{
+							count = (currentProductPictures.Any() ? currentProductPictures.Select(x => x.DisplayOrder).Max() : 0);
+						}
+
+						var pictureBinary = _pictureService.FindEqualPicture(path, currentPictures, out equalPictureId);
 
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{
@@ -121,23 +125,25 @@ namespace SmartStore.Services.Catalog.Importer
 								{
 									ProductId = row.Entity.Id,
 									PictureId = newPicture.Id,
-									DisplayOrder = 1,
+									DisplayOrder = ++count
 								};
-								_rsProductPicture.Insert(mapping);
+
+								_productPictureRepository.Insert(mapping);
 								lastInserted = mapping;
 							}
 						}
 						else
 						{
-							context.Result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "Picture" + (i + 1).ToString());
+							var idx = thumbPaths.IndexOf(path) + 1;
+							context.Result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "PictureThumbPaths" + idx.ToString());
 						}
 					}
+					catch (Exception exception)
+					{
+						var idx = thumbPaths.IndexOf(path) + 1;
+						context.Result.AddWarning(exception.Message, row.GetRowInfo(), "PictureThumbPaths" + idx.ToString());
+					}
 				}
-				catch (Exception exception)
-				{
-					context.Result.AddWarning(exception.Message, row.GetRowInfo(), "Picture" + (i + 1).ToString());
-				}
-
 			}
 
 			// Perf: notify only about LAST insertion and update
@@ -147,7 +153,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 		private int ProcessProductManufacturers(ImportExecuteContext context, ImportRow<Product>[] batch)
 		{
-			_rsProductManufacturer.AutoCommitEnabled = false;
+			_productManufacturerRepository.AutoCommitEnabled = false;
 
 			ProductManufacturer lastInserted = null;
 
@@ -160,7 +166,7 @@ namespace SmartStore.Services.Catalog.Importer
 					{
 						foreach (var id in manufacturerIds)
 						{
-							if (_rsProductManufacturer.TableUntracked.Where(x => x.ProductId == row.Entity.Id && x.ManufacturerId == id).FirstOrDefault() == null)
+							if (_productManufacturerRepository.TableUntracked.Where(x => x.ProductId == row.Entity.Id && x.ManufacturerId == id).FirstOrDefault() == null)
 							{
 								// ensure that manufacturer exists
 								var manufacturer = _manufacturerService.GetManufacturerById(id);
@@ -173,7 +179,7 @@ namespace SmartStore.Services.Catalog.Importer
 										IsFeaturedProduct = false,
 										DisplayOrder = 1
 									};
-									_rsProductManufacturer.Insert(productManufacturer);
+									_productManufacturerRepository.Insert(productManufacturer);
 									lastInserted = productManufacturer;
 								}
 							}
@@ -187,7 +193,7 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 
 			// commit whole batch at once
-			var num = _rsProductManufacturer.Context.SaveChanges();
+			var num = _productManufacturerRepository.Context.SaveChanges();
 
 			// Perf: notify only about LAST insertion and update
 			if (lastInserted != null)
@@ -198,7 +204,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 		private int ProcessProductCategories(ImportExecuteContext context, ImportRow<Product>[] batch)
 		{
-			_rsProductCategory.AutoCommitEnabled = false;
+			_productCategoryRepository.AutoCommitEnabled = false;
 
 			ProductCategory lastInserted = null;
 
@@ -211,7 +217,7 @@ namespace SmartStore.Services.Catalog.Importer
 					{
 						foreach (var id in categoryIds)
 						{
-							if (_rsProductCategory.TableUntracked.Where(x => x.ProductId == row.Entity.Id && x.CategoryId == id).FirstOrDefault() == null)
+							if (_productCategoryRepository.TableUntracked.Where(x => x.ProductId == row.Entity.Id && x.CategoryId == id).FirstOrDefault() == null)
 							{
 								// ensure that category exists
 								var category = _categoryService.GetCategoryById(id);
@@ -224,7 +230,7 @@ namespace SmartStore.Services.Catalog.Importer
 										IsFeaturedProduct = false,
 										DisplayOrder = 1
 									};
-									_rsProductCategory.Insert(productCategory);
+									_productCategoryRepository.Insert(productCategory);
 									lastInserted = productCategory;
 								}
 							}
@@ -238,7 +244,7 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 
 			// commit whole batch at once
-			var num = _rsProductCategory.Context.SaveChanges();
+			var num = _productCategoryRepository.Context.SaveChanges();
 
 			// Perf: notify only about LAST insertion and update
 			if (lastInserted != null)
@@ -292,7 +298,7 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 
 			// commit whole batch at once
-			var num = _rsProductManufacturer.Context.SaveChanges();
+			var num = _productManufacturerRepository.Context.SaveChanges();
 
 			// Perf: notify only about LAST insertion and update
 			//if (lastInserted != null)
@@ -337,7 +343,7 @@ namespace SmartStore.Services.Catalog.Importer
 								LanguageId = 0,
 								IsActive = true,
 							};
-							_rsUrlRecord.Insert(urlRecord);
+							_urlRecordRepository.Insert(urlRecord);
 						}
 						else
 						{
@@ -358,12 +364,12 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 
 			// commit whole batch at once
-			return _rsUrlRecord.Context.SaveChanges();
+			return _urlRecordRepository.Context.SaveChanges();
 		}
 
 		private int ProcessProducts(ImportExecuteContext context, ImportRow<Product>[] batch, DateTime utcNow)
 		{
-			_rsProduct.AutoCommitEnabled = true;
+			_productRepository.AutoCommitEnabled = true;
 
 			Product lastInserted = null;
 			Product lastUpdated = null;
@@ -510,18 +516,18 @@ namespace SmartStore.Services.Catalog.Importer
 
 				if (row.IsTransient)
 				{
-					_rsProduct.Insert(product);
+					_productRepository.Insert(product);
 					lastInserted = product;
 				}
 				else
 				{
-					_rsProduct.Update(product);
+					_productRepository.Update(product);
 					lastUpdated = product;
 				}
 			}
 
 			// commit whole batch at once
-			var num = _rsProduct.Context.SaveChanges();
+			var num = _productRepository.Context.SaveChanges();
 
 			// Perf: notify only about LAST insertion and update
 			if (lastInserted != null)
@@ -534,7 +540,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 		public void Execute(ImportExecuteContext context)
 		{
-			using (var scope = new DbContextScope(ctx: _rsProduct.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
 				var segmenter = new ImportDataSegmenter<Product>(context.DataTable);
 				var utcNow = DateTime.UtcNow;
@@ -546,7 +552,7 @@ namespace SmartStore.Services.Catalog.Importer
 					var batch = segmenter.CurrentBatch;
 
 					// Perf: detach all entities
-					_rsProduct.Context.DetachAll(false);
+					_productRepository.Context.DetachAll(false);
 
 					context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
 
@@ -579,7 +585,7 @@ namespace SmartStore.Services.Catalog.Importer
 					{
 						try
 						{
-							_rsProduct.Context.AutoDetectChangesEnabled = true;
+							_productRepository.Context.AutoDetectChangesEnabled = true;
 							ProcessSlugs(context, batch);
 						}
 						catch (Exception exception)
@@ -588,7 +594,7 @@ namespace SmartStore.Services.Catalog.Importer
 						}
 						finally
 						{
-							_rsProduct.Context.AutoDetectChangesEnabled = false;
+							_productRepository.Context.AutoDetectChangesEnabled = false;
 						}
 					}
 
@@ -637,7 +643,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					// 6.) Import product picture mappings
 					// ===========================================================================
-					if (context.DataTable.HasColumn("Picture1") || context.DataTable.HasColumn("Picture2") || context.DataTable.HasColumn("Picture3"))
+					if (context.DataTable.HasColumn("PictureThumbPaths"))
 					{
 						try
 						{

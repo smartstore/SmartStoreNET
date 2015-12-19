@@ -176,23 +176,12 @@ namespace SmartStore.Services.DataExchange.Import
 
 			foreach (var message in result.Messages)
 			{
-				string prefix = null;
-
-				if (message.AffectedItem != null)
-					prefix.Grow("Pos: " + (message.AffectedItem.Position + 1).ToString(), ", ");
-
-				if (message.AffectedField.HasValue())
-					prefix.Grow("Field: " + message.AffectedField, ", ");
-
-				if (prefix.HasValue())
-					message.Message = "[{0}] {1}".FormatInvariant(prefix, message.Message);
-
 				if (message.MessageType == ImportMessageType.Error)
-					ctx.Log.Error(message.Message);
+					ctx.Log.Error(message.ToString());
 				else if (message.MessageType == ImportMessageType.Warning)
-					ctx.Log.Warning(message.Message);
+					ctx.Log.Warning(message.ToString());
 				else
-					ctx.Log.Information(message.Message);
+					ctx.Log.Information(message.ToString());
 			}
 		}
 

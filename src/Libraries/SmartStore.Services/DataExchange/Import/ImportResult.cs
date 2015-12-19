@@ -106,8 +106,10 @@ namespace SmartStore.Services.DataExchange.Import
 		public ImportMessage AddMessage(string message, ImportMessageType severity, ImportRowInfo affectedRow = null, string affectedField = null)
 		{
 			var msg = new ImportMessage(message, severity);
+
 			msg.AffectedItem = affectedRow;
 			msg.AffectedField = affectedField;
+
 			this.Messages.Add(msg);
 			return msg;
 		}

@@ -1,69 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartStore.Services.DataExchange
 {
 	public class ColumnMap
 	{
-		private readonly Dictionary<string, string> _map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		private readonly Dictionary<string, ColumnMappingValue> _map = new Dictionary<string, ColumnMappingValue>(StringComparer.OrdinalIgnoreCase);
 
-		public IReadOnlyDictionary<string, string> Mappings
+		public IReadOnlyDictionary<string, ColumnMappingValue> Mappings
 		{
 			get { return _map; }
 		}
 
-		public void AddMapping(string sourceName, string mappedName)
+		public void AddMapping(string sourceName, string entityProperty, string defaultValue = null)
 		{
-			AddMapping(sourceName, null, mappedName);
+			AddMapping(sourceName, null, entityProperty, defaultValue);
         }
 
-		public void AddMapping(string sourceName, string index, string mappedName)
+		public void AddMapping(string sourceName, string index, string entityProperty, string defaultValue = null)
 		{
 			Guard.ArgumentNotEmpty(() => sourceName);
-			Guard.ArgumentNotEmpty(() => mappedName);
+			Guard.ArgumentNotEmpty(() => entityProperty);
 
-			_map[CreateName(sourceName, index)] = mappedName;
+			_map[CreateSourceName(sourceName, index)] = new ColumnMappingValue
+			{
+				EntityProperty = entityProperty,
+				DefaultValue = defaultValue
+			};
 		}
 
 		/// <summary>
-		/// Gets a mapped column name
+		/// Gets a mapped column value
 		/// </summary>
-		/// <param name="sourceName">The name of the column to get a mapped name for.</param>
-		/// <returns>The mapped column name OR - if the name is unmapped - the passed <paramref name="sourceName"/></returns>
-		public string GetMappedName(string sourceName)
+		/// <param name="sourceName">The name of the column to get a mapped value for.</param>
+		/// <returns>The mapped column name OR - if the name is unmapped - a value with the passed <paramref name="sourceName"/></returns>
+		public ColumnMappingValue GetMapping(string sourceName)
 		{
-			string result;
+			ColumnMappingValue result;
+
 			if (_map.TryGetValue(sourceName, out result))
 			{
 				return result;
 			}
 
-			return sourceName;
+			return new ColumnMappingValue { EntityProperty = sourceName };
 		}
 
 		/// <summary>
-		/// Gets a mapped column name
+		/// Gets a mapped column value
 		/// </summary>
-		/// <param name="sourceName">The name of the column to get a mapped name for.</param>
+		/// <param name="sourceName">The name of the column to get a mapped value for.</param>
 		/// <param name="index">The column index, e.g. a language code (de, en etc.)</param>
-		/// <returns>The mapped column name OR - if the name is unmapped - the passed <paramref name="sourceName"/>[<paramref name="index"/>]</returns>
-		public string GetMappedName(string sourceName, string index)
+		/// <returns>The mapped column name OR - if the name is unmapped - a value with the passed <paramref name="sourceName"/>[<paramref name="index"/>]</returns>
+		public ColumnMappingValue GetMapping(string sourceName, string index)
 		{
-			sourceName = CreateName(sourceName, index);
+			return GetMapping(CreateSourceName(sourceName, index));
+		}
 
-			string result;
+		public string GetMappedProperty(string sourceName)
+		{
+			ColumnMappingValue result;
+
 			if (_map.TryGetValue(sourceName, out result))
 			{
-				return result;
+				return result.EntityProperty;
 			}
 
 			return sourceName;
 		}
 
-		internal static string CreateName(string name, string index)
+		public string GetMappedProperty(string sourceName, string index)
+		{
+			return GetMappedProperty(CreateSourceName(sourceName, index));
+		}
+
+		internal static string CreateSourceName(string name, string index)
 		{
 			if (index.HasValue())
 			{
@@ -72,5 +83,13 @@ namespace SmartStore.Services.DataExchange
 
 			return name;
 		}
+	}
+
+
+	public class ColumnMappingValue
+	{
+		public string EntityProperty { get; set; }
+
+		public string DefaultValue { get; set; }
 	}
 }

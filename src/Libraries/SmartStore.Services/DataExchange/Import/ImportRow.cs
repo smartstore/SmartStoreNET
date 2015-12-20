@@ -91,7 +91,7 @@ namespace SmartStore.Services.DataExchange.Import
 		public TProp GetDataValue<TProp>(string columnName, string index)
 		{
 			object value;
-			if (_row.TryGetValue(_segmenter.ColumnMap.GetMappedName(columnName, index), out value))
+			if (_row.TryGetValue(_segmenter.ColumnMap.GetMappedProperty(columnName, index), out value))
 			{
 				return value.Convert<TProp>(_segmenter.Culture);
 			}
@@ -117,7 +117,25 @@ namespace SmartStore.Services.DataExchange.Import
 				var fastProp = FastProperty.GetProperty(target.GetUnproxiedType(), propName, PropertyCachingStrategy.EagerCached);
 
 				object value;
-				if (_row.TryGetValue(_segmenter.ColumnMap.GetMappedName(propName), out value))
+				var mapping = _segmenter.ColumnMap.GetMapping(propName);
+
+				if (mapping.DefaultValue != null)
+				{
+					try
+					{
+						if (mapping.DefaultValue.IsEmpty())
+							defaultValue = default(TProp);      // ignore called in value and explicitly convert to default
+						else
+							defaultValue = mapping.DefaultValue.Convert<TProp>(_segmenter.Culture);
+					}
+					catch (Exception exception)
+					{
+						var msg = "Failed to convert default value '{0}'. Please specify a convertable default value. {1}";
+						result.AddWarning(msg.FormatInvariant(mapping.DefaultValue.NaIfEmpty(), exception.Message), this.GetRowInfo(), propName);
+					}
+				}
+
+				if (_row.TryGetValue(mapping.EntityProperty, out value))
 				{
 					// source contains field value. Set it.
 					TProp converted;
@@ -147,9 +165,9 @@ namespace SmartStore.Services.DataExchange.Import
 					}
 				}
 			}
-			catch (Exception ex)
+			catch (Exception exception)
 			{
-				result.AddWarning("Conversion failed: " + ex.Message, this.GetRowInfo(), propName);
+				result.AddWarning("Conversion failed: " + exception.Message, this.GetRowInfo(), propName);
 			}
 
 			return false;

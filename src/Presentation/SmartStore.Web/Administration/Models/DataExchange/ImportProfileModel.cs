@@ -47,5 +47,20 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string TempFileName { get; set; }
 
 		public CsvConfigurationModel CsvConfiguration { get; set; }
+		public List<ColumnMappingItemModel> ColumnMappings { get; set; }
+	}
+
+
+	public class ColumnMappingItemModel
+	{
+		[SmartResourceDisplayName("Admin.DataExchange.ColumnMapping.SourceColumn")]
+		public string SourceColumn { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.ColumnMapping.EntityProperty")]
+		public string EntityProperty { get; set; }
+		public List<SelectListItem> AvailableEntityProperties { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.ColumnMapping.DefaultValue")]
+		public string DefaultValue { get; set; }
 	}
 }

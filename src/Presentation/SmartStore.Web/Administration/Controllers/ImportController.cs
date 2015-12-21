@@ -45,8 +45,68 @@ namespace SmartStore.Admin.Controllers
 
 		#region Utilities
 
+		private List<ColumnMappingItemModel> PrepareColumnMappingModels(ImportProfile profile, CsvConfiguration csvConfiguration)
+		{
+			var models = new List<ColumnMappingItemModel>();
+
+			try
+			{
+				var mapConverter = new ColumnMapConverter();
+				var map = mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping);
+
+				if (map != null && map.Mappings.Any())
+				{
+					models = map.Mappings
+						.Select(x =>
+						{
+							var mapModel = new ColumnMappingItemModel
+							{
+								SourceColumn = x.Key,
+								EntityProperty = x.Value.EntityProperty,
+								DefaultValue = x.Value.DefaultValue
+							};
+							return mapModel;
+						})
+						.ToList();
+				}
+				else
+				{
+					var files = profile.GetImportFiles();
+					if (files.Any())
+					{
+						var filePath = files.First();
+						using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+						{
+							var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfiguration, 0, 2);
+
+							foreach (var column in dataTable.Columns)
+							{
+								models.Add(new ColumnMappingItemModel
+								{
+									SourceColumn = column.Name
+								});
+							}
+
+							return models;
+						}
+					}
+				}
+			}
+			catch (Exception exception)
+			{
+				NotifyError(exception);
+			}
+			return models;
+		}
+
 		private void PrepareProfileModel(ImportProfileModel model, ImportProfile profile, bool forEdit)
 		{
+			if (forEdit)
+			{
+				model.AvailableEntityTypes = ImportEntityType.Product.ToSelectList(false).ToList();
+				model.AvailableFileTypes = ImportFileType.CSV.ToSelectList(false).ToList();
+			}
+
 			if (profile != null)
 			{
 				model.Id = profile.Id;
@@ -67,24 +127,25 @@ namespace SmartStore.Admin.Controllers
 					.Select(x => Path.GetFileName(x))
 					.ToList();
 
-				if (profile.FileType == ImportFileType.CSV)
+				if (forEdit)
 				{
-					var converter = new CsvConfigurationConverter();
-					var config = converter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration);
+					CsvConfiguration csvConfiguration = null;
 
-					model.CsvConfiguration = new CsvConfigurationModel(config ?? CsvConfiguration.ExcelFriendlyConfiguration);
+					if (profile.FileType == ImportFileType.CSV)
+					{
+						var csvConverter = new CsvConfigurationConverter();
+						csvConfiguration = csvConverter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration);
+
+						model.CsvConfiguration = new CsvConfigurationModel(csvConfiguration ?? CsvConfiguration.ExcelFriendlyConfiguration);
+					}
+
+					model.ColumnMappings = PrepareColumnMappingModels(profile, csvConfiguration);
 				}
 			}
 			else
 			{
 				model.Name = model.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
 				model.ExistingFileNames = new List<string>();
-			}
-
-			if (forEdit)
-			{
-				model.AvailableEntityTypes = ImportEntityType.Product.ToSelectList(false).ToList();
-				model.AvailableFileTypes = ImportFileType.CSV.ToSelectList(false).ToList();
 			}
 		}
 
@@ -192,12 +253,32 @@ namespace SmartStore.Admin.Controllers
 				profile.Skip = model.Skip;
 				profile.Take = model.Take;
 
-				if (profile.FileType == ImportFileType.CSV && model.CsvConfiguration != null)
+				if (model.ColumnMappings != null && model.ColumnMappings.Any())
 				{
-					CsvConfiguration config = model.CsvConfiguration.Clone();
+					var map = new ColumnMap();
+					var mapConverter = new ColumnMapConverter();
 
-					var converter = new CsvConfigurationConverter();
-					profile.FileTypeConfiguration = converter.ConvertTo(config);
+					model.ColumnMappings.Each(x => map.AddMapping(x.SourceColumn, x.EntityProperty, x.DefaultValue));
+					profile.ColumnMapping = mapConverter.ConvertTo(map);
+				}
+				else
+				{
+					profile.ColumnMapping = null;
+				}
+
+				if (profile.FileType == ImportFileType.CSV)
+				{
+					if (model.CsvConfiguration != null)
+					{
+						CsvConfiguration config = model.CsvConfiguration.Clone();
+
+						var csvConverter = new CsvConfigurationConverter();
+						profile.FileTypeConfiguration = csvConverter.ConvertTo(config);
+					}
+					else
+					{
+						profile.FileTypeConfiguration = null;
+					}
 				}
 
 				_importService.UpdateImportProfile(profile);

@@ -544,6 +544,7 @@
     <Content Include="Views\Import\Edit.cshtml" />
     <Content Include="Views\Import\_ImportFileList.cshtml" />
     <Content Include="Views\Shared\CsvConfiguration.cshtml" />
+    <Content Include="Views\Import\_ColumnMappings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

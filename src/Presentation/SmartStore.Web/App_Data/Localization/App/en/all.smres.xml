@@ -3269,7 +3269,7 @@
 		<Value>{0} of {1} rows processed.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.ImportFromExcel.QuickStats">
-		<Value>{0} new, {1} updated - with {2} warning(s) und {3} error(s).</Value>
+		<Value>{0} new, {1} updated - with {2} warning(s) and {3} error(s).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.ImportFromExcelProgress">
 		<Value>Please wait while the import is being executed</Value>

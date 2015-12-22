@@ -1,7 +1,43 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
 @model ImportProfileModel
-<div class="import-column-mappings">
-	@foreach (var mapping in Model.ColumnMappings)
-	{
-	}
-</div>
+@if (Model.ColumnMappings.Any())
+{
+	<p>&nbsp;</p>
+
+	<div class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		@T("Admin.DataExchange.ColumnMapping.Note")
+	</div>
+
+	<div id="ImportColumnMappings">
+		<table class="table table-striped admin-table">
+			<thead>
+				<tr>
+					<th>@T("Admin.DataExchange.ColumnMapping.ImportField")</th>
+					<th>@T("Admin.DataExchange.ColumnMapping.ImportFieldIndex")</th>
+					<th>@T("Admin.DataExchange.ColumnMapping.EntityProperty")</th>
+					<th>@T("Admin.DataExchange.ColumnMapping.DefaultValue")</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var mapping in Model.ColumnMappings.OrderBy(x => x.SourceColumn))
+				{
+					<tr>
+						<td>
+							@mapping.SourceColumn
+						</td>
+						<td>
+							@mapping.SourceColumnIndex
+						</td>
+						<td>
+							@Html.DropDownList("ColumnMappings.EntityProperty", mapping.AvailableEntityProperties, Model.UnspecifiedString)
+						</td>
+						<td>
+							@Html.Editor("ColumnMappings.DefaultValue", mapping.DefaultValue)
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}

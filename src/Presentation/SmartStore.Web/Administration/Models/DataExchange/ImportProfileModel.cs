@@ -45,6 +45,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		public ScheduleTaskModel TaskModel { get; set; }
 		public bool LogFileExists { get; set; }
 		public string TempFileName { get; set; }
+		public string UnspecifiedString { get; set; }
 
 		public CsvConfigurationModel CsvConfiguration { get; set; }
 		public List<ColumnMappingItemModel> ColumnMappings { get; set; }
@@ -53,14 +54,13 @@ namespace SmartStore.Admin.Models.DataExchange
 
 	public class ColumnMappingItemModel
 	{
-		[SmartResourceDisplayName("Admin.DataExchange.ColumnMapping.SourceColumn")]
 		public string SourceColumn { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.ColumnMapping.EntityProperty")]
+		public string SourceColumnIndex { get; set; }
+
 		public string EntityProperty { get; set; }
 		public List<SelectListItem> AvailableEntityProperties { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.ColumnMapping.DefaultValue")]
 		public string DefaultValue { get; set; }
 	}
 }

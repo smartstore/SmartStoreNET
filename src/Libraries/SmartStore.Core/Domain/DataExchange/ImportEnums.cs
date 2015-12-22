@@ -8,9 +8,9 @@ namespace SmartStore.Core.Domain.DataExchange
 	public enum ImportEntityType
 	{
 		Product = 0,
+		Category,
 		Customer,
-		NewsLetterSubscription,
-		Category
+		NewsLetterSubscription
 	}
 
 	public enum ImportFileType

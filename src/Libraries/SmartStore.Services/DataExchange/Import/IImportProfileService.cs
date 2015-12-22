@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.DataExchange;
 
@@ -40,5 +41,7 @@ namespace SmartStore.Services.DataExchange.Import
 		/// <param name="id">Import profile identifier</param>
 		/// <returns>Import profile</returns>
 		ImportProfile GetImportProfileById(int id);
+
+		Dictionary<string, string> GetImportableEntityProperties(ImportEntityType entityType);
 	}
 }

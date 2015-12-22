@@ -173,6 +173,33 @@ namespace SmartStore.Data.Migrations
 				"Trennzeichen und Anführungszeichen können in CSV Dateien nicht gleich sein.");
 
 
+			builder.AddOrUpdate("Admin.Catalog.Products.Fields.BasePriceMeasureUnit", "Base price measure unit", "Grundpreis Maßeinheit");
+			builder.AddOrUpdate("Admin.Catalog.Products.Fields.ApprovedRatingSum", "Approved rating sum", "Summe genehmigter Bewertungen");
+			builder.AddOrUpdate("Admin.Catalog.Products.Fields.NotApprovedRatingSum", "Not approved rating sum", "Summe nicht genehmigter Bewertungen");
+			builder.AddOrUpdate("Admin.Catalog.Products.Fields.ApprovedTotalReviews", "Approved total reviews", "Summe genehmigter Rezensionen");
+			builder.AddOrUpdate("Admin.Catalog.Products.Fields.NotApprovedTotalReviews", "Not approved total reviews", "Summe nicht genehmigter Rezensionen");
+			builder.AddOrUpdate("Admin.Catalog.Products.Fields.HasTierPrices", "Has tier prices", "Hat Staffelpreise");
+			builder.AddOrUpdate("Admin.Catalog.Products.Fields.LowestAttributeCombinationPrice", "Lowest attribute combination price", "Niedrigster Attributkombinationspreis");
+			builder.AddOrUpdate("Admin.Catalog.Products.Fields.HasDiscountsApplied", "Has discounts applied", "Hat angewendete Rabatte");
+
+			builder.AddOrUpdate("Admin.Catalog.Categories.Fields.ParentCategory", "Parent category", "Übergeordnete Warengruppe");
+
+			builder.AddOrUpdate("Admin.Customers.Customers.Fields.CustomerGuid", "Customer GUID", "Kunden GUID");
+			builder.AddOrUpdate("Admin.Customers.Customers.Fields.PasswordSalt", "Password salt", "Passwort Salt");
+			builder.AddOrUpdate("Admin.Customers.Customers.Fields.IsSystemAccount", "Is system account", "Ist Systemkonto");
+			builder.AddOrUpdate("Admin.Customers.Customers.Fields.LastLoginDateUtc", "Last login date", "Letztes Login-Datum");
+
+			builder.AddOrUpdate("Admin.Promotions.NewsLetterSubscriptions.Fields.NewsLetterSubscriptionGuid", "Subscription GUID", "Abonnement GUID");
+
+			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Note",
+				"For each field of the import file you can optionally set to which entity property whose data is to be imported. Specifying a default value is also possible, which is applied when the import field is empty.",
+				"Sie können optional für jedes Feld der Importdatei festlegen, zu welcher Entitätseigenschaft dessen Daten importiert werden sollen. Zudem ist die Angabe eines Standardwertes möglich, der angewendet wird, wenn das Importfeld leer ist.");
+
+			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.ImportField", "Import Field", "Importfeld");
+			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.ImportFieldIndex", "Index (language code etc.)",	"Index (Sprach-Code etc.)");
+			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.EntityProperty", "Entity property", "Eigenschaft der Entität");
+			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.DefaultValue", "Default Value", "Standard Wert");
+
 			builder.Delete(
 				"Admin.DataExchange.Export.LastExecution",
 				"Admin.DataExchange.Export.Offset",

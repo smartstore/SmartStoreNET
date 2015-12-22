@@ -51,44 +51,65 @@ namespace SmartStore.Admin.Controllers
 
 			try
 			{
+				var files = profile.GetImportFiles();
+				if (!files.Any())
+					return models;
+
+				var filePath = files.First();
 				var mapConverter = new ColumnMapConverter();
 				var map = mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping);
+				var hasMappings = (map != null && map.Mappings.Any());
 
-				if (map != null && map.Mappings.Any())
+				var destProperties = _importService.GetImportableEntityProperties(profile.EntityType);
+
+				using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
-					models = map.Mappings
-						.Select(x =>
-						{
-							var mapModel = new ColumnMappingItemModel
-							{
-								SourceColumn = x.Key,
-								EntityProperty = x.Value.EntityProperty,
-								DefaultValue = x.Value.DefaultValue
-							};
-							return mapModel;
-						})
-						.ToList();
-				}
-				else
-				{
-					var files = profile.GetImportFiles();
-					if (files.Any())
+					var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfiguration, 0, 2);
+
+					foreach (var column in dataTable.Columns)
 					{
-						var filePath = files.First();
-						using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+						var sourceName = column.Name;
+						if (sourceName.IsEmpty())
+							continue;
+
+						var mapModel = new ColumnMappingItemModel();
+
+						var x1 = sourceName.IndexOf('[');
+						var x2 = sourceName.IndexOf(']');
+
+						if (x1 != -1 && x2 != -1 && x2 > x1)
 						{
-							var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfiguration, 0, 2);
-
-							foreach (var column in dataTable.Columns)
-							{
-								models.Add(new ColumnMappingItemModel
-								{
-									SourceColumn = column.Name
-								});
-							}
-
-							return models;
+							mapModel.SourceColumn = sourceName.Substring(0, x1);
+							mapModel.SourceColumnIndex = sourceName.Substring(x1 + 1, x2 - x1 - 1);
 						}
+						else
+						{
+							mapModel.SourceColumn = sourceName;
+						}
+
+						mapModel.AvailableEntityProperties = destProperties
+							.Select(x =>
+							{
+								return new SelectListItem
+								{
+									Value = "{0}¶{1}".FormatInvariant(sourceName, x.Key),
+									Text = (x.Key.IsCaseInsensitiveEqual(x.Value) ? x.Value : "{0} ({1})".FormatInvariant(x.Key, x.Value)),
+									Selected = (x.Key == sourceName)
+								};
+							})
+							.ToList();
+
+						if (hasMappings)
+						{
+							var mapping = map.Mappings.FirstOrDefault(x => x.Key == sourceName);
+							if (mapping.Value != null)
+							{
+								mapModel.EntityProperty = mapping.Value.EntityProperty;
+								mapModel.DefaultValue = mapping.Value.DefaultValue;
+							}
+						}
+
+						models.Add(mapModel);
 					}
 				}
 			}
@@ -122,6 +143,7 @@ namespace SmartStore.Admin.Controllers
 				model.IsTaskEnabled = profile.ScheduleTask.Enabled;
 				model.LogFileExists = System.IO.File.Exists(profile.GetImportLogPath());
 				model.EntityTypeName = profile.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
+				model.UnspecifiedString = T("Common.Unspecified");
 
 				model.ExistingFileNames = profile.GetImportFiles()
 					.Select(x => Path.GetFileName(x))
@@ -134,12 +156,12 @@ namespace SmartStore.Admin.Controllers
 					if (profile.FileType == ImportFileType.CSV)
 					{
 						var csvConverter = new CsvConfigurationConverter();
-						csvConfiguration = csvConverter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration);
+						csvConfiguration = csvConverter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration) ?? CsvConfiguration.ExcelFriendlyConfiguration;
 
-						model.CsvConfiguration = new CsvConfigurationModel(csvConfiguration ?? CsvConfiguration.ExcelFriendlyConfiguration);
+						model.CsvConfiguration = new CsvConfigurationModel(csvConfiguration);
 					}
 
-					model.ColumnMappings = PrepareColumnMappingModels(profile, csvConfiguration);
+					model.ColumnMappings = PrepareColumnMappingModels(profile, csvConfiguration ?? CsvConfiguration.ExcelFriendlyConfiguration);
 				}
 			}
 			else

@@ -122,15 +122,18 @@
 
 <p></p>
 
-@if (Model.CsvConfiguration != null)
+@if (Model.Id != 0)
 {
-	var viewData = new ViewDataDictionary();
-	viewData.TemplateInfo.HtmlFieldPrefix = "CsvConfiguration";
-	viewData.ModelState.Merge(ViewData.ModelState);
-	@Html.Partial("CsvConfiguration", Model.CsvConfiguration, viewData)
-}
+	if (Model.CsvConfiguration != null)
+	{
+		var viewData = new ViewDataDictionary();
+		viewData.TemplateInfo.HtmlFieldPrefix = "CsvConfiguration";
+		viewData.ModelState.Merge(ViewData.ModelState);
+		@Html.Partial("CsvConfiguration", Model.CsvConfiguration, viewData)
+	}
 
-@Html.Partial("_ColumnMappings")
+	@Html.Partial("_ColumnMappings")
+}
 
 <script type="text/javascript">
 	jQuery(document).ready(function () {
@@ -173,6 +176,8 @@
 			});
 			return false;
 		});
+
+		$('#ImportColumnMappings').find('select').selectWrapper();
 
 	});
 </script>

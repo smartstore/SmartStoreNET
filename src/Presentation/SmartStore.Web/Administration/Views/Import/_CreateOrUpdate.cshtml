@@ -177,6 +177,20 @@
 			return false;
 		});
 
+		// reset column mappings button
+		$('#ResetColumnMappings').click(function (e) {
+			e.preventDefault();
+
+			if (confirm('@T("Admin.Common.AskToProceed")')) {
+				var form = '<form id="ResetColumnMappingsForm" action="' + $(this).data('url') + '" method="post"></form>';
+				$('body').append(form);
+				$('#ResetColumnMappingsForm').submit();
+			}
+
+			return false;
+		});
+
+		// init column mappings select
 		$('#ImportColumnMappings').find('select').select2({
 			allowClear: true,
 			minimumResultsForSearch: 16,

@@ -6,7 +6,13 @@
 
 	<div class="alert alert-info">
 		<button type="button" class="close" data-dismiss="alert">×</button>
-		@T("Admin.DataExchange.ColumnMapping.Note")
+		@Html.Raw(T("Admin.DataExchange.ColumnMapping.Note"))
+	</div>
+
+	<div>
+		<button type="button" id="ResetColumnMappings" class="btn btn-above" data-url="@Url.Action("ResetColumnMappings", new { id = Model.Id })">
+			<i class="fa fa-rotate-left"></i>&nbsp;@T("Admin.Common.Clear")
+		</button>
 	</div>
 
 	<div id="ImportColumnMappings">

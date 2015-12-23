@@ -327,6 +327,24 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
+		[HttpPost]
+		public ActionResult ResetColumnMappings(int id)
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+				return AccessDeniedView();
+
+			var profile = _importService.GetImportProfileById(id);
+			if (profile == null)
+				return RedirectToAction("List");
+
+			profile.ColumnMapping = null;
+			_importService.UpdateImportProfile(profile);
+
+			NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+
+			return RedirectToAction("Edit", new { id = profile.Id });
+		}
+
 		[HttpPost, ActionName("Delete")]
 		public ActionResult DeleteConfirmed(int id)
 		{

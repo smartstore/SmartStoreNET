@@ -196,9 +196,14 @@ namespace SmartStore.Data.Migrations
 				"Sie können optional für jedes Feld der Importdatei festlegen, zu welcher Entitätseigenschaft dessen Daten importiert werden sollen. Zudem ist die Angabe eines Standardwertes möglich, der angewendet wird, wenn das Importfeld leer ist.");
 
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.ImportField", "Import Field", "Importfeld");
-			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.ImportFieldIndex", "Index (language code etc.)",	"Index (Sprach-Code etc.)");
+			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.ImportFieldIndex", "Language Code etc.",	"Sprach-Code etc.");
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.EntityProperty", "Entity property", "Eigenschaft der Entität");
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.DefaultValue", "Default Value", "Standard Wert");
+
+			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Validate.EntityMultipleMapped",
+				"The entity property \"{0}\" was assigned several times. Please assign each property only once.",
+				"Die Entitätseigenschaft \"{0}\" wurde mehrfach zugeodnet. Bitte ordnen Sie jede Eigenschaft nur einmal zu.");
+
 
 			builder.Delete(
 				"Admin.DataExchange.Export.LastExecution",

@@ -45,63 +45,59 @@ namespace SmartStore.Admin.Controllers
 
 		#region Utilities
 
-		private List<ColumnMappingItemModel> PrepareColumnMappingModels(ImportProfile profile, CsvConfiguration csvConfiguration)
+		private void PrepareColumnMappingModels(ImportProfile profile, ImportProfileModel model, CsvConfiguration csvConfiguration, ColumnMap invalidMap = null)
 		{
-			var models = new List<ColumnMappingItemModel>();
+			model.ColumnMappings = new List<ColumnMappingItemModel>();
+			model.AvailableEntityProperties = new List<SelectListItem>();
 
 			try
 			{
 				var files = profile.GetImportFiles();
 				if (!files.Any())
-					return models;
+					return;
 
 				var filePath = files.First();
 				var mapConverter = new ColumnMapConverter();
-				var map = mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping);
+
+				var map = (invalidMap != null ? invalidMap : mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping));
 				var hasMappings = (map != null && map.Mappings.Any());
 
 				var destProperties = _importService.GetImportableEntityProperties(profile.EntityType);
 
+				model.AvailableEntityProperties = destProperties
+					.Select(x => new SelectListItem { Value = x.Key, Text = x.Value	})
+					.OrderBy(x => x.Text)
+					.ToList();
+
 				using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
+					var index = 0;
 					var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfiguration, 0, 2);
 
-					foreach (var column in dataTable.Columns)
+					foreach (var column in dataTable.Columns.Where(x => x.Name.HasValue()))
 					{
-						var sourceName = column.Name;
-						if (sourceName.IsEmpty())
-							continue;
+						var mapModel = new ColumnMappingItemModel
+						{
+							Index = index++,
+							Column = column.Name
+						};
 
-						var mapModel = new ColumnMappingItemModel();
-
-						var x1 = sourceName.IndexOf('[');
-						var x2 = sourceName.IndexOf(']');
+						var x1 = column.Name.IndexOf('[');
+						var x2 = column.Name.IndexOf(']');
 
 						if (x1 != -1 && x2 != -1 && x2 > x1)
 						{
-							mapModel.SourceColumn = sourceName.Substring(0, x1);
-							mapModel.SourceColumnIndex = sourceName.Substring(x1 + 1, x2 - x1 - 1);
+							mapModel.ColumnWithoutIndex = column.Name.Substring(0, x1);
+							mapModel.ColumnIndex = column.Name.Substring(x1 + 1, x2 - x1 - 1);
 						}
 						else
 						{
-							mapModel.SourceColumn = sourceName;
+							mapModel.ColumnWithoutIndex = column.Name;
 						}
-
-						mapModel.AvailableEntityProperties = destProperties
-							.Select(x =>
-							{
-								return new SelectListItem
-								{
-									Value = "{0}¶{1}".FormatInvariant(sourceName, x.Key),
-									Text = (x.Key.IsCaseInsensitiveEqual(x.Value) ? x.Value : "{0} ({1})".FormatInvariant(x.Key, x.Value)),
-									Selected = (x.Key == sourceName)
-								};
-							})
-							.ToList();
 
 						if (hasMappings)
 						{
-							var mapping = map.Mappings.FirstOrDefault(x => x.Key == sourceName);
+							var mapping = map.Mappings.FirstOrDefault(x => x.Key == column.Name);
 							if (mapping.Value != null)
 							{
 								mapModel.EntityProperty = mapping.Value.EntityProperty;
@@ -109,7 +105,7 @@ namespace SmartStore.Admin.Controllers
 							}
 						}
 
-						models.Add(mapModel);
+						model.ColumnMappings.Add(mapModel);
 					}
 				}
 			}
@@ -117,10 +113,9 @@ namespace SmartStore.Admin.Controllers
 			{
 				NotifyError(exception);
 			}
-			return models;
 		}
 
-		private void PrepareProfileModel(ImportProfileModel model, ImportProfile profile, bool forEdit)
+		private void PrepareProfileModel(ImportProfileModel model, ImportProfile profile, bool forEdit, ColumnMap invalidMap = null)
 		{
 			if (forEdit)
 			{
@@ -161,7 +156,7 @@ namespace SmartStore.Admin.Controllers
 						model.CsvConfiguration = new CsvConfigurationModel(csvConfiguration);
 					}
 
-					model.ColumnMappings = PrepareColumnMappingModels(profile, csvConfiguration ?? CsvConfiguration.ExcelFriendlyConfiguration);
+					PrepareColumnMappingModels(profile, model, csvConfiguration ?? CsvConfiguration.ExcelFriendlyConfiguration, invalidMap);
 				}
 			}
 			else
@@ -267,6 +262,42 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
+			var map = new ColumnMap();
+			var mapConverter = new ColumnMapConverter();
+			var filePath = profile.GetImportFiles().First();
+
+			CsvConfiguration csvConfig = null;
+			if (model.CsvConfiguration != null)
+			{
+				csvConfig = model.CsvConfiguration.Clone();
+			}
+
+			using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				var index = 0;
+				var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfig ?? CsvConfiguration.ExcelFriendlyConfiguration, 0, 2);
+
+				foreach (var column in dataTable.Columns.Where(x => x.Name.HasValue()))
+				{
+					var key = "ColumnMapping.EntityProperty." + index.ToString();
+					if (form.AllKeys.Contains(key))
+					{
+						var entityProperty = form[key];
+						if (entityProperty.HasValue())
+						{
+							if (map.Mappings.Any(x => x.Value.EntityProperty.IsCaseInsensitiveEqual(entityProperty)))
+							{
+								ModelState.AddModelError(key, T("Admin.DataExchange.ColumnMapping.Validate.EntityMultipleMapped", entityProperty));
+							}
+
+							var defaultValue = form["ColumnMapping.DefaultValue." + index.ToString()];
+							map.AddMapping(column.Name, entityProperty, defaultValue);
+						}
+					}
+					++index;
+				}
+			}
+
 			if (ModelState.IsValid)
 			{
 				profile.Name = model.Name;
@@ -274,33 +305,14 @@ namespace SmartStore.Admin.Controllers
 				profile.Enabled = model.Enabled;
 				profile.Skip = model.Skip;
 				profile.Take = model.Take;
+				profile.FileTypeConfiguration = null;
 
-				if (model.ColumnMappings != null && model.ColumnMappings.Any())
+				profile.ColumnMapping = mapConverter.ConvertTo(map);
+
+				if (profile.FileType == ImportFileType.CSV && csvConfig != null)
 				{
-					var map = new ColumnMap();
-					var mapConverter = new ColumnMapConverter();
-
-					model.ColumnMappings.Each(x => map.AddMapping(x.SourceColumn, x.EntityProperty, x.DefaultValue));
-					profile.ColumnMapping = mapConverter.ConvertTo(map);
-				}
-				else
-				{
-					profile.ColumnMapping = null;
-				}
-
-				if (profile.FileType == ImportFileType.CSV)
-				{
-					if (model.CsvConfiguration != null)
-					{
-						CsvConfiguration config = model.CsvConfiguration.Clone();
-
-						var csvConverter = new CsvConfigurationConverter();
-						profile.FileTypeConfiguration = csvConverter.ConvertTo(config);
-					}
-					else
-					{
-						profile.FileTypeConfiguration = null;
-					}
+					var csvConverter = new CsvConfigurationConverter();
+					profile.FileTypeConfiguration = csvConverter.ConvertTo(csvConfig);
 				}
 
 				_importService.UpdateImportProfile(profile);
@@ -310,7 +322,7 @@ namespace SmartStore.Admin.Controllers
 				return (continueEditing ? RedirectToAction("Edit", new { id = profile.Id }) : RedirectToAction("List"));
 			}
 
-			PrepareProfileModel(model, profile, true);
+			PrepareProfileModel(model, profile, true, map);
 
 			return View(model);
 		}

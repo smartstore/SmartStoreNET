@@ -49,18 +49,17 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public CsvConfigurationModel CsvConfiguration { get; set; }
 		public List<ColumnMappingItemModel> ColumnMappings { get; set; }
+		public List<SelectListItem> AvailableEntityProperties { get; set; }
 	}
 
 
 	public class ColumnMappingItemModel
 	{
-		public string SourceColumn { get; set; }
-
-		public string SourceColumnIndex { get; set; }
-
+		public int Index { get; set; }
+		public string Column { get; set; }
+		public string ColumnWithoutIndex { get; set; }
+		public string ColumnIndex { get; set; }
 		public string EntityProperty { get; set; }
-		public List<SelectListItem> AvailableEntityProperties { get; set; }
-
 		public string DefaultValue { get; set; }
 	}
 }

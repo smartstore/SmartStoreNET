@@ -13,27 +13,38 @@
 		<table class="table table-striped admin-table">
 			<thead>
 				<tr>
-					<th>@T("Admin.DataExchange.ColumnMapping.ImportField")</th>
-					<th>@T("Admin.DataExchange.ColumnMapping.ImportFieldIndex")</th>
-					<th>@T("Admin.DataExchange.ColumnMapping.EntityProperty")</th>
+					<th style="width: 15%;">@T("Admin.DataExchange.ColumnMapping.ImportField")</th>
+					<th style="width: 10%;">@T("Admin.DataExchange.ColumnMapping.ImportFieldIndex")</th>
+					<th style="width: 32%;">@T("Admin.DataExchange.ColumnMapping.EntityProperty")</th>
 					<th>@T("Admin.DataExchange.ColumnMapping.DefaultValue")</th>
 				</tr>
 			</thead>
 			<tbody>
-				@foreach (var mapping in Model.ColumnMappings.OrderBy(x => x.SourceColumn))
+				@foreach (var mapping in Model.ColumnMappings.OrderBy(x => x.ColumnWithoutIndex))
 				{
 					<tr>
 						<td>
-							@mapping.SourceColumn
+							@mapping.ColumnWithoutIndex
 						</td>
 						<td>
-							@mapping.SourceColumnIndex
+							@mapping.ColumnIndex
 						</td>
 						<td>
-							@Html.DropDownList("ColumnMappings.EntityProperty", mapping.AvailableEntityProperties, Model.UnspecifiedString)
+							<select name="ColumnMapping.EntityProperty.@mapping.Index" data-placeholder="@Model.UnspecifiedString" class="control-large">
+								<option></option>
+								@foreach (var prop in Model.AvailableEntityProperties)
+								{
+									var select = ((mapping.EntityProperty.HasValue() && prop.Value.IsCaseInsensitiveEqual(mapping.EntityProperty)) || 
+										(!mapping.EntityProperty.HasValue() && prop.Value.IsCaseInsensitiveEqual(mapping.Column)));
+
+									<option value="@prop.Value" @(select ? "selected='selected'" : "")>@prop.Text</option>
+								}
+							</select>
+							<br />
+							@Html.ValidationMessage("ColumnMapping.EntityProperty." + mapping.Index.ToString())
 						</td>
 						<td>
-							@Html.Editor("ColumnMappings.DefaultValue", mapping.DefaultValue)
+							<input type="text" name="ColumnMapping.DefaultValue.@mapping.Index" class="text-box single-line" value="@mapping.DefaultValue" />
 						</td>
 					</tr>
 				}

@@ -177,7 +177,28 @@
 			return false;
 		});
 
-		$('#ImportColumnMappings').find('select').selectWrapper();
+		$('#ImportColumnMappings').find('select').select2({
+			allowClear: true,
+			minimumResultsForSearch: 16,
+			formatResult: columnMappingSelectItemFormatting,
+			formatSelection: columnMappingSelectItemFormatting
+		});
 
+		function columnMappingSelectItemFormatting(item) {
+			try {
+				var option = $(item.element);
+
+				var html = '<div><span>' + item.text + '</span>';
+				if (option.length !== 0) {
+					html += ' <span class="muted" style="font-size: 0.9em;">(' + option.val() + ')</span>';
+				}
+				html += '</div>';
+
+				return html;
+			}
+			catch (e) { }
+
+			return item.text;
+		}
 	});
 </script>

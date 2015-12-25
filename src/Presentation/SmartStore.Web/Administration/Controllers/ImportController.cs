@@ -399,7 +399,6 @@ namespace SmartStore.Admin.Controllers
 			var success = false;
 			string error = null;
 			string tempFile = "";
-			string fileList = "";
 
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 			{
@@ -436,14 +435,6 @@ namespace SmartStore.Admin.Controllers
 								var destFile = Path.Combine(folder, Path.GetFileName(postedFile.FileName));
 
 								success = postedFile.Stream.ToFile(destFile);
-
-								if (success)
-								{
-									var model = new ImportProfileModel();
-									PrepareProfileModel(model, profile, false);
-
-									fileList = this.RenderPartialViewToString("_ImportFileList", model);
-								}
 							}
 						}
 					}
@@ -460,7 +451,7 @@ namespace SmartStore.Admin.Controllers
 			if (error.HasValue())
 				NotifyError(error);
 
-			return Json(new { success = success, tempFile = tempFile, fileList = fileList });
+			return Json(new { success = success, tempFile = tempFile });
 		}
 
 		[HttpPost]
@@ -522,6 +513,7 @@ namespace SmartStore.Admin.Controllers
 			return result;
 		}
 
+		[HttpPost]
 		public ActionResult DeleteImportFile(int id, string name)
 		{
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
@@ -531,14 +523,9 @@ namespace SmartStore.Admin.Controllers
 				{
 					var path = Path.Combine(profile.GetImportFolder(true), name);
 					FileSystemHelper.Delete(path);
-
-					var model = new ImportProfileModel();
-					PrepareProfileModel(model, profile, false);
-
-					return PartialView("_ImportFileList", model);
 				}
 			}
-			return new EmptyResult();
+			return RedirectToAction("Edit", new { id = id });
 		}
 	}
 }

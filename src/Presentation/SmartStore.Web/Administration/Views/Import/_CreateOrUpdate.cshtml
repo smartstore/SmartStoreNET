@@ -39,12 +39,22 @@
 
 		</td>
 	</tr>
-	<tr id="ImportFileListContainer" class="@(Model.ExistingFileNames.Count > 0 ? "" : "hide")">
+	<tr id="ImportFileListContainer" class="@(Model.ExistingFileNames.Any() ? "" : "hide")">
 		<td class="adminTitle">
 			&nbsp;
 		</td>
 		<td id="ImportFileList" class="adminData">
-			@Html.Partial("_ImportFileList", Model)
+			@foreach (var fileName in Model.ExistingFileNames)
+			{
+				<p>
+					@Html.IconForFileExtension(Path.GetExtension(fileName), false)
+					<a href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
+
+					<button type="button" class="btn btn-mini btn-right import-file-delete" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
+						<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+					</button>
+				</p>
+			}
 		</td>
 	</tr>
 	@if (Model.ScheduleTaskId > 0)
@@ -152,9 +162,8 @@
 						$('#ImportFileList').html(data.result.tempFile);
 						$('#ImportFileUploadContainer').hide();		// just one initial file to specify the file type
 					}
-
-					if (!_.isEmpty(data.result.fileList)) {
-						$('#ImportFileList').html(data.result.fileList);
+					else {
+						location.href = '@Url.Action("Edit", new { id = Model.Id })';
 					}
 				}
 			}
@@ -163,17 +172,13 @@
 		// delete import file
 		$('#ImportFileList').on('click', '.import-file-delete', function (e) {
 			e.preventDefault();
-			var url = '@Url.Action("DeleteImportFile", new { id = Model.Id })';
 
-			$({}).doAjax({
-				type: 'POST',
-				url: url + '?name=' + encodeURIComponent($(this).attr('data-filename')),
-				ask: '@T("Admin.Common.AreYouSure")',
-				callbackSuccess: function (resp) {
-					if (!_.isEmpty(resp))
-						$('#ImportFileList').html(resp);
-				}
-			});
+			if (confirm('@T("Admin.Common.AskToProceed")')) {
+				var form = '<form id="DeleteImportFileForm" action="' + $(this).data('url') + '" method="post"></form>';
+				$('body').append(form);
+				$('#DeleteImportFileForm').submit();
+			}
+
 			return false;
 		});
 

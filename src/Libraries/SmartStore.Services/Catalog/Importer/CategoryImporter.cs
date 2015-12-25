@@ -111,7 +111,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 		private int ProcessParentMappings(IImportExecuteContext context,
 			ImportRow<Category>[] batch,
-			Dictionary<int, ImportCategoryMapping> oldToNewId)
+			Dictionary<int, ImportCategoryMapping> srcToDestId)
 		{
 			foreach (var row in batch)
 			{
@@ -119,15 +119,55 @@ namespace SmartStore.Services.Catalog.Importer
 				var rawParentId = row.GetDataValue<string>("ParentCategoryId");
 				var parentId = rawParentId.ToInt(-1);
 
-				if (id != 0 && parentId != -1 && oldToNewId.ContainsKey(id) && oldToNewId.ContainsKey(parentId))
+				if (id != 0 && parentId != -1 && srcToDestId.ContainsKey(id) && srcToDestId.ContainsKey(parentId))
 				{
 					// only touch hierarchical data if child and parent were inserted
-					if (oldToNewId[id].Inserted && oldToNewId[parentId].Inserted && oldToNewId[id].NewId != 0)
+					if (srcToDestId[id].Inserted && srcToDestId[parentId].Inserted && srcToDestId[id].DestinationId != 0)
 					{
-						var category = _categoryRepository.GetById(oldToNewId[id].NewId);
+						var category = _categoryRepository.GetById(srcToDestId[id].DestinationId);
 						if (category != null)
 						{
-							category.ParentCategoryId = oldToNewId[parentId].NewId;
+							category.ParentCategoryId = srcToDestId[parentId].DestinationId;
+						}
+					}
+				}
+			}
+
+			var num = _categoryRepository.Context.SaveChanges();
+
+			return num;
+		}
+
+		private int ProcessPictures(IImportExecuteContext context,
+			ImportRow<Category>[] batch,
+			Dictionary<int, ImportCategoryMapping> srcToDestId)
+		{
+			Picture picture = null;
+			var equalPictureId = 0;
+
+			foreach (var row in batch)
+			{
+				var srcId = row.GetDataValue<int>("Id");
+				var thumbPath = row.GetDataValue<string>("PictureThumbPath");
+
+				if (srcId != 0 && srcToDestId.ContainsKey(srcId) && thumbPath.HasValue() && File.Exists(thumbPath))
+				{
+					var category = _categoryRepository.GetById(srcToDestId[srcId].DestinationId);
+
+					if (category != null)
+					{
+						var pictures = new List<Picture>();
+						if (category.PictureId.HasValue && (picture = _pictureRepository.GetById(category.PictureId.Value)) != null)
+							pictures.Add(picture);
+
+						var pictureBinary = _pictureService.FindEqualPicture(thumbPath, pictures, out equalPictureId);
+
+						if (pictureBinary != null && pictureBinary.Length > 0 &&
+							(picture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, false, false)) != null)
+						{
+							category.PictureId = picture.Id;
+
+							_categoryRepository.Update(category);
 						}
 					}
 				}
@@ -142,14 +182,14 @@ namespace SmartStore.Services.Catalog.Importer
 			ImportRow<Category>[] batch,
 			DateTime utcNow,
 			List<int> allCategoryTemplateIds,
-			Dictionary<int, ImportCategoryMapping> oldToNewId)
+			Dictionary<int, ImportCategoryMapping> srcToDestId)
 		{
 			_categoryRepository.AutoCommitEnabled = true;
 
-			Picture picture = null;
+			//Picture picture = null;
 			Category lastInserted = null;
 			Category lastUpdated = null;
-			var equalPictureId = 0;
+			//var equalPictureId = 0;
 			var defaultTemplateId = allCategoryTemplateIds.First();
 
 			foreach (var row in batch)
@@ -217,28 +257,28 @@ namespace SmartStore.Services.Catalog.Importer
 					_storeMappingService.SaveStoreMappings(category, storeIds.ToArray());
 				}
 
-				var thumbPath = row.GetDataValue<string>("PictureThumbPath");
-				if (thumbPath.HasValue() && File.Exists(thumbPath))
-				{
-					var pictures = new List<Picture>();
-					if (category.PictureId.HasValue && (picture = _pictureRepository.GetById(category.PictureId.Value)) != null)
-						pictures.Add(picture);
+				//var thumbPath = row.GetDataValue<string>("PictureThumbPath");
+				//if (thumbPath.HasValue() && File.Exists(thumbPath))
+				//{
+				//	var pictures = new List<Picture>();
+				//	if (category.PictureId.HasValue && (picture = _pictureRepository.GetById(category.PictureId.Value)) != null)
+				//		pictures.Add(picture);
 
-					var pictureBinary = _pictureService.FindEqualPicture(thumbPath, pictures, out equalPictureId);
+				//	var pictureBinary = _pictureService.FindEqualPicture(thumbPath, pictures, out equalPictureId);
 
-					if (pictureBinary != null && pictureBinary.Length > 0 &&
-						(picture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, false, false)) != null)
-					{
-						category.PictureId = picture.Id;
-					}
-				}
+				//	if (pictureBinary != null && pictureBinary.Length > 0 &&
+				//		(picture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, false, false)) != null)
+				//	{
+				//		category.PictureId = picture.Id;
+				//	}
+				//}
 
 				row.SetProperty(context.Result, category, (x) => x.CreatedOnUtc, utcNow);
 				category.UpdatedOnUtc = utcNow;
 
-				if (id != 0 && !oldToNewId.ContainsKey(id))
+				if (id != 0 && !srcToDestId.ContainsKey(id))
 				{
-					oldToNewId.Add(id, new ImportCategoryMapping { Inserted = row.IsTransient });
+					srcToDestId.Add(id, new ImportCategoryMapping { Inserted = row.IsTransient });
 				}
 
 				if (row.IsTransient)
@@ -261,8 +301,8 @@ namespace SmartStore.Services.Catalog.Importer
 			{
 				var id = row.GetDataValue<int>("Id");
 
-				if (id != 0 && oldToNewId.ContainsKey(id))
-					oldToNewId[id].NewId = row.Entity.Id;
+				if (id != 0 && srcToDestId.ContainsKey(id))
+					srcToDestId[id].DestinationId = row.Entity.Id;
 			}
 
 			// Perf: notify only about LAST insertion and update
@@ -277,7 +317,7 @@ namespace SmartStore.Services.Catalog.Importer
 		public void Execute(IImportExecuteContext context)
 		{
 			var utcNow = DateTime.UtcNow;
-			var oldToNewId = new Dictionary<int, ImportCategoryMapping>();
+			var srcToDestId = new Dictionary<int, ImportCategoryMapping>();
 
 			var allCategoryTemplateIds = _categoryTemplateService.GetAllCategoryTemplates()
 				.Select(x => x.Id)
@@ -300,7 +340,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 					try
 					{
-						ProcessCategories(context, batch, utcNow, allCategoryTemplateIds, oldToNewId);
+						ProcessCategories(context, batch, utcNow, allCategoryTemplateIds, srcToDestId);
 					}
 					catch (Exception exception)
 					{
@@ -315,6 +355,7 @@ namespace SmartStore.Services.Catalog.Importer
 					context.Result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
 					context.Result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
 
+					// process slugs
 					if (segmenter.HasColumn("SeName") || batch.Any(x => x.IsNew || x.NameChanged))
 					{
 						try
@@ -331,10 +372,28 @@ namespace SmartStore.Services.Catalog.Importer
 							_categoryRepository.Context.AutoDetectChangesEnabled = false;
 						}
 					}
+
+					// process pictures
+					if (srcToDestId.Any() && segmenter.HasColumn("PictureThumbPath"))
+					{
+						try
+						{
+							_categoryRepository.Context.AutoDetectChangesEnabled = true;
+							ProcessPictures(context, batch, srcToDestId);
+						}
+						catch (Exception exception)
+						{
+							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessPictures");
+						}
+						finally
+						{
+							_categoryRepository.Context.AutoDetectChangesEnabled = false;
+						}
+					}
 				}
 
 				// map parent id of inserted categories
-				if (oldToNewId.Any() && segmenter.HasColumn("Id") && segmenter.HasColumn("ParentCategoryId"))
+				if (srcToDestId.Any() && segmenter.HasColumn("Id") && segmenter.HasColumn("ParentCategoryId"))
 				{
 					segmenter.Reset();
 
@@ -346,7 +405,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 						try
 						{
-							ProcessParentMappings(context, batch, oldToNewId);
+							ProcessParentMappings(context, batch, srcToDestId);
 						}
 						catch (Exception exception)
 						{
@@ -361,7 +420,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 	internal class ImportCategoryMapping
 	{
-		public int NewId { get; set; }
+		public int DestinationId { get; set; }
 		public bool Inserted { get; set; }
 	}
 }

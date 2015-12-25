@@ -65,7 +65,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 			foreach (var row in batch)
 			{
-				if (row.IsNew || row.NameChanged || row.Segmenter.HasDataColumn("SeName"))
+				if (row.IsNew || row.NameChanged || row.Segmenter.HasColumn("SeName"))
 				{
 					try
 					{
@@ -118,7 +118,7 @@ namespace SmartStore.Services.Catalog.Importer
 			foreach (var row in batch)
 			{
 				if (row.DataRow.TryGetValue("Id", out key1) &&
-					row.Segmenter.HasDataColumn("ParentCategoryId") && row.DataRow.TryGetValue("ParentCategoryId", out key2))
+					row.Segmenter.HasColumn("ParentCategoryId") && row.DataRow.TryGetValue("ParentCategoryId", out key2))
 				{
 					var id = key1.ToString().ToInt();
 					var parentId = key2.ToString().ToInt(-1);
@@ -176,7 +176,7 @@ namespace SmartStore.Services.Catalog.Importer
 				if (category == null)
 				{
 					// a Name is required with new categories
-					if (!row.Segmenter.HasDataColumn("Name"))
+					if (!row.Segmenter.HasColumn("Name"))
 					{
 						context.Result.AddError("The 'Name' field is required for new categories. Skipping row.", row.GetRowInfo(), "Name");
 						continue;
@@ -333,7 +333,7 @@ namespace SmartStore.Services.Catalog.Importer
 					context.Result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
 					context.Result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
 
-					if (context.HasColumn("SeName") || batch.Any(x => x.IsNew || x.NameChanged))
+					if (segmenter.HasColumn("SeName") || batch.Any(x => x.IsNew || x.NameChanged))
 					{
 						try
 						{

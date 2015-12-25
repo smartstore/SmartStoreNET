@@ -36,13 +36,6 @@ namespace SmartStore.Services.DataExchange.Import
 		ImportDataSegmenter<TEntity> GetSegmenter<TEntity>() where TEntity : BaseEntity;
 
 		/// <summary>
-		/// Whether the data source contains a particular column
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		bool HasColumn(string name);
-
-		/// <summary>
 		/// Allows to set a progress message
 		/// </summary>
 		/// <param name="value">Progress value</param>
@@ -110,11 +103,6 @@ namespace SmartStore.Services.DataExchange.Import
 		public ImportDataSegmenter<TEntity> GetSegmenter<TEntity>() where TEntity : BaseEntity
 		{
 			return new ImportDataSegmenter<TEntity>(DataTable, ColumnMap);
-		}
-
-		public bool HasColumn(string name)
-		{
-			return DataTable.HasColumn(name);
 		}
 
 		public void SetProgress(int value, int maximum)

@@ -323,7 +323,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 			foreach (var row in batch)
 			{
-				if (row.IsNew || row.NameChanged || row.Segmenter.HasDataColumn("SeName"))
+				if (row.IsNew || row.NameChanged || row.Segmenter.HasColumn("SeName"))
 				{
 					try
 					{
@@ -400,7 +400,7 @@ namespace SmartStore.Services.Catalog.Importer
 				if (product == null)
 				{
 					// a Name is required with new products.
-					if (!row.Segmenter.HasDataColumn("Name"))
+					if (!row.Segmenter.HasColumn("Name"))
 					{
 						context.Result.AddError("The 'Name' field is required for new products. Skipping row.", row.GetRowInfo(), "Name");
 						continue;
@@ -581,7 +581,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// IMPORTANT: Unlike with Products AutoCommitEnabled must be TRUE,
 					//            as Slugs are going to be validated against existing ones in DB.
 					// ===========================================================================
-					if (context.HasColumn("SeName") || batch.Any(x => x.IsNew || x.NameChanged))
+					if (segmenter.HasColumn("SeName") || batch.Any(x => x.IsNew || x.NameChanged))
 					{
 						try
 						{
@@ -613,7 +613,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					// 4.) Import product category mappings
 					// ===========================================================================
-					if (context.HasColumn("CategoryIds"))
+					if (segmenter.HasColumn("CategoryIds"))
 					{
 						try
 						{
@@ -628,7 +628,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					// 5.) Import product manufacturer mappings
 					// ===========================================================================
-					if (context.HasColumn("ManufacturerIds"))
+					if (segmenter.HasColumn("ManufacturerIds"))
 					{
 						try
 						{
@@ -643,7 +643,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					// 6.) Import product picture mappings
 					// ===========================================================================
-					if (context.HasColumn("PictureThumbPaths"))
+					if (segmenter.HasColumn("PictureThumbPaths"))
 					{
 						try
 						{

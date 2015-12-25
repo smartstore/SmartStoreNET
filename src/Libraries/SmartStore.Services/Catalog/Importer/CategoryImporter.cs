@@ -113,26 +113,21 @@ namespace SmartStore.Services.Catalog.Importer
 			ImportRow<Category>[] batch,
 			Dictionary<int, ImportCategoryMapping> oldToNewId)
 		{
-			object key1, key2;
-
 			foreach (var row in batch)
 			{
-				if (row.DataRow.TryGetValue("Id", out key1) &&
-					row.Segmenter.HasColumn("ParentCategoryId") && row.DataRow.TryGetValue("ParentCategoryId", out key2))
-				{
-					var id = key1.ToString().ToInt();
-					var parentId = key2.ToString().ToInt(-1);
+				var id = row.GetDataValue<int>("Id");
+				var rawParentId = row.GetDataValue<string>("ParentCategoryId");
+				var parentId = rawParentId.ToInt(-1);
 
-					if (id != 0 && parentId != -1 && oldToNewId.ContainsKey(id) && oldToNewId.ContainsKey(parentId))
+				if (id != 0 && parentId != -1 && oldToNewId.ContainsKey(id) && oldToNewId.ContainsKey(parentId))
+				{
+					// only touch hierarchical data if child and parent were inserted
+					if (oldToNewId[id].Inserted && oldToNewId[parentId].Inserted && oldToNewId[id].NewId != 0)
 					{
-						// only touch hierarchical data if child and parent were inserted
-						if (oldToNewId[id].Inserted && oldToNewId[parentId].Inserted && oldToNewId[id].NewId != 0)
+						var category = _categoryRepository.GetById(oldToNewId[id].NewId);
+						if (category != null)
 						{
-							var category = _categoryRepository.GetById(oldToNewId[id].NewId);
-							if (category != null)
-							{
-								category.ParentCategoryId = oldToNewId[parentId].NewId;
-							}
+							category.ParentCategoryId = oldToNewId[parentId].NewId;
 						}
 					}
 				}
@@ -151,7 +146,6 @@ namespace SmartStore.Services.Catalog.Importer
 		{
 			_categoryRepository.AutoCommitEnabled = true;
 
-			object key;
 			Picture picture = null;
 			Category lastInserted = null;
 			Category lastUpdated = null;
@@ -161,16 +155,11 @@ namespace SmartStore.Services.Catalog.Importer
 			foreach (var row in batch)
 			{
 				Category category = null;
-				var id = 0;
+				var id = row.GetDataValue<int>("Id");
 
-				// try get by int ID
-				if (row.DataRow.TryGetValue("Id", out key))
+				if (id != 0)
 				{
-					id = key.ToString().ToInt();
-					if (id != 0)
-					{
-						category = _categoryRepository.GetById(id);
-					}
+					category = _categoryRepository.GetById(id);
 				}
 
 				if (category == null)
@@ -216,11 +205,10 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, category, (x) => x.Alias);
 				row.SetProperty(context.Result, category, (x) => x.DefaultViewMode);
 
-				if (row.DataRow.TryGetValue("CategoryTemplateId", out key))
+				var templateId = row.GetDataValue<int>("CategoryTemplateId");
+				if (templateId > 0 && allCategoryTemplateIds.Contains(templateId))
 				{
-					int templateId = key.ToString().ToInt();
-					if (templateId > 0 && allCategoryTemplateIds.Contains(templateId))
-						category.CategoryTemplateId = templateId;
+					category.CategoryTemplateId = templateId;
 				}
 
 				var storeIds = row.GetDataValue<List<int>>("StoreIds");
@@ -229,25 +217,21 @@ namespace SmartStore.Services.Catalog.Importer
 					_storeMappingService.SaveStoreMappings(category, storeIds.ToArray());
 				}
 
-				if (row.DataRow.TryGetValue("PictureThumbPath", out key))
+				var thumbPath = row.GetDataValue<string>("PictureThumbPath");
+				if (thumbPath.HasValue() && File.Exists(thumbPath))
 				{
-					var thumbPath = key.ToString();
-					if (thumbPath.HasValue() && File.Exists(thumbPath))
+					var pictures = new List<Picture>();
+					if (category.PictureId.HasValue && (picture = _pictureRepository.GetById(category.PictureId.Value)) != null)
+						pictures.Add(picture);
+
+					var pictureBinary = _pictureService.FindEqualPicture(thumbPath, pictures, out equalPictureId);
+
+					if (pictureBinary != null && pictureBinary.Length > 0 &&
+						(picture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, false, false)) != null)
 					{
-						var pictures = new List<Picture>();
-						if (category.PictureId.HasValue && (picture = _pictureRepository.GetById(category.PictureId.Value)) != null)
-							pictures.Add(picture);
-
-						var pictureBinary = _pictureService.FindEqualPicture(thumbPath, pictures, out equalPictureId);
-
-						if (pictureBinary != null && pictureBinary.Length > 0 &&
-							(picture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, false, false)) != null)
-						{
-							category.PictureId = picture.Id;
-						}
+						category.PictureId = picture.Id;
 					}
 				}
-
 
 				row.SetProperty(context.Result, category, (x) => x.CreatedOnUtc, utcNow);
 				category.UpdatedOnUtc = utcNow;
@@ -275,12 +259,10 @@ namespace SmartStore.Services.Catalog.Importer
 			// get new category ids
 			foreach (var row in batch)
 			{
-				if (row.DataRow.TryGetValue("Id", out key))
-				{
-					var id = key.ToString().ToInt();
-					if (id != 0 && oldToNewId.ContainsKey(id))
-						oldToNewId[id].NewId = row.Entity.Id;
-				}
+				var id = row.GetDataValue<int>("Id");
+
+				if (id != 0 && oldToNewId.ContainsKey(id))
+					oldToNewId[id].NewId = row.Entity.Id;
 			}
 
 			// Perf: notify only about LAST insertion and update
@@ -352,7 +334,7 @@ namespace SmartStore.Services.Catalog.Importer
 				}
 
 				// map parent id of inserted categories
-				if (oldToNewId.Any())
+				if (oldToNewId.Any() && segmenter.HasColumn("Id") && segmenter.HasColumn("ParentCategoryId"))
 				{
 					segmenter.Reset();
 

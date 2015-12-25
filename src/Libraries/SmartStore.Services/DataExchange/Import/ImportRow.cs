@@ -73,11 +73,6 @@ namespace SmartStore.Services.DataExchange.Import
 			get { return _isNew; }
 		}
 
-		public IDataRow DataRow
-		{
-			get { return _row; }
-		}
-
 		public ImportDataSegmenter<T> Segmenter
 		{
 			get { return _segmenter; }

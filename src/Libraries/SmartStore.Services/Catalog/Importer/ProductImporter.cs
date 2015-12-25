@@ -376,25 +376,17 @@ namespace SmartStore.Services.Catalog.Importer
 
 			foreach (var row in batch)
 			{
-				Product product = null;
-				object key;
+				var id = row.GetDataValue<int>("Id");
+				var product = _productService.GetProductById(id);
 
-				// try get by int ID
-				if (row.DataRow.TryGetValue("Id", out key) && key.ToString().ToInt() > 0)
+				if (product == null)
 				{
-					product = _productService.GetProductById(key.ToString().ToInt());
+					product = _productService.GetProductBySku(row.GetDataValue<string>("Sku"));
 				}
 
-				// try get by SKU
-				if (product == null && row.DataRow.TryGetValue("SKU", out key))
+				if (product == null)
 				{
-					product = _productService.GetProductBySku(key.ToString());
-				}
-
-				// try get by GTIN
-				if (product == null && row.DataRow.TryGetValue("Gtin", out key))
-				{
-					product = _productService.GetProductByGtin(key.ToString());
+					product = _productService.GetProductByGtin(row.GetDataValue<string>("Gtin"));
 				}
 
 				if (product == null)

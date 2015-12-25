@@ -180,19 +180,14 @@ namespace SmartStore.Services.Customers.Importer
 
 			foreach (var row in batch)
 			{
-				object key;
-				var customerId = 0;
-				Customer customer = null;
+				var id = row.GetDataValue<int>("Id");
+				var customer = _customerService.GetCustomerById(id);
 
-				if (row.DataRow.TryGetValue("Id", out key) && key.ToString().ToInt() > 0)
+				if (customer == null)
 				{
-					customerId = key.ToString().ToInt();
-					customer = _customerService.GetCustomerById(customerId);
-				}
-
-				if (customer == null && row.DataRow.TryGetValue("CustomerGuid", out key))
-				{
-					customer = _customerService.GetCustomerByGuid(new Guid(key.ToString()));
+					var guid = row.GetDataValue<string>("CustomerGuid");
+					if (guid.HasValue())
+						customer = _customerService.GetCustomerByGuid(new Guid(guid));
 				}
 
 				if (customer == null)
@@ -214,8 +209,9 @@ namespace SmartStore.Services.Customers.Importer
 				var isRegistered = row.GetDataValue<bool>("IsRegistered");
 				var isAdmin = row.GetDataValue<bool>("IsAdministrator");
 				var isForumModerator = row.GetDataValue<bool>("IsForumModerator");
+				var affiliateId = row.GetDataValue<int>("AffiliateId");
 
-				row.Initialize(customer, email.HasValue() ? email : customerId.ToString());
+				row.Initialize(customer, email.HasValue() ? email : id.ToString());
 
 				row.SetProperty(context.Result, customer, (x) => x.CustomerGuid);
 				row.SetProperty(context.Result, customer, (x) => x.Username);
@@ -235,13 +231,10 @@ namespace SmartStore.Services.Customers.Importer
 				row.SetProperty(context.Result, customer, (x) => x.CreatedOnUtc, utcNow);
 				row.SetProperty(context.Result, customer, (x) => x.LastActivityDateUtc, utcNow);
 
-				if (row.DataRow.TryGetValue("AffiliateId", out key))
+				if (affiliateId > 0 && allAffiliateIds.Contains(affiliateId))
 				{
-					int affiliateId = key.ToString().ToInt();
-					if (affiliateId > 0 && allAffiliateIds.Contains(affiliateId))
-						customer.AffiliateId = affiliateId;
+					customer.AffiliateId = affiliateId;
 				}
-
 
 				UpsertRole(row, guestRole, SystemCustomerRoleNames.Guests, isGuest);
 				UpsertRole(row, registeredRole, SystemCustomerRoleNames.Registered, isRegistered);

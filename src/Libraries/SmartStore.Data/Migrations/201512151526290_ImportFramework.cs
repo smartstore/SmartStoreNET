@@ -65,6 +65,8 @@ namespace SmartStore.Data.Migrations
 				"Specifies the number of records to be skipped.",
 				"Legt die Anzahl der zu überspringenden Datensätze fest.");
 
+			builder.AddOrUpdate("Common.Unknown", "Unknown", "Unbekannt");
+			builder.AddOrUpdate("Common.Language", "Language", "Sprache");
 			builder.AddOrUpdate("Admin.Common.ImportFile", "Import file", "Importdatei");
 			builder.AddOrUpdate("Admin.Common.ImportFiles", "Import files", "Importdateien");
 			builder.AddOrUpdate("Admin.Common.CsvConfiguration", "CSV Configuration", "CSV Konfiguration");
@@ -192,13 +194,12 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Promotions.NewsLetterSubscriptions.Fields.NewsLetterSubscriptionGuid", "Subscription GUID", "Abonnement GUID");
 
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Note",
-				"For each field of the import file you can optionally set to which entity property whose data is to be imported. Specifying a default value is also possible, which is applied when the import field is empty. Through <b>Reset</b> all made assignments are reset to their original values.",
-				"Sie können optional für jedes Feld der Importdatei festlegen, nach welcher Entitätseigenschaft dessen Daten importiert werden sollen. Zudem ist die Angabe eines Standardwertes möglich, der angewendet wird, wenn das Importfeld leer ist. Über <b>Zurücksetzen</b> werden alle getätigten Zuordnungen auf ihre Ursprungswerte zurückgesetzt.");
+				"For each field of the import file you can optionally set whether and to which entity property the data is to be imported. Specifying a default value is also possible, which is applied when the import field is empty. Through <b>Reset</b> all made assignments are reset to their original values.",
+				"Sie können optional für jedes Feld der Importdatei festlegen, ob und nach welcher Entitätseigenschaft dessen Daten importiert werden sollen. Zudem ist die Angabe eines Standardwertes möglich, der angewendet wird, wenn das Importfeld leer ist. Über <b>Zurücksetzen</b> werden alle getätigten Zuordnungen auf ihre Ursprungswerte zurückgesetzt.");
 
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.ImportField", "Import Field", "Importfeld");
-			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.ImportFieldIndex", "Language Code etc.",	"Sprach-Code etc.");
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.EntityProperty", "Entity property", "Eigenschaft der Entität");
-			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.DefaultValue", "Default Value", "Standard Wert");
+			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.DefaultValue", "Default Value", "Standardwert");
 
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Validate.EntityMultipleMapped",
 				"The entity property \"{0}\" was assigned several times. Please assign each property only once.",

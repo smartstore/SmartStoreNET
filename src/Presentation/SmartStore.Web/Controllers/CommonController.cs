@@ -22,6 +22,7 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
@@ -158,7 +159,7 @@ namespace SmartStore.Web.Controllers
                     {
                         Id = x.Id,
                         Name = x.Name,
-                        NativeName = GetLanguageNativeName(x.LanguageCulture) ?? x.Name,
+                        NativeName = LocalizationHelper.GetLanguageNativeName(x.LanguageCulture) ?? x.Name,
                         ISOCode = x.LanguageCulture,
                         SeoCode = x.UniqueSeoCode,
                         FlagImageFileName = x.FlagImageFileName
@@ -198,28 +199,6 @@ namespace SmartStore.Web.Controllers
             }
 
             return model;
-        }
-
-        // TODO: (MC) zentral auslagern
-        private string GetLanguageNativeName(string locale)
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(locale))
-                {
-                    var info = CultureInfo.GetCultureInfoByIetfLanguageTag(locale);
-                    if (info == null)
-                    {
-                        return null;
-                    }
-                    return info.NativeName;
-                }
-                return null;
-            }
-            catch
-            {
-                return null;
-            }
         }
 
         [NonAction]

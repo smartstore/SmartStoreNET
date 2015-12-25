@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartStore.Services.DataExchange.Import
 {
@@ -7,9 +8,61 @@ namespace SmartStore.Services.DataExchange.Import
 	{
 		private readonly Dictionary<string, ColumnMappingValue> _map = new Dictionary<string, ColumnMappingValue>(StringComparer.OrdinalIgnoreCase);
 
+		private static bool IsIndexed(string name)
+		{
+			return (name.EmptyNull().EndsWith("]") && name.EmptyNull().Contains("["));
+		}
+
+		private static string CreateSourceName(string name, string index)
+		{
+			if (index.HasValue())
+			{
+				name += String.Concat("[", index, "]");
+			}
+
+			return name;
+		}
+
 		public IReadOnlyDictionary<string, ColumnMappingValue> Mappings
 		{
 			get { return _map; }
+		}
+
+		public static bool ParseSourceColumn(string sourceColumn, out string columnWithoutIndex, out string index)
+		{
+			columnWithoutIndex = sourceColumn;
+			index = null;
+
+			var result = true;
+
+			if (sourceColumn.HasValue() && IsIndexed(sourceColumn))
+			{
+				var x1 = sourceColumn.IndexOf('[');
+				var x2 = sourceColumn.IndexOf(']', x1);
+
+				if (x1 != -1 && x2 != -1 && x2 > x1)
+				{
+					columnWithoutIndex = sourceColumn.Substring(0, x1);
+					index = sourceColumn.Substring(x1 + 1, x2 - x1 - 1);
+				}
+				else
+				{
+					result = false;
+				}
+			}
+
+			return result;
+		}
+
+		public IEnumerable<KeyValuePair<string, ColumnMappingValue>> GetInvalidMappings()
+		{
+			var mappings = Mappings.Where(x => 
+				!IsIndexed(x.Key) && 
+				x.Value.Property.HasValue() &&
+				Mappings.Count(y => y.Value.Property.IsCaseInsensitiveEqual(x.Value.Property)) > 1
+			);
+
+			return mappings;
 		}
 
 		public void AddMapping(string sourceColumn, string entityProperty, string defaultValue = null)
@@ -20,12 +73,11 @@ namespace SmartStore.Services.DataExchange.Import
 		public void AddMapping(string sourceColumn, string index, string entityProperty, string defaultValue = null)
 		{
 			Guard.ArgumentNotEmpty(() => sourceColumn);
-			Guard.ArgumentNotEmpty(() => entityProperty);
 
 			_map[CreateSourceName(sourceColumn, index)] = new ColumnMappingValue
 			{
-				EntityProperty = entityProperty,
-				DefaultValue = defaultValue
+				Property = entityProperty,
+				Default = defaultValue
 			};
 		}
 
@@ -43,7 +95,7 @@ namespace SmartStore.Services.DataExchange.Import
 				return result;
 			}
 
-			return new ColumnMappingValue { EntityProperty = sourceColumn };
+			return new ColumnMappingValue { Property = sourceColumn };
 		}
 
 		/// <summary>
@@ -68,7 +120,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 			if (_map.TryGetValue(sourceColumn, out result))
 			{
-				return result.EntityProperty;
+				return result.Property;
 			}
 
 			return sourceColumn;
@@ -84,16 +136,6 @@ namespace SmartStore.Services.DataExchange.Import
 		{
 			return GetMappedProperty(CreateSourceName(sourceColumn, index));
 		}
-
-		internal static string CreateSourceName(string name, string index)
-		{
-			if (index.HasValue())
-			{
-				name += String.Concat("[", index, "]");
-			}
-
-			return name;
-		}
 	}
 
 
@@ -102,11 +144,11 @@ namespace SmartStore.Services.DataExchange.Import
 		/// <summary>
 		/// The property name of the target entity
 		/// </summary>
-		public string EntityProperty { get; set; }
+		public string Property { get; set; }
 
 		/// <summary>
 		/// An optional default value
 		/// </summary>
-		public string DefaultValue { get; set; }
+		public string Default { get; set; }
 	}
 }

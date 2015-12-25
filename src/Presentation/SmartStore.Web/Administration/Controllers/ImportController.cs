@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
@@ -8,6 +9,7 @@ using SmartStore.Admin.Models.DataExchange;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.IO;
+using SmartStore.Core.Localization;
 using SmartStore.Services;
 using SmartStore.Services.DataExchange.Csv;
 using SmartStore.Services.DataExchange.Import;
@@ -30,17 +32,20 @@ namespace SmartStore.Admin.Controllers
 		private readonly IImportProfileService _importService;
 		private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly ITaskScheduler _taskScheduler;
+		private readonly ILanguageService _languageService;
 
 		public ImportController(
 			ICommonServices services,
 			IImportProfileService importService,
 			IDateTimeHelper dateTimeHelper,
-			ITaskScheduler taskScheduler)
+			ITaskScheduler taskScheduler,
+			ILanguageService languageService)
 		{
 			_services = services;
 			_importService = importService;
 			_dateTimeHelper = dateTimeHelper;
 			_taskScheduler = taskScheduler;
+			_languageService = languageService;
 		}
 
 		#region Utilities
@@ -58,6 +63,7 @@ namespace SmartStore.Admin.Controllers
 
 				var filePath = files.First();
 				var mapConverter = new ColumnMapConverter();
+				var allLanguages = _languageService.GetAllLanguages(true);
 
 				var map = (invalidMap != null ? invalidMap : mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping));
 				var hasMappings = (map != null && map.Mappings.Any());
@@ -71,28 +77,35 @@ namespace SmartStore.Admin.Controllers
 
 				using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
-					var index = 0;
-					var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfiguration, 0, 2);
+					var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfiguration, 0, 1);
 
 					foreach (var column in dataTable.Columns.Where(x => x.Name.HasValue()))
 					{
+						string columnWithoutIndex;
+						string columnIndex;
+						ColumnMap.ParseSourceColumn(column.Name, out columnWithoutIndex, out columnIndex);
+
 						var mapModel = new ColumnMappingItemModel
 						{
-							Index = index++,
-							Column = column.Name
+							Index = dataTable.Columns.IndexOf(column),
+							Column = column.Name,
+							ColumnWithoutIndex = columnWithoutIndex,
+							ColumnIndex = columnIndex
 						};
 
-						var x1 = column.Name.IndexOf('[');
-						var x2 = column.Name.IndexOf(']');
-
-						if (x1 != -1 && x2 != -1 && x2 > x1)
+						if (destProperties.ContainsKey(column.Name))
 						{
-							mapModel.ColumnWithoutIndex = column.Name.Substring(0, x1);
-							mapModel.ColumnIndex = column.Name.Substring(x1 + 1, x2 - x1 - 1);
+							mapModel.ColumnLocalized = destProperties[column.Name];
 						}
-						else
+
+						if (columnIndex.HasValue())
 						{
-							mapModel.ColumnWithoutIndex = column.Name;
+							var language = allLanguages.FirstOrDefault(x => x.UniqueSeoCode.IsCaseInsensitiveEqual(columnIndex));
+							if (language != null)
+							{
+								mapModel.LanguageDescription = LocalizationHelper.GetLanguageNativeName(language.LanguageCulture);
+								mapModel.FlagImageFileName = language.FlagImageFileName;
+							}
 						}
 
 						if (hasMappings)
@@ -100,8 +113,9 @@ namespace SmartStore.Admin.Controllers
 							var mapping = map.Mappings.FirstOrDefault(x => x.Key == column.Name);
 							if (mapping.Value != null)
 							{
-								mapModel.EntityProperty = mapping.Value.EntityProperty;
-								mapModel.DefaultValue = mapping.Value.DefaultValue;
+								mapModel.Property = mapping.Value.Property;
+								mapModel.Default = mapping.Value.Default;
+								mapModel.IsNilProperty = mapping.Value.Property.IsEmpty();
 							}
 						}
 
@@ -274,27 +288,35 @@ namespace SmartStore.Admin.Controllers
 
 			using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
-				var index = 0;
-				var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfig ?? CsvConfiguration.ExcelFriendlyConfiguration, 0, 2);
+				var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfig ?? CsvConfiguration.ExcelFriendlyConfiguration, 0, 1);
 
 				foreach (var column in dataTable.Columns.Where(x => x.Name.HasValue()))
 				{
-					var key = "ColumnMapping.EntityProperty." + index.ToString();
+					var index = dataTable.Columns.IndexOf(column);
+					var key = "ColumnMapping.Property." + index.ToString();
+
 					if (form.AllKeys.Contains(key))
 					{
+						// allow to nil an entity property name to explicitly ignore a column
 						var entityProperty = form[key];
-						if (entityProperty.HasValue())
-						{
-							if (map.Mappings.Any(x => x.Value.EntityProperty.IsCaseInsensitiveEqual(entityProperty)))
-							{
-								ModelState.AddModelError(key, T("Admin.DataExchange.ColumnMapping.Validate.EntityMultipleMapped", entityProperty));
-							}
+						var defaultValue = form["ColumnMapping.Default." + index.ToString()];
 
-							var defaultValue = form["ColumnMapping.DefaultValue." + index.ToString()];
-							map.AddMapping(column.Name, entityProperty, defaultValue);
-						}
+						map.AddMapping(column.Name, null, entityProperty, defaultValue);
 					}
-					++index;
+				}
+
+				// add model state error for invalid mappings
+				foreach (var invalidMapping in map.GetInvalidMappings())
+				{
+					// do not mark columns as invalid where column name equals entity property name
+					if (invalidMapping.Key != invalidMapping.Value.Property)
+					{
+						var column = dataTable.Columns.First(x => x.Name == invalidMapping.Key);
+						var index = dataTable.Columns.IndexOf(column);
+						var key = "ColumnMapping.Property." + index.ToString();
+
+						ModelState.AddModelError(key, T("Admin.DataExchange.ColumnMapping.Validate.EntityMultipleMapped", invalidMapping.Value.Property));
+					}
 				}
 			}
 

@@ -270,6 +270,11 @@ namespace SmartStore.Services.DataExchange.Import
 
 					ctx.ExecuteContext.CustomerId = ctx.Request.CustomerId;
 
+					{
+						var mapConverter = new ColumnMapConverter();
+						ctx.ExecuteContext.ColumnMap = mapConverter.ConvertFrom<ColumnMap>(ctx.Request.Profile.ColumnMapping) ?? new ColumnMap();
+					}
+
 					var files = ctx.Request.Profile.GetImportFiles();
 
 					if (files.Count == 0)

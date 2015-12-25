@@ -56,10 +56,17 @@ namespace SmartStore.Admin.Models.DataExchange
 	public class ColumnMappingItemModel
 	{
 		public int Index { get; set; }
+		public bool IsNilProperty { get; set; }
+
 		public string Column { get; set; }
 		public string ColumnWithoutIndex { get; set; }
 		public string ColumnIndex { get; set; }
-		public string EntityProperty { get; set; }
-		public string DefaultValue { get; set; }
+		public string ColumnLocalized { get; set; }
+
+		public string LanguageDescription { get; set; }
+		public string FlagImageFileName { get; set; }
+
+		public string Property { get; set; }
+		public string Default { get; set; }
 	}
 }

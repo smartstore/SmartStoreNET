@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.DataExchange;
@@ -22,7 +21,7 @@ namespace SmartStore.Services.Messages.Importer
 			_subscriptionRepository = subscriptionRepository;
 		}
 
-		public void Execute(ImportExecuteContext context)
+		public void Execute(IImportExecuteContext context)
 		{
 			var utcNow = DateTime.UtcNow;
 			var currentStoreId = _services.StoreContext.CurrentStore.Id;
@@ -32,7 +31,7 @@ namespace SmartStore.Services.Messages.Importer
 
 			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
-				var segmenter = new ImportDataSegmenter<NewsLetterSubscription>(context.DataTable);
+				var segmenter = context.GetSegmenter<NewsLetterSubscription>();
 
 				context.Result.TotalRecords = segmenter.TotalRows;
 

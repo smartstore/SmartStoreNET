@@ -190,6 +190,7 @@
     <Compile Include="DataExchange\ExportConfigurationInfo.cs" />
     <Compile Include="DataExchange\Import\DataImporter.cs" />
     <Compile Include="DataExchange\Import\IEntityImporter.cs" />
+    <Compile Include="DataExchange\Import\ImportExecuteContext.cs" />
     <Compile Include="DataExchange\Import\Internal\DataImporterContext.cs" />
     <Compile Include="DataExchange\Import\DataImportTask.cs" />
     <Compile Include="DataExchange\Import\DataTable\IDataTable.cs" />

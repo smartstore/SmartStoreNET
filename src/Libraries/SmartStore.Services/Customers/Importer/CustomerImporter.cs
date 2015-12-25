@@ -72,7 +72,7 @@ namespace SmartStore.Services.Customers.Importer
 			}
 		}
 
-		private int ProcessGenericAttributes(ImportExecuteContext context,
+		private int ProcessGenericAttributes(IImportExecuteContext context,
 			ImportRow<Customer>[] batch,
 			List<int> allCountryIds,
 			List<int> allStateProvinceIds,
@@ -162,7 +162,7 @@ namespace SmartStore.Services.Customers.Importer
 			return num;
 		}
 
-		private int ProcessCustomers(ImportExecuteContext context,
+		private int ProcessCustomers(IImportExecuteContext context,
 			ImportRow<Customer>[] batch,
 			DateTime utcNow,
 			List<int> allAffiliateIds,
@@ -270,7 +270,7 @@ namespace SmartStore.Services.Customers.Importer
 			return num;
 		}
 
-		public void Execute(ImportExecuteContext context)
+		public void Execute(IImportExecuteContext context)
 		{
 			var utcNow = DateTime.UtcNow;
 			var customer = _customerService.GetCustomerById(context.CustomerId);
@@ -296,7 +296,7 @@ namespace SmartStore.Services.Customers.Importer
 
 			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
-				var segmenter = new ImportDataSegmenter<Customer>(context.DataTable);
+				var segmenter = context.GetSegmenter<Customer>();
 
 				context.Result.TotalRecords = segmenter.TotalRows;
 

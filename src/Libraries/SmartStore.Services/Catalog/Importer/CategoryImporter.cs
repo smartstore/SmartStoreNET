@@ -49,7 +49,7 @@ namespace SmartStore.Services.Catalog.Importer
 			_seoSettings = seoSettings;
 		}
 
-		private int ProcessSlugs(ImportExecuteContext context, ImportRow<Category>[] batch)
+		private int ProcessSlugs(IImportExecuteContext context, ImportRow<Category>[] batch)
 		{
 			var slugMap = new Dictionary<string, UrlRecord>(100);
 			Func<string, UrlRecord> slugLookup = ((s) =>
@@ -109,7 +109,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return _urlRecordRepository.Context.SaveChanges();
 		}
 
-		private int ProcessParentMappings(ImportExecuteContext context,
+		private int ProcessParentMappings(IImportExecuteContext context,
 			ImportRow<Category>[] batch,
 			Dictionary<int, ImportCategoryMapping> oldToNewId)
 		{
@@ -143,7 +143,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		private int ProcessCategories(ImportExecuteContext context,
+		private int ProcessCategories(IImportExecuteContext context,
 			ImportRow<Category>[] batch,
 			DateTime utcNow,
 			List<int> allCategoryTemplateIds,
@@ -292,8 +292,9 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		public void Execute(ImportExecuteContext context)
+		public void Execute(IImportExecuteContext context)
 		{
+			var utcNow = DateTime.UtcNow;
 			var oldToNewId = new Dictionary<int, ImportCategoryMapping>();
 
 			var allCategoryTemplateIds = _categoryTemplateService.GetAllCategoryTemplates()
@@ -302,8 +303,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 			using (var scope = new DbContextScope(ctx: _categoryRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
-				var segmenter = new ImportDataSegmenter<Category>(context.DataTable);
-				var utcNow = DateTime.UtcNow;
+				var segmenter = context.GetSegmenter<Category>();
 
 				context.Result.TotalRecords = segmenter.TotalRows;
 
@@ -333,7 +333,7 @@ namespace SmartStore.Services.Catalog.Importer
 					context.Result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
 					context.Result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
 
-					if (context.DataTable.HasColumn("SeName") || batch.Any(x => x.IsNew || x.NameChanged))
+					if (context.HasColumn("SeName") || batch.Any(x => x.IsNew || x.NameChanged))
 					{
 						try
 						{

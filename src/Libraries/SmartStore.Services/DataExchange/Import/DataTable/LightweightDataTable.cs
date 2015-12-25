@@ -42,20 +42,20 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public bool HasColumn(string name)
 		{
+			if (name.IsEmpty())
+				return false;
+
 			return _columnIndexes.ContainsKey(name);
 		}
 
 		public int GetColumnIndex(string name)
 		{
-			Guard.ArgumentNotEmpty(name, "name");
-
 			int index;
-			if (!_columnIndexes.TryGetValue(name, out index))
-			{
-				return -1;
-			}
 
-			return index;
+			if (name.HasValue() && _columnIndexes.TryGetValue(name, out index))
+				return index;
+
+			return -1;
 		}
 
 		public IList<IDataColumn> Columns

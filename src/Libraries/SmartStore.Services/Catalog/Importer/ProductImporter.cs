@@ -80,7 +80,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return (int?)null;
 		}
 
-		private void ProcessProductPictures(ImportExecuteContext context, ImportRow<Product>[] batch)
+		private void ProcessProductPictures(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
 			// true, cause pictures must be saved and assigned an id prior adding a mapping.
 			_productPictureRepository.AutoCommitEnabled = true;
@@ -151,7 +151,7 @@ namespace SmartStore.Services.Catalog.Importer
 				_services.EventPublisher.EntityInserted(lastInserted);
 		}
 
-		private int ProcessProductManufacturers(ImportExecuteContext context, ImportRow<Product>[] batch)
+		private int ProcessProductManufacturers(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
 			_productManufacturerRepository.AutoCommitEnabled = false;
 
@@ -202,7 +202,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		private int ProcessProductCategories(ImportExecuteContext context, ImportRow<Product>[] batch)
+		private int ProcessProductCategories(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
 			_productCategoryRepository.AutoCommitEnabled = false;
 
@@ -253,7 +253,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		private int ProcessLocalizations(ImportExecuteContext context, ImportRow<Product>[] batch)
+		private int ProcessLocalizations(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
 			//_rsProductManufacturer.AutoCommitEnabled = false;
 
@@ -307,7 +307,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		private int ProcessSlugs(ImportExecuteContext context, ImportRow<Product>[] batch)
+		private int ProcessSlugs(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
 			var slugMap = new Dictionary<string, UrlRecord>(100);
 			Func<string, UrlRecord> slugLookup = ((s) =>
@@ -367,7 +367,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return _urlRecordRepository.Context.SaveChanges();
 		}
 
-		private int ProcessProducts(ImportExecuteContext context, ImportRow<Product>[] batch, DateTime utcNow)
+		private int ProcessProducts(IImportExecuteContext context, ImportRow<Product>[] batch, DateTime utcNow)
 		{
 			_productRepository.AutoCommitEnabled = true;
 
@@ -538,11 +538,11 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		public void Execute(ImportExecuteContext context)
+		public void Execute(IImportExecuteContext context)
 		{
 			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
-				var segmenter = new ImportDataSegmenter<Product>(context.DataTable);
+				var segmenter = context.GetSegmenter<Product>();
 				var utcNow = DateTime.UtcNow;
 
 				context.Result.TotalRecords = segmenter.TotalRows;
@@ -581,7 +581,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// IMPORTANT: Unlike with Products AutoCommitEnabled must be TRUE,
 					//            as Slugs are going to be validated against existing ones in DB.
 					// ===========================================================================
-					if (context.DataTable.HasColumn("SeName") || batch.Any(x => x.IsNew || x.NameChanged))
+					if (context.HasColumn("SeName") || batch.Any(x => x.IsNew || x.NameChanged))
 					{
 						try
 						{
@@ -613,7 +613,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					// 4.) Import product category mappings
 					// ===========================================================================
-					if (context.DataTable.HasColumn("CategoryIds"))
+					if (context.HasColumn("CategoryIds"))
 					{
 						try
 						{
@@ -628,7 +628,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					// 5.) Import product manufacturer mappings
 					// ===========================================================================
-					if (context.DataTable.HasColumn("ManufacturerIds"))
+					if (context.HasColumn("ManufacturerIds"))
 					{
 						try
 						{
@@ -643,7 +643,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					// 6.) Import product picture mappings
 					// ===========================================================================
-					if (context.DataTable.HasColumn("PictureThumbPaths"))
+					if (context.HasColumn("PictureThumbPaths"))
 					{
 						try
 						{

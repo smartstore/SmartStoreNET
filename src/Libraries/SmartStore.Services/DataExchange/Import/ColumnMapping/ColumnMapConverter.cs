@@ -32,7 +32,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 				foreach (var kvp in dict)
 				{
-					map.AddMapping(kvp.Key, kvp.Value.EntityProperty, kvp.Value.DefaultValue);
+					map.AddMapping(kvp.Key, null, kvp.Value.Property, kvp.Value.Default);
 				}
 
 				return map;

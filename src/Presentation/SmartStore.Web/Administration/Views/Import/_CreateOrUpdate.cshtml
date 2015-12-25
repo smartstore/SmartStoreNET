@@ -200,15 +200,17 @@
 
 		function columnMappingSelectItemFormatting(item) {
 			try {
-				var option = $(item.element);
+				if (item.text.length > 0) {
+					var option = $(item.element);
 
-				var html = '<div><span>' + item.text + '</span>';
-				if (option.length !== 0) {
-					html += ' <span class="muted" style="font-size: 0.9em;">(' + option.val() + ')</span>';
+					var html = '<div><span>' + item.text + '</span>';
+					if (option.length !== 0) {
+						html += ' <span class="muted" style="font-size: 0.9em;">(' + option.val() + ')</span>';
+					}
+					html += '</div>';
+
+					return html;
 				}
-				html += '</div>';
-
-				return html;
 			}
 			catch (e) { }
 

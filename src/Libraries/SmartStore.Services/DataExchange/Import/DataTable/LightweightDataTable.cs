@@ -4,11 +4,8 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.Common;
 using System.Dynamic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using SmartStore.Services.DataExchange.Csv;
 using SmartStore.Services.DataExchange.Excel;
@@ -45,20 +42,20 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public bool HasColumn(string name)
 		{
+			if (name.IsEmpty())
+				return false;
+
 			return _columnIndexes.ContainsKey(name);
 		}
 
 		public int GetColumnIndex(string name)
 		{
-			Guard.ArgumentNotEmpty(name, "name");
-
 			int index;
-			if (!_columnIndexes.TryGetValue(name, out index))
-			{
-				return -1;
-			}
 
-			return index;
+			if (name.HasValue() && _columnIndexes.TryGetValue(name, out index))
+				return index;
+
+			return -1;
 		}
 
 		public IList<IDataColumn> Columns
@@ -82,7 +79,9 @@ namespace SmartStore.Services.DataExchange.Import
 			int skip = 0,
 			int take = int.MaxValue)
 		{
-			return FromPostedFile(file, new CsvConfiguration(), skip, take);
+			Guard.ArgumentNotNull(() => file);
+
+			return FromFile(file.FileName, file.InputStream, file.ContentLength, new CsvConfiguration(), skip, take);
 		}
 
 		public static IDataTable FromPostedFile(
@@ -92,26 +91,40 @@ namespace SmartStore.Services.DataExchange.Import
 			int take = int.MaxValue)
 		{
 			Guard.ArgumentNotNull(() => file);
+
+			return FromFile(file.FileName, file.InputStream, file.ContentLength, configuration, skip, take);
+		}
+
+		public static IDataTable FromFile(
+			string fileName,
+			Stream stream,
+			long contentLength,
+			CsvConfiguration configuration,
+			int skip = 0,
+			int take = int.MaxValue)
+		{
+			Guard.ArgumentNotEmpty(() => fileName);
+			Guard.ArgumentNotNull(() => stream);
 			Guard.ArgumentNotNull(() => configuration);
 
-			if (file.ContentLength == 0)
+			if (contentLength == 0)
 			{
-				throw Error.Argument("file", "The posted file '{0}' does not contain any data.".FormatInvariant(file.FileName)); // TODO Loc
+				throw Error.Argument("file", "The posted file '{0}' does not contain any data.".FormatInvariant(fileName)); // TODO Loc
 			}
 
 			IDataReader dataReader = null;
 
 			try
 			{
-				var fileExt = System.IO.Path.GetExtension(file.FileName).ToLowerInvariant();
+				var fileExt = System.IO.Path.GetExtension(fileName).ToLowerInvariant();
 
 				switch (fileExt)
 				{
 					case ".xlsx":
-						dataReader = new ExcelDataReader(file.InputStream, true); // TODO: let the user specify if excel file has headers
+						dataReader = new ExcelDataReader(stream, true); // TODO: let the user specify if excel file has headers
 						break;
 					default:
-						dataReader = new CsvDataReader(new StreamReader(file.InputStream), configuration);
+						dataReader = new CsvDataReader(new StreamReader(stream), configuration);
 						break;
 				}
 
@@ -119,7 +132,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 				if (table.Columns.Count == 0 || table.Rows.Count == 0)
 				{
-					throw Error.InvalidOperation("file", "The posted file '{0}' does not contain any columns or data rows.".FormatInvariant(file.FileName)); // TODO Loc
+					throw Error.InvalidOperation("file", "The posted file '{0}' does not contain any columns or data rows.".FormatInvariant(fileName)); // TODO Loc
 				}
 
 				return table;

@@ -1,0 +1,147 @@
+﻿@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Admin.Models.DataExchange;
+@using Telerik.Web.Mvc.UI;
+@model List<ImportProfileModel>
+@{
+	ViewBag.Title = T("Common.Import").Text;
+}
+
+<div class="section-header">
+    <div class="title">
+		<i class="fa fa-arrow-circle-o-up"></i>
+        @T("Common.Import")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+    </div>
+</div>
+
+<form id="ProfileImportForm" method="POST" action="@Url.Action("Execute", "Import", new { area = "Admin" })">
+	<input type="hidden" name="Id" value="" />
+</form>
+
+@if(Model.Count > 0)
+{
+	<table id="import-profile-list" class="table admin-table">
+		<thead>
+			<tr>
+				<th>@T("Admin.DataExchange.Import.Name")</th>
+				<th class="centered">@T("Common.Enabled")</th>
+				<th>@T("Admin.Common.Entity")</th>
+				<th>@T("Admin.Common.ImportFiles")</th>
+				<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
+				<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
+				<th>@T("Admin.Common.Actions")</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var profile in Model)
+			{
+				<tr data-profile-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
+					<td>
+						<a href="@Url.Action("Edit", new { id = profile.Id })">@profile.Name</a>
+					</td>
+					<td class="centered">
+						@Html.SymbolForBool(profile.Enabled)
+					</td>
+					<td>
+						@profile.EntityTypeName
+					</td>
+					<td>
+						@foreach (var fileName in profile.ExistingFileNames)
+						{
+							<div>
+								@Html.IconForFileExtension(Path.GetExtension(fileName), false)
+								<a href="@Url.Action("DownloadImportFile", new { id = profile.Id, name = fileName })" download>@fileName</a>
+							</div>
+						}
+					</td>
+					<td>
+						<div class="last-run-info">
+							@Html.Partial("~/Administration/Views/ScheduleTask/_LastRun.cshtml", profile.TaskModel)
+						</div>
+					</td>
+					<td class="progress-info">
+						<div class="next-run-info">
+							@Html.Partial("~/Administration/Views/ScheduleTask/_NextRun.cshtml", profile.TaskModel)
+						</div>
+						<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
+					</td>
+					<td>
+						<button type="button" class="btn btn-small btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"
+							data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId">
+							<i class="fa fa-play"></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
+						</button>
+
+						<a href="@Url.Action("CancelJob", "ScheduleTask", new { id = profile.ScheduleTaskId })" class="btn btn-small btn-danger btn-cancel-task@(!profile.IsTaskRunning ? " hide" : "")"
+						   data-task-id="@profile.ScheduleTaskId" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+							@T("Common.Cancel")
+						</a>
+
+						<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })"
+						   class="btn btn-small btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " hide" : "")">
+							<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+						</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else
+{
+	<div class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		@T("Admin.DataExchange.Import.NoProfiles")
+	</div>
+}
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		// start task
+		$(document).on('click', '.btn-run-task', function (e) {
+			e.preventDefault();
+			if (confirm('@T("Admin.Common.AreYouSure")')) {
+				var form = $('#ProfileImportForm');
+				form.find('input[name=Id]').val($(this).attr('data-id'));
+				form.submit();
+			}
+			return false;
+		});
+
+		Admin.TaskWatcher.startWatching({
+			context: $('#import-profile-list'),
+			elementsSelector: '.task-progress',
+			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
+			pollUrl: '@Url.Action("GetRunningTasks", "ScheduleTask")',
+			onTaskStarted: function (task, el) {
+				var tr = el.closest('tr');
+				tr.find('.btn-run-task').addClass('hide');
+				tr.find('.btn-cancel-task').removeClass('hide');
+				tr.find('.btn-log').addClass('hide');
+				tr.find('.next-run-info').addClass('hide');
+			},
+			onTaskCompleted: function (taskId, el) {
+				var tr = el.closest('tr'),
+					profileId = tr.attr('data-profile-id');
+
+				tr.find('.btn-run-task').removeClass('hide');
+				tr.find('.btn-cancel-task').addClass('hide');
+				tr.find('.btn-log').removeClass('hide');
+
+				$.ajax({
+					cache: false,
+					global: false,
+					type: 'POST',
+					url: '@Url.Action("GetTaskRunInfo", "ScheduleTask")',
+					data: { id: taskId },
+					success: function (data) {
+						tr.find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
+						tr.find('.last-run-info').html(data.lastRunHtml);
+					}
+				});
+			}
+		});
+	});
+</script>

@@ -98,6 +98,14 @@ namespace SmartStore.Services.DataExchange.Csv
 		}
 
 		/// <summary>
+		/// Gets an array with preset characters
+		/// </summary>
+		public static char[] PresetCharacters
+		{
+			get { return new char[] { '\n', '\r', '\0' }; }
+		}
+
+		/// <summary>
 		/// Gets the comment character indicating that a line is commented out (default: #).
 		/// </summary>
 		/// <value>The comment character indicating that a line is commented out.</value>
@@ -119,7 +127,7 @@ namespace SmartStore.Services.DataExchange.Csv
 				if (value == _escape)
 					return;
 
-				if (new char[] { '\n', '\r', '\0' }.Contains(value))
+				if (PresetCharacters.Contains(value))
 				{
 					throw new SmartException("'{0}' is not a valid escape char.".FormatInvariant(value));
 				}
@@ -145,7 +153,7 @@ namespace SmartStore.Services.DataExchange.Csv
 				if (value == _delimiter)
 					return;
 
-				if (new char[] { '\n', '\r', '\0' }.Contains(value))
+				if (PresetCharacters.Contains(value))
 				{
 					throw new SmartException("'{0}' is not a valid delimiter char.".FormatInvariant(value));
 				}
@@ -172,7 +180,7 @@ namespace SmartStore.Services.DataExchange.Csv
 				if (value == _quote)
 					return;
 
-				if (new char[] { '\n', '\r', '\0' }.Contains(value))
+				if (PresetCharacters.Contains(value))
 				{
 					throw new SmartException("'{0}' is not a valid quote char.".FormatInvariant(value));
 				}

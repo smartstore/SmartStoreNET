@@ -128,5 +128,22 @@ namespace SmartStore.Services.DataExchange.Export
 
 			return result;
 		}
+
+		/// <summary>
+		/// Join values into a string that can be used for exporting
+		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
+		/// <param name="values">Enumerable of values to join</param>
+		/// <returns>Joined values</returns>
+		public static string JoinForExport<T>(this IEnumerable<T> values)
+		{
+			if (values == null)
+				return "";
+
+			if (typeof(T) == typeof(string))
+				return string.Join("|", values);	// because file paths cannot contain pipes
+
+			return string.Join(",", values);
+		}
 	}
 }

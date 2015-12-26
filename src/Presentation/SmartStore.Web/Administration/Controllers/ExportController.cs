@@ -488,13 +488,17 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var profile in profiles)
 			{
-				var profileModel = new ExportProfileModel();
+				var provider = providers.FirstOrDefault(x => x.Metadata.SystemName == profile.ProviderSystemName);
+				if (provider != null)
+				{
+					var profileModel = new ExportProfileModel();
 
-				PrepareProfileModel(profileModel, profile, providers.FirstOrDefault(x => x.Metadata.SystemName == profile.ProviderSystemName), false);
+					PrepareProfileModel(profileModel, profile, provider, false);
 
-				profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(_services.Localization, _dateTimeHelper, Url);
+					profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(_services.Localization, _dateTimeHelper, Url);
 
-				model.Add(profileModel);
+					model.Add(profileModel);
+				}
 			}
 
 			return View(model);
@@ -613,6 +617,8 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+			if (provider.Metadata.IsHidden)
+				return RedirectToAction("List");
 
 			var model = new ExportProfileModel();
 
@@ -634,6 +640,8 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+			if (provider.Metadata.IsHidden)
+				return RedirectToAction("List");
 
 			if (!ModelState.IsValid)
 			{
@@ -754,6 +762,10 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
+			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+			if (provider.Metadata.IsHidden)
+				return RedirectToAction("List");
+
 			try
 			{
 				_exportService.DeleteExportProfile(profile);
@@ -779,14 +791,16 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
+			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+			if (provider.Metadata.IsHidden)
+				return RedirectToAction("List");
+
 			if (!profile.Enabled)
 			{
 				NotifyInfo(T("Admin.DataExchange.Export.EnableProfileForPreview"));
 
 				return RedirectToAction("Edit", new { id = profile.Id });
 			}
-
-			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
 
 			var request = new DataExportRequest(profile, provider);
 			var totalRecords = _dataExporter.GetDataCount(request);
@@ -814,7 +828,8 @@ namespace SmartStore.Admin.Controllers
 
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports) &&
 				(profile = _exportService.GetExportProfileById(id)) != null &&
-				(provider = _exportService.LoadProvider(profile.ProviderSystemName)) != null)
+				(provider = _exportService.LoadProvider(profile.ProviderSystemName)) != null &&
+				!provider.Metadata.IsHidden)
 			{
 				var productModel = new List<ExportPreviewProductModel>();
 				var orderModel = new List<ExportPreviewOrderModel>();
@@ -975,20 +990,21 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult Execute(int id, string selectedIds)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
-				return AccessDeniedView();
+			// permissions checked internally by DataExporter
 
 			var profile = _exportService.GetExportProfileById(id);
 			if (profile == null)
 				return RedirectToAction("List");
 
-			Dictionary<string, string> taskParams = null;
+			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+			if (provider.Metadata.IsHidden)
+				return RedirectToAction("List");
+
+			var taskParams = new Dictionary<string, string>();
+			taskParams.Add("CurrentCustomerId", _services.WorkContext.CurrentCustomer.Id.ToString());
 
 			if (selectedIds.HasValue())
-			{
-				taskParams = new Dictionary<string, string>();
 				taskParams.Add("SelectedIds", selectedIds);
-			}
 
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 
@@ -1093,6 +1109,8 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+			if (provider.Metadata.IsHidden)
+				return RedirectToAction("List");
 
 			//var fileSystemName = ExportDeploymentType.FileSystem.GetLocalizedEnum(_services.Localization, _services.WorkContext);
 
@@ -1116,6 +1134,10 @@ namespace SmartStore.Admin.Controllers
 
 			var profile = _exportService.GetExportProfileById(model.ProfileId);
 			if (profile == null)
+				return RedirectToAction("List");
+
+			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+			if (provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			if (ModelState.IsValid)
@@ -1144,6 +1166,8 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(deployment.Profile.ProviderSystemName);
+			if (provider.Metadata.IsHidden)
+				return RedirectToAction("List");
 
 			var model = PrepareDeploymentModel(deployment, provider, true);
 
@@ -1159,6 +1183,10 @@ namespace SmartStore.Admin.Controllers
 
 			var deployment = _exportService.GetExportDeploymentById(model.Id);
 			if (deployment == null)
+				return RedirectToAction("List");
+
+			var provider = _exportService.LoadProvider(deployment.Profile.ProviderSystemName);
+			if (provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			if (ModelState.IsValid)
@@ -1184,6 +1212,10 @@ namespace SmartStore.Admin.Controllers
 
 			var deployment = _exportService.GetExportDeploymentById(id);
 			if (deployment == null)
+				return RedirectToAction("List");
+
+			var provider = _exportService.LoadProvider(deployment.Profile.ProviderSystemName);
+			if (provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			int profileId = deployment.ProfileId;

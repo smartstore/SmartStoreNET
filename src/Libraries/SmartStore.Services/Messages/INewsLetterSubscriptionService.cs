@@ -1,21 +1,11 @@
 ﻿using System;
-using System.IO;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Messages;
-using SmartStore.Services.DataExchange.Import;
 
 namespace SmartStore.Services.Messages
 {
-    public partial interface INewsLetterSubscriptionService
-    {
-
-        /// <summary>
-        /// Executes a bulk import of subscriber data from a CSV source
-        /// </summary>
-        /// <param name="stream">The input file stream</param>
-        /// <returns>The import result</returns>
-        ImportResult ImportSubscribers(Stream stream);
-        
+	public partial interface INewsLetterSubscriptionService
+    {       
         /// <summary>
         /// Inserts a newsletter subscription
         /// </summary>

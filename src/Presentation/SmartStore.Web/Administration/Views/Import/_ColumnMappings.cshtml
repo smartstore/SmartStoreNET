@@ -1,0 +1,79 @@
+﻿@using SmartStore.Admin.Models.DataExchange;
+@model ImportProfileModel
+@if (Model.ColumnMappings.Any())
+{
+	<p>&nbsp;</p>
+
+	<div class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		@Html.Raw(T("Admin.DataExchange.ColumnMapping.Note"))
+	</div>
+
+	<div>
+		<button type="button" id="ResetColumnMappings" class="btn btn-above" data-url="@Url.Action("ResetColumnMappings", new { id = Model.Id })">
+			<i class="fa fa-rotate-left"></i>&nbsp;@T("Admin.Common.Clear")
+		</button>
+	</div>
+
+	<div id="ImportColumnMappings">
+		<table class="table table-striped admin-table">
+			<thead>
+				<tr>
+					<th style="width: 20%;">@T("Admin.DataExchange.ColumnMapping.ImportField")</th>
+					<th style="width: 15%;">@T("Common.Language")</th>
+					<th style="width: 32%;">@T("Admin.DataExchange.ColumnMapping.EntityProperty")</th>
+					<th>@T("Admin.DataExchange.ColumnMapping.DefaultValue")</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var mapping in Model.ColumnMappings.OrderBy(x => x.ColumnWithoutIndex))
+				{
+					<tr>
+						<td>
+							@if (mapping.ColumnLocalized.HasValue())
+							{
+								<div>@mapping.ColumnLocalized</div>								
+							}
+							<div class="muted">@mapping.Column</div>
+						</td>
+						<td>
+							@if (mapping.ColumnIndex.HasValue())
+							{
+								if (mapping.LanguageDescription.HasValue())
+								{
+									if (mapping.FlagImageFileName.HasValue())
+									{
+										<img src="~/Content/images/flags/@mapping.FlagImageFileName" alt="Icon" />
+									}
+									<span>@mapping.LanguageDescription</span>
+								}
+								else
+								{
+									<span class="muted">@T("Common.Unknown")</span>
+								}
+							}
+						</td>
+						<td>
+							<select name="ColumnMapping.Property.@mapping.Index" data-placeholder="@Model.UnspecifiedString" class="control-large">
+								<option></option>
+								@foreach (var prop in Model.AvailableEntityProperties)
+								{
+									var select = !mapping.IsNilProperty &&
+										((mapping.Property.HasValue() && prop.Value.IsCaseInsensitiveEqual(mapping.Property)) ||
+										(!mapping.Property.HasValue() && prop.Value.IsCaseInsensitiveEqual(mapping.ColumnWithoutIndex)));
+
+									<option value="@prop.Value" @(select ? "selected='selected'" : "")>@prop.Text</option>
+								}
+							</select>
+							<br />
+							@Html.ValidationMessage("ColumnMapping.Property." + mapping.Index.ToString())
+						</td>
+						<td>
+							<input type="text" name="ColumnMapping.Default.@mapping.Index" class="text-box single-line" value="@mapping.Default" />
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}

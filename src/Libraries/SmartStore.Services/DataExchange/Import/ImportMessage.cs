@@ -39,7 +39,20 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public override string ToString()
 		{
-			return "{0} - {1}".FormatCurrent(MessageType.ToString().ToUpper(), Message.EmptyNull());
+			var result = Message.NaIfEmpty();
+
+			string appendix = null;
+
+			if (AffectedItem != null)
+				appendix = appendix.Grow("Pos: " + (AffectedItem.Position + 1).ToString(), ", ");
+
+			if (AffectedField.HasValue())
+				appendix = appendix.Grow("Field: " + AffectedField, ", ");
+
+			if (appendix.HasValue())
+				result = "{0} [{1}]".FormatInvariant(result, appendix);
+
+			return result;
 		}
 	}
 

@@ -142,24 +142,7 @@ namespace SmartStore.Data.Migrations
 				"The file type of the exported data.",
 				"Der Dateityp der exportierten Daten.");
 
-			builder.AddOrUpdate("Admin.DataExchange.Export.LastExecution",
-				"Last execution",
-				"Letzte Ausführung",
-				"Information about the last execution of the export.",
-				"Informationen zur letzten Ausführung des Exports.");
 
-
-			builder.AddOrUpdate("Admin.DataExchange.Export.Offset",
-				"Skip",
-				"Überspringen",
-				"Specifies the number of records to be skipped.",
-				"Legt die Anzahl der zu überspringenden Datensätze fest.");
-
-			builder.AddOrUpdate("Admin.DataExchange.Export.Limit",
-				"Limit",
-				"Begrenzen",
-				"Specifies how many records to be loaded at maximum.",
-				"Legt die maximale Anzahl der zu exportierenden Datensätze fest.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.BatchSize",
 				"Batch size",

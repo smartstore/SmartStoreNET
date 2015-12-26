@@ -21,16 +21,17 @@ namespace SmartStore.Services.DataExchange.Import
 
 		private readonly IDictionary<string, string[]> _columnIndexes = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
 
-		public ImportDataSegmenter(IDataTable table)
+		public ImportDataSegmenter(IDataTable table, ColumnMap map)
 		{
 			Guard.ArgumentNotNull(() => table);
+			Guard.ArgumentNotNull(() => map);
 
 			_table = table;
+			_columnMap = map;
 
 			_bof = true;
 			_pageable = new PagedList(0, BATCHSIZE, table.Rows.Count);
 			_culture = CultureInfo.InvariantCulture;
-			_columnMap = new ColumnMap();
         }
 
 		public CultureInfo Culture
@@ -87,14 +88,14 @@ namespace SmartStore.Services.DataExchange.Import
 			get { return BATCHSIZE; }
 		}
 
-		public bool HasDataColumn(string name)
+		public bool HasColumn(string name)
 		{
-			return _table.HasColumn(_columnMap.GetMappedName(name));
+			return _table.HasColumn(_columnMap.GetMappedProperty(name));
 		}
 
-		public bool HasDataColumn(string name, string index)
+		public bool HasColumn(string name, string index)
 		{
-			return _table.HasColumn(_columnMap.GetMappedName(name, index));
+			return _table.HasColumn(_columnMap.GetMappedProperty(name, index));
 		}
 
 		/// <summary>

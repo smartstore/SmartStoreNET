@@ -191,14 +191,14 @@
 
 <div style="margin-bottom: 30px; overflow: hidden;">
 	<table class="adminContent">
-		@if (Model.Id > 0)
+		@if (Model.Id != 0)
 		{
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.Id)
 				</td>
 				<td class="adminData">
-					@Model.Id.ToString()
+					@Html.DisplayFor(model => model.Id)
 					@Html.ValidationMessageFor(model => model.Id)
 				</td>
 			</tr>

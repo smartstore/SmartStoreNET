@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
 namespace SmartStore.Core.Localization
 {
-    public static class LocalizationHelper
+	public static class LocalizationHelper
     {
         private readonly static HashSet<string> _cultureCodes =
             new HashSet<string>(
@@ -18,5 +17,20 @@ namespace SmartStore.Core.Localization
             return _cultureCodes.Contains(cultureCode);
         }
 
-    }
+		public static string GetLanguageNativeName(string locale)
+		{
+			try
+			{
+				if (locale.HasValue())
+				{
+					var info = CultureInfo.GetCultureInfoByIetfLanguageTag(locale);
+					if (info != null)
+						return info.NativeName;
+				}
+			}
+			catch {	}
+
+			return null;
+		}
+	}
 }

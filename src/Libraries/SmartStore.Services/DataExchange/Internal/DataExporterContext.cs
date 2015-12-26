@@ -29,6 +29,10 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 
 			Categories = new Dictionary<int, Category>();
 			CategoryPathes = new Dictionary<int, string>();
+			DeliveryTimes = new Dictionary<int, DeliveryTime>();
+			QuantityUnits = new Dictionary<int, QuantityUnit>();
+			Stores = new Dictionary<int, Store>();
+			Languages = new Dictionary<int, Language>();
 			Countries = new Dictionary<int, Country>();
 			ProductTemplates = new Dictionary<int, ProductTemplate>();
 			NewsletterSubscriptions = new HashSet<string>();
@@ -47,7 +51,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 
 			if (!IsPreview)
 			{
-				ExecuteContext.ProgressMessageSetter = Request.ProgressMessageSetter;
+				ExecuteContext.ProgressValueSetter = Request.ProgressValueSetter;
 			}
 		}
 

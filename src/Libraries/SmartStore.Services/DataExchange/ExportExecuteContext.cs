@@ -47,7 +47,7 @@ namespace SmartStore.Services.DataExchange.Export
 		/// <summary>
 		/// Indicates whether and how to abort the export
 		/// </summary>
-		ExportAbortion Abort { get; set; }
+		DataExchangeAbortion Abort { get; set; }
 
 
 		/// <summary>
@@ -128,7 +128,7 @@ namespace SmartStore.Services.DataExchange.Export
 		/// Allows to set a progress message
 		/// </summary>
 		/// <param name="message">Output message</param>
-		void SetProgressMessage(string message);
+		void SetProgress(string message);
 	}
 
 
@@ -155,7 +155,7 @@ namespace SmartStore.Services.DataExchange.Export
 	{
 		private DataExportResult _result;
 		private CancellationToken _cancellation;
-		private ExportAbortion _providerAbort;
+		private DataExchangeAbortion _providerAbort;
 
 		internal ExportExecuteContext(DataExportResult result, CancellationToken cancellation, string folder)
 		{
@@ -175,14 +175,14 @@ namespace SmartStore.Services.DataExchange.Export
 		public ExportProjection Projection { get; internal set; }
 
 		public ILogger Log { get; internal set; }
-		public ProgressMessageSetter ProgressMessageSetter { get; internal set; }
+		public ProgressValueSetter ProgressValueSetter { get; internal set; }
 
-		public ExportAbortion Abort
+		public DataExchangeAbortion Abort
 		{
 			get
 			{
 				if (_cancellation.IsCancellationRequested || IsMaxFailures)
-					return ExportAbortion.Hard;
+					return DataExchangeAbortion.Hard;
 
 				return _providerAbort;
 			}
@@ -226,11 +226,15 @@ namespace SmartStore.Services.DataExchange.Export
 				_result.LastError = exc.ToString();
 		}
 
-		public void SetProgressMessage(string message)
+		public void SetProgress(string message)
 		{
-			if (ProgressMessageSetter != null && message.HasValue())
+			if (ProgressValueSetter != null && message.HasValue())
 			{
-				ProgressMessageSetter.Invoke(message);
+				try
+				{
+					ProgressValueSetter.Invoke(0, 0, message);
+				}
+				catch { }
 			}
 		}
 	}

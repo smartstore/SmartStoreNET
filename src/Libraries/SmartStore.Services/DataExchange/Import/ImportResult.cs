@@ -11,7 +11,17 @@ namespace SmartStore.Services.DataExchange.Import
 		public ImportResult()
 		{
 			this.Messages = new List<ImportMessage>();
-			this.StartDateUtc = DateTime.UtcNow;
+			Clear();
+		}
+
+		public void Clear()
+		{
+			Messages.Clear();
+			StartDateUtc = EndDateUtc = DateTime.UtcNow;
+			TotalRecords = 0;
+			NewRecords = 0;
+			ModifiedRecords = 0;
+			Cancelled = false;
 		}
 
 		public DateTime StartDateUtc
@@ -72,14 +82,6 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public ImportMessage AddError(Exception exception, int? affectedBatch = null, string stage = null)
 		{
-			var ex = exception;
-			while (true)
-			{
-				if (ex.InnerException == null)
-					break;
-				ex = ex.InnerException;
-			}
-
 			var prefix = new List<string>();
 			if (affectedBatch.HasValue)
 			{
@@ -96,7 +98,7 @@ namespace SmartStore.Services.DataExchange.Import
 				msg = "[{0}] ".FormatCurrent(String.Join(", ", prefix));
 			}
 
-			msg += ex.Message;
+			msg += exception.ToAllMessages();
 
 			return this.AddMessage(msg, ImportMessageType.Error);
 		}
@@ -104,8 +106,10 @@ namespace SmartStore.Services.DataExchange.Import
 		public ImportMessage AddMessage(string message, ImportMessageType severity, ImportRowInfo affectedRow = null, string affectedField = null)
 		{
 			var msg = new ImportMessage(message, severity);
+
 			msg.AffectedItem = affectedRow;
 			msg.AffectedField = affectedField;
+
 			this.Messages.Add(msg);
 			return msg;
 		}

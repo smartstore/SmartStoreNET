@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
 
@@ -20,6 +17,27 @@ namespace SmartStore.Services.DataExchange.Import
 
 		private readonly ImportDataSegmenter<T> _segmenter;
 		private readonly IDataRow _row;
+
+		private TProp GetDefaultValue<TProp>(ColumnMappingValue mapping, string columnName, TProp defaultValue, ImportResult result = null)
+		{
+			if (mapping != null && mapping.Default.HasValue())
+			{
+				try
+				{
+					return mapping.Default.Convert<TProp>(_segmenter.Culture);
+				}
+				catch (Exception exception)
+				{
+					if (result != null)
+					{
+						var msg = "Failed to convert default value '{0}'. Please specify a convertable default value. {1}";
+						result.AddWarning(msg.FormatInvariant(mapping.Default, exception.Message), this.GetRowInfo(), columnName);
+					}
+				}
+			}
+
+			return defaultValue;
+		}
 
 		public ImportRow(ImportDataSegmenter<T> parent, IDataRow row, int position)
 		{
@@ -53,11 +71,6 @@ namespace SmartStore.Services.DataExchange.Import
 		public bool IsNew
 		{
 			get { return _isNew; }
-		}
-
-		public IDataRow DataRow
-		{
-			get { return _row; }
 		}
 
 		public ImportDataSegmenter<T> Segmenter
@@ -94,12 +107,14 @@ namespace SmartStore.Services.DataExchange.Import
 		public TProp GetDataValue<TProp>(string columnName, string index)
 		{
 			object value;
-			if (_row.TryGetValue(_segmenter.ColumnMap.GetMappedName(columnName, index), out value))
+			var mapping = _segmenter.ColumnMap.GetMapping(columnName, index);
+
+			if (_row.TryGetValue(mapping.Property, out value) && value != DBNull.Value)
 			{
 				return value.Convert<TProp>(_segmenter.Culture);
 			}
 
-			return default(TProp);
+			return GetDefaultValue(mapping, columnName, default(TProp));
 		}
 
 		public bool SetProperty<TProp>(
@@ -112,15 +127,16 @@ namespace SmartStore.Services.DataExchange.Import
 			// TBD: (MC) do not check for perf reason?
 			//CheckInitialized();
 
+			var isPropertySet = false;
 			var pi = prop.ExtractPropertyInfo();
 			var propName = pi.Name;
 
 			try
 			{
-				var fastProp = FastProperty.GetProperty(target.GetUnproxiedType(), propName, PropertyCachingStrategy.EagerCached);
-
 				object value;
-				if (_row.TryGetValue(_segmenter.ColumnMap.GetMappedName(propName), out value))
+				var mapping = _segmenter.ColumnMap.GetMapping(propName);
+
+				if (_row.TryGetValue(mapping.Property, out value))
 				{
 					// source contains field value. Set it.
 					TProp converted;
@@ -128,34 +144,42 @@ namespace SmartStore.Services.DataExchange.Import
 					{
 						converted = converter(value, _segmenter.Culture);
 					}
+					else if (value == DBNull.Value || value.ToString().IsCaseInsensitiveEqual("NULL"))
+					{
+						converted = GetDefaultValue(mapping, propName, defaultValue, result);
+					}
 					else
 					{
-						converted = value.ToString().ToUpper().Equals("NULL") 
-							? default(TProp) 
-							: value.Convert<TProp>(_segmenter.Culture);
+						converted = value.Convert<TProp>(_segmenter.Culture);
 					}
 
+					var fastProp = FastProperty.GetProperty(target.GetUnproxiedType(), propName, PropertyCachingStrategy.EagerCached);
 					fastProp.SetValue(target, converted);
-					return true;
+					isPropertySet = true;
 				}
 				else
 				{
-					// source does not contain field data or is empty...
-					if (IsTransient && defaultValue != null)
+					if (IsTransient)
 					{
-						// ...but the entity is new. In this case
-						// set the default value if given.
-						fastProp.SetValue(target, defaultValue);
-						return true;
+						defaultValue = GetDefaultValue(mapping, propName, defaultValue, result);
+
+						// source does not contain field data or is empty...
+						if (defaultValue != null)
+						{
+							// ...but the entity is new. In this case set the default value if given.
+							var fastProp = FastProperty.GetProperty(target.GetUnproxiedType(), propName, PropertyCachingStrategy.EagerCached);
+							fastProp.SetValue(target, defaultValue);
+							isPropertySet = true;
+						}
 					}
 				}
 			}
-			catch (Exception ex)
+			catch (Exception exception)
 			{
-				result.AddWarning("Conversion failed: " + ex.Message, this.GetRowInfo(), propName);
+				result.AddWarning("Conversion failed: " + exception.Message, this.GetRowInfo(), propName);
 			}
 
-			return false;
+			return isPropertySet;
 		}
 
 		public ImportRowInfo GetRowInfo()

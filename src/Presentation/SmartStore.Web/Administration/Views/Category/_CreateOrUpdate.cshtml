@@ -14,8 +14,25 @@
 	//generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "category-edit", this.Html, this.Model));
 })
-@helper TabInfo() {
-        
+@helper TabInfo()
+{
+	if (Model.Id != 0)
+	{
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Id)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(model => model.Id)
+					@Html.ValidationMessageFor(model => model.Id)
+				</td>
+			</tr>
+		</table>
+
+		<p></p>
+	}
+
     @(Html.LocalizedEditor<CategoryModel, CategoryLocalizedModel>("category-info-localized",
 				@<table class="adminContent">
                     <tr>
@@ -99,7 +116,8 @@
                         </td>
                     </tr>
                 </table>
-			))
+))
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">

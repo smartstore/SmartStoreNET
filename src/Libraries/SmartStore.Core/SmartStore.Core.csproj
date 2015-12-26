@@ -168,6 +168,9 @@
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
     <Compile Include="Domain\Customers\CustomerNumberVisibility.cs" />
     <Compile Include="Domain\Customers\CustomerNumberMethod.cs" />
+    <Compile Include="Domain\DataExchange\DataExchangeEnums.cs" />
+    <Compile Include="Domain\DataExchange\ImportEnums.cs" />
+    <Compile Include="Domain\DataExchange\ImportProfile.cs" />
     <Compile Include="Domain\DataExchange\SyncMapping.cs" />
     <Compile Include="Domain\DataExchange\DataExchangeSettings.cs" />
     <Compile Include="Domain\DataExchange\ExportDeployment.cs" />

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.DataExchange.Import;
@@ -28,7 +24,7 @@ namespace SmartStore.Services.Tests.DataExchange
 			};
 
 			var table = new LightweightDataTable(columns, new List<object[]>());
-			var segmenter = new ImportDataSegmenter<Product>(table);
+			var segmenter = new ImportDataSegmenter<Product>(table, new ColumnMap());
 			segmenter.ColumnMap.AddMapping("Attr[Material]", "material");
 			segmenter.ColumnMap.AddMapping("Name[it]", "name_it");
 

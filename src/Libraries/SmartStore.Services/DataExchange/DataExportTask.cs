@@ -33,15 +33,15 @@ namespace SmartStore.Services.DataExchange.Export
 			// build export request
 			var request = new DataExportRequest(profile, provider);
 
-			request.ProgressValueSetter = delegate(int val, int max, string msg)
+			request.ProgressValueSetter = delegate (int val, int max, string msg)
 			{
 				ctx.SetProgress(val, max, msg, true);
 			};
 
-			request.ProgressMessageSetter = delegate(string msg)
+			if (ctx.Parameters.ContainsKey("CurrentCustomerId"))
 			{
-				ctx.SetProgress(null, msg, true);
-			};
+				request.CustomerId = ctx.Parameters["CurrentCustomerId"].ToInt();       // do not use built-in background tasks customer
+			}
 
 			if (ctx.Parameters.ContainsKey("SelectedIds"))
 			{

@@ -1,20 +1,18 @@
-﻿using SmartStore.Core.Data;
+﻿using NUnit.Framework;
+using Rhino.Mocks;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Events;
 using SmartStore.Services.Messages;
-using NUnit.Framework;
-using Rhino.Mocks;
-using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Tests.Messages
 {
-    [TestFixture]
+	[TestFixture]
 	public class NewsLetterSubscriptionServiceTests : ServiceTest
     {
 		IEventPublisher _eventPublisher;
 		IRepository<NewsLetterSubscription> _subscriptionRepository;
 		IDbContext _dbContext;
-		IStoreService _storeService;
 		NewsLetterSubscriptionService _newsLetterSubscriptionService;
 
 		[SetUp]
@@ -23,9 +21,8 @@ namespace SmartStore.Services.Tests.Messages
 			_eventPublisher = MockRepository.GenerateStub<IEventPublisher>();
 			_subscriptionRepository = MockRepository.GenerateStub<IRepository<NewsLetterSubscription>>();
 			_dbContext = MockRepository.GenerateStub<IDbContext>();
-			_storeService = MockRepository.GenerateStub<IStoreService>();
 
-			_newsLetterSubscriptionService = new NewsLetterSubscriptionService(_dbContext, _subscriptionRepository, _eventPublisher, _storeService);
+			_newsLetterSubscriptionService = new NewsLetterSubscriptionService(_dbContext, _subscriptionRepository, _eventPublisher);
 		}
 
         /// <summary>

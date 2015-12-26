@@ -1,7 +1,7 @@
 ﻿using SmartStore.ComponentModel;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Services.DataExchange;
 using SmartStore.Services.DataExchange.Csv;
+using SmartStore.Services.DataExchange.Import;
 
 namespace SmartStore.Admin.Infrastructure
 {

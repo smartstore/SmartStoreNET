@@ -8,10 +8,10 @@ using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Directory
 {
-    /// <summary>
-    /// State province service
-    /// </summary>
-    public partial class StateProvinceService : IStateProvinceService
+	/// <summary>
+	/// State province service
+	/// </summary>
+	public partial class StateProvinceService : IStateProvinceService
     {
         #region Constants
         private const string STATEPROVINCES_ALL_KEY = "SmartStore.stateprovince.all-{0}";
@@ -46,6 +46,7 @@ namespace SmartStore.Services.Directory
         #endregion
 
         #region Methods
+
         /// <summary>
         /// Deletes a state/province
         /// </summary>
@@ -63,12 +64,22 @@ namespace SmartStore.Services.Directory
             _eventPublisher.EntityDeleted(stateProvince);
         }
 
-        /// <summary>
-        /// Gets a state/province
-        /// </summary>
-        /// <param name="stateProvinceId">The state/province identifier</param>
-        /// <returns>State/province</returns>
-        public virtual StateProvince GetStateProvinceById(int stateProvinceId)
+		public virtual IQueryable<StateProvince> GetAllStateProvinces(bool showHidden = false)
+		{
+			var query = _stateProvinceRepository.Table;
+
+			if (!showHidden)
+				query = query.Where(x => x.Published);
+
+			return query;
+		}
+
+		/// <summary>
+		/// Gets a state/province
+		/// </summary>
+		/// <param name="stateProvinceId">The state/province identifier</param>
+		/// <returns>State/province</returns>
+		public virtual StateProvince GetStateProvinceById(int stateProvinceId)
         {
             if (stateProvinceId == 0)
                 return null;

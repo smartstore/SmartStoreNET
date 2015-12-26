@@ -148,33 +148,5 @@ namespace SmartStore.Admin.Controllers
 
 			return SubscriptionList(command, listModel);
         }
-
-        [HttpPost]
-        public ActionResult ImportCsv(FormCollection form)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers))
-                return AccessDeniedView();
-
-            try
-            {            
-                var file = Request.Files["importcsvfile"];
-				if (file != null && file.ContentLength > 0)
-				{
-					var result = _newsLetterSubscriptionService.ImportSubscribers(file.InputStream);
-
-					NotifySuccess(T("Admin.Promotions.NewsLetterSubscriptions.ImportEmailsSuccess", result.NewRecords, result.ModifiedRecords));
-				}
-				else
-				{
-					NotifyError(T("Admin.Common.UploadFile"));
-				}
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-            }
-
-			return RedirectToAction("List");
-        }
 	}
 }

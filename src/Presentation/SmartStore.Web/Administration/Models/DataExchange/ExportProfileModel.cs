@@ -49,14 +49,10 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool IsTaskRunning { get; set; }
 		public bool IsTaskEnabled { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.Export.LastExecution")]
-		[AllowHtml]
-		public string LastExecution { get; set; }
-
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Offset")]
+		[SmartResourceDisplayName("Admin.Common.RecordsSkip")]
 		public int Offset { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Limit")]
+		[SmartResourceDisplayName("Admin.Common.RecordsTake")]
 		public int Limit { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.BatchSize")]

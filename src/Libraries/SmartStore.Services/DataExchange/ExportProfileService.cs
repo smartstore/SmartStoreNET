@@ -45,8 +45,6 @@ namespace SmartStore.Services.DataExchange.Export
 			_localizationService = localizationService;
 		}
 
-		#region Export profiles
-
 		public virtual ExportProfile InsertExportProfile(
 			string providerSystemName,
 			string name,
@@ -142,6 +140,8 @@ namespace SmartStore.Services.DataExchange.Export
 				.ToValidPath()
 				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 
+			profile.FolderName = FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath("~/App_Data/ExportProfiles"), profile.FolderName);
+
 			if (profileSystemName.IsEmpty() && isSystemProfile)
 				profile.SystemName = cleanedSystemName;
 			else
@@ -211,6 +211,10 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			if (profile == null)
 				throw new ArgumentNullException("profile");
+
+			profile.FolderName = profile.FolderName
+				.ToValidPath()
+				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 
 			_exportProfileRepository.Update(profile);
 
@@ -340,7 +344,5 @@ namespace SmartStore.Services.DataExchange.Export
 
 			_eventPublisher.EntityDeleted(deployment);
 		}
-
-		#endregion
 	}
 }

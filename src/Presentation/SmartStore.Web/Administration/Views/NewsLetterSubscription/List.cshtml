@@ -11,10 +11,6 @@
     <div class="options">
 		@Html.Widget("admin_button_toolbar_before")
 
-        <a href="#importcsv-window" data-toggle="modal" class="btn">
-			<i class="fa fa-arrow-circle-o-up"></i>&nbsp;@T("Admin.Common.ImportFromCsv")
-		</a>
-
 		@Html.Widget("admin_button_toolbar_after")
     </div>
 </div>
@@ -114,34 +110,4 @@
         alert(e.XMLHttpRequest.responseText);
         e.preventDefault();
     }
-</script>
-
-@*import emails form*@
-@{Html.SmartStore().Window()
-        .Name("importcsv-window")
-        .Title(T("Admin.Common.ImportFromCsv").Text)
-        .Content(@<text>
-    @using (Html.BeginForm("ImportCsv", "NewsLetterSubscription", FormMethod.Post, new { enctype = "multipart/form-data" }))
-    {
-        <div>
-             @T("Admin.Common.CsvFile"): <input type="file" id="importcsvfile" name="importcsvfile" />
-        </div>
-    }
-    </text>)
-    .FooterContent(@<text>
-        <button id="importcsv" type="button" class="btn btn-primary">@T("Admin.Common.ImportFromCsv")</button>
-    </text>)
-        .Width(400)
-        .Modal(true)
-        .Visible(false)
-        .Render();
-}
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        $("#importcsv").click(function (e) {
-            e.preventDefault();
-            $('#importcsv-window').find('form').submit();
-        });
-    });
 </script>

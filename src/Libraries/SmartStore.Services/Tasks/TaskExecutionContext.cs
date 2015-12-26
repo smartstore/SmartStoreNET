@@ -57,10 +57,17 @@ namespace SmartStore.Services.Tasks
 		/// <param name="immediately">if <c>true</c>, saves the updated task entity immediately, or lazily with the next database commit otherwise.</param>
 		public void SetProgress(int value, int maximum, string message, bool immediately = false)
 		{
-			float fraction = (float)value / (float)Math.Max(maximum, 1f);
-			int percentage = (int)Math.Round(fraction * 100f, 0);
+			if (value == 0 && maximum == 0)
+			{
+				SetProgress(null, message, immediately);
+			}
+			else
+			{
+				float fraction = (float)value / (float)Math.Max(maximum, 1f);
+				int percentage = (int)Math.Round(fraction * 100f, 0);
 
-			SetProgress(Math.Min(Math.Max(percentage, 0), 100), message, immediately);
+				SetProgress(Math.Min(Math.Max(percentage, 0), 100), message, immediately);
+			}
 		}
 
 		/// <summary>

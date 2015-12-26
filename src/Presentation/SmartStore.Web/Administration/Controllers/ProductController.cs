@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 using Autofac;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Collections;
 using SmartStore.Core;
-using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -22,13 +18,11 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Events;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Helpers;
@@ -41,10 +35,10 @@ using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using Telerik.Web.Mvc;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
+using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -115,7 +109,6 @@ namespace SmartStore.Admin.Controllers
             ITaxCategoryService taxCategoryService,
 			IProductTagService productTagService,
             ICopyProductService copyProductService,
-			IImportManager importManager,
             ICustomerActivityService customerActivityService,
             IPermissionService permissionService,
 			IAclService aclService,
@@ -2792,157 +2785,6 @@ namespace SmartStore.Admin.Controllers
         }
 
 		#endregion
-
-		#region Import
-
-		[HttpPost]
-		public ActionResult ImportExcel(FormCollection form)
-		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
-
-			try
-			{
-				var file = Request.Files["importfile"];
-				if (file != null)
-				{
-					IDataTable table = null;
-
-					try
-					{
-						table = LightweightDataTable.FromPostedFile(file);
-					}
-					catch (Exception ex)
-					{
-						NotifyError(ex);
-						return RedirectToAction("List");
-					}
-
-					var options = TaskCreationOptions.LongRunning;
-					var cts = new CancellationTokenSource();
-					var scheduler = TaskScheduler.Default;
-
-					var task = AsyncRunner.Run((c, ct) =>
-					{
-						var progress = new Progress<ImportProgressInfo>(p =>
-						{
-							AsyncState.Current.Set(p);
-						});
-
-						try
-						{
-							AsyncState.Current.SetCancelTokenSource<ImportProgressInfo>(cts);
-							var importManager = c.Resolve<IImportManager>();
-							var result = importManager.ImportProducts(table, ct, progress);
-
-							// Saving the result enables us to show a report for last import.
-							AsyncState.Current.Set(result, neverExpires: true);
-						}
-						catch (AggregateException ae)
-						{
-							foreach (var e in ae.Flatten().InnerExceptions)
-							{
-								// TBD: do exactly WHAT now?! Logging? Nothing?
-								// [...]
-							}
-						}
-						finally
-						{
-							AsyncState.Current.Remove<ImportProgressInfo>();
-						}
-
-					}, cts.Token, options, scheduler);
-
-					task.Wait(500);
-				}
-				else
-				{
-					NotifyError(T("Admin.Common.UploadFile"));
-					return RedirectToAction("List");
-				}
-
-				NotifySuccess(T("Admin.Common.ImportFromExcel.InProgress"));
-				return RedirectToAction("List");
-			}
-			catch (Exception exc)
-			{
-				NotifyError(exc);
-				return RedirectToAction("List");
-			}
-		}
-
-		[HttpPost]
-		public ActionResult ImportExcelProgress()
-		{
-			var progress = AsyncState.Current.Get<ImportProgressInfo>();
-
-			//object lastResult = null;
-			string lastResultSummary = null;
-			string lastResultClass = "";
-			var result = AsyncState.Current.Get<ImportResult>();
-			if (result != null)
-			{
-				var title = _localizationService.GetResource("Admin.Common.ImportFromExcel.LastResultTitle").FormatCurrent(
-					result.EndDateUtc.ToLocalTime(),
- 					result.Cancelled ? " (" + _localizationService.GetResource("Common.Cancelled").ToLower() + ")" : "");
-				var counts = _localizationService.GetResource("Admin.Common.ImportFromExcel.ProcessedCount").FormatCurrent(
-					result.AffectedRecords, 
-					result.TotalRecords);
-				var stats = _localizationService.GetResource("Admin.Common.ImportFromExcel.QuickStats").FormatCurrent(
-					result.NewRecords,
-					result.ModifiedRecords,
-					result.Messages.Count(x => x.MessageType == ImportMessageType.Warning),
-					result.Messages.Count(x => x.MessageType == ImportMessageType.Error));
-
-				lastResultSummary = "{0} {1} {2}".FormatInvariant(title, counts, stats);
-
-				if (!result.Cancelled) 
-				{
-					lastResultClass = result.HasErrors ? "alert-error" : "alert-success";
-				}
-			}
-
-			if (progress == null)
-			{
-				return Json(new { NoRunningTask = true, LastResultSummary = lastResultSummary, LastResultClass = lastResultClass }, JsonRequestBehavior.DenyGet);
-			}
-
-			return Json(new { Progress = progress, LastResultSummary = lastResultSummary, LastResultClass = lastResultClass }, JsonRequestBehavior.DenyGet);
-		}
-
-		public ActionResult ImportExcelCancel()
-		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
-			
-			var tcs = AsyncState.Current.GetCancelTokenSource<ImportProgressInfo>();
-			if (tcs != null) 
-			{
-				tcs.Cancel();
-				NotifySuccess(_localizationService.GetResource("Admin.Common.ImportFromExcel.Cancelled"));
-			}
-
-			return RedirectToAction("List");
-		}
-
-		public ActionResult ImportExcelDownloadReport()
-		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
-
-			var result = AsyncState.Current.Get<ImportResult>();
-			if (result == null)
-			{
-				return Content(_localizationService.GetResource("Admin.Common.ImportFromExcel.NoReportAvailable"));
-			}
-
-			var importManager = EngineContext.Current.Resolve<IImportManager>();
-			string report = importManager.CreateTextReport(result);
-
-			return File(Encoding.UTF8.GetBytes(report), "text/plain", "excelimport-report-{0}.txt".FormatInvariant(result.StartDateUtc.ToLocalTime()));
-		}
-
-        #endregion
 
 		#region Low stock reports
 

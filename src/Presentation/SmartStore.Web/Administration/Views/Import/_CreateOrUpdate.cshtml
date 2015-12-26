@@ -1,0 +1,225 @@
+﻿@using SmartStore.Admin.Models.DataExchange;
+@using SmartStore.Core.Domain.DataExchange;
+@model ImportProfileModel
+@{
+	Html.AddScriptParts("~/bundles/fileupload");
+	Html.AddCssFileParts("~/css/fileupload");
+}
+
+@Html.ValidationSummary(false)
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.TempFileName)
+
+<table class="adminContent">
+	<tr id="ImportFileUploadContainer">
+		<td class="adminTitle">
+			&nbsp;
+		</td>
+		<td class="adminData">
+
+			<div id="ImportFileUploader" class="fileupload">
+				<span class="btn btn-primary fileinput-button">
+					<i class="fa fa-upload"></i>
+					<span>@T("Admin.DataExchange.Import.FileUpload")</span>
+					<input id="ImportFileUpload" type="file" name="importfile" />
+				</span>
+
+				<button class="btn btn-warning cancel">
+					<i class="fa fa-times"></i>
+					<span>@T("Common.Fileuploader.Cancel")</span>
+				</button>
+
+				<div class="span5 fileupload-progress fade">
+					<div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+						<div class="bar" style="width:0%;"></div>
+					</div>
+					<div class="progress-extended">&nbsp;</div>
+				</div>
+			</div>
+
+		</td>
+	</tr>
+	<tr id="ImportFileListContainer" class="@(Model.ExistingFileNames.Any() ? "" : "hide")">
+		<td class="adminTitle">
+			&nbsp;
+		</td>
+		<td id="ImportFileList" class="adminData">
+			@foreach (var fileName in Model.ExistingFileNames)
+			{
+				<p>
+					@Html.IconForFileExtension(Path.GetExtension(fileName), false)
+					<a href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
+
+					<button type="button" class="btn btn-mini btn-right import-file-delete" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
+						<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+					</button>
+				</p>
+			}
+		</td>
+	</tr>
+	@if (Model.ScheduleTaskId > 0)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ScheduleTaskId)
+			</td>
+			<td class="adminData">
+				@Html.Action("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, area = "admin" })
+			</td>
+		</tr>
+	}
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Name)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.Name)
+			@Html.ValidationMessageFor(x => x.Name)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.EntityType)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(x => x.EntityType, Model.AvailableEntityTypes)
+			@Html.ValidationMessageFor(x => x.EntityType)
+		</td>
+	</tr>
+	@if (Model.Id != 0)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.FileType)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.FileType, Model.AvailableFileTypes)
+				@Html.ValidationMessageFor(x => x.FileType)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Enabled)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Enabled)
+				@Html.ValidationMessageFor(x => x.Enabled)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Skip)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Skip)
+				@Html.ValidationMessageFor(x => x.Skip)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Take)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Take)
+				@Html.ValidationMessageFor(x => x.Take)
+			</td>
+		</tr>
+	}
+</table>
+
+<p></p>
+
+@if (Model.Id != 0)
+{
+	if (Model.CsvConfiguration != null)
+	{
+		var viewData = new ViewDataDictionary();
+		viewData.TemplateInfo.HtmlFieldPrefix = "CsvConfiguration";
+		viewData.ModelState.Merge(ViewData.ModelState);
+		@Html.Partial("CsvConfiguration", Model.CsvConfiguration, viewData)
+	}
+
+	@Html.Partial("_ColumnMappings")
+}
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		// upload import file
+		$('#ImportFileUploader').fileupload({
+			url: '@Url.Action("FileUpload", new { id = Model.Id })',
+			dataType: 'json',
+			acceptFileTypes: /(\.|\/)(csv|xlsx)$/i,
+			done: function (e, data) {
+				if (data.result.success) {
+					$('#ImportFileListContainer').show();
+
+					if (!_.isEmpty(data.result.tempFile)) {
+						$('input[name=TempFileName]').val(data.result.tempFile);
+						$('#ImportFileList').html(data.result.tempFile);
+						$('#ImportFileUploadContainer').hide();		// just one initial file to specify the file type
+					}
+					else {
+						location.href = '@Url.Action("Edit", new { id = Model.Id })';
+					}
+				}
+			}
+		});
+
+		// delete import file
+		$('#ImportFileList').on('click', '.import-file-delete', function (e) {
+			e.preventDefault();
+
+			if (confirm('@T("Admin.Common.AskToProceed")')) {
+				var form = '<form id="DeleteImportFileForm" action="' + $(this).data('url') + '" method="post"></form>';
+				$('body').append(form);
+				$('#DeleteImportFileForm').submit();
+			}
+
+			return false;
+		});
+
+		// reset column mappings button
+		$('#ResetColumnMappings').click(function (e) {
+			e.preventDefault();
+
+			if (confirm('@T("Admin.Common.AskToProceed")')) {
+				var form = '<form id="ResetColumnMappingsForm" action="' + $(this).data('url') + '" method="post"></form>';
+				$('body').append(form);
+				$('#ResetColumnMappingsForm').submit();
+			}
+
+			return false;
+		});
+
+		// init column mappings select
+		$('#ImportColumnMappings').find('select').select2({
+			allowClear: true,
+			minimumResultsForSearch: 16,
+			formatResult: columnMappingSelectItemFormatting,
+			formatSelection: columnMappingSelectItemFormatting
+		});
+
+		function columnMappingSelectItemFormatting(item) {
+			try {
+				if (item.text.length > 0) {
+					var option = $(item.element);
+
+					var html = '<div><span>' + item.text + '</span>';
+					if (option.length !== 0) {
+						html += ' <span class="muted" style="font-size: 0.9em;">(' + option.val() + ')</span>';
+					}
+					html += '</div>';
+
+					return html;
+				}
+			}
+			catch (e) { }
+
+			return item.text;
+		}
+	});
+</script>

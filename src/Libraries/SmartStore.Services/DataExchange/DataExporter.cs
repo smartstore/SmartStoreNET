@@ -202,6 +202,9 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private bool HasPermission(DataExporterContext ctx)
 		{
+			if (ctx.Request.HasPermission)
+				return true;
+
 			if (ctx.Request.CustomerId == 0)
 				ctx.Request.CustomerId = _services.WorkContext.CurrentCustomer.Id;	// fallback to background task system customer
 

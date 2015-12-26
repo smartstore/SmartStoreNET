@@ -186,10 +186,8 @@ namespace SmartStore.Services.Catalog.Importer
 		{
 			_categoryRepository.AutoCommitEnabled = true;
 
-			//Picture picture = null;
 			Category lastInserted = null;
 			Category lastUpdated = null;
-			//var equalPictureId = 0;
 			var defaultTemplateId = allCategoryTemplateIds.First();
 
 			foreach (var row in batch)
@@ -256,22 +254,6 @@ namespace SmartStore.Services.Catalog.Importer
 				{
 					_storeMappingService.SaveStoreMappings(category, storeIds.ToArray());
 				}
-
-				//var thumbPath = row.GetDataValue<string>("PictureThumbPath");
-				//if (thumbPath.HasValue() && File.Exists(thumbPath))
-				//{
-				//	var pictures = new List<Picture>();
-				//	if (category.PictureId.HasValue && (picture = _pictureRepository.GetById(category.PictureId.Value)) != null)
-				//		pictures.Add(picture);
-
-				//	var pictureBinary = _pictureService.FindEqualPicture(thumbPath, pictures, out equalPictureId);
-
-				//	if (pictureBinary != null && pictureBinary.Length > 0 &&
-				//		(picture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, false, false)) != null)
-				//	{
-				//		category.PictureId = picture.Id;
-				//	}
-				//}
 
 				row.SetProperty(context.Result, category, (x) => x.CreatedOnUtc, utcNow);
 				category.UpdatedOnUtc = utcNow;

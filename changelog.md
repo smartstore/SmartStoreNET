@@ -3,7 +3,8 @@
 ## SmartStore.NET 2.5
 
 ### New Features
-* #701 Implement new export framework
+* New export and import framework
+* Import of customer and category data
 * #141 Payment and shipping methods by customer roles
 * #67 Restrict payment methods to countries
 * #94 Restrict payment methods to shipping methods
@@ -28,8 +29,6 @@
 * #722 System > SEO Names: Implement editing of an UrlRecord
 * Admin > System > System Info shows used application memory (RAM)
 * Added option to make VATIN mandatory during customer registration
-* Customer import
-* Category import
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

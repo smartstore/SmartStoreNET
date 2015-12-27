@@ -48,6 +48,7 @@ namespace SmartStore.Data.Migrations
 			context.MigrateLocaleResources(MigrateLocaleResources);
 
 			var permissionMigrator = new PermissionMigrator(context);
+			var activityLogMigrator = new ActivityLogTypeMigrator(context);
 
 			permissionMigrator.AddPermission(new PermissionRecord
 			{
@@ -55,6 +56,8 @@ namespace SmartStore.Data.Migrations
 				SystemName = "ManageImports",
 				Category = "Configuration"
 			}, new string[] { SystemCustomerRoleNames.Administrators });
+
+			activityLogMigrator.AddActivityLogType("DeleteOrder", "Delete order", "Auftrag gelöscht");
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
@@ -227,6 +230,8 @@ namespace SmartStore.Data.Migrations
 				"Admin.Common.ImportFromExcel.DownloadReport",
 				"Admin.Common.ImportFromExcel.NoReportAvailable"
 			);
+
+			builder.AddOrUpdate("ActivityLog.DeleteOrder", "Deleted order {0}", "Auftrag {0} gelöscht");
 		}
 	}
 }

@@ -15,6 +15,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
 using SmartStore.Core.Html;
+using SmartStore.Core.Logging;
 using SmartStore.Services;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
@@ -80,6 +81,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICustomerService _customerService;
 		private readonly PluginMediator _pluginMediator;
 		private readonly IAffiliateService _affiliateService;
+		private readonly ICustomerActivityService _customerActivityService;
 
 		private readonly CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
@@ -119,7 +121,8 @@ namespace SmartStore.Admin.Controllers
 			ICustomerService customerService,
 			PluginMediator pluginMediator,
 			IAffiliateService affiliateService,
-            CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
+			ICustomerActivityService customerActivityService,
+			CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
             MeasureSettings measureSettings, PdfSettings pdfSettings, AddressSettings addressSettings,
             IPdfConverter pdfConverter, ICommonServices services, Lazy<IPictureService> pictureService)
 		{
@@ -156,6 +159,7 @@ namespace SmartStore.Admin.Controllers
 			this._customerService = customerService;
 			this._pluginMediator = pluginMediator;
 			this._affiliateService = affiliateService;
+			this._customerActivityService = customerActivityService;
 
 			this._catalogSettings = catalogSettings;
             this._currencySettings = currencySettings;
@@ -1230,7 +1234,14 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             _orderProcessingService.DeleteOrder(order);
-            return RedirectToAction("List");
+
+			var msg = T("ActivityLog.DeleteOrder", order.GetOrderNumber());
+
+			_customerActivityService.InsertActivity("DeleteOrder", msg);
+
+			NotifySuccess(msg);
+
+			return RedirectToAction("List");
         }
 
         public ActionResult Print(int orderId, bool pdf = false)

@@ -74,20 +74,27 @@ namespace SmartStore.Core.Logging
         /// <param name="activityLog">Activity log</param>
         void DeleteActivity(ActivityLog activityLog);
 
-        /// <summary>
-        /// Gets all activity log items
-        /// </summary>
-        /// <param name="createdOnFrom">Log item creation from; null to load all customers</param>
-        /// <param name="createdOnTo">Log item creation to; null to load all customers</param>
-        /// <param name="customerId">Customer identifier; null to load all customers</param>
-        /// <param name="activityLogTypeId">Activity log type identifier</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
+		/// <summary>
+		/// Gets all activity log items
+		/// </summary>
+		/// <param name="createdOnFrom">Log item creation from; null to load all customers</param>
+		/// <param name="createdOnTo">Log item creation to; null to load all customers</param>
+		/// <param name="customerId">Customer identifier; null to load all customers</param>
+		/// <param name="activityLogTypeId">Activity log type identifier</param>
+		/// <param name="pageIndex">Page index</param>
+		/// <param name="pageSize">Page size</param>
 		/// <param name="email">Customer email</param>
-        /// <returns>Activity log collection</returns>
-        IPagedList<ActivityLog> GetAllActivities(DateTime? createdOnFrom,
-            DateTime? createdOnTo, int? customerId,
-            int activityLogTypeId, int pageIndex, int pageSize, string email = null);
+		/// <param name="customerSystemAccount">Customer system name</param>
+		/// <returns>Activity log collection</returns>
+		IPagedList<ActivityLog> GetAllActivities(
+			DateTime? createdOnFrom,
+            DateTime? createdOnTo,
+			int? customerId,
+            int activityLogTypeId,
+			int pageIndex,
+			int pageSize,
+			string email = null,
+			bool? customerSystemAccount = null);
 
         /// <summary>
         /// Gets an activity log item

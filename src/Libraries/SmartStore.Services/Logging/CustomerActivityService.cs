@@ -213,19 +213,33 @@ namespace SmartStore.Services.Logging
 		/// <param name="pageIndex">Page index</param>
 		/// <param name="pageSize">Page size</param>
 		/// <param name="email">Customer email</param>
+		/// <param name="customerSystemAccount">Customer system name</param>
 		/// <returns>Activity log collection</returns>
-		public virtual IPagedList<ActivityLog> GetAllActivities(DateTime? createdOnFrom,
-            DateTime? createdOnTo, int? customerId, int activityLogTypeId,
-            int pageIndex, int pageSize, string email = null)
+		public virtual IPagedList<ActivityLog> GetAllActivities(
+			DateTime? createdOnFrom,
+            DateTime? createdOnTo,
+			int? customerId,
+			int activityLogTypeId,
+            int pageIndex,
+			int pageSize,
+			string email = null,
+			bool? customerSystemAccount = null)
         {
             var query = _activityLogRepository.Table;
 
-			if (email.HasValue())
+			if (email.HasValue() || customerSystemAccount.HasValue)
 			{
+				var queryCustomers = _customerRepository.Table;
+
+				if (email.HasValue())
+					queryCustomers = queryCustomers.Where(x => x.Email == email);
+
+				if (customerSystemAccount.HasValue)
+					queryCustomers = queryCustomers.Where(x => x.IsSystemAccount == customerSystemAccount.Value);
+
 				query =
 					from al in _activityLogRepository.Table
-					join c in _customerRepository.Table on al.CustomerId equals c.Id
-					where c.Email == email
+					join c in queryCustomers on al.CustomerId equals c.Id
 					select al;
 			}
 

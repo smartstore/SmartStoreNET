@@ -29,6 +29,7 @@
 * #722 System > SEO Names: Implement editing of an UrlRecord
 * Admin > System > System Info shows used application memory (RAM)
 * Added option to make VATIN mandatory during customer registration
+* #840 Activity log: Have option to exclude search engine activity
 * #841 Activity log for deleting an order
 
 ### Improvements
@@ -79,7 +80,7 @@
 * #796 Selected specification in product filter mask is displayed with default language (not localized)
 * #805 Product filter is reset if 'product sorting' or 'view mode' or 'amount of displayed products per page' is changed
 * Hide link to a topic page if it is limited to stores
-* #829 Activity Log: Searching by customer email out of function
+* #829 Activity log: Searching by customer email out of function
 
 
 ## SmartStore.NET 2.2.2

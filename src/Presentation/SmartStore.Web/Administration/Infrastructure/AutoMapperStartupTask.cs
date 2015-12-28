@@ -315,8 +315,10 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<ActivityLog, ActivityLogModel>()
                 .ForMember(dest => dest.ActivityLogTypeName, mo => mo.MapFrom(src => src.ActivityLogType.Name))
                 .ForMember(dest => dest.CustomerEmail, mo => mo.MapFrom(src => src.Customer.Email))
-                .ForMember(dest => dest.CreatedOn, mo => mo.Ignore());
-            //currencies
+                .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+				.ForMember(dest => dest.IsSystemAccount, mo => mo.Ignore())
+				.ForMember(dest => dest.SystemAccountName, mo => mo.Ignore());
+			//currencies
 			Mapper.CreateMap<Currency, CurrencyModel>()
 				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
 				.ForMember(dest => dest.IsPrimaryExchangeRateCurrency, mo => mo.Ignore())

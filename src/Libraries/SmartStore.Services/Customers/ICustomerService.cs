@@ -88,12 +88,18 @@ namespace SmartStore.Services.Customers
         /// <returns>Customers</returns>
         IList<Customer> GetCustomersByIds(int[] customerIds);
 
-        /// <summary>
-        /// Gets a customer by GUID
-        /// </summary>
-        /// <param name="customerGuid">Customer GUID</param>
-        /// <returns>A customer</returns>
-        Customer GetCustomerByGuid(Guid customerGuid);
+		/// <summary>
+		/// Get system account customers
+		/// </summary>
+		/// <returns>System account customers</returns>
+		IList<Customer> GetSystemAccountCustomers();
+
+		/// <summary>
+		/// Gets a customer by GUID
+		/// </summary>
+		/// <param name="customerGuid">Customer GUID</param>
+		/// <returns>A customer</returns>
+		Customer GetCustomerByGuid(Guid customerGuid);
 
         /// <summary>
         /// Get customer by email

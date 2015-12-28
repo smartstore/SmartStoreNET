@@ -23,22 +23,30 @@
     <p></p>
 
     <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CreatedOnFrom)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.CreatedOnFrom)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CreatedOnTo)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.CreatedOnTo)
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CreatedOnFrom)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.CreatedOnFrom)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CreatedOnTo)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.CreatedOnTo)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ActivityLogTypeId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(ModelBase => ModelBase.ActivityLogTypeId, Model.ActivityLogType, T("Common.Unspecified"))
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerEmail)
@@ -47,14 +55,14 @@
                 @Html.EditorFor(model => model.CustomerEmail)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ActivityLogTypeId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownListFor(ModelBase => ModelBase.ActivityLogTypeId, Model.ActivityLogType, T("Common.Unspecified"))
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomerSystemAccount)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.CustomerSystemAccount)
+			</td>
+		</tr>
         <tr>
 			<td class="adminTitle">
 				&nbsp;
@@ -89,12 +97,14 @@
 							.HtmlAttributes(new { style = "text-align:center" })
 							.HeaderHtmlAttributes(new { style = "text-align:center" });
 						columns.Bound(x => x.ActivityLogTypeName);
-						columns.Bound(x => x.CustomerId)
-							.Template(x => Html.ActionLink(x.CustomerEmail, "Edit", "Customer", new { id = x.CustomerId }, new { }))
-							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
 						columns.Bound(x => x.Comment);
+						columns.Bound(x => x.CustomerId)
+							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
+						columns.Bound(x => x.IsSystemAccount)
+							.ClientTemplate("<i class='fa fa-fw icon-active-<#= IsSystemAccount #>'></i>&nbsp;<#= SystemAccountName #>")
+							.Width(220);
 						columns.Bound(x => x.CreatedOn)
-							.Width(180);
+							.Width(200);
 					})
 					.DataBinding(dataBinding =>
 					{
@@ -146,20 +156,20 @@
         		$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
         	});
 
-        	//wire up checkboxes. 
+        	//wire up checkboxes.
         	$(document).on('change', '#activityLog-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
         		var $check = $(this);
         		if ($check.is(":checked") == true) {
         			var checked = jQuery.inArray($check.val(), selectedIds);
         			if (checked == -1) {
-        				//add id to selectedIds.  
+        				//add id to selectedIds.
         				selectedIds.push($check.val());
         			}
         		}
         		else {
         			var checked = jQuery.inArray($check.val(), selectedIds);
         			if (checked > -1) {
-        				//remove id from selectedIds.  
+        				//remove id from selectedIds.
         				selectedIds = $.grep(selectedIds, function (item, index) {
         					return item != $check.val();
         				});
@@ -179,11 +189,12 @@
         });
 
         function onDataBinding(e) {
-            var searchModel = {
+        	var searchModel = {
+        		ActivityLogTypeId: $('#ActivityLogTypeId').val(),
                 CreatedOnFrom: $('#@Html.FieldIdFor(model => model.CreatedOnFrom)').val(),
                 CreatedOnTo: $('#@Html.FieldIdFor(model => model.CreatedOnTo)').val(),
-                CustomerEmail: $('#@Html.FieldIdFor(model => model.CustomerEmail)').val(),
-                ActivityLogTypeId: $('#ActivityLogTypeId').val()
+        		CustomerEmail: $('#@Html.FieldIdFor(model => model.CustomerEmail)').val(),
+        		CustomerSystemAccount: $('#@Html.FieldIdFor(model => model.CustomerSystemAccount)').val()
             };
             e.data = searchModel;
         }
@@ -192,7 +203,7 @@
 			$('#activityLog-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
 				var currentId = $(this).val();
 				var checked = jQuery.inArray(currentId, selectedIds);
-				//set checked based on if current checkbox's value is in selectedIds.  
+				//set checked based on if current checkbox's value is in selectedIds.
 				$(this).attr('checked', checked > -1);
 			});
 

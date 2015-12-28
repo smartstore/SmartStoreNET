@@ -20,5 +20,9 @@ namespace SmartStore.Admin.Models.Logging
 
         [SmartResourceDisplayName("Admin.Configuration.ActivityLog.ActivityLog.Fields.CreatedOn")]
         public DateTime CreatedOn { get; set; }
+
+		[SmartResourceDisplayName("Admin.Customers.Customers.Fields.IsSystemAccount")]
+		public bool IsSystemAccount { get; set; }
+		public string SystemAccountName { get; set; }
 	}
 }

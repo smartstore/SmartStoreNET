@@ -228,10 +228,27 @@ namespace SmartStore.Data.Migrations
 				"Admin.Common.ImportFromExcel.Cancel",
 				"Admin.Common.ImportFromExcel.Cancelled",
 				"Admin.Common.ImportFromExcel.DownloadReport",
-				"Admin.Common.ImportFromExcel.NoReportAvailable"
+				"Admin.Common.ImportFromExcel.NoReportAvailable",
+				"Admin.Configuration.ActivityLog.ActivityLog.Fields.ActivityLogTypeColumn"
 			);
 
 			builder.AddOrUpdate("ActivityLog.DeleteOrder", "Deleted order {0}", "Auftrag {0} gelöscht");
+
+			builder.AddOrUpdate("Admin.System.SystemCustomerNames.SearchEngine", "Search Engine", "Suchmaschine");
+			builder.AddOrUpdate("Admin.System.SystemCustomerNames.BackgroundTask", "Background Task", "Geplante Aufgabe");
+			builder.AddOrUpdate("Admin.System.SystemCustomerNames.PdfConverter", "PDF Converter", "PDF-Konvertierer");
+
+			builder.AddOrUpdate("Admin.Configuration.ActivityLog.ActivityLog.Fields.CustomerSystemAccount",
+				"Customer system account",
+				"Kundensystemkonto",
+				"Filters results by customer system accounts.",
+				"Filtert Ergebnisse nach Kundenystemkonten.");
+
+			builder.AddOrUpdate("Admin.Configuration.ActivityLog.ActivityLog.Fields.CustomerEmail",
+				"Customer Email",
+				"Kunden-E-Mail",
+				"Filters results by customer email address.",
+				"Filtert Ergebnisse nach E-Mail-Adresse der Kunden.");
 		}
 	}
 }

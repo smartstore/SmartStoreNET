@@ -10,6 +10,10 @@ namespace SmartStore.Admin.Models.Logging
     {
 		public int GridPageSize { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.ActivityLog.ActivityLog.Fields.ActivityLogType")]
+		public int ActivityLogTypeId { get; set; }
+		public IList<SelectListItem> ActivityLogType { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.ActivityLog.ActivityLog.Fields.CreatedOnFrom")]
         public DateTime? CreatedOnFrom { get; set; }
 
@@ -20,8 +24,7 @@ namespace SmartStore.Admin.Models.Logging
         [AllowHtml]
         public string CustomerEmail { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.ActivityLog.ActivityLog.Fields.ActivityLogType")]
-        public int ActivityLogTypeId { get; set; }
-        public IList<SelectListItem> ActivityLogType { get; set; }
-    }
+		[SmartResourceDisplayName("Admin.Configuration.ActivityLog.ActivityLog.Fields.CustomerSystemAccount")]
+		public bool? CustomerSystemAccount { get; set; }
+	}
 }

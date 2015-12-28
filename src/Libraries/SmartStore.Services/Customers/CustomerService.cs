@@ -291,6 +291,11 @@ namespace SmartStore.Services.Customers
             return sortedCustomers;
         }
 
+		public virtual IList<Customer> GetSystemAccountCustomers()
+		{
+			return _customerRepository.Table.Where(x => x.IsSystemAccount).ToList();
+		}
+
         public virtual Customer GetCustomerByGuid(Guid customerGuid)
         {
             if (customerGuid == Guid.Empty)

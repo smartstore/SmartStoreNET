@@ -251,8 +251,8 @@ namespace SmartStore.Data.Migrations
 				"Filtert Ergebnisse nach E-Mail-Adresse der Kunden.");
 
 			builder.AddOrUpdate("Admin.Configuration.Plugins.UnknownError",
-				"An unknown error occurred in the configuration page of the plugin. Please refer to the following message for details.",
-				"Beim Aufruf der Konfigurationsseite des Plugins ist ein unbekannter Fehler aufgetreten. Details entnehmen Sie bitte der folgenden Meldung.");
+				"An unknown error occurred when calling a plugin. Please refer to the following message for details.",
+				"Beim Aufruf eines Plugins ist ein unbekannter Fehler aufgetreten. Details entnehmen Sie bitte der folgenden Meldung.");
 		}
 	}
 }

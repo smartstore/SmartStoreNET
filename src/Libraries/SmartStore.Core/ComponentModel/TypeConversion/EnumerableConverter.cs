@@ -78,7 +78,7 @@ namespace SmartStore.ComponentModel
 
 		public override bool CanConvertFrom(Type type)
 		{
-			return type == typeof(string);
+			return type == typeof(string) || typeof(IConvertible).IsAssignableFrom(type);
 		}
 
 		public override bool CanConvertTo(Type type)
@@ -103,6 +103,15 @@ namespace SmartStore.ComponentModel
 					.Cast<T>();
 				
 				return _activator(result);
+			}
+
+			if (value is IConvertible)
+			{
+				var result2 = (new object[] { value })
+					.Select(x => Convert.ChangeType(value, typeof(T)))
+					.Cast<T>();
+
+				return _activator(result2);
 			}
 
 			return base.ConvertFrom(culture, value);

@@ -171,6 +171,11 @@ namespace SmartStore.Core.Tests
 			var list3 = new List<int>(new int[] { 1,2,3,4,5 });
 			var str = list3.Convert<string>();
 			Assert.AreEqual("1,2,3,4,5", str);
+
+			var list4 = ((double)5).Convert<List<int>>();
+			list4.ShouldBe<List<int>>();
+			Assert.AreEqual(1, list4.Count);
+			Assert.AreEqual(5, list4[0]);
 		}
 
 		[Test]

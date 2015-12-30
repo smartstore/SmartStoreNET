@@ -146,7 +146,7 @@ namespace SmartStore.ComponentModel
 		{
 			if (!String.IsNullOrEmpty(input))
 			{
-				var splitChar = ',';
+				var splitChar = '|';
 
 				if (input.IndexOf(splitChar) < 0)
 				{
@@ -154,9 +154,9 @@ namespace SmartStore.ComponentModel
 					{
 						splitChar = ';';
 					}
-					else if (input.IndexOf('|') > -1)
+					else if (input.IndexOf(',') > -1)
 					{
-						splitChar = '|';
+						splitChar = ',';
 					}
 				}
 

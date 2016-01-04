@@ -27,8 +27,8 @@
 		$("#@Html.FieldIdFor(model => model.StoreInformationSettings.StoreClosed)").click(toggleStoreClosed);
 		$("#@Html.FieldIdFor(model => model.CaptchaSettings.Enabled)").change(function () {
 			$('#SecuritySettingTable').find('.captcha-setting').toggle($(this).is(':checked'));
-    	}).trigger('change');
-        $("#@Html.FieldIdFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)").click(toggleSeoLanguageUrls);
+		}).trigger('change');
+		$("#@Html.FieldIdFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)").click(toggleSeoLanguageUrls);
 
 		toggleStoreClosed();
 		toggleSeoLanguageUrls();
@@ -36,6 +36,17 @@
 		$("#@Html.FieldIdFor(model => model.SocialSettings.ShowSocialLinksInFooter)").change(function () {
 			$('#SocialLinkTable').find('.social-link').toggle($(this).is(':checked'));
 		}).trigger('change');
+
+		// test creation of SEO names
+		$('#TestSeoNameCreationButton').click(function () {
+			$(this).closest('form').doAjax({
+				type: 'POST',
+				url: '@Url.Action("TestSeoNameCreation")',
+				callbackSuccess: function (resp) {
+					$('#TestSeoNameCreationResult').text(resp);
+				}
+			});
+		});
 	});
 
 	function toggleStoreClosed() {
@@ -150,15 +161,6 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SeoSettings.ConvertNonWesternChars)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.SeoSettings.ConvertNonWesternChars)
-                @Html.ValidationMessageFor(model => model.SeoSettings.ConvertNonWesternChars)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SeoSettings.CanonicalUrlsEnabled)
             </td>
             <td class="adminData">
@@ -185,6 +187,59 @@
                 @Html.ValidationMessageFor(model => model.SeoSettings.ExtraRobotsDisallows)
             </td>
         </tr>
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Admin.System.SeNames")</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SeoSettings.ConvertNonWesternChars)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.SeoSettings.ConvertNonWesternChars)
+				@Html.ValidationMessageFor(model => model.SeoSettings.ConvertNonWesternChars)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SeoSettings.AllowUnicodeCharsInUrls)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.SeoSettings.AllowUnicodeCharsInUrls)
+				@Html.ValidationMessageFor(model => model.SeoSettings.AllowUnicodeCharsInUrls)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SeoSettings.SeoNameCharConversion)
+			</td>
+			<td class="adminData">
+				@Html.TextAreaFor(model => model.SeoSettings.SeoNameCharConversion, new { @class = "input-large", style = "height:250px" })
+				@Html.ValidationMessageFor(model => model.SeoSettings.SeoNameCharConversion)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SeoSettings.TestSeoNameCreation)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.SeoSettings.TestSeoNameCreation)
+
+				<button id="TestSeoNameCreationButton" type="button" class="btn">
+					<i class="fa fa-refresh"></i>&nbsp;@T("Admin.Common.Check")
+				</button>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td id="TestSeoNameCreationResult" class="adminData">
+			</td>
+		</tr>
     </table>
 }
 @helper TabSecuritySettings()

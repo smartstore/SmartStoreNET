@@ -304,7 +304,8 @@ namespace SmartStore.Services.Seo
 			return SeoHelper.GetSeName(
 				name,
 				seoSettings == null ? false : seoSettings.ConvertNonWesternChars,
-				seoSettings == null ? false : seoSettings.AllowUnicodeCharsInUrls);
+				seoSettings == null ? false : seoSettings.AllowUnicodeCharsInUrls,
+				seoSettings == null ? null : seoSettings.SeoNameCharConversion);
 		}
 
         #endregion

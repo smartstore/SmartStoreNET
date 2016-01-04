@@ -1,11 +1,11 @@
-﻿using SmartStore.Services.Seo;
-using SmartStore.Tests;
+﻿using System;
 using NUnit.Framework;
+using SmartStore.Tests;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Tests.Seo
 {
-    [TestFixture]
+	[TestFixture]
     public class SeoExtensionsTests
     {
         [Test]
@@ -38,17 +38,23 @@ namespace SmartStore.Services.Tests.Seo
         {
             //german letters with diacritics
 			SeoHelper.GetSeName("testäöü", true, false).ShouldEqual("testaou");
-			SeoHelper.GetSeName("testäöü", false, false).ShouldEqual("testaeoeue");
-        }
+			SeoHelper.GetSeName("testäöü", false, false).ShouldEqual("test");
 
-        //[Test]
-        //public void Can_allow_unicode_chars()
-        //{
-        //    //russian letters
-			//SeoHelper.GetSeName("testтест", false, true).ShouldEqual("testтест");
-			//SeoHelper.GetSeName("testтест", false, false).ShouldEqual("test");
-        //}
-    }
+			var charConversions = string.Join(Environment.NewLine, new string[] { "ä;ae", "ö;oe", "ü;ue" });
+
+			SeoHelper.GetSeName("testäöü", false, false, charConversions).ShouldEqual("testaeoeue");
+
+			SeoHelper.ResetUserSeoCharacterTable();
+		}
+
+		[Test]
+		public void Can_allow_unicode_chars()
+		{
+			//russian letters
+			SeoHelper.GetSeName("testтест", false, true).ShouldEqual("testтест");
+			SeoHelper.GetSeName("testтест", false, false).ShouldEqual("test");
+		}
+	}
 }
 
 

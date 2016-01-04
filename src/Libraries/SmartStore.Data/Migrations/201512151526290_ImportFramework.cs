@@ -3,6 +3,7 @@ namespace SmartStore.Data.Migrations
 	using System.Data.Entity.Migrations;
 	using Core.Domain.Customers;
 	using Core.Domain.Security;
+	using Core.Domain.Seo;
 	using Setup;
 
 	public partial class ImportFramework : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
@@ -58,6 +59,12 @@ namespace SmartStore.Data.Migrations
 			}, new string[] { SystemCustomerRoleNames.Administrators });
 
 			activityLogMigrator.AddActivityLogType("DeleteOrder", "Delete order", "Auftrag gelöscht");
+
+			context.MigrateSettings(x =>
+			{
+				var seoSettings = new SeoSettings();
+				x.Add("seosettings.seonamecharconversion", seoSettings.SeoNameCharConversion);
+			});
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
@@ -253,6 +260,24 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Plugins.UnknownError",
 				"An unknown error occurred when calling a plugin. Please refer to the following message for details.",
 				"Beim Aufruf eines Plugins ist ein unbekannter Fehler aufgetreten. Details entnehmen Sie bitte der folgenden Meldung.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.AllowUnicodeCharsInUrls",
+				"Allow unicode characters",
+				"Unicode-Zeichen erlauben",
+				"Check whether SEO names can contain letters that are classified as unicode characters.",
+				"Legt fest, ob als Unicode-Zeichen eingestufte Buchstaben in SEO relevanten Namen erlaubt sind.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.SeoNameCharConversion",
+				"Characters to be converted",
+				"Zu konvertierende Zeichen",
+				"Allows an individual conversion of characters for SEO name creation. Enter the old and the new character separated by a semicolon, e.g. ä;ae. Each entry has to be entered in a new line.",
+				"Ermöglicht das individuelle Konvertieren von Zeichen bei der Erstellung SEO Namen. Geben Sie hier durch Semikolon getrennt das alte und das neue Zeichen ein, z.B. ä;ae. Jeder Eintrag muss in einer neuen Zeile erfolgen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.TestSeoNameCreation",
+				"Check string",
+				"Zeichenkette prüfen",
+				"Enter any string to check the SEO name creation. Changed settings must be saved before.",
+				"Geben Sie eine beliebige Zeichenkette ein, um daraus den SEO Namen zu erstellen. Geänderte Einstellungen müssen zuvor gespeichert werden.");
 		}
 	}
 }

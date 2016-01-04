@@ -31,6 +31,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Tax;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -1014,6 +1015,8 @@ namespace SmartStore.Admin.Controllers
 			model.SeoSettings.DefaultMetaKeywords = seoSettings.DefaultMetaKeywords;
 			model.SeoSettings.DefaultMetaDescription = seoSettings.DefaultMetaDescription;
 			model.SeoSettings.ConvertNonWesternChars = seoSettings.ConvertNonWesternChars;
+			model.SeoSettings.AllowUnicodeCharsInUrls = seoSettings.AllowUnicodeCharsInUrls;
+			model.SeoSettings.SeoNameCharConversion = seoSettings.SeoNameCharConversion;
 			model.SeoSettings.CanonicalUrlsEnabled = seoSettings.CanonicalUrlsEnabled;
 			model.SeoSettings.CanonicalHostNameRule = seoSettings.CanonicalHostNameRule;
             model.SeoSettings.ExtraRobotsDisallows = String.Join(Environment.NewLine, seoSettings.ExtraRobotsDisallows);
@@ -1187,17 +1190,26 @@ namespace SmartStore.Admin.Controllers
 
 			//seo settings
 			var seoSettings = _services.Settings.LoadSetting<SeoSettings>(storeScope);
+			var resetUserSeoCharacterTable = (seoSettings.SeoNameCharConversion != model.SeoSettings.SeoNameCharConversion);
+
 			seoSettings.PageTitleSeparator = model.SeoSettings.PageTitleSeparator;
 			seoSettings.PageTitleSeoAdjustment = model.SeoSettings.PageTitleSeoAdjustment;
 			seoSettings.DefaultTitle = model.SeoSettings.DefaultTitle;
 			seoSettings.DefaultMetaKeywords = model.SeoSettings.DefaultMetaKeywords;
 			seoSettings.DefaultMetaDescription = model.SeoSettings.DefaultMetaDescription;
+			seoSettings.AllowUnicodeCharsInUrls = model.SeoSettings.AllowUnicodeCharsInUrls;
+			seoSettings.SeoNameCharConversion = model.SeoSettings.SeoNameCharConversion;
 			seoSettings.ConvertNonWesternChars = model.SeoSettings.ConvertNonWesternChars;
 			seoSettings.CanonicalUrlsEnabled = model.SeoSettings.CanonicalUrlsEnabled;
 			seoSettings.CanonicalHostNameRule = model.SeoSettings.CanonicalHostNameRule;
             seoSettings.ExtraRobotsDisallows = new List<string>(model.SeoSettings.ExtraRobotsDisallows.EmptyNull().Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
 
 			StoreDependingSettings.UpdateSettings(seoSettings, form, storeScope, _services.Settings);
+
+			if (resetUserSeoCharacterTable)
+			{
+				SeoHelper.ResetUserSeoCharacterTable();
+			}
 
 			//security settings
 			var securitySettings = _services.Settings.LoadSetting<SecuritySettings>(storeScope);
@@ -1492,11 +1504,24 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("GeneralCommon");
         }
 
+		[HttpPost]
+		public ActionResult TestSeoNameCreation(GeneralCommonSettingsModel model)
+		{
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var seoSettings = _services.Settings.LoadSetting<SeoSettings>(storeScope);
 
+			// we always test against persisted settings
 
+			var result = SeoHelper.GetSeName(model.SeoSettings.TestSeoNameCreation,
+				seoSettings.ConvertNonWesternChars,
+				seoSettings.AllowUnicodeCharsInUrls,
+				seoSettings.SeoNameCharConversion);
 
-        //all settings
-        public ActionResult AllSettings()
+			return Content(result);
+		}
+
+		//all settings
+		public ActionResult AllSettings()
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();

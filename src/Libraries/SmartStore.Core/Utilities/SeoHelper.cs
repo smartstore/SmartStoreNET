@@ -1,107 +1,109 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Text;
 
 namespace SmartStore.Utilities
 {
-	
+
 	public static class SeoHelper
 	{
+		private static readonly string _okChars = "abcdefghijklmnopqrstuvwxyz1234567890 _-/";
+		private static readonly object _lock = new object();
 		private static Dictionary<string, string> _seoCharacterTable;
-		private static readonly object s_lock = new object();
+		private static Dictionary<string, string> _userSeoCharacterTable;
 
 		/// <summary>
-		/// Get SE name
+		/// Get SEO friendly string
 		/// </summary>
-		/// <param name="name">Name</param>
+		/// <param name="name">String to be converted</param>
 		/// <param name="convertNonWesternChars">A value indicating whether non western chars should be converted</param>
 		/// <param name="allowUnicodeCharsInUrls">A value indicating whether Unicode chars are allowed</param>
-		/// <returns>Result</returns>
+		/// <param name="charConversions">Raw data of semicolon separated char conversions</param>
+		/// <returns>SEO friendly string</returns>
 		[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-		public static string GetSeName(string name, bool convertNonWesternChars, bool allowUnicodeCharsInUrls)
+		public static string GetSeName(string name, bool convertNonWesternChars, bool allowUnicodeCharsInUrls, string charConversions = null)
 		{
 			if (String.IsNullOrEmpty(name))
 				return name;
-			string okChars = "abcdefghijklmnopqrstuvwxyz1234567890 _-/";
+
 			name = name.Trim().ToLowerInvariant();
 
-			if (convertNonWesternChars)
+			if (charConversions != null && _userSeoCharacterTable == null)
 			{
-				if (_seoCharacterTable == null)
-					InitializeSeoCharacterTable();
+				InitializeUserSeoCharacterTable(charConversions);
+			}
+
+			if (convertNonWesternChars && _seoCharacterTable == null)
+			{
+				InitializeSeoCharacterTable();
 			}
 
 			var sb = new StringBuilder();
 			foreach (char c in name)
 			{
-				string c2 = c.ToString();
-				if (convertNonWesternChars)
+				var c2 = c.ToString();
+
+				if (charConversions != null && _userSeoCharacterTable != null && _userSeoCharacterTable.ContainsKey(c2))
 				{
-					if (_seoCharacterTable.ContainsKey(c2))
-						c2 = _seoCharacterTable[c2];
+					sb.Append(_userSeoCharacterTable[c2]);
+					continue;
 				}
 
-				switch (c2)
+				if (convertNonWesternChars && _seoCharacterTable.ContainsKey(c2))
 				{
-					case "ä":
-						sb.Append("ae");
-						break;
-					case "ö":
-						sb.Append("oe");
-						break;
-					case "ü":
-						sb.Append("ue");
-						break;
-					case "ß":
-						sb.Append("ss");
-						break;
-					case "Ä":
-						sb.Append("AE");
-						break;
-					case "Ö":
-						sb.Append("OE");
-						break;
-					case "Ü":
-						sb.Append("UE");
-						break;
+					c2 = _seoCharacterTable[c2];
+				}
 
-					case "é":
-					case "è":
-					case "ê":
-						sb.Append('e');
-						break;
-					case "á":
-					case "à":
-					case "â":
-						sb.Append('a');
-						break;
-					case "ú":
-					case "ù":
-					case "û":
-						sb.Append('u');
-						break;
-					case "ó":
-					case "ò":
-					case "ô":
-						sb.Append('o');
-						break;
-
-					default:
-						if (okChars.Contains(c2))
-							sb.Append(c2);
-						break;
-				}	// switch
+				if (_okChars.Contains(c2) || (allowUnicodeCharsInUrls && char.IsLetterOrDigit(c)))
+				{
+					sb.Append(c2);
+				}
 			}
-			string name2 = sb.ToString();
-			name2 = name2.Replace(" ", "-");
-			while (name2.Contains("--"))
-				name2 = name2.Replace("--", "-");
-			while (name2.Contains("__"))
-				name2 = name2.Replace("__", "_");
 
-			return name2.Trim('/');
+			sb.Replace(" ", "-");
+
+			var result = sb.ToString();
+
+			while (result.Contains("--"))
+			{
+				result = result.Replace("--", "-");
+			}
+			while (result.Contains("__"))
+			{
+				result = result.Replace("__", "_");
+			}
+			return result.Trim('/');
+		}
+
+		public static void ResetUserSeoCharacterTable()
+		{
+			if (_userSeoCharacterTable != null)
+			{
+				_userSeoCharacterTable.Clear();
+				_userSeoCharacterTable = null;
+			}
+		}
+
+		private static void InitializeUserSeoCharacterTable(string charConversions)
+		{
+			lock (_lock)
+			{
+				if (_userSeoCharacterTable == null)
+				{
+					_userSeoCharacterTable = new Dictionary<string, string>();
+
+					string strLeft, strRight;
+
+					foreach (var conversion in charConversions.SplitSafe(Environment.NewLine))
+					{
+						if (conversion.SplitToPair(out strLeft, out strRight, ";") && strLeft.HasValue() && !_userSeoCharacterTable.ContainsKey(strLeft))
+						{
+							_userSeoCharacterTable.Add(strLeft, strRight);
+						}
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -115,7 +117,7 @@ namespace SmartStore.Utilities
 		/// </summary>
 		private static void InitializeSeoCharacterTable()
 		{
-			lock (s_lock)
+			lock (_lock)
 			{
 				if (_seoCharacterTable == null)
 				{

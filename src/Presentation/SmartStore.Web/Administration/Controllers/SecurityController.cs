@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.Security;
 using SmartStore.Core;
-using SmartStore.Services.Customers;
-using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
@@ -22,7 +20,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IWorkContext _workContext;
         private readonly IPermissionService _permissionService;
         private readonly ICustomerService _customerService;
-        private readonly ILocalizationService _localizationService;
 
 		#endregion
 
@@ -30,12 +27,11 @@ namespace SmartStore.Admin.Controllers
 
         public SecurityController(IWorkContext workContext,
             IPermissionService permissionService,
-            ICustomerService customerService, ILocalizationService localizationService)
+            ICustomerService customerService)
 		{
             this._workContext = workContext;
             this._permissionService = permissionService;
             this._customerService = customerService;
-            this._localizationService = localizationService;
 		}
 
 		#endregion 
@@ -45,14 +41,15 @@ namespace SmartStore.Admin.Controllers
         public ActionResult AccessDenied(string pageUrl)
         {
             var currentCustomer = _workContext.CurrentCustomer;
+
             if (currentCustomer == null || currentCustomer.IsGuest())
             {
-				Logger.Information(string.Format("Access denied to anonymous request on {0}", pageUrl));
+				Logger.Information(T("Admin.System.Warnings.AccessDeniedToAnonymousRequest", pageUrl.NaIfEmpty()));
                 return View();
             }
 
-			Logger.Information(string.Format("Access denied to user #{0} '{1}' on {2}", currentCustomer.Email, currentCustomer.Email, pageUrl));
-
+			Logger.Information(T("Admin.System.Warnings.AccessDeniedToUser",
+				currentCustomer.Email.NaIfEmpty(), currentCustomer.Email.NaIfEmpty(), pageUrl.NaIfEmpty()));
 
             return View();
         }
@@ -66,30 +63,38 @@ namespace SmartStore.Admin.Controllers
 
             var permissionRecords = _permissionService.GetAllPermissionRecords();
             var customerRoles = _customerService.GetAllCustomerRoles(true);
+
             foreach (var pr in permissionRecords)
             {
-                model.AvailablePermissions.Add(new PermissionRecordModel()
+                model.AvailablePermissions.Add(new PermissionRecordModel
                 {
                     Name = pr.Name,
-                    SystemName = pr.SystemName
+                    SystemName = pr.SystemName,
+					Category = pr.Category
                 });
             }
+
             foreach (var cr in customerRoles)
             {
-                model.AvailableCustomerRoles.Add(new CustomerRoleModel()
+                model.AvailableCustomerRoles.Add(new CustomerRoleModel
                 {
                     Id = cr.Id,
                     Name = cr.Name
                 });
             }
-            foreach (var pr in permissionRecords)
-                foreach (var cr in customerRoles)
-                {
-                    bool allowed = pr.CustomerRoles.Where(x => x.Id == cr.Id).ToList().Count() > 0;
-                    if (!model.Allowed.ContainsKey(pr.SystemName))
-                        model.Allowed[pr.SystemName] = new Dictionary<int, bool>();
-                    model.Allowed[pr.SystemName][cr.Id] = allowed;
-                }
+
+			foreach (var pr in permissionRecords)
+			{
+				foreach (var cr in customerRoles)
+				{
+					var allowed = pr.CustomerRoles.Any(x => x.Id == cr.Id);
+
+					if (!model.Allowed.ContainsKey(pr.SystemName))
+						model.Allowed[pr.SystemName] = new Dictionary<int, bool>();
+
+					model.Allowed[pr.SystemName][cr.Id] = allowed;
+				}
+			}
 
             return View(model);
         }
@@ -103,38 +108,38 @@ namespace SmartStore.Admin.Controllers
             var permissionRecords = _permissionService.GetAllPermissionRecords();
             var customerRoles = _customerService.GetAllCustomerRoles(true);
 
-
             foreach (var cr in customerRoles)
             {
-                string formKey = "allow_" + cr.Id;
-                var permissionRecordSystemNamesToRestrict = form[formKey] != null ? form[formKey].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList() : new List<string>();
+				var restrictedSystemNames = form["allow_" + cr.Id.ToString()].SplitSafe(",").ToList();
 
-                foreach (var pr in permissionRecords)
+				foreach (var permission in permissionRecords)
                 {
+                    bool allow = restrictedSystemNames.Contains(permission.SystemName);
 
-                    bool allow = permissionRecordSystemNamesToRestrict.Contains(pr.SystemName);
                     if (allow)
                     {
-                        if (pr.CustomerRoles.Where(x => x.Id == cr.Id).FirstOrDefault() == null)
+                        if (!permission.CustomerRoles.Any(x => x.Id == cr.Id))
                         {
-                            pr.CustomerRoles.Add(cr);
-                            _permissionService.UpdatePermissionRecord(pr);
+                            permission.CustomerRoles.Add(cr);
+                            _permissionService.UpdatePermissionRecord(permission);
                         }
                     }
                     else
                     {
-                        if (pr.CustomerRoles.Where(x => x.Id == cr.Id).FirstOrDefault() != null)
+                        if (permission.CustomerRoles.Any(x => x.Id == cr.Id))
                         {
-                            pr.CustomerRoles.Remove(cr);
-                            _permissionService.UpdatePermissionRecord(pr);
+                            permission.CustomerRoles.Remove(cr);
+                            _permissionService.UpdatePermissionRecord(permission);
                         }
                     }
                 }
             }
 
-            NotifySuccess(_localizationService.GetResource("Admin.Configuration.ACL.Updated"));
+            NotifySuccess(T("Admin.Configuration.ACL.Updated"));
+
             return RedirectToAction("Permissions");
         }
+
         #endregion
     }
 }

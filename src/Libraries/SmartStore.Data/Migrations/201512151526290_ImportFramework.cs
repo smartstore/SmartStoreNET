@@ -278,6 +278,23 @@ namespace SmartStore.Data.Migrations
 				"Zeichenkette prüfen",
 				"Enter any string to check the SEO name creation. Changed settings must be saved before.",
 				"Geben Sie eine beliebige Zeichenkette ein, um daraus den SEO Namen zu erstellen. Geänderte Einstellungen müssen zuvor gespeichert werden.");
+
+
+			builder.AddOrUpdate("Admin.System.Warnings.NoPermissionsDefined",
+				"There are no permissions defined.",
+				"Es sind keine Zugriffsrechte festgelegt.");
+
+			builder.AddOrUpdate("Admin.System.Warnings.NoCustomerRolesDefined",
+				"There are no customer roles defined.",
+				"Es sind keine Kundengruppen festgelegt.");
+
+			builder.AddOrUpdate("Admin.System.Warnings.AccessDeniedToAnonymousRequest",
+				"Access denied to anonymous request on {0}.",
+				"Zugriffsverweigerung durch anonyme Anfrage bei {0}.");
+
+			builder.AddOrUpdate("Admin.System.Warnings.AccessDeniedToUser",
+				"Access denied to user #{0} '{1}' on {2}.",
+				"Zugriffsverweigerung durch Kunde #{0} '{1}' bei {2}.");
 		}
 	}
 }

@@ -37,10 +37,13 @@ namespace SmartStore.Admin.Models.Orders
         //customer info
         [SmartResourceDisplayName("Admin.Orders.Fields.Customer")]
         public int CustomerId { get; set; }
+
+		[SmartResourceDisplayName("Admin.Orders.List.CustomerName")]
 		public string CustomerName { get; set; }
 
         [SmartResourceDisplayName("Admin.Orders.Fields.CustomerEmail")]
         public string CustomerEmail { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.Fields.CustomerIP")]
         public string CustomerIp { get; set; }
 

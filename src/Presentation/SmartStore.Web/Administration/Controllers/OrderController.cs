@@ -89,8 +89,9 @@ namespace SmartStore.Admin.Controllers
         private readonly MeasureSettings _measureSettings;
         private readonly PdfSettings _pdfSettings;
         private readonly AddressSettings _addressSettings;
+		private readonly AdminAreaSettings _adminAreaSettings;
 
-        private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
+		private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
         private readonly IPdfConverter _pdfConverter;
         private readonly ICommonServices _services;
         private readonly Lazy<IPictureService> _pictureService;
@@ -124,7 +125,8 @@ namespace SmartStore.Admin.Controllers
 			ICustomerActivityService customerActivityService,
 			CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
             MeasureSettings measureSettings, PdfSettings pdfSettings, AddressSettings addressSettings,
-            IPdfConverter pdfConverter, ICommonServices services, Lazy<IPictureService> pictureService)
+			AdminAreaSettings adminAreaSettings,
+			IPdfConverter pdfConverter, ICommonServices services, Lazy<IPictureService> pictureService)
 		{
             this._orderService = orderService;
             this._orderReportService = orderReportService;
@@ -167,6 +169,7 @@ namespace SmartStore.Admin.Controllers
             this._measureSettings = measureSettings;
             this._pdfSettings = pdfSettings;
             this._addressSettings = addressSettings;
+			this._adminAreaSettings = adminAreaSettings;
 
             this._checkoutAttributeFormatter = checkoutAttributeFormatter;
             _pdfConverter = pdfConverter;
@@ -787,15 +790,20 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
+			var allStores = _storeService.GetAllStores();
+
+			model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
             model.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
             model.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
 
-			//stores
-			model.AvailableStores.AddRange(_storeService.GetAllStores().ToList().ToSelectListItems());
-			model.AvailableStores.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			model.AvailableStores = allStores
+				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+				.ToList();
 
-            return View(model);
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
+			model.StoreCount = allStores.Count;
+
+			return View(model);
 		}
 
 		[GridAction(EnableCustomBinding = true)]
@@ -823,12 +831,13 @@ namespace SmartStore.Admin.Controllers
                     {
                         Id = x.Id,
                         OrderNumber = x.GetOrderNumber(),
-						StoreName = store != null ? store.Name : "Unknown",
+						StoreName = (store != null ? store.Name : "".NaIfEmpty()),
                         OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
                         OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
                         PaymentStatus = x.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
                         ShippingStatus = x.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
-                        CustomerEmail = x.BillingAddress.Email,
+						CustomerName = x.BillingAddress.GetFullName(),
+						CustomerEmail = x.BillingAddress.Email,
                         CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
 						HasNewPaymentNotification = x.HasNewPaymentNotification
                     };

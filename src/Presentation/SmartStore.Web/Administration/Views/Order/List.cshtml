@@ -1,10 +1,10 @@
 ﻿@model OrderListModel
 @using Telerik.Web.Mvc.UI
 @{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    var hideProfitReport = false;
-    
-    ViewBag.Title = T("Admin.Orders").Text;
+	var hideProfitReport = false;
+	var allString = T("Admin.Common.All").Text;
+
+	ViewBag.Title = T("Admin.Orders").Text;
 }
 
 @using (Html.BeginForm())
@@ -39,39 +39,40 @@
 			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
-    <table style="width: 100%">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StartDate)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.StartDate)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.EndDate)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.EndDate)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerName)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.CustomerName)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerEmail)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.CustomerEmail)
-            </td>
-        </tr>
+
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.StartDate)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.StartDate)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.EndDate)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.EndDate)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomerName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.CustomerName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomerEmail)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.CustomerEmail)
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.OrderStatusIds)
@@ -80,69 +81,72 @@
 				@Html.DropDownList("OrderStatusIds", Model.AvailableOrderStatuses, null, new { multiple = "multiple" })
 			</td>
 		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PaymentStatusIds)
-            </td>
-            <td class="adminData">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PaymentStatusIds)
+			</td>
+			<td class="adminData">
 				@Html.DropDownList("PaymentStatusIds", Model.AvailablePaymentStatuses, null, new { multiple = "multiple" })
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShippingStatusIds)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("ShippingStatusIds", Model.AvailableShippingStatuses, null, new { multiple = "multiple" })
-            </td>
-        </tr>
-       <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.StoreId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("StoreId", Model.AvailableStores)
-            </td>
-        </tr>
+			</td>
+		</tr>
 		<tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.OrderGuid)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.OrderGuid)
-            </td>
-        </tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShippingStatusIds)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("ShippingStatusIds", Model.AvailableShippingStatuses, null, new { multiple = "multiple" })
+			</td>
+		</tr>
+		@if (Model.StoreCount > 1)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.StoreId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores, allString)
+				</td>
+			</tr>
+		}
 		<tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.OrderNumber)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.OrderNumber)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.GoDirectlyToNumber)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.GoDirectlyToNumber)
-                <button type="submit" name="go-to-order-by-number" value="go-to-order-by-number" class="btn">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.OrderGuid)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.OrderGuid)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.OrderNumber)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.OrderNumber)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.GoDirectlyToNumber)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.GoDirectlyToNumber)
+				<button type="submit" name="go-to-order-by-number" value="go-to-order-by-number" class="btn">
 					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Common.Go")
 				</button>
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                &nbsp;
-            </td>
-            <td class="adminData">
-                <button type="submit" id="btnSearch" class="btn">
-                    <i class="fa fa-search"></i>
-                    @T("Admin.Common.Search")
-                </button>
-            </td>
-        </tr>
-    </table>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
+				<button type="submit" id="btnSearch" class="btn">
+					<i class="fa fa-search"></i>
+					@T("Admin.Common.Search")
+				</button>
+			</td>
+		</tr>
+	</table>
 
 	<p></p>
 
@@ -150,29 +154,31 @@
         <tr>
             <td>
                 @(Html.Telerik().Grid<OrderModel>()
-                        .Name("orders-grid")
-                        .ClientEvents(events => events
-                            .OnDataBinding("onDataBinding")
-                            .OnDataBound("onDataBound")
-                            .OnComplete("onComplete"))
-                        .Columns(columns =>
-                        {
-                            columns.Bound(x => x.Id)
-                                .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-                                .Title("<input id='mastercheckbox' type='checkbox'/>")
-                                .Width(50)
-                                .HtmlAttributes(new { style = "text-align:center" })
-                                .HeaderHtmlAttributes(new { style = "text-align:center" });
+						.Name("orders-grid")
+						.ClientEvents(events => events
+							.OnDataBinding("onDataBinding")
+							.OnDataBound("onDataBound")
+							.OnComplete("onComplete"))
+						.Columns(columns =>
+						{
+							columns.Bound(x => x.Id)
+								.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+								.Title("<input id='mastercheckbox' type='checkbox'/>")
+								.Width(50)
+								.HtmlAttributes(new { style = "text-align:center" })
+								.HeaderHtmlAttributes(new { style = "text-align:center" });
 
-                            columns.Bound(x => x.OrderNumber)
+							columns.Bound(x => x.OrderNumber)
 								.ClientTemplate(@Html.LabeledOrderNumber());
-                            columns.Bound(x => x.OrderStatus);
-                            columns.Bound(x => x.PaymentStatus);
-                            columns.Bound(x => x.ShippingStatus);
-                            columns.Bound(x => x.CustomerEmail);
-							columns.Bound(x => x.StoreName);
-                            columns.Bound(x => x.CreatedOn);
-                            columns.Bound(x => x.OrderTotal)
+							columns.Bound(x => x.OrderStatus);
+							columns.Bound(x => x.PaymentStatus);
+							columns.Bound(x => x.ShippingStatus);
+							columns.Bound(x => x.CustomerName);
+							columns.Bound(x => x.CustomerEmail);
+							columns.Bound(x => x.StoreName)
+								.Hidden(Model.StoreCount <= 1);
+							columns.Bound(x => x.CreatedOn);
+							columns.Bound(x => x.OrderTotal)
 								.Width(180)
 								.RightAlign()
 								.FooterTemplate(
@@ -184,17 +190,11 @@
 									(hideProfitReport ? "" : @T("Admin.Orders.Report.Profit").Text),
 									@T("Admin.Orders.Report.Tax").Text,
 									@T("Admin.Orders.Report.Total").Text));
-                            columns.Bound(x => x.Id)
-                                .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", new { id = x.Id }))
-                                .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.View").Text + "</a>")
-                                .Width(50)
-                                .Centered()
-                                .Title(T("Admin.Common.View").Text);
-                        })
-                        .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                        .DataBinding(dataBinding => dataBinding.Ajax().Select("OrderList", "Order"))
+						})
+						.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+						.DataBinding(dataBinding => dataBinding.Ajax().Select("OrderList", "Order"))
 						.PreserveGridState()
-                        .EnableCustomBinding(true))
+						.EnableCustomBinding(true))
             </td>
         </tr>
     </table>

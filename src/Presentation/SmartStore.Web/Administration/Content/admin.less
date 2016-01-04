@@ -395,25 +395,32 @@ td.adminData > input[type="checkbox"] {
 
 .admin-config-group {
 	.title,
-	.small-title {
+	.small-title,
+	.head {
 		font-family: @headingsFontFamily;
 		font-weight: @headingsFontWeight;
 		color: inherit; 
 		border-bottom: 1px solid #ddd;
 	}
-	.title {
-		font-size: @fontSizeLarge;
-		margin: 12px 0;
-		padding: 8px 0;
-	}
-	.small-title {
-		margin: 2px 0;
-		padding: 2px 0;
-	}
 	.sub-title {
 		font-family: @baseFontFamily;
 		font-size: @baseFontSize;
 		font-weight: normal;
+	}
+	.title,
+	.head {
+		font-size: @fontSizeLarge;
+		padding: 8px 0;
+	}
+	.head {
+		margin-bottom: 12px;
+	}
+	.title {
+		margin: 12px 0;
+	}
+	.small-title {
+		margin: 2px 0;
+		padding: 2px 0;
 	}
 }
 
@@ -809,6 +816,16 @@ td.adminTitle > .ctl-label {
 		}
 	}
 }
+tr.adminGroup {
+	> td {
+		padding-top: 18px;
+	}
+
+	label {
+		padding-bottom: 3px;
+		text-decoration: underline;
+	}
+}
 
 td.adminTitle:hover a.hint {
 	.opacity(100);
@@ -850,13 +867,14 @@ td.adminData .t-combobox {
     width: 306px;
 }
 
-tr.adminSeparator hr {
-    background-color: #D3D3D3;
-    border: medium none;
-    color: #D3D3D3;
+tr.adminSeparator hr,
+td.adminSeparator hr {
+	border: medium none;
+    background-color: #ddd;
+    color: #ddd;
     height: 1px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 12px;
+    margin-bottom: 12px;
     padding: 0;
 }
 

@@ -105,29 +105,37 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
-                return AccessDeniedView();
+			var model = new GridModel<BlogPostModel>();
 
-			var blogPosts = _blogService.GetAllBlogPosts(0, 0, null, null, command.Page - 1, command.PageSize, true);
-            var gridModel = new GridModel<BlogPostModel>
-            {
-                Data = blogPosts.Select(x =>
-                {
-                    var m = x.ToModel();
-                    if (x.StartDateUtc.HasValue)
-                        m.StartDate = _dateTimeHelper.ConvertToUserTime(x.StartDateUtc.Value, DateTimeKind.Utc);
-                    if (x.EndDateUtc.HasValue)
-                        m.EndDate = _dateTimeHelper.ConvertToUserTime(x.EndDateUtc.Value, DateTimeKind.Utc);
-                    m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-                    m.LanguageName = x.Language.Name;
-                    m.Comments = x.ApprovedCommentCount + x.NotApprovedCommentCount;
-                    return m;
-                }),
-                Total = blogPosts.TotalCount
-            };
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
+			{
+				var blogPosts = _blogService.GetAllBlogPosts(0, 0, null, null, command.Page - 1, command.PageSize, true);
+
+				model.Data = blogPosts.Select(x =>
+				{
+					var m = x.ToModel();
+					if (x.StartDateUtc.HasValue)
+						m.StartDate = _dateTimeHelper.ConvertToUserTime(x.StartDateUtc.Value, DateTimeKind.Utc);
+					if (x.EndDateUtc.HasValue)
+						m.EndDate = _dateTimeHelper.ConvertToUserTime(x.EndDateUtc.Value, DateTimeKind.Utc);
+					m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
+					m.LanguageName = x.Language.Name;
+					m.Comments = x.ApprovedCommentCount + x.NotApprovedCommentCount;
+					return m;
+				});
+
+				model.Total = blogPosts.TotalCount;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<BlogPostModel>();
+
+				NotifyAccessDenied();
+			}
+
 			return new JsonResult
 			{
-				Data = gridModel
+				Data = model
 			};
 		}
         
@@ -269,70 +277,75 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult Comments(int? filterByBlogPostId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
-                return AccessDeniedView();
+			var model = new GridModel<BlogCommentModel>();
 
-            IList<BlogComment> comments;
-            if (filterByBlogPostId.HasValue)
-            {
-                //filter comments by blog
-                var blogPost = _blogService.GetBlogPostById(filterByBlogPostId.Value);
-                comments = blogPost.BlogComments.OrderBy(bc => bc.CreatedOnUtc).ToList();
-            }
-            else
-            {
-                //load all blog comments
-                comments = _customerContentService.GetAllCustomerContent<BlogComment>(0, null);
-            }
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
+			{
+				IList<BlogComment> comments;
+				if (filterByBlogPostId.HasValue)
+				{
+					//filter comments by blog
+					var blogPost = _blogService.GetBlogPostById(filterByBlogPostId.Value);
+					comments = blogPost.BlogComments.OrderBy(bc => bc.CreatedOnUtc).ToList();
+				}
+				else
+				{
+					//load all blog comments
+					comments = _customerContentService.GetAllCustomerContent<BlogComment>(0, null);
+				}
 
-            var gridModel = new GridModel<BlogCommentModel>
-            {
-                Data = comments.PagedForCommand(command).Select(blogComment =>
-                {
-                    var commentModel = new BlogCommentModel();
+				model.Data = comments.PagedForCommand(command).Select(blogComment =>
+				{
+					var commentModel = new BlogCommentModel();
 					var customer = _customerService.GetCustomerById(blogComment.CustomerId);
 
-                    commentModel.Id = blogComment.Id;
-                    commentModel.BlogPostId = blogComment.BlogPostId;
-                    commentModel.BlogPostTitle = blogComment.BlogPost.Title;
-                    commentModel.CustomerId = blogComment.CustomerId;
-                    commentModel.IpAddress = blogComment.IpAddress;
-                    commentModel.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogComment.CreatedOnUtc, DateTimeKind.Utc);
-                    commentModel.Comment = Core.Html.HtmlUtils.FormatText(blogComment.CommentText, false, true, false, false, false, false);
+					commentModel.Id = blogComment.Id;
+					commentModel.BlogPostId = blogComment.BlogPostId;
+					commentModel.BlogPostTitle = blogComment.BlogPost.Title;
+					commentModel.CustomerId = blogComment.CustomerId;
+					commentModel.IpAddress = blogComment.IpAddress;
+					commentModel.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogComment.CreatedOnUtc, DateTimeKind.Utc);
+					commentModel.Comment = Core.Html.HtmlUtils.FormatText(blogComment.CommentText, false, true, false, false, false, false);
 
 					if (customer == null)
 						commentModel.CustomerName = "".NaIfEmpty();
 					else
 						commentModel.CustomerName = customer.GetFullName();
 
-                    return commentModel;
-                }),
-                Total = comments.Count,
-            };
+					return commentModel;
+				});
+
+				model.Total = comments.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<BlogCommentModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
-                Data = gridModel
+                Data = model
             };
         }
         
         [GridAction(EnableCustomBinding = true)]
         public ActionResult CommentDelete(int? filterByBlogPostId, int id, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageBlog))
+			{
+				var comment = _customerContentService.GetCustomerContentById(id) as BlogComment;
 
-            var comment = _customerContentService.GetCustomerContentById(id) as BlogComment;
-            if (comment == null)
-                throw new ArgumentException("No comment found with the specified id");
+				var blogPost = comment.BlogPost;
+				_customerContentService.DeleteCustomerContent(comment);
 
-            var blogPost = comment.BlogPost;
-            _customerContentService.DeleteCustomerContent(comment);
-            //update totals
-            _blogService.UpdateCommentTotals(blogPost);
+				//update totals
+				_blogService.UpdateCommentTotals(blogPost);
+			}
 
             return Comments(filterByBlogPostId, command);
         }
-
 
         #endregion
     }

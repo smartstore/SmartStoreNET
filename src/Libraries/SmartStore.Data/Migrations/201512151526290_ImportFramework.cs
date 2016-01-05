@@ -297,8 +297,12 @@ namespace SmartStore.Data.Migrations
 				"Zugriffsverweigerung durch Kunde #{0} '{1}' bei {2}.");
 
 			builder.AddOrUpdate("Admin.Configuration.Countries.CannotDeleteDueToAssociatedAddresses",
-				"The country cannaot be deleted because it has associated addresses.",
+				"The country cannot be deleted because it has associated addresses.",
 				"Das Land kann nicht gelöscht werden, weil ihm Adressen zugeordnet sind.");
+
+			builder.AddOrUpdate("Admin.Configuration.Countries.States.CantDeleteWithAddresses",
+				"The state\\province cannot be deleted because it has associated addresses.",
+				"Das Bundesland\\Region kann nicht gelöscht werden, weil ihm Adressen zugeordnet sind.");
 		}
 	}
 }

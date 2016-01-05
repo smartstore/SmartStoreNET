@@ -78,24 +78,32 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageEmailAccounts))
-                return AccessDeniedView();
+			var model = new GridModel<EmailAccountModel>();
 
-            var emailAccountModels = _emailAccountService.GetAllEmailAccounts()
-                                    .Select(x => x.ToModel())
-                                    .ToList();
-            foreach (var eam in emailAccountModels)
-                eam.IsDefaultEmailAccount = eam.Id == _emailAccountSettings.DefaultEmailAccountId;
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageEmailAccounts))
+			{
+				var emailAccountModels = _emailAccountService.GetAllEmailAccounts()
+					.Select(x => x.ToModel())
+					.ToList();
 
-            var gridModel = new GridModel<EmailAccountModel>
-            {
-                Data = emailAccountModels,
-                Total = emailAccountModels.Count()
-            };
+				foreach (var eam in emailAccountModels)
+				{
+					eam.IsDefaultEmailAccount = eam.Id == _emailAccountSettings.DefaultEmailAccountId;
+				}
+
+				model.Data = emailAccountModels;
+				model.Total = emailAccountModels.Count();
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<EmailAccountModel>();
+
+				NotifyAccessDenied();
+			}
 
 			return new JsonResult
 			{
-				Data = gridModel
+				Data = model
 			};
 		}
 

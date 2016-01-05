@@ -396,28 +396,37 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult CustomerList(GridCommand command, CustomerListModel model, [ModelBinderAttribute(typeof(CommaSeparatedModelBinder))] int[] searchCustomerRoleIds)
         {
-            //we use own own binder for searchCustomerRoleIds property 
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
+			// we use own own binder for searchCustomerRoleIds property 
+			var gridModel = new GridModel<CustomerModel>();
 
-            var searchDayOfBirth = 0;
-            int searchMonthOfBirth = 0;
-            if (!String.IsNullOrWhiteSpace(model.SearchDayOfBirth))
-                searchDayOfBirth = Convert.ToInt32(model.SearchDayOfBirth);
-            if (!String.IsNullOrWhiteSpace(model.SearchMonthOfBirth))
-                searchMonthOfBirth = Convert.ToInt32(model.SearchMonthOfBirth);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+			{
+				var searchDayOfBirth = 0;
+				var searchMonthOfBirth = 0;
 
-            var customers = _customerService.GetAllCustomers(null, null,
-                searchCustomerRoleIds, model.SearchEmail, model.SearchUsername,
-                model.SearchFirstName, model.SearchLastName,
-                searchDayOfBirth, searchMonthOfBirth,
-                model.SearchCompany, model.SearchPhone, model.SearchZipPostalCode,
-                false, null, command.Page - 1, command.PageSize);
-            var gridModel = new GridModel<CustomerModel>
-            {
-                Data = customers.Select(PrepareCustomerModelForList),
-                Total = customers.TotalCount
-            };
+				if (!String.IsNullOrWhiteSpace(model.SearchDayOfBirth))
+					searchDayOfBirth = Convert.ToInt32(model.SearchDayOfBirth);
+
+				if (!String.IsNullOrWhiteSpace(model.SearchMonthOfBirth))
+					searchMonthOfBirth = Convert.ToInt32(model.SearchMonthOfBirth);
+
+				var customers = _customerService.GetAllCustomers(null, null,
+					searchCustomerRoleIds, model.SearchEmail, model.SearchUsername,
+					model.SearchFirstName, model.SearchLastName,
+					searchDayOfBirth, searchMonthOfBirth,
+					model.SearchCompany, model.SearchPhone, model.SearchZipPostalCode,
+					false, null, command.Page - 1, command.PageSize);
+
+				gridModel.Data = customers.Select(PrepareCustomerModelForList);
+				gridModel.Total = customers.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<CustomerModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
@@ -1519,17 +1528,15 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult OrderList(int customerId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
+			var model = new GridModel<CustomerModel.OrderModel>();
 
-			var orders = _orderService.SearchOrders(0, customerId,
-				null, null, null, null, null, null, null, null, 0, int.MaxValue);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+			{
+				var orders = _orderService.SearchOrders(0, customerId, null, null, null, null, null, null, null, null, 0, int.MaxValue);
 
-            var model = new GridModel<CustomerModel.OrderModel>
-            {
-				Data = orders.PagedForCommand(command)
-                    .Select(order =>
-                    {
+				model.Data = orders.PagedForCommand(command)
+					.Select(order =>
+					{
 						var store = _storeService.GetStoreById(order.StoreId);
 						var orderModel = new CustomerModel.OrderModel()
 						{
@@ -1538,13 +1545,20 @@ namespace SmartStore.Admin.Controllers
 							PaymentStatus = order.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
 							ShippingStatus = order.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
 							OrderTotal = _priceFormatter.FormatPrice(order.OrderTotal, true, false),
-							StoreName = store != null ? store.Name : "Unknown",
+							StoreName = store != null ? store.Name : "".NaIfEmpty(),
 							CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc),
 						};
-                        return orderModel;
-                    }),
-                Total = orders.Count
-            };
+						return orderModel;
+					});
+
+				model.Total = orders.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<CustomerModel.OrderModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {
@@ -1596,9 +1610,8 @@ namespace SmartStore.Admin.Controllers
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
             ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)(model.ShippingStatusId) : null;
 
+            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 1);
 
-            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue,
-                orderStatus, paymentStatus, shippingStatus, 1);
             var gridModel = new GridModel<BestCustomerReportLineModel>
             {
                 Data = items.Select(x =>
@@ -1609,23 +1622,25 @@ namespace SmartStore.Admin.Controllers
                         OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
                         OrderCount = x.OrderCount,
                     };
+
                     var customer = _customerService.GetCustomerById(x.CustomerId);
                     if (customer != null)
                     {
-                        m.CustomerName = customer.IsGuest()
-                                             ? _localizationService.GetResource("Admin.Customers.Guest")
-                                             : customer.Email;
+                        m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
                     }
+
                     return m;
                 }),
                 Total = items.Count
             };
+
             return new JsonResult
             {
                 Data = gridModel
             };
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult ReportBestCustomersByNumberOfOrdersList(GridCommand command, BestCustomersReportModel model)
         {
             DateTime? startDateValue = (model.StartDate == null) ? null
@@ -1638,26 +1653,25 @@ namespace SmartStore.Admin.Controllers
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
             ShippingStatus? shippingStatus = model.ShippingStatusId > 0 ? (ShippingStatus?)(model.ShippingStatusId) : null;
 
+            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue, orderStatus, paymentStatus, shippingStatus, 2);
 
-            var items = _customerReportService.GetBestCustomersReport(startDateValue, endDateValue,
-                orderStatus, paymentStatus, shippingStatus, 2);
             var gridModel = new GridModel<BestCustomerReportLineModel>
             {
                 Data = items.Select(x =>
                 {
-                    var m = new BestCustomerReportLineModel()
+                    var m = new BestCustomerReportLineModel
                     {
                         CustomerId = x.CustomerId,
                         OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
                         OrderCount = x.OrderCount,
                     };
+
                     var customer = _customerService.GetCustomerById(x.CustomerId);
                     if (customer != null)
                     {
-                        m.CustomerName = customer.IsGuest()
-                                             ? _localizationService.GetResource("Admin.Customers.Guest")
-                                             : customer.Email;
+                        m.CustomerName = customer.IsGuest() ? T("Admin.Customers.Guest").Text : customer.Email;
                     }
+
                     return m;
                 }),
                 Total = items.Count
@@ -1674,15 +1688,18 @@ namespace SmartStore.Admin.Controllers
             var model = GetReportRegisteredCustomersModel();
             return PartialView(model);
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult ReportRegisteredCustomersList(GridCommand command)
         {
             var model = GetReportRegisteredCustomersModel();
-            var gridModel = new GridModel<RegisteredCustomerReportLineModel>
+
+			var gridModel = new GridModel<RegisteredCustomerReportLineModel>
             {
                 Data = model,
                 Total = model.Count
             };
+
             return new JsonResult
             {
                 Data = gridModel
@@ -1699,16 +1716,17 @@ namespace SmartStore.Admin.Controllers
             var customer = _customerService.GetCustomerById(customerId);
             var cart = customer.GetCartItems((ShoppingCartType)cartTypeId);
 
-            var gridModel = new GridModel<ShoppingCartItemModel>()
+            var gridModel = new GridModel<ShoppingCartItemModel>
             {
                 Data = cart.Select(sci =>
                 {
                     decimal taxRate;
 					var store = _storeService.GetStoreById(sci.Item.StoreId); 
-                    var sciModel = new ShoppingCartItemModel()
+
+                    var sciModel = new ShoppingCartItemModel
                     {
                         Id = sci.Item.Id,
-						Store = store != null ? store.Name : "Unknown",
+						Store = store != null ? store.Name : "".NaIfEmpty(),
 						ProductId = sci.Item.ProductId,
                         Quantity = sci.Item.Quantity,
 						ProductName = sci.Item.Product.Name,
@@ -1722,6 +1740,7 @@ namespace SmartStore.Admin.Controllers
                 }),
                 Total = cart.Count
             };
+
             return new JsonResult
             {
                 Data = gridModel
@@ -1736,11 +1755,12 @@ namespace SmartStore.Admin.Controllers
         public JsonResult ListActivityLog(GridCommand command, int customerId)
         {
             var activityLog = _customerActivityService.GetAllActivities(null, null, customerId, 0, command.Page - 1, command.PageSize);
+
             var gridModel = new GridModel<CustomerModel.ActivityLogModel>
             {
                 Data = activityLog.Select(x =>
                 {
-                    var m = new CustomerModel.ActivityLogModel()
+                    var m = new CustomerModel.ActivityLogModel
                     {
                         Id = x.Id,
                         ActivityLogTypeName = x.ActivityLogType.Name,
@@ -1748,11 +1768,11 @@ namespace SmartStore.Admin.Controllers
                         CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
                     };
                     return m;
-
                 }),
                 Total = activityLog.TotalCount
             };
-            return new JsonResult { Data = gridModel }; ;
+
+            return new JsonResult { Data = gridModel };
         }
 
 		#endregion

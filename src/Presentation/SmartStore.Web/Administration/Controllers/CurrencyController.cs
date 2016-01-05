@@ -239,18 +239,25 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
-                return AccessDeniedView();
+			var model = new GridModel<CurrencyModel>();
 
-            var currencies = _currencyService.GetAllCurrencies(true);
-            var gridModel = new GridModel<CurrencyModel>
-            {
-                Data = currencies.Select(x => x.ToModel()),
-                Total = currencies.Count()
-            };
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
+			{
+				var currencies = _currencyService.GetAllCurrencies(true);
+
+				model.Data = currencies.Select(x => x.ToModel());
+				model.Total = currencies.Count();
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<CurrencyModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
-                Data = gridModel
+                Data = model
             };
         }
 

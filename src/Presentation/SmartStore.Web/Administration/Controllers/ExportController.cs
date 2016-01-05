@@ -823,11 +823,17 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult PreviewList(GridCommand command, int id, int totalRecords)
 		{
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			{
+				NotifyAccessDenied();
+
+				return new JsonResult { Data = Enumerable.Empty<ExportPreviewProductModel>() };
+			}
+
 			ExportProfile profile = null;
 			Provider<IExportProvider> provider = null;
 
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports) &&
-				(profile = _exportService.GetExportProfileById(id)) != null &&
+			if ((profile = _exportService.GetExportProfileById(id)) != null &&
 				(provider = _exportService.LoadProvider(profile.ProviderSystemName)) != null &&
 				!provider.Metadata.IsHidden)
 			{
@@ -984,7 +990,7 @@ namespace SmartStore.Admin.Controllers
 				return new JsonResult { Data = gridData };
             }
 
-			return new EmptyResult();
+			return new JsonResult { Data = Enumerable.Empty<ExportPreviewProductModel>() };
 		}
 
 		[HttpPost]

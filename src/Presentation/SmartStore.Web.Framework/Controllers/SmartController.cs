@@ -101,7 +101,7 @@ namespace SmartStore.Web.Framework.Controllers
 		/// </summary>
 		/// <param name="durable">A value indicating whether a message should be persisted for the next request</param>
 		/// <param name="log">A value indicating whether the message should be logged</param>
-		protected virtual void NotifyAccessDenied(bool durable = true, bool log = false)
+		protected virtual void NotifyAccessDenied(bool durable = true, bool log = true)
 		{
 			var message = T("Admin.AccessDenied.Description");
 

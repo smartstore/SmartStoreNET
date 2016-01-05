@@ -304,17 +304,22 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult States(int countryId, GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
-                return AccessDeniedView();
+			var model = new GridModel<StateProvinceModel>();
 
-            var states = _stateProvinceService.GetStateProvincesByCountryId(countryId, true)
-                .Select(x => x.ToModel());
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
+			{
+				var states = _stateProvinceService.GetStateProvincesByCountryId(countryId, true)
+					.Select(x => x.ToModel());
 
-            var model = new GridModel<StateProvinceModel>
-            {
-                Data = states,
-                Total = states.Count()
-            };
+				model.Data = states;
+				model.Total = states.Count();
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<StateProvinceModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {
@@ -417,18 +422,18 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult StateDelete(int id, GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
-                return AccessDeniedView();
+			var state = _stateProvinceService.GetStateProvinceById(id);
+			var countryId = state.CountryId;
 
-            var state = _stateProvinceService.GetStateProvinceById(id);
-            if (state == null)
-                throw new ArgumentException("No state found with the specified id");
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
+			{
+				if (_addressService.GetAddressTotalByStateProvinceId(state.Id) > 0)
+				{
+					return Content(T("Admin.Configuration.Countries.States.CantDeleteWithAddresses"));
+				}
 
-            if (_addressService.GetAddressTotalByStateProvinceId(state.Id) > 0)
-                return Content(T("Admin.Configuration.Countries.States.CantDeleteWithAddresses"));
-
-            int countryId = state.CountryId;
-            _stateProvinceService.DeleteStateProvince(state);
+				_stateProvinceService.DeleteStateProvince(state);
+			}
 
             return States(countryId, command);
         }

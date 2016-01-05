@@ -285,24 +285,30 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command, CategoryListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			var gridModel = new GridModel<CategoryModel>();
 
-            var categories = _categoryService.GetAllCategories(model.SearchCategoryName, command.Page - 1, command.PageSize, true, model.SearchAlias, true, false, model.SearchStoreId);
-            var mappedCategories = categories.ToDictionary(x => x.Id);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var categories = _categoryService.GetAllCategories(model.SearchCategoryName, command.Page - 1, command.PageSize, true, model.SearchAlias, true, false, model.SearchStoreId);
+				var mappedCategories = categories.ToDictionary(x => x.Id);
 
-            var gridModel = new GridModel<CategoryModel>
-            {
-                Data = categories.Select(x =>
-                {
-                    var categoryModel = x.ToModel();
-                    categoryModel.Breadcrumb = x.GetCategoryBreadCrumb(_categoryService, mappedCategories);
-                    return categoryModel;
-                }),
-                Total = categories.TotalCount
-            };
+				gridModel.Data = categories.Select(x =>
+				{
+					var categoryModel = x.ToModel();
+					categoryModel.Breadcrumb = x.GetCategoryBreadCrumb(_categoryService, mappedCategories);
+					return categoryModel;
+				});
 
-            return new JsonResult
+				gridModel.Total = categories.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<CategoryModel>();
+
+				NotifyAccessDenied();
+			}
+
+			return new JsonResult
             {
                 Data = gridModel
             };
@@ -758,17 +764,16 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult ProductList(GridCommand command, int categoryId)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-            
-            var productCategories = _categoryService.GetProductCategoriesByCategoryId(categoryId, command.Page - 1, command.PageSize, true);
+			var model = new GridModel<CategoryModel.CategoryProductModel>();
 
-			var products = _productService.GetProductsByIds(productCategories.Select(x => x.ProductId).ToArray());
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var productCategories = _categoryService.GetProductCategoriesByCategoryId(categoryId, command.Page - 1, command.PageSize, true);
 
-            var model = new GridModel<CategoryModel.CategoryProductModel>
-            {
-                Data = productCategories.Select(x =>
-                {
+				var products = _productService.GetProductsByIds(productCategories.Select(x => x.ProductId).ToArray());
+
+				model.Data = productCategories.Select(x =>
+				{
 					var productModel = new CategoryModel.CategoryProductModel
 					{
 						Id = x.Id,
@@ -788,13 +793,20 @@ namespace SmartStore.Admin.Controllers
 						productModel.ProductTypeLabelHint = product.ProductTypeLabelHint;
 						productModel.Published = product.Published;
 					}
-					
-					return productModel;
-                }),
-                Total = productCategories.TotalCount
-            };
 
-            return new JsonResult
+					return productModel;
+				});
+
+				model.Total = productCategories.TotalCount;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<CategoryModel.CategoryProductModel>();
+
+				NotifyAccessDenied();
+			}
+
+			return new JsonResult
             {
                 Data = model
             };
@@ -803,41 +815,38 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult ProductUpdate(GridCommand command, CategoryModel.CategoryProductModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var productCategory = _categoryService.GetProductCategoryById(model.Id);
 
-            var productCategory = _categoryService.GetProductCategoryById(model.Id);
-            if (productCategory == null)
-                throw new ArgumentException("No product category mapping found with the specified id");
+				productCategory.IsFeaturedProduct = model.IsFeaturedProduct;
+				productCategory.DisplayOrder = model.DisplayOrder1;
 
-            productCategory.IsFeaturedProduct = model.IsFeaturedProduct;
-            productCategory.DisplayOrder = model.DisplayOrder1;
-            _categoryService.UpdateProductCategory(productCategory);
+				_categoryService.UpdateProductCategory(productCategory);
+			}
 
-            return ProductList(command, productCategory.CategoryId);
+            return ProductList(command, model.Id);
         }
 
         [GridAction(EnableCustomBinding = true)]
         public ActionResult ProductDelete(int id, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var productCategory = _categoryService.GetProductCategoryById(id);
 
-            var productCategory = _categoryService.GetProductCategoryById(id);
-            if (productCategory == null)
-                throw new ArgumentException("No product category mapping found with the specified id");
+				var categoryId = productCategory.CategoryId;
 
-            var categoryId = productCategory.CategoryId;
-            _categoryService.DeleteProductCategory(productCategory);
+				_categoryService.DeleteProductCategory(productCategory);
+			}
 
-            return ProductList(command, categoryId);
+            return ProductList(command, id);
         }
 
         public ActionResult ProductAddPopup(int categoryId)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
-
 
             var ctx = new ProductSearchContext();
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
@@ -864,16 +873,18 @@ namespace SmartStore.Admin.Controllers
             var mappedCategories = allCategories.ToDictionary(x => x.Id);
             foreach (var c in allCategories)
             {
-                model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
+                model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
             }
 
-            //manufacturers
-            foreach (var m in _manufacturerService.GetAllManufacturers(true))
-                model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
+			//manufacturers
+			foreach (var m in _manufacturerService.GetAllManufacturers(true))
+			{
+				model.AvailableManufacturers.Add(new SelectListItem { Text = m.Name, Value = m.Id.ToString() });
+			}
 
 			//product types
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-			model.AvailableProductTypes.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			model.AvailableProductTypes.Insert(0, new SelectListItem { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
             return View(model);
         }
@@ -881,35 +892,44 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult ProductAddPopupList(GridCommand command, CategoryModel.AddCategoryProductModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			var gridModel = new GridModel<ProductModel>();
 
-            var gridModel = new GridModel();
-            var ctx = new ProductSearchContext();
-
-            if (model.SearchCategoryId > 0)
-                ctx.CategoryIds.Add(model.SearchCategoryId);
-
-            ctx.ManufacturerId = model.SearchManufacturerId;
-            ctx.Keywords = model.SearchProductName;
-            ctx.LanguageId = _workContext.WorkingLanguage.Id;
-            ctx.OrderBy = ProductSortingEnum.Position;
-            ctx.PageIndex = command.Page - 1;
-            ctx.PageSize = command.PageSize;
-            ctx.ShowHidden = true;
-			ctx.ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null;
-
-            var products = _productService.SearchProducts(ctx);
-			gridModel.Data = products.Select(x =>
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var productModel = x.ToModel();
-				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+				var ctx = new ProductSearchContext();
 
-				return productModel;
-			});
+				if (model.SearchCategoryId > 0)
+					ctx.CategoryIds.Add(model.SearchCategoryId);
 
-            gridModel.Total = products.TotalCount;
-            return new JsonResult
+				ctx.ManufacturerId = model.SearchManufacturerId;
+				ctx.Keywords = model.SearchProductName;
+				ctx.LanguageId = _workContext.WorkingLanguage.Id;
+				ctx.OrderBy = ProductSortingEnum.Position;
+				ctx.PageIndex = command.Page - 1;
+				ctx.PageSize = command.PageSize;
+				ctx.ShowHidden = true;
+				ctx.ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null;
+
+				var products = _productService.SearchProducts(ctx);
+
+				gridModel.Data = products.Select(x =>
+				{
+					var productModel = x.ToModel();
+					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+
+					return productModel;
+				});
+
+				gridModel.Total = products.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<ProductModel>();
+
+				NotifyAccessDenied();
+			}
+
+			return new JsonResult
             {
                 Data = gridModel
             };

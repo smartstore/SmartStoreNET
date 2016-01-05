@@ -88,24 +88,31 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCampaigns))
-                return AccessDeniedView();
+			var model = new GridModel<CampaignModel>();
 
-            var campaigns = _campaignService.GetAllCampaigns();
-            var gridModel = new GridModel<CampaignModel>
-            {
-                Data = campaigns.Select(x =>
-                {
-                    var model = x.ToModel();
-                    model.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-                    return model;
-                }),
-                Total = campaigns.Count
-            };
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCampaigns))
+			{
+				var campaigns = _campaignService.GetAllCampaigns();
+
+				model.Data = campaigns.Select(x =>
+				{
+					var m = x.ToModel();
+					m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
+					return m;
+				});
+
+                model.Total = campaigns.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<CampaignModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {
-                Data = gridModel
+                Data = model
             };
         }
 

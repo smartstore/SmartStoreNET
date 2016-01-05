@@ -138,7 +138,6 @@ namespace SmartStore.Admin.Controllers
 
         #region Discounts
 
-        //list
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -161,22 +160,28 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageDiscounts))
-                return AccessDeniedView();
+			var model = new GridModel<DiscountModel>();
 
-            var discounts = _discountService.GetAllDiscounts(null, null, true);
-            var gridModel = new GridModel<DiscountModel>
-            {
-                Data = discounts.Select(x => x.ToModel()),
-                Total = discounts.Count()
-            };
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageDiscounts))
+			{
+				var discounts = _discountService.GetAllDiscounts(null, null, true);
+
+				model.Data = discounts.Select(x => x.ToModel());
+				model.Total = discounts.Count();
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<DiscountModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
-                Data = gridModel
+                Data = model
             };
         }
         
-        //create
         public ActionResult Create()
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageDiscounts))
@@ -212,7 +217,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        //edit
         public ActionResult Edit(int id)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageDiscounts))
@@ -281,7 +285,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        //delete
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -386,28 +389,31 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult UsageHistoryList(int discountId, GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageDiscounts))
-                return AccessDeniedView();
+			var model = new GridModel<DiscountModel.DiscountUsageHistoryModel>();
 
-            var discount = _discountService.GetDiscountById(discountId);
-            if (discount == null)
-                throw new ArgumentException("No discount found with the specified id");
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageDiscounts))
+			{
+				var discount = _discountService.GetDiscountById(discountId);
 
-            var duh = _discountService.GetAllDiscountUsageHistory(discount.Id, null, command.Page - 1, command.PageSize);
-            var model = new GridModel<DiscountModel.DiscountUsageHistoryModel>
-            {
-                Data = duh.Select(x =>
-                {
-                    return new DiscountModel.DiscountUsageHistoryModel
-                    {
-                        Id = x.Id,
-                        DiscountId = x.DiscountId,
-                        OrderId = x.OrderId,
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
-                    };
-                }),
-                Total = duh.TotalCount
-            };
+				var discountHistories = _discountService.GetAllDiscountUsageHistory(discount.Id, null, command.Page - 1, command.PageSize);
+
+				model.Data = discountHistories.Select(x => new DiscountModel.DiscountUsageHistoryModel
+				{
+					Id = x.Id,
+					DiscountId = x.DiscountId,
+					OrderId = x.OrderId,
+					CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
+				});
+
+				model.Total = discountHistories.TotalCount;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<DiscountModel.DiscountUsageHistoryModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = model
@@ -417,16 +423,13 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult UsageHistoryDelete(int discountId, int id, GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageDiscounts))
-                return AccessDeniedView();
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageDiscounts))
+			{
+				var discountHistory = _discountService.GetDiscountUsageHistoryById(id);
 
-            var discount = _discountService.GetDiscountById(discountId);
-            if (discount == null)
-                throw new ArgumentException("No discount found with the specified id");
-            
-            var duh = _discountService.GetDiscountUsageHistoryById(id);
-            if (duh != null)
-                _discountService.DeleteDiscountUsageHistory(duh);
+				_discountService.DeleteDiscountUsageHistory(discountHistory);
+			}
+
             return UsageHistoryList(discountId, command);
         }
 

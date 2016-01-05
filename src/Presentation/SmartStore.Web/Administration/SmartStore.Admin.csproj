@@ -258,6 +258,7 @@
     <Compile Include="Models\DataExchange\ProfileInfoForProviderModel.cs" />
     <Compile Include="Models\DataExchange\ExportPreviewModel.cs" />
     <Compile Include="Models\DataExchange\ExportProjectionModel.cs" />
+    <Compile Include="Models\Directory\CountryListModel.cs" />
     <Compile Include="Models\Directory\QuantityUnitModel.cs" />
     <Compile Include="Models\DataExchange\ExportProfileModel.cs" />
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />

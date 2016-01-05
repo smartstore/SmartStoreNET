@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Directory;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Services;
 using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
@@ -24,37 +24,31 @@ namespace SmartStore.Admin.Controllers
 
         private readonly ICountryService _countryService;
         private readonly IStateProvinceService _stateProvinceService;
-        private readonly ILocalizationService _localizationService;
 	    private readonly IAddressService _addressService;
-        private readonly IPermissionService _permissionService;
 	    private readonly ILocalizedEntityService _localizedEntityService;
 	    private readonly ILanguageService _languageService;
-		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
+		private readonly ICommonServices _services;
 
-	    #endregion
+		#endregion
 
 		#region Constructors
 
-        public CountryController(ICountryService countryService,
+		public CountryController(ICountryService countryService,
             IStateProvinceService stateProvinceService,
-			ILocalizationService localizationService,
             IAddressService addressService,
-			IPermissionService permissionService,
             ILocalizedEntityService localizedEntityService,
 			ILanguageService languageService,
-			IStoreService storeService,
-			IStoreMappingService storeMappingService)
+			IStoreMappingService storeMappingService,
+			ICommonServices services)
 		{
             _countryService = countryService;
             _stateProvinceService = stateProvinceService;
-            _localizationService = localizationService;
             _addressService = addressService;
-            _permissionService = permissionService;
             _localizedEntityService = localizedEntityService;
             _languageService = languageService;
-			_storeService = storeService;
 			_storeMappingService = storeMappingService;
+			_services = services;
 		}
 
 		#endregion 
@@ -66,10 +60,7 @@ namespace SmartStore.Admin.Controllers
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(country,
-                                                               x => x.Name,
-                                                               localized.Name,
-                                                               localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(country, x => x.Name, localized.Name, localized.LanguageId);
             }
         }
 
@@ -78,10 +69,7 @@ namespace SmartStore.Admin.Controllers
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(stateProvince,
-                                                               x => x.Name,
-                                                               localized.Name,
-                                                               localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(stateProvince, x => x.Name, localized.Name, localized.LanguageId);
             }
         }
 
@@ -91,19 +79,14 @@ namespace SmartStore.Admin.Controllers
 			if (model == null)
 				throw new ArgumentNullException("model");
 
-			var allStores = _storeService.GetAllStores();
+			var allStores = _services.StoreService.GetAllStores();
 
 			model.AvailableStores = allStores.Select(s => s.ToModel()).ToList();
 
 			if (!excludeProperties)
 			{
-				if (country != null)
-					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(country);
-				else
-					model.SelectedStoreIds = new int[0];
+				model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(country);
 			}
-
-			ViewBag.StoreCount = allStores.Count;
 		}
 
         #endregion
@@ -117,40 +100,85 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult List()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCountries))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
                 return AccessDeniedView();
 
-            var countries = _countryService.GetAllCountries(true);
-            var model = new GridModel<CountryModel>
-            {
-                Data = countries.Select(x => x.ToModel()),
-                Total = countries.Count
-            };
-            return View(model);
+			var allStores = _services.StoreService.GetAllStores();
+
+			var model = new CountryListModel
+			{
+				StoreCount = allStores.Count
+			};
+
+			return View(model);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult CountryList(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCountries))
-                return AccessDeniedView();
+			var model = new GridModel<CountryModel>();
 
-            var countries = _countryService.GetAllCountries(true);
-            var model = new GridModel<CountryModel>
-            {
-                Data = countries.Select(x => x.ToModel()),
-                Total = countries.Count
-            };
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
+			{
+				var countries = _countryService.GetAllCountries(true);
+
+				model.Data = countries.Select(x => x.ToModel());
+				model.Total = countries.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<CountryModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {
                 Data = model
             };
         }
-        
-        public ActionResult Create()
+
+		[GridAction(EnableCustomBinding = true)]
+		public ActionResult CountryUpdate(CountryModel model, GridCommand command)
+		{
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
+			{
+				if (!ModelState.IsValid)
+				{
+					var modelStateErrors = ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+					return Content(modelStateErrors.FirstOrDefault());
+				}
+
+				var country = _countryService.GetCountryById(model.Id);
+
+				country = model.ToEntity(country);
+				_countryService.UpdateCountry(country);
+			}
+
+			return CountryList(command);
+		}
+
+		[GridAction(EnableCustomBinding = true)]
+		public ActionResult CountryDelete(int id, GridCommand command)
+		{
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
+			{
+				if (_addressService.GetAddressTotalByCountryId(id) > 0)
+				{
+					return Content(T("Admin.Configuration.Countries.CannotDeleteDueToAssociatedAddresses"));
+				}
+
+				var country = _countryService.GetCountryById(id);
+
+				_countryService.DeleteCountry(country);
+			}
+
+			return CountryList(command);
+		}
+
+		public ActionResult Create()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCountries))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
                 return AccessDeniedView();
 
             var model = new CountryModel();
@@ -169,7 +197,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(CountryModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCountries))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
                 return AccessDeniedView();
 
             if (ModelState.IsValid)
@@ -181,7 +209,7 @@ namespace SmartStore.Admin.Controllers
 
 				_storeMappingService.SaveStoreMappings<Country>(country, model.SelectedStoreIds);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Countries.Added"));
+                NotifySuccess(T("Admin.Configuration.Countries.Added"));
 
                 return continueEditing ? RedirectToAction("Edit", new { id = country.Id }) : RedirectToAction("List");
             }
@@ -193,7 +221,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Edit(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCountries))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
                 return AccessDeniedView();
 
             var country = _countryService.GetCountryById(id);
@@ -215,7 +243,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Edit(CountryModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCountries))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
                 return AccessDeniedView();
 
             var country = _countryService.GetCountryById(model.Id);
@@ -231,7 +259,7 @@ namespace SmartStore.Admin.Controllers
 
 				_storeMappingService.SaveStoreMappings<Country>(country, model.SelectedStoreIds);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Countries.Updated"));
+                NotifySuccess(T("Admin.Configuration.Countries.Updated"));
 
                 return continueEditing ? RedirectToAction("Edit", new { id = country.Id }) : RedirectToAction("List");
             }
@@ -244,7 +272,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCountries))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
                 return AccessDeniedView();
 
             var country = _countryService.GetCountryById(id);
@@ -254,11 +282,12 @@ namespace SmartStore.Admin.Controllers
             try
             {
                 if (_addressService.GetAddressTotalByCountryId(country.Id) > 0)
-                    throw new SmartException("The country can't be deleted. It has associated addresses");
+                    throw new SmartException(T("Admin.Configuration.Countries.CannotDeleteDueToAssociatedAddresses"));
 
                 _countryService.DeleteCountry(country);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Countries.Deleted"));
+                NotifySuccess(T("Admin.Configuration.Countries.Deleted"));
+
                 return RedirectToAction("List");
             }
             catch (Exception exc)
@@ -268,7 +297,6 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-
         #endregion
 
         #region States / provinces
@@ -276,7 +304,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult States(int countryId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCountries))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
                 return AccessDeniedView();
 
             var states = _stateProvinceService.GetStateProvincesByCountryId(countryId, true)
@@ -287,30 +315,33 @@ namespace SmartStore.Admin.Controllers
                 Data = states,
                 Total = states.Count()
             };
+
             return new JsonResult
             {
                 Data = model
             };
         }
 
-
         //create
         public ActionResult StateCreatePopup(int countryId)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCountries))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
                 return AccessDeniedView();
 
-            var model = new StateProvinceModel();
-            model.CountryId = countryId;
-            //locales
+			var model = new StateProvinceModel
+			{
+				CountryId = countryId
+			};
+
             AddLocales(_languageService, model.Locales);
+
             return View(model);
         }
 
         [HttpPost]
         public ActionResult StateCreatePopup(string btnId, string formId, StateProvinceModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCountries))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
                 return AccessDeniedView();
 
             var country = _countryService.GetCountryById(model.CountryId);
@@ -327,6 +358,7 @@ namespace SmartStore.Admin.Controllers
                 ViewBag.RefreshPage = true;
                 ViewBag.btnId = btnId;
                 ViewBag.formId = formId;
+
                 return View(model);
             }
 
@@ -337,16 +369,15 @@ namespace SmartStore.Admin.Controllers
         //edit
         public ActionResult StateEditPopup(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCountries))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
                 return AccessDeniedView();
 
             var sp = _stateProvinceService.GetStateProvinceById(id);
             if (sp == null)
-                //No state found with the specified id
                 return RedirectToAction("List");
 
             var model = sp.ToModel();
-            //locales
+
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = sp.GetLocalized(x => x.Name, languageId, false, false);
@@ -358,12 +389,11 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult StateEditPopup(string btnId, string formId, StateProvinceModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCountries))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
                 return AccessDeniedView();
 
             var sp = _stateProvinceService.GetStateProvinceById(model.Id);
             if (sp == null)
-                //No state found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -376,6 +406,7 @@ namespace SmartStore.Admin.Controllers
                 ViewBag.RefreshPage = true;
                 ViewBag.btnId = btnId;
                 ViewBag.formId = formId;
+
                 return View(model);
             }
 
@@ -386,7 +417,7 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult StateDelete(int id, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCountries))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCountries))
                 return AccessDeniedView();
 
             var state = _stateProvinceService.GetStateProvinceById(id);
@@ -394,11 +425,10 @@ namespace SmartStore.Admin.Controllers
                 throw new ArgumentException("No state found with the specified id");
 
             if (_addressService.GetAddressTotalByStateProvinceId(state.Id) > 0)
-                return Content(_localizationService.GetResource("Admin.Configuration.Countries.States.CantDeleteWithAddresses"));
+                return Content(T("Admin.Configuration.Countries.States.CantDeleteWithAddresses"));
 
             int countryId = state.CountryId;
             _stateProvinceService.DeleteStateProvince(state);
-
 
             return States(countryId, command);
         }
@@ -406,23 +436,20 @@ namespace SmartStore.Admin.Controllers
         [AcceptVerbs(HttpVerbs.Get)]
         public ActionResult GetStatesByCountryId(string countryId, bool? addEmptyStateIfRequired, bool? addAsterisk)
         {
-            //permission validation is not required here
-
+            // permission validation is not required here
             // This action method gets called via an ajax request
 
-            int cid = 0;
-            int.TryParse(countryId, out cid);
-            /*if (String.IsNullOrEmpty(countryId))
-                throw new ArgumentNullException("countryId");*/
+            var country = _countryService.GetCountryById(countryId.ToInt());
 
-            var country = _countryService.GetCountryById(cid /* Convert.ToInt32(countryId) */);
             var states = country != null ? _stateProvinceService.GetStateProvincesByCountryId(country.Id, true).ToList() : new List<StateProvince>();
-            var result = (from s in states
-                         select new { id = s.Id, name = s.Name }).ToList();
+            var result = (from s in states select new { id = s.Id, name = s.Name }).ToList();
+
             if (addEmptyStateIfRequired.HasValue && addEmptyStateIfRequired.Value && result.Count == 0)
-                result.Insert(0, new { id = 0, name = _localizationService.GetResource("Admin.Address.OtherNonUS") });
+                result.Insert(0, new { id = 0, name = T("Admin.Address.OtherNonUS").Text });
+
             if (addAsterisk.HasValue && addAsterisk.Value)
                 result.Insert(0, new { id = 0, name = "*" });
+
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 

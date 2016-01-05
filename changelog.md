@@ -66,6 +66,7 @@
 * URLs are not converted to lower case anymore
 * Product grid sortable by name, price and created on
 * #26 Display company or name in order list
+* Added inline editing of country grid
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

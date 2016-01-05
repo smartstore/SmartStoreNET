@@ -295,6 +295,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.System.Warnings.AccessDeniedToUser",
 				"Access denied to user #{0} '{1}' on {2}.",
 				"Zugriffsverweigerung durch Kunde #{0} '{1}' bei {2}.");
+
+			builder.AddOrUpdate("Admin.Configuration.Countries.CannotDeleteDueToAssociatedAddresses",
+				"The country cannaot be deleted because it has associated addresses.",
+				"Das Land kann nicht gelöscht werden, weil ihm Adressen zugeordnet sind.");
 		}
 	}
 }

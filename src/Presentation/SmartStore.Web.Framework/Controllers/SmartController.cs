@@ -95,6 +95,23 @@ namespace SmartStore.Web.Framework.Controllers
 			Services.Notifier.Error(exception.ToAllMessages(), durable);
 		}
 
+		/// <summary>
+		/// Pushes an error message to the notification queue that the access to a resource has been denied
+		/// </summary>
+		/// <param name="durable">A value indicating whether a message should be persisted for the next request</param>
+		/// <param name="log">A value indicating whether the message should be logged</param>
+		protected virtual void NotifyAccessDenied(bool durable = true, bool log = false)
+		{
+			var message = T("Admin.AccessDenied.Description");
+
+			if (log)
+			{
+				Logger.Error(message, null, Services.WorkContext.CurrentCustomer);
+			}
+
+			Services.Notifier.Error(message, durable);
+		}
+
 		protected virtual ActionResult RedirectToReferrer()
 		{
 			if (Request.UrlReferrer != null && Request.UrlReferrer.ToString().HasValue())

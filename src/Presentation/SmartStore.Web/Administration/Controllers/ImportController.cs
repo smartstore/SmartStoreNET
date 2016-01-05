@@ -125,7 +125,7 @@ namespace SmartStore.Admin.Controllers
 			}
 			catch (Exception exception)
 			{
-				NotifyError(exception);
+				NotifyError(exception, true, false);
 			}
 		}
 

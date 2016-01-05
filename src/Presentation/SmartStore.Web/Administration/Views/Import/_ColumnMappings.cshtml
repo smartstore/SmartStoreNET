@@ -1,6 +1,6 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
 @model ImportProfileModel
-@if (Model.ColumnMappings.Any())
+@if (Model.ColumnMappings != null && Model.ColumnMappings.Any())
 {
 	<p>&nbsp;</p>
 

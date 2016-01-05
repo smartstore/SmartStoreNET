@@ -367,6 +367,21 @@ namespace SmartStore.Services.Catalog.Importer
 			return _urlRecordRepository.Context.SaveChanges();
 		}
 
+		private void ProcessStoreMappings(IImportExecuteContext context, ImportRow<Product>[] batch)
+		{
+			foreach (var row in batch)
+			{
+				var limitedToStore = row.GetDataValue<bool>("LimitedToStores");
+
+				if (limitedToStore)
+				{
+					var storeIds = row.GetDataValue<List<int>>("StoreIds");
+
+					_storeMappingService.SaveStoreMappings(row.Entity, storeIds == null ? new int[0] : storeIds.ToArray());
+				}
+			}
+		}
+
 		private int ProcessProducts(IImportExecuteContext context, ImportRow<Product>[] batch, DateTime utcNow)
 		{
 			_productRepository.AutoCommitEnabled = true;
@@ -497,12 +512,6 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, product, (x) => x.AvailableEndDateTimeUtc);
 				row.SetProperty(context.Result, product, (x) => x.LimitedToStores);
 
-				var storeIds = row.GetDataValue<List<int>>("StoreIds");
-				if (storeIds != null && storeIds.Any())
-				{
-					_storeMappingService.SaveStoreMappings(product, storeIds.ToArray());
-				}
-
 				row.SetProperty(context.Result, product, (x) => x.CreatedOnUtc, utcNow);
 				product.UpdatedOnUtc = utcNow;
 
@@ -583,6 +592,23 @@ namespace SmartStore.Services.Catalog.Importer
 						catch (Exception exception)
 						{
 							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessSlugs");
+						}
+						finally
+						{
+							_productRepository.Context.AutoDetectChangesEnabled = false;
+						}
+					}
+
+					if (segmenter.HasColumn("LimitedToStores") && segmenter.HasColumn("StoreIds"))
+					{
+						try
+						{
+							_productRepository.Context.AutoDetectChangesEnabled = true;
+							ProcessStoreMappings(context, batch);
+						}
+						catch (Exception exception)
+						{
+							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessStoreMappings");
 						}
 						finally
 						{

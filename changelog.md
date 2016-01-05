@@ -84,6 +84,7 @@
 * #805 Product filter is reset if 'product sorting' or 'view mode' or 'amount of displayed products per page' is changed
 * Hide link to a topic page if it is limited to stores
 * #829 Activity log: Searching by customer email out of function
+* Product import: Store mappings were not applied when inserting new records
 
 
 ## SmartStore.NET 2.2.2

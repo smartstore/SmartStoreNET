@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
@@ -92,7 +93,7 @@ namespace SmartStore.Web.Framework.Controllers
 				LogException(exception);
 			}
 
-			Services.Notifier.Error(exception.ToAllMessages(), durable);
+			Services.Notifier.Error(HttpUtility.HtmlEncode(exception.ToAllMessages()), durable);
 		}
 
 		/// <summary>

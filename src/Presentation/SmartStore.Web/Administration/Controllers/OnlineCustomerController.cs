@@ -81,27 +81,35 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
+			var model = new GridModel<OnlineCustomerModel>();
 
-            var customers = _customerService.GetOnlineCustomers(DateTime.UtcNow.AddMinutes(-_customerSettings.OnlineCustomerMinutes),
-                null, command.Page - 1, command.PageSize);
-            var model = new GridModel<OnlineCustomerModel>
-            {
-                Data = customers.Select(x =>
-                {
-                    return new OnlineCustomerModel()
-                    {
-                        Id = x.Id,
-                        CustomerInfo = x.IsRegistered() ? x.Email : _localizationService.GetResource("Admin.Customers.Guest"),
-                        LastIpAddress = x.LastIpAddress,
-                        Location = _geoCountryLookup.LookupCountryName(x.LastIpAddress),
-                        LastActivityDate = _dateTimeHelper.ConvertToUserTime(x.LastActivityDateUtc, DateTimeKind.Utc),
-                        LastVisitedPage = x.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage)
-                    };
-                }),
-                Total = customers.TotalCount
-            };
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+			{
+				var lastActivityFrom = DateTime.UtcNow.AddMinutes(-_customerSettings.OnlineCustomerMinutes);
+				var customers = _customerService.GetOnlineCustomers(lastActivityFrom, null, command.Page - 1, command.PageSize);
+
+				model.Data = customers.Select(x =>
+				{
+					return new OnlineCustomerModel
+					{
+						Id = x.Id,
+						CustomerInfo = x.IsRegistered() ? x.Email : T("Admin.Customers.Guest").Text,
+						LastIpAddress = x.LastIpAddress,
+						Location = _geoCountryLookup.LookupCountryName(x.LastIpAddress),
+						LastActivityDate = _dateTimeHelper.ConvertToUserTime(x.LastActivityDateUtc, DateTimeKind.Utc),
+						LastVisitedPage = x.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage)
+					};
+				});
+
+				model.Total = customers.TotalCount;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<OnlineCustomerModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = model

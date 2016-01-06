@@ -1532,44 +1532,49 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult AllSettings(GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
-                return AccessDeniedView();
+			var model = new GridModel<SettingModel>();
 
-			var stores = _services.StoreService.GetAllStores();
-			string allStoresString = _services.Localization.GetResource("Admin.Common.StoresAll");
-            
-            var settings = _services.Settings
-                .GetAllSettings()
-				.Select(x =>
-				{
-					var settingModel = new SettingModel()
-					{
-						Id = x.Id,
-						Name = x.Name,
-						Value = x.Value,
-						StoreId = x.StoreId
-					};
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+			{
+				var stores = _services.StoreService.GetAllStores();
+				string allStoresString = _services.Localization.GetResource("Admin.Common.StoresAll");
 
-					if (x.StoreId == 0)
+				var settings = _services.Settings
+					.GetAllSettings()
+					.Select(x =>
 					{
-						settingModel.Store = allStoresString;
-					}
-					else
-					{
-						var store = stores.FirstOrDefault(s => s.Id == x.StoreId);
-						settingModel.Store = store != null ? store.Name : "Unknown";
-					}
+						var settingModel = new SettingModel()
+						{
+							Id = x.Id,
+							Name = x.Name,
+							Value = x.Value,
+							StoreId = x.StoreId
+						};
 
-					return settingModel;
-				})
-                .ForCommand(command)
-                .ToList();
-            
-            var model = new GridModel<SettingModel>
-            {
-                Data = settings.PagedForCommand(command),
-                Total = settings.Count
-            };
+						if (x.StoreId == 0)
+						{
+							settingModel.Store = allStoresString;
+						}
+						else
+						{
+							var store = stores.FirstOrDefault(s => s.Id == x.StoreId);
+							settingModel.Store = store != null ? store.Name : "".NaIfEmpty();
+						}
+
+						return settingModel;
+					})
+					.ForCommand(command)
+					.ToList();
+
+				model.Data = settings.PagedForCommand(command);
+				model.Total = settings.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<SettingModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {
@@ -1580,80 +1585,76 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult SettingUpdate(SettingModel model, GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
-                return AccessDeniedView();
-
-            if (model.Name != null)
-                model.Name = model.Name.Trim();
-            if (model.Value != null)
-                model.Value = model.Value.Trim();
-
-            if (!ModelState.IsValid)
-            {
-                //display the first model error
-                var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-                return Content(modelStateErrors.FirstOrDefault());
-            }
-
-            var setting = _services.Settings.GetSettingById(model.Id);
-			if (setting == null)
-				return Content(_services.Localization.GetResource("Admin.Configuration.Settings.NoneWithThatId"));
-
-			var storeId = model.Store.ToInt(); //use Store property (not StoreId) because appropriate property is stored in it
-
-			if (!setting.Name.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase) ||
-				setting.StoreId != storeId)
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
 			{
-				//setting name or store has been changed
-				_services.Settings.DeleteSetting(setting);
+				if (model.Name != null)
+					model.Name = model.Name.Trim();
+				if (model.Value != null)
+					model.Value = model.Value.Trim();
+
+				if (!ModelState.IsValid)
+				{
+					var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+					return Content(modelStateErrors.FirstOrDefault());
+				}
+
+				var setting = _services.Settings.GetSettingById(model.Id);
+				if (setting == null)
+					return Content(T("Admin.Configuration.Settings.NoneWithThatId"));
+
+				var storeId = model.Store.ToInt(); //use Store property (not StoreId) because appropriate property is stored in it
+
+				if (!setting.Name.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase) || setting.StoreId != storeId)
+				{
+					//setting name or store has been changed
+					_services.Settings.DeleteSetting(setting);
+				}
+
+				_services.Settings.SetSetting(model.Name, model.Value, storeId);
+
+				//activity log
+				_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 			}
-
-			_services.Settings.SetSetting(model.Name, model.Value, storeId);
-
-            //activity log
-            _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
 
             return AllSettings(command);
         }
         [GridAction(EnableCustomBinding = true)]
         public ActionResult SettingAdd([Bind(Exclude = "Id")] SettingModel model, GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
-                return AccessDeniedView();
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+			{
+				if (model.Name != null)
+					model.Name = model.Name.Trim();
+				if (model.Value != null)
+					model.Value = model.Value.Trim();
 
-            if (model.Name != null)
-                model.Name = model.Name.Trim();
-            if (model.Value != null)
-                model.Value = model.Value.Trim();
+				if (!ModelState.IsValid)
+				{
+					var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+					return Content(modelStateErrors.FirstOrDefault());
+				}
 
-            if (!ModelState.IsValid)
-            {
-                //display the first model error
-                var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-                return Content(modelStateErrors.FirstOrDefault());
-            }
+				var storeId = model.Store.ToInt(); //use Store property (not StoreId) because appropriate property is stored in it
+				_services.Settings.SetSetting(model.Name, model.Value, storeId);
 
-			var storeId = model.Store.ToInt(); //use Store property (not StoreId) because appropriate property is stored in it
-			_services.Settings.SetSetting(model.Name, model.Value, storeId);
-
-            //activity log
-            _customerActivityService.InsertActivity("AddNewSetting", _services.Localization.GetResource("ActivityLog.AddNewSetting"), model.Name);
+				//activity log
+				_customerActivityService.InsertActivity("AddNewSetting", T("ActivityLog.AddNewSetting", model.Name));
+			}
 
             return AllSettings(command);
         }
         [GridAction(EnableCustomBinding = true)]
         public ActionResult SettingDelete(int id, GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
-                return AccessDeniedView();
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+			{
+				var setting = _services.Settings.GetSettingById(id);
 
-            var setting = _services.Settings.GetSettingById(id);
-            if (setting == null)
-                throw new ArgumentException("No setting found with the specified id");
-            _services.Settings.DeleteSetting(setting);
+				_services.Settings.DeleteSetting(setting);
 
-            //activity log
-            _customerActivityService.InsertActivity("DeleteSetting", _services.Localization.GetResource("ActivityLog.DeleteSetting"), setting.Name);
+				//activity log
+				_customerActivityService.InsertActivity("DeleteSetting", T("ActivityLog.DeleteSetting", setting.Name));
+			}
 
             return AllSettings(command);
         }

@@ -171,7 +171,6 @@ namespace SmartStore.Admin.Controllers
 
         #region Methods
 
-        //list
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -191,26 +190,31 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command, ReturnRequestListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
-                return AccessDeniedView();
+			var gridModel = new GridModel<ReturnRequestModel>();
 
-			var data = new List<ReturnRequestModel>();
-
-			var returnRequests = _orderService.SearchReturnRequests(model.SearchStoreId, 0, 0, model.SearchReturnRequestStatus,
-				command.Page - 1, command.PageSize, model.SearchId ?? 0);
-
-			foreach (var rr in returnRequests)
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
 			{
-				var m = new ReturnRequestModel();
-				if (PrepareReturnRequestModel(m, rr, false))
-					data.Add(m);
+				var data = new List<ReturnRequestModel>();
+
+				var returnRequests = _orderService.SearchReturnRequests(model.SearchStoreId, 0, 0, model.SearchReturnRequestStatus,
+					command.Page - 1, command.PageSize, model.SearchId ?? 0);
+
+				foreach (var rr in returnRequests)
+				{
+					var m = new ReturnRequestModel();
+					if (PrepareReturnRequestModel(m, rr, false))
+						data.Add(m);
+				}
+
+				gridModel.Data = data;
+				gridModel.Total = returnRequests.TotalCount;
 			}
-
-			var gridModel = new GridModel<ReturnRequestModel>
+			else
 			{
-				Data = data,
-				Total = returnRequests.TotalCount,
-			};
+				gridModel.Data = Enumerable.Empty<ReturnRequestModel>();
+
+				NotifyAccessDenied();
+			}
 
 			return new JsonResult
 			{
@@ -218,7 +222,6 @@ namespace SmartStore.Admin.Controllers
 			};
         }
 
-        //edit
         public ActionResult Edit(int id)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
@@ -300,7 +303,6 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("Edit", returnRequest.Id);
         }
 
-        //delete
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {

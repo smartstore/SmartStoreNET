@@ -109,34 +109,40 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command, ProductReviewListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			var gridModel = new GridModel<ProductReviewModel>();
 
-            DateTime? createdOnFromValue = (model.CreatedOnFrom == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnFrom.Value, _dateTimeHelper.CurrentTimeZone);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				DateTime? createdOnFromValue = (model.CreatedOnFrom == null) ? null
+					: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnFrom.Value, _dateTimeHelper.CurrentTimeZone);
 
-            DateTime? createdToFromValue = (model.CreatedOnTo == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnTo.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+				DateTime? createdToFromValue = (model.CreatedOnTo == null) ? null
+					: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnTo.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
-            var productReviews = _customerContentService.GetAllCustomerContent<ProductReview>(0, null,
-                createdOnFromValue, createdToFromValue);
-            var gridModel = new GridModel<ProductReviewModel>
-            {
-                Data = productReviews.PagedForCommand(command).Select(x =>
-                {
-                    var m = new ProductReviewModel();
-                    PrepareProductReviewModel(m, x, false, true);
-                    return m;
-                }),
-                Total = productReviews.Count,
-            };
+				var productReviews = _customerContentService.GetAllCustomerContent<ProductReview>(0, null, createdOnFromValue, createdToFromValue);
+
+				gridModel.Data = productReviews.PagedForCommand(command).Select(x =>
+				{
+					var m = new ProductReviewModel();
+					PrepareProductReviewModel(m, x, false, true);
+					return m;
+				});
+
+				gridModel.Total = productReviews.Count;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<ProductReviewModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
             };
         }
 
-        //edit
         public ActionResult Edit(int id)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -186,7 +192,6 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
         
-        //delete
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {

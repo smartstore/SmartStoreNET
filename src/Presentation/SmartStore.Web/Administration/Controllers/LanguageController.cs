@@ -60,7 +60,8 @@ namespace SmartStore.Admin.Controllers
         }
 
         #endregion 
-        #region Utilities
+        
+		#region Utilities
 
         [NonAction]
         private void PrepareFlagsModel(LanguageModel model)
@@ -123,18 +124,25 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
-                return AccessDeniedView();
+			var model = new GridModel<LanguageModel>();
 
-            var languages = _languageService.GetAllLanguages(true);
-            var gridModel = new GridModel<LanguageModel>
-            {
-                Data = languages.Select(x => x.ToModel()),
-                Total = languages.Count()
-            };
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
+			{
+				var languages = _languageService.GetAllLanguages(true);
+
+				model.Data = languages.Select(x => x.ToModel());
+				model.Total = languages.Count();
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<LanguageModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
-                Data = gridModel
+                Data = model
             };
         }
 
@@ -329,31 +337,37 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult Resources(int languageId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
-                return AccessDeniedView();
+			var model = new GridModel<LanguageResourceModel>();
 
-            var language = _languageService.GetLanguageById(languageId);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
+			{
+				var language = _languageService.GetLanguageById(languageId);
 
-            var resources = _localizationService
-                .GetResourceValues(languageId, true)
-                .OrderBy(x => x.Key)
-                .Where(x => x.Key != "!!___EOF___!!" && x.Value != null)
-                .Select(x => new LanguageResourceModel
-                {
-                    LanguageId = languageId,
-                    LanguageName = language.Name,
-                    Id = x.Value.Item1,
-                    Name = x.Key,
-                    Value = x.Value.Item2.EmptyNull(),
-                })
-                .ForCommand(command)
-                .ToList();
+				var resources = _localizationService
+					.GetResourceValues(languageId, true)
+					.OrderBy(x => x.Key)
+					.Where(x => x.Key != "!!___EOF___!!" && x.Value != null)
+					.Select(x => new LanguageResourceModel
+					{
+						LanguageId = languageId,
+						LanguageName = language.Name,
+						Id = x.Value.Item1,
+						Name = x.Key,
+						Value = x.Value.Item2.EmptyNull(),
+					})
+					.ForCommand(command)
+					.ToList();
 
-            var model = new GridModel<LanguageResourceModel>
-            {
-                Data = resources.PagedForCommand(command),
-                Total = resources.Count
-            };
+				model.Data = resources.PagedForCommand(command);
+				model.Total = resources.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<LanguageResourceModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = model
@@ -363,36 +377,36 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult ResourceUpdate(LanguageResourceModel model, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
+			{
+				if (model.Name != null)
+					model.Name = model.Name.Trim();
+				if (model.Value != null)
+					model.Value = model.Value.Trim();
 
-            if (model.Name != null)
-                model.Name = model.Name.Trim();
-            if (model.Value != null)
-                model.Value = model.Value.Trim();
+				if (!ModelState.IsValid)
+				{
+					var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+					return Content(modelStateErrors.FirstOrDefault());
+				}
 
-            if (!ModelState.IsValid)
-            {
-                //display the first model error
-                var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-                return Content(modelStateErrors.FirstOrDefault());
-            }
+				var resource = _localizationService.GetLocaleStringResourceById(model.Id);
+				// if the resourceName changed, ensure it isn't being used by another resource
+				if (!resource.ResourceName.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase))
+				{
+					var res = _localizationService.GetLocaleStringResourceByName(model.Name, model.LanguageId, false);
+					if (res != null && res.Id != resource.Id)
+					{
+						return Content(T("Admin.Configuration.Languages.Resources.NameAlreadyExists", res.ResourceName));
+					}
+				}
 
-            var resource = _localizationService.GetLocaleStringResourceById(model.Id);
-            // if the resourceName changed, ensure it isn't being used by another resource
-            if (!resource.ResourceName.Equals(model.Name, StringComparison.InvariantCultureIgnoreCase))
-            {
-                var res = _localizationService.GetLocaleStringResourceByName(model.Name, model.LanguageId, false);
-                if (res != null && res.Id != resource.Id)
-                {
-                    return Content(string.Format(_localizationService.GetResource("Admin.Configuration.Languages.Resources.NameAlreadyExists"), res.ResourceName));
-                }
-            }
+				resource.ResourceName = model.Name;
+				resource.ResourceValue = model.Value;
+				resource.IsTouched = true;
 
-            resource.ResourceName = model.Name;
-            resource.ResourceValue = model.Value;
-            resource.IsTouched = true;
-            _localizationService.UpdateLocaleStringResource(resource);
+				_localizationService.UpdateLocaleStringResource(resource);
+			}
 
             return Resources(model.LanguageId, command);
         }
@@ -400,47 +414,47 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult ResourceAdd(int id, LanguageResourceModel model, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
+			{
+				if (model.Name != null)
+					model.Name = model.Name.Trim();
+				if (model.Value != null)
+					model.Value = model.Value.Trim();
 
-            if (model.Name != null)
-                model.Name = model.Name.Trim();
-            if (model.Value != null)
-                model.Value = model.Value.Trim();
+				if (!ModelState.IsValid)
+				{
+					var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+					return Content(modelStateErrors.FirstOrDefault());
+				}
 
-            if (!ModelState.IsValid)
-            {
-                //display the first model error
-                var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-                return Content(modelStateErrors.FirstOrDefault());
-            }
+				var res = _localizationService.GetLocaleStringResourceByName(model.Name, model.LanguageId, false);
+				if (res == null)
+				{
+					var resource = new LocaleStringResource { LanguageId = id };
+					resource.ResourceName = model.Name;
+					resource.ResourceValue = model.Value;
+					resource.IsTouched = true;
 
-            var res = _localizationService.GetLocaleStringResourceByName(model.Name, model.LanguageId, false);
-            if (res == null)
-            {
-                var resource = new LocaleStringResource { LanguageId = id };
-                resource.ResourceName = model.Name;
-                resource.ResourceValue = model.Value;
-                resource.IsTouched = true;
-                _localizationService.InsertLocaleStringResource(resource);
-            }
-            else
-            {
-                return Content(string.Format(_localizationService.GetResource("Admin.Configuration.Languages.Resources.NameAlreadyExists"), model.Name));
-            }
+					_localizationService.InsertLocaleStringResource(resource);
+				}
+				else
+				{
+					return Content(T("Admin.Configuration.Languages.Resources.NameAlreadyExists", model.Name));
+				}
+			}
+
             return Resources(id, command);
         }
 
         [GridAction(EnableCustomBinding = true)]
         public ActionResult ResourceDelete(int id, int languageId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
+			{
+				var resource = _localizationService.GetLocaleStringResourceById(id);
 
-            var resource = _localizationService.GetLocaleStringResourceById(id);
-            if (resource == null)
-                throw new ArgumentException("No resource found with the specified id");
-            _localizationService.DeleteLocaleStringResource(resource);
+				_localizationService.DeleteLocaleStringResource(resource);
+			}
 
             return Resources(languageId, command);
         }

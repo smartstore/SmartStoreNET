@@ -107,20 +107,19 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command, UrlRecordListModel model)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
-				return AccessDeniedView();
+			var gridModel = new GridModel<UrlRecordModel>();
 
-			var allLanguages = _languageService.GetAllLanguages(true);
-			var defaultLanguageName = T("Admin.System.SeNames.Language.Standard");
-
-			var urlRecords = _urlRecordService.GetAllUrlRecords(command.Page - 1, command.PageSize,
-				model.SeName, model.EntityName, model.EntityId, model.LanguageId, model.IsActive);
-
-			var slugsPerEntity = _urlRecordService.CountSlugsPerEntity(urlRecords.Select(x => x.Id).Distinct().ToArray());
-
-			var gridModel = new GridModel<UrlRecordModel>
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
 			{
-				Data = urlRecords.Select(x =>
+				var allLanguages = _languageService.GetAllLanguages(true);
+				var defaultLanguageName = T("Admin.System.SeNames.Language.Standard");
+
+				var urlRecords = _urlRecordService.GetAllUrlRecords(command.Page - 1, command.PageSize,
+					model.SeName, model.EntityName, model.EntityId, model.LanguageId, model.IsActive);
+
+				var slugsPerEntity = _urlRecordService.CountSlugsPerEntity(urlRecords.Select(x => x.Id).Distinct().ToArray());
+
+				gridModel.Data = urlRecords.Select(x =>
 				{
 					string languageName;
 
@@ -141,9 +140,16 @@ namespace SmartStore.Admin.Controllers
 					urlRecordModel.SlugsPerEntity = (slugsPerEntity.ContainsKey(x.Id) ? slugsPerEntity[x.Id] : 0);
 
 					return urlRecordModel;
-				}),
-				Total = urlRecords.TotalCount
-			};
+				});
+
+				gridModel.Total = urlRecords.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<UrlRecordModel>();
+
+				NotifyAccessDenied();
+			}
 
 			return new JsonResult
 			{

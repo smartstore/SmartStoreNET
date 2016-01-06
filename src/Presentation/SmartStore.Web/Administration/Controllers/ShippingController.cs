@@ -149,19 +149,24 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult Methods(GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
-                return AccessDeniedView();
+			var model = new GridModel<ShippingMethodModel>();
 
-            var shippingMethodsModel = _shippingService.GetAllShippingMethods()
-                .Select(x => x.ToModel())
-                .ForCommand(command)
-                .ToList();
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+			{
+				var shippingMethodsModel = _shippingService.GetAllShippingMethods()
+					.Select(x => x.ToModel())
+					.ForCommand(command)
+					.ToList();
 
-            var model = new GridModel<ShippingMethodModel>
-            {
-                Data = shippingMethodsModel,
-                Total = shippingMethodsModel.Count
-            };
+				model.Data = shippingMethodsModel;
+				model.Total = shippingMethodsModel.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<ShippingMethodModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {

@@ -103,24 +103,36 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManagePolls))
-                return AccessDeniedView();
+			var gridModel = new GridModel<PollModel>();
 
-            var polls = _pollService.GetPolls(0, false, command.Page - 1, command.PageSize, true);
-            var gridModel = new GridModel<PollModel>
-            {
-                Data = polls.Select(x =>
-                {
-                    var m = x.ToModel();
-                    if (x.StartDateUtc.HasValue)
-                        m.StartDate = _dateTimeHelper.ConvertToUserTime(x.StartDateUtc.Value, DateTimeKind.Utc);
-                    if (x.EndDateUtc.HasValue)
-                        m.EndDate = _dateTimeHelper.ConvertToUserTime(x.EndDateUtc.Value, DateTimeKind.Utc);
-                    m.LanguageName = x.Language.Name;
-                    return m;
-                }),
-                Total = polls.TotalCount
-            };
+			if (_permissionService.Authorize(StandardPermissionProvider.ManagePolls))
+			{
+				var polls = _pollService.GetPolls(0, false, command.Page - 1, command.PageSize, true);
+
+				gridModel.Data = polls.Select(x =>
+				{
+					var m = x.ToModel();
+
+					if (x.StartDateUtc.HasValue)
+						m.StartDate = _dateTimeHelper.ConvertToUserTime(x.StartDateUtc.Value, DateTimeKind.Utc);
+
+					if (x.EndDateUtc.HasValue)
+						m.EndDate = _dateTimeHelper.ConvertToUserTime(x.EndDateUtc.Value, DateTimeKind.Utc);
+
+					m.LanguageName = x.Language.Name;
+
+					return m;
+				});
+
+				gridModel.Total = polls.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<PollModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
@@ -245,30 +257,35 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult PollAnswers(int pollId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManagePolls))
-                return AccessDeniedView();
+			var model = new GridModel<PollAnswerModel>();
 
-            var poll = _pollService.GetPollById(pollId);
-            if (poll == null)
-                throw new ArgumentException("No poll found with the specified id", "pollId");
+			if (_permissionService.Authorize(StandardPermissionProvider.ManagePolls))
+			{
+				var poll = _pollService.GetPollById(pollId);
 
-            var answers = poll.PollAnswers.OrderBy(x=>x.DisplayOrder).ToList();
+				var answers = poll.PollAnswers.OrderBy(x => x.DisplayOrder).ToList();
 
-            var model = new GridModel<PollAnswerModel>
-            {
-                Data = answers.Select(x => 
-                {
-                    return new PollAnswerModel()
-                    {
-                        Id = x.Id,
-                        PollId = x.PollId,
-                        Name = x.Name,
-                        NumberOfVotes = x.NumberOfVotes,
-                        DisplayOrder1 = x.DisplayOrder
-                    };
-                }),
-                Total = answers.Count
-            };
+				model.Data = answers.Select(x =>
+				{
+					return new PollAnswerModel
+					{
+						Id = x.Id,
+						PollId = x.PollId,
+						Name = x.Name,
+						NumberOfVotes = x.NumberOfVotes,
+						DisplayOrder1 = x.DisplayOrder
+					};
+				});
+
+				model.Total = answers.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<PollAnswerModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = model
@@ -279,23 +296,21 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult PollAnswerUpdate(PollAnswerModel model, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManagePolls))
-                return AccessDeniedView();
-            
-            if (!ModelState.IsValid)
-            {
-                //display the first model error
-                var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-                return Content(modelStateErrors.FirstOrDefault());
-            }
+			var pollAnswer = _pollService.GetPollAnswerById(model.Id);
 
-            var pollAnswer = _pollService.GetPollAnswerById(model.Id);
-            if (pollAnswer == null)
-                throw new ArgumentException("No poll answer found with the specified id", "id");
+			if (_permissionService.Authorize(StandardPermissionProvider.ManagePolls))
+			{
+				if (!ModelState.IsValid)
+				{
+					var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+					return Content(modelStateErrors.FirstOrDefault());
+				}
 
-            pollAnswer.Name = model.Name;
-            pollAnswer.DisplayOrder = model.DisplayOrder1;
-            _pollService.UpdatePoll(pollAnswer.Poll);
+				pollAnswer.Name = model.Name;
+				pollAnswer.DisplayOrder = model.DisplayOrder1;
+
+				_pollService.UpdatePoll(pollAnswer.Poll);
+			}
 
             return PollAnswers(pollAnswer.PollId, command);
         }
@@ -303,44 +318,39 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult PollAnswerAdd(int pollId, PollAnswerModel model, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManagePolls))
-                return AccessDeniedView();
-           
-            if (!ModelState.IsValid)
-            {
-                //display the first model error
-                var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-                return Content(modelStateErrors.FirstOrDefault());
-            }
+			if (_permissionService.Authorize(StandardPermissionProvider.ManagePolls))
+			{
+				if (!ModelState.IsValid)
+				{
+					var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+					return Content(modelStateErrors.FirstOrDefault());
+				}
 
-            var poll = _pollService.GetPollById(pollId);
-            if (poll == null)
-                throw new ArgumentException("No poll found with the specified id", "pollId");
+				var poll = _pollService.GetPollById(pollId);
 
-            poll.PollAnswers.Add(new PollAnswer 
-            {
-                Name = model.Name,
-                DisplayOrder = model.DisplayOrder1
-            });
-            _pollService.UpdatePoll(poll);
+				poll.PollAnswers.Add(new PollAnswer
+				{
+					Name = model.Name,
+					DisplayOrder = model.DisplayOrder1
+				});
 
-            return PollAnswers(poll.Id, command);
+				_pollService.UpdatePoll(poll);
+			}
+
+            return PollAnswers(pollId, command);
         }
 
 
         [GridAction(EnableCustomBinding = true)]
         public ActionResult PollAnswerDelete(int id, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManagePolls))
-                return AccessDeniedView();
+			var pollAnswer = _pollService.GetPollAnswerById(id);
+			var pollId = pollAnswer.PollId;
 
-            var pollAnswer = _pollService.GetPollAnswerById(id);
-            if (pollAnswer == null)
-                throw new ArgumentException("No poll answer found with the specified id", "id");
-
-            int pollId = pollAnswer.PollId;
-            _pollService.DeletePollAnswer(pollAnswer);
-
+			if (_permissionService.Authorize(StandardPermissionProvider.ManagePolls))
+			{
+				_pollService.DeletePollAnswer(pollAnswer);
+			}
 
             return PollAnswers(pollId, command);
         }

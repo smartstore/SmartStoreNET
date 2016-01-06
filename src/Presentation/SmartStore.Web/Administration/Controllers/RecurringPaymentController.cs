@@ -113,7 +113,6 @@ namespace SmartStore.Admin.Controllers
 
         #region Recurring payment
 
-        //list
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -131,27 +130,34 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			var gridModel = new GridModel<RecurringPaymentModel>();
 
-            var payments = _orderService.SearchRecurringPayments(0, 0, 0, null, true);
-            var gridModel = new GridModel<RecurringPaymentModel>
-            {
-                Data = payments.PagedForCommand(command).Select(x =>
-                {
-                    var m = new RecurringPaymentModel();
-                    PrepareRecurringPaymentModel(m, x, false);
-                    return m;
-                }),
-                Total = payments.Count,
-            };
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+			{
+				var payments = _orderService.SearchRecurringPayments(0, 0, 0, null, true);
+
+				gridModel.Data = payments.PagedForCommand(command).Select(x =>
+				{
+					var m = new RecurringPaymentModel();
+					PrepareRecurringPaymentModel(m, x, false);
+					return m;
+				});
+
+				gridModel.Total = payments.Count;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<RecurringPaymentModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
             };
         }
 
-        //edit
         public ActionResult Edit(int id)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
@@ -189,7 +195,6 @@ namespace SmartStore.Admin.Controllers
             return continueEditing ? RedirectToAction("Edit", payment.Id) : RedirectToAction("List");
         }
 
-        //delete
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -214,26 +219,30 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult HistoryList(int recurringPaymentId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			var model = new GridModel<RecurringPaymentModel.RecurringPaymentHistoryModel>();
 
-            var payment = _orderService.GetRecurringPaymentById(recurringPaymentId);
-            if (payment == null)
-                throw new ArgumentException("No recurring payment found with the specified id");
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+			{
+				var payment = _orderService.GetRecurringPaymentById(recurringPaymentId);
 
-            var historyModel = payment.RecurringPaymentHistory.OrderBy(x => x.CreatedOnUtc)
-                .Select(x =>
-                {
-                    var m = new RecurringPaymentModel.RecurringPaymentHistoryModel();
-                    PrepareRecurringPaymentHistoryModel(m, x);
-                    return m;
-                })
-                .ToList();
-            var model = new GridModel<RecurringPaymentModel.RecurringPaymentHistoryModel>
-            {
-                Data = historyModel,
-                Total = historyModel.Count
-            };
+				var historyModel = payment.RecurringPaymentHistory.OrderBy(x => x.CreatedOnUtc)
+					.Select(x =>
+					{
+						var m = new RecurringPaymentModel.RecurringPaymentHistoryModel();
+						PrepareRecurringPaymentHistoryModel(m, x);
+						return m;
+					})
+					.ToList();
+
+				model.Data = historyModel;
+				model.Total = historyModel.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<RecurringPaymentModel.RecurringPaymentHistoryModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {

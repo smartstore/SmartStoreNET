@@ -64,49 +64,55 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult LogList(GridCommand command, LogListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageSystemLog))
-                return AccessDeniedView();
+			var gridModel = new GridModel<LogModel>();
 
-            DateTime? createdOnFromValue = (model.CreatedOnFrom == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnFrom.Value, _dateTimeHelper.CurrentTimeZone);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageSystemLog))
+			{
+				DateTime? createdOnFromValue = (model.CreatedOnFrom == null) ? null
+					: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnFrom.Value, _dateTimeHelper.CurrentTimeZone);
 
-            DateTime? createdToFromValue = (model.CreatedOnTo == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnTo.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+				DateTime? createdToFromValue = (model.CreatedOnTo == null) ? null
+					: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnTo.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
-            LogLevel? logLevel = model.LogLevelId > 0 ? (LogLevel?)(model.LogLevelId) : null;
+				LogLevel? logLevel = model.LogLevelId > 0 ? (LogLevel?)(model.LogLevelId) : null;
 
+				var logItems = Logger.GetAllLogs(createdOnFromValue, createdToFromValue, model.Message,
+					logLevel, command.Page - 1, command.PageSize, model.MinFrequency);
 
-			var logItems = Logger.GetAllLogs(createdOnFromValue, createdToFromValue, model.Message,
-                logLevel, command.Page - 1, command.PageSize, model.MinFrequency);
-
-            var gridModel = new GridModel<LogModel>
-            {
-                Data = logItems.Select(x =>
-                {
-                    var logModel = new LogModel()
-                    {
-                        Id = x.Id,
-                        LogLevelHint = s_logLevelHintMap[x.LogLevel],
-                        LogLevel = x.LogLevel.GetLocalizedEnum(_localizationService, _workContext),
-                        ShortMessage = x.ShortMessage,
-                        FullMessage = x.FullMessage,
-                        IpAddress = x.IpAddress,
-                        CustomerId = x.CustomerId,
-                        CustomerEmail = x.Customer != null ? x.Customer.Email : null,
-                        PageUrl = x.PageUrl,
-                        ReferrerUrl = x.ReferrerUrl,
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
+				gridModel.Data = logItems.Select(x =>
+				{
+					var logModel = new LogModel
+					{
+						Id = x.Id,
+						LogLevelHint = s_logLevelHintMap[x.LogLevel],
+						LogLevel = x.LogLevel.GetLocalizedEnum(_localizationService, _workContext),
+						ShortMessage = x.ShortMessage,
+						FullMessage = x.FullMessage,
+						IpAddress = x.IpAddress,
+						CustomerId = x.CustomerId,
+						CustomerEmail = x.Customer != null ? x.Customer.Email : null,
+						PageUrl = x.PageUrl,
+						ReferrerUrl = x.ReferrerUrl,
+						CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
 						Frequency = x.Frequency,
 						ContentHash = x.ContentHash
-                    };
+					};
 
 					if (x.UpdatedOnUtc.HasValue)
 						logModel.UpdatedOn = _dateTimeHelper.ConvertToUserTime(x.UpdatedOnUtc.Value, DateTimeKind.Utc);
 
 					return logModel;
-                }),
-                Total = logItems.TotalCount
-            };
+				});
+
+				gridModel.Total = logItems.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<LogModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel

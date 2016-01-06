@@ -116,18 +116,24 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult Categories(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTaxSettings))
-                return AccessDeniedView();
+			var model = new GridModel<TaxCategoryModel>();
 
-            var categoriesModel = _taxCategoryService.GetAllTaxCategories()
-                .Select(x => x.ToModel())
-                .ForCommand(command)
-                .ToList();
-            var model = new GridModel<TaxCategoryModel>
-            {
-                Data = categoriesModel,
-                Total = categoriesModel.Count
-            };
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageTaxSettings))
+			{
+				var categoriesModel = _taxCategoryService.GetAllTaxCategories()
+					.Select(x => x.ToModel())
+					.ForCommand(command)
+					.ToList();
+
+				model.Data = categoriesModel;
+				model.Total = categoriesModel.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<TaxCategoryModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {
@@ -138,19 +144,19 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult CategoryUpdate(TaxCategoryModel model, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTaxSettings))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageTaxSettings))
+			{
+				if (!ModelState.IsValid)
+				{
+					var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+					return Content(modelStateErrors.FirstOrDefault());
+				}
 
-            if (!ModelState.IsValid)
-            {
-                //display the first model error
-                var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-                return Content(modelStateErrors.FirstOrDefault());
-            }
+				var taxCategory = _taxCategoryService.GetTaxCategoryById(model.Id);
+				taxCategory = model.ToEntity(taxCategory);
 
-            var taxCategory = _taxCategoryService.GetTaxCategoryById(model.Id);
-            taxCategory = model.ToEntity(taxCategory);
-            _taxCategoryService.UpdateTaxCategory(taxCategory);
+				_taxCategoryService.UpdateTaxCategory(taxCategory);
+			}
 
             return Categories(command);
         }
@@ -158,19 +164,19 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult CategoryAdd([Bind(Exclude = "Id")] TaxCategoryModel model, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTaxSettings))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageTaxSettings))
+			{
+				if (!ModelState.IsValid)
+				{
+					var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+					return Content(modelStateErrors.FirstOrDefault());
+				}
 
-            if (!ModelState.IsValid)
-            {
-                //display the first model error
-                var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-                return Content(modelStateErrors.FirstOrDefault());
-            }
+				var taxCategory = new TaxCategory();
+				taxCategory = model.ToEntity(taxCategory);
 
-            var taxCategory = new TaxCategory();
-            taxCategory = model.ToEntity(taxCategory);
-            _taxCategoryService.InsertTaxCategory(taxCategory);
+				_taxCategoryService.InsertTaxCategory(taxCategory);
+			}
 
             return Categories(command);
         }
@@ -178,13 +184,12 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult CategoryDelete(int id, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTaxSettings))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageTaxSettings))
+			{
+				var taxCategory = _taxCategoryService.GetTaxCategoryById(id);
 
-            var taxCategory = _taxCategoryService.GetTaxCategoryById(id);
-            if (taxCategory == null)
-                throw new ArgumentException("No tax category found with the specified id");
-            _taxCategoryService.DeleteTaxCategory(taxCategory);
+				_taxCategoryService.DeleteTaxCategory(taxCategory);
+			}
 
             return Categories(command);
         }

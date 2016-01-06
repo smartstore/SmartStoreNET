@@ -53,41 +53,47 @@ namespace SmartStore.Admin.Controllers
 		[GridAction(EnableCustomBinding = true)]
 		public ActionResult QueuedEmailList(GridCommand command, QueuedEmailListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
-                return AccessDeniedView();
+			var gridModel = new GridModel<QueuedEmailModel>();
 
-            DateTime? startDateValue = (model.SearchStartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchStartDate.Value, _dateTimeHelper.CurrentTimeZone);
-            DateTime? endDateValue = (model.SearchEndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchEndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
-
-			var q = new SearchEmailsQuery
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
 			{
-				EndTime = endDateValue,
-				From = model.SearchFromEmail,
-				MaxSendTries = model.SearchMaxSentTries,
-				OrderByLatest = true,
-				PageIndex = command.Page - 1,
-				PageSize = command.PageSize,
-				SendManually = model.SearchSendManually,
-				StartTime = startDateValue,
-				To = model.SearchToEmail,
-				UnsentOnly = model.SearchLoadNotSent
-			};
-            var queuedEmails = _queuedEmailService.SearchEmails(q);
+				DateTime? startDateValue = (model.SearchStartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchStartDate.Value, _dateTimeHelper.CurrentTimeZone);
+				DateTime? endDateValue = (model.SearchEndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchEndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
-            var gridModel = new GridModel<QueuedEmailModel>
-            {
-                Data = queuedEmails.Select(x =>
+				var q = new SearchEmailsQuery
 				{
-                    var m = x.ToModel();
-                    m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
+					EndTime = endDateValue,
+					From = model.SearchFromEmail,
+					MaxSendTries = model.SearchMaxSentTries,
+					OrderByLatest = true,
+					PageIndex = command.Page - 1,
+					PageSize = command.PageSize,
+					SendManually = model.SearchSendManually,
+					StartTime = startDateValue,
+					To = model.SearchToEmail,
+					UnsentOnly = model.SearchLoadNotSent
+				};
+				var queuedEmails = _queuedEmailService.SearchEmails(q);
 
-                    if (x.SentOnUtc.HasValue)
-                        m.SentOn = _dateTimeHelper.ConvertToUserTime(x.SentOnUtc.Value, DateTimeKind.Utc);
+				gridModel.Data = queuedEmails.Select(x =>
+				{
+					var m = x.ToModel();
+					m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
 
-                    return m;
-                }),
-                Total = queuedEmails.TotalCount
-            };
+					if (x.SentOnUtc.HasValue)
+						m.SentOn = _dateTimeHelper.ConvertToUserTime(x.SentOnUtc.Value, DateTimeKind.Utc);
+
+					return m;
+				});
+
+				gridModel.Total = queuedEmails.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<QueuedEmailModel>();
+
+				NotifyAccessDenied();
+			}
 
 			return new JsonResult
 			{

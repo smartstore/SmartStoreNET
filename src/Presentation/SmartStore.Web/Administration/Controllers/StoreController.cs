@@ -81,27 +81,32 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageStores))
-				return AccessDeniedView();
+			var gridModel = new GridModel<StoreModel>();
 
-			var storeModels = _storeService.GetAllStores()
-				.Select(x => 
-				{
-					var model = x.ToModel();
-
-					PrepareStoreModel(model, x);
-
-					model.Hosts = model.Hosts.EmptyNull().Replace(",", "<br />");
-
-					return model;
-				})
-				.ToList();
-
-			var gridModel = new GridModel<StoreModel>
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageStores))
 			{
-				Data = storeModels,
-				Total = storeModels.Count()
-			};
+				var storeModels = _storeService.GetAllStores()
+					.Select(x =>
+					{
+						var model = x.ToModel();
+
+						PrepareStoreModel(model, x);
+
+						model.Hosts = model.Hosts.EmptyNull().Replace(",", "<br />");
+
+						return model;
+					})
+					.ToList();
+
+				gridModel.Data = storeModels;
+				gridModel.Total = storeModels.Count();
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<StoreModel>();
+
+				NotifyAccessDenied();
+			}
 
 			return new JsonResult
 			{

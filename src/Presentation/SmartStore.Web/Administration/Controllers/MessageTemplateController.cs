@@ -162,15 +162,21 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command, MessageTemplateListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageTemplates))
-                return AccessDeniedView();
+			var gridModel = new GridModel<MessageTemplateModel>();
 
-			var messageTemplates = _messageTemplateService.GetAllMessageTemplates(model.SearchStoreId);
-			var gridModel = new GridModel<MessageTemplateModel>
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageMessageTemplates))
 			{
-				Data = messageTemplates.Select(x => x.ToModel()),
-				Total = messageTemplates.Count
-			};
+				var messageTemplates = _messageTemplateService.GetAllMessageTemplates(model.SearchStoreId);
+
+				gridModel.Data = messageTemplates.Select(x => x.ToModel());
+				gridModel.Total = messageTemplates.Count;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<MessageTemplateModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {

@@ -91,29 +91,35 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			var gridModel = new GridModel<ProductAttributeModel>();
 
-            var productAttributes = _productAttributeService.GetAllProductAttributes();
-            var gridModel = new GridModel<ProductAttributeModel>
-            {
-                Data = productAttributes.Select(x => x.ToModel()),
-                Total = productAttributes.Count()
-            };
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var productAttributes = _productAttributeService.GetAllProductAttributes();
+
+				gridModel.Data = productAttributes.Select(x => x.ToModel());
+				gridModel.Total = productAttributes.Count();
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<ProductAttributeModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
             };
         }
         
-        //create
         public ActionResult Create()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
             var model = new ProductAttributeModel();
-            //locales
+
             AddLocales(_languageService, model.Locales);
             return View(model);
         }

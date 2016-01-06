@@ -97,7 +97,7 @@ namespace SmartStore.WebApi.Controllers
 		public ActionResult GridUserData(GridCommand command)
 		{
 			if (!HasPermission())
-				return new JsonResult { Data = new GridModel<WebApiUserModel> { Data = new List<WebApiUserModel>() }};
+				return new JsonResult { Data = new GridModel<WebApiUserModel> { Data = new List<WebApiUserModel>() } };
 
 			var model = _webApiPluginService.GetGridModel(command.Page - 1, command.PageSize);
 

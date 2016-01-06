@@ -68,7 +68,7 @@ namespace SmartStore.Admin.Controllers
 					var store = _storeService.GetStoreById(x.StoreId);
 
 					m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-					m.StoreName = store != null ? store.Name : "Unknown";
+					m.StoreName = store != null ? store.Name : "".NaIfEmpty();
 
 					return m;
 				}),
@@ -80,26 +80,33 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult SubscriptionList(GridCommand command, NewsLetterSubscriptionListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers))
-                return AccessDeniedView();
+			var gridModel = new GridModel<NewsLetterSubscriptionModel>();
 
-            var newsletterSubscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(
-				model.SearchEmail, command.Page - 1, command.PageSize, true, model.StoreId);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers))
+			{
+				var newsletterSubscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(
+					model.SearchEmail, command.Page - 1, command.PageSize, true, model.StoreId);
 
-            var gridModel = new GridModel<NewsLetterSubscriptionModel>
-            {
-                Data = newsletterSubscriptions.Select(x =>
+				gridModel.Data = newsletterSubscriptions.Select(x =>
 				{
 					var m = x.ToModel();
 					var store = _storeService.GetStoreById(x.StoreId);
 
 					m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-					m.StoreName = store != null ? store.Name : "Unknown";
+					m.StoreName = store != null ? store.Name : "".NaIfEmpty();
 
 					return m;
-				}),
-                Total = newsletterSubscriptions.TotalCount
-            };
+				});
+
+				gridModel.Total = newsletterSubscriptions.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<NewsLetterSubscriptionModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
@@ -109,39 +116,36 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult SubscriptionUpdate(NewsLetterSubscriptionModel model, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers))
-                return AccessDeniedView();
-            
-            if (!ModelState.IsValid)
-            {
-                //display the first model error
-                var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-                return Content(modelStateErrors.FirstOrDefault());
-            }
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers))
+			{
+				if (!ModelState.IsValid)
+				{
+					var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+					return Content(modelStateErrors.FirstOrDefault());
+				}
 
-            var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionById(model.Id);
-            subscription.Email = model.Email;
-            subscription.Active = model.Active;
+				var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionById(model.Id);
+				subscription.Email = model.Email;
+				subscription.Active = model.Active;
 
-            _newsLetterSubscriptionService.UpdateNewsLetterSubscription(subscription);
+				_newsLetterSubscriptionService.UpdateNewsLetterSubscription(subscription);
+			}
 
 			var listModel = new NewsLetterSubscriptionListModel();
 			PrepareNewsLetterSubscriptionListModel(listModel);
 
-            return SubscriptionList(command, listModel);
+			return SubscriptionList(command, listModel);
         }
 
         [GridAction(EnableCustomBinding = true)]
         public ActionResult SubscriptionDelete(int id, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers))
+			{
+				var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionById(id);
 
-            var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionById(id);
-            if (subscription == null)
-                throw new ArgumentException("No subscription found with the specified id");
-
-            _newsLetterSubscriptionService.DeleteNewsLetterSubscription(subscription);
+				_newsLetterSubscriptionService.DeleteNewsLetterSubscription(subscription);
+			}
 
 			var listModel = new NewsLetterSubscriptionListModel();
 			PrepareNewsLetterSubscriptionListModel(listModel);

@@ -137,20 +137,29 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command, TopicListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
-                return AccessDeniedView();
+			var gridModel = new GridModel<TopicModel>();
 
-            var topics = _topicService.GetAllTopics(model.SearchStoreId);
-            var gridModel = new GridModel<TopicModel>
-            {
-				Data = topics.Select(x => { 
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
+			{
+				var topics = _topicService.GetAllTopics(model.SearchStoreId);
+
+				gridModel.Data = topics.Select(x =>
+				{
 					var item = x.ToModel();
 					// otherwise maxJsonLength could be exceeded
 					item.Body = "";
 					return item;
-				}),
-                Total = topics.Count
-            };
+				});
+
+				gridModel.Total = topics.Count;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<TopicModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
 			{
 				MaxJsonLength = int.MaxValue,

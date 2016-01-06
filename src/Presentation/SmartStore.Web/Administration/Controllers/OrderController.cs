@@ -809,57 +809,65 @@ namespace SmartStore.Admin.Controllers
 		[GridAction(EnableCustomBinding = true)]
 		public ActionResult OrderList(GridCommand command, OrderListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			var gridModel = new GridModel<OrderModel>();
 
-            DateTime? startDateValue = (model.StartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
-            DateTime? endDateValue = (model.EndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+			{
+				DateTime? startDateValue = (model.StartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
+				DateTime? endDateValue = (model.EndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
-			var orderStatusIds = model.OrderStatusIds.ToIntArray();
-			var paymentStatusIds = model.PaymentStatusIds.ToIntArray();
-			var shippingStatusIds = model.ShippingStatusIds.ToIntArray();
+				var orderStatusIds = model.OrderStatusIds.ToIntArray();
+				var paymentStatusIds = model.PaymentStatusIds.ToIntArray();
+				var shippingStatusIds = model.ShippingStatusIds.ToIntArray();
 
-			var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatusIds, paymentStatusIds, shippingStatusIds,
-                model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName);
+				var orders = _orderService.SearchOrders(model.StoreId, 0, startDateValue, endDateValue, orderStatusIds, paymentStatusIds, shippingStatusIds,
+					model.CustomerEmail, model.OrderGuid, model.OrderNumber, command.Page - 1, command.PageSize, model.CustomerName);
 
-            var gridModel = new GridModel<OrderModel>
-            {
-                Data = orders.Select(x =>
-                {
+				gridModel.Data = orders.Select(x =>
+				{
 					var store = _storeService.GetStoreById(x.StoreId);
-                    return new OrderModel
-                    {
-                        Id = x.Id,
-                        OrderNumber = x.GetOrderNumber(),
+					return new OrderModel
+					{
+						Id = x.Id,
+						OrderNumber = x.GetOrderNumber(),
 						StoreName = (store != null ? store.Name : "".NaIfEmpty()),
-                        OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
-                        OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
-                        PaymentStatus = x.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
-                        ShippingStatus = x.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
+						OrderTotal = _priceFormatter.FormatPrice(x.OrderTotal, true, false),
+						OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
+						PaymentStatus = x.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
+						ShippingStatus = x.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
 						CustomerName = x.BillingAddress.GetFullName(),
 						CustomerEmail = x.BillingAddress.Email,
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
+						CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
 						HasNewPaymentNotification = x.HasNewPaymentNotification
-                    };
-                }),
-                Total = orders.TotalCount
-            };
+					};
+				});
 
-            //summary report
-            //implemented as a workaround described here: http://www.telerik.com/community/forums/aspnet-mvc/grid/gridmodel-aggregates-how-to-use.aspx
-			var reportSummary = _orderReportService.GetOrderAverageReportLine(model.StoreId, orderStatusIds,
-				paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
+				gridModel.Total = orders.TotalCount;
 
-			var profit = _orderReportService.ProfitReport(model.StoreId, orderStatusIds,
-				paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
+				//summary report
+				//implemented as a workaround described here: http://www.telerik.com/community/forums/aspnet-mvc/grid/gridmodel-aggregates-how-to-use.aspx
+				var reportSummary = _orderReportService.GetOrderAverageReportLine(model.StoreId, orderStatusIds,
+					paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
 
-		    var aggregator = new OrderModel()
-		    {
-                aggregatorprofit = _priceFormatter.FormatPrice(profit, true, false),
-                aggregatortax = _priceFormatter.FormatPrice(reportSummary.SumTax, true, false),
-		        aggregatortotal = _priceFormatter.FormatPrice(reportSummary.SumOrders, true, false)
-		    };
-		    gridModel.Aggregates = aggregator;
+				var profit = _orderReportService.ProfitReport(model.StoreId, orderStatusIds,
+					paymentStatusIds, shippingStatusIds, startDateValue, endDateValue, model.CustomerEmail);
+
+				var aggregator = new OrderModel
+				{
+					aggregatorprofit = _priceFormatter.FormatPrice(profit, true, false),
+					aggregatortax = _priceFormatter.FormatPrice(reportSummary.SumTax, true, false),
+					aggregatortotal = _priceFormatter.FormatPrice(reportSummary.SumOrders, true, false)
+				};
+
+				gridModel.Aggregates = aggregator;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<OrderModel>();
+
+				NotifyAccessDenied();
+			}
+
 			return new JsonResult
 			{
 				Data = gridModel
@@ -1676,36 +1684,46 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult AddProductToOrder(GridCommand command, OrderModel.AddOrderProductModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			var gridModel = new GridModel<OrderModel.AddOrderProductModel.ProductModel>();
 
-            var gridModel = new GridModel();
-			var searchContext = new ProductSearchContext()
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
 			{
-				CategoryIds = new List<int>() { model.SearchCategoryId },
-				ManufacturerId = model.SearchManufacturerId,
-				Keywords = model.SearchProductName,
-				PageIndex = command.Page - 1,
-				PageSize = command.PageSize,
-				ShowHidden = true,
-				ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
-			};
+				var searchContext = new ProductSearchContext
+				{
+					CategoryIds = new List<int> { model.SearchCategoryId },
+					ManufacturerId = model.SearchManufacturerId,
+					Keywords = model.SearchProductName,
+					PageIndex = command.Page - 1,
+					PageSize = command.PageSize,
+					ShowHidden = true,
+					ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
+				};
 
-            var products = _productService.SearchProducts(searchContext);
-            gridModel.Data = products.Select(x =>
-            {
-                var productModel = new OrderModel.AddOrderProductModel.ProductModel
-                {
-                    Id = x.Id,
-                    Name =  x.Name,
-                    Sku = x.Sku,
-					ProductTypeName = x.GetProductTypeLabel(_localizationService),
-					ProductTypeLabelHint = x.ProductTypeLabelHint
-                };
+				var products = _productService.SearchProducts(searchContext);
 
-                return productModel;
-            });
-            gridModel.Total = products.TotalCount;
+				gridModel.Data = products.Select(x =>
+				{
+					var productModel = new OrderModel.AddOrderProductModel.ProductModel
+					{
+						Id = x.Id,
+						Name = x.Name,
+						Sku = x.Sku,
+						ProductTypeName = x.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = x.ProductTypeLabelHint
+					};
+
+					return productModel;
+				});
+
+				gridModel.Total = products.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<OrderModel.AddOrderProductModel.ProductModel>();
+
+				NotifyAccessDenied();
+			}
+
             return new JsonResult
             {
                 Data = gridModel
@@ -1983,23 +2001,29 @@ namespace SmartStore.Admin.Controllers
 		[GridAction(EnableCustomBinding = true)]
         public ActionResult ShipmentListSelect(GridCommand command, ShipmentListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			var gridModel = new GridModel<ShipmentModel>();
 
-            DateTime? startDateValue = (model.StartDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+			{
+				DateTime? startDateValue = (model.StartDate == null) ? null
+					: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
 
-            DateTime? endDateValue = (model.EndDate == null) ? null 
-                            :(DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+				DateTime? endDateValue = (model.EndDate == null) ? null
+					: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
-            //load shipments
-			var shipments = _shipmentService.GetAllShipments(model.TrackingNumber, startDateValue, endDateValue, 
-                command.Page - 1, command.PageSize);
-            var gridModel = new GridModel<ShipmentModel>
-            {
-                Data = shipments.Select(shipment => PrepareShipmentModel(shipment, false, false)),
-                Total = shipments.TotalCount
-            };
+				//load shipments
+				var shipments = _shipmentService.GetAllShipments(model.TrackingNumber, startDateValue, endDateValue, command.Page - 1, command.PageSize);
+
+				gridModel.Data = shipments.Select(shipment => PrepareShipmentModel(shipment, false, false));
+				gridModel.Total = shipments.TotalCount;
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<ShipmentModel>();
+
+				NotifyAccessDenied();
+			}
+
 			return new JsonResult
 			{
 				Data = gridModel
@@ -2009,24 +2033,29 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult ShipmentsSelect(int orderId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			var model = new GridModel<ShipmentModel>();
 
-            var order = _orderService.GetOrderById(orderId);
-            if (order == null)
-                throw new ArgumentException("No order found with the specified id");
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+			{
+				var order = _orderService.GetOrderById(orderId);
 
-            //shipments
-            var shipmentModels = new List<ShipmentModel>();
-            var shipments = order.Shipments.OrderBy(s => s.CreatedOnUtc).ToList();
-            foreach (var shipment in shipments)
-                shipmentModels.Add(PrepareShipmentModel(shipment, false, false));
+				var shipmentModels = new List<ShipmentModel>();
+				var shipments = order.Shipments.OrderBy(s => s.CreatedOnUtc).ToList();
 
-            var model = new GridModel<ShipmentModel>
-            {
-                Data = shipmentModels,
-                Total = shipmentModels.Count
-            };
+				foreach (var shipment in shipments)
+				{
+					shipmentModels.Add(PrepareShipmentModel(shipment, false, false));
+				}
+
+				model.Data = shipmentModels;
+				model.Total = shipmentModels.Count;
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<ShipmentModel>();
+
+				NotifyAccessDenied();
+			}
 
             return new JsonResult
             {
@@ -2311,37 +2340,40 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult OrderNotesSelect(int orderId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			var model = new GridModel<OrderModel.OrderNote>();
 
-            var order = _orderService.GetOrderById(orderId);
-            if (order == null)
-                throw new ArgumentException("No order found with the specified id");
-
-            var orderNoteModels = new List<OrderModel.OrderNote>();
-
-            foreach (var orderNote in order.OrderNotes.OrderByDescending(on => on.CreatedOnUtc))
-            {
-                orderNoteModels.Add(new OrderModel.OrderNote
-                {
-                    Id = orderNote.Id,
-                    OrderId = orderNote.OrderId,
-                    DisplayToCustomer = orderNote.DisplayToCustomer,
-                    Note = orderNote.FormatOrderNoteText(),
-                    CreatedOn = _dateTimeHelper.ConvertToUserTime(orderNote.CreatedOnUtc, DateTimeKind.Utc)
-                });
-            }
-
-            var model = new GridModel<OrderModel.OrderNote>
-            {
-                Data = orderNoteModels,
-                Total = orderNoteModels.Count
-            };
-
-			if (order.HasNewPaymentNotification)
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
 			{
-				order.HasNewPaymentNotification = false;
-				_orderService.UpdateOrder(order);
+				var order = _orderService.GetOrderById(orderId);
+
+				var orderNoteModels = new List<OrderModel.OrderNote>();
+
+				foreach (var orderNote in order.OrderNotes.OrderByDescending(on => on.CreatedOnUtc))
+				{
+					orderNoteModels.Add(new OrderModel.OrderNote
+					{
+						Id = orderNote.Id,
+						OrderId = orderNote.OrderId,
+						DisplayToCustomer = orderNote.DisplayToCustomer,
+						Note = orderNote.FormatOrderNoteText(),
+						CreatedOn = _dateTimeHelper.ConvertToUserTime(orderNote.CreatedOnUtc, DateTimeKind.Utc)
+					});
+				}
+
+				model.Data = orderNoteModels;
+				model.Total = orderNoteModels.Count;
+
+				if (order.HasNewPaymentNotification)
+				{
+					order.HasNewPaymentNotification = false;
+					_orderService.UpdateOrder(order);
+				}
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<OrderModel.OrderNote>();
+
+				NotifyAccessDenied();
 			}
 
             return new JsonResult
@@ -2385,17 +2417,13 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult OrderNoteDelete(int orderId, int orderNoteId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+			{
+				var order = _orderService.GetOrderById(orderId);
+				var orderNote = order.OrderNotes.Where(on => on.Id == orderNoteId).FirstOrDefault();
 
-            var order = _orderService.GetOrderById(orderId);
-            if (order == null)
-                throw new ArgumentException("No order found with the specified id");
-
-            var orderNote = order.OrderNotes.Where(on => on.Id == orderNoteId).FirstOrDefault();
-            if (orderNote == null)
-                throw new ArgumentException("No order note found with the specified id");
-            _orderService.DeleteOrderNote(orderNote);
+				_orderService.DeleteOrderNote(orderNote);
+			}
 
             return OrderNotesSelect(orderId, command);
         }
@@ -2433,12 +2461,14 @@ namespace SmartStore.Admin.Controllers
 
             return model;
         }
-        public ActionResult BestsellersBriefReportByQuantity()
+
+		public ActionResult BestsellersBriefReportByQuantity()
         {
             var model = GetBestsellersBriefReportModel(5, 1);
             return PartialView(model);
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult BestsellersBriefReportByQuantityList(GridCommand command)
         {
             var model = GetBestsellersBriefReportModel(5, 1);
@@ -2452,12 +2482,14 @@ namespace SmartStore.Admin.Controllers
                 Data = gridModel
             };
         }
-        public ActionResult BestsellersBriefReportByAmount()
+
+		public ActionResult BestsellersBriefReportByAmount()
         {
             var model = GetBestsellersBriefReportModel(5, 2);
             return PartialView(model);
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult BestsellersBriefReportByAmountList(GridCommand command)
         {
             var model = GetBestsellersBriefReportModel(5, 2);
@@ -2496,27 +2528,29 @@ namespace SmartStore.Admin.Controllers
 
             return View(model);
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult BestsellersReportList(GridCommand command, BestsellersReportModel model)
         {
             DateTime? startDateValue = (model.StartDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
+				: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
 
             DateTime? endDateValue = (model.EndDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+				: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
             OrderStatus? orderStatus = model.OrderStatusId > 0 ? (OrderStatus?)(model.OrderStatusId) : null;
             PaymentStatus? paymentStatus = model.PaymentStatusId > 0 ? (PaymentStatus?)(model.PaymentStatusId) : null;
 
 			var items = _orderReportService.BestSellersReport(0, startDateValue, endDateValue,
                 orderStatus, paymentStatus, null, model.BillingCountryId, 100, 2, true);
+
             var gridModel = new GridModel<BestsellersReportLineModel>
             {
                 Data = items.Select(x =>
                 {
 					var product = _productService.GetProductById(x.ProductId);
 
-                    var m = new BestsellersReportLineModel()
+                    var m = new BestsellersReportLineModel
                     {
                         ProductId = x.ProductId,
                         TotalAmount = _priceFormatter.FormatPrice(x.TotalAmount, true, false),
@@ -2533,6 +2567,7 @@ namespace SmartStore.Admin.Controllers
                 }),
                 Total = items.Count
             };
+
             return new JsonResult
             {
                 Data = gridModel
@@ -2546,17 +2581,18 @@ namespace SmartStore.Admin.Controllers
             var model = new NeverSoldReportModel();
             return View(model);
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult NeverSoldReportList(GridCommand command, NeverSoldReportModel model)
         {
             DateTime? startDateValue = (model.StartDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
+				: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.StartDate.Value, _dateTimeHelper.CurrentTimeZone);
 
             DateTime? endDateValue = (model.EndDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+				: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.EndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
             
-            var items = _orderReportService.ProductsNeverSold(startDateValue, endDateValue,
-                command.Page - 1, command.PageSize, true);
+            var items = _orderReportService.ProductsNeverSold(startDateValue, endDateValue, command.Page - 1, command.PageSize, true);
+
 			var gridModel = new GridModel<NeverSoldReportLineModel>
 			{
 				Data = items.Select(x =>
@@ -2572,6 +2608,7 @@ namespace SmartStore.Admin.Controllers
 				}),
 				Total = items.TotalCount
 			};
+
             return new JsonResult
             {
                 Data = gridModel
@@ -2680,13 +2717,15 @@ namespace SmartStore.Admin.Controllers
 
             return model;
         }
-        [ChildActionOnly]
+
+		[ChildActionOnly]
         public ActionResult OrderIncompleteReport()
         {
             var model = GetOrderIncompleteReportModel();
             return PartialView(model);
         }
-        [GridAction(EnableCustomBinding = true)]
+
+		[GridAction(EnableCustomBinding = true)]
         public ActionResult OrderIncompleteReportList(GridCommand command)
         {
             var model = GetOrderIncompleteReportModel();

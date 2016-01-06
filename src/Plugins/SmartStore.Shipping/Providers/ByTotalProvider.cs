@@ -1,20 +1,20 @@
 ﻿using System;
-using System.Data.Entity.Migrations;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Localization;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
-using SmartStore.Shipping.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Shipping.Tracking;
+using SmartStore.Shipping.Services;
 
 namespace SmartStore.Shipping
 {
-    [SystemName("Shipping.ByTotal")]
+	[SystemName("Shipping.ByTotal")]
     [FriendlyName("Shipping by total")]
     [DisplayOrder(1)]
 	public class ByTotalProvider : IShippingRateComputationMethod, IConfigurable
@@ -27,7 +27,6 @@ namespace SmartStore.Shipping
         private readonly ILogger _logger;
         private readonly ISettingService _settingService;
         private readonly ILocalizationService _localizationService;
-
 
         /// <summary>
         /// Ctor
@@ -56,14 +55,18 @@ namespace SmartStore.Shipping
             this._logger = logger;
             this._settingService = settingService;
             this._localizationService = localizationService;
-        }
 
-        #region Properties
+			T = NullLocalizer.Instance;
+		}
 
-        /// <summary>
-        ///  Gets a shipping rate computation method type
-        /// </summary>
-        public ShippingRateComputationMethodType ShippingRateComputationMethodType
+		#region Properties
+
+		public Localizer T { get; set; }
+
+		/// <summary>
+		///  Gets a shipping rate computation method type
+		/// </summary>
+		public ShippingRateComputationMethodType ShippingRateComputationMethodType
         {
             get
             {
@@ -158,7 +161,7 @@ namespace SmartStore.Shipping
 
             if (getShippingOptionRequest.Items == null || getShippingOptionRequest.Items.Count == 0)
             {
-                response.AddError("No shipment items");
+                response.AddError(T("Admin.System.Warnings.NoShipmentItems"));
                 return response;
             }
 

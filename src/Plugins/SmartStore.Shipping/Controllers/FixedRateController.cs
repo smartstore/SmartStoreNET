@@ -29,7 +29,7 @@ namespace SmartStore.Shipping.Controllers
         {
             var shippingMethods = _shippingService.GetAllShippingMethods();
             if (shippingMethods.Count == 0)
-                return Content("No shipping methods can be loaded");
+                return Content(T("Admin.Configuration.Shipping.Methods.NoMethodsLoaded"));
 
             var tmp = new List<FixedRateModel>();
             foreach (var shippingMethod in shippingMethods)

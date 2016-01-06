@@ -70,7 +70,7 @@ namespace SmartStore.Tax.Controllers
                     var tc = _taxCategoryService.GetTaxCategoryById(x.TaxCategoryId);
                     m.TaxCategoryName = (tc != null) ? tc.Name : "";
                     var c = _countryService.GetCountryById(x.CountryId);
-                    m.CountryName = (c != null) ? c.Name : "Unavailable";
+                    m.CountryName = (c != null) ? c.Name : T("Common.Unavailable").Text;
                     var s = _stateProvinceService.GetStateProvinceById(x.StateProvinceId);
                     m.StateProvinceName = (s != null) ? s.Name : "*";
                     m.Zip = (!String.IsNullOrEmpty(x.Zip)) ? x.Zip : "*";
@@ -99,7 +99,7 @@ namespace SmartStore.Tax.Controllers
                     var tc = _taxCategoryService.GetTaxCategoryById(x.TaxCategoryId);
                     m.TaxCategoryName = (tc != null) ? tc.Name : "";
                     var c = _countryService.GetCountryById(x.CountryId);
-                    m.CountryName = (c != null) ? c.Name : "Unavailable";
+                    m.CountryName = (c != null) ? c.Name : T("Common.Unavailable").Text;
                     var s = _stateProvinceService.GetStateProvinceById(x.StateProvinceId);
                     m.StateProvinceName = (s != null) ? s.Name : "*";
                     m.Zip = (!String.IsNullOrEmpty(x.Zip)) ? x.Zip : "*";

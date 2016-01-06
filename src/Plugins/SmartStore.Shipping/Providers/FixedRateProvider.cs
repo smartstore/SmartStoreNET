@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Routing;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
@@ -10,27 +11,29 @@ using SmartStore.Services.Shipping.Tracking;
 
 namespace SmartStore.Shipping
 {
-    /// <summary>
-    /// Fixed rate shipping computation provider
-    /// </summary>
-    [SystemName("Shipping.FixedRate")]
+	/// <summary>
+	/// Fixed rate shipping computation provider
+	/// </summary>
+	[SystemName("Shipping.FixedRate")]
     [FriendlyName("Fixed Rate Shipping")]
     [DisplayOrder(0)]
 	public class FixedRateProvider : IShippingRateComputationMethod, IConfigurable
     {
         private readonly ISettingService _settingService;
         private readonly IShippingService _shippingService;
-        private readonly ILocalizationService _localizationService;
 
         public FixedRateProvider(ISettingService settingService,
-            IShippingService shippingService, ILocalizationService localizationService)
+            IShippingService shippingService)
         {
             this._settingService = settingService;
             this._shippingService = shippingService;
-            _localizationService = localizationService;
-        }
-        
-        private decimal GetRate(int shippingMethodId)
+
+			T = NullLocalizer.Instance;
+		}
+
+		public Localizer T { get; set; }
+
+		private decimal GetRate(int shippingMethodId)
         {
             string key = string.Format("ShippingRateComputationMethod.FixedRate.Rate.ShippingMethodId{0}", shippingMethodId);
             decimal rate = this._settingService.GetSettingByKey<decimal>(key);
@@ -51,7 +54,7 @@ namespace SmartStore.Shipping
 
             if (getShippingOptionRequest.Items == null || getShippingOptionRequest.Items.Count == 0)
             {
-                response.AddError("No shipment items");
+                response.AddError(T("Admin.System.Warnings.NoShipmentItems"));
                 return response;
             }
 

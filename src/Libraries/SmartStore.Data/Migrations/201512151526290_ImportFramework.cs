@@ -76,6 +76,7 @@ namespace SmartStore.Data.Migrations
 				"Legt die Anzahl der zu überspringenden Datensätze fest.");
 
 			builder.AddOrUpdate("Common.Unknown", "Unknown", "Unbekannt");
+			builder.AddOrUpdate("Common.Unavailable", "Unavailable", "Nicht verfügbar");
 			builder.AddOrUpdate("Common.Language", "Language", "Sprache");
 			builder.AddOrUpdate("Admin.Common.ImportFile", "Import file", "Importdatei");
 			builder.AddOrUpdate("Admin.Common.ImportFiles", "Import files", "Importdateien");
@@ -303,6 +304,14 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Countries.States.CantDeleteWithAddresses",
 				"The state\\province cannot be deleted because it has associated addresses.",
 				"Das Bundesland\\Region kann nicht gelöscht werden, weil ihm Adressen zugeordnet sind.");
+
+			builder.AddOrUpdate("Admin.Configuration.Shipping.Methods.NoMethodsLoaded",
+				"No shipping methods could be loaded.",
+				"Es konnten keine Versandarten geladen werden.");
+
+			builder.AddOrUpdate("Admin.System.Warnings.NoShipmentItems",
+				"No shipment items",
+				"Keine Versand-Artikel");
 		}
 	}
 }

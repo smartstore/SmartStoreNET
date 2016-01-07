@@ -173,8 +173,15 @@ namespace SmartStore.Services.Tasks
 				}
 				else
 				{
+					var response = t.Result;
+
+					using (var logger = new TraceLogger())
+					{
+						logger.Debug("TaskScheduler Sweep called successfully: {0}".FormatCurrent(response.GetResponseStream().AsString()));
+					}
+
 					_errCount = 0;
-					t.Result.Dispose();
+					response.Dispose();
 				}
             });
         }

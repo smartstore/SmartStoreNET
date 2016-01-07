@@ -65,7 +65,7 @@ namespace SmartStore.Web.Controllers
 				}
             }
             
-            return Content("{0} tasks executed".FormatInvariant(count));
+            return Content("{0} of {1} pending tasks executed".FormatInvariant(count, pendingTasks.Count));
         }
 
         [HttpPost]

@@ -239,7 +239,11 @@ namespace SmartStore
 			
 			// convert stream to string
             string result;
-            stream.Position = 0;
+
+			if (stream.CanSeek)
+			{
+				stream.Position = 0;
+			}
 
             using (StreamReader sr = new StreamReader(stream, encoding))
             {

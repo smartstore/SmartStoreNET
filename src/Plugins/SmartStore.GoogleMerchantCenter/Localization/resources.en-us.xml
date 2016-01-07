@@ -37,24 +37,9 @@
 	<LocaleResource Name="Products.GoogleCategory">
 		<Value>Google Category</Value>
 	</LocaleResource>
-	<LocaleResource Name="Products.Gender">
-		<Value>Gender</Value>
-	</LocaleResource>
-	<LocaleResource Name="Products.AgeGroup">
-		<Value>Age group</Value>
-	</LocaleResource>
-	<LocaleResource Name="Products.Color">
-		<Value>Color</Value>
-	</LocaleResource>
-	<LocaleResource Name="Products.Size">
-		<Value>Size</Value>
-	</LocaleResource>
-	<LocaleResource Name="Products.Material">
-		<Value>Material</Value>
-	</LocaleResource>
-	<LocaleResource Name="Products.Pattern">
-		<Value>Pattern</Value>
-	</LocaleResource>
+  <LocaleResource Name="Products.GoogleCategory.Hint">
+    <Value>Specifies the Google category corresponding to the product. Mandatory.</Value>
+  </LocaleResource>
 	<LocaleResource Name="AdditionalImages">
 		<Value>Additional images</Value>
 	</LocaleResource>
@@ -148,12 +133,6 @@
 	<LocaleResource Name="Pattern.Hint">
 		<Value>The pattern or graphic print featured on a product. Usefull for clothes for instance.</Value>
 	</LocaleResource>
-	<LocaleResource Name="OnlineOnly">
-		<Value>Only online available</Value>
-	</LocaleResource>
-	<LocaleResource Name="OnlineOnly.Hint">
-		<Value>Check the box if products can only be purchased online.</Value>
-	</LocaleResource>
 	<LocaleResource Name="EmptyGridCell">
 		<Value>Empty</Value>
 	</LocaleResource>
@@ -196,4 +175,61 @@
 	<LocaleResource Name="ExportBasePrice.Hint">
 		<Value>Activate this option if you want to export the base price of the product.</Value>
 	</LocaleResource>
+  <LocaleResource Name="Multipack">
+    <Value>Multipack</Value>
+  </LocaleResource>
+  <LocaleResource Name="Multipack.Hint">
+    <Value>Number of identical products in a merchant defined multipack. Must be greater than 1.</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsBundle">
+    <Value>Bundle</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsBundle.Hint">
+    <Value>Merchant defined product package consisting of one main and several accessories or add-ons.</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsAdult">
+    <Value>Adult</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsAdult.Hint">
+    <Value>Product, which is intended only for adult users.</Value>
+  </LocaleResource>
+  <LocaleResource Name="EnergyEfficiencyClass">
+    <Value>Energy efficiency</Value>
+  </LocaleResource>
+  <LocaleResource Name="EnergyEfficiencyClass.Hint">
+    <Value>The energy efficiency class of the product in accordance with EU directive 2010/30/EU. Possible values are G, F, E, D, C, B, A, A +, A++, A+++.</Value>
+  </LocaleResource>
+  <LocaleResource Name="EnergyEfficiencyClasses">
+    <Value>A+++,A++,A+,A,B,C,D,E,F,G</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel0">
+    <Value>Label 0</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel0.Hint">
+    <Value>Custom label 0 serves the individual grouping of products.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel1">
+    <Value>Label 1</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel1.Hint">
+    <Value>Custom label 1 serves the individual grouping of products.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel2">
+    <Value>Label 2</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel2.Hint">
+    <Value>Custom label 2 serves the individual grouping of products.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel3">
+    <Value>Label 3</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel3.Hint">
+    <Value>Custom label 3 serves the individual grouping of products.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel4">
+    <Value>Label 4</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel4.Hint">
+    <Value>Custom label 4 serves the individual grouping of products.</Value>
+  </LocaleResource>
 </Language>

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 using Newtonsoft.Json;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
@@ -18,9 +19,11 @@ namespace SmartStore.GoogleMerchantCenter.Models
 			{
 				if (AvailableGoogleCategories != null && AvailableGoogleCategories.Length > 0)
 					return JsonConvert.SerializeObject(AvailableGoogleCategories);
-				return "";
+				return "[ ]";
 			}
 		}
+
+		public string[] EnergyEfficiencyClasses { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.SearchProductName")]
 		public string SearchProductName { get; set; }
@@ -28,7 +31,6 @@ namespace SmartStore.GoogleMerchantCenter.Models
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.SearchIsTouched")]
 		public string SearchIsTouched { get; set; }
 	}
-
 
 	public class GoogleProductModel : ModelBase
 	{
@@ -74,35 +76,66 @@ namespace SmartStore.GoogleMerchantCenter.Models
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.GoogleCategory")]
 		public string Taxonomy { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Gender")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Gender")]
 		public string Gender { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.AgeGroup")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.AgeGroup")]
 		public string AgeGroup { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Color")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Color")]
 		public string Color { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Size")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Size")]
 		public string Size { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Material")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Material")]
 		public string Material { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Pattern")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Pattern")]
 		public string Pattern { get; set; }
 
 		[SmartResourceDisplayName("Common.Export")]
 		public int Export { get; set; }
 		[SmartResourceDisplayName("Common.Export")]
-		public bool Exporting
+		public bool Export2
 		{
 			get { return Export != 0; }
 			set { Export = (value ? 1 : 0); }
 		}
 
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Multipack")]
+		public int Multipack { get; set; }
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Multipack")]
+		public int? Multipack2
+		{
+			get { return Multipack > 0 ? Multipack : (int?)null; }
+			set { Multipack = (value ?? 0); }
+		}
+
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.IsBundle")]
+		public bool? IsBundle { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.IsAdult")]
+		public bool? IsAdult { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.EnergyEfficiencyClass")]
+		public string EnergyEfficiencyClass { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.CustomLabel0")]
+		public string CustomLabel0 { get; set; }
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.CustomLabel1")]
+		public string CustomLabel1 { get; set; }
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.CustomLabel2")]
+		public string CustomLabel2 { get; set; }
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.CustomLabel3")]
+		public string CustomLabel3 { get; set; }
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.CustomLabel4")]
+		public string CustomLabel4 { get; set; }
+
 		public string GenderLocalize { get; set; }
 		public string AgeGroupLocalize { get; set; }
-		public string ExportingLocalize { get; set; }
+		public string Export2Localize { get; set; }
+		public string IsBundleLocalize { get; set; }
+		public string IsAdultLocalize { get; set; }
 	}
 }

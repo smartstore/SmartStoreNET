@@ -14,7 +14,6 @@ namespace SmartStore.GoogleMerchantCenter.Models
 		public ProfileConfigurationModel()
 		{
 			Condition = "new";
-			OnlineOnly = true;
 			AdditionalImages = true;
 			SpecialPrice = true;
 		}
@@ -65,9 +64,6 @@ namespace SmartStore.GoogleMerchantCenter.Models
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Pattern")]
 		public string Pattern { get; set; }
-
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.OnlineOnly")]
-		public bool OnlineOnly { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.ExpirationDays")]
 		public int ExpirationDays { get; set; }

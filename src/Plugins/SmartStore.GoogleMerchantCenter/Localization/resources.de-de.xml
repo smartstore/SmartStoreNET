@@ -37,24 +37,9 @@
 	<LocaleResource Name="Products.GoogleCategory">
 		<Value>Google-Kategorie</Value>
 	</LocaleResource>
-	<LocaleResource Name="Products.Gender">
-		<Value>Geschlecht</Value>
-	</LocaleResource>
-	<LocaleResource Name="Products.AgeGroup">
-		<Value>Altersgruppe</Value>
-	</LocaleResource>
-	<LocaleResource Name="Products.Color">
-		<Value>Farbe</Value>
-	</LocaleResource>
-	<LocaleResource Name="Products.Size">
-		<Value>Größe</Value>
-	</LocaleResource>
-	<LocaleResource Name="Products.Material">
-		<Value>Material</Value>
-	</LocaleResource>
-	<LocaleResource Name="Products.Pattern">
-		<Value>Muster</Value>
-	</LocaleResource>
+  <LocaleResource Name="Products.GoogleCategory.Hint">
+    <Value>Legt die dem Artikel entsprechende Google-Kategorie fest. Zwingend erforderlich.</Value>
+  </LocaleResource>
 	<LocaleResource Name="AdditionalImages">
 		<Value>Zusätzliche Bilder</Value>
 	</LocaleResource>
@@ -148,12 +133,6 @@
 	<LocaleResource Name="Pattern.Hint">
 		<Value>Muster oder grafisches Druckdesign eines Produktes. Angabe ist z.B. bei Bekleidung sinnvoll.</Value>
 	</LocaleResource>
-	<LocaleResource Name="OnlineOnly">
-		<Value>Nur online zu kaufen</Value>
-	</LocaleResource>
-	<LocaleResource Name="OnlineOnly.Hint">
-		<Value>Legt fest, ob Produkte nur online erworben werden können. Aktivieren Sie diese Option nicht, falls Produkte auch in Ihrem Ladengeschäft erhältlich sind.</Value>
-	</LocaleResource>
 	<LocaleResource Name="EmptyGridCell">
 		<Value>Leer</Value>
 	</LocaleResource>
@@ -196,4 +175,61 @@
 	<LocaleResource Name="ExportBasePrice.Hint">
 		<Value>Legt fest, ob der Grundpreis eines Produktes exportiert werden soll.</Value>
 	</LocaleResource>
+  <LocaleResource Name="Multipack">
+    <Value>Multipack</Value>
+  </LocaleResource>
+  <LocaleResource Name="Multipack.Hint">
+    <Value>Anzahl identischer Produkte in einem händlerdefinierten Multipack. Muss größer 1 sein.</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsBundle">
+    <Value>Bundle</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsBundle.Hint">
+    <Value>Händlerdefiniertes Produktpaket bestehend aus einem Haupt- und mehreren Zubehörartikel bzw. Add-ons.</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsAdult">
+    <Value>Nicht jugendfrei</Value>
+  </LocaleResource>
+  <LocaleResource Name="IsAdult.Hint">
+    <Value>Produkt, welches nur für erwachsene Nutzer bestimmt ist.</Value>
+  </LocaleResource>
+  <LocaleResource Name="EnergyEfficiencyClass">
+    <Value>Energieeffizienz</Value>
+  </LocaleResource>
+  <LocaleResource Name="EnergyEfficiencyClass.Hint">
+    <Value>Die Energieeffizienzklasse des Produktes gemäß EU-Richtlinie 2010/30/EU. Mögliche Werte sind G, F, E, D, C, B, A, A+, A++, A+++.</Value>
+  </LocaleResource>
+  <LocaleResource Name="EnergyEfficiencyClasses">
+    <Value>A+++,A++,A+,A,B,C,D,E,F,G</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel0">
+    <Value>Label 0</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel0.Hint">
+    <Value>Benutzerdefiniertes Label 0. Dient der individuellen Gruppierung von Produkten.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel1">
+    <Value>Label 1</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel1.Hint">
+    <Value>Benutzerdefiniertes Label 1. Dient der individuellen Gruppierung von Produkten.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel2">
+    <Value>Label 2</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel2.Hint">
+    <Value>Benutzerdefiniertes Label 2. Dient der individuellen Gruppierung von Produkten.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel3">
+    <Value>Label 3</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel3.Hint">
+    <Value>Benutzerdefiniertes Label 3. Dient der individuellen Gruppierung von Produkten.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel4">
+    <Value>Label 4</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomLabel4.Hint">
+    <Value>Benutzerdefiniertes Label 4. Dient der individuellen Gruppierung von Produkten.</Value>
+  </LocaleResource>
 </Language>

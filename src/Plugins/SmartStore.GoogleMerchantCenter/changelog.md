@@ -1,5 +1,12 @@
 ﻿#Release Notes
 
+##Google Merchant Center (GMC) 2.2.0.5
+###New Features
+* Supports GMC fields: multipack, bundle, adult, energy efficiency class and custom label (0 to 4)
+* Export of availability date
+###Improvements
+* Removed "online_only" because it's not part of the GMC feed specification anymore
+
 ##Google Merchant Center (GMC) 2.2.0.4
 ###Improvements
 * Supports new export framework

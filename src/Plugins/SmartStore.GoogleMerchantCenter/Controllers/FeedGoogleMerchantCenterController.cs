@@ -36,21 +36,31 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 			var culture = CultureInfo.InvariantCulture;
 			var model = new GoogleProductModel { ProductId = productId };
 			var entity = _googleFeedService.GetGoogleProductRecord(productId);
+			string notSpecified = T("Common.Unspecified");
 
 			if (entity != null)
 			{
 				model.Taxonomy = entity.Taxonomy;
 				model.Gender = entity.Gender;
 				model.AgeGroup = entity.AgeGroup;
+				model.IsAdult = entity.IsAdult;
 				model.Color = entity.Color;
 				model.Size = entity.Size;
 				model.Material = entity.Material;
 				model.Pattern = entity.Pattern;
-				model.Exporting = entity.Export;
+				model.Export2 = entity.Export;
+				model.Multipack2 = entity.Multipack;
+				model.IsBundle = entity.IsBundle;
+				model.EnergyEfficiencyClass = entity.EnergyEfficiencyClass;
+				model.CustomLabel0 = entity.CustomLabel0;
+				model.CustomLabel1 = entity.CustomLabel1;
+				model.CustomLabel2 = entity.CustomLabel2;
+				model.CustomLabel3 = entity.CustomLabel3;
+				model.CustomLabel4 = entity.CustomLabel4;
 			}
 			else
 			{
-				model.Exporting = true;
+				model.Export2 = true;
 			}
 
 			ViewBag.DefaultCategory = "";
@@ -58,8 +68,13 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 			ViewBag.DefaultSize = "";
 			ViewBag.DefaultMaterial = "";
 			ViewBag.DefaultPattern = "";
-			ViewBag.DefaultGender = T("Common.Auto");
-			ViewBag.DefaultAgeGroup = T("Common.Auto");		
+			ViewBag.DefaultGender = notSpecified;
+			ViewBag.DefaultAgeGroup = notSpecified;
+			ViewBag.DefaultIsAdult = "";
+			ViewBag.DefaultMultipack2 = "";
+			ViewBag.DefaultIsBundle = "";
+			ViewBag.DefaultEnergyEfficiencyClass = notSpecified;
+			ViewBag.DefaultCustomLabel = "";
 
 			// we do not have export profile context here, so we simply use the first profile
 			var profile = _exportService.GetExportProfilesBySystemName(GmcXmlExportProvider.SystemName).FirstOrDefault();
@@ -99,6 +114,11 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 				new SelectListItem { Value = "kids", Text = T("Plugins.Feed.Froogle.AgeGroupKids") },
 			};
 
+			ViewBag.AvailableEnergyEfficiencyClasses = T("Plugins.Feed.Froogle.EnergyEfficiencyClasses").Text
+				.SplitSafe(",")
+				.Select(x => new SelectListItem { Value = x, Text = x })
+				.ToList();
+
 			var result = PartialView(model);
 			result.ViewData.TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "CustomProperties[GMC]" };
 			return result;
@@ -114,8 +134,9 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 		{
 			var model = new FeedGoogleMerchantCenterModel();
 
-			model.AvailableGoogleCategories = _googleFeedService.GetTaxonomyList();
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
+			model.AvailableGoogleCategories = _googleFeedService.GetTaxonomyList();
+			model.EnergyEfficiencyClasses = T("Plugins.Feed.Froogle.EnergyEfficiencyClasses").Text.SplitSafe(",");
 
 			return View(model);
 		}

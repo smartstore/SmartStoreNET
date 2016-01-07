@@ -18,15 +18,6 @@
 	</tr>
 	<tr>
 		<td class="adminTitle">
-			@Html.SmartLabelFor(m => m.OnlineOnly)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(m => m.OnlineOnly)
-			@Html.ValidationMessageFor(m => m.OnlineOnly)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
 			@Html.SmartLabelFor(m => m.ExpirationDays)
 		</td>
 		<td class="adminData">
@@ -71,7 +62,8 @@
 			@Html.SmartLabelFor(m => m.Gender)
 		</td>
 		<td class="adminData">
-			@Html.DropDownList("Gender", new List<SelectListItem> {
+			@Html.DropDownList("Gender", new List<SelectListItem>
+			{
 				new SelectListItem { Text = T("Common.Auto"), Value = "" },
 				new SelectListItem { Text = T("Common.Unspecified"), Value = GmcXmlExportProvider.Unspecified },
 				new SelectListItem { Text = T("Plugins.Feed.Froogle.GenderMale"), Value = "male" },
@@ -86,7 +78,8 @@
 			@Html.SmartLabelFor(m => m.AgeGroup)
 		</td>
 		<td class="adminData">
-			@Html.DropDownList("AgeGroup", new List<SelectListItem> {
+			@Html.DropDownList("AgeGroup", new List<SelectListItem>
+			{
 				new SelectListItem { Text = T("Common.Auto"), Value = "" },
 				new SelectListItem { Text = T("Common.Unspecified"), Value = GmcXmlExportProvider.Unspecified },
 				new SelectListItem { Text = T("Plugins.Feed.Froogle.AgeGroupAdult"), Value = "adult" },

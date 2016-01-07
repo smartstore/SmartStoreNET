@@ -10,8 +10,7 @@ namespace SmartStore.GoogleMerchantCenter
 {
 	public class Events : 
 		IConsumer<TabStripCreated>,
-		IConsumer<ModelBoundEvent>/*,
-		IConsumer<RowExportingEvent>*/
+		IConsumer<ModelBoundEvent>
 	{
 		private readonly IGoogleFeedService _googleService;
 
@@ -25,6 +24,7 @@ namespace SmartStore.GoogleMerchantCenter
 			if (eventMessage.TabStripName == "product-edit")
 			{
 				var productId = ((TabbableModel)eventMessage.Model).Id;
+
 				eventMessage.ItemFactory.Add().Text("GMC")
 					.Name("tab-gmc")
 					.Icon("fa fa-google fa-lg fa-fw")
@@ -33,30 +33,6 @@ namespace SmartStore.GoogleMerchantCenter
 					.Ajax();
 			}
 		}
-
-		//public void HandleEvent(RowExportingEvent eventMessage)
-		//{
-		//	if (eventMessage.EntityType != ExportEntityType.Product)
-		//		return;
-
-		//	var row = eventMessage.Row;
-		//	var product = eventMessage.Row.Entity as Product;
-
-		//	if (product == null)
-		//		return;
-
-		//	var gmc = _googleService.GetGoogleProductRecord(product.Id);
-		//	if (gmc == null)
-		//		return;
-
-		//	row["_GMC_AgeGroup"] = gmc.AgeGroup;
-		//	row["_GMC_Color"] = gmc.Color;
-		//	row["_GMC_Gender"] = gmc.Gender;
-		//	row["_GMC_Size"] = gmc.Size;
-		//	row["_GMC_Taxonomy"] = gmc.Taxonomy;
-		//	row["_GMC_Material"] = gmc.Material;
-		//	row["_GMC_Pattern"] = gmc.Pattern;
-		//}
 
 		public void HandleEvent(ModelBoundEvent eventMessage)
 		{
@@ -88,8 +64,17 @@ namespace SmartStore.GoogleMerchantCenter
 			entity.Taxonomy = model.Taxonomy;
 			entity.Material = model.Material;
 			entity.Pattern = model.Pattern;
-			entity.Export = model.Exporting;
+			entity.Export = model.Export2;
 			entity.UpdatedOnUtc = utcNow;
+			entity.Multipack = model.Multipack2 ?? 0;
+			entity.IsBundle = model.IsBundle;
+			entity.IsAdult = model.IsAdult;
+			entity.EnergyEfficiencyClass = model.EnergyEfficiencyClass;
+			entity.CustomLabel0 = model.CustomLabel0;
+			entity.CustomLabel1 = model.CustomLabel1;
+			entity.CustomLabel2 = model.CustomLabel2;
+			entity.CustomLabel3 = model.CustomLabel3;
+			entity.CustomLabel4 = model.CustomLabel4;
 
 			entity.IsTouched = entity.IsTouched();
 

@@ -312,6 +312,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.System.Warnings.NoShipmentItems",
 				"No shipment items",
 				"Keine Versand-Artikel");
+
+			builder.AddOrUpdate("Admin.System.Warnings.DigitsOnly",
+				"Please enter digits only.",
+				"Bitte nur Ziffern eingeben.");
 		}
 	}
 }

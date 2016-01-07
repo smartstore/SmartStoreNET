@@ -6,24 +6,24 @@
 
 <script>
 	$(function () {
-		var googCategories;
+		var googleCategories;
 
 		$('#@Html.IdFor(m => m.Taxonomy)').typeahead({
 			items: 18,
 			source: function (query, process) {
-				if (googCategories === undefined) {
+				if (googleCategories === undefined) {
 					return $.ajax({
 						dataType: "json",
 						url: '@Url.Action("GoogleCategories")',
 						type: 'POST',
 						success: function (json) {
-							googCategories = json;
+							googleCategories = json;
 							process(json);
 						},
 					});
 				}
 				else {
-					process(googCategories);
+					process(googleCategories);
 				}
 			}
 		});
@@ -38,11 +38,11 @@
 <table id="GmcData" class="adminContent">
 	<tr>
 		<td class="adminTitle">
-			@Html.SmartLabelFor(m => m.Exporting)
+			@Html.SmartLabelFor(m => m.Export2)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(m => m.Exporting)
-			@Html.ValidationMessageFor(m => m.Exporting)
+			@Html.EditorFor(m => m.Export2)
+			@Html.ValidationMessageFor(m => m.Export2)
 		</td>
 	</tr>
 	<tr>
@@ -70,6 +70,15 @@
 		<td class="adminData">
 			@Html.DropDownListFor(m => m.AgeGroup, (IEnumerable<SelectListItem>)ViewBag.AvailableAgeGroups, (string)ViewBag.DefaultAgeGroup)
 			@Html.ValidationMessageFor(m => m.AgeGroup)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.IsAdult)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.IsAdult, new { placeholder = ViewBag.DefaultIsAdult })
+			@Html.ValidationMessageFor(m => m.IsAdult)
 		</td>
 	</tr>
 	<tr>
@@ -107,5 +116,77 @@
 			@Html.TextBoxFor(m => m.Pattern, new { placeholder = ViewBag.DefaultPattern })
 			@Html.ValidationMessageFor(m => m.Pattern)
 		</td>
-	</tr>	
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.Multipack2)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.Multipack2, new { placeholder = ViewBag.DefaultMultipack2 })
+			@Html.ValidationMessageFor(m => m.Multipack2)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.IsBundle)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.IsBundle, new { placeholder = ViewBag.DefaultIsBundle })
+			@Html.ValidationMessageFor(m => m.IsBundle)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.EnergyEfficiencyClass)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(m => m.EnergyEfficiencyClass, (IEnumerable<SelectListItem>)ViewBag.AvailableEnergyEfficiencyClasses, (string)ViewBag.DefaultEnergyEfficiencyClass)
+			@Html.ValidationMessageFor(m => m.EnergyEfficiencyClass)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.CustomLabel0)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.CustomLabel0, new { placeholder = ViewBag.DefaultCustomLabel })
+			@Html.ValidationMessageFor(m => m.CustomLabel0)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.CustomLabel1)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.CustomLabel1, new { placeholder = ViewBag.DefaultCustomLabel })
+			@Html.ValidationMessageFor(m => m.CustomLabel1)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.CustomLabel2)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.CustomLabel2, new { placeholder = ViewBag.DefaultCustomLabel })
+			@Html.ValidationMessageFor(m => m.CustomLabel2)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.CustomLabel3)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.CustomLabel3, new { placeholder = ViewBag.DefaultCustomLabel })
+			@Html.ValidationMessageFor(m => m.CustomLabel3)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.CustomLabel4)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.CustomLabel4, new { placeholder = ViewBag.DefaultCustomLabel })
+			@Html.ValidationMessageFor(m => m.CustomLabel4)
+		</td>
+	</tr>
 </table>

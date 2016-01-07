@@ -32,6 +32,7 @@
 * #840 Activity log: Have option to exclude search engine activity
 * #841 Activity log for deleting an order
 * More settings to control creation of SEO names
+* GMC feed: Supporting fields multipack, bundle, adult, energy efficiency class and custom label (0 to 4)
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

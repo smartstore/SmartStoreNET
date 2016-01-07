@@ -125,8 +125,35 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				case "Pattern":
 					product.Pattern = value;
 					break;
-				case "Exporting":
+				case "Export2":
 					product.Export = value.ToBool(true);
+					break;
+				case "Multipack2":
+					product.Multipack = value.ToInt();
+					break;
+				case "IsBundle":
+					product.IsBundle = (value.IsEmpty() ? (bool?)null : value.ToBool());
+					break;
+				case "IsAdult":
+					product.IsAdult = (value.IsEmpty() ? (bool?)null : value.ToBool());
+					break;
+				case "EnergyEfficiencyClass":
+					product.EnergyEfficiencyClass = value;
+					break;
+				case "CustomLabel0":
+					product.CustomLabel0 = value;
+					break;
+				case "CustomLabel1":
+					product.CustomLabel1 = value;
+					break;
+				case "CustomLabel2":
+					product.CustomLabel2 = value;
+					break;
+				case "CustomLabel3":
+					product.CustomLabel3 = value;
+					break;
+				case "CustomLabel4":
+					product.CustomLabel4 = value;
 					break;
 			}
 
@@ -156,7 +183,8 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			string yes = T("Admin.Common.Yes");
 			string no = T("Admin.Common.No");
 
-			// there's no way to share a context instance across repositories which makes GoogleProductObjectContext pretty useless here.
+			// there's no way to share a context instance across repositories in EF.
+			// so we have to fallback to pure SQL here to get the data paged and filtered.
 
 			var whereClause = new StringBuilder("(NOT ([t2].[Deleted] = 1)) AND ([t2].[VisibleIndividually] = 1)");
 
@@ -181,11 +209,11 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			{
 				// fastest possible paged data query
 				sql =
-					"SELECT [TotalCount], [t3].[Id], [t3].[Name], [t3].[SKU], [t3].[ProductTypeId], [t3].[value] AS [Taxonomy], [t3].[value2] AS [Gender], [t3].[value3] AS [AgeGroup], [t3].[value4] AS [Color], [t3].[value5] AS [Size], [t3].[value6] AS [Material], [t3].[value7] AS [Pattern], [t3].[value8] AS [Export]" +
+					"SELECT [TotalCount], [t3].[Id], [t3].[Name], [t3].[SKU], [t3].[ProductTypeId], [t3].[value] AS [Taxonomy], [t3].[value2] AS [Gender], [t3].[value3] AS [AgeGroup], [t3].[value4] AS [Color], [t3].[value5] AS [Size], [t3].[value6] AS [Material], [t3].[value7] AS [Pattern], [t3].[value8] AS [Export], [t3].[value9] AS [Multipack], [t3].[value10] AS [IsBundle], [t3].[value11] AS [IsAdult], [t3].[value12] AS [EnergyEfficiencyClass], [t3].[value13] AS [CustomLabel0], [t3].[value14] AS [CustomLabel1], [t3].[value15] AS [CustomLabel2], [t3].[value16] AS [CustomLabel3], [t3].[value17] AS [CustomLabel4]" +
 					" FROM (" +
-					"    SELECT COUNT(id) OVER() [TotalCount], ROW_NUMBER() OVER (ORDER BY [t2].[Name]) AS [ROW_NUMBER], [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value], [t2].[value2], [t2].[value3], [t2].[value4], [t2].[value5], [t2].[value6], [t2].[value7], [t2].[value8]" +
+					"    SELECT COUNT(id) OVER() [TotalCount], ROW_NUMBER() OVER (ORDER BY [t2].[Name]) AS [ROW_NUMBER], [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value], [t2].[value2], [t2].[value3], [t2].[value4], [t2].[value5], [t2].[value6], [t2].[value7], [t2].[value8], [t2].[value9], [t2].[value10], [t2].[value11], [t2].[value12], [t2].[value13], [t2].[value14], [t2].[value15], [t2].[value16], [t2].[value17]" +
 					"    FROM (" +
-					"        SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched]" +
+					"        SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], COALESCE([t1].[Multipack],0) AS [value9], [t1].[IsBundle] AS [value10], [t1].[IsAdult] AS [value11], [t1].[EnergyEfficiencyClass] AS [value12], [t1].[CustomLabel0] AS [value13], [t1].[CustomLabel1] AS [value14], [t1].[CustomLabel2] AS [value15], [t1].[CustomLabel3] AS [value16], [t1].[CustomLabel4] AS [value17], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched]" +
 					"        FROM [Product] AS [t0]" +
 					"        LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
 					"        ) AS [t2]" +
@@ -198,9 +226,9 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			{
 				// OFFSET... FETCH NEXT requires SQL Server 2012 or SQL CE 4
 				sql =
-					"SELECT [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value] AS [Taxonomy], [t2].[value2] AS [Gender], [t2].[value3] AS [AgeGroup], [t2].[value4] AS [Color], [t2].[value5] AS [Size], [t2].[value6] AS [Material], [t2].[value7] AS [Pattern], [t2].[value8] AS [Export]" +
+					"SELECT [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value] AS [Taxonomy], [t2].[value2] AS [Gender], [t2].[value3] AS [AgeGroup], [t2].[value4] AS [Color], [t2].[value5] AS [Size], [t2].[value6] AS [Material], [t2].[value7] AS [Pattern], [t2].[value8] AS [Export], [t2].[value9] AS [Multipack], [t2].[value10] AS [IsBundle], [t2].[value11] AS [IsAdult], [t2].[value12] AS [EnergyEfficiencyClass], [t2].[value13] AS [CustomLabel0], [t2].[value14] AS [CustomLabel1], [t2].[value15] AS [CustomLabel2], [t2].[value16] AS [CustomLabel3], [t2].[value17] AS [CustomLabel4]" +
 					" FROM (" +
-					"     SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched] AS [IsTouched]" +
+					"     SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], COALESCE([t1].[Multipack],0) AS [value9], [t1].[IsBundle] AS [value10], [t1].[IsAdult] AS [value11], [t1].[EnergyEfficiencyClass] AS [value12], [t1].[CustomLabel0] AS [value13], [t1].[CustomLabel1] AS [value14], [t1].[CustomLabel2] AS [value15], [t1].[CustomLabel3] AS [value16], [t1].[CustomLabel4] AS [value17], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched] AS [IsTouched]" +
 					"     FROM [Product] AS [t0]" +
 					"     LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
 					" ) AS [t2]" +
@@ -232,7 +260,17 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				if (x.AgeGroup.HasValue())
 					x.AgeGroupLocalize = T("Plugins.Feed.Froogle.AgeGroup" + textInfo.ToTitleCase(x.AgeGroup));
 
-				x.ExportingLocalize = (x.Export == 0 ? no : yes);
+				x.Export2Localize = (x.Export == 0 ? no : yes);
+
+				if (x.IsBundle.HasValue)
+					x.IsBundleLocalize = (x.IsBundle.Value ? yes : no);
+				else
+					x.IsBundleLocalize = null;
+
+				if (x.IsAdult.HasValue)
+					x.IsAdultLocalize = (x.IsAdult.Value ? yes : no);
+				else
+					x.IsAdultLocalize = null;
 			});
 
 			model.Data = data;

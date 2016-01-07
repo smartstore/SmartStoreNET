@@ -9,7 +9,7 @@ namespace SmartStore.GoogleMerchantCenter
 		{
 			string displayText = null;
 
-			if (fieldName == "Gender" || fieldName == "AgeGroup" || fieldName == "Exporting")
+			if (fieldName == "Gender" || fieldName == "AgeGroup" || fieldName == "Export2" || fieldName == "IsBundle" || fieldName == "IsAdult")
 				displayText = "<#= {0}Localize #>".FormatInvariant(fieldName);
 			else
 				displayText = "<#= {0} #>".FormatInvariant(fieldName);
@@ -22,12 +22,15 @@ namespace SmartStore.GoogleMerchantCenter
 			return skeleton.FormatInvariant(fieldName, fieldName.ToLower(), type, displayText);
 		}
 
-		public static bool IsTouched(this GoogleProductRecord product)
+		public static bool IsTouched(this GoogleProductRecord p)
 		{
-			if (product != null)
+			if (p != null)
 			{
-				return product.Taxonomy.HasValue() || product.Gender.HasValue() || product.AgeGroup.HasValue() || product.Color.HasValue() ||
-					product.Size.HasValue() || product.Material.HasValue() || product.Pattern.HasValue() || product.ItemGroupId.HasValue() || !product.Export;
+				return
+					p.Taxonomy.HasValue() || p.Gender.HasValue() || p.AgeGroup.HasValue() || p.Color.HasValue() ||
+					p.Size.HasValue() || p.Material.HasValue() || p.Pattern.HasValue() || p.ItemGroupId.HasValue() ||
+					!p.Export || p.Multipack != 0 || p.IsBundle.HasValue || p.IsAdult.HasValue || p.EnergyEfficiencyClass.HasValue() ||
+					p.CustomLabel0.HasValue() || p.CustomLabel1.HasValue() || p.CustomLabel2.HasValue() || p.CustomLabel3.HasValue() || p.CustomLabel4.HasValue();
 			}
 			return false;
 		}

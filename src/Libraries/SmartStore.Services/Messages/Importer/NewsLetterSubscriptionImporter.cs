@@ -104,9 +104,7 @@ namespace SmartStore.Services.Messages.Importer
 							toAdd.Clear();
 
 							// update modified subscribers
-							_subscriptionRepository.AutoCommitEnabled = null;
-							toUpdate.Each(x => _subscriptionRepository.Update(x));
-							_subscriptionRepository.Context.SaveChanges();
+							_subscriptionRepository.UpdateRange(toUpdate);
 							toUpdate.Clear();
 						}
 						catch (Exception exception)

@@ -437,7 +437,6 @@ namespace SmartStore.Services.Localization
 
 				foreach (var xel in nodes.Cast<XmlElement>())
 				{
-
 					string name = xel.GetAttribute("Name").TrimSafe();
 					string value = "";
 					var valueNode = xel.SelectSingleNode("Value");
@@ -488,13 +487,7 @@ namespace SmartStore.Services.Localization
 				_lsrRepository.InsertRange(toAdd, 500);
 				toAdd.Clear();
 
-				_lsrRepository.AutoCommitEnabled = null;
-				toUpdate.Each(x =>
-				{
-					_lsrRepository.Update(x);
-				});
-
-				_lsrRepository.Context.SaveChanges();
+				_lsrRepository.UpdateRange(toUpdate);
 				toUpdate.Clear();
 
 				//clear cache

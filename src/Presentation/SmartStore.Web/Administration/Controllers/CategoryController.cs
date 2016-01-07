@@ -273,7 +273,6 @@ namespace SmartStore.Admin.Controllers
 				GridPageSize = _adminAreaSettings.GridPageSize
 			};
 
-			model.AvailableStores.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 			foreach (var store in allStores)
 			{
 				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
@@ -376,7 +375,6 @@ namespace SmartStore.Admin.Controllers
 			var allStores = _storeService.GetAllStores();
 			var model = new CategoryTreeModel();
 
-			model.AvailableStores.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 			foreach (var store in allStores)
 			{
 				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
@@ -884,7 +882,6 @@ namespace SmartStore.Admin.Controllers
 
 			//product types
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-			model.AvailableProductTypes.Insert(0, new SelectListItem { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
             return View(model);
         }

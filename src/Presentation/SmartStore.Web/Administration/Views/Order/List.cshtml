@@ -97,7 +97,7 @@
 				@Html.DropDownList("ShippingStatusIds", Model.AvailableShippingStatuses, null, new { multiple = "multiple" })
 			</td>
 		</tr>
-		@if (Model.StoreCount > 1)
+		@if (Model.AvailableStores.Count > 1)
 		{
 			<tr>
 				<td class="adminTitle">
@@ -176,7 +176,7 @@
 							columns.Bound(x => x.CustomerName);
 							columns.Bound(x => x.CustomerEmail);
 							columns.Bound(x => x.StoreName)
-								.Hidden(Model.StoreCount <= 1);
+								.Hidden(Model.AvailableStores.Count <= 1);
 							columns.Bound(x => x.CreatedOn);
 							columns.Bound(x => x.OrderTotal)
 								.Width(180)

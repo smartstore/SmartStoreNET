@@ -104,10 +104,11 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			var model = new NewsItemListModel();
-			//stores
-			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+
 			foreach (var s in _storeService.GetAllStores())
-				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+			{
+				model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
+			}
 
 			return View(model);
         }

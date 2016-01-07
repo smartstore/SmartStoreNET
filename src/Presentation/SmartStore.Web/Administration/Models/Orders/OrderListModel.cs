@@ -55,7 +55,6 @@ namespace SmartStore.Admin.Models.Orders
         public string GoDirectlyToNumber { get; set; }
 
 		public int GridPageSize { get; set; }
-		public int StoreCount { get; set; }
 
 		public IList<SelectListItem> AvailableOrderStatuses { get; set; }
         public IList<SelectListItem> AvailablePaymentStatuses { get; set; }

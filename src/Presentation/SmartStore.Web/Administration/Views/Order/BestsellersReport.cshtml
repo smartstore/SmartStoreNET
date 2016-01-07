@@ -1,7 +1,6 @@
 ﻿@model BestsellersReportModel
 @using Telerik.Web.Mvc.UI
 @{
-    //page title
     ViewBag.Title = T("Admin.SalesReport.Bestsellers").Text;
 }
 @using (Html.BeginForm())
@@ -14,7 +13,8 @@
         <div class="options">
         </div>
     </div>
-    <table width="100%">
+
+    <table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.StartDate)
@@ -36,7 +36,7 @@
                 @Html.SmartLabelFor(model => model.OrderStatusId)
             </td>
             <td class="adminData">
-                @Html.DropDownList("OrderStatusId", Model.AvailableOrderStatuses)
+                @Html.DropDownList("OrderStatusId", Model.AvailableOrderStatuses, T("Admin.Common.All"))
             </td>
         </tr>
         <tr>
@@ -44,7 +44,7 @@
                 @Html.SmartLabelFor(model => model.PaymentStatusId)
             </td>
             <td class="adminData">
-                @Html.DropDownList("PaymentStatusId", Model.AvailablePaymentStatuses)
+                @Html.DropDownList("PaymentStatusId", Model.AvailablePaymentStatuses, T("Admin.Common.All"))
             </td>
         </tr>
         <tr>
@@ -56,8 +56,9 @@
             </td>
         </tr>
     </table>
-    <p>
-    </p>
+    
+	<p></p>
+
     <table class="adminContent">
         <tr>
             <td>
@@ -106,5 +107,4 @@
         }
 
     </script>
-    
 }

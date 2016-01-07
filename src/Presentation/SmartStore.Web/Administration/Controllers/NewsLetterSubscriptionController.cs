@@ -42,8 +42,7 @@ namespace SmartStore.Admin.Controllers
 
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
-			model.AvailableStores.Add(new SelectListItem { Text = T("Admin.Common.All"), Value = "0" });
-			model.AvailableStores.AddRange(stores.ToSelectListItems());
+			model.AvailableStores = stores.ToSelectListItems();
 		}
 
 		public ActionResult Index()

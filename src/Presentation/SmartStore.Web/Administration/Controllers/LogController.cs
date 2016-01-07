@@ -55,8 +55,8 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new LogListModel();
-            model.AvailableLogLevels = LogLevel.Debug.ToSelectList(false).ToList();
-            model.AvailableLogLevels.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+
+			model.AvailableLogLevels = LogLevel.Debug.ToSelectList(false).ToList();
 
             return View(model);
         }

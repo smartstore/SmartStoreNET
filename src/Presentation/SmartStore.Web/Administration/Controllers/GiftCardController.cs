@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Orders;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
@@ -32,19 +33,21 @@ namespace SmartStore.Admin.Controllers
         private readonly ILanguageService _languageService;
         private readonly ICustomerActivityService _customerActivityService;
 		private readonly ICommonServices _services;
+		private readonly AdminAreaSettings _adminAreaSettings;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public GiftCardController(IGiftCardService giftCardService,
+		public GiftCardController(IGiftCardService giftCardService,
             IPriceFormatter priceFormatter,
 			IWorkflowMessageService workflowMessageService,
             IDateTimeHelper dateTimeHelper,
 			LocalizationSettings localizationSettings,
             ILanguageService languageService,
             ICustomerActivityService customerActivityService,
-			ICommonServices services)
+			ICommonServices services,
+			AdminAreaSettings adminAreaSettings)
         {
             this._giftCardService = giftCardService;
             this._priceFormatter = priceFormatter;
@@ -54,6 +57,7 @@ namespace SmartStore.Admin.Controllers
             this._languageService = languageService;
             this._customerActivityService = customerActivityService;
 			this._services = services;
+			this._adminAreaSettings = adminAreaSettings;
         }
 
         #endregion
@@ -71,23 +75,23 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
                 return AccessDeniedView();
 
-            var model = new GiftCardListModel();
-            model.ActivatedList.Add(new SelectListItem()
-                {
-                    Value = "0",
-                    Selected = true,
-                    Text = _services.Localization.GetResource("Common.All", logIfNotFound: false, defaultValue: "All")
-                });
-            model.ActivatedList.Add(new SelectListItem()
+			var model = new GiftCardListModel
+			{
+				GridPageSize = _adminAreaSettings.GridPageSize
+			};
+
+			model.ActivatedList.Add(new SelectListItem
             {
                 Value = "1",
                 Text = _services.Localization.GetResource("Common.Activated", logIfNotFound: false, defaultValue: "Activated")
             });
-            model.ActivatedList.Add(new SelectListItem()
+
+            model.ActivatedList.Add(new SelectListItem
             {
                 Value = "2",
                 Text = _services.Localization.GetResource("Common.Deactivated", logIfNotFound: false, defaultValue: "Deactivated")
             });
+
             return View(model);
         }
 

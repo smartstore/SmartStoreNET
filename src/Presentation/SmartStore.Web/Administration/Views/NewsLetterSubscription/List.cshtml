@@ -24,14 +24,17 @@
             @Html.EditorFor(model => Model.SearchEmail)
         </td>
     </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.StoreId)
-        </td>
-        <td class="adminData">
-            @Html.DropDownList("StoreId", Model.AvailableStores)
-        </td>
-    </tr>
+	@if (Model.AvailableStores.Count > 1)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.StoreId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("StoreId", Model.AvailableStores, T("Admin.Common.All"))
+			</td>
+		</tr>
+	}
     <tr>
 		<td class="adminTitle">
 			&nbsp;
@@ -64,6 +67,7 @@
 								.Centered()
                                 .Width(100);
 							columns.Bound(x => x.StoreName)
+								.Hidden(Model.AvailableStores.Count <= 1)
 								.ReadOnly();
                             columns.Bound(x => x.CreatedOn)
                                 .ReadOnly()

@@ -5,7 +5,6 @@
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
 
-    //page title
     ViewBag.Title = T("Admin.Catalog.Manufacturers.Products.AddNew").Text;
 }
 @using Telerik.Web.Mvc.UI;
@@ -17,17 +16,16 @@
         </div>
     </div>    
     
-       if (ViewBag.RefreshPage == true)
-       {
-        <script type="text/javascript">
-            try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
-            catch (e){} 
-            window.close();
-        </script>
-       }
+    if (ViewBag.RefreshPage == true)
+    {
+    <script type="text/javascript">
+        try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
+        catch (e){} 
+        window.close();
+    </script>
+    }
 
-    
-    <table width="100%">
+    <table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SearchProductName)
@@ -41,7 +39,7 @@
                 @Html.SmartLabelFor(model => model.SearchCategoryId)
             </td>
             <td class="adminData">
-                @Html.DropDownList("SearchCategoryId", Model.AvailableCategories, T("Admin.Common.All").Text)
+                @Html.DropDownList("SearchCategoryId", Model.AvailableCategories, T("Admin.Common.All"))
             </td>
         </tr>
         <tr>
@@ -49,7 +47,7 @@
                 @Html.SmartLabelFor(model => model.SearchManufacturerId)
             </td>
             <td class="adminData">
-                @Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, T("Admin.Common.All").Text)
+                @Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, T("Admin.Common.All"))
             </td>
         </tr>
         <tr>
@@ -57,7 +55,7 @@
                 @Html.SmartLabelFor(model => model.SearchProductTypeId)
             </td>
             <td class="adminData">
-                @Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes)
+                @Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes, T("Admin.Common.All"))
             </td>
         </tr>
         <tr>
@@ -69,8 +67,9 @@
             </td>
         </tr>
     </table>
-    <p>
-    </p>
+    
+	<p></p>
+
     <table class="adminContent">
         <tr>
             <td>

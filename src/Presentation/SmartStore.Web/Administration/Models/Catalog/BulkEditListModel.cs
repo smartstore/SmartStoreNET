@@ -33,7 +33,6 @@ namespace SmartStore.Admin.Models.Catalog
 		public IList<SelectListItem> AvailableProductTypes { get; set; }
 
 		public int GridPageSize { get; set; }
-		public int StoreCount { get; set; }
         
         public IList<SelectListItem> AvailableCategories { get; set; }
         public IList<SelectListItem> AvailableManufacturers { get; set; }

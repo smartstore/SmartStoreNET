@@ -24,7 +24,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class ReturnRequestController : AdminControllerBase
     {
         #region Fields
@@ -78,15 +78,11 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareReturnRequestListModel(ReturnRequestListModel model)
 		{
-			string allString = _localizationService.GetResource("Admin.Common.All");
-
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
-			model.AvailableStores.Add(new SelectListItem() { Text = allString, Value = "0" });
-			model.AvailableStores.AddRange(_storeService.GetAllStores().ToSelectListItems());
+			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems();
 
 			model.AvailableReturnRequestStatus = ReturnRequestStatus.Pending.ToSelectList(false).ToList();
-			model.AvailableReturnRequestStatus.Insert(0, new SelectListItem() { Text = allString });
 		}
 
         private bool PrepareReturnRequestModel(ReturnRequestModel model, ReturnRequest returnRequest, bool excludeProperties)

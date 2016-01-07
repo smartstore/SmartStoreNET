@@ -98,22 +98,19 @@ namespace SmartStore.Services.Catalog
 			if (!showHidden)
 				query = query.Where(m => m.Published);
 
-			if (!showHidden)
+			if (!QuerySettings.IgnoreMultiStore && storeId > 0)
 			{
-				if (!QuerySettings.IgnoreMultiStore && storeId > 0)
-				{
-					query = from m in query
-							join sm in _storeMappingRepository.Table
-							on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
-							from sm in m_sm.DefaultIfEmpty()
-							where !m.LimitedToStores || storeId == sm.StoreId
-							select m;
+				query = from m in query
+						join sm in _storeMappingRepository.Table
+						on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
+						from sm in m_sm.DefaultIfEmpty()
+						where !m.LimitedToStores || storeId == sm.StoreId
+						select m;
 
-					query = from m in query
-							group m by m.Id into mGroup
-							orderby mGroup.Key
-							select mGroup.FirstOrDefault();
-				}
+				query = from m in query
+						group m by m.Id into mGroup
+						orderby mGroup.Key
+						select mGroup.FirstOrDefault();
 			}
 
 			return query;
@@ -126,18 +123,19 @@ namespace SmartStore.Services.Catalog
         /// <returns>Manufacturer collection</returns>
         public virtual IList<Manufacturer> GetAllManufacturers(bool showHidden = false)
         {
-            return GetAllManufacturers(null, showHidden);
+            return GetAllManufacturers(null, 0, showHidden);
         }
 
         /// <summary>
         /// Gets all manufacturers
         /// </summary>
         /// <param name="manufacturerName">Manufacturer name</param>
+		/// <param name="storeId">Whether to filter result by store identifier</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Manufacturer collection</returns>
-        public virtual IList<Manufacturer> GetAllManufacturers(string manufacturerName, bool showHidden = false)
+        public virtual IList<Manufacturer> GetAllManufacturers(string manufacturerName, int storeId = 0, bool showHidden = false)
         {
-			var query = GetManufacturers(showHidden, _storeContext.CurrentStore.Id);
+			var query = GetManufacturers(showHidden, storeId);
 
 			if (manufacturerName.HasValue())
 				query = query.Where(m => m.Name.Contains(manufacturerName));
@@ -148,19 +146,20 @@ namespace SmartStore.Services.Catalog
             var manufacturers = query.ToList();
             return manufacturers;
         }
-        
-        /// <summary>
-        /// Gets all manufacturers
-        /// </summary>
-        /// <param name="manufacturerName">Manufacturer name</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Manufacturers</returns>
-        public virtual IPagedList<Manufacturer> GetAllManufacturers(string manufacturerName,
-            int pageIndex, int pageSize, bool showHidden = false)
+
+		/// <summary>
+		/// Gets all manufacturers
+		/// </summary>
+		/// <param name="manufacturerName">Manufacturer name</param>
+		/// <param name="pageIndex">Page index</param>
+		/// <param name="pageSize">Page size</param>
+		/// <param name="storeId">Whether to filter result by store identifier</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>Manufacturers</returns>
+		public virtual IPagedList<Manufacturer> GetAllManufacturers(string manufacturerName,
+            int pageIndex, int pageSize, int storeId = 0, bool showHidden = false)
         {
-            var manufacturers = GetAllManufacturers(manufacturerName, showHidden);
+            var manufacturers = GetAllManufacturers(manufacturerName, storeId, showHidden);
             return new PagedList<Manufacturer>(manufacturers, pageIndex, pageSize);
         }
 

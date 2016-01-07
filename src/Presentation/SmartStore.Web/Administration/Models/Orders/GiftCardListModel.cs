@@ -12,6 +12,8 @@ namespace SmartStore.Admin.Models.Orders
             ActivatedList = new List<SelectListItem>();
         }
 
+		public int GridPageSize { get; set; }
+
         [SmartResourceDisplayName("Admin.GiftCards.List.CouponCode")]
         [AllowHtml]
         public string CouponCode { get; set; }

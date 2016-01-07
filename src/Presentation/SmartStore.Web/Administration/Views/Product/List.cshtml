@@ -44,7 +44,7 @@
 				@Html.DropDownListFor(model => model.SearchProductTypeId, Model.AvailableProductTypes, allString)
 			</td>
 		</tr>
-		@if (Model.StoreCount > 1)
+		@if (Model.AvailableStores.Count > 1)
 		{
 			<tr>
 				<td class="adminTitle">
@@ -170,7 +170,7 @@
 							.Sortable(false)
 							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
 							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-							.Hidden(Model.StoreCount <= 1)
+							.Hidden(Model.AvailableStores.Count <= 1)
 							.Centered();
 						columns.Bound(x => x.CreatedOn);
 						columns.Bound(x => x.UpdatedOn)

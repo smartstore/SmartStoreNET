@@ -911,7 +911,14 @@ namespace SmartStore.Admin.Controllers
 
 				gridModel.Data = products.Select(x =>
 				{
-					var productModel = x.ToModel();
+                    var productModel = new ProductModel
+                    {
+                        Sku = x.Sku,
+                        Published = x.Published,
+                        ProductTypeLabelHint = x.ProductTypeLabelHint,
+                        Name = x.Name,
+                        Id = x.Id
+                    };
 					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 
 					return productModel;

@@ -943,8 +943,18 @@ namespace SmartStore.Admin.Controllers
 
 				gridModel.Data = products.Select(x =>
 				{
-					var productModel = x.ToModel();
-					productModel.FullDescription = ""; // Perf
+                    var productModel = new ProductModel
+                    {
+                        Sku = x.Sku,
+                        Published = x.Published,
+                        ProductTypeLabelHint = x.ProductTypeLabelHint,
+                        Name = x.Name,
+                        Id = x.Id,
+                        StockQuantity = x.StockQuantity,
+                        Price = x.Price,
+                        LimitedToStores = x.LimitedToStores
+                    };
+
 					PrepareProductPictureThumbnailModel(productModel, x);
 
 					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
@@ -1654,7 +1664,15 @@ namespace SmartStore.Admin.Controllers
 
 				gridModel.Data = products.Select(x =>
 				{
-					var productModel = x.ToModel();
+                    var productModel = new ProductModel
+                    {
+                        Sku = x.Sku,
+                        Published = x.Published,
+                        ProductTypeLabelHint = x.ProductTypeLabelHint,
+                        Name = x.Name,
+                        Id = x.Id
+                    };
+
 					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 
 					return productModel;
@@ -1876,7 +1894,15 @@ namespace SmartStore.Admin.Controllers
 
 				gridModel.Data = products.Select(x =>
 				{
-					var productModel = x.ToModel();
+                    var productModel = new ProductModel
+                    {
+                        Sku = x.Sku,
+                        Published = x.Published,
+                        ProductTypeLabelHint = x.ProductTypeLabelHint,
+                        Name = x.Name,
+                        Id = x.Id
+                    };
+
 					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 
 					return productModel;
@@ -2095,7 +2121,15 @@ namespace SmartStore.Admin.Controllers
 
 				gridModel.Data = products.Select(x =>
 				{
-					var productModel = x.ToModel();
+                    var productModel = new ProductModel
+                    {
+                        Sku = x.Sku,
+                        Published = x.Published,
+                        ProductTypeLabelHint = x.ProductTypeLabelHint,
+                        Name = x.Name,
+                        Id = x.Id
+                    };
+
 					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 
 					return productModel;
@@ -2411,7 +2445,15 @@ namespace SmartStore.Admin.Controllers
 
 				gridModel.Data = products.Select(x =>
 				{
-					var productModel = x.ToModel();
+                    var productModel = new ProductModel
+                    {
+                        Sku = x.Sku,
+                        Published = x.Published,
+                        ProductTypeLabelHint = x.ProductTypeLabelHint,
+                        Name = x.Name,
+                        Id = x.Id
+                    };
+
 					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 					productModel.ProductSelectCheckboxClass = (!x.CanBeBundleItem() ? " hide" : "");
 
@@ -3611,7 +3653,15 @@ namespace SmartStore.Admin.Controllers
 
 				gridModel.Data = products.Select(x =>
 				{
-					var productModel = x.ToModel();
+                    var productModel = new ProductModel
+                    {
+                        Sku = x.Sku,
+                        Published = x.Published,
+                        ProductTypeLabelHint = x.ProductTypeLabelHint,
+                        Name = x.Name,
+                        Id = x.Id
+                    };
+
 					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 
 					return productModel;

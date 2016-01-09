@@ -3,7 +3,6 @@
 @using SmartStore.Core.Domain.Customers;
 @using SmartStore.Core.Domain.Security;
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Settings.CustomerUser").Text;
 }
 @using (Html.BeginForm())
@@ -126,6 +125,16 @@
 				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.UserRegistrationType)
                 @Html.DropDownListFor(model => model.CustomerSettings.UserRegistrationType, ((UserRegistrationType)Model.CustomerSettings.UserRegistrationType).ToSelectList())
                 @Html.ValidationMessageFor(model => model.CustomerSettings.UserRegistrationType)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.RegisterCustomerRoleId)
+            </td>
+            <td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.RegisterCustomerRoleId)
+                @Html.DropDownListFor(model => model.CustomerSettings.RegisterCustomerRoleId, Model.CustomerSettings.AvailableRegisterCustomerRoles, T("Common.Unspecified"))
+                @Html.ValidationMessageFor(model => model.CustomerSettings.RegisterCustomerRoleId)
             </td>
         </tr>
         <tr>

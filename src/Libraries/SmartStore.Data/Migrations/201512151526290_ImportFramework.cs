@@ -316,6 +316,28 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.System.Warnings.DigitsOnly",
 				"Please enter digits only.",
 				"Bitte nur Ziffern eingeben.");
+
+			builder.AddOrUpdate("Account.Register.Errors.CannotRegisterSearchEngine",
+				"A search engine can't be registered.",
+				"Eine Suchmaschine kann nicht registriert werden.");
+
+			builder.AddOrUpdate("Account.Register.Errors.CannotRegisterTaskAccount",
+				"A background task account can't be registered.",
+				"Das Konto einer geplanten Aufgabe kann nicht registriert werden.");
+
+			builder.AddOrUpdate("Account.Register.Errors.AlreadyRegistered",
+				"The customer is already registered.",
+				"Der Kunde ist bereits registriert.");
+
+			builder.AddOrUpdate("Admin.Customers.CustomerRoles.CannotFoundRole",
+				"The customer role \"{0}\" cannot be found.",
+				"Die Kundengruppe \"{0}\" wurde nicht gefunden.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.RegisterCustomerRole",
+				"Customer role at registrations",
+				"Kundengruppe bei Registrierungen",
+				"Specifies a customer role that will be assigned to newly registered customers.",
+				"Legt eine Kundengruppe fest, die neu registrierten Kunden zugeordnet wird.");
 		}
 	}
 }

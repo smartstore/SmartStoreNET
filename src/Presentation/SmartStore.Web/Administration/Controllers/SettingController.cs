@@ -902,13 +902,15 @@ namespace SmartStore.Admin.Controllers
 			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
 			StoreDependingSettings.CreateViewDataObject(storeScope);
 
+			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+
 			var customerSettings = _services.Settings.LoadSetting<CustomerSettings>(storeScope);
 			var addressSettings = _services.Settings.LoadSetting<AddressSettings>(storeScope);
 			var dateTimeSettings = _services.Settings.LoadSetting<DateTimeSettings>(storeScope);
 			var externalAuthenticationSettings = _services.Settings.LoadSetting<ExternalAuthenticationSettings>(storeScope);
 
-            //merge settings
-            var model = new CustomerUserSettingsModel();
+			//merge settings
+			var model = new CustomerUserSettingsModel();
             model.CustomerSettings = customerSettings.ToModel();
 
 			StoreDependingSettings.GetOverrideKeys(customerSettings, model.CustomerSettings, storeScope, _services.Settings, false);
@@ -919,14 +921,15 @@ namespace SmartStore.Admin.Controllers
 
             model.DateTimeSettings.AllowCustomersToSetTimeZone = dateTimeSettings.AllowCustomersToSetTimeZone;
             model.DateTimeSettings.DefaultStoreTimeZoneId = _dateTimeHelper.DefaultStoreTimeZone.Id;
+
             foreach (TimeZoneInfo timeZone in _dateTimeHelper.GetSystemTimeZones())
             {
-                model.DateTimeSettings.AvailableTimeZones.Add(new SelectListItem()
-                    {
-                        Text = timeZone.DisplayName,
-                        Value = timeZone.Id,
-                        Selected = timeZone.Id.Equals(_dateTimeHelper.DefaultStoreTimeZone.Id, StringComparison.InvariantCultureIgnoreCase)
-                    });
+                model.DateTimeSettings.AvailableTimeZones.Add(new SelectListItem
+                {
+                    Text = timeZone.DisplayName,
+                    Value = timeZone.Id,
+                    Selected = timeZone.Id.Equals(_dateTimeHelper.DefaultStoreTimeZone.Id, StringComparison.InvariantCultureIgnoreCase)
+                });
             }
 
 			StoreDependingSettings.GetOverrideKeys(dateTimeSettings, model.DateTimeSettings, storeScope, _services.Settings, false);
@@ -938,7 +941,12 @@ namespace SmartStore.Admin.Controllers
             model.CustomerSettings.AvailableCustomerNumberMethods = customerSettings.CustomerNumberMethod.ToSelectList();
             model.CustomerSettings.AvailableCustomerNumberVisibilities = customerSettings.CustomerNumberVisibility.ToSelectList();
 
-            return View(model);
+			model.CustomerSettings.AvailableRegisterCustomerRoles = allCustomerRoles
+				.Where(x => x.SystemName != SystemCustomerRoleNames.Registered && x.SystemName != SystemCustomerRoleNames.Guests)
+				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+				.ToList();
+
+			return View(model);
         }
 
         [HttpPost]

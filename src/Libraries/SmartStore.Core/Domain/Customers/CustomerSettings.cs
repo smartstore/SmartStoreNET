@@ -151,7 +151,6 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public bool StoreLastVisitedPage { get; set; }
 
-
         #region Form fields
 
         /// <summary>
@@ -246,8 +245,12 @@ namespace SmartStore.Core.Domain.Customers
 
         #endregion
 
-        // codehint: sm-add (no ui, only db edit)
         public string PrefillLoginUsername { get; set; }
         public string PrefillLoginPwd { get; set; }
-    }
+
+		/// <summary>
+		/// Identifier of a customer role that new registered customers will be assigned to
+		/// </summary>
+		public int RegisterCustomerRoleId { get; set; }
+	}
 }

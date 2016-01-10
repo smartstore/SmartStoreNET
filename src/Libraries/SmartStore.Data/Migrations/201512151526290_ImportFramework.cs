@@ -338,6 +338,15 @@ namespace SmartStore.Data.Migrations
 				"Kundengruppe bei Registrierungen",
 				"Specifies a customer role that will be assigned to newly registered customers.",
 				"Legt eine Kundengruppe fest, die neu registrierten Kunden zugeordnet wird.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Order.DisplayOrdersOfAllStores",
+				"Display orders of all stores",
+				"Aufträge aller Shops anzeigen",
+				"Specifies whether to display the orders of all stores to the customer. If this option is disabled, only the orders of the current store are displayed.",
+				"Legt fest, ob dem Kunden die Aufträge aller Shops angezeigt werden sollen. Ist diese Option deaktiviert, so werden nur die Aufträge des aktuellen Shops angezeigt.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Order.GiftCards_Deactivated")
+				.Value("de", "Geschenkgutschein wird deaktiviert, wenn Auftragsstatus...");
 		}
 	}
 }

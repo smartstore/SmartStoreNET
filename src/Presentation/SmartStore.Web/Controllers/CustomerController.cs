@@ -360,11 +360,14 @@ namespace SmartStore.Web.Controllers
             var model = new CustomerOrderListModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.Orders;
-			var orders = _orderService.SearchOrders(_storeContext.CurrentStore.Id, customer.Id,
-				null, null, null, null, null, null, null, null, 0, int.MaxValue);
+
+			var storeScope = (_orderSettings.DisplayOrdersOfAllStores ? 0 : _storeContext.CurrentStore.Id);
+
+			var orders = _orderService.SearchOrders(storeScope, customer.Id, null, null, null, null, null, null, null, null, 0, int.MaxValue);
+
             foreach (var order in orders)
             {
-                var orderModel = new CustomerOrderListModel.OrderDetailsModel()
+                var orderModel = new CustomerOrderListModel.OrderDetailsModel
                 {
                     Id = order.Id,
                     OrderNumber = order.GetOrderNumber(),
@@ -372,6 +375,7 @@ namespace SmartStore.Web.Controllers
                     OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
                     IsReturnRequestAllowed = _orderProcessingService.IsReturnRequestAllowed(order)
                 };
+
                 var orderTotalInCustomerCurrency = _currencyService.ConvertCurrency(order.OrderTotal, order.CurrencyRate);
                 orderModel.OrderTotal = _priceFormatter.FormatPrice(orderTotalInCustomerCurrency, true, order.CustomerCurrencyCode, false, _workContext.WorkingLanguage);
 
@@ -382,7 +386,7 @@ namespace SmartStore.Web.Controllers
 
             foreach (var recurringPayment in recurringPayments)
             {
-                var recurringPaymentModel = new CustomerOrderListModel.RecurringOrderModel()
+                var recurringPaymentModel = new CustomerOrderListModel.RecurringOrderModel
                 {
                     Id = recurringPayment.Id,
                     StartDate = _dateTimeHelper.ConvertToUserTime(recurringPayment.StartDateUtc, DateTimeKind.Utc).ToString(),
@@ -1291,6 +1295,7 @@ namespace SmartStore.Web.Controllers
 
             var customer = _workContext.CurrentCustomer;
             var model = PrepareCustomerOrderListModel(customer);
+
             return View(model);
         }
 
@@ -1303,9 +1308,13 @@ namespace SmartStore.Web.Controllers
 
             //get recurring payment identifier
             int recurringPaymentId = 0;
-            foreach (var formValue in form.AllKeys)
-                if (formValue.StartsWith("cancelRecurringPayment", StringComparison.InvariantCultureIgnoreCase))
-                    recurringPaymentId = Convert.ToInt32(formValue.Substring("cancelRecurringPayment".Length));
+			foreach (var formValue in form.AllKeys)
+			{
+				if (formValue.StartsWith("cancelRecurringPayment", StringComparison.InvariantCultureIgnoreCase))
+				{
+					recurringPaymentId = Convert.ToInt32(formValue.Substring("cancelRecurringPayment".Length));
+				}
+			}
 
             var recurringPayment = _orderService.GetRecurringPaymentById(recurringPaymentId);
             if (recurringPayment == null)
@@ -1323,11 +1332,9 @@ namespace SmartStore.Web.Controllers
 
                 return View(model);
             }
-            else
-            {
-				return RedirectToAction("Orders");
-            }
-        }
+
+			return RedirectToAction("Orders");
+		}
 
         #endregion
 

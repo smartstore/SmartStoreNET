@@ -58,9 +58,13 @@ namespace SmartStore.Admin.Models.Settings
         public IList<SelectListItem> GiftCards_Deactivated_OrderStatuses { get; set; }
 
         public string PrimaryStoreCurrencyCode { get; set; }
+		public int StoreCount { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.OrderIdent")]
         public int? OrderIdent { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Order.DisplayOrdersOfAllStores")]
+		public bool DisplayOrdersOfAllStores { get; set; }
 
 		public IList<OrderSettingsLocalizedModel> Locales { get; set; }
     }

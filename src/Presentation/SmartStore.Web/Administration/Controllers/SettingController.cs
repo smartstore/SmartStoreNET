@@ -685,13 +685,16 @@ namespace SmartStore.Admin.Controllers
 			//load settings for a chosen store scope
 			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
 			var orderSettings = _services.Settings.LoadSetting<OrderSettings>(storeScope);
-			var store = (storeScope == 0 ? _services.StoreContext.CurrentStore : _services.StoreService.GetStoreById(storeScope));
+
+			var allStores = _services.StoreService.GetAllStores();
+			var store = (storeScope == 0 ? _services.StoreContext.CurrentStore : allStores.FirstOrDefault(x => x.Id == storeScope));
 
 			var model = orderSettings.ToModel();
 
 			StoreDependingSettings.GetOverrideKeys(orderSettings, model, storeScope, _services.Settings);
 
 			model.PrimaryStoreCurrencyCode = store.PrimaryStoreCurrency.CurrencyCode;
+			model.StoreCount = allStores.Count;
 
             //gift card activation/deactivation
             model.GiftCards_Activated_OrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();

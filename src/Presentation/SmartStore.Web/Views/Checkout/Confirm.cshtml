@@ -8,8 +8,8 @@
     //title
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
 
-    string termsLink = "<a id='terms-of-service-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal' href='javascript:void(0)'>";
-    string disclaimerLink = "<a id='disclaimer-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal' href='javascript:void(0)'>";
+    string termsLink = "<a id='terms-of-service-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
+    string disclaimerLink = "<a id='disclaimer-trigger' class='read' data-toggle='modal' data-target='#terms-of-service-modal'>";
     string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink);
 }
 @section orderProgress{
@@ -38,7 +38,7 @@
                             $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
                         });
                         $("#disclaimer-trigger").click(function () {
-                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "Disclaimer" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
+                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "disclaimer" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
                         });
                     });
                 </script>

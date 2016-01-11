@@ -4048,7 +4048,7 @@ namespace SmartStore.Data.Setup
 					{
 						Name = "ReturnRequestStatusChanged.CustomerNotification",
 						Subject = "%Store.Name%. Return request status was changed.",
-						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p> <br /><br />Hello %Customer.FullName%,<br />Your return request #%ReturnRequest.ID% status has been changed.</p>"  + templateFooter,
+						Body = templateHeader + "<h2><a href=\"%Store.URL%\">%Store.Name%</a></h2><p> <br /><br />Hello %Customer.FullName%,<br />Your return request #%ReturnRequest.ID% status has been changed: %ReturnRequest.Status%</p>"  + templateFooter,
 						IsActive = true,
 						EmailAccountId = eaGeneral.Id,
 					},

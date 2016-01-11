@@ -347,6 +347,16 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Order.GiftCards_Deactivated")
 				.Value("de", "Geschenkgutschein wird deaktiviert, wenn Auftragsstatus...");
+
+			builder.AddOrUpdate("Admin.Configuration.Languages.Fields.UniqueSeoCode.Required",
+				"Please select a SEO language code.",
+				"Bitte legen Sie einen SEO Sprach-Code fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Languages.Fields.FlagImageFileName",
+				"Flag image",
+				"Flaggenbild",
+				"Specifies the flag image. The files for the flag images must be stored in /Content/Images/flags/.",
+				"Legt das Flaggenbild fest. Die Dateien der Flaggenbilder müssen in /Content/Images/flags/ liegen.");
 		}
 	}
 }

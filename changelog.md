@@ -70,6 +70,7 @@
 * Product grid sortable by name, price and created on
 * #26 Display company or name in order list
 * Added inline editing of country grid
+* #790 Improved language editing
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

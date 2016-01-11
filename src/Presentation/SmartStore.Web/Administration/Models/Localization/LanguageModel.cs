@@ -8,7 +8,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Localization
 {
-    [Validator(typeof(LanguageValidator))]
+	[Validator(typeof(LanguageValidator))]
     public class LanguageModel : EntityModelBase
     {
         public LanguageModel()
@@ -23,18 +23,21 @@ namespace SmartStore.Admin.Models.Localization
         [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.LanguageCulture")]
         [AllowHtml]
         public string LanguageCulture { get; set; }
+		public List<SelectListItem> AvailableCultures { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.UniqueSeoCode")]
+		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.UniqueSeoCode")]
         [AllowHtml]
         public string UniqueSeoCode { get; set; }
+		public List<SelectListItem> AvailableTwoLetterLanguageCodes { get; set; }
 
-        //flags
-        [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.FlagImageFileName")]
+		//flags
+		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.FlagImageFileName")]
         [AllowHtml]
         public string FlagImageFileName { get; set; }
         public IList<string> FlagFileNames { get; set; }
+		public List<SelectListItem> AvailableFlags { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.Rtl")]
+		[SmartResourceDisplayName("Admin.Configuration.Languages.Fields.Rtl")]
         public bool Rtl { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Languages.Fields.Published")]

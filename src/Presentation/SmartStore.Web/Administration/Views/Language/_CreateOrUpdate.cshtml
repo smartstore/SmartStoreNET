@@ -1,9 +1,7 @@
-﻿@model LanguageModel
+﻿@using SmartStore.Web.Framework.UI;
+@model LanguageModel
 
-@using Telerik.Web.Mvc.UI;
-@using SmartStore.Web.Framework.UI;
-
-@Html.ValidationSummary(true)
+@Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("language-edit").Style(TabsStyle.Tabs).Position(TabsPosition.Top).Items(x =>
 {
@@ -16,20 +14,7 @@
 
 @helper TabInfo()
 {
-	var cultures = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.SpecificCultures).ToList();
-<script type="text/javascript">
-    function toggleFlags() {
-        $('#pnlAllFlags').toggle();
-        if ($('#pnlAllFlags').css('display') == 'none') {
-            $('#displayAllFlags').html('@T("Admin.Common.Show")');
-        }
-        else {
-            $('#displayAllFlags').html('@T("Admin.Common.Hide")');
-        }
-    }
-</script>
-
-<table class="adminContent">
+<table id="LanguageEditTable" class="adminContent">
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Name)
@@ -44,8 +29,7 @@
             @Html.SmartLabelFor(model => model.LanguageCulture)
         </td>
         <td class="adminData">
-            @Html.DropDownListFor(x => x.LanguageCulture, cultures.Select(x => 
-                new SelectListItem { Value = x.IetfLanguageTag, Text = string.Format("{0} [{1}]", x.DisplayName, x.IetfLanguageTag) }))
+            @Html.DropDownListFor(x => x.LanguageCulture, Model.AvailableCultures)
             @Html.ValidationMessageFor(model => model.LanguageCulture)
         </td>
     </tr>
@@ -54,7 +38,7 @@
             @Html.SmartLabelFor(model => model.UniqueSeoCode)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.UniqueSeoCode)
+			@Html.DropDownListFor(x => x.UniqueSeoCode, Model.AvailableTwoLetterLanguageCodes)
             @Html.ValidationMessageFor(model => model.UniqueSeoCode)
         </td>
     </tr>
@@ -63,20 +47,15 @@
             @Html.SmartLabelFor(model => model.FlagImageFileName)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.FlagImageFileName)
+			<select name="FlagImageFileName" data-placeholder="@T("Common.Unspecified")">
+				<option></option>
+				@foreach (var item in Model.AvailableFlags)
+				{
+					var select = item.Value.IsCaseInsensitiveEqual(Model.FlagImageFileName);
+					<option value="@item.Value" @(select ? "selected='selected'" : "")>@item.Text</option>
+				}
+			</select>
             @Html.ValidationMessageFor(model => model.FlagImageFileName)
-            <br/>
-            <a id="displayAllFlags" href="javascript:toggleFlags();">@T("Admin.Common.Show")</a>
-            <div id="pnlAllFlags" style="display: none">
-                @foreach (var fileName in Model.FlagFileNames)
-                {
-                    <a href="javascript: void(0)" class="flag" data-filename="@fileName">
-                        <img alt="" src="@Url.Content("~/Content/Images/flags/" + fileName)"/>
-                        @fileName
-                        <text>, </text>
-                    </a>
-                }
-            </div>
         </td>
     </tr>
     <tr>
@@ -118,9 +97,40 @@
 
     	    toggleStoreMapping();
 
-    	    $("#pnlAllFlags a.flag").click(function () {
-    	        $("#FlagImageFileName").val($(this).data("filename"));
+    		// init flags select
+    	    $('#LanguageEditTable').find('select[name=FlagImageFileName]').select2({
+    	    	allowClear: true,
+    	    	minimumResultsForSearch: 16,
+    	    	formatResult: flagSelectItemFormatting,
+    	    	formatSelection: flagSelectItemFormatting
     	    });
+
+    	    function flagSelectItemFormatting(item) {
+    	    	var flagUrl = '@Url.Content("~/Content/Images/flags/")';
+
+    	    	try {
+    	    		if (item.text.length > 0) {
+    	    			var option = $(item.element),
+    	    				html = '<div class="select2-image-item">';
+
+    	    			// item.element is undefined for selection formatting
+    	    			if (option.length === 0) {
+    	    				option = $('select[name="FlagImageFileName"]').find('option[value="' + item.id + '"]');
+    	    			}
+
+    	    			if (option.length !== 0) {
+    	    				html += '<div class="icon-container"><img alt="" src="' + flagUrl + option.val() + '" /></div>';
+    	    			}
+
+    	    			html += '<span>' + item.text + '</span></div>';
+
+    	    			return html;
+    	    		}
+    	    	}
+    	    	catch (e) { }
+
+    	    	return item.text;
+    	    }
         });
 
 
@@ -132,8 +142,8 @@
         		$('#pnl-available-stores').hide();
         	}
         }
-
     </script>
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">

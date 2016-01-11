@@ -129,7 +129,9 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Country, mo => mo.Ignore());
             //language
             Mapper.CreateMap<Language, LanguageModel>()
-                .ForMember(dest => dest.FlagFileNames, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableFlags, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableCultures, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableTwoLetterLanguageCodes, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore());
             Mapper.CreateMap<LanguageModel, Language>()

@@ -363,6 +363,12 @@ namespace SmartStore.Data.Migrations
 				"Kein Standardbild bei Warengruppen",
 				"Specifies whether to hide the default image for categories. The default image is shown when no image is assigned to a category.",
 				"Legt fest, ob das Standardbild bei Warengruppen ausgeblendet werden soll. Das Standardbild wird angezeigt, wenn der Warengruppe kein Bild zugeordnet ist.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.HideProductDefaultPictures",
+				"Hide default picture for products",
+				"Kein Standardbild bei Produkten",
+				"Specifies whether to hide the default image for products. The default image is shown when no image is assigned to a product.",
+				"Legt fest, ob das Standardbild bei Produkten ausgeblendet werden soll. Das Standardbild wird angezeigt, wenn dem Produkt kein Bild zugeordnet ist.");
 		}
 	}
 }

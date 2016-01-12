@@ -28,9 +28,11 @@
                     @if (Model.ShowProductImages)
                     {
                         <figure class="picture pull-left">
-                            <a href="@item.ProductUrl" title="@item.Picture.Title">
-                                <img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
-                            </a>
+							@if (item.Picture.ImageUrl.HasValue())
+							{
+								<a href="@item.ProductUrl" title="@item.Picture.Title">
+									<img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" /></a>
+							}
                         </figure>
                     }
                     <div class="quantity pull-left">

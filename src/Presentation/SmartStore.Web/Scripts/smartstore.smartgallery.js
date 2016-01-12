@@ -132,7 +132,9 @@
 				};
 			};
 			
-			this.loading(true);
+			if (this.images[startAt]) {
+				this.loading(true);
+			}
 			
 			this.showImage(startAt);
 			

@@ -75,6 +75,9 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideCategoryDefaultPictures")]
 		public bool HideCategoryDefaultPictures { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideProductDefaultPictures")]
+		public bool HideProductDefaultPictures { get; set; }
+
 		#endregion
 
 		#region Product lists

@@ -19,9 +19,12 @@
                 
                 <li class="@itemClass">
                     <figure class="picture pull-left">
-                        <a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@item.DefaultPictureModel.Title">
-                            <img alt="@item.DefaultPictureModel.AlternateText" src="@item.DefaultPictureModel.ImageUrl" title="@item.DefaultPictureModel.Title" />
-                        </a>
+						@if (item.DefaultPictureModel.ImageUrl.HasValue())
+						{
+							<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@item.DefaultPictureModel.Title">
+								<img alt="@item.DefaultPictureModel.AlternateText" src="@item.DefaultPictureModel.ImageUrl" title="@item.DefaultPictureModel.Title" />
+							</a>
+						}
                     </figure>
                     <div class="data pull-left">
                         <a class="name" href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@item.Name">@item.Name</a>

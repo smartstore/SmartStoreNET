@@ -178,7 +178,7 @@ namespace SmartStore.Web.Controllers
         #region Utilities
 
         [NonAction]
-        protected PictureModel PrepareCartItemPictureModel(Product product, int pictureSize, bool showDefaultPicture, string productName, string attributesXml)
+        protected PictureModel PrepareCartItemPictureModel(Product product, int pictureSize, string productName, string attributesXml)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -209,10 +209,10 @@ namespace SmartStore.Web.Controllers
 					picture = _pictureService.GetPicturesByProductId(product.ParentGroupedProductId, 1).FirstOrDefault();
 				}
 
-                return new PictureModel()
+                return new PictureModel
                 {
                     PictureId = picture != null ? picture.Id : 0,
-                    ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, showDefaultPicture),
+                    ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
                     Title = string.Format(_localizationService.GetResource("Media.Product.ImageLinkTitleFormat"), productName),
                     AlternateText = string.Format(_localizationService.GetResource("Media.Product.ImageAlternateTextFormat"), productName),
                 };
@@ -389,12 +389,12 @@ namespace SmartStore.Web.Controllers
 			if (item.BundleItem != null)
 			{
 				if (_shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
-					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbBundleItemPictureSize, true, model.ProductName, item.AttributesXml);
+					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbBundleItemPictureSize, model.ProductName, item.AttributesXml);
 			}
 			else
 			{
 				if (_shoppingCartSettings.ShowProductImagesOnShoppingCart)
-					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbPictureSize, true, model.ProductName, item.AttributesXml);
+					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbPictureSize, model.ProductName, item.AttributesXml);
 			}
 
 			//item warnings
@@ -537,12 +537,12 @@ namespace SmartStore.Web.Controllers
 			if (item.BundleItem != null)
 			{
 				if (_shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
-					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbBundleItemPictureSize, true, model.ProductName, item.AttributesXml);
+					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbBundleItemPictureSize, model.ProductName, item.AttributesXml);
 			}
 			else
 			{
 				if (_shoppingCartSettings.ShowProductImagesOnShoppingCart)
-					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbPictureSize, true, model.ProductName, item.AttributesXml);
+					model.Picture = PrepareCartItemPictureModel(product, _mediaSettings.CartThumbPictureSize, model.ProductName, item.AttributesXml);
 			}
 
 			//item warnings
@@ -1031,7 +1031,7 @@ namespace SmartStore.Web.Controllers
                     //picture
                     if (_shoppingCartSettings.ShowProductImagesInMiniShoppingCart)
                     {
-                        cartItemModel.Picture = PrepareCartItemPictureModel(product, _mediaSettings.MiniCartThumbPictureSize, true, cartItemModel.ProductName, item.AttributesXml);
+                        cartItemModel.Picture = PrepareCartItemPictureModel(product, _mediaSettings.MiniCartThumbPictureSize, cartItemModel.ProductName, item.AttributesXml);
                     }
 
                     model.Items.Add(cartItemModel);

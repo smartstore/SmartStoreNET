@@ -50,31 +50,33 @@
 </div>
 
 <div class="bundle-item-overview">
-
     @{
         int i = 0;
         int bundleItemAmount = Model.BundledItems.Count;
     }
 
     @foreach (var item in Model.BundledItems.Where(x => x.BundleItem.Visible))
-    {
-
-        if (item.VisibleIndividually)
-        {
-            <a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">
-                <img alt="@item.Name" src="@item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl" title="@item.Name" /></a>
-			@* img and a in same line cause of hover underlines *@
-        }
-        else
-        {
+	{
+		if (item.VisibleIndividually)
+		{
+			if (item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl.HasValue())
+			{
+				<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">
+					<img alt="@item.Name" src="@item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl" title="@item.Name" /></a>@* img and a in same line cause of hover underlines *@
+			}
+			else
+			{
+				<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">@item.Name</a>
+			}
+		}
+		else
+		{
             @item.Name
         }
 
         if (item.BundleItem.Quantity > 1)
         {
-            <strong>
-                &#215;&nbsp;@item.BundleItem.Quantity
-            </strong>
+            <strong>&#215;&nbsp;@item.BundleItem.Quantity</strong>
         }
 
         if (bundleItemAmount != (i + 1))
@@ -84,5 +86,4 @@
 
         i++;
     }
-
 </div>

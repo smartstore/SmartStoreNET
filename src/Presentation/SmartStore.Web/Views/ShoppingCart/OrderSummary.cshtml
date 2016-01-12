@@ -21,7 +21,10 @@
 		@if (Model.ShowProductImages)
 		{
 			<td class="productpicture nobr">
-				<img class="img-polaroid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" style="max-width:@(Model.MediaDimensions)px;max-height:@(Model.MediaDimensions)px"/>
+				@if (item.Picture.ImageUrl.HasValue())
+				{
+					<img class="img-polaroid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" style="max-width:@(Model.MediaDimensions)px;max-height:@(Model.MediaDimensions)px"/>
+				}
 			</td>
 		}
 		<td class="product">
@@ -152,7 +155,7 @@
 						@if (Model.ShowProductBundleImages)
 						{
 							<div class="bundle-item-image" style="@("min-width: {0}px; min-height: {0}px;".FormatInvariant(Model.BundleThumbSize + 10))">
-								@if (!item.BundleItem.HideThumbnail)
+								@if (item.Picture.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
 								{
 									<img class="img-polaroid" src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
 								}

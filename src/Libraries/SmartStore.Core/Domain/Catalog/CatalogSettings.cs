@@ -307,6 +307,11 @@ namespace SmartStore.Core.Domain.Catalog
 		public bool HideCategoryDefaultPictures { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to hide product default pictures
+		/// </summary>
+		public bool HideProductDefaultPictures { get; set; }
+
+		/// <summary>
 		/// Gets or sets a number of products per page on search products page
 		/// </summary>
 		public int SearchPageProductsPerPage { get; set; }

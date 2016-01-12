@@ -52,9 +52,12 @@
                         {
                             <td style="width: @columnWidth; vertical-align: bottom;" class="ac">
                                 <div>
-                                    <p>
-                                        <img alt="@product.DefaultPictureModel.AlternateText" src="@product.DefaultPictureModel.ImageUrl" title="@product.DefaultPictureModel.Title" />
-                                    </p>
+									@if (product.DefaultPictureModel.ImageUrl.HasValue())
+									{
+										<p>
+											<img alt="@product.DefaultPictureModel.AlternateText" src="@product.DefaultPictureModel.ImageUrl" title="@product.DefaultPictureModel.Title" />
+										</p>
+									}
                                     <p>
                                         <a class="btn btn-mini btn-danger remove-button" href='@Url.Action("RemoveProductFromCompare", new { id = product.Id })' rel="nofollow">
                                             @T("Common.Remove")

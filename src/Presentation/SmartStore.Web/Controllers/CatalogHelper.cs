@@ -320,11 +320,11 @@ namespace SmartStore.Web.Controllers
 
 		private PictureModel CreatePictureModel(ProductDetailsPictureModel model, Picture picture, int pictureSize)
 		{
-			var result = new PictureModel()
+			var result = new PictureModel
 			{
 				PictureId = picture.Id,
 				ThumbImageUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage),
-				ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize),
+				ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
 				FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
 				Title = model.Name,
 				AlternateText = model.AlternateText
@@ -411,12 +411,16 @@ namespace SmartStore.Web.Controllers
 			{
 				model.DefaultPictureModel = new PictureModel
 				{
-					ThumbImageUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage),
-					ImageUrl = _pictureService.GetDefaultPictureUrl(defaultPictureSize),
-					FullSizeImageUrl = _pictureService.GetDefaultPictureUrl(),
 					Title = T("Media.Product.ImageLinkTitleFormat", model.Name),
 					AlternateText = model.AlternateText
 				};
+
+				if (!_catalogSettings.HideProductDefaultPictures)
+				{
+					model.DefaultPictureModel.ThumbImageUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage);
+					model.DefaultPictureModel.ImageUrl = _pictureService.GetDefaultPictureUrl(defaultPictureSize);
+					model.DefaultPictureModel.FullSizeImageUrl = _pictureService.GetDefaultPictureUrl();
+				}
 			}
 			else
 			{
@@ -1325,8 +1329,8 @@ namespace SmartStore.Web.Controllers
 						var picture = product.GetDefaultProductPicture(_pictureService);
 						var pictureModel = new PictureModel
 						{
-							ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize),
-							FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
+							ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
+							FullSizeImageUrl = _pictureService.GetPictureUrl(picture, 0, !_catalogSettings.HideProductDefaultPictures),
 							Title = string.Format(res["Media.Product.ImageLinkTitleFormat"], model.Name),
 							AlternateText = string.Format(res["Media.Product.ImageAlternateTextFormat"], model.Name)
 						};

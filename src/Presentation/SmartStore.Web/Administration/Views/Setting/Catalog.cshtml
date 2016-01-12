@@ -339,6 +339,15 @@
 				@Html.ValidationMessageFor(model => model.HideCategoryDefaultPictures)
 			</td>
 		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.HideProductDefaultPictures)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.HideProductDefaultPictures)
+				@Html.ValidationMessageFor(model => model.HideProductDefaultPictures)
+			</td>
+		</tr>
 
         <tr>
             <td class="adminTitle">

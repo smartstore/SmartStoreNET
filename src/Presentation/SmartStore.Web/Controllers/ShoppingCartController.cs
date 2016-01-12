@@ -399,7 +399,7 @@ namespace SmartStore.Web.Controllers
 
 			//item warnings
 			var itemWarnings = _shoppingCartService.GetShoppingCartItemWarnings(_workContext.CurrentCustomer, item.ShoppingCartType, product, item.StoreId,
-				item.AttributesXml, item.CustomerEnteredPrice, item.Quantity, false, childItems: sci.ChildItems);
+				item.AttributesXml, item.CustomerEnteredPrice, item.Quantity, false, bundleItem: item.BundleItem, childItems: sci.ChildItems);
 
 			foreach (var warning in itemWarnings)
 			{

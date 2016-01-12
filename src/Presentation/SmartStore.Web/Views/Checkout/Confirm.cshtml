@@ -34,10 +34,12 @@
             <div class="terms-of-service alert alert-info">
                 <script type="text/javascript">
                     $(document).ready(function () {
-                        $("#terms-of-service-trigger").click(function () {
+                        $("#terms-of-service-trigger").click(function (event) {
+                            event.preventDefault();
                             $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
                         });
-                        $("#disclaimer-trigger").click(function () {
+                        $("#disclaimer-trigger").click(function (event) {
+                            event.preventDefault();
                             $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "disclaimer" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
                         });
                     });

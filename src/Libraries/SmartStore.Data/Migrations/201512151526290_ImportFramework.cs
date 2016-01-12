@@ -357,6 +357,12 @@ namespace SmartStore.Data.Migrations
 				"Flaggenbild",
 				"Specifies the flag image. The files for the flag images must be stored in /Content/Images/flags/.",
 				"Legt das Flaggenbild fest. Die Dateien der Flaggenbilder müssen in /Content/Images/flags/ liegen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.HideCategoryDefaultPictures",
+				"Hide default picture for categories",
+				"Kein Standardbild bei Warengruppen",
+				"Specifies whether to hide the default image for categories. The default image is shown when no image is assigned to a category.",
+				"Legt fest, ob das Standardbild bei Warengruppen ausgeblendet werden soll. Das Standardbild wird angezeigt, wenn der Warengruppe kein Bild zugeordnet ist.");
 		}
 	}
 }

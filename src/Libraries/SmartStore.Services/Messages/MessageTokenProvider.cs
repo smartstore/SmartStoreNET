@@ -13,6 +13,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
@@ -929,20 +930,27 @@ namespace SmartStore.Services.Messages
             _eventPublisher.EntityTokensAdded(newsComment, tokens);
         }
 
-		public virtual void AddProductTokens(IList<Token> tokens, Product product, int languageId)
+		public virtual void AddProductTokens(IList<Token> tokens, Product product, Language language)
         {
 			tokens.Add(new Token("Product.ID", product.Id.ToString()));
 			tokens.Add(new Token("Product.Sku", product.Sku));
-			tokens.Add(new Token("Product.Name", product.GetLocalized(x => x.Name, languageId)));
-			tokens.Add(new Token("Product.ShortDescription", product.GetLocalized(x => x.ShortDescription, languageId), true));
+			tokens.Add(new Token("Product.Name", product.GetLocalized(x => x.Name, language.Id)));
+			tokens.Add(new Token("Product.ShortDescription", product.GetLocalized(x => x.ShortDescription, language.Id), true));
 			tokens.Add(new Token("Product.StockQuantity", product.StockQuantity.ToString()));
 
             // TODO: add a method for getting URL (use routing because it handles all SEO friendly URLs)
             var productUrl = string.Format("{0}{1}", _webHelper.GetStoreLocation(false), product.GetSeName());
             tokens.Add(new Token("Product.ProductURLForCustomer", productUrl, true));
 
-            //event notification
-            _eventPublisher.EntityTokensAdded(product, tokens);
+			var currency = _workContext.WorkingCurrency;
+
+			var additionalShippingCharge = _currencyService.ConvertFromPrimaryStoreCurrency(product.AdditionalShippingCharge, currency);
+			var additionalShippingChargeFormatted = _priceFormatter.FormatPrice(additionalShippingCharge, false, currency.CurrencyCode, false, language);
+
+			tokens.Add(new Token("Product.AdditionalShippingCharge", additionalShippingChargeFormatted));
+
+			//event notification
+			_eventPublisher.EntityTokensAdded(product, tokens);
         }
 
         public virtual void AddForumTopicTokens(IList<Token> tokens, ForumTopic forumTopic,
@@ -1075,6 +1083,7 @@ namespace SmartStore.Services.Messages
                 "%Product.ShortDescription%", 
                 "%Product.ProductURLForCustomer%",
                 "%Product.StockQuantity%",
+				"%Product.AdditionalShippingCharge",
                 "%RecurringPayment.ID%",
                 "%Shipment.ShipmentNumber%",
                 "%Shipment.TrackingNumber%",

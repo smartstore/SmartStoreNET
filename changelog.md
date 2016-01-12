@@ -36,6 +36,7 @@
 * #760 Setting to set a customer role for new registered users
 * #800 Multi-store: Option to display all orders of all stores for customer in frontend
 * #457 Added option to hide the default image for categories and products
+* #451 Add message token for product shipping surcharge
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

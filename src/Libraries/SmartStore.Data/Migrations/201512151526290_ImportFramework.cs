@@ -375,6 +375,12 @@ namespace SmartStore.Data.Migrations
 				"Thumbnail-Größe von Produkten in E-Mails",
 				"Specifies the thumbnail image size (pixels) of products in emails. Enter 0 to not display thumbnails.",
 				"Legt die Thumbnail-Bildgröße (in Pixel) von Produkten in E-Mails fest. Geben Sie 0 ein, um keine Thumbnails anzuzeigen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.MetaRobotsContent",
+				"Meta robots",
+				"Meta Robots",
+				"Specifies if and how search engines indexing the pages of your store.",
+				"Legt fest, ob und wie Suchmaschinen die Seiten Ihres Shops indexieren.");
 		}
 	}
 }

@@ -68,8 +68,9 @@ namespace SmartStore.Core.Domain.Seo
         public string DefaultTitle { get; set; }
         public string DefaultMetaKeywords { get; set; }
         public string DefaultMetaDescription { get; set; }
+		public string MetaRobotsContent { get; set; }
 
-        public bool ConvertNonWesternChars { get; set; }
+		public bool ConvertNonWesternChars { get; set; }
         public bool AllowUnicodeCharsInUrls { get; set; }
 		public string SeoNameCharConversion { get; set; }
 

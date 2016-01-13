@@ -38,6 +38,7 @@
 * #457 Added option to hide the default image for categories and products
 * #451 Add message token for product shipping surcharge
 * #436 Make %Order.Product(s)% token to link the product detail page and a add product thumbnail
+* #339 Meta robots setting for page indexing of search engines
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

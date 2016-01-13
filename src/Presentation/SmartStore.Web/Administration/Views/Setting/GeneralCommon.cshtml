@@ -159,6 +159,24 @@
                 @Html.ValidationMessageFor(model => model.SeoSettings.DefaultMetaDescription)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SeoSettings.MetaRobotsContent)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.SeoSettings.MetaRobotsContent)
+				@Html.DropDownListFor(model => model.SeoSettings.MetaRobotsContent, new List<SelectListItem>
+				{
+					new SelectListItem { Text = "index", Value = "index" },
+					new SelectListItem { Text = "noindex", Value = "noindex" },
+					new SelectListItem { Text = "index, follow", Value = "index, follow" },
+					new SelectListItem { Text = "index, nofollow", Value = "index, nofollow" },
+					new SelectListItem { Text = "noindex, follow", Value = "noindex, follow" },
+					new SelectListItem { Text = "noindex, nofollow", Value = "noindex, nofollow" }
+				}, T("Common.Unspecified"))
+				@Html.ValidationMessageFor(model => model.SeoSettings.MetaRobotsContent)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SeoSettings.CanonicalUrlsEnabled)

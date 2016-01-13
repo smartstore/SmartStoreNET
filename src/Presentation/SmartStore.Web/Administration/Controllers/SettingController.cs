@@ -1025,6 +1025,7 @@ namespace SmartStore.Admin.Controllers
 			model.SeoSettings.DefaultTitle = seoSettings.DefaultTitle;
 			model.SeoSettings.DefaultMetaKeywords = seoSettings.DefaultMetaKeywords;
 			model.SeoSettings.DefaultMetaDescription = seoSettings.DefaultMetaDescription;
+			model.SeoSettings.MetaRobotsContent = seoSettings.MetaRobotsContent;
 			model.SeoSettings.ConvertNonWesternChars = seoSettings.ConvertNonWesternChars;
 			model.SeoSettings.AllowUnicodeCharsInUrls = seoSettings.AllowUnicodeCharsInUrls;
 			model.SeoSettings.SeoNameCharConversion = seoSettings.SeoNameCharConversion;
@@ -1208,6 +1209,7 @@ namespace SmartStore.Admin.Controllers
 			seoSettings.DefaultTitle = model.SeoSettings.DefaultTitle;
 			seoSettings.DefaultMetaKeywords = model.SeoSettings.DefaultMetaKeywords;
 			seoSettings.DefaultMetaDescription = model.SeoSettings.DefaultMetaDescription;
+			seoSettings.MetaRobotsContent = model.SeoSettings.MetaRobotsContent;
 			seoSettings.AllowUnicodeCharsInUrls = model.SeoSettings.AllowUnicodeCharsInUrls;
 			seoSettings.SeoNameCharConversion = model.SeoSettings.SeoNameCharConversion;
 			seoSettings.ConvertNonWesternChars = model.SeoSettings.ConvertNonWesternChars;

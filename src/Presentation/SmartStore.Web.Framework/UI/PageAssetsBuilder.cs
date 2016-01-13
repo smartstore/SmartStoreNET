@@ -406,7 +406,16 @@ namespace SmartStore.Web.Framework.UI
 			return sb.ToString();
 		}
 
-        public class WebAssetDescriptor
+		public string GenerateMetaRobots()
+		{
+			if (_seoSettings.MetaRobotsContent.HasValue())
+			{
+				return "<meta name=\"robots\" content=\"{0}\" />".FormatInvariant(_seoSettings.MetaRobotsContent);
+			}
+			return null;
+		}
+
+		public class WebAssetDescriptor
         {
             public bool ExcludeFromBundling { get; set; }
             public string Part { get; set; }

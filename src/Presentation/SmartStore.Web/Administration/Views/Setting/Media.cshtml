@@ -61,6 +61,15 @@
                 @Html.ValidationMessageFor(model => model.ProductThumbPictureSizeOnProductDetailsPage)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.MessageProductThumbPictureSize)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.MessageProductThumbPictureSize)
+				@Html.ValidationMessageFor(model => model.MessageProductThumbPictureSize)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ProductDetailsPictureSize)

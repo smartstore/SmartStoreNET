@@ -360,15 +360,21 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.HideCategoryDefaultPictures",
 				"Hide default picture for categories",
-				"Kein Standardbild bei Warengruppen",
+				"Standardbild bei Warengruppen ausblenden",
 				"Specifies whether to hide the default image for categories. The default image is shown when no image is assigned to a category.",
 				"Legt fest, ob das Standardbild bei Warengruppen ausgeblendet werden soll. Das Standardbild wird angezeigt, wenn der Warengruppe kein Bild zugeordnet ist.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.HideProductDefaultPictures",
 				"Hide default picture for products",
-				"Kein Standardbild bei Produkten",
+				"Standardbild bei Produkten ausblenden",
 				"Specifies whether to hide the default image for products. The default image is shown when no image is assigned to a product.",
 				"Legt fest, ob das Standardbild bei Produkten ausgeblendet werden soll. Das Standardbild wird angezeigt, wenn dem Produkt kein Bild zugeordnet ist.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Media.MessageProductThumbPictureSize",
+				"Thumbnail size of products in emails",
+				"Thumbnail-Größe von Produkten in E-Mails",
+				"Specifies the thumbnail image size (pixels) of products in emails. Enter 0 to not display thumbnails.",
+				"Legt die Thumbnail-Bildgröße (in Pixel) von Produkten in E-Mails fest. Geben Sie 0 ein, um keine Thumbnails anzuzeigen.");
 		}
 	}
 }

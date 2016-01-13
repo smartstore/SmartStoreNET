@@ -421,7 +421,7 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddOrderTokens(tokens, order, language.Id);
+			_messageTokenProvider.AddOrderTokens(tokens, order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
             //event notification
@@ -463,7 +463,7 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddOrderTokens(tokens, order, language.Id);
+			_messageTokenProvider.AddOrderTokens(tokens, order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
             _messageTokenProvider.AddCompanyTokens(tokens);
@@ -505,8 +505,8 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddShipmentTokens(tokens, shipment, language.Id);
-			_messageTokenProvider.AddOrderTokens(tokens, shipment.Order, language.Id);
+			_messageTokenProvider.AddShipmentTokens(tokens, shipment, language);
+			_messageTokenProvider.AddOrderTokens(tokens, shipment.Order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, shipment.Order.Customer);
 
             //event notification
@@ -544,8 +544,8 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddShipmentTokens(tokens, shipment, language.Id);
-			_messageTokenProvider.AddOrderTokens(tokens, shipment.Order, language.Id);
+			_messageTokenProvider.AddShipmentTokens(tokens, shipment, language);
+			_messageTokenProvider.AddOrderTokens(tokens, shipment.Order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, shipment.Order.Customer);
 
             //event notification
@@ -579,7 +579,7 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddOrderTokens(tokens, order, language.Id);
+			_messageTokenProvider.AddOrderTokens(tokens, order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
             _messageTokenProvider.AddCompanyTokens(tokens);
@@ -617,7 +617,7 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddOrderTokens(tokens, order, language.Id);
+			_messageTokenProvider.AddOrderTokens(tokens, order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
             //event notification
@@ -654,7 +654,7 @@ namespace SmartStore.Services.Messages
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddOrderNoteTokens(tokens, orderNote);
-			_messageTokenProvider.AddOrderTokens(tokens, orderNote.Order, language.Id);
+			_messageTokenProvider.AddOrderTokens(tokens, orderNote.Order, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, orderNote.Order.Customer);
 
             //event notification
@@ -688,7 +688,7 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddOrderTokens(tokens, recurringPayment.InitialOrder, language.Id);
+			_messageTokenProvider.AddOrderTokens(tokens, recurringPayment.InitialOrder, language);
 			_messageTokenProvider.AddCustomerTokens(tokens, recurringPayment.InitialOrder.Customer);
 			_messageTokenProvider.AddRecurringPaymentTokens(tokens, recurringPayment);
             
@@ -990,8 +990,7 @@ namespace SmartStore.Services.Messages
         /// <param name="forum">Forum</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public int SendNewForumTopicMessage(Customer customer,
-            ForumTopic forumTopic, Forum forum, int languageId)
+        public int SendNewForumTopicMessage(Customer customer, ForumTopic forumTopic, Forum forum, int languageId)
         {
             if (customer == null)
             {
@@ -999,6 +998,7 @@ namespace SmartStore.Services.Messages
             }
 
 			var store = _storeContext.CurrentStore;
+			var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("Forums.NewForumTopic", store.Id);
 			if (messageTemplate == null)
@@ -1011,16 +1011,16 @@ namespace SmartStore.Services.Messages
 			_messageTokenProvider.AddStoreTokens(tokens, store);
             _messageTokenProvider.AddCustomerTokens(tokens, customer);
 			_messageTokenProvider.AddForumTopicTokens(tokens, forumTopic);
-			_messageTokenProvider.AddForumTokens(tokens, forumTopic.Forum, languageId);
+			_messageTokenProvider.AddForumTokens(tokens, forumTopic.Forum, language);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = customer.Email;
             var toName = customer.GetFullName();
 
-            return SendNotification(messageTemplate, emailAccount, languageId, tokens, toEmail, toName);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>
@@ -1033,9 +1033,7 @@ namespace SmartStore.Services.Messages
         /// <param name="friendlyForumTopicPageIndex">Friendly (starts with 1) forum topic page to use for URL generation</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public int SendNewForumPostMessage(Customer customer,
-            ForumPost forumPost, ForumTopic forumTopic,
-            Forum forum, int friendlyForumTopicPageIndex, int languageId)
+        public int SendNewForumPostMessage(Customer customer, ForumPost forumPost, ForumTopic forumTopic, Forum forum, int friendlyForumTopicPageIndex, int languageId)
         {
             if (customer == null)
             {
@@ -1043,6 +1041,7 @@ namespace SmartStore.Services.Messages
             }
 
 			var store = _storeContext.CurrentStore;
+			var language = EnsureLanguageIsActive(languageId, store.Id);
 
 			var messageTemplate = GetActiveMessageTemplate("Forums.NewForumPost", store.Id);
             if (messageTemplate == null)
@@ -1056,16 +1055,16 @@ namespace SmartStore.Services.Messages
 			_messageTokenProvider.AddForumPostTokens(tokens, forumPost);
             _messageTokenProvider.AddCustomerTokens(tokens, customer);
 			_messageTokenProvider.AddForumTopicTokens(tokens, forumPost.ForumTopic, friendlyForumTopicPageIndex, forumPost.Id);
-			_messageTokenProvider.AddForumTokens(tokens, forumPost.ForumTopic.Forum, languageId);
+			_messageTokenProvider.AddForumTokens(tokens, forumPost.ForumTopic.Forum, language);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
-            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
+            var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, language.Id);
             var toEmail = customer.Email;
             var toName = customer.GetFullName();
 
-            return SendNotification(messageTemplate, emailAccount, languageId, tokens, toEmail, toName);
+            return SendNotification(messageTemplate, emailAccount, language.Id, tokens, toEmail, toName);
         }
 
         /// <summary>

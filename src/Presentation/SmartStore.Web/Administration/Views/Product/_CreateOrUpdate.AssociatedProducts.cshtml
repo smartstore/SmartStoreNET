@@ -65,6 +65,8 @@
 
                     <input type="submit" id="btnRefreshAssociatedProducts" name="btnRefreshAssociatedProducts" style="display: none" />
 
+					<button type="button" id="EntityPickerTest">Entity Picker Test</button>
+
                     <script type="text/javascript">
                         $(document).ready(function () {
                             $('#btnRefreshAssociatedProducts').click(function () {
@@ -74,6 +76,15 @@
 
                                 //return false to don't reload a page
                                 return false;
+                            });
+
+                            $('#EntityPickerTest').click(function () {
+
+                            	$({}).entityPicker({
+                            		url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+                            		caption: '@T("Admin.Catalog.Products.AssociatedProducts.AddNew")'
+                            	});
+
                             });
                         });
                     </script>

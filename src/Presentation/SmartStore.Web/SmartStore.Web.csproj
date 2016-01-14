@@ -349,6 +349,7 @@
     <Compile Include="Models\Checkout\CheckoutConfirmModel.cs" />
     <Compile Include="Models\Checkout\CheckoutCompletedModel.cs" />
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
+    <Compile Include="Models\Common\EntityPickerModel.cs" />
     <Compile Include="Models\ShoppingCart\ButtonPaymentMethodModel.cs" />
     <Compile Include="Models\Topics\TopicWidgetModel.cs" />
     <Compile Include="Models\Common\AddressModel.cs" />
@@ -1193,6 +1194,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
     <Content Include="Scripts\public.product-detail.mobile.js" />
+    <Content Include="Scripts\smartstore.entityPicker.js" />
     <Content Include="Scripts\smartstore.instantsearch.js" />
     <Content Include="Scripts\smartstore.common.js" />
     <Content Include="Scripts\smartstore.globalize.adapter.js" />
@@ -1856,6 +1858,7 @@
     <Content Include="Themes\MobileLight\Views\Web.config" />
     <Content Include="Views\Shared\LicenseRequired.cshtml" />
     <Content Include="Themes\Web.config" />
+    <Content Include="Views\Common\EntityPicker.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />

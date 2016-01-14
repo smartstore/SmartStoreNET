@@ -1025,6 +1025,16 @@ namespace SmartStore.Web.Controllers
 			}, 1 /* 1 min. (just for the duration of pdf processing) */);
 		}
 
-        #endregion
-    }
+		#endregion
+
+		#region Entity Picker
+
+		public ActionResult EntityPicker(EntityPickerModel model)
+		{
+
+			return PartialView(model);
+		}
+
+		#endregion
+	}
 }

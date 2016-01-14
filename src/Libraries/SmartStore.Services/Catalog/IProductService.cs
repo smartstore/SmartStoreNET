@@ -330,8 +330,9 @@ namespace SmartStore.Services.Catalog
 		/// Get product pictures by product identifiers
 		/// </summary>
 		/// <param name="productIds">Product identifiers</param>
+		/// <param name="onlyFirstPicture">Whether to only load the first picture for each product</param>
 		/// <returns>Product pictures</returns>
-		Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds);
+		Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds, bool onlyFirstPicture = false);
 
         /// <summary>
         /// Gets a product picture

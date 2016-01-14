@@ -33,8 +33,15 @@
 	function loadDialog(opt) {
 		var dialog = $('#entity-picker-' + opt.entity + '-dialog');
 
-		if (dialog.length) {
+		function showAndFocusDialog() {
 			dialog.modal('show');
+			setTimeout(function () {
+				dialog.find('.modal-body :input:visible:enabled:first').focus();
+			}, 1000);
+		}
+
+		if (dialog.length) {
+			showAndFocusDialog();
 		}
 		else {
 			$.ajax({
@@ -46,7 +53,7 @@
 					$('body').append(response);
 					dialog = $('#entity-picker-' + opt.entity + '-dialog');
 					dialog.find('.caption').html(opt.caption || '&nbsp;');
-					dialog.modal('show');
+					showAndFocusDialog();
 				},
 				error: function (objXml) {
 					try {

@@ -78,6 +78,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Unknown", "Unknown", "Unbekannt");
 			builder.AddOrUpdate("Common.Unavailable", "Unavailable", "Nicht verfügbar");
 			builder.AddOrUpdate("Common.Language", "Language", "Sprache");
+			builder.AddOrUpdate("Common.Loading", "Loading", "Lade");
 			builder.AddOrUpdate("Admin.Common.ImportFile", "Import file", "Importdatei");
 			builder.AddOrUpdate("Admin.Common.ImportFiles", "Import files", "Importdateien");
 			builder.AddOrUpdate("Admin.Common.CsvConfiguration", "CSV Configuration", "CSV Konfiguration");

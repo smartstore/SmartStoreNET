@@ -1,0 +1,9 @@
+﻿@model EntityPickerModel
+@using SmartStore.Web.Models.Common;
+
+@foreach (var entity in Model.SearchResult)
+{
+	<div>
+		@entity.Id @entity.Name
+	</div>
+}

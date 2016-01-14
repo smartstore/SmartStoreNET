@@ -68,7 +68,7 @@
 	        $(opt.throbber).removeData('throbber').throbber({ white: true, small: true });
 	    }
 	    else if (opt.smallIcon) {
-	        $(opt.smallIcon).append('<span class="ajax-loader-small"></span>');
+	        $(opt.smallIcon).append('&nbsp;<span class="ajax-loader-small"></span>');
 	    }
 	}
 

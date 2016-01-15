@@ -7,9 +7,17 @@ namespace SmartStore.Web.Models.Common
 {
 	public class EntityPickerModel : ModelBase
 	{
+		public EntityPickerModel()
+		{
+			PageSize = 12;
+		}
+
 		public string AllString { get; set; }
 		public string Entity { get; set; }
+		public bool MultiPick { get; set; }
 		public int PageIndex { get; set; }
+		public int PageSize { get; set; }
+		public string SearchTerm { get; set; }
 
 		public List<SearchResultModel> SearchResult { get; set; }
 
@@ -39,9 +47,11 @@ namespace SmartStore.Web.Models.Common
 
 		public class SearchResultModel : EntityModelBase
 		{
-			public string Name { get; set; }
+			public string Id2 { get; set; }
+			public string Title { get; set; }
 			public string Summary { get; set; }
 			public bool? Published { get; set; }
+			public string ImageUrl { get; set; }
 			public string LabelText { get; set; }
 			public string LabelClassName { get; set; }
 		}

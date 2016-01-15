@@ -76,6 +76,7 @@ namespace SmartStore.Web.Controllers
         private readonly LocalizationSettings _localizationSettings;
 		private readonly Lazy<SecuritySettings> _securitySettings;
 		private readonly Lazy<SocialSettings> _socialSettings;
+		private readonly Lazy<MediaSettings> _mediaSettings;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		
         private readonly IPriceFormatter _priceFormatter;
@@ -112,6 +113,7 @@ namespace SmartStore.Web.Controllers
             LocalizationSettings localizationSettings, 
 			Lazy<SecuritySettings> securitySettings,
 			Lazy<SocialSettings> socialSettings,
+			Lazy<MediaSettings> mediaSettings,
 			IOrderTotalCalculationService orderTotalCalculationService, 
 			IPriceFormatter priceFormatter,
             ThemeSettings themeSettings, 
@@ -143,6 +145,7 @@ namespace SmartStore.Web.Controllers
             this._localizationSettings = localizationSettings;
 			this._securitySettings = securitySettings;
 			this._socialSettings = socialSettings;
+			this._mediaSettings = mediaSettings;
 
             this._orderTotalCalculationService = orderTotalCalculationService;
             this._priceFormatter = priceFormatter;
@@ -1070,8 +1073,6 @@ namespace SmartStore.Web.Controllers
 		[HttpPost]
 		public ActionResult EntityPicker(EntityPickerModel model, FormCollection form)
 		{
-			const int pageSize = 36;
-
 			//System.Threading.Thread.Sleep(3000);
 
 			try
@@ -1080,7 +1081,10 @@ namespace SmartStore.Web.Controllers
 				{
 					if (model.Entity.IsCaseInsensitiveEqual("product"))
 					{
+						model.SearchTerm = model.ProductName.TrimSafe();
+
 						var hasPermission = _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog);
+						var storeLocation = _services.WebHelper.GetStoreLocation(false);
 						var labelTextGrouped = T("Admin.Catalog.Products.ProductType.GroupedProduct.Label").Text;
 						var labelTextBundled = T("Admin.Catalog.Products.ProductType.BundledProduct.Label").Text;
 
@@ -1089,7 +1093,7 @@ namespace SmartStore.Web.Controllers
 							CategoryIds = (model.CategoryId == 0 ? null : new List<int> { model.CategoryId }),
 							ManufacturerId = model.ManufacturerId,
 							StoreId = model.StoreId,
-							Keywords = model.ProductName,
+							Keywords = model.SearchTerm,
 							ProductType = model.ProductTypeId > 0 ? (ProductType?)model.ProductTypeId : null,
 							SearchSku = !_catalogSettings.SuppressSkuSearch,
 							ShowHidden = hasPermission
@@ -1097,13 +1101,19 @@ namespace SmartStore.Web.Controllers
 
 						var query = _productService.Value.PrepareProductSearchQuery(searchContext, x => new { x.Id, x.Sku, x.Name, x.Published, x.ProductTypeId });
 
+						query = from x in query
+								group x by x.Id into grp
+								orderby grp.Key
+								select grp.FirstOrDefault();
+
 						var products = query
 							.OrderBy(x => x.Name)
-							.Skip(model.PageIndex * pageSize)
-							.Take(pageSize)
+							.Skip(model.PageIndex * model.PageSize)
+							.Take(model.PageSize)
 							.ToList();
 
 						var productIds = products.Select(x => x.Id).ToArray();
+						var pictures = _productService.Value.GetProductPicturesByProductIds(productIds, true);
 
 						model.SearchResult = products
 							.Select(x =>
@@ -1111,7 +1121,8 @@ namespace SmartStore.Web.Controllers
 								var extract = new EntityPickerModel.SearchResultModel
 								{
 									Id = x.Id,
-									Name = x.Name,
+									Id2 = x.Sku,
+									Title = x.Name,
 									Summary = x.Sku,
 									Published = (hasPermission ? x.Published : (bool?)null)
 								};
@@ -1125,6 +1136,17 @@ namespace SmartStore.Web.Controllers
 								{
 									extract.LabelText = labelTextBundled;
 									extract.LabelClassName = "label-info";
+								}
+
+								var productPicture = pictures.FirstOrDefault(y => y.Key == x.Id);
+								if (productPicture.Value != null)
+								{
+									var picture = productPicture.Value.FirstOrDefault();
+									if (picture != null)
+									{
+										extract.ImageUrl = _pictureService.Value.GetPictureUrl(picture.Picture, _mediaSettings.Value.ProductThumbPictureSizeOnProductDetailsPage,
+											!_catalogSettings.HideProductDefaultPictures, storeLocation);
+									}
 								}
 
 								return extract;

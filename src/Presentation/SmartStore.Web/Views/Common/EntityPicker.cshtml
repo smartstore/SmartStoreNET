@@ -9,6 +9,7 @@
 	<div class="modal-body">
 		<form method="POST" action="@Url.Action("EntityPicker", "Common", new { area = "" })">
 			<input type="hidden" name="Entity" value="@Model.Entity" />
+			<input type="hidden" name="MultiPick" value="@Model.MultiPick.ToString()" />
 			<input type="hidden" name="PageIndex" value="@Model.PageIndex" />
 
 			@if (Model.Entity.IsCaseInsensitiveEqual("product"))
@@ -16,12 +17,12 @@
 				@ProductSearchForm()
 			}
 
-			<div class="entity-picker-list"></div>
+			<div class="entity-picker-list clearfix"></div>
 		</form>
 	</div>
 	<div class="modal-footer">
-		<span class="footer-note pull-left hide">TODO: note for entity selection here!</span>
-		<button class="btn btn-primary">@T("Common.OK")</button>
+		<span class="footer-note pull-left hide">@T(Model.MultiPick ? "Common.EntityPicker.MultiPickNote" : "Common.EntityPicker.SinglePickNote")</span>
+		<button class="btn btn-primary" disabled="disabled">@T("Common.OK")</button>
 		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
 	</div>
 	<script type="text/javascript">
@@ -31,22 +32,13 @@
 			// search entities
 			dialog.find('button[name=SearchEntities]').click(function (e) {
 				e.preventDefault();
-				var button = $(this);
-				button.button('loading').prop('disabled', true);
-
-				button.closest('form').doAjax({
-					type: 'POST',
-					smallIcon: dialog.find('.entity-picker-list:first'),
-					callbackSuccess: function (response) {
-						dialog.find('.entity-picker-list:first').append(response);
-						dialog.find('.footer-note').show();
-						$('#entity-picker-@(Model.Entity)-filter').slideUp();
-					},
-					callbackComplete: function () {
-						button.prop('disabled', false).button('reset');
-					}
-				});
+				dialog.entityPicker('fillList', { append: false });
 				return false;
+			});
+
+			// toggle filters
+			dialog.find('button[name=FilterEntities]').click(function () {
+				dialog.find('.entity-picker-filter').slideToggle();
 			});
 
 			// enter starts searching
@@ -58,9 +50,21 @@
 				}
 			});
 
-			// toggle filters
-			dialog.find('button[name=FilterEntities]').click(function () {
-				$('#entity-picker-@(Model.Entity)-filter').slideToggle();
+			// show more items
+			dialog.on('click', 'a.entity-picker-showmore', function (e) {
+				e.preventDefault();
+				$(this).entityPicker('fillList', { append: true });
+				return false;
+			});
+
+			// select item
+			dialog.find('.entity-picker-list').on('click', '.item', function (e) {
+				$(this).entityPicker('itemClick');
+			});
+
+			// return value(s)
+			dialog.find('.modal-footer .btn-primary').click(function () {
+				$(this).entityPicker('returnValues');
 			});
 		});
 	</script>
@@ -82,7 +86,7 @@
 			</div>
 		</div>
 
-		<div id="entity-picker-@(Model.Entity)-filter" class="hide">
+		<div class="entity-picker-filter hide">
 			<div class="control-group">
 				@Html.LabelFor(model => model.CategoryId, new { @class = "control-label", @for = "CategoryId" })
 				<div class="controls">

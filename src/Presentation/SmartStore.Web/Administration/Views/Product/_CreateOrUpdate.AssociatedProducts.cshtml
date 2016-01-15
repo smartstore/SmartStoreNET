@@ -80,7 +80,7 @@
 
                             $('#EntityPickerTest').click(function () {
 
-                            	$({}).entityPicker({
+                            	$({}).entityPicker('loadDialog', {
                             		url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
                             		caption: '@T("Admin.Catalog.Products.AssociatedProducts.AddNew")'
                             	});

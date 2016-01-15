@@ -1,9 +1,51 @@
-﻿@model EntityPickerModel
-@using SmartStore.Web.Models.Common;
-
-@foreach (var entity in Model.SearchResult)
+﻿@using SmartStore.Web.Models.Common;
+@model EntityPickerModel
+@helper HighlightSearchTermInTitle(EntityPickerModel.SearchResultModel item)
 {
-	<div>
-		@entity.Id @entity.Name
+	if (Model.SearchTerm.HasValue() && item.Title.HasValue())
+	{
+		@Html.Raw(item.Title.Replace(Model.SearchTerm, "<span class=\"highlight\">{0}</span>".FormatInvariant(Model.SearchTerm), StringComparison.OrdinalIgnoreCase))
+	}
+	else
+	{
+		@item.Title
+	}
+}
+@foreach (var item in Model.SearchResult ?? Enumerable.Empty<EntityPickerModel.SearchResultModel>())
+{
+	<div class="item clearfix" data-id="@item.Id" data-id2="@item.Id2">
+		@if (item.ImageUrl.HasValue())
+		{
+			<div class="thumb">
+				<img src="@item.ImageUrl" alt="" />
+			</div>
+		}
+		<div class="data">
+			<div class="title ellipsis" title="@item.Title">
+				@if (item.LabelText.HasValue())
+				{
+					<span class="label label-smnet @item.LabelClassName">@item.LabelText</span>
+				}
+				<span>@HighlightSearchTermInTitle(item)</span>
+			</div>
+			@if (item.Summary.HasValue())
+			{
+				<div class="subtitle muted">@item.Summary</div>
+			}
+		</div>
 	</div>
 }
+<div class="list-footer">
+	@if (Model.SearchResult == null || Model.SearchResult.Count == 0)
+	{
+		@T("Common.EntityPicker.NoMoreItemsFound")
+	}
+	else if (Model.SearchResult.Count == Model.PageSize)
+	{
+		<a href="javascript:void(0)" class="entity-picker-showmore">@(T("Common.ShowMore"))&hellip;</a>
+	}
+	else if (Model.PageIndex > 0)
+	{
+		@T("Common.EntityPicker.NoMoreItemsFound")
+	}
+</div>

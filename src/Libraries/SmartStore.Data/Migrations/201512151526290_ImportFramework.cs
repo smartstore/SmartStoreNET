@@ -78,7 +78,6 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Unknown", "Unknown", "Unbekannt");
 			builder.AddOrUpdate("Common.Unavailable", "Unavailable", "Nicht verfügbar");
 			builder.AddOrUpdate("Common.Language", "Language", "Sprache");
-			builder.AddOrUpdate("Common.Loading", "Loading", "Lade");
 			builder.AddOrUpdate("Admin.Common.ImportFile", "Import file", "Importdatei");
 			builder.AddOrUpdate("Admin.Common.ImportFiles", "Import files", "Importdateien");
 			builder.AddOrUpdate("Admin.Common.CsvConfiguration", "CSV Configuration", "CSV Konfiguration");
@@ -382,6 +381,22 @@ namespace SmartStore.Data.Migrations
 				"Meta Robots",
 				"Specifies if and how search engines indexing the pages of your store.",
 				"Legt fest, ob und wie Suchmaschinen die Seiten Ihres Shops indexieren.");
+
+
+			builder.AddOrUpdate("Common.Loading", "Loading", "Lade");
+			builder.AddOrUpdate("Common.ShowMore", "Show more", "Mehr anzeigen");
+
+			builder.AddOrUpdate("Common.EntityPicker.SinglePickNote",
+				"Click on an item to select it and OK to apply it.",
+				"Klicken Sie auf ein Element, um es auszuwählen und OK, um es zu übernehmen.");
+
+			builder.AddOrUpdate("Common.EntityPicker.MultiPickNote",
+				"Click on an item to select or deselect it and OK to apply it.",
+				"Klicken Sie auf ein Element, um es aus- bzw. abzuwählen und OK, um es zu übernehmen.");
+
+			builder.AddOrUpdate("Common.EntityPicker.NoMoreItemsFound",
+				"There were no more items found.",
+				"Es wurden keine weiteren Elemente gefunden.");
 		}
 	}
 }

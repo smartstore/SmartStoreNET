@@ -1049,6 +1049,7 @@
     <Content Include="Content\samples\ubisoft-prince-of-persia.jpg" />
     <Content Include="Content\samples\ubisoft-watchdogs.jpg" />
     <Content Include="Content\samples\vivaldi-four-seasons-spring.mp3" />
+    <Content Include="Content\smartstore.entitypicker.css" />
     <Content Include="Content\x-editable\bootstrap-editable.css" />
     <Content Include="Content\x-editable\img\clear.png" />
     <Content Include="Content\x-editable\img\loading.gif" />

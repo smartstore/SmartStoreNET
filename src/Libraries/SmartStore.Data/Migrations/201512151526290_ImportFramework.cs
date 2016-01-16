@@ -385,6 +385,9 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Common.Loading", "Loading", "Lade");
 			builder.AddOrUpdate("Common.ShowMore", "Show more", "Mehr anzeigen");
+			builder.AddOrUpdate("Common.Published", "Published", "Veröffentlicht");
+			builder.AddOrUpdate("Common.Unpublished", "Unpublished", "Unveröffentlicht");
+			builder.AddOrUpdate("Common.NotSelectable", "Not selectable", "Nicht auswählbar");
 
 			builder.AddOrUpdate("Common.EntityPicker.SinglePickNote",
 				"Click on an item to select it and OK to apply it.",

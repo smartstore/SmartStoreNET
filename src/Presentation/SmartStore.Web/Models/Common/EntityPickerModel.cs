@@ -13,11 +13,17 @@ namespace SmartStore.Web.Models.Common
 		}
 
 		public string AllString { get; set; }
+		public string PublishedString { get; set; }
+		public string UnpublishedString { get; set; }
+
 		public string Entity { get; set; }
-		public bool MultiPick { get; set; }
+		public bool HighligtSearchTerm { get; set; }
+		public string DisableIf { get; set; }
+		public string SearchTerm { get; set; }
+		public string ReturnField { get; set; }
+		public int MaxReturnValues { get; set; }
 		public int PageIndex { get; set; }
 		public int PageSize { get; set; }
-		public string SearchTerm { get; set; }
 
 		public List<SearchResultModel> SearchResult { get; set; }
 
@@ -47,10 +53,12 @@ namespace SmartStore.Web.Models.Common
 
 		public class SearchResultModel : EntityModelBase
 		{
-			public string Id2 { get; set; }
+			public string ReturnValue { get; set; }
 			public string Title { get; set; }
 			public string Summary { get; set; }
+			public string SummaryTitle { get; set; }
 			public bool? Published { get; set; }
+			public bool Disable { get; set; }
 			public string ImageUrl { get; set; }
 			public string LabelText { get; set; }
 			public string LabelClassName { get; set; }

@@ -7,10 +7,16 @@
 
 	var methods = {
 		loadDialog: function (options) {
-			options = normalizeOptions(options);
+			options = normalizeOptions(options, this);
 
 			return this.each(function () {
 				loadDialog(options);
+			});
+		},
+
+		initDialog: function () {
+			return this.each(function () {
+				initDialog(this);
 			});
 		},
 
@@ -24,12 +30,6 @@
 			return this.each(function () {
 				itemClick(this);
 			});
-		},
-
-		returnValues: function () {
-			return this.each(function () {
-				returnValues(this);
-			});
 		}
 	};
 
@@ -39,7 +39,7 @@
 
 	$.entityPicker = function () {
 		return main.apply($('.entity-picker:first'), arguments);
-	};
+		};
 
 
 	function main(method) {
@@ -53,24 +53,35 @@
 		return null;
 	}
 
-	function normalizeOptions(options) {
+	function normalizeOptions(options, context) {
+		var self = $(context),
+			selector = self.selector;
+
 		var defaults = {
-			entity: 'product',
 			url: '',
+			entity: 'product',
+			disableIf: '',
 			thumbZoomer: false,
-			returnValue: 'id',
+			highligtSearchTerm: true,
+			returnField: 'id',
 			returnValueDelimiter: ';',
-			maxReturnValues: 1
+			returnSelector: '',
+			maxReturnValues: 1,
+			onOkClicked: null
 		};
 
 		options = $.extend({}, defaults, options);
 
 		if (_.isEmpty(options.url)) {
-			options.url = $(element).attr('data-url');
+			options.url = self.attr('data-url');
 		}
 
 		if (_.isEmpty(options.url)) {
 			console.log('entityPicker cannot find the url for entity picker!');
+		}
+
+		if (_.isString(selector) && !_.isEmpty(selector) && $(selector).is('input')) {
+			options.returnSelector = selector;
 		}
 
 		return options;
@@ -83,6 +94,12 @@
 			}
 		}
 		catch (e) { }
+	}
+
+	function showStatus(dialog, noteClass, condition) {
+		var footerNote = $(dialog).find('.footer-note');
+		footerNote.find('span').hide();
+		footerNote.find('.' + (noteClass || 'default')).show();
 	}
 
 	function loadDialog(opt) {
@@ -102,7 +119,13 @@
 			$.ajax({
 				cache: false,
 				type: 'GET',
-				data: { "Entity": opt.entity, "MultiPick": opt.multiPick },
+				data: {
+					"Entity": opt.entity,
+					"HighligtSearchTerm": opt.highligtSearchTerm,
+					"ReturnField": opt.returnField,
+					"MaxReturnValues": opt.maxReturnValues,
+					"DisableIf": opt.disableIf
+				},
 				url: opt.url,
 				success: function (response) {
 					$('body').append(response);
@@ -114,6 +137,98 @@
 				error: ajaxErrorHandler
 			});
 		}
+	}
+
+	function initDialog(dialog) {
+		// search entities
+		$(dialog).find('button[name=SearchEntities]').click(function (e) {
+			e.preventDefault();
+			fillList(this, { append: false });
+			return false;
+		});
+
+		// toggle filters
+		$(dialog).find('button[name=FilterEntities]').click(function () {
+			$(dialog).find('.entity-picker-filter').slideToggle();
+		});
+
+		// hit enter starts searching
+		$(dialog).find('input.entity-picker-searchterm').keydown(function (e) {
+			if (e.keyCode == 13) {
+				e.preventDefault();
+				$(dialog).find('button[name=SearchEntities]').click();
+				return false;
+			}
+		});
+
+		// show more items
+		$(dialog).on('click', 'a.entity-picker-showmore', function (e) {
+			e.preventDefault();
+			fillList(this, { append: true });
+			return false;
+		});
+
+		// item select and item hover
+		$(dialog).find('.entity-picker-list').on('click', '.item', function (e) {
+			var item = $(this);
+
+			if (item.hasClass('disable'))
+				return false;
+
+			var dialog = item.closest('.entity-picker'),
+				list = item.closest('.entity-picker-list'),
+				data = dialog.data('entitypicker');
+
+			if (data.maxReturnValues === 1) {
+				list.find('.item').removeClass('selected');
+				item.addClass('selected');
+			}
+			else if (item.hasClass('selected')) {
+				item.removeClass('selected');
+			}
+			else if (list.find('.selected').length < data.maxReturnValues) {
+				item.addClass('selected');
+			}
+
+			dialog.find('.modal-footer .btn-primary').prop('disabled', list.find('.selected').length <= 0);
+		}).on({
+			mouseenter: function () {
+				if ($(this).hasClass('disable'))
+					showStatus($(this).closest('.entity-picker'), 'not-selectable');
+			},
+			mouseleave: function () {
+				if ($(this).hasClass('disable'))
+					showStatus($(this).closest('.entity-picker'));
+			}
+		}, '.item');
+
+		// return value(s)
+		$(dialog).find('.modal-footer .btn-primary').click(function () {
+			var dialog = $(this).closest('.entity-picker'),
+				items = dialog.find('.entity-picker-list .selected'),
+				data = dialog.data('entitypicker'),
+				result = '';
+
+			items.each(function (index, elem) {
+				var val = $(elem).attr('data-returnvalue');
+				if (!_.isEmpty(val)) {
+					result = (_.isEmpty(result) ? val : (result + data.returnValueDelimiter + val));
+				}
+			});
+
+			if (!_.isEmpty(data.returnSelector)) {
+				$(data.returnSelector).val(result);
+			}
+
+			if (_.isFunction(data.onOkClicked)) {
+				if (data.onOkClicked(result)) {
+					dialog.modal('hide');
+			}
+			}
+			else {
+				dialog.modal('hide');
+			}
+		});
 	}
 
 	function fillList(context, opt) {
@@ -135,10 +250,13 @@
 			data: dialog.find('form:first').serialize(),
 			url: dialog.find('form:first').attr('action'),
 			beforeSend: function () {
-				if (_.isTrue(opt.append))
+				if (_.isTrue(opt.append)) {
 					dialog.find('.list-footer').remove();
-				else
+				}
+				else {
 					dialog.find('.entity-picker-list:first').empty();
+					dialog.find('.modal-footer .btn-primary').prop('disabled', true);
+				}
 
 				dialog.find('button[name=SearchEntities]').button('loading').prop('disabled', true);
 				dialog.find('.entity-picker-list:first').append('&nbsp;<span class="ajax-loader-small"></span>');
@@ -150,8 +268,8 @@
 				list.append(response);
 
 				if (!_.isTrue(opt.append)) {
-					dialog.find('.footer-note').show();
 					dialog.find('.entity-picker-filter').slideUp();
+					showStatus(dialog);
 				}
 
 				if (list.thumbZoomer && _.isTrue(data.thumbZoomer)) {
@@ -165,30 +283,6 @@
 			},
 			error: ajaxErrorHandler
 		});
-	}
-
-	function itemClick(item) {
-		var dialog = $(item).closest('.entity-picker'),
-			list = $(item).closest('.entity-picker-list'),
-			data = dialog.data('entitypicker');
-
-		if (data.maxReturnValues === 1) {
-			list.find('.item').removeClass('selected');
-			$(item).addClass('selected');
-		}
-		else if ($(item).hasClass('selected')) {
-			$(item).removeClass('selected');
-		}
-		else if (list.find('.selected').length < data.maxReturnValues) {
-			$(item).addClass('selected');
-		}
-
-		dialog.find('.modal-footer .btn-primary').prop('disabled', list.find('.selected').length <= 0);
-	}
-
-	function returnValues(context) {
-		var dialog = $(context).closest('.entity-picker');
-
 	}
 
 })(jQuery, window, document);

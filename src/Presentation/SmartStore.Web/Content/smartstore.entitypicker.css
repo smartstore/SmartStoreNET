@@ -20,6 +20,10 @@
 .entity-picker-list .selected {
 	background-color: #FFCB7C;
 }
+.entity-picker-list .disable {
+	opacity: .4;
+	filter: Alpha(Opacity=40);
+}
 .entity-picker-list .thumb {
 	float: left;
 	width: 65px;
@@ -34,6 +38,17 @@
 }
 .entity-picker-list .summary {
 	font-size: 0.9em;
+	height: 2.65em;
+	min-height: 2.65em;
+	line-height: 1.22em;
+	vertical-align: top;
+	margin-top: 2px;
+	overflow: hidden;
+}
+.entity-picker-list .published {
+	clear: both;
+	float: right; 
+	margin-top: -13px;
 }
 .entity-picker-list .list-footer {
 	clear: both;

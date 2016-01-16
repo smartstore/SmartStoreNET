@@ -1074,6 +1074,10 @@ namespace SmartStore.Web.Controllers
 		public ActionResult EntityPicker(EntityPickerModel model, FormCollection form)
 		{
 			//System.Threading.Thread.Sleep(3000);
+			model.PublishedString = T("Common.Published");
+			model.UnpublishedString = T("Common.Unpublished");
+
+			var disableIf = model.DisableIf.SplitSafe(",").Select(x => x.ToLower().Trim()).ToList();
 
 			try
 			{
@@ -1081,12 +1085,16 @@ namespace SmartStore.Web.Controllers
 				{
 					if (model.Entity.IsCaseInsensitiveEqual("product"))
 					{
+						#region Product
+
 						model.SearchTerm = model.ProductName.TrimSafe();
 
 						var hasPermission = _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog);
 						var storeLocation = _services.WebHelper.GetStoreLocation(false);
+						var disableIfNotSimpleProduct = disableIf.Contains("notsimpleproduct");
 						var labelTextGrouped = T("Admin.Catalog.Products.ProductType.GroupedProduct.Label").Text;
 						var labelTextBundled = T("Admin.Catalog.Products.ProductType.BundledProduct.Label").Text;
+						var sku = T("Products.Sku").Text;
 
 						var searchContext = new ProductSearchContext
 						{
@@ -1118,24 +1126,30 @@ namespace SmartStore.Web.Controllers
 						model.SearchResult = products
 							.Select(x =>
 							{
-								var extract = new EntityPickerModel.SearchResultModel
+								var item = new EntityPickerModel.SearchResultModel
 								{
 									Id = x.Id,
-									Id2 = x.Sku,
+									ReturnValue = (model.ReturnField.IsCaseInsensitiveEqual("sku") ? x.Sku : x.Id.ToString()),
 									Title = x.Name,
 									Summary = x.Sku,
+									SummaryTitle = "{0}: {1}".FormatInvariant(sku, x.Sku.NaIfEmpty()),
 									Published = (hasPermission ? x.Published : (bool?)null)
 								};
 
+								if (disableIfNotSimpleProduct)
+								{
+									item.Disable = (x.ProductTypeId != (int)ProductType.SimpleProduct);
+								}
+
 								if (x.ProductTypeId == (int)ProductType.GroupedProduct)
 								{
-									extract.LabelText = labelTextGrouped;
-									extract.LabelClassName = "label-success";
+									item.LabelText = labelTextGrouped;
+									item.LabelClassName = "label-success";
 								}
 								else if (x.ProductTypeId == (int)ProductType.BundledProduct)
 								{
-									extract.LabelText = labelTextBundled;
-									extract.LabelClassName = "label-info";
+									item.LabelText = labelTextBundled;
+									item.LabelClassName = "label-info";
 								}
 
 								var productPicture = pictures.FirstOrDefault(y => y.Key == x.Id);
@@ -1144,14 +1158,16 @@ namespace SmartStore.Web.Controllers
 									var picture = productPicture.Value.FirstOrDefault();
 									if (picture != null)
 									{
-										extract.ImageUrl = _pictureService.Value.GetPictureUrl(picture.Picture, _mediaSettings.Value.ProductThumbPictureSizeOnProductDetailsPage,
+										item.ImageUrl = _pictureService.Value.GetPictureUrl(picture.Picture, _mediaSettings.Value.ProductThumbPictureSizeOnProductDetailsPage,
 											!_catalogSettings.HideProductDefaultPictures, storeLocation);
 									}
 								}
 
-								return extract;
+								return item;
 							})
 							.ToList();
+
+						#endregion
 					}
 				}
 			}

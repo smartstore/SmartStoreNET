@@ -65,7 +65,7 @@
 
                     <input type="submit" id="btnRefreshAssociatedProducts" name="btnRefreshAssociatedProducts" style="display: none" />
 
-					<button type="button" id="EntityPickerTest">Entity Picker Test</button>
+					<button type="button" id="EntityPickerTest">Entity Picker Test</button><input type="text" name="EntityPickerResult" />
 
                     <script type="text/javascript">
                         $(document).ready(function () {
@@ -80,9 +80,14 @@
 
                             $('#EntityPickerTest').click(function () {
 
-                            	$({}).entityPicker('loadDialog', {
+                            	$('input[name=EntityPickerResult]').entityPicker('loadDialog', {
                             		url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
-                            		caption: '@T("Admin.Catalog.Products.AssociatedProducts.AddNew")'
+                            		caption: '@T("Admin.Catalog.Products.AssociatedProducts.AddNew")',
+                            		disableIf: 'notSimpleProduct',
+                            		//onOkClicked: function (result) {
+                            		//	console.log(result + ', ' + $('input[name=EntityPickerResult]').val());
+                            		//	return true;
+                            		//}
                             	});
 
                             });

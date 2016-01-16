@@ -2,7 +2,7 @@
 @model EntityPickerModel
 @helper HighlightSearchTermInTitle(EntityPickerModel.SearchResultModel item)
 {
-	if (Model.SearchTerm.HasValue() && item.Title.HasValue())
+	if (Model.HighligtSearchTerm && Model.SearchTerm.HasValue() && item.Title.HasValue())
 	{
 		@Html.Raw(item.Title.Replace(Model.SearchTerm, "<span class=\"highlight\">{0}</span>".FormatInvariant(Model.SearchTerm), StringComparison.OrdinalIgnoreCase))
 	}
@@ -13,7 +13,7 @@
 }
 @foreach (var item in Model.SearchResult ?? Enumerable.Empty<EntityPickerModel.SearchResultModel>())
 {
-	<div class="item clearfix" data-id="@item.Id" data-id2="@item.Id2">
+	<div class="item clearfix@(item.Disable ? " disable" : "")" data-id="@item.Id" data-returnvalue="@item.ReturnValue">
 		@if (item.ImageUrl.HasValue())
 		{
 			<div class="thumb">
@@ -30,7 +30,11 @@
 			</div>
 			@if (item.Summary.HasValue())
 			{
-				<div class="subtitle muted">@item.Summary</div>
+				<div class="summary muted" title="@item.SummaryTitle">@item.Summary</div>
+			}
+			@if (item.Published.HasValue)
+			{
+				<i class="published fa fa-fw icon-active-@item.Published.Value.ToString().ToLower()" title="@(item.Published.Value ? Model.PublishedString : Model.UnpublishedString)"></i>
 			}
 		</div>
 	</div>

@@ -9,7 +9,10 @@
 	<div class="modal-body">
 		<form method="POST" action="@Url.Action("EntityPicker", "Common", new { area = "" })">
 			<input type="hidden" name="Entity" value="@Model.Entity" />
-			<input type="hidden" name="MultiPick" value="@Model.MultiPick.ToString()" />
+			<input type="hidden" name="HighligtSearchTerm" value="@Model.HighligtSearchTerm.ToString()" />
+			<input type="hidden" name="ReturnField" value="@Model.ReturnField" />
+			<input type="hidden" name="MaxReturnValues" value="@Model.MaxReturnValues" />
+			<input type="hidden" name="DisableIf" value="@Model.DisableIf" />
 			<input type="hidden" name="PageIndex" value="@Model.PageIndex" />
 
 			@if (Model.Entity.IsCaseInsensitiveEqual("product"))
@@ -21,51 +24,16 @@
 		</form>
 	</div>
 	<div class="modal-footer">
-		<span class="footer-note pull-left hide">@T(Model.MultiPick ? "Common.EntityPicker.MultiPickNote" : "Common.EntityPicker.SinglePickNote")</span>
+		<span class="footer-note pull-left">
+			<span class="default hide">@T(Model.MaxReturnValues > 1 ? "Common.EntityPicker.MultiPickNote" : "Common.EntityPicker.SinglePickNote")</span>
+			<span class="not-selectable hide">@T("Common.NotSelectable").</span>
+		</span>
 		<button class="btn btn-primary" disabled="disabled">@T("Common.OK")</button>
 		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
 	</div>
 	<script type="text/javascript">
 		$(document).ready(function () {
-			var dialog = $('#entity-picker-@(Model.Entity)-dialog');
-
-			// search entities
-			dialog.find('button[name=SearchEntities]').click(function (e) {
-				e.preventDefault();
-				dialog.entityPicker('fillList', { append: false });
-				return false;
-			});
-
-			// toggle filters
-			dialog.find('button[name=FilterEntities]').click(function () {
-				dialog.find('.entity-picker-filter').slideToggle();
-			});
-
-			// enter starts searching
-			dialog.find('input.entity-picker-searchterm').keydown(function (e) {
-				if (e.keyCode == 13) {
-					e.preventDefault();
-					dialog.find('button[name=SearchEntities]').click();
-					return false;
-				}
-			});
-
-			// show more items
-			dialog.on('click', 'a.entity-picker-showmore', function (e) {
-				e.preventDefault();
-				$(this).entityPicker('fillList', { append: true });
-				return false;
-			});
-
-			// select item
-			dialog.find('.entity-picker-list').on('click', '.item', function (e) {
-				$(this).entityPicker('itemClick');
-			});
-
-			// return value(s)
-			dialog.find('.modal-footer .btn-primary').click(function () {
-				$(this).entityPicker('returnValues');
-			});
+			$('#entity-picker-@(Model.Entity)-dialog').entityPicker('initDialog');
 		});
 	</script>
 </div>

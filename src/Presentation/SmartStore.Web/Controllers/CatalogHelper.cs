@@ -216,6 +216,7 @@ namespace SmartStore.Web.Controllers
 			{
 				var searchContext = new ProductSearchContext
 				{
+					OrderBy = ProductSortingEnum.Position,
 					StoreId = _services.StoreContext.CurrentStore.Id,
 					ParentGroupedProductId = product.Id,
 					PageSize = int.MaxValue,
@@ -1137,6 +1138,7 @@ namespace SmartStore.Web.Controllers
 
 						var searchContext = new ProductSearchContext
 						{
+							OrderBy = ProductSortingEnum.Position,
 							StoreId = currentStore.Id,
 							ParentGroupedProductId = product.Id,
 							PageSize = int.MaxValue,

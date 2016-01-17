@@ -1073,7 +1073,6 @@ namespace SmartStore.Web.Controllers
 		[HttpPost]
 		public ActionResult EntityPicker(EntityPickerModel model, FormCollection form)
 		{
-			//System.Threading.Thread.Sleep(3000);
 			model.PublishedString = T("Common.Published");
 			model.UnpublishedString = T("Common.Unpublished");
 

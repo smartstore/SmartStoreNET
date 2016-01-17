@@ -13,7 +13,7 @@
 }
 @foreach (var item in Model.SearchResult ?? Enumerable.Empty<EntityPickerModel.SearchResultModel>())
 {
-	<div class="item clearfix@(item.Disable ? " disable" : "")" data-id="@item.Id" data-returnvalue="@item.ReturnValue">
+	<div class="item@(item.Disable ? " disable" : "")" data-id="@item.Id" data-returnvalue="@item.ReturnValue">
 		@if (item.ImageUrl.HasValue())
 		{
 			<div class="thumb">

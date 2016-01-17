@@ -83,8 +83,6 @@
                             	$('input[name=EntityPickerResult]').entityPicker('loadDialog', {
                             		url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
                             		caption: '@T("Admin.Catalog.Products.AssociatedProducts.AddNew")',
-                            		//disableIf: 'notSimpleProduct',
-                            		//maxReturnValues: 3,
                             		onOkClicked: function (ids) {
                             			$({}).doAjax({
                             				type: 'POST',

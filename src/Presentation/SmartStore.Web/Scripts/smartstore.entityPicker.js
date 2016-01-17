@@ -261,15 +261,15 @@
 					dialog.find('.list-footer').remove();
 				}
 				else {
-					dialog.find('.entity-picker-list:first').empty();
+					dialog.find('.entity-picker-list').empty();
 					dialog.find('.modal-footer .btn-primary').prop('disabled', true);
 				}
 
 				dialog.find('button[name=SearchEntities]').button('loading').prop('disabled', true);
-				dialog.find('.entity-picker-list:first').append('&nbsp;<span class="ajax-loader-small"></span>');
+				dialog.find('.entity-picker-list').append('<span class="ajax-loader-small"></span>');
 			},
 			success: function (response) {
-				var list = dialog.find('.entity-picker-list:first'),
+				var list = dialog.find('.entity-picker-list'),
 					data = dialog.data('entitypicker');
 
 				list.append(response);
@@ -286,7 +286,7 @@
 			},
 			complete: function () {
 				dialog.find('button[name=SearchEntities]').prop('disabled', false).button('reset');
-				dialog.find('.entity-picker-list:first').find('span.ajax-loader-small').remove();
+				dialog.find('.entity-picker-list').find('span.ajax-loader-small').remove();
 			},
 			error: ajaxErrorHandler
 		});

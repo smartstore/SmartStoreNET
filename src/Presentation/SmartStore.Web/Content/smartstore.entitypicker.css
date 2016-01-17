@@ -3,22 +3,29 @@
 -------------------------------------------------------------- */
 
 .entity-picker-list .item {
-	float: left;
+	display: inline-block;
 	width: 360px;
 	min-height: 54px;
 	max-height: 54px;
 	padding: 3px;
-	border-bottom: 1px solid #cfcfcf;
+	margin: 2px 0 1px 0;
+	border-radius: 8px;
+	border: #d4d4d4 solid 1px;
+	background-image: linear-gradient(to bottom, #fcfcfc, #e3e3e3);
+	background-color: #FCF8F0;
 }
-.entity-picker-list .item:nth-child(odd) {
-	padding-right: 10px;
+.entity-picker-list .selected {
+	box-shadow: 0 0 0 1px #FFCB7C;
+	border: #FFCB7C solid 1px;
+	background-image: linear-gradient(to bottom, #fcfcfc, #FFCB7C);
+	background-color: #F2EEE6;
 }
 .entity-picker-list .item:hover {
 	cursor: pointer;
-	background-color: #FFCB7C;
 }
-.entity-picker-list .selected {
-	background-color: #FFCB7C;
+.entity-picker-list .item:not(.selected):hover {
+	background-image: linear-gradient(to bottom, #fcfcfc, #cacaca);
+	background-color: #F2EEE6;
 }
 .entity-picker-list .disable {
 	opacity: .4;

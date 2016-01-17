@@ -25,7 +25,7 @@
 	</div>
 	<div class="modal-footer">
 		<span class="footer-note pull-left">
-			<span class="default hide">@T(Model.MaxReturnValues > 1 ? "Common.EntityPicker.MultiPickNote" : "Common.EntityPicker.SinglePickNote")</span>
+			<span class="default hide">@T(Model.MaxReturnValues == 1 ? "Common.EntityPicker.SinglePickNote" : "Common.EntityPicker.MultiPickNote")</span>
 			<span class="not-selectable hide">@T("Common.NotSelectable").</span>
 		</span>
 		<button class="btn btn-primary" disabled="disabled">@T("Common.OK")</button>

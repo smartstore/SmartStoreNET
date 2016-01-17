@@ -2176,6 +2176,43 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
+		[HttpPost]
+		public ActionResult AssociatedProductAdd(int productId, string selectedProductIds)
+		{
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var searchContext = new ProductSearchContext
+				{
+					ParentGroupedProductId = productId,
+					PageSize = 1,
+					ShowHidden = true
+				};
+
+				var maxDisplayOrder = _productService.PrepareProductSearchQuery(searchContext, x => x.DisplayOrder)
+					.OrderByDescending(x => x)
+					.FirstOrDefault();
+
+				foreach (var id in selectedProductIds.SplitSafe(","))
+				{
+					var product = _productService.GetProductById(id.ToInt());
+					if (product != null)
+					{
+						product.ParentGroupedProductId = productId;
+						product.DisplayOrder = ++maxDisplayOrder;
+
+						_productService.UpdateProduct(product);
+					}
+				}
+			}
+			else
+			{
+				NotifyAccessDenied();
+			}
+
+			return new EmptyResult();
+		}
+
+
 		#endregion
 
 		#region Bundle items

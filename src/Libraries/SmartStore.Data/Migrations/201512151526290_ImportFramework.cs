@@ -394,8 +394,8 @@ namespace SmartStore.Data.Migrations
 				"Klicken Sie auf ein Element, um es auszuwählen und OK, um es zu übernehmen.");
 
 			builder.AddOrUpdate("Common.EntityPicker.MultiPickNote",
-				"Click on an item to select or deselect it and OK to apply it.",
-				"Klicken Sie auf ein Element, um es aus- bzw. abzuwählen und OK, um es zu übernehmen.");
+				"Click on an item to select or deselect it and OK to apply the selection.",
+				"Klicken Sie auf ein Element, um es aus- bzw. abzuwählen und OK, um die Auswahl zu übernehmen.");
 
 			builder.AddOrUpdate("Common.EntityPicker.NoMoreItemsFound",
 				"There were no more items found.",

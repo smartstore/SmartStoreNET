@@ -83,11 +83,19 @@
                             	$('input[name=EntityPickerResult]').entityPicker('loadDialog', {
                             		url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
                             		caption: '@T("Admin.Catalog.Products.AssociatedProducts.AddNew")',
-                            		disableIf: 'notSimpleProduct',
-                            		//onOkClicked: function (result) {
-                            		//	console.log(result + ', ' + $('input[name=EntityPickerResult]').val());
-                            		//	return true;
-                            		//}
+                            		//disableIf: 'notSimpleProduct',
+                            		//maxReturnValues: 3,
+                            		onOkClicked: function (ids) {
+                            			$({}).doAjax({
+                            				type: 'POST',
+                            				url: '@Url.Action("AssociatedProductAdd")',
+                            				data: { "productId": @Model.Id, "selectedProductIds": ids },
+                            				callbackSuccess: function (resp) {
+                            					$('#associatedproducts-grid').data('tGrid').ajaxRequest();
+                            				}
+                            			});
+                            			return true;
+                            		}
                             	});
 
                             });

@@ -39,7 +39,7 @@
 
 	$.entityPicker = function () {
 		return main.apply($('.entity-picker:first'), arguments);
-		};
+	};
 
 
 	function main(method) {
@@ -64,9 +64,9 @@
 			thumbZoomer: false,
 			highligtSearchTerm: true,
 			returnField: 'id',
-			returnValueDelimiter: ';',
+			returnValueDelimiter: ',',
 			returnSelector: '',
-			maxReturnValues: 1,
+			maxReturnValues: 0,
 			onOkClicked: null
 		};
 
@@ -139,37 +139,39 @@
 		}
 	}
 
-	function initDialog(dialog) {
+	function initDialog(context) {
+		var dialog = $(context);
+
 		// search entities
-		$(dialog).find('button[name=SearchEntities]').click(function (e) {
+		dialog.find('button[name=SearchEntities]').click(function (e) {
 			e.preventDefault();
 			fillList(this, { append: false });
 			return false;
 		});
 
 		// toggle filters
-		$(dialog).find('button[name=FilterEntities]').click(function () {
-			$(dialog).find('.entity-picker-filter').slideToggle();
+		dialog.find('button[name=FilterEntities]').click(function () {
+			dialog.find('.entity-picker-filter').slideToggle();
 		});
 
 		// hit enter starts searching
-		$(dialog).find('input.entity-picker-searchterm').keydown(function (e) {
+		dialog.find('input.entity-picker-searchterm').keydown(function (e) {
 			if (e.keyCode == 13) {
 				e.preventDefault();
-				$(dialog).find('button[name=SearchEntities]').click();
+				dialog.find('button[name=SearchEntities]').click();
 				return false;
 			}
 		});
 
 		// show more items
-		$(dialog).on('click', 'a.entity-picker-showmore', function (e) {
+		dialog.on('click', 'a.entity-picker-showmore', function (e) {
 			e.preventDefault();
 			fillList(this, { append: true });
 			return false;
 		});
 
 		// item select and item hover
-		$(dialog).find('.entity-picker-list').on('click', '.item', function (e) {
+		dialog.find('.entity-picker-list').on('click', '.item', function (e) {
 			var item = $(this);
 
 			if (item.hasClass('disable'))
@@ -186,7 +188,7 @@
 			else if (item.hasClass('selected')) {
 				item.removeClass('selected');
 			}
-			else if (list.find('.selected').length < data.maxReturnValues) {
+			else if (data.maxReturnValues === 0 || list.find('.selected').length < data.maxReturnValues) {
 				item.addClass('selected');
 			}
 
@@ -203,7 +205,7 @@
 		}, '.item');
 
 		// return value(s)
-		$(dialog).find('.modal-footer .btn-primary').click(function () {
+		dialog.find('.modal-footer .btn-primary').click(function () {
 			var dialog = $(this).closest('.entity-picker'),
 				items = dialog.find('.entity-picker-list .selected'),
 				data = dialog.data('entitypicker'),
@@ -223,11 +225,16 @@
 			if (_.isFunction(data.onOkClicked)) {
 				if (data.onOkClicked(result)) {
 					dialog.modal('hide');
-			}
+				}
 			}
 			else {
 				dialog.modal('hide');
 			}
+		});
+
+		// clear selection
+		dialog.find('button[class=btn][data-dismiss=modal]').click(function () {
+			dialog.find('.entity-picker-list .selected').removeClass('selected');
 		});
 	}
 

@@ -657,7 +657,7 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						var associatedSearchContext = new ProductSearchContext
 						{
-							OrderBy = ProductSortingEnum.CreatedOn,
+							OrderBy = ProductSortingEnum.Position,
 							PageSize = int.MaxValue,
 							StoreId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
 							VisibleIndividuallyOnly = false,

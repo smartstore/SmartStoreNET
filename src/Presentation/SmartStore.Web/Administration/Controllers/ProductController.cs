@@ -2001,6 +2001,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var searchContext = new ProductSearchContext
 				{
+					OrderBy = ProductSortingEnum.Position,
 					ParentGroupedProductId = productId,
 					PageSize = int.MaxValue,
 					ShowHidden = true

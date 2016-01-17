@@ -236,6 +236,7 @@ namespace SmartStore.WebApi.Controllers.OData
 					{
 						var searchContext = new ProductSearchContext
 						{
+							OrderBy = ProductSortingEnum.Position,
 							Query = this.GetExpandedEntitySet(requiredProperties),
 							ParentGroupedProductId = entity.Id,
 							PageSize = int.MaxValue,

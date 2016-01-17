@@ -94,6 +94,7 @@
 * #829 Activity log: Searching by customer email out of function
 * Product import: Store mappings were not applied when inserting new records
 * Faulty permission handling in ajax grid actions (no message, infinite loading icon)
+* Grouped products: Display order was not correct
 
 
 ## SmartStore.NET 2.2.2

@@ -11,7 +11,7 @@
 	width: 360px;
 	min-height: 54px;
 	max-height: 54px;
-	padding: 3px;
+	padding: 3px 4px;
 	margin: 2px 0 1px 0;
 	border-radius: 8px;
 	border: #d4d4d4 solid 1px;
@@ -57,9 +57,8 @@
 	overflow: hidden;
 }
 .entity-picker-list .published {
-	clear: both;
 	float: right; 
-	margin-top: -13px;
+	margin-top: -11px;
 }
 .entity-picker-list .list-footer {
 	clear: both;

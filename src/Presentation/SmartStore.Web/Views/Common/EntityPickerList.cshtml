@@ -28,10 +28,7 @@
 				}
 				<span>@HighlightSearchTermInTitle(item)</span>
 			</div>
-			@if (item.Summary.HasValue())
-			{
-				<div class="summary muted" title="@item.SummaryTitle">@item.Summary</div>
-			}
+			<div class="summary muted" title="@item.SummaryTitle">@item.Summary</div>
 			@if (item.Published.HasValue)
 			{
 				<i class="published fa fa-fw icon-active-@item.Published.Value.ToString().ToLower()" title="@(item.Published.Value ? Model.PublishedString : Model.UnpublishedString)"></i>

@@ -404,6 +404,22 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Catalog.Products.BundleItems.NotesOnProductBundles",
 				"Notes on product bundles",
 				"Hinweise zu Produkt-Bundles");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.RelatedProducts.AddNew",
+				"Add cross-selling product",
+				"Cross-Selling-Produkt hinzufügen");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.RelatedProducts.SaveBeforeEdit",
+				"You need to save the product before you can add cross-selling products for this product page.",
+				"Sie müssen das Produkt speichern, bevor Sie Cross-Selling-Produkte hinzufügen können.");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.CrossSells.AddNew",
+				"Add checkout-selling product",
+				"Checkout-Selling-Produkt hinzufügen");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.CrossSells.SaveBeforeEdit",
+				"You need to save the product before you can add checkout-selling products for this product page.",
+				"Sie müssen das Produkt speichern, bevor Sie Checkout-Selling-Produkte hinzufügen können.");
 		}
 	}
 }

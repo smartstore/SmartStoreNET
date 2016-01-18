@@ -60,6 +60,7 @@
 		var defaults = {
 			url: '',
 			entity: 'product',
+			caption: '&nbsp;',
 			disableIf: '',
 			thumbZoomer: false,
 			highligtSearchTerm: true,
@@ -108,7 +109,11 @@
 		var dialog = $('#entity-picker-' + opt.entity + '-dialog');
 
 		function showAndFocusDialog() {
+			dialog = $('#entity-picker-' + opt.entity + '-dialog');
+			dialog.find('.caption').html(opt.caption || '&nbsp;');
+			dialog.data('entitypicker', opt);
 			dialog.modal('show');
+
 			setTimeout(function () {
 				dialog.find('.modal-body :input:visible:enabled:first').focus();
 			}, 800);
@@ -136,9 +141,6 @@
 				},
 				success: function (response) {
 					$('body').append(response);
-					dialog = $('#entity-picker-' + opt.entity + '-dialog');
-					dialog.find('.caption').html(opt.caption || '&nbsp;');
-					dialog.data('entitypicker', opt);
 					showAndFocusDialog();
 				},
 				complete: function () {
@@ -244,9 +246,11 @@
 			}
 		});
 
-		// clear selection
+		// cancel
 		dialog.find('button[class=btn][data-dismiss=modal]').click(function () {
-			dialog.find('.entity-picker-list .selected').removeClass('selected');
+			dialog.find('.entity-picker-list').empty();
+			dialog.find('.footer-note span').hide();
+			dialog.find('.modal-footer .btn-primary').prop('disabled', true);
 		});
 	}
 

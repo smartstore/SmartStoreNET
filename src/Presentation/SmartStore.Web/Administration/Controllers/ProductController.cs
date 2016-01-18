@@ -1637,12 +1637,8 @@ namespace SmartStore.Admin.Controllers
 				var product = _productService.GetProductById(productId);
 				if (product != null)
 				{
-					int count = _productService.EnsureMutuallyRelatedProducts(productId);
+					var count = _productService.EnsureMutuallyRelatedProducts(productId);
 					message = T("Admin.Common.CreateMutuallyAssociationsResult", count);
-				}
-				else
-				{
-					message = "No product found with the specified id";
 				}
 			}
 			else
@@ -1716,147 +1712,37 @@ namespace SmartStore.Admin.Controllers
             return CrossSellProductList(command, productId);
         }
 
-        public ActionResult CrossSellProductAddPopup(int productId)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
-            var ctx = new ProductSearchContext();
-            ctx.LanguageId = _workContext.WorkingLanguage.Id;
-            ctx.OrderBy = ProductSortingEnum.Position;
-            ctx.PageSize = _adminAreaSettings.GridPageSize;
-            ctx.ShowHidden = true;
-
-            var products = _productService.SearchProducts(ctx);
-
-            var model = new ProductModel.AddCrossSellProductModel();
-            model.Products = new GridModel<ProductModel>
-            {
-                Data = products.Select(x => 
-				{
-					var productModel = x.ToModel();
-					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
-
-					return productModel;
-				}),
-                Total = products.TotalCount
-            };
-
-            var allCategories = _categoryService.GetAllCategories(showHidden: true);
-            var mappedCategories = allCategories.ToDictionary(x => x.Id);
-            foreach (var c in allCategories)
-            {
-                model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
-            }
-
-            foreach (var m in _manufacturerService.GetAllManufacturers(true))
-            {
-                model.AvailableManufacturers.Add(new SelectListItem { Text = m.Name, Value = m.Id.ToString() });
-            }
-
-			foreach (var s in _storeService.GetAllStores())
-			{
-				model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
-			}
-
-			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-
-            return View(model);
-        }
-
-        [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult CrossSellProductAddPopupList(GridCommand command, ProductModel.AddCrossSellProductModel model)
-        {
-			var gridModel = new GridModel<ProductModel>();
-
+		[HttpPost]
+		public ActionResult CrossSellProductAdd(int productId, string selectedProductIds)
+		{
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var ctx = new ProductSearchContext();
+				var productIds = selectedProductIds.SplitSafe(",").Select(x => x.ToInt()).ToArray();
+				var products = _productService.GetProductsByIds(productIds);
 
-				if (model.SearchCategoryId > 0)
-					ctx.CategoryIds.Add(model.SearchCategoryId);
-
-				ctx.ManufacturerId = model.SearchManufacturerId;
-				ctx.StoreId = model.SearchStoreId;
-				ctx.Keywords = model.SearchProductName;
-				ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
-				ctx.LanguageId = _workContext.WorkingLanguage.Id;
-				ctx.OrderBy = ProductSortingEnum.Position;
-				ctx.PageIndex = command.Page - 1;
-				ctx.PageSize = command.PageSize;
-				ctx.ShowHidden = true;
-				ctx.ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null;
-
-				var products = _productService.SearchProducts(ctx);
-
-				gridModel.Data = products.Select(x =>
+				foreach (var product in products)
 				{
-                    var productModel = new ProductModel
-                    {
-                        Sku = x.Sku,
-                        Published = x.Published,
-                        ProductTypeLabelHint = x.ProductTypeLabelHint,
-                        Name = x.Name,
-                        Id = x.Id
-                    };
+					var existingRelations = _productService.GetCrossSellProductsByProductId1(productId);
 
-					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
-
-					return productModel;
-				});
-
-				gridModel.Total = products.TotalCount;
+					if (existingRelations.FindCrossSellProduct(productId, product.Id) == null)
+					{
+						_productService.InsertCrossSellProduct(new CrossSellProduct
+						{
+							ProductId1 = productId,
+							ProductId2 = product.Id
+						});
+					}
+				}
 			}
 			else
 			{
-				gridModel.Data = Enumerable.Empty<ProductModel>();
-
 				NotifyAccessDenied();
 			}
 
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
+			return new EmptyResult();
+		}
 
-        [HttpPost]
-        [FormValueRequired("save")]
-        public ActionResult CrossSellProductAddPopup(string btnId, string formId, ProductModel.AddCrossSellProductModel model)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
-            if (model.SelectedProductIds != null)
-            {
-                foreach (int id in model.SelectedProductIds)
-                {
-                    var product = _productService.GetProductById(id);
-                    if (product != null)
-                    {
-                        var existingCrossSellProducts = _productService.GetCrossSellProductsByProductId1(model.ProductId);
-                        if (existingCrossSellProducts.FindCrossSellProduct(model.ProductId, id) == null)
-                        {
-                            _productService.InsertCrossSellProduct(
-                                new CrossSellProduct()
-                                {
-                                    ProductId1 = model.ProductId,
-                                    ProductId2 = id,
-                                });
-                        }
-                    }
-                }
-            }
-
-            ViewBag.RefreshPage = true;
-            ViewBag.btnId = btnId;
-            ViewBag.formId = formId;
-            model.Products = new GridModel<ProductModel>();
-            return View(model);
-        }
-
-		[HttpPost]
-		[ValidateInput(false)]
+		[HttpPost, ValidateInput(false)]
 		public ActionResult CreateAllMutuallyCrossSellProducts(int productId)
 		{
 			string message = null;
@@ -1866,12 +1752,8 @@ namespace SmartStore.Admin.Controllers
 				var product = _productService.GetProductById(productId);
 				if (product != null)
 				{
-					int count = _productService.EnsureMutuallyCrossSellProducts(productId);
+					var count = _productService.EnsureMutuallyCrossSellProducts(productId);
 					message = T("Admin.Common.CreateMutuallyAssociationsResult", count);
-				}
-				else
-				{
-					message = "No product found with the specified id";
 				}
 			}
 			else

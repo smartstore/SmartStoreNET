@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
-using AutoMapper;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.Stores;
@@ -15,7 +14,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Catalog
 {
-    [Validator(typeof(ProductValidator))]
+	[Validator(typeof(ProductValidator))]
     public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>
     {
         public ProductModel()
@@ -552,42 +551,6 @@ namespace SmartStore.Admin.Models.Catalog
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
 			public bool Product2Published { get; set; }
-        }
-        public class AddCrossSellProductModel : ModelBase
-        {
-            public AddCrossSellProductModel()
-            {
-                AvailableCategories = new List<SelectListItem>();
-                AvailableManufacturers = new List<SelectListItem>();
-				AvailableStores = new List<SelectListItem>();
-				AvailableProductTypes = new List<SelectListItem>();
-            }
-            public GridModel<ProductModel> Products { get; set; }
-
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
-            [AllowHtml]
-            public string SearchProductName { get; set; }
-
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
-            public int SearchCategoryId { get; set; }
-
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
-            public int SearchManufacturerId { get; set; }
-
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
-			public int SearchStoreId { get; set; }
-
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
-			public int SearchProductTypeId { get; set; }
-
-            public IList<SelectListItem> AvailableCategories { get; set; }
-            public IList<SelectListItem> AvailableManufacturers { get; set; }
-			public IList<SelectListItem> AvailableStores { get; set; }
-			public IList<SelectListItem> AvailableProductTypes { get; set; }
-
-            public int ProductId { get; set; }
-
-            public int[] SelectedProductIds { get; set; }
         }
 
 		public class TierPriceModel : EntityModelBase

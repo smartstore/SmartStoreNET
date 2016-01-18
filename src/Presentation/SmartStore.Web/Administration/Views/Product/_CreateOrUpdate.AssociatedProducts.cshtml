@@ -56,7 +56,7 @@
         </tr>
         <tr>
             <td>
-                <button type="button" id="AddNewAssociatedProductButton" class="btn btn-warning btn-below">
+                <button type="button" id="AddNewAssociatedProductButton" class="btn btn-warning btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
                     <i class="fa fa-plus"></i>
                     @T("Admin.Catalog.Products.AssociatedProducts.AddNew")
                 </button>
@@ -68,7 +68,13 @@
 
                         	$({}).entityPicker('loadDialog', {
                             	url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
-                            	caption: '@T("Admin.Catalog.Products.AssociatedProducts.AddNew")',
+                        		caption: '@T("Admin.Catalog.Products.AssociatedProducts.AddNew")',
+                        		onLoadDialogBefore: function () {
+                        			$('#AddNewAssociatedProductButton').button('loading').prop('disabled', true);
+                        		},
+                        		onLoadDialogComplete: function () {
+                        			$('#AddNewAssociatedProductButton').prop('disabled', false).button('reset');
+                        		},
                             	onOkClicked: function (ids) {
                             		$({}).doAjax({
                             			type: 'POST',

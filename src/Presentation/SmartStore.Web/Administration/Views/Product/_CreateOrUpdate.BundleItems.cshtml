@@ -140,7 +140,7 @@
         </tr>
         <tr>
             <td>
-				<button type="button" id="AddNewBundleItemButton" class="btn btn-warning btn-below">
+				<button type="button" id="AddNewBundleItemButton" class="btn btn-warning btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
 					<i class="fa fa-plus"></i>
 					@T("Common.AddNew")
 				</button>
@@ -180,6 +180,12 @@
 				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
 				caption: '@T("Admin.Catalog.Products.BundleItems.AddNew")',
 				disableIf: 'notSimpleProduct',
+				onLoadDialogBefore: function () {
+					$('#AddNewBundleItemButton').button('loading').prop('disabled', true);
+				},
+				onLoadDialogComplete: function () {
+					$('#AddNewBundleItemButton').prop('disabled', false).button('reset');
+				},
 				onOkClicked: function (ids) {
 					$({}).doAjax({
 						type: 'POST',

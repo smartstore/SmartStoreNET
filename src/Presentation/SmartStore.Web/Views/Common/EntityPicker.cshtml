@@ -38,34 +38,39 @@
 	</script>
 </div>
 
+@helper FormButtons()
+{
+	<div class="control-group">
+		@Html.LabelFor(model => model.ProductName, new { @class = "control-label", @for = "ProductName" })
+		<div class="controls">
+			@Html.TextBoxFor(model => model.ProductName, new { @class = "entity-picker-searchterm" })
+			<button type="button" class="btn btn-warning" name="SearchEntities" data-loading-text="@(T("Common.Loading"))&hellip;">
+				<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+			</button>
+			<button type="button" class="btn" name="FilterEntities">
+				<i class="fa fa-filter"></i>&nbsp;@T("Common.Filter")
+			</button>
+		</div>
+	</div>
+}
+
 @helper ProductSearchForm()
 {
 	<div class="form-horizontal">
-		<div class="control-group">
-			@Html.LabelFor(model => model.ProductName, new { @class = "control-label", @for = "ProductName" })
-			<div class="controls">
-				@Html.TextBoxFor(model => model.ProductName, new { @class = "entity-picker-searchterm" })
-				<button type="button" class="btn btn-warning" name="SearchEntities" data-loading-text="@(T("Common.Loading"))&hellip;">
-					<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
-				</button>
-				<button type="button" class="btn" name="FilterEntities">
-					<i class="fa fa-filter"></i>&nbsp;@T("Common.Filter")
-				</button>
-			</div>
-		</div>
+		@FormButtons()
 
 		<div class="entity-picker-filter hide">
 			<div class="control-group">
 				@Html.LabelFor(model => model.CategoryId, new { @class = "control-label", @for = "CategoryId" })
 				<div class="controls">
-					@Html.DropDownListFor(model => model.CategoryId, Model.AvailableCategories, Model.AllString, new { style = "min-width: 320px" })
+					@Html.DropDownListFor(model => model.CategoryId, Model.AvailableCategories, Model.AllString, new { @class = "item" })
 				</div>
 			</div>
 
 			<div class="control-group">
 				@Html.LabelFor(model => model.ManufacturerId, new { @class = "control-label", @for = "ManufacturerId" })
 				<div class="controls">
-					@Html.DropDownListFor(model => model.ManufacturerId, Model.AvailableManufacturers, Model.AllString, new { style = "min-width: 320px" })
+					@Html.DropDownListFor(model => model.ManufacturerId, Model.AvailableManufacturers, Model.AllString, new { @class = "item" })
 				</div>
 			</div>
 
@@ -74,7 +79,7 @@
 				<div class="control-group">
 					@Html.LabelFor(model => model.StoreId, new { @class = "control-label", @for = "StoreId" })
 					<div class="controls">
-						@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores, Model.AllString, new { style = "min-width: 320px" })
+						@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores, Model.AllString, new { @class = "item" })
 					</div>
 				</div>
 			}
@@ -82,7 +87,7 @@
 			<div class="control-group">
 				@Html.LabelFor(model => model.ProductTypeId, new { @class = "control-label", @for = "ProductTypeId" })
 				<div class="controls">
-					@Html.DropDownListFor(model => model.ProductTypeId, Model.AvailableProductTypes, Model.AllString, new { style = "min-width: 320px" })
+					@Html.DropDownListFor(model => model.ProductTypeId, Model.AvailableProductTypes, Model.AllString, new { @class = "item" })
 				</div>
 			</div>
 		</div>

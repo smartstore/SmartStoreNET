@@ -2,6 +2,10 @@
  	SmartStore Component: smartstore.entitypicker.css
 -------------------------------------------------------------- */
 
+.entity-picker-filter .item {
+	min-width: 320px;
+}
+
 .entity-picker-list .item {
 	display: inline-block;
 	width: 360px;

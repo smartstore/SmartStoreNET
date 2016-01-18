@@ -67,6 +67,8 @@
 			returnValueDelimiter: ',',
 			returnSelector: '',
 			maxReturnValues: 0,
+			onLoadDialogBefore: null,
+			onLoadDialogComplete: null,
 			onOkClicked: null
 		};
 
@@ -127,12 +129,22 @@
 					"DisableIf": opt.disableIf
 				},
 				url: opt.url,
+				beforeSend: function () {
+					if (_.isFunction(opt.onLoadDialogBefore)) {
+						return opt.onLoadDialogBefore();
+					}
+				},
 				success: function (response) {
 					$('body').append(response);
 					dialog = $('#entity-picker-' + opt.entity + '-dialog');
 					dialog.find('.caption').html(opt.caption || '&nbsp;');
 					dialog.data('entitypicker', opt);
 					showAndFocusDialog();
+				},
+				complete: function () {
+					if (_.isFunction(opt.onLoadDialogComplete)) {
+						opt.onLoadDialogComplete();
+					}
 				},
 				error: ajaxErrorHandler
 			});

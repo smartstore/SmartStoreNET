@@ -1589,148 +1589,45 @@ namespace SmartStore.Admin.Controllers
             return RelatedProductList(command, productId);
         }
         
-        public ActionResult RelatedProductAddPopup(int productId)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
-            var ctx = new ProductSearchContext();
-            ctx.LanguageId = _workContext.WorkingLanguage.Id;
-            ctx.OrderBy = ProductSortingEnum.Position;
-            ctx.PageSize = _adminAreaSettings.GridPageSize;
-            ctx.ShowHidden = true;
-
-            var products = _productService.SearchProducts(ctx);
-
-            var model = new ProductModel.AddRelatedProductModel();
-            model.Products = new GridModel<ProductModel>
-            {
-                Data = products.Select(x => 
-				{
-					var productModel = x.ToModel();
-					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
-
-					return productModel;
-				}),
-                Total = products.TotalCount
-            };
-
-            var allCategories = _categoryService.GetAllCategories(showHidden: true);
-            var mappedCategories = allCategories.ToDictionary(x => x.Id);
-            foreach (var c in allCategories)
-            {
-                model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
-            }
-
-            foreach (var m in _manufacturerService.GetAllManufacturers(true))
-            {
-                model.AvailableManufacturers.Add(new SelectListItem { Text = m.Name, Value = m.Id.ToString() });
-            }
-
-			foreach (var s in _storeService.GetAllStores())
-			{
-				model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
-			}
-
-			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-
-            return View(model);
-        }
-
-        [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult RelatedProductAddPopupList(GridCommand command, ProductModel.AddRelatedProductModel model)
-        {
-			var gridModel = new GridModel<ProductModel>();
-
+		[HttpPost]
+		public ActionResult RelatedProductAdd(int productId, string selectedProductIds)
+		{
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var ctx = new ProductSearchContext();
+				var productIds = selectedProductIds.SplitSafe(",").Select(x => x.ToInt()).ToArray();
+				var products = _productService.GetProductsByIds(productIds);
+				RelatedProduct relation = null;
+				var maxDisplayOrder = -1;
 
-				if (model.SearchCategoryId > 0)
-					ctx.CategoryIds.Add(model.SearchCategoryId);
-
-				ctx.ManufacturerId = model.SearchManufacturerId;
-				ctx.StoreId = model.SearchStoreId;
-				ctx.Keywords = model.SearchProductName;
-				ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
-				ctx.LanguageId = _workContext.WorkingLanguage.Id;
-				ctx.OrderBy = ProductSortingEnum.Position;
-				ctx.PageIndex = command.Page - 1;
-				ctx.PageSize = command.PageSize;
-				ctx.ShowHidden = true;
-				ctx.ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null;
-
-				var products = _productService.SearchProducts(ctx);
-
-				gridModel.Data = products.Select(x =>
+				foreach (var product in products)
 				{
-                    var productModel = new ProductModel
-                    {
-                        Sku = x.Sku,
-                        Published = x.Published,
-                        ProductTypeLabelHint = x.ProductTypeLabelHint,
-                        Name = x.Name,
-                        Id = x.Id
-                    };
+					var existingRelations = _productService.GetRelatedProductsByProductId1(productId);
 
-					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+					if (existingRelations.FindRelatedProduct(productId, product.Id) == null)
+					{
+						if (maxDisplayOrder == -1 && (relation = existingRelations.OrderByDescending(x => x.DisplayOrder).FirstOrDefault()) != null)
+						{
+							maxDisplayOrder = relation.DisplayOrder;
+						}
 
-					return productModel;
-				});
-
-				gridModel.Total = products.TotalCount;
+						_productService.InsertRelatedProduct(new RelatedProduct
+						{
+							ProductId1 = productId,
+							ProductId2 = product.Id,
+							DisplayOrder = ++maxDisplayOrder
+						});
+					}
+				}
 			}
 			else
 			{
-				gridModel.Data = Enumerable.Empty<ProductModel>();
-
 				NotifyAccessDenied();
 			}
 
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
+			return new EmptyResult();
+		}
 
-        [HttpPost]
-        [FormValueRequired("save")]
-        public ActionResult RelatedProductAddPopup(string btnId, string formId, ProductModel.AddRelatedProductModel model)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
-            if (model.SelectedProductIds != null)
-            {
-                foreach (int id in model.SelectedProductIds)
-                {
-                    var product = _productService.GetProductById(id);
-                    if (product != null)
-                    {
-                        var existingRelatedProducts = _productService.GetRelatedProductsByProductId1(model.ProductId);
-                        if (existingRelatedProducts.FindRelatedProduct(model.ProductId, id) == null)
-                        {
-                            _productService.InsertRelatedProduct(
-                                new RelatedProduct()
-                                {
-                                    ProductId1 = model.ProductId,
-                                    ProductId2 = id,
-                                    DisplayOrder = 1
-                                });
-                        }
-                    }
-                }
-            }
-
-            ViewBag.RefreshPage = true;
-            ViewBag.btnId = btnId;
-            ViewBag.formId = formId;
-            model.Products = new GridModel<ProductModel>();
-            return View(model);
-        }
-
-		[HttpPost]
-		[ValidateInput(false)]
+		[HttpPost, ValidateInput(false)]
 		public ActionResult CreateAllMutuallyRelatedProducts(int productId)
 		{
 			string message = null;

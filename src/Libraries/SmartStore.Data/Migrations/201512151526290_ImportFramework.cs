@@ -237,7 +237,9 @@ namespace SmartStore.Data.Migrations
 				"Admin.Common.ImportFromExcel.Cancelled",
 				"Admin.Common.ImportFromExcel.DownloadReport",
 				"Admin.Common.ImportFromExcel.NoReportAvailable",
-				"Admin.Configuration.ActivityLog.ActivityLog.Fields.ActivityLogTypeColumn"
+
+				"Admin.Configuration.ActivityLog.ActivityLog.Fields.ActivityLogTypeColumn",
+				"Plugins.ExchangeRate.EcbExchange.SetCurrencyToEURO"
 			);
 
 			builder.AddOrUpdate("ActivityLog.DeleteOrder", "Deleted order {0}", "Auftrag {0} gelöscht");
@@ -381,6 +383,10 @@ namespace SmartStore.Data.Migrations
 				"Meta Robots",
 				"Specifies if and how search engines indexing the pages of your store.",
 				"Legt fest, ob und wie Suchmaschinen die Seiten Ihres Shops indexieren.");
+
+			builder.AddOrUpdate("Providers.ExchangeRate.EcbExchange.SetCurrencyToEURO",
+				"You can use ECB (European central bank) exchange rate provider only when exchange rate currency code is set to EURO.",
+				"Der EZB-Wechselkursdienst kann nur genutzt werden, wenn der Wechselkurs-Währungscode auf EUR gesetzt ist.");
 		}
 	}
 }

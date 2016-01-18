@@ -7,11 +7,6 @@ namespace SmartStore.Web.Models.Common
 {
 	public class EntityPickerModel : ModelBase
 	{
-		public EntityPickerModel()
-		{
-			PageSize = 12;
-		}
-
 		public string AllString { get; set; }
 		public string PublishedString { get; set; }
 		public string UnpublishedString { get; set; }

@@ -10,99 +10,84 @@
             @T("Admin.Catalog.Products.AssociatedProducts.Note2")
         </div>
     </div>
-    
-    <div style="margin: 10px 0">    
-        <table class="adminContent">
-            <tr>
-                <td>
-                    @(Html.Telerik().Grid<ProductModel.AssociatedProductModel>()
-                        .Name("associatedproducts-grid")
-                        .DataKeys(keys =>
+
+	<p></p>   
+
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<ProductModel.AssociatedProductModel>()
+                    .Name("associatedproducts-grid")
+                    .DataKeys(keys =>
+                    {
+                        keys.Add(x => x.Id);
+                    })
+                    .DataBinding(dataBinding =>
+                    {
+                        dataBinding.Ajax()
+                            .Select("AssociatedProductList", "Product", new { productId = Model.Id })
+                            .Update("AssociatedProductUpdate", "Product")
+                            .Delete("AssociatedProductDelete", "Product");
+                    })
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.ProductName)
+                            .ReadOnly()
+							.ClientTemplate(@Html.LabeledProductName("Id", "ProductName"));
+                        columns.Bound(x => x.Sku)
+                            .ReadOnly();
+                        columns.Bound(x => x.Published)
+                            .ReadOnly()
+                            .Width(100)
+                            .ClientTemplate(@Html.SymbolForBool("Published"))
+                            .Centered();
+                        columns.Bound(x => x.DisplayOrder)
+                            .Width(100)
+                            .Centered();
+                        columns.Command(commands =>
                         {
-                            keys.Add(x => x.Id);
+                            commands.Edit().Localize(T);
+                            commands.Delete().Localize(T);
                         })
-                        .DataBinding(dataBinding =>
-                        {
-                            dataBinding.Ajax()
-                                .Select("AssociatedProductList", "Product", new { productId = Model.Id })
-                                .Update("AssociatedProductUpdate", "Product")
-                                .Delete("AssociatedProductDelete", "Product");
-                        })
-                        .Columns(columns =>
-                        {
-                            columns.Bound(x => x.ProductName)
-                                .ReadOnly()
-								.Template(x => @Html.LabeledProductName(x.Id, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
-								.ClientTemplate(@Html.LabeledProductName("Id", "ProductName"));
-                            columns.Bound(x => x.Sku)
-                                .ReadOnly();
-                            columns.Bound(x => x.Published)
-                                .ReadOnly()
-                                .Width(100)
-                                .Template(item => @Html.SymbolForBool(item.Published))
-                                .ClientTemplate(@Html.SymbolForBool("Published"))
-                                .Centered();
-                            columns.Bound(x => x.DisplayOrder)
-                                .Width(100)
-                                .Centered();
-                            columns.Command(commands =>
-                            {
-                                commands.Edit().Localize(T);
-                                commands.Delete().Localize(T);
-                            })
-                            .Width(180);
-                        })
-                        .EnableCustomBinding(true))
-                </td>
-            </tr>
-            <tr>
-                <td width="100%">
-                    <button type="submit" id="btnAddNewAssociatedProduct" name="btnAddNewAssociatedProduct" class="btn btn-warning" style="margin-top:3px;"
-                            onclick="javascript:OpenWindow('@(Url.Action("AssociatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshAssociatedProducts", formId = "product-form" }))', 1000, 700, true); return false;">
-                        <i class="fa fa-plus"></i>
-                        @T("Admin.Catalog.Products.AssociatedProducts.AddNew")
-                    </button>
+                        .Width(180);
+                    })
+                    .EnableCustomBinding(true))
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button type="button" id="AddNewAssociatedProductButton" class="btn btn-warning btn-below">
+                    <i class="fa fa-plus"></i>
+                    @T("Admin.Catalog.Products.AssociatedProducts.AddNew")
+                </button>
 
-                    <input type="submit" id="btnRefreshAssociatedProducts" name="btnRefreshAssociatedProducts" style="display: none" />
+                <script type="text/javascript">
+                    $(document).ready(function () {
 
-					<button type="button" id="EntityPickerTest">Entity Picker Test</button><input type="text" name="EntityPickerResult" />
+                        $('#AddNewAssociatedProductButton').click(function () {
 
-                    <script type="text/javascript">
-                        $(document).ready(function () {
-                            $('#btnRefreshAssociatedProducts').click(function () {
-                                //refresh grid
-                                var optionsGrid = $("#associatedproducts-grid");
-                                optionsGrid.data('tGrid').ajaxRequest();
-
-                                //return false to don't reload a page
-                                return false;
+                        	$({}).entityPicker('loadDialog', {
+                            	url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+                            	caption: '@T("Admin.Catalog.Products.AssociatedProducts.AddNew")',
+                            	onOkClicked: function (ids) {
+                            		$({}).doAjax({
+                            			type: 'POST',
+                            			url: '@Url.Action("AssociatedProductAdd")',
+                            			data: { "productId": @Model.Id, "selectedProductIds": ids },
+                            			callbackSuccess: function (resp) {
+                            				$('#associatedproducts-grid').data('tGrid').ajaxRequest();
+                            			}
+                            		});
+                            		return true;
+                            	}
                             });
 
-                            $('#EntityPickerTest').click(function () {
-
-                            	$('input[name=EntityPickerResult]').entityPicker('loadDialog', {
-                            		url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
-                            		caption: '@T("Admin.Catalog.Products.AssociatedProducts.AddNew")',
-                            		onOkClicked: function (ids) {
-                            			$({}).doAjax({
-                            				type: 'POST',
-                            				url: '@Url.Action("AssociatedProductAdd")',
-                            				data: { "productId": @Model.Id, "selectedProductIds": ids },
-                            				callbackSuccess: function (resp) {
-                            					$('#associatedproducts-grid').data('tGrid').ajaxRequest();
-                            				}
-                            			});
-                            			return true;
-                            		}
-                            	});
-
-                            });
                         });
-                    </script>
-                </td>
-            </tr>
-        </table>
-    </div>
+                    });
+                </script>
+            </td>
+        </tr>
+    </table>
 }
 else
 {

@@ -2069,114 +2069,6 @@ namespace SmartStore.Admin.Controllers
 			return AssociatedProductList(command, originalParentGroupedProductId);
 		}
 
-		public ActionResult AssociatedProductAddPopup(int productId)
-		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
-
-			var model = new ProductModel.AddAssociatedProductModel();
-
-			var allCategories = _categoryService.GetAllCategories(showHidden: true);
-			var mappedCategories = allCategories.ToDictionary(x => x.Id);
-			foreach (var c in allCategories)
-			{
-				model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
-			}
-
-			foreach (var m in _manufacturerService.GetAllManufacturers(true))
-			{
-				model.AvailableManufacturers.Add(new SelectListItem { Text = m.Name, Value = m.Id.ToString() });
-			}
-
-			foreach (var s in _storeService.GetAllStores())
-			{
-				model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
-			}
-
-			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-
-			return View(model);
-		}
-
-		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult AssociatedProductAddPopupList(GridCommand command, ProductModel.AddAssociatedProductModel model)
-		{
-			var gridModel = new GridModel<ProductModel>();
-
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-			{
-				var searchContext = new ProductSearchContext
-				{
-					CategoryIds = new List<int>() { model.SearchCategoryId },
-					ManufacturerId = model.SearchManufacturerId,
-					StoreId = model.SearchStoreId,
-					Keywords = model.SearchProductName,
-					SearchSku = !_catalogSettings.SuppressSkuSearch,
-					PageIndex = command.Page - 1,
-					PageSize = command.PageSize,
-					ShowHidden = true,
-					ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
-				};
-
-				var products = _productService.SearchProducts(searchContext);
-
-				gridModel.Data = products.Select(x =>
-				{
-                    var productModel = new ProductModel
-                    {
-                        Sku = x.Sku,
-                        Published = x.Published,
-                        ProductTypeLabelHint = x.ProductTypeLabelHint,
-                        Name = x.Name,
-                        Id = x.Id
-                    };
-
-					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
-
-					return productModel;
-				});
-
-				gridModel.Total = products.TotalCount;
-			}
-			else
-			{
-				gridModel.Data = Enumerable.Empty<ProductModel>();
-
-				NotifyAccessDenied();
-			}
-
-			return new JsonResult
-			{
-				Data = gridModel
-			};
-		}
-
-		[HttpPost]
-		[FormValueRequired("save")]
-		public ActionResult AssociatedProductAddPopup(string btnId, string formId, ProductModel.AddAssociatedProductModel model)
-		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
-
-			if (model.SelectedProductIds != null)
-			{
-				foreach (int id in model.SelectedProductIds)
-				{
-					var product = _productService.GetProductById(id);
-					if (product != null)
-					{
-						product.ParentGroupedProductId = model.ProductId;
-						_productService.UpdateProduct(product);
-					}
-				}
-			}
-
-			ViewBag.RefreshPage = true;
-			ViewBag.btnId = btnId;
-			ViewBag.formId = formId;
-			return View(model);
-		}
-
 		[HttpPost]
 		public ActionResult AssociatedProductAdd(int productId, string selectedProductIds)
 		{
@@ -2212,7 +2104,6 @@ namespace SmartStore.Admin.Controllers
 
 			return new EmptyResult();
 		}
-
 
 		#endregion
 

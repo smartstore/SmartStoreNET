@@ -1236,9 +1236,6 @@
     <Content Include="Views\Product\_CreateOrUpdate.Stores.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Product\AssociatedProductAddPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.AssociatedProducts.cshtml" />
   </ItemGroup>
   <ItemGroup>

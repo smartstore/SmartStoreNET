@@ -64,7 +64,7 @@
                 <script type="text/javascript">
                     $(document).ready(function () {
 
-                        $('#AddNewAssociatedProductButton').click(function () {
+                    	$(document).on('click', '#AddNewAssociatedProductButton', function () {
 
                         	$({}).entityPicker('loadDialog', {
                             	url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
@@ -74,7 +74,7 @@
                             			type: 'POST',
                             			url: '@Url.Action("AssociatedProductAdd")',
                             			data: { "productId": @Model.Id, "selectedProductIds": ids },
-                            			callbackSuccess: function (resp) {
+                            			callbackSuccess: function () {
                             				$('#associatedproducts-grid').data('tGrid').ajaxRequest();
                             			}
                             		});

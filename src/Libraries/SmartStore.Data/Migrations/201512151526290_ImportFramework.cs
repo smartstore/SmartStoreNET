@@ -400,6 +400,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.EntityPicker.NoMoreItemsFound",
 				"There were no more items found.",
 				"Es wurden keine weiteren Elemente gefunden.");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.BundleItems.NotesOnProductBundles",
+				"Notes on product bundles",
+				"Hinweise zu Produkt-Bundles");
 		}
 	}
 }

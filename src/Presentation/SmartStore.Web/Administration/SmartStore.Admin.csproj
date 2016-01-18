@@ -1248,9 +1248,6 @@
     <Content Include="Views\Product\_CreateOrUpdate.BundleItems.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Product\BundleItemAddPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Product\BundleItemEditPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>

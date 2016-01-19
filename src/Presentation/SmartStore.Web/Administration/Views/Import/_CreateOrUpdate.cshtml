@@ -73,20 +73,19 @@
 	</tr>
 	<tr>
 		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.EntityType)
+		</td>
+		<td class="adminData">
+			@Html.DisplayFor(x => x.EntityType)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
 			@Html.SmartLabelFor(x => x.Name)
 		</td>
 		<td class="adminData">
 			@Html.EditorFor(x => x.Name)
 			@Html.ValidationMessageFor(x => x.Name)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(x => x.EntityType)
-		</td>
-		<td class="adminData">
-			@Html.DropDownListFor(x => x.EntityType, Model.AvailableEntityTypes)
-			@Html.ValidationMessageFor(x => x.EntityType)
 		</td>
 	</tr>
 	@if (Model.Id != 0)
@@ -152,7 +151,7 @@
 		$('#ImportFileUploader').fileupload({
 			url: '@Url.Action("FileUpload", new { id = Model.Id })',
 			dataType: 'json',
-			acceptFileTypes: /(\.|\/)(csv|xlsx)$/i,
+			acceptFileTypes: /(\.|\/)(csv|xlsx|txt|tab)$/i,
 			done: function (e, data) {
 				if (data.result.success) {
 					$('#ImportFileListContainer').show();
@@ -198,6 +197,8 @@
 		// init column mappings select
 		$('#ImportColumnMappings').find('select').select2({
 			allowClear: true,
+			width: 'resolve',
+			//dropdownAutoWidth: true,
 			minimumResultsForSearch: 16,
 			formatResult: columnMappingSelectItemFormatting,
 			formatSelection: columnMappingSelectItemFormatting
@@ -208,9 +209,9 @@
 				if (item.text.length > 0) {
 					var option = $(item.element);
 
-					var html = '<div><span>' + item.text + '</span>';
+					var html = '<div>' + item.text;
 					if (option.length !== 0) {
-						html += ' <span class="muted" style="font-size: 0.9em;">(' + option.val() + ')</span>';
+						html += ' <span class="muted pull-right" style="font-size: 0.9em;">(' + option.val() + ')</span>';
 					}
 					html += '</div>';
 

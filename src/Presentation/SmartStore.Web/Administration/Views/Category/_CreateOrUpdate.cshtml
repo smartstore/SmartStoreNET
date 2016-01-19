@@ -393,7 +393,8 @@
 						{
 							commands.Edit().Localize(T);
 							commands.Delete().Localize(T);
-						}).Width(220);
+						})
+						.Width(220);
 					})
 					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 					.PreserveGridState()

@@ -161,6 +161,8 @@ namespace SmartStore.Admin.Controllers
             if (model == null)
                 throw new ArgumentNullException("model");
 
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
+
             var discounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, null, true);
             model.AvailableDiscounts = discounts.ToList();
 
@@ -506,7 +508,6 @@ namespace SmartStore.Admin.Controllers
 
             model.PageSize = 12;
             model.Published = true;
-			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
             model.AllowCustomersToSelectPageSize = true;
 
@@ -598,7 +599,6 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var model = category.ToModel();
-			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
 			//parent categories
 			if (model.ParentCategoryId.HasValue)

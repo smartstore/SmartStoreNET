@@ -745,9 +745,6 @@
     <Content Include="Views\Product\EditorTemplates\ProductManufacturer.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Category\ProductAddPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Product\EditorTemplates\TierPriceCustomer.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1038,9 +1035,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Manufacturer\List.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Manufacturer\ProductAddPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\ShoppingCart\CurrentCarts.cshtml" />

@@ -21,7 +21,7 @@ namespace SmartStore.Admin.Models.Catalog
         {
             if (PageSize < 1)
             {
-                PageSize = 5;
+                PageSize = 12;
             }
 
             Locales = new List<CategoryLocalizedModel>();

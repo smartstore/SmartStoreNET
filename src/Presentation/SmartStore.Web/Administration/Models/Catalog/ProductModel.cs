@@ -10,7 +10,6 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Catalog
 {
@@ -677,41 +676,6 @@ namespace SmartStore.Admin.Models.Catalog
 			public string QuantityInfo { get; set; }
 
 			public IList<ProductVariantAttributeValueLocalizedModel> Locales { get; set; }
-
-			public class AddProductLinkageModel : ModelBase
-			{
-				public AddProductLinkageModel()
-				{
-					AvailableCategories = new List<SelectListItem>();
-					AvailableManufacturers = new List<SelectListItem>();
-					AvailableStores = new List<SelectListItem>();
-					AvailableProductTypes = new List<SelectListItem>();
-				}
-				public GridModel<ProductModel> Products { get; set; }
-
-				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
-				[AllowHtml]
-				public string SearchProductName { get; set; }
-
-				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
-				public int SearchCategoryId { get; set; }
-
-				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
-				public int SearchManufacturerId { get; set; }
-
-				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
-				public int SearchStoreId { get; set; }
-
-				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
-				public int SearchProductTypeId { get; set; }
-
-				public IList<SelectListItem> AvailableCategories { get; set; }
-				public IList<SelectListItem> AvailableManufacturers { get; set; }
-				public IList<SelectListItem> AvailableStores { get; set; }
-				public IList<SelectListItem> AvailableProductTypes { get; set; }
-
-				public int ProductId { get; set; }
-			}
 		}
 
 		public class ProductVariantAttributeValueLocalizedModel : ILocalizedModelLocal

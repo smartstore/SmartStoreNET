@@ -1239,9 +1239,6 @@
     <Content Include="Views\Product\BundleItemEditPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Product\ProductAttributeValueLinkagePopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Media\UploadImage.cshtml" />
   </ItemGroup>
   <ItemGroup>

@@ -40,7 +40,7 @@
                         {
                             commands.Edit().Localize(T);
                             commands.Delete().Localize(T);
-                        }).Width(280);
+                        }).Width(220);
                     })
                     .EnableCustomBinding(true))
 
@@ -105,7 +105,7 @@
                         columns.Command(commands =>
                         {
                             commands.Delete().Localize(T);
-                        }).Width(280);
+                        }).Width(220);
                     })
                     .EnableCustomBinding(true))
                 </td>
@@ -147,7 +147,6 @@
 
 		// add related products
 		$(document).on('click', '#AddRelatedProductButton', function () {
-
 			$({}).entityPicker('loadDialog', {
 				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
 				caption: '@T("Admin.Catalog.Products.RelatedProducts.AddNew")',
@@ -169,12 +168,10 @@
 					return true;
 				}
 			});
-
 		});
 
 		// add cross sell products
 		$(document).on('click', '#AddCrossSellProductButton', function () {
-
 			$({}).entityPicker('loadDialog', {
 				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
 				caption: '@T("Admin.Catalog.Products.CrossSells.AddNew")',
@@ -196,7 +193,7 @@
 					return true;
 				}
 			});
-
 		});
+
 	});
 </script>

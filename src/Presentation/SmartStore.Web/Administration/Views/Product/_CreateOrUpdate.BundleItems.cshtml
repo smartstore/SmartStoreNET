@@ -175,7 +175,6 @@
 		});
 
 		$(document).on('click', '#AddNewBundleItemButton', function () {
-
 			$({}).entityPicker('loadDialog', {
 				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
 				caption: '@T("Admin.Catalog.Products.BundleItems.AddNew")',
@@ -198,8 +197,8 @@
 					return true;
 				}
 			});
-
 		});
+
 	});
     </script>
 }

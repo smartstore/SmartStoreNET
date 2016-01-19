@@ -33,23 +33,21 @@
                     {
                         columns.Bound(x => x.ProductName)
                             .ReadOnly()
+							.Width(520)
 							.ClientTemplate(@Html.LabeledProductName("Id", "ProductName"));
                         columns.Bound(x => x.Sku)
                             .ReadOnly();
                         columns.Bound(x => x.Published)
                             .ReadOnly()
-                            .Width(100)
                             .ClientTemplate(@Html.SymbolForBool("Published"))
                             .Centered();
                         columns.Bound(x => x.DisplayOrder)
-                            .Width(100)
                             .Centered();
                         columns.Command(commands =>
                         {
                             commands.Edit().Localize(T);
                             commands.Delete().Localize(T);
-                        })
-                        .Width(180);
+                        }).Width(220);
                     })
                     .EnableCustomBinding(true))
             </td>
@@ -65,7 +63,6 @@
                     $(document).ready(function () {
 
                     	$(document).on('click', '#AddNewAssociatedProductButton', function () {
-
                         	$({}).entityPicker('loadDialog', {
                             	url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
                         		caption: '@T("Admin.Catalog.Products.AssociatedProducts.AddNew")',
@@ -87,8 +84,8 @@
                             		return true;
                             	}
                             });
+                    	});
 
-                        });
                     });
                 </script>
             </td>

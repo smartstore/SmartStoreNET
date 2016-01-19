@@ -1864,10 +1864,12 @@ namespace SmartStore.Admin.Controllers
 					.OrderByDescending(x => x)
 					.FirstOrDefault();
 
-				foreach (var id in selectedProductIds.SplitSafe(","))
+				var productIds = selectedProductIds.SplitSafe(",").Select(x => x.ToInt()).ToArray();
+				var products = _productService.GetProductsByIds(productIds);
+
+				foreach (var product in products)
 				{
-					var product = _productService.GetProductById(id.ToInt());
-					if (product != null && product.ParentGroupedProductId != productId)
+					if (product.ParentGroupedProductId != productId)
 					{
 						product.ParentGroupedProductId = productId;
 						product.DisplayOrder = ++maxDisplayOrder;

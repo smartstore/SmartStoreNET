@@ -76,7 +76,14 @@
 			@Html.SmartLabelFor(x => x.EntityType)
 		</td>
 		<td class="adminData">
-			@Html.DisplayFor(x => x.EntityType)
+			@if (Model.Id == 0)
+			{
+				@Html.DropDownListFor(x => x.EntityType, Model.AvailableEntityTypes)
+			}
+			else
+			{
+				@Html.DisplayFor(x => x.EntityType)
+			}
 		</td>
 	</tr>
 	<tr>

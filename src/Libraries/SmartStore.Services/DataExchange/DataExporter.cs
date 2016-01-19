@@ -554,7 +554,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 			message.Body = body.ToString();
 
-#if DEBUG
+			_emailSender.Value.SendEmail(smtpContext, message);
+
 			//_queuedEmailService.Value.InsertQueuedEmail(new QueuedEmail
 			//{
 			//	From = emailAccount.Email,
@@ -567,9 +568,6 @@ namespace SmartStore.Services.DataExchange.Export
 			//	SendManually = true
 			//});
 			//_dbContext.SaveChanges();
-#else
-        _emailSender.Value.SendEmail(smtpContext, message);
-#endif
 		}
 
 		#endregion

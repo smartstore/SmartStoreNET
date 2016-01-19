@@ -18,9 +18,9 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using Telerik.Web.Mvc;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
+using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -151,6 +151,8 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (model == null)
 				throw new ArgumentNullException("model");
+
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
 			model.AvailableStores = _storeService
 				.GetAllStores()
@@ -523,144 +525,47 @@ namespace SmartStore.Admin.Controllers
 			}
 
             return ProductList(command, manufacturerId);
-        }
+        }       
 
-        public ActionResult ProductAddPopup(int manufacturerId)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
-            var ctx = new ProductSearchContext();
-            ctx.LanguageId = _workContext.WorkingLanguage.Id;
-            ctx.OrderBy = ProductSortingEnum.Position;
-            ctx.PageSize = _adminAreaSettings.GridPageSize;
-            ctx.ShowHidden = true;
-
-            var products = _productService.SearchProducts(ctx);
-
-            var model = new ManufacturerModel.AddManufacturerProductModel();
-			model.Products = new GridModel<ProductModel>
-			{
-				Data = products.Select(x =>
-				{
-					var productModel = x.ToModel();
-					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
-
-					return productModel;
-				}),
-				Total = products.TotalCount
-			};
-
-            //categories
-            var allCategories = _categoryService.GetAllCategories(showHidden: true);
-            var mappedCategories = allCategories.ToDictionary(x => x.Id);
-            foreach (var c in allCategories)
-            {
-                model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
-            }
-
-            //manufacturers
-            foreach (var m in _manufacturerService.GetAllManufacturers(true))
-            {
-                model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
-            }
-
-			//product types
-			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-
-            return View(model);
-        }
-
-        [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult ProductAddPopupList(GridCommand command, ManufacturerModel.AddManufacturerProductModel model)
-        {
-			var gridModel = new GridModel<ProductModel>();
-
+		[HttpPost]
+		public ActionResult ProductAdd(int manufacturerId, string selectedProductIds)
+		{
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var ctx = new ProductSearchContext();
+				var productIds = selectedProductIds.SplitSafe(",").Select(x => x.ToInt()).ToArray();
+				var products = _productService.GetProductsByIds(productIds);
+				ProductManufacturer productManu = null;
+				var maxDisplayOrder = -1;
 
-				if (model.SearchCategoryId > 0)
-					ctx.CategoryIds.Add(model.SearchCategoryId);
-
-				ctx.ManufacturerId = model.SearchManufacturerId;
-				ctx.Keywords = model.SearchProductName;
-				ctx.LanguageId = _workContext.WorkingLanguage.Id;
-				ctx.OrderBy = ProductSortingEnum.Position;
-				ctx.PageIndex = command.Page - 1;
-				ctx.PageSize = command.PageSize;
-				ctx.ShowHidden = true;
-				ctx.ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null;
-
-				var products = _productService.SearchProducts(ctx);
-
-				gridModel.Data = products.Select(x =>
+				foreach (var product in products)
 				{
-                    var productModel = new ProductModel
-                    {
-                        Sku = x.Sku,
-                        Published = x.Published,
-                        ProductTypeLabelHint = x.ProductTypeLabelHint,
-                        Name = x.Name,
-                        Id = x.Id
-                    };
-					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
+					var existingProductManus = _manufacturerService.GetProductManufacturersByManufacturerId(manufacturerId, 0, int.MaxValue, true);
 
-					return productModel;
-				});
+					if (!existingProductManus.Any(x => x.ProductId == product.Id && x.ManufacturerId == manufacturerId))
+					{
+						if (maxDisplayOrder == -1 && (productManu = existingProductManus.OrderByDescending(x => x.DisplayOrder).FirstOrDefault()) != null)
+						{
+							maxDisplayOrder = productManu.DisplayOrder;
+						}
 
-				gridModel.Total = products.TotalCount;
+						_manufacturerService.InsertProductManufacturer(new ProductManufacturer
+						{
+							ManufacturerId = manufacturerId,
+							ProductId = product.Id,
+							IsFeaturedProduct = false,
+							DisplayOrder = ++maxDisplayOrder
+						});
+					}
+				}
 			}
 			else
 			{
-				gridModel.Data = Enumerable.Empty<ProductModel>();
-
 				NotifyAccessDenied();
 			}
 
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
-        
-        [HttpPost]
-        [FormValueRequired("save")]
-        public ActionResult ProductAddPopup(string btnId, string formId, ManufacturerModel.AddManufacturerProductModel model)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			return new EmptyResult();
+		}
 
-            if (model.SelectedProductIds != null)
-            {
-                foreach (int id in model.SelectedProductIds)
-                {
-                    var product = _productService.GetProductById(id);
-                    if (product != null)
-                    {
-                        var existingProductmanufacturers = _manufacturerService.GetProductManufacturersByManufacturerId(model.ManufacturerId, 0, int.MaxValue, true);
-
-						if (!existingProductmanufacturers.Any(x => x.ProductId == id && x.ManufacturerId == model.ManufacturerId))
-                        {
-                            _manufacturerService.InsertProductManufacturer(new ProductManufacturer
-							{
-								ManufacturerId = model.ManufacturerId,
-								ProductId = id,
-								IsFeaturedProduct = false,
-								DisplayOrder = 1
-							});
-                        }
-                    }
-                }
-            }
-
-            ViewBag.RefreshPage = true;
-            ViewBag.btnId = btnId;
-            ViewBag.formId = formId;
-            model.Products = new GridModel<ProductModel>();
-            return View(model);
-        }
-
-        #endregion
-    }
+		#endregion
+	}
 }

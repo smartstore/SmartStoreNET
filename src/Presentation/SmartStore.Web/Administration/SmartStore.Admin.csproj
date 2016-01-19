@@ -745,15 +745,6 @@
     <Content Include="Views\Product\EditorTemplates\ProductManufacturer.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Product\RelatedProductAddPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Product\CrossSellProductAddPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Category\ProductAddPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Product\EditorTemplates\TierPriceCustomer.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1046,9 +1037,6 @@
     <Content Include="Views\Manufacturer\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Manufacturer\ProductAddPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\ShoppingCart\CurrentCarts.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1236,9 +1224,6 @@
     <Content Include="Views\Product\_CreateOrUpdate.Stores.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Product\AssociatedProductAddPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdate.AssociatedProducts.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1251,13 +1236,7 @@
     <Content Include="Views\Product\_CreateOrUpdate.BundleItems.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Product\BundleItemAddPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Product\BundleItemEditPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Product\ProductAttributeValueLinkagePopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Media\UploadImage.cshtml" />

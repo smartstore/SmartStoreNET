@@ -1,0 +1,70 @@
+/* -------------------------------------------------------------- 
+ 	SmartStore Component: smartstore.entitypicker.css
+-------------------------------------------------------------- */
+
+.entity-picker-filter .item {
+	min-width: 320px;
+}
+
+.entity-picker-list .item {
+	display: inline-block;
+	width: 360px;
+	min-height: 54px;
+	max-height: 54px;
+	padding: 3px 4px;
+	margin: 2px 0 1px 0;
+	border-radius: 8px;
+	border: #d4d4d4 solid 1px;
+	background-image: linear-gradient(to bottom, #fcfcfc, #e3e3e3);
+	background-color: #FCF8F0;
+}
+.entity-picker-list .selected {
+	box-shadow: 0 0 0 1px #FFCB7C;
+	border: #FFCB7C solid 1px;
+	background-image: linear-gradient(to bottom, #fcfcfc, #FFCB7C);
+	background-color: #F2EEE6;
+}
+.entity-picker-list .item:hover {
+	cursor: pointer;
+}
+.entity-picker-list .item:not(.selected):hover {
+	background-image: linear-gradient(to bottom, #fcfcfc, #cacaca);
+	background-color: #F2EEE6;
+}
+.entity-picker-list .disable {
+	opacity: .4;
+	filter: Alpha(Opacity=40);
+}
+.entity-picker-list .thumb {
+	float: left;
+	width: 65px;
+}
+.entity-picker-list .thumb img {
+	max-width: 52px;
+	max-height: 52px;
+}
+.entity-picker-list .highlight {
+	color: #f00;
+	background-color: transparent;
+}
+.entity-picker-list .summary {
+	font-size: 0.9em;
+	height: 2.65em;
+	min-height: 2.65em;
+	line-height: 1.22em;
+	vertical-align: top;
+	margin-top: 2px;
+	overflow: hidden;
+}
+.entity-picker-list .published {
+	float: right; 
+	margin-top: -11px;
+}
+.entity-picker-list .list-footer {
+	clear: both;
+	float: left;
+	margin-top: 8px;
+}
+.entity-picker-list .list-footer a {
+	padding-bottom: 2px;
+}

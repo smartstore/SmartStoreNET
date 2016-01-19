@@ -21,14 +21,17 @@ namespace SmartStore.Admin.Models.Catalog
         {
             if (PageSize < 1)
             {
-                PageSize = 5;
+                PageSize = 12;
             }
+
             Locales = new List<CategoryLocalizedModel>();
             AvailableCategoryTemplates = new List<SelectListItem>();
             AvailableDefaultViewModes = new List<SelectListItem>();
         }
 
-        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Name")]
+		public int GridPageSize { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
 
@@ -162,35 +165,6 @@ namespace SmartStore.Admin.Models.Catalog
             //"if we have one more editor with the same name on a page, it doesn't allow editing"
             //in our case it's category.DisplayOrder
             public int DisplayOrder1 { get; set; }
-        }
-
-        public class AddCategoryProductModel : ModelBase
-        {
-            public AddCategoryProductModel()
-            {
-                AvailableCategories = new List<SelectListItem>();
-                AvailableManufacturers = new List<SelectListItem>();
-				AvailableProductTypes = new List<SelectListItem>();
-            }
-            public GridModel<ProductModel> Products { get; set; }
-
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
-            [AllowHtml]
-            public string SearchProductName { get; set; }
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
-            public int SearchCategoryId { get; set; }
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
-            public int SearchManufacturerId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
-			public int SearchProductTypeId { get; set; }
-
-            public IList<SelectListItem> AvailableCategories { get; set; }
-            public IList<SelectListItem> AvailableManufacturers { get; set; }
-			public IList<SelectListItem> AvailableProductTypes { get; set; }
-
-            public int CategoryId { get; set; }
-
-            public int[] SelectedProductIds { get; set; }
         }
 
         #endregion

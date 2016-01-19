@@ -661,7 +661,31 @@ namespace SmartStore
 			return value;
 		}
 
-        [DebuggerStepThrough]
+		[DebuggerStepThrough]
+		public static string Replace(this string value, string oldValue, string newValue, StringComparison comparisonType)
+		{
+			try
+			{
+				int startIndex = 0;
+				while (true)
+				{
+					startIndex = value.IndexOf(oldValue, startIndex, comparisonType);
+					if (startIndex == -1)
+						break;
+
+					value = value.Substring(0, startIndex) + newValue + value.Substring(startIndex + oldValue.Length);
+
+					startIndex += newValue.Length;
+				}
+			}
+			catch (Exception exc)
+			{
+				exc.Dump();
+			}
+			return value;
+		}
+
+		[DebuggerStepThrough]
 		public static string TrimSafe(this string value) 
         {
 			return (value.HasValue() ? value.Trim() : value);

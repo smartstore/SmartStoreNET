@@ -1825,20 +1825,31 @@ namespace SmartStore.Services.Catalog
             return productPictures;
         }
 
-		public virtual Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds)
+		public virtual Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds, bool onlyFirstPicture = false)
 		{
 			var query = 
 				from pp in _productPictureRepository.TableUntracked.Expand(x => x.Picture)
 				where productIds.Contains(pp.ProductId)
+				orderby pp.ProductId, pp.DisplayOrder
 				select pp;
 
-			var map = query
-				.OrderBy(x => x.ProductId)
-				.ThenBy(x => x.DisplayOrder)
-				.ToList()
-				.ToMultimap(x => x.ProductId, x => x);
+			if (onlyFirstPicture)
+			{
+				var map = query.GroupBy(x => x.ProductId, x => x)
+					.Select(x => x.FirstOrDefault())
+					.ToList()
+					.ToMultimap(x => x.ProductId, x => x);
 
-			return map;
+				return map;
+			}
+			else
+			{
+				var map = query
+					.ToList()
+					.ToMultimap(x => x.ProductId, x => x);
+
+				return map;
+			}
 		}
 
         /// <summary>

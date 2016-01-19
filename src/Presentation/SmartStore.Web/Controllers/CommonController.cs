@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
@@ -35,6 +36,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Topics;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Pdf;
@@ -51,6 +53,7 @@ namespace SmartStore.Web.Controllers
 
 		#region Fields
 
+		private readonly ICommonServices _services;
 		private readonly ITopicService _topicService;
         private readonly Lazy<ILanguageService> _languageService;
         private readonly Lazy<ICurrencyService> _currencyService;
@@ -73,18 +76,22 @@ namespace SmartStore.Web.Controllers
         private readonly LocalizationSettings _localizationSettings;
 		private readonly Lazy<SecuritySettings> _securitySettings;
 		private readonly Lazy<SocialSettings> _socialSettings;
+		private readonly Lazy<MediaSettings> _mediaSettings;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		
         private readonly IPriceFormatter _priceFormatter;
 		private readonly IPageAssetsBuilder _pageAssetsBuilder;
 		private readonly Lazy<IPictureService> _pictureService;
-		private readonly ICommonServices _services;
+		private readonly Lazy<IManufacturerService> _manufacturerService;
+		private readonly Lazy<ICategoryService> _categoryService;
+		private readonly Lazy<IProductService> _productService;
 
         #endregion
 
         #region Constructors
 
         public CommonController(
+			ICommonServices services,
 			ITopicService topicService,
             Lazy<ILanguageService> languageService,
             Lazy<ICurrencyService> currencyService,
@@ -106,14 +113,18 @@ namespace SmartStore.Web.Controllers
             LocalizationSettings localizationSettings, 
 			Lazy<SecuritySettings> securitySettings,
 			Lazy<SocialSettings> socialSettings,
+			Lazy<MediaSettings> mediaSettings,
 			IOrderTotalCalculationService orderTotalCalculationService, 
 			IPriceFormatter priceFormatter,
             ThemeSettings themeSettings, 
 			IPageAssetsBuilder pageAssetsBuilder,
 			Lazy<IPictureService> pictureService,
-			ICommonServices services)
+			Lazy<IManufacturerService> manufacturerService,
+			Lazy<ICategoryService> categoryService,
+			Lazy<IProductService> productService)
         {
-            this._topicService = topicService;
+			this._services = services;
+			this._topicService = topicService;
             this._languageService = languageService;
             this._currencyService = currencyService;
             this._themeContext = themeContext;
@@ -134,6 +145,7 @@ namespace SmartStore.Web.Controllers
             this._localizationSettings = localizationSettings;
 			this._securitySettings = securitySettings;
 			this._socialSettings = socialSettings;
+			this._mediaSettings = mediaSettings;
 
             this._orderTotalCalculationService = orderTotalCalculationService;
             this._priceFormatter = priceFormatter;
@@ -141,7 +153,9 @@ namespace SmartStore.Web.Controllers
             this._themeSettings = themeSettings;
 			this._pageAssetsBuilder = pageAssetsBuilder;
 			this._pictureService = pictureService;
-			this._services = services;
+			this._manufacturerService = manufacturerService;
+			this._categoryService = categoryService;
+			this._productService = productService;
         }
 
         #endregion
@@ -1025,6 +1039,147 @@ namespace SmartStore.Web.Controllers
 			}, 1 /* 1 min. (just for the duration of pdf processing) */);
 		}
 
-        #endregion
-    }
+		#endregion
+
+		#region Entity Picker
+
+		public ActionResult EntityPicker(EntityPickerModel model)
+		{
+			model.PageSize = _commonSettings.EntityPickerPageSize;
+			model.AllString = T("Admin.Common.All");
+
+			if (model.Entity.IsCaseInsensitiveEqual("product"))
+			{
+				var allCategories = _categoryService.Value.GetAllCategories(showHidden: true);
+				var mappedCategories = allCategories.ToDictionary(x => x.Id);
+
+				model.AvailableCategories = allCategories
+					.Select(x => new SelectListItem { Text = x.GetCategoryNameWithPrefix(_categoryService.Value, mappedCategories), Value = x.Id.ToString() })
+					.ToList();
+
+				model.AvailableManufacturers = _manufacturerService.Value.GetAllManufacturers(true)
+					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+					.ToList();
+
+				model.AvailableStores = _services.StoreService.GetAllStores()
+					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+					.ToList();
+
+				model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
+			}
+
+			return PartialView(model);
+		}
+
+		[HttpPost]
+		public ActionResult EntityPicker(EntityPickerModel model, FormCollection form)
+		{
+			model.PageSize = _commonSettings.EntityPickerPageSize;
+			model.PublishedString = T("Common.Published");
+			model.UnpublishedString = T("Common.Unpublished");
+
+			var disableIf = model.DisableIf.SplitSafe(",").Select(x => x.ToLower().Trim()).ToList();
+
+			try
+			{
+				using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
+				{
+					if (model.Entity.IsCaseInsensitiveEqual("product"))
+					{
+						#region Product
+
+						model.SearchTerm = model.ProductName.TrimSafe();
+
+						var hasPermission = _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog);
+						var storeLocation = _services.WebHelper.GetStoreLocation(false);
+						var disableIfNotSimpleProduct = disableIf.Contains("notsimpleproduct");
+						var labelTextGrouped = T("Admin.Catalog.Products.ProductType.GroupedProduct.Label").Text;
+						var labelTextBundled = T("Admin.Catalog.Products.ProductType.BundledProduct.Label").Text;
+						var sku = T("Products.Sku").Text;
+
+						var searchContext = new ProductSearchContext
+						{
+							CategoryIds = (model.CategoryId == 0 ? null : new List<int> { model.CategoryId }),
+							ManufacturerId = model.ManufacturerId,
+							StoreId = model.StoreId,
+							Keywords = model.SearchTerm,
+							ProductType = model.ProductTypeId > 0 ? (ProductType?)model.ProductTypeId : null,
+							SearchSku = !_catalogSettings.SuppressSkuSearch,
+							ShowHidden = hasPermission
+						};
+
+						var query = _productService.Value.PrepareProductSearchQuery(searchContext, x => new { x.Id, x.Sku, x.Name, x.Published, x.ProductTypeId });
+
+						query = from x in query
+								group x by x.Id into grp
+								orderby grp.Key
+								select grp.FirstOrDefault();
+
+						var products = query
+							.OrderBy(x => x.Name)
+							.Skip(model.PageIndex * model.PageSize)
+							.Take(model.PageSize)
+							.ToList();
+
+						var productIds = products.Select(x => x.Id).ToArray();
+						var pictures = _productService.Value.GetProductPicturesByProductIds(productIds, true);
+
+						model.SearchResult = products
+							.Select(x =>
+							{
+								var item = new EntityPickerModel.SearchResultModel
+								{
+									Id = x.Id,
+									ReturnValue = (model.ReturnField.IsCaseInsensitiveEqual("sku") ? x.Sku : x.Id.ToString()),
+									Title = x.Name,
+									Summary = x.Sku,
+									SummaryTitle = "{0}: {1}".FormatInvariant(sku, x.Sku.NaIfEmpty()),
+									Published = (hasPermission ? x.Published : (bool?)null)
+								};
+
+								if (disableIfNotSimpleProduct)
+								{
+									item.Disable = (x.ProductTypeId != (int)ProductType.SimpleProduct);
+								}
+
+								if (x.ProductTypeId == (int)ProductType.GroupedProduct)
+								{
+									item.LabelText = labelTextGrouped;
+									item.LabelClassName = "label-success";
+								}
+								else if (x.ProductTypeId == (int)ProductType.BundledProduct)
+								{
+									item.LabelText = labelTextBundled;
+									item.LabelClassName = "label-info";
+								}
+
+								var productPicture = pictures.FirstOrDefault(y => y.Key == x.Id);
+								if (productPicture.Value != null)
+								{
+									var picture = productPicture.Value.FirstOrDefault();
+									if (picture != null)
+									{
+										item.ImageUrl = _pictureService.Value.GetPictureUrl(picture.Picture, _mediaSettings.Value.ProductThumbPictureSizeOnProductDetailsPage,
+											!_catalogSettings.HideProductDefaultPictures, storeLocation);
+									}
+								}
+
+								return item;
+							})
+							.ToList();
+
+						#endregion
+					}
+				}
+			}
+			catch (Exception exception)
+			{
+				NotifyError(exception.ToAllMessages());
+			}
+
+			return PartialView("EntityPickerList", model);
+		}
+
+		#endregion
+	}
 }

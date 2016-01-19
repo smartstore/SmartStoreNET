@@ -387,6 +387,45 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Providers.ExchangeRate.EcbExchange.SetCurrencyToEURO",
 				"You can use ECB (European central bank) exchange rate provider only when exchange rate currency code is set to EURO.",
 				"Der EZB-Wechselkursdienst kann nur genutzt werden, wenn der Wechselkurs-Währungscode auf EUR gesetzt ist.");
+
+
+			builder.AddOrUpdate("Common.Loading", "Loading", "Lade");
+			builder.AddOrUpdate("Common.ShowMore", "Show more", "Mehr anzeigen");
+			builder.AddOrUpdate("Common.Published", "Published", "Veröffentlicht");
+			builder.AddOrUpdate("Common.Unpublished", "Unpublished", "Unveröffentlicht");
+			builder.AddOrUpdate("Common.NotSelectable", "Not selectable", "Nicht auswählbar");
+
+			builder.AddOrUpdate("Common.EntityPicker.SinglePickNote",
+				"Click on an item to select it and OK to apply it.",
+				"Klicken Sie auf ein Element, um es auszuwählen und OK, um es zu übernehmen.");
+
+			builder.AddOrUpdate("Common.EntityPicker.MultiPickNote",
+				"Click on an item to select or deselect it and OK to apply the selection.",
+				"Klicken Sie auf ein Element, um es aus- bzw. abzuwählen und OK, um die Auswahl zu übernehmen.");
+
+			builder.AddOrUpdate("Common.EntityPicker.NoMoreItemsFound",
+				"There were no more items found.",
+				"Es wurden keine weiteren Elemente gefunden.");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.BundleItems.NotesOnProductBundles",
+				"Notes on product bundles",
+				"Hinweise zu Produkt-Bundles");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.RelatedProducts.AddNew",
+				"Add cross-selling product",
+				"Cross-Selling-Produkt hinzufügen");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.RelatedProducts.SaveBeforeEdit",
+				"You need to save the product before you can add cross-selling products for this product page.",
+				"Sie müssen das Produkt speichern, bevor Sie Cross-Selling-Produkte hinzufügen können.");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.CrossSells.AddNew",
+				"Add checkout-selling product",
+				"Checkout-Selling-Produkt hinzufügen");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.CrossSells.SaveBeforeEdit",
+				"You need to save the product before you can add checkout-selling products for this product page.",
+				"Sie müssen das Produkt speichern, bevor Sie Checkout-Selling-Produkte hinzufügen können.");
 		}
 	}
 }

@@ -8,11 +8,10 @@ using SmartStore.Admin.Validators.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Catalog
 {
-    [Validator(typeof(ManufacturerValidator))]
+	[Validator(typeof(ManufacturerValidator))]
     public class ManufacturerModel : EntityModelBase, ILocalizedModel<ManufacturerLocalizedModel>
     {
         public ManufacturerModel()
@@ -21,11 +20,14 @@ namespace SmartStore.Admin.Models.Catalog
             {
                 PageSize = 5;
             }
+
             Locales = new List<ManufacturerLocalizedModel>();
             AvailableManufacturerTemplates = new List<SelectListItem>();
         }
 
-        [SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Name")]
+		public int GridPageSize { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Manufacturers.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
 
@@ -125,35 +127,6 @@ namespace SmartStore.Admin.Models.Catalog
             //"if we have one more editor with the same name on a page, it doesn't allow editing"
             //in our case it's category.DisplayOrder
             public int DisplayOrder1 { get; set; }
-        }
-
-        public class AddManufacturerProductModel : ModelBase
-        {
-            public AddManufacturerProductModel()
-            {
-                AvailableCategories = new List<SelectListItem>();
-                AvailableManufacturers = new List<SelectListItem>();
-				AvailableProductTypes = new List<SelectListItem>();
-            }
-            public GridModel<ProductModel> Products { get; set; }
-
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
-            [AllowHtml]
-            public string SearchProductName { get; set; }
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
-            public int SearchCategoryId { get; set; }
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
-            public int SearchManufacturerId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
-			public int SearchProductTypeId { get; set; }
-
-            public IList<SelectListItem> AvailableCategories { get; set; }
-            public IList<SelectListItem> AvailableManufacturers { get; set; }
-			public IList<SelectListItem> AvailableProductTypes { get; set; }
-
-            public int ManufacturerId { get; set; }
-
-            public int[] SelectedProductIds { get; set; }
         }
 
         #endregion

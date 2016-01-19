@@ -272,83 +272,63 @@
     </table>
 }
 @helper TabProducts()
-    {
+{
     if (Model.Id > 0)
     {
-        var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-            <table class="adminContent">
-                <tr>
-                    <td>
-            @(Html.Telerik().Grid<ManufacturerModel.ManufacturerProductModel>()
-                .Name("products-grid")
-                    .DataKeys(keys =>
-                    {
-                        keys.Add(x => x.Id);
-                    })
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax()
-                            .Select("ProductList", "Manufacturer", new { manufacturerId = Model.Id })
-                            .Update("ProductUpdate", "Manufacturer")
-                            .Delete("ProductDelete", "Manufacturer");
-                    })
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.ProductName)
-                            .ReadOnly()
-							.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
-							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-						columns.Bound(x => x.Sku)
-							.ReadOnly();
-						columns.Bound(x => x.Published)
-							.ReadOnly()
-							.Width(100)
-							.Template(item => @Html.SymbolForBool(item.Published))
-							.ClientTemplate(@Html.SymbolForBool("Published"))
-							.Centered();
-                        columns.Bound(x => x.IsFeaturedProduct)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.IsFeaturedProduct))
-                            .ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
-                            .Centered();
-                        columns.Bound(x => x.DisplayOrder1)
-                            .Width(100)
-                            .Centered();
-                        columns.Command(commands =>
-                        {
-                            commands.Edit().Localize(T);
-                            commands.Delete().Localize(T);
-                        })
-                        .Width(180);
-                    })
-                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-					.PreserveGridState()
-                    .EnableCustomBinding(true))
-                    </td>
-                </tr>
-                <tr>
-                    <td width="100%">
-						<button type="submit" id="btnAddNewProduct" name="btnAddNewProduct" class="btn" style="margin-top:3px;"
-								onclick="javascript:OpenWindow('@(Url.Action("ProductAddPopup", "Manufacturer", new { manufacturerId = Model.Id, btnId = "btnRefreshProducts", formId = "manufacturer-form" }))', 1000, 700, true); return false;">
-							<i class="fa fa-plus"></i>
-							@T("Admin.Catalog.Manufacturers.Products.AddNew")
-						</button>
-                        <input type="submit" id="btnRefreshProducts" name="btnRefreshProducts" style="display: none" />
-                        <script type="text/javascript">
-                            $(document).ready(function () {
-                                $('#btnRefreshProducts').click(function () {
-                                    //refresh grid
-                                    var optionsGrid = $("#products-grid");
-                                    optionsGrid.data('tGrid').ajaxRequest();
-
-                                    //return false to don't reload a page
-                                    return false;
-                                });
-                            });
-                        </script>
-                    </td>
-                </tr>
-            </table>
+        <table class="adminContent">
+            <tr>
+                <td>
+					@(Html.Telerik().Grid<ManufacturerModel.ManufacturerProductModel>()
+						.Name("products-grid")
+						.DataKeys(keys =>
+						{
+							keys.Add(x => x.Id);
+						})
+						.DataBinding(dataBinding =>
+						{
+							dataBinding.Ajax()
+								.Select("ProductList", "Manufacturer", new { manufacturerId = Model.Id })
+								.Update("ProductUpdate", "Manufacturer")
+								.Delete("ProductDelete", "Manufacturer");
+						})
+						.Columns(columns =>
+						{
+							columns.Bound(x => x.ProductName)
+								.ReadOnly()
+								.Width(520)
+								.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
+							columns.Bound(x => x.Sku)
+								.ReadOnly();
+							columns.Bound(x => x.Published)
+								.ReadOnly()
+								.ClientTemplate(@Html.SymbolForBool("Published"))
+								.Centered();
+							columns.Bound(x => x.IsFeaturedProduct)
+								.ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
+								.Centered();
+							columns.Bound(x => x.DisplayOrder1)
+								.Centered();
+							columns.Command(commands =>
+							{
+								commands.Edit().Localize(T);
+								commands.Delete().Localize(T);
+							})
+							.Width(220);
+						})
+						.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+						.PreserveGridState()
+						.EnableCustomBinding(true))
+                </td>
+            </tr>
+            <tr>
+                <td>
+					<button type="button" id="AddNewProductButton" class="btn btn-warning btn-below" data-loading-text="@(T("Common.Loading"))&hellip;">
+						<i class="fa fa-plus"></i>
+						@T("Admin.Catalog.Manufacturers.Products.AddNew")
+					</button>
+                </td>
+            </tr>
+        </table>
     }
     else
     {
@@ -362,7 +342,6 @@
     	$(document).ready(function () {
 
     		$("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
-        
         	toggleStoreMapping();
         });
 
@@ -375,8 +354,8 @@
         		$('#pnl-available-stores').hide();
         	}
         }
-
     </script>
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -411,9 +390,36 @@
 }
 
 <script type="text/javascript">
-    $(document).ready(function () {
+	$(document).ready(function () {
+
         $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").click(togglePageSize);
-        togglePageSize();
+		togglePageSize();
+
+		// add new product
+		$(document).on('click', '#AddNewProductButton', function () {
+			$({}).entityPicker('loadDialog', {
+				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+				caption: '@T("Admin.Catalog.Manufacturers.Products.AddNew")',
+				onLoadDialogBefore: function () {
+					$('#AddNewProductButton').button('loading').prop('disabled', true);
+				},
+				onLoadDialogComplete: function () {
+					$('#AddNewProductButton').prop('disabled', false).button('reset');
+				},
+				onOkClicked: function (ids) {
+					$({}).doAjax({
+						type: 'POST',
+						url: '@Url.Action("ProductAdd")',
+						data: { "manufacturerId": @Model.Id, "selectedProductIds": ids },
+						callbackSuccess: function () {
+							$('#products-grid').data('tGrid').ajaxRequest();
+						}
+					});
+					return true;
+				}
+			});
+		});
+
     });
 
     function togglePageSize() {

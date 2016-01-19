@@ -200,125 +200,125 @@
     </table>
     
     <script type="text/javascript">
-		@*used by widget SmartStore.DataExport::ExportButtonsGeneral.cshtml*@
-        var selectedIds = [];
-        var reportAggregates = "";
+		@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
+		var selectedIds = [];
+		var reportAggregates = "";
 
-        $(document).ready(function () {
+		$(document).ready(function () {
 
-            //search button
-            $('#btnSearch').click(function () {
-                //search
-                var grid = $('#orders-grid').data('tGrid');
-                grid.currentPage = 1; //new search. Set page size to 1
-                grid.ajaxRequest();
-                //clear selected checkboxes
-                $('.checkboxGroups').attr('checked', false).change();
-                selectedIds = [];
-                return false;
-            });
+			//search button
+			$('#btnSearch').click(function () {
+				//search
+				var grid = $('#orders-grid').data('tGrid');
+				grid.currentPage = 1; //new search. Set page size to 1
+				grid.ajaxRequest();
+				//clear selected checkboxes
+				$('.checkboxGroups').attr('checked', false).change();
+				selectedIds = [];
+				return false;
+			});
 
-        	// export products to pdf
-            $('a.pdf-export-button').click(function (e) {
-            	e.preventDefault();
+			// export products to pdf
+			$('a.pdf-export-button').click(function (e) {
+				e.preventDefault();
 
-            	if (confirm('@T("Admin.Common.AskToProceed")')) {
-            		var form = '<form id="PdfExportForm" action="' + $(this).data('url') + '" method="post">';
-            		form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
-            		form += '</form>';
+				if (confirm('@T("Admin.Common.AskToProceed")')) {
+					var form = '<form id="PdfExportForm" action="' + $(this).data('url') + '" method="post">';
+					form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
+					form += '</form>';
 
-            		$('body').append(form);
-            		$('#PdfExportForm').submit();
-            	}
+					$('body').append(form);
+					$('#PdfExportForm').submit();
+				}
 
-            	return false;
-            });
-            
-            $('#mastercheckbox').click(function () {
-                $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
-            });
+				return false;
+			});
 
-            //wire up checkboxes. 
-            $(document).on('change', '#orders-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
-                var $check = $(this);
-                if ($check.is(":checked") == true) {
-                    var checked = jQuery.inArray($check.val(), selectedIds);
-                    if (checked == -1) {
-                        //add id to selectedIds.  
-                        selectedIds.push($check.val());
-                    }
-                }
-                else {
-                    var checked = jQuery.inArray($check.val(), selectedIds);
-                    if (checked > -1) {
-                        //remove id from selectedIds.  
-                        selectedIds = $.grep(selectedIds, function (item, index) {
-                            return item != $check.val();
-                        });
-                    }
-                }
-                updateMasterCheckbox();
-            });
-        });
+			$('#mastercheckbox').click(function () {
+				$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+			});
 
-        function onDataBinding(e) {
-            var searchModel = {
+			//wire up checkboxes.
+			$(document).on('change', '#orders-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
+				var $check = $(this);
+				if ($check.is(":checked") == true) {
+					var checked = jQuery.inArray($check.val(), selectedIds);
+					if (checked == -1) {
+						//add id to selectedIds.
+						selectedIds.push($check.val());
+					}
+				}
+				else {
+					var checked = jQuery.inArray($check.val(), selectedIds);
+					if (checked > -1) {
+						//remove id from selectedIds.
+						selectedIds = $.grep(selectedIds, function (item, index) {
+							return item != $check.val();
+						});
+					}
+				}
+				updateMasterCheckbox();
+			});
+		});
+
+		function onDataBinding(e) {
+			var searchModel = {
 				StartDate: $('#@Html.FieldIdFor(model => model.StartDate)').val(),
 				EndDate: $('#@Html.FieldIdFor(model => model.EndDate)').val(),
 				CustomerEmail: $('#@Html.FieldIdFor(model => model.CustomerEmail)').val(),
-            	CustomerName: $('#@Html.FieldIdFor(model => model.CustomerName)').val(),
-            	OrderStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.OrderStatusIds)').val()).join(),
-            	PaymentStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.PaymentStatusIds)').val()).join(),
-            	ShippingStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.ShippingStatusIds)').val()).join(),
+				CustomerName: $('#@Html.FieldIdFor(model => model.CustomerName)').val(),
+				OrderStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.OrderStatusIds)').val()).join(),
+				PaymentStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.PaymentStatusIds)').val()).join(),
+				ShippingStatusIds: jQuery.makeArray($('#@Html.FieldIdFor(model => model.ShippingStatusIds)').val()).join(),
 				StoreId: $('#@Html.FieldIdFor(model => model.StoreId)').val(),
 				OrderGuid: $('#@Html.FieldIdFor(model => model.OrderGuid)').val(),
 				OrderNumber: $('#@Html.FieldIdFor(model => model.OrderNumber)').val()
-            };
-            e.data = searchModel;
-        }
-    
-        function onDataBound(e) {
+			};
+			e.data = searchModel;
+		}
 
-            $('#orders-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
-                var currentId = $(this).val();
-                var checked = jQuery.inArray(currentId, selectedIds);
-                //set checked based on if current checkbox's value is in selectedIds.  
-                $(this).attr('checked', checked > -1);
-            });
+		function onDataBound(e) {
 
-            updateMasterCheckbox();
+			$('#orders-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+				var currentId = $(this).val();
+				var checked = jQuery.inArray(currentId, selectedIds);
+				//set checked based on if current checkbox's value is in selectedIds.
+				$(this).attr('checked', checked > -1);
+			});
 
-            reportLoaded(e);
-        }
+			updateMasterCheckbox();
 
-        function onComplete(e) {
-            var result = e.response;
-            if (result) {
-                reportAggregates = e.response["aggregates"];
-            }
-        }
+			reportLoaded(e);
+		}
 
-        function reportLoaded(e) {
-            if (reportAggregates != "") {
-                updateAggregates(reportAggregates);
-            }
-        }
-        function updateAggregates(aggs) {
-            for (var key in aggs) {
+		function onComplete(e) {
+			var result = e.response;
+			if (result) {
+				reportAggregates = e.response["aggregates"];
+			}
+		}
 
-                @if (!hideProfitReport)
+		function reportLoaded(e) {
+			if (reportAggregates != "") {
+				updateAggregates(reportAggregates);
+			}
+		}
+		function updateAggregates(aggs) {
+			for (var key in aggs) {
+
+				@if (!hideProfitReport)
                 {
                 <text>$('#aggregator-profit-block').text(aggs['aggregatorprofit']);</text>
                 }
-                $('#aggregator-tax-block').text(aggs['aggregatortax']);
-                $('#aggregator-total-block').text(aggs['aggregatortotal']);
-            }
-        }
+				$('#aggregator-tax-block').text(aggs['aggregatortax']);
+				$('#aggregator-total-block').text(aggs['aggregatortotal']);
+			}
+		}
 
-        function updateMasterCheckbox() {
-            var numChkBoxes = $('#orders-grid input[type=checkbox][id!=mastercheckbox]').length;
-            var numChkBoxesChecked = $('#orders-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
-            $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
-        }
+		function updateMasterCheckbox() {
+			var numChkBoxes = $('#orders-grid input[type=checkbox][id!=mastercheckbox]').length;
+			var numChkBoxesChecked = $('#orders-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+			$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+		}
    </script>   
 }

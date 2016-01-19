@@ -200,126 +200,126 @@
     </table>
     
     <script type="text/javascript">
-		@*used by widget SmartStore.DataExport::ExportButtonsGeneral.cshtml*@
-        var selectedIds = [];
+		@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
+		var selectedIds = [];
 
-        $(document).ready(function () {
+		$(document).ready(function () {
 
-            //search button
-            $('#search-customers').click(function () {
-                var grid = $('#customers-grid').data('tGrid');
-                grid.currentPage = 1; //new search. Set page size to 1
-                grid.ajaxRequest();
-                return false;
-            });
+			//search button
+			$('#search-customers').click(function () {
+				var grid = $('#customers-grid').data('tGrid');
+				grid.currentPage = 1; //new search. Set page size to 1
+				grid.ajaxRequest();
+				return false;
+			});
 
-            $("#@Html.FieldIdFor(model => model.SearchEmail)").keydown(function (event) {
-                if (event.keyCode == 13) {
-                    $("#search-customers").click();
-                    return false;
-                }
-            });
-            $("#@Html.FieldIdFor(model => model.SearchUsername)").keydown(function (event) {
-                if (event.keyCode == 13) {
-                    $("#search-customers").click();
-                    return false;
-                }
-            });
-            $("#@Html.FieldIdFor(model => model.SearchFirstName)").keydown(function (event) {
-                if (event.keyCode == 13) {
-                    $("#search-customers").click();
-                    return false;
-                }
-            });
-            $("#@Html.FieldIdFor(model => model.SearchLastName)").keydown(function (event) {
-                if (event.keyCode == 13) {
-                    $("#search-customers").click();
-                    return false;
-                }
-            });
-            $("#@Html.FieldIdFor(model => model.SearchCompany)").keydown(function (event) {
-                if (event.keyCode == 13) {
-                    $("#search-customers").click();
-                    return false;
-                }
-            });
-            $("#@Html.FieldIdFor(model => model.SearchPhone)").keydown(function (event) {
-                if (event.keyCode == 13) {
-                    $("#search-customers").click();
-                    return false;
-                }
-            });
-            $("#@Html.FieldIdFor(model => model.SearchZipPostalCode)").keydown(function (event) {
-                if (event.keyCode == 13) {
-                    $("#search-customers").click();
-                    return false;
-                }
-            });
+			$("#@Html.FieldIdFor(model => model.SearchEmail)").keydown(function (event) {
+				if (event.keyCode == 13) {
+					$("#search-customers").click();
+					return false;
+				}
+			});
+			$("#@Html.FieldIdFor(model => model.SearchUsername)").keydown(function (event) {
+				if (event.keyCode == 13) {
+					$("#search-customers").click();
+					return false;
+				}
+			});
+			$("#@Html.FieldIdFor(model => model.SearchFirstName)").keydown(function (event) {
+				if (event.keyCode == 13) {
+					$("#search-customers").click();
+					return false;
+				}
+			});
+			$("#@Html.FieldIdFor(model => model.SearchLastName)").keydown(function (event) {
+				if (event.keyCode == 13) {
+					$("#search-customers").click();
+					return false;
+				}
+			});
+			$("#@Html.FieldIdFor(model => model.SearchCompany)").keydown(function (event) {
+				if (event.keyCode == 13) {
+					$("#search-customers").click();
+					return false;
+				}
+			});
+			$("#@Html.FieldIdFor(model => model.SearchPhone)").keydown(function (event) {
+				if (event.keyCode == 13) {
+					$("#search-customers").click();
+					return false;
+				}
+			});
+			$("#@Html.FieldIdFor(model => model.SearchZipPostalCode)").keydown(function (event) {
+				if (event.keyCode == 13) {
+					$("#search-customers").click();
+					return false;
+				}
+			});
 
-            $('#mastercheckbox').click(function () {
-                $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
-            });
+			$('#mastercheckbox').click(function () {
+				$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+			});
 
-            //wire up checkboxes. 
-            $(document).on('change', '#customers-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
-                var $check = $(this);
-                if ($check.is(":checked") == true) {
-                    var checked = jQuery.inArray($check.val(), selectedIds);
-                    if (checked == -1) {
-                        //add id to selectedIds.  
-                        selectedIds.push($check.val());
-                    }
-                }
-                else {
-                    var checked = jQuery.inArray($check.val(), selectedIds);
-                    if (checked > -1) {
-                        //remove id from selectedIds.  
-                        selectedIds = $.grep(selectedIds, function (item, index) {
-                            return item != $check.val();
-                        });
-                    }
-                }
-                updateMasterCheckbox();
-            });
-        });
+			//wire up checkboxes.
+			$(document).on('change', '#customers-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
+				var $check = $(this);
+				if ($check.is(":checked") == true) {
+					var checked = jQuery.inArray($check.val(), selectedIds);
+					if (checked == -1) {
+						//add id to selectedIds.
+						selectedIds.push($check.val());
+					}
+				}
+				else {
+					var checked = jQuery.inArray($check.val(), selectedIds);
+					if (checked > -1) {
+						//remove id from selectedIds.
+						selectedIds = $.grep(selectedIds, function (item, index) {
+							return item != $check.val();
+						});
+					}
+				}
+				updateMasterCheckbox();
+			});
+		});
 
-        function onDataBound(e) {
+		function onDataBound(e) {
 
-            $('#customers-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
-                var currentId = $(this).val();
-                var checked = jQuery.inArray(currentId, selectedIds);
-                //set checked based on if current checkbox's value is in selectedIds.  
-                $(this).attr('checked', checked > -1);
-            });
+			$('#customers-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+				var currentId = $(this).val();
+				var checked = jQuery.inArray(currentId, selectedIds);
+				//set checked based on if current checkbox's value is in selectedIds.
+				$(this).attr('checked', checked > -1);
+			});
 
-            updateMasterCheckbox();
-        }
+			updateMasterCheckbox();
+		}
 
-        function updateMasterCheckbox() {
-            var numChkBoxes = $('#customers-grid input[type=checkbox][id!=mastercheckbox]').length;
-            var numChkBoxesChecked = $('#customers-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
-            $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
-        }
+		function updateMasterCheckbox() {
+			var numChkBoxes = $('#customers-grid input[type=checkbox][id!=mastercheckbox]').length;
+			var numChkBoxesChecked = $('#customers-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+			$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+		}
 
-        function onDataBinding(e) {
-            var customerRoleIds = [];
-            $('[name=SearchCustomerRoleIds]:checked').each(function () {
-                customerRoleIds.push($(this).val());
-            });
+		function onDataBinding(e) {
+			var customerRoleIds = [];
+			$('[name=SearchCustomerRoleIds]:checked').each(function () {
+				customerRoleIds.push($(this).val());
+			});
 
-            var searchModel = {
-                SearchCustomerRoleIds: customerRoleIds.join(","),
-                SearchEmail: $('#@Html.FieldIdFor(model => model.SearchEmail)').val(),
-                SearchUsername: $('#@Html.FieldIdFor(model => model.SearchUsername)').val(),
-                SearchFirstName: $('#@Html.FieldIdFor(model => model.SearchFirstName)').val(),
-                SearchLastName: $('#@Html.FieldIdFor(model => model.SearchLastName)').val(),
-                SearchDayOfBirth: $('#@Html.FieldIdFor(model => model.SearchDayOfBirth)').val(),
-                SearchMonthOfBirth: $('#@Html.FieldIdFor(model => model.SearchMonthOfBirth)').val(),
-                SearchCompany: $('#@Html.FieldIdFor(model => model.SearchCompany)').val(),
-                SearchPhone: $('#@Html.FieldIdFor(model => model.SearchPhone)').val(),
-                SearchZipPostalCode: $('#@Html.FieldIdFor(model => model.SearchZipPostalCode)').val()
-            };
-            e.data = searchModel;
-        }
+			var searchModel = {
+				SearchCustomerRoleIds: customerRoleIds.join(","),
+				SearchEmail: $('#@Html.FieldIdFor(model => model.SearchEmail)').val(),
+				SearchUsername: $('#@Html.FieldIdFor(model => model.SearchUsername)').val(),
+				SearchFirstName: $('#@Html.FieldIdFor(model => model.SearchFirstName)').val(),
+				SearchLastName: $('#@Html.FieldIdFor(model => model.SearchLastName)').val(),
+				SearchDayOfBirth: $('#@Html.FieldIdFor(model => model.SearchDayOfBirth)').val(),
+				SearchMonthOfBirth: $('#@Html.FieldIdFor(model => model.SearchMonthOfBirth)').val(),
+				SearchCompany: $('#@Html.FieldIdFor(model => model.SearchCompany)').val(),
+				SearchPhone: $('#@Html.FieldIdFor(model => model.SearchPhone)').val(),
+				SearchZipPostalCode: $('#@Html.FieldIdFor(model => model.SearchZipPostalCode)').val()
+			};
+			e.data = searchModel;
+		}
     </script>
 }

@@ -196,114 +196,114 @@
     </table>
     
     <script type="text/javascript">
-		@*used by widget SmartStore.DataExport::ExportButtonsGeneral.cshtml*@
-        var selectedIds = [];
+		@*used by widget SmartStore.CommonExportProviders::ExportButtonsGeneral.cshtml*@
+		var selectedIds = [];
 
-        $(document).ready(function () {
+		$(document).ready(function () {
 
-            $("#products-grid").thumbZoomer();
+			$("#products-grid").thumbZoomer();
 
-            //search button
-            $('#search-products').click(function () {
-                //search
-                var grid = $('#products-grid').data('tGrid');
-                grid.currentPage = 1; //new search. Set page size to 1
-                grid.ajaxRequest();
-                //clear selected checkboxes
-                $('.checkboxGroups').attr('checked', false).change();
-                selectedIds = [];
-                return false;
-            });
+			//search button
+			$('#search-products').click(function () {
+				//search
+				var grid = $('#products-grid').data('tGrid');
+				grid.currentPage = 1; //new search. Set page size to 1
+				grid.ajaxRequest();
+				//clear selected checkboxes
+				$('.checkboxGroups').attr('checked', false).change();
+				selectedIds = [];
+				return false;
+			});
 
-            $("#@Html.FieldIdFor(model => model.SearchProductName)").keydown(function (event) {
-                if (event.keyCode == 13) {
-                    $("#search-products").click();
-                    return false;
-                }
-            });
+			$("#@Html.FieldIdFor(model => model.SearchProductName)").keydown(function (event) {
+				if (event.keyCode == 13) {
+					$("#search-products").click();
+					return false;
+				}
+			});
 
-            $("#@Html.FieldIdFor(model => model.GoDirectlyToSku)").keydown(function (event) {
-                if (event.keyCode == 13) {
-                    $("#go-to-product-by-sku").click();
-                    return false;
-                }
-            });
+			$("#@Html.FieldIdFor(model => model.GoDirectlyToSku)").keydown(function (event) {
+				if (event.keyCode == 13) {
+					$("#go-to-product-by-sku").click();
+					return false;
+				}
+			});
 
-        	// show/hide category filter
-        	$('#SearchWithoutCategories').change(function () {
-        		$('#SearchCategoryIdContainer').toggle(_.isEmpty($(this).val()));
-        	}).trigger('change');
+			// show/hide category filter
+			$('#SearchWithoutCategories').change(function () {
+				$('#SearchCategoryIdContainer').toggle(_.isEmpty($(this).val()));
+			}).trigger('change');
 
-        	// show/hide manufacturer filter
-        	$('#SearchWithoutManufacturers').change(function () {
-        		$('#SearchManufacturerIdContainer').toggle(_.isEmpty($(this).val()));
-        	}).trigger('change');
+			// show/hide manufacturer filter
+			$('#SearchWithoutManufacturers').change(function () {
+				$('#SearchManufacturerIdContainer').toggle(_.isEmpty($(this).val()));
+			}).trigger('change');
 
-            $('#mastercheckbox').click(function () {
-                $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
-            });
+			$('#mastercheckbox').click(function () {
+				$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+			});
 
-            //"Delete (selected)" button
-            $('#delete-selected').click(function (e) {
-                e.preventDefault();
-                //redirect to required URL
-                setLocation('@(Url.Action("DeleteSelected", "Product"))?selectedIds=' + selectedIds.join(","));
-                return false;
-            });
+			//"Delete (selected)" button
+			$('#delete-selected').click(function (e) {
+				e.preventDefault();
+				//redirect to required URL
+				setLocation('@(Url.Action("DeleteSelected", "Product"))?selectedIds=' + selectedIds.join(","));
+				return false;
+			});
 
-            //wire up checkboxes. 
-        	$(document).on('change', '#products-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
-                var $check = $(this);
-                if ($check.is(":checked") == true) {
-                    var checked = jQuery.inArray($check.val(), selectedIds);
-                    if (checked == -1) {
-                        //add id to selectedIds.  
-                        selectedIds.push($check.val());
-                    }
-                }
-                else {
-                    var checked = jQuery.inArray($check.val(), selectedIds);
-                    if (checked > -1) {
-                        //remove id from selectedIds.  
-                        selectedIds = $.grep(selectedIds, function (item, index) {
-                            return item != $check.val();
-                        });
-                    }
-                }
-                productsGrid_updateMasterCheckbox();
-            });
-        });
+			//wire up checkboxes.
+			$(document).on('change', '#products-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
+				var $check = $(this);
+				if ($check.is(":checked") == true) {
+					var checked = jQuery.inArray($check.val(), selectedIds);
+					if (checked == -1) {
+						//add id to selectedIds.
+						selectedIds.push($check.val());
+					}
+				}
+				else {
+					var checked = jQuery.inArray($check.val(), selectedIds);
+					if (checked > -1) {
+						//remove id from selectedIds.
+						selectedIds = $.grep(selectedIds, function (item, index) {
+							return item != $check.val();
+						});
+					}
+				}
+				productsGrid_updateMasterCheckbox();
+			});
+		});
 
-        function productsGrid_onDataBinding(e) {
-            var searchModel = {
-                SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
-                SearchCategoryId: $('#SearchCategoryId').val(),
-                SearchManufacturerId: $('#SearchManufacturerId').val(),
-                SearchStoreId: $('#SearchStoreId').val(),
-                SearchProductTypeId: $('#SearchProductTypeId').val(),
-                SearchWithoutCategories: $('#SearchWithoutCategories').val(),
-                SearchWithoutManufacturers: $('#SearchWithoutManufacturers').val(),
-                SearchIsPublished: $('#SearchIsPublished').val(),
-                SearchHomePageProducts: $('#SearchHomePageProducts').val()
-            };
-            e.data = searchModel;
-        }
+		function productsGrid_onDataBinding(e) {
+			var searchModel = {
+				SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
+				SearchCategoryId: $('#SearchCategoryId').val(),
+				SearchManufacturerId: $('#SearchManufacturerId').val(),
+				SearchStoreId: $('#SearchStoreId').val(),
+				SearchProductTypeId: $('#SearchProductTypeId').val(),
+				SearchWithoutCategories: $('#SearchWithoutCategories').val(),
+				SearchWithoutManufacturers: $('#SearchWithoutManufacturers').val(),
+				SearchIsPublished: $('#SearchIsPublished').val(),
+				SearchHomePageProducts: $('#SearchHomePageProducts').val()
+			};
+			e.data = searchModel;
+		}
 
-        function productsGrid_onDataBound(e) {
-            $('#products-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
-                var currentId = $(this).val();
-                var checked = jQuery.inArray(currentId, selectedIds);
-                //set checked based on if current checkbox's value is in selectedIds.  
-                $(this).attr('checked', checked > -1);
-            });
+		function productsGrid_onDataBound(e) {
+			$('#products-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+				var currentId = $(this).val();
+				var checked = jQuery.inArray(currentId, selectedIds);
+				//set checked based on if current checkbox's value is in selectedIds.
+				$(this).attr('checked', checked > -1);
+			});
 
-            productsGrid_updateMasterCheckbox();
-        }
+			productsGrid_updateMasterCheckbox();
+		}
 
-        function productsGrid_updateMasterCheckbox() {
-            var numChkBoxes = $('#products-grid input[type=checkbox][id!=mastercheckbox]').length;
-            var numChkBoxesChecked = $('#products-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
-            $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
-        }
+		function productsGrid_updateMasterCheckbox() {
+			var numChkBoxes = $('#products-grid input[type=checkbox][id!=mastercheckbox]').length;
+			var numChkBoxesChecked = $('#products-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+			$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+		}
     </script>  
 }

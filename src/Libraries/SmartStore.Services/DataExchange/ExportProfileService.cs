@@ -258,7 +258,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			query = query
 				.OrderBy(x => x.IsSystemProfile)
-				.ThenBy(x => x.ProviderSystemName)
+				//.ThenBy(x => x.ProviderSystemName)
 				.ThenBy(x => x.Name);
 
 			return query;
@@ -310,8 +310,8 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			var allProviders = _providerManager.GetAllProviders<IExportProvider>(storeId)
 				.Where(x => x.IsValid() && (showHidden || !x.Metadata.IsHidden))
-				.OrderBy(x => x.Metadata.SystemName)
-				.ThenBy(x => x.Metadata.FriendlyName);
+				//.OrderBy(x => x.Metadata.SystemName)
+				.OrderBy(x => x.Metadata.FriendlyName);
 
 			return allProviders;
 		}

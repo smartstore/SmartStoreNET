@@ -15,10 +15,6 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Import.Name")]
 		public string Name { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.Import.FileType")]
-		public ImportFileType FileType { get; set; }
-		public List<SelectListItem> AvailableFileTypes { get; set; }
-
 		[SmartResourceDisplayName("Admin.Common.ImportFiles")]
 		public List<string> ExistingFileNames { get; set; }
 

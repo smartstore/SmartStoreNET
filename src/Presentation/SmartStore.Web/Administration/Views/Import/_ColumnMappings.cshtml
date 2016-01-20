@@ -21,7 +21,7 @@
 				<tr>
 					<th style="width: 20%;">@T("Admin.DataExchange.ColumnMapping.ImportField")</th>
 					<th style="width: 15%;">@T("Common.Language")</th>
-					<th style="width: 32%;">@T("Admin.DataExchange.ColumnMapping.EntityProperty")</th>
+					<th style="width: 40%;">@T("Admin.DataExchange.ColumnMapping.EntityProperty")</th>
 					<th>@T("Admin.DataExchange.ColumnMapping.DefaultValue")</th>
 				</tr>
 			</thead>
@@ -54,7 +54,7 @@
 							}
 						</td>
 						<td>
-							<select name="ColumnMapping.Property.@mapping.Index" data-placeholder="@Model.UnspecifiedString" class="control-large">
+							<select name="ColumnMapping.Property.@mapping.Index" data-placeholder="@Model.UnspecifiedString" style="width: 640px;">
 								<option></option>
 								@foreach (var prop in Model.AvailableEntityProperties)
 								{

@@ -50,9 +50,12 @@
 					@Html.IconForFileExtension(Path.GetExtension(fileName), false)
 					<a href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
 
-					<button type="button" class="btn btn-mini btn-right import-file-delete" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
-						<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
-					</button>
+					@if (Model.ExistingFileNames.Count > 1)
+					{
+						<button type="button" class="btn btn-mini btn-right import-file-delete" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
+							<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+						</button>
+					}
 				</p>
 			}
 		</td>
@@ -70,6 +73,15 @@
 	}
 	<tr>
 		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Enabled)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.Enabled)
+			@Html.ValidationMessageFor(x => x.Enabled)
+		</td>
 	</tr>
 	<tr>
 		<td class="adminTitle">
@@ -97,24 +109,6 @@
 	</tr>
 	@if (Model.Id != 0)
 	{
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.FileType)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(x => x.FileType, Model.AvailableFileTypes)
-				@Html.ValidationMessageFor(x => x.FileType)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Enabled)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.Enabled)
-				@Html.ValidationMessageFor(x => x.Enabled)
-			</td>
-		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Skip)
@@ -204,8 +198,6 @@
 		// init column mappings select
 		$('#ImportColumnMappings').find('select').select2({
 			allowClear: true,
-			width: 'resolve',
-			//dropdownAutoWidth: true,
 			minimumResultsForSearch: 16,
 			formatResult: columnMappingSelectItemFormatting,
 			formatSelection: columnMappingSelectItemFormatting
@@ -216,11 +208,13 @@
 				if (item.text.length > 0) {
 					var option = $(item.element);
 
-					var html = '<div>' + item.text;
+					var html = '<div class="clear"></div><div>';
+					
 					if (option.length !== 0) {
 						html += ' <span class="muted pull-right" style="font-size: 0.9em;">(' + option.val() + ')</span>';
 					}
-					html += '</div>';
+
+					html += '<span>' + item.text + '</span></div>';
 
 					return html;
 				}

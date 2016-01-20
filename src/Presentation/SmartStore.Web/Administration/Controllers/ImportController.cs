@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Web.Mvc;
 using SmartStore.Admin.Extensions;
 using SmartStore.Admin.Models.DataExchange;
@@ -134,14 +135,12 @@ namespace SmartStore.Admin.Controllers
 			if (forEdit)
 			{
 				model.AvailableEntityTypes = ImportEntityType.Product.ToSelectList(false).ToList();
-				model.AvailableFileTypes = ImportFileType.CSV.ToSelectList(false).ToList();
 			}
 
 			if (profile != null)
 			{
 				model.Id = profile.Id;
 				model.Name = profile.Name;
-				model.FileType = profile.FileType;
 				model.EntityType = profile.EntityType;
 				model.Enabled = profile.Enabled;
 				model.Skip = profile.Skip;
@@ -485,7 +484,7 @@ namespace SmartStore.Admin.Controllers
 			var path = profile.GetImportLogPath();
 			var stream = new FileStream(path, FileMode.Open);
 
-			var result = new FileStreamResult(stream, "text/plain; charset=utf-8");
+			var result = new FileStreamResult(stream, MediaTypeNames.Text.Plain);
 			result.FileDownloadName = profile.Name.ToValidFileName() + "-log.txt";
 
 			return result;
@@ -521,8 +520,12 @@ namespace SmartStore.Admin.Controllers
 				var profile = _importService.GetImportProfileById(id);
 				if (profile != null)
 				{
-					var path = Path.Combine(profile.GetImportFolder(true), name);
-					FileSystemHelper.Delete(path);
+					var importFiles = profile.GetImportFiles();
+					if (importFiles.Count > 1)
+					{
+						var path = Path.Combine(profile.GetImportFolder(true), name);
+						FileSystemHelper.Delete(path);
+					}
 				}
 			}
 			return RedirectToAction("Edit", new { id = id });

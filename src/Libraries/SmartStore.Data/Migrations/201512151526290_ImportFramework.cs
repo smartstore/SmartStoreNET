@@ -102,12 +102,6 @@ namespace SmartStore.Data.Migrations
 				"Specifies the name of the import profile.",
 				"Legt den Namen des Importprofils fest.");
 
-			builder.AddOrUpdate("Admin.DataExchange.Import.FileType",
-				"File type",
-				"Dateityp",
-				"The file type of the import file(s).",
-				"Der Dateityp der Importdatei(en).");
-
 			builder.AddOrUpdate("Admin.DataExchange.Import.ProgressInfo",
 				"{0} of {1} records processed",
 				"{0} von {1} Datensätzen verarbeitet");

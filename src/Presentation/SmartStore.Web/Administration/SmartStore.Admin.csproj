@@ -254,6 +254,7 @@
     <Compile Include="Models\DataExchange\CsvConfigurationModel.cs" />
     <Compile Include="Models\DataExchange\ExportDeploymentModel.cs" />
     <Compile Include="Models\DataExchange\ExportFilterModel.cs" />
+    <Compile Include="Models\DataExchange\ImportProfileListModel.cs" />
     <Compile Include="Models\DataExchange\ImportProfileModel.cs" />
     <Compile Include="Models\DataExchange\ProfileInfoForProviderModel.cs" />
     <Compile Include="Models\DataExchange\ExportPreviewModel.cs" />

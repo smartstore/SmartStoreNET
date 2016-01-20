@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SmartStore.Core.Domain.Logging;
-using SmartStore.Core.Domain.Customers;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Logging;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Logging
@@ -12,6 +12,7 @@ namespace SmartStore.Core.Logging
 	public class TraceLogger : DisposableObject, ILogger
 	{
 		private readonly TraceSource _traceSource;
+		private readonly StreamWriter _streamWriter;
 
 		public TraceLogger() : this(CommonHelper.MapPath("~/App_Data/SmartStore.log"))
 		{
@@ -32,6 +33,12 @@ namespace SmartStore.Core.Logging
 			var textListener = new TextWriterTraceListener(fileName);
 			textListener.Filter = new EventTypeFilter(SourceLevels.All);
 			textListener.TraceOutputOptions = TraceOptions.DateTime;
+
+			// force UTF-8 encoding (even if the text just contains ANSI characters)
+			var append = File.Exists(fileName);
+
+			_streamWriter = new StreamWriter(fileName, append, Encoding.UTF8);
+			textListener.Writer = _streamWriter;
 
 			_traceSource.Listeners.Add(console);
 			_traceSource.Listeners.Add(textListener);
@@ -132,7 +139,11 @@ namespace SmartStore.Core.Logging
 		protected override void OnDispose(bool disposing)
 		{
 			_traceSource.Flush();
+
+			_streamWriter.Close();
 			_traceSource.Close();
+
+			_streamWriter.Dispose();
 		}
 	}
 }

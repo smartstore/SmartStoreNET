@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
@@ -132,11 +131,6 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareProfileModel(ImportProfileModel model, ImportProfile profile, bool forEdit, ColumnMap invalidMap = null)
 		{
-			if (forEdit)
-			{
-				model.AvailableEntityTypes = ImportEntityType.Product.ToSelectList(false).ToList();
-			}
-
 			if (profile != null)
 			{
 				model.Id = profile.Id;
@@ -174,7 +168,13 @@ namespace SmartStore.Admin.Controllers
 			}
 			else
 			{
-				model.Name = model.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
+				if (model.Name.IsEmpty())
+				{
+					var defaultNames = T("Admin.DataExchange.Import.DefaultProfileNames").Text.SplitSafe(";");
+
+					model.Name = defaultNames.SafeGet((int)model.EntityType);
+				}
+
 				model.ExistingFileNames = new List<string>();
 			}
 		}
@@ -191,8 +191,13 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
+			var model = new ImportProfileListModel
+			{
+				Profiles = new List<ImportProfileModel>(),
+				AvailableEntityTypes = ImportEntityType.Product.ToSelectList(false).ToList()
+			};
+
 			var profiles = _importService.GetImportProfiles().ToList();
-			var model = new List<ImportProfileModel>();
 
 			foreach (var profile in profiles)
 			{
@@ -202,18 +207,22 @@ namespace SmartStore.Admin.Controllers
 
 				profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(_services.Localization, _dateTimeHelper, Url);
 
-				model.Add(profileModel);
+				model.Profiles.Add(profileModel);
 			}
 
 			return View(model);
 		}
 
-		public ActionResult Create()
+		public ActionResult Create(ImportEntityType entityType)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
-			var model = new ImportProfileModel();
+			var model = new ImportProfileModel
+			{
+				EntityType = entityType
+			};
+
 			PrepareProfileModel(model, null, true);
 
 			return View(model);
@@ -467,7 +476,7 @@ namespace SmartStore.Admin.Controllers
 
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 
-			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+			NotifyInfo(T("Admin.DataExchange.Import.RunNowNote"));
 
 			return RedirectToAction("List");
 		}

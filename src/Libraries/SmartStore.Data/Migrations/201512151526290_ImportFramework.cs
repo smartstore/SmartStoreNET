@@ -112,7 +112,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportEntityType.NewsLetterSubscription", "Newsletter Subscriber", "Newsletter Abonnent");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportEntityType.Category", "Category", "Warengruppe");
 
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportFileType.CSV", "Delimiter separated values (.csv)", "Trennzeichen getrennte Werte (.csv)");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportFileType.CSV", "Delimiter separated values (.csv, .txt, .tab)", "Trennzeichen getrennte Werte (.csv, .txt, .tab)");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ImportFileType.XLSX", "Excel (.xlsx)", "Excel  (.xlsx)");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.FileUpload",

@@ -1015,7 +1015,7 @@ namespace SmartStore.Admin.Controllers
 
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 
-			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+			NotifyInfo(T("Admin.DataExchange.Export.RunNowNote"));
 
 			return RedirectToAction("List");
         }

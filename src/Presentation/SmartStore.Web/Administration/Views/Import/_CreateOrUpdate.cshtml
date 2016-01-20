@@ -1,5 +1,4 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
-@using SmartStore.Core.Domain.DataExchange;
 @model ImportProfileModel
 @{
 	Html.AddScriptParts("~/bundles/fileupload");
@@ -10,125 +9,142 @@
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.TempFileName)
 
-<table class="adminContent">
-	<tr id="ImportFileUploadContainer">
-		<td class="adminTitle">
-			&nbsp;
-		</td>
-		<td class="adminData">
+@if (Model.Id == 0)
+{
+	<div class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+		@T("Admin.DataExchange.Import.ProfileCreationNote")
+	</div>
+}
+else if (Model.ExistingFileNames.Count > 1)
+{
+	<div class="alert alert-warning">
+		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+		@T("Admin.DataExchange.Import.MultipleFilesSameFileTypeNote")
+	</div>
+}
 
-			<div id="ImportFileUploader" class="fileupload">
-				<span class="btn btn-primary fileinput-button">
-					<i class="fa fa-upload"></i>
-					<span>@T("Admin.DataExchange.Import.FileUpload")</span>
-					<input id="ImportFileUpload" type="file" name="importfile" />
-				</span>
+<div>
+	<table class="adminContent">
+		<tr id="ImportFileUploadContainer">
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
 
-				<button class="btn btn-warning cancel">
-					<i class="fa fa-times"></i>
-					<span>@T("Common.Fileuploader.Cancel")</span>
-				</button>
+				<div id="ImportFileUploader" class="fileupload">
+					<span class="btn btn-primary fileinput-button">
+						<i class="fa fa-upload"></i>
+						<span>@T(Model.ExistingFileNames.Any() ? "Admin.DataExchange.Import.AddAnotherFile" : "Admin.DataExchange.Import.FileUpload")</span>
+						<input id="ImportFileUpload" type="file" name="importfile" />
+					</span>
 
-				<div class="span5 fileupload-progress fade">
-					<div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-						<div class="bar" style="width:0%;"></div>
+					<button class="btn btn-warning cancel">
+						<i class="fa fa-times"></i>
+						<span>@T("Common.Fileuploader.Cancel")</span>
+					</button>
+
+					<div class="span5 fileupload-progress fade">
+						<div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+							<div class="bar" style="width:0%;"></div>
+						</div>
+						<div class="progress-extended">&nbsp;</div>
 					</div>
-					<div class="progress-extended">&nbsp;</div>
 				</div>
-			</div>
 
-		</td>
-	</tr>
-	<tr id="ImportFileListContainer" class="@(Model.ExistingFileNames.Any() ? "" : "hide")">
-		<td class="adminTitle">
-			&nbsp;
-		</td>
-		<td id="ImportFileList" class="adminData">
-			@foreach (var fileName in Model.ExistingFileNames)
-			{
-				<p>
-					@Html.IconForFileExtension(Path.GetExtension(fileName), false)
-					<a href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
+			</td>
+		</tr>
+		<tr id="ImportFileListContainer" class="@(Model.ExistingFileNames.Any() ? "" : "hide")">
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td id="ImportFileList" class="adminData">
+				@foreach (var fileName in Model.ExistingFileNames)
+				{
+					<p>
+						@Html.IconForFileExtension(Path.GetExtension(fileName), false)
+						<a href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
 
-					@if (Model.ExistingFileNames.Count > 1)
-					{
-						<button type="button" class="btn btn-mini btn-right import-file-delete" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
-							<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
-						</button>
-					}
-				</p>
-			}
-		</td>
-	</tr>
-	@if (Model.ScheduleTaskId > 0)
-	{
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.ScheduleTaskId)
-			</td>
-			<td class="adminData">
-				@Html.Action("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, area = "admin" })
+						@if (Model.ExistingFileNames.Count > 1)
+						{
+							<button type="button" class="btn btn-mini btn-right import-file-delete" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
+								<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+							</button>
+						}
+					</p>
+				}
 			</td>
 		</tr>
-	}
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(x => x.Enabled)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(x => x.Enabled)
-			@Html.ValidationMessageFor(x => x.Enabled)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(x => x.EntityType)
-		</td>
-		<td class="adminData">
-			@if (Model.Id == 0)
-			{
-				@Html.DropDownListFor(x => x.EntityType, Model.AvailableEntityTypes)
-			}
-			else
-			{
-				@Html.DisplayFor(x => x.EntityType)
-			}
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(x => x.Name)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(x => x.Name)
-			@Html.ValidationMessageFor(x => x.Name)
-		</td>
-	</tr>
-	@if (Model.Id != 0)
-	{
+		@if (Model.ScheduleTaskId > 0)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ScheduleTaskId)
+				</td>
+				<td class="adminData">
+					@Html.Action("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, area = "admin" })
+				</td>
+			</tr>
+		}
+		<tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>
+		@if (Model.Id != 0)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Enabled)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.Enabled)
+					@Html.ValidationMessageFor(x => x.Enabled)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.EntityTypeName)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(x => x.EntityTypeName)
+				</td>
+			</tr>
+		}
+		else
+		{
+			@Html.HiddenFor(x => x.EntityType)
+		}
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Skip)
+				@Html.SmartLabelFor(x => x.Name)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(x => x.Skip)
-				@Html.ValidationMessageFor(x => x.Skip)
+				@Html.EditorFor(x => x.Name)
+				@Html.ValidationMessageFor(x => x.Name)
 			</td>
 		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Take)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.Take)
-				@Html.ValidationMessageFor(x => x.Take)
-			</td>
-		</tr>
-	}
-</table>
+		@if (Model.Id != 0)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Skip)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.Skip)
+					@Html.ValidationMessageFor(x => x.Skip)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Take)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.Take)
+					@Html.ValidationMessageFor(x => x.Take)
+				</td>
+			</tr>
+		}
+	</table>
+</div>
 
 <p></p>
 

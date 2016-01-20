@@ -128,7 +128,7 @@ namespace SmartStore.Services.DataExchange.Import
 						break;
 				}
 
-				var table = LightweightDataTable.FromDataReader(dataReader);
+				var table = LightweightDataTable.FromDataReader(dataReader, skip, take);
 
 				if (table.Columns.Count == 0 || table.Rows.Count == 0)
 				{

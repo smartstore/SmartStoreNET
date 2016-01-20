@@ -20,8 +20,9 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.Common.Entity")]
 		public ImportEntityType EntityType { get; set; }
+
+		[SmartResourceDisplayName("Admin.Common.Entity")]
 		public string EntityTypeName { get; set; }
-		public List<SelectListItem> AvailableEntityTypes { get; set; }
 
 		[SmartResourceDisplayName("Common.Enabled")]
 		public bool Enabled { get; set; }

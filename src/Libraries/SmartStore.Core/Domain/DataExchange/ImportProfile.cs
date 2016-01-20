@@ -81,6 +81,11 @@ namespace SmartStore.Core.Domain
 		public string ColumnMapping { get; set; }
 
 		/// <summary>
+		/// XML with information about the last import
+		/// </summary>
+		public string ResultInfo { get; set; }
+
+		/// <summary>
 		/// The scheduling task identifier
 		/// </summary>
 		public int SchedulingTaskId { get; set; }

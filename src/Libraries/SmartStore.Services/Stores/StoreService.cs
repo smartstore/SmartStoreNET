@@ -177,6 +177,8 @@ namespace SmartStore.Services.Stores
 				{
 					case "www.yourstore.com":
 					case "yourstore.com":
+					case "www.mystore.com":
+					case "mystore.com":
 					case "www.mein-shop.de":
 					case "mein-shop.de":
 						return false;

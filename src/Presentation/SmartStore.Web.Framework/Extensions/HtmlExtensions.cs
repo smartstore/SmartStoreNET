@@ -612,54 +612,125 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(result);
 		}
 
-		public static MvcHtmlString IconForFileExtension(this HtmlHelper helper, string fileExtension, bool renderExtensionText)
+		public static MvcHtmlString IconForFileExtension(this HtmlHelper helper, string fileExtension, bool renderLabel = false)
 		{
-			string result = "";
-
-			if (fileExtension != null && fileExtension.StartsWith("."))
-			{
-				fileExtension = fileExtension.Substring(1);
-			}
-
-			if (fileExtension.IsCaseInsensitiveEqual("xml"))
-			{
-				result = "<i class='fa fa-file-code-o' title='{0}'></i>";
-			}
-			else if (fileExtension.IsCaseInsensitiveEqual("xls") || fileExtension.IsCaseInsensitiveEqual("xlsx"))
-			{
-				result = "<i class='fa fa-file-excel-o' title='{0}'></i>";
-			}
-			else if (fileExtension.IsCaseInsensitiveEqual("pdf"))
-			{
-				result = "<i class='fa fa-file-pdf-o' title='{0}'></i>";
-			}
-			else if (fileExtension.IsCaseInsensitiveEqual("zip"))
-			{
-				result = "<i class='fa fa-file-archive-o' title='{0}'></i>";
-			}
-			else if (fileExtension.IsCaseInsensitiveEqual("txt") || fileExtension.IsCaseInsensitiveEqual("csv"))
-			{
-				result = "<i class='fa fa-file-text-o' title='{0}'></i>";
-			}
-			else if (fileExtension.IsCaseInsensitiveEqual("doc"))
-			{
-				result = "<i class='fa fa-file-word-o' title='{0}'></i>";
-			}
-			else if (fileExtension.IsCaseInsensitiveEqual("jpg") || fileExtension.IsCaseInsensitiveEqual("png") || fileExtension.IsCaseInsensitiveEqual("gif"))
-			{
-				result = "<i class='fa fa-file-image-o' title='{0}'></i>";
-			}
-
-			if (renderExtensionText)
-			{
-				if (fileExtension.IsEmpty())
-					result = "<span class='muted'>{0}</span>".FormatInvariant("".NaIfEmpty());
-				else
-					result = result + "<span class='ml4'>{0}</span>";
-			}
-
-			return MvcHtmlString.Create(result.FormatInvariant(fileExtension.NaIfEmpty().ToUpper()));
+			return IconForFileExtension(helper, fileExtension, null, renderLabel);
 		}
-    }
+
+		public static MvcHtmlString IconForFileExtension(this HtmlHelper helper, string fileExtension, string extraCssClasses = null, bool renderLabel = false)
+		{
+			Guard.ArgumentNotNull(() => helper);
+			Guard.ArgumentNotEmpty(() => fileExtension);
+
+			var icon = "file-o";
+			var ext = fileExtension;
+
+			if (ext != null && ext.StartsWith("."))
+			{
+				ext = ext.Substring(1);
+			}
+
+			if (ext.HasValue())
+			{
+				switch (ext.ToLowerInvariant())
+				{
+					case "pdf":
+						icon = "file-pdf-o";
+						break;
+					case "doc":
+					case "docx":
+					case "docm":
+					case "odt":
+					case "dot":
+					case "dotx":
+					case "dotm":
+						icon = "file-word-o";
+						break;
+					case "xls":
+					case "xlsx":
+					case "xlsm":
+					case "xlsb":
+					case "ods":
+						icon = "file-excel-o";
+						break;
+					case "csv":
+					case "tab":
+						icon = "table";
+						break;
+					case "ppt":
+					case "pptx":
+					case "pptm":
+					case "ppsx":
+					case "odp":
+					case "potx":
+					case "pot":
+					case "potm":
+					case "pps":
+					case "ppsm":
+						icon = "file-powerpoint-o";
+						break;
+					case "zip":
+					case "rar":
+					case "7z":
+						icon = "file-archive-o";
+						break;
+					case "png":
+					case "jpg":
+					case "jpeg":
+					case "bmp":
+					case "psd":
+						icon = "file-image-o";
+						break;
+					case "mp3":
+					case "wav":
+					case "ogg":
+					case "wma":
+						icon = "file-audio-o";
+						break;
+					case "mp4":
+					case "mkv":
+					case "wmv":
+					case "avi":
+					case "asf":
+					case "mpg":
+					case "mpeg":
+						icon = "file-video-o";
+						break;
+					case "txt":
+						icon = "file-text-o";
+						break;
+					case "exe":
+						icon = "gear";
+						break;
+					case "xml":
+					case "html":
+					case "htm":
+						icon = "file-code-o";
+						break;
+				}
+			}
+
+			var label = ext.NaIfEmpty().ToUpper();
+
+			var result = "<i class='fa fa-fw fa-{0}{1}' title='{2}'></i>".FormatInvariant(
+				icon, 
+				extraCssClasses.HasValue() ? " " + extraCssClasses : "",
+				label);
+
+			if (renderLabel)
+			{
+				if (ext.IsEmpty())
+				{
+					result = "<span class='muted'>{0}</span>".FormatInvariant("".NaIfEmpty());
+				}
+				else
+				{
+					result = result + "<span class='ml4'>{0}</span>".FormatInvariant(label);
+				}	
+			}
+
+			return MvcHtmlString.Create(result);
+		}
+	}
 }
 

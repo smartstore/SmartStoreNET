@@ -199,8 +199,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Promotions.NewsLetterSubscriptions.Fields.NewsLetterSubscriptionGuid", "Subscription GUID", "Abonnement GUID");
 
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Note",
-				"For each field of the import file you can optionally set whether and to which entity property the data is to be imported. It is also possible to define a default value which is applied when the import field is empty. Through <b>Clear</b> all made assignments are reset to their original values.",
-				"Sie können optional für jedes Feld der Importdatei festlegen, ob und nach welcher Entitätseigenschaft dessen Daten importiert werden sollen. Zudem ist die Angabe eines Standardwertes möglich, der angewendet wird, wenn das Importfeld leer ist. Über <b>Zurücksetzen</b> werden alle getätigten Zuordnungen auf ihre Ursprungswerte zurückgesetzt.");
+				"For each field of the import file you can optionally set whether and to which entity property the data is to be imported. Not yet selected properties are highlighted in the selection list. It is also possible to define a default value which is applied when the import field is empty. Through <b>Clear</b> all made assignments are reset to their original values.",
+				"Sie können optional für jedes Feld der Importdatei festlegen, ob und nach welcher Entitätseigenschaft dessen Daten importiert werden sollen. Noch nicht ausgewählte Eigenschaften sind dabei in der Auswahlliste hervorgehoben. Zudem ist die Angabe eines Standardwertes möglich, der angewendet wird, wenn das Importfeld leer ist. Über <b>Zurücksetzen</b> werden alle getätigten Zuordnungen auf ihre Ursprungswerte zurückgesetzt.");
 
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.ImportField", "Import Field", "Importfeld");
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.EntityProperty", "Entity property", "Eigenschaft der Entität");

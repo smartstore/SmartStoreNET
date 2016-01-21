@@ -162,6 +162,8 @@ else if (Model.ExistingFileNames.Count > 1)
 }
 
 <script type="text/javascript">
+	var mappedProperties = [];
+
 	jQuery(document).ready(function () {
 
 		// upload import file
@@ -211,8 +213,8 @@ else if (Model.ExistingFileNames.Count > 1)
 			return false;
 		});
 
-		// init column mappings select
-		$('#ImportColumnMappings').find('select').select2({
+		// init column mappings select boxes
+		$('#ImportColumnMappings').find('select[name^="ColumnMapping.Property."]').select2({
 			allowClear: true,
 			minimumResultsForSearch: 16,
 			formatResult: columnMappingSelectItemFormatting,
@@ -222,15 +224,40 @@ else if (Model.ExistingFileNames.Count > 1)
 		function columnMappingSelectItemFormatting(item) {
 			try {
 				if (item.text.length > 0) {
-					var option = $(item.element);
+					var option = $(item.element),
+						html = '<div class="clear"></div>';
 
-					var html = '<div class="clear"></div><div>';
-					
-					if (option.length !== 0) {
-						html += ' <span class="muted pull-right" style="font-size: 0.9em;">(' + option.val() + ')</span>';
+					if (option.length === 0) {
+						html += '<div>';
+					}
+					else {
+						// update mapped properties when first popup list item is about to be rendered.
+						if (option.index() === 1) {
+							mappedProperties = [];
+
+							// localized properties occur\mapped multiple times... that's why we cannot hide or deactivate list items.
+							$('#ImportColumnMappings').find('select[name^="ColumnMapping.Property."]').each(function () {
+								var val = $(this).val();
+								if (!_.isEmpty(val)) {
+									mappedProperties.push(val);
+								}
+							});
+						}
+
+						var val = option.val(),
+							mappingIndex = $.inArray(val, mappedProperties);
+
+						if (mappingIndex === -1) {
+							html += '<div><i class="fa fa-fw icon-active-true"></i>';
+						}
+						else {
+							html += '<div class="muted"><i class="fa fa-fw icon-active-false"></i>';
+						}
+
+						html += '<span class="muted pull-right" style="font-size: 0.9em;">(' + val + ')</span>';
 					}
 
-					html += '<span>' + item.text + '</span></div>';
+					html += '<span class="ml4">' + item.text + '</span></div>';
 
 					return html;
 				}

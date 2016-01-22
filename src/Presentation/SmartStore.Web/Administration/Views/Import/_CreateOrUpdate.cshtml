@@ -217,18 +217,21 @@ else if (Model.ExistingFileNames.Count > 1)
 		$('#ImportColumnMappings').find('select[name^="ColumnMapping.Property."]').select2({
 			allowClear: true,
 			minimumResultsForSearch: 16,
-			formatResult: columnMappingSelectItemFormatting,
-			formatSelection: columnMappingSelectItemFormatting
+			formatResult: columnMappingFormatting,
+			formatSelection: columnMappingFormatting
 		});
 
-		function columnMappingSelectItemFormatting(item) {
+		function columnMappingFormatting(item, container, query) {
 			try {
 				if (item.text.length > 0) {
 					var option = $(item.element),
-						html = '<div class="clear"></div>';
+						html = '';
 
 					if (option.length === 0) {
 						html += '<div>';
+						html += '<span style="display: inline-block; margin-right: 0;">';
+						html += '<i class="fa fa-fw fa-chain-broken text-success" />';
+						html += '</span>';
 					}
 					else {
 						// update mapped properties when first popup list item is about to be rendered.
@@ -237,9 +240,9 @@ else if (Model.ExistingFileNames.Count > 1)
 
 							// localized properties occur\mapped multiple times... that's why we cannot hide or deactivate list items.
 							$('#ImportColumnMappings').find('select[name^="ColumnMapping.Property."]').each(function () {
-								var val = $(this).val();
-								if (!_.isEmpty(val)) {
-									mappedProperties.push(val);
+								var value = $(this).val();
+								if (!_.isEmpty(value)) {
+									mappedProperties.push(value);
 								}
 							});
 						}
@@ -247,17 +250,21 @@ else if (Model.ExistingFileNames.Count > 1)
 						var val = option.val(),
 							mappingIndex = $.inArray(val, mappedProperties);
 
-						if (mappingIndex === -1) {
-							html += '<div><i class="fa fa-fw icon-active-true"></i>';
-						}
-						else {
-							html += '<div class="muted"><i class="fa fa-fw icon-active-false"></i>';
-						}
+						html += '<div class="clear"></div>';
+						html += (mappingIndex === -1 ? '<div>' : '<div class="muted">');
 
-						html += '<span class="muted pull-right" style="font-size: 0.9em;">(' + val + ')</span>';
+						html += '<span style="display: inline-block; margin-right: 0;">';
+						html += (mappingIndex === -1 ? '<i class="fa fa-fw fa-chain-broken text-success" />' : '<i class="fa fa-fw fa-link text-warning" />');
+						html += '</span>';
+
+						// do not render for selection (text may overlap)
+						if (query) {
+							html += '<span class="muted pull-right" style="font-size: 0.9em;">' + val + '</span>';
+						}
 					}
 
-					html += '<span class="ml4">' + item.text + '</span></div>';
+					html += '<span class="ml4" style="display: inline-block;">' + item.text + '</span>';
+					html += '</div>';
 
 					return html;
 				}

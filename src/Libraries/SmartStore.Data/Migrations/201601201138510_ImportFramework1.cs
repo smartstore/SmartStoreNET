@@ -32,8 +32,8 @@ namespace SmartStore.Data.Migrations
 				"Bei mehreren Importdateien ist darauf zu achten, dass diese vom selben Dateityp sind und deren Inhalt demselben Schema folgt (z.B. gleiche Spaltenüberschriften).");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.ProfileEntitySelectNote",
-				"Please select the entity that you want to import.",
-				"Wählen Sie bitte die Entität aus, die Sie importieren möchten.");
+				"Please select an object that you want to import.",
+				"Wählen Sie bitte ein Objekt aus, das Sie importieren möchten.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.ProfileCreationNote",
 				"Please upload an import file, enter a meaningful name for the import profile and save.",

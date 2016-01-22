@@ -40,7 +40,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Example", "Example", "Beispiel");
 			builder.AddOrUpdate("Common.ShowAll", "Show all", "Alle anzeigen");
 			builder.AddOrUpdate("Admin.Common.Selected", "Selected", "Ausgewählte");
-			builder.AddOrUpdate("Admin.Common.Entity", "Entity", "Entität");
+			builder.AddOrUpdate("Admin.Common.Entity", "Object", "Objekt");
 			builder.AddOrUpdate("Admin.Common.Placeholder", "Placeholder", "Platzhalter");
 
 
@@ -75,16 +75,16 @@ namespace SmartStore.Data.Migrations
 				"Legt den SEO Namen fest.");
 
 			builder.AddOrUpdate("Admin.System.SeNames.EntityId",
-				"Entity ID",
-				"ID der Entität",
-				"Specifies the ID of the associated entity.",
-				"Legt die ID der zugehörigen Entität fest.");
+				"Object ID",
+				"Objekt-ID",
+				"Specifies the ID of the associated object.",
+				"Legt die ID des zugehörigen Objektes fest.");
 
 			builder.AddOrUpdate("Admin.System.SeNames.EntityName",
-				"Entity",
-				"Entität",
-				"Specifies the name of the associated entity.",
-				"Legt den Namen der zugehörigen Entität fest.");
+				"Object",
+				"Objekt",
+				"Specifies the name of the associated object.",
+				"Legt den Namen der zugehörigen Objektes fest.");
 
 			builder.AddOrUpdate("Admin.System.SeNames.IsActive",
 				"Is active",
@@ -99,10 +99,10 @@ namespace SmartStore.Data.Migrations
 				"Legt die Sprache des SEO Namens fest.");
 
 			builder.AddOrUpdate("Admin.System.SeNames.SlugsPerEntity",
-				"Names per entity",
-				"Namen pro Entität",
-				"The number of SEO names per entity.",
-				"Die Anzahl der SEO Namen pro Entität.");
+				"Names per object",
+				"Namen pro Objekt",
+				"The number of SEO names per object.",
+				"Die Anzahl der SEO Namen pro Objekt.");
 
 			builder.AddOrUpdate("Admin.System.SeNames.ActiveSlugAlreadyExist",
 				"Only one active SEO name should be set per language.",

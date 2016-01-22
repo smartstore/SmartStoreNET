@@ -6,6 +6,7 @@ using System.Net.Mime;
 using System.Web.Mvc;
 using SmartStore.Admin.Extensions;
 using SmartStore.Admin.Models.DataExchange;
+using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.IO;
@@ -207,10 +208,35 @@ namespace SmartStore.Admin.Controllers
 
 				profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(_services.Localization, _dateTimeHelper, Url);
 
+				if (profile.ResultInfo.HasValue())
+				{
+					profileModel.ImportResult = XmlHelper.Deserialize<SerializableImportResult>(profile.ResultInfo);
+				}
+
 				model.Profiles.Add(profileModel);
 			}
 
 			return View(model);
+		}
+
+		public ActionResult ProfileListDetails(int profileId)
+		{
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			{
+				var profile = _importService.GetImportProfileById(profileId);
+				if (profile != null)
+				{
+					var importResult = XmlHelper.Deserialize<SerializableImportResult>(profile.ResultInfo);
+
+					return Json(new
+					{
+						importResult = this.RenderPartialViewToString("ProfileImportResult", importResult)
+					},
+					JsonRequestBehavior.AllowGet);
+				}
+			}
+
+			return new EmptyResult();
 		}
 
 		public ActionResult Create(ImportEntityType entityType)

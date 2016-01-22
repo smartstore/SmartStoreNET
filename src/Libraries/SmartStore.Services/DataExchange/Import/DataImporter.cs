@@ -6,12 +6,14 @@ using System.Threading;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Email;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Affiliates;
@@ -26,6 +28,7 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Messages;
 using SmartStore.Services.Messages.Importer;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
@@ -40,6 +43,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 		private readonly ICommonServices _services;
 		private readonly ICustomerService _customerService;
+		private readonly IImportProfileService _importProfileService;
 
 		private readonly Lazy<IRepository<NewsLetterSubscription>> _subscriptionRepository;
 		private readonly Lazy<IRepository<Picture>> _pictureRepository;
@@ -64,15 +68,19 @@ namespace SmartStore.Services.DataExchange.Import
 		private readonly Lazy<IAffiliateService> _affiliateService;
 		private readonly Lazy<ICountryService> _countryService;
 		private readonly Lazy<IStateProvinceService> _stateProvinceService;
+		private readonly Lazy<IEmailAccountService> _emailAccountService;
+		private readonly Lazy<IEmailSender> _emailSender;
 
 		private readonly Lazy<SeoSettings> _seoSettings;
 		private readonly Lazy<CustomerSettings> _customerSettings;
 		private readonly Lazy<DateTimeSettings> _dateTimeSettings;
 		private readonly Lazy<ForumSettings> _forumSettings;
+		private readonly Lazy<ContactDataSettings> _contactDataSettings;
 
 		public DataImporter(
 			ICommonServices services,
 			ICustomerService customerService,
+			IImportProfileService importProfileService,
 			Lazy<IRepository<NewsLetterSubscription>> subscriptionRepository,
 			Lazy<IRepository<Picture>> pictureRepository,
 			Lazy<IRepository<ProductPicture>> productPictureRepository,
@@ -95,13 +103,18 @@ namespace SmartStore.Services.DataExchange.Import
 			Lazy<IAffiliateService> affiliateService,
 			Lazy<ICountryService> countryService,
 			Lazy<IStateProvinceService> stateProvinceService,
+			Lazy<IEmailAccountService> emailAccountService,
+			Lazy<IEmailSender> emailSender,
 			Lazy<SeoSettings> seoSettings,
 			Lazy<CustomerSettings> customerSettings,
 			Lazy<DateTimeSettings> dateTimeSettings,
-			Lazy<ForumSettings> forumSettings)
+			Lazy<ForumSettings> forumSettings,
+			Lazy<ContactDataSettings> contactDataSettings)
 		{
 			_services = services;
 			_customerService = customerService;
+			_importProfileService = importProfileService;
+
 			_subscriptionRepository = subscriptionRepository;
 			_pictureRepository = pictureRepository;
 			_productPictureRepository = productPictureRepository;
@@ -125,11 +138,14 @@ namespace SmartStore.Services.DataExchange.Import
 			_affiliateService = affiliateService;
 			_countryService = countryService;
 			_stateProvinceService = stateProvinceService;
+			_emailAccountService = emailAccountService;
+			_emailSender = emailSender;
 
 			_seoSettings = seoSettings;
 			_customerSettings = customerSettings;
 			_dateTimeSettings = dateTimeSettings;
 			_forumSettings = forumSettings;
+			_contactDataSettings = contactDataSettings;
 
 			T = NullLocalizer.Instance;
 		}
@@ -169,15 +185,15 @@ namespace SmartStore.Services.DataExchange.Import
 			sb.AppendFormat("Records imported:\t{0}\r\n", result.NewRecords);
 			sb.AppendFormat("Records updated:\t{0}\r\n", result.ModifiedRecords);
 			sb.AppendLine();
-			sb.AppendFormat("Warnings:\t\t\t{0}\r\n", result.Messages.Count(x => x.MessageType == ImportMessageType.Warning));
-			sb.AppendFormat("Errors:\t\t\t\t{0}", result.Messages.Count(x => x.MessageType == ImportMessageType.Error));
+			sb.AppendFormat("Warnings:\t\t\t{0}\r\n", result.Warnings);
+			sb.AppendFormat("Errors:\t\t\t\t{0}", result.Errors);
 
 			ctx.Log.Information(sb.ToString());
 
 			foreach (var message in result.Messages)
 			{
 				if (message.MessageType == ImportMessageType.Error)
-					ctx.Log.Error(message.ToString());
+					ctx.Log.Error(message.ToString(), message.FullMessage);
 				else if (message.MessageType == ImportMessageType.Warning)
 					ctx.Log.Warning(message.ToString());
 				else
@@ -185,9 +201,74 @@ namespace SmartStore.Services.DataExchange.Import
 			}
 		}
 
+		private void SendCompletionEmail(DataImporterContext ctx)
+		{
+			var emailAccount = _emailAccountService.Value.GetDefaultEmailAccount();
+			var smtpContext = new SmtpContext(emailAccount);
+			var message = new EmailMessage();
+
+			var store = _services.StoreContext.CurrentStore;
+			var storeInfo = "{0} ({1})".FormatInvariant(store.Name, store.Url);
+			var intro = _services.Localization.GetResource("Admin.DataExchange.Import.CompletedEmail.Body").FormatInvariant(storeInfo);
+			var body = new StringBuilder(intro);
+			var result = ctx.ExecuteContext.Result;
+
+			if (result.LastError.HasValue())
+			{
+				body.AppendFormat("<p style=\"color: #B94A48;\">{0}</p>", result.LastError);
+			}
+
+			body.Append("<p>");
+
+			body.AppendFormat("<div>{0}: {1} &middot; {2}: {3}</div>",
+				T("Admin.Common.TotalRows"), result.TotalRecords,
+				T("Admin.Common.Processed"), result.AffectedRecords);
+
+			body.AppendFormat("<div>{0}: {1} &middot; {2}: {3}</div>",
+				T("Admin.Common.NewRecords"), result.NewRecords,
+				T("Admin.Common.Updated"), result.ModifiedRecords);
+
+			body.AppendFormat("<div>{0}: {1} &middot; {2}: {3}</div>",
+				T("Admin.Common.Errors"), result.Errors,
+				T("Admin.Common.Warnings"), result.Warnings);
+
+			body.Append("</p>");
+
+			message.From = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
+
+			if (_contactDataSettings.Value.WebmasterEmailAddress.HasValue())
+				message.To.Add(new EmailAddress(_contactDataSettings.Value.WebmasterEmailAddress));
+
+			if (message.To.Count == 0 && _contactDataSettings.Value.CompanyEmailAddress.HasValue())
+				message.To.Add(new EmailAddress(_contactDataSettings.Value.CompanyEmailAddress));
+
+			if (message.To.Count == 0)
+				message.To.Add(new EmailAddress(emailAccount.Email, emailAccount.DisplayName));
+
+			message.Subject = T("Admin.DataExchange.Import.CompletedEmail.Subject").Text.FormatInvariant(ctx.Request.Profile.Name);
+
+			message.Body = body.ToString();
+
+			_emailSender.Value.SendEmail(smtpContext, message);
+
+			//Core.Infrastructure.EngineContext.Current.Resolve<IQueuedEmailService>().InsertQueuedEmail(new QueuedEmail
+			//{
+			//	From = emailAccount.Email,
+			//	FromName = emailAccount.DisplayName,
+			//	To = message.To.First().Address,
+			//	Subject = message.Subject,
+			//	Body = message.Body,
+			//	CreatedOnUtc = DateTime.UtcNow,
+			//	EmailAccountId = emailAccount.Id,
+			//	SendManually = true
+			//});
+			//_services.DbContext.SaveChanges();
+		}
+
 		private void ImportCoreInner(DataImporterContext ctx, string filePath)
 		{
-			ctx.ExecuteContext.Result.Clear();
+			if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard)
+				return;
 
 			{
 				var logHead = new StringBuilder();
@@ -210,7 +291,6 @@ namespace SmartStore.Services.DataExchange.Import
 
 			CsvConfiguration csvConfiguration = null;
 			var extension = Path.GetExtension(filePath);
-			var take = (ctx.Request.Profile.Take > 0 ? ctx.Request.Profile.Take : int.MaxValue);
 
 			if (extension.IsCaseInsensitiveEqual(".csv"))
 			{
@@ -221,12 +301,19 @@ namespace SmartStore.Services.DataExchange.Import
 			if (csvConfiguration == null)
 			{
 				csvConfiguration = CsvConfiguration.ExcelFriendlyConfiguration;
-				ctx.Log.Warning("No CSV configuration provided for import profile. Fallback to Excel friendly configuration.");
+				ctx.ExecuteContext.Result.AddWarning("No CSV configuration provided for import profile. Fallback to Excel friendly configuration.");
 			}
 
 			using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
-				ctx.ExecuteContext.DataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfiguration, ctx.Request.Profile.Skip, take);
+				ctx.ExecuteContext.DataTable = LightweightDataTable.FromFile(
+					Path.GetFileName(filePath),
+					stream,
+					stream.Length,
+					csvConfiguration,
+					ctx.Request.Profile.Skip,
+					ctx.Request.Profile.Take > 0 ? ctx.Request.Profile.Take : int.MaxValue
+				);
 
 				try
 				{
@@ -235,18 +322,14 @@ namespace SmartStore.Services.DataExchange.Import
 				catch (Exception exception)
 				{
 					ctx.ExecuteContext.Abort = DataExchangeAbortion.Hard;
-					ctx.Log.Error("The importer failed: {0}.".FormatInvariant(exception.ToAllMessages()), exception);
+					ctx.ExecuteContext.Result.AddError(exception, "The importer failed: {0}.".FormatInvariant(exception.ToAllMessages()));
 				}
 
-				ctx.ExecuteContext.Result.EndDateUtc = DateTime.UtcNow;
-
 				if (ctx.ExecuteContext.IsMaxFailures)
-					ctx.Log.Warning("Import aborted. The maximum number of failures has been reached.");
+					ctx.ExecuteContext.Result.AddWarning("Import aborted. The maximum number of failures has been reached.");
 
 				if (ctx.CancellationToken.IsCancellationRequested)
-					ctx.Log.Warning("Import aborted. A cancellation has been requested.");
-
-				LogResult(ctx);
+					ctx.ExecuteContext.Result.AddWarning("Import aborted. A cancellation has been requested.");
 			}
 		}
 
@@ -344,10 +427,51 @@ namespace SmartStore.Services.DataExchange.Import
 				}
 				catch (Exception exception)
 				{
-					logger.ErrorsAll(exception);
+					ctx.ExecuteContext.Result.AddError(exception);
 				}
 				finally
 				{
+					try
+					{
+						// important because otherwise subsequent SaveChanges may fail (e.g. UpdateImportProfile)!
+						_services.DbContext.DetachAll(false);
+					}
+					catch (Exception exception)
+					{
+						logger.ErrorsAll(exception);
+					}
+
+					try
+					{
+						ctx.ExecuteContext.Result.EndDateUtc = DateTime.UtcNow;
+
+						LogResult(ctx);
+					}
+					catch (Exception exception)
+					{
+						logger.ErrorsAll(exception);
+					}
+
+					try
+					{
+						ctx.Request.Profile.ResultInfo = XmlHelper.Serialize(ctx.ExecuteContext.Result.Clone());
+
+						_importProfileService.UpdateImportProfile(ctx.Request.Profile);
+					}
+					catch (Exception exception)
+					{
+						logger.ErrorsAll(exception);
+					}
+
+					try
+					{
+						SendCompletionEmail(ctx);
+					}
+					catch (Exception exception)
+					{
+						logger.ErrorsAll(exception);
+					}
+
 					try
 					{
 						ctx.Request.CustomData.Clear();

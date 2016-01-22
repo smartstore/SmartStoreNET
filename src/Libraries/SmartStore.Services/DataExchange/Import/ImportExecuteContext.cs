@@ -96,7 +96,7 @@ namespace SmartStore.Services.DataExchange.Import
 		{
 			get
 			{
-				return Result.Messages.Count(x => x.MessageType == ImportMessageType.Error) > 11;
+				return Result.Errors > 11;
 			}
 		}
 

@@ -87,7 +87,7 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.CompletedEmail.Subject",
 				"Export of profile \"{0}\" has been finished",
-				"Export von Profile \"{0}\" ist abgeschlossen");
+				"Export von Profil \"{0}\" ist abgeschlossen");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.CompletedEmail.Body",
 				"This is an automatic notification of store \"{0}\" about a recent data export.",

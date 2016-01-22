@@ -31,6 +31,7 @@
 				<th class="centered">@T("Common.Enabled")</th>
 				<th>@T("Admin.Common.Entity")</th>
 				<th>@T("Admin.Common.ImportFiles")</th>
+				<th>@T("Admin.DataExchange.Import.LastImportResult")</th>
 				<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
 				<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
 				<th>@T("Admin.Common.Actions")</th>
@@ -58,6 +59,16 @@
 									<a href="@Url.Action("DownloadImportFile", new { id = profile.Id, name = fileName })" download>@fileName</a>
 								</li>
 							</ul>
+						}
+					</td>
+					<td id="ProfileImportResult@(profile.Id)">
+						@if (profile.ImportResult != null)
+						{
+							@Html.Partial("ProfileImportResult", profile.ImportResult)
+						}
+						else
+						{
+							<span class="muted">@("".NaIfEmpty())</span>
 						}
 					</td>
 					<td>
@@ -188,6 +199,10 @@ else
 						tr.find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
 						tr.find('.last-run-info').html(data.lastRunHtml);
 					}
+				});
+
+				$.get('@Url.Action("ProfileListDetails")?profileId=' + profileId, function (response) {
+					$('#ProfileImportResult' + profileId).html(response.importResult || '');
 				});
 			}
 		});

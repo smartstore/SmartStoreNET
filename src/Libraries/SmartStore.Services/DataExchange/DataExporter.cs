@@ -516,7 +516,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (ctx.Result.LastError.HasValue())
 			{
-				body.AppendFormat("<p>{0}</p>", ctx.Result.LastError);
+				body.AppendFormat("<p style=\"color: #B94A48;\">{0}</p>", ctx.Result.LastError);
 			}
 
 			if (ctx.IsFileBasedExport && File.Exists(zipPath))

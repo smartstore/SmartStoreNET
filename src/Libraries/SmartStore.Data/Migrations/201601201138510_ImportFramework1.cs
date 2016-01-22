@@ -54,6 +54,25 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Import.DefaultProfileNames",
 				"My product import;My category import;My customer import;My newsletter subscription import",
 				"Mein Produktimport;Mein Warengruppenimport;Mein Kundenimport;Mein Newsletter-Abonnement-Import");
+
+			builder.AddOrUpdate("Admin.DataExchange.Import.LastImportResult",
+				"Last import result",
+				"Letztes Importergebnis");
+
+			builder.AddOrUpdate("Admin.Common.TotalRows", "Total rows", "Zeilen insgesamt");
+			builder.AddOrUpdate("Admin.Common.Processed", "Processed", "Verarbeitet");
+			builder.AddOrUpdate("Admin.Common.NewRecords", "New records", "Neue Datensätze");
+			builder.AddOrUpdate("Admin.Common.Updated", "Updated", "Aktualisiert");
+			builder.AddOrUpdate("Admin.Common.Warnings", "Warnings", "Warnungen");
+			builder.AddOrUpdate("Admin.Common.Errors", "Errors", "Fehler");
+
+			builder.AddOrUpdate("Admin.DataExchange.Import.CompletedEmail.Body",
+				"This is an automatic notification of store \"{0}\" about a recent data import.",
+				"Dies ist eine automatische Benachrichtung von Shop \"{0}\" über einen erfolgten Datenimport.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Import.CompletedEmail.Subject",
+				"Import of profile \"{0}\" has been finished",
+				"Import von Profil \"{0}\" ist abgeschlossen");
 		}
 	}
 }

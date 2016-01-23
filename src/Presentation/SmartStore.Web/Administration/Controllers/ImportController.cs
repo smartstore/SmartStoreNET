@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using SmartStore.Admin.Extensions;
 using SmartStore.Admin.Models.DataExchange;
@@ -310,59 +311,80 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
+			var hasErrors = false;
 			var map = new ColumnMap();
 			var mapConverter = new ColumnMapConverter();
-			var filePath = profile.GetImportFiles().First();
-
 			CsvConfiguration csvConfig = null;
-			if (model.CsvConfiguration != null)
+
+			if (!ModelState.IsValid)
 			{
-				csvConfig = model.CsvConfiguration.Clone();
+				PrepareProfileModel(model, profile, true, map);
+				return View(model);
 			}
 
-			using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+			try
 			{
-				var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfig ?? CsvConfiguration.ExcelFriendlyConfiguration, 0, 1);
-
-				foreach (var column in dataTable.Columns.Where(x => x.Name.HasValue()))
+				if (model.CsvConfiguration != null)
 				{
-					var index = dataTable.Columns.IndexOf(column);
-					var key = "ColumnMapping.Property." + index.ToString();
-
-					if (form.AllKeys.Contains(key))
-					{
-						// allow to nil an entity property name to explicitly ignore a column
-						var entityProperty = form[key];
-						var defaultValue = form["ColumnMapping.Default." + index.ToString()];
-
-						map.AddMapping(column.Name, null, entityProperty, defaultValue);
-					}
+					csvConfig = model.CsvConfiguration.Clone();
 				}
 
-				// add model state error for invalid mappings
-				foreach (var invalidMapping in map.GetInvalidMappings())
+				var filePath = profile.GetImportFiles().First();
+				using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
-					// do not mark columns as invalid where column name equals entity property name
-					if (invalidMapping.Key != invalidMapping.Value.Property)
+					var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfig ?? CsvConfiguration.ExcelFriendlyConfiguration, 0, 1);
+
+					foreach (var column in dataTable.Columns.Where(x => x.Name.HasValue()))
 					{
-						var column = dataTable.Columns.First(x => x.Name == invalidMapping.Key);
 						var index = dataTable.Columns.IndexOf(column);
 						var key = "ColumnMapping.Property." + index.ToString();
 
-						ModelState.AddModelError(key, T("Admin.DataExchange.ColumnMapping.Validate.EntityMultipleMapped", invalidMapping.Value.Property));
+						if (form.AllKeys.Contains(key))
+						{
+							// allow to nil an entity property name to explicitly ignore a column
+							var entityProperty = form[key];
+							var defaultValue = form["ColumnMapping.Default." + index.ToString()];
+
+							map.AddMapping(column.Name, null, entityProperty, defaultValue);
+						}
+					}
+
+					// add model state error for invalid mappings
+					foreach (var invalidMapping in map.GetInvalidMappings())
+					{
+						// do not mark columns as invalid where column name equals entity property name
+						if (invalidMapping.Key != invalidMapping.Value.Property)
+						{
+							var column = dataTable.Columns.First(x => x.Name == invalidMapping.Key);
+							var index = dataTable.Columns.IndexOf(column);
+							var key = "ColumnMapping.Property." + index.ToString();
+
+							ModelState.AddModelError(key, T("Admin.DataExchange.ColumnMapping.Validate.EntityMultipleMapped", invalidMapping.Value.Property));
+						}
 					}
 				}
 			}
-
-			if (ModelState.IsValid)
+			catch (Exception exception)
 			{
-				profile.Name = model.Name;
-				profile.EntityType = model.EntityType;
-				profile.Enabled = model.Enabled;
-				profile.Skip = model.Skip;
-				profile.Take = model.Take;
-				profile.FileTypeConfiguration = null;
+				hasErrors = true;
+				NotifyError(exception, true, false);
+			}
 
+			if (!ModelState.IsValid)
+			{
+				PrepareProfileModel(model, profile, true, map);
+				return View(model);
+			}
+
+			profile.Name = model.Name;
+			profile.EntityType = model.EntityType;
+			profile.Enabled = model.Enabled;
+			profile.Skip = model.Skip;
+			profile.Take = model.Take;
+			profile.FileTypeConfiguration = null;
+
+			try
+			{
 				profile.ColumnMapping = mapConverter.ConvertTo(map);
 
 				if (profile.FileType == ImportFileType.CSV && csvConfig != null)
@@ -370,17 +392,21 @@ namespace SmartStore.Admin.Controllers
 					var csvConverter = new CsvConfigurationConverter();
 					profile.FileTypeConfiguration = csvConverter.ConvertTo(csvConfig);
 				}
+			}
+			catch (Exception exception)
+			{
+				hasErrors = true;
+				NotifyError(exception, true, false);
+			}
 
+			if (!hasErrors)
+			{
 				_importService.UpdateImportProfile(profile);
 
 				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
-
-				return (continueEditing ? RedirectToAction("Edit", new { id = profile.Id }) : RedirectToAction("List"));
 			}
 
-			PrepareProfileModel(model, profile, true, map);
-
-			return View(model);
+			return (continueEditing ? RedirectToAction("Edit", new { id = profile.Id }) : RedirectToAction("List"));
 		}
 
 		[HttpPost]

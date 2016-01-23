@@ -73,6 +73,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Import.CompletedEmail.Subject",
 				"Import of profile \"{0}\" has been finished",
 				"Import von Profil \"{0}\" ist abgeschlossen");
+
+			builder.AddOrUpdate("Admin.DataExchange.Import.ColumnMapping",
+				"Column mapping",
+				"Spaltenzuordnung");
 		}
 	}
 }

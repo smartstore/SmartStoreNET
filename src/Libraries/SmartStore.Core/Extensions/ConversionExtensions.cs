@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Globalization;
-using System.Runtime.Serialization.Formatters.Binary;
-using SmartStore.Utilities;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
 using SmartStore.ComponentModel;
+using SmartStore.Utilities;
 
 namespace SmartStore
 {
-    public static class ConversionExtensions
+	public static class ConversionExtensions
     {
         #region Object
 
@@ -121,7 +121,17 @@ namespace SmartStore
 			return defaultValue;
         }
 
-        public static float ToFloat(this string value, float defaultValue = 0)
+		public static char ToChar(this string value, bool unescape = false, char defaultValue = '\0')
+		{
+			char result;
+			if (value.HasValue() && char.TryParse(unescape ? Regex.Unescape(value) : value, out result))
+			{
+				return result;
+			}
+			return defaultValue;
+		}
+
+		public static float ToFloat(this string value, float defaultValue = 0)
         {
             float result;
 			if (CommonHelper.TryConvert(value, out result))

@@ -8,6 +8,7 @@
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.TempFileName)
+@Html.HiddenFor(x => x.EntityType)
 
 @if (Model.Id == 0)
 {
@@ -109,10 +110,6 @@ else if (Model.ExistingFileNames.Count > 1)
 				</td>
 			</tr>
 		}
-		else
-		{
-			@Html.HiddenFor(x => x.EntityType)
-		}
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Name)
@@ -153,6 +150,7 @@ else if (Model.ExistingFileNames.Count > 1)
 	if (Model.CsvConfiguration != null)
 	{
 		var viewData = new ViewDataDictionary();
+		viewData.Add("ShowGroupCaption", true);
 		viewData.TemplateInfo.HtmlFieldPrefix = "CsvConfiguration";
 		viewData.ModelState.Merge(ViewData.ModelState);
 		@Html.Partial("CsvConfiguration", Model.CsvConfiguration, viewData)
@@ -218,7 +216,19 @@ else if (Model.ExistingFileNames.Count > 1)
 			allowClear: true,
 			minimumResultsForSearch: 16,
 			formatResult: columnMappingFormatting,
-			formatSelection: columnMappingFormatting
+			formatSelection: columnMappingFormatting,
+			matcher: function (term, text, opt) {
+				var searchFor = term.toUpperCase();
+
+				if (text.toUpperCase().indexOf(searchFor) >= 0)
+					return true;
+
+				var val = $(opt).val();
+				if (val && val.toUpperCase().indexOf(searchFor) >= 0)
+					return true;
+
+				return false;
+			}
 		});
 
 		function columnMappingFormatting(item, container, query) {

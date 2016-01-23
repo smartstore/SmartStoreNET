@@ -2,10 +2,18 @@
 @model ImportProfileModel
 @if (Model.ColumnMappings != null && Model.ColumnMappings.Any())
 {
-	<p>&nbsp;</p>
+	<table class="adminContent">
+		<tr class="adminSeparator">
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Admin.DataExchange.Import.ColumnMapping")</div>
+				</div>
+			</td>
+		</tr>
+	</table>
 
 	<div class="alert alert-info">
-		<button type="button" class="close" data-dismiss="alert">×</button>
+		<button type="button" class="close" data-dismiss="alert">&#215;</button>
 		@Html.Raw(T("Admin.DataExchange.ColumnMapping.Note"))
 	</div>
 

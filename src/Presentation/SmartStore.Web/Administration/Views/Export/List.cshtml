@@ -29,9 +29,6 @@
 			<tr>
 				<th class="centered">@T("Common.Image")</th>
 				<th>@T("Admin.DataExchange.Export.Name")</th>
-				<th class="centered">@T("Admin.DataExchange.Export.IsSystemProfile")</th>
-				<th>@T("Common.Provider")</th>
-				<th class="centered">@T("Common.Enabled")</th>
 				<th>@T("Admin.DataExchange.Export.EntityType")</th>
 				<th class="centered">@T("Admin.DataExchange.Export.FileExtension")</th>
 				<th class="centered">@T("Admin.DataExchange.Export.ExportFiles")</th>
@@ -41,35 +38,15 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var profile in Model)
+			@foreach (var profile in Model.OrderBy(x => x.Name))
 			{
 				<tr data-profile-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
 					<td class="centered">
-						<img src="@profile.Provider.ThumbnailUrl" alt="@profile.Provider.FriendlyName" />
+						<img src="@profile.Provider.ThumbnailUrl" alt="@profile.Provider.FriendlyName" class="@(profile.Enabled ? "" : "o40")" />
 					</td>
 					<td>
 						<a href="@Url.Action("Edit", new { id = profile.Id })">@profile.Name</a>
-						@if (profile.SystemName.HasValue())
-						{
-							<div class="muted">@profile.SystemName</div>
-						}
-					</td>
-					<td class="centered">
-						@Html.SymbolForBool(profile.IsSystemProfile)
-					</td>
-					<td>
-						@if (profile.Provider.ConfigurationUrl.HasValue())
-						{
-							<a href="@profile.Provider.ConfigurationUrl">@profile.Provider.FriendlyName.NaIfEmpty()</a>
-						}
-						else
-						{
-							@profile.Provider.FriendlyName.NaIfEmpty()
-						}
 						<div class="muted">@profile.ProviderSystemName</div>
-					</td>
-					<td class="centered">
-						@Html.SymbolForBool(profile.Enabled)
 					</td>
 					<td>
 						@profile.Provider.EntityTypeName.NaIfEmpty()
@@ -91,19 +68,19 @@
 						</div>
 						<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
 					</td>
-					<td>
-						<button type="button" class="btn btn-small btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"
-							data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId">
+					<td style="width: 200px">
+						<button type="button" class="btn btn-block btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")" 
+								data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId">
 							<i class="fa fa-play"></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
 						</button>
 
-						<a href="@Url.Action("CancelJob", "ScheduleTask", new { id = profile.ScheduleTaskId })" class="btn btn-small btn-danger btn-cancel-task@(!profile.IsTaskRunning ? " hide" : "")"
+						<a href="@Url.Action("CancelJob", "ScheduleTask", new { id = profile.ScheduleTaskId })" class="btn btn-block btn-danger btn-cancel-task@(!profile.IsTaskRunning ? " hide" : "")" 
 						   data-task-id="@profile.ScheduleTaskId" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
 							@T("Common.Cancel")
 						</a>
 
-						<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })"
-						   class="btn btn-small btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " hide" : "")">
+						<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })" 
+						   class="btn btn-block btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " hide" : "")">
 							<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
 						</a>
 					</td>

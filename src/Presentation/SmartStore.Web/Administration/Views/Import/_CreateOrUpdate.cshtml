@@ -66,12 +66,9 @@ else if (Model.ExistingFileNames.Count > 1)
 						@Html.IconForFileExtension(Path.GetExtension(fileName), false)
 						<a href="@Url.Action("DownloadImportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
 
-						@if (Model.ExistingFileNames.Count > 1)
-						{
-							<button type="button" class="btn btn-mini btn-right import-file-delete" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
-								<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
-							</button>
-						}
+						<button type="button" class="btn btn-mini btn-right import-file-delete" data-url="@Url.Action("DeleteImportFile", new { id = Model.Id, name = fileName })">
+							<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+						</button>
 					</p>
 				}
 			</td>
@@ -156,7 +153,10 @@ else if (Model.ExistingFileNames.Count > 1)
 		@Html.Partial("CsvConfiguration", Model.CsvConfiguration, viewData)
 	}
 
-	@Html.Partial("_ColumnMappings")
+	if (Model.ColumnMappings != null && Model.ColumnMappings.Any() && Model.ExistingFileNames.Any())
+	{
+		@Html.Partial("_ColumnMappings")
+	}
 }
 
 <script type="text/javascript">
@@ -257,8 +257,7 @@ else if (Model.ExistingFileNames.Count > 1)
 							});
 						}
 
-						var val = option.val(),
-							mappingIndex = $.inArray(val, mappedProperties);
+						var mappingIndex = $.inArray(item.id, mappedProperties);
 
 						html += '<div class="clear"></div>';
 						html += (mappingIndex === -1 ? '<div>' : '<div class="muted">');
@@ -266,14 +265,18 @@ else if (Model.ExistingFileNames.Count > 1)
 						html += '<span style="display: inline-block; margin-right: 0;">';
 						html += (mappingIndex === -1 ? '<i class="fa fa-fw fa-chain-broken text-success" />' : '<i class="fa fa-fw fa-link text-warning" />');
 						html += '</span>';
-
-						// do not render for selection (text may overlap)
-						if (query) {
-							html += '<span class="muted pull-right" style="font-size: 0.9em;">' + val + '</span>';
-						}
 					}
 
-					html += '<span class="ml4" style="display: inline-block;">' + item.text + '</span>';
+					html += '<span class="muted pull-right" style="font-size: 0.9em;">' + item.id + '</span>';
+
+					html += '<span class="ml4" style="display: inline-block;" title="';
+					if (item.text.length > 60) {
+						html += item.text + '">' + item.text.substring(0, 60) + '…';
+					}
+					else {
+						html += '">' + item.text;
+					}
+					html += '</span>';
 					html += '</div>';
 
 					return html;

@@ -15,7 +15,7 @@
 					</td>
 					<td class="adminData">
 						<select name="@Html.FieldNameFor(x => x.ProviderSystemName)" id="@Html.FieldIdFor(x => x.ProviderSystemName)" class="large-select2 control-large">
-							@foreach (var item in Model.AvailableProviders)
+							@foreach (var item in Model.AvailableProviders.OrderBy(x => x.FriendlyName))
 							{
 								<option value="@item.SystemName" data-id="@item.Id" data-imageurl="@item.ImageUrl">@item.FriendlyName</option>
 							}
@@ -32,7 +32,7 @@
 							<select name="@Html.FieldNameFor(x => x.CloneProfileId)" id="@Html.FieldIdFor(x => x.CloneProfileId)" class="large-select2 control-large" 
 									data-placeholder="@Model.UnspecifiedString">
 								<option></option>
-								@foreach (var item in Model.AvailableProfiles)
+								@foreach (var item in Model.AvailableProfiles.OrderBy(x => x.FriendlyName))
 								{
 									<option value="@item.Id" data-systemname="@item.SystemName" data-imageurl="@item.ImageUrl">@item.FriendlyName</option>
 								}

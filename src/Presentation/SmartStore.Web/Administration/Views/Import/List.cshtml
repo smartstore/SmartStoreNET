@@ -28,7 +28,6 @@
 		<thead>
 			<tr>
 				<th>@T("Admin.DataExchange.Import.Name")</th>
-				<th class="centered">@T("Common.Enabled")</th>
 				<th>@T("Admin.Common.Entity")</th>
 				<th>@T("Admin.Common.ImportFiles")</th>
 				<th>@T("Admin.DataExchange.Import.LastImportResult")</th>
@@ -43,9 +42,6 @@
 				<tr data-profile-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
 					<td>
 						<a href="@Url.Action("Edit", new { id = profile.Id })">@profile.Name</a>
-					</td>
-					<td class="centered">
-						@Html.SymbolForBool(profile.Enabled)
 					</td>
 					<td>
 						@profile.EntityTypeName
@@ -83,18 +79,18 @@
 						<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
 					</td>
 					<td style="width: 200px">
-						<button type="button" class="btn xbtn-small btn-block btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"
+						<button type="button" class="btn btn-block btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"
 							data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId">
 							<i class="fa fa-play"></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
 						</button>
 
-						<a href="@Url.Action("CancelJob", "ScheduleTask", new { id = profile.ScheduleTaskId })" class="btn xbtn-small btn-block btn-danger btn-cancel-task@(!profile.IsTaskRunning ? " hide" : "")"
+						<a href="@Url.Action("CancelJob", "ScheduleTask", new { id = profile.ScheduleTaskId })" class="btn btn-block btn-danger btn-cancel-task@(!profile.IsTaskRunning ? " hide" : "")"
 						   data-task-id="@profile.ScheduleTaskId" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
 							@T("Common.Cancel")
 						</a>
 
 						<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })"
-						   class="btn xbtn-small btn-block btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " hide" : "")">
+						   class="btn btn-block btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " hide" : "")">
 							<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
 						</a>
 					</td>

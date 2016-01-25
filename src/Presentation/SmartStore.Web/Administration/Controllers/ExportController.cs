@@ -188,7 +188,6 @@ namespace SmartStore.Admin.Controllers
 				if (descriptor != null)
 				{
 					model.Provider.Url = descriptor.Url;
-					model.Provider.ConfigurationUrl = Url.Action("ConfigurePlugin", "Plugin", new { systemName = descriptor.SystemName, area = "Admin" });
 					model.Provider.Author = descriptor.Author;
 					model.Provider.Version = descriptor.Version.ToString();
 				}

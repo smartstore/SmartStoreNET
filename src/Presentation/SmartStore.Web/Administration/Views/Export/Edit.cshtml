@@ -124,16 +124,7 @@
 					@Html.SmartLabelFor(x => x.Provider.FriendlyName)
 				</td>
 				<td class="adminData">
-					@if (Model.Provider.ConfigurationUrl.HasValue())
-					{
-						<a href="@Model.Provider.ConfigurationUrl" title="@T("Admin.Configuration.Plugins.Fields.Configure")">
-							@Model.Provider.FriendlyName.NaIfEmpty()
-						</a>
-					}
-					else
-					{
-						<div>@Model.Provider.FriendlyName.NaIfEmpty()</div>
-					}
+					<div>@Model.Provider.FriendlyName.NaIfEmpty()</div>
 					<div class="muted">@(Model.ProviderSystemName.NaIfEmpty())</div>
 				</td>
 			</tr>

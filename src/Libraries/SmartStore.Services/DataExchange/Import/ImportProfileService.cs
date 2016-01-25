@@ -153,8 +153,6 @@ namespace SmartStore.Services.DataExchange.Import
 			if (profile == null)
 				throw new ArgumentNullException("profile");
 
-			var ctx = _importProfileRepository.Context;
-
 			_importProfileRepository.Update(profile);
 
 			_eventPublisher.EntityUpdated(profile);

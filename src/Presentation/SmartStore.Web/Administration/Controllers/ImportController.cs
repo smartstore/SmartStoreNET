@@ -492,9 +492,19 @@ namespace SmartStore.Admin.Controllers
 							if (!error.HasValue())
 							{
 								var folder = profile.GetImportFolder(true, true);
-								var destFile = Path.Combine(folder, Path.GetFileName(postedFile.FileName));
+								var fileName = Path.GetFileName(postedFile.FileName);
 
-								success = postedFile.Stream.ToFile(destFile);
+								success = postedFile.Stream.ToFile(Path.Combine(folder, fileName));
+
+								if (success)
+								{
+									var fileType = (Path.GetExtension(fileName).IsCaseInsensitiveEqual(".xlsx") ? ImportFileType.XLSX : ImportFileType.CSV);
+									if (fileType != profile.FileType)
+									{
+										profile.FileType = fileType;
+										_importService.UpdateImportProfile(profile);
+									}
+								}
 							}
 						}
 					}
@@ -582,11 +592,8 @@ namespace SmartStore.Admin.Controllers
 				if (profile != null)
 				{
 					var importFiles = profile.GetImportFiles();
-					if (importFiles.Count > 1)
-					{
-						var path = Path.Combine(profile.GetImportFolder(true), name);
-						FileSystemHelper.Delete(path);
-					}
+					var path = Path.Combine(profile.GetImportFolder(true), name);
+					FileSystemHelper.Delete(path);
 				}
 			}
 			return RedirectToAction("Edit", new { id = id });

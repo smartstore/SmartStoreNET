@@ -433,7 +433,10 @@ namespace SmartStore.Services.DataExchange.Import
 				{
 					try
 					{
-						// important because otherwise subsequent SaveChanges may fail (e.g. UpdateImportProfile)!
+						// database context sharing problem: if there are entities in modified state left by the provider due to SaveChanges failure,
+						// then all subsequent SaveChanges would fail too (e.g. IImportProfileService.UpdateImportProfile, IScheduledTaskService.UpdateTask...).
+						// so whatever it is, detach\dispose all that the tracker still has tracked.
+
 						_services.DbContext.DetachAll(false);
 					}
 					catch (Exception exception)

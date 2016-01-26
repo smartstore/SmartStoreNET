@@ -75,8 +75,12 @@ namespace SmartStore.Data.Migrations
 				"Import von Profil \"{0}\" ist abgeschlossen");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.ColumnMapping",
-				"Column mapping",
-				"Spaltenzuordnung");
+				"Mapping of import fields",
+				"Zuordnung der Importfelder");
+
+			builder.AddOrUpdate("Admin.DataExchange.Import.SelectTargetProperty",
+				"Create new mapping here",
+				"Hier neue Zuordnung vornehmen");
 		}
 	}
 }

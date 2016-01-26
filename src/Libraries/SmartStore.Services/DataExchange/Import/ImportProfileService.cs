@@ -10,6 +10,7 @@ using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Events;
+using SmartStore.Core.Localization;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
@@ -25,6 +26,7 @@ namespace SmartStore.Services.DataExchange.Import
 		private readonly IEventPublisher _eventPublisher;
 		private readonly IScheduleTaskService _scheduleTaskService;
 		private readonly ILocalizationService _localizationService;
+		private readonly ILanguageService _languageService;
 		private readonly DataExchangeSettings _dataExchangeSettings;
 
 		public ImportProfileService(
@@ -32,12 +34,14 @@ namespace SmartStore.Services.DataExchange.Import
 			IEventPublisher eventPublisher,
 			IScheduleTaskService scheduleTaskService,
 			ILocalizationService localizationService,
+			ILanguageService languageService,
 			DataExchangeSettings dataExchangeSettings)
 		{
 			_importProfileRepository = importProfileRepository;
 			_eventPublisher = eventPublisher;
 			_scheduleTaskService = scheduleTaskService;
 			_localizationService = localizationService;
+			_languageService = languageService;
 			_dataExchangeSettings = dataExchangeSettings;
 		}
 
@@ -221,6 +225,17 @@ namespace SmartStore.Services.DataExchange.Import
 						var context = ((IObjectContextAdapter)_importProfileRepository.Context).ObjectContext;
 						var container = context.MetadataWorkspace.GetEntityContainer(context.DefaultContainerName, DataSpace.CSpace);
 
+						var allLanguages = _languageService.GetAllLanguages(true);
+						var allLanguageNames = allLanguages.ToDictionary(x => x.UniqueSeoCode, x => LocalizationHelper.GetLanguageNativeName(x.LanguageCulture) ?? x.Name);
+
+						var localizableProperties = new Dictionary<ImportEntityType, string[]>
+						{
+							{ ImportEntityType.Product, new string[] { "Name", "ShortDescription", "FullDescription", "MetaKeywords", "MetaDescription", "MetaTitle", "SeName" } },
+							{ ImportEntityType.Category, new string[] { "Name", "FullName", "Description", "BottomDescription", "MetaKeywords", "MetaDescription", "MetaTitle", "SeName" } },
+							{ ImportEntityType.Customer, new string[] {  } },
+							{ ImportEntityType.NewsLetterSubscription, new string[] {  } }
+						};
+
 						foreach (ImportEntityType type in Enum.GetValues(typeof(ImportEntityType)))
 						{
 							EntitySet entitySet = null;
@@ -245,6 +260,17 @@ namespace SmartStore.Services.DataExchange.Import
 									var localizedValue = GetLocalizedPropertyName(type, member.Name);
 
 									dic.Add(member.Name, localizedValue.NaIfEmpty());
+
+									if (localizableProperties[type].Contains(member.Name))
+									{
+										foreach (var language in allLanguages)
+										{
+											dic.Add(
+												"{0}[{1}]".FormatInvariant(member.Name, language.UniqueSeoCode.EmptyNull().ToLower()),
+												"{0} {1}".FormatInvariant(localizedValue.NaIfEmpty(), allLanguageNames[language.UniqueSeoCode])
+											);
+										}
+									}
 								}
 							}
 

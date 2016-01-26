@@ -46,9 +46,13 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool LogFileExists { get; set; }
 		public string TempFileName { get; set; }
 		public string UnspecifiedString { get; set; }
+		public string AddNewString { get; set; }
+		public string DeleteString { get; set; }
 
 		public CsvConfigurationModel CsvConfiguration { get; set; }
+
 		public List<ColumnMappingItemModel> ColumnMappings { get; set; }
+		public List<ColumnMappingItemModel> AvailableSourceColumns { get; set; }
 		public List<SelectListItem> AvailableEntityProperties { get; set; }
 	}
 
@@ -56,7 +60,6 @@ namespace SmartStore.Admin.Models.DataExchange
 	public class ColumnMappingItemModel
 	{
 		public int Index { get; set; }
-		public bool IsNilProperty { get; set; }
 
 		public string Column { get; set; }
 		public string ColumnWithoutIndex { get; set; }
@@ -66,6 +69,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string LanguageDescription { get; set; }
 		public string FlagImageFileName { get; set; }
 
+		public bool IsNilProperty { get; set; }
 		public string Property { get; set; }
 		public string Default { get; set; }
 	}

@@ -54,21 +54,38 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareColumnMappingModels(ImportProfile profile, ImportProfileModel model, CsvConfiguration csvConfiguration, ColumnMap invalidMap = null)
 		{
-			model.ColumnMappings = new List<ColumnMappingItemModel>();
+			model.AvailableSourceColumns = new List<ColumnMappingItemModel>();
 			model.AvailableEntityProperties = new List<SelectListItem>();
 
 			try
 			{
+				var mapConverter = new ColumnMapConverter();
+				var map = (invalidMap != null ? invalidMap : mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping));
+				var hasMappings = (map != null && map.Mappings.Any());
+
+				if (hasMappings)
+				{
+					model.ColumnMappings = map.Mappings
+						.Select(x => new ColumnMappingItemModel
+						{
+							Column = x.Key,
+							Property = x.Value.Property,
+							IsNilProperty = x.Value.Property.IsEmpty(),
+							Default = x.Value.Default
+						})
+						.ToList();
+				}
+				else
+				{
+					model.ColumnMappings = new List<ColumnMappingItemModel>();
+				}
+
 				var files = profile.GetImportFiles();
 				if (!files.Any())
 					return;
 
 				var filePath = files.First();
-				var mapConverter = new ColumnMapConverter();
 				var allLanguages = _languageService.GetAllLanguages(true);
-
-				var map = (invalidMap != null ? invalidMap : mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping));
-				var hasMappings = (map != null && map.Mappings.Any());
 
 				var destProperties = _importService.GetImportableEntityProperties(profile.EntityType);
 
@@ -83,8 +100,7 @@ namespace SmartStore.Admin.Controllers
 
 					foreach (var column in dataTable.Columns.Where(x => x.Name.HasValue()))
 					{
-						string columnWithoutIndex;
-						string columnIndex;
+						string columnWithoutIndex, columnIndex;
 						ColumnMap.ParseSourceColumn(column.Name, out columnWithoutIndex, out columnIndex);
 
 						var mapModel = new ColumnMappingItemModel
@@ -110,18 +126,18 @@ namespace SmartStore.Admin.Controllers
 							}
 						}
 
-						if (hasMappings)
-						{
-							var mapping = map.Mappings.FirstOrDefault(x => x.Key == column.Name);
-							if (mapping.Value != null)
-							{
-								mapModel.Property = mapping.Value.Property;
-								mapModel.Default = mapping.Value.Default;
-								mapModel.IsNilProperty = mapping.Value.Property.IsEmpty();
-							}
-						}
+						//if (hasMappings)
+						//{
+						//	var mapping = map.Mappings.FirstOrDefault(x => x.Key == column.Name);
+						//	if (mapping.Value != null)
+						//	{
+						//		mapModel.Property = mapping.Value.Property;
+						//		mapModel.Default = mapping.Value.Default;
+						//		mapModel.IsNilProperty = mapping.Value.Property.IsEmpty();
+						//	}
+						//}
 
-						model.ColumnMappings.Add(mapModel);
+						model.AvailableSourceColumns.Add(mapModel);
 					}
 				}
 			}
@@ -148,6 +164,8 @@ namespace SmartStore.Admin.Controllers
 				model.LogFileExists = System.IO.File.Exists(profile.GetImportLogPath());
 				model.EntityTypeName = profile.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
 				model.UnspecifiedString = T("Common.Unspecified");
+				model.AddNewString = T("Common.AddNew");
+				model.DeleteString = T("Common.Delete");
 
 				model.ExistingFileNames = profile.GetImportFiles()
 					.Select(x => Path.GetFileName(x))
@@ -329,40 +347,64 @@ namespace SmartStore.Admin.Controllers
 					csvConfig = model.CsvConfiguration.Clone();
 				}
 
-				var filePath = profile.GetImportFiles().First();
-				using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+				var propertyKeyPrefix = "ColumnMapping.Property.";
+				var allPropertyKeys = form.AllKeys.Where(x => x.HasValue() && x.StartsWith(propertyKeyPrefix));
+
+				foreach (var key in allPropertyKeys)
 				{
-					var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfig ?? CsvConfiguration.ExcelFriendlyConfiguration, 0, 1);
+					var index = key.Substring(propertyKeyPrefix.Length);
+					var property = form[key];
+					var column = form["ColumnMapping.Column." + index];
+					var defaultValue = form["ColumnMapping.Default." + index];
 
-					foreach (var column in dataTable.Columns.Where(x => x.Name.HasValue()))
+					string columnWithoutIndex, columnIndex;
+
+					if (ColumnMap.ParseSourceColumn(column, out columnWithoutIndex, out columnIndex))
 					{
-						var index = dataTable.Columns.IndexOf(column);
-						var key = "ColumnMapping.Property." + index.ToString();
+						var result = map.AddMapping(column, columnIndex, property, defaultValue);
 
-						if (form.AllKeys.Contains(key))
+						if (!result)
 						{
-							// allow to nil an entity property name to explicitly ignore a column
-							var entityProperty = form[key];
-							var defaultValue = form["ColumnMapping.Default." + index.ToString()];
-
-							map.AddMapping(column.Name, null, entityProperty, defaultValue);
-						}
-					}
-
-					// add model state error for invalid mappings
-					foreach (var invalidMapping in map.GetInvalidMappings())
-					{
-						// do not mark columns as invalid where column name equals entity property name
-						if (invalidMapping.Key != invalidMapping.Value.Property)
-						{
-							var column = dataTable.Columns.First(x => x.Name == invalidMapping.Key);
-							var index = dataTable.Columns.IndexOf(column);
-							var key = "ColumnMapping.Property." + index.ToString();
-
-							ModelState.AddModelError(key, T("Admin.DataExchange.ColumnMapping.Validate.EntityMultipleMapped", invalidMapping.Value.Property));
+							// add model state error for multiple mapped properties
+							ModelState.AddModelError("", T("Admin.DataExchange.ColumnMapping.Validate.EntityMultipleMapped", property));
 						}
 					}
 				}
+
+				//var filePath = profile.GetImportFiles().First();
+				//using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+				//{
+				//	var dataTable = LightweightDataTable.FromFile(Path.GetFileName(filePath), stream, stream.Length, csvConfig ?? CsvConfiguration.ExcelFriendlyConfiguration, 0, 1);
+
+				//	foreach (var column in dataTable.Columns.Where(x => x.Name.HasValue()))
+				//	{
+				//		var index = dataTable.Columns.IndexOf(column);
+				//		var key = "ColumnMapping.Property." + index.ToString();
+
+				//		if (form.AllKeys.Contains(key))
+				//		{
+				//			// allow to nil an entity property name to explicitly ignore a column
+				//			var entityProperty = form[key];
+				//			var defaultValue = form["ColumnMapping.Default." + index.ToString()];
+
+				//			map.AddMapping(column.Name, null, entityProperty, defaultValue);
+				//		}
+				//	}
+
+				//	// add model state error for invalid mappings
+				//	foreach (var invalidMapping in map.GetInvalidMappings())
+				//	{
+				//		// do not mark columns as invalid where column name equals entity property name
+				//		if (invalidMapping.Key != invalidMapping.Value.Property)
+				//		{
+				//			var column = dataTable.Columns.First(x => x.Name == invalidMapping.Key);
+				//			var index = dataTable.Columns.IndexOf(column);
+				//			var key = "ColumnMapping.Property." + index.ToString();
+
+				//			ModelState.AddModelError(key, T("Admin.DataExchange.ColumnMapping.Validate.EntityMultipleMapped", invalidMapping.Value.Property));
+				//		}
+				//	}
+				//}
 			}
 			catch (Exception exception)
 			{

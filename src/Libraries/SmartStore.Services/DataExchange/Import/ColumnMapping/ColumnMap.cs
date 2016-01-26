@@ -54,31 +54,34 @@ namespace SmartStore.Services.DataExchange.Import
 			return result;
 		}
 
-		public IEnumerable<KeyValuePair<string, ColumnMappingValue>> GetInvalidMappings()
-		{
-			var mappings = Mappings.Where(x => 
-				!IsIndexed(x.Key) && 
-				x.Value.Property.HasValue() &&
-				Mappings.Count(y => y.Value.Property.IsCaseInsensitiveEqual(x.Value.Property)) > 1
-			);
+		//public IEnumerable<KeyValuePair<string, ColumnMappingValue>> GetInvalidMappings()
+		//{
+		//	var mappings = Mappings.Where(x => 
+		//		x.Value.Property.HasValue() &&
+		//		Mappings.Count(y => y.Value.Property.IsCaseInsensitiveEqual(x.Value.Property)) > 1
+		//	);
 
-			return mappings;
-		}
+		//	return mappings;
+		//}
 
-		public void AddMapping(string sourceColumn, string entityProperty, string defaultValue = null)
+		public bool AddMapping(string sourceColumn, string entityProperty, string defaultValue = null)
 		{
-			AddMapping(sourceColumn, null, entityProperty, defaultValue);
+			return AddMapping(sourceColumn, null, entityProperty, defaultValue);
         }
 
-		public void AddMapping(string sourceColumn, string index, string entityProperty, string defaultValue = null)
+		public bool AddMapping(string sourceColumn, string index, string entityProperty, string defaultValue = null)
 		{
 			Guard.ArgumentNotEmpty(() => sourceColumn);
+
+			var isPropertyMultipleMapped = (entityProperty.HasValue() && _map.Any(x => x.Value.Property.IsCaseInsensitiveEqual(entityProperty)));
 
 			_map[CreateSourceName(sourceColumn, index)] = new ColumnMappingValue
 			{
 				Property = entityProperty,
 				Default = defaultValue
 			};
+
+			return !isPropertyMultipleMapped;
 		}
 
 		/// <summary>

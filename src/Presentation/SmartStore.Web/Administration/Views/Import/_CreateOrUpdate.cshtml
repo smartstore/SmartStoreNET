@@ -136,6 +136,15 @@ else if (Model.ExistingFileNames.Count > 1)
 					@Html.ValidationMessageFor(x => x.Take)
 				</td>
 			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.UpdateOnly)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.UpdateOnly)
+					@Html.ValidationMessageFor(x => x.UpdateOnly)
+				</td>
+			</tr>
 		}
 	</table>
 </div>
@@ -196,47 +205,53 @@ else if (Model.ExistingFileNames.Count > 1)
 			return false;
 		});
 
-		// reset column mappings button
+		// reset column mappings
 		$('#ResetColumnMappings').click(function (e) {
 			e.preventDefault();
-
 			if (confirm('@T("Admin.Common.AskToProceed")')) {
 				var form = '<form id="ResetColumnMappingsForm" action="' + $(this).data('url') + '" method="post"></form>';
 				$('body').append(form);
 				$('#ResetColumnMappingsForm').submit();
 			}
-
 			return false;
 		});
 
 		// mapping row handling
 		$('#ImportColumnMappings').on('change', '.mapping-control-property', function () {
-			var row = $(this).closest('tr');
-			if (row.hasClass('column-mapping-new')) {
-				var property = $(this).val(),
-					hasProperty = !_.isEmpty(property);
+			var row = $(this).closest('tr'),
+				property = $(this).select2('val'),
+				hasProperty = !_.isEmpty(property);
 
+			if (row.hasClass('column-mapping-new')) {
 				row.find('.mapping-control-column').select2('val', property).select2(hasProperty ? 'enable' : 'disable').prop('disabled', !hasProperty);
-				row.find('.mapping-control-default').prop('disabled', !hasProperty);
 
 				var hasColumn = !_.isEmpty(row.find('.mapping-control-column').select2('val'));
-				row.find('.mapping-button-add').toggle(hasProperty && hasColumn);
+				row.find('.mapping-control-default').prop('disabled', !(hasProperty && hasColumn));
+				row.find('.mapping-button-add').toggle(hasProperty);
+			}
+			else {
+				var hasColumn = !_.isEmpty(row.find('.mapping-control-column').select2('val'));
+				if (!hasColumn) {
+					row.find('.mapping-control-column').select2('val', property);
+				}
 			}
 		}).on('change', '.mapping-control-column', function () {
-			var row = $(this).closest('tr');
-			if (row.hasClass('column-mapping-new')) {
-				var hasColumn = !_.isEmpty($(this).val()),
-					hasProperty = !_.isEmpty(row.find('.mapping-control-property').val());
+			var row = $(this).closest('tr'),
+				hasColumn = !_.isEmpty($(this).select2('val')),
+				hasProperty = !_.isEmpty(row.find('.mapping-control-property').select2('val'));
 
-				row.find('.mapping-button-add').toggle(hasProperty && hasColumn);
+			if (row.hasClass('column-mapping-new')) {
+				row.find('.mapping-button-add').toggle(hasProperty);
 			}
+
+			row.find('.mapping-control-default').prop('disabled', !(hasProperty && hasColumn));			
 		}).on('click', '.mapping-button-add', function () {
 			var row = $(this).closest('tr'),
 				table = row.closest('table'),
 				index = parseInt(table.attr('data-maxindex')) + 1;
 
 			row.find('.mapping-control-property').attr('name', 'ColumnMapping.Property.' + index);
-			row.find('.mapping-control-column').attr('name', 'ColumnMapping.Column.' + index);//.prop('disabled', false);
+			row.find('.mapping-control-column').attr('name', 'ColumnMapping.Column.' + index);
 			row.find('.mapping-control-default').attr('name', 'ColumnMapping.Default.' + index);
 
 			table.attr('data-maxindex', index);
@@ -250,8 +265,39 @@ else if (Model.ExistingFileNames.Count > 1)
 			$(this).closest('tr').remove();
 		});
 
+
+		initSelectBoxes($('#ImportColumnMappings'));
 		appendNewMappingRow();
 
+
+		function initSelectBoxes(context) {
+			var options = {
+				allowClear: true,
+				minimumResultsForSearch: 16,
+				matcher: function (term, text, opt) {
+					var searchFor = term.toUpperCase();
+
+					if (text.toUpperCase().indexOf(searchFor) >= 0)
+						return true;
+
+					var val = $(opt).val();
+					if (val && val.toUpperCase().indexOf(searchFor) >= 0)
+						return true;
+
+					return false;
+				}
+			};
+
+			context.find('.mapping-control-property').select2($.extend({}, options, {
+				formatResult: selectPropertyFormatting,
+				formatSelection: selectPropertyFormatting
+			}));
+
+			context.find('.mapping-control-column').select2($.extend({}, options, {
+				formatResult: selectColumnFormatting,
+				formatSelection: selectColumnFormatting
+			}));
+		}
 
 		function appendNewMappingRow() {
 			var mappings = $('#ImportColumnMappings');
@@ -263,22 +309,7 @@ else if (Model.ExistingFileNames.Count > 1)
 			mappings.find('table:first tbody').append(html);
 
 			var row = mappings.find('table:first tr:last');
-
-			row.find('.mapping-control-property').select2({
-				allowClear: true,
-				minimumResultsForSearch: 16,
-				formatResult: selectPropertyFormatting,
-				formatSelection: selectPropertyFormatting,
-				matcher: selectMatcher
-			});
-
-			row.find('.mapping-control-column').select2({
-				allowClear: true,
-				minimumResultsForSearch: 16,
-				formatResult: selectColumnFormatting,
-				formatSelection: selectColumnFormatting,
-				matcher: selectMatcher
-			});
+			initSelectBoxes(row);
 		}
 
 		function selectPropertyFormatting(item, container, query) {
@@ -362,19 +393,6 @@ else if (Model.ExistingFileNames.Count > 1)
 			catch (e) { }
 
 			return item.text;
-		}
-
-		function selectMatcher(term, text, opt) {
-			var searchFor = term.toUpperCase();
-
-			if (text.toUpperCase().indexOf(searchFor) >= 0)
-				return true;
-
-			var val = $(opt).val();
-			if (val && val.toUpperCase().indexOf(searchFor) >= 0)
-				return true;
-
-			return false;
 		}
 
 	});

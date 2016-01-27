@@ -78,6 +78,11 @@ namespace SmartStore.Services.Messages.Importer
 
 							if (subscription == null)
 							{
+								if (context.UpdateOnly)
+								{
+									continue;
+								}
+
 								subscription = new NewsLetterSubscription
 								{
 									Active = active,

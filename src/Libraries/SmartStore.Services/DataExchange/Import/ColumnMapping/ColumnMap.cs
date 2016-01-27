@@ -73,7 +73,10 @@ namespace SmartStore.Services.DataExchange.Import
 		{
 			Guard.ArgumentNotEmpty(() => sourceColumn);
 
-			var isPropertyMultipleMapped = (entityProperty.HasValue() && _map.Any(x => x.Value.Property.IsCaseInsensitiveEqual(entityProperty)));
+			var isAlreadyMapped = (entityProperty.HasValue() && _map.Any(x => x.Value.Property.IsCaseInsensitiveEqual(entityProperty)));
+
+			if (isAlreadyMapped)
+				return false;
 
 			_map[CreateSourceName(sourceColumn, index)] = new ColumnMappingValue
 			{
@@ -81,7 +84,7 @@ namespace SmartStore.Services.DataExchange.Import
 				Default = defaultValue
 			};
 
-			return !isPropertyMultipleMapped;
+			return true;
 		}
 
 		/// <summary>

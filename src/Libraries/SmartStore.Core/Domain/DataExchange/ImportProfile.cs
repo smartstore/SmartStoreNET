@@ -71,6 +71,16 @@ namespace SmartStore.Core.Domain
 		public int Take { get; set; }
 
 		/// <summary>
+		/// Whether to only update existing data
+		/// </summary>
+		public bool UpdateOnly { get; set; }
+
+		/// <summary>
+		/// Name of key fields to identify existing records during import
+		/// </summary>
+		public string KeyFieldNames { get; set; }
+
+		/// <summary>
 		/// File type specific configuration
 		/// </summary>
 		public string FileTypeConfiguration { get; set; }

@@ -199,16 +199,16 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Promotions.NewsLetterSubscriptions.Fields.NewsLetterSubscriptionGuid", "Subscription GUID", "Abonnement GUID");
 
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Note",
-				"For each field of the import file you can optionally set whether and to which object property the data is to be imported. Not yet selected properties are highlighted in the selection list. It is also possible to define a default value which is applied when the import field is empty. Through <b>Clear</b> all made assignments are reset to their original values.",
-				"Sie können optional für jedes Feld der Importdatei festlegen, ob und nach welcher Objekteigenschaft dessen Daten importiert werden sollen. Noch nicht ausgewählte Eigenschaften sind dabei in der Auswahlliste hervorgehoben. Zudem ist die Angabe eines Standardwertes möglich, der angewendet wird, wenn das Importfeld leer ist. Über <b>Zurücksetzen</b> werden alle getätigten Zuordnungen auf ihre Ursprungswerte zurückgesetzt.");
+				"You can optionally set for each field of the import file whether and for which object property the data should be imported. Fields with equal names are always imported as long as they are not explicitly ignored. Not yet selected properties are highlighted in the selection list. It is also possible to define a default value which is applied when the import field is empty.",
+				"Sie können optional für jedes Feld der Importdatei festlegen, ob und nach welcher Objekteigenschaft dessen Daten zu importieren sind. Gleichnamige Felder werden grundsätzlich immer importiert, sofern sie nicht explizit ignoriert werden sollen. Noch nicht ausgewählte Eigenschaften sind in der Auswahlliste hervorgehoben. Zudem ist die Angabe eines Standardwertes möglich, der angewendet wird, wenn das Importfeld leer ist.");
 
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.ImportField", "Import Field", "Importfeld");
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.EntityProperty", "Object property", "Eigenschaft des Objektes");
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.DefaultValue", "Default Value", "Standardwert");
 
-			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Validate.EntityMultipleMapped",
-				"The object property \"{0}\" was assigned several times. Please assign each property only once.",
-				"Die Objekteigenschaft \"{0}\" wurde mehrfach zugeodnet. Bitte ordnen Sie jede Eigenschaft nur einmal zu.");
+			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Validate.MultipleMappedIgnored",
+				"The following object properties were multiple assigned and thus ignored: {0}",
+				"Die folgenden Objekteigenschaft wurden mehrfach zugeodnet und deshalb ignoriert: {0}");
 
 
 			builder.Delete(

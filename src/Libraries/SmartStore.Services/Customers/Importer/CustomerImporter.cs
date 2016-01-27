@@ -192,6 +192,11 @@ namespace SmartStore.Services.Customers.Importer
 
 				if (customer == null)
 				{
+					if (context.UpdateOnly)
+					{
+						continue;
+					}
+
 					customer = new Customer
 					{
 						CustomerGuid = new Guid(),

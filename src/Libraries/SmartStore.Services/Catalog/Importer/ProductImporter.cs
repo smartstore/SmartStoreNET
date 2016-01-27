@@ -412,6 +412,12 @@ namespace SmartStore.Services.Catalog.Importer
 						context.Result.AddError("The 'Name' field is required for new products. Skipping row.", row.GetRowInfo(), "Name");
 						continue;
 					}
+
+					if (context.UpdateOnly)
+					{
+						continue;
+					}
+					
 					product = new Product();
 				}
 

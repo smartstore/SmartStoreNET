@@ -16,13 +16,11 @@
 					<button type="button" class="close" data-dismiss="alert">&#215;</button>
 					@Html.Raw(T("Admin.DataExchange.ColumnMapping.Note"))
 				</div>
-				@if (Model.ColumnMappings != null && Model.ColumnMappings.Any())
+				@if (Model.ColumnMappings.Any())
 				{
-					<div>
-						<button type="button" id="ResetColumnMappings" class="btn" data-url="@Url.Action("ResetColumnMappings", new { id = Model.Id })">
-							<i class="fa fa-rotate-left"></i>&nbsp;@T("Admin.Common.Clear")
-						</button>
-					</div>
+					<button id="ResetColumnMappings" type="button" class="btn btn-above" data-url="@Url.Action("ResetColumnMappings", new { id = Model.Id })">
+						<i class="fa fa-refresh"></i>&nbsp;@T("Admin.Common.Clear")
+					</button>
 				}
 			</td>
 		</tr>
@@ -43,11 +41,11 @@
 					</select>
 				</td>
 				<td>
-					<select class="mapping-control-column" data-placeholder="@Model.UnspecifiedString" disabled="disabled" style="width: 100%;">
+					<select class="mapping-control-column" data-placeholder="@Model.IgnoreString" disabled="disabled" style="width: 100%;">
 						<option></option>
 						@foreach (var column in Model.AvailableSourceColumns)
 						{
-							<option value="@column.Column">@(column.ColumnLocalized.HasValue() ? column.ColumnLocalized : column.Column)</option>
+							<option value="@column.Column">@column.ColumnLocalized</option>
 						}
 					</select>
 				</td>
@@ -55,10 +53,10 @@
 					<input type="text" class="mapping-control-default text-box single-line" value="" disabled="disabled" style="width: 97%;" />
 				</td>
 				<td style="width: 180px;">
-					<button type="button" class="btn btn-block hide mapping-button-add">
+					<button type="button" class="btn btn-block btn-warning hide mapping-button-add">
 						<i class="fa fa-plus"></i>&nbsp;@Model.AddNewString
 					</button>
-					<button type="button" class="btn btn-block btn-danger hide mapping-button-delete">
+					<button type="button" class="btn btn-block hide mapping-button-delete">
 						<i class="fa fa-trash"></i>&nbsp;@Model.DeleteString
 					</button>
 				</td>
@@ -83,7 +81,7 @@
 				var index = Model.ColumnMappings.IndexOf(mapping) + 1;
 				<tr>
 					<td>
-						<select name="ColumnMapping.Property.@(index)" data-placeholder="@Model.UnspecifiedString" style="width: 100%;">
+						<select name="ColumnMapping.Property.@(index)" class="mapping-control-property" data-placeholder="@Model.UnspecifiedString" style="width: 100%;">
 							<option></option>
 							@foreach (var property in Model.AvailableEntityProperties)
 							{
@@ -93,21 +91,22 @@
 						</select>
 					</td>
 					<td>
-						<select name="ColumnMapping.Column.@(index)" data-placeholder="@Model.UnspecifiedString" style="width: 100%;">
+						<select name="ColumnMapping.Column.@(index)" class="mapping-control-column" data-placeholder="@Model.IgnoreString" style="width: 100%;">
 							<option></option>
 							@foreach (var column in Model.AvailableSourceColumns)
 							{
-								var select = column.Column.IsCaseInsensitiveEqual(mapping.Column);
+								var select = (mapping.Column.HasValue() && column.Column.IsCaseInsensitiveEqual(mapping.Column));
 								var text = (column.ColumnLocalized.HasValue() ? column.ColumnLocalized : column.Column);
 								<option value="@column.Column" @(select ? "selected='selected'" : "")>@text</option>
 							}
 						</select>
 					</td>
 					<td>
-						<input type="text" name="ColumnMapping.Default.@(index)" class="text-box single-line" value="@mapping.Default" style="width: 97%;" />
+						<input type="text" name="ColumnMapping.Default.@(index)" class="mapping-control-default text-box single-line" value="@mapping.Default" 
+							   @(mapping.Column.HasValue() ? "" : "disabled='disabled'") style="width: 97%;" />
 					</td>
-					<td style="width: 180px;">
-						<button type="button" class="btn btn-block btn-danger mapping-button-delete">
+					<td>
+						<button type="button" class="btn btn-block mapping-button-delete">
 							<i class="fa fa-trash"></i>&nbsp;@Model.DeleteString
 						</button>
 					</td>

@@ -7,12 +7,16 @@ namespace SmartStore.Data.Migrations
 	{
         public override void Up()
         {
+            AddColumn("dbo.ImportProfile", "UpdateOnly", c => c.Boolean(nullable: false));
+            AddColumn("dbo.ImportProfile", "KeyFieldNames", c => c.String(maxLength: 1000));
             AddColumn("dbo.ImportProfile", "ResultInfo", c => c.String());
         }
         
         public override void Down()
         {
             DropColumn("dbo.ImportProfile", "ResultInfo");
+            DropColumn("dbo.ImportProfile", "KeyFieldNames");
+            DropColumn("dbo.ImportProfile", "UpdateOnly");
         }
 
 		public bool RollbackOnFailure
@@ -75,12 +79,28 @@ namespace SmartStore.Data.Migrations
 				"Import von Profil \"{0}\" ist abgeschlossen");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.ColumnMapping",
-				"Mapping of import fields",
+				"Assignment of import fields",
 				"Zuordnung der Importfelder");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.SelectTargetProperty",
-				"Create new mapping here",
+				"Create new assignment here",
 				"Hier neue Zuordnung vornehmen");
+
+			builder.AddOrUpdate("Admin.DataExchange.Import.UpdateOnly",
+				"Only update",
+				"Nur aktualisieren",
+				"If this option is enabled, only existing data is updated but no new records are added.",
+				"Ist diese Option aktiviert, werden nur vorhandene Daten aktualisiert, aber keine neue Datensätze hinzugefügt.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Import.KeyFieldNames",
+				"Key fields",
+				"Schlüsselfelder",
+				"Existing records can be identified on the basis of key fields. The key fields are processed in the order that is defined here.",
+				"Anhand von Schlüsselfeldern können vorhandene Datensätze identifiziert werden. Die Schlüsselfelder werden in der hier festgelegten Reihenfolge verarbeitet.");
+
+			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Validate.OneMappingRequired",
+				"At least one field assignment is required.",
+				"Es ist mindestens eine Feldzuordnung erforderlich.");
 		}
 	}
 }

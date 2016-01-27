@@ -34,6 +34,13 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Common.RecordsTake")]
 		public int Take { get; set; }
 
+		[SmartResourceDisplayName("Admin.DataExchange.Import.UpdateOnly")]
+		public bool UpdateOnly { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Import.KeyFieldNames")]
+		public string[] KeyFieldNames { get; set; }
+		public List<SelectListItem> AvailableKeyFieldNames { get; set; }
+
 		[SmartResourceDisplayName("Common.Execution")]
 		public int ScheduleTaskId { get; set; }
 		public string ScheduleTaskName { get; set; }
@@ -48,6 +55,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string UnspecifiedString { get; set; }
 		public string AddNewString { get; set; }
 		public string DeleteString { get; set; }
+		public string IgnoreString { get; set; }
 
 		public CsvConfigurationModel CsvConfiguration { get; set; }
 
@@ -66,10 +74,10 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string ColumnIndex { get; set; }
 		public string ColumnLocalized { get; set; }
 
-		public string LanguageDescription { get; set; }
-		public string FlagImageFileName { get; set; }
+		//public string LanguageDescription { get; set; }
+		//public string FlagImageFileName { get; set; }
 
-		public bool IsNilProperty { get; set; }
+		//public bool IsNilProperty { get; set; }
 		public string Property { get; set; }
 		public string Default { get; set; }
 	}

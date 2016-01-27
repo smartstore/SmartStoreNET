@@ -223,6 +223,12 @@ namespace SmartStore.Services.Catalog.Importer
 						context.Result.AddError("The 'Name' field is required for new categories. Skipping row.", row.GetRowInfo(), "Name");
 						continue;
 					}
+
+					if (context.UpdateOnly)
+					{
+						continue;
+					}
+
 					category = new Category
 					{
 						CategoryTemplateId = defaultTemplateId

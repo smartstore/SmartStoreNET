@@ -352,6 +352,7 @@ namespace SmartStore.Services.DataExchange.Import
 						ctx.Request.CustomerId = _services.WorkContext.CurrentCustomer.Id;  // fallback to system background task customer
 
 					ctx.ExecuteContext.CustomerId = ctx.Request.CustomerId;
+					ctx.ExecuteContext.UpdateOnly = ctx.Request.Profile.UpdateOnly;
 
 					{
 						var mapConverter = new ColumnMapConverter();

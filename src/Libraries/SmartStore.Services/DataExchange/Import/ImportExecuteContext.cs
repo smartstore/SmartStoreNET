@@ -14,6 +14,11 @@ namespace SmartStore.Services.DataExchange.Import
 		int CustomerId { get; }
 
 		/// <summary>
+		/// Whether to only update existing data
+		/// </summary>
+		bool UpdateOnly { get; }
+
+		/// <summary>
 		/// Use this dictionary for any custom data required along the export
 		/// </summary>
 		Dictionary<string, object> CustomProperties { get; set; }
@@ -69,6 +74,8 @@ namespace SmartStore.Services.DataExchange.Import
 		public ColumnMap ColumnMap { get; internal set; }
 
 		public int CustomerId { get; internal set; }
+
+		public bool UpdateOnly { get; internal set; }
 
 		/// <summary>
 		/// Use this dictionary for any custom data required along the import

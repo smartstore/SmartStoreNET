@@ -101,6 +101,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Validate.OneMappingRequired",
 				"At least one field assignment is required.",
 				"Es ist mindestens eine Feldzuordnung erforderlich.");
+
+			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Validate.MultipleMappedIgnored",
+				"The following object properties were multiple assigned and thus ignored: {0}",
+				"Die folgenden Objekteigenschaft wurden mehrfach zugeodnet und deshalb ignoriert: {0}");
 		}
 	}
 }

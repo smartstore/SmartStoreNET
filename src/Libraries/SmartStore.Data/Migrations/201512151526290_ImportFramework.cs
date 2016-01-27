@@ -206,10 +206,6 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.EntityProperty", "Object property", "Eigenschaft des Objektes");
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.DefaultValue", "Default Value", "Standardwert");
 
-			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Validate.MultipleMappedIgnored",
-				"The following object properties were multiple assigned and thus ignored: {0}",
-				"Die folgenden Objekteigenschaft wurden mehrfach zugeodnet und deshalb ignoriert: {0}");
-
 
 			builder.Delete(
 				"Admin.DataExchange.Export.LastExecution",

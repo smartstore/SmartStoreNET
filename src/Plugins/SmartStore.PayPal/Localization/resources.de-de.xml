@@ -80,7 +80,7 @@
             <li>Auf den Register <b>Mein Profil</b> klicken.</li>
             <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
             <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
-            <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalExpress/IPNHandler</b>) eingeben.</li>
+            <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalExpress/IPNHandler</b>) eingeben.</li>
             <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
             </ol>]]>
 		    </Value>
@@ -175,7 +175,7 @@
           <li>Auf den Register <b>Mein Profil</b> klicken.</li>
           <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
           <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
-          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalDirect/IPNHandler</b>) eingeben.</li>
+          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalDirect/IPNHandler</b>) eingeben.</li>
           <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
           </ol>]]>
 		    </Value>
@@ -227,7 +227,7 @@
           <li>Klicken Sie auf den Register <b>Mein Profil</b>.</li>
           <li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>Website-Einstellungen</b>.</li>
           <li>Aktivieren Sie <b>Automatische Rückleitung</b>.</li>
-          <li>Als Rückleitungs-URL geben Sie bitte die Seite Ihres Shops ein, die die Transaktions-ID von PayPal nach einer Kundenzahlung empfängt (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/PDTHandler</b>).</li>
+          <li>Als Rückleitungs-URL geben Sie bitte die Seite Ihres Shops ein, die die Transaktions-ID von PayPal nach einer Kundenzahlung empfängt (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/PDTHandler</b>).</li>
           <li>Aktivieren Sie <b>Übertragung der Zahlungsdaten</b>.</li>
           <li>Klicken Sie auf <b>Speichern</b>.</li>
           <li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>Website-Einstellungen</b>.</li>
@@ -243,7 +243,7 @@
 	          <li>Auf den Register <b>Mein Profil</b> klicken.</li>
 	          <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
 	          <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
-	          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/IPNHandler</b>) eingeben.</li>
+	          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/IPNHandler</b>) eingeben.</li>
 	          <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
 	          </ol>
           </li>

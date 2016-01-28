@@ -30,7 +30,7 @@
           <li>Click the Profile subtab.</li>
           <li>Click <b>Instant Payment Notification</b> in the Selling Preferences column.</li>
           <li>Click the <b>Edit IPN Settings</b> button to update your settings.</li>
-          <li>Select <b>Receive IPN messages</b> (enabled) and enter the URL of your IPN handler (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalExpress/IPNHandler</b>).</li>
+          <li>Select <b>Receive IPN messages</b> (enabled) and enter the URL of your IPN handler (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalExpress/IPNHandler</b>).</li>
           <li>Click <b>Save</b>, and you should get a message that you have successfully activated IPN.</li>
           </ol>]]>
 		    </Value>
@@ -167,7 +167,7 @@
           <li>Click the Profile subtab.</li>
           <li>Click <b>Instant Payment Notification</b> in the Selling Preferences column.</li>
           <li>Click the <b>Edit IPN Settings</b> button to update your settings.</li>
-          <li>Select <b>Receive IPN messages</b> (enabled) and enter the URL of your IPN handler (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalDirect/IPNHandler</b>).</li>
+          <li>Select <b>Receive IPN messages</b> (enabled) and enter the URL of your IPN handler (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalDirect/IPNHandler</b>).</li>
           <li>Click <b>Save</b>, and you should get a message that you have successfully activated IPN.</li>
           </ol>]]>
         </Value>
@@ -260,7 +260,7 @@
           <li>Click the Profile subtab.</li>
           <li>Click <b>Website Payment Preferences</b> in the Seller Preferences column.</li>
           <li>Under <b>Auto Return for Website Payments</b>, click the On radio button.</li>
-          <li>For the Return URL, enter the URL on your site that will receive the transaction ID posted by PayPal after a customer payment (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/PDTHandler</b>).</li>
+          <li>For the Return URL, enter the URL on your site that will receive the transaction ID posted by PayPal after a customer payment (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/PDTHandler</b>).</li>
           <li>Under <b>Payment Data Transfer</b>, click the On radio button.</li>
           <li>Click <b>Save</b>.</li>
           <li>Click <b>Website Payment Preferences</b> in the Seller Preferences column.</li>
@@ -276,7 +276,7 @@
 	          <li>Click the Profile subtab.</li>
 	          <li>Click <b>Instant Payment Notification</b> in the Selling Preferences column.</li>
 	          <li>Click the <b>Edit IPN Settings</b> button to update your settings.</li>
-	          <li>Select <b>Receive IPN messages (Enabled)</b> and enter the URL of your IPN handler (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/IPNHandler</b>).</li>
+	          <li>Select <b>Receive IPN messages (Enabled)</b> and enter the URL of your IPN handler (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/IPNHandler</b>).</li>
 	          <li>Click <b>Save</b>, and you should get a message that you have successfully activated IPN.</li>
 	          </ol>
           </li>

@@ -38,7 +38,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool UpdateOnly { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Import.KeyFieldNames")]
-		public string[] KeyFieldNames { get; set; }
+		public List<string> KeyFieldNames { get; set; }
 		public List<SelectListItem> AvailableKeyFieldNames { get; set; }
 
 		[SmartResourceDisplayName("Common.Execution")]
@@ -74,10 +74,6 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string ColumnIndex { get; set; }
 		public string ColumnLocalized { get; set; }
 
-		//public string LanguageDescription { get; set; }
-		//public string FlagImageFileName { get; set; }
-
-		//public bool IsNilProperty { get; set; }
 		public string Property { get; set; }
 		public string Default { get; set; }
 	}

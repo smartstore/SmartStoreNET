@@ -11,7 +11,10 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
+using SmartStore.Services.Catalog.Importer;
+using SmartStore.Services.Customers.Importer;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Messages.Importer;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
 
@@ -136,6 +139,26 @@ namespace SmartStore.Services.DataExchange.Import
 			else
 				profile.FileType = ImportFileType.CSV;
 
+			string[] keyFieldNames = null;
+
+			switch (entityType)
+			{
+				case ImportEntityType.Product:
+					keyFieldNames = ProductImporter.DefaultKeyFields;
+					break;
+				case ImportEntityType.Category:
+					keyFieldNames = CategoryImporter.DefaultKeyFields;
+					break;
+				case ImportEntityType.Customer:
+					keyFieldNames = CustomerImporter.DefaultKeyFields;
+					break;
+				case ImportEntityType.NewsLetterSubscription:
+					keyFieldNames = NewsLetterSubscriptionImporter.DefaultKeyFields;
+					break;
+			}
+
+			profile.KeyFieldNames = string.Join(",", keyFieldNames);
+
 			profile.FolderName = SeoHelper.GetSeName(name, true, false)
 				.ToValidPath()
 				.Truncate(_dataExchangeSettings.MaxFileNameLength);
@@ -255,7 +278,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 							foreach (var member in entitySet.ElementType.Members)
 							{
-								if (member.BuiltInTypeKind.HasFlag(BuiltInTypeKind.EdmProperty))
+								if (!member.Name.IsCaseInsensitiveEqual("Id") && member.BuiltInTypeKind.HasFlag(BuiltInTypeKind.EdmProperty))
 								{
 									var localizedValue = GetLocalizedPropertyName(type, member.Name);
 

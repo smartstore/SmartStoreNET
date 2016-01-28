@@ -11,10 +11,13 @@ using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.IO;
 using SmartStore.Services;
+using SmartStore.Services.Catalog.Importer;
+using SmartStore.Services.Customers.Importer;
 using SmartStore.Services.DataExchange.Csv;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Messages.Importer;
 using SmartStore.Services.Security;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
@@ -50,23 +53,108 @@ namespace SmartStore.Admin.Controllers
 
 		#region Utilities
 
-		private void PrepareColumnMappingModels(ImportProfile profile, ImportProfileModel model, CsvConfiguration csvConfiguration, ColumnMap invalidMap = null)
+		private void PrepareProfileModel(ImportProfileModel model, ImportProfile profile, bool forEdit, ColumnMap invalidMap = null)
 		{
+			if (profile == null)
+			{
+				if (model.Name.IsEmpty())
+				{
+					var defaultNames = T("Admin.DataExchange.Import.DefaultProfileNames").Text.SplitSafe(";");
+
+					model.Name = defaultNames.SafeGet((int)model.EntityType);
+				}
+
+				model.ExistingFileNames = new List<string>();
+				return;
+			}
+
+			model.Id = profile.Id;
+			model.Name = profile.Name;
+			model.EntityType = profile.EntityType;
+			model.Enabled = profile.Enabled;
+			model.Skip = profile.Skip;
+			model.Take = profile.Take;
+			model.UpdateOnly = profile.UpdateOnly;
+			model.KeyFieldNames = profile.KeyFieldNames.SplitSafe(",").Distinct().ToList();
+			model.ScheduleTaskId = profile.SchedulingTaskId;
+			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
+			model.IsTaskRunning = profile.ScheduleTask.IsRunning;
+			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
+			model.LogFileExists = System.IO.File.Exists(profile.GetImportLogPath());
+			model.EntityTypeName = profile.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
+			model.UnspecifiedString = T("Common.Unspecified");
+			model.AddNewString = T("Common.AddNew");
+			model.DeleteString = T("Common.Delete");
+			model.IgnoreString = T("Admin.Common.Ignore");
+
+			model.ExistingFileNames = profile.GetImportFiles()
+				.Select(x => Path.GetFileName(x))
+				.ToList();
+
+			if (!forEdit)
+				return;
+
+			CsvConfiguration csvConfiguration = null;
+
+			if (profile.FileType == ImportFileType.CSV)
+			{
+				var csvConverter = new CsvConfigurationConverter();
+				csvConfiguration = csvConverter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration) ?? CsvConfiguration.ExcelFriendlyConfiguration;
+
+				model.CsvConfiguration = new CsvConfigurationModel(csvConfiguration);
+			}
+			else
+			{
+				csvConfiguration = CsvConfiguration.ExcelFriendlyConfiguration;
+			}
+
+			// column mapping
 			model.AvailableSourceColumns = new List<ColumnMappingItemModel>();
 
 			try
 			{
+				string[] availableKeyFieldNames = null;
 				var mapConverter = new ColumnMapConverter();
 				var storedMap = mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping);
 				var hasStoredMappings = (storedMap != null && storedMap.Mappings.Any());
 				var map = (invalidMap ?? storedMap) ?? new ColumnMap();
-				
+
 				// property name to localized property name
 				var allProperties = _importService.GetImportableEntityProperties(profile.EntityType);
+
+				switch (profile.EntityType)
+				{
+					case ImportEntityType.Product:
+						availableKeyFieldNames = ProductImporter.SupportedKeyFields;
+						break;
+					case ImportEntityType.Category:
+						availableKeyFieldNames = CategoryImporter.SupportedKeyFields;
+						break;
+					case ImportEntityType.Customer:
+						availableKeyFieldNames = CustomerImporter.SupportedKeyFields;
+						break;
+					case ImportEntityType.NewsLetterSubscription:
+						availableKeyFieldNames = NewsLetterSubscriptionImporter.SupportedKeyFields;
+						break;
+				}
 
 				model.AvailableEntityProperties = allProperties
 					.Select(x => new SelectListItem { Value = x.Key, Text = x.Value })
 					.OrderBy(x => x.Text)
+					.ToList();
+
+				model.AvailableKeyFieldNames = availableKeyFieldNames
+					.Select(x =>
+					{
+						var item = new SelectListItem { Value = x, Text = x };
+
+						if (x == "Id")
+							item.Text = T("Admin.Common.Entity.Fields.Id");
+						else if (allProperties.ContainsKey(x))
+							item.Text = allProperties[x];							
+
+						return item;
+					})
 					.ToList();
 
 				model.ColumnMappings = map.Mappings
@@ -117,7 +205,7 @@ namespace SmartStore.Admin.Controllers
 
 						// auto map where field equals property name
 						if (!hasStoredMappings && !model.ColumnMappings.Any(x => x.Column == column.Name) && allProperties.Any(x => x.Key == column.Name))
-						{						
+						{
 							model.ColumnMappings.Add(new ColumnMappingItemModel
 							{
 								Column = column.Name,
@@ -140,61 +228,6 @@ namespace SmartStore.Admin.Controllers
 			catch (Exception exception)
 			{
 				NotifyError(exception, true, false);
-			}
-		}
-
-		private void PrepareProfileModel(ImportProfileModel model, ImportProfile profile, bool forEdit, ColumnMap invalidMap = null)
-		{
-			if (profile != null)
-			{
-				model.Id = profile.Id;
-				model.Name = profile.Name;
-				model.EntityType = profile.EntityType;
-				model.Enabled = profile.Enabled;
-				model.Skip = profile.Skip;
-				model.Take = profile.Take;
-				model.UpdateOnly = profile.UpdateOnly;
-				model.KeyFieldNames = profile.KeyFieldNames.SplitSafe(",");
-				model.ScheduleTaskId = profile.SchedulingTaskId;
-				model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
-				model.IsTaskRunning = profile.ScheduleTask.IsRunning;
-				model.IsTaskEnabled = profile.ScheduleTask.Enabled;
-				model.LogFileExists = System.IO.File.Exists(profile.GetImportLogPath());
-				model.EntityTypeName = profile.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
-				model.UnspecifiedString = T("Common.Unspecified");
-				model.AddNewString = T("Common.AddNew");
-				model.DeleteString = T("Common.Delete");
-				model.IgnoreString = T("Admin.Common.Ignore");
-
-				model.ExistingFileNames = profile.GetImportFiles()
-					.Select(x => Path.GetFileName(x))
-					.ToList();
-
-				if (forEdit)
-				{
-					CsvConfiguration csvConfiguration = null;
-
-					if (profile.FileType == ImportFileType.CSV)
-					{
-						var csvConverter = new CsvConfigurationConverter();
-						csvConfiguration = csvConverter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration) ?? CsvConfiguration.ExcelFriendlyConfiguration;
-
-						model.CsvConfiguration = new CsvConfigurationModel(csvConfiguration);
-					}
-
-					PrepareColumnMappingModels(profile, model, csvConfiguration ?? CsvConfiguration.ExcelFriendlyConfiguration, invalidMap);
-				}
-			}
-			else
-			{
-				if (model.Name.IsEmpty())
-				{
-					var defaultNames = T("Admin.DataExchange.Import.DefaultProfileNames").Text.SplitSafe(";");
-
-					model.Name = defaultNames.SafeGet((int)model.EntityType);
-				}
-
-				model.ExistingFileNames = new List<string>();
 			}
 		}
 

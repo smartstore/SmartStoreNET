@@ -21,6 +21,22 @@ namespace SmartStore.Services.Messages.Importer
 			_subscriptionRepository = subscriptionRepository;
 		}
 
+		public static string[] SupportedKeyFields
+		{
+			get
+			{
+				return new string[] { "Email" };
+			}
+		}
+
+		public static string[] DefaultKeyFields
+		{
+			get
+			{
+				return new string[] { "Email" };
+			}
+		}
+
 		public void Execute(IImportExecuteContext context)
 		{
 			var utcNow = DateTime.UtcNow;
@@ -72,9 +88,22 @@ namespace SmartStore.Services.Messages.Importer
 								continue;
 							}
 
-							var subscription = _subscriptionRepository.Table
-								.OrderBy(x => x.Id)
-								.FirstOrDefault(x => x.Email == email && x.StoreId == storeId);
+							NewsLetterSubscription subscription = null;
+
+							foreach (var keyName in context.KeyFieldNames)
+							{
+								switch (keyName)
+								{
+									case "Email":
+										subscription = _subscriptionRepository.Table
+											.OrderBy(x => x.Id)
+											.FirstOrDefault(x => x.Email == email && x.StoreId == storeId);
+										break;
+								}
+
+								if (subscription != null)
+									break;
+							}
 
 							if (subscription == null)
 							{

@@ -42,6 +42,11 @@ namespace SmartStore.Services.DataExchange.Import
 		/// <returns>Import profile</returns>
 		ImportProfile GetImportProfileById(int id);
 
+		/// <summary>
+		/// Get all importable entity properties and their localized values
+		/// </summary>
+		/// <param name="entityType">Import entity type</param>
+		/// <returns>Importable entity properties</returns>
 		Dictionary<string, string> GetImportableEntityProperties(ImportEntityType entityType);
 	}
 }

@@ -95,8 +95,12 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Import.KeyFieldNames",
 				"Key fields",
 				"Schlüsselfelder",
-				"Existing records can be identified on the basis of key fields. The key fields are processed in the order that is defined here.",
-				"Anhand von Schlüsselfeldern können vorhandene Datensätze identifiziert werden. Die Schlüsselfelder werden in der hier festgelegten Reihenfolge verarbeitet.");
+				"Existing records can be identified for updates on the basis of key fields. The key fields are processed in the order how they are defined here.",
+				"Anhand von Schlüsselfeldern können vorhandene Datensätze zwecks Aktualisierung identifiziert werden. Die Schlüsselfelder werden in der hier festgelegten Reihenfolge verarbeitet.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Import.Validate.OneKeyFieldRequired",
+				"At least one key field is required.",
+				"Es ist mindestens ein Schlüsselfeld erforderlich.");
 
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Validate.OneMappingRequired",
 				"At least one field assignment is required.",

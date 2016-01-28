@@ -353,6 +353,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 					ctx.ExecuteContext.CustomerId = ctx.Request.CustomerId;
 					ctx.ExecuteContext.UpdateOnly = ctx.Request.Profile.UpdateOnly;
+					ctx.ExecuteContext.KeyFieldNames = ctx.Request.Profile.KeyFieldNames.SplitSafe(",");
 
 					{
 						var mapConverter = new ColumnMapConverter();

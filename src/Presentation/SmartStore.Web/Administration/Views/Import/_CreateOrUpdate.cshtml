@@ -120,6 +120,17 @@ else if (Model.ExistingFileNames.Count > 1)
 		{
 			<tr>
 				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.KeyFieldNames)
+				</td>
+				<td class="adminData">
+					@Html.ListBoxFor(model => model.KeyFieldNames,
+						new MultiSelectList(Model.AvailableKeyFieldNames, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-large" })
+					@Html.ValidationMessageFor(model => model.KeyFieldNames)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
 					@Html.SmartLabelFor(x => x.Skip)
 				</td>
 				<td class="adminData">
@@ -244,7 +255,7 @@ else if (Model.ExistingFileNames.Count > 1)
 				row.find('.mapping-button-add').toggle(hasProperty);
 			}
 
-			row.find('.mapping-control-default').prop('disabled', !(hasProperty && hasColumn));			
+			row.find('.mapping-control-default').prop('disabled', !(hasProperty && hasColumn));
 		}).on('click', '.mapping-button-add', function () {
 			var row = $(this).closest('tr'),
 				table = row.closest('table'),
@@ -265,7 +276,7 @@ else if (Model.ExistingFileNames.Count > 1)
 			$(this).closest('tr').remove();
 		});
 
-
+		
 		initSelectBoxes($('#ImportColumnMappings'));
 		appendNewMappingRow();
 

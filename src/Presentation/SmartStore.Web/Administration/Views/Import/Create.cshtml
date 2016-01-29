@@ -17,6 +17,9 @@
 				<button type="submit" name="save" value="save" class="btn btn-primary">
 					<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
 				</button>
+				<a href="@Url.Action("List", "Import", new { area = "Admin" })" class="btn">
+					@T("Common.Cancel")
+				</a>
 			</div>
 		</div>
 		@Html.Partial("_CreateOrUpdate", Model)

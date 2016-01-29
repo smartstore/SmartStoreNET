@@ -31,6 +31,12 @@ namespace SmartStore.Services.DataExchange.Import
 			set;
 		}
 
+		public int SkippedRecords
+		{
+			get;
+			set;
+		}
+
 		public int NewRecords
 		{
 			get;
@@ -59,6 +65,7 @@ namespace SmartStore.Services.DataExchange.Import
 			Messages.Clear();
 			StartDateUtc = EndDateUtc = DateTime.UtcNow;
 			TotalRecords = 0;
+			SkippedRecords = 0;
 			NewRecords = 0;
 			ModifiedRecords = 0;
 			Cancelled = false;
@@ -173,6 +180,7 @@ namespace SmartStore.Services.DataExchange.Import
 			result.StartDateUtc = StartDateUtc;
 			result.EndDateUtc = EndDateUtc;
 			result.TotalRecords = TotalRecords;
+			result.SkippedRecords = SkippedRecords;
 			result.NewRecords = NewRecords;
 			result.ModifiedRecords = ModifiedRecords;
 			result.AffectedRecords = AffectedRecords;
@@ -192,6 +200,7 @@ namespace SmartStore.Services.DataExchange.Import
 		public DateTime StartDateUtc { get; set; }
 		public DateTime EndDateUtc { get; set; }
 		public int TotalRecords { get; set; }
+		public int SkippedRecords { get; set; }
 		public int NewRecords { get; set; }
 		public int ModifiedRecords { get; set; }
 		public int AffectedRecords { get; set; }

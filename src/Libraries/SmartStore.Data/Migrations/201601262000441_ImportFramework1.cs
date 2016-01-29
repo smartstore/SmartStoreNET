@@ -64,19 +64,19 @@ namespace SmartStore.Data.Migrations
 				"Letztes Importergebnis");
 
 			builder.AddOrUpdate("Admin.Common.TotalRows", "Total rows", "Zeilen insgesamt");
-			builder.AddOrUpdate("Admin.Common.Processed", "Processed", "Verarbeitet");
+			builder.AddOrUpdate("Admin.Common.Skipped", "Skipped", "Ausgelassen");
 			builder.AddOrUpdate("Admin.Common.NewRecords", "New records", "Neue Datensätze");
 			builder.AddOrUpdate("Admin.Common.Updated", "Updated", "Aktualisiert");
 			builder.AddOrUpdate("Admin.Common.Warnings", "Warnings", "Warnungen");
 			builder.AddOrUpdate("Admin.Common.Errors", "Errors", "Fehler");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.CompletedEmail.Body",
-				"This is an automatic notification of store \"{0}\" about a recent data import.",
-				"Dies ist eine automatische Benachrichtung von Shop \"{0}\" über einen erfolgten Datenimport.");
+				"This is an automatic notification of store \"{0}\" about a recent data import. Summary:",
+				"Dies ist eine automatische Benachrichtung von Shop \"{0}\" über einen erfolgten Datenimport. Zusammenfassung:");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.CompletedEmail.Subject",
-				"Import of profile \"{0}\" has been finished",
-				"Import von Profil \"{0}\" ist abgeschlossen");
+				"Import of \"{0}\" has been finished",
+				"Import von \"{0}\" ist abgeschlossen");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.ColumnMapping",
 				"Assignment of import fields",

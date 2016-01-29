@@ -222,7 +222,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 			body.AppendFormat("<div>{0}: {1} &middot; {2}: {3}</div>",
 				T("Admin.Common.TotalRows"), result.TotalRecords,
-				T("Admin.Common.Processed"), result.AffectedRecords);
+				T("Admin.Common.Skipped"), result.SkippedRecords);
 
 			body.AppendFormat("<div>{0}: {1} &middot; {2}: {3}</div>",
 				T("Admin.Common.NewRecords"), result.NewRecords,
@@ -301,7 +301,6 @@ namespace SmartStore.Services.DataExchange.Import
 			if (csvConfiguration == null)
 			{
 				csvConfiguration = CsvConfiguration.ExcelFriendlyConfiguration;
-				ctx.ExecuteContext.Result.AddWarning("No CSV configuration provided for import profile. Fallback to Excel friendly configuration.");
 			}
 
 			using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))

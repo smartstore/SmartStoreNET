@@ -212,6 +212,7 @@ namespace SmartStore.Services.Customers.Importer
 				{
 					if (context.UpdateOnly)
 					{
+						++context.Result.SkippedRecords;
 						continue;
 					}
 

@@ -422,12 +422,14 @@ namespace SmartStore.Services.Catalog.Importer
 				{
 					if (context.UpdateOnly)
 					{
+						++context.Result.SkippedRecords;
 						continue;
 					}
 
 					// a Name is required with new products.
 					if (!row.Segmenter.HasColumn("Name"))
 					{
+						++context.Result.SkippedRecords;
 						context.Result.AddError("The 'Name' field is required for new products. Skipping row.", row.GetRowInfo(), "Name");
 						continue;
 					}

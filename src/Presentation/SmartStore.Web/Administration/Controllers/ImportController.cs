@@ -383,7 +383,7 @@ namespace SmartStore.Admin.Controllers
 						var defaultValue = form["ColumnMapping.Default." + index];
 						var result = true;
 
-						// ignored properties: column is empty means swap column and property
+						// ignored properties: column is empty means swap column and property (otherwise mapping impossible)
 						if (column.IsEmpty())
 							result = map.AddMapping(property, null, null);
 						else

@@ -109,6 +109,7 @@ namespace SmartStore.Services.Messages.Importer
 							{
 								if (context.UpdateOnly)
 								{
+									++context.Result.SkippedRecords;
 									continue;
 								}
 

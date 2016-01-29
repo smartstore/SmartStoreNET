@@ -128,6 +128,8 @@ namespace SmartStore.Services.Catalog.Importer
 						if (category != null)
 						{
 							category.ParentCategoryId = srcToDestId[parentId].DestinationId;
+
+							_categoryRepository.Update(category);
 						}
 					}
 				}
@@ -233,12 +235,14 @@ namespace SmartStore.Services.Catalog.Importer
 				{
 					if (context.UpdateOnly)
 					{
+						++context.Result.SkippedRecords;
 						continue;
 					}
 
 					// a Name is required with new categories
 					if (!row.Segmenter.HasColumn("Name"))
 					{
+						++context.Result.SkippedRecords;
 						context.Result.AddError("The 'Name' field is required for new categories. Skipping row.", row.GetRowInfo(), "Name");
 						continue;
 					}

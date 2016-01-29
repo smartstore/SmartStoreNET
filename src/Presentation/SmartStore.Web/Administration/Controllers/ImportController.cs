@@ -75,7 +75,7 @@ namespace SmartStore.Admin.Controllers
 			model.Skip = profile.Skip;
 			model.Take = profile.Take;
 			model.UpdateOnly = profile.UpdateOnly;
-			model.KeyFieldNames = profile.KeyFieldNames.SplitSafe(",").Distinct().ToList();
+			model.KeyFieldNames = profile.KeyFieldNames.SplitSafe(",").Distinct().ToArray();
 			model.ScheduleTaskId = profile.SchedulingTaskId;
 			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
 			model.IsTaskRunning = profile.ScheduleTask.IsRunning;
@@ -290,7 +290,8 @@ namespace SmartStore.Admin.Controllers
 			return new EmptyResult();
 		}
 
-		public ActionResult Create(ImportEntityType entityType)
+		[HttpPost]
+		public ActionResult CreateUploadFile(ImportEntityType entityType)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
@@ -302,7 +303,7 @@ namespace SmartStore.Admin.Controllers
 
 			PrepareProfileModel(model, null, true);
 
-			return View(model);
+			return View("Create", model);
 		}
 
 		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing"), FormValueRequired("save", "save-continue")]

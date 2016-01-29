@@ -14,6 +14,7 @@ namespace SmartStore.Admin.Validators.DataExchange
 
 			RuleFor(x => x.KeyFieldNames)
 				.NotEmpty()
+				.When(x => x.Id != 0)
 				.WithMessage(localization.GetResource("Admin.DataExchange.Import.Validate.OneKeyFieldRequired"));
 		}
 	}

@@ -38,7 +38,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool UpdateOnly { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Import.KeyFieldNames")]
-		public List<string> KeyFieldNames { get; set; }
+		public string[] KeyFieldNames { get; set; }
 		public List<SelectListItem> AvailableKeyFieldNames { get; set; }
 
 		[SmartResourceDisplayName("Common.Execution")]

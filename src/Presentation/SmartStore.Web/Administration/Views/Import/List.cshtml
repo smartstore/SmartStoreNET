@@ -107,35 +107,37 @@ else
 	</div>
 }
 
-<div id="import-profile-dialog" class="modal modal-large hide fade" tabindex="-1" data-profile="@T("Common.Profile")">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
-		<h4 class="caption">@T("Common.Profile") - @T("Admin.Common.AddNew")</h4>
-	</div>
-	<div class="modal-body">
-		<div class="alert alert-info">
-			<button type="button" class="close" data-dismiss="alert">&#215;</button>
-			@T("Admin.DataExchange.Import.ProfileEntitySelectNote")
+<form method="POST" action="@Url.Action("CreateUploadFile", "Import", new { area = "Admin" })">
+	<div id="import-profile-dialog" class="modal modal-large hide fade" tabindex="-1" data-profile="@T("Common.Profile")">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
+			<h4 class="caption">@T("Common.Profile") - @T("Admin.Common.AddNew")</h4>
 		</div>
-		<div>
-			<table class="adminContent">
-				<tr>
-					<td class="adminTitle">
-						@Html.SmartLabelFor(x => x.EntityType)
-					</td>
-					<td class="adminData">
-						@Html.DropDownListFor(x => x.EntityType, Model.AvailableEntityTypes)
-					</td>
-				</tr>
-			</table>
+		<div class="modal-body">
+			<div class="alert alert-info">
+				<button type="button" class="close" data-dismiss="alert">&#215;</button>
+				@T("Admin.DataExchange.Import.ProfileEntitySelectNote")
+			</div>
+			<div>
+				<table class="adminContent">
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(x => x.EntityType)
+						</td>
+						<td class="adminData">
+							@Html.DropDownListFor(x => x.EntityType, Model.AvailableEntityTypes)
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>&nbsp;</p>
 		</div>
-		<p>&nbsp;</p>
+		<div class="modal-footer">
+			<button type="submit" class="btn btn-primary">@T("Common.OK")</button>
+			<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
+		</div>
 	</div>
-	<div class="modal-footer">
-		<button class="btn btn-primary">@T("Common.OK")</button>
-		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
-	</div>
-</div>
+</form>
 
 <script type="text/javascript">
 	jQuery(document).ready(function () {
@@ -144,13 +146,6 @@ else
 		$(document).on('click', '.import-profile-button', function (e) {
 			e.preventDefault();
 			$('#import-profile-dialog').modal('show');
-			return false;
-		});
-
-		// create profile
-		$('#import-profile-dialog').on('click', '.btn-primary', function (e) {
-			var entityType = $('#import-profile-dialog').find('select[name=EntityType]').val();
-			location.href = '@(Url.Action("Create"))' + '?entityType=' + entityType;
 			return false;
 		});
 

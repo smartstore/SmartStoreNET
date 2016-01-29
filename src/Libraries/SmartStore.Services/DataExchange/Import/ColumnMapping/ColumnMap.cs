@@ -103,14 +103,20 @@ namespace SmartStore.Services.DataExchange.Import
 				return result;
 			}
 
-			// source column and property are unequal
-			var crossPair = _map.FirstOrDefault(x => x.Value.Property == sourceColumn);
+			var crossPair = _map.FirstOrDefault(x => x.Value.Property != null && x.Value.Property == sourceColumn);
 
-			return new ColumnMappingValue
+			if (crossPair.Key.HasValue())
 			{
-				Property = crossPair.Key,
-				Default = (crossPair.Value != null ? crossPair.Value.Default : null)
-			};
+				// source column and property are unequal
+				return new ColumnMappingValue
+				{
+					Property = crossPair.Key,
+					Default = (crossPair.Value != null ? crossPair.Value.Default : null)
+				};
+			}
+
+			// there is no mapping at all
+			return new ColumnMappingValue { Property = sourceColumn };
 		}
 
 		/// <summary>
@@ -140,7 +146,12 @@ namespace SmartStore.Services.DataExchange.Import
 
 			var crossPair = _map.FirstOrDefault(x => x.Value.Property == sourceColumn);
 
-			return crossPair.Key;
+			if (crossPair.Key.HasValue())
+			{
+				return crossPair.Key;
+			}
+
+			return sourceColumn;
 		}
 
 		/// <summary>

@@ -6,6 +6,7 @@ namespace SmartStore.Services.DataExchange.Import
 {
 	public class ColumnMap
 	{
+		// maps source column to property
 		private readonly Dictionary<string, ColumnMappingValue> _map = new Dictionary<string, ColumnMappingValue>(StringComparer.OrdinalIgnoreCase);
 
 		private static bool IsIndexed(string name)
@@ -98,10 +99,18 @@ namespace SmartStore.Services.DataExchange.Import
 
 			if (_map.TryGetValue(sourceColumn, out result))
 			{
+				// a) source column and property are equal or b) property should be ignored
 				return result;
 			}
 
-			return new ColumnMappingValue { Property = sourceColumn };
+			// source column and property are unequal
+			var crossPair = _map.FirstOrDefault(x => x.Value.Property == sourceColumn);
+
+			return new ColumnMappingValue
+			{
+				Property = crossPair.Key,
+				Default = (crossPair.Value != null ? crossPair.Value.Default : null)
+			};
 		}
 
 		/// <summary>
@@ -129,7 +138,9 @@ namespace SmartStore.Services.DataExchange.Import
 				return result.Property;
 			}
 
-			return sourceColumn;
+			var crossPair = _map.FirstOrDefault(x => x.Value.Property == sourceColumn);
+
+			return crossPair.Key;
 		}
 
 		/// <summary>

@@ -100,13 +100,13 @@ namespace SmartStore.Admin.Controllers
 			{
 				var csvConverter = new CsvConfigurationConverter();
 				csvConfiguration = csvConverter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration) ?? CsvConfiguration.ExcelFriendlyConfiguration;
-
-				model.CsvConfiguration = new CsvConfigurationModel(csvConfiguration);
 			}
 			else
 			{
 				csvConfiguration = CsvConfiguration.ExcelFriendlyConfiguration;
 			}
+
+			model.CsvConfiguration = new CsvConfigurationModel(csvConfiguration);
 
 			// column mapping
 			model.AvailableSourceColumns = new List<ColumnMappingItemModel>();
@@ -365,6 +365,7 @@ namespace SmartStore.Admin.Controllers
 			var multipleMapped = new List<string>();
 			var map = new ColumnMap();
 			var hasErrors = false;
+			var resetMappings = false;
 
 			try
 			{
@@ -396,10 +397,6 @@ namespace SmartStore.Admin.Controllers
 						}
 					}
 				}
-				else
-				{
-					ModelState.AddModelError("", T("Admin.DataExchange.ColumnMapping.Validate.OneMappingRequired"));
-				}
 			}
 			catch (Exception exception)
 			{
@@ -420,17 +417,34 @@ namespace SmartStore.Admin.Controllers
 			profile.Take = model.Take;
 			profile.UpdateOnly = model.UpdateOnly;
 			profile.KeyFieldNames = (model.KeyFieldNames == null ? null : string.Join(",", model.KeyFieldNames));
-			profile.FileTypeConfiguration = null;
 
 			try
 			{
-				var mapConverter = new ColumnMapConverter();
-				profile.ColumnMapping = mapConverter.ConvertTo(map);
-
 				if (profile.FileType == ImportFileType.CSV && model.CsvConfiguration != null)
 				{
 					var csvConverter = new CsvConfigurationConverter();
+
+					var oldCsvConfig = csvConverter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration);
+					var oldDelimiter = (oldCsvConfig != null ? oldCsvConfig.Delimiter.ToString() : null);
+
+					// auto reset mappings cause they are invalid. note: delimiter can be whitespaced, so no oldDelimter.HasValue() etc.
+					resetMappings = (oldDelimiter != model.CsvConfiguration.Delimiter);
+
 					profile.FileTypeConfiguration = csvConverter.ConvertTo(model.CsvConfiguration.Clone());
+				}
+				else
+				{
+					profile.FileTypeConfiguration = null;
+				}
+
+				if (resetMappings)
+				{
+					profile.ColumnMapping = null;
+				}
+				else
+				{
+					var mapConverter = new ColumnMapConverter();
+					profile.ColumnMapping = mapConverter.ConvertTo(map);
 				}
 			}
 			catch (Exception exception)
@@ -445,7 +459,11 @@ namespace SmartStore.Admin.Controllers
 
 				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
-				if (multipleMapped.Any())
+				if (resetMappings)
+				{
+					NotifyWarning(T("Admin.DataExchange.ColumnMapping.Validate.MappingsReset"));
+				}
+				else if (multipleMapped.Any())
 				{
 					NotifyWarning(T("Admin.DataExchange.ColumnMapping.Validate.MultipleMappedIgnored", "<p>" + string.Join("<br />", multipleMapped) + "</p>"));
 				}

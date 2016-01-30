@@ -102,13 +102,13 @@ namespace SmartStore.Data.Migrations
 				"At least one key field is required.",
 				"Es ist mindestens ein Schlüsselfeld erforderlich.");
 
-			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Validate.OneMappingRequired",
-				"At least one field assignment is required.",
-				"Es ist mindestens eine Feldzuordnung erforderlich.");
-
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Validate.MultipleMappedIgnored",
 				"The following object properties were multiple assigned and thus ignored: {0}",
 				"Die folgenden Objekteigenschaft wurden mehrfach zugeodnet und deshalb ignoriert: {0}");
+
+			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Validate.MappingsReset",
+				"The stored field assignments are invalid due to the change of the delimiter and were reset.",
+				"Die gespeicherten Feldzuordnungen sind aufgrund der Änderung des Trennzeichens ungültig und wurden zurückgesetzt.");
 		}
 	}
 }

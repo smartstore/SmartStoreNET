@@ -128,6 +128,8 @@ namespace SmartStore.Services.Catalog.Importer
 						if (category != null)
 						{
 							category.ParentCategoryId = srcToDestId[parentId].DestinationId;
+
+							_categoryRepository.Update(category);
 						}
 					}
 				}
@@ -209,27 +211,47 @@ namespace SmartStore.Services.Catalog.Importer
 			{
 				Category category = null;
 				var id = row.GetDataValue<int>("Id");
+				var name = row.GetDataValue<string>("Name");
 
-				if (id != 0)
+				foreach (var keyName in context.KeyFieldNames)
 				{
-					category = _categoryRepository.GetById(id);
+					switch (keyName)
+					{
+						case "Id":
+							if (id != 0)
+								category = _categoryRepository.GetById(id);
+							break;
+						case "Name":
+							if (name.HasValue())
+								category = _categoryRepository.Table.FirstOrDefault(x => x.Name == name);
+							break;
+					}
+
+					if (category != null)
+						break;
 				}
 
 				if (category == null)
 				{
+					if (context.UpdateOnly)
+					{
+						++context.Result.SkippedRecords;
+						continue;
+					}
+
 					// a Name is required with new categories
 					if (!row.Segmenter.HasColumn("Name"))
 					{
+						++context.Result.SkippedRecords;
 						context.Result.AddError("The 'Name' field is required for new categories. Skipping row.", row.GetRowInfo(), "Name");
 						continue;
 					}
+
 					category = new Category
 					{
 						CategoryTemplateId = defaultTemplateId
 					};
 				}
-
-				var name = row.GetDataValue<string>("Name");
 
 				row.Initialize(category, name);
 
@@ -303,6 +325,22 @@ namespace SmartStore.Services.Catalog.Importer
 				_services.EventPublisher.EntityUpdated(lastUpdated);
 
 			return num;
+		}
+
+		public static string[] SupportedKeyFields
+		{
+			get
+			{
+				return new string[] { "Id", "Name" };
+			}
+		}
+
+		public static string[] DefaultKeyFields
+		{
+			get
+			{
+				return new string[] { "Id" };
+			}
 		}
 
 		public void Execute(IImportExecuteContext context)

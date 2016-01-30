@@ -124,10 +124,10 @@ namespace SmartStore.Data.Migrations
 				"Legt den Export-Provider fest. Er ist für die individuelle Formatierung der zu exportierenden Daten zuständig.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.EntityType",
-				"Entity",
-				"Entität",
-				"The entity type the provider processes.",
-				"Der Entitätstyp, den der Provider verarbeitet.");
+				"Object",
+				"Objekt",
+				"The object type the provider processes.",
+				"Der Objekttyp, den der Provider verarbeitet.");
 
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.Name",

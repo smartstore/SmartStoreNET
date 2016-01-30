@@ -180,18 +180,42 @@ namespace SmartStore.Services.Customers.Importer
 
 			foreach (var row in batch)
 			{
+				Customer customer = null;
 				var id = row.GetDataValue<int>("Id");
-				var customer = _customerService.GetCustomerById(id);
+				var email = row.GetDataValue<string>("Email");
 
-				if (customer == null)
+				foreach (var keyName in context.KeyFieldNames)
 				{
-					var guid = row.GetDataValue<string>("CustomerGuid");
-					if (guid.HasValue())
-						customer = _customerService.GetCustomerByGuid(new Guid(guid));
+					switch (keyName)
+					{
+						case "Id":
+							customer = _customerService.GetCustomerById(id);
+							break;
+						case "CustomerGuid":
+							var guid = row.GetDataValue<string>("CustomerGuid");
+							if (guid.HasValue())
+								customer = _customerService.GetCustomerByGuid(new Guid(guid));
+							break;
+						case "Email":
+							customer = _customerService.GetCustomerByEmail(email);
+							break;
+						case "Username":
+							customer = _customerService.GetCustomerByUsername(row.GetDataValue<string>("Username"));
+							break;
+					}
+
+					if (customer != null)
+						break;
 				}
 
 				if (customer == null)
 				{
+					if (context.UpdateOnly)
+					{
+						++context.Result.SkippedRecords;
+						continue;
+					}
+
 					customer = new Customer
 					{
 						CustomerGuid = new Guid(),
@@ -204,7 +228,6 @@ namespace SmartStore.Services.Customers.Importer
 					_customerRepository.Context.LoadCollection(customer, (Customer x) => x.CustomerRoles);
 				}
 
-				var email = row.GetDataValue<string>("Email");
 				var isGuest = row.GetDataValue<bool>("IsGuest");
 				var isRegistered = row.GetDataValue<bool>("IsRegistered");
 				var isAdmin = row.GetDataValue<bool>("IsAdministrator");
@@ -261,6 +284,22 @@ namespace SmartStore.Services.Customers.Importer
 				_services.EventPublisher.EntityUpdated(lastUpdated);
 
 			return num;
+		}
+
+		public static string[] SupportedKeyFields
+		{
+			get
+			{
+				return new string[] { "Id", "CustomerGuid", "Email", "Username" };
+			}
+		}
+
+		public static string[] DefaultKeyFields
+		{
+			get
+			{
+				return new string[] { "Id", "CustomerGuid" };
+			}
 		}
 
 		public void Execute(IImportExecuteContext context)

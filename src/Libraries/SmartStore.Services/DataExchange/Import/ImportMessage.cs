@@ -37,6 +37,12 @@ namespace SmartStore.Services.DataExchange.Import
 			set;
 		}
 
+		public string FullMessage
+		{
+			get;
+			set;
+		}
+
 		public override string ToString()
 		{
 			var result = Message.NaIfEmpty();

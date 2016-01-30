@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.DataExchange;
 using SmartStore.Services.DataExchange.Csv;
@@ -19,9 +20,9 @@ namespace SmartStore.Admin.Models.DataExchange
 			QuoteAllFields = config.QuoteAllFields;
 			TrimValues = config.TrimValues;
 			SupportsMultiline = config.SupportsMultiline;
-			Delimiter = config.Delimiter;
-			Quote = config.Quote;
-			Escape = config.Escape;
+			Delimiter = Regex.Escape(config.Delimiter.ToString());
+			Quote = Regex.Escape(config.Quote.ToString());
+			Escape = Regex.Escape(config.Escape.ToString());
 		}
 
 		[SmartResourceDisplayName("Admin.DataExchange.Csv.QuoteAllFields")]
@@ -34,13 +35,13 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool SupportsMultiline { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Csv.Delimiter")]
-		public char Delimiter { get; set; }
+		public string Delimiter { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Csv.Quote")]
-		public char Quote { get; set; }
+		public string Quote { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Csv.Escape")]
-		public char Escape { get; set; }
+		public string Escape { get; set; }
 
 		object ICloneable.Clone()
 		{
@@ -53,9 +54,9 @@ namespace SmartStore.Admin.Models.DataExchange
 			config.QuoteAllFields = QuoteAllFields;
 			config.TrimValues = TrimValues;
 			config.SupportsMultiline = SupportsMultiline;
-			config.Delimiter = Delimiter;
-			config.Quote = Quote;
-			config.Escape = Escape;
+			config.Delimiter = Delimiter.ToChar(true);
+			config.Quote = Quote.ToChar(true);
+			config.Escape = Escape.ToChar(true);
 
 			return config;
 		}

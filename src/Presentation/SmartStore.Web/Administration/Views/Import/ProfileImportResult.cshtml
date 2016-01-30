@@ -1,0 +1,17 @@
+﻿@using SmartStore.Services.DataExchange.Import;
+@model SerializableImportResult
+@{
+	Layout = null;
+}
+<div>
+	<span>@T("Admin.Common.TotalRows"):</span> <span class="muted">@Model.TotalRecords</span> &middot;
+	<span>@T("Admin.Common.Skipped"):</span> <span class="muted">@Model.SkippedRecords</span>
+</div>
+<div>
+	<span>@T("Admin.Common.NewRecords"):</span> <span class="muted">@Model.NewRecords</span> &middot;
+	<span>@T("Admin.Common.Updated"):</span> <span class="muted">@Model.ModifiedRecords</span>
+</div>
+<div>
+	<span>@T("Admin.Common.Errors"):</span> <span class="muted">@Model.Errors</span> &middot;
+	<span>@T("Admin.Common.Warnings"):</span> <span class="muted">@Model.Warnings</span>
+</div>

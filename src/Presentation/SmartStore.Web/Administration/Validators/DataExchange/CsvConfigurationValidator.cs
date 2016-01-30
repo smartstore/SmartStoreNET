@@ -11,15 +11,15 @@ namespace SmartStore.Admin.Validators.DataExchange
 		public CsvConfigurationValidator(ILocalizationService localization)
 		{
 			RuleFor(x => x.Delimiter)
-				.Must(x => !CsvConfiguration.PresetCharacters.Contains(x))
+				.Must(x => !CsvConfiguration.PresetCharacters.Contains(x.ToChar(true)))
 				.WithMessage(localization.GetResource("Admin.DataExchange.Csv.Delimiter.Validation"));
 
 			RuleFor(x => x.Quote)
-				.Must(x => !CsvConfiguration.PresetCharacters.Contains(x))
+				.Must(x => !CsvConfiguration.PresetCharacters.Contains(x.ToChar(true)))
 				.WithMessage(localization.GetResource("Admin.DataExchange.Csv.Quote.Validation"));
 
 			RuleFor(x => x.Escape)
-				.Must(x => !CsvConfiguration.PresetCharacters.Contains(x))
+				.Must(x => !CsvConfiguration.PresetCharacters.Contains(x.ToChar(true)))
 				.WithMessage(localization.GetResource("Admin.DataExchange.Csv.Escape.Validation"));
 
 			

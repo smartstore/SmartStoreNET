@@ -14,6 +14,16 @@ namespace SmartStore.Services.DataExchange.Import
 		int CustomerId { get; }
 
 		/// <summary>
+		/// Whether to only update existing records
+		/// </summary>
+		bool UpdateOnly { get; }
+
+		/// <summary>
+		/// Name of key fields to identify existing records for updating
+		/// </summary>
+		string[] KeyFieldNames { get; }
+
+		/// <summary>
 		/// Use this dictionary for any custom data required along the export
 		/// </summary>
 		Dictionary<string, object> CustomProperties { get; set; }
@@ -70,6 +80,10 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public int CustomerId { get; internal set; }
 
+		public bool UpdateOnly { get; internal set; }
+
+		public string[] KeyFieldNames { get; internal set; }
+
 		/// <summary>
 		/// Use this dictionary for any custom data required along the import
 		/// </summary>
@@ -96,7 +110,7 @@ namespace SmartStore.Services.DataExchange.Import
 		{
 			get
 			{
-				return Result.Messages.Count(x => x.MessageType == ImportMessageType.Error) > 11;
+				return Result.Errors > 11;
 			}
 		}
 

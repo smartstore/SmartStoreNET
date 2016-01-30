@@ -11,6 +11,11 @@ namespace SmartStore.Admin.Validators.DataExchange
 			RuleFor(x => x.Name)
 				.NotEmpty()
 				.WithMessage(localization.GetResource("Admin.Validation.Name"));
+
+			RuleFor(x => x.KeyFieldNames)
+				.NotEmpty()
+				.When(x => x.Id != 0)
+				.WithMessage(localization.GetResource("Admin.DataExchange.Import.Validate.OneKeyFieldRequired"));
 		}
 	}
 }

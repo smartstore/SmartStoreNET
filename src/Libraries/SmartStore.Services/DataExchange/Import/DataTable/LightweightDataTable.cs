@@ -109,7 +109,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 			if (contentLength == 0)
 			{
-				throw Error.Argument("file", "The posted file '{0}' does not contain any data.".FormatInvariant(fileName)); // TODO Loc
+				throw Error.Argument("fileName", "The posted file '{0}' does not contain any data.".FormatInvariant(fileName)); // TODO Loc
 			}
 
 			IDataReader dataReader = null;
@@ -128,7 +128,7 @@ namespace SmartStore.Services.DataExchange.Import
 						break;
 				}
 
-				var table = LightweightDataTable.FromDataReader(dataReader);
+				var table = LightweightDataTable.FromDataReader(dataReader, skip, take);
 
 				if (table.Columns.Count == 0 || table.Rows.Count == 0)
 				{

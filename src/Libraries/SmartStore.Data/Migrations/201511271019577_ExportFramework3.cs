@@ -64,8 +64,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Common.Of", "of", "von");
 
 			builder.AddOrUpdate("Admin.Common.NoTempFilesFound",
-				"No temporary files were found.",
-				"Es wurden keine temporären Dateien gefunden.");
+				"There are no temporary files.",
+				"Es sind keine temporären Dateien vorhanden.");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.NewsLetterSubscription",
 				"Newsletter Subscribers",

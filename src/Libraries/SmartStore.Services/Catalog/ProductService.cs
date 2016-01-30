@@ -1149,6 +1149,36 @@ namespace SmartStore.Services.Catalog
             return product;
         }
 
+		public virtual Product GetProductByManufacturerPartNumber(string manufacturerPartNumber)
+		{
+			if (manufacturerPartNumber.IsEmpty())
+				return null;
+
+			manufacturerPartNumber = manufacturerPartNumber.Trim();
+
+			var product = _productRepository
+				.Where(x => !x.Deleted && x.ManufacturerPartNumber == manufacturerPartNumber)
+				.OrderBy(x => x.Id)
+				.FirstOrDefault();
+
+			return product;
+		}
+
+		public virtual Product GetProductByName(string name)
+		{
+			if (name.IsEmpty())
+				return null;
+
+			name = name.Trim();
+
+			var product = _productRepository
+				.Where(x => !x.Deleted && x.Name == name)
+				.OrderBy(x => x.Id)
+				.FirstOrDefault();
+
+			return product;
+		}
+
 		/// <summary>
 		/// Adjusts inventory
 		/// </summary>

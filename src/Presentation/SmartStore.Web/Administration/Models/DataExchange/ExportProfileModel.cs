@@ -105,9 +105,6 @@ namespace SmartStore.Admin.Models.DataExchange
 			[SmartResourceDisplayName("Common.Website")]
 			public string Url { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Configure")]
-			public string ConfigurationUrl { get; set; }
-
 			[SmartResourceDisplayName("Common.Provider")]
 			public string FriendlyName { get; set; }
 

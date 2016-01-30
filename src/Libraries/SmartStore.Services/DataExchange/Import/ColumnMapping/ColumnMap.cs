@@ -6,6 +6,7 @@ namespace SmartStore.Services.DataExchange.Import
 {
 	public class ColumnMap
 	{
+		// maps source column to property
 		private readonly Dictionary<string, ColumnMappingValue> _map = new Dictionary<string, ColumnMappingValue>(StringComparer.OrdinalIgnoreCase);
 
 		private static bool IsIndexed(string name)
@@ -54,31 +55,37 @@ namespace SmartStore.Services.DataExchange.Import
 			return result;
 		}
 
-		public IEnumerable<KeyValuePair<string, ColumnMappingValue>> GetInvalidMappings()
-		{
-			var mappings = Mappings.Where(x => 
-				!IsIndexed(x.Key) && 
-				x.Value.Property.HasValue() &&
-				Mappings.Count(y => y.Value.Property.IsCaseInsensitiveEqual(x.Value.Property)) > 1
-			);
+		//public IEnumerable<KeyValuePair<string, ColumnMappingValue>> GetInvalidMappings()
+		//{
+		//	var mappings = Mappings.Where(x => 
+		//		x.Value.Property.HasValue() &&
+		//		Mappings.Count(y => y.Value.Property.IsCaseInsensitiveEqual(x.Value.Property)) > 1
+		//	);
 
-			return mappings;
-		}
+		//	return mappings;
+		//}
 
-		public void AddMapping(string sourceColumn, string entityProperty, string defaultValue = null)
+		public bool AddMapping(string sourceColumn, string entityProperty, string defaultValue = null)
 		{
-			AddMapping(sourceColumn, null, entityProperty, defaultValue);
+			return AddMapping(sourceColumn, null, entityProperty, defaultValue);
         }
 
-		public void AddMapping(string sourceColumn, string index, string entityProperty, string defaultValue = null)
+		public bool AddMapping(string sourceColumn, string index, string entityProperty, string defaultValue = null)
 		{
 			Guard.ArgumentNotEmpty(() => sourceColumn);
+
+			var isAlreadyMapped = (entityProperty.HasValue() && _map.Any(x => x.Value.Property.IsCaseInsensitiveEqual(entityProperty)));
+
+			if (isAlreadyMapped)
+				return false;
 
 			_map[CreateSourceName(sourceColumn, index)] = new ColumnMappingValue
 			{
 				Property = entityProperty,
 				Default = defaultValue
 			};
+
+			return true;
 		}
 
 		/// <summary>
@@ -92,9 +99,23 @@ namespace SmartStore.Services.DataExchange.Import
 
 			if (_map.TryGetValue(sourceColumn, out result))
 			{
+				// a) source column and property are equal or b) property should be ignored
 				return result;
 			}
 
+			var crossPair = _map.FirstOrDefault(x => x.Value.Property != null && x.Value.Property == sourceColumn);
+
+			if (crossPair.Key.HasValue())
+			{
+				// source column and property are unequal
+				return new ColumnMappingValue
+				{
+					Property = crossPair.Key,
+					Default = (crossPair.Value != null ? crossPair.Value.Default : null)
+				};
+			}
+
+			// there is no mapping at all
 			return new ColumnMappingValue { Property = sourceColumn };
 		}
 
@@ -121,6 +142,13 @@ namespace SmartStore.Services.DataExchange.Import
 			if (_map.TryGetValue(sourceColumn, out result))
 			{
 				return result.Property;
+			}
+
+			var crossPair = _map.FirstOrDefault(x => x.Value.Property == sourceColumn);
+
+			if (crossPair.Key.HasValue())
+			{
+				return crossPair.Key;
 			}
 
 			return sourceColumn;

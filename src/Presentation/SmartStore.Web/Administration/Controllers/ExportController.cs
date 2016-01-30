@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Admin.Extensions;
@@ -187,7 +188,6 @@ namespace SmartStore.Admin.Controllers
 				if (descriptor != null)
 				{
 					model.Provider.Url = descriptor.Url;
-					model.Provider.ConfigurationUrl = Url.Action("ConfigurePlugin", "Plugin", new { systemName = descriptor.SystemName, area = "Admin" });
 					model.Provider.Author = descriptor.Author;
 					model.Provider.Version = descriptor.Version.ToString();
 				}
@@ -1014,7 +1014,7 @@ namespace SmartStore.Admin.Controllers
 
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 
-			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+			NotifyInfo(T("Admin.DataExchange.Export.RunNowNote"));
 
 			return RedirectToAction("List");
         }
@@ -1061,7 +1061,7 @@ namespace SmartStore.Admin.Controllers
 			var path = profile.GetExportLogPath();
 			var stream = new FileStream(path, FileMode.Open);
 
-			var result = new FileStreamResult(stream, "text/plain; charset=utf-8");
+			var result = new FileStreamResult(stream, MediaTypeNames.Text.Plain);
 			result.FileDownloadName = profile.Name.ToValidFileName() + "-log.txt";
 
 			return result;

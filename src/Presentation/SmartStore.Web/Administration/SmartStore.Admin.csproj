@@ -254,6 +254,7 @@
     <Compile Include="Models\DataExchange\CsvConfigurationModel.cs" />
     <Compile Include="Models\DataExchange\ExportDeploymentModel.cs" />
     <Compile Include="Models\DataExchange\ExportFilterModel.cs" />
+    <Compile Include="Models\DataExchange\ImportProfileListModel.cs" />
     <Compile Include="Models\DataExchange\ImportProfileModel.cs" />
     <Compile Include="Models\DataExchange\ProfileInfoForProviderModel.cs" />
     <Compile Include="Models\DataExchange\ExportPreviewModel.cs" />
@@ -545,6 +546,7 @@
     <Content Include="Views\Import\Edit.cshtml" />
     <Content Include="Views\Shared\CsvConfiguration.cshtml" />
     <Content Include="Views\Import\_ColumnMappings.cshtml" />
+    <Content Include="Views\Import\ProfileImportResult.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

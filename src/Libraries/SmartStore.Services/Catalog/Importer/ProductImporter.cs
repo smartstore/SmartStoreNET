@@ -391,27 +391,49 @@ namespace SmartStore.Services.Catalog.Importer
 
 			foreach (var row in batch)
 			{
-				var id = row.GetDataValue<int>("Id");
-				var product = _productService.GetProductById(id);
+				Product product = null;
 
-				if (product == null)
+				foreach (var keyName in context.KeyFieldNames)
 				{
-					product = _productService.GetProductBySku(row.GetDataValue<string>("Sku"));
+					switch (keyName)
+					{
+						case "Id":
+							product = _productService.GetProductById(row.GetDataValue<int>("Id"));
+							break;
+						case "Sku":
+							product = _productService.GetProductBySku(row.GetDataValue<string>("Sku"));
+							break;
+						case "Gtin":
+							product = _productService.GetProductByGtin(row.GetDataValue<string>("Gtin"));
+							break;
+						case "ManufacturerPartNumber":
+							product = _productService.GetProductByManufacturerPartNumber(row.GetDataValue<string>("ManufacturerPartNumber"));
+							break;
+						case "Name":
+							product = _productService.GetProductByName(row.GetDataValue<string>("Name"));
+							break;
+					}
+
+					if (product != null)
+						break;
 				}
 
 				if (product == null)
 				{
-					product = _productService.GetProductByGtin(row.GetDataValue<string>("Gtin"));
-				}
+					if (context.UpdateOnly)
+					{
+						++context.Result.SkippedRecords;
+						continue;
+					}
 
-				if (product == null)
-				{
 					// a Name is required with new products.
 					if (!row.Segmenter.HasColumn("Name"))
 					{
+						++context.Result.SkippedRecords;
 						context.Result.AddError("The 'Name' field is required for new products. Skipping row.", row.GetRowInfo(), "Name");
 						continue;
 					}
+					
 					product = new Product();
 				}
 
@@ -537,6 +559,22 @@ namespace SmartStore.Services.Catalog.Importer
 				_services.EventPublisher.EntityUpdated(lastUpdated);
 
 			return num;
+		}
+
+		public static string[] SupportedKeyFields
+		{
+			get
+			{
+				return new string[] { "Id", "Sku", "Gtin", "ManufacturerPartNumber", "Name" };
+			}
+		}
+
+		public static string[] DefaultKeyFields
+		{
+			get
+			{
+				return new string[] { "Id", "Sku", "Gtin" };
+			}
 		}
 
 		public void Execute(IImportExecuteContext context)

@@ -108,7 +108,21 @@ namespace SmartStore.Services.Catalog
 		/// <param name="gtin">GTIN</param>
         /// <returns>Product</returns>
 		Product GetProductByGtin(string gtin);
-        
+
+		/// <summary>
+		/// Gets a product by manufacturer part number (MPN)
+		/// </summary>
+		/// <param name="manufacturerPartNumber">Manufacturer part number</param>
+		/// <returns>Product</returns>
+		Product GetProductByManufacturerPartNumber(string manufacturerPartNumber);
+
+		/// <summary>
+		/// Gets a product by name
+		/// </summary>
+		/// <param name="name">Product name</param>
+		/// <returns>Product</returns>
+		Product GetProductByName(string name);
+
 		/// <summary>
 		/// Adjusts inventory
 		/// </summary>

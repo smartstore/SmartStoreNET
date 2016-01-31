@@ -116,7 +116,7 @@
                         </td>
                     </tr>
                 </table>
-))
+	))
 
     <table class="adminContent">
         <tr>
@@ -232,6 +232,7 @@
 		}
     </table>
 }
+
 @helper TabSeo()
 {
     @(Html.LocalizedEditor<CategoryModel, CategoryLocalizedModel>("category-seo-localized",
@@ -441,22 +442,6 @@
 
 @helper TabAcl()
 {    
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#@Html.FieldIdFor(model => model.SubjectToAcl)").click(toggleAcl);
-            toggleAcl();
-        });
-
-        function toggleAcl() {
-            if ($('#@Html.FieldIdFor(model => model.SubjectToAcl)').is(':checked')) {
-                $('.pnl-acl').show();
-            }
-            else {
-                $('.pnl-acl').hide();
-            }
-        }
-    </script>
-
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -491,15 +476,12 @@
                 }
             </td>
         </tr>
-        <tr class="pnl">
-			<td colspan="2"><hr /></td>
+        <tr>
+			<td colspan="2">&nbsp;</td>
 		</tr>
-        <tr class="pnl">
-            <td class="adminTitle">
-                &nbsp;
-            </td>
-            <td class="adminData">
-                <div class="alert alert-danger"  >
+        <tr>
+            <td colspan="2">
+                <div class="alert alert-danger">
                     @T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint")
                 </div>
                 <a href="@Url.Action("InheritAclIntoChildren", "Category", new { categoryId = Model.Id })" name="inherit-acl-into-children" class="btn btn-danger">
@@ -513,23 +495,6 @@
 
 @helper TabStores()
 {
-    <script type="text/javascript">
-    	$(document).ready(function () {
-
-    		$("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
-        	toggleStoreMapping();
-        });
-
-        function toggleStoreMapping() {
-        	if ($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked')) {
-        		$('.pnl-available-stores').show();
-        	}
-        	else {
-        		$('.pnl-available-stores').hide();
-        	}
-        }
-    </script>
-
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -561,15 +526,11 @@
                 }
             </td>
         </tr>
-
-        <tr class="pnl">
-			<td colspan="2"><hr /></td>
+        <tr>
+			<td colspan="2">&nbsp;</td>
 		</tr>
-        <tr class="pnl">
-            <td class="adminTitle">
-                &nbsp;
-            </td>
-            <td class="adminData">
+        <tr>
+            <td colspan="2">
                 <div class="alert alert-danger">
                     @T("Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts.Hint")
                 </div>
@@ -585,8 +546,22 @@
 <script type="text/javascript">
 	$(document).ready(function () {
 
-        $("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").click(togglePageSize);
-		togglePageSize();
+		// toggle page size
+		$("#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)").change(function () {
+			var customerSelectPageSize = $('#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)').is(':checked');
+			$('#pnlPageSize').toggle(!customerSelectPageSize);
+			$('#pnlPageSizeOptions').toggle(customerSelectPageSize);
+		}).trigger('change');
+
+		// toggle acl customer roles
+		$("#@Html.FieldIdFor(model => model.SubjectToAcl)").change(function() {
+			$('.pnl-acl').toggle($('#@Html.FieldIdFor(model => model.SubjectToAcl)').is(':checked'));
+		}).trigger('change');
+
+		// toggle limited to stores
+		$("#@Html.FieldIdFor(model => model.LimitedToStores)").change(function () {
+			$('.pnl-available-stores').toggle($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked'));
+		}).trigger('change');
 
 		// add new product
 		$(document).on('click', '#AddNewProductButton', function () {
@@ -613,16 +588,5 @@
 			});
 		});
 
-    });
-
-	function togglePageSize() {
-		if ($('#@Html.FieldIdFor(model => model.AllowCustomersToSelectPageSize)').is(':checked')) {
-            $('#pnlPageSize').hide();
-            $('#pnlPageSizeOptions').show();
-		}
-		else {
-            $('#pnlPageSize').show();
-            $('#pnlPageSizeOptions').hide();
-        }
-    }
+	});
 </script>

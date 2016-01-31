@@ -40,12 +40,10 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint",
                 @"This function assigns the ACL configuration of this category to all subcategories and products included in this category.<br />
-                    Please keep in mind you have to save changes in the ACL configuration <br/> 
-                    before you can assign them to all subcategories and products. <br/>
-                    <b>Attention:</b> Please keep in mind that <b>existing ACL records will be deleted</b>",
+                    Please keep in mind you have to save changes in the ACL configuration before you can assign them to all subcategories and products. <br/>
+                    <b>Attention:</b> Please keep in mind that <b>existing ACL records will be deleted</b>.",
                 @"Diese Funktion übernimmt die Zugriffsrecht-Konfiguration dieser Warengruppe für alle Unterwarengruppen und Produkte.<br/>
-                    Bitte beachten Sie, dass die Änderungen der Zugriffsrechte zunächst gespeichert werden müssen, <br />
-                    bevor diese für Unterkategorien und Produkte übernommen werden können. <br />
+                    Bitte beachten Sie, dass die Änderungen der Zugriffsrechte zunächst gespeichert werden müssen, bevor diese für Unterkategorien und Produkte übernommen werden können. <br />
                     <b>Vorsicht:</b> Bitte beachten Sie, <b>dass vorhandene Zugriffsrechte überschrieben bzw. gelöscht werden</b>.");
 
             builder.AddOrUpdate("Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts",
@@ -54,12 +52,10 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts.Hint",
                 @"This function assigns the store configuration of this category to all subcategories and products included in this category.<br />
-                    Please keep in mind you have to save changes in the store configuration <br/> 
-                    before you can assign them to all subcategories and products. <br/>
-                    <b>Attention:</b> Please keep in mind that <b>existing store mappings will be deleted</b>",
+                    Please keep in mind you have to save changes in the store configuration before you can assign them to all subcategories and products. <br/>
+                    <b>Attention:</b> Please keep in mind that <b>existing store mappings will be deleted</b>.",
                 @"Diese Funktion übernimmt die Shop-Konfiguration dieser Warengruppe für alle Unterwarengruppen und Produkte.<br/>
-                    Bitte beachten Sie, dass die Änderungen an der Store-Konfiguration zunächst gespeichert werden müssen, <br />
-                    bevor diese für Unterkategorien und Produkte übernommen werden können. <br />
+                    Bitte beachten Sie, dass die Änderungen an der Store-Konfiguration zunächst gespeichert werden müssen, bevor diese für Unterkategorien und Produkte übernommen werden können. <br />
                     <b>Vorsicht:</b> Bitte beachten Sie, <b>dass vorhandene Store-Konfiguration überschrieben bzw. gelöscht werden</b>.");
 
             builder.AddOrUpdate("Admin.Configuration.Acl.NoRolesDefined",

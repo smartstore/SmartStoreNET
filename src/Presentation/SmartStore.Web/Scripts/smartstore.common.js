@@ -219,6 +219,10 @@
 		if ($({}).moreLess) {
 			$('.more-less').moreLess();
 		}
+		
+		// fixes bootstrap 2 bug: non functional links on mobile devices
+	    // https://github.com/twbs/bootstrap/issues/4550
+		$('body').on('touchstart.dropdown', '.dropdown-menu a', function (e) { e.stopPropagation(); });
     });
 
 })( jQuery, this, document );

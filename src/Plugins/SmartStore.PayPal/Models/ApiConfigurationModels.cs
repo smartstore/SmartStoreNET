@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Web.Mvc;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
@@ -7,7 +9,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.PayPal.Models
 {
-    public abstract class ApiConfigurationModel: ModelBase
+	public abstract class ApiConfigurationModel: ModelBase
 	{
         public string[] ConfigGroups { get; set; }
 
@@ -17,6 +19,10 @@ namespace SmartStore.PayPal.Models
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.TransactMode")]
 		public int TransactMode { get; set; }
 		public SelectList TransactModeValues { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.SecurityProtocol")]
+		public SecurityProtocolType? SecurityProtocol { get; set; }
+		public List<SelectListItem> AvailableSecurityProtocols { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.ApiAccountName")]
 		public string ApiAccountName { get; set; }
@@ -43,6 +49,7 @@ namespace SmartStore.PayPal.Models
             {
                 UseSandbox = settings.UseSandbox;
                 TransactMode = Convert.ToInt32(settings.TransactMode);
+				SecurityProtocol = settings.SecurityProtocol;
                 ApiAccountName = settings.ApiAccountName;
                 ApiAccountPassword = settings.ApiAccountPassword;
                 Signature = settings.Signature;
@@ -53,6 +60,7 @@ namespace SmartStore.PayPal.Models
             {
                 settings.UseSandbox = UseSandbox;
                 settings.TransactMode = (TransactMode)TransactMode;
+				settings.SecurityProtocol = SecurityProtocol;
                 settings.ApiAccountName = ApiAccountName;
                 settings.ApiAccountPassword = ApiAccountPassword;
                 settings.Signature = Signature;
@@ -85,7 +93,8 @@ namespace SmartStore.PayPal.Models
             {
                 UseSandbox = settings.UseSandbox;
                 TransactMode = Convert.ToInt32(settings.TransactMode);
-                ApiAccountName = settings.ApiAccountName;
+				SecurityProtocol = settings.SecurityProtocol;
+				ApiAccountName = settings.ApiAccountName;
                 ApiAccountPassword = settings.ApiAccountPassword;
                 Signature = settings.Signature;
                 AdditionalFee = settings.AdditionalFee;
@@ -100,7 +109,8 @@ namespace SmartStore.PayPal.Models
 			{
                 settings.UseSandbox = UseSandbox;
                 settings.TransactMode = (TransactMode)TransactMode;
-                settings.ApiAccountName = ApiAccountName;
+				settings.SecurityProtocol = SecurityProtocol;
+				settings.ApiAccountName = ApiAccountName;
                 settings.ApiAccountPassword = ApiAccountPassword;
                 settings.Signature = Signature;
                 settings.AdditionalFee = AdditionalFee;
@@ -112,8 +122,5 @@ namespace SmartStore.PayPal.Models
                 settings.DefaultShippingPrice = DefaultShippingPrice;
             }
         }
-
     }
-
-
 }

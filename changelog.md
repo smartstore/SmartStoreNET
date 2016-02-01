@@ -39,6 +39,7 @@
 * #451 Add message token for product shipping surcharge
 * #436 Make %Order.Product(s)% token to link the product detail page and a add product thumbnail
 * #339 Meta robots setting for page indexing of search engines
+* PayPal Direct and Express: Option for API security protocol
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

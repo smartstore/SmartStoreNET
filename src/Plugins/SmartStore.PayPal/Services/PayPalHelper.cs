@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Web.Routing;
@@ -10,10 +11,10 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.PayPal.Services
 {
-    /// <summary>
-    /// Represents paypal helper
-    /// </summary>
-    public static class PayPalHelper
+	/// <summary>
+	/// Represents paypal helper
+	/// </summary>
+	public static class PayPalHelper
     {
         /// <summary>
         /// Gets a payment status
@@ -153,8 +154,6 @@ namespace SmartStore.PayPal.Services
                 && routeData.GetRequiredString("action").IsCaseInsensitiveEqual("Cart");
         }
 
-        //TODO: join the following two methods, with help of payment method type
-
         /// <summary>
         /// Gets Paypal URL
         /// </summary>
@@ -164,17 +163,6 @@ namespace SmartStore.PayPal.Services
             return settings.UseSandbox ?
                 "https://www.sandbox.paypal.com/cgi-bin/webscr" :
                 "https://www.paypal.com/cgi-bin/webscr";
-        }
-
-        /// <summary>
-        /// Gets Paypal URL
-        /// </summary>
-        /// <returns></returns>
-        public static string GetPaypalServiceUrl(PayPalSettingsBase settings)
-        {
-            return settings.UseSandbox ?
-                "https://api-3t.sandbox.paypal.com/2.0/" :
-                "https://api-3t.paypal.com/2.0/";
         }
 
         public static string GetApiVersion()
@@ -198,7 +186,8 @@ namespace SmartStore.PayPal.Services
 
             return customSecurityHeaderType;
         }
-        /// <summary>
+        
+		/// <summary>
         /// Get Paypal country code
         /// </summary>
         /// <param name="country">Country</param>
@@ -238,6 +227,37 @@ namespace SmartStore.PayPal.Services
                 return PaymentActionCodeType.Sale;
             }
         }
+
+		public static Dictionary<SecurityProtocolType, string> GetSecurityProtocols()
+		{
+			var dic = new Dictionary<SecurityProtocolType, string>();
+
+			foreach (SecurityProtocolType protocol in Enum.GetValues(typeof(SecurityProtocolType)))
+			{
+				string friendlyName = null;
+				switch (protocol)
+				{
+					case SecurityProtocolType.Ssl3:
+						friendlyName = "SSL 3.0";
+						break;
+					case SecurityProtocolType.Tls:
+						friendlyName = "TLS 1.0";
+						break;
+					case SecurityProtocolType.Tls11:
+						friendlyName = "TLS 1.1";
+						break;
+					case SecurityProtocolType.Tls12:
+						friendlyName = "TLS 1.2";
+						break;
+					default:
+						friendlyName = protocol.ToString().ToUpper();
+						break;
+				}
+
+				dic.Add(protocol, friendlyName);
+			}
+			return dic;
+		}
 
     }
 }

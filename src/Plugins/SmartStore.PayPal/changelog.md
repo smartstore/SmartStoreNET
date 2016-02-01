@@ -1,4 +1,8 @@
-﻿#Release Notes#
+﻿#Release Notes
+
+##Paypal 2.2.0.4
+### New Features
+* Option for API security protocol
 
 ##Paypal 2.2.0.3
 ### New Features

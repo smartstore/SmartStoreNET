@@ -1,5 +1,5 @@
+using System.Net;
 using SmartStore.Core.Configuration;
-using SmartStore.PayPal;
 
 namespace SmartStore.PayPal.Settings
 {
@@ -18,10 +18,16 @@ namespace SmartStore.PayPal.Settings
 
     public abstract class PayPalApiSettingsBase : PayPalSettingsBase
 	{
+		public PayPalApiSettingsBase()
+		{
+			SecurityProtocol = SecurityProtocolType.Tls12;
+		}
+
 		public TransactMode TransactMode { get; set; }
 		public string ApiAccountName { get; set; }
 		public string ApiAccountPassword { get; set; }
 		public string Signature { get; set; }
+		public SecurityProtocolType? SecurityProtocol { get; set; }
 	}
 
     public class PayPalDirectPaymentSettings : PayPalApiSettingsBase, ISettings

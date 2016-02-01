@@ -20,7 +20,7 @@ using SmartStore.Services.Payments;
 
 namespace SmartStore.PayPal
 {
-    public abstract class PayPalProviderBase<TSetting> : PaymentMethodBase, IConfigurable where TSetting : PayPalApiSettingsBase, ISettings, new()
+	public abstract class PayPalProviderBase<TSetting> : PaymentMethodBase, IConfigurable where TSetting : PayPalApiSettingsBase, ISettings, new()
     {
         protected PayPalProviderBase()
 		{
@@ -37,13 +37,46 @@ namespace SmartStore.PayPal
 
 		protected abstract string GetResourceRootKey();
 
-        /// <summary>
-        /// Verifies IPN
-        /// </summary>
-        /// <param name="formString">Form string</param>
-        /// <param name="values">Values</param>
-        /// <returns>Result</returns>
-        public bool VerifyIPN(string formString, out Dictionary<string, string> values)
+		protected PayPalAPIAASoapBinding GetApiAaService(TSetting settings)
+		{
+			if (settings.SecurityProtocol.HasValue)
+			{
+				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
+			}
+
+			var service = new PayPalAPIAASoapBinding();
+
+			service.Url = settings.UseSandbox ? "https://api-3t.sandbox.paypal.com/2.0/" : "https://api-3t.paypal.com/2.0/";
+
+			service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
+
+			return service;
+		}
+
+		protected PayPalAPISoapBinding GetApiService(TSetting settings)
+		{
+			if (settings.SecurityProtocol.HasValue)
+			{
+				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
+			}
+
+			var service = new PayPalAPISoapBinding();
+
+			service.Url = settings.UseSandbox ? "https://api-3t.sandbox.paypal.com/2.0/" : "https://api-3t.paypal.com/2.0/";
+
+			service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
+
+			return service;
+		}
+
+
+		/// <summary>
+		/// Verifies IPN
+		/// </summary>
+		/// <param name="formString">Form string</param>
+		/// <param name="values">Values</param>
+		/// <returns>Result</returns>
+		public bool VerifyIPN(string formString, out Dictionary<string, string> values)
         {
 			// settings: multistore context not possible here. we need the custom value to determine what store it is.
 			var settings = Services.Settings.LoadSetting<TSetting>();
@@ -125,10 +158,8 @@ namespace SmartStore.PayPal
             req.DoCaptureRequest.Amount.currencyID = (CurrencyCodeType)Enum.Parse(typeof(CurrencyCodeType), currencyCode, true);
             req.DoCaptureRequest.CompleteType = CompleteCodeType.Complete;
 
-            using (var service = new PayPalAPIAASoapBinding())
+            using (var service = GetApiAaService(settings))
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 DoCaptureResponseType response = service.DoCapture(req);
 
                 string error = "";
@@ -170,10 +201,8 @@ namespace SmartStore.PayPal
             req.RefundTransactionRequest.Version = PayPalHelper.GetApiVersion();
             req.RefundTransactionRequest.TransactionID = transactionId;
 
-            using (var service = new PayPalAPISoapBinding())
+            using (var service = GetApiService(settings))
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 RefundTransactionResponseType response = service.RefundTransaction(req);
 
                 string error = string.Empty;
@@ -216,10 +245,8 @@ namespace SmartStore.PayPal
             req.DoVoidRequest.AuthorizationID = transactionId;
 
 
-            using (var service = new PayPalAPIAASoapBinding())
+            using (var service = GetApiAaService(settings))
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 DoVoidResponseType response = service.DoVoid(req);
 
                 string error = "";
@@ -258,10 +285,8 @@ namespace SmartStore.PayPal
             //Recurring payments profile ID returned in the CreateRecurringPaymentsProfile response
             details.ProfileID = order.SubscriptionTransactionId;
 
-            using (var service = new PayPalAPIAASoapBinding())
+            using (var service = GetApiAaService(settings))
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 var response = service.ManageRecurringPaymentsProfileStatus(req);
 
                 string error = "";

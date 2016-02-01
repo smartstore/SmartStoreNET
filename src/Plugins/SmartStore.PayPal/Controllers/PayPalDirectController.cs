@@ -60,9 +60,13 @@ namespace SmartStore.PayPal.Controllers
 
             model.Copy(settings, true);
 
-            model.TransactModeValues = TransactModeValues(settings.TransactMode);
+			model.TransactModeValues = TransactModeValues(settings.TransactMode);
 
-            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			model.AvailableSecurityProtocols = PayPalHelper.GetSecurityProtocols()
+				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
+				.ToList();
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
 			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
 
             return View(model);

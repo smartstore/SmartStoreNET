@@ -131,10 +131,8 @@ namespace SmartStore.PayPal
             }
 
             //send request
-            using (var service = new PayPalAPIAASoapBinding())
+            using (var service = GetApiAaService(settings))
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 DoDirectPaymentResponseType response = service.DoDirectPayment(req);
 
                 string error = "";
@@ -246,10 +244,8 @@ namespace SmartStore.PayPal
 			details.ScheduleDetails.PaymentPeriod.TotalBillingCycles = processPaymentRequest.RecurringTotalCycles;
 			details.ScheduleDetails.PaymentPeriod.TotalBillingCyclesSpecified = true;
 
-			using (var service = new PayPalAPIAASoapBinding())
+			using (var service = GetApiAaService(settings))
 			{
-                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
 				CreateRecurringPaymentsProfileResponseType response = service.CreateRecurringPaymentsProfile(req);
 
 				string error = "";

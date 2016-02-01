@@ -24,6 +24,12 @@
       <LocaleResource Name="TransactMode.Hint">
         <Value>Bestimmen Sie den Transaktionsmodus.</Value>
       </LocaleResource>
+      <LocaleResource Name="SecurityProtocol">
+        <Value>Sicherheitsprotokoll</Value>
+      </LocaleResource>
+      <LocaleResource Name="SecurityProtocol.Hint">
+        <Value>Legt das mit der PayPal-API zu verwendende Sicherheitsprotokoll fest.</Value>
+      </LocaleResource>
       <LocaleResource Name="ApiAccountName">
         <Value>API Benutzername</Value>
       </LocaleResource>

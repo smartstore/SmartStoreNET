@@ -48,6 +48,12 @@
 	    <LocaleResource Name="Fields.TransactMode.Hint">
 		    <Value>Specify transaction mode.</Value>
 	    </LocaleResource>
+      <LocaleResource Name="SecurityProtocol">
+        <Value>Security protocol</Value>
+      </LocaleResource>
+      <LocaleResource Name="SecurityProtocol.Hint">
+        <Value>Specifies the security protocol to use with the PayPal API.</Value>
+      </LocaleResource>
 	    <LocaleResource Name="Fields.ApiAccountName">
 		    <Value>API Account Name</Value>
 	    </LocaleResource>

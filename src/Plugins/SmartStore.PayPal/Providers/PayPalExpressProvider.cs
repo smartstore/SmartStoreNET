@@ -138,10 +138,8 @@ namespace SmartStore.PayPal
             };
 
             //execute request
-            using (var service = new PayPalAPIAASoapBinding())
+            using (var service = GetApiAaService(settings))
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 result = service.DoCapture(req);
             }
 
@@ -388,10 +386,8 @@ namespace SmartStore.PayPal
             req.SetExpressCheckoutRequest.SetExpressCheckoutRequestDetails.Custom = processPaymentRequest.OrderGuid.ToString();
             req.SetExpressCheckoutRequest.SetExpressCheckoutRequestDetails = details;
 
-            using (var service = new PayPalAPIAASoapBinding())
+            using (var service = GetApiAaService(settings))
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 result = service.SetExpressCheckout(req);
             }
 
@@ -404,7 +400,7 @@ namespace SmartStore.PayPal
             var result = new GetExpressCheckoutDetailsResponseType();
 			var settings = Services.Settings.LoadSetting<PayPalExpressPaymentSettings>(Services.StoreContext.CurrentStore.Id);
 
-            using (var service = new PayPalAPIAASoapBinding())
+            using (var service = GetApiAaService(settings))
             {
                 var req = new GetExpressCheckoutDetailsReq();
                 req.GetExpressCheckoutDetailsRequest = new GetExpressCheckoutDetailsRequestType
@@ -413,8 +409,6 @@ namespace SmartStore.PayPal
                     Version = PayPalHelper.GetApiVersion()
                 };
 
-                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 result = service.GetExpressCheckoutDetails(req);
             }
             return result;
@@ -613,10 +607,8 @@ namespace SmartStore.PayPal
             };
 
             //execute request
-            using (var service = new PayPalAPIAASoapBinding())
+            using (var service = GetApiAaService(settings))
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 result = service.DoExpressCheckoutPayment(req);
             }
             return result;

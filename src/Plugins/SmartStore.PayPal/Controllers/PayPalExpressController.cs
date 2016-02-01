@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Customers;
@@ -92,7 +93,11 @@ namespace SmartStore.PayPal.Controllers
 
             model.TransactModeValues = TransactModeValues(settings.TransactMode);
 
-            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			model.AvailableSecurityProtocols = PayPalHelper.GetSecurityProtocols()
+				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
+				.ToList();
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
             storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
 
 			return View(model);

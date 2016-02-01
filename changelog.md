@@ -76,6 +76,7 @@
 * Added inline editing of country grid
 * #790 Improved language editing
 * #843 Implement a product picker
+* #850 Use new product picker for selecting required products
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

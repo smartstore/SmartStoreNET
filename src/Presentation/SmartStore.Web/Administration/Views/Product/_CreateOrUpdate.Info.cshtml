@@ -34,10 +34,25 @@
         toggleShipping();
         toggleTax();
         
-    	// show/hide homepage display order
+    	// toggle homepage display order
     	$('#ShowOnHomePage').change(function () {
     		$('#pnlHomePageDisplayOrder').toggle($(this).is(':checked'));
-        }).trigger('change');
+    	}).trigger('change');
+
+    	// add required products
+    	$(document).on('click', '#SearchRequiredProductsButton', function () {
+    		$('#@(Html.FieldIdFor(x => x.RequiredProductIds))').entityPicker('loadDialog', {
+    			url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+    			caption: '@T("Admin.Catalog.Products.Fields.RequireOtherProducts")',
+    			returnValueDelimiter: ',',
+    			onLoadDialogBefore: function () {
+    				$('#SearchRequiredProductsButton').button('loading').prop('disabled', true);
+    			},
+    			onLoadDialogComplete: function () {
+    				$('#SearchRequiredProductsButton').prop('disabled', false).button('reset');
+    			}
+    		});
+    	});
     });
 
     function toggleProductType() {
@@ -465,6 +480,11 @@
 			</td>
 			<td class="adminData">
 				@Html.EditorFor(model => model.RequiredProductIds)
+
+				<button type="button" class="btn" id="SearchRequiredProductsButton" data-loading-text="@(T("Common.Loading"))&hellip;">
+					<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+				</button>
+
 				@Html.ValidationMessageFor(model => model.RequiredProductIds)
 			</td>
 		</tr>

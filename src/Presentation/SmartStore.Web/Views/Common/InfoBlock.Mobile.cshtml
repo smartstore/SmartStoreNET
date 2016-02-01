@@ -23,9 +23,9 @@
 </div>
 <div data-role="navbar">
     <ul>
-        @if (Model.CompareProductsEnabled)
-        {
-            <li><a href="@Url.RouteUrl("CompareProducts")" data-role="button">@T("Products.Compare.List")</a></li>
+        @if (Model.TopicPageUrls.ContainsKey("paymentinfo"))
+{
+            <li><a href="@Url.RouteUrl("Topic", new { SystemName = "paymentinfo" })" data-role="button">@T("Paymentinfo")</a></li>
         }
 		@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
 		{

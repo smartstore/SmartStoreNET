@@ -112,7 +112,7 @@ namespace SmartStore.Data.Migrations
 
 
 			builder.AddOrUpdate("Common.Download.NoDataAvailable",
-				"Download data is not available any more.",
+				"Download data is not available anymore.",
 				"Es sind keine Daten zum Herunterladen mehr verfügbar.");
 
 			builder.AddOrUpdate("Common.Download.NotAvailable",
@@ -120,7 +120,7 @@ namespace SmartStore.Data.Migrations
 				"Der Download ist nicht mehr verfügbar.");
 
 			builder.AddOrUpdate("Common.Download.SampleNotAvailable",
-				"Sample download is not available any more.",
+				"Sample download is not available anymore.",
 				"Der Download einer Beispieldatei ist nicht mehr verfügbar.");
 
 			builder.AddOrUpdate("Common.Download.HasNoSample",

@@ -109,6 +109,35 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.ColumnMapping.Validate.MappingsReset",
 				"The stored field assignments are invalid due to the change of the delimiter and were reset.",
 				"Die gespeicherten Feldzuordnungen sind aufgrund der Änderung des Trennzeichens ungültig und wurden zurückgesetzt.");
+
+
+			builder.AddOrUpdate("Common.Download.NoDataAvailable",
+				"Download data is not available any more.",
+				"Es sind keine Daten zum Herunterladen mehr verfügbar.");
+
+			builder.AddOrUpdate("Common.Download.NotAvailable",
+				"Download is not available any more.",
+				"Der Download ist nicht mehr verfügbar.");
+
+			builder.AddOrUpdate("Common.Download.SampleNotAvailable",
+				"Sample download is not available any more.",
+				"Der Download einer Beispieldatei ist nicht mehr verfügbar.");
+
+			builder.AddOrUpdate("Common.Download.HasNoSample",
+				"The product variant doesn't have a sample download.",
+				"Für die Produktvariante ist der Download einer Beispieldatei nicht verfügbar.");
+
+			builder.AddOrUpdate("Common.Download.NotAllowed",
+				"Downloads are not allowed.",
+				"Downloads sind nicht gestattet.");
+
+			builder.AddOrUpdate("Common.Download.MaxNumberReached",
+				"You have reached the maximum number of downloads {0}.",
+				"Sie haben die maximale Anzahl an Downloads {0} erreicht.");
+
+			builder.AddOrUpdate("Account.CustomerOrders.NotYourOrder",
+				"This is not your order.",
+				"Dieser Auftrag konnte Ihnen nicht zugeordnet werden.");
 		}
 	}
 }

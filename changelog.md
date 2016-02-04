@@ -79,6 +79,7 @@
 * #843 Implement a product picker
 * #850 Use new product picker for selecting required products
 * Trusted Shops: badge will be displayed in mobile themes, payment info link replaced compare list link in footer
+* Product filter: Specification attributes are sorted by display order rather than alphabetically by name
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

@@ -288,7 +288,6 @@ namespace SmartStore.Services.Filter
 				from p in query
 				from sa in p.ProductSpecificationAttributes
 				where sa.AllowFiltering
-				orderby sa.DisplayOrder
 				select sa.SpecificationAttributeOption;
 
 			if (attributeName.HasValue())
@@ -301,13 +300,18 @@ namespace SmartStore.Services.Filter
 				{
 					Name = g.FirstOrDefault().SpecificationAttribute.Name,
 					Value = g.FirstOrDefault().Name,
+					DisplayOrder = g.FirstOrDefault().SpecificationAttribute.DisplayOrder,
 					ID = g.Key.Id,
 					PId = g.FirstOrDefault().SpecificationAttribute.Id,
 					MatchCount = g.Count()
 				};
 
 
-			var lst = grouped.OrderByDescending(a => a.MatchCount).ToList();
+			var lst = grouped
+				.OrderBy(a => a.DisplayOrder)
+				.ThenByDescending(a => a.MatchCount)
+				.ToList();
+
 			int languageId = _services.WorkContext.WorkingLanguage.Id;
 
 			lst.ForEach(c =>

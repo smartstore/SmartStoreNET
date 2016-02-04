@@ -96,7 +96,7 @@ namespace SmartStore.ComponentModel
 			{
 				if (!_isSequenceType.HasValue)
 				{
-					_isSequenceType = Property.PropertyType.IsSubClass(typeof(IEnumerable<>));
+					_isSequenceType = Property.PropertyType != typeof(string) && Property.PropertyType.IsSubClass(typeof(IEnumerable<>));
 				}
 				return _isSequenceType.Value;
 			}

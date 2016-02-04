@@ -296,10 +296,10 @@
         <Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.PassProductNamesAndTotals">
-        <Value>Produktbezeichnung und Gesamtbetrag an PayPal übermitteln</Value>
+        <Value>Produktbezeichnungen und Einzelpreise übermitteln</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.PassProductNamesAndTotals.Hint">
-        <Value>Aktivieren Sie diese Option, falls die Produktbezeichnung und der Gesamtbetrag an PayPal übermitteln werden sollen.</Value>
+        <Value>Aktivieren Sie diese Option, falls Produktbezeichnungen und Einzelpreise an PayPal übermittelt werden sollen.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.EnableIpn">
         <Value>IPN aktivieren</Value>

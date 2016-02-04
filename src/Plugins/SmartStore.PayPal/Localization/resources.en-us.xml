@@ -335,10 +335,10 @@
         <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.PassProductNamesAndTotals">
-        <Value>Pass product names and order totals to PayPal</Value>
+        <Value>Transmit product names and unit prices</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.PassProductNamesAndTotals.Hint">
-        <Value>Check the box if product names and order totals should be passed to PayPal.</Value>
+        <Value>Check the box if product names and unit prices should be transmitted to PayPal.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.EnableIpn">
         <Value>Enable IPN</Value>

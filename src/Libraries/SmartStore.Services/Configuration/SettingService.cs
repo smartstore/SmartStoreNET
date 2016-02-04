@@ -10,6 +10,7 @@ using SmartStore.Core.Events;
 using System.Linq.Expressions;
 using System.Reflection;
 using SmartStore.ComponentModel;
+using System.Collections;
 
 namespace SmartStore.Services.Configuration
 {
@@ -309,33 +310,46 @@ namespace SmartStore.Services.Configuration
 					continue;
 
 				var key = typeof(T).Name + "." + prop.Name;
-				//load by store
+				// load by store
 				string setting = GetSettingByKey<string>(key, storeId: storeId, loadSharedValueIfNotFound: true);
 
-				if (setting == null && !fastProp.IsSequenceType)
+				if (setting == null)
 				{
-					#region Obsolete ('EnumerableConverter' can handle this case now)
-					//if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
-					//{
-					//	// convenience: don't return null for simple list types
-					//	var listArg = prop.PropertyType.GetGenericArguments()[0];
-					//	object list = null;
+					if (fastProp.IsSequenceType)
+                    {
+                        if ((fastProp.GetValue(settings) as IEnumerable) != null)
+                        {
+                            // Instance of IEnumerable<> was already created, most likely in the constructor of the settings concrete class.
+                            // In this case we shouldn't let the EnumerableConverter create a new instance but keep this one.
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        #region Obsolete ('EnumerableConverter' can handle this case now)
+                        //if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
+                        //{
+                        //	// convenience: don't return null for simple list types
+                        //	var listArg = prop.PropertyType.GetGenericArguments()[0];
+                        //	object list = null;
 
-					//	if (listArg == typeof(int))
-					//		list = new List<int>();
-					//	else if (listArg == typeof(decimal))
-					//		list = new List<decimal>();
-					//	else if (listArg == typeof(string))
-					//		list = new List<string>();
+                        //	if (listArg == typeof(int))
+                        //		list = new List<int>();
+                        //	else if (listArg == typeof(decimal))
+                        //		list = new List<decimal>();
+                        //	else if (listArg == typeof(string))
+                        //		list = new List<string>();
 
-					//	if (list != null)
-					//	{
-					//		fastProp.SetValue(settings, list);
-					//	}
-					//}
-					#endregion
+                        //	if (list != null)
+                        //	{
+                        //		fastProp.SetValue(settings, list);
+                        //	}
+                        //}
+                        #endregion
 
-					continue;
+                        continue;
+                    }
+
 				}
 
 				var converter = TypeConverterFactory.GetConverter(prop.PropertyType);

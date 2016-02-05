@@ -138,6 +138,130 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Account.CustomerOrders.NotYourOrder",
 				"This is not your order.",
 				"Dieser Auftrag konnte Ihnen nicht zugeordnet werden.");
+
+			builder.AddOrUpdate("Payment.CouldNotLoadMethod",
+				"The payment method could not be loaded.",
+				"Die Zahlungsart konnte nicht geladen werden.");
+
+			builder.AddOrUpdate("Payment.MethodNotAvailable",
+				"The payment method is not available.",
+				"Die Zahlungsart steht nicht zur Verfügung.");
+
+			builder.AddOrUpdate("Payment.RecurringPaymentNotSupported",
+				"Recurring payments are not supported by selected payment method.",
+				"Wiederkehrende Zahlungen sind für die gewählte Zahlungsart nicht möglich.");
+
+			builder.AddOrUpdate("Payment.RecurringPaymentNotActive",
+				"Recurring payment is not active.",
+				"Wiederkehrende Zahlung ist inaktiv.");
+
+			builder.AddOrUpdate("Payment.RecurringPaymentTypeUnknown",
+				"The recurring payment type is not supported.",
+				"Der Typ von wiederkehrender Zahlung wird nicht unterstützt.");
+
+			builder.AddOrUpdate("Payment.CannotCalculateNextPaymentDate",
+				"The next payment date could not be calculated.",
+				"Das Datum der nächsten Zahlung kann nicht ermittelt werden.");
+
+			builder.AddOrUpdate("Order.InitialOrderDoesNotExistForRecurringPayment",
+				"No initial order exists for the recurring payment.",
+				"Für die wiederkehrende Zahlung existiert kein Ausgangsauftrag.");
+
+			builder.AddOrUpdate("Order.CannotCalculateShippingTotal",
+				"The shipping total could not be calculated.",
+				"Die Versandkosten konnten nicht berechnet werden.");
+
+			builder.AddOrUpdate("Order.CannotCalculateOrderTotal",
+				"The order total could not be calculated.",
+				"Die Auftragssumme konnte nicht berechnet werden.");
+
+			builder.AddOrUpdate("Order.BillingAddressMissing",
+				"The billing address is missing.",
+				"Die Rechnungsanschrift fehlt.");
+
+			builder.AddOrUpdate("Order.ShippingAddressMissing",
+				"The shipping address is missing.",
+				"Die Lieferanschrift fehlt.");
+
+			builder.AddOrUpdate("Order.CountryNotAllowedForBilling",
+				"The country '{0}' is not allowed for billing.",
+				"Eine Rechnungslegung ist für das Land '{0}' unzulässig.");
+
+			builder.AddOrUpdate("Order.CountryNotAllowedForShipping",
+				"The country '{0}' is not allowed for shipping.",
+				"Ein Versand ist für das Land '{0}' unzulässig.");
+
+			builder.AddOrUpdate("Order.NoRecurringProducts",
+				"There are no recurring products.",
+				"Keine wiederkehrenden Produkte.");
+
+			builder.AddOrUpdate("Order.DoesNotExist",
+				"The order does not exist.",
+				"Der Auftrag existiert nicht.");
+
+			builder.AddOrUpdate("Order.CannotCancel",
+				"Cannot cancel order.",
+				"Der Auftrag kann nicht storniert werden.");
+
+			builder.AddOrUpdate("Order.CannotMarkCompleted",
+				"Cannot mark order as completed.",
+				"Der Auftrag kann nicht als abgeschlossen markiert werden.");
+
+			builder.AddOrUpdate("Order.CannotCapture",
+				"Cannot capture order.",
+				"Der Auftrag kann nicht gebucht werden.");
+
+			builder.AddOrUpdate("Order.CannotMarkPaid",
+				"Cannot mark order as paid.",
+				"Der Auftrag kann nicht als bezahlt markiert werden.");
+
+			builder.AddOrUpdate("Order.CannotRefund",
+				"Cannot do refund for order.",
+				"Eine Rückerstattung ist für diesen Auftrag nicht möglich.");
+
+			builder.AddOrUpdate("Order.CannotPartialRefund",
+				"Cannot do partial refund for order.",
+				"Eine Teilrückerstattung ist für diesen Auftrag nicht möglich.");
+
+			builder.AddOrUpdate("Order.CannotVoid",
+				"Cannot do void for order.",
+				"Eine Stornierung dieses Auftrages ist nicht möglich.");
+
+			builder.AddOrUpdate("Shipment.AlreadyShipped",
+				"This shipment is already shipped.",
+				"Diese Sendung wird bereits ausgeliefert.");
+
+			builder.AddOrUpdate("Shipment.AlreadyDelivered",
+				"This shipment is already delivered.",
+				"Diese Sendung wird bereits zugestellt.");
+
+			builder.AddOrUpdate("Customer.DoesNotExist",
+				"The customer does not exist.",
+				"Der Kunde existiert nicht.");
+
+			builder.AddOrUpdate("Checkout.AnonymousNotAllowed",
+				"An anonymous checkout is not allowed.",
+				"Ein anonymer Checkout ist nicht zulässig.");
+
+			builder.AddOrUpdate("Common.Error.InvalidEmail",
+				"The email address is not valid.",
+				"Die E-Mail-Adresse ist ungültig.");
+
+			builder.AddOrUpdate("Admin.OrderNotice.RecurringPaymentCancellationError",
+				"Unable to cancel recurring payment for order {0}.",
+				"Es ist ein Fehler bei der Stornierung einer wiederkehrenden Zahlung für Auftrag {0} aufgetreten.");
+
+			builder.AddOrUpdate("Admin.OrderNotice.OrderRefundError",
+				"Unable to refund order {0}.",
+				"Es ist ein Fehler bei einer Rückerstattung zu Auftrag {0} aufgetreten.");
+
+			builder.AddOrUpdate("Admin.OrderNotice.OrderPartiallyRefundError",
+				"Unable to partially refund order {0}.",
+				"Es ist ein Fehler bei einer Teilerstattung zu Auftrag {0} aufgetreten.");
+
+			builder.AddOrUpdate("Admin.OrderNotice.OrderVoidError",
+				"Unable to void payment transaction of order {0}.",
+				"Es ist ein Fehler bei der Stornierung einer Zahlungstransaktion zu Auftrag {0} aufgetreten.");
 		}
 	}
 }

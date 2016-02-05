@@ -164,17 +164,25 @@ namespace SmartStore.Services.Orders
         /// <param name="paymentMethodSystemName">Payment method system name</param>
         /// <returns>Order</returns>
         Order GetOrderByAuthorizationTransactionIdAndPaymentMethod(string authorizationTransactionId, string paymentMethodSystemName);
-        
-        #endregion
 
-        #region Orders items
-        
-        /// <summary>
-        /// Gets an order item
-        /// </summary>
-        /// <param name="orderItemId">Order item identifier</param>
-        /// <returns>Order item</returns>
-        OrderItem GetOrderItemById(int orderItemId);
+		/// <summary>
+		/// Shortcut to add an order
+		/// </summary>
+		/// <param name="order">Order</param>
+		/// <param name="note">Order note</param>
+		/// <param name="displayToCustomer">Whether to display the note to the customer</param>
+		void AddOrderNote(Order order, string note, bool displayToCustomer = false);
+
+		#endregion
+
+		#region Orders items
+
+		/// <summary>
+		/// Gets an order item
+		/// </summary>
+		/// <param name="orderItemId">Order item identifier</param>
+		/// <returns>Order item</returns>
+		OrderItem GetOrderItemById(int orderItemId);
 
         /// <summary>
         /// Gets an order item

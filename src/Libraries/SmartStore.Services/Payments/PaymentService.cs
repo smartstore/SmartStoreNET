@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Payments
@@ -59,21 +60,25 @@ namespace SmartStore.Services.Payments
 			_providerManager = providerManager;
 			_services = services;
 			_typeFinder = typeFinder;
-        }
 
-        #endregion
+			T = NullLocalizer.Instance;
+		}
+
+		public Localizer T { get; set; }
+
+		#endregion
 
 		#region Methods
 
 		/// <summary>
-        /// Load active payment methods
-        /// </summary>
+		/// Load active payment methods
+		/// </summary>
 		/// <param name="customer">Filter payment methods by customer and apply payment method restrictions; null to load all records</param>
 		/// <param name="cart">Filter payment methods by cart amount; null to load all records</param>
 		/// <param name="storeId">Filter payment methods by store identifier; pass 0 to load all records</param>
 		/// <param name="types">Filter payment methods by payment method types</param>
 		/// <param name="provideFallbackMethod">Provide a fallback payment method if none is active</param>
-        /// <returns>Payment methods</returns>
+		/// <returns>Payment methods</returns>
 		public virtual IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(
 			Customer customer = null,
 			IList<OrganizedShoppingCartItem> cart = null,
@@ -253,7 +258,7 @@ namespace SmartStore.Services.Payments
 			{
 				var paymentMethod = LoadPaymentMethodBySystemName(processPaymentRequest.PaymentMethodSystemName);
 				if (paymentMethod == null)
-					throw new SmartException("Payment method couldn't be loaded");
+					throw new SmartException(T("Payment.CouldNotLoadMethod"));
 
 				return paymentMethod.Value.PreProcessPayment(processPaymentRequest);
 			}
@@ -282,9 +287,12 @@ namespace SmartStore.Services.Payments
                     processPaymentRequest.CreditCardNumber = processPaymentRequest.CreditCardNumber.Replace(" ", "");
                     processPaymentRequest.CreditCardNumber = processPaymentRequest.CreditCardNumber.Replace("-", "");
                 }
-                var paymentMethod = LoadPaymentMethodBySystemName(processPaymentRequest.PaymentMethodSystemName);
-                if (paymentMethod == null)
-                    throw new SmartException("Payment method couldn't be loaded");
+
+				var paymentMethod = LoadPaymentMethodBySystemName(processPaymentRequest.PaymentMethodSystemName);
+
+				if (paymentMethod == null)
+                    throw new SmartException(T("Payment.CouldNotLoadMethod"));
+
                 return paymentMethod.Value.ProcessPayment(processPaymentRequest);
             }
         }
@@ -300,7 +308,7 @@ namespace SmartStore.Services.Payments
 			{
 				var paymentMethod = LoadPaymentMethodBySystemName(postProcessPaymentRequest.Order.PaymentMethodSystemName);
 				if (paymentMethod == null)
-					throw new SmartException("Payment method couldn't be loaded");
+					throw new SmartException(T("Payment.CouldNotLoadMethod"));
 
 				paymentMethod.Value.PostProcessPayment(postProcessPaymentRequest);
 			}
@@ -377,7 +385,7 @@ namespace SmartStore.Services.Payments
         {
             var paymentMethod = LoadPaymentMethodBySystemName(capturePaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
-                throw new SmartException("Payment method couldn't be loaded");
+                throw new SmartException(T("Payment.CouldNotLoadMethod"));
 
 			try
 			{
@@ -386,7 +394,7 @@ namespace SmartStore.Services.Payments
 			catch (NotSupportedException)
 			{
 				var result = new CapturePaymentResult();
-				result.AddError(_services.Localization.GetResource("Common.Payment.NoCaptureSupport"));
+				result.AddError(T("Common.Payment.NoCaptureSupport"));
 				return result;
 			}
 			catch
@@ -432,7 +440,7 @@ namespace SmartStore.Services.Payments
         {
             var paymentMethod = LoadPaymentMethodBySystemName(refundPaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
-                throw new SmartException("Payment method couldn't be loaded");
+                throw new SmartException(T("Payment.CouldNotLoadMethod"));
 
 			try
 			{
@@ -441,7 +449,7 @@ namespace SmartStore.Services.Payments
 			catch (NotSupportedException)
 			{
 				var result = new RefundPaymentResult();
-				result.AddError(_services.Localization.GetResource("Common.Payment.NoRefundSupport"));
+				result.AddError(T("Common.Payment.NoRefundSupport"));
 				return result;
 			}
 			catch
@@ -474,7 +482,7 @@ namespace SmartStore.Services.Payments
         {
             var paymentMethod = LoadPaymentMethodBySystemName(voidPaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
-                throw new SmartException("Payment method couldn't be loaded");
+                throw new SmartException(T("Payment.CouldNotLoadMethod"));
 
 			try
 			{
@@ -483,7 +491,7 @@ namespace SmartStore.Services.Payments
 			catch (NotSupportedException)
 			{
 				var result = new VoidPaymentResult();
-				result.AddError(_services.Localization.GetResource("Common.Payment.NoVoidSupport"));
+				result.AddError(T("Common.Payment.NoVoidSupport"));
 				return result;
 			}
 			catch
@@ -526,7 +534,7 @@ namespace SmartStore.Services.Payments
             {
                 var paymentMethod = LoadPaymentMethodBySystemName(processPaymentRequest.PaymentMethodSystemName);
                 if (paymentMethod == null)
-                    throw new SmartException("Payment method couldn't be loaded");
+                    throw new SmartException(T("Payment.CouldNotLoadMethod"));
 
 				try
 				{
@@ -535,7 +543,7 @@ namespace SmartStore.Services.Payments
 				catch (NotSupportedException)
 				{
 					var result = new ProcessPaymentResult();
-					result.AddError(_services.Localization.GetResource("Common.Payment.NoRecurringPaymentSupport"));
+					result.AddError(T("Common.Payment.NoRecurringPaymentSupport"));
 					return result;
 				}
 				catch
@@ -557,7 +565,7 @@ namespace SmartStore.Services.Payments
 
             var paymentMethod = LoadPaymentMethodBySystemName(cancelPaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
-                throw new SmartException("Payment method couldn't be loaded");
+                throw new SmartException(T("Payment.CouldNotLoadMethod"));
 
 			try
 			{
@@ -566,7 +574,7 @@ namespace SmartStore.Services.Payments
 			catch (NotSupportedException)
 			{
 				var result = new CancelRecurringPaymentResult();
-				result.AddError(_services.Localization.GetResource("Common.Payment.NoRecurringPaymentSupport"));
+				result.AddError(T("Common.Payment.NoRecurringPaymentSupport"));
 				return result;
 			}
 			catch

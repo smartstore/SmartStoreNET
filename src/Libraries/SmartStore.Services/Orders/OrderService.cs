@@ -13,10 +13,10 @@ using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Orders
 {
-    /// <summary>
-    /// Order service
-    /// </summary>
-    public partial class OrderService : IOrderService
+	/// <summary>
+	/// Order service
+	/// </summary>
+	public partial class OrderService : IOrderService
     {
         #region Fields
 
@@ -392,8 +392,7 @@ namespace SmartStore.Services.Orders
         /// <param name="authorizationTransactionId">Authorization transaction ID</param>
         /// <param name="paymentMethodSystemName">Payment method system name</param>
         /// <returns>Order</returns>
-        public virtual Order GetOrderByAuthorizationTransactionIdAndPaymentMethod(string authorizationTransactionId, 
-            string paymentMethodSystemName)
+        public virtual Order GetOrderByAuthorizationTransactionIdAndPaymentMethod(string authorizationTransactionId, string paymentMethodSystemName)
         { 
             var query = _orderRepository.Table;
             if (!String.IsNullOrWhiteSpace(authorizationTransactionId))
@@ -406,17 +405,34 @@ namespace SmartStore.Services.Orders
             var order = query.FirstOrDefault();
             return order;
         }
-        
-        #endregion
-        
-        #region Order items
 
-        /// <summary>
-        /// Gets an Order item
-        /// </summary>
-        /// <param name="orderItemId">Order item identifier</param>
-        /// <returns>Order item</returns>
-        public virtual OrderItem GetOrderItemById(int orderItemId)
+		public virtual void AddOrderNote(Order order, string note, bool displayToCustomer = false)
+		{
+			Guard.ArgumentNotNull(() => order);
+
+			if (note.HasValue())
+			{
+				order.OrderNotes.Add(new OrderNote
+				{
+					Note = note,
+					DisplayToCustomer = displayToCustomer,
+					CreatedOnUtc = DateTime.UtcNow
+				});
+
+				UpdateOrder(order);
+			}
+		}
+
+		#endregion
+
+		#region Order items
+
+		/// <summary>
+		/// Gets an Order item
+		/// </summary>
+		/// <param name="orderItemId">Order item identifier</param>
+		/// <returns>Order item</returns>
+		public virtual OrderItem GetOrderItemById(int orderItemId)
         {
             if (orderItemId == 0)
                 return null;

@@ -109,6 +109,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ExpandAllFilterCriteria")]
         public bool ExpandAllFilterCriteria { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SortFilterResultsByMatches")]
+		public bool SortFilterResultsByMatches { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SubCategoryDisplayType")]
 		public SubCategoryDisplayType SubCategoryDisplayType { get; set; }
 		public SelectList AvailableSubCategoryDisplayTypes { get; set; }

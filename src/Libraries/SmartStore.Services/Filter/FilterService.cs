@@ -11,7 +11,6 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.Filter
 {
@@ -254,19 +253,28 @@ namespace SmartStore.Services.Filter
 
 			var grouped =
 				from m in manus
-				orderby m.DisplayOrder
 				group m by m.Id into grp
 				orderby grp.Key
 				select new FilterCriteria
 				{
 					MatchCount = grp.Count(),
-					Value = grp.FirstOrDefault().Name
+					Value = grp.FirstOrDefault().Name,
+					DisplayOrder = grp.FirstOrDefault().DisplayOrder
 				};
 
-			grouped = grouped.OrderByDescending(m => m.MatchCount);
+			if (_catalogSettings.SortFilterResultsByMatches)
+			{
+				grouped = grouped.OrderByDescending(m => m.MatchCount);
+			}
+			else
+			{
+				grouped = grouped.OrderBy(m => m.DisplayOrder);
+			}
 
 			if (!getAll)
+			{
 				grouped = grouped.Take(_catalogSettings.MaxFilterItemsToDisplay);
+			}
 
 			var lst = grouped.ToList();
 
@@ -282,6 +290,8 @@ namespace SmartStore.Services.Filter
 
 		private List<FilterCriteria> ProductFilterableSpecAttributes(FilterProductContext context, string attributeName = null)
 		{
+			List<FilterCriteria> criterias = null;
+			var languageId = _services.WorkContext.WorkingLanguage.Id;
 			var query = ProductFilter(context);
 
 			var attributes =
@@ -291,7 +301,9 @@ namespace SmartStore.Services.Filter
 				select sa.SpecificationAttributeOption;
 
 			if (attributeName.HasValue())
+			{
 				attributes = attributes.Where(a => a.SpecificationAttribute.Name == attributeName);
+			}
 
 			var grouped =
 				from a in attributes
@@ -300,21 +312,30 @@ namespace SmartStore.Services.Filter
 				{
 					Name = g.FirstOrDefault().SpecificationAttribute.Name,
 					Value = g.FirstOrDefault().Name,
-					DisplayOrder = g.FirstOrDefault().SpecificationAttribute.DisplayOrder,
 					ID = g.Key.Id,
 					PId = g.FirstOrDefault().SpecificationAttribute.Id,
-					MatchCount = g.Count()
+					MatchCount = g.Count(),
+					DisplayOrder = g.FirstOrDefault().SpecificationAttribute.DisplayOrder,
+					DisplayOrderValues = g.FirstOrDefault().DisplayOrder
 				};
 
+			if (_catalogSettings.SortFilterResultsByMatches)
+			{
+				criterias = grouped
+					.OrderBy(a => a.DisplayOrder)
+					.ThenByDescending(a => a.MatchCount)
+					.ThenBy(a => a.DisplayOrderValues)
+					.ToList();
+			}
+			else
+			{
+				criterias = grouped
+					.OrderBy(a => a.DisplayOrder)
+					.ThenBy(a => a.DisplayOrderValues)
+					.ToList();
+			}
 
-			var lst = grouped
-				.OrderBy(a => a.DisplayOrder)
-				.ThenByDescending(a => a.MatchCount)
-				.ToList();
-
-			int languageId = _services.WorkContext.WorkingLanguage.Id;
-
-			lst.ForEach(c =>
+			criterias.ForEach(c =>
 			{
 				c.Entity = ShortcutSpecAttribute;
 				c.IsInactive = true;
@@ -326,7 +347,7 @@ namespace SmartStore.Services.Filter
 					c.ValueLocalized = _localizedEntityService.GetLocalizedValue(languageId, c.ID.Value, "SpecificationAttributeOption", "Name");
 			});
 
-			return lst;
+			return criterias;
 		}
 
 		public virtual List<FilterCriteria> Deserialize(string jsonData)

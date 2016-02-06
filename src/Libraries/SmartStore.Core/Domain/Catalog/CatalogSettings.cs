@@ -33,6 +33,7 @@ namespace SmartStore.Core.Domain.Catalog
 			CompareProductsEnabled = true;
             FilterEnabled = true;
             MaxFilterItemsToDisplay = 4;
+			SortFilterResultsByMatches = true;
 			SubCategoryDisplayType = SubCategoryDisplayType.AboveProductList;
 			ProductSearchAutoCompleteEnabled = true;
 			ShowProductImagesInSearchAutoComplete = true;
@@ -175,7 +176,12 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether all filter criterias should be expanded
         /// </summary>
         public bool ExpandAllFilterCriteria { get; set; }
-        
+
+		/// <summary>
+		/// Gets or sets a value indicating whether filter results should be sorted by matches
+		/// </summary>
+		public bool SortFilterResultsByMatches { get; set; }
+
 		/// <summary>
 		/// Gets or sets a value indicating whether and where to display a list of subcategories
 		/// </summary>

@@ -39,6 +39,7 @@ namespace SmartStore.Services.Filter
 		// Metadata
 		public int MatchCount { get; set; }
 		public int DisplayOrder { get; set; }
+		public int DisplayOrderValues { get; set; }
 		public bool IsInactive { get; set; }
 		public string NameLocalized { get; set; }
 		public string ValueLocalized { get; set; }

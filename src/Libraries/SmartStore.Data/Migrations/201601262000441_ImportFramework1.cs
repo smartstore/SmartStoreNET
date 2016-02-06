@@ -262,6 +262,12 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.OrderNotice.OrderVoidError",
 				"Unable to void payment transaction of order {0}.",
 				"Es ist ein Fehler bei der Stornierung einer Zahlungstransaktion zu Auftrag {0} aufgetreten.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.SortFilterResultsByMatches",
+				"Sort filter results by number of matches",
+				"Filterergebnisse nach Trefferanzahl sortieren",
+				"Specifies to sort filter results by number of matches in descending order. If this option is deactivated then the result is sorted by the display order of the values.",
+				"Legt fest, das Filterergebnisse absteigend nach der Anzahl an Übereinstimmungen sortiert werden. Ist diese Option deaktiviert, so wird in der für die Werte festgelegten Reihenfolge sortiert.");
 		}
 	}
 }

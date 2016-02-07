@@ -32,5 +32,21 @@ namespace SmartStore.Core.Localization
 
 			return null;
 		}
+
+		public static string GetCurrencySymbol(string locale)
+		{
+			try
+			{
+				if (locale.HasValue())
+				{
+					var info = new RegionInfo(locale);
+					if (info != null)
+						return info.CurrencySymbol;
+				}
+			}
+			catch { }
+
+			return null;
+		}
 	}
 }

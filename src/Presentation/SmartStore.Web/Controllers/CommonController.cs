@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
@@ -227,7 +226,7 @@ namespace SmartStore.Web.Controllers
                         Id = x.Id,
                         Name = x.GetLocalized(y => y.Name),
                         ISOCode = x.CurrencyCode,
-                        Symbol = GetCurrencySymbol(x.DisplayLocale) ?? x.CurrencyCode
+                        Symbol = LocalizationHelper.GetCurrencySymbol(x.DisplayLocale) ?? x.CurrencyCode
                     })
                     .ToList();
                 return result;
@@ -239,28 +238,6 @@ namespace SmartStore.Web.Controllers
                 AvailableCurrencies = availableCurrencies
             };
             return model;
-        }
-
-        // TODO: Zentral auslagern
-        private static string GetCurrencySymbol(string locale)
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(locale))
-                {
-                    var info = new RegionInfo(locale);
-                    if (info == null)
-                    {
-                        return null;
-                    }
-                    return info.CurrencySymbol;
-                }
-                return null;
-            }
-            catch
-            {
-                return null;
-            }
         }
 
         [NonAction]

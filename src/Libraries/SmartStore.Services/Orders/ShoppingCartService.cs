@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Events;
+using SmartStore.Core.Localization;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -19,10 +20,10 @@ using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Orders
 {
-    /// <summary>
-    /// Shopping cart service
-    /// </summary>
-    public partial class ShoppingCartService : IShoppingCartService
+	/// <summary>
+	/// Shopping cart service
+	/// </summary>
+	public partial class ShoppingCartService : IShoppingCartService
     {
         #region Fields
 
@@ -112,20 +113,24 @@ namespace SmartStore.Services.Orders
 			this._genericAttributeService = genericAttributeService;
 			this._downloadService = downloadService;
 			this._catalogSettings = catalogSettings;
-        }
 
-        #endregion
+			T = NullLocalizer.Instance;
+		}
 
-        #region Methods
+		public Localizer T { get; set; }
 
-        /// <summary>
-        /// Delete shopping cart item
-        /// </summary>
-        /// <param name="shoppingCartItem">Shopping cart item</param>
-        /// <param name="resetCheckoutData">A value indicating whether to reset checkout data</param>
-        /// <param name="ensureOnlyActiveCheckoutAttributes">A value indicating whether to ensure that only active checkout attributes are attached to the current customer</param>
+		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// Delete shopping cart item
+		/// </summary>
+		/// <param name="shoppingCartItem">Shopping cart item</param>
+		/// <param name="resetCheckoutData">A value indicating whether to reset checkout data</param>
+		/// <param name="ensureOnlyActiveCheckoutAttributes">A value indicating whether to ensure that only active checkout attributes are attached to the current customer</param>
 		/// <param name="deleteChildCartItems">A value indicating whether to delete child cart items</param>
-        public virtual void DeleteShoppingCartItem(ShoppingCartItem shoppingCartItem, bool resetCheckoutData = true, 
+		public virtual void DeleteShoppingCartItem(ShoppingCartItem shoppingCartItem, bool resetCheckoutData = true, 
             bool ensureOnlyActiveCheckoutAttributes = false, bool deleteChildCartItems = true)
         {
             if (shoppingCartItem == null)
@@ -271,17 +276,17 @@ namespace SmartStore.Services.Orders
 
                                     //don't display specific errors from 'addToCartWarnings' variable
                                     //display only generic error
-									warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.RequiredProductWarning"), rp.GetLocalized(x => x.Name)));
+									warnings.Add(T("ShoppingCart.RequiredProductWarning", rp.GetLocalized(x => x.Name)));
                                 }
                             }
                             else
                             {
-								warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.RequiredProductWarning"), rp.GetLocalized(x => x.Name)));
+								warnings.Add(T("ShoppingCart.RequiredProductWarning", rp.GetLocalized(x => x.Name)));
                             }
                         }
                         else
                         {
-							warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.RequiredProductWarning"), rp.GetLocalized(x => x.Name)));
+							warnings.Add(T("ShoppingCart.RequiredProductWarning", rp.GetLocalized(x => x.Name)));
                         }
                     }
                 }
@@ -314,57 +319,57 @@ namespace SmartStore.Services.Orders
             //deleted?
             if (product.Deleted)
             {
-                warnings.Add(_localizationService.GetResource("ShoppingCart.ProductDeleted"));
+                warnings.Add(T("ShoppingCart.ProductDeleted"));
                 return warnings;
             }
 
 			// check if the product type is available for order
 			if (product.ProductType == ProductType.GroupedProduct)
 			{
-				warnings.Add(_localizationService.GetResource("ShoppingCart.ProductNotAvailableForOrder"));
+				warnings.Add(T("ShoppingCart.ProductNotAvailableForOrder"));
 			}
 
 			// validate bundle
 			if (product.ProductType == ProductType.BundledProduct)
 			{
 				if (product.BundlePerItemPricing && customerEnteredPrice != decimal.Zero)
-					warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.NoCustomerEnteredPrice"));
+					warnings.Add(T("ShoppingCart.Bundle.NoCustomerEnteredPrice"));
 			}
 
             //published?
             if (!product.Published)
             {
-                warnings.Add(_localizationService.GetResource("ShoppingCart.ProductUnpublished"));
+                warnings.Add(T("ShoppingCart.ProductUnpublished"));
             }
             
             //ACL
             if (!_aclService.Authorize(product, customer))
             {
-                warnings.Add(_localizationService.GetResource("ShoppingCart.ProductUnpublished"));
+                warnings.Add(T("ShoppingCart.ProductUnpublished"));
             }
 
 			//Store mapping
 			if (!_storeMappingService.Authorize(product, _storeContext.CurrentStore.Id))
 			{
-				warnings.Add(_localizationService.GetResource("ShoppingCart.ProductUnpublished"));
+				warnings.Add(T("ShoppingCart.ProductUnpublished"));
 			}
 
             //disabled "add to cart" button
             if (shoppingCartType == ShoppingCartType.ShoppingCart && product.DisableBuyButton)
             {
-                warnings.Add(_localizationService.GetResource("ShoppingCart.BuyingDisabled"));
+                warnings.Add(T("ShoppingCart.BuyingDisabled"));
             }
 
             //disabled "add to wishlist" button
             if (shoppingCartType == ShoppingCartType.Wishlist && product.DisableWishlistButton)
             {
-                warnings.Add(_localizationService.GetResource("ShoppingCart.WishlistDisabled"));
+                warnings.Add(T("ShoppingCart.WishlistDisabled"));
             }
 
             //call for price
             if (shoppingCartType == ShoppingCartType.ShoppingCart && product.CallForPrice)
             {
-                warnings.Add(_localizationService.GetResource("Products.CallForPrice"));
+                warnings.Add(T("Products.CallForPrice"));
             }
 
             //customer entered price
@@ -373,11 +378,13 @@ namespace SmartStore.Services.Orders
                 if (customerEnteredPrice < product.MinimumCustomerEnteredPrice ||
                     customerEnteredPrice > product.MaximumCustomerEnteredPrice)
                 {
-                    decimal minimumCustomerEnteredPrice = _currencyService.ConvertFromPrimaryStoreCurrency(product.MinimumCustomerEnteredPrice, _workContext.WorkingCurrency);
-                    decimal maximumCustomerEnteredPrice = _currencyService.ConvertFromPrimaryStoreCurrency(product.MaximumCustomerEnteredPrice, _workContext.WorkingCurrency);
-                    warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.CustomerEnteredPrice.RangeError"),
-                        _priceFormatter.FormatPrice(minimumCustomerEnteredPrice, true, false),
-                        _priceFormatter.FormatPrice(maximumCustomerEnteredPrice, true, false)));
+                    var minimumCustomerEnteredPrice = _currencyService.ConvertFromPrimaryStoreCurrency(product.MinimumCustomerEnteredPrice, _workContext.WorkingCurrency);
+                    var maximumCustomerEnteredPrice = _currencyService.ConvertFromPrimaryStoreCurrency(product.MaximumCustomerEnteredPrice, _workContext.WorkingCurrency);
+
+                    warnings.Add(T("ShoppingCart.CustomerEnteredPrice.RangeError",
+						_priceFormatter.FormatPrice(minimumCustomerEnteredPrice, true, false),
+                        _priceFormatter.FormatPrice(maximumCustomerEnteredPrice, true, false))
+					);
                 }
             }
 
@@ -385,18 +392,20 @@ namespace SmartStore.Services.Orders
             var hasQtyWarnings = false;
             if (quantity < product.OrderMinimumQuantity)
             {
-                warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.MinimumQuantity"), product.OrderMinimumQuantity));
+                warnings.Add(T("ShoppingCart.MinimumQuantity", product.OrderMinimumQuantity));
                 hasQtyWarnings = true;
             }
+
             if (quantity > product.OrderMaximumQuantity)
             {
-                warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.MaximumQuantity"), product.OrderMaximumQuantity));
+                warnings.Add(T("ShoppingCart.MaximumQuantity", product.OrderMaximumQuantity));
                 hasQtyWarnings = true;
             }
+
             var allowedQuantities = product.ParseAllowedQuatities();
             if (allowedQuantities.Length > 0 && !allowedQuantities.Contains(quantity))
             {
-                warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.AllowedQuantities"), string.Join(", ", allowedQuantities)));
+                warnings.Add(T("ShoppingCart.AllowedQuantities", string.Join(", ", allowedQuantities)));
             }
 
             var validateOutOfStock = shoppingCartType == ShoppingCartType.ShoppingCart || !_shoppingCartSettings.AllowOutOfStockItemsToBeAddedToWishlist;
@@ -414,11 +423,12 @@ namespace SmartStore.Services.Orders
                             {
                                 if (product.StockQuantity < quantity)
                                 {
-                                    int maximumQuantityCanBeAdded = product.StockQuantity;
+                                    var maximumQuantityCanBeAdded = product.StockQuantity;
+
                                     if (maximumQuantityCanBeAdded <= 0)
-                                        warnings.Add(_localizationService.GetResource("ShoppingCart.OutOfStock"));
+                                        warnings.Add(T("ShoppingCart.OutOfStock"));
                                     else
-                                        warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.QuantityExceedsStock"), maximumQuantityCanBeAdded));
+                                        warnings.Add(T("ShoppingCart.QuantityExceedsStock", maximumQuantityCanBeAdded));
                                 }
                             }
                         }
@@ -434,9 +444,9 @@ namespace SmartStore.Services.Orders
 									int maximumQuantityCanBeAdded = combination.StockQuantity;
 
 									if (maximumQuantityCanBeAdded <= 0)
-										warnings.Add(_localizationService.GetResource("ShoppingCart.OutOfStock"));
+										warnings.Add(T("ShoppingCart.OutOfStock"));
 									else
-										warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.QuantityExceedsStock"), maximumQuantityCanBeAdded));
+										warnings.Add(T("ShoppingCart.QuantityExceedsStock", maximumQuantityCanBeAdded));
 								}
                             }
                         }
@@ -447,14 +457,14 @@ namespace SmartStore.Services.Orders
             }
 
             //availability dates
-            bool availableStartDateError = false;
+            var availableStartDateError = false;
             if (product.AvailableStartDateTimeUtc.HasValue)
             {
                 DateTime now = DateTime.UtcNow;
                 DateTime availableStartDateTime = DateTime.SpecifyKind(product.AvailableStartDateTimeUtc.Value, DateTimeKind.Utc);
                 if (availableStartDateTime.CompareTo(now) > 0)
                 {
-                    warnings.Add(_localizationService.GetResource("ShoppingCart.NotAvailable"));
+                    warnings.Add(T("ShoppingCart.NotAvailable"));
                     availableStartDateError = true;
                 }
             }
@@ -464,7 +474,7 @@ namespace SmartStore.Services.Orders
                 DateTime availableEndDateTime = DateTime.SpecifyKind(product.AvailableEndDateTimeUtc.Value, DateTimeKind.Utc);
                 if (availableEndDateTime.CompareTo(now) < 0)
                 {
-                    warnings.Add(_localizationService.GetResource("ShoppingCart.NotAvailable"));
+                    warnings.Add(T("ShoppingCart.NotAvailable"));
                 }
             }
             return warnings;
@@ -497,7 +507,7 @@ namespace SmartStore.Services.Orders
 
 				if (pv1 == null || pv1.Id != product.Id)
 				{
-					warnings.Add(_localizationService.GetResource("ShoppingCart.AttributeError"));
+					warnings.Add(T("ShoppingCart.AttributeError"));
 					return warnings;
 				}
             }
@@ -533,8 +543,7 @@ namespace SmartStore.Services.Orders
 
                     if (!found)
                     {
-						warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.SelectAttribute"),
-							pva2.TextPrompt.HasValue() ? pva2.TextPrompt : pva2.ProductAttribute.GetLocalized(a => a.Name)));
+						warnings.Add(T("ShoppingCart.SelectAttribute", pva2.TextPrompt.HasValue() ? pva2.TextPrompt : pva2.ProductAttribute.GetLocalized(a => a.Name)));
                     }
                 }
             }
@@ -549,7 +558,7 @@ namespace SmartStore.Services.Orders
 
 				if (combination != null && !combination.IsActive)
 				{
-					warnings.Add(_localizationService.GetResource("ShoppingCart.NotAvailable"));
+					warnings.Add(T("ShoppingCart.NotAvailable"));
 				}
 			}
 
@@ -568,18 +577,16 @@ namespace SmartStore.Services.Orders
 
 							foreach (var linkageWarning in linkageWarnings)
 							{
-								string msg = _localizationService.GetResource("ShoppingCart.ProductLinkageAttributeWarning").FormatWith(
+								warnings.Add(T("ShoppingCart.ProductLinkageAttributeWarning",
 									pvaValue.ProductVariantAttribute.ProductAttribute.GetLocalized(a => a.Name),
 									pvaValue.GetLocalized(a => a.Name),
-									linkageWarning);
-
-								warnings.Add(msg);
+									linkageWarning)
+								);
 							}
 						}
 						else
 						{
-							string msg = _localizationService.GetResource("ShoppingCart.ProductLinkageProductNotLoading").FormatWith(pvaValue.LinkedProductId);
-							warnings.Add(msg);
+							warnings.Add(T("ShoppingCart.ProductLinkageProductNotLoading", pvaValue.LinkedProductId));
 						}
 					}
 				}
@@ -668,27 +675,34 @@ namespace SmartStore.Services.Orders
                 string giftCardMessage = string.Empty;
 
                 _productAttributeParser.GetGiftCardAttribute(selectedAttributes,
-                    out giftCardRecipientName, out giftCardRecipientEmail,
-                    out giftCardSenderName, out giftCardSenderEmail, out giftCardMessage);
+                    out giftCardRecipientName, out giftCardRecipientEmail, out giftCardSenderName, out giftCardSenderEmail, out giftCardMessage);
 
-                if (String.IsNullOrEmpty(giftCardRecipientName))
-                    warnings.Add(_localizationService.GetResource("ShoppingCart.RecipientNameError"));
+				if (String.IsNullOrEmpty(giftCardRecipientName))
+				{
+					warnings.Add(T("ShoppingCart.RecipientNameError"));
+				}
 
                 if (product.GiftCardType == GiftCardType.Virtual)
                 {
-                    //validate for virtual gift cards only
+					//validate for virtual gift cards only
 					if (String.IsNullOrEmpty(giftCardRecipientEmail) || !giftCardRecipientEmail.IsEmail())
-                        warnings.Add(_localizationService.GetResource("ShoppingCart.RecipientEmailError"));
+					{
+						warnings.Add(T("ShoppingCart.RecipientEmailError"));
+					}
                 }
 
-                if (String.IsNullOrEmpty(giftCardSenderName))
-                    warnings.Add(_localizationService.GetResource("ShoppingCart.SenderNameError"));
+				if (String.IsNullOrEmpty(giftCardSenderName))
+				{
+					warnings.Add(T("ShoppingCart.SenderNameError"));
+				}
 
                 if (product.GiftCardType == GiftCardType.Virtual)
                 {
-                    //validate for virtual gift cards only
+					//validate for virtual gift cards only
 					if (String.IsNullOrEmpty(giftCardSenderEmail) || !giftCardSenderEmail.IsEmail())
-                        warnings.Add(_localizationService.GetResource("ShoppingCart.SenderEmailError"));
+					{
+						warnings.Add(T("ShoppingCart.SenderEmailError"));
+					}
                 }
             }
 
@@ -707,19 +721,27 @@ namespace SmartStore.Services.Orders
 
 			if (bundleItem != null)
 			{
-				string name = bundleItem.GetLocalizedName();
+				var name = bundleItem.GetLocalizedName();
 
 				if (!bundleItem.Published)
-					warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.BundleItemUnpublished").FormatWith(name));
+				{
+					warnings.Add(T("ShoppingCart.Bundle.BundleItemUnpublished", name));
+				}
 
 				if (bundleItem.ProductId == 0 || bundleItem.BundleProductId == 0 || bundleItem.Product == null || bundleItem.BundleProduct == null)
-					warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.MissingProduct").FormatWith(name));
+				{
+					warnings.Add(T("ShoppingCart.Bundle.MissingProduct", name));
+				}
 
 				if (bundleItem.Quantity <= 0)
-					warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.Quantity").FormatWith(name));
+				{
+					warnings.Add(T("ShoppingCart.Bundle.Quantity", name));
+				}
 
 				if (bundleItem.Product.IsDownload || bundleItem.Product.IsRecurring)
-					warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.ProductResrictions").FormatWith(name));
+				{
+					warnings.Add(T("ShoppingCart.Bundle.ProductResrictions", name));
+				}
 			}
 
 			return warnings;
@@ -819,7 +841,7 @@ namespace SmartStore.Services.Orders
                 var product = sci.Item.Product;
                 if (product == null)
                 {
-                    warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.CannotLoadProduct"), sci.Item.ProductId));
+                    warnings.Add(T("ShoppingCart.CannotLoadProduct", sci.Item.ProductId));
                     return warnings;
                 }
 
@@ -829,17 +851,20 @@ namespace SmartStore.Services.Orders
                     hasStandartProducts = true;
             }
 
-            //don't mix standard and recurring products
-            if (hasStandartProducts && hasRecurringProducts)
-                warnings.Add(_localizationService.GetResource("ShoppingCart.CannotMixStandardAndAutoshipProducts"));
+			//don't mix standard and recurring products
+			if (hasStandartProducts && hasRecurringProducts)
+			{
+				warnings.Add(T("ShoppingCart.CannotMixStandardAndAutoshipProducts"));
+			}
 
             //recurring cart validation
             if (hasRecurringProducts)
             {
-                int cycleLength = 0;
-                RecurringProductCyclePeriod cyclePeriod =  RecurringProductCyclePeriod.Days;
-                int totalCycles = 0;
-                string cyclesError = shoppingCart.GetRecurringCycleInfo(_localizationService, out cycleLength, out cyclePeriod, out totalCycles);
+                var cycleLength = 0;
+                var cyclePeriod =  RecurringProductCyclePeriod.Days;
+                var totalCycles = 0;
+                var cyclesError = shoppingCart.GetRecurringCycleInfo(_localizationService, out cycleLength, out cyclePeriod, out totalCycles);
+
                 if (!string.IsNullOrEmpty(cyclesError))
                 {
                     warnings.Add(cyclesError);
@@ -860,6 +885,7 @@ namespace SmartStore.Services.Orders
                     //remove attributes which require shippable products
                     ca2Collection = ca2Collection.RemoveShippableAttributes();
                 }
+
                 foreach (var ca2 in ca2Collection)
                 {
                     if (ca2.IsRequired)
@@ -871,12 +897,14 @@ namespace SmartStore.Services.Orders
                             if (ca1.Id == ca2.Id)
                             {
                                 var caValuesStr = _checkoutAttributeParser.ParseValues(checkoutAttributes, ca1.Id);
-                                foreach (string str1 in caValuesStr)
-                                    if (!String.IsNullOrEmpty(str1.Trim()))
-                                    {
-                                        found = true;
-                                        break;
-                                    }
+								foreach (string str1 in caValuesStr)
+								{
+									if (!String.IsNullOrEmpty(str1.Trim()))
+									{
+										found = true;
+										break;
+									}
+								}
                             }
                         }
 
@@ -886,7 +914,7 @@ namespace SmartStore.Services.Orders
                             if (!string.IsNullOrEmpty(ca2.GetLocalized(a => a.TextPrompt)))
                                 warnings.Add(ca2.GetLocalized(a => a.TextPrompt));
                             else
-                                warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.SelectAttribute"), ca2.GetLocalized(a => a.Name)));
+                                warnings.Add(T("ShoppingCart.SelectAttribute", ca2.GetLocalized(a => a.Name)));
                         }
                     }
                 }
@@ -927,7 +955,7 @@ namespace SmartStore.Services.Orders
                     bool attributesEqual = _productAttributeParser.AreProductAttributesEqual(sci.Item.AttributesXml, selectedAttributes);
 
                     //gift cards
-                    bool giftCardInfoSame = true;
+                    var giftCardInfoSame = true;
                     if (sci.Item.Product.IsGiftCard)
                     {
                         string giftCardRecipientName1 = string.Empty;
@@ -937,8 +965,7 @@ namespace SmartStore.Services.Orders
                         string giftCardMessage1 = string.Empty;
 
                         _productAttributeParser.GetGiftCardAttribute(selectedAttributes,
-                            out giftCardRecipientName1, out giftCardRecipientEmail1,
-                            out giftCardSenderName1, out giftCardSenderEmail1, out giftCardMessage1);
+                            out giftCardRecipientName1, out giftCardRecipientEmail1, out giftCardSenderName1, out giftCardSenderEmail1, out giftCardMessage1);
 
                         string giftCardRecipientName2 = string.Empty;
                         string giftCardRecipientEmail2 = string.Empty;
@@ -947,23 +974,28 @@ namespace SmartStore.Services.Orders
                         string giftCardMessage2 = string.Empty;
 
                         _productAttributeParser.GetGiftCardAttribute(sci.Item.AttributesXml,
-                            out giftCardRecipientName2, out giftCardRecipientEmail2,
-                            out giftCardSenderName2, out giftCardSenderEmail2, out giftCardMessage2);
+                            out giftCardRecipientName2, out giftCardRecipientEmail2, out giftCardSenderName2, out giftCardSenderEmail2, out giftCardMessage2);
 
 
-                        if (giftCardRecipientName1.ToLowerInvariant() != giftCardRecipientName2.ToLowerInvariant() ||
-                            giftCardSenderName1.ToLowerInvariant() != giftCardSenderName2.ToLowerInvariant())
-                            giftCardInfoSame = false;
+						if (giftCardRecipientName1.ToLowerInvariant() != giftCardRecipientName2.ToLowerInvariant() ||
+							giftCardSenderName1.ToLowerInvariant() != giftCardSenderName2.ToLowerInvariant())
+						{
+							giftCardInfoSame = false;
+						}
                     }
 
                     //price is the same (for products which require customers to enter a price)
-                    bool customerEnteredPricesEqual = true;
-                    if (sci.Item.Product.CustomerEntersPrice)
-                        customerEnteredPricesEqual = Math.Round(sci.Item.CustomerEnteredPrice, 2) == Math.Round(customerEnteredPrice, 2);
+                    var customerEnteredPricesEqual = true;
+					if (sci.Item.Product.CustomerEntersPrice)
+					{
+						customerEnteredPricesEqual = Math.Round(sci.Item.CustomerEnteredPrice, 2) == Math.Round(customerEnteredPrice, 2);
+					}
 
-                    //found?
-                    if (attributesEqual && giftCardInfoSame && customerEnteredPricesEqual)
-                        return sci;
+					//found?
+					if (attributesEqual && giftCardInfoSame && customerEnteredPricesEqual)
+					{
+						return sci;
+					}
                 }
             }
 
@@ -1000,24 +1032,24 @@ namespace SmartStore.Services.Orders
 
 			if (cartType == ShoppingCartType.ShoppingCart && !_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart, customer))
 			{
-				warnings.Add("Shopping cart is disabled");
+				warnings.Add(T("ShoppingCart.IsDisabled"));
 				return warnings;
 			}
 			if (cartType == ShoppingCartType.Wishlist && !_permissionService.Authorize(StandardPermissionProvider.EnableWishlist, customer))
 			{
-				warnings.Add("Wishlist is disabled");
+				warnings.Add(T("Wishlist.IsDisabled"));
 				return warnings;
 			}
 
 			if (quantity <= 0)
 			{
-				warnings.Add(_localizationService.GetResource("ShoppingCart.QuantityShouldPositive"));
+				warnings.Add(T("ShoppingCart.QuantityShouldPositive"));
 				return warnings;
 			}
 
 			//if (parentItemId.HasValue && (parentItemId.Value == 0 || bundleItem == null || bundleItem.Id == 0))
 			//{
-			//	warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.BundleItemNotFound").FormatWith(bundleItem.GetLocalizedName()));
+			//	warnings.Add(T("ShoppingCart.Bundle.BundleItemNotFound", bundleItem.GetLocalizedName()));
 			//	return warnings;
 			//}
 
@@ -1066,17 +1098,17 @@ namespace SmartStore.Services.Orders
 					//maximum items validation
 					if (cartType == ShoppingCartType.ShoppingCart && cart.Count >= _shoppingCartSettings.MaximumShoppingCartItems)
 					{
-						warnings.Add(_localizationService.GetResource("ShoppingCart.MaximumShoppingCartItems"));
+						warnings.Add(T("ShoppingCart.MaximumShoppingCartItems"));
 						return warnings;
 					}
 					else if (cartType == ShoppingCartType.Wishlist && cart.Count >= _shoppingCartSettings.MaximumWishlistItems)
 					{
-						warnings.Add(_localizationService.GetResource("ShoppingCart.MaximumWishlistItems"));
+						warnings.Add(T("ShoppingCart.MaximumWishlistItems"));
 						return warnings;
 					}
 
 					var now = DateTime.UtcNow;
-					var cartItem = new ShoppingCartItem()
+					var cartItem = new ShoppingCartItem
 					{
 						ShoppingCartType = cartType,
 						StoreId = storeId,
@@ -1090,8 +1122,9 @@ namespace SmartStore.Services.Orders
 					};
 
 					if (bundleItem != null)
+					{
 						cartItem.BundleItemId = bundleItem.Id;
-
+					}
 
 					if (ctx == null)
 					{
@@ -1137,7 +1170,7 @@ namespace SmartStore.Services.Orders
 					_downloadService, _catalogSettings, null, ctx.Warnings, true, ctx.BundleItemId);
 
 				if (ctx.Product.ProductType == ProductType.BundledProduct && ctx.Attributes.HasValue())
-					ctx.Warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.NoAttributes"));
+					ctx.Warnings.Add(T("ShoppingCart.Bundle.NoAttributes"));
 
 				if (ctx.Product.IsGiftCard)
 					ctx.Attributes = ctx.AttributeForm.AddGiftCardAttribute(ctx.Attributes, ctx.Product.Id, _productAttributeParser, ctx.BundleItemId);

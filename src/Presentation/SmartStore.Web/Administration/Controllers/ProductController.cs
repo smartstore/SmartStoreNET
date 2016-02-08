@@ -2162,7 +2162,7 @@ namespace SmartStore.Admin.Controllers
 
             var product = _productService.GetProductById(productId);
             if (product == null)
-                throw new ArgumentException("No product found with the specified id");
+                throw new ArgumentException(T("Products.NotFound", productId));
 
 			var productPicture = new ProductPicture
             {
@@ -2940,11 +2940,11 @@ namespace SmartStore.Admin.Controllers
 
 			var pva = _productAttributeService.GetProductVariantAttributeById(productVariantAttributeId);
 			if (pva == null)
-				throw new ArgumentException("No product variant attribute found with the specified id");
+				throw new ArgumentException(T("Products.Variants.NotFound", productVariantAttributeId));
 
 			var product = _productService.GetProductById(pva.ProductId);
 			if (product == null)
-				throw new ArgumentException("No product found with the specified id");
+				throw new ArgumentException(T("Products.NotFound", pva.ProductId));
 
 			var model = new ProductModel.ProductVariantAttributeValueListModel()
 			{
@@ -3027,7 +3027,7 @@ namespace SmartStore.Admin.Controllers
 
 			var pva = _productAttributeService.GetProductVariantAttributeById(productAttributeAttributeId);
 			if (pva == null)
-				throw new ArgumentException("No product variant attribute found with the specified id");
+				throw new ArgumentException(T("Products.Variants.NotFound", productAttributeAttributeId));
 
 			var model = new ProductModel.ProductVariantAttributeValueModel()
 			{
@@ -3539,7 +3539,7 @@ namespace SmartStore.Admin.Controllers
 
 			var product = _productService.GetProductById(productId);
 			if (product == null)
-				throw new ArgumentException("No product found with the specified id");
+				throw new ArgumentException(T("Products.NotFound", productId));
 
 			_productAttributeService.CreateAllProductVariantAttributeCombinations(product);
 
@@ -3557,7 +3557,7 @@ namespace SmartStore.Admin.Controllers
 
 			var product = _productService.GetProductById(productId);
 			if (product == null)
-				throw new ArgumentException("No product found with the specified id");
+				throw new ArgumentException(T("Products.NotFound", productId));
 
 			_pvacRepository.DeleteAll(x => x.ProductId == product.Id);
 

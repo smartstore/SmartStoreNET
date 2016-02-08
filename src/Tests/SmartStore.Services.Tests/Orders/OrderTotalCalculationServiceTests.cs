@@ -22,7 +22,6 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Shipping;
@@ -53,7 +52,6 @@ namespace SmartStore.Services.Tests.Orders
         IOrderTotalCalculationService _orderTotalCalcService;
         IAddressService _addressService;
         ShippingSettings _shippingSettings;
-        ILocalizationService _localizationService;
         ILogger _logger;
         IRepository<ShippingMethod> _shippingMethodRepository;
         ShoppingCartSettings _shoppingCartSettings;
@@ -91,7 +89,6 @@ namespace SmartStore.Services.Tests.Orders
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
             
-			_localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			_settingService = MockRepository.GenerateMock<ISettingService>();
 			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
 
@@ -109,7 +106,6 @@ namespace SmartStore.Services.Tests.Orders
 				_productService,
                 _checkoutAttributeParser,
 				_genericAttributeService,
-                _localizationService,
                 _shippingSettings,
                 _eventPublisher,
 				_shoppingCartSettings,

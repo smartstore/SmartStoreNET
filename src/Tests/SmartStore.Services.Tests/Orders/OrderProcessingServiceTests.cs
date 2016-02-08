@@ -135,7 +135,6 @@ namespace SmartStore.Services.Tests.Orders
 				_productService,
                 _checkoutAttributeParser,
 				_genericAttributeService,
-                _localizationService,
                 _shippingSettings,
 				_eventPublisher,
 				_shoppingCartSettings,

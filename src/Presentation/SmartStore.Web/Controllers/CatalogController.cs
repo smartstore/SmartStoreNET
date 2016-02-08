@@ -365,7 +365,7 @@ namespace SmartStore.Web.Controllers
 		{
 			var product = _productService.GetProductById(productId);
 			if (product == null)
-				throw new ArgumentException("No product found with the specified id");
+				throw new ArgumentException(T("Products.NotFound", productId));
 
 			if (!_catalogSettings.CategoryBreadcrumbEnabled)
 				return Content("");

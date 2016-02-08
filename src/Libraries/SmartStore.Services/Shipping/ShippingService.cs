@@ -9,12 +9,12 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Shipping
@@ -32,7 +32,6 @@ namespace SmartStore.Services.Shipping
 		private readonly IProductService _productService;
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
 		private readonly IGenericAttributeService _genericAttributeService;
-        private readonly ILocalizationService _localizationService;
         private readonly ShippingSettings _shippingSettings;
         private readonly IEventPublisher _eventPublisher;
         private readonly ShoppingCartSettings _shoppingCartSettings;
@@ -67,7 +66,6 @@ namespace SmartStore.Services.Shipping
 			IProductService productService,
             ICheckoutAttributeParser checkoutAttributeParser,
 			IGenericAttributeService genericAttributeService,
-            ILocalizationService localizationService,
             ShippingSettings shippingSettings,
             IEventPublisher eventPublisher,
             ShoppingCartSettings shoppingCartSettings,
@@ -81,26 +79,29 @@ namespace SmartStore.Services.Shipping
 			this._productService = productService;
             this._checkoutAttributeParser = checkoutAttributeParser;
 			this._genericAttributeService = genericAttributeService;
-            this._localizationService = localizationService;
             this._shippingSettings = shippingSettings;
             this._eventPublisher = eventPublisher;
             this._shoppingCartSettings = shoppingCartSettings;
 			this._settingService = settingService;
 			this._providerManager = providerManager;
 			this._typeFinder = typeFinder;
+
+			T = NullLocalizer.Instance;
 		}
 
-        #endregion
-        
-        #region Methods
+		public Localizer T { get; set; }
 
-        #region Shipping rate computation methods
+		#endregion
 
-        /// <summary>
-        /// Load active shipping rate computation methods
-        /// </summary>
+		#region Methods
+
+		#region Shipping rate computation methods
+
+		/// <summary>
+		/// Load active shipping rate computation methods
+		/// </summary>
 		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
-        /// <returns>Shipping rate computation methods</returns>
+		/// <returns>Shipping rate computation methods</returns>
 		public virtual IEnumerable<Provider<IShippingRateComputationMethod>> LoadActiveShippingRateComputationMethods(int storeId = 0)
         {
 			var allMethods = LoadAllShippingRateComputationMethods(storeId);
@@ -126,7 +127,7 @@ namespace SmartStore.Services.Shipping
 				else
 				{
 					if (DataSettings.DatabaseIsInstalled())
-						throw Error.Application("At least one shipping method provider is required to be active.");
+						throw new SmartException(T("Shipping.OneActiveMethodProviderRequired"));
 				}
 			}
 
@@ -389,7 +390,7 @@ namespace SmartStore.Services.Shipping
                 .ToList();
 
             if (shippingRateComputationMethods.Count == 0)
-                throw new SmartException("Shipping rate computation method could not be loaded");
+                throw new SmartException(T("Shipping.CouldNotLoadMethod"));
 
             //get shipping options
             foreach (var srcm in shippingRateComputationMethods)
@@ -413,7 +414,7 @@ namespace SmartStore.Services.Shipping
                     foreach (string error in getShippingOptionResponse.Errors)
                     {
                         result.AddError(error);
-						_logger.Warning(string.Format("Shipping ({0}). {1}", srcm.Metadata.FriendlyName, error));
+						_logger.Warning(string.Concat(srcm.Metadata.FriendlyName, ": ", error));
                     }
                 }
             }
@@ -424,10 +425,12 @@ namespace SmartStore.Services.Shipping
                 if (result.ShippingOptions.Count > 0 && result.Errors.Count > 0)
                     result.Errors.Clear();
             }
-            
-            //no shipping options loaded
-            if (result.ShippingOptions.Count == 0 && result.Errors.Count == 0)
-                result.Errors.Add(_localizationService.GetResource("Checkout.ShippingOptionCouldNotBeLoaded"));
+
+			//no shipping options loaded
+			if (result.ShippingOptions.Count == 0 && result.Errors.Count == 0)
+			{
+				result.Errors.Add(T("Checkout.ShippingOptionCouldNotBeLoaded"));
+			}
             
             return result;
         }

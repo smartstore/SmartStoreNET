@@ -288,7 +288,7 @@ namespace SmartStore.Services.Orders
 				return;
 
             //reduce reward points
-            order.Customer.AddRewardPointsHistoryEntry(-points, string.Format(T("RewardPoints.Message.ReducedForOrder"), order.GetOrderNumber()));
+            order.Customer.AddRewardPointsHistoryEntry(-points, T("RewardPoints.Message.ReducedForOrder", order.GetOrderNumber()));
 
 			if (!order.RewardPointsRemaining.HasValue)
 				order.RewardPointsRemaining = (int)Math.Round(order.OrderTotal / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
@@ -1370,7 +1370,7 @@ namespace SmartStore.Services.Orders
 
                         if (!processPaymentRequest.IsRecurringPayment)
                         {
-                            _customerActivityService.InsertActivity("PublicStore.PlaceOrder", T("ActivityLog.PublicStore.PlaceOrder"), order.GetOrderNumber());
+                            _customerActivityService.InsertActivity("PublicStore.PlaceOrder", T("ActivityLog.PublicStore.PlaceOrder", order.GetOrderNumber()));
                         }
 						
                         //raise event         

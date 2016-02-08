@@ -1195,7 +1195,7 @@ namespace SmartStore.Web.Controllers
 				return Json(new
 				{
 					success = false,
-					message = "No product found with the specified ID"
+					message = T("Products.NotFound", productId)
 				});
 			}
 

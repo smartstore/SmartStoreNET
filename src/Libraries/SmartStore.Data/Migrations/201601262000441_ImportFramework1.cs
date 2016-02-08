@@ -139,6 +139,14 @@ namespace SmartStore.Data.Migrations
 				"This is not your order.",
 				"Dieser Auftrag konnte Ihnen nicht zugeordnet werden.");
 
+			builder.AddOrUpdate("Shipping.CouldNotLoadMethod",
+				"The shipping rate computation method could not be loaded.",
+				"Die Berechnungsmethode für Versandkosten konnte nicht geladen werden.");
+
+			builder.AddOrUpdate("Shipping.OneActiveMethodProviderRequired",
+				"At least one shipping rate computation method provider is required to be active.",
+				"Mindestens ein Provider zur Berechnung von Versandkosten muss aktiviert sein.");
+
 			builder.AddOrUpdate("Payment.CouldNotLoadMethod",
 				"The payment method could not be loaded.",
 				"Die Zahlungsart konnte nicht geladen werden.");
@@ -146,6 +154,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Payment.MethodNotAvailable",
 				"The payment method is not available.",
 				"Die Zahlungsart steht nicht zur Verfügung.");
+
+			builder.AddOrUpdate("Payment.OneActiveMethodProviderRequired",
+				"At least one payment method provider is required to be active.",
+				"Mindestens ein Zahlungsart-Provider muss aktiviert sein.");
 
 			builder.AddOrUpdate("Payment.RecurringPaymentNotSupported",
 				"Recurring payments are not supported by selected payment method.",
@@ -268,6 +280,22 @@ namespace SmartStore.Data.Migrations
 				"Filterergebnisse nach Trefferanzahl sortieren",
 				"Specifies to sort filter results by number of matches in descending order. If this option is deactivated then the result is sorted by the display order of the values.",
 				"Legt fest, das Filterergebnisse absteigend nach der Anzahl an Übereinstimmungen sortiert werden. Ist diese Option deaktiviert, so wird in der für die Werte festgelegten Reihenfolge sortiert.");
+
+			builder.AddOrUpdate("Wishlist.IsDisabled",
+				"The wishlist is disabled.",
+				"Die Wunschliste ist deaktiviert.");
+
+			builder.AddOrUpdate("ShoppingCart.IsDisabled",
+				"The shoping cart is disabled.",
+				"Der Warenkorb ist deaktiviert.");
+
+			builder.AddOrUpdate("Products.NotFound",
+				"The product {0} was not found.",
+				"Das Produkt {0} wurde nicht gefunden.");
+
+			builder.AddOrUpdate("Products.Variants.NotFound",
+				"The product variant {0} was not found.",
+				"Die Produktvariante wurde {0} nicht gefunden.");
 		}
 	}
 }

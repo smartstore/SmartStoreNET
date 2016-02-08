@@ -133,7 +133,7 @@ namespace SmartStore.Services.Payments
 				else
 				{
 					if (DataSettings.DatabaseIsInstalled())
-						throw Error.Application("At least one payment method provider is required to be active.");
+						throw new SmartException(T("Payment.OneActiveMethodProviderRequired"));
 				}
 			}
 
@@ -512,6 +512,7 @@ namespace SmartStore.Services.Payments
             var paymentMethod = LoadPaymentMethodBySystemName(paymentMethodSystemName);
             if (paymentMethod == null)
                 return RecurringPaymentType.NotSupported;
+
 			return paymentMethod.Value.RecurringPaymentType;
         }
 
@@ -595,6 +596,7 @@ namespace SmartStore.Services.Payments
             var paymentMethod = LoadPaymentMethodBySystemName(paymentMethodSystemName);
             if (paymentMethod == null)
                 return PaymentMethodType.Unknown;
+
 			return paymentMethod.Value.PaymentMethodType;
         }
 

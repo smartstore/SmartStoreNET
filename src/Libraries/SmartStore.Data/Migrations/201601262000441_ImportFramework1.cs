@@ -175,6 +175,10 @@ namespace SmartStore.Data.Migrations
 				"The next payment date could not be calculated.",
 				"Das Datum der nächsten Zahlung kann nicht ermittelt werden.");
 
+			builder.AddOrUpdate("Payment.PayingFailed",
+				"Unfortunately we can not handle this purchasing via your preferred payment method. Please select an alternate payment option to complete your order.",
+				"Leider können wir diesen Einkauf nicht über die gewünschte Zahlungsart abwickeln. Bitte wählen Sie eine alternative Zahlungsoption aus, um Ihre Bestellung abzuschließen.");
+
 			builder.AddOrUpdate("Order.InitialOrderDoesNotExistForRecurringPayment",
 				"No initial order exists for the recurring payment.",
 				"Für die wiederkehrende Zahlung existiert kein Ausgangsauftrag.");

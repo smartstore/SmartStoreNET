@@ -74,8 +74,9 @@ namespace SmartStore.PayPal.Services
         /// <returns>True - response OK; otherwise, false</returns>
 		public static bool CheckSuccess(ILocalizationService localization, AbstractResponseType abstractResponse, out string errorMsg)
         {
-            bool success = false;
-            StringBuilder sb = new StringBuilder();
+            var success = false;
+            var sb = new StringBuilder();
+
             switch (abstractResponse.Ack)
             {
                 case AckCodeType.Success:
@@ -85,19 +86,25 @@ namespace SmartStore.PayPal.Services
                 default:
                     break;
             }
+
             if (null != abstractResponse.Errors)
             {
                 foreach (ErrorType errorType in abstractResponse.Errors)
                 {
-                    if (sb.Length <= 0)
-                    {
+					if (errorType.ShortMessage.IsEmpty())
+						continue;
+
+					if (sb.Length > 0)
                         sb.Append(Environment.NewLine);
-                    }
-					sb.AppendLine("{0}: {1}".FormatWith(localization.GetResource("Admin.System.Log.Fields.FullMessage"), errorType.LongMessage));
-					sb.AppendLine("{0}: {1}".FormatWith(localization.GetResource("Admin.System.Log.Fields.ShortMessage"), errorType.ShortMessage));
-                    sb.Append("Code: ").Append(errorType.ErrorCode).Append(Environment.NewLine);
-                }
+
+					sb.Append("{0}: {1}".FormatInvariant(localization.GetResource("Admin.System.Log.Fields.ShortMessage"), errorType.ShortMessage));
+					sb.AppendLine(" ({0}).".FormatInvariant(errorType.ErrorCode));
+
+					if (errorType.LongMessage.HasValue() && errorType.LongMessage != errorType.ShortMessage)
+						sb.AppendLine("{0}: {1}".FormatInvariant(localization.GetResource("Admin.System.Log.Fields.FullMessage"), errorType.LongMessage));
+				}
             }
+
             errorMsg = sb.ToString();
             return success;
         }

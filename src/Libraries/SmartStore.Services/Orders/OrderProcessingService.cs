@@ -1384,6 +1384,8 @@ namespace SmartStore.Services.Orders
                 }
                 else
                 {
+					result.AddError(T("Payment.PayingFailed"));
+
 					foreach (var paymentError in processPaymentResult.Errors)
 					{
 						result.AddError(paymentError);

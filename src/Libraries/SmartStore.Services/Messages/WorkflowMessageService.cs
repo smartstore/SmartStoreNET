@@ -15,6 +15,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Core.Localization;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -72,13 +73,17 @@ namespace SmartStore.Services.Messages
             this._workContext = workContext;
             this._httpRequest = httpRequest;
 			this._downloadServioce = downloadServioce;
-        }
 
-        #endregion
+			T = NullLocalizer.Instance;
+		}
 
-        #region Utilities
+		public Localizer T { get; set; }
 
-        protected int SendNotification(
+		#endregion
+
+		#region Utilities
+
+		protected int SendNotification(
 			MessageTemplate messageTemplate,
             EmailAccount emailAccount, 
 			int languageId, 
@@ -250,7 +255,7 @@ namespace SmartStore.Services.Messages
 			}
 
 			if (language == null)
-				throw new Exception("No active language could be loaded");
+				throw new SmartException(T("Common.Error.NoActiveLanguage"));
 
             return language;
         }
@@ -493,7 +498,7 @@ namespace SmartStore.Services.Messages
 
             var order = shipment.Order;
             if (order == null)
-                throw new Exception("Order cannot be loaded");
+                throw new SmartException(T("Order.NotFound", shipment.OrderId));
 
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
             var language = EnsureLanguageIsActive(languageId, store.Id);
@@ -532,7 +537,7 @@ namespace SmartStore.Services.Messages
 
             var order = shipment.Order;
             if (order == null)
-                throw new Exception("Order cannot be loaded");
+                throw new SmartException(T("Order.NotFound", shipment.OrderId));
 
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
             var language = EnsureLanguageIsActive(languageId, store.Id);

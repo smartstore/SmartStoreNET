@@ -1484,7 +1484,7 @@ namespace SmartStore.Services.Orders
                 if (result.Success)
                 {
                     if (result.PlacedOrder == null)
-                        throw new SmartException(T("Order.DoesNotExist"));
+                        throw new SmartException(T("Order.NotFound", "".NaIfEmpty()));
 
                     var rph = new RecurringPaymentHistory
                     {
@@ -1608,7 +1608,7 @@ namespace SmartStore.Services.Orders
 
             var order = _orderService.GetOrderById(shipment.OrderId);
             if (order == null)
-                throw new SmartException(T("Order.DoesNotExist"));
+                throw new SmartException(T("Order.NotFound", shipment.OrderId));
 
             if (shipment.ShippedDateUtc.HasValue)
                 throw new SmartException(T("Shipment.AlreadyShipped"));
@@ -1652,7 +1652,7 @@ namespace SmartStore.Services.Orders
 
             var order = shipment.Order;
             if (order == null)
-				throw new SmartException(T("Order.DoesNotExist"));
+				throw new SmartException(T("Order.NotFound", shipment.OrderId));
 
 			if (shipment.DeliveryDateUtc.HasValue)
                 throw new SmartException(T("Shipment.AlreadyDelivered"));

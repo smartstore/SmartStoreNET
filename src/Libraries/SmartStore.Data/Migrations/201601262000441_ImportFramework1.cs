@@ -211,9 +211,9 @@ namespace SmartStore.Data.Migrations
 				"There are no recurring products.",
 				"Keine wiederkehrenden Produkte.");
 
-			builder.AddOrUpdate("Order.DoesNotExist",
-				"The order does not exist.",
-				"Der Auftrag existiert nicht.");
+			builder.AddOrUpdate("Order.NotFound",
+				"The order {0} was not found.",
+				"Der Auftrag {0} wurde nicht gefunden.");
 
 			builder.AddOrUpdate("Order.CannotCancel",
 				"Cannot cancel order.",
@@ -263,6 +263,10 @@ namespace SmartStore.Data.Migrations
 				"The email address is not valid.",
 				"Die E-Mail-Adresse ist ungültig.");
 
+			builder.AddOrUpdate("Common.Error.NoActiveLanguage",
+				"No active language could be loaded.",
+				"Es wurde keine aktive Sprache gefunden.");
+
 			builder.AddOrUpdate("Admin.OrderNotice.RecurringPaymentCancellationError",
 				"Unable to cancel recurring payment for order {0}.",
 				"Es ist ein Fehler bei der Stornierung einer wiederkehrenden Zahlung für Auftrag {0} aufgetreten.");
@@ -299,7 +303,23 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Products.Variants.NotFound",
 				"The product variant {0} was not found.",
-				"Die Produktvariante wurde {0} nicht gefunden.");
+				"Die Produktvariante {0} wurde nicht gefunden.");
+
+			builder.AddOrUpdate("Reviews.NotFound",
+				"The product review {0} was not found.",
+				"Die Produktbewertung {0} wurde nicht gefunden.");
+
+			builder.AddOrUpdate("Polls.AnswerNotFound",
+				"The poll answer {0} was not found.",
+				"Eine Umfrageantwort {0} wurde nicht gefunden.");
+
+			builder.AddOrUpdate("Polls.NotAvailable",
+				"The poll is not available.",
+				"Die Umfrage ist nicht verfügbar.");
+
+			builder.AddOrUpdate("Install.LanguageNotRegistered",
+				"The install language '{0}' is not registered.",
+				"Die Installationssprache '{0}' ist nicht registriert.");
 		}
 	}
 }

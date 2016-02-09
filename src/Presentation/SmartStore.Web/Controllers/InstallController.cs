@@ -1,33 +1,28 @@
-﻿using Autofac;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.SessionState;
-using System.Web.Caching;
 using System.Web.Hosting;
 using System.Web.Mvc;
-using System.ComponentModel.Composition;
+using System.Web.SessionState;
+using Autofac;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
+using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
+using SmartStore.Data;
+using SmartStore.Data.Setup;
 using SmartStore.Services.Security;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Infrastructure.Installation;
 using SmartStore.Web.Models.Install;
-using SmartStore.Core.Async;
-using System.Data.Entity;
-using SmartStore.Data;
-using SmartStore.Data.Setup;
-using System.Configuration;
-using SmartStore.Utilities;
 
 namespace SmartStore.Web.Controllers
 {
@@ -480,7 +475,7 @@ namespace SmartStore.Web.Controllers
 					{
 						return UpdateResult(x =>
 						{
-							x.Errors.Add(string.Format("The install language '{0}' is not registered", model.PrimaryLanguage));
+							x.Errors.Add(_locService.GetResource("Install.LanguageNotRegistered").FormatInvariant(model.PrimaryLanguage));
 							x.Completed = true;
 							x.Success = false;
 							x.RedirectUrl = null;

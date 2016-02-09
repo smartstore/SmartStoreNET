@@ -893,7 +893,7 @@ namespace SmartStore.Web.Controllers
 		{
 			var productReview = _customerContentService.GetCustomerContentById(productReviewId) as ProductReview;
 			if (productReview == null)
-				throw new ArgumentException("No product review found with the specified id");
+				throw new ArgumentException(T("Reviews.NotFound", productReviewId));
 
 			if (_services.WorkContext.CurrentCustomer.IsGuest() && !_catalogSettings.AllowAnonymousUsersToReviewProduct)
 			{
@@ -1032,7 +1032,7 @@ namespace SmartStore.Web.Controllers
 				}
 				else
 				{
-					ModelState.AddModelError("", "Fehler beim Versenden der Email. Bitte versuchen Sie es später erneut.");
+					ModelState.AddModelError("", T("Common.Error.SendMail"));
 				}
 			}
 

@@ -1219,7 +1219,6 @@
     <Content Include="Themes\AlphaBlue\preview.png" />
     <Content Include="Themes\Alpha\Content\images\color-overlay.png" />
     <Content Include="Themes\Alpha\Content\images\deliv-bg-aero.png" />
-    <Content Include="Themes\Alpha\Content\images\gradient.png" />
     <Content Include="Content\Images\star-off-12.png" />
     <Content Include="Content\Images\star-off.png" />
     <Content Include="Content\Images\star-on-12.png" />
@@ -1581,11 +1580,7 @@
     <Content Include="Scripts\public.common.js" />
     <Content Include="Scripts\smartstore.jquery.utils.js" />
     <Content Include="Scripts\smartstore.system.js" />
-    <Content Include="Themes\Alpha\Content\images\ajax_loader_large.gif" />
     <Content Include="Themes\Alpha\Content\images\ajax_loader_small.gif" />
-    <Content Include="Themes\Alpha\Content\images\ico-delete.gif" />
-    <Content Include="Themes\Alpha\Content\images\ico-edit.gif" />
-    <Content Include="Themes\Alpha\Content\images\ico-move-topic.gif" />
     <Content Include="Themes\Alpha\Content\images\loading.gif" />
     <Content Include="Themes\Alpha\preview.png" />
     <Content Include="Themes\MobileLight\Content\jquery.mobile.theme-1.3.2.css" />

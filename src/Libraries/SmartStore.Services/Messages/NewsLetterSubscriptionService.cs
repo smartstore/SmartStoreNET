@@ -114,7 +114,8 @@ namespace SmartStore.Services.Messages
         /// <param name="publishSubscriptionEvents">if set to <c>true</c> [publish subscription events].</param>
         public virtual void DeleteNewsLetterSubscription(NewsLetterSubscription newsLetterSubscription, bool publishSubscriptionEvents = true)
         {
-            if (newsLetterSubscription == null) throw new ArgumentNullException("newsLetterSubscription");
+            if (newsLetterSubscription == null)
+				throw new ArgumentNullException("newsLetterSubscription");
 
             _subscriptionRepository.Delete(newsLetterSubscription);
 

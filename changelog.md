@@ -101,6 +101,7 @@
 * Product import: Store mappings were not applied when inserting new records
 * Faulty permission handling in ajax grid actions (no message, infinite loading icon)
 * Grouped products: Display order was not correct
+* Deletion of a customer could delete all newsletter subscriptions
 
 
 ## SmartStore.NET 2.2.2

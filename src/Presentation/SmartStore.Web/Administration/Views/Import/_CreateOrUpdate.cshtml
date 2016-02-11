@@ -229,33 +229,23 @@ else if (Model.ExistingFileNames.Count > 1)
 
 		// mapping row handling
 		$('#ImportColumnMappings').on('change', '.mapping-control-property', function () {
-			var row = $(this).closest('tr'),
-				property = $(this).select2('val'),
-				hasProperty = !_.isEmpty(property);
+			var row = $(this).closest('tr');
 
 			if (row.hasClass('column-mapping-new')) {
-				row.find('.mapping-control-column').select2('val', property).select2(hasProperty ? 'enable' : 'disable').prop('disabled', !hasProperty);
+				var hasColumn = !_.isEmpty(row.find('.mapping-control-column').select2('val')),
+					hasProperty = !_.isEmpty($(this).select2('val'));
 
-				var hasColumn = !_.isEmpty(row.find('.mapping-control-column').select2('val'));
-				row.find('.mapping-control-default').prop('disabled', !(hasProperty && hasColumn));
-				row.find('.mapping-button-add').toggle(hasProperty);
-			}
-			else {
-				var hasColumn = !_.isEmpty(row.find('.mapping-control-column').select2('val'));
-				if (!hasColumn) {
-					row.find('.mapping-control-column').select2('val', property);
-				}
+				row.find('.mapping-button-add').prop('disabled', !(hasProperty && hasColumn));
 			}
 		}).on('change', '.mapping-control-column', function () {
-			var row = $(this).closest('tr'),
-				hasColumn = !_.isEmpty($(this).select2('val')),
-				hasProperty = !_.isEmpty(row.find('.mapping-control-property').select2('val'));
+			var row = $(this).closest('tr');
 
 			if (row.hasClass('column-mapping-new')) {
-				row.find('.mapping-button-add').toggle(hasProperty);
-			}
+				var hasColumn = !_.isEmpty($(this).select2('val')),
+					hasProperty = !_.isEmpty(row.find('.mapping-control-property').select2('val'));
 
-			row.find('.mapping-control-default').prop('disabled', !(hasProperty && hasColumn));
+				row.find('.mapping-button-add').prop('disabled', !(hasProperty && hasColumn));
+			}
 		}).on('click', '.mapping-button-add', function () {
 			var row = $(this).closest('tr'),
 				table = row.closest('table'),
@@ -327,12 +317,13 @@ else if (Model.ExistingFileNames.Count > 1)
 			try {
 				if (item.text.length > 0) {
 					var option = $(item.element),
+						isLocalized = (item.id.substring(item.id.length - 1) === ']'),
 						html = '';
 
 					if (option.length === 0) {
 						html += '<div>';
 						html += '<span style="display: inline-block; margin-right: 0;">';
-						html += '<i class="fa fa-fw fa-chain-broken text-success" />';
+						html += '<i class="fa fa-fw ' + (isLocalized ? 'fa-globe' : 'fa-chain-broken') + ' text-success" />';
 						html += '</span>';
 					}
 					else {
@@ -354,18 +345,20 @@ else if (Model.ExistingFileNames.Count > 1)
 						html += (mappingIndex === -1 ? '<div>' : '<div class="muted">');
 
 						html += '<span style="display: inline-block; margin-right: 0;">';
-						html += (mappingIndex === -1 ? '<i class="fa fa-fw fa-chain-broken text-success" />' : '<i class="fa fa-fw fa-link text-warning" />');
+						html += '<i class="fa fa-fw ';
+						html += (isLocalized ? 'fa-globe' : (mappingIndex === -1 ? 'fa-chain-broken' : 'fa-link'));
+						html += (mappingIndex === -1 ? ' text-success" />' : ' text-warning" />');
 						html += '</span>';
 					}
 
 					html += '<span class="muted pull-right" style="font-size: 0.9em;">' + item.id + '</span>';
 
-					html += '<span class="ml4" style="display: inline-block;" title="';
+					html += '<span class="ml4" style="display: inline-block;"';
 					if (item.text.length > 50) {
-						html += item.text + '">' + item.text.substring(0, 50) + '…';
+						html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, 50) + '…';
 					}
 					else {
-						html += '">' + item.text;
+						html += '>' + item.text;
 					}
 					html += '</span>';
 					html += '</div>';
@@ -379,7 +372,7 @@ else if (Model.ExistingFileNames.Count > 1)
 
 		function selectColumnFormatting(item, container, query) {
 			try {
-				if (item.text.length > 0) {
+				if (item.id.length > 0) {
 					var html = '';
 
 					if (item.element) {
@@ -387,16 +380,20 @@ else if (Model.ExistingFileNames.Count > 1)
 					}
 
 					html += '<div>';
-					html += '<span class="muted pull-right" style="font-size: 0.9em;">' + item.id + '</span>';
 
-					html += '<span title="';
-					if (item.text.length > 50) {
-						html += item.text + '">' + item.text.substring(0, 50) + '…';
+					if (query) {
+						html += '<span class="muted pull-right" style="font-size: 0.9em;"'
+						if (item.text.length > 50) {
+							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, 50) + '…';
+						}
+						else {
+							html += '>' + item.text;
+						}
+						html += '</span>';
 					}
-					else {
-						html += '">' + item.text;
-					}
-					html += '</span>';
+
+					html += '<span>' + item.id + '</span>';
+
 					html += '</div>';
 					return html;
 				}

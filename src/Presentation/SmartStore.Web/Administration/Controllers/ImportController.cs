@@ -100,13 +100,13 @@ namespace SmartStore.Admin.Controllers
 			{
 				var csvConverter = new CsvConfigurationConverter();
 				csvConfiguration = csvConverter.ConvertFrom<CsvConfiguration>(profile.FileTypeConfiguration) ?? CsvConfiguration.ExcelFriendlyConfiguration;
+
+				model.CsvConfiguration = new CsvConfigurationModel(csvConfiguration);
 			}
 			else
 			{
 				csvConfiguration = CsvConfiguration.ExcelFriendlyConfiguration;
 			}
-
-			model.CsvConfiguration = new CsvConfigurationModel(csvConfiguration);
 
 			// column mapping
 			model.AvailableSourceColumns = new List<ColumnMappingItemModel>();

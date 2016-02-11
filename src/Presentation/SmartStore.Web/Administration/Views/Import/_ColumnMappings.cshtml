@@ -41,7 +41,7 @@
 					</select>
 				</td>
 				<td>
-					<select class="mapping-control-column" data-placeholder="@Model.IgnoreString" disabled="disabled" style="width: 100%;">
+					<select class="mapping-control-column" data-placeholder="@Model.IgnoreString" style="width: 100%;">
 						<option></option>
 						@foreach (var column in Model.AvailableSourceColumns)
 						{
@@ -50,13 +50,13 @@
 					</select>
 				</td>
 				<td>
-					<input type="text" class="mapping-control-default text-box single-line" value="" disabled="disabled" style="width: 97%;" />
+					<input type="text" class="mapping-control-default text-box single-line" value="" style="width: 97%;" />
 				</td>
 				<td style="width: 180px;">
-					<button type="button" class="btn btn-block btn-warning hide mapping-button-add">
+					<button type="button" class="btn btn-block btn-warning mapping-button-add" disabled="disabled">
 						<i class="fa fa-plus"></i>&nbsp;@Model.AddNewString
 					</button>
-					<button type="button" class="btn btn-block hide mapping-button-delete">
+					<button type="button" class="btn btn-block btn-danger hide mapping-button-delete">
 						<i class="fa fa-trash"></i>&nbsp;@Model.DeleteString
 					</button>
 				</td>
@@ -106,7 +106,7 @@
 							   @(mapping.Column.HasValue() ? "" : "disabled='disabled'") style="width: 97%;" />
 					</td>
 					<td>
-						<button type="button" class="btn btn-block mapping-button-delete">
+						<button type="button" class="btn btn-block btn-danger mapping-button-delete">
 							<i class="fa fa-trash"></i>&nbsp;@Model.DeleteString
 						</button>
 					</td>

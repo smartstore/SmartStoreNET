@@ -381,7 +381,7 @@ else if (Model.ExistingFileNames.Count > 1)
 
 					html += '<div>';
 
-					if (query) {
+					if (query && item.text !== item.id) {
 						html += '<span class="muted pull-right" style="font-size: 0.9em;"'
 						if (item.text.length > 50) {
 							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, 50) + '…';

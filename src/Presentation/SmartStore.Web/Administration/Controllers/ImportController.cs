@@ -151,7 +151,7 @@ namespace SmartStore.Admin.Controllers
 						if (x == "Id")
 							item.Text = T("Admin.Common.Entity.Fields.Id");
 						else if (allProperties.ContainsKey(x))
-							item.Text = allProperties[x];							
+							item.Text = allProperties[x];
 
 						return item;
 					})
@@ -204,14 +204,34 @@ namespace SmartStore.Admin.Controllers
 						model.AvailableSourceColumns.Add(mapModel);
 
 						// auto map where field equals property name
-						if (!hasStoredMappings && !model.ColumnMappings.Any(x => x.Column == column.Name) && allProperties.Any(x => x.Key == column.Name))
+						if (!hasStoredMappings && !model.ColumnMappings.Any(x => x.Column == column.Name))
 						{
-							model.ColumnMappings.Add(new ColumnMappingItemModel
+							var kvp = allProperties.FirstOrDefault(x => x.Key.IsCaseInsensitiveEqual(column.Name));
+
+							if (kvp.Key.HasValue())
 							{
-								Column = column.Name,
-								Property = column.Name,
-								ColumnLocalized = (allProperties.ContainsKey(column.Name) ? allProperties[column.Name] : null)
-							});
+								model.ColumnMappings.Add(new ColumnMappingItemModel
+								{
+									Column = column.Name,
+									Property = kvp.Key,
+									ColumnLocalized = kvp.Value
+								});
+							}
+							else
+							{
+								var alternativeName = LightweightDataTable.GetAlternativeColumnNameFor(column.Name);
+								kvp = allProperties.FirstOrDefault(x => x.Key.IsCaseInsensitiveEqual(alternativeName));
+
+								if (kvp.Key.HasValue())
+								{
+									model.ColumnMappings.Add(new ColumnMappingItemModel
+									{
+										Column = column.Name,
+										Property = kvp.Key,
+										ColumnLocalized = kvp.Value
+									});
+								}
+							}
 						}
 					}
 

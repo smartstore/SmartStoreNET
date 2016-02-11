@@ -262,7 +262,7 @@ namespace SmartStore.Services.DataExchange.Import
 						foreach (ImportEntityType type in Enum.GetValues(typeof(ImportEntityType)))
 						{
 							EntitySet entitySet = null;
-							var dic = new Dictionary<string, string>();
+							var dic = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 							try
 							{

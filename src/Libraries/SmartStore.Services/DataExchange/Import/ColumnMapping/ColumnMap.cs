@@ -103,7 +103,7 @@ namespace SmartStore.Services.DataExchange.Import
 				return result;
 			}
 
-			var crossPair = _map.FirstOrDefault(x => x.Value.Property != null && x.Value.Property == sourceColumn);
+			var crossPair = _map.FirstOrDefault(x => x.Value.Property.IsCaseInsensitiveEqual(sourceColumn));
 
 			if (crossPair.Key.HasValue())
 			{
@@ -144,7 +144,7 @@ namespace SmartStore.Services.DataExchange.Import
 				return result.Property;
 			}
 
-			var crossPair = _map.FirstOrDefault(x => x.Value.Property == sourceColumn);
+			var crossPair = _map.FirstOrDefault(x => x.Value.Property.IsCaseInsensitiveEqual(sourceColumn));
 
 			if (crossPair.Key.HasValue())
 			{

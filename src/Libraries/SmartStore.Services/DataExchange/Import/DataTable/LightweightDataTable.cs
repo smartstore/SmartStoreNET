@@ -17,6 +17,7 @@ namespace SmartStore.Services.DataExchange.Import
 		private readonly IList<IDataColumn> _columns;
 		private readonly IList<IDataRow> _rows;
 		private readonly IDictionary<string, int> _columnIndexes;
+		private readonly IDictionary<string, int> _alternativeColumnIndexes;
 
 		public LightweightDataTable(IList<IDataColumn> columns, IList<object[]> data)
 		{
@@ -34,26 +35,42 @@ namespace SmartStore.Services.DataExchange.Import
 			_rows = new ReadOnlyCollection<IDataRow>(rows);
 
 			_columnIndexes = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+			_alternativeColumnIndexes = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
 			for (var i = 0; i < columns.Count; i++)
 			{
-				_columnIndexes[columns[i].Name] = i;
+				var name = columns[i].Name;
+				var alternativeName = GetAlternativeColumnNameFor(name);
+
+				_columnIndexes[name] = i;
+
+				if (!alternativeName.IsCaseInsensitiveEqual(name))
+					_alternativeColumnIndexes[alternativeName] = i;
 			}
-        }
+		}
 
 		public bool HasColumn(string name)
 		{
-			if (name.IsEmpty())
-				return false;
+			if (name.HasValue())
+			{
+				return (_columnIndexes.ContainsKey(name) || _alternativeColumnIndexes.ContainsKey(name));
+			}
 
-			return _columnIndexes.ContainsKey(name);
+			return false;
 		}
 
 		public int GetColumnIndex(string name)
 		{
 			int index;
 
-			if (name.HasValue() && _columnIndexes.TryGetValue(name, out index))
-				return index;
+			if (name.HasValue())
+			{
+				if (_columnIndexes.TryGetValue(name, out index))
+					return index;
+
+				if (_alternativeColumnIndexes.TryGetValue(name, out index))
+					return index;
+			}
 
 			return -1;
 		}
@@ -72,6 +89,17 @@ namespace SmartStore.Services.DataExchange.Import
 			{
 				return _rows;
 			}
+		}
+
+		public static string GetAlternativeColumnNameFor(string name)
+		{
+			if (name.IsEmpty())
+				return name;
+
+			return name
+				.Replace(" ", "")
+				.Replace("-", "")
+				.Replace("_", "");
 		}
 
 		public static IDataTable FromPostedFile(

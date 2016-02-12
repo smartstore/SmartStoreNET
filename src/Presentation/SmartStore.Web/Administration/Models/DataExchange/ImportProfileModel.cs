@@ -48,6 +48,8 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool IsTaskEnabled { get; set; }
 
 		public ScheduleTaskModel TaskModel { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Import.LastImportResult")]
 		public SerializableImportResult ImportResult { get; set; }
 
 		public bool LogFileExists { get; set; }

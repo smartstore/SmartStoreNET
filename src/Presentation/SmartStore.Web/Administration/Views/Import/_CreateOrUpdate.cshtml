@@ -84,6 +84,17 @@ else if (Model.ExistingFileNames.Count > 1)
 				</td>
 			</tr>
 		}
+		@if (Model.ImportResult != null)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ImportResult)
+				</td>
+				<td class="adminData">
+					@Html.Partial("ProfileImportResult", Model.ImportResult)
+				</td>
+			</tr>
+		}
 		<tr>
 			<td colspan="2">&nbsp;</td>
 		</tr>

@@ -91,6 +91,9 @@ namespace SmartStore.Admin.Controllers
 				.Select(x => Path.GetFileName(x))
 				.ToList();
 
+			if (profile.ResultInfo.HasValue())
+				model.ImportResult = XmlHelper.Deserialize<SerializableImportResult>(profile.ResultInfo);
+
 			if (!forEdit)
 				return;
 
@@ -281,11 +284,6 @@ namespace SmartStore.Admin.Controllers
 				PrepareProfileModel(profileModel, profile, false);
 
 				profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(_services.Localization, _dateTimeHelper, Url);
-
-				if (profile.ResultInfo.HasValue())
-				{
-					profileModel.ImportResult = XmlHelper.Deserialize<SerializableImportResult>(profile.ResultInfo);
-				}
 
 				model.Profiles.Add(profileModel);
 			}

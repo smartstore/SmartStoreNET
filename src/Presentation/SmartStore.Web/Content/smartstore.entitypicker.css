@@ -13,7 +13,7 @@
 	max-height: 54px;
 	padding: 3px 4px;
 	margin: 2px 0 1px 0;
-	border-radius: 8px;
+	border-radius: 3px;
 	border: #d4d4d4 solid 1px;
 	background-image: linear-gradient(to bottom, #fcfcfc, #e3e3e3);
 	background-color: #FCF8F0;
@@ -42,6 +42,11 @@
 .entity-picker-list .thumb img {
 	max-width: 52px;
 	max-height: 52px;
+}
+.entity-picker-list .label {
+	display: inline-block;
+	float: left;
+	margin-right: 5px;
 }
 .entity-picker-list .highlight {
 	color: #f00;

@@ -21,11 +21,11 @@
 			</div>
 		}
 		<div class="data">
+			@if (item.LabelText.HasValue())
+			{
+				<div class="label @item.LabelClassName">@item.LabelText</div>
+			}
 			<div class="title ellipsis" title="@item.Title">
-				@if (item.LabelText.HasValue())
-				{
-					<span class="label label-smnet @item.LabelClassName">@item.LabelText</span>
-				}
 				<span>@HighlightSearchTermInTitle(item)</span>
 			</div>
 			<div class="summary muted" title="@item.SummaryTitle">@item.Summary</div>

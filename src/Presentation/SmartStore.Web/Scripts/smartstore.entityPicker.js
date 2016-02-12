@@ -233,7 +233,7 @@
 			});
 
 			if (!_.isEmpty(data.returnSelector)) {
-				$(data.returnSelector).val(result);
+				$(data.returnSelector).val(result).focus().blur();
 			}
 
 			if (_.isFunction(data.onOkClicked)) {

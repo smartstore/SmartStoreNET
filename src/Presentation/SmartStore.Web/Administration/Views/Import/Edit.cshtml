@@ -16,7 +16,7 @@
 			<div class="options">
 				@if (Model.LogFileExists)
 				{
-					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn" download>
+					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn" target="LogFile">
 						<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
 					</a>
 				}

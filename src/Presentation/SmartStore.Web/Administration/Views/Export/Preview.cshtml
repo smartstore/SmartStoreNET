@@ -9,7 +9,6 @@
 <div class="section-header">
 	<div class="title">
 		<img src="@Url.Content(Model.ThumbnailUrl)" />
-		&nbsp;
 		@title - @Model.Name @Html.ActionLink("(" + T("Common.Back") + ")", "Edit", new { id = Model.Id })
 	</div>
 	<div class="options">
@@ -19,7 +18,9 @@
 
 			@if (Model.LogFileExists)
 			{
-				<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn" download><i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")</a>
+				<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn" target="LogFile">
+					<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+				</a>
 			}
 			<button type="button" id="ExportSelected" class="btn btn-default">
 				<i class="fa fa-gears"></i>&nbsp;@T("Admin.Common.ExportSelected")

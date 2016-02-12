@@ -79,7 +79,7 @@
 							@T("Common.Cancel")
 						</a>
 
-						<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })" 
+						<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })" target="LogFile"
 						   class="btn btn-block btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " hide" : "")">
 							<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
 						</a>

@@ -110,6 +110,9 @@ namespace SmartStore.Admin.Controllers
 
 			// column mapping
 			model.AvailableSourceColumns = new List<ColumnMappingItemModel>();
+			model.AvailableEntityProperties = new List<SelectListItem>();
+			model.AvailableKeyFieldNames = new List<SelectListItem>();
+			model.ColumnMappings = new List<ColumnMappingItemModel>();
 
 			try
 			{
@@ -639,7 +642,6 @@ namespace SmartStore.Admin.Controllers
 			var stream = new FileStream(path, FileMode.Open);
 
 			var result = new FileStreamResult(stream, MediaTypeNames.Text.Plain);
-			result.FileDownloadName = profile.Name.ToValidFileName() + "-log.txt";
 
 			return result;
 		}

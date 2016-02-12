@@ -1062,7 +1062,6 @@ namespace SmartStore.Admin.Controllers
 			var stream = new FileStream(path, FileMode.Open);
 
 			var result = new FileStreamResult(stream, MediaTypeNames.Text.Plain);
-			result.FileDownloadName = profile.Name.ToValidFileName() + "-log.txt";
 
 			return result;
 		}

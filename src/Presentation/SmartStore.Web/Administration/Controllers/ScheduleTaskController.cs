@@ -16,7 +16,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public partial class ScheduleTaskController : AdminControllerBase
     {
 		private readonly IScheduleTaskService _scheduleTaskService;
@@ -52,7 +52,30 @@ namespace SmartStore.Admin.Controllers
 			return false;
 		}
 
-        public ActionResult Index()
+		private string GetTaskMessage(ScheduleTask task, string resourceKey)
+		{
+			string message = null;
+
+			var taskClassName = task.Type
+				.SplitSafe(",")
+				.SafeGet(0)
+				.SplitSafe(".")
+				.LastOrDefault();
+
+			if (taskClassName.HasValue())
+			{
+				message = T(string.Concat(resourceKey, ".", taskClassName));
+			}
+
+			if (message.IsEmpty())
+			{
+				message = T(resourceKey);
+			}
+
+			return message;
+		}
+
+		public ActionResult Index()
         {
             return RedirectToAction("List");
         }
@@ -128,7 +151,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				if (task.IsRunning)
 				{
-					NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+					NotifyInfo(GetTaskMessage(task, "Admin.System.ScheduleTasks.RunNow.Progress"));
 				}
 				else
 				{
@@ -138,10 +161,9 @@ namespace SmartStore.Admin.Controllers
 					}
 					else
 					{
-						NotifySuccess(T("Admin.System.ScheduleTasks.RunNow.Success"));
+						NotifySuccess(GetTaskMessage(task, "Admin.System.ScheduleTasks.RunNow.Success"));
 					}
 				}
-				var now = DateTime.UtcNow;
 			}
 
 			return Redirect(returnUrl);

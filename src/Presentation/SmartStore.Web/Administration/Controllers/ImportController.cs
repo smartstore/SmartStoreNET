@@ -622,7 +622,7 @@ namespace SmartStore.Admin.Controllers
 
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 
-			NotifyInfo(T("Admin.DataExchange.Import.RunNowNote"));
+			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Success.DataImportTask"));
 
 			return RedirectToAction("List");
 		}

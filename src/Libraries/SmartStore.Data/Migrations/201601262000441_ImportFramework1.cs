@@ -47,11 +47,11 @@ namespace SmartStore.Data.Migrations
 				"Add import file...",
 				"Importdatei hinzufügen...");
 
-			builder.AddOrUpdate("Admin.DataExchange.Import.RunNowNote",
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.RunNow.Success.DataImportTask",
 				"The task is now running in the background. You will receive an email as soon as it is completed. The progress can be tracked in the import profile list.",
 				"Die Aufgabe wird jetzt im Hintergrund ausgeführt. Sie erhalten eine E-Mail, sobald sie abgeschlossen ist. Den Fortschritt können Sie in der Importprofilliste verfolgen.");
 
-			builder.AddOrUpdate("Admin.DataExchange.Export.RunNowNote",
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.RunNow.Success.DataExportTask",
 				"The task is now running in the background. You will receive an email as soon as it is completed. The progress can be tracked in the export profile list.",
 				"Die Aufgabe wird jetzt im Hintergrund ausgeführt. Sie erhalten eine E-Mail, sobald sie abgeschlossen ist. Den Fortschritt können Sie in der Exportprofilliste verfolgen.");
 

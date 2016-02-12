@@ -1014,7 +1014,7 @@ namespace SmartStore.Admin.Controllers
 
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 
-			NotifyInfo(T("Admin.DataExchange.Export.RunNowNote"));
+			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Success.DataExportTask"));
 
 			return RedirectToAction("List");
         }

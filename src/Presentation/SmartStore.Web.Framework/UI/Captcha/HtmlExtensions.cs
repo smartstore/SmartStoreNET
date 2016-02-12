@@ -13,7 +13,7 @@ namespace SmartStore.Web.Framework.UI.Captcha
             var captchaControl = new Recaptcha.RecaptchaControl
             {
                 ID = "recaptcha",
-                Theme = "blackglass",
+                Theme = "white",
                 PublicKey = captchaSettings.ReCaptchaPublicKey,
                 PrivateKey = captchaSettings.ReCaptchaPrivateKey
             };

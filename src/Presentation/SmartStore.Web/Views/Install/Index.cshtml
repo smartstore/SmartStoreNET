@@ -407,7 +407,8 @@
                 onStart: function (context) {
 
                     $.throbber.show({
-                        message: '<span id="install-message">@ILS.GetResource("Installing")</span>' + '<br /><span id="install-progress" style="font-size: 16px"></span>'
+                        //message: '<span id="install-message">@ILS.GetResource("Installing")</span>' + '<br /><span id="install-progress" style="font-size: 16px"></span>',
+                        message: '<div id="install-message">@ILS.GetResource("Installing")</div><div id="install-progress" style="font-size: 16px; font-weight: 400; margin: 10px 0 30px 0"></div>',
                     });
 
                     // start the checkprogress interval

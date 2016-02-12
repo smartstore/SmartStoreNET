@@ -282,7 +282,7 @@
 				}
 
 				dialog.find('button[name=SearchEntities]').button('loading').prop('disabled', true);
-				dialog.find('.entity-picker-list').append('<span class="ajax-loader-small"></span>');
+				dialog.find('.entity-picker-list').append(createCircularSpinner(20, true));
 			},
 			success: function (response) {
 				var list = dialog.find('.entity-picker-list'),
@@ -302,7 +302,7 @@
 			},
 			complete: function () {
 				dialog.find('button[name=SearchEntities]').prop('disabled', false).button('reset');
-				dialog.find('.entity-picker-list').find('span.ajax-loader-small').remove();
+				dialog.find('.entity-picker-list').find('.spinner').remove();
 			},
 			error: ajaxErrorHandler
 		});

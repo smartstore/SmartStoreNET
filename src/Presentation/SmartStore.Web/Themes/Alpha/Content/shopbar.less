@@ -66,7 +66,7 @@
 	position: absolute;
 	right: 45px;
 	top: 50%;
-	margin-top: -8px;
+	margin-top: -10px;
 	z-index: 10;
 }
 
@@ -269,10 +269,18 @@
 	.box-shadow(0 2px 8px rgba(0,0,0,.2));
 	
 	.shopbar-tool.loading & {
-		background-image: url('images/loading.gif');
+		//background-image: url('images/loading.gif');
 	}
 	
-	.shopbar-tool.loading & > * {
+    .spinner-container {
+        height: 100%;
+	}
+
+    .shopbar-tool:not(.loading) & > .spinner-container {
+		display: none;
+	}
+
+	.shopbar-tool.loading & > .shopbar-flyout-inner {
 		display: none;
 	}
 	

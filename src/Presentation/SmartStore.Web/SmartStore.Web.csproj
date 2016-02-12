@@ -1078,6 +1078,7 @@
     <Content Include="Scripts\2012.2.607\telerik.grid.resizing.min.js" />
     <Content Include="Scripts\2012.2.607\telerik.textbox.min.js" />
     <Content Include="Scripts\2012.2.607\telerik.treeview.min.js" />
+    <Content Include="Content\bootstrap\custom\spinner.less" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-AE.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-BH.js" />
@@ -1543,11 +1544,6 @@
     <Content Include="Scripts\underscore.min.map" />
     <None Include="Scripts\_references.js" />
     <Content Include="Content\bootstrap\custom\throbber.less" />
-    <Content Include="Content\bootstrap\custom\images\throbber-progress-black-16.gif" />
-    <Content Include="Content\bootstrap\custom\images\throbber-progress-black-32.gif" />
-    <Content Include="Content\bootstrap\custom\images\throbber-progress-white-16.gif" />
-    <Content Include="Content\bootstrap\custom\images\throbber-progress-white-32.gif" />
-    <Content Include="Content\bootstrap\custom\images\throbber-progress-white-32-alt.gif" />
     <Content Include="Content\Images\uploaded\placeholder.txt" />
     <Content Include="Content\samples\category_accessories.jpg" />
     <Content Include="Content\samples\category_accessories_apparel.jpg" />

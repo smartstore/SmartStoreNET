@@ -427,29 +427,7 @@
     <Compile Include="Validators\Catalog\ProductValidator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\images\ajax-progress-2.gif" />
     <Content Include="Content\images\ajax_loader_small.gif" />
-    <Content Include="Content\images\ap-catalog-white.png" />
-    <Content Include="Content\images\ap-catalog.png" />
-    <Content Include="Content\images\ap-chevron.png" />
-    <Content Include="Content\images\ap-cms-white.png" />
-    <Content Include="Content\images\ap-cms.png" />
-    <Content Include="Content\images\ap-customers-white.png" />
-    <Content Include="Content\images\ap-customers.png" />
-    <Content Include="Content\images\ap-dashboard-white.png" />
-    <Content Include="Content\images\ap-dashboard.png" />
-    <Content Include="Content\images\ap-default-white.png" />
-    <Content Include="Content\images\ap-default.png" />
-    <Content Include="Content\images\ap-help-white.png" />
-    <Content Include="Content\images\ap-help.png" />
-    <Content Include="Content\images\ap-marketing-white.png" />
-    <Content Include="Content\images\ap-marketing.png" />
-    <Content Include="Content\images\ap-sales-white.png" />
-    <Content Include="Content\images\ap-sales.png" />
-    <Content Include="Content\images\ap-settings-white.png" />
-    <Content Include="Content\images\ap-settings.png" />
-    <Content Include="Content\images\ap-system-white.png" />
-    <Content Include="Content\images\ap-system.png" />
     <Content Include="Content\images\checkmark.png" />
     <Content Include="Content\images\google-maps.gif" />
     <Content Include="Content\images\ico-content-negative.png" />
@@ -478,7 +456,6 @@
     <Content Include="Content\images\icon-plugin-shipping.png" />
     <Content Include="Content\images\icon-plugin-social.png" />
     <Content Include="Content\images\icon-plugin-tax.png" />
-    <Content Include="Content\images\preloader-32.gif" />
     <Content Include="Content\images\smnet.png" />
     <Content Include="favicon.ico" />
     <Content Include="Scripts\admin.common.js" />

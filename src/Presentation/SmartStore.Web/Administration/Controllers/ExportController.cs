@@ -1007,7 +1007,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var taskParams = new Dictionary<string, string>();
-			taskParams.Add("CurrentCustomerId", _services.WorkContext.CurrentCustomer.Id.ToString());
+			taskParams.Add(TaskExecutor.CurrentCustomerIdParamName, _services.WorkContext.CurrentCustomer.Id.ToString());
 
 			if (selectedIds.HasValue())
 				taskParams.Add("SelectedIds", selectedIds);

@@ -38,9 +38,9 @@ namespace SmartStore.Services.DataExchange.Export
 				ctx.SetProgress(val, max, msg, true);
 			};
 
-			if (ctx.Parameters.ContainsKey("CurrentCustomerId"))
+			if (ctx.Parameters.ContainsKey(TaskExecutor.CurrentCustomerIdParamName))
 			{
-				request.CustomerId = ctx.Parameters["CurrentCustomerId"].ToInt();       // do not use built-in background tasks customer
+				request.CustomerId = ctx.Parameters[TaskExecutor.CurrentCustomerIdParamName].ToInt();       // do not use built-in background tasks customer
 			}
 
 			if (ctx.Parameters.ContainsKey("SelectedIds"))

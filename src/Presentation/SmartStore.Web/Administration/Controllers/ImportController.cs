@@ -618,7 +618,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var taskParams = new Dictionary<string, string>();
-			taskParams.Add("CurrentCustomerId", _services.WorkContext.CurrentCustomer.Id.ToString());
+			taskParams.Add(TaskExecutor.CurrentCustomerIdParamName, _services.WorkContext.CurrentCustomer.Id.ToString());
 
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 

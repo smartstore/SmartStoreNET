@@ -14,7 +14,6 @@ using SmartStore.Collections;
 
 namespace SmartStore.Services.Tasks
 {
-
 	public class DefaultTaskScheduler : DisposableObject, ITaskScheduler, IRegisteredObject
     {
 		private bool _intervalFixed;
@@ -108,7 +107,7 @@ namespace SmartStore.Services.Tasks
 
 			if (taskParameters != null && taskParameters.Any())
 			{
-				var qs = new QueryString();
+                var qs = new QueryString();
 				taskParameters.Each(x => qs.Add(x.Key, x.Value));
 				query = qs.ToString();
 			}

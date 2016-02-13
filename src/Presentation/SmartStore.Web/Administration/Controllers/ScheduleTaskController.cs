@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Threading;
 using System.Web.Mvc;
 using SmartStore.Admin.Extensions;
@@ -13,6 +14,7 @@ using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Core;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -24,19 +26,22 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
         private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly ILocalizationService _localizationService;
+        private readonly IWorkContext _workContext;
 
-		public ScheduleTaskController(
+        public ScheduleTaskController(
             IScheduleTaskService scheduleTaskService, 
             ITaskScheduler taskScheduler, 
             IPermissionService permissionService, 
             IDateTimeHelper dateTimeHelper,
-			ILocalizationService localizationService)
+			ILocalizationService localizationService,
+            IWorkContext workContext)
         {
             this._scheduleTaskService = scheduleTaskService;
 			this._taskScheduler = taskScheduler;
             this._permissionService = permissionService;
             this._dateTimeHelper = dateTimeHelper;
 			this._localizationService = localizationService;
+            this._workContext = workContext;
         }
 
 		private bool IsTaskVisible(ScheduleTask task)
@@ -137,9 +142,10 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
 				return AccessDeniedView();
 
-			returnUrl = returnUrl.NullEmpty() ?? Request.UrlReferrer.ToString();
+            var taskParams = new Dictionary<string, string>();
+            taskParams[TaskExecutor.CurrentCustomerIdParamName] = _workContext.CurrentCustomer.Id.ToString();
 
-            _taskScheduler.RunSingleTask(id);
+            _taskScheduler.RunSingleTask(id, taskParams);
 
 			// The most tasks are completed rather quickly. Wait a while...
 			var start = DateTime.UtcNow;
@@ -166,7 +172,7 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			return Redirect(returnUrl);
+			return Redirect(returnUrl.NullEmpty() ?? Request.UrlReferrer.ToString());
 		}
 
 		public ActionResult CancelJob(int id /* scheduleTaskId */, string returnUrl = "")

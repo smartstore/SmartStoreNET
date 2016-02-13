@@ -24,6 +24,8 @@ namespace SmartStore.Services.Tasks
         private readonly Func<Type, ITask> _taskResolver;
 		private readonly IComponentContext _componentContext;
 
+        public const string CurrentCustomerIdParamName = "CurrentCustomerId";
+
         public TaskExecutor(
 			IScheduleTaskService scheduledTaskService, 
 			IDbContext dbContext,
@@ -82,8 +84,20 @@ namespace SmartStore.Services.Tasks
 
             try
             {
-                // set background task system customer as current customer
-				var customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.BackgroundTask);
+                Customer customer = null;
+                
+                // try virtualize current customer (which is necessary when user manually executes a task)
+                if (taskParameters != null && taskParameters.ContainsKey(CurrentCustomerIdParamName))
+                {
+                    customer = _customerService.GetCustomerById(taskParameters[CurrentCustomerIdParamName].ToInt());
+                }
+                
+                if (customer == null)
+                {
+                    // no virtualization: set background task system customer as current customer
+                    customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.BackgroundTask);
+                }
+				
 				_workContext.CurrentCustomer = customer;
 
 				// create task instance

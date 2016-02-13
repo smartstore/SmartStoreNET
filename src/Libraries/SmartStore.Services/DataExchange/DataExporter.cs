@@ -205,10 +205,10 @@ namespace SmartStore.Services.DataExchange.Export
 			if (ctx.Request.HasPermission)
 				return true;
 
-			if (ctx.Request.CustomerId == 0)
-				ctx.Request.CustomerId = _services.WorkContext.CurrentCustomer.Id;	// fallback to background task system customer
+			var customer = _services.WorkContext.CurrentCustomer;
 
-			var customer = _customerService.GetCustomerById(ctx.Request.CustomerId);
+			if (customer.SystemName == SystemCustomerNames.BackgroundTask)
+				return true;
 
 			if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Product ||
 				ctx.Request.Provider.Value.EntityType == ExportEntityType.Category ||
@@ -865,9 +865,6 @@ namespace SmartStore.Services.DataExchange.Export
 			// Init base things that are even required for preview. Init all other things (regular export) in ExportCoreOuter.
 			List<Store> result = null;
 
-			if (ctx.Request.CustomerId == 0)
-				ctx.Request.CustomerId = _services.WorkContext.CurrentCustomer.Id;
-
 			if (ctx.Projection.CurrencyId.HasValue)
 				ctx.ContextCurrency = _currencyService.Value.GetCurrencyById(ctx.Projection.CurrencyId.Value);
 			else
@@ -961,13 +958,16 @@ namespace SmartStore.Services.DataExchange.Export
 				logHead.AppendLine("Export provider:\t{0} ({1})".FormatInvariant(ctx.Request.Provider.Metadata.FriendlyName, ctx.Request.Profile.ProviderSystemName));
 
 				var plugin = ctx.Request.Provider.Metadata.PluginDescriptor;
-				logHead.Append("Plugin:\t\t\t\t");
+				logHead.Append("Plugin:\t\t\t");
 				logHead.AppendLine(plugin == null ? "".NaIfEmpty() : "{0} ({1}) v.{2}".FormatInvariant(plugin.FriendlyName, plugin.SystemName, plugin.Version.ToString()));
 
-				logHead.AppendLine("Entity:\t\t\t\t" + ctx.Request.Provider.Value.EntityType.ToString());
+				logHead.AppendLine("Entity:\t\t\t" + ctx.Request.Provider.Value.EntityType.ToString());
 
 				var storeInfo = (ctx.Request.Profile.PerStore ? "{0} (Id {1})".FormatInvariant(ctx.Store.Name, ctx.Store.Id) : "All stores");
-				logHead.Append("Store:\t\t\t\t" + storeInfo);
+				logHead.AppendLine("Store:\t\t\t" + storeInfo);
+
+				var customer = _services.WorkContext.CurrentCustomer;
+				logHead.Append("Executed by:\t\t" + (customer.Email.HasValue() ? customer.Email : customer.SystemName));
 
 				ctx.Log.Information(logHead.ToString());
 			}
@@ -1329,13 +1329,13 @@ namespace SmartStore.Services.DataExchange.Export
 			var unused = Init(ctx, totalRecords);
 
 			if (!HasPermission(ctx))
-				throw new SmartException("You do not have permission to perform the selected export");
+				throw new SmartException(T("Admin.AccessDenied"));
 
 			using (var segmenter = CreateSegmenter(ctx, pageIndex))
 			{
 				if (segmenter == null)
 				{
-					throw new SmartException("Unsupported entity type '{0}'".FormatInvariant(ctx.Request.Provider.Value.EntityType.ToString()));
+					throw new SmartException(T("Admin.Common.UnsupportedEntityType", ctx.Request.Provider.Value.EntityType.ToString()));
 				}
 
 				while (segmenter.HasData)

@@ -42,7 +42,6 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public ProgressValueSetter ProgressValueSetter { get; set; }
 
-		public int CustomerId { get; set; }
 		public bool HasPermission { get; set; }
 
 		public IList<int> EntitiesToExport { get; set; }

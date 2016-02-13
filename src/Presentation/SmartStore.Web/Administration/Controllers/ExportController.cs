@@ -823,7 +823,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult PreviewList(GridCommand command, int id, int totalRecords)
 		{
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 			{
 				NotifyAccessDenied();
 
@@ -1014,7 +1014,7 @@ namespace SmartStore.Admin.Controllers
 
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 
-			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Success.DataExportTask"));
+			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress.DataExportTask"));
 
 			return RedirectToAction("List");
         }

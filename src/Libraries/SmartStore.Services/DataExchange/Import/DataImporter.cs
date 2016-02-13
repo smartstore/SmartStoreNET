@@ -156,7 +156,13 @@ namespace SmartStore.Services.DataExchange.Import
 
 		private bool HasPermission(DataImporterContext ctx)
 		{
-			var customer = _customerService.GetCustomerById(ctx.Request.CustomerId);
+			if (ctx.Request.HasPermission)
+				return true;
+
+			var customer = _services.WorkContext.CurrentCustomer;
+
+			if (customer.SystemName == SystemCustomerNames.BackgroundTask)
+				return true;
 
 			if (ctx.Request.Profile.EntityType == ImportEntityType.Product || ctx.Request.Profile.EntityType == ImportEntityType.Category)
 				return _services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog, customer);
@@ -176,17 +182,17 @@ namespace SmartStore.Services.DataExchange.Import
 			var sb = new StringBuilder();
 
 			sb.AppendLine();
-			sb.AppendFormat("Started:\t\t\t{0}\r\n", result.StartDateUtc.ToLocalTime());
-			sb.AppendFormat("Finished:\t\t\t{0}\r\n", result.EndDateUtc.ToLocalTime());
-			sb.AppendFormat("Duration:\t\t\t{0}\r\n", (result.EndDateUtc - result.StartDateUtc).ToString("g"));
+			sb.AppendFormat("Started:\t\t{0}\r\n", result.StartDateUtc.ToLocalTime());
+			sb.AppendFormat("Finished:\t\t{0}\r\n", result.EndDateUtc.ToLocalTime());
+			sb.AppendFormat("Duration:\t\t{0}\r\n", (result.EndDateUtc - result.StartDateUtc).ToString("g"));
 			sb.AppendLine();
-			sb.AppendFormat("Total rows:\t\t\t{0}\r\n", result.TotalRecords);
+			sb.AppendFormat("Total rows:\t\t{0}\r\n", result.TotalRecords);
 			sb.AppendFormat("Rows processed:\t\t{0}\r\n", result.AffectedRecords);
 			sb.AppendFormat("Records imported:\t{0}\r\n", result.NewRecords);
 			sb.AppendFormat("Records updated:\t{0}\r\n", result.ModifiedRecords);
 			sb.AppendLine();
-			sb.AppendFormat("Warnings:\t\t\t{0}\r\n", result.Warnings);
-			sb.AppendFormat("Errors:\t\t\t\t{0}", result.Errors);
+			sb.AppendFormat("Warnings:\t\t{0}\r\n", result.Warnings);
+			sb.AppendFormat("Errors:\t\t\t{0}", result.Errors);
 
 			ctx.Log.Information(sb.ToString());
 
@@ -278,8 +284,11 @@ namespace SmartStore.Services.DataExchange.Import
 				logHead.Append("Import profile:\t\t" + ctx.Request.Profile.Name);
 				logHead.AppendLine(ctx.Request.Profile.Id == 0 ? " (volatile)" : " (Id {0})".FormatInvariant(ctx.Request.Profile.Id));
 
-				logHead.AppendLine("Entity:\t\t\t\t" + ctx.Request.Profile.EntityType.ToString());
-				logHead.Append("File:\t\t\t\t" + Path.GetFileName(filePath));
+				logHead.AppendLine("Entity:\t\t\t" + ctx.Request.Profile.EntityType.ToString());
+				logHead.AppendLine("File:\t\t\t" + Path.GetFileName(filePath));
+
+				var customer = _services.WorkContext.CurrentCustomer;
+				logHead.Append("Executed by:\t\t" + (customer.Email.HasValue() ? customer.Email : customer.SystemName));
 
 				ctx.Log.Information(logHead.ToString());
 			}
@@ -347,10 +356,6 @@ namespace SmartStore.Services.DataExchange.Import
 				{
 					ctx.Log = logger;
 
-					if (ctx.Request.CustomerId == 0)
-						ctx.Request.CustomerId = _services.WorkContext.CurrentCustomer.Id;  // fallback to system background task customer
-
-					ctx.ExecuteContext.CustomerId = ctx.Request.CustomerId;
 					ctx.ExecuteContext.UpdateOnly = ctx.Request.Profile.UpdateOnly;
 					ctx.ExecuteContext.KeyFieldNames = ctx.Request.Profile.KeyFieldNames.SplitSafe(",");
 

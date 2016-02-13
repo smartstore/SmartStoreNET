@@ -305,7 +305,7 @@ namespace SmartStore.Services.Customers.Importer
 		public void Execute(IImportExecuteContext context)
 		{
 			var utcNow = DateTime.UtcNow;
-			var customer = _customerService.GetCustomerById(context.CustomerId);
+			var customer = _services.WorkContext.CurrentCustomer;
 			var allowManagingCustomerRoles = _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomerRoles, customer);
 
 			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);

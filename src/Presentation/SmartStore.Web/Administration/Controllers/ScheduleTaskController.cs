@@ -69,7 +69,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (taskClassName.HasValue())
 			{
-				message = T(string.Concat(resourceKey, ".", taskClassName));
+				message = _localizationService.GetResource(string.Concat(resourceKey, ".", taskClassName), returnEmptyIfNotFound: true);
 			}
 
 			if (message.IsEmpty())
@@ -274,7 +274,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[ChildActionOnly]
-		public ActionResult MinimalTask(int taskId, string returnUrl /* mandatory on purpose */, bool cancellable = true)
+		public ActionResult MinimalTask(int taskId, string returnUrl /* mandatory on purpose */, bool cancellable = true, bool reloadPage = false)
 		{
 			var task = _scheduleTaskService.GetTaskById(taskId);
 			if (task == null)
@@ -285,6 +285,7 @@ namespace SmartStore.Admin.Controllers
 			ViewBag.HasPermission = _permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks);
 			ViewBag.ReturnUrl = returnUrl;
 			ViewBag.Cancellable = cancellable;
+			ViewBag.ReloadPage = reloadPage;
 
 			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url);
 

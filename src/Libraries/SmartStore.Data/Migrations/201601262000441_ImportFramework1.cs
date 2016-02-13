@@ -47,11 +47,11 @@ namespace SmartStore.Data.Migrations
 				"Add import file...",
 				"Importdatei hinzufügen...");
 
-			builder.AddOrUpdate("Admin.System.ScheduleTasks.RunNow.Success.DataImportTask",
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.RunNow.Progress.DataImportTask",
 				"The task is now running in the background. You will receive an email as soon as it is completed. The progress can be tracked in the import profile list.",
 				"Die Aufgabe wird jetzt im Hintergrund ausgeführt. Sie erhalten eine E-Mail, sobald sie abgeschlossen ist. Den Fortschritt können Sie in der Importprofilliste verfolgen.");
 
-			builder.AddOrUpdate("Admin.System.ScheduleTasks.RunNow.Success.DataExportTask",
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.RunNow.Progress.DataExportTask",
 				"The task is now running in the background. You will receive an email as soon as it is completed. The progress can be tracked in the export profile list.",
 				"Die Aufgabe wird jetzt im Hintergrund ausgeführt. Sie erhalten eine E-Mail, sobald sie abgeschlossen ist. Den Fortschritt können Sie in der Exportprofilliste verfolgen.");
 
@@ -69,6 +69,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Common.Updated", "Updated", "Aktualisiert");
 			builder.AddOrUpdate("Admin.Common.Warnings", "Warnings", "Warnungen");
 			builder.AddOrUpdate("Admin.Common.Errors", "Errors", "Fehler");
+			builder.AddOrUpdate("Admin.Common.UnsupportedEntityType", "Unsupported entity type '{0}'", "Nicht unterstützter Entitätstyp '{0}'");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.CompletedEmail.Body",
 				"This is an automatic notification of store \"{0}\" about a recent data import. Summary:",

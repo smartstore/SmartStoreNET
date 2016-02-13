@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using SmartStore.Core;
 using SmartStore.Core.Domain.DataExchange;
@@ -8,11 +7,6 @@ namespace SmartStore.Services.DataExchange.Import
 {
 	public interface IImportExecuteContext
 	{
-		/// <summary>
-		/// Context customer identifier
-		/// </summary>
-		int CustomerId { get; }
-
 		/// <summary>
 		/// Whether to only update existing records
 		/// </summary>
@@ -77,8 +71,6 @@ namespace SmartStore.Services.DataExchange.Import
 		public IDataTable DataTable { get; internal set; }
 
 		public ColumnMap ColumnMap { get; internal set; }
-
-		public int CustomerId { get; internal set; }
 
 		public bool UpdateOnly { get; internal set; }
 

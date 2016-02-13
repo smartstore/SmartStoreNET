@@ -80,7 +80,7 @@ else if (Model.ExistingFileNames.Count > 1)
 					@Html.SmartLabelFor(x => x.ScheduleTaskId)
 				</td>
 				<td class="adminData">
-					@Html.Action("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, area = "admin" })
+					@Html.Action("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, reloadPage = true, area = "admin" })
 				</td>
 			</tr>
 		}

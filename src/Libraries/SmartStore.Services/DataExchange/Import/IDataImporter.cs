@@ -29,9 +29,9 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public ImportProfile Profile { get; private set; }
 
-		public int CustomerId { get; set; }
-
 		public ProgressValueSetter ProgressValueSetter { get; set; }
+
+		public bool HasPermission { get; set; }
 
 		public IList<int> EntitiesToImport { get; set; }
 

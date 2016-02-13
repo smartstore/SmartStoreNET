@@ -321,6 +321,16 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Install.LanguageNotRegistered",
 				"The install language '{0}' is not registered.",
 				"Die Installationssprache '{0}' ist nicht registriert.");
+
+			builder.AddOrUpdate("Admin.Catalog.Categories.DescriptionToggle",
+				"Show other description",
+				"Andere Beschreibung anzeigen");
+
+			builder.AddOrUpdate("Admin.Catalog.Categories.Fields.Description",
+				"Top description",
+				"Obere Beschreibung",
+				"Description of the category that is displayed above products on the category page.",
+				"Beschreibung der Warengruppe, die auf der Warengruppenseite oberhalb der Produkte angezeigt wird.");
 		}
 	}
 }

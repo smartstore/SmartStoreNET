@@ -53,7 +53,7 @@
 				 			@Html.ValidationMessageFor(model => model.Locales[item].FullName)
 						</td>
 					</tr>
-                    <tr>
+                    <tr class="description-container">
                         <td class="adminTitle">
                             @Html.SmartLabelFor(model => model.Locales[item].Description)
                         </td>
@@ -62,13 +62,23 @@
                             @Html.ValidationMessageFor(model => model.Locales[item].Description)
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="description-container hide">
                         <td class="adminTitle">
                             @Html.SmartLabelFor(model => model.Locales[item].BottomDescription)
                         </td>
                         <td class="adminData">
                             @Html.EditorFor(model => model.Locales[item].BottomDescription, Html.RichEditorFlavor())
                             @Html.ValidationMessageFor(model => model.Locales[item].BottomDescription)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adminTitle">
+							&nbsp;
+                        </td>
+                        <td class="adminData">
+							<button type="button" class="btn description-toggle-button">
+								<i class="fa fa-exchange"></i>&nbsp;@T("Admin.Catalog.Categories.DescriptionToggle")
+							</button>
                         </td>
                     </tr>
                     <tr>
@@ -97,7 +107,7 @@
                             @Html.ValidationMessageFor(model => model.FullName)
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="description-container">
                         <td class="adminTitle">
                             @Html.SmartLabelFor(model => model.Description)
                         </td>
@@ -106,7 +116,7 @@
                             @Html.ValidationMessageFor(model => model.Description)
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="description-container hide">
                         <td class="adminTitle">
                             @Html.SmartLabelFor(model => model.BottomDescription)
                         </td>
@@ -115,6 +125,16 @@
                             @Html.ValidationMessageFor(model => model.BottomDescription)
                         </td>
                     </tr>
+					<tr>
+						<td class="adminTitle">
+							&nbsp;
+						</td>
+						<td class="adminData">
+							<button type="button" class="btn description-toggle-button">
+								<i class="fa fa-exchange"></i>&nbsp;@T("Admin.Catalog.Categories.DescriptionToggle")
+							</button>
+						</td>
+					</tr>
                 </table>
 	))
 
@@ -562,6 +582,11 @@
 		$("#@Html.FieldIdFor(model => model.LimitedToStores)").change(function () {
 			$('.pnl-available-stores').toggle($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked'));
 		}).trigger('change');
+
+		// toggle top\bottom description
+		$('button.description-toggle-button').click(function() {
+			$('table').find('.description-container').toggle();
+		});
 
 		// add new product
 		$(document).on('click', '#AddNewProductButton', function () {

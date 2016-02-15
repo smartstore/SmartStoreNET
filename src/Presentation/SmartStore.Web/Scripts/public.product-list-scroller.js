@@ -16,7 +16,7 @@
             	list.evenIfHidden(function(el) {
             		
             	    var visibleElemnts = parseInt(list.outerWidth() / list.find(".item-box:first").outerWidth());
-					visibleElemnts = (visibleElemnts == 0) ? 1 : (visibleElemnts - 1);
+					visibleElemnts = (visibleElemnts >= 1) ? 1 : (visibleElemnts - 1);
 					
 					list.find('.pl-row').wrap('<div class="pl-slider" style="overflow: hidden;position: relative;" />') ;
 					

@@ -27,11 +27,11 @@
 	<table id="export-profile-list" class="table admin-table">
 		<thead>
 			<tr>
-				<th class="centered">@T("Common.Image")</th>
+				<th class="ac"></th>
 				<th>@T("Admin.DataExchange.Export.Name")</th>
 				<th>@T("Admin.DataExchange.Export.EntityType")</th>
-				<th class="centered">@T("Admin.DataExchange.Export.FileExtension")</th>
-				<th class="centered">@T("Admin.DataExchange.Export.ExportFiles")</th>
+				<th class="ac">@T("Admin.DataExchange.Export.FileExtension")</th>
+				<th class="ac">@T("Admin.DataExchange.Export.ExportFiles")</th>
 				<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
 				<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
 				<th>@T("Admin.Common.Actions")</th>
@@ -41,20 +41,20 @@
 			@foreach (var profile in Model.OrderBy(x => x.Name))
 			{
 				<tr data-profile-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
-					<td class="centered">
+					<td class="ac">
 						<img src="@profile.Provider.ThumbnailUrl" alt="@profile.Provider.FriendlyName" class="@(profile.Enabled ? "" : "o40")" />
 					</td>
 					<td>
-						<a href="@Url.Action("Edit", new { id = profile.Id })">@profile.Name</a>
+						<a href="@Url.Action("Edit", new { id = profile.Id })"><strong>@profile.Name</strong></a>
 						<div class="muted">@profile.ProviderSystemName</div>
 					</td>
 					<td>
 						@profile.Provider.EntityTypeName.NaIfEmpty()
 					</td>
-					<td class="centered">
+					<td class="ac">
 						@Html.IconForFileExtension(profile.Provider.FileExtension, true)
 					</td>
-					<td id="ExportFileCount@(profile.Id)" class="centered">
+					<td id="ExportFileCount@(profile.Id)" class="ac">
 						@Html.Partial("ProfileFileCount", profile.Details)
 					</td>
 					<td>

@@ -24,7 +24,7 @@
 
 @if(Model.Profiles.Any())
 {
-	<table id="import-profile-list" class="table admin-table">
+	<table id="import-profile-list" class="table xtable-bordered xtable-striped admin-table">
 		<thead>
 			<tr>
 				<th>@T("Admin.DataExchange.Import.Name")</th>
@@ -41,7 +41,7 @@
 			{
 				<tr data-profile-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
 					<td>
-						<a href="@Url.Action("Edit", new { id = profile.Id })">@profile.Name</a>
+						<a href="@Url.Action("Edit", new { id = profile.Id })"><strong>@profile.Name</strong></a>
 					</td>
 					<td>
 						@profile.EntityTypeName

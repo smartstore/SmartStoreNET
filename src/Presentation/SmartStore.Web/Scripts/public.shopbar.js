@@ -196,7 +196,7 @@ var ShopBar = (function($) {
                 url: cnt.data("href"),
                 success: function (data) {
                     cnt.find('.shopbar-flyout-inner').remove();
-                    cnt.append($(data));
+                    cnt.append(data);
                 },
                 complete: function (jqXHR, textStatus) {
                     tool.removeClass("loading").addClass("loaded");

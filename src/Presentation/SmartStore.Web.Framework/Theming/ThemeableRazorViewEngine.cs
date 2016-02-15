@@ -14,41 +14,34 @@ namespace SmartStore.Web.Framework.Theming
 			var areaBasePaths = areaBasePathsSetting.Split(',').Select(x => x.Trim().EnsureEndsWith("/")).ToArray();
 
 			// 0: view, 1: controller, 2: area
-			var areaFormats = new string[] { "{2}/Views/{1}/{0}.cshtml", "{2}/Views/Shared/{0}.cshtml" };
-			var areaViewLocationFormats = areaBasePaths.SelectMany(x => areaFormats.Select(f => x + f));
+			var areaFormats = new string[] { "{2}/Views/{1}/{0}", "{2}/Views/Shared/{0}" };
+			var areaViewLocationFormats = ExpandLocationFormats(areaBasePaths.SelectMany(x => areaFormats.Select(f => x + f)));
 
 			AreaViewLocationFormats = areaViewLocationFormats.ToArray();
 			AreaMasterLocationFormats = areaViewLocationFormats.ToArray();
 			AreaPartialViewLocationFormats = areaViewLocationFormats.ToArray();
 
-			// 0: view, 1: controller, 2: theme
-			ViewLocationFormats = new[]
+            // 0: view, 1: controller, 2: theme
+            var locationFormats = ExpandLocationFormats(new[]
             {
-                "~/Themes/{2}/Views/{1}/{0}.cshtml", 
-				"~/Views/{1}/{0}.cshtml", 
-                "~/Themes/{2}/Views/Shared/{0}.cshtml",
-				"~/Views/Shared/{0}.cshtml"
-            };
+                "~/Themes/{2}/Views/{1}/{0}",
+                "~/Views/{1}/{0}",
+                "~/Themes/{2}/Views/Shared/{0}",
+                "~/Views/Shared/{0}"
+            });
 
-			// 0: view, 1: controller, 2: theme
-			MasterLocationFormats = new[]
+            ViewLocationFormats = locationFormats.ToArray();
+            MasterLocationFormats = locationFormats.ToArray();
+            PartialViewLocationFormats = locationFormats.ToArray();
+
+            if (EnableVbViews)
             {
-                "~/Themes/{2}/Views/{1}/{0}.cshtml", 
-				"~/Views/{1}/{0}.cshtml",
-                "~/Themes/{2}/Views/Shared/{0}.cshtml", 
-                "~/Views/Shared/{0}.cshtml"
-            };
-
-			// 0: view, 1: controller, 2: theme
-			PartialViewLocationFormats = new[]
+                FileExtensions = new[] { "cshtml", "vbhtml" };
+            }
+            else
             {
-				"~/Themes/{2}/Views/{1}/{0}.cshtml",
- 				"~/Views/{1}/{0}.cshtml",  
-				"~/Themes/{2}/Views/Shared/{0}.cshtml", 
-				"~/Views/Shared/{0}.cshtml" 
-            };
-
-			FileExtensions = new[] { "cshtml" };
+                FileExtensions = new[] { "cshtml" };
+            }
 		}
 
 		protected override IView CreatePartialView(ControllerContext controllerContext, string partialPath)

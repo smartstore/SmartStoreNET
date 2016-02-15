@@ -19,7 +19,8 @@ namespace SmartStore.Web.Framework.Theming
 
 		private static readonly string[] _emptyLocations = new string[0];
 		private static bool? _enableLocalizedViews;
-		private readonly string _cacheKeyType = typeof(ThemeableRazorViewEngine).Name;
+        private static bool? _enableVbViews;
+        private readonly string _cacheKeyType = typeof(ThemeableRazorViewEngine).Name;
 		private readonly string _cacheKeyEntry = ":ViewCacheEntry:{0}:{1}:{2}:{3}:{4}:{5}";
 
 		#endregion
@@ -121,7 +122,24 @@ namespace SmartStore.Web.Framework.Theming
 			}
 		}
 
-		protected virtual string GetPath(ControllerContext controllerContext, string[] locations, string[] areaLocations, string locationsPropertyName, string name, string controllerName, string theme, string cacheKeyPrefix, bool useCache, out string[] searchedLocations)
+        public static bool EnableVbViews
+        {
+            get
+            {
+                if (!_enableVbViews.HasValue)
+                {
+                    _enableVbViews = CommonHelper.GetAppSetting<bool>("sm:EnableVbViews", false);
+                }
+
+                return _enableVbViews.Value;
+            }
+            set
+            {
+                _enableVbViews = value;
+            }
+        }
+
+        protected virtual string GetPath(ControllerContext controllerContext, string[] locations, string[] areaLocations, string locationsPropertyName, string name, string controllerName, string theme, string cacheKeyPrefix, bool useCache, out string[] searchedLocations)
 		{
 			searchedLocations = _emptyLocations;
 
@@ -146,11 +164,11 @@ namespace SmartStore.Web.Framework.Theming
 					if (isAdminArea)
 					{
 						// the admin area cannot fallback to itself. Prepend to list.
-						extraAreaViewLocations.Reverse().Each(x => newLocations.Insert(0, x));
+						ExpandLocationFormats(extraAreaViewLocations).Reverse().Each(x => newLocations.Insert(0, x));
 					}
 					else
 					{
-						newLocations.AddRange(extraAreaViewLocations);
+						newLocations.AddRange(ExpandLocationFormats(extraAreaViewLocations));
 					}
 
 					areaLocations = newLocations.ToArray();
@@ -316,6 +334,21 @@ namespace SmartStore.Web.Framework.Theming
 			// so append "{displayMode}:" to the key
 			return cacheKey + displayMode + ":";
 		}
+
+        protected virtual IEnumerable<string> ExpandLocationFormats(IEnumerable<string> formats)
+        {
+            // appends razor view file extensions to location formats
+            Guard.ArgumentNotNull(() => formats);
+
+            foreach (var format in formats)
+            {
+                yield return format + ".cshtml";
+                if (EnableVbViews)
+                {
+                    yield return format + ".vbhtml";
+                } 
+            }
+        }
 
 		protected virtual List<ViewLocation> GetViewLocations(string[] viewLocationFormats, string[] areaViewLocationFormats)
 		{

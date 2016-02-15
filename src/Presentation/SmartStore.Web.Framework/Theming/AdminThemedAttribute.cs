@@ -22,8 +22,8 @@ namespace SmartStore.Web.Framework.Theming
 			// add extra view location formats to all view results (even the partial ones)
 			filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = new string[] 
 			{
-				"~/Administration/Views/{1}/{0}.cshtml",
-				"~/Administration/Views/Shared/{0}.cshtml"
+				"~/Administration/Views/{1}/{0}",
+				"~/Administration/Views/Shared/{0}"
 			};
 		}
 

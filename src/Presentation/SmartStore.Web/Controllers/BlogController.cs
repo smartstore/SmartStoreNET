@@ -339,12 +339,9 @@ namespace SmartStore.Web.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("PublicStore.AddBlogComment", _localizationService.GetResource("ActivityLog.PublicStore.AddBlogComment"));
 
-                //The text boxes should be cleared after a comment has been posted
-                //That' why we reload the page
-                TempData["sm.blog.addcomment.result"] = _localizationService.GetResource("Blog.Comments.SuccessfullyAdded");
+				NotifySuccess(T("Blog.Comments.SuccessfullyAdded"));
 
-                // codehint: sm-add (MC) > append url fragment to route url
-                string url = UrlHelper.GenerateUrl(
+                var url = UrlHelper.GenerateUrl(
                     routeName: "BlogPost",
                     actionName: null,
                     controllerName: null,
@@ -356,6 +353,7 @@ namespace SmartStore.Web.Controllers
                     requestContext: this.ControllerContext.RequestContext,
                     includeImplicitMvcValues: true /*helps fill in the nulls above*/
                 );
+
                 return Redirect(url);
             }
 

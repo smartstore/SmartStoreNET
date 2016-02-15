@@ -34,14 +34,10 @@
                 @using (Html.BeginForm())
                 {
                     <div>
-                        <div class="message-error">@Html.ValidationSummary(true)</div>
-                        @{
-                    string result = TempData["sm.blog.addcomment.result"] as string;
-                        }
-                        @if (!String.IsNullOrEmpty(result))
-                        {
-                            <div class="result">@result</div>
-                        }
+						@if (ViewContext.ViewData.ModelState.ContainsKey(""))
+						{
+							<div class="message-error">@Html.ValidationSummary(true)</div>
+						}
                         <div class="forms-box">
                             <div class="inputs">
                                 @Html.LabelFor(model => model.AddProductReview.Rating)

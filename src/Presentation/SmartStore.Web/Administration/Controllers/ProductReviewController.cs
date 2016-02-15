@@ -17,7 +17,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class ProductReviewController : AdminControllerBase
     {
         #region Fields
@@ -150,11 +150,11 @@ namespace SmartStore.Admin.Controllers
 
             var productReview = _customerContentService.GetCustomerContentById(id) as ProductReview;
             if (productReview == null)
-                //No product review found with the specified id
                 return RedirectToAction("List");
 
             var model = new ProductReviewModel();
             PrepareProductReviewModel(model, productReview, false, false);
+
             return View(model);
         }
 
@@ -166,7 +166,6 @@ namespace SmartStore.Admin.Controllers
 
             var productReview = _customerContentService.GetCustomerContentById(model.Id) as ProductReview;
             if (productReview == null)
-                //No product review found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -186,7 +185,6 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", productReview.Id) : RedirectToAction("List");
             }
 
-
             //If we got this far, something failed, redisplay form
             PrepareProductReviewModel(model, productReview, true, false);
             return View(model);
@@ -200,11 +198,11 @@ namespace SmartStore.Admin.Controllers
 
             var productReview = _customerContentService.GetCustomerContentById(id) as ProductReview;
             if (productReview == null)
-                //No product review found with the specified id
                 return RedirectToAction("List");
 
             var product = productReview.Product;
             _customerContentService.DeleteCustomerContent(productReview);
+
             //update product totals
             _productService.UpdateProductReviewTotals(product);
 
@@ -215,84 +213,107 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult ApproveSelected(ICollection<int> selectedIds)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			var result = true;
 
-            if (selectedIds != null)
-            {
-                foreach (var id in selectedIds)
-                {
-                    var productReview = _customerContentService.GetCustomerContentById(id) as ProductReview;
-                    if (productReview != null)
-                    {
-                        productReview.IsApproved = true;
-                        _customerContentService.UpdateCustomerContent(productReview);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				if (selectedIds != null)
+				{
+					foreach (var id in selectedIds)
+					{
+						var productReview = _customerContentService.GetCustomerContentById(id) as ProductReview;
+						if (productReview != null)
+						{
+							productReview.IsApproved = true;
+							_customerContentService.UpdateCustomerContent(productReview);
 
-                        //update product totals
-                        _productService.UpdateProductReviewTotals(productReview.Product);
+							//update product totals
+							_productService.UpdateProductReviewTotals(productReview.Product);
 
-						_customerService.RewardPointsForProductReview(productReview.Customer, productReview.Product, true);
-                    }
-                }
-            }
+							_customerService.RewardPointsForProductReview(productReview.Customer, productReview.Product, true);
+						}
+					}
+				}
 
-            return Json(new { Result = true });
+				NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+			}
+			else
+			{
+				result = false;
+				NotifyAccessDenied();
+			}
+
+            return Json(new { Result = result });
         }
 
         [HttpPost]
         public ActionResult DeleteSelected(ICollection<int> selectedIds)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			var result = true;
 
-            if (selectedIds != null)
-            {
-                foreach (var id in selectedIds)
-                {
-                    var productReview = _customerContentService.GetCustomerContentById(id) as ProductReview;
-                    if (productReview != null)
-                    {
-                        var product = productReview.Product;
-                        _customerContentService.DeleteCustomerContent(productReview);
-                        //update product totals
-                        _productService.UpdateProductReviewTotals(product);
-                    }
-                }
-            }
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				if (selectedIds != null)
+				{
+					foreach (var id in selectedIds)
+					{
+						var productReview = _customerContentService.GetCustomerContentById(id) as ProductReview;
+						if (productReview != null)
+						{
+							var product = productReview.Product;
+							_customerContentService.DeleteCustomerContent(productReview);
+							//update product totals
+							_productService.UpdateProductReviewTotals(product);
+						}
+					}
+				}
 
-            return Json(new { Result = true });
-        }
+				NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+			}
+			else
+			{
+				result = false;
+				NotifyAccessDenied();
+			}
 
+			return Json(new { Result = result });
+		}
 
         [HttpPost]
         public ActionResult DisapproveSelected(ICollection<int> selectedIds)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			var result = true;
 
-            if (selectedIds != null)
-            {
-                foreach (var id in selectedIds)
-                {
-                    var productReview = _customerContentService.GetCustomerContentById(id) as ProductReview;
-                    if (productReview != null)
-                    {
-                        productReview.IsApproved = false;
-                        _customerContentService.UpdateCustomerContent(productReview);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				if (selectedIds != null)
+				{
+					foreach (var id in selectedIds)
+					{
+						var productReview = _customerContentService.GetCustomerContentById(id) as ProductReview;
+						if (productReview != null)
+						{
+							productReview.IsApproved = false;
+							_customerContentService.UpdateCustomerContent(productReview);
 
-                        //update product totals
-                        _productService.UpdateProductReviewTotals(productReview.Product);
+							//update product totals
+							_productService.UpdateProductReviewTotals(productReview.Product);
 
-						_customerService.RewardPointsForProductReview(productReview.Customer, productReview.Product, false);
-                    }
-                }
-            }
+							_customerService.RewardPointsForProductReview(productReview.Customer, productReview.Product, false);
+						}
+					}
+				}
 
-            return Json(new { Result = true });
-        }
+				NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+			}
+			else
+			{
+				result = false;
+				NotifyAccessDenied();
+			}
 
-
-
+			return Json(new { Result = result });
+		}
 
         #endregion
     }

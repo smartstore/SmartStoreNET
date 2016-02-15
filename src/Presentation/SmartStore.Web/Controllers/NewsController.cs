@@ -319,12 +319,10 @@ namespace SmartStore.Web.Controllers
                 //activity log
                 _customerActivityService.InsertActivity("PublicStore.AddNewsComment", _localizationService.GetResource("ActivityLog.PublicStore.AddNewsComment"));
 
-                //The text boxes should be cleared after a comment has been posted
-                //That' why we reload the page
-                TempData["sm.news.addcomment.result"] = _localizationService.GetResource("News.Comments.SuccessfullyAdded");
+				NotifySuccess(T("News.Comments.SuccessfullyAdded"));
+
                 return RedirectToRoute("NewsItem", new { SeName = newsItem.GetSeName(newsItem.LanguageId, ensureTwoPublishedLanguages: false) });
             }
-
 
             //If we got this far, something failed, redisplay form
             PrepareNewsItemModel(model, newsItem, true);

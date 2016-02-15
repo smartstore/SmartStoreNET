@@ -27,16 +27,7 @@
     @bg: top, @shopBarBackgroundColor, @shopBarBackgroundColor 40%, darken(@shopBarBackgroundColor, 7%) 100%;
     background-color: @shopBarBackgroundColor;
     background-image: -webkit-linear-gradient(@bg);
-    background-image:      -o-linear-gradient(@bg);
     background-image:         linear-gradient(@bg);
-}
-
-.no-cssgradients #shopbar {
-	// fix the ie9 "gradient dropdown transparent" bug
-	background-color: @shopBarBackgroundColor;
-	background-image: url('images/shopbar-bg.png');
-	background-position: 0 100%;
-	background-repeat: repeat-x;
 }
 
 #shopbar.sticky {

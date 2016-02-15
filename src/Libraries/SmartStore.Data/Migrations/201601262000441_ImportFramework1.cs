@@ -331,6 +331,14 @@ namespace SmartStore.Data.Migrations
 				"Obere Beschreibung",
 				"Description of the category that is displayed above products on the category page.",
 				"Beschreibung der Warengruppe, die auf der Warengruppenseite oberhalb der Produkte angezeigt wird.");
+
+			builder.AddOrUpdate("Common.CaptchaUnableToVerify",
+				"The API call to verify a CAPTCHA has failed.",
+				"Der API-Aufruf zur Prüfung eines CAPTCHAs ist fehlgeschlagen.");
+
+			builder.AddOrUpdate("Common.WrongCaptcha",
+				"Please confirm that you are not a \"robot\".",
+				"Bitte bestätigen Sie, dass Sie kein \"Roboter\" sind.");
 		}
 	}
 }

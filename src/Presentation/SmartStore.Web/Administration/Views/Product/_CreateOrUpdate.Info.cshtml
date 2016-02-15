@@ -599,7 +599,7 @@
 				@Html.SmartLabelFor(model => model.UserAgreementText)
 			</td>
 			<td class="adminData">
-				@Html.TextAreaFor(model => model.UserAgreementText)
+				@Html.EditorFor(model => model.UserAgreementText, Html.RichEditorFlavor())
 				@Html.ValidationMessageFor(model => model.UserAgreementText)
 			</td>
 		</tr>

@@ -39,7 +39,7 @@
 * #451 Add message token for product shipping surcharge
 * #436 Make %Order.Product(s)% token to link the product detail page and a add product thumbnail
 * #339 Meta robots setting for page indexing of search engines
-* PayPal Direct and Express: Option for API security protocol
+* PayPal: Option for API security protocol
 * Product filter: Option to sort filter results by their display order rather than by number of matches
 * Elmar Shopinfo: Option to export delivery time as availability
 
@@ -104,6 +104,7 @@
 * Faulty permission handling in ajax grid actions (no message, infinite loading icon)
 * Grouped products: Display order was not correct
 * Deletion of a customer could delete all newsletter subscriptions
+* PayPal: Fixed "The request was aborted: Could not create SSL/TLS secure channel."
 
 
 ## SmartStore.NET 2.2.2

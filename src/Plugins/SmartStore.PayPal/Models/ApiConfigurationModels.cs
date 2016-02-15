@@ -47,9 +47,9 @@ namespace SmartStore.PayPal.Models
         {
             if (fromSettings)
             {
-                UseSandbox = settings.UseSandbox;
-                TransactMode = Convert.ToInt32(settings.TransactMode);
 				SecurityProtocol = settings.SecurityProtocol;
+				UseSandbox = settings.UseSandbox;
+                TransactMode = Convert.ToInt32(settings.TransactMode);
                 ApiAccountName = settings.ApiAccountName;
                 ApiAccountPassword = settings.ApiAccountPassword;
                 Signature = settings.Signature;
@@ -58,9 +58,9 @@ namespace SmartStore.PayPal.Models
             }
             else
             {
-                settings.UseSandbox = UseSandbox;
-                settings.TransactMode = (TransactMode)TransactMode;
 				settings.SecurityProtocol = SecurityProtocol;
+				settings.UseSandbox = UseSandbox;
+                settings.TransactMode = (TransactMode)TransactMode;
                 settings.ApiAccountName = ApiAccountName;
                 settings.ApiAccountPassword = ApiAccountPassword;
                 settings.Signature = Signature;
@@ -91,9 +91,9 @@ namespace SmartStore.PayPal.Models
         {
             if (fromSettings)
             {
-                UseSandbox = settings.UseSandbox;
-                TransactMode = Convert.ToInt32(settings.TransactMode);
 				SecurityProtocol = settings.SecurityProtocol;
+				UseSandbox = settings.UseSandbox;
+                TransactMode = Convert.ToInt32(settings.TransactMode);
 				ApiAccountName = settings.ApiAccountName;
                 ApiAccountPassword = settings.ApiAccountPassword;
                 Signature = settings.Signature;
@@ -107,9 +107,9 @@ namespace SmartStore.PayPal.Models
             }
             else
 			{
-                settings.UseSandbox = UseSandbox;
-                settings.TransactMode = (TransactMode)TransactMode;
 				settings.SecurityProtocol = SecurityProtocol;
+				settings.UseSandbox = UseSandbox;
+                settings.TransactMode = (TransactMode)TransactMode;
 				settings.ApiAccountName = ApiAccountName;
                 settings.ApiAccountPassword = ApiAccountPassword;
                 settings.Signature = Signature;

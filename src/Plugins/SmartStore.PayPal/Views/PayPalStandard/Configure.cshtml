@@ -24,6 +24,14 @@
 @using (Html.BeginForm())
 {
     <table class="adminContent configure-paypal-standard">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SecurityProtocol)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.SecurityProtocol, Model.AvailableSecurityProtocols, T("Common.Unspecified"))
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.UseSandbox)

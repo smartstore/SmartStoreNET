@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
@@ -35,10 +34,8 @@ namespace SmartStore.PayPal.Controllers
 		private readonly IOrderService _orderService;
 		private readonly IOrderProcessingService _orderProcessingService;
 		private readonly ILogger _logger;
-		private readonly PaymentSettings _paymentSettings;
 		private readonly OrderSettings _orderSettings;
 		private readonly ICurrencyService _currencyService;
-		private readonly CurrencySettings _currencySettings;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		private readonly ICustomerService _customerService;
 		private readonly IGenericAttributeService _genericAttributeService;
@@ -49,10 +46,8 @@ namespace SmartStore.PayPal.Controllers
 			IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
 			ILogger logger, 
-			PaymentSettings paymentSettings,
 			OrderSettings orderSettings,
 			ICurrencyService currencyService,
-			CurrencySettings currencySettings,
 			IOrderTotalCalculationService orderTotalCalculationService,
 			ICustomerService customerService,
 			IGenericAttributeService genericAttributeService,
@@ -62,10 +57,8 @@ namespace SmartStore.PayPal.Controllers
 			_orderService = orderService;
 			_orderProcessingService = orderProcessingService;
 			_logger = logger;
-			_paymentSettings = paymentSettings;
 			_orderSettings = orderSettings;
 			_currencyService = currencyService;
-			_currencySettings = currencySettings;
 			_orderTotalCalculationService = orderTotalCalculationService;
 			_customerService = customerService;
 			_genericAttributeService = genericAttributeService;
@@ -123,22 +116,23 @@ namespace SmartStore.PayPal.Controllers
 			_services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
 
             _services.Settings.ClearCache();
-            NotifySuccess(_services.Localization.GetResource("Plugins.Payments.PayPal.ConfigSaveNote"));
+            NotifySuccess(_services.Localization.GetResource("Admin.Common.DataSuccessfullySaved"));
 
 			return Configure();
 		}
 
 		public ActionResult PaymentInfo()
 		{
-
 			var model = new PayPalExpressPaymentInfoModel();
 			model.CurrentPageIsBasket = PayPalHelper.CurrentPageIsBasket(this.ControllerContext.ParentActionViewContext.RequestContext.RouteData);
 
 			if (model.CurrentPageIsBasket)
 			{
 				var culture = _services.WorkContext.WorkingLanguage.LanguageCulture;
+				var settings = _services.Settings.LoadSetting<PayPalExpressPaymentSettings>(_services.StoreContext.CurrentStore.Id);
 				var buttonUrl = "https://www.paypalobjects.com/{0}/i/btn/btn_xpressCheckout.gif".FormatWith(culture.Replace("-", "_"));
-				model.SubmitButtonImageUrl = PayPalHelper.CheckIfButtonExists(buttonUrl);
+
+				model.SubmitButtonImageUrl = PayPalHelper.CheckIfButtonExists(settings, buttonUrl);
 			}
 
 			return PartialView(model);
@@ -148,7 +142,7 @@ namespace SmartStore.PayPal.Controllers
 		public ActionResult IPNHandler()
 		{
 			byte[] param = Request.BinaryRead(Request.ContentLength);
-			string strRequest = Encoding.ASCII.GetString(param);
+			var strRequest = Encoding.ASCII.GetString(param);
 			Dictionary<string, string> values;
 
 			var provider = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalExpress", true);
@@ -156,7 +150,9 @@ namespace SmartStore.PayPal.Controllers
 			if (processor == null)
 				throw new SmartException(T("PayPal Express module cannot be loaded"));
 
-			if (processor.VerifyIPN(strRequest, out values))
+			var settings = _services.Settings.LoadSetting<PayPalExpressPaymentSettings>();
+
+			if (PayPalHelper.VerifyIPN(settings, strRequest, out values))
 			{
 				#region values
 				decimal total = decimal.Zero;

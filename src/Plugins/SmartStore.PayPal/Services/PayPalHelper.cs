@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Text;
+using System.Web;
 using System.Web.Routing;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Payments;
@@ -127,11 +129,16 @@ namespace SmartStore.PayPal.Services
             return currencyCodeType;
         }
 
-        public static string CheckIfButtonExists(string buttonUrl) 
-        { 
-        
+        public static string CheckIfButtonExists(PayPalExpressPaymentSettings settings, string buttonUrl) 
+        {
             HttpWebResponse response = null;
-            var request = (HttpWebRequest)WebRequest.Create(buttonUrl);
+
+			if (settings.SecurityProtocol.HasValue)
+			{
+				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
+			}
+
+			var request = (HttpWebRequest)WebRequest.Create(buttonUrl);
             request.Method = "HEAD";
 
             try
@@ -151,8 +158,6 @@ namespace SmartStore.PayPal.Services
                     response.Close();
                 }
             }
-            
-
         }
 
         public static bool CurrentPageIsBasket(RouteData routeData) 
@@ -172,7 +177,57 @@ namespace SmartStore.PayPal.Services
                 "https://www.paypal.com/cgi-bin/webscr";
         }
 
-        public static string GetApiVersion()
+		public static HttpWebRequest GetPayPalWebRequest(PayPalSettingsBase settings)
+		{
+			if (settings.SecurityProtocol.HasValue)
+			{
+				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
+			}
+
+			var request = (HttpWebRequest)WebRequest.Create(GetPaypalUrl(settings));
+			return request;
+		}
+
+		public static bool VerifyIPN(PayPalSettingsBase settings, string formString, out Dictionary<string, string> values)
+		{
+			// settings: multistore context not possible here. we need the custom value to determine what store it is.
+
+			var request = PayPalHelper.GetPayPalWebRequest(settings);
+			request.Method = "POST";
+			request.ContentType = "application/x-www-form-urlencoded";
+			request.UserAgent = HttpContext.Current.Request.UserAgent;
+
+			var formContent = string.Format("{0}&cmd=_notify-validate", formString);
+			request.ContentLength = formContent.Length;
+
+			using (var sw = new StreamWriter(request.GetRequestStream(), Encoding.ASCII))
+			{
+				sw.Write(formContent);
+			}
+
+			string response = null;
+			using (var sr = new StreamReader(request.GetResponse().GetResponseStream()))
+			{
+				response = HttpUtility.UrlDecode(sr.ReadToEnd());
+			}
+
+			var success = response.Trim().Equals("VERIFIED", StringComparison.OrdinalIgnoreCase);
+
+			values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+			foreach (var item in formString.SplitSafe("&"))
+			{
+				var line = HttpUtility.UrlDecode(item).TrimSafe();
+				var equalIndex = line.IndexOf('=');
+
+				if (equalIndex >= 0)
+					values.Add(line.Substring(0, equalIndex), line.Substring(equalIndex + 1));
+			}
+
+			return success;
+		}
+
+		public static string GetApiVersion()
         {
             return "109";
         }

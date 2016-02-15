@@ -9,9 +9,6 @@
 
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
     <Children>
-      <LocaleResource Name="ConfigSaveNote">
-        <Value>Ihre Einstellungen wurden erfolgreich gespeichert.</Value>
-      </LocaleResource>
       <LocaleResource Name="UseSandbox">
         <Value>Sandbox benutzen</Value>
       </LocaleResource>
@@ -63,7 +60,6 @@
     </Children>
   </LocaleResource>
   
-  
 	<LocaleResource Name="Plugins.FriendlyName.Payments.PayPalExpress" AppendRootKey="false">
 		<Value>PayPal Express</Value>
 	</LocaleResource>
@@ -84,6 +80,7 @@
             <ol>
             <li>In Ihr Premier- oder Business-Konto einloggen.</li>
             <li>Auf den Register <b>Mein Profil</b> klicken.</li>
+            <li>Unter <b>Sprach-Kodierung > Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
             <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
             <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
             <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalExpress/IPNHandler</b>) eingeben.</li>
@@ -119,11 +116,9 @@
 	    <LocaleResource Name="ModeAuth">
 		    <Value>Autorisierung sofort, Abbuchung später</Value>
 	    </LocaleResource>
-
       <LocaleResource Name="SelectionText">
         <Value>oder</Value>
       </LocaleResource>
-
       <LocaleResource Name="Fields.DisplayCheckoutButton">
         <Value>Checkout-Button auf der Warenkorbseite aktivieren</Value>
       </LocaleResource>
@@ -161,7 +156,6 @@
   <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalDirect" AppendRootKey="false">
 		<Value>PayPal Direct</Value>
 	</LocaleResource>
-
   <LocaleResource Name="Plugins.Payments.PayPalDirect" AppendRootKey="false">
     <Children>  
       <LocaleResource Name="AdminInstruction">
@@ -179,6 +173,7 @@
           <ol>
           <li>In Ihr Premier- oder Business-Konto einloggen.</li>
           <li>Auf den Register <b>Mein Profil</b> klicken.</li>
+          <li>Unter <b>Sprach-Kodierung > Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
           <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
           <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
           <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalDirect/IPNHandler</b>) eingeben.</li>
@@ -219,12 +214,11 @@
   <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalStandard" AppendRootKey="false">
     <Value>PayPal Standard</Value>
   </LocaleResource>
-
   <LocaleResource Name="Plugins.Payments.PayPalStandard" AppendRootKey="false">
     <Children>
       <LocaleResource Name="AdminInstruction">
         <Value>
-          <![CDATA[<p>Stellen Sie bitte sicher, dass PayPal die Primärwährung Ihres Shops unterstützt, falls Sie dieses Gateway benutzen!</p>
+          <![CDATA[<p>Stellen Sie bitte sicher, dass PayPal die Primärwährung Ihres Shops unterstützt, falls Sie dieses Gateway benutzen.</p>
           <p>Sie müssen PDT (Payment Data Transfer) und die automatische Rückleitung in Ihrem PayPal-Profil aktivieren, um PDT nutzen zu können.
           Ferner benötigen Sie einen PDT-Identitäts-Token, der für jede PDT-Kommunikation mit PayPal erforderlich ist.
           Folgen Sie den Schritten, um Ihr Konto für PDT zu konfigurieren:</p>
@@ -247,7 +241,8 @@
 	          <ol>
 	          <li>In Ihr Premier- oder Business-Konto einloggen.</li>
 	          <li>Auf den Register <b>Mein Profil</b> klicken.</li>
-	          <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
+            <li>Unter <b>Sprach-Kodierung > Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
+	          <li>Zurück zu <b>Mein Profil</b> und auf <b>Sofortige Zahlungsbestätigung</b> klicken.</li>
 	          <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
 	          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/IPNHandler</b>) eingeben.</li>
 	          <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
@@ -282,18 +277,6 @@
       </LocaleResource>
       <LocaleResource Name="Fields.PdtValidateOnlyWarn.Hint">
         <Value>Legt fest, ob im Falle einer Nichtübereinstimmung des Gesamtbetrags lediglich eine Auftragsnotiz angelegt werden soll. Ansonsten wird ein Fehler erzeugt und der Zahlungsstatus wird nicht aktualisiert.</Value>
-      </LocaleResource>
-      <LocaleResource Name="Fields.AdditionalFee">
-        <Value>Zusätzliche Gebühren</Value>
-      </LocaleResource>
-      <LocaleResource Name="Fields.AdditionalFee.Hint">
-        <Value>Zusätzliche Gebühren, die dem Kunden berechnet werden sollen.</Value>
-      </LocaleResource>
-      <LocaleResource Name="Fields.AdditionalFeePercentage">
-        <Value>Zusätzliche Gebühren (prozentual)</Value>
-      </LocaleResource>
-      <LocaleResource Name="Fields.AdditionalFeePercentage.Hint">
-        <Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.PassProductNamesAndTotals">
         <Value>Produktbezeichnungen und Einzelpreise übermitteln</Value>

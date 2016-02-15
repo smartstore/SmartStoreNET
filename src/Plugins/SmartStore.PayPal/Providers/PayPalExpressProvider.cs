@@ -14,7 +14,6 @@ using SmartStore.PayPal.Controllers;
 using SmartStore.PayPal.PayPalSvc;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
-using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -22,11 +21,10 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Shipping;
-using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.PayPal
 {
-    [SystemName("Payments.PayPalExpress")]
+	[SystemName("Payments.PayPalExpress")]
     [FriendlyName("PayPal Express")]
     [DisplayOrder(0)]
     public partial class PayPalExpress : PayPalProviderBase<PayPalExpressPaymentSettings>

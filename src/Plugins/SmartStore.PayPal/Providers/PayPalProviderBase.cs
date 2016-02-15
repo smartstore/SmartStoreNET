@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Net;
-using System.Text;
-using System.Web;
 using System.Web.Routing;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Orders;
@@ -68,50 +65,6 @@ namespace SmartStore.PayPal
 
 			return service;
 		}
-
-
-		/// <summary>
-		/// Verifies IPN
-		/// </summary>
-		/// <param name="formString">Form string</param>
-		/// <param name="values">Values</param>
-		/// <returns>Result</returns>
-		public bool VerifyIPN(string formString, out Dictionary<string, string> values)
-        {
-			// settings: multistore context not possible here. we need the custom value to determine what store it is.
-			var settings = Services.Settings.LoadSetting<TSetting>();
-            var req = (HttpWebRequest)WebRequest.Create(PayPalHelper.GetPaypalUrl(settings));
-
-            req.Method = "POST";
-            req.ContentType = "application/x-www-form-urlencoded";
-            req.UserAgent = HttpContext.Current.Request.UserAgent;
-
-            string formContent = string.Format("{0}&cmd=_notify-validate", formString);
-            req.ContentLength = formContent.Length;
-
-            using (var sw = new StreamWriter(req.GetRequestStream(), Encoding.ASCII))
-            {
-                sw.Write(formContent);
-            }
-
-            string response = null;
-            using (var sr = new StreamReader(req.GetResponse().GetResponseStream()))
-            {
-                response = HttpUtility.UrlDecode(sr.ReadToEnd());
-            }
-            bool success = response.Trim().Equals("VERIFIED", StringComparison.OrdinalIgnoreCase);
-
-            values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            foreach (string l in formString.Split('&'))
-            {
-                string line = HttpUtility.UrlDecode(l).Trim();
-                int equalPox = line.IndexOf('=');
-                if (equalPox >= 0)
-                    values.Add(line.Substring(0, equalPox), line.Substring(equalPox + 1));
-            }
-
-            return success;
-        }
 
         /// <summary>
         /// Gets additional handling fee

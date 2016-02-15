@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Logging;
 using SmartStore.PayPal.Models;
+using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services;
 using SmartStore.Services.Localization;
@@ -67,7 +68,11 @@ namespace SmartStore.PayPal.Controllers
 
             model.Copy(settings, true);
 
-            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			model.AvailableSecurityProtocols = PayPalHelper.GetSecurityProtocols()
+				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
+				.ToList();
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
             storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
 
             return View(model);
@@ -93,7 +98,7 @@ namespace SmartStore.PayPal.Controllers
 			_services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
 
             _services.Settings.ClearCache();
-            NotifySuccess(_services.Localization.GetResource("Plugins.Payments.PayPal.ConfigSaveNote"));
+            NotifySuccess(_services.Localization.GetResource("Admin.Common.DataSuccessfullySaved"));
 
             return Configure();
 		}
@@ -266,7 +271,7 @@ namespace SmartStore.PayPal.Controllers
 			Debug.WriteLine("PayPal Standard IPN: {0}".FormatInvariant(Request.ContentLength));
 
 			byte[] param = Request.BinaryRead(Request.ContentLength);
-			string strRequest = Encoding.ASCII.GetString(param);
+			var strRequest = Encoding.UTF8.GetString(param);
 			Dictionary<string, string> values;
 
 			var provider = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalStandard", true);
@@ -274,7 +279,9 @@ namespace SmartStore.PayPal.Controllers
 			if (processor == null)
 				throw new SmartException(_localizationService.GetResource("Plugins.Payments.PayPalStandard.NoModuleLoading"));
 
-			if (processor.VerifyIPN(strRequest, out values))
+			var settings = _services.Settings.LoadSetting<PayPalStandardPaymentSettings>();
+
+			if (PayPalHelper.VerifyIPN(settings, strRequest, out values))
 			{
 				#region values
 

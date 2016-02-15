@@ -31,8 +31,7 @@ namespace SmartStore.PayPal
 		#region Ctor
 
         public PayPalDirectProvider(
-            ICustomerService customerService,
-            IComponentContext ctx)
+            ICustomerService customerService)
 		{
 			_customerService = customerService;
 		}

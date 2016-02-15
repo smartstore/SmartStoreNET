@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 
 namespace SmartStore.PayPal.Services
 {
@@ -20,7 +19,7 @@ namespace SmartStore.PayPal.Services
 
 		public PayPalLineItem Clone()
 		{
-			var item = new PayPalLineItem()
+			var item = new PayPalLineItem
 			{
 				Type = this.Type,
 				Name = this.Name,
@@ -37,10 +36,9 @@ namespace SmartStore.PayPal.Services
 	}
 
 
-	public enum PayPalItemType : int
+	public enum PayPalItemType
 	{
 		CartItem = 0,
-		CheckoutAttribute,
 		Shipping,
 		PaymentFee,
 		Tax

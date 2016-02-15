@@ -92,7 +92,7 @@ namespace SmartStore.PayPal.Controllers
 			_services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
 
 			_services.Settings.ClearCache();
-            NotifySuccess(_services.Localization.GetResource("Plugins.Payments.PayPal.ConfigSaveNote"));
+            NotifySuccess(_services.Localization.GetResource("Admin.Common.DataSuccessfullySaved"));
 
             return Configure();
 		}
@@ -180,9 +180,13 @@ namespace SmartStore.PayPal.Controllers
 			};
 
             var validationResult = validator.Validate(model);
-            if (!validationResult.IsValid)
-                foreach (var error in validationResult.Errors)
-                    warnings.Add(error.ErrorMessage);
+			if (!validationResult.IsValid)
+			{
+				foreach (var error in validationResult.Errors)
+				{
+					warnings.Add(error.ErrorMessage);
+				}
+			}
 			return warnings;
 		}
 
@@ -216,7 +220,7 @@ namespace SmartStore.PayPal.Controllers
 			Debug.WriteLine("PayPal Direct IPN: {0}".FormatWith(Request.ContentLength));
 
 			byte[] param = Request.BinaryRead(Request.ContentLength);
-			string strRequest = Encoding.ASCII.GetString(param);
+			var strRequest = Encoding.ASCII.GetString(param);
 			Dictionary<string, string> values;
 
 			var provider = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalDirect", true);
@@ -224,7 +228,9 @@ namespace SmartStore.PayPal.Controllers
 			if (processor == null)
 				throw new SmartException(T("Plugins.Payments.PayPalDirect.NoModuleLoading"));
 
-			if (processor.VerifyIPN(strRequest, out values))
+			var settings = _services.Settings.LoadSetting<PayPalDirectPaymentSettings>();
+
+			if (PayPalHelper.VerifyIPN(settings, strRequest, out values))
 			{
 				#region values
 				decimal total = decimal.Zero;

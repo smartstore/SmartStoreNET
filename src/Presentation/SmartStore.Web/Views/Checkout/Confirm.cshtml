@@ -112,7 +112,8 @@
                             var checkoutButton = $(".confirm-order-next-step-button");
                             checkoutButton.click(function () {
                             	var termOfServiceOk = true,
-                            		userAgreementsOk = true;
+                            		userAgreementsOk = true,
+                            		esdRevocationWaiverOk = true;
 
                             	$("#customercommenthidden").val($("#CustomerComment").val());
 
@@ -142,8 +143,25 @@
                             			return false;
                             		}
                             	});
+
+                            	// agree esd revocation waiver
+								@if(Model.ShowEsdRevocationWaiverBox)
+								{
+									<text>
+                            		$('table.table-order-products').find('input[name^=AgreeEsdRevocationWaiver]').each(function () {
+                            			if (!$(this).is(':checked')) {
+                            				esdRevocationWaiverOk = false;
+                            				displayNotification('@T("Checkout.EsdRevocationWaiverConfirmation.PleaseAgree").ToString().EncodeJsString('"', false)', 'error');
+                            				if (termOfServiceOk) {
+                            					$.scrollTo($('table.table-order-products'), 800, { offset: -20 });
+                            				}
+                            				return false;
+                            			}
+                            		});
+                            		</text>
+								}
 								
-                            	if (termOfServiceOk && userAgreementsOk) {
+                            	if (termOfServiceOk && userAgreementsOk && esdRevocationWaiverOk) {
                             		var submitOrderEvent = jQuery.Event('submitOrder');
                             		submitOrderEvent.isOrderValid = true;
                             		submitOrderEvent.isMobile = false;

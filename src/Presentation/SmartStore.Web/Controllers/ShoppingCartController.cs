@@ -242,7 +242,8 @@ namespace SmartStore.Web.Controllers
 				BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, _workContext.WorkingCurrency),
 				Weight = product.Weight,
 				IsDownload = product.IsDownload,
-				HasUserAgreement = product.HasUserAgreement
+				HasUserAgreement = product.HasUserAgreement,
+				IsEsd = product.IsEsd
 			};
 
 			model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);

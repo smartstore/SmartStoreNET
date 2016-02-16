@@ -76,6 +76,17 @@
 					</div>
 				</div>
 			}
+			@if (!Model.IsEditable && Model.DisplayEsdRevocationWaiverBox && item.IsEsd)
+			{
+				<div class="esd-revocation-waiver">
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="AgreeEsdRevocationWaiver@(item.ProductId)">
+							@T("Checkout.EsdRevocationWaiverConfirmation")
+						</label>
+					</div>
+				</div>
+			}
 			@if (item.Warnings.Count > 0)
 			{
 				<div class="alert alert-error">

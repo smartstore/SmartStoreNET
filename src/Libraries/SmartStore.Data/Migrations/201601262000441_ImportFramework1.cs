@@ -374,6 +374,15 @@ namespace SmartStore.Data.Migrations
 				"Rechtliche Hinweise in der Warenkorbübersicht anzeigen",
 				"Specifies whether to show hints in order summary on the confirm order page. This text can be altered in the language resources.",
 				"Legt fest, ob rechtliche Hinweise in der Warenkorbübersicht auf der Bestellabschlußseite angezeigt werden. Dieser Text kann in den Sprachresourcen geändert werden.");
+
+
+			builder.AddOrUpdate("Checkout.EsdRevocationWaiverConfirmation",
+				"Yes, I want access to the digital content immediately and know that my right of revocation expires with the access.",
+				"Ja, ich möchte sofort Zugang zu dem digitalen Inhalt und weiß, dass mein Widerrufsrecht mit dem Zugang erlischt.");
+
+			builder.AddOrUpdate("Checkout.EsdRevocationWaiverConfirmation.PleaseAgree",
+				"Please confirm that you would like access to the digital content immediately.",
+				"Bitte bestätigen Sie, dass Sie sofort Zugang zu dem digitalen Inhalt wünschen.");
 		}
 	}
 }

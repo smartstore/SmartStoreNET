@@ -17,6 +17,7 @@ namespace SmartStore.Web.Models.Checkout
         public IList<string> Warnings { get; set; }
 
         public bool ShowConfirmOrderLegalHint { get; set; }
+		public bool ShowEsdRevocationWaiverBox { get; set; }
 
 		public bool BypassPaymentMethodInfo { get; set; }
     }

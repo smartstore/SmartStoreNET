@@ -113,6 +113,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 			public bool IsDownload { get; set; }
 			public bool HasUserAgreement { get; set; }
 
+			public bool IsEsd { get; set; }
+
 			public bool BundlePerItemPricing { get; set; }
 			public bool BundlePerItemShoppingCart { get; set; }
 			public BundleItemModel BundleItem { get; set; }

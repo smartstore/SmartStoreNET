@@ -174,7 +174,7 @@ namespace SmartStore.Web.Controllers
 		{
 			var product = _productService.GetProductById(productId);
 			if (product == null)
-				return HttpNotFound();
+				return Content(T("Products.NotFound", productId));
 
 			if (!product.IsDownload || !product.HasUserAgreement || product.UserAgreementText.IsEmpty())
 				return Content(T("DownloadableProducts.HasNoUserAgreement"));

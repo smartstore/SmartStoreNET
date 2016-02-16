@@ -39,9 +39,12 @@
 	float: left;
 	width: 65px;
 }
+.entity-picker-list .img-polaroid {
+	padding: 2px;
+}
 .entity-picker-list .thumb img {
-	max-width: 52px;
-	max-height: 52px;
+	max-width: 50px;
+	max-height: 50px;
 }
 .entity-picker-list .label {
 	display: inline-block;

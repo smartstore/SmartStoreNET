@@ -51,9 +51,11 @@ namespace SmartStore.Web.Models.ShoppingCart
         public bool DisplayCommentBox { get; set; }
         public string CustomerComment { get; set; }
 
+		public bool DisplayEsdRevocationWaiverBox { get; set; }
+
 		#region Nested Classes
 
-        public partial class ShoppingCartItemModel : EntityModelBase
+		public partial class ShoppingCartItemModel : EntityModelBase
         {
             public ShoppingCartItemModel()
             {

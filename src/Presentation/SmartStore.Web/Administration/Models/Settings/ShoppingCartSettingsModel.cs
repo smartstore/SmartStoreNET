@@ -76,7 +76,10 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowCommentBox")]
         public bool ShowCommentBox { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation")]
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowEsdRevocationWaiverBox")]
+		public bool ShowEsdRevocationWaiverBox { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation")]
         public bool RoundPricesDuringCalculation { get; set; }
         
     }

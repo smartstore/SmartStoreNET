@@ -637,12 +637,14 @@ namespace SmartStore.Web.Controllers
 			model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
 			model.ShowProductBundleImages = _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;
 			model.ShowSku = _catalogSettings.ShowProductSku;
+
 			var checkoutAttributesXml = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 			model.CheckoutAttributeInfo = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(
 				_checkoutAttributeFormatter.FormatAttributes(checkoutAttributesXml, _workContext.CurrentCustomer)
 			));
 			//model.CheckoutAttributeInfo = _checkoutAttributeFormatter.FormatAttributes(_workContext.CurrentCustomer.CheckoutAttributes, _workContext.CurrentCustomer);
 			//model.CheckoutAttributeInfo = _checkoutAttributeFormatter.FormatAttributes(_workContext.CurrentCustomer.CheckoutAttributes, _workContext.CurrentCustomer, "", false);
+
 			bool minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
 			if (!minOrderSubtotalAmountOk)
 			{
@@ -655,17 +657,21 @@ namespace SmartStore.Web.Controllers
 			model.DiscountBox.Display = _shoppingCartSettings.ShowDiscountBox;
 			var discountCouponCode = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.DiscountCouponCode);
 			var discount = _discountService.GetDiscountByCouponCode(discountCouponCode);
-			if (discount != null &&
-				discount.RequiresCouponCode &&
-				_discountService.IsDiscountValid(discount, _workContext.CurrentCustomer))
+			if (discount != null && discount.RequiresCouponCode && _discountService.IsDiscountValid(discount, _workContext.CurrentCustomer))
+			{
 				model.DiscountBox.CurrentCode = discount.CouponCode;
+			}
+
 			model.GiftCardBox.Display = _shoppingCartSettings.ShowGiftCardBox;
 			model.DisplayCommentBox = _shoppingCartSettings.ShowCommentBox;
+			model.DisplayEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
 
 			//cart warnings
 			var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, validateCheckoutAttributes);
 			foreach (var warning in cartWarnings)
+			{
 				model.Warnings.Add(warning);
+			}
 
 			#endregion
 

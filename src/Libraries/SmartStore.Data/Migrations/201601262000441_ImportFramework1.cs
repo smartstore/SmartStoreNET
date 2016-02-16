@@ -351,6 +351,29 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Checkout.DownloadUserAgreement.PleaseAgree",
 				"Please agree to the user agreement for downloadable products.",
 				"Bitte stimmen Sie der Nutzungsvereinbarung für herunterladbare Produkte zu.");
+
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.OrderConfirmationPage",
+				"Order confirmation page",
+				"Bestellabschlussseite");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.ShowEsdRevocationWaiverBox",
+				"Show revocation waiver box for electronic services",
+				"Widerrufsverzichtbox für elektronische Leistungen anzeigen",
+				"Specifies whether the customer must agree a revocation waiver for electronic services on the order confirmation page.",
+				"Legt fest, ob der Kunde auf der Bestellabschlussseite einem Widerrufsverzicht für elektronische Leistungen zustimmen muss.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.ShowCommentBox",
+				"Show comment box",
+				"Kommentarbox anzeigen",
+				"Specifies whether comment box is displayed on the order confirmation page.",
+				"Legt fest, ob der Kunde auf der Bestellabschlussseite einen Kommentar zu seiner Bestellung hinterlegen kann.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.ShowConfirmOrderLegalHint",
+				"Show legal hints in order summary",
+				"Rechtliche Hinweise in der Warenkorbübersicht anzeigen",
+				"Specifies whether to show hints in order summary on the confirm order page. This text can be altered in the language resources.",
+				"Legt fest, ob rechtliche Hinweise in der Warenkorbübersicht auf der Bestellabschlußseite angezeigt werden. Dieser Text kann in den Sprachresourcen geändert werden.");
 		}
 	}
 }

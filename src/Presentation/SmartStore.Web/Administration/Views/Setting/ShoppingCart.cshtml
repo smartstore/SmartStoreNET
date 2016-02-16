@@ -292,6 +292,22 @@
 @helper TabCheckoutSettings()
 {
     <table class="adminContent">
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="head">@T("Admin.Configuration.Settings.ShoppingCart.OrderConfirmationPage")</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowCommentBox)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowCommentBox)
+				@Html.ValidationMessageFor(model => model.ShowCommentBox)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowConfirmOrderLegalHint)
@@ -301,14 +317,14 @@
                 @Html.ValidationMessageFor(model => model.ShowConfirmOrderLegalHint)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowCommentBox)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowCommentBox)
-                @Html.ValidationMessageFor(model => model.ShowCommentBox)
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowEsdRevocationWaiverBox)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowEsdRevocationWaiverBox)
+				@Html.ValidationMessageFor(model => model.ShowEsdRevocationWaiverBox)
+			</td>
+		</tr>
     </table>
 }

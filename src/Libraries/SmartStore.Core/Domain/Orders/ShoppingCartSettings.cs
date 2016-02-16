@@ -17,6 +17,7 @@ namespace SmartStore.Core.Domain.Orders
 			ShowDiscountBox = true;
 			ShowGiftCardBox = true;
             ShowCommentBox = true;
+			ShowEsdRevocationWaiverBox = true;
 			CrossSellsNumber = 8;
 			EmailWishlistEnabled = true;
 			MiniShoppingCartEnabled = true;
@@ -97,11 +98,16 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets a value indicating whether to show a comment box on shopping cart page
         /// </summary>
         public bool ShowCommentBox { get; set; }
-        
-        /// <summary>
-        /// Gets or sets a number of "Cross-sells" on shopping cart page
-        /// </summary>
-        public int CrossSellsNumber { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to show a revocation waiver checkbox box for ESD products
+		/// </summary>
+		public bool ShowEsdRevocationWaiverBox { get; set; }
+
+		/// <summary>
+		/// Gets or sets a number of "Cross-sells" on shopping cart page
+		/// </summary>
+		public int CrossSellsNumber { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating whether "email a wishlist" feature is enabled

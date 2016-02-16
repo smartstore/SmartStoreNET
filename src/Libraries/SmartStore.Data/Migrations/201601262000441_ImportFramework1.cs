@@ -339,6 +339,18 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.WrongCaptcha",
 				"Please confirm that you are not a \"robot\".",
 				"Bitte bestätigen Sie, dass Sie kein \"Roboter\" sind.");
+
+			builder.AddOrUpdate("DownloadableProducts.UserAgreementConfirmation",
+				"Yes, I agree to the <a href='javascript:void(0)' data-id='{0}' class='download-user-agreement'>user agreement</a> for this product.",
+				"Ja, ich stimme der <a href='javascript:void(0)' data-id='{0}' class='download-user-agreement'>Nutzungsvereinbarung</a> für dieses Produkt zu.");
+
+			builder.AddOrUpdate("DownloadableProducts.HasNoUserAgreement",
+				"The product has no user agreement.",
+				"Das Produkt besitzt keine Nutzungsvereinbarung.");
+
+			builder.AddOrUpdate("Checkout.DownloadUserAgreement.PleaseAgree",
+				"Please agree to the user agreement for downloadable products.",
+				"Bitte stimmen Sie der Nutzungsvereinbarung für herunterladbare Produkte zu.");
 		}
 	}
 }

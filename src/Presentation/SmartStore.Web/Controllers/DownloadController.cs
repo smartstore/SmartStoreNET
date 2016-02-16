@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Html;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
@@ -167,5 +169,25 @@ namespace SmartStore.Web.Controllers
 
 			return GetFileContentResultFor(download, null);
 		}
-    }
+
+		public ActionResult GetUserAgreement(int productId, bool? asPlainText)
+		{
+			var product = _productService.GetProductById(productId);
+			if (product == null)
+				return HttpNotFound();
+
+			if (!product.IsDownload || !product.HasUserAgreement || product.UserAgreementText.IsEmpty())
+				return Content(T("DownloadableProducts.HasNoUserAgreement"));
+
+			if (asPlainText ?? false)
+			{
+				var agreement = HtmlUtils.ConvertHtmlToPlainText(product.UserAgreementText);
+				agreement = HtmlUtils.StripTags(HttpUtility.HtmlDecode(agreement));
+
+				return Content(agreement);
+			}
+
+			return Content(product.UserAgreementText);
+		}
+	}
 }

@@ -44,15 +44,12 @@
                 </div>
             }
 
-			@if (Model.DisplayDeliveryTime)
+			@if (Model.DisplayDeliveryTime && item.IsShipEnabled && (!String.IsNullOrEmpty(item.DeliveryTimeName) && !String.IsNullOrEmpty(item.DeliveryTimeHexValue)))
 			{
 				<div class="delivery-time">
-					@if ((!String.IsNullOrEmpty(item.DeliveryTimeName) && !String.IsNullOrEmpty(item.DeliveryTimeHexValue)) && item.IsShipEnabled)
-					{
-						<span class="delivery-time-label">@T("Products.DeliveryTime")</span>
-						<span class="delivery-time-color" style="background-color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName"></span>
-						<span class="delivery-time-value">@item.DeliveryTimeName</span>
-					}
+					<span class="delivery-time-label">@T("Products.DeliveryTime")</span>
+					<span class="delivery-time-color" style="background-color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName"></span>
+					<span class="delivery-time-value">@item.DeliveryTimeName</span>
 				</div>
 			}
 
@@ -66,6 +63,17 @@
 			{
 				<div class="recurring-info">
 					@Html.Raw(item.RecurringInfo)
+				</div>
+			}
+			@if (!Model.IsEditable && item.IsDownload && item.HasUserAgreement)
+			{
+				<div class="download-agreement">
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="AgreeUserAgreement@(item.ProductId)">
+							@T("DownloadableProducts.UserAgreementConfirmation", item.ProductId)
+						</label>
+					</div>
 				</div>
 			}
 			@if (item.Warnings.Count > 0)
@@ -126,8 +134,7 @@
 @helper BundleProducts(ShoppingCartModel.ShoppingCartItemModel parentItem)
 {
 	if (parentItem.ChildItems != null)
-	{	
-        
+	{   
         <tr class="product-bundle-row">
             <td colspan="2">&nbsp;</td>
             <td colspan="5" class="bundle-headline">
@@ -413,3 +420,33 @@
 		</div>
 	}
 </div>
+
+@if (!Model.IsEditable && Model.Items.Any(x => x.IsDownload && x.HasUserAgreement))
+{
+	<div id="user-agreement-modal" class="modal modal-large hide fade" tabindex="-1">
+		<div class="modal-header">
+			<h4 class="caption">@T("DownloadableProducts.UserAgreement")</h4>
+		</div>
+		<div class="modal-body"></div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal">@T("Common.OK")</button>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('a.download-user-agreement').click(function () {
+				var url = '@(Url.Action("GetUserAgreement", "Download"))?productId=' + $(this).attr('data-id'),
+					dialog = $('#user-agreement-modal');
+
+				dialog.find('.modal-body').empty();
+
+				$.get(url, function (html) {
+					dialog.find('.modal-body').html(html);
+				});
+
+				dialog.modal('show');
+				return false;
+			});
+		});
+	</script>
+}

@@ -43,6 +43,7 @@
 * PayPal: Option for API security protocol
 * Product filter: Option to sort filter results by their display order rather than by number of matches
 * Elmar Shopinfo: Option to export delivery time as availability
+* #654 Place user agreement for downloadable files in checkout process
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

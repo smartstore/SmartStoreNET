@@ -27,7 +27,7 @@
                 @Html.Raw(@T("Checkout.ConfirmHint"))
             </div>
 
-            <input id="customercommenthidden" type="hidden" name="customercommenthidden" />
+            <input type="hidden" id="customercommenthidden" name="customercommenthidden" />
 
             if (Model.TermsOfServiceEnabled)
             {
@@ -92,11 +92,11 @@
         </div>
 
         @if (Model.ShowConfirmOrderLegalHint) 
-            { 
-                <div class="confirm-order-legal-hint alert alert-info">
-                    @T("OrderSummary.ConfirmOrderLegalHint")
-                </div>
-            }
+        { 
+            <div class="confirm-order-legal-hint alert alert-info">
+                @T("OrderSummary.ConfirmOrderLegalHint")
+            </div>
+        }
 
         <div class="confirm-order">
             
@@ -111,26 +111,39 @@
                         $(function () {
                             var checkoutButton = $(".confirm-order-next-step-button");
                             checkoutButton.click(function () {
+                            	var termOfServiceOk = true,
+                            		userAgreementsOk = true;
 
-                                $("#customercommenthidden").val($("#CustomerComment").val());
+                            	$("#customercommenthidden").val($("#CustomerComment").val());
 
-                                //terms of services
-                                var termOfServiceOk = true;
+								// terms of services
                                 @if (Model.TermsOfServiceEnabled)
                                 {
-                                        <text>
+									<text>
                                     if (!$('#termsofservice').is(':checked')) {
-                                        displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString()', "error");
+                                        displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString('"', false)', "error");
                                         termOfServiceOk = false;
                                         $.scrollTo($('#termsofservice'), 800, { offset: -70 });
                                     }
                                     else {
                                         termOfServiceOk = true;
                                     }
-                                        </text>
+									</text>
                                 }
+
+                            	// agree user agreement for downloadable products
+                            	$('table.table-order-products').find('input[name^=AgreeUserAgreement]').each(function () {
+                            		if (!$(this).is(':checked')) {
+                            			userAgreementsOk = false;
+                            			displayNotification('@T("Checkout.DownloadUserAgreement.PleaseAgree").ToString().EncodeJsString('"', false)', 'error');
+                            			if (termOfServiceOk) {
+                            				$.scrollTo($('table.table-order-products'), 800, { offset: -20 });
+                            			}
+                            			return false;
+                            		}
+                            	});
 								
-                            	if (termOfServiceOk) {
+                            	if (termOfServiceOk && userAgreementsOk) {
                             		var submitOrderEvent = jQuery.Event('submitOrder');
                             		submitOrderEvent.isOrderValid = true;
                             		submitOrderEvent.isMobile = false;

@@ -75,8 +75,10 @@
                       <script type="text/javascript">
                         $(function () {
                             $('.confirm-order-next-step-button').click(function () {
-                                //terms of services
-                                var termOfServiceOk = true;
+                            	var termOfServiceOk = true,
+									userAgreementsOk = true;
+
+                            	// terms of services
                                 @if (Model.TermsOfServiceEnabled)
                                 {
                                     <text>
@@ -89,8 +91,17 @@
                                         }
                                     </text>
                                 }
+
+                            	// agree user agreement for downloadable products
+                            	$('ul.list-order-products').find('input[name^=AgreeUserAgreement]').each(function () {
+                            		if (!$(this).is(':checked')) {
+                            			userAgreementsOk = false;
+                            			alert('@T("Checkout.DownloadUserAgreement.PleaseAgree")');
+                            			return false;
+                            		}
+                            	});
 								
-                            	if (termOfServiceOk) {
+                            	if (termOfServiceOk && userAgreementsOk) {
                             		var submitOrderEvent = jQuery.Event('submitOrder');
                             		submitOrderEvent.isOrderValid = true;
                             		submitOrderEvent.isMobile = true;

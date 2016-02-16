@@ -240,7 +240,9 @@ namespace SmartStore.Web.Controllers
 				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
 				BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, _workContext.WorkingCurrency),
-				Weight = product.Weight
+				Weight = product.Weight,
+				IsDownload = product.IsDownload,
+				HasUserAgreement = product.HasUserAgreement
 			};
 
 			model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);

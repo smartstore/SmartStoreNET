@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Localization;
@@ -113,7 +114,9 @@ namespace SmartStore.Admin.Controllers
 			this._services = services;
         }
 
-		#endregion 
+		#endregion
+
+		#region Utilities
 
 		private StoreDependingSettingHelper StoreDependingSettings
 		{
@@ -125,7 +128,20 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-        #region Methods
+		private void NotifyModelStateErrors()
+		{
+			foreach (var modelState in ModelState.Values)
+			{
+				foreach (var error in modelState.Errors)
+				{
+					NotifyError(error.ErrorMessage);
+				}
+			}
+		}
+
+		#endregion
+
+		#region Methods
 
 		[ChildActionOnly]
 		public ActionResult StoreScopeConfiguration()
@@ -666,11 +682,9 @@ namespace SmartStore.Admin.Controllers
 			}
 			else
 			{
-				//If we got this far, something failed, redisplay form
-				foreach (var modelState in ModelState.Values)
-					foreach (var error in modelState.Errors)
-						NotifyError(error.ErrorMessage);
+				NotifyModelStateErrors();
 			}
+
 			return RedirectToAction("RewardPoints");
         }
 
@@ -768,13 +782,9 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-				//If we got this far, something failed, redisplay form
-				foreach (var modelState in ModelState.Values)
-				{
-					foreach (var error in modelState.Errors)
-						NotifyError(error.ErrorMessage);
-				}
-            }
+				NotifyModelStateErrors();
+			}
+
             return RedirectToAction("Order");
         }
 
@@ -1532,6 +1542,56 @@ namespace SmartStore.Admin.Controllers
 
 			return Content(result);
 		}
+
+		public ActionResult DataExchange()
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+				return AccessDeniedView();
+
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var settings = _services.Settings.LoadSetting<DataExchangeSettings>(storeScope);
+
+			var model = new DataExchangeSettingsModel
+			{
+				MaxFileNameLength = settings.MaxFileNameLength,
+				ImageImportFolder = settings.ImageImportFolder
+			};
+
+			StoreDependingSettings.GetOverrideKeys(settings, model, storeScope, _services.Settings);
+
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult DataExchange(DataExchangeSettingsModel model, FormCollection form)
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+				return AccessDeniedView();
+
+			if (ModelState.IsValid)
+			{
+				var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+				var settings = _services.Settings.LoadSetting<DataExchangeSettings>(storeScope);
+
+				settings.MaxFileNameLength = model.MaxFileNameLength;
+				settings.ImageImportFolder = model.ImageImportFolder;
+
+				StoreDependingSettings.UpdateSettings(settings, form, storeScope, _services.Settings);
+
+				_services.Settings.ClearCache();
+
+				_customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
+
+				NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
+			}
+			else
+			{
+				NotifyModelStateErrors();
+			}
+
+			return RedirectToAction("DataExchange");
+		}
+
 
 		//all settings
 		public ActionResult AllSettings()

@@ -70,6 +70,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Common.Warnings", "Warnings", "Warnungen");
 			builder.AddOrUpdate("Admin.Common.Errors", "Errors", "Fehler");
 			builder.AddOrUpdate("Admin.Common.UnsupportedEntityType", "Unsupported entity type '{0}'", "Nicht unterstützter Entitätstyp '{0}'");
+			builder.AddOrUpdate("Admin.Common.DataExchange", "Data exchange", "Datenaustausch");
 
 			builder.AddOrUpdate("Admin.DataExchange.Import.CompletedEmail.Body",
 				"This is an automatic notification of store \"{0}\" about a recent data import. Summary:",
@@ -383,6 +384,19 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Checkout.EsdRevocationWaiverConfirmation.PleaseAgree",
 				"Please confirm that you would like access to the digital content immediately.",
 				"Bitte bestätigen Sie, dass Sie sofort Zugang zu dem digitalen Inhalt wünschen.");
+
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.DataExchange.MaxFileNameLength",
+				"Maximum length of file and folder names",
+				"Maximale Länge von Datei- und Ordnernamen",
+				"Specifies the maximum length of file and folder names created during an import or export.",
+				"Legt die maximale Länge von Datei- und Ordnernamen fest, die im Rahmen eines Imports\\Exports erzeugt wurden.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.DataExchange.ImageImportFolder",
+				"Image folder (relative path)",
+				"Bilderordner (relativer Pfad)",
+				"Specifies a relative path to a folder with images to be imported (e.g. Content\\Images).",
+				"Legt einen relativen Pfad zu einem Ordner mit zu importierenden Bildern fest (z.B. Inhalt\\Bilder).");
 		}
 	}
 }

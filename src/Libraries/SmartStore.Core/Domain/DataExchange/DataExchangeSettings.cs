@@ -13,5 +13,10 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// The maximum length of file names (in characters) of files created by the export framework
 		/// </summary>
 		public int MaxFileNameLength { get; set; }
+
+		/// <summary>
+		/// Relative path to a folder with images to be imported
+		/// </summary>
+		public string ImageImportFolder { get; set; }
 	}
 }

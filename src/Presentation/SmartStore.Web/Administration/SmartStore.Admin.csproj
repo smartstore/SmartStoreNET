@@ -270,6 +270,7 @@
     <Compile Include="Models\Plugins\LicensePluginModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
+    <Compile Include="Models\Settings\DataExchangeSettingsModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordListModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordModel.cs" />
     <Compile Include="Models\Settings\ContentSliderSettingsModel.cs" />
@@ -524,6 +525,7 @@
     <Content Include="Views\Shared\CsvConfiguration.cshtml" />
     <Content Include="Views\Import\_ColumnMappings.cshtml" />
     <Content Include="Views\Import\ProfileImportResult.cshtml" />
+    <Content Include="Views\Setting\DataExchange.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

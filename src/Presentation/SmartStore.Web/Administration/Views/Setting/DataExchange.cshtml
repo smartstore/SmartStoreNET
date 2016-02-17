@@ -16,40 +16,32 @@
     
 	@Html.Action("StoreScopeConfiguration", "Setting")
 	@Html.ValidationSummary(false)
-    
-    @(Html.SmartStore().TabStrip().Name("dataexchangesettings-edit").Items(x =>
-	{
-		x.Add().Text(T("Admin.Common.General").Text).Content(@TabGeneral()).Selected(true);
-		x.Add().Text(T("Common.Import").Text).Content(@TabImport());  
-    }))
-}
 
-@helper TabGeneral()
-{
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MaxFileNameLength)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.MaxFileNameLength)
-                @Html.ValidationMessageFor(model => model.MaxFileNameLength)
-            </td>
-        </tr>
-    </table>
-}
-
-@helper TabImport()
-{
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ImageImportFolder)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ImageImportFolder)
-                @Html.ValidationMessageFor(model => model.ImageImportFolder)
-            </td>
-        </tr>
-    </table>
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.MaxFileNameLength)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.MaxFileNameLength)
+				@Html.ValidationMessageFor(model => model.MaxFileNameLength)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Common.Import")</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ImageImportFolder)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ImageImportFolder)
+				@Html.ValidationMessageFor(model => model.ImageImportFolder)
+			</td>
+		</tr>
+	</table>
 }

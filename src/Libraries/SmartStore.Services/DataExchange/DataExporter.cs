@@ -79,7 +79,6 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<IRepository<NewsLetterSubscription>> _subscriptionRepository;
 		private readonly Lazy<IRepository<Order>> _orderRepository;
 
-		private readonly Lazy<DataExchangeSettings> _dataExchangeSettings;
 		private readonly Lazy<MediaSettings> _mediaSettings;
 		private readonly Lazy<ContactDataSettings> _contactDataSettings;
 
@@ -116,7 +115,6 @@ namespace SmartStore.Services.DataExchange.Export
             Lazy<IRepository<Customer>> customerRepository,
 			Lazy<IRepository<NewsLetterSubscription>> subscriptionRepository,
 			Lazy<IRepository<Order>> orderRepository,
-            Lazy<DataExchangeSettings> dataExchangeSettings,
 			Lazy<MediaSettings> mediaSettings,
 			Lazy<ContactDataSettings> contactDataSettings)
 		{
@@ -154,7 +152,6 @@ namespace SmartStore.Services.DataExchange.Export
 			_subscriptionRepository = subscriptionRepository;
 			_orderRepository = orderRepository;
 
-			_dataExchangeSettings = dataExchangeSettings;
 			_mediaSettings = mediaSettings;
 			_contactDataSettings = contactDataSettings;
 
@@ -943,7 +940,8 @@ namespace SmartStore.Services.DataExchange.Export
 			if (ctx.ExecuteContext.Abort != DataExchangeAbortion.None)
 				return;
 
-			int fileIndex = 0;
+			var fileIndex = 0;
+			var dataExchangeSettings = _services.Settings.LoadSetting<DataExchangeSettings>(store.Id);
 
 			ctx.Store = store;
 
@@ -974,7 +972,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			ctx.ExecuteContext.Store = ToDynamic(ctx, ctx.Store);
 
-			ctx.ExecuteContext.MaxFileNameLength = _dataExchangeSettings.Value.MaxFileNameLength;
+			ctx.ExecuteContext.MaxFileNameLength = dataExchangeSettings.MaxFileNameLength;
 
 			ctx.ExecuteContext.HasPublicDeployment = ctx.Request.Profile.Deployments.Any(x => x.IsPublic && x.DeploymentType == ExportDeploymentType.FileSystem);
 

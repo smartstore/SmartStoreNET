@@ -1580,9 +1580,9 @@ namespace SmartStore.Admin.Controllers
 
 				_services.Settings.ClearCache();
 
-				_customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
+				_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 
-				NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
+				NotifySuccess(T("Admin.Configuration.Updated"));
 			}
 			else
 			{

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
@@ -149,35 +150,10 @@ namespace SmartStore.Services.Catalog.Importer
 				// download images
 				if (imageFiles.Any(x => x.Url.HasValue()))
 				{
-					foreach (var image in imageFiles.Where(x => x.Url.HasValue()))
-					{
-						try
-						{
-							var timeout = (_dataExchangeSettings.ImageDownloadTimeout * 60 * 1000);
-							var response = _fileDownloadManager.DownloadFile(image.Url, false, timeout > 0 ? timeout : (int?)null);
-							image.Success = (response != null);
-
-							if (response != null)
-							{
-								File.WriteAllBytes(image.Path, response.Data);
-							}
-						}
-						catch (Exception exception)
-						{
-							context.Result.AddWarning(exception.ToAllMessages(), row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
-						}
-					}
-
-					// async HttpClient deadlocks ITask. wrong synchronization context?
 					// async downloading in batch processing is inefficient cause only the image processing benefits from async,
-					// not the record processing itself. a per record processing would speed up the import.
+					// not the record processing itself. a per record processing may speed up the import.
 
-					//Task imageDownload = _fileDownloadManager.DownloadAsync(importerContext.DownloaderContext, imageFiles.Where(x => x.Url.HasValue()));
-
-					//if (imageDownload != null)
-					//{
-					//	imageDownload.Wait();
-					//}
+					AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(importerContext.DownloaderContext, imageFiles.Where(x => x.Url.HasValue())));
 				}
 
 				// import images
@@ -905,17 +881,17 @@ namespace SmartStore.Services.Catalog.Importer
 			if (!System.IO.Directory.Exists(ImageDownloadFolder))
 				System.IO.Directory.CreateDirectory(ImageDownloadFolder);
 
-			//DownloaderContext = new FileDownloadManagerContext
-			//{
-			//	Timeout = TimeSpan.FromMinutes(dataExchangeSettings.ImageDownloadTimeout),
-			//	Logger = context.Log,
-			//	CancellationToken = context.CancellationToken
-			//};
+			DownloaderContext = new FileDownloadManagerContext
+			{
+				Timeout = TimeSpan.FromMinutes(dataExchangeSettings.ImageDownloadTimeout),
+				Logger = context.Log,
+				CancellationToken = context.CancellationToken
+			};
 		}
 
 		public DateTime UtcNow { get; private set; }
 		public string ImageDownloadFolder { get; private set; }
 		public string ImageFolder { get; private set; }
-		//public FileDownloadManagerContext DownloaderContext { get; private set; }
+		public FileDownloadManagerContext DownloaderContext { get; private set; }
 	}
 }

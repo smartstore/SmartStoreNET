@@ -86,7 +86,7 @@ namespace SmartStore.Web.Controllers
 			var settings = _services.Settings.LoadSetting<ContentSliderSettings>();
 
             settings.BackgroundPictureUrl = pictureService.GetPictureUrl(settings.BackgroundPictureId, 0, false);
-
+            
             var slides = settings.Slides
 				.Where(s => 
 					s.LanguageCulture == _services.WorkContext.WorkingLanguage.LanguageCulture && 

@@ -70,12 +70,14 @@ namespace SmartStore.Services.DataExchange.Import
 		private readonly Lazy<IStateProvinceService> _stateProvinceService;
 		private readonly Lazy<IEmailAccountService> _emailAccountService;
 		private readonly Lazy<IEmailSender> _emailSender;
+		private readonly Lazy<FileDownloadManager> _fileDownloadManager;
 
 		private readonly Lazy<SeoSettings> _seoSettings;
 		private readonly Lazy<CustomerSettings> _customerSettings;
 		private readonly Lazy<DateTimeSettings> _dateTimeSettings;
 		private readonly Lazy<ForumSettings> _forumSettings;
 		private readonly Lazy<ContactDataSettings> _contactDataSettings;
+		private readonly Lazy<DataExchangeSettings> _dataExchangeSettings;
 
 		public DataImporter(
 			ICommonServices services,
@@ -105,11 +107,13 @@ namespace SmartStore.Services.DataExchange.Import
 			Lazy<IStateProvinceService> stateProvinceService,
 			Lazy<IEmailAccountService> emailAccountService,
 			Lazy<IEmailSender> emailSender,
+			Lazy<FileDownloadManager> fileDownloadManager,
 			Lazy<SeoSettings> seoSettings,
 			Lazy<CustomerSettings> customerSettings,
 			Lazy<DateTimeSettings> dateTimeSettings,
 			Lazy<ForumSettings> forumSettings,
-			Lazy<ContactDataSettings> contactDataSettings)
+			Lazy<ContactDataSettings> contactDataSettings,
+			Lazy<DataExchangeSettings> dataExchangeSettings)
 		{
 			_services = services;
 			_customerService = customerService;
@@ -140,12 +144,14 @@ namespace SmartStore.Services.DataExchange.Import
 			_stateProvinceService = stateProvinceService;
 			_emailAccountService = emailAccountService;
 			_emailSender = emailSender;
+			_fileDownloadManager = fileDownloadManager;
 
 			_seoSettings = seoSettings;
 			_customerSettings = customerSettings;
 			_dateTimeSettings = dateTimeSettings;
 			_forumSettings = forumSettings;
 			_contactDataSettings = contactDataSettings;
+			_dataExchangeSettings = dataExchangeSettings;
 
 			T = NullLocalizer.Instance;
 		}
@@ -356,8 +362,10 @@ namespace SmartStore.Services.DataExchange.Import
 				{
 					ctx.Log = logger;
 
+					ctx.ExecuteContext.Log = logger;
 					ctx.ExecuteContext.UpdateOnly = ctx.Request.Profile.UpdateOnly;
 					ctx.ExecuteContext.KeyFieldNames = ctx.Request.Profile.KeyFieldNames.SplitSafe(",");
+					ctx.ExecuteContext.ImportFolder = ctx.Request.Profile.GetImportFolder();
 
 					{
 						var mapConverter = new ColumnMapConverter();
@@ -389,7 +397,9 @@ namespace SmartStore.Services.DataExchange.Import
 							_productService.Value,
 							_urlRecordService.Value,
 							_storeMappingService.Value,
-							_seoSettings.Value);
+							_fileDownloadManager.Value,
+							_seoSettings.Value,
+							_dataExchangeSettings.Value);
 					}
 					else if (ctx.Request.Profile.EntityType == ImportEntityType.Customer)
 					{

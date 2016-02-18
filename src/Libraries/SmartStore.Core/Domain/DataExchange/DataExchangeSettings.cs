@@ -7,6 +7,7 @@ namespace SmartStore.Core.Domain.DataExchange
 		public DataExchangeSettings()
 		{
 			MaxFileNameLength = 50;
+			ImageDownloadTimeout = 10;
 		}
 
 		/// <summary>
@@ -18,5 +19,10 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// Relative path to a folder with images to be imported
 		/// </summary>
 		public string ImageImportFolder { get; set; }
+
+		/// <summary>
+		/// The timeout for image download per entity in minutes
+		/// </summary>
+		public int ImageDownloadTimeout { get; set; }
 	}
 }

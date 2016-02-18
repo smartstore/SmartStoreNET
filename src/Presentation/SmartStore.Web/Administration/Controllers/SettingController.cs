@@ -1554,7 +1554,8 @@ namespace SmartStore.Admin.Controllers
 			var model = new DataExchangeSettingsModel
 			{
 				MaxFileNameLength = settings.MaxFileNameLength,
-				ImageImportFolder = settings.ImageImportFolder
+				ImageImportFolder = settings.ImageImportFolder,
+				ImageDownloadTimeout = settings.ImageDownloadTimeout
 			};
 
 			StoreDependingSettings.GetOverrideKeys(settings, model, storeScope, _services.Settings);
@@ -1575,6 +1576,7 @@ namespace SmartStore.Admin.Controllers
 
 				settings.MaxFileNameLength = model.MaxFileNameLength;
 				settings.ImageImportFolder = model.ImageImportFolder;
+				settings.ImageDownloadTimeout = model.ImageDownloadTimeout;
 
 				StoreDependingSettings.UpdateSettings(settings, form, storeScope, _services.Settings);
 

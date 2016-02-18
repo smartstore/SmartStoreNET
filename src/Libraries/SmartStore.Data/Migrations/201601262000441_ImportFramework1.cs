@@ -397,6 +397,12 @@ namespace SmartStore.Data.Migrations
 				"Bilderordner (relativer Pfad)",
 				"Specifies a relative path to a folder with images to be imported (e.g. Content\\Images).",
 				"Legt einen relativen Pfad zu einem Ordner mit zu importierenden Bildern fest (z.B. Inhalt\\Bilder).");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.DataExchange.ImageDownloadTimeout",
+				"Timeout for image download (minutes)",
+				"Zeitlimit für Bilder-Download (Minuten)",
+				"Specifies the timeout for the image download in minutes.",
+				"Legt das Zeitlimit für den Bilder-Download in Minuten fest.");
 		}
 	}
 }

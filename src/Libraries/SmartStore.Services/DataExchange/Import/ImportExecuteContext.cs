@@ -2,6 +2,7 @@
 using System.Threading;
 using SmartStore.Core;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.DataExchange.Import
 {
@@ -18,9 +19,24 @@ namespace SmartStore.Services.DataExchange.Import
 		string[] KeyFieldNames { get; }
 
 		/// <summary>
+		/// The import folder
+		/// </summary>
+		string ImportFolder { get; }
+
+		/// <summary>
 		/// Use this dictionary for any custom data required along the export
 		/// </summary>
 		Dictionary<string, object> CustomProperties { get; set; }
+
+		/// <summary>
+		/// To log information into the import log file
+		/// </summary>
+		ILogger Log { get; }
+
+		/// <summary>
+		/// Cancellation token
+		/// </summary>
+		CancellationToken CancellationToken { get; }
 
 		/// <summary>
 		/// Result of the import
@@ -51,7 +67,6 @@ namespace SmartStore.Services.DataExchange.Import
 	public class ImportExecuteContext : IImportExecuteContext
 	{
 		private DataExchangeAbortion _abortion;
-		private CancellationToken _cancellation;
 		private ProgressValueSetter _progressValueSetter;
 		private string _progressInfo;
 
@@ -60,10 +75,10 @@ namespace SmartStore.Services.DataExchange.Import
 			ProgressValueSetter progressValueSetter,
 			string progressInfo)
 		{
-			_cancellation = cancellation;
 			_progressValueSetter = progressValueSetter;
 			_progressInfo = progressInfo;
 
+			CancellationToken = cancellation;
 			CustomProperties = new Dictionary<string, object>();
 			Result = new ImportResult();
 		}
@@ -76,6 +91,12 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public string[] KeyFieldNames { get; internal set; }
 
+		public ILogger Log { get; internal set; }
+
+		public CancellationToken CancellationToken { get; private set; }
+
+		public string ImportFolder { get; internal set; }
+
 		/// <summary>
 		/// Use this dictionary for any custom data required along the import
 		/// </summary>
@@ -87,7 +108,7 @@ namespace SmartStore.Services.DataExchange.Import
 		{
 			get
 			{
-				if (_cancellation.IsCancellationRequested || IsMaxFailures)
+				if (CancellationToken.IsCancellationRequested || IsMaxFailures)
 					return DataExchangeAbortion.Hard;
 
 				return _abortion;

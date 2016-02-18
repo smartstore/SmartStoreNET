@@ -45,6 +45,7 @@
 * Elmar Shopinfo: Option to export delivery time as availability
 * #654 Place user agreement for downloadable files in checkout process
 * #398 EU law: add 'revocation' form and revocation waiver for ESD
+* #738 Implement download of pictures via URLs in product import
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

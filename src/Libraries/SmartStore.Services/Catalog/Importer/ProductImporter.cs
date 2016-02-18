@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Events;
+using SmartStore.Core.IO;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -33,7 +34,9 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly IProductService _productService;
 		private readonly IUrlRecordService _urlRecordService;
 		private readonly IStoreMappingService _storeMappingService;
+		private readonly FileDownloadManager _fileDownloadManager;
 		private readonly SeoSettings _seoSettings;
+		private readonly DataExchangeSettings _dataExchangeSettings;
 
 		public ProductImporter(
 			IRepository<ProductPicture> productPictureRepository,
@@ -50,7 +53,9 @@ namespace SmartStore.Services.Catalog.Importer
 			IProductService productService,
 			IUrlRecordService urlRecordService,
 			IStoreMappingService storeMappingService,
-			SeoSettings seoSettings)
+			FileDownloadManager fileDownloadManager,
+			SeoSettings seoSettings,
+			DataExchangeSettings dataExchangeSettings)
 		{
 			_productPictureRepository = productPictureRepository;
 			_productManufacturerRepository = productManufacturerRepository;
@@ -66,7 +71,10 @@ namespace SmartStore.Services.Catalog.Importer
 			_productService = productService;
 			_urlRecordService = urlRecordService;
 			_storeMappingService = storeMappingService;
+			_fileDownloadManager = fileDownloadManager;
+			
 			_seoSettings = seoSettings;
+			_dataExchangeSettings = dataExchangeSettings;
 		}
 
 		private int? ZeroToNull(object value, CultureInfo culture)
@@ -80,7 +88,168 @@ namespace SmartStore.Services.Catalog.Importer
 			return (int?)null;
 		}
 
-		private void ProcessProductPictures(IImportExecuteContext context, ImportRow<Product>[] batch)
+		private void ProcessProductPictures(IImportExecuteContext context, ProductImporterContext importerContext, ImportRow<Product>[] batch)
+		{
+			// true, cause pictures must be saved and assigned an id prior adding a mapping.
+			_productPictureRepository.AutoCommitEnabled = true;
+
+			ProductPicture lastInserted = null;
+			var equalPictureId = 0;
+
+			foreach (var row in batch)
+			{
+				var imageUrls = row.GetDataValue<List<string>>("ImageUrls");
+				if (imageUrls == null)
+					continue;
+
+				var imageNumber = 0;
+				var displayOrder = -1;
+				var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
+				var imageFiles = new List<FileDownloadManagerItem>();
+
+				// collect required image file infos
+				foreach (var urlOrPath in imageUrls)
+				{
+					++imageNumber;
+					var image = new FileDownloadManagerItem
+					{
+						Id = imageNumber,
+						DisplayOrder = imageNumber,
+						MimeType = MimeTypes.MapNameToMimeType(urlOrPath)
+					};
+
+					if (image.MimeType.IsEmpty())
+						image.MimeType = "image/jpeg";
+
+					var extension = MimeTypes.MapMimeTypeToExtension(image.MimeType);
+
+					if (extension.HasValue())
+					{
+						if (urlOrPath.IsWebUrl())
+						{
+							image.Url = urlOrPath;
+							image.FileName = "{0}-{1}".FormatInvariant(image.Id, seoName).ToValidFileName();
+							image.Path = Path.Combine(importerContext.ImageDownloadFolder, image.FileName + extension.EnsureStartsWith("."));
+						}
+						else if (Path.IsPathRooted(urlOrPath))
+						{
+							image.Path = urlOrPath;
+							image.Success = true;
+						}
+						else
+						{
+							image.Path = Path.Combine(importerContext.ImageFolder, urlOrPath);
+							image.Success = true;
+						}
+
+						imageFiles.Add(image);
+					}
+				}
+
+				// download images
+				if (imageFiles.Any(x => x.Url.HasValue()))
+				{
+					foreach (var image in imageFiles.Where(x => x.Url.HasValue()))
+					{
+						try
+						{
+							var timeout = (_dataExchangeSettings.ImageDownloadTimeout * 60 * 1000);
+							var response = _fileDownloadManager.DownloadFile(image.Url, false, timeout > 0 ? timeout : (int?)null);
+							image.Success = (response != null);
+
+							if (response != null)
+							{
+								File.WriteAllBytes(image.Path, response.Data);
+							}
+						}
+						catch (Exception exception)
+						{
+							context.Result.AddWarning(exception.ToAllMessages(), row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+						}
+					}
+
+					// async HttpClient deadlocks ITask. wrong synchronization context?
+					// async downloading in batch processing is inefficient cause only the image processing benefits from async,
+					// not the record processing itself. a per record processing would speed up the import.
+
+					//Task imageDownload = _fileDownloadManager.DownloadAsync(importerContext.DownloaderContext, imageFiles.Where(x => x.Url.HasValue()));
+
+					//if (imageDownload != null)
+					//{
+					//	imageDownload.Wait();
+					//}
+				}
+
+				// import images
+				foreach (var image in imageFiles.OrderBy(x => x.DisplayOrder))
+				{
+					try
+					{
+						if ((image.Success ?? false) && File.Exists(image.Path))
+						{
+							var pictureBinary = File.ReadAllBytes(image.Path);
+
+							if (pictureBinary != null && pictureBinary.Length > 0)
+							{
+								var currentProductPictures = _productPictureRepository.TableUntracked.Expand(x => x.Picture)
+									.Where(x => x.ProductId == row.Entity.Id)
+									.ToList();
+
+								var currentPictures = currentProductPictures
+									.Select(x => x.Picture)
+									.ToList();
+
+								if (displayOrder == -1)
+								{
+									displayOrder = (currentProductPictures.Any() ? currentProductPictures.Select(x => x.DisplayOrder).Max() : 0);
+								}
+
+								pictureBinary = _pictureService.ValidatePicture(pictureBinary);
+								pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
+
+								if (pictureBinary != null && pictureBinary.Length > 0)
+								{
+									// no equal picture found in sequence
+									var newPicture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false);
+									if (newPicture != null)
+									{
+										var mapping = new ProductPicture
+										{
+											ProductId = row.Entity.Id,
+											PictureId = newPicture.Id,
+											DisplayOrder = ++displayOrder
+										};
+
+										_productPictureRepository.Insert(mapping);
+										lastInserted = mapping;
+									}
+								}
+								else
+								{
+									context.Result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+								}
+							}
+						}
+						else if (image.Url.HasValue())
+						{
+							context.Result.AddInfo("Download of an image failed.", row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+						}
+					}
+					catch (Exception exception)
+					{
+						context.Result.AddWarning(exception.ToAllMessages(), row.GetRowInfo(), "ImageUrls" + image.DisplayOrder.ToString());
+					}
+				}
+			}
+
+			// Perf: notify only about LAST insertion and update
+			if (lastInserted != null)
+			{
+				_services.EventPublisher.EntityInserted(lastInserted);
+			}
+		}
+
+		private void ProcessProductPicturesOld(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
 			// true, cause pictures must be saved and assigned an id prior adding a mapping.
 			_productPictureRepository.AutoCommitEnabled = true;
@@ -382,7 +551,7 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
-		private int ProcessProducts(IImportExecuteContext context, ImportRow<Product>[] batch, DateTime utcNow)
+		private int ProcessProducts(IImportExecuteContext context, ProductImporterContext importerContext, ImportRow<Product>[] batch)
 		{
 			_productRepository.AutoCommitEnabled = true;
 
@@ -534,8 +703,8 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, product, (x) => x.AvailableEndDateTimeUtc);
 				row.SetProperty(context.Result, product, (x) => x.LimitedToStores);
 
-				row.SetProperty(context.Result, product, (x) => x.CreatedOnUtc, utcNow);
-				product.UpdatedOnUtc = utcNow;
+				row.SetProperty(context.Result, product, (x) => x.CreatedOnUtc, importerContext.UtcNow);
+				product.UpdatedOnUtc = importerContext.UtcNow;
 
 				if (row.IsTransient)
 				{
@@ -554,9 +723,14 @@ namespace SmartStore.Services.Catalog.Importer
 
 			// Perf: notify only about LAST insertion and update
 			if (lastInserted != null)
+			{
 				_services.EventPublisher.EntityInserted(lastInserted);
+			}
+
 			if (lastUpdated != null)
+			{
 				_services.EventPublisher.EntityUpdated(lastUpdated);
+			}
 
 			return num;
 		}
@@ -582,7 +756,7 @@ namespace SmartStore.Services.Catalog.Importer
 			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
 				var segmenter = context.GetSegmenter<Product>();
-				var utcNow = DateTime.UtcNow;
+				var importerContext = new ProductImporterContext(context, _dataExchangeSettings);
 
 				context.Result.TotalRecords = segmenter.TotalRows;
 
@@ -600,7 +774,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					try
 					{
-						ProcessProducts(context, batch, utcNow);
+						ProcessProducts(context, importerContext, batch);
 					}
 					catch (Exception exception)
 					{
@@ -699,11 +873,11 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					// 6.) Import product picture mappings
 					// ===========================================================================
-					if (segmenter.HasColumn("PictureThumbPaths"))
+					if (segmenter.HasColumn("ImageUrls"))
 					{
 						try
 						{
-							ProcessProductPictures(context, batch);
+							ProcessProductPictures(context, importerContext, batch);
 						}
 						catch (Exception exception)
 						{
@@ -713,5 +887,35 @@ namespace SmartStore.Services.Catalog.Importer
 				}
 			}
 		}
+	}
+
+
+	internal class ProductImporterContext
+	{
+		public ProductImporterContext(IImportExecuteContext context, DataExchangeSettings dataExchangeSettings)
+		{
+			UtcNow = DateTime.UtcNow;
+			ImageDownloadFolder = Path.Combine(context.ImportFolder, "Content\\DownloadedImages");
+
+			if (dataExchangeSettings.ImageImportFolder.HasValue())
+				ImageFolder = Path.Combine(context.ImportFolder, dataExchangeSettings.ImageImportFolder);
+			else
+				ImageFolder = context.ImportFolder;
+
+			if (!System.IO.Directory.Exists(ImageDownloadFolder))
+				System.IO.Directory.CreateDirectory(ImageDownloadFolder);
+
+			//DownloaderContext = new FileDownloadManagerContext
+			//{
+			//	Timeout = TimeSpan.FromMinutes(dataExchangeSettings.ImageDownloadTimeout),
+			//	Logger = context.Log,
+			//	CancellationToken = context.CancellationToken
+			//};
+		}
+
+		public DateTime UtcNow { get; private set; }
+		public string ImageDownloadFolder { get; private set; }
+		public string ImageFolder { get; private set; }
+		//public FileDownloadManagerContext DownloaderContext { get; private set; }
 	}
 }

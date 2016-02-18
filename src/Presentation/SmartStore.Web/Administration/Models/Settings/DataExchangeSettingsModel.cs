@@ -16,6 +16,9 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.DataExchange.ImageImportFolder")]
 		public string ImageImportFolder { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.DataExchange.ImageDownloadTimeout")]
+		public int ImageDownloadTimeout { get; set; }
+
 		#endregion
 
 		#region Export

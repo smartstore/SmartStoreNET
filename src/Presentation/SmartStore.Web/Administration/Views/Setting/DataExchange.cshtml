@@ -43,5 +43,14 @@
 				@Html.ValidationMessageFor(model => model.ImageImportFolder)
 			</td>
 		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ImageDownloadTimeout)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ImageDownloadTimeout)
+				@Html.ValidationMessageFor(model => model.ImageDownloadTimeout)
+			</td>
+		</tr>
 	</table>
 }

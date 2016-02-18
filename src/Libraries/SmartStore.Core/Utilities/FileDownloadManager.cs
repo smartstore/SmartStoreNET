@@ -51,14 +51,32 @@ namespace SmartStore.Utilities
 			}
 
 			using (var resp = (HttpWebResponse)req.GetResponse())
+			using (var stream = resp.GetResponseStream())
 			{
-				using (var stream = resp.GetResponseStream())
+				if (resp.StatusCode == HttpStatusCode.OK)
 				{
-					if (resp.StatusCode == HttpStatusCode.OK)
+					var data = stream.ToByteArray();
+					if (data != null && data.Length != 0)
 					{
-						var data = stream.ToByteArray();
-						var cd = new ContentDisposition(resp.Headers["Content-Disposition"]);
-						var fileName = cd.FileName;
+						string fileName = null;
+
+						var contentDisposition = resp.Headers["Content-Disposition"];
+						if (contentDisposition.HasValue())
+						{
+							var cd = new ContentDisposition(contentDisposition);
+							fileName = cd.FileName;
+						}
+
+						if (fileName.IsEmpty())
+						{
+							try
+							{
+								var uri = new Uri(url);
+								fileName = Path.GetFileName(uri.LocalPath);
+							}
+							catch { }
+						}
+
 						return new FileDownloadResponse(data, fileName, resp.ContentType);
 					}
 				}
@@ -79,31 +97,40 @@ namespace SmartStore.Utilities
 
 		private async Task DownloadFiles(FileDownloadManagerContext context, IEnumerable<FileDownloadManagerItem> items)
 		{
-			var client = new HttpClient();
-
-			client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue();
-			client.DefaultRequestHeaders.CacheControl.NoCache = true;
-			client.DefaultRequestHeaders.Add("Connection", "Keep-alive");
-
-			if (context.Timeout.TotalMilliseconds > 0 && context.Timeout != Timeout.InfiniteTimeSpan)
-				client.Timeout = context.Timeout;
-
-			IEnumerable<Task> downloadTasksQuery =
-				from item in items
-				select ProcessUrl(context, client, item);
-
-			// now execute the bunch
-			List<Task> downloadTasks = downloadTasksQuery.ToList();
-
-			while (downloadTasks.Count > 0)
+			try
 			{
-				// identify the first task that completes
-				Task firstFinishedTask = await Task.WhenAny(downloadTasks);
+				using (var client = new HttpClient())
+				{
+					client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue();
+					client.DefaultRequestHeaders.CacheControl.NoCache = true;
+					client.DefaultRequestHeaders.Add("Connection", "Keep-alive");
 
-				// process only once
-				downloadTasks.Remove(firstFinishedTask);
+					if (context.Timeout.TotalMilliseconds > 0 && context.Timeout != Timeout.InfiniteTimeSpan)
+						client.Timeout = context.Timeout;
 
-				await firstFinishedTask;
+					IEnumerable<Task> downloadTasksQuery =
+						from item in items
+						select ProcessUrl(context, client, item);
+
+					// now execute the bunch
+					List<Task> downloadTasks = downloadTasksQuery.ToList();
+
+					while (downloadTasks.Count > 0)
+					{
+						// identify the first task that completes
+						Task firstFinishedTask = await Task.WhenAny(downloadTasks);
+
+						// process only once
+						downloadTasks.Remove(firstFinishedTask);
+
+						await firstFinishedTask;
+					}
+				}
+			}
+			catch (Exception exception)
+			{
+				if (context.Logger != null)
+					context.Logger.ErrorsAll(exception);
 			}
 		}
 
@@ -111,7 +138,10 @@ namespace SmartStore.Utilities
 		{
 			try
 			{
-				Task<Stream> task = client.GetStreamAsync(item.Url);
+				//HttpResponseMessage response = await client.GetAsync(item.Url, HttpCompletionOption.ResponseHeadersRead);
+				//Task<Stream> task = response.Content.ReadAsStreamAsync();
+
+				Task <Stream> task = client.GetStreamAsync(item.Url);
 				await task;
 
 				int count;
@@ -132,29 +162,31 @@ namespace SmartStore.Utilities
 
 				item.Success = (!task.IsFaulted && !canceled);
 			}
-			catch (Exception exc)
+			catch (Exception exception)
 			{
-				item.Success = false;
-				item.ErrorMessage = exc.ToAllMessages();
-				
-				var webExc = exc.InnerException as WebException;
-				if (webExc != null)
-					item.ExceptionStatus = webExc.Status;
+				try
+				{
+					item.Success = false;
+					item.ErrorMessage = exception.ToAllMessages();
 
-				if (context.Logger != null)
-					context.Logger.Error(item.ToString(), exc);
+					var webExc = exception.InnerException as WebException;
+					if (webExc != null)
+						item.ExceptionStatus = webExc.Status;
+
+					if (context.Logger != null)
+						context.Logger.Error(item.ToString(), exception);
+				}
+				catch { }
 			}
 		}
-
 	}
+
 
 	public class FileDownloadResponse
 	{
 		public FileDownloadResponse(byte[] data, string fileName, string contentType)
 		{
 			Guard.ArgumentNotNull(() => data);
-			Guard.ArgumentNotEmpty(() => fileName);
-			Guard.ArgumentNotEmpty(() => contentType);
 
 			this.Data = data;
 			this.FileName = fileName;
@@ -182,12 +214,12 @@ namespace SmartStore.Utilities
 		/// <summary>
 		/// Optional logger to log errors
 		/// </summary>
-		public TraceLogger Logger { get; set; }
+		public ILogger Logger { get; set; }
 
 		/// <summary>
 		/// Cancellation token
 		/// </summary>
-		public CancellationTokenSource CancellationToken { get; set; }
+		public CancellationToken CancellationToken { get; set; }
 
 		/// <summary>
 		/// Timeout for the HTTP client

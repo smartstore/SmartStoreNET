@@ -25,7 +25,7 @@ namespace SmartStore.Core.Logging
 			_traceSource = new TraceSource("SmartStore");
 			_traceSource.Switch = new SourceSwitch("LogSwitch", "Error");
 			_traceSource.Listeners.Remove("Default");
-			
+
 			var console = new ConsoleTraceListener(false);
 			console.Filter = new EventTypeFilter(SourceLevels.All);
 			console.Name = "console";
@@ -34,11 +34,15 @@ namespace SmartStore.Core.Logging
 			textListener.Filter = new EventTypeFilter(SourceLevels.All);
 			textListener.TraceOutputOptions = TraceOptions.DateTime;
 
-			// force UTF-8 encoding (even if the text just contains ANSI characters)
-			var append = File.Exists(fileName);
+			try
+			{
+				// force UTF-8 encoding (even if the text just contains ANSI characters)
+				var append = File.Exists(fileName);
+				_streamWriter = new StreamWriter(fileName, append, Encoding.UTF8);
 
-			_streamWriter = new StreamWriter(fileName, append, Encoding.UTF8);
-			textListener.Writer = _streamWriter;
+				textListener.Writer = _streamWriter;
+			}
+			catch (IOException) { }
 
 			_traceSource.Listeners.Add(console);
 			_traceSource.Listeners.Add(textListener);
@@ -139,11 +143,13 @@ namespace SmartStore.Core.Logging
 		protected override void OnDispose(bool disposing)
 		{
 			_traceSource.Flush();
-
-			_streamWriter.Close();
 			_traceSource.Close();
 
-			_streamWriter.Dispose();
+			if (_streamWriter != null)
+			{
+				_streamWriter.Close();
+				_streamWriter.Dispose();
+			}
 		}
 	}
 }

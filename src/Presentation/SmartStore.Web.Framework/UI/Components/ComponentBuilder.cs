@@ -67,6 +67,7 @@ namespace SmartStore.Web.Framework.UI
         private void EnrichRenderer(ComponentRenderer<TComponent> renderer)
         {
             renderer.Component = this.Component;
+            renderer.HtmlHelper = this.HtmlHelper;
             renderer.ViewContext = this.HtmlHelper.ViewContext;
             renderer.ViewData = this.HtmlHelper.ViewData;
         }

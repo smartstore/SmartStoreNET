@@ -1849,6 +1849,7 @@
     <Content Include="Themes\Web.config" />
     <Content Include="Views\Common\EntityPicker.cshtml" />
     <Content Include="Views\Common\EntityPickerList.cshtml" />
+    <Content Include="Views\Widget\TabWidgets.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />

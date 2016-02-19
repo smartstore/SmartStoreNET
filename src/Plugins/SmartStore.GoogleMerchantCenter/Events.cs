@@ -25,13 +25,13 @@ namespace SmartStore.GoogleMerchantCenter
 			{
 				var productId = ((TabbableModel)eventMessage.Model).Id;
 
-				eventMessage.ItemFactory.Add().Text("GMC")
-					.Name("tab-gmc")
-					.Icon("fa fa-google fa-lg fa-fw")
-					.LinkHtmlAttributes(new { data_tab_name = "GMC" })
-					.Route("SmartStore.GoogleMerchantCenter", new { action = "ProductEditTab", productId = productId })
-					.Ajax();
-			}
+                eventMessage.ItemFactory.Add().Text("GMC")
+                    .Name("tab-gmc")
+                    .Icon("fa fa-google fa-lg fa-fw")
+                    .LinkHtmlAttributes(new { data_tab_name = "GMC" })
+                    .Route("SmartStore.GoogleMerchantCenter", new { action = "ProductEditTab", productId = productId })
+                    .Ajax();
+            }
 		}
 
 		public void HandleEvent(ModelBoundEvent eventMessage)

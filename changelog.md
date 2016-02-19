@@ -13,7 +13,8 @@
 * Attach order invoice PDF automatically to order notification emails
 * #526 Min/Max amount option for which the payment method should be offered during checkout
 * (Dev) New _SyncMapping_ service: enables easier entity synchronization with external systems
-* (Dev) #792 ViewEngine: Enable vbhtml views per configuration 
+* (Dev) #792 ViewEngine: Enable vbhtml views per configuration
+* (Dev) Plugin developers can now render child actions into a dynamically created special tab called 'Plugins' 
 * #718 ShopConnector: Import option for "Published" and "Disable buy\wishlist button"
 * #702 Facebook and Twitter external authentication suitable for multi-stores
 * New scheduled task: Clear e-mail queue

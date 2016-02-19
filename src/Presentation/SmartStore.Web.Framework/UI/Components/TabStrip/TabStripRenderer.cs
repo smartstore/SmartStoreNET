@@ -5,15 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Web.UI;
 using System.Web.Mvc;
+using System.Web.Mvc.Html;
 using System.Web.Routing;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework.UI
-{
-   
+{ 
     public class TabStripRenderer : ComponentRenderer<TabStrip>
     {
-
         public TabStripRenderer()
         { 
         }
@@ -22,7 +21,10 @@ namespace SmartStore.Web.Framework.UI
 	    protected override void WriteHtmlCore(HtmlTextWriter writer)
 		{
 			var tab = base.Component;
-			var hasContent = tab.Items.Any(x => x.Content != null || x.Ajax);
+
+            MoveSpecialTabToEnd(tab.Items);
+
+            var hasContent = tab.Items.Any(x => x.Content != null || x.Ajax);
 			var isTabbable = tab.Position != TabsPosition.Top;
 			var urlHelper = new UrlHelper(this.ViewContext.RequestContext);
 
@@ -129,8 +131,19 @@ namespace SmartStore.Web.Framework.UI
 			}
 		}
 
-		// returns a query selector
-		private string TrySelectRememberedTab()
+        private void MoveSpecialTabToEnd(List<Tab> tabs)
+        {
+            var idx = tabs.FindIndex(x => x.Name == "tab-special-plugin-widgets");
+            if (idx > -1 && idx < (tabs.Count - 1))
+            {
+                var tab = tabs[idx];
+                tabs.RemoveAt(idx);
+                tabs.Add(tab);
+            }
+        }
+
+        // returns a query selector
+        private string TrySelectRememberedTab()
 		{
 			var tab = this.Component;
 
@@ -358,7 +371,7 @@ namespace SmartStore.Web.Framework.UI
 			writer.AddAttribute("id", BuildItemId(item, index));
 			writer.RenderBeginTag("div");
 			{
-				if (item.Content != null)
+                if (item.Content != null)
 				{
 					writer.WriteLine(item.Content.ToHtmlString());
 				}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Mime;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.IO;
 using SmartStore.Utilities;
@@ -9,6 +10,8 @@ namespace SmartStore.Services.DataExchange.Import
 {
 	public abstract class EntityImporterBase
 	{
+		private const string _imageDownloadFolder = @"Content\DownloadedImages";
+
 		public DateTime UtcNow { get; private set; }
 
 		public Dictionary<string, string> DownloadedItems { get; private set; }
@@ -23,7 +26,7 @@ namespace SmartStore.Services.DataExchange.Import
 		{
 			UtcNow = DateTime.UtcNow;
 			DownloadedItems = new Dictionary<string, string>();
-			ImageDownloadFolder = Path.Combine(context.ImportFolder, "Content\\DownloadedImages");
+			ImageDownloadFolder = Path.Combine(context.ImportFolder, _imageDownloadFolder);
 
 			if (dataExchangeSettings.ImageImportFolder.HasValue())
 				ImageFolder = Path.Combine(context.ImportFolder, dataExchangeSettings.ImageImportFolder);
@@ -52,7 +55,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 			if (item.MimeType.IsEmpty())
 			{
-				item.MimeType = "image/jpeg";
+				item.MimeType = MediaTypeNames.Image.Jpeg;
 			}
 
 			var extension = MimeTypes.MapMimeTypeToExtension(item.MimeType);

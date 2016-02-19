@@ -183,11 +183,10 @@ namespace SmartStore.Services.Catalog.Importer
 
 								if (pictureBinary != null && pictureBinary.Length > 0)
 								{
-									pictureBinary = _pictureService.ValidatePicture(pictureBinary);
-
 									if (category.PictureId.HasValue && (picture = _pictureRepository.GetById(category.PictureId.Value)) != null)
 										currentPictures.Add(picture);
 
+									pictureBinary = _pictureService.ValidatePicture(pictureBinary);
 									pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 									if (pictureBinary != null && pictureBinary.Length > 0)

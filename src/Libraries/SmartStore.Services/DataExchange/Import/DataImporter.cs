@@ -432,7 +432,9 @@ namespace SmartStore.Services.DataExchange.Import
 							_categoryTemplateService.Value,
 							_storeMappingService.Value,
 							_pictureService.Value,
-							_seoSettings.Value);
+							_fileDownloadManager.Value,
+							_seoSettings.Value,
+							_dataExchangeSettings.Value);
 					}
 					else
 					{
@@ -457,7 +459,16 @@ namespace SmartStore.Services.DataExchange.Import
 					}
 					catch (Exception exception)
 					{
-						logger.ErrorsAll(exception);
+						ctx.ExecuteContext.Result.AddError(exception);
+					}
+
+					try
+					{
+						SendCompletionEmail(ctx);
+					}
+					catch (Exception exception)
+					{
+						ctx.ExecuteContext.Result.AddError(exception);
 					}
 
 					try
@@ -484,17 +495,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 					try
 					{
-						SendCompletionEmail(ctx);
-					}
-					catch (Exception exception)
-					{
-						logger.ErrorsAll(exception);
-					}
-
-					try
-					{
 						ctx.Request.CustomData.Clear();
-
 						ctx.Log = null;
 					}
 					catch (Exception exception)

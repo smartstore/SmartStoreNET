@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
@@ -12,10 +13,11 @@ using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog.Importer
 {
-	public class CategoryImporter : IEntityImporter
+	public class CategoryImporter : EntityImporterBase, IEntityImporter
 	{
 		private readonly IRepository<Category> _categoryRepository;
 		private readonly IRepository<UrlRecord> _urlRecordRepository;
@@ -25,7 +27,9 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly ICategoryTemplateService _categoryTemplateService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IPictureService _pictureService;
+		private readonly FileDownloadManager _fileDownloadManager;
 		private readonly SeoSettings _seoSettings;
+		private readonly DataExchangeSettings _dataExchangeSettings;
 
 		public CategoryImporter(
 			IRepository<Category> categoryRepository,
@@ -36,7 +40,9 @@ namespace SmartStore.Services.Catalog.Importer
 			ICategoryTemplateService categoryTemplateService,
 			IStoreMappingService storeMappingService,
 			IPictureService pictureService,
-			SeoSettings seoSettings)
+			FileDownloadManager fileDownloadManager,
+			SeoSettings seoSettings,
+			DataExchangeSettings dataExchangeSettings)
 		{
 			_categoryRepository = categoryRepository;
 			_urlRecordRepository = urlRecordRepository;
@@ -46,7 +52,9 @@ namespace SmartStore.Services.Catalog.Importer
 			_categoryTemplateService = categoryTemplateService;
 			_storeMappingService = storeMappingService;
 			_pictureService = pictureService;
+			_fileDownloadManager = fileDownloadManager;
 			_seoSettings = seoSettings;
+			_dataExchangeSettings = dataExchangeSettings;
 		}
 
 		private int ProcessSlugs(IImportExecuteContext context, ImportRow<Category>[] batch)
@@ -149,29 +157,63 @@ namespace SmartStore.Services.Catalog.Importer
 
 			foreach (var row in batch)
 			{
-				var srcId = row.GetDataValue<int>("Id");
-				var thumbPath = row.GetDataValue<string>("PictureThumbPath");
-
-				if (srcId != 0 && srcToDestId.ContainsKey(srcId) && thumbPath.HasValue() && File.Exists(thumbPath))
+				try
 				{
-					var category = _categoryRepository.GetById(srcToDestId[srcId].DestinationId);
+					var srcId = row.GetDataValue<int>("Id");
+					var urlOrPath = row.GetDataValue<string>("ImageUrl");
 
-					if (category != null)
+					if (srcId != 0 && srcToDestId.ContainsKey(srcId) && urlOrPath.HasValue())
 					{
-						var pictures = new List<Picture>();
-						if (category.PictureId.HasValue && (picture = _pictureRepository.GetById(category.PictureId.Value)) != null)
-							pictures.Add(picture);
+						var currentPictures = new List<Picture>();
+						var category = _categoryRepository.GetById(srcToDestId[srcId].DestinationId);
+						var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
+						var image = CreateDownloadImage(urlOrPath, seoName, 1);
 
-						var pictureBinary = _pictureService.FindEqualPicture(thumbPath, pictures, out equalPictureId);
-
-						if (pictureBinary != null && pictureBinary.Length > 0 &&
-							(picture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, false, false)) != null)
+						if (category != null && image != null)
 						{
-							category.PictureId = picture.Id;
+							if (image.Url.HasValue())
+							{
+								AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, new FileDownloadManagerItem[] { image }));
+							}
 
-							_categoryRepository.Update(category);
+							if ((image.Success ?? false) && File.Exists(image.Path))
+							{
+								var pictureBinary = File.ReadAllBytes(image.Path);
+
+								if (pictureBinary != null && pictureBinary.Length > 0)
+								{
+									pictureBinary = _pictureService.ValidatePicture(pictureBinary);
+
+									if (category.PictureId.HasValue && (picture = _pictureRepository.GetById(category.PictureId.Value)) != null)
+										currentPictures.Add(picture);
+
+									pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
+
+									if (pictureBinary != null && pictureBinary.Length > 0)
+									{
+										if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false)) != null)
+										{
+											category.PictureId = picture.Id;
+
+											_categoryRepository.Update(category);
+										}
+									}
+									else
+									{
+										context.Result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "ImageUrls");
+									}
+								}
+							}
+							else if (image.Url.HasValue())
+							{
+								context.Result.AddInfo("Download of an image failed.", row.GetRowInfo(), "ImageUrls");
+							}
 						}
 					}
+				}
+				catch (Exception exception)
+				{
+					context.Result.AddWarning(exception.ToAllMessages(), row.GetRowInfo(), "ImageUrls");
 				}
 			}
 
@@ -197,7 +239,6 @@ namespace SmartStore.Services.Catalog.Importer
 
 		private int ProcessCategories(IImportExecuteContext context,
 			ImportRow<Category>[] batch,
-			DateTime utcNow,
 			List<int> allCategoryTemplateIds,
 			Dictionary<int, ImportCategoryMapping> srcToDestId)
 		{
@@ -286,8 +327,8 @@ namespace SmartStore.Services.Catalog.Importer
 					category.CategoryTemplateId = templateId;
 				}
 
-				row.SetProperty(context.Result, category, (x) => x.CreatedOnUtc, utcNow);
-				category.UpdatedOnUtc = utcNow;
+				row.SetProperty(context.Result, category, (x) => x.CreatedOnUtc, UtcNow);
+				category.UpdatedOnUtc = UtcNow;
 
 				if (id != 0 && !srcToDestId.ContainsKey(id))
 				{
@@ -345,7 +386,6 @@ namespace SmartStore.Services.Catalog.Importer
 
 		public void Execute(IImportExecuteContext context)
 		{
-			var utcNow = DateTime.UtcNow;
 			var srcToDestId = new Dictionary<int, ImportCategoryMapping>();
 
 			var allCategoryTemplateIds = _categoryTemplateService.GetAllCategoryTemplates()
@@ -355,6 +395,8 @@ namespace SmartStore.Services.Catalog.Importer
 			using (var scope = new DbContextScope(ctx: _categoryRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
 				var segmenter = context.GetSegmenter<Category>();
+
+				Init(context, _dataExchangeSettings);
 
 				context.Result.TotalRecords = segmenter.TotalRows;
 
@@ -369,7 +411,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 					try
 					{
-						ProcessCategories(context, batch, utcNow, allCategoryTemplateIds, srcToDestId);
+						ProcessCategories(context, batch, allCategoryTemplateIds, srcToDestId);
 					}
 					catch (Exception exception)
 					{
@@ -421,7 +463,7 @@ namespace SmartStore.Services.Catalog.Importer
 					}
 
 					// process pictures
-					if (srcToDestId.Any() && segmenter.HasColumn("PictureThumbPath"))
+					if (srcToDestId.Any() && segmenter.HasColumn("ImageUrl"))
 					{
 						try
 						{

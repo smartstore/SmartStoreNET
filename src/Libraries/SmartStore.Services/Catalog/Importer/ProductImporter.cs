@@ -123,7 +123,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// async downloading in batch processing is inefficient cause only the image processing benefits from async,
 					// not the record processing itself. a per record processing may speed up the import.
 
-					AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, imageFiles.Where(x => x.Url.HasValue())));
+					AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, imageFiles.Where(x => x.Url.HasValue() && !x.Success.HasValue)));
 				}
 
 				// import images
@@ -133,6 +133,7 @@ namespace SmartStore.Services.Catalog.Importer
 					{
 						if ((image.Success ?? false) && File.Exists(image.Path))
 						{
+							Succeeded(image);
 							var pictureBinary = File.ReadAllBytes(image.Path);
 
 							if (pictureBinary != null && pictureBinary.Length > 0)

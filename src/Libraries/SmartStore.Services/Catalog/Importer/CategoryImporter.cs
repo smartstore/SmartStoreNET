@@ -171,13 +171,14 @@ namespace SmartStore.Services.Catalog.Importer
 
 						if (category != null && image != null)
 						{
-							if (image.Url.HasValue())
+							if (image.Url.HasValue() && !image.Success.HasValue)
 							{
 								AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, new FileDownloadManagerItem[] { image }));
 							}
 
 							if ((image.Success ?? false) && File.Exists(image.Path))
 							{
+								Succeeded(image);
 								var pictureBinary = File.ReadAllBytes(image.Path);
 
 								if (pictureBinary != null && pictureBinary.Length > 0)

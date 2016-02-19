@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.IO;
@@ -10,6 +11,8 @@ namespace SmartStore.Services.DataExchange.Import
 	{
 		public DateTime UtcNow { get; private set; }
 
+		public Dictionary<string, string> DownloadedItems { get; private set; }
+
 		public string ImageDownloadFolder { get; private set; }
 
 		public string ImageFolder { get; private set; }
@@ -19,6 +22,7 @@ namespace SmartStore.Services.DataExchange.Import
 		public void Init(IImportExecuteContext context, DataExchangeSettings dataExchangeSettings)
 		{
 			UtcNow = DateTime.UtcNow;
+			DownloadedItems = new Dictionary<string, string>();
 			ImageDownloadFolder = Path.Combine(context.ImportFolder, "Content\\DownloadedImages");
 
 			if (dataExchangeSettings.ImageImportFolder.HasValue())
@@ -39,41 +43,60 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public FileDownloadManagerItem CreateDownloadImage(string urlOrPath, string seoName, int displayOrder)
 		{
-			var image = new FileDownloadManagerItem
+			var item = new FileDownloadManagerItem
 			{
 				Id = displayOrder,
 				DisplayOrder = displayOrder,
 				MimeType = MimeTypes.MapNameToMimeType(urlOrPath)
 			};
 
-			if (image.MimeType.IsEmpty())
-				image.MimeType = "image/jpeg";
+			if (item.MimeType.IsEmpty())
+			{
+				item.MimeType = "image/jpeg";
+			}
 
-			var extension = MimeTypes.MapMimeTypeToExtension(image.MimeType);
+			var extension = MimeTypes.MapMimeTypeToExtension(item.MimeType);
 
 			if (extension.HasValue())
 			{
 				if (urlOrPath.IsWebUrl())
 				{
-					image.Url = urlOrPath;
-					image.FileName = "{0}-{1}".FormatInvariant(image.Id, seoName).ToValidFileName();
-					image.Path = Path.Combine(ImageDownloadFolder, image.FileName + extension.EnsureStartsWith("."));
+					item.Url = urlOrPath;
+					item.FileName = "{0}-{1}".FormatInvariant(seoName, item.Id).ToValidFileName();
+
+					if (DownloadedItems.ContainsKey(urlOrPath))
+					{
+						item.Path = Path.Combine(ImageDownloadFolder, DownloadedItems[urlOrPath]);
+						item.Success = true;
+					}
+					else
+					{
+						item.Path = Path.Combine(ImageDownloadFolder, item.FileName + extension.EnsureStartsWith("."));
+					}
 				}
 				else if (Path.IsPathRooted(urlOrPath))
 				{
-					image.Path = urlOrPath;
-					image.Success = true;
+					item.Path = urlOrPath;
+					item.Success = true;
 				}
 				else
 				{
-					image.Path = Path.Combine(ImageFolder, urlOrPath);
-					image.Success = true;
+					item.Path = Path.Combine(ImageFolder, urlOrPath);
+					item.Success = true;
 				}
 
-				return image;
+				return item;
 			}
 
 			return null;
+		}
+
+		public void Succeeded(FileDownloadManagerItem item)
+		{
+			if ((item.Success ?? false) && item.Url.HasValue() && !DownloadedItems.ContainsKey(item.Url))
+			{
+				DownloadedItems.Add(item.Url, Path.GetFileName(item.Path));
+			}
 		}
 	}
 }

@@ -140,6 +140,16 @@ else if (Model.ExistingFileNames.Count > 1)
 					@Html.ValidationMessageFor(model => model.KeyFieldNames)
 				</td>
 			</tr>
+			if (Model.ShowKeyFieldNote)
+			{
+				<tr>
+					<td colspan="2">
+						<div class="alert alert-warning">
+							@T("Admin.DataExchange.Import.KeyFieldNames.Note")
+						</div>
+					</td>
+				</tr>
+			}
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(x => x.Skip)

@@ -407,6 +407,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.System.Maintenance.SqlQuery.Succeeded",
 				"The SQL command was executed successfully.",
 				"Die SQL Anweisung wurde erfolgreich ausgeführt.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Import.KeyFieldNames.Note",
+				"Please only use the ID field as a key field, if the data sourced from the same database to which it will be imported. Otherwise it is possible that the wrong records are updated.",
+				"Benutzen Sie das ID-Feld bitte nur dann als Schlüsselfeld, wenn die Daten aus der derselben Datenbank stammen, in der sie importiert werden sollen. Ansonsten werden u.U. die falschen Datensätze aktualisiert.");
 		}
 	}
 }

@@ -47,6 +47,7 @@
 * #654 Place user agreement for downloadable files in checkout process
 * #398 EU law: add 'revocation' form and revocation waiver for ESD
 * #738 Implement download of pictures via URLs in product import
+* Web-API: Bridge to import framework: uploading import files to import profile directory
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

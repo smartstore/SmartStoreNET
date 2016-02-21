@@ -1,42 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.WebApi.Models.Api
 {
 	[DataContract]
-	public partial class UploadImage
+	public partial class UploadImage : UploadFileBase
 	{
-		/// <summary>
-		/// Unquoted name attribute of content-disposition multipart header
-		/// </summary>
-		[DataMember]
-		public string Name { get; set; }
+		public UploadImage()
+		{
+		}
 
-		/// <summary>
-		/// Unquoted filename attribute of content-disposition multipart header
-		/// </summary>
-		[DataMember]
-		public string FileName { get; set; }
-
-		/// <summary>
-		/// Media (mime) type of content-type multipart header
-		/// </summary>
-		[DataMember]
-		public string MediaType { get; set; }
-
-		/// <summary>
-		/// Indicates whether the uploaded image already exist and therefore has been skipped
-		/// </summary>
-		[DataMember]
-		public bool Exists { get; set; }
-
-		/// <summary>
-		/// Indicates whether the uploaded image has been inserted
-		/// </summary>
-		[DataMember]
-		public bool Inserted { get; set; }
+		public UploadImage(HttpContentHeaders headers) : base(headers)
+		{
+		}
 
 		/// <summary>
 		/// Url of the default size image
@@ -55,12 +32,6 @@ namespace SmartStore.WebApi.Models.Api
 		/// </summary>
 		[DataMember]
 		public string FullSizeImageUrl { get; set; }
-
-		/// <summary>
-		/// Raw custom parameters of the content-disposition multipart header
-		/// </summary>
-		[DataMember]
-		public ICollection<NameValueHeaderValue> ContentDisposition { get; set; }
 
 		/// <summary>
 		/// The picture entity. Can be null.

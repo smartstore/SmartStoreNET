@@ -957,11 +957,11 @@ namespace SmartStore.Admin.Controllers
                 {
 					dbContext.ExecuteSqlThroughSmo(model.SqlQuery);
 
-                    NotifySuccess("The sql command was executed successfully.");
+                    NotifySuccess(T("Admin.System.Maintenance.SqlQuery.Succeeded"));
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-					NotifyError("Error executing sql command: {0}".FormatCurrentUI(ex.Message));
+					NotifyError(exception);
                 }
             }
 

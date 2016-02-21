@@ -235,6 +235,18 @@ namespace SmartStore.Services.DataExchange.Import
 			return profile;
 		}
 
+		public virtual ImportProfile GetImportProfileByName(string name)
+		{
+			if (name.IsEmpty())
+				return null;
+
+			var profile = _importProfileRepository.Table
+				.Expand(x => x.ScheduleTask)
+				.FirstOrDefault(x => x.Name == name);
+
+			return profile;
+		}
+
 		public virtual Dictionary<string, string> GetImportableEntityProperties(ImportEntityType entityType)
 		{
 			if (_entityProperties == null)

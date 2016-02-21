@@ -10,8 +10,8 @@ using SmartStore.Web.Framework.WebApi.Configuration;
 using SmartStore.Web.Framework.WebApi.OData;
 
 namespace SmartStore.Web.Framework.WebApi
-{   
-    public class WebApiStartupTask : IStartupTask
+{
+	public class WebApiStartupTask : IStartupTask
     {
         
         public void Execute()
@@ -52,6 +52,12 @@ namespace SmartStore.Web.Framework.WebApi
 
 			try
 			{
+				if (!config.Routes.ContainsKey(WebApiGlobal.RouteNameUploads))
+				{
+					config.Routes.MapHttpRoute(WebApiGlobal.RouteNameUploads, "api/{version}/Uploads/{action}/{id}",
+						new { version = "v1", controller = "Uploads", action = "Index", id = RouteParameter.Optional });
+				}
+
 				if (!config.Routes.ContainsKey(WebApiGlobal.RouteNameDefaultApi))
 				{
 					config.Routes.MapHttpRoute(WebApiGlobal.RouteNameDefaultApi, "api/{version}/{controller}/{id}",

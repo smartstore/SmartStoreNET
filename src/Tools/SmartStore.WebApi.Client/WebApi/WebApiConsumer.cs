@@ -63,7 +63,7 @@ namespace SmartStore.Net.WebApi
 						WriteToStream(stream, requestContent, sb.ToString());
 
 						stream.Write(file.Data, 0, file.Data.Length);
-						requestContent.AppendFormat("<Binary image data here (length {0} bytes)...>", file.Data.Length);
+						requestContent.AppendFormat("<Binary file data here (length {0} bytes)...>", file.Data.Length);
 					}
 					else
 					{
@@ -85,7 +85,7 @@ namespace SmartStore.Net.WebApi
 				return formData;
 			}
 		}
-		
+
 		private void GetResponse(HttpWebResponse webResponse, WebApiConsumerResponse response)
 		{
 			if (webResponse == null)
@@ -109,23 +109,12 @@ namespace SmartStore.Net.WebApi
 			return false;
 		}
 
-		public Dictionary<string, object> CreateProductImageMultipartData(List<string> filePaths, int productId, string sku)
+		public void AddApiFileParameter(Dictionary<string, object> multipartData, string filePath)
 		{
 			var count = 0;
-			var dic = new Dictionary<string, object>();
+			var paths = (filePath.Contains(";") ? filePath.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList() : new List<string> { filePath });
 
-			// only one identifier required (product Id, Sku or Gtin).
-			if (productId != 0)
-				dic.Add("Id", productId);
-
-			if (!string.IsNullOrEmpty(sku))
-				dic.Add("Sku", sku);
-
-			// also possible:
-			//if (!string.IsNullOrEmpty(gtin))
-			//	dic.Add("Gtin", sku);
-
-			foreach (var path in filePaths)
+			foreach (var path in paths)
 			{
 				using (var fstream = new FileStream(path, FileMode.Open, FileAccess.Read))
 				{
@@ -133,27 +122,18 @@ namespace SmartStore.Net.WebApi
 					fstream.Read(data, 0, data.Length);
 
 					var name = Path.GetFileName(path);
-					var id = string.Format("my-image{0}", ++count);
+					var id = string.Format("my-file-{0}", ++count);
 					var apiFile = new ApiFileParameter(data, name, MimeMapping.GetMimeMapping(name));
 
 					// test pass through of custom parameters
 					apiFile.Parameters.Add("CustomValue1", string.Format("{0:N}", Guid.NewGuid()));
 					apiFile.Parameters.Add("CustomValue2", string.Format("say hello to {0}", id));
 
-					dic.Add(id, apiFile);
+					multipartData.Add(id, apiFile);
 
 					fstream.Close();
 				}
 			}
-
-			return dic;
-		}
-		public Dictionary<string, object> CreateProductImageMultipartData(string filePath, int productId, string sku)
-		{
-			if (filePath.Contains(";"))
-				return CreateProductImageMultipartData(filePath.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList(), productId, sku);
-
-			return CreateProductImageMultipartData(new List<string> { filePath }, productId, sku);
 		}
 
 		public HttpWebRequest StartRequest(WebApiRequestContext context, string content, Dictionary<string, object> multipartData, out StringBuilder requestContent)

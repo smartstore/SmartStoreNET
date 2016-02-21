@@ -59,9 +59,6 @@ namespace SmartStore.WebApi
 
 			_permissionService.UninstallPermissions(new WebApiPermissionProvider());
 
-			_localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
-            _localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.Api.WebApi", false);
-
 			base.Uninstall();
 		}
 

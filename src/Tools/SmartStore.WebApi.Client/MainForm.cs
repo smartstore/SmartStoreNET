@@ -38,10 +38,10 @@ namespace SmartStoreNetWebApiClient
 				cboMethod_changeCommitted(null, null);
 				radioApi_CheckedChanged(null, null);
 
-				openFileDialog1.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
+				openFileDialog1.Filter = "Supported files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png, *.csv, *.xlsx, *.txt, *.tab, *.zip) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png; *.csv; *.xlsx; *.txt; *.tab; *.zip";
 				openFileDialog1.DefaultExt = ".jpg";
 				openFileDialog1.FileName = "";
-				openFileDialog1.Title = "Please select an image file to upload";
+				openFileDialog1.Title = "Please select files to upload";
 				openFileDialog1.Multiselect = true;
 			};
 
@@ -63,10 +63,10 @@ namespace SmartStoreNetWebApiClient
 
 		private void CallTheApi()
 		{
-			if (!string.IsNullOrWhiteSpace(txtUrl.Text) && !txtUrl.Text.EndsWith("/"))
+			if (txtUrl.Text.HasValue() && !txtUrl.Text.EndsWith("/"))
 				txtUrl.Text = txtUrl.Text + "/";
 
-			if (!string.IsNullOrWhiteSpace(cboPath.Text) && !cboPath.Text.StartsWith("/"))
+			if (cboPath.Text.HasValue() && !cboPath.Text.StartsWith("/"))
 				cboPath.Text = "/" + cboPath.Text;
 
 			var context = new WebApiRequestContext
@@ -78,7 +78,7 @@ namespace SmartStoreNetWebApiClient
 				HttpAcceptType = (radioJson.Checked ? ApiConsumer.JsonAcceptType : ApiConsumer.XmlAcceptType)
 			};
 
-			if (!string.IsNullOrWhiteSpace(cboQuery.Text))
+			if (cboQuery.Text.HasValue())
 				context.Url = string.Format("{0}?{1}", context.Url, cboQuery.Text);
 
 			if (!context.IsValid)
@@ -97,13 +97,42 @@ namespace SmartStoreNetWebApiClient
 			lblRequest.Text = "Request: " + context.HttpMethod + " " + context.Url;
 			lblRequest.Refresh();
 
-			if (radioApi.Checked && !string.IsNullOrEmpty(txtFile.Text) && cboPath.Text.StartsWith("/Upload"))
-				multiPartData = apiConsumer.CreateProductImageMultipartData(txtFile.Text, txtProductId.Text.ToInt(), txtProductSku.Text);
+			if (radioApi.Checked && txtFile.Text.HasValue())
+			{
+				var id1 = txtIdentfier1.Text.ToInt();
+				var id2 = txtIdentfier2.Text;
+				var keyForId1 = "Id";
+				var keyForId2 = "";
+
+				multiPartData = new Dictionary<string, object>();
+
+				if (cboPath.Text.StartsWith("/Uploads/ProductImages"))
+				{
+					// only one identifier required: product id, sku or gtin
+					keyForId2 = "Sku";
+				}
+				else if (cboPath.Text.StartsWith("/Uploads/ImportFiles"))
+				{
+					// only one identifier required: import profile id or profile name
+					keyForId2 = "Name";
+
+					// to delete existing import files:
+					//multiPartData.Add("deleteExisting", true);
+				}
+
+				if (id1 != 0)
+					multiPartData.Add(keyForId1, id1);
+
+				if (id2.HasValue())
+					multiPartData.Add(keyForId2, id2);
+
+				apiConsumer.AddApiFileParameter(multiPartData, txtFile.Text);
+			}
 
 			var webRequest = apiConsumer.StartRequest(context, cboContent.Text, multiPartData, out requestContent);
 			txtRequest.Text = requestContent.ToString();
 
-			bool result = apiConsumer.ProcessResponse(webRequest, response);
+			var result = apiConsumer.ProcessResponse(webRequest, response);
 
 			lblResponse.Text = "Response: " + response.Status;
 
@@ -115,10 +144,9 @@ namespace SmartStoreNetWebApiClient
 
 				if (customers != null)
 				{
-					sb.AppendLine(string.Format("Parsed {0} customer(s):", customers.Count));
+					sb.AppendLine("Parsed {0} customer(s):".FormatInvariant(customers.Count));
 
-					foreach (var customer in customers)
-						sb.AppendLine(customer.ToString());
+					customers.ForEach(x => sb.AppendLine(x.ToString()));
 
 					sb.Append("\r\n");
 				}
@@ -214,10 +242,10 @@ namespace SmartStoreNetWebApiClient
 			lblFile.Visible = show;
 			txtFile.Visible = show;
 			btnFileOpen.Visible = show;
-			lblProductId.Visible = show;
-			txtProductId.Visible = show;
-			lblProductSku.Visible = show;
-			txtProductSku.Visible = show;
+			lblIdentifier1.Visible = show;
+			txtIdentfier1.Visible = show;
+			lblIdentfier2.Visible = show;
+			txtIdentfier2.Visible = show;
 		}
 
 		private void btnFileOpen_Click(object sender, EventArgs e)

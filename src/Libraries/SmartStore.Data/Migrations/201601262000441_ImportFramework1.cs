@@ -403,6 +403,10 @@ namespace SmartStore.Data.Migrations
 				"Zeitlimit für Bilder-Download (Minuten)",
 				"Specifies the timeout for the image download in minutes.",
 				"Legt das Zeitlimit für den Bilder-Download in Minuten fest.");
+
+			builder.AddOrUpdate("Admin.System.Maintenance.SqlQuery.Succeeded",
+				"The SQL command was executed successfully.",
+				"Die SQL Anweisung wurde erfolgreich ausgeführt.");
 		}
 	}
 }

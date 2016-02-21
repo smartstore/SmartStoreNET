@@ -113,6 +113,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -229,7 +230,9 @@
     <Compile Include="Controllers\WebApiController.cs" />
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
+    <Compile Include="Models\Api\UploadFileBase.cs" />
     <Compile Include="Models\Api\UploadImage.cs" />
+    <Compile Include="Models\Api\UploadImportFile.cs" />
     <Compile Include="Models\WebApiConfigModel.cs" />
     <Compile Include="Models\WebApiUserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

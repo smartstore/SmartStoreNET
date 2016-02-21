@@ -134,13 +134,26 @@ else if (Model.ExistingFileNames.Count > 1)
 					@Html.SmartLabelFor(model => model.KeyFieldNames)
 				</td>
 				<td class="adminData">
-					@Html.ListBoxFor(model => model.KeyFieldNames,
-						new MultiSelectList(Model.AvailableKeyFieldNames, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-large" })
+					@*ListBoxFor is insufficient here because the user cannot influence the stored order*@
+					<select class="control-large" multiple="multiple" name="@Html.FieldNameFor(x => x.KeyFieldNames)" id="@Html.FieldIdFor(x => x.KeyFieldNames)">
+						@foreach (var field in Model.KeyFieldNames)
+						{
+							var availableKey = Model.AvailableKeyFieldNames.FirstOrDefault(x => x.Value == field);
+							<option value="@field" selected="selected">@(availableKey != null ? availableKey.Text : field)</option>
+						}
+						@foreach (var field in Model.AvailableKeyFieldNames)
+						{
+							var selectedKey = Model.KeyFieldNames.FirstOrDefault(x => x == field.Value);
+							if (!selectedKey.HasValue())
+							{
+								<option value="@field.Value">@field.Text</option>
+							}
+						}
+					</select>
 					@Html.ValidationMessageFor(model => model.KeyFieldNames)
 				</td>
 			</tr>
-			if (Model.ShowKeyFieldNote)
+			if (Model.KeyFieldNames != null && Model.KeyFieldNames.Contains("Id", StringComparer.OrdinalIgnoreCase))
 			{
 				<tr>
 					<td colspan="2">

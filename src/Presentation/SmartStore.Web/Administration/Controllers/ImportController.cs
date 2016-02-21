@@ -449,7 +449,7 @@ namespace SmartStore.Admin.Controllers
 					var oldDelimiter = (oldCsvConfig != null ? oldCsvConfig.Delimiter.ToString() : null);
 
 					// auto reset mappings cause they are invalid. note: delimiter can be whitespaced, so no oldDelimter.HasValue() etc.
-					resetMappings = (oldDelimiter != model.CsvConfiguration.Delimiter);
+					resetMappings = (oldDelimiter != model.CsvConfiguration.Delimiter && profile.ColumnMapping.HasValue());
 
 					profile.FileTypeConfiguration = csvConverter.ConvertTo(model.CsvConfiguration.Clone());
 				}

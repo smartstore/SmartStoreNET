@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Tasks;
@@ -42,13 +40,6 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Import.KeyFieldNames")]
 		public string[] KeyFieldNames { get; set; }
 		public List<SelectListItem> AvailableKeyFieldNames { get; set; }
-		public bool ShowKeyFieldNote
-		{
-			get
-			{
-				return KeyFieldNames.Contains("Id", StringComparer.OrdinalIgnoreCase);
-			}
-		}
 
 		[SmartResourceDisplayName("Common.Execution")]
 		public int ScheduleTaskId { get; set; }

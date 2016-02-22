@@ -361,9 +361,14 @@ namespace SmartStore.Services.Catalog.Importer
 
 			// Perf: notify only about LAST insertion and update
 			if (lastInserted != null)
+			{
 				_services.EventPublisher.EntityInserted(lastInserted);
+			}
+
 			if (lastUpdated != null)
+			{
 				_services.EventPublisher.EntityUpdated(lastUpdated);
+			}
 
 			return num;
 		}

@@ -9,7 +9,6 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Events;
-using SmartStore.Core.IO;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -87,6 +86,36 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 
 			return (int?)null;
+		}
+
+		private int ProcessParentMappings(IImportExecuteContext context,
+			ImportRow<Product>[] batch,
+			Dictionary<int, ImportProductMapping> srcToDestId)
+		{
+			foreach (var row in batch)
+			{
+				var id = row.GetDataValue<int>("Id");
+				var parentGroupedProductId = row.GetDataValue<int>("ParentGroupedProductId");
+
+				if (id != 0 && parentGroupedProductId != 0 && srcToDestId.ContainsKey(id) && srcToDestId.ContainsKey(parentGroupedProductId))
+				{
+					// only touch relationship if child and parent were inserted
+					if (srcToDestId[id].Inserted && srcToDestId[parentGroupedProductId].Inserted && srcToDestId[id].DestinationId != 0)
+					{
+						var product = _productRepository.GetById(srcToDestId[id].DestinationId);
+						if (product != null)
+						{
+							product.ParentGroupedProductId = srcToDestId[parentGroupedProductId].DestinationId;
+
+							_productRepository.Update(product);
+						}
+					}
+				}
+			}
+
+			var num = _productRepository.Context.SaveChanges();
+
+			return num;
 		}
 
 		private void ProcessProductPictures(IImportExecuteContext context, ImportRow<Product>[] batch)
@@ -498,7 +527,7 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
-		private int ProcessProducts(IImportExecuteContext context, ImportRow<Product>[] batch)
+		private int ProcessProducts(IImportExecuteContext context, ImportRow<Product>[] batch, Dictionary<int, ImportProductMapping> srcToDestId)
 		{
 			_productRepository.AutoCommitEnabled = true;
 
@@ -508,13 +537,14 @@ namespace SmartStore.Services.Catalog.Importer
 			foreach (var row in batch)
 			{
 				Product product = null;
-
+				var id = row.GetDataValue<int>("Id");
+				
 				foreach (var keyName in context.KeyFieldNames)
 				{
 					switch (keyName)
 					{
 						case "Id":
-							product = _productService.GetProductById(row.GetDataValue<int>("Id"));
+							product = _productService.GetProductById(id);
 							break;
 						case "Sku":
 							product = _productService.GetProductBySku(row.GetDataValue<string>("Sku"));
@@ -570,7 +600,6 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, product, (x) => x.Gtin);
 				row.SetProperty(context.Result, product, (x) => x.ManufacturerPartNumber);
 				row.SetProperty(context.Result, product, (x) => x.ProductTypeId, (int)ProductType.SimpleProduct);
-				row.SetProperty(context.Result, product, (x) => x.ParentGroupedProductId);
 				row.SetProperty(context.Result, product, (x) => x.VisibleIndividually, true);
 				row.SetProperty(context.Result, product, (x) => x.Name);
 				row.SetProperty(context.Result, product, (x) => x.ShortDescription);
@@ -653,6 +682,11 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, product, (x) => x.CreatedOnUtc, UtcNow);
 				product.UpdatedOnUtc = UtcNow;
 
+				if (id != 0 && !srcToDestId.ContainsKey(id))
+				{
+					srcToDestId.Add(id, new ImportProductMapping { Inserted = row.IsTransient });
+				}
+
 				if (row.IsTransient)
 				{
 					_productRepository.Insert(product);
@@ -667,6 +701,15 @@ namespace SmartStore.Services.Catalog.Importer
 
 			// commit whole batch at once
 			var num = _productRepository.Context.SaveChanges();
+
+			// get new product ids
+			foreach (var row in batch)
+			{
+				var id = row.GetDataValue<int>("Id");
+
+				if (id != 0 && srcToDestId.ContainsKey(id))
+					srcToDestId[id].DestinationId = row.Entity.Id;
+			}
 
 			// Perf: notify only about LAST insertion and update
 			if (lastInserted != null)
@@ -700,6 +743,8 @@ namespace SmartStore.Services.Catalog.Importer
 
 		public void Execute(IImportExecuteContext context)
 		{
+			var srcToDestId = new Dictionary<int, ImportProductMapping>();
+
 			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
 				var segmenter = context.GetSegmenter<Product>();
@@ -722,7 +767,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					try
 					{
-						ProcessProducts(context, batch);
+						ProcessProducts(context, batch, srcToDestId);
 					}
 					catch (Exception exception)
 					{
@@ -833,7 +878,38 @@ namespace SmartStore.Services.Catalog.Importer
 						}
 					}
 				}
+
+				// ===========================================================================
+				// 7.) Map parent id of inserted products
+				// ===========================================================================
+				if (srcToDestId.Any() && segmenter.HasColumn("Id") && segmenter.HasColumn("ParentGroupedProductId"))
+				{
+					segmenter.Reset();
+
+					while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
+					{
+						var batch = segmenter.CurrentBatch;
+
+						_productRepository.Context.DetachAll(false);
+
+						try
+						{
+							ProcessParentMappings(context, batch, srcToDestId);
+						}
+						catch (Exception exception)
+						{
+							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessParentMappings");
+						}
+					}
+				}
 			}
 		}
+	}
+
+
+	internal class ImportProductMapping
+	{
+		public int DestinationId { get; set; }
+		public bool Inserted { get; set; }
 	}
 }

@@ -104,7 +104,10 @@ namespace SmartStore.Services.Customers.Importer
 			if (image == null)
 				return;
 
-			AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, new FileDownloadManagerItem[] { image }));
+			if (image.Url.HasValue() && !image.Success.HasValue)
+			{
+				AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, new FileDownloadManagerItem[] { image }));
+			}
 
 			if ((image.Success ?? false) && File.Exists(image.Path))
 			{

@@ -310,6 +310,7 @@ namespace SmartStore.Services.DataExchange.Export
 			result._HasNewsletterSubscription = false;
 
 			result._FullName = null;
+			result._AvatarPictureUrl = null;
 
 			return result;
 		}
@@ -1204,6 +1205,16 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			dynObject._FullName = firstName.Grow(lastName, " ");
+
+			if (_customerSettings.Value.AllowCustomersToUploadAvatars)
+			{
+				var pictureId = genericAttributes.FirstOrDefault(x => x.Key == SystemCustomerAttributeNames.AvatarPictureId);
+				if (pictureId != null)
+				{
+					// reduce traffic and do not export default avatar
+					dynObject._AvatarPictureUrl = _pictureService.Value.GetPictureUrl(pictureId.Value.ToInt(), _mediaSettings.Value.AvatarPictureSize, false, ctx.Store.Url);
+				}
+			}
 
 			result.Add(dynObject);
 

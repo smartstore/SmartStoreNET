@@ -404,16 +404,20 @@ namespace SmartStore.Services.DataExchange.Import
 					else if (ctx.Request.Profile.EntityType == ImportEntityType.Customer)
 					{
 						ctx.Importer = new CustomerImporter(
-							_services,
 							_customerRepository.Value,
+							_pictureRepository.Value,
+							_services,
 							_genericAttributeService.Value,
 							_customerService,
+							_pictureService.Value,
 							_affiliateService.Value,
 							_countryService.Value,
 							_stateProvinceService.Value,
+							_fileDownloadManager.Value,
 							_customerSettings.Value,
 							_dateTimeSettings.Value,
-							_forumSettings.Value);
+							_forumSettings.Value,
+							_dataExchangeSettings.Value);
 					}
 					else if (ctx.Request.Profile.EntityType == ImportEntityType.NewsLetterSubscription)
 					{

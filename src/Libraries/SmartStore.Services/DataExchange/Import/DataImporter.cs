@@ -61,6 +61,7 @@ namespace SmartStore.Services.DataExchange.Import
 		private readonly Lazy<IManufacturerService> _manufacturerService;
 		private readonly Lazy<ICategoryService> _categoryService;
 		private readonly Lazy<ICategoryTemplateService> _categoryTemplateService;
+		private readonly Lazy<IProductTemplateService> _productTemplateService;
 		private readonly Lazy<IProductService> _productService;
 		private readonly Lazy<IUrlRecordService> _urlRecordService;
 		private readonly Lazy<IStoreMappingService> _storeMappingService;
@@ -98,6 +99,7 @@ namespace SmartStore.Services.DataExchange.Import
 			Lazy<IManufacturerService> manufacturerService,
 			Lazy<ICategoryService> categoryService,
 			Lazy<ICategoryTemplateService> categoryTemplateService,
+			Lazy<IProductTemplateService> productTemplateService,
 			Lazy<IProductService> productService,
 			Lazy<IUrlRecordService> urlRecordService,
 			Lazy<IStoreMappingService> storeMappingService,
@@ -135,6 +137,7 @@ namespace SmartStore.Services.DataExchange.Import
 			_manufacturerService = manufacturerService;
 			_categoryService = categoryService;
 			_categoryTemplateService = categoryTemplateService;
+			_productTemplateService = productTemplateService;
 			_productService = productService;
 			_urlRecordService = urlRecordService;
 			_storeMappingService = storeMappingService;
@@ -396,6 +399,7 @@ namespace SmartStore.Services.DataExchange.Import
 							_categoryService.Value,
 							_productService.Value,
 							_urlRecordService.Value,
+							_productTemplateService.Value,
 							_storeMappingService.Value,
 							_fileDownloadManager.Value,
 							_seoSettings.Value,

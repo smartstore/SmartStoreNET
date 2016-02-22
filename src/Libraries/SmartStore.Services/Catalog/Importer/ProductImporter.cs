@@ -33,6 +33,7 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly ICategoryService _categoryService;
 		private readonly IProductService _productService;
 		private readonly IUrlRecordService _urlRecordService;
+		private readonly IProductTemplateService _productTemplateService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly FileDownloadManager _fileDownloadManager;
 		private readonly SeoSettings _seoSettings;
@@ -52,6 +53,7 @@ namespace SmartStore.Services.Catalog.Importer
 			ICategoryService categoryService,
 			IProductService productService,
 			IUrlRecordService urlRecordService,
+			IProductTemplateService productTemplateService,
 			IStoreMappingService storeMappingService,
 			FileDownloadManager fileDownloadManager,
 			SeoSettings seoSettings,
@@ -70,6 +72,7 @@ namespace SmartStore.Services.Catalog.Importer
 			_categoryService = categoryService;
 			_productService = productService;
 			_urlRecordService = urlRecordService;
+			_productTemplateService = productTemplateService;
 			_storeMappingService = storeMappingService;
 			_fileDownloadManager = fileDownloadManager;
 			
@@ -88,7 +91,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return (int?)null;
 		}
 
-		private int ProcessParentMappings(IImportExecuteContext context,
+		private int ProcessProductMappings(IImportExecuteContext context,
 			ImportRow<Product>[] batch,
 			Dictionary<int, ImportProductMapping> srcToDestId)
 		{
@@ -527,12 +530,17 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
-		private int ProcessProducts(IImportExecuteContext context, ImportRow<Product>[] batch, Dictionary<int, ImportProductMapping> srcToDestId)
+		private int ProcessProducts(
+			IImportExecuteContext context,
+			ImportRow<Product>[] batch,
+			Dictionary<string, int> templateViewPaths,
+			Dictionary<int, ImportProductMapping> srcToDestId)
 		{
 			_productRepository.AutoCommitEnabled = true;
 
 			Product lastInserted = null;
 			Product lastUpdated = null;
+			var defaultTemplateId = templateViewPaths["ProductTemplate.Simple"];
 
 			foreach (var row in batch)
 			{
@@ -579,7 +587,7 @@ namespace SmartStore.Services.Catalog.Importer
 						context.Result.AddError("The 'Name' field is required for new products. Skipping row.", row.GetRowInfo(), "Name");
 						continue;
 					}
-					
+
 					product = new Product();
 				}
 
@@ -596,34 +604,39 @@ namespace SmartStore.Services.Catalog.Importer
 					}
 				}
 
-				row.SetProperty(context.Result, product, (x) => x.Sku);
-				row.SetProperty(context.Result, product, (x) => x.Gtin);
-				row.SetProperty(context.Result, product, (x) => x.ManufacturerPartNumber);
 				row.SetProperty(context.Result, product, (x) => x.ProductTypeId, (int)ProductType.SimpleProduct);
 				row.SetProperty(context.Result, product, (x) => x.VisibleIndividually, true);
 				row.SetProperty(context.Result, product, (x) => x.Name);
 				row.SetProperty(context.Result, product, (x) => x.ShortDescription);
 				row.SetProperty(context.Result, product, (x) => x.FullDescription);
-				row.SetProperty(context.Result, product, (x) => x.ProductTemplateId);
+				row.SetProperty(context.Result, product, (x) => x.AdminComment);
 				row.SetProperty(context.Result, product, (x) => x.ShowOnHomePage);
 				row.SetProperty(context.Result, product, (x) => x.HomePageDisplayOrder);
 				row.SetProperty(context.Result, product, (x) => x.MetaKeywords);
 				row.SetProperty(context.Result, product, (x) => x.MetaDescription);
 				row.SetProperty(context.Result, product, (x) => x.MetaTitle);
 				row.SetProperty(context.Result, product, (x) => x.AllowCustomerReviews, true);
+				row.SetProperty(context.Result, product, (x) => x.ApprovedRatingSum);
+				row.SetProperty(context.Result, product, (x) => x.NotApprovedRatingSum);
+				row.SetProperty(context.Result, product, (x) => x.ApprovedTotalReviews);
+				row.SetProperty(context.Result, product, (x) => x.NotApprovedTotalReviews);
 				row.SetProperty(context.Result, product, (x) => x.Published, true);
+				row.SetProperty(context.Result, product, (x) => x.Sku);
+				row.SetProperty(context.Result, product, (x) => x.ManufacturerPartNumber);
+				row.SetProperty(context.Result, product, (x) => x.Gtin);
 				row.SetProperty(context.Result, product, (x) => x.IsGiftCard);
 				row.SetProperty(context.Result, product, (x) => x.GiftCardTypeId);
 				row.SetProperty(context.Result, product, (x) => x.RequireOtherProducts);
-				row.SetProperty(context.Result, product, (x) => x.RequiredProductIds);
+				row.SetProperty(context.Result, product, (x) => x.RequiredProductIds);	// TODO: global scope
 				row.SetProperty(context.Result, product, (x) => x.AutomaticallyAddRequiredProducts);
 				row.SetProperty(context.Result, product, (x) => x.IsDownload);
 				row.SetProperty(context.Result, product, (x) => x.DownloadId);
 				row.SetProperty(context.Result, product, (x) => x.UnlimitedDownloads, true);
 				row.SetProperty(context.Result, product, (x) => x.MaxNumberOfDownloads, 10);
+				row.SetProperty(context.Result, product, (x) => x.DownloadExpirationDays);
 				row.SetProperty(context.Result, product, (x) => x.DownloadActivationTypeId, 1);
 				row.SetProperty(context.Result, product, (x) => x.HasSampleDownload);
-				row.SetProperty(context.Result, product, (x) => x.SampleDownloadId, (int?)null, ZeroToNull);
+				row.SetProperty(context.Result, product, (x) => x.SampleDownloadId, (int?)null, ZeroToNull);    // TODO: global scope
 				row.SetProperty(context.Result, product, (x) => x.HasUserAgreement);
 				row.SetProperty(context.Result, product, (x) => x.UserAgreementText);
 				row.SetProperty(context.Result, product, (x) => x.IsRecurring);
@@ -635,7 +648,7 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, product, (x) => x.AdditionalShippingCharge);
 				row.SetProperty(context.Result, product, (x) => x.IsEsd);
 				row.SetProperty(context.Result, product, (x) => x.IsTaxExempt);
-				row.SetProperty(context.Result, product, (x) => x.TaxCategoryId, 1);
+				row.SetProperty(context.Result, product, (x) => x.TaxCategoryId, 1);    // TODO: global scope
 				row.SetProperty(context.Result, product, (x) => x.ManageInventoryMethodId);
 				row.SetProperty(context.Result, product, (x) => x.StockQuantity, 10000);
 				row.SetProperty(context.Result, product, (x) => x.DisplayStockAvailability);
@@ -661,23 +674,29 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, product, (x) => x.CustomerEntersPrice);
 				row.SetProperty(context.Result, product, (x) => x.MinimumCustomerEnteredPrice);
 				row.SetProperty(context.Result, product, (x) => x.MaximumCustomerEnteredPrice, 1000);
+				// HasTierPrices... ignore as long as no tier prices are imported
+				// LowestAttributeCombinationPrice... ignore as long as no combinations are imported
 				row.SetProperty(context.Result, product, (x) => x.Weight);
 				row.SetProperty(context.Result, product, (x) => x.Length);
 				row.SetProperty(context.Result, product, (x) => x.Width);
 				row.SetProperty(context.Result, product, (x) => x.Height);
-				row.SetProperty(context.Result, product, (x) => x.DeliveryTimeId);
-				row.SetProperty(context.Result, product, (x) => x.QuantityUnitId);
+				row.SetProperty(context.Result, product, (x) => x.DisplayOrder);
+				row.SetProperty(context.Result, product, (x) => x.DeliveryTimeId);      // TODO: global scope
+				row.SetProperty(context.Result, product, (x) => x.QuantityUnitId);      // TODO: global scope
 				row.SetProperty(context.Result, product, (x) => x.BasePriceEnabled);
 				row.SetProperty(context.Result, product, (x) => x.BasePriceMeasureUnit);
 				row.SetProperty(context.Result, product, (x) => x.BasePriceAmount);
 				row.SetProperty(context.Result, product, (x) => x.BasePriceBaseAmount);
-				row.SetProperty(context.Result, product, (x) => x.BundlePerItemPricing);
-				row.SetProperty(context.Result, product, (x) => x.BundlePerItemShipping);
-				row.SetProperty(context.Result, product, (x) => x.BundlePerItemShoppingCart);
 				row.SetProperty(context.Result, product, (x) => x.BundleTitleText);
+				row.SetProperty(context.Result, product, (x) => x.BundlePerItemShipping);
+				row.SetProperty(context.Result, product, (x) => x.BundlePerItemPricing);
+				row.SetProperty(context.Result, product, (x) => x.BundlePerItemShoppingCart);
 				row.SetProperty(context.Result, product, (x) => x.AvailableStartDateTimeUtc);
 				row.SetProperty(context.Result, product, (x) => x.AvailableEndDateTimeUtc);
 				row.SetProperty(context.Result, product, (x) => x.LimitedToStores);
+
+				var tvp = row.GetDataValue<string>("ProductTemplateViewPath");
+				product.ProductTemplateId = (tvp.HasValue() && templateViewPaths.ContainsKey(tvp) ? templateViewPaths[tvp] : defaultTemplateId);
 
 				row.SetProperty(context.Result, product, (x) => x.CreatedOnUtc, UtcNow);
 				product.UpdatedOnUtc = UtcNow;
@@ -745,6 +764,10 @@ namespace SmartStore.Services.Catalog.Importer
 		{
 			var srcToDestId = new Dictionary<int, ImportProductMapping>();
 
+			var templateViewPaths = _productTemplateService.GetAllProductTemplates()
+				.GroupBy(x => x.ViewPath, StringComparer.OrdinalIgnoreCase)
+				.ToDictionary(x => x.Key, x => x.First().Id);
+
 			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
 				var segmenter = context.GetSegmenter<Product>();
@@ -767,7 +790,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					try
 					{
-						ProcessProducts(context, batch, srcToDestId);
+						ProcessProducts(context, batch, templateViewPaths, srcToDestId);
 					}
 					catch (Exception exception)
 					{
@@ -894,7 +917,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 						try
 						{
-							ProcessParentMappings(context, batch, srcToDestId);
+							ProcessProductMappings(context, batch, srcToDestId);
 						}
 						catch (Exception exception)
 						{

@@ -127,6 +127,8 @@ namespace SmartStore.Services.Customers.Importer
 					{
 						if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false)) != null)
 						{
+							_pictureRepository.Context.SaveChanges();
+
 							_genericAttributeService.SaveAttribute(row.Entity.Id, SystemCustomerAttributeNames.AvatarPictureId, _attributeKeyGroup, picture.Id.ToString());
 						}
 					}
@@ -134,7 +136,6 @@ namespace SmartStore.Services.Customers.Importer
 					{
 						context.Result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "AvatarPictureUrl");
 					}
-
 				}
 			}
 			else
@@ -143,7 +144,7 @@ namespace SmartStore.Services.Customers.Importer
 			}
 		}
 
-		private int ProcessGenericAttributes(IImportExecuteContext context,
+		private void ProcessGenericAttributes(IImportExecuteContext context,
 			ImportRow<Customer>[] batch,
 			List<int> allCountryIds,
 			List<int> allStateProvinceIds,
@@ -228,11 +229,9 @@ namespace SmartStore.Services.Customers.Importer
 				{
 					ImportAvatar(context, row);
 				}
+
+				_services.DbContext.SaveChanges();
 			}
-
-			var num = _customerRepository.Context.SaveChanges();
-
-			return num;
 		}
 
 		private int ProcessCustomers(IImportExecuteContext context,
@@ -432,11 +431,17 @@ namespace SmartStore.Services.Customers.Importer
 
 					try
 					{
+						_services.DbContext.AutoDetectChangesEnabled = true;
+
 						ProcessGenericAttributes(context, batch, allCountryIds, allStateProvinceIds, allCustomerNumbers);
 					}
 					catch (Exception exception)
 					{
 						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessGenericAttributes");
+					}
+					finally
+					{
+						_services.DbContext.AutoDetectChangesEnabled = false;
 					}
 				}
 			}

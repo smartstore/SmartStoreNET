@@ -239,14 +239,14 @@ namespace SmartStore.Services.Catalog.Importer
 
 		private int ProcessCategories(IImportExecuteContext context,
 			ImportRow<Category>[] batch,
-			List<int> allCategoryTemplateIds,
+			Dictionary<string, int> templateViewPaths,
 			Dictionary<int, ImportCategoryMapping> srcToDestId)
 		{
 			_categoryRepository.AutoCommitEnabled = true;
 
 			Category lastInserted = null;
 			Category lastUpdated = null;
-			var defaultTemplateId = allCategoryTemplateIds.First();
+			var defaultTemplateId = templateViewPaths["CategoryTemplate.ProductsInGridOrLines"];
 
 			foreach (var row in batch)
 			{
@@ -288,10 +288,7 @@ namespace SmartStore.Services.Catalog.Importer
 						continue;
 					}
 
-					category = new Category
-					{
-						CategoryTemplateId = defaultTemplateId
-					};
+					category = new Category();
 				}
 
 				row.Initialize(category, name);
@@ -321,11 +318,8 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, category, (x) => x.Alias);
 				row.SetProperty(context.Result, category, (x) => x.DefaultViewMode);
 
-				var templateId = row.GetDataValue<int>("CategoryTemplateId");
-				if (templateId > 0 && allCategoryTemplateIds.Contains(templateId))
-				{
-					category.CategoryTemplateId = templateId;
-				}
+				var tvp = row.GetDataValue<string>("CategoryTemplateViewPath");
+				category.CategoryTemplateId = (tvp.HasValue() && templateViewPaths.ContainsKey(tvp) ? templateViewPaths[tvp] : defaultTemplateId);
 
 				row.SetProperty(context.Result, category, (x) => x.CreatedOnUtc, UtcNow);
 				category.UpdatedOnUtc = UtcNow;
@@ -393,9 +387,9 @@ namespace SmartStore.Services.Catalog.Importer
 		{
 			var srcToDestId = new Dictionary<int, ImportCategoryMapping>();
 
-			var allCategoryTemplateIds = _categoryTemplateService.GetAllCategoryTemplates()
-				.Select(x => x.Id)
-				.ToList();
+			var templateViewPaths = _categoryTemplateService.GetAllCategoryTemplates()
+				.GroupBy(x => x.ViewPath, StringComparer.OrdinalIgnoreCase)
+				.ToDictionary(x => x.Key, x => x.First().Id);
 
 			using (var scope = new DbContextScope(ctx: _categoryRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
@@ -416,7 +410,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 					try
 					{
-						ProcessCategories(context, batch, allCategoryTemplateIds, srcToDestId);
+						ProcessCategories(context, batch, templateViewPaths, srcToDestId);
 					}
 					catch (Exception exception)
 					{

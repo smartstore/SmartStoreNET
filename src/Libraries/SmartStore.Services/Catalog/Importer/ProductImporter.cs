@@ -26,7 +26,6 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly IRepository<UrlRecord> _urlRecordRepository;
 		private readonly IRepository<Product> _productRepository;
 		private readonly ICommonServices _services;
-		private readonly ILanguageService _languageService;
 		private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly IPictureService _pictureService;
 		private readonly IManufacturerService _manufacturerService;
@@ -46,7 +45,6 @@ namespace SmartStore.Services.Catalog.Importer
 			IRepository<UrlRecord> urlRecordRepository,
 			IRepository<Product> productRepository,
 			ICommonServices services,
-			ILanguageService languageService,
 			ILocalizedEntityService localizedEntityService,
 			IPictureService pictureService,
 			IManufacturerService manufacturerService,
@@ -65,7 +63,6 @@ namespace SmartStore.Services.Catalog.Importer
 			_urlRecordRepository = urlRecordRepository;
 			_productRepository = productRepository;
 			_services = services;
-			_languageService = languageService;
 			_localizedEntityService = localizedEntityService;
 			_pictureService = pictureService;
 			_manufacturerService = manufacturerService;
@@ -403,54 +400,30 @@ namespace SmartStore.Services.Catalog.Importer
 
 		private int ProcessLocalizations(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
-			//_rsProductManufacturer.AutoCommitEnabled = false;
-
-			//string lastInserted = null;
-
-			var languages = _languageService.GetAllLanguages(true);
-
 			foreach (var row in batch)
 			{
-
-				Product product = null;
-
-				//get product
-				try
+				foreach (var lang in context.Languages)
 				{
-					product = _productService.GetProductById(row.Entity.Id);
-				}
-				catch (Exception exception)
-				{
-					context.Result.AddWarning(exception.Message, row.GetRowInfo(), "ProcessLocalizations Product");
-				}
+					var name = row.GetDataValue<string>("Name", lang.UniqueSeoCode);
+					var shortDescription = row.GetDataValue<string>("ShortDescription", lang.UniqueSeoCode);
+					var fullDescription = row.GetDataValue<string>("FullDescription", lang.UniqueSeoCode);
+					var metaKeywords = row.GetDataValue<string>("MetaKeywords", lang.UniqueSeoCode);
+					var metaDescription  = row.GetDataValue<string>("MetaDescription", lang.UniqueSeoCode);
+					var metaTitle = row.GetDataValue<string>("MetaTitle", lang.UniqueSeoCode);
+					var bundleTitleText = row.GetDataValue<string>("BundleTitleText", lang.UniqueSeoCode);
 
-				foreach (var lang in languages)
-				{
-					string localizedName = row.GetDataValue<string>("Name", lang.UniqueSeoCode);
-					string localizedShortDescription = row.GetDataValue<string>("ShortDescription", lang.UniqueSeoCode);
-					string localizedFullDescription = row.GetDataValue<string>("FullDescription", lang.UniqueSeoCode);
-
-					if (localizedName.HasValue())
-					{
-						_localizedEntityService.SaveLocalizedValue(product, x => x.Name, localizedName, lang.Id);
-					}
-					if (localizedShortDescription.HasValue())
-					{
-						_localizedEntityService.SaveLocalizedValue(product, x => x.ShortDescription, localizedShortDescription, lang.Id);
-					}
-					if (localizedFullDescription.HasValue())
-					{
-						_localizedEntityService.SaveLocalizedValue(product, x => x.FullDescription, localizedFullDescription, lang.Id);
-					}
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.Name, name, lang.Id);
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.ShortDescription, shortDescription, lang.Id);
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.FullDescription, fullDescription, lang.Id);
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaKeywords, metaKeywords, lang.Id);
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaDescription, metaDescription, lang.Id);
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaTitle, metaTitle, lang.Id);
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.BundleTitleText, bundleTitleText, lang.Id);
 				}
 			}
 
 			// commit whole batch at once
 			var num = _productManufacturerRepository.Context.SaveChanges();
-
-			// Perf: notify only about LAST insertion and update
-			//if (lastInserted != null)
-			//    _eventPublisher.EntityInserted(lastInserted);
 
 			return num;
 		}

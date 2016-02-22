@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Events;
 using SmartStore.Services.DataExchange.Import;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
@@ -27,6 +28,7 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly ICategoryTemplateService _categoryTemplateService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IPictureService _pictureService;
+		private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly FileDownloadManager _fileDownloadManager;
 		private readonly SeoSettings _seoSettings;
 		private readonly DataExchangeSettings _dataExchangeSettings;
@@ -40,6 +42,7 @@ namespace SmartStore.Services.Catalog.Importer
 			ICategoryTemplateService categoryTemplateService,
 			IStoreMappingService storeMappingService,
 			IPictureService pictureService,
+			ILocalizedEntityService localizedEntityService,
 			FileDownloadManager fileDownloadManager,
 			SeoSettings seoSettings,
 			DataExchangeSettings dataExchangeSettings)
@@ -52,6 +55,7 @@ namespace SmartStore.Services.Catalog.Importer
 			_categoryTemplateService = categoryTemplateService;
 			_storeMappingService = storeMappingService;
 			_pictureService = pictureService;
+			_localizedEntityService = localizedEntityService;
 			_fileDownloadManager = fileDownloadManager;
 			_seoSettings = seoSettings;
 			_dataExchangeSettings = dataExchangeSettings;
@@ -115,6 +119,35 @@ namespace SmartStore.Services.Catalog.Importer
 
 			// commit whole batch at once
 			return _urlRecordRepository.Context.SaveChanges();
+		}
+
+		private int ProcessLocalizations(IImportExecuteContext context, ImportRow<Category>[] batch)
+		{
+			foreach (var row in batch)
+			{
+				foreach (var lang in context.Languages)
+				{
+					var name = row.GetDataValue<string>("Name", lang.UniqueSeoCode);
+					var fullName = row.GetDataValue<string>("FullName", lang.UniqueSeoCode);
+					var description = row.GetDataValue<string>("Description", lang.UniqueSeoCode);
+					var bottomDescription = row.GetDataValue<string>("BottomDescription", lang.UniqueSeoCode);
+					var metaKeywords = row.GetDataValue<string>("MetaKeywords", lang.UniqueSeoCode);
+					var metaDescription = row.GetDataValue<string>("MetaDescription", lang.UniqueSeoCode);
+					var metaTitle = row.GetDataValue<string>("MetaTitle", lang.UniqueSeoCode);
+
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.Name, name, lang.Id);
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.FullName, fullName, lang.Id);
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.Description, description, lang.Id);
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.BottomDescription, bottomDescription, lang.Id);
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaKeywords, metaKeywords, lang.Id);
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaDescription, metaDescription, lang.Id);
+					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaTitle, metaTitle, lang.Id);
+				}
+			}
+
+			var num = _categoryRepository.Context.SaveChanges();
+
+			return num;
 		}
 
 		private int ProcessParentMappings(IImportExecuteContext context,
@@ -459,6 +492,16 @@ namespace SmartStore.Services.Catalog.Importer
 						{
 							_categoryRepository.Context.AutoDetectChangesEnabled = false;
 						}
+					}
+
+					// localizations
+					try
+					{
+						ProcessLocalizations(context, batch);
+					}
+					catch (Exception exception)
+					{
+						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessLocalizedProperties");
 					}
 
 					// process pictures

@@ -2,6 +2,7 @@
 using System.Threading;
 using SmartStore.Core;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.DataExchange.Import
@@ -27,6 +28,11 @@ namespace SmartStore.Services.DataExchange.Import
 		/// Use this dictionary for any custom data required along the export
 		/// </summary>
 		Dictionary<string, object> CustomProperties { get; set; }
+
+		/// <summary>
+		/// All languages
+		/// </summary>
+		IList<Language> Languages { get; }
 
 		/// <summary>
 		/// To log information into the import log file
@@ -90,6 +96,8 @@ namespace SmartStore.Services.DataExchange.Import
 		public bool UpdateOnly { get; internal set; }
 
 		public string[] KeyFieldNames { get; internal set; }
+
+		public IList<Language> Languages { get; internal set; }
 
 		public ILogger Log { get; internal set; }
 

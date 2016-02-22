@@ -366,6 +366,7 @@ namespace SmartStore.Services.DataExchange.Import
 					ctx.Log = logger;
 
 					ctx.ExecuteContext.Log = logger;
+					ctx.ExecuteContext.Languages = _languageService.Value.GetAllLanguages(true);
 					ctx.ExecuteContext.UpdateOnly = ctx.Request.Profile.UpdateOnly;
 					ctx.ExecuteContext.KeyFieldNames = ctx.Request.Profile.KeyFieldNames.SplitSafe(",");
 					ctx.ExecuteContext.ImportFolder = ctx.Request.Profile.GetImportFolder();
@@ -392,7 +393,6 @@ namespace SmartStore.Services.DataExchange.Import
 							_urlRecordRepository.Value,
 							_productRepository.Value,
 							_services,
-							_languageService.Value,
 							_localizedEntityService.Value,
 							_pictureService.Value,
 							_manufacturerService.Value,
@@ -440,6 +440,7 @@ namespace SmartStore.Services.DataExchange.Import
 							_categoryTemplateService.Value,
 							_storeMappingService.Value,
 							_pictureService.Value,
+							_localizedEntityService.Value,
 							_fileDownloadManager.Value,
 							_seoSettings.Value,
 							_dataExchangeSettings.Value);

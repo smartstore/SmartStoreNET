@@ -39,7 +39,7 @@ using SmartStore.Web.Models.Customer;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class CustomerController : PublicControllerBase
+	public partial class CustomerController : PublicControllerBase
     {
         #region Fields
 
@@ -1596,30 +1596,34 @@ namespace SmartStore.Web.Controllers
                 try
                 {
                     var customerAvatar = _pictureService.GetPictureById(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId));
-                    if ((uploadedFile != null) && (!String.IsNullOrEmpty(uploadedFile.FileName)))
-                    {
-                        int avatarMaxSize = _customerSettings.AvatarMaximumSizeBytes;
-                        if (uploadedFile.ContentLength > avatarMaxSize)
-                            throw new SmartException(string.Format(_localizationService.GetResource("Account.Avatar.MaximumUploadedFileSize"), Prettifier.BytesToString(avatarMaxSize)));
 
-                        byte[] customerPictureBinary = uploadedFile.InputStream.ToByteArray();
-                        if (customerAvatar != null)
-                            customerAvatar = _pictureService.UpdatePicture(customerAvatar.Id, customerPictureBinary, uploadedFile.ContentType, null, true);
-                        else
-                            customerAvatar = _pictureService.InsertPicture(customerPictureBinary, uploadedFile.ContentType, null, true, false);
-                    }
+					if ((uploadedFile != null) && (!String.IsNullOrEmpty(uploadedFile.FileName)))
+					{
+						var avatarMaxSize = _customerSettings.AvatarMaximumSizeBytes;
 
-                    int customerAvatarId = 0;
-                    if (customerAvatar != null)
-                        customerAvatarId = customerAvatar.Id;
+						if (uploadedFile.ContentLength > avatarMaxSize)
+							throw new SmartException(T("Account.Avatar.MaximumUploadedFileSize", Prettifier.BytesToString(avatarMaxSize)));
+
+						byte[] customerPictureBinary = uploadedFile.InputStream.ToByteArray();
+
+						if (customerAvatar != null)
+							customerAvatar = _pictureService.UpdatePicture(customerAvatar.Id, customerPictureBinary, uploadedFile.ContentType, null, true);
+						else
+							customerAvatar = _pictureService.InsertPicture(customerPictureBinary, uploadedFile.ContentType, null, true, false);
+					}
+					else if (customerAvatar != null)
+					{
+						_pictureService.DeletePicture(customerAvatar);
+						customerAvatar = null;
+					}
+
+                    var customerAvatarId = (customerAvatar != null ? customerAvatar.Id : 0);
 
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, customerAvatarId);
 
-                    model.AvatarUrl = _pictureService.GetPictureUrl(
-                        customerAvatarId,
-                        _mediaSettings.AvatarPictureSize,
-                        false);
-                    return View(model);
+                    model.AvatarUrl = _pictureService.GetPictureUrl(customerAvatarId, _mediaSettings.AvatarPictureSize, false);
+
+					return View(model);
                 }
                 catch (Exception exc)
                 {
@@ -1627,12 +1631,8 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-
             //If we got this far, something failed, redisplay form
-            model.AvatarUrl = _pictureService.GetPictureUrl(
-                customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), 
-                _mediaSettings.AvatarPictureSize, 
-                false);
+            model.AvatarUrl = _pictureService.GetPictureUrl(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), _mediaSettings.AvatarPictureSize, false);
 
             return View(model);
         }
@@ -1655,6 +1655,7 @@ namespace SmartStore.Web.Controllers
             var customerAvatar = _pictureService.GetPictureById(customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId));
             if (customerAvatar != null)
                 _pictureService.DeletePicture(customerAvatar);
+
             _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, 0);
 
             return RedirectToAction("Avatar");

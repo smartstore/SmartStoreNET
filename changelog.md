@@ -112,6 +112,7 @@
 * Grouped products: Display order was not correct
 * Deletion of a customer could delete all newsletter subscriptions
 * PayPal: Fixed "The request was aborted: Could not create SSL/TLS secure channel."
+* Customer could not delete his avatar
 
 
 ## SmartStore.NET 2.2.2

@@ -1127,8 +1127,14 @@ namespace SmartStore.Services.Orders
             if (amount <= 0)
                 return 0;
 
-            if (_rewardPointsSettings.ExchangeRate > 0)
-                result = (int)Math.Ceiling(amount / _rewardPointsSettings.ExchangeRate);
+			if (_rewardPointsSettings.ExchangeRate > 0)
+			{
+				if (_rewardPointsSettings.RoundDownRewardPoints)
+					result = (int)Math.Floor(amount / _rewardPointsSettings.ExchangeRate);
+				else
+					result = (int)Math.Ceiling(amount / _rewardPointsSettings.ExchangeRate);
+			}
+
             return result;
         }
 

@@ -411,6 +411,12 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Import.KeyFieldNames.Note",
 				"Please only use the ID field as a key field, if the data sourced from the same database to which it will be imported. Otherwise it is possible that the wrong records are updated.",
 				"Benutzen Sie das ID-Feld bitte nur dann als Schlüsselfeld, wenn die Daten aus der derselben Datenbank stammen, in der sie importiert werden sollen. Ansonsten werden u.U. die falschen Datensätze aktualisiert.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.RewardPoints.RoundDownRewardPoints",
+				"Round down points",
+				"Punkte abrunden",
+				"Specifies whether to round down calculated points. Otherwise the bonus points will be rounded up.",
+				"Legt fest, ob bei der Punkteberechnung abgerundet werden soll. Ansonsten werden Bonuspunkte aufgerundet.");
 		}
 	}
 }

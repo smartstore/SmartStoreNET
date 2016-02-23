@@ -48,6 +48,7 @@
 * #398 EU law: add 'revocation' form and revocation waiver for ESD
 * #738 Implement download of pictures via URLs in product import
 * Web-API: Bridge to import framework: uploading import files to import profile directory
+* Setting to round down calculated reward points
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

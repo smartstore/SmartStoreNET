@@ -45,6 +45,15 @@
                 @Html.ValidationMessageFor(model => model.ExchangeRate)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.RoundDownRewardPoints)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.RoundDownRewardPoints)
+				@Html.ValidationMessageFor(model => model.RoundDownRewardPoints)
+			</td>
+		</tr>
 	</table>
 
 	<table class="adminContent">

@@ -13,7 +13,10 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.RewardPoints.ExchangeRate")]
         public decimal ExchangeRate { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.RewardPoints.PointsForRegistration")]
+		[SmartResourceDisplayName("Admin.Configuration.Settings.RewardPoints.RoundDownRewardPoints")]
+		public bool RoundDownRewardPoints { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.RewardPoints.PointsForRegistration")]
         public int PointsForRegistration { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.RewardPoints.PointsForProductReview")]

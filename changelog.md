@@ -114,6 +114,7 @@
 * Deletion of a customer could delete all newsletter subscriptions
 * PayPal: Fixed "The request was aborted: Could not create SSL/TLS secure channel."
 * Customer could not delete his avatar
+* Facebook authentication: Email missing in verification
 
 
 ## SmartStore.NET 2.2.2

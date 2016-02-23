@@ -13,7 +13,7 @@ namespace SmartStore.Core.Domain.Common
 			SitemapIncludeTopics = true;
 			FullTextMode = FulltextSearchMode.ExactMatch;
 			AutoUpdateEnabled = true;
-			EntityPickerPageSize = 24;
+			EntityPickerPageSize = 48;
 		}
 		
 		public bool UseSystemEmailForContactUsForm { get; set; }

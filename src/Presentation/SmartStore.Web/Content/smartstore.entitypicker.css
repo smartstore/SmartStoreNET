@@ -75,7 +75,7 @@
 
 .entity-picker-list .list-footer {
 	clear: both;
-	padding: 8px 12px 0 12px;
+	padding: 12px;
     text-align: center;
 }
 
@@ -89,6 +89,8 @@
     display: table-cell;
     width: 54px;
     height: 54px;
+    max-width: 54px;
+    max-height: 54px;
     padding: 2px;
     text-align: center;
     vertical-align: middle;

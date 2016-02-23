@@ -1022,7 +1022,7 @@ namespace SmartStore.Web.Controllers
 
 		public ActionResult EntityPicker(EntityPickerModel model)
 		{
-			model.PageSize = _commonSettings.EntityPickerPageSize;
+            model.PageSize = 48; // _commonSettings.EntityPickerPageSize;
 			model.AllString = T("Admin.Common.All");
 
 			if (model.Entity.IsCaseInsensitiveEqual("product"))
@@ -1051,7 +1051,7 @@ namespace SmartStore.Web.Controllers
 		[HttpPost]
 		public ActionResult EntityPicker(EntityPickerModel model, FormCollection form)
 		{
-            model.PageSize = _commonSettings.EntityPickerPageSize;
+            model.PageSize = 48; // _commonSettings.EntityPickerPageSize;
 			model.PublishedString = T("Common.Published");
 			model.UnpublishedString = T("Common.Unpublished");
 

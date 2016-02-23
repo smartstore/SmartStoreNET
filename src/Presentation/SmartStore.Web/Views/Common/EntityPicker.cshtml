@@ -1,13 +1,13 @@
 ﻿@model EntityPickerModel
 @using SmartStore.Web.Models.Common;
 
-<div id="entity-picker-@(Model.Entity)-dialog" class="entity-picker modal modal-xlarge hide fade" tabindex="-1">
+<div id="entity-picker-@(Model.Entity)-dialog" class="entity-picker modal modal-xlarge modal-flex hide fade" tabindex="-1">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
 		<h4 class="caption">&nbsp;</h4>
 	</div>
 	<div class="modal-body">
-		<form method="POST" action="@Url.Action("EntityPicker", "Common", new { area = "" })">
+		<form method="POST" class="modal-flex-fill-area" action="@Url.Action("EntityPicker", "Common", new { area = "" })">
 			<input type="hidden" name="Entity" value="@Model.Entity" />
 			<input type="hidden" name="HighligtSearchTerm" value="@Model.HighligtSearchTerm.ToString()" />
 			<input type="hidden" name="ReturnField" value="@Model.ReturnField" />
@@ -28,7 +28,7 @@
 			<span class="default hide">@T(Model.MaxReturnValues == 1 ? "Common.EntityPicker.SinglePickNote" : "Common.EntityPicker.MultiPickNote")</span>
 			<span class="not-selectable hide">@T("Common.NotSelectable").</span>
 		</span>
-		<button class="btn btn-primary" disabled="disabled">@T("Common.OK")</button>
+		<button class="btn btn-primary" disabled="disabled">@T("Common.Apply")</button>
 		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
 	</div>
 	<script type="text/javascript">

@@ -217,13 +217,6 @@
 		    }    
 		});
 
-		// show more items
-		dialog.on('click', 'a.entity-picker-showmore', function (e) {
-			e.preventDefault();
-			fillList(this, { append: true });
-			return false;
-		});
-
 		// item select and item hover
 		dialog.find('.entity-picker-list').on('click', '.item', function (e) {
 			var item = $(this);

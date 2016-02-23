@@ -142,6 +142,7 @@
 				success: function (response) {
 					$('body').append(response);
 					showAndFocusDialog();
+					fillList('#entity-picker-' + opt.entity + '-dialog', { append: false });
 				},
 				complete: function () {
 					if (_.isFunction(opt.onLoadDialogComplete)) {
@@ -154,7 +155,9 @@
 	}
 
 	function initDialog(context) {
-		var dialog = $(context);
+		var dialog = $(context),
+			keyUpTimer = null,
+			currentValue = '';
 
 		// search entities
 		dialog.find('button[name=SearchEntities]').click(function (e) {
@@ -168,13 +171,43 @@
 			dialog.find('.entity-picker-filter').slideToggle();
 		});
 
-		// hit enter starts searching
+		// hit enter or key up starts searching
 		dialog.find('input.entity-picker-searchterm').keydown(function (e) {
 			if (e.keyCode == 13) {
 				e.preventDefault();
 				dialog.find('button[name=SearchEntities]').click();
 				return false;
 			}
+		}).keyup(function (e) {
+			try {
+				var val = $(this).val();
+
+				if (val.length < 1) {
+					dialog.find('.entity-picker-list').stop().empty();
+					return;
+				}
+				
+				if (val !== currentValue) {
+					if (keyUpTimer) {
+						keyUpTimer = clearTimeout(keyUpTimer);
+					}
+
+					keyUpTimer = setTimeout(function () {
+						fillList(dialog, {
+							append: false,
+							onSuccess: function () {
+								currentValue = val;
+							}
+						});
+					}, 500);
+				}
+			}
+			catch (err) { }
+		});
+
+		// filter change starts searching
+		dialog.find('.entity-picker-filter .item').change(function () {
+			fillList(this, { append: false });
 		});
 
 	    // lazy loading
@@ -295,9 +328,9 @@
 				var list = dialog.find('.entity-picker-list'),
 					data = dialog.data('entitypicker');
 
-				list.append(response);
+				list.stop().append(response);
 
-				if (!_.isTrue(opt.append)) {
+				if (_.isFalse(opt.append)) {
 					dialog.find('.entity-picker-filter').slideUp();
 					showStatus(dialog);
 				}
@@ -305,6 +338,10 @@
 				if (list.thumbZoomer && _.isTrue(data.thumbZoomer)) {
 					list.find('.thumb img:not(.zoomable-thumb)').addClass('zoomable-thumb');
 					list.thumbZoomer();
+				}
+
+				if (_.isFunction(opt.onSuccess)) {
+					opt.onSuccess();
 				}
 			},
 			complete: function () {

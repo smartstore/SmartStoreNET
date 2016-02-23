@@ -177,6 +177,13 @@
 			}
 		});
 
+	    // lazy loading
+		dialog.find('.modal-body').on('scroll', function (e) {
+		    if ($('.load-more:not(.loading)').visible(true, false, 'vertical')) {
+		        fillList(this, { append: true });
+		    }    
+		});
+
 		// show more items
 		dialog.on('click', 'a.entity-picker-showmore', function (e) {
 			e.preventDefault();
@@ -274,7 +281,7 @@
 			url: dialog.find('form:first').attr('action'),
 			beforeSend: function () {
 				if (_.isTrue(opt.append)) {
-					dialog.find('.list-footer').remove();
+				    dialog.find('.load-more').addClass('loading');
 				}
 				else {
 					dialog.find('.entity-picker-list').empty();
@@ -282,7 +289,7 @@
 				}
 
 				dialog.find('button[name=SearchEntities]').button('loading').prop('disabled', true);
-				dialog.find('.entity-picker-list').append(createCircularSpinner(20, true));
+				dialog.find('.load-more').append(createCircularSpinner(20, true));
 			},
 			success: function (response) {
 				var list = dialog.find('.entity-picker-list'),
@@ -302,7 +309,7 @@
 			},
 			complete: function () {
 				dialog.find('button[name=SearchEntities]').prop('disabled', false).button('reset');
-				dialog.find('.entity-picker-list').find('.spinner').remove();
+				dialog.find('.load-more.loading').parent().remove();
 			},
 			error: ajaxErrorHandler
 		});

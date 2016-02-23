@@ -1051,7 +1051,7 @@ namespace SmartStore.Web.Controllers
 		[HttpPost]
 		public ActionResult EntityPicker(EntityPickerModel model, FormCollection form)
 		{
-			model.PageSize = _commonSettings.EntityPickerPageSize;
+            model.PageSize = _commonSettings.EntityPickerPageSize;
 			model.PublishedString = T("Common.Published");
 			model.UnpublishedString = T("Common.Unpublished");
 

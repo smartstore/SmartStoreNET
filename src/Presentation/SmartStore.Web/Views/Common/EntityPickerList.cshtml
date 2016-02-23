@@ -13,28 +13,32 @@
 }
 @foreach (var item in Model.SearchResult ?? Enumerable.Empty<EntityPickerModel.SearchResultModel>())
 {
-	<div class="item@(item.Disable ? " disable" : "")" data-id="@item.Id" data-returnvalue="@item.ReturnValue">
-		@if (item.ImageUrl.HasValue())
-		{
-			<div class="thumb">
-				<img class="img-polaroid" src="@item.ImageUrl" alt="" />
-			</div>
-		}
-		<div class="data">
-			@if (item.LabelText.HasValue())
-			{
-				<div class="label @item.LabelClassName">@item.LabelText</div>
-			}
-			<div class="title ellipsis" title="@item.Title">
-				<span>@HighlightSearchTermInTitle(item)</span>
-			</div>
-			<div class="summary muted" title="@item.SummaryTitle">@item.Summary</div>
-			@if (item.Published.HasValue)
-			{
-				<i class="published fa fa-fw icon-active-@item.Published.Value.ToString().ToLower()" title="@(item.Published.Value ? Model.PublishedString : Model.UnpublishedString)"></i>
-			}
-		</div>
-	</div>
+	<div class="item-wrap">
+        <div class="item@(item.Disable ? " disable" : "")" data-id="@item.Id" data-returnvalue="@item.ReturnValue">
+            <div class="thumb">
+                @if (item.ImageUrl.HasValue())
+                {
+                    <img src="@item.ImageUrl" alt="" />
+                }
+            </div>
+            <div class="data">
+                <div class="title" title="@item.Title">
+                    @if (item.LabelText.HasValue())
+                    {
+                        <span class="label @item.LabelClassName">@item.LabelText</span>
+                    }
+                    <span>@HighlightSearchTermInTitle(item)</span>
+                </div>
+                <div>
+                    @if (item.Published.HasValue)
+                    {
+                        <i class="published fa @(item.Published.Value ? "fa-globe" : "fa-eye-slash") xicon-active-@item.Published.Value.ToString().ToLower()" title="@(item.Published.Value ? Model.PublishedString : Model.UnpublishedString)"></i>
+                    }
+                    <span class="summary" title="@item.SummaryTitle">@item.Summary</span>
+                </div>              
+            </div>
+        </div>
+    </div>
 }
 <div class="list-footer">
 	@if (Model.SearchResult == null || Model.SearchResult.Count == 0)
@@ -43,7 +47,7 @@
 	}
 	else if (Model.SearchResult.Count == Model.PageSize)
 	{
-		<a href="javascript:void(0)" class="entity-picker-showmore">@(T("Common.ShowMore"))&hellip;</a>
+        <span class="load-more">&nbsp;</span>
 	}
 	else if (Model.PageIndex > 0)
 	{

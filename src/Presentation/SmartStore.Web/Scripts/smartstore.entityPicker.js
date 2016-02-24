@@ -114,6 +114,8 @@
 			dialog.data('entitypicker', opt);
 			dialog.modal('show');
 
+			fillList(dialog, { append: false });
+
 			setTimeout(function () {
 				dialog.find('.modal-body :input:visible:enabled:first').focus();
 			}, 800);
@@ -142,7 +144,6 @@
 				success: function (response) {
 					$('body').append(response);
 					showAndFocusDialog();
-					fillList('#entity-picker-' + opt.entity + '-dialog', { append: false });
 				},
 				complete: function () {
 					if (_.isFunction(opt.onLoadDialogComplete)) {
@@ -175,18 +176,12 @@
 		dialog.find('input.entity-picker-searchterm').keydown(function (e) {
 			if (e.keyCode == 13) {
 				e.preventDefault();
-				dialog.find('button[name=SearchEntities]').click();
 				return false;
 			}
-		}).keyup(function (e) {
+		}).bind('keyup change paste', function (e) {
 			try {
 				var val = $(this).val();
 
-				if (val.length < 1) {
-					dialog.find('.entity-picker-list').stop().empty();
-					return;
-				}
-				
 				if (val !== currentValue) {
 					if (keyUpTimer) {
 						keyUpTimer = clearTimeout(keyUpTimer);

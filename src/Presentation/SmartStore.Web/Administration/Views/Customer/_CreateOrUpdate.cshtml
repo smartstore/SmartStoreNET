@@ -507,13 +507,16 @@
         columns.Bound(x => x.Message);
         columns.Bound(x => x.CreatedOn).ReadOnly();
     }))
-    <div class="clear">
-    </div>
+    <div class="clear"></div>
     
-    <div class="caption-container">
-        <h3 class="bordered">@T("Admin.Customers.Customers.RewardPoints.AddTitle")</h3>
-    </div>
     <table class="adminContent">
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Admin.Customers.Customers.RewardPoints.AddTitle")</div>
+				</div>
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AddRewardPointsValue)

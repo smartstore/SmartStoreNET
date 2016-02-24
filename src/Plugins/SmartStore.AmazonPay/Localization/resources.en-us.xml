@@ -11,11 +11,11 @@
 			<![CDATA[<p>Register now at <a href="https://payments.amazon.de/preregistration/lpa?ld=SPEXDEAPA-SmartStore.Net-CP-DP">Amazon Payments</a>.</p>
 <p>How to set up "Pay with Amazon":</p><ul>
 <li>Enter your Amazon credentials in the fields provided below. You can find these credentials in your <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> account.</li>
-<li>You can find the Merchant ID in Seller Central at Settings - Integration Settings.</li>
-<li>You can find both access keys in Seller Central at Integration - MWS Access Key.</li>
-<li>If you would like to receive instant payment notifications (SSL required!) enter the IPN URL listed bewlow under Settings - Integration Settings - Instant Notification Settings - Merchant URL.</li>
+<li>You can find the Merchant ID in Seller Central at <b>Settings > Integration Settings</b>.</li>
+<li>You can find both access keys in Seller Central at <b>Integration > MWS Access Key</b>.</li>
+<li>If you would like to receive instant payment notifications (SSL required!) enter the IPN URL listed bewlow under <b>Settings > Integration Settings > Instant Notification Settings > Merchant URL</b>.</li>
 </ul>
-<p>Please add information about "Pay with Amazon" on your payment page (see CMS - Topics). You will find picture material <a href="https://payments.amazon.de/resources#marks">here</a>.
+<p>Please add information about "Pay with Amazon" on your payment page (see <b>CMS > Topics</b>). You will find picture material <a href="https://payments.amazon.de/resources#marks">here</a>.
 Text suggestions:<ul>
 <li>Option 1: Pay with Amazon: Pay now with the payment and shipping information from your Amazon account.</li>
 <li>Option 2: Already Amazon customer? Pay now with the payment and shipping information from your Amazon account.</li>

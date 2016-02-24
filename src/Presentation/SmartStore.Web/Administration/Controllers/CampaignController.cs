@@ -211,7 +211,7 @@ namespace SmartStore.Admin.Controllers
             {
 				var emailAccount = _emailAccountService.GetDefaultEmailAccount();
                 if (emailAccount == null)
-                    throw new SmartException("Email account could not be loaded");
+                    throw new SmartException(T("Common.Error.NoEmailAccount"));
 
                 var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(model.TestEmail);
                 if (subscription != null)
@@ -227,7 +227,8 @@ namespace SmartStore.Admin.Controllers
                     _campaignService.SendCampaign(campaign, emailAccount, model.TestEmail);
                 }
 
-                NotifySuccess(_localizationService.GetResource("Admin.Promotions.Campaigns.TestEmailSentToCustomers"), false);
+                NotifySuccess(T("Admin.Promotions.Campaigns.TestEmailSentToCustomers"), false);
+
                 return View(model);
             }
             catch (Exception exc)
@@ -256,7 +257,7 @@ namespace SmartStore.Admin.Controllers
             {
 				var emailAccount = _emailAccountService.GetDefaultEmailAccount();
                 if (emailAccount == null)
-                    throw new SmartException("Email account could not be loaded");
+                    throw new SmartException(T("Common.Error.NoEmailAccount"));
 
                 var subscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(null, 0 , int.MaxValue, false);
                 var totalEmailsSent = _campaignService.SendCampaign(campaign, emailAccount, subscriptions);

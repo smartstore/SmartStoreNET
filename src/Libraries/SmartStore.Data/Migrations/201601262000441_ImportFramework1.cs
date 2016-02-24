@@ -269,6 +269,10 @@ namespace SmartStore.Data.Migrations
 				"No active language could be loaded.",
 				"Es wurde keine aktive Sprache gefunden.");
 
+			builder.AddOrUpdate("Common.Error.NoEmailAccount",
+				"No email account could be loaded.",
+				"Es wurde kein E-Mail-Konto gefunden.");
+
 			builder.AddOrUpdate("Admin.OrderNotice.RecurringPaymentCancellationError",
 				"Unable to cancel recurring payment for order {0}.",
 				"Es ist ein Fehler bei der Stornierung einer wiederkehrenden Zahlung für Auftrag {0} aufgetreten.");

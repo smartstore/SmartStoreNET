@@ -1102,7 +1102,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.Id);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             try
@@ -1118,7 +1117,7 @@ namespace SmartStore.Admin.Controllers
 
 				var emailAccount = _emailAccountService.GetDefaultEmailAccount();
                 if (emailAccount == null)
-                    throw new SmartException("Email account can't be loaded");
+                    throw new SmartException(T("Common.Error.NoEmailAccount"));
 
                 var email = new QueuedEmail
                 {
@@ -1131,8 +1130,10 @@ namespace SmartStore.Admin.Controllers
                     Body = model.SendEmail.Body,
                     CreatedOnUtc = DateTime.UtcNow,
                 };
-                _queuedEmailService.InsertQueuedEmail(email);
-                NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.SendEmail.Queued"));
+
+				_queuedEmailService.InsertQueuedEmail(email);
+
+                NotifySuccess(T("Admin.Customers.Customers.SendEmail.Queued"));
             }
             catch (Exception exc)
             {

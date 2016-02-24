@@ -8,7 +8,9 @@
 	{
 		<tr>
 			<td colspan="2">
-				@Html.Raw(T("Admin.DataExchange.Export.NoProfilesForProvider", Model.SystemName, Url.Action("List", "Export", new { area = "Admin" })))
+				<div class="alert alert-info">
+					@Html.Raw(T("Admin.DataExchange.Export.NoProfilesForProvider", Model.SystemName, Url.Action("List", "Export", new { area = "Admin" })))
+				</div>
 			</td>
 		</tr>
 	}

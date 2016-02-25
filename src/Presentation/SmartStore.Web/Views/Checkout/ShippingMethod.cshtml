@@ -42,7 +42,7 @@
 										<input id="shippingoption_@(i)" type="radio" name="shippingoption" class="opt-radio"
 											   @Html.Attr("checked", "checked", shippingMethod.Selected)
 											   value="@(shippingMethod.Name)___@(shippingMethod.ShippingRateComputationMethodSystemName)" />
-										<span class="opt-name">@shippingMethod.Name</span>
+                                        <span class="opt-name">@Html.Raw(HttpUtility.HtmlDecode(shippingMethod.Name))</span>
 									</label>
 								</div>
 							</div>

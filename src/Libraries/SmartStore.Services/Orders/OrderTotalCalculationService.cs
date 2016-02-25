@@ -810,7 +810,12 @@ namespace SmartStore.Services.Orders
                 decimal taxRate = decimal.Zero;
 				
 				var provider = _providerManager.GetProvider<IPaymentMethod>(paymentMethodSystemName);
-				decimal paymentMethodAdditionalFee = provider.GetAdditionalHandlingFee(cart, _shoppingCartSettings.RoundPricesDuringCalculation);
+				var paymentMethodAdditionalFee = (provider != null ? provider.Value.GetAdditionalHandlingFee(cart) : decimal.Zero);
+
+				if (_shoppingCartSettings.RoundPricesDuringCalculation)
+				{
+					paymentMethodAdditionalFee = Math.Round(paymentMethodAdditionalFee, 2);
+				}
 
                 decimal paymentMethodAdditionalFeeExclTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, false, customer, out taxRate);
                 decimal paymentMethodAdditionalFeeInclTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, true, customer, out taxRate);
@@ -917,9 +922,14 @@ namespace SmartStore.Services.Orders
             if (usePaymentMethodAdditionalFee && !String.IsNullOrEmpty(paymentMethodSystemName))
             {
 				var provider = _providerManager.GetProvider<IPaymentMethod>(paymentMethodSystemName);
-				decimal paymentMethodAdditionalFee = provider.GetAdditionalHandlingFee(cart, _shoppingCartSettings.RoundPricesDuringCalculation);
+				var paymentMethodAdditionalFee = (provider != null ? provider.Value.GetAdditionalHandlingFee(cart) : decimal.Zero);
 
-                paymentMethodAdditionalFeeWithoutTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, false, customer);
+				if (_shoppingCartSettings.RoundPricesDuringCalculation)
+				{
+					paymentMethodAdditionalFee = Math.Round(paymentMethodAdditionalFee, 2);
+				}
+
+				paymentMethodAdditionalFeeWithoutTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, false, customer);
             }
 
             //tax

@@ -357,8 +357,14 @@ namespace SmartStore.Services.Payments
 		public virtual decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart, string paymentMethodSystemName)
         {
             var paymentMethod = LoadPaymentMethodBySystemName(paymentMethodSystemName);
+			var paymentMethodAdditionalFee = (paymentMethod != null ? paymentMethod.Value.GetAdditionalHandlingFee(cart) : decimal.Zero);
 
-			return paymentMethod.GetAdditionalHandlingFee(cart, _shoppingCartSettings.RoundPricesDuringCalculation);
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				paymentMethodAdditionalFee = Math.Round(paymentMethodAdditionalFee, 2);
+			}
+
+			return paymentMethodAdditionalFee;
         }
 
 

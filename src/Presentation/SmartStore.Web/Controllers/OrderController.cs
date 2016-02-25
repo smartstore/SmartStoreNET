@@ -291,12 +291,18 @@ namespace SmartStore.Web.Controllers
             //gift cards
             foreach (var gcuh in order.GiftCardUsageHistory)
             {
-                model.GiftCards.Add(new OrderDetailsModel.GiftCard
-                {
-                    CouponCode = gcuh.GiftCard.GiftCardCouponCode,
+				var remainingAmountBase = gcuh.GiftCard.GetGiftCardRemainingAmount();
+				var remainingAmount = _currencyService.ConvertCurrency(remainingAmountBase, order.CurrencyRate);
+
+				var gcModel = new OrderDetailsModel.GiftCard
+				{
+					CouponCode = gcuh.GiftCard.GiftCardCouponCode,
 					Amount = _priceFormatter.FormatPrice(-(_currencyService.ConvertCurrency(gcuh.UsedValue, order.CurrencyRate)), true, order.CustomerCurrencyCode, false, language),
-                });
-            }
+					Remaining = _priceFormatter.FormatPrice(remainingAmount, true, false)
+				};
+
+				model.GiftCards.Add(gcModel);
+			}
 
             //reward points           
             if (order.RedeemedRewardPointsEntry != null)

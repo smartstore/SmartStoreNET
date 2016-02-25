@@ -91,6 +91,7 @@
 * Product filter: Specification attributes are sorted by display order rather than alphabetically by name
 * #856 Don't route topics which are excluded from sitemap
 * #851 Replace reCAPTCHA with "I'm not a robot" CAPTCHA
+* #713 Display gift card remaining amount in frontend order details and order messages
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

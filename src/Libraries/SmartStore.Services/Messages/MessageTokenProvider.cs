@@ -507,7 +507,12 @@ namespace SmartStore.Services.Messages
                 string giftCardText = String.Format(_localizationService.GetResource("Messages.Order.GiftCardInfo", language.Id), HttpUtility.HtmlEncode(gcuh.GiftCard.GiftCardCouponCode));
                 string giftCardAmount = _priceFormatter.FormatPrice(-(_currencyService.ConvertCurrency(gcuh.UsedValue, order.CurrencyRate)), true, order.CustomerCurrencyCode, false, language);
 
-                sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong></td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{1}</td></tr>", giftCardText, giftCardAmount));
+				var remaining = _currencyService.ConvertCurrency(gcuh.GiftCard.GetGiftCardRemainingAmount(), order.CurrencyRate);
+				var remainingFormatted = _priceFormatter.FormatPrice(remaining, true, false);
+				var remainingText = _localizationService.GetResource("ShoppingCart.Totals.GiftCardInfo.Remaining", language.Id).FormatInvariant(remainingFormatted);
+
+				sb.AppendLine(string.Format("<tr style=\"text-align:right;\"><td>&nbsp;</td><td colspan=\"2\" style=\"padding:8px;border-top:1px solid #ddd;\"><strong>{0}</strong><br />{1}</td> <td style=\"padding:8px;border-top:1px solid #ddd;\">{2}</td></tr>",
+					giftCardText, remainingText, giftCardAmount));
             }
 
             //reward points
@@ -914,14 +919,18 @@ namespace SmartStore.Services.Messages
 
         public virtual void AddGiftCardTokens(IList<Token> tokens, GiftCard giftCard)
         {
-            tokens.Add(new Token("GiftCard.SenderName", giftCard.SenderName));
+			var order = giftCard.PurchasedWithOrderItem.Order;
+			var remainingAmount = _currencyService.ConvertCurrency(giftCard.GetGiftCardRemainingAmount(), order.CurrencyRate);	
+
+			tokens.Add(new Token("GiftCard.SenderName", giftCard.SenderName));
             tokens.Add(new Token("GiftCard.SenderEmail", giftCard.SenderEmail));
             tokens.Add(new Token("GiftCard.RecipientName", giftCard.RecipientName));
             tokens.Add(new Token("GiftCard.RecipientEmail", giftCard.RecipientEmail));
             tokens.Add(new Token("GiftCard.Amount", _priceFormatter.FormatPrice(giftCard.Amount, true, false)));
-            tokens.Add(new Token("GiftCard.CouponCode", giftCard.GiftCardCouponCode));
+			tokens.Add(new Token("GiftCard.RemainingAmount", _priceFormatter.FormatPrice(remainingAmount, true, false)));
+			tokens.Add(new Token("GiftCard.CouponCode", giftCard.GiftCardCouponCode));
 
-            var giftCardMesage = !String.IsNullOrWhiteSpace(giftCard.Message) ?
+			var giftCardMesage = !String.IsNullOrWhiteSpace(giftCard.Message) ?
                 HtmlUtils.FormatText(giftCard.Message, false, true, false, false, false, false) : "";
 
             tokens.Add(new Token("GiftCard.Message", giftCardMesage, true));
@@ -1177,8 +1186,9 @@ namespace SmartStore.Services.Messages
                 "%GiftCard.SenderEmail%",
                 "%GiftCard.RecipientName%", 
                 "%GiftCard.RecipientEmail%", 
-                "%GiftCard.Amount%", 
-                "%GiftCard.CouponCode%",
+                "%GiftCard.Amount%",
+				"%GiftCard.RemainingAmount%",
+				"%GiftCard.CouponCode%",
                 "%GiftCard.Message%",
                 "%Customer.Email%", 
                 "%Customer.Username%", 

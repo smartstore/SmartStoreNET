@@ -126,7 +126,8 @@ namespace SmartStore.Web.Models.Order
         {
             public string CouponCode { get; set; }
             public string Amount { get; set; }
-        }
+			public string Remaining { get; set; }
+		}
 
         public partial class OrderNote : ModelBase
         {

@@ -439,8 +439,9 @@
                         {
                         <tr>
                             <td class="cart-total-left">
-                                <strong>
-                                    @string.Format(T("Order.GiftCardInfo").Text, gc.CouponCode):</strong>
+                                <strong>@string.Format(T("Order.GiftCardInfo").Text, gc.CouponCode):</strong>
+								<br />
+								<span class="nobr">@string.Format(T("ShoppingCart.Totals.GiftCardInfo.Remaining").Text, gc.Remaining)</span>
                             </td>
                             <td class="cart-total-right">
                                 <span class="nobr">

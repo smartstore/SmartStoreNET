@@ -49,6 +49,7 @@
 * #738 Implement download of pictures via URLs in product import
 * Web-API: Bridge to import framework: uploading import files to import profile directory
 * Setting to round down calculated reward points
+* #695 Implement checkbox in checkout to let customers subscribe to newsletters
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

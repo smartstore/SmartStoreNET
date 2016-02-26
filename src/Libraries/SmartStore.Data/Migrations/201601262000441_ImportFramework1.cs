@@ -421,6 +421,34 @@ namespace SmartStore.Data.Migrations
 				"Punkte abrunden",
 				"Specifies whether to round down calculated points. Otherwise the bonus points will be rounded up.",
 				"Legt fest, ob bei der Punkteberechnung abgerundet werden soll. Ansonsten werden Bonuspunkte aufgerundet.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Order.GiftCards_Deactivated",
+				"Gift card deactivation order status",
+				"Geschenkgutschein wird deaktiviert, wenn Auftragsstatus...");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.NewsLetterSubscription",
+				"Subscribe to newsletters",
+				"Abonnieren von Newslettern",
+				"Specifies id customers can subscribe to newsletters when ordering and if the checkbox is enabled by default.",
+				"Legt fest, ob Kunden bei einer Bestellung Newsletter abonnieren können und ob die Checkbox standardmäßig aktiviert ist.");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Orders.CheckoutNewsLetterSubscription.None", "Do not show", "Nicht anzeigen");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Orders.CheckoutNewsLetterSubscription.Deactivated", "Show deactivated", "Deaktiviert anzeigen");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Orders.CheckoutNewsLetterSubscription.Activated", "Show activated", "Aktiviert anzeigen");
+
+			builder.AddOrUpdate("Common.Options", "Options", "Optionen");
+
+			builder.AddOrUpdate("Checkout.SubscribeToNewsLetter",
+				"Subscribed to newsletter",
+				"Newsletter abonnieren");
+
+			builder.AddOrUpdate("Admin.OrderNotice.NewsLetterSubscriptionAdded",
+				"Subscribed to newsletter",
+				"Newsletter wurde abonniert");
+
+			builder.AddOrUpdate("Admin.OrderNotice.NewsLetterSubscriptionRemoved",
+				"Newsletter subscriber has been removed",
+				"Newsletter-Abonnent wurde entfernt");
 		}
 	}
 }

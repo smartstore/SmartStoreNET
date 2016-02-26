@@ -796,13 +796,14 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			//load settings for a chosen store scope
 			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
 			var shoppingCartSettings = _services.Settings.LoadSetting<ShoppingCartSettings>(storeScope);
+
 			var model = shoppingCartSettings.ToModel();
 
-			StoreDependingSettings.GetOverrideKeys(shoppingCartSettings, model, storeScope, _services.Settings);
+			model.AvailableNewsLetterSubscription = shoppingCartSettings.NewsLetterSubscription.ToSelectList();
 
+			StoreDependingSettings.GetOverrideKeys(shoppingCartSettings, model, storeScope, _services.Settings);
 
 			return View(model);
         }

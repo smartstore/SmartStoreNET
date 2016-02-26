@@ -979,8 +979,7 @@ namespace SmartStore.Web.Controllers
                 if (ModelState.IsValid)
                 {
                     //username 
-                    if (_customerSettings.UsernamesEnabled &&
-                        this._customerSettings.AllowUsersToChangeUsernames)
+                    if (_customerSettings.UsernamesEnabled && _customerSettings.AllowUsersToChangeUsernames)
                     {
                         if (!customer.Username.Equals(model.Username.Trim(), StringComparison.InvariantCultureIgnoreCase))
                         {
@@ -1040,7 +1039,7 @@ namespace SmartStore.Web.Controllers
 
                         if (model.CustomerNumber != currentCustomerNumber && customerNumbers.Where(x => x.Value == model.CustomerNumber).Any())
                         {
-                            this.NotifyError("Common.CustomerNumberAlreadyExists");
+                            NotifyError("Common.CustomerNumberAlreadyExists");
                         }
                         else 
                         {
@@ -1083,38 +1082,13 @@ namespace SmartStore.Web.Controllers
                     //newsletter
                     if (_customerSettings.NewsletterEnabled)
                     {
-                        //save newsletter value
-                        var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, _storeContext.CurrentStore.Id);
-                        if (newsletter != null)
-                        {
-							if (model.Newsletter)
-							{
-								newsletter.Active = true;
-								_newsLetterSubscriptionService.UpdateNewsLetterSubscription(newsletter);
-							}
-							else
-							{
-								_newsLetterSubscriptionService.DeleteNewsLetterSubscription(newsletter);
-							}
-                        }
-                        else
-                        {
-                            if (model.Newsletter)
-                            {
-                                _newsLetterSubscriptionService.InsertNewsLetterSubscription(new NewsLetterSubscription()
-                                {
-                                    NewsLetterSubscriptionGuid = Guid.NewGuid(),
-                                    Email = customer.Email,
-                                    Active = true,
-                                    CreatedOnUtc = DateTime.UtcNow,
-									StoreId = _storeContext.CurrentStore.Id
-                                });
-                            }
-                        }
+						_newsLetterSubscriptionService.AddNewsLetterSubscriptionFor(model.Newsletter, customer.Email, _storeContext.CurrentStore.Id);
                     }
 
-                    if (_forumSettings.ForumsEnabled && _forumSettings.SignaturesEnabled)
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Signature, model.Signature);
+					if (_forumSettings.ForumsEnabled && _forumSettings.SignaturesEnabled)
+					{
+						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Signature, model.Signature);
+					}
 
 					return RedirectToAction("Info");
                 }

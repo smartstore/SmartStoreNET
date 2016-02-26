@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
@@ -50,6 +51,9 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         public bool DisplayCommentBox { get; set; }
         public string CustomerComment { get; set; }
+
+		public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
+		public bool? SubscribeToNewsLetter { get; set; }
 
 		public bool DisplayEsdRevocationWaiverBox { get; set; }
 

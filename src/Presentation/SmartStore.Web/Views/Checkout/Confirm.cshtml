@@ -28,9 +28,10 @@
             </div>
 
             <input type="hidden" id="customercommenthidden" name="customercommenthidden" />
+			<input type="hidden" id="SubscribeToNewsLetterHidden" name="SubscribeToNewsLetterHidden" />
 
-            if (Model.TermsOfServiceEnabled)
-            {
+			if (Model.TermsOfServiceEnabled)
+			{
             <div class="terms-of-service alert alert-info">
                 <script type="text/javascript">
                     $(document).ready(function () {
@@ -116,6 +117,7 @@
                             		esdRevocationWaiverOk = true;
 
                             	$("#customercommenthidden").val($("#CustomerComment").val());
+                            	$('#SubscribeToNewsLetterHidden').val($('input[name=SubscribeToNewsLetter]').is(':checked'));
 
 								// terms of services
                                 @if (Model.TermsOfServiceEnabled)

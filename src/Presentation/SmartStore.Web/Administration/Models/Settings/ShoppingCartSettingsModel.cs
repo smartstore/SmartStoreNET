@@ -1,4 +1,7 @@
-﻿using SmartStore.Web.Framework;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
 {
@@ -40,7 +43,10 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.CrossSellsNumber")]
         public int CrossSellsNumber { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.EmailWishlistEnabled")]
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation")]
+		public bool RoundPricesDuringCalculation { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.EmailWishlistEnabled")]
         public bool EmailWishlistEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.AllowAnonymousUsersToEmailWishlist")]
@@ -79,8 +85,8 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowEsdRevocationWaiverBox")]
 		public bool ShowEsdRevocationWaiverBox { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation")]
-        public bool RoundPricesDuringCalculation { get; set; }
-        
-    }
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.NewsLetterSubscription")]
+		public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
+		public SelectList AvailableNewsLetterSubscription { get; set; }
+	}
 }

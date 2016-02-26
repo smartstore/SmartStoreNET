@@ -665,6 +665,7 @@ namespace SmartStore.Web.Controllers
 
 			model.GiftCardBox.Display = _shoppingCartSettings.ShowGiftCardBox;
 			model.DisplayCommentBox = _shoppingCartSettings.ShowCommentBox;
+			model.NewsLetterSubscription = _shoppingCartSettings.NewsLetterSubscription;
 			model.DisplayEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
 
 			//cart warnings

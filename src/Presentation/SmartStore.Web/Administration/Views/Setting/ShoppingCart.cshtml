@@ -51,8 +51,8 @@
     @(Html.SmartStore().TabStrip().Name("catalogsettings-edit").Items(x =>
 	{
 		x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.CartSettings").Text).Content(@TabCartSettings()).Selected(true);
-		x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.WishlistSettings").Text).Content(@TabWishlistSettings());
         x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.Checkout").Text).Content(@TabCheckoutSettings());
+		x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.WishlistSettings").Text).Content(@TabWishlistSettings());
     }))
 }
 
@@ -306,6 +306,16 @@
 			<td class="adminData">
 				@Html.SettingEditorFor(model => model.ShowCommentBox)
 				@Html.ValidationMessageFor(model => model.ShowCommentBox)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.NewsLetterSubscription)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.NewsLetterSubscription)
+				@Html.DropDownListFor(model => model.NewsLetterSubscription, Model.AvailableNewsLetterSubscription)
+				@Html.ValidationMessageFor(model => model.NewsLetterSubscription)
 			</td>
 		</tr>
         <tr>

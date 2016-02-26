@@ -7,7 +7,6 @@ using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Messages
 {
-
 	public class NewsLetterSubscriptionService : INewsLetterSubscriptionService
     {
         private readonly IEventPublisher _eventPublisher;
@@ -126,12 +125,52 @@ namespace SmartStore.Services.Messages
             _eventPublisher.EntityDeleted(newsLetterSubscription);
         }
 
-        /// <summary>
-        /// Gets a newsletter subscription by newsletter subscription identifier
-        /// </summary>
-        /// <param name="newsLetterSubscriptionId">The newsletter subscription identifier</param>
-        /// <returns>NewsLetter subscription</returns>
-        public virtual NewsLetterSubscription GetNewsLetterSubscriptionById(int newsLetterSubscriptionId)
+		public virtual bool? AddNewsLetterSubscriptionFor(bool add, string email, int storeId)
+		{
+			bool? result = null;
+
+			if (email.IsEmail())
+			{
+				var newsletter = GetNewsLetterSubscriptionByEmail(email, storeId);
+				if (newsletter != null)
+				{
+					if (add)
+					{
+						newsletter.Active = true;
+						UpdateNewsLetterSubscription(newsletter);
+						result = true;
+					}
+					else
+					{
+						DeleteNewsLetterSubscription(newsletter);
+						result = false;
+					}
+				}
+				else
+				{
+					if (add)
+					{
+						InsertNewsLetterSubscription(new NewsLetterSubscription
+						{
+							NewsLetterSubscriptionGuid = Guid.NewGuid(),
+							Email = email,
+							Active = true,
+							CreatedOnUtc = DateTime.UtcNow,
+							StoreId = storeId
+						});
+						result = true;
+					}
+				}
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// Gets a newsletter subscription by newsletter subscription identifier
+		/// </summary>
+		/// <param name="newsLetterSubscriptionId">The newsletter subscription identifier</param>
+		/// <returns>NewsLetter subscription</returns>
+		public virtual NewsLetterSubscription GetNewsLetterSubscriptionById(int newsLetterSubscriptionId)
         {
             if (newsLetterSubscriptionId == 0) return null;
 

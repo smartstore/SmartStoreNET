@@ -69,8 +69,9 @@ namespace SmartStore.Services.Orders
 		private readonly IAffiliateService _affiliateService;
         private readonly IEventPublisher _eventPublisher;
 		private readonly IGenericAttributeService _genericAttributeService;
+		private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
 
-        private readonly PaymentSettings _paymentSettings;
+		private readonly PaymentSettings _paymentSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly OrderSettings _orderSettings;
         private readonly TaxSettings _taxSettings;
@@ -78,48 +79,48 @@ namespace SmartStore.Services.Orders
         private readonly CurrencySettings _currencySettings;
 		private readonly ShoppingCartSettings _shoppingCartSettings;
 
-        #endregion
+		#endregion
 
-        #region Ctor
+		#region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="orderService">Order service</param>
-        /// <param name="webHelper">Web helper</param>
-        /// <param name="localizationService">Localization service</param>
-        /// <param name="languageService">Language service</param>
-        /// <param name="productService">Product service</param>
-        /// <param name="paymentService">Payment service</param>
-        /// <param name="logger">Logger</param>
-        /// <param name="orderTotalCalculationService">Order total calculationservice</param>
-        /// <param name="priceCalculationService">Price calculation service</param>
-        /// <param name="priceFormatter">Price formatter</param>
-        /// <param name="productAttributeParser">Product attribute parser</param>
-        /// <param name="productAttributeFormatter">Product attribute formatter</param>
-        /// <param name="giftCardService">Gift card service</param>
-        /// <param name="shoppingCartService">Shopping cart service</param>
-        /// <param name="checkoutAttributeFormatter">Checkout attribute service</param>
-        /// <param name="shippingService">Shipping service</param>
-        /// <param name="shipmentService">Shipment service</param>
-        /// <param name="taxService">Tax service</param>
-        /// <param name="customerService">Customer service</param>
-        /// <param name="discountService">Discount service</param>
-        /// <param name="encryptionService">Encryption service</param>
-        /// <param name="workContext">Work context</param>
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="orderService">Order service</param>
+		/// <param name="webHelper">Web helper</param>
+		/// <param name="localizationService">Localization service</param>
+		/// <param name="languageService">Language service</param>
+		/// <param name="productService">Product service</param>
+		/// <param name="paymentService">Payment service</param>
+		/// <param name="logger">Logger</param>
+		/// <param name="orderTotalCalculationService">Order total calculationservice</param>
+		/// <param name="priceCalculationService">Price calculation service</param>
+		/// <param name="priceFormatter">Price formatter</param>
+		/// <param name="productAttributeParser">Product attribute parser</param>
+		/// <param name="productAttributeFormatter">Product attribute formatter</param>
+		/// <param name="giftCardService">Gift card service</param>
+		/// <param name="shoppingCartService">Shopping cart service</param>
+		/// <param name="checkoutAttributeFormatter">Checkout attribute service</param>
+		/// <param name="shippingService">Shipping service</param>
+		/// <param name="shipmentService">Shipment service</param>
+		/// <param name="taxService">Tax service</param>
+		/// <param name="customerService">Customer service</param>
+		/// <param name="discountService">Discount service</param>
+		/// <param name="encryptionService">Encryption service</param>
+		/// <param name="workContext">Work context</param>
 		/// <param name="storeContext">Store context</param>
-        /// <param name="workflowMessageService">Workflow message service</param>
-        /// <param name="customerActivityService">Customer activity service</param>
-        /// <param name="currencyService">Currency service</param>
+		/// <param name="workflowMessageService">Workflow message service</param>
+		/// <param name="customerActivityService">Customer activity service</param>
+		/// <param name="currencyService">Currency service</param>
 		/// <param name="affiliateService">Affiliate service</param>
-        /// <param name="eventPublisher">Event published</param>
-        /// <param name="paymentSettings">Payment settings</param>
-        /// <param name="rewardPointsSettings">Reward points settings</param>
-        /// <param name="orderSettings">Order settings</param>
-        /// <param name="taxSettings">Tax settings</param>
-        /// <param name="localizationSettings">Localization settings</param>
-        /// <param name="currencySettings">Currency settings</param>
-        public OrderProcessingService(IOrderService orderService,
+		/// <param name="eventPublisher">Event published</param>
+		/// <param name="paymentSettings">Payment settings</param>
+		/// <param name="rewardPointsSettings">Reward points settings</param>
+		/// <param name="orderSettings">Order settings</param>
+		/// <param name="taxSettings">Tax settings</param>
+		/// <param name="localizationSettings">Localization settings</param>
+		/// <param name="currencySettings">Currency settings</param>
+		public OrderProcessingService(IOrderService orderService,
             IWebHelper webHelper,
             ILocalizationService localizationService,
             ILanguageService languageService,
@@ -148,7 +149,8 @@ namespace SmartStore.Services.Orders
 			IAffiliateService affiliateService,
             IEventPublisher eventPublisher,
 			IGenericAttributeService genericAttributeService,
-            PaymentSettings paymentSettings,
+			INewsLetterSubscriptionService newsLetterSubscriptionService,
+			PaymentSettings paymentSettings,
             RewardPointsSettings rewardPointsSettings,
             OrderSettings orderSettings,
             TaxSettings taxSettings,
@@ -185,6 +187,7 @@ namespace SmartStore.Services.Orders
 			this._affiliateService = affiliateService;
             this._eventPublisher = eventPublisher;
 			this._genericAttributeService = genericAttributeService;
+			this._newsLetterSubscriptionService = newsLetterSubscriptionService;
             this._paymentSettings = paymentSettings;
             this._rewardPointsSettings = rewardPointsSettings;
             this._orderSettings = orderSettings;
@@ -1379,9 +1382,28 @@ namespace SmartStore.Services.Orders
                             _eventPublisher.PublishOrderPaid(order);
                         }
 
-                        #endregion
-                    }
-                }
+						#endregion
+
+						#region Newsletter subscription
+
+						if (extraData.ContainsKey("SubscribeToNewsLetter") && _shoppingCartSettings.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
+						{
+							var addSubscription = extraData["SubscribeToNewsLetter"].ToBool();
+
+							bool? nsResult = _newsLetterSubscriptionService.AddNewsLetterSubscriptionFor(addSubscription, customer.Email, order.StoreId);
+
+							if (nsResult.HasValue)
+							{
+								if (nsResult.Value)
+									_orderService.AddOrderNote(order, T("Admin.OrderNotice.NewsLetterSubscriptionAdded"));
+								else
+									_orderService.AddOrderNote(order, T("Admin.OrderNotice.NewsLetterSubscriptionRemoved"));
+							}
+						}
+
+						#endregion
+					}
+				}
                 else
                 {
 					result.AddError(T("Payment.PayingFailed"));

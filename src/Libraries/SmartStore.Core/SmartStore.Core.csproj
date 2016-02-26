@@ -181,6 +181,7 @@
     <Compile Include="Domain\DataExchange\ExportProfile.cs" />
     <Compile Include="Domain\Messages\EmailAttachmentStorageLocation.cs" />
     <Compile Include="Domain\Messages\QueuedEmailAttachment.cs" />
+    <Compile Include="Domain\Orders\CheckoutNewsLetterSubscription.cs" />
     <Compile Include="Domain\Payments\PaymentMethod.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />

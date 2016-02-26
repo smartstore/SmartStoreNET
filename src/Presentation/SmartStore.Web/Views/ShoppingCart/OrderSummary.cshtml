@@ -70,7 +70,7 @@
 				<div class="download-agreement">
 					<div class="checkbox">
 						<label>
-							<input type="checkbox" name="AgreeUserAgreement@(item.ProductId)">
+							<input type="checkbox" name="AgreeUserAgreement@(item.ProductId)" />
 							@T("DownloadableProducts.UserAgreementConfirmation", item.ProductId)
 						</label>
 					</div>
@@ -81,7 +81,7 @@
 				<div class="esd-revocation-waiver">
 					<div class="checkbox">
 						<label>
-							<input type="checkbox" name="AgreeEsdRevocationWaiver@(item.ProductId)">
+							<input type="checkbox" name="AgreeEsdRevocationWaiver@(item.ProductId)" />
 							@T("Checkout.EsdRevocationWaiverConfirmation")
 						</label>
 					</div>
@@ -257,6 +257,23 @@
     {
         @Html.Partial("_CommentBox", Model)
     }
+
+	@if (!Model.IsEditable && Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
+	{
+		<div class="block block-bordered newsletter-subscription">
+			<div class="block-title">
+				@T("Common.Options")
+			</div>
+			<div class="block-body">
+				<div class="checkbox">
+					<label style="margin-bottom: 0;">
+						<input type="checkbox" name="SubscribeToNewsLetter" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
+						@T("Checkout.SubscribeToNewsLetter")
+					</label>
+				</div>
+			</div>
+		</div>
+	}
 
     @if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
     {

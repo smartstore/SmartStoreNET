@@ -105,6 +105,11 @@ namespace SmartStore.Core.Domain.Orders
 		public bool ShowEsdRevocationWaiverBox { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether to show a checkbox to subscribe to newsletters
+		/// </summary>
+		public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
+
+		/// <summary>
 		/// Gets or sets a number of "Cross-sells" on shopping cart page
 		/// </summary>
 		public int CrossSellsNumber { get; set; }

@@ -2,6 +2,17 @@
 
 ## SmartStore.NET 2.5
 
+### Highlights
+ * New import/export framework (profiles, filters, mapping, projections, scheduling, deployment... just everything!)
+ * TaskScheduler: Rewritten from scratch to be suitable for Web Farms (including support for cron expressions)
+ * Payment and shipping methods by customer roles
+ * Restrict payment methods to countries
+ * Restrict payment methods to shipping methods
+ * Email attachment support for message templates
+ * Attach order invoice PDF automatically to order notification emails
+ * Overall performance increase
+ * Lots of bug fixes
+
 ### New Features
 * New export and import framework
 * Import of customer and category data

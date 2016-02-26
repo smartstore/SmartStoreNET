@@ -38,16 +38,14 @@ namespace SmartStore.PayPal.Filters
 			if (filterContext == null || filterContext.ActionDescriptor == null || filterContext.HttpContext == null || filterContext.HttpContext.Request == null)
 				return;
 
-			string actionName = filterContext.ActionDescriptor.ActionName;
-
-			var store = _services.StoreContext.CurrentStore;
-			var customer = _services.WorkContext.CurrentCustomer;
-
 			var attr = Convert.ToBoolean(filterContext.HttpContext.GetCheckoutState().CustomProperties["PayPalExpressButtonUsed"]);
 
 			//verify paypalexpressprovider was used
 			if (attr == true)
 			{
+				var store = _services.StoreContext.CurrentStore;
+				var customer = _services.WorkContext.CurrentCustomer;
+
 				_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, "Payments.PayPalExpress", store.Id);
 
 				var paymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;

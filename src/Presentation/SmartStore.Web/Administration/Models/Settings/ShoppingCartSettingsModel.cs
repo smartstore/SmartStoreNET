@@ -87,6 +87,6 @@ namespace SmartStore.Admin.Models.Settings
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.NewsLetterSubscription")]
 		public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
-		public SelectList AvailableNewsLetterSubscription { get; set; }
+		public SelectList AvailableNewsLetterSubscriptions { get; set; }
 	}
 }

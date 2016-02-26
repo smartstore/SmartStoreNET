@@ -119,23 +119,23 @@
       <LocaleResource Name="SelectionText">
         <Value>oder</Value>
       </LocaleResource>
-      <LocaleResource Name="Fields.DisplayCheckoutButton">
-        <Value>Checkout-Button auf der Warenkorbseite aktivieren</Value>
+      <LocaleResource Name="Fields.ShowButtonInMiniShoppingCart">
+        <Value>Button im Miniwarenkorb anzeigen</Value>
       </LocaleResource>
-      <LocaleResource Name="Fields.DisplayCheckoutButton.Hint">
-        <Value>Aktiviert den Checkout-Button auf der Warenkorbseite.</Value>
+      <LocaleResource Name="Fields.ShowButtonInMiniShoppingCart.Hint">
+        <Value>Legt fest, ob der Checkout-Button im Miniwarenkorb angezeigt werden soll.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.ConfirmedShipment">
-        <Value>Bestätigte Emailadresse</Value>
+        <Value>Bestätigte E-Mail-Adresse</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.ConfirmedShipment.Hint">
-        <Value>Wählen Sie ob sich bei der verwendetet Emailadresse, um eine von PayPal bestätigte Emailadresse handeln muss.</Value>
+        <Value>Legt fest, ob es sich bei der verwendeten E-Mail-Adresse, um eine von PayPal bestätigte Adresse handeln muss.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.NoShipmentAddress">
         <Value>Anzeige der Lieferadresse unterdrücken</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.NoShipmentAddress.Hint">
-        <Value>Bestimmen Sie ob auf der PayPal Seite die Lieferadresse angezeigt werden soll.</Value>
+        <Value>Legt fest, ob auf der PayPal Seite die Lieferadresse angezeigt werden soll.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.CallbackTimeout">
         <Value>Zeitlimit für API-Callback</Value>

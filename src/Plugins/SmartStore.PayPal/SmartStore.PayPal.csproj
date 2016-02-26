@@ -119,6 +119,7 @@
     <Compile Include="Controllers\PayPalExpressController.cs" />
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Filters\PayPalExpressCheckoutFilter.cs" />
+    <Compile Include="Filters\PayPalExpressWidgetZoneFilter.cs" />
     <Compile Include="Models\ApiConfigurationModels.cs" />
     <Compile Include="Models\PayPalStandardConfigurationModel.cs" />
     <Compile Include="Models\PayPalDirectPaymentInfoModel.cs" />
@@ -264,6 +265,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\PayPalDirect\PaymentInfo.Mobile.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PayPalExpress\MiniShoppingCart.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Web References\PayPalSvc\CoreComponentTypes.xsd">

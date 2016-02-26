@@ -51,12 +51,17 @@ namespace SmartStore.PayPal.Settings
         /// <summary>
         /// Determines whether the checkout button is displayed beneath the cart
         /// </summary>
-        public bool DisplayCheckoutButton { get; set; }
+        //public bool DisplayCheckoutButton { get; set; }
 
-        /// <summary>
-        /// Determines whether the shipment address has  to be confirmed by PayPal 
-        /// </summary>
-        public bool ConfirmedShipment { get; set; }
+		/// <summary>
+		/// Specifies whether to display the checkout button in mini shopping cart
+		/// </summary>
+		public bool ShowButtonInMiniShoppingCart { get; set; }
+
+		/// <summary>
+		/// Determines whether the shipment address has  to be confirmed by PayPal 
+		/// </summary>
+		public bool ConfirmedShipment { get; set; }
 
         /// <summary>
         /// Determines whether the shipment address is transmitted to PayPal

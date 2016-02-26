@@ -801,7 +801,7 @@ namespace SmartStore.Admin.Controllers
 
 			var model = shoppingCartSettings.ToModel();
 
-			model.AvailableNewsLetterSubscription = shoppingCartSettings.NewsLetterSubscription.ToSelectList();
+			model.AvailableNewsLetterSubscriptions = shoppingCartSettings.NewsLetterSubscription.ToSelectList();
 
 			StoreDependingSettings.GetOverrideKeys(shoppingCartSettings, model, storeScope, _services.Settings);
 

@@ -6,6 +6,7 @@ using System.Text;
 using System.Web;
 using System.Web.Routing;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.PayPal.PayPalSvc;
 using SmartStore.PayPal.Settings;
@@ -129,15 +130,18 @@ namespace SmartStore.PayPal.Services
             return currencyCodeType;
         }
 
-        public static string CheckIfButtonExists(PayPalExpressPaymentSettings settings, string buttonUrl) 
+        public static string CheckIfButtonExists(PayPalExpressPaymentSettings settings, Language language) 
         {
-            HttpWebResponse response = null;
+			const string expressCheckoutButton = "https://www.paypalobjects.com/{0}/i/btn/btn_xpressCheckout.gif";
+
+			HttpWebResponse response = null;
 
 			if (settings.SecurityProtocol.HasValue)
 			{
 				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
 			}
 
+			var buttonUrl = expressCheckoutButton.FormatInvariant(language.LanguageCulture.Replace("-", "_"));
 			var request = (HttpWebRequest)WebRequest.Create(buttonUrl);
             request.Method = "HEAD";
 
@@ -148,8 +152,8 @@ namespace SmartStore.PayPal.Services
             }
             catch (WebException)
             {
-                /* A WebException will be thrown if the status of the response is not `200 OK` */
-                return "https://www.paypalobjects.com/en_US/i/btn/btn_xpressCheckout.gif";
+				/* A WebException will be thrown if the status of the response is not `200 OK` */
+				return expressCheckoutButton.FormatInvariant("en_US");
             }
             finally
             {

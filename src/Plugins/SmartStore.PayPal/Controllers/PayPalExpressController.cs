@@ -65,7 +65,7 @@ namespace SmartStore.PayPal.Controllers
             _services = services;
 		}
 
-		public SelectList TransactModeValues(TransactMode selected)
+		private SelectList TransactModeValues(TransactMode selected)
 		{
 			return new SelectList(new List<object>
 			{
@@ -128,14 +128,27 @@ namespace SmartStore.PayPal.Controllers
 
 			if (model.CurrentPageIsBasket)
 			{
-				var culture = _services.WorkContext.WorkingLanguage.LanguageCulture;
 				var settings = _services.Settings.LoadSetting<PayPalExpressPaymentSettings>(_services.StoreContext.CurrentStore.Id);
-				var buttonUrl = "https://www.paypalobjects.com/{0}/i/btn/btn_xpressCheckout.gif".FormatWith(culture.Replace("-", "_"));
 
-				model.SubmitButtonImageUrl = PayPalHelper.CheckIfButtonExists(settings, buttonUrl);
+				model.SubmitButtonImageUrl = PayPalHelper.CheckIfButtonExists(settings, _services.WorkContext.WorkingLanguage);
 			}
 
 			return PartialView(model);
+		}
+
+		public ActionResult MiniShoppingCart()
+		{
+			var settings = _services.Settings.LoadSetting<PayPalExpressPaymentSettings>(_services.StoreContext.CurrentStore.Id);
+
+			if (settings.ShowButtonInMiniShoppingCart)
+			{
+				var model = new PayPalExpressPaymentInfoModel();
+				model.SubmitButtonImageUrl = PayPalHelper.CheckIfButtonExists(settings, _services.WorkContext.WorkingLanguage);
+
+				return PartialView(model);
+			}
+
+			return new EmptyResult();
 		}
 
 		[ValidateInput(false)]
@@ -349,7 +362,6 @@ namespace SmartStore.PayPal.Controllers
 			return Content("");
 		}
 
-
 		public ActionResult SubmitButton()
 		{
 			try
@@ -539,16 +551,18 @@ namespace SmartStore.PayPal.Controllers
 		{
 			var warnings = new List<string>();
 
-			//validate
 			var validator = new PayPalExpressPaymentInfoValidator(_services.Localization);
-			var model = new PayPalExpressPaymentInfoModel()
-			{
+			var model = new PayPalExpressPaymentInfoModel();
 
-			};
 			var validationResult = validator.Validate(model);
+
 			if (!validationResult.IsValid)
+			{
 				foreach (var error in validationResult.Errors)
+				{
 					warnings.Add(error.ErrorMessage);
+				}
+			}
 
 			return warnings;
 		}

@@ -652,7 +652,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.MinimumOrderPlacementInterval, mo => mo.Ignore())
 				.ForMember(dest => dest.Id, mo => mo.Ignore());
 			Mapper.CreateMap<ShoppingCartSettings, ShoppingCartSettingsModel>()
-				.ForMember(dest => dest.AvailableNewsLetterSubscription, mo => mo.Ignore());
+				.ForMember(dest => dest.AvailableNewsLetterSubscriptions, mo => mo.Ignore());
 			Mapper.CreateMap<ShoppingCartSettingsModel, ShoppingCartSettings>()
 				.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore())
 				.ForMember(dest => dest.ShowItemsFromWishlistToCartButton, mo => mo.Ignore());

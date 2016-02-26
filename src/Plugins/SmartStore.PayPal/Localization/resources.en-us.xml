@@ -120,11 +120,11 @@
       <LocaleResource Name="SelectionText">
         <Value>or</Value>
       </LocaleResource>
-      <LocaleResource Name="Fields.DisplayCheckoutButton">
-        <Value>Activate checkout button in shopping cart</Value>
+      <LocaleResource Name="Fields.ShowButtonInMiniShoppingCart">
+        <Value>Show button in mini shopping cart</Value>
       </LocaleResource>
-      <LocaleResource Name="Fields.DisplayCheckoutButton.Hint">
-        <Value>Activates the checkout button in the shopping cart.</Value>
+      <LocaleResource Name="Fields.ShowButtonInMiniShoppingCart.Hint">
+        <Value>Soecifies to show the checkout button in the mini shopping cart.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.ConfirmedShipment">
         <Value>Confirmed email address</Value>

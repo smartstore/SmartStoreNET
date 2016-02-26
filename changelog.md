@@ -93,6 +93,7 @@
 * #856 Don't route topics which are excluded from sitemap
 * #851 Replace reCAPTCHA with "I'm not a robot" CAPTCHA
 * #713 Display gift card remaining amount in frontend order details and order messages
+* #736 Render PayPal Express Button in minibasket
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

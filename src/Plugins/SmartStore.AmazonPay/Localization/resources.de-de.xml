@@ -179,7 +179,7 @@ Textvorschläge:<ul>
 		<Value>Button im Miniwarenkorb anzeigen</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShowButtonInMiniShoppingCart.Hint">
-		<Value>Legt fest, dass der "Bezahlen mit Amazon" Button auch im Miniwarenkorb angezeigt werden soll.</Value>
+		<Value>Legt fest, ob der "Bezahlen mit Amazon" Button auch im Miniwarenkorb angezeigt werden soll.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AddressWidgetWidth">
 		<Value>Breite des Adressen-Widgets</Value>

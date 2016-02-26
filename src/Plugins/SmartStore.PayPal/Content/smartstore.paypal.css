@@ -21,9 +21,6 @@
 .paypal-standard-public {
     margin-bottom: 10px;
 }
-.button-save {
-    padding-top: 10px;
-}
 .form-horizontal.paypal-direct #s2id_CreditCardType{
     min-width: 180px;
 }

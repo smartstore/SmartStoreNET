@@ -314,7 +314,7 @@
 			</td>
 			<td class="adminData">
 				@Html.SettingOverrideCheckbox(model => Model.NewsLetterSubscription)
-				@Html.DropDownListFor(model => model.NewsLetterSubscription, Model.AvailableNewsLetterSubscription)
+				@Html.DropDownListFor(model => model.NewsLetterSubscription, Model.AvailableNewsLetterSubscriptions)
 				@Html.ValidationMessageFor(model => model.NewsLetterSubscription)
 			</td>
 		</tr>

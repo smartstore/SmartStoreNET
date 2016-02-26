@@ -72,10 +72,10 @@ namespace SmartStore.PayPal.Models
 
     public class PayPalExpressConfigurationModel : ApiConfigurationModel
     {
-        [SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.DisplayCheckoutButton")]
-        public bool DisplayCheckoutButton { get; set; }
+		[SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.ShowButtonInMiniShoppingCart")]
+		public bool ShowButtonInMiniShoppingCart { get; set; }
 
-        [SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.ConfirmedShipment")]
+		[SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.ConfirmedShipment")]
         public bool ConfirmedShipment { get; set; }
 
         [SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.NoShipmentAddress")]
@@ -99,7 +99,7 @@ namespace SmartStore.PayPal.Models
                 Signature = settings.Signature;
                 AdditionalFee = settings.AdditionalFee;
                 AdditionalFeePercentage = settings.AdditionalFeePercentage;
-                DisplayCheckoutButton = settings.DisplayCheckoutButton;
+				ShowButtonInMiniShoppingCart = settings.ShowButtonInMiniShoppingCart;
                 ConfirmedShipment = settings.ConfirmedShipment;
                 NoShipmentAddress = settings.NoShipmentAddress;
                 CallbackTimeout = settings.CallbackTimeout;
@@ -115,7 +115,7 @@ namespace SmartStore.PayPal.Models
                 settings.Signature = Signature;
                 settings.AdditionalFee = AdditionalFee;
                 settings.AdditionalFeePercentage = AdditionalFeePercentage;
-                settings.DisplayCheckoutButton = DisplayCheckoutButton;
+				settings.ShowButtonInMiniShoppingCart = ShowButtonInMiniShoppingCart;
                 settings.ConfirmedShipment = ConfirmedShipment;
                 settings.NoShipmentAddress = NoShipmentAddress;
                 settings.CallbackTimeout = CallbackTimeout;

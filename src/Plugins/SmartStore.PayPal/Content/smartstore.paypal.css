@@ -1,7 +1,7 @@
 ﻿#paypal-checkout .selection-text {
     text-align: right;
     font-weight: bold;
-    padding: 12px 15px 5px 0;
+    padding: 12px 15px 0 0;
 }
 
 #paypal-checkout .form-horizontal {

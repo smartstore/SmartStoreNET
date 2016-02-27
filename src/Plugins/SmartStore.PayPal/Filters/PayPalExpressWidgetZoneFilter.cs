@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Web.Mvc;
 using SmartStore.PayPal.Settings;
+using SmartStore.Services;
+using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.ShoppingCart;
 
@@ -9,13 +11,19 @@ namespace SmartStore.PayPal.Filters
 	public class PayPalExpressWidgetZoneFilter : IActionFilter, IResultFilter
 	{
 		private readonly Lazy<IWidgetProvider> _widgetProvider;
+		private readonly Lazy<IPaymentService> _paymentService;
+		private readonly Lazy<ICommonServices> _services;
 		private readonly Lazy<PayPalExpressPaymentSettings> _payPalExpressSettings;
 
 		public PayPalExpressWidgetZoneFilter(
 			Lazy<IWidgetProvider> widgetProvider,
+			Lazy<IPaymentService> paymentService,
+			Lazy<ICommonServices> services,
 			Lazy<PayPalExpressPaymentSettings> payPalExpressSettings)
 		{
 			_widgetProvider = widgetProvider;
+			_paymentService = paymentService;
+			_services = services;
 			_payPalExpressSettings = payPalExpressSettings;
 		}
 
@@ -46,7 +54,10 @@ namespace SmartStore.PayPal.Filters
 
 				if (model != null && model.DisplayCheckoutButton && _payPalExpressSettings.Value.ShowButtonInMiniShoppingCart)
 				{
-					_widgetProvider.Value.RegisterAction("mini_shopping_cart_bottom", "MiniShoppingCart", "PayPalExpress", new { area = "SmartStore.PayPal" });
+					if (_paymentService.Value.IsPaymentMethodActive("Payments.PayPalExpress", _services.Value.StoreContext.CurrentStore.Id))
+					{
+						_widgetProvider.Value.RegisterAction("mini_shopping_cart_bottom", "MiniShoppingCart", "PayPalExpress", new { area = "SmartStore.PayPal" });
+					}
 				}
 			}
 		}

@@ -105,6 +105,7 @@
 * #851 Replace reCAPTCHA with "I'm not a robot" CAPTCHA
 * #713 Display gift card remaining amount in frontend order details and order messages
 * #736 Render PayPal Express Button in minibasket
+* PayPal: Support for partial refunds
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin
@@ -127,6 +128,7 @@
 * Grouped products: Display order was not correct
 * Deletion of a customer could delete all newsletter subscriptions
 * PayPal: Fixed "The request was aborted: Could not create SSL/TLS secure channel."
+* PayPal Express: Void and refund out of function ("The transaction id is not valid")
 * Customer could not delete his avatar
 * Facebook authentication: Email missing in verification
 

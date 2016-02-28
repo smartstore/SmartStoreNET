@@ -15,6 +15,12 @@
       <LocaleResource Name="UseSandbox.Hint">
         <Value>Aktiviert die Nutzung der PayPal Sandbox (Testumgebung).</Value>
       </LocaleResource>
+      <LocaleResource Name="IpnChangesPaymentStatus">
+        <Value>Zahlungsstatus über IPN ändern</Value>
+      </LocaleResource>
+      <LocaleResource Name="IpnChangesPaymentStatus.Hint">
+        <Value>Legt fest, ob durch eingehende IPNs der Zahlunsgstatus eines Auftrags angepasst werden soll.</Value>
+      </LocaleResource>
       <LocaleResource Name="TransactMode">
         <Value>Transaktionsmodus</Value>
       </LocaleResource>
@@ -57,6 +63,21 @@
       <LocaleResource Name="AdditionalFeePercentage.Hint">
         <Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
       </LocaleResource>
+      <LocaleResource Name="NoModuleLoading">
+        <Value>Das Zahlungsmodul Modul konnte nicht geladen werden.</Value>
+      </LocaleResource>
+      <LocaleResource Name="IpnLogInfo">
+        <Value>PayPal IPN. Wiederkehrende Zahlung.</Value>
+      </LocaleResource>
+      <LocaleResource Name="IpnOrderNotFound">
+        <Value>PayPal IPN. Bestellung konnte nicht gefunden werden.</Value>
+      </LocaleResource>
+      <LocaleResource Name="IpnFailed">
+        <Value>PayPal IPN. Benachrichtigung konnte nicht abgerufen werden.</Value>
+      </LocaleResource>
+      <LocaleResource Name="PartialRefundMemo">
+        <Value>Teilerstattung von {0}</Value>
+      </LocaleResource>
     </Children>
   </LocaleResource>
   
@@ -87,23 +108,7 @@
             <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
             </ol>]]>
 		    </Value>
-	    </LocaleResource>
-  
-	    <LocaleResource Name="NoModuleLoading">
-		    <Value>PayPal-Express-Modul konnte nicht geladen werden.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="NewPaymentStatus">
-		    <Value>Neuer Zahlungsstatus</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnLogInfo">
-		    <Value>PayPal Express IPN. Wiederkehrende Information.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnOrderNotFound">
-		    <Value>PayPal Express IPN. Bestellung konnte nicht gefunden werden.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnFailed">
-		    <Value>PayPal Express IPN. Benachrichtigung konnte nicht abgerufen werden.</Value>
-	    </LocaleResource>
+	    </LocaleResource>  
 	    <LocaleResource Name="RecurringPayment">
 		    <Value>Wiederkehrende Zahlung</Value>
 	    </LocaleResource>
@@ -180,21 +185,6 @@
           <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
           </ol>]]>
 		    </Value>
-	    </LocaleResource>
-	    <LocaleResource Name="NoModuleLoading">
-		    <Value>PayPal-Direct-Modul konnte nicht geladen werden.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="NewPaymentStatus">
-		    <Value>Neuer Zahlungsstatus</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnLogInfo">
-		    <Value>PayPal Direct IPN. Wiederkehrende Information.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnOrderNotFound">
-		    <Value>PayPal Direct IPN. Bestellung konnte nicht gefunden werden.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnFailed">
-		    <Value>PayPal Direct IPN. Benachrichtigung konnte nicht abgerufen werden.</Value>
 	    </LocaleResource>
 	    <LocaleResource Name="RecurringPayment">
 		    <Value>Wiederkehrende Zahlung</Value>
@@ -299,9 +289,6 @@
       <LocaleResource Name="Fields.IpnUrl.Hint">
         <Value>URL zum IPN-Handler festlegen.</Value>
       </LocaleResource>
-      <LocaleResource Name="NoModuleLoading">
-        <Value>PayPal Standard Modul konnte nicht geladen werden.</Value>
-      </LocaleResource>
       <LocaleResource Name="FailedGetGross">
         <Value>PayPal Standard PDT. Fehler beim Abruf von mc_gross.</Value>
       </LocaleResource>
@@ -310,18 +297,6 @@
       </LocaleResource>
       <LocaleResource Name="PdtFailed">
         <Value>PayPal Standard PDT ist fehlgeschlagen.</Value>
-      </LocaleResource>
-      <LocaleResource Name="NewPaymentStatus">
-        <Value>Neuer Zahlungsstatus</Value>
-      </LocaleResource>
-      <LocaleResource Name="IpnLogInfo">
-        <Value>PayPal Standard IPN. Wiederkehrende Information.</Value>
-      </LocaleResource>
-      <LocaleResource Name="IpnOrderNotFound">
-        <Value>PayPal Standard IPN. Bestellung konnte nicht gefunden werden.</Value>
-      </LocaleResource>
-      <LocaleResource Name="IpnFailed">
-        <Value>PayPal Standard IPN. Benachrichtigung konnte nicht abgerufen werden.</Value>
       </LocaleResource>
       <LocaleResource Name="InvalidCredentials">
         <Value>Unvollständige Zugangsdaten für die PayPal API. Bitte geben Sie die erforderlichen Zugangsdaten im Konfigurationsbereich ein.</Value>

@@ -46,7 +46,7 @@ namespace SmartStore.PayPal.Filters
 				var store = _services.StoreContext.CurrentStore;
 				var customer = _services.WorkContext.CurrentCustomer;
 
-				_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, "Payments.PayPalExpress", store.Id);
+				_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, PayPalExpressProvider.SystemName, store.Id);
 
 				var paymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
 				if (paymentRequest == null)

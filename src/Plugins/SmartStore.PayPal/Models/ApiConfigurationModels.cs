@@ -16,6 +16,9 @@ namespace SmartStore.PayPal.Models
         [SmartResourceDisplayName("Plugins.Payments.PayPal.UseSandbox")]
 		public bool UseSandbox { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.IpnChangesPaymentStatus")]
+		public bool IpnChangesPaymentStatus { get; set; }
+
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.TransactMode")]
 		public int TransactMode { get; set; }
 		public SelectList TransactModeValues { get; set; }
@@ -49,6 +52,7 @@ namespace SmartStore.PayPal.Models
             {
 				SecurityProtocol = settings.SecurityProtocol;
 				UseSandbox = settings.UseSandbox;
+				IpnChangesPaymentStatus = settings.IpnChangesPaymentStatus;
                 TransactMode = Convert.ToInt32(settings.TransactMode);
                 ApiAccountName = settings.ApiAccountName;
                 ApiAccountPassword = settings.ApiAccountPassword;
@@ -60,6 +64,7 @@ namespace SmartStore.PayPal.Models
             {
 				settings.SecurityProtocol = SecurityProtocol;
 				settings.UseSandbox = UseSandbox;
+				settings.IpnChangesPaymentStatus = IpnChangesPaymentStatus;
                 settings.TransactMode = (TransactMode)TransactMode;
                 settings.ApiAccountName = ApiAccountName;
                 settings.ApiAccountPassword = ApiAccountPassword;
@@ -93,7 +98,8 @@ namespace SmartStore.PayPal.Models
             {
 				SecurityProtocol = settings.SecurityProtocol;
 				UseSandbox = settings.UseSandbox;
-                TransactMode = Convert.ToInt32(settings.TransactMode);
+				IpnChangesPaymentStatus = settings.IpnChangesPaymentStatus;
+				TransactMode = Convert.ToInt32(settings.TransactMode);
 				ApiAccountName = settings.ApiAccountName;
                 ApiAccountPassword = settings.ApiAccountPassword;
                 Signature = settings.Signature;
@@ -109,6 +115,7 @@ namespace SmartStore.PayPal.Models
 			{
 				settings.SecurityProtocol = SecurityProtocol;
 				settings.UseSandbox = UseSandbox;
+				settings.IpnChangesPaymentStatus = IpnChangesPaymentStatus;
                 settings.TransactMode = (TransactMode)TransactMode;
 				settings.ApiAccountName = ApiAccountName;
                 settings.ApiAccountPassword = ApiAccountPassword;

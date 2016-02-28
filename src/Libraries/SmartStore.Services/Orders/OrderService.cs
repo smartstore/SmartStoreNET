@@ -408,9 +408,7 @@ namespace SmartStore.Services.Orders
 
 		public virtual void AddOrderNote(Order order, string note, bool displayToCustomer = false)
 		{
-			Guard.ArgumentNotNull(() => order);
-
-			if (note.HasValue())
+			if (order != null && note.HasValue())
 			{
 				order.OrderNotes.Add(new OrderNote
 				{

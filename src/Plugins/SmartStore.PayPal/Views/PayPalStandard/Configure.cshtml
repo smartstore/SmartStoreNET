@@ -114,6 +114,15 @@
                 @Html.ValidationMessageFor(model => model.EnableIpn)
             </td>
         </tr>
+		<tr class="ipn-handling">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.IpnChangesPaymentStatus)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.IpnChangesPaymentStatus)
+				@Html.ValidationMessageFor(model => model.IpnChangesPaymentStatus)
+			</td>
+		</tr>
         <tr class="ipn-handling">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.IpnUrl)

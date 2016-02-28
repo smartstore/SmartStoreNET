@@ -449,6 +449,18 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.OrderNotice.NewsLetterSubscriptionRemoved",
 				"Newsletter subscriber has been removed",
 				"Newsletter-Abonnent wurde entfernt");
+
+			builder.AddOrUpdate("Admin.Orders.Fields.CaptureTransactionID",
+				"Capture transaction ID",
+				"Transaktions-ID für Buchung",
+				"Capture transaction identifier received from your payment gateway.",
+				"Vom Zahlungsanbieter erhaltene Transaktions-ID für die Buchung.");
+
+			builder.AddOrUpdate("Admin.Orders.Fields.AuthorizationTransactionID",
+				"Authorization transaction ID",
+				"Transaktions-ID für Autorisierung",
+				"Authorization transaction identifier received from your payment gateway.",
+				"Vom Zahlungsanbieter erhaltene Transaktions-ID für die Autorisierung.");
 		}
 	}
 }

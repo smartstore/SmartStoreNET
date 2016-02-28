@@ -18,6 +18,11 @@ namespace SmartStore.PayPal
 			_localizationService = localizationService;
 		}
 
+		public static string SystemName
+		{
+			get { return "SmartStore.PayPal"; }
+		}
+
 		public override void Install()
 		{
 			_settingService.SaveSetting<PayPalExpressPaymentSettings>(new PayPalExpressPaymentSettings());

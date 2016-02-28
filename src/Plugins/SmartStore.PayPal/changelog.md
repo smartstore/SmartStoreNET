@@ -4,8 +4,11 @@
 ###New Features
 * Option for API security protocol
 * Option to display express checkout button in mini shopping cart
+* Support for partial refunds
+* Option whether IPD may change the payment status of an order
 ###Bugfixes
 * "The request was aborted: Could not create SSL/TLS secure channel." See https://devblog.paypal.com/upcoming-security-changes-notice/
+* PayPal Express: Void and refund out of function ("The transaction id is not valid")
 
 ##Paypal 2.2.0.3
 ###New Features

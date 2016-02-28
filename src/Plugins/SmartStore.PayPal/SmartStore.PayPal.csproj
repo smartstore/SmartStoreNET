@@ -114,10 +114,12 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Controllers\PayPalControllerBase.cs" />
     <Compile Include="Controllers\PayPalStandardController.cs" />
     <Compile Include="Controllers\PayPalDirectController.cs" />
     <Compile Include="Controllers\PayPalExpressController.cs" />
     <Compile Include="DependencyRegistrar.cs" />
+    <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Filters\PayPalExpressCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalExpressWidgetZoneFilter.cs" />
     <Compile Include="Models\ApiConfigurationModels.cs" />
@@ -128,8 +130,7 @@
     <Compile Include="Providers\PayPalProviderBase.cs" />
     <Compile Include="Providers\PayPalDirectProvider.cs" />
     <Compile Include="Providers\PayPalStandardProvider.cs" />
-    <Compile Include="Services\PayPalHelper.cs" />
-    <Compile Include="Services\PayPalStandardCore.cs" />
+    <Compile Include="Services\PayPalLineItem.cs" />
     <Compile Include="Settings\PayPalSettings.cs" />
     <Compile Include="Services\PayPalProcessPaymentRequest.cs" />
     <Compile Include="Plugin.cs" />

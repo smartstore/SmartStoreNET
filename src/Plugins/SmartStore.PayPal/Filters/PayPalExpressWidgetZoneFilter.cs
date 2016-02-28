@@ -54,7 +54,7 @@ namespace SmartStore.PayPal.Filters
 
 				if (model != null && model.DisplayCheckoutButton && _payPalExpressSettings.Value.ShowButtonInMiniShoppingCart)
 				{
-					if (_paymentService.Value.IsPaymentMethodActive("Payments.PayPalExpress", _services.Value.StoreContext.CurrentStore.Id))
+					if (_paymentService.Value.IsPaymentMethodActive(PayPalExpressProvider.SystemName, _services.Value.StoreContext.CurrentStore.Id))
 					{
 						_widgetProvider.Value.RegisterAction("mini_shopping_cart_bottom", "MiniShoppingCart", "PayPalExpress", new { area = "SmartStore.PayPal" });
 					}

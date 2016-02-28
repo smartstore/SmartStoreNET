@@ -45,6 +45,16 @@ namespace SmartStore.PayPal
             _logger = logger;
 		}
 
+		public static string SystemName { get { return "Payments.PayPalStandard"; } }
+
+		public override PaymentMethodType PaymentMethodType
+		{
+			get
+			{
+				return PaymentMethodType.Redirection;
+			}
+		}
+
 		/// <summary>
 		/// Process a payment
 		/// </summary>
@@ -78,7 +88,7 @@ namespace SmartStore.PayPal
 			var settings = _services.Settings.LoadSetting<PayPalStandardPaymentSettings>(postProcessPaymentRequest.Order.StoreId);
 
 			var builder = new StringBuilder();
-            builder.Append(PayPalHelper.GetPaypalUrl(settings));
+            builder.Append(settings.GetPayPalUrl());
 
 			string orderNumber = postProcessPaymentRequest.Order.GetOrderNumber();
             string cmd = (settings.PassProductNamesAndTotals ? "_cart" : "_xclick");
@@ -315,7 +325,6 @@ namespace SmartStore.PayPal
 			return result;
 		}
 
-
         /// <summary>
         /// Gets PDT details
         /// </summary>
@@ -325,7 +334,7 @@ namespace SmartStore.PayPal
         /// <returns>Result</returns>
         public bool GetPDTDetails(string tx, PayPalStandardPaymentSettings settings, out Dictionary<string, string> values, out string response)
         {
-			var request = PayPalHelper.GetPayPalWebRequest(settings);
+			var request = settings.GetPayPalWebRequest();
 			request.Method = "POST";
             request.ContentType = "application/x-www-form-urlencoded";
 
@@ -565,17 +574,5 @@ namespace SmartStore.PayPal
             controllerName = "PayPalStandard";
             routeValues = new RouteValueDictionary() { { "area", "SmartStore.PayPal" } };
         }
-
-		#region Properties
-
-		public override PaymentMethodType PaymentMethodType
-		{
-			get
-			{
-				return PaymentMethodType.Redirection;
-			}
-		}
-
-		#endregion
 	}
 }

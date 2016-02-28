@@ -15,6 +15,12 @@
       <LocaleResource Name="UseSandbox.Hint">
         <Value>Check the box to enable Sandbox (testing environment).</Value>
       </LocaleResource>
+      <LocaleResource Name="IpnChangesPaymentStatus">
+        <Value>IPN may change payment status</Value>
+      </LocaleResource>
+      <LocaleResource Name="IpnChangesPaymentStatus.Hint">
+        <Value>Specifies whether received IPNs should change the payment status of an order.</Value>
+      </LocaleResource>
       <LocaleResource Name="TransactMode">
         <Value>Transaction mode</Value>
       </LocaleResource>
@@ -57,6 +63,21 @@
       <LocaleResource Name="AdditionalFeePercentage.Hint">
         <Value>Specifies whether to apply a percentage additional fee to the order total. A fixed value is used if not enabled.</Value>
       </LocaleResource>
+      <LocaleResource Name="NoModuleLoading">
+        <Value>The payment module cannot be loaded.</Value>
+      </LocaleResource>
+      <LocaleResource Name="IpnRecurringPaymentInfo">
+        <Value>PayPal IPN. Recurring payment.</Value>
+      </LocaleResource>
+      <LocaleResource Name="IpnOrderNotFound">
+        <Value>PayPal IPN. Order cannot be found.</Value>
+      </LocaleResource>
+      <LocaleResource Name="IpnFailed">
+        <Value>PayPal IPN. Failed to retrieve notification.</Value>
+      </LocaleResource>
+      <LocaleResource Name="PartialRefundMemo">
+        <Value>Partial refund of {0}</Value>
+      </LocaleResource>
     </Children>
   </LocaleResource>
   
@@ -88,23 +109,7 @@
           <li>Click <b>Save</b>, and you should get a message that you have successfully activated IPN.</li>
           </ol>]]>
 		    </Value>
-	    </LocaleResource>  
-  
-	    <LocaleResource Name="NoModuleLoading">
-		    <Value>PayPal Express module cannot be loaded.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="NewPaymentStatus">
-		    <Value>New payment status</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnLogInfo">
-		    <Value>PayPal Express IPN. Recurring info.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnOrderNotFound">
-		    <Value>PayPal Express IPN. Order cannot be found.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="IpnFailed">
-		    <Value>PayPal Express IPN. Failed to retrieve notification.</Value>
-	    </LocaleResource>
+	    </LocaleResource>    
 	    <LocaleResource Name="RecurringPayment">
 		    <Value>recurring payment</Value>
 	    </LocaleResource>
@@ -180,21 +185,6 @@
           <li>Click <b>Save</b>, and you should get a message that you have successfully activated IPN.</li>
           </ol>]]>
         </Value>
-      </LocaleResource>
-      <LocaleResource Name="NoModuleLoading">
-        <Value>PayPal Direct module cannot be loaded.</Value>
-      </LocaleResource>
-      <LocaleResource Name="NewPaymentStatus">
-        <Value>New payment status</Value>
-      </LocaleResource>
-      <LocaleResource Name="IpnLogInfo">
-        <Value>PayPal Direct IPN. Recurring info.</Value>
-      </LocaleResource>
-      <LocaleResource Name="IpnOrderNotFound">
-        <Value>PayPal Direct IPN. Order cannot be found.</Value>
-      </LocaleResource>
-      <LocaleResource Name="IpnFailed">
-        <Value>PayPal Direct IPN. Failed to retrieve notification.</Value>
       </LocaleResource>
       <LocaleResource Name="RecurringPayment">
         <Value>recurring payment</Value>
@@ -299,9 +289,6 @@
       <LocaleResource Name="Fields.IpnUrl.Hint">
         <Value>Specify IPN Handler.</Value>
       </LocaleResource>
-      <LocaleResource Name="NoModuleLoading">
-        <Value>PayPal Standard module cannot be loaded.</Value>
-      </LocaleResource>
       <LocaleResource Name="FailedGetGross">
         <Value>PayPal Standard PDT. Error getting mc_gross.</Value>
       </LocaleResource>
@@ -310,18 +297,6 @@
       </LocaleResource>
       <LocaleResource Name="PdtFailed">
         <Value>PayPal Standard PDT failed.</Value>
-      </LocaleResource>
-      <LocaleResource Name="NewPaymentStatus">
-        <Value>New payment status</Value>
-      </LocaleResource>
-      <LocaleResource Name="IpnLogInfo">
-        <Value>PayPal Standard IPN. Recurring info.</Value>
-      </LocaleResource>
-      <LocaleResource Name="IpnOrderNotFound">
-        <Value>PayPal Standard IPN. Order cannot be found.</Value>
-      </LocaleResource>
-      <LocaleResource Name="IpnFailed">
-        <Value>PayPal Standard IPN. Failed to retrieve notification.</Value>
       </LocaleResource>
       <LocaleResource Name="InvalidCredentials">
         <Value>Incomplete credentials for the PayPal API. Please enter the required data in the configuration area.</Value>

@@ -89,15 +89,15 @@
 				@Html.ValidationMessageFor(model => model.CallbackTimeout)
 			</td>
 		</tr>
-        @*<tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DisplayCheckoutButton)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.DisplayCheckoutButton)
-                @Html.ValidationMessageFor(model => model.DisplayCheckoutButton)
-            </td>
-        </tr>*@
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.IpnChangesPaymentStatus)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.IpnChangesPaymentStatus)
+				@Html.ValidationMessageFor(model => model.IpnChangesPaymentStatus)
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.ShowButtonInMiniShoppingCart)

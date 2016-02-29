@@ -468,7 +468,9 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="processPaymentRequest">Process payment request</param>
         /// <returns>Place order result</returns>
-        public virtual PlaceOrderResult PlaceOrder(ProcessPaymentRequest processPaymentRequest, Dictionary<string, string> extraData)
+        public virtual PlaceOrderResult PlaceOrder(
+            ProcessPaymentRequest processPaymentRequest, 
+            Dictionary<string, string> extraData)
         {
             // think about moving functionality of processing recurring orders (after the initial order was placed) to ProcessNextRecurringPayment() method
             if (processPaymentRequest == null)
@@ -552,8 +554,16 @@ namespace SmartStore.Services.Orders
                 IList<OrganizedShoppingCartItem> cart = null;
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
+<<<<<<< HEAD
                     // load shopping cart
 					cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, processPaymentRequest.StoreId);
+=======
+                    //load shopping cart
+                    if (processPaymentRequest.ShoppingCartItems.Count > 0)
+                        cart = processPaymentRequest.ShoppingCartItems;
+                    else
+                        cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, processPaymentRequest.StoreId);
+>>>>>>> Minor enhancement
 
                     if (cart.Count == 0)
                         throw new SmartException(T("ShoppingCart.CartIsEmpty"));
@@ -676,7 +686,7 @@ namespace SmartStore.Services.Orders
                 {
                     if (!processPaymentRequest.IsRecurringPayment)
                     {
-						var shippingOption = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, processPaymentRequest.StoreId);
+                        var shippingOption = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, processPaymentRequest.StoreId);
                         if (shippingOption != null)
                         {
                             shippingMethodName = shippingOption.Name;
@@ -902,7 +912,7 @@ namespace SmartStore.Services.Orders
 
                 // process payment
                 ProcessPaymentResult processPaymentResult = null;
-                if (!skipPaymentWorkflow)
+                if (!skipPaymentWorkflow && !processPaymentRequest.IsMultiOrder)
                 {
                     if (!processPaymentRequest.IsRecurringPayment)
                     {
@@ -1059,6 +1069,7 @@ namespace SmartStore.Services.Orders
 							UpdatedOnUtc = utcNow,
                             CustomerOrderComment = extraData.ContainsKey("CustomerComment") ? extraData["CustomerComment"] : ""
                         };
+
                         _orderService.InsertOrder(order);
 
                         result.PlacedOrder = order;
@@ -1172,7 +1183,8 @@ namespace SmartStore.Services.Orders
                             }
 
                             //clear shopping cart
-                            cart.ToList().ForEach(sci => _shoppingCartService.DeleteShoppingCartItem(sci.Item, false));
+                            if (!processPaymentRequest.IsMultiOrder)
+                                cart.ToList().ForEach(sci => _shoppingCartService.DeleteShoppingCartItem(sci.Item, false));
                         }
                         else
                         {
@@ -1353,8 +1365,13 @@ namespace SmartStore.Services.Orders
                         // check order status
                         CheckOrderStatus(order);
 
+<<<<<<< HEAD
 						// reset checkout data
 						if (!processPaymentRequest.IsRecurringPayment)
+=======
+						//reset checkout data
+                        if (!processPaymentRequest.IsRecurringPayment && !processPaymentRequest.IsMultiOrder)
+>>>>>>> Minor enhancement
 						{
 							_customerService.ResetCheckoutData(customer, processPaymentRequest.StoreId, clearCouponCodes: true, clearCheckoutAttributes: true);
 						}

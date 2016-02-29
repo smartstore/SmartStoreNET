@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
@@ -9,7 +8,6 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Localization;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -33,7 +31,7 @@ using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class CatalogController : PublicControllerBase
+	public partial class CatalogController : PublicControllerBase
     {
         #region Fields
 
@@ -1087,14 +1085,13 @@ namespace SmartStore.Web.Controllers
 				_services.StoreContext.CurrentStore.Id);
 
 			if (command.PageSize <= 0)
+
 				command.PageSize = _catalogSettings.SearchPageProductsPerPage;
 			if (command.PageNumber <= 0)
 				command.PageNumber = 1;
 
             if (command.OrderBy == (int)ProductSortingEnum.Initial)
-            {
                 command.OrderBy = (int)_catalogSettings.DefaultSortOrder;
-            }
 
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
 			{
@@ -1103,17 +1100,10 @@ namespace SmartStore.Web.Controllers
 				PageSizeOptions = _catalogSettings.ProductSearchPageSizeOptions
 			});
 
-			if (model.Q == null)
-				model.Q = "";
-			model.Q = model.Q.Trim();
+			model.Q = model.Q.EmptyNull().Trim();
 
 			// Build AvailableCategories
-			// first empty entry
-			model.AvailableCategories.Add(new SelectListItem
-			{
-				Value = "0",
-				Text = T("Common.All")
-			});
+			model.AvailableCategories.Add(new SelectListItem { Value = "0",	Text = T("Common.All") });
 
 			var navModel = _helper.PrepareCategoryNavigationModel(0, 0);
 
@@ -1122,7 +1112,7 @@ namespace SmartStore.Web.Controllers
 				if (node.IsRoot)
 					return;
 
-				int id = node.Value.EntityId;
+				var id = node.Value.EntityId;
 				var breadcrumb = node.GetBreadcrumb().Select(x => x.Text).ToArray();
 
 				model.AvailableCategories.Add(new SelectListItem
@@ -1136,21 +1126,21 @@ namespace SmartStore.Web.Controllers
 			var manufacturers = _manufacturerService.GetAllManufacturers();
 			if (manufacturers.Count > 0)
 			{
-				model.AvailableManufacturers.Add(new SelectListItem
-				{
-					Value = "0",
-					Text = T("Common.All")
-				});
+				model.AvailableManufacturers.Add(new SelectListItem	{ Value = "0", Text = T("Common.All") });
+
 				foreach (var m in manufacturers)
+				{
 					model.AvailableManufacturers.Add(new SelectListItem
 					{
 						Value = m.Id.ToString(),
 						Text = m.GetLocalized(x => x.Name),
 						Selected = model.Mid == m.Id
 					});
+				}
 			}
 
 			IPagedList<Product> products = new PagedList<Product>(new List<Product>(), 0, 1);
+
 			// only search if query string search keyword is set (used to avoid searching or displaying search term min length error message on /search page load)
 			if (Request.Params["Q"] != null)
 			{
@@ -1161,10 +1151,11 @@ namespace SmartStore.Web.Controllers
 				else
 				{
 					var categoryIds = new List<int>();
-					int manufacturerId = 0;
+					var manufacturerId = 0;
 					decimal? minPriceConverted = null;
 					decimal? maxPriceConverted = null;
-					bool searchInDescriptions = false;
+					var searchInDescriptions = _catalogSettings.SearchDescriptions;
+
 					if (model.As)
 					{
 						// advanced search
@@ -1182,16 +1173,16 @@ namespace SmartStore.Web.Controllers
 						manufacturerId = model.Mid;
 
 						// min price
-						if (!string.IsNullOrEmpty(model.Pf))
+						if (model.Pf.HasValue())
 						{
-							decimal minPrice = decimal.Zero;
+							var minPrice = decimal.Zero;
 							if (decimal.TryParse(model.Pf, out minPrice))
 								minPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(minPrice, _services.WorkContext.WorkingCurrency);
 						}
 						// max price
-						if (!string.IsNullOrEmpty(model.Pt))
+						if (model.Pt.HasValue())
 						{
-							decimal maxPrice = decimal.Zero;
+							var maxPrice = decimal.Zero;
 							if (decimal.TryParse(model.Pt, out maxPrice))
 								maxPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(maxPrice, _services.WorkContext.WorkingCurrency);
 						}
@@ -1201,8 +1192,6 @@ namespace SmartStore.Web.Controllers
 
 					//var searchInProductTags = false;
 					var searchInProductTags = searchInDescriptions;
-
-					//products
 
 					var ctx = new ProductSearchContext();
 					ctx.CategoryIds = categoryIds;
@@ -1223,12 +1212,16 @@ namespace SmartStore.Web.Controllers
 					products = _productService.SearchProducts(ctx);
 
 					model.Products = _helper.PrepareProductOverviewModels(
-						products, 
-						prepareColorAttributes: true, 
+						products,
+						prepareColorAttributes: true,
 						prepareManufacturers: command.ViewMode.IsCaseInsensitiveEqual("list")).ToList();
 
 					model.NoResults = !model.Products.Any();
 				}
+			}
+			else
+			{
+				model.Sid = _catalogSettings.SearchDescriptions;
 			}
 
 			model.PagingFilteringContext.LoadPagedList(products);
@@ -1252,35 +1245,32 @@ namespace SmartStore.Web.Controllers
 			if (String.IsNullOrWhiteSpace(term) || term.Length < _catalogSettings.ProductSearchTermMinimumLength)
 				return Content("");
 
-			// products
-			var pageSize = _catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0 ? _catalogSettings.ProductSearchAutoCompleteNumberOfProducts : 10;
-
 			var ctx = new ProductSearchContext();
 			ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
 			ctx.Keywords = term;
 			ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
+			ctx.SearchDescriptions = _catalogSettings.SearchDescriptions;
 			ctx.OrderBy = ProductSortingEnum.Position;
-			ctx.PageSize = pageSize;
+			ctx.PageSize = (_catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0 ? _catalogSettings.ProductSearchAutoCompleteNumberOfProducts : 10);
 			ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
 			ctx.VisibleIndividuallyOnly = true;
 
 			var products = _productService.SearchProducts(ctx);
 
-			var models = _helper.PrepareProductOverviewModels(
-				products, 
+			var models = _helper.PrepareProductOverviewModels(products, 
 				false, 
 				_catalogSettings.ShowProductImagesInSearchAutoComplete, 
-				_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage).ToList();
-			
-			var result = (from p in models
-						  select new
-						  {
-							  label = p.Name,
-							  secondary = p.ShortDescription.Truncate(70, "...") ?? "",
-							  producturl = Url.RouteUrl("Product", new { SeName = p.SeName }),
-							  productpictureurl = p.DefaultPictureModel.ImageUrl
-						  })
-						  .ToList();
+				_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage
+				).ToList();
+
+			var result = models.Select(x => new
+			{
+				label = x.Name,
+				secondary = x.ShortDescription.Truncate(70, "...") ?? "",
+				producturl = Url.RouteUrl("Product", new { SeName = x.SeName }),
+				productpictureurl = x.DefaultPictureModel.ImageUrl
+			}).ToList();
+
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
 

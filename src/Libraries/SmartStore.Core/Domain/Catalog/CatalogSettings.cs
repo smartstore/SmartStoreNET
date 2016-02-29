@@ -382,10 +382,15 @@ namespace SmartStore.Core.Domain.Catalog
 
 		public bool SuppressSkuSearch { get; set; }
 
-        /// <summary>
-        /// Gets or sets the available customer selectable default page size options
-        /// </summary>
-        public string DefaultPageSizeOptions { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether to search long description
+		/// </summary>
+		public bool SearchDescriptions { get; set; }
+
+		/// <summary>
+		/// Gets or sets the available customer selectable default page size options
+		/// </summary>
+		public string DefaultPageSizeOptions { get; set; }
 
 		/// <summary>
 		/// Gets or sets the price display type for prices in product lists

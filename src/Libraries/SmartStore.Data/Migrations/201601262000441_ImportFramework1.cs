@@ -461,6 +461,12 @@ namespace SmartStore.Data.Migrations
 				"Transaktions-ID für Autorisierung",
 				"Authorization transaction identifier received from your payment gateway.",
 				"Vom Zahlungsanbieter erhaltene Transaktions-ID für die Autorisierung.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.SearchDescriptions",
+				"Search product description",
+				"Produktbeschreibung durchsuchen",
+				"Specifies whether the product description should be included in the search.",
+				"Legt fest, ob die Produktbeschreibung in der Suche einbezogen werden soll.");
 		}
 	}
 }

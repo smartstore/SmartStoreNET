@@ -281,7 +281,10 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SuppressSkuSearch")]
         public bool SuppressSkuSearch { get; set; }
 
-        #endregion 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SearchDescriptions")]
+		public bool SearchDescriptions { get; set; }
 
-    }
+		#endregion
+
+	}
 }

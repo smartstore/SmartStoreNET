@@ -61,6 +61,7 @@
 * Web-API: Bridge to import framework: uploading import files to import profile directory
 * Setting to round down calculated reward points
 * #695 Implement checkbox in checkout to let customers subscribe to newsletters
+* #495 Implement option to search product detail description by default
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

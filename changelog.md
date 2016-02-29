@@ -132,6 +132,7 @@
 * PayPal Express: Void and refund out of function ("The transaction id is not valid")
 * Customer could not delete his avatar
 * Facebook authentication: Email missing in verification
+* Attribute with a product linkage throws exception if added to cart
 
 
 ## SmartStore.NET 2.2.2

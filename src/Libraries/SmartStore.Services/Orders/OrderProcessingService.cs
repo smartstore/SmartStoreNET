@@ -554,16 +554,11 @@ namespace SmartStore.Services.Orders
                 IList<OrganizedShoppingCartItem> cart = null;
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
-<<<<<<< HEAD
-                    // load shopping cart
-					cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, processPaymentRequest.StoreId);
-=======
                     //load shopping cart
                     if (processPaymentRequest.ShoppingCartItems.Count > 0)
                         cart = processPaymentRequest.ShoppingCartItems;
                     else
                         cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, processPaymentRequest.StoreId);
->>>>>>> Minor enhancement
 
                     if (cart.Count == 0)
                         throw new SmartException(T("ShoppingCart.CartIsEmpty"));
@@ -1365,13 +1360,8 @@ namespace SmartStore.Services.Orders
                         // check order status
                         CheckOrderStatus(order);
 
-<<<<<<< HEAD
-						// reset checkout data
-						if (!processPaymentRequest.IsRecurringPayment)
-=======
 						//reset checkout data
                         if (!processPaymentRequest.IsRecurringPayment && !processPaymentRequest.IsMultiOrder)
->>>>>>> Minor enhancement
 						{
 							_customerService.ResetCheckoutData(customer, processPaymentRequest.StoreId, clearCouponCodes: true, clearCheckoutAttributes: true);
 						}

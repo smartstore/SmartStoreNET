@@ -552,6 +552,7 @@ namespace SmartStore.Services.DataExchange.Export
 			var languageId = (ctx.Projection.LanguageId ?? 0);
 			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
 			var pictureSize = _mediaSettings.Value.ProductDetailsPictureSize;
+			var numberOfPictures = (ctx.Projection.NumberOfPictures ?? int.MaxValue);
 			int[] pictureIds = (combination == null ? new int[0] : combination.GetAssignedPictureIds());
 
 			if (ctx.Supports(ExportFeatures.CanIncludeMainPicture) && ctx.Projection.PictureSize > 0)
@@ -569,6 +570,8 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				productPictures = productPictures.Where(x => pictureIds.Contains(x.PictureId));
 			}
+
+			productPictures = productPictures.Take(numberOfPictures);
 
 			dynamic dynObject = ToDynamic(ctx, product);
 
@@ -670,7 +673,7 @@ namespace SmartStore.Services.DataExchange.Export
 					dynamic dyn = ToDynamic(ctx, x);
 					var assignedPictures = new List<dynamic>();
 
-					foreach (int pictureId in x.GetAssignedPictureIds())
+					foreach (int pictureId in x.GetAssignedPictureIds().Take(numberOfPictures))
 					{
 						var assignedPicture = productPictures.FirstOrDefault(y => y.PictureId == pictureId);
 						if (assignedPicture != null && assignedPicture.Picture != null)
@@ -771,8 +774,10 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				if (productPictures != null && productPictures.Any())
 					dynObject._MainPictureUrl = _pictureService.Value.GetPictureUrl(productPictures.First().Picture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
-				else
+				else if (!_catalogSettings.Value.HideProductDefaultPictures)
 					dynObject._MainPictureUrl = _pictureService.Value.GetDefaultPictureUrl(ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
+				else
+					dynObject._MainPictureUrl = null;
 			}
 
 			if (ctx.Supports(ExportFeatures.UsesSkuAsMpnFallback) && product.ManufacturerPartNumber.IsEmpty())
@@ -1089,9 +1094,10 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (!ctx.IsPreview && manufacturer.PictureId.HasValue)
 			{
-				var pictures = ctx.ManufacturerExportContext.Pictures.Load(manufacturer.PictureId.Value);
+				var numberOfPictures = (ctx.Projection.NumberOfPictures ?? int.MaxValue);
+				var pictures = ctx.ManufacturerExportContext.Pictures.Load(manufacturer.PictureId.Value).Take(numberOfPictures);
 
-				if (pictures.Count > 0)
+				if (pictures.Any())
 					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.Value.ManufacturerThumbPictureSize, _mediaSettings.Value.ManufacturerThumbPictureSize);
 			}
 
@@ -1121,16 +1127,17 @@ namespace SmartStore.Services.DataExchange.Export
 		private List<dynamic> Convert(DataExporterContext ctx, Category category)
 		{
 			var result = new List<dynamic>();
-			
+
 			var productCategories = ctx.CategoryExportContext.ProductCategories.Load(category.Id);
 
 			dynamic dynObject = ToDynamic(ctx, category);
 
 			if (!ctx.IsPreview && category.PictureId.HasValue)
 			{
-				var pictures = ctx.CategoryExportContext.Pictures.Load(category.PictureId.Value);
+				var numberOfPictures = (ctx.Projection.NumberOfPictures ?? int.MaxValue);
+				var pictures = ctx.CategoryExportContext.Pictures.Load(category.PictureId.Value).Take(numberOfPictures);
 
-				if (pictures.Count > 0)
+				if (pictures.Any())
 					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.Value.CategoryThumbPictureSize, _mediaSettings.Value.CategoryThumbPictureSize);
 			}
 

@@ -24,6 +24,9 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.CustomerId")]
 		public int? CustomerId { get; set; }
 
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.NumberOfPictures")]
+		public int? NumberOfPictures { get; set; }
+
 		#endregion
 
 		#region Product

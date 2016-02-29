@@ -82,6 +82,7 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<MediaSettings> _mediaSettings;
 		private readonly Lazy<ContactDataSettings> _contactDataSettings;
 		private readonly Lazy<CustomerSettings> _customerSettings;
+		private readonly Lazy<CatalogSettings> _catalogSettings;
 
 		public DataExporter(
 			ICommonServices services,
@@ -118,7 +119,8 @@ namespace SmartStore.Services.DataExchange.Export
 			Lazy<IRepository<Order>> orderRepository,
 			Lazy<MediaSettings> mediaSettings,
 			Lazy<ContactDataSettings> contactDataSettings,
-			Lazy<CustomerSettings> customerSettings)
+			Lazy<CustomerSettings> customerSettings,
+			Lazy<CatalogSettings> catalogSettings)
 		{
 			_services = services;
 			_dbContext = dbContext;
@@ -157,6 +159,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_mediaSettings = mediaSettings;
 			_contactDataSettings = contactDataSettings;
 			_customerSettings = customerSettings;
+			_catalogSettings = catalogSettings;
 
 			T = NullLocalizer.Instance;
 		}

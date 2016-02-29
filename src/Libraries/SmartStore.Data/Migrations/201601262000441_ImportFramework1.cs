@@ -467,6 +467,12 @@ namespace SmartStore.Data.Migrations
 				"Produktbeschreibung durchsuchen",
 				"Specifies whether the product description should be included in the search.",
 				"Legt fest, ob die Produktbeschreibung in der Suche einbezogen werden soll.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.NumberOfPictures",
+				"Number of pictures",
+				"Anzahl der Bilder",
+				"Specifies the number of images per object to be exported.",
+				"Legt die Anzahl der zu exportierenden Bilder pro Objekt fest.");
 		}
 	}
 }

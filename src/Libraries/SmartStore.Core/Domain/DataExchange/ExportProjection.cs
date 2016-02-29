@@ -35,6 +35,11 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// </summary>
 		public int? CustomerId { get; set; }
 
+		/// <summary>
+		/// Number of images per object to be exported
+		/// </summary>
+		public int? NumberOfPictures { get; set; }
+
 		#endregion
 
 		#region Product

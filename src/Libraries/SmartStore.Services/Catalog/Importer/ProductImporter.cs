@@ -129,7 +129,7 @@ namespace SmartStore.Services.Catalog.Importer
 			foreach (var row in batch)
 			{
 				var imageUrls = row.GetDataValue<List<string>>("ImageUrls");
-				if (imageUrls == null)
+				if (imageUrls == null || !imageUrls.Any())
 					continue;
 
 				var imageNumber = 0;

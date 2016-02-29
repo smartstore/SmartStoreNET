@@ -39,6 +39,15 @@
 			@Html.ValidationMessageFor(x => x.Projection.CustomerId)
 		</td>
 	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Projection.NumberOfPictures)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.Projection.NumberOfPictures)
+			@Html.ValidationMessageFor(x => x.Projection.NumberOfPictures)
+		</td>
+	</tr>
 
 	@if (Model.Provider.EntityType == ExportEntityType.Product)
 	{	

@@ -8,7 +8,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.DataExchange.Import
 {
-	public abstract class EntityImporterBase
+	public abstract class EntityImporterBase : IEntityImporter
 	{
 		private const string _imageDownloadFolder = @"Content\DownloadedImages";
 
@@ -21,6 +21,13 @@ namespace SmartStore.Services.DataExchange.Import
 		public string ImageFolder { get; private set; }
 
 		public FileDownloadManagerContext DownloaderContext { get; private set; }
+
+		protected abstract void Import(IImportExecuteContext context);
+
+		public void Execute(IImportExecuteContext context)
+		{
+			Import(context);
+		}
 
 		public void Init(IImportExecuteContext context, DataExchangeSettings dataExchangeSettings)
 		{

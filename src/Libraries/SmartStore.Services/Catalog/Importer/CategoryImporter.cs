@@ -18,7 +18,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog.Importer
 {
-	public class CategoryImporter : EntityImporterBase, IEntityImporter
+	public class CategoryImporter : EntityImporterBase
 	{
 		private readonly IRepository<Category> _categoryRepository;
 		private readonly IRepository<UrlRecord> _urlRecordRepository;
@@ -416,7 +416,7 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
-		public void Execute(IImportExecuteContext context)
+		protected override void Import(IImportExecuteContext context)
 		{
 			var srcToDestId = new Dictionary<int, ImportCategoryMapping>();
 

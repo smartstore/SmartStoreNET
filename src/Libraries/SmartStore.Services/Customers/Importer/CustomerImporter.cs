@@ -20,7 +20,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Customers.Importer
 {
-	public class CustomerImporter : EntityImporterBase, IEntityImporter
+	public class CustomerImporter : EntityImporterBase
 	{
 		private const string _attributeKeyGroup = "Customer";
 
@@ -373,7 +373,7 @@ namespace SmartStore.Services.Customers.Importer
 			}
 		}
 
-		public void Execute(IImportExecuteContext context)
+		protected override void Import(IImportExecuteContext context)
 		{
 			var customer = _services.WorkContext.CurrentCustomer;
 			var allowManagingCustomerRoles = _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomerRoles, customer);

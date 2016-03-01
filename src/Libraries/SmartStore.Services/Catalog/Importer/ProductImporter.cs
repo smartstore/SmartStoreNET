@@ -18,7 +18,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog.Importer
 {
-	public class ProductImporter : EntityImporterBase, IEntityImporter
+	public class ProductImporter : EntityImporterBase
 	{
 		private readonly IRepository<ProductPicture> _productPictureRepository;
 		private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
@@ -733,7 +733,7 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
-		public void Execute(IImportExecuteContext context)
+		protected override void Import(IImportExecuteContext context)
 		{
 			var srcToDestId = new Dictionary<int, ImportProductMapping>();
 

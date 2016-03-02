@@ -535,7 +535,7 @@ th label {
     }
 
     .modal-body {
-        max-height: initial;
+        max-height: none;
         overflow-y: auto;
         overflow-x: hidden;
         .display-flex();
@@ -561,6 +561,7 @@ th label {
 
     .modal-flex-fill-area {
         //overflow: hidden;
+        min-height: 100%;
         -webkit-box-flex: 1;
         -webkit-flex: 1;
             -ms-flex: 1;

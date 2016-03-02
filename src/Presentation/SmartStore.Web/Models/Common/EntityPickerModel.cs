@@ -14,6 +14,7 @@ namespace SmartStore.Web.Models.Common
 		public string Entity { get; set; }
 		public bool HighligtSearchTerm { get; set; }
 		public string DisableIf { get; set; }
+		public string DisableIds { get; set; }
 		public string SearchTerm { get; set; }
 		public string ReturnField { get; set; }
 		public int MaxReturnValues { get; set; }

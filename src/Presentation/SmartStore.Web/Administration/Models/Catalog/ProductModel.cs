@@ -628,6 +628,7 @@ namespace SmartStore.Admin.Models.Catalog
 				Locales = new List<ProductVariantAttributeValueLocalizedModel>();
 			}
 
+			public int ProductId { get; set; }
 			public int ProductVariantAttributeId { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Alias")]

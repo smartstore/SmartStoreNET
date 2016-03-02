@@ -1055,10 +1055,11 @@ namespace SmartStore.Web.Controllers
 			model.PublishedString = T("Common.Published");
 			model.UnpublishedString = T("Common.Unpublished");
 
-			var disableIf = model.DisableIf.SplitSafe(",").Select(x => x.ToLower().Trim()).ToList();
-
 			try
 			{
+				var disableIf = model.DisableIf.SplitSafe(",").Select(x => x.ToLower().Trim()).ToList();
+				var disableIds = model.DisableIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
+
 				using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
 				{
 					if (model.Entity.IsCaseInsensitiveEqual("product"))
@@ -1117,6 +1118,10 @@ namespace SmartStore.Web.Controllers
 								if (disableIfNotSimpleProduct)
 								{
 									item.Disable = (x.ProductTypeId != (int)ProductType.SimpleProduct);
+								}
+								else
+								{
+									item.Disable = disableIds.Contains(x.Id);
 								}
 
 								if (x.ProductTypeId == (int)ProductType.GroupedProduct)

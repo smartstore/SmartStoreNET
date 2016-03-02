@@ -62,6 +62,7 @@
 			entity: 'product',
 			caption: '&nbsp;',
 			disableIf: '',
+			disableIds: '',
 			thumbZoomer: false,
 			highligtSearchTerm: true,
 			returnField: 'id',
@@ -133,7 +134,8 @@
 					"HighligtSearchTerm": opt.highligtSearchTerm,
 					"ReturnField": opt.returnField,
 					"MaxReturnValues": opt.maxReturnValues,
-					"DisableIf": opt.disableIf
+					"DisableIf": opt.disableIf,
+					"DisableIds": opt.disableIds
 				},
 				url: opt.url,
 				beforeSend: function () {

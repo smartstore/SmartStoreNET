@@ -3029,16 +3029,17 @@ namespace SmartStore.Admin.Controllers
 			if (pva == null)
 				throw new ArgumentException(T("Products.Variants.NotFound", productAttributeAttributeId));
 
-			var model = new ProductModel.ProductVariantAttributeValueModel()
+			var model = new ProductModel.ProductVariantAttributeValueModel
 			{
+				ProductId = pva.ProductId,
 				ProductVariantAttributeId = productAttributeAttributeId,
 				DisplayColorSquaresRgb = pva.AttributeControlType == AttributeControlType.ColorSquares,
 				ColorSquaresRgb = "#000000",
 				Quantity = 1
 			};
 
-			//locales
 			AddLocales(_languageService, model.Locales);
+
 			return View(model);
 		}
 
@@ -3069,7 +3070,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (ModelState.IsValid)
 			{
-				var pvav = new ProductVariantAttributeValue()
+				var pvav = new ProductVariantAttributeValue
 				{
 					ProductVariantAttributeId = model.ProductVariantAttributeId,
 					Name = model.Name,
@@ -3108,8 +3109,9 @@ namespace SmartStore.Admin.Controllers
 
 			var linkedProduct = _productService.GetProductById(pvav.LinkedProductId);
 
-			var model = new ProductModel.ProductVariantAttributeValueModel()
+			var model = new ProductModel.ProductVariantAttributeValueModel
 			{
+				ProductId = pvav.ProductVariantAttribute.ProductId,
 				ProductVariantAttributeId = pvav.ProductVariantAttributeId,
 				Name = pvav.Name,
 				Alias = pvav.Alias,
@@ -3136,7 +3138,6 @@ namespace SmartStore.Admin.Controllers
 					model.QuantityInfo = " × {0}".FormatWith(model.Quantity);
 			}
 
-			//locales
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
 			{
 				locale.Name = pvav.GetLocalized(x => x.Name, languageId, false, false);

@@ -50,6 +50,7 @@
 				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
 				caption: '@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.LinkedProduct.AddNew")',
 				maxReturnValues: 1,
+				disableIds: '@Model.ProductId',
 				onLoadDialogBefore: function () {
 					$('#AddProductLinkageButton').button('loading').prop('disabled', true);
 				},

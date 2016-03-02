@@ -26,7 +26,7 @@
 	margin: 5px 0;
 	border-radius: 3px;
 }
-.entity-picker-list .item:hover {
+.entity-picker-list .item:not(.disable):hover {
 	cursor: pointer;
 }
 .entity-picker-list .item:not(.selected):hover {

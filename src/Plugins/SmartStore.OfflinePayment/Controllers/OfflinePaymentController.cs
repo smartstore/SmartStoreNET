@@ -38,6 +38,18 @@ namespace SmartStore.OfflinePayment.Controllers
 
 		#region Global
 
+		private List<SelectListItem> GetTransactModes()
+		{
+			var list = new List<SelectListItem>
+			{
+				new SelectListItem { Text = T("Enums.SmartStore.Core.Domain.Payments.PaymentStatus.Pending"), Value = ((int)TransactMode.Pending).ToString() },
+				new SelectListItem { Text = T("Enums.SmartStore.Core.Domain.Payments.PaymentStatus.Authorized"), Value = ((int)TransactMode.Authorize).ToString() },
+				new SelectListItem { Text = T("Enums.SmartStore.Core.Domain.Payments.PaymentStatus.Paid"), Value = ((int)TransactMode.Paid).ToString() }
+			};
+
+			return list;
+		}
+
 		[NonAction]
 		private TModel ConfigureGet<TModel, TSetting>(Action<TModel, TSetting> fn = null)
 			where TModel : ConfigurationModelBase, new()
@@ -414,7 +426,17 @@ namespace SmartStore.OfflinePayment.Controllers
 			var model = ConfigureGet<ManualConfigurationModel, ManualPaymentSettings>((m, s) => 
 			{
 				m.TransactMode = s.TransactMode;
-				m.TransactModeValues = s.TransactMode.ToSelectList();		
+				m.TransactModeValues = GetTransactModes();
+				m.ExcludedCreditCards = s.ExcludedCreditCards.SplitSafe(",");		
+
+				m.AvailableCreditCards = ManualProvider.CreditCardTypes
+					.Select(x => new SelectListItem
+					{
+						Text = x.Text,
+						Value = x.Value,
+						Selected = m.ExcludedCreditCards.Contains(x.Value)
+					})
+					.ToList();
 			});
 
 			return View(model);
@@ -429,8 +451,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			ConfigurePost<ManualConfigurationModel, ManualPaymentSettings>(model, form, s =>
 			{
 				s.TransactMode = model.TransactMode;
-
-				model.TransactModeValues = s.TransactMode.ToSelectList();
+				s.ExcludedCreditCards = string.Join(",", model.ExcludedCreditCards ?? new string[0]);
 			});
 
 			return ManualConfigure();
@@ -438,50 +459,35 @@ namespace SmartStore.OfflinePayment.Controllers
 
 		public ActionResult ManualPaymentInfo()
 		{
-			var model = PaymentInfoGet<ManualPaymentInfoModel, ManualPaymentSettings>();
+			var model = PaymentInfoGet<ManualPaymentInfoModel, ManualPaymentSettings>((m, s) =>
+			{
+				var excludedCreditCards = s.ExcludedCreditCards.SplitSafe(",");
 
-			// CC types
-			model.CreditCardTypes.Add(new SelectListItem()
-			{
-				Text = "Visa",
-				Value = "Visa",
-			});
-			model.CreditCardTypes.Add(new SelectListItem()
-			{
-				Text = "Master card",
-				Value = "MasterCard",
-			});
-			model.CreditCardTypes.Add(new SelectListItem()
-			{
-				Text = "Discover",
-				Value = "Discover",
-			});
-			model.CreditCardTypes.Add(new SelectListItem()
-			{
-				Text = "Amex",
-				Value = "Amex",
+				foreach (var creditCard in ManualProvider.CreditCardTypes)
+				{
+					if (!excludedCreditCards.Any(x => x.IsCaseInsensitiveEqual(creditCard.Value)))
+					{
+						m.CreditCardTypes.Add(new SelectListItem
+						{
+							Text = creditCard.Text,
+							Value = creditCard.Value
+						});
+					}
+				}
 			});
 
 			// years
 			for (int i = 0; i < 15; i++)
 			{
 				string year = Convert.ToString(DateTime.Now.Year + i);
-				model.ExpireYears.Add(new SelectListItem()
-				{
-					Text = year,
-					Value = year,
-				});
+				model.ExpireYears.Add(new SelectListItem { Text = year,	Value = year });
 			}
 
 			// months
 			for (int i = 1; i <= 12; i++)
 			{
 				string text = (i < 10) ? "0" + i.ToString() : i.ToString();
-				model.ExpireMonths.Add(new SelectListItem()
-				{
-					Text = text,
-					Value = i.ToString(),
-				});
+				model.ExpireMonths.Add(new SelectListItem { Text = text, Value = i.ToString() });
 			}
 
 			// set postback values
@@ -489,6 +495,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			model.CardholderName = form["CardholderName"];
 			model.CardNumber = form["CardNumber"];
 			model.CardCode = form["CardCode"];
+
 			var selectedCcType = model.CreditCardTypes.Where(x => x.Value.Equals(form["CreditCardType"], StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 			if (selectedCcType != null)
 				selectedCcType.Selected = true;

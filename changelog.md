@@ -107,6 +107,7 @@
 * #713 Display gift card remaining amount in frontend order details and order messages
 * #736 Render PayPal Express Button in minibasket
 * PayPal: Support for partial refunds
+* Offline credit card payment: Option to exclude credit card types
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

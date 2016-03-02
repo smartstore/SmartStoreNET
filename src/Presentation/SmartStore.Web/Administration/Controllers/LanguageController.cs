@@ -91,7 +91,10 @@ namespace SmartStore.Admin.Controllers
 						index == -1 ? item.DisplayName : item.DisplayName.Substring(0, index),
 						item.TwoLetterISOLanguageName);
 
-					model.AvailableTwoLetterLanguageCodes.Add(new SelectListItem { Text = displayName, Value = item.TwoLetterISOLanguageName });
+                    if (item.TwoLetterISOLanguageName.Length == 2)
+                    { 
+					    model.AvailableTwoLetterLanguageCodes.Add(new SelectListItem { Text = displayName, Value = item.TwoLetterISOLanguageName });
+                    }
 				}
 			}
 

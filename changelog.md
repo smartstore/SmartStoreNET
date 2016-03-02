@@ -133,6 +133,7 @@
 * Customer could not delete his avatar
 * Facebook authentication: Email missing in verification
 * Attribute with a product linkage throws exception if added to cart
+* Number of products per product tag could be incorrect in a multi-store
 
 
 ## SmartStore.NET 2.2.2

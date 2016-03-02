@@ -37,11 +37,11 @@
                     $(document).ready(function () {
                         $("#terms-of-service-trigger").click(function (event) {
                             event.preventDefault();
-                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
+                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofuse" })" frameBorder="0" class="modal-flex-fill-area" />');
                         });
                         $("#disclaimer-trigger").click(function (event) {
                             event.preventDefault();
-                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "disclaimer" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
+                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "disclaimer" })" frameBorder="0" class="modal-flex-fill-area" />');
                         });
                     });
                 </script>
@@ -51,8 +51,8 @@
                 </label>
 
                 <!-- Terms of service -->
-                <div id="terms-of-service-modal" class="modal hide fade" tabindex="-1" style="width: 650px">
-                    <div class="modal-body" style="min-height: 300px;overflow:hidden"></div>
+                <div id="terms-of-service-modal" class="modal modal-flex hide fade" tabindex="-1" style="width: 650px">
+                    <div class="modal-body"></div>
                     <div class="modal-footer">
                         <button class="btn" data-dismiss="modal">@T("Common.Confirm")</button>
                     </div>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Text;
 using System.Web.Mvc;
 using SmartStore.Admin.Extensions;
 using SmartStore.Admin.Models.DataExchange;
@@ -633,37 +634,56 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedView();
 
 			var profile = _importService.GetImportProfileById(id);
-			if (profile == null)
-				return RedirectToAction("List");
+			if (profile != null)
+			{
+				var path = profile.GetImportLogPath();
+				if (System.IO.File.Exists(path))
+				{
+					var stream = new FileStream(path, FileMode.Open);
+					var result = new FileStreamResult(stream, MediaTypeNames.Text.Plain);
 
-			var path = profile.GetImportLogPath();
-			var stream = new FileStream(path, FileMode.Open);
+					return result;
+				}
+			}
 
-			var result = new FileStreamResult(stream, MediaTypeNames.Text.Plain);
-
-			return result;
+			return RedirectToAction("List");
 		}
 
 		public ActionResult DownloadImportFile(int id, string name)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
-				return AccessDeniedView();
+			string message = null;
 
-			var profile = _importService.GetImportProfileById(id);
-			if (profile == null)
-				return RedirectToAction("List");
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			{
+				var profile = _importService.GetImportProfileById(id);
+				if (profile != null)
+				{
+					var path = Path.Combine(profile.GetImportFolder(true), name);
 
-			var path = Path.Combine(profile.GetImportFolder(true), name);
+					if (!System.IO.File.Exists(path))
+						path = Path.Combine(profile.GetImportFolder(false), name);
 
-			if (!System.IO.File.Exists(path))
-				path = Path.Combine(profile.GetImportFolder(false), name);
+					if (System.IO.File.Exists(path))
+					{
+						var stream = new FileStream(path, FileMode.Open);
+						var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path));
+						result.FileDownloadName = Path.GetFileName(path);
 
-			var stream = new FileStream(path, FileMode.Open);
+						return result;
+					}
+				}
+			}
+			else
+			{
+				message = T("Admin.AccessDenied.Description");
+			}
 
-			var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path));
-			result.FileDownloadName = Path.GetFileName(path);
+			if (message.IsEmpty())
+			{
+				message = T("Admin.Common.ResourceNotFound");
+			}
 
-			return result;
+			return File(Encoding.UTF8.GetBytes(message), MediaTypeNames.Text.Plain, "DownloadImportFile.txt");
 		}
 
 		[HttpPost]

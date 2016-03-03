@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Admin.Extensions;
@@ -1057,19 +1058,25 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedView();
 
 			var profile = _exportService.GetExportProfileById(id);
-			if (profile == null)
-				return RedirectToAction("List");
+			if (profile != null)
+			{
+				var path = profile.GetExportLogPath();
+				if (System.IO.File.Exists(path))
+				{
+					var stream = new FileStream(path, FileMode.Open);
+					var result = new FileStreamResult(stream, MediaTypeNames.Text.Plain);
 
-			var path = profile.GetExportLogPath();
-			var stream = new FileStream(path, FileMode.Open);
+					return result;
+				}
+			}
 
-			var result = new FileStreamResult(stream, MediaTypeNames.Text.Plain);
-
-			return result;
+			return RedirectToAction("List");
 		}
 
 		public ActionResult DownloadExportFile(int id, string name)
 		{
+			string message = null;
+
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 			{
 				var profile = _exportService.GetExportProfileById(id);
@@ -1091,8 +1098,17 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 			}
+			else
+			{
+				message = T("Admin.AccessDenied.Description");
+			}
 
-			return new EmptyResult();	// TODO
+			if (message.IsEmpty())
+			{
+				message = T("Admin.Common.ResourceNotFound");
+			}
+
+			return File(Encoding.UTF8.GetBytes(message), MediaTypeNames.Text.Plain, "DownloadExportFile.txt");
 		}
 
 		public ActionResult ResolveFileNamePatternExample(int id, string pattern)

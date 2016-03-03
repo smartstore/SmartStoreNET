@@ -1119,9 +1119,10 @@ namespace SmartStore.Web.Controllers
 								{
 									item.Disable = (x.ProductTypeId != (int)ProductType.SimpleProduct);
 								}
-								else
+
+								if (!item.Disable && disableIds.Contains(x.Id))
 								{
-									item.Disable = disableIds.Contains(x.Id);
+									item.Disable = true;
 								}
 
 								if (x.ProductTypeId == (int)ProductType.GroupedProduct)

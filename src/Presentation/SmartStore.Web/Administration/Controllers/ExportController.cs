@@ -1070,24 +1070,29 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult DownloadExportFile(int id, string name)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
-				return AccessDeniedView();
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			{
+				var profile = _exportService.GetExportProfileById(id);
+				if (profile != null)
+				{
+					var path = Path.Combine(profile.GetExportFolder(true), name);
 
-			var profile = _exportService.GetExportProfileById(id);
-			if (profile == null)
-				return RedirectToAction("List");
+					if (!System.IO.File.Exists(path))
+						path = Path.Combine(profile.GetExportFolder(false), name);
 
-			var path = Path.Combine(profile.GetExportFolder(true), name);
+					if (System.IO.File.Exists(path))
+					{
+						var stream = new FileStream(path, FileMode.Open);
 
-            if (!System.IO.File.Exists(path))
-				path = Path.Combine(profile.GetExportFolder(false), name);
+						var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path));
+						result.FileDownloadName = Path.GetFileName(path);
 
-			var stream = new FileStream(path, FileMode.Open);
+						return result;
+					}
+				}
+			}
 
-			var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path));
-			result.FileDownloadName = Path.GetFileName(path);
-
-			return result;
+			return new EmptyResult();	// TODO
 		}
 
 		public ActionResult ResolveFileNamePatternExample(int id, string pattern)

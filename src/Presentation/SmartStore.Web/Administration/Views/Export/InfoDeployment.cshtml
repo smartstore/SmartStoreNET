@@ -8,7 +8,7 @@
 {
 	<div>
 		@Html.IconForFileExtension(Path.GetExtension(fileName), false)
-		<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
+		<a href="@Url.Action("DownloadExportFile", new { id = Model.ProfileId, name = fileName })" download>@fileName</a>
 	</div>
 }
 <div>

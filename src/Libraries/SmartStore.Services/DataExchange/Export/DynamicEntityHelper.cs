@@ -386,13 +386,13 @@ namespace SmartStore.Services.DataExchange.Export
 				return null;
 
 			dynamic result = new DynamicEntity(picture);
+			var relativeUrl = _pictureService.Value.GetPictureUrl(picture, 0, false);
 
+			result._FileName = relativeUrl.Substring(relativeUrl.LastIndexOf("/") + 1);
+			result._RelativeUrl = relativeUrl;
 			result._ThumbImageUrl = _pictureService.Value.GetPictureUrl(picture, thumbPictureSize, false, ctx.Store.Url);
 			result._ImageUrl = _pictureService.Value.GetPictureUrl(picture, detailsPictureSize, false, ctx.Store.Url);
 			result._FullSizeImageUrl = _pictureService.Value.GetPictureUrl(picture, 0, false, ctx.Store.Url);
-
-			var relativeUrl = _pictureService.Value.GetPictureUrl(picture);
-			result._FileName = relativeUrl.Substring(relativeUrl.LastIndexOf("/") + 1);
 
 			result._ThumbLocalPath = _pictureService.Value.GetThumbLocalPath(picture);
 
@@ -773,11 +773,21 @@ namespace SmartStore.Services.DataExchange.Export
 			if (ctx.Supports(ExportFeatures.CanIncludeMainPicture))
 			{
 				if (productPictures != null && productPictures.Any())
-					dynObject._MainPictureUrl = _pictureService.Value.GetPictureUrl(productPictures.First().Picture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
+				{
+					var firstPicture = productPictures.First().Picture;
+					dynObject._MainPictureUrl = _pictureService.Value.GetPictureUrl(firstPicture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
+					dynObject._MainPictureRelativeUrl = _pictureService.Value.GetPictureUrl(firstPicture, ctx.Projection.PictureSize);
+				}
 				else if (!_catalogSettings.Value.HideProductDefaultPictures)
+				{
 					dynObject._MainPictureUrl = _pictureService.Value.GetDefaultPictureUrl(ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
+					dynObject._MainPictureRelativeUrl = _pictureService.Value.GetDefaultPictureUrl(ctx.Projection.PictureSize);
+				}
 				else
+				{
 					dynObject._MainPictureUrl = null;
+					dynObject._MainPictureRelativeUrl = null;
+				}
 			}
 
 			if (ctx.Supports(ExportFeatures.UsesSkuAsMpnFallback) && product.ManufacturerPartNumber.IsEmpty())

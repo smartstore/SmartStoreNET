@@ -1,5 +1,6 @@
 ﻿<div class="change-device">
-	<a class="btn btn-info" href="@(Url.RouteUrl("ChangeDevice", new { dontusemobileversion = false }))" rel="nofollow">
-		@T("Mobile.ViewMobileVersion")
-	</a>
+    @using (Html.BeginRouteForm("ChangeDevice", new { dontusemobileversion = false }, FormMethod.Post))
+    {
+        <button type="submit" class="btn btn-info">@T("Mobile.ViewMobileVersion")</button>
+    }
 </div>

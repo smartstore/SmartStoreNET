@@ -1,15 +1,11 @@
-﻿@model SearchModel
+﻿@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web.Framework.UI;
+@model SearchModel
 @{
     Layout = "~/Views/Shared/_ColumnsThree.cshtml";
 
-    //title
     Html.AddTitleParts(T("PageTitle.Search").Text);
 }
-@using SmartStore.Core;
-@using SmartStore.Core.Infrastructure;
-@using SmartStore.Web;
-@using SmartStore.Web.Models.Catalog;
-@using SmartStore.Web.Framework.UI;
 
 @functions{
     private bool ShowListOptions() {
@@ -32,7 +28,9 @@
                 <script type="text/javascript">
                     $(document).ready(function () {
                         $("#@Html.FieldIdFor(model => model.As)").click(toggleAdvancedSearch);
-                        toggleAdvancedSearch();
+                    	toggleAdvancedSearch();
+
+                    	$('#@Html.FieldIdFor(model => model.Q)').focus();
                     });
 
                     function toggleAdvancedSearch() {

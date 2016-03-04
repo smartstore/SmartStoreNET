@@ -1,5 +1,4 @@
-﻿
-using SmartStore.Core.Configuration;
+﻿using SmartStore.Core.Configuration;
 
 namespace SmartStore.Core.Domain.News
 {
@@ -12,6 +11,7 @@ namespace SmartStore.Core.Domain.News
 			ShowNewsOnMainPage = true;
 			MainPageNewsCount = 3;
 			NewsArchivePageSize = 10;
+			MaxAgeInDays = 180;
 		}
 		
 		/// <summary>
@@ -43,6 +43,11 @@ namespace SmartStore.Core.Domain.News
         /// Gets or sets the page size for news archive
         /// </summary>
         public int NewsArchivePageSize { get; set; }
+
+		/// <summary>
+		/// The maximum age of news (in days) for RSS feed
+		/// </summary>
+		public int MaxAgeInDays { get; set; }
 
         /// <summary>
         /// Enable the news RSS feed link in customers browser address bar

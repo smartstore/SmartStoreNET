@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
@@ -11,9 +13,9 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Seo;
+using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Order;
-using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {
@@ -30,6 +32,7 @@ namespace SmartStore.Web.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly ICustomerService _customerService;
         private readonly IWorkflowMessageService _workflowMessageService;
+		private readonly IProductAttributeParser _productAttributeParser;
 
         private readonly LocalizationSettings _localizationSettings;
         private readonly OrderSettings _orderSettings;
@@ -46,6 +49,7 @@ namespace SmartStore.Web.Controllers
             ILocalizationService localizationService,
             ICustomerService customerService,
             IWorkflowMessageService workflowMessageService,
+			IProductAttributeParser productAttributeParser,
             LocalizationSettings localizationSettings,
             OrderSettings orderSettings)
         {
@@ -58,6 +62,7 @@ namespace SmartStore.Web.Controllers
             this._localizationService = localizationService;
             this._customerService = customerService;
             this._workflowMessageService = workflowMessageService;
+			this._productAttributeParser = productAttributeParser;
 
             this._localizationSettings = localizationSettings;
             this._orderSettings = orderSettings;
@@ -95,18 +100,33 @@ namespace SmartStore.Web.Controllers
 
             //products
             var orderItems = _orderService.GetAllOrderItems(order.Id, null, null, null, null, null, null);
+
             foreach (var orderItem in orderItems)
             {
-                var orderItemModel = new SubmitReturnRequestModel.OrderItemModel()
+				var attributeQueryData = new List<List<int>>();
+
+                var orderItemModel = new SubmitReturnRequestModel.OrderItemModel
                 {
                     Id = orderItem.Id,
                     ProductId = orderItem.Product.Id,
 					ProductName = orderItem.Product.GetLocalized(x => x.Name),
-                    ProductSeName = orderItem.Product.GetSeName(),
+					ProductSeName = orderItem.Product.GetSeName(),
                     AttributeInfo = orderItem.AttributeDescription,
                     Quantity = orderItem.Quantity
                 };
-                model.Items.Add(orderItemModel);
+
+				if (orderItem.Product.ProductType != ProductType.BundledProduct)
+				{
+					_productAttributeParser.DeserializeQueryData(attributeQueryData, orderItem.AttributesXml, orderItem.ProductId);
+				}
+				else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
+				{
+					var bundleData = orderItem.GetBundleData();
+
+					bundleData.ForEach(x => _productAttributeParser.DeserializeQueryData(attributeQueryData, x.AttributesXml, x.ProductId, x.BundleItemId));
+				}
+
+				orderItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, orderItemModel.ProductSeName);
 
                 //unit price
                 switch (order.CustomerTaxDisplayType)
@@ -124,6 +144,8 @@ namespace SmartStore.Web.Controllers
                         }
                         break;
                 }
+
+				model.Items.Add(orderItemModel);
             }
 
             return model;

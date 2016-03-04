@@ -1,6 +1,5 @@
 ﻿using System;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Tasks;
 
 namespace SmartStore.Services.Directory
@@ -11,15 +10,17 @@ namespace SmartStore.Services.Directory
     public partial class UpdateExchangeRateTask : ITask
     {
         private readonly ICurrencyService _currencyService;
-        private readonly ISettingService _settingService;
         private readonly CurrencySettings _currencySettings;
+		private readonly ICommonServices _services;
 
-        public UpdateExchangeRateTask(ICurrencyService currencyService, 
-            ISettingService settingService, CurrencySettings currencySettings)
+        public UpdateExchangeRateTask(
+			ICurrencyService currencyService, 
+			CurrencySettings currencySettings,
+			ICommonServices services)
         {
             this._currencyService = currencyService;
-            this._settingService = settingService;
             this._currencySettings = currencySettings;
+			this._services = services;
         }
 
         /// <summary>
@@ -33,10 +34,11 @@ namespace SmartStore.Services.Directory
             long lastUpdateTimeTicks = _currencySettings.LastUpdateTime;
             DateTime lastUpdateTime = DateTime.FromBinary(lastUpdateTimeTicks);
             lastUpdateTime = DateTime.SpecifyKind(lastUpdateTime, DateTimeKind.Utc);
+
             if (lastUpdateTime.AddHours(1) < DateTime.UtcNow)
             {
                 //update rates each one hour
-                var exchangeRates = _currencyService.GetCurrencyLiveRates(_currencyService.GetCurrencyById(_currencySettings.PrimaryExchangeRateCurrencyId).CurrencyCode);
+                var exchangeRates = _currencyService.GetCurrencyLiveRates(_services.StoreContext.CurrentStore.PrimaryExchangeRateCurrency.CurrencyCode);
 
                 foreach (var exchageRate in exchangeRates)
                 {
@@ -51,7 +53,7 @@ namespace SmartStore.Services.Directory
 
                 //save new update time value
                 _currencySettings.LastUpdateTime = DateTime.UtcNow.ToBinary();
-                _settingService.SaveSetting(_currencySettings);
+				_services.Settings.SaveSetting(_currencySettings);
             }
         }
     }

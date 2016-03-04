@@ -9,6 +9,8 @@ using SmartStore.Tax.Services;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Tax.Controllers
@@ -68,7 +70,7 @@ namespace SmartStore.Tax.Controllers
                     var tc = _taxCategoryService.GetTaxCategoryById(x.TaxCategoryId);
                     m.TaxCategoryName = (tc != null) ? tc.Name : "";
                     var c = _countryService.GetCountryById(x.CountryId);
-                    m.CountryName = (c != null) ? c.Name : "Unavailable";
+                    m.CountryName = (c != null) ? c.Name : T("Common.Unavailable").Text;
                     var s = _stateProvinceService.GetStateProvinceById(x.StateProvinceId);
                     m.StateProvinceName = (s != null) ? s.Name : "*";
                     m.Zip = (!String.IsNullOrEmpty(x.Zip)) ? x.Zip : "*";
@@ -97,7 +99,7 @@ namespace SmartStore.Tax.Controllers
                     var tc = _taxCategoryService.GetTaxCategoryById(x.TaxCategoryId);
                     m.TaxCategoryName = (tc != null) ? tc.Name : "";
                     var c = _countryService.GetCountryById(x.CountryId);
-                    m.CountryName = (c != null) ? c.Name : "Unavailable";
+                    m.CountryName = (c != null) ? c.Name : T("Common.Unavailable").Text;
                     var s = _stateProvinceService.GetStateProvinceById(x.StateProvinceId);
                     m.StateProvinceName = (s != null) ? s.Name : "*";
                     m.Zip = (!String.IsNullOrEmpty(x.Zip)) ? x.Zip : "*";

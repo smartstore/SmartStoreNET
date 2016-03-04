@@ -2,9 +2,8 @@
 using Autofac.Integration.Mvc;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
-using SmartStore.Core.Plugins;
-using SmartStore.Web.Controllers;
 using SmartStore.PayPal.Filters;
+using SmartStore.Web.Controllers;
 
 namespace SmartStore.PayPal
 {
@@ -15,6 +14,7 @@ namespace SmartStore.PayPal
 			if (isActiveModule)
 			{
 				builder.RegisterType<PayPalExpressCheckoutFilter>().AsActionFilterFor<CheckoutController>(x => x.PaymentMethod()).InstancePerRequest();
+				builder.RegisterType<PayPalExpressWidgetZoneFilter>().AsActionFilterFor<ShoppingCartController>(x => x.FlyoutShoppingCart()).InstancePerRequest();
 			}
 		}
 

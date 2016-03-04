@@ -40,20 +40,20 @@
                     {
                         case AttributeControlType.DropdownList:
                             {
-                        <select name="@(controlId)" id="@(controlId)"@(Html.Raw(disabled))>
-							@if (!attribute.IsRequired)
-							{
-								<option value="0">@T("Common.Unspecified")</option>
-							}
-							else if (attribute.Values.Count > 0 && !attribute.Values.Any(x => x.IsPreSelected))
-							{
-								<option value="0">@T("Common.PleaseSelect")</option>
-							}
-                            @foreach (var pvaValue in attribute.Values)
-                            {
-                                <option selected="@pvaValue.IsPreSelected" value="@pvaValue.Id">@Html.Raw(pvaValue.Name + pvaValue.GetAttributeValueInfo())</option>
-                            }
-                        </select>
+                                <select name="@(controlId)" id="@(controlId)" @(Html.Raw(disabled)) data-native-menu="false">
+                                    @if (!attribute.IsRequired)
+                                    {
+                                        <option value="0">@T("Common.Unspecified")</option>
+                                    }
+                                    else if (attribute.Values.Count > 0 && !attribute.Values.Any(x => x.IsPreSelected))
+                                    {
+                                        <option value="0">@T("Common.PleaseSelect")</option>
+                                    }
+                                    @foreach (var pvaValue in attribute.Values)
+                                    {
+                                        <option selected="@pvaValue.IsPreSelected" value="@pvaValue.Id">@Html.Raw(pvaValue.Name + pvaValue.GetAttributeValueInfo())</option>
+                                    }
+                                </select>
                             }
                             break;
                         case AttributeControlType.RadioList:

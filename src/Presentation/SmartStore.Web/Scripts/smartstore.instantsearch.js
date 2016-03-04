@@ -21,7 +21,12 @@
 			menu: '<ul class="typeahead dropdown-menu dropdown-instantsearch{0}"></ul>'.format(showThumbs ? " rich" : ""),
 			autoSelectFirstItem: false,
 			source: function (query, process) {
-				$('#instantsearch-progress').removeClass('hide');
+			    var spinner = $('#instantsearch-progress');
+			    if (spinner.length === 0) {
+			        spinner = createCircularSpinner(20).attr('id', 'instantsearch-progress').appendTo(searchBox.parent());
+			    }
+			    spinner.addClass('active');
+
 				return $.ajax({
 					dataType: "json",
 					url: url,
@@ -38,7 +43,7 @@
 						searchResult = null;
 					},
 					complete: function () {
-						$('#instantsearch-progress').addClass('hide');
+					    spinner.removeClass('active');
 					}
 				});
 			},

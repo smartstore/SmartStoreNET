@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using SmartStore.OfflinePayment.Settings;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.OfflinePayment.Models
 { 
@@ -35,7 +35,11 @@ namespace SmartStore.OfflinePayment.Models
 	{
 		[SmartResourceDisplayName("Plugins.Payments.Manual.Fields.TransactMode")]
 		public TransactMode TransactMode { get; set; }
-		public SelectList TransactModeValues { get; set; }
+		public List<SelectListItem> TransactModeValues { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.Manual.ExcludedCreditCards")]
+		public string[] ExcludedCreditCards { get; set; }
+		public List<SelectListItem> AvailableCreditCards { get; set; }
 	}
 
 	public class PayInStoreConfigurationModel : ConfigurationModelBase
@@ -45,4 +49,8 @@ namespace SmartStore.OfflinePayment.Models
 	public class PrepaymentConfigurationModel : ConfigurationModelBase
 	{
 	}
+
+    public class PurchaseOrderNumberConfigurationModel : ConfigurationModelBase
+    {
+    }
 }

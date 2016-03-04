@@ -1,44 +1,82 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Text;
+using System.Web;
 using System.Web.Mvc;
-using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Logging;
+using SmartStore.Services.Localization;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI.Captcha
 {
-    public class CaptchaValidatorAttribute : ActionFilterAttribute
+	public class CaptchaValidatorAttribute : ActionFilterAttribute
     {
-        private const string CHALLENGE_FIELD_KEY = "recaptcha_challenge_field";
-        private const string RESPONSE_FIELD_KEY = "recaptcha_response_field";
-
 		public Lazy<CaptchaSettings> CaptchaSettings { get; set; }
+		public Lazy<ILogger> Logger { get; set; }
+		public Lazy<ILocalizationService> LocalizationService { get; set; }
 
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+		public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            bool valid = false;
-            var captchaChallengeValue = filterContext.HttpContext.Request.Form[CHALLENGE_FIELD_KEY];
-            var captchaResponseValue = filterContext.HttpContext.Request.Form[RESPONSE_FIELD_KEY];
-            if (!string.IsNullOrEmpty(captchaChallengeValue) && !string.IsNullOrEmpty(captchaResponseValue))
-            {
+            var valid = false;
+
+			try
+			{
 				var captchaSettings = CaptchaSettings.Value;
-                if (captchaSettings.Enabled)
-                {
-                    //validate captcha
-                    var captchaValidtor = new Recaptcha.RecaptchaValidator
-                    {
-                        PrivateKey = captchaSettings.ReCaptchaPrivateKey,
-                        RemoteIP = filterContext.HttpContext.Request.UserHostAddress,
-                        Challenge = captchaChallengeValue,
-                        Response = captchaResponseValue
-                    };
+				var verifyUrl = CommonHelper.GetAppSetting<string>("g:RecaptchaVerifyUrl");
+				var recaptchaResponse = filterContext.HttpContext.Request.Form["g-recaptcha-response"];
 
-                    var recaptchaResponse = captchaValidtor.Validate();
-                    valid = recaptchaResponse.IsValid;
-                }
-            }
+				var url = "{0}?secret={1}&response={2}".FormatInvariant(
+					verifyUrl,
+					HttpUtility.UrlEncode(captchaSettings.ReCaptchaPrivateKey),
+					HttpUtility.UrlEncode(recaptchaResponse)
+				);
 
-            //this will push the result value into a parameter in our Action  
-            filterContext.ActionParameters["captchaValid"] = valid;
+				using (var client = new WebClient())
+				{
+					var jsonResponse = client.DownloadString(url);
+					using (var memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(jsonResponse)))
+					{
+						var serializer = new DataContractJsonSerializer(typeof(GoogleRecaptchaApiResponse));
+						var result = serializer.ReadObject(memoryStream) as GoogleRecaptchaApiResponse;
+
+						if (result == null)
+						{
+							Logger.Value.Error(LocalizationService.Value.GetResource("Common.CaptchaUnableToVerify"));
+						}
+						else
+						{
+							if (result.ErrorCodes == null)
+							{
+								valid = result.Success;
+							}
+						}
+					}
+				}
+			}
+			catch (Exception exception)
+			{
+				Logger.Value.ErrorsAll(exception);
+			}
+
+			// this will push the result value into a parameter in our Action  
+			filterContext.ActionParameters["captchaValid"] = valid;
 
             base.OnActionExecuting(filterContext);
         }
     }
+
+
+	[DataContract]
+	public class GoogleRecaptchaApiResponse
+	{
+		[DataMember(Name = "success")]
+		public bool Success { get; set; }
+
+		[DataMember(Name = "error-codes")]
+		public List<string> ErrorCodes { get; set; }
+	}
 }

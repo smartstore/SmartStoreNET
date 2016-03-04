@@ -16,9 +16,9 @@ namespace SmartStore
 		private static string AttributeFormatedName(int productAttributeId, int attributeId, int productId = 0, int bundleItemId = 0)
 		{
 			if (productId == 0)
-				return "product_attribute_{0}_{1}".FormatWith(productAttributeId, attributeId);
+				return "product_attribute_{0}_{1}".FormatInvariant(productAttributeId, attributeId);
 			else
-				return "product_attribute_{0}_{1}_{2}_{3}".FormatWith(productId, bundleItemId, productAttributeId, attributeId);
+				return "product_attribute_{0}_{1}_{2}_{3}".FormatInvariant(productId, bundleItemId, productAttributeId, attributeId);
 		}
 
 		public static void AddProductAttribute(this NameValueCollection collection, int productAttributeId, int attributeId, int valueId, int productId = 0, int bundleItemId = 0)
@@ -35,31 +35,39 @@ namespace SmartStore
 		/// Converts attribute query data
 		/// </summary>
 		/// <param name="collection">Name value collection</param>
-		/// <param name="queryData">Attribute query data items with following structure: Product.Id, ProductAttribute.Id, Product_ProductAttribute_Mapping.Id, ProductVariantAttributeValue.Id</param>
+		/// <param name="queryData">Attribute query data items with following structure: 
+		/// <c>Product.Id, ProductAttribute.Id, Product_ProductAttribute_Mapping.Id, ProductVariantAttributeValue.Id, [BundleItem.Id]</c></param>
 		/// <param name="productId">Product identifier to filter</param>
 		public static void ConvertAttributeQueryData(this NameValueCollection collection, List<List<int>> queryData, int productId = 0)
 		{
 			if (collection == null || queryData == null || queryData.Count <= 0)
 				return;
 
-			var enm = queryData.Where(i => i.Count > 3);
+			var items = queryData.Where(i => i.Count > 3);
 
 			if (productId != 0)
-				enm = enm.Where(i => i[0] == productId);
+				items = items.Where(i => i[0] == productId);
 
-			foreach (var itm in enm)
+			foreach (var item in items)
 			{
-				string name = AttributeFormatedName(itm[1], itm[2], itm[0]);
+				var name = AttributeFormatedName(item[1], item[2], item[0], item.Count > 4 ? item[4] : 0);
 
-				collection.Add(name, itm[3].ToString());
+				collection.Add(name, item[3].ToString());
 			}
 		}
 
 		/// <summary>Takes selected elements from collection and creates a attribute XML string from it.</summary>
 		/// <param name="formatWithProductId">how the name of the controls are formatted. frontend includes productId, backend does not.</param>
-		public static string CreateSelectedAttributesXml(this NameValueCollection collection, int productId, IList<ProductVariantAttribute> variantAttributes,
-			IProductAttributeParser productAttributeParser, ILocalizationService localizationService, IDownloadService downloadService, CatalogSettings catalogSettings,
-			HttpRequestBase request, List<string> warnings, bool formatWithProductId = true, int bundleItemId = 0)
+		public static string CreateSelectedAttributesXml(this NameValueCollection collection, 
+			int productId, 
+			IEnumerable<ProductVariantAttribute> variantAttributes,
+			IProductAttributeParser productAttributeParser, 
+			ILocalizationService localizationService, 
+			IDownloadService downloadService, 
+			CatalogSettings catalogSettings,
+			HttpRequestBase request, List<string> warnings, 
+			bool formatWithProductId = true, 
+			int bundleItemId = 0)
 		{
 			if (collection == null)
 				return "";
@@ -142,16 +150,18 @@ namespace SmartStore
 							var download = downloadService.GetDownloadByGuid(downloadGuid);
 							if (download != null)
 							{
+								download.IsTransient = false;
+								downloadService.UpdateDownload(download);
 								selectedAttributes = productAttributeParser.AddProductAttribute(selectedAttributes, attribute, download.DownloadGuid.ToString());
 							}
 						}
 						else
 						{
-							var httpPostedFile = request.Files[controlId];
-							if (httpPostedFile != null && httpPostedFile.FileName.HasValue())
+							var postedFile = request.Files[controlId];
+							if (postedFile != null && postedFile.FileName.HasValue())
 							{
 								int fileMaxSize = catalogSettings.FileUploadMaximumSizeBytes;
-								if (httpPostedFile.ContentLength > fileMaxSize)
+								if (postedFile.ContentLength > fileMaxSize)
 								{
 									warnings.Add(string.Format(localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024)));
 								}
@@ -163,10 +173,10 @@ namespace SmartStore
 										DownloadGuid = Guid.NewGuid(),
 										UseDownloadUrl = false,
 										DownloadUrl = "",
-										DownloadBinary = httpPostedFile.GetDownloadBits(),
-										ContentType = httpPostedFile.ContentType,
-										Filename = System.IO.Path.GetFileNameWithoutExtension(httpPostedFile.FileName),
-										Extension = System.IO.Path.GetExtension(httpPostedFile.FileName),
+										DownloadBinary = postedFile.InputStream.ToByteArray(),
+										ContentType = postedFile.ContentType,
+										Filename = System.IO.Path.GetFileNameWithoutExtension(postedFile.FileName),
+										Extension = System.IO.Path.GetExtension(postedFile.FileName),
 										IsNew = true
 									};
 									downloadService.InsertDownload(download);

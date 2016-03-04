@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.OData.Routing;
+using SmartStore.Core;
 using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.WebApi
@@ -24,6 +26,13 @@ namespace SmartStore.Web.Framework.WebApi
 		public static HttpResponseMessage CreateResponse(this HttpRequestMessage request, HttpStatusCode status, Type type, object value)
 		{
 			return _createResponse.MakeGenericMethod(type).Invoke(null, new[] { request, status, value }) as HttpResponseMessage;
+		}
+		public static HttpResponseMessage CreateResponseForEntity(this HttpRequestMessage request, object entity, int key)
+		{
+			if (entity == null)
+				return request.CreateResponse(HttpStatusCode.NotFound, WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
+
+			return request.CreateResponse(HttpStatusCode.OK, entity.GetType(), entity);
 		}
 
 		public static HttpResponseException ExceptionInvalidModelState(this ApiController apiController)
@@ -96,6 +105,17 @@ namespace SmartStore.Web.Framework.WebApi
 			}
 			key = 0;
 			return false;
+		}
+
+		public static string GetNavigation(this ODataPath odataPath, int segmentIndex)
+		{
+			if (odataPath.Segments.Count > segmentIndex)
+			{
+				string navigationProperty = (odataPath.Segments[segmentIndex] as NavigationPathSegment).NavigationPropertyName;
+
+				return navigationProperty;
+			}
+			return null;
 		}
 
 		public static void DeleteLocalFiles(this MultipartFormDataStreamProvider provider)

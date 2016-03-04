@@ -14,5 +14,11 @@ namespace SmartStore.Web.Controllers
 			return PartialView(zoneModel);
         }
 
+        [ChildActionOnly]
+        public ActionResult TabWidgets(object model, string viewDataKey)
+        {
+            var widgets = this.ControllerContext.ParentActionViewContext.ViewData[viewDataKey];
+            return PartialView(widgets);
+        }
     }
 }

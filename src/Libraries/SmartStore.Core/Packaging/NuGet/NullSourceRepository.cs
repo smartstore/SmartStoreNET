@@ -12,10 +12,6 @@ namespace SmartStore.Core.Packaging
 	/// </summary>
 	internal class NullSourceRepository : PackageRepositoryBase
 	{
-		public NullSourceRepository()
-		{
-		}
-
 		public override IQueryable<IPackage> GetPackages()
 		{
 			return Enumerable.Empty<IPackage>().AsQueryable();

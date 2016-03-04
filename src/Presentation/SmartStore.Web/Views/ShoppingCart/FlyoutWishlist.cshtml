@@ -28,16 +28,18 @@
                     @if (Model.ShowProductImages)
                     {
                         <figure class="picture pull-left">
-                            <a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@item.Picture.Title">
-                                <img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
-                            </a>
+							@if (item.Picture.ImageUrl.HasValue())
+							{
+								<a href="@item.ProductUrl" title="@item.Picture.Title">
+									<img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" /></a>
+							}
                         </figure>
                     }
                     <div class="quantity pull-left">
                         @(item.Quantity)<span class="times">x</span>
                     </div>
                     <div class="data pull-left">
-                        <a class="name" href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@item.ProductName">@item.ProductName</a>
+                        <a class="name" href="@item.ProductUrl" title="@item.ProductName">@item.ProductName</a>
                         @if (item.AttributeInfo.HasValue())
                         {
                             <br />    
@@ -56,7 +58,7 @@
 								 data-name="@item.ProductName"
 								 data-type="cart"
 								 data-action="addfromwishlist">
-								<i class="fa fa-shopping-cart"></i>
+								<i class="fa fa-cart-arrow-down"></i>
 							</a>
 						</div>
 					}

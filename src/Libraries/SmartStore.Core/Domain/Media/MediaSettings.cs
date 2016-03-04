@@ -1,5 +1,4 @@
-﻿
-using SmartStore.Core.Configuration;
+﻿using SmartStore.Core.Configuration;
 
 namespace SmartStore.Core.Domain.Media
 {
@@ -11,6 +10,7 @@ namespace SmartStore.Core.Domain.Media
 			ProductThumbPictureSize = 100;
 			ProductDetailsPictureSize = 300;
 			ProductThumbPictureSizeOnProductDetailsPage = 70;
+			MessageProductThumbPictureSize = 70;
 			AssociatedProductPictureSize = 125;
 			BundledProductPictureSize = 70;
 			CategoryThumbPictureSize = 125;
@@ -30,16 +30,17 @@ namespace SmartStore.Core.Domain.Media
         public int ProductThumbPictureSize { get; set; }
         public int ProductDetailsPictureSize { get; set; }
         public int ProductThumbPictureSizeOnProductDetailsPage { get; set; }
-        public int AssociatedProductPictureSize { get; set; }
+		public int MessageProductThumbPictureSize { get; set; }
+		public int AssociatedProductPictureSize { get; set; }
 		public int BundledProductPictureSize { get; set; }
-        public int CategoryThumbPictureSize { get; set; }
+		public int CategoryThumbPictureSize { get; set; }
         public int ManufacturerThumbPictureSize { get; set; }
         public int CartThumbPictureSize { get; set; }
 		public int CartThumbBundleItemPictureSize { get; set; }
         public int MiniCartThumbPictureSize { get; set; }
         public int AutoCompleteSearchThumbPictureSize { get; set; }
 
-        public bool DefaultPictureZoomEnabled { get; set; }
+		public bool DefaultPictureZoomEnabled { get; set; }
         public string PictureZoomType { get; set; }
 
         public int MaximumImageSize { get; set; }

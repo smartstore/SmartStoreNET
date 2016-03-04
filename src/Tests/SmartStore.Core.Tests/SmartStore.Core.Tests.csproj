@@ -62,8 +62,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\..\packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -83,15 +84,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComponentModel\ExpandoTests.cs" />
+    <Compile Include="FastPropertyTests.cs" />
+    <Compile Include="PerformanceTests.cs" />
     <Compile Include="TopologicSortTests.cs" />
     <Compile Include="WildcardTests.cs" />
-    <Compile Include="Domain\Shipping\ShippingOptionListTypeConverterTests.cs" />
     <Compile Include="Domain\Stores\StoreExtensionsTests.cs" />
     <Compile Include="Infrastructure\DependencyManagement\AutofacTests.cs" />
     <Compile Include="ConversionTests.cs" />
     <Compile Include="WebHelperTests.cs" />
-    <Compile Include="ComponentModel\GenericListTypeConverterTests.cs" />
     <Compile Include="ExtensionsTests.cs" />
     <Compile Include="Domain\Blogs\BlogPostTests.cs" />
     <Compile Include="Domain\Common\AddressTests.cs" />
@@ -99,7 +99,6 @@
     <Compile Include="Domain\EntityEqualityTests.cs" />
     <Compile Include="Domain\Orders\RecurringPaymentTests.cs" />
     <Compile Include="Domain\Orders\GiftCardTests.cs" />
-    <Compile Include="Domain\Shipping\ShippingOptionTypeConverterTests.cs" />
     <Compile Include="Fakes\FakeTypeFinder.cs" />
     <Compile Include="FileSystemStorageProviderTests.cs" />
     <Compile Include="Infrastructure\SingletonTests.cs" />

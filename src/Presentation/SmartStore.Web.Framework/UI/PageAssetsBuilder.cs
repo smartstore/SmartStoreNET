@@ -109,7 +109,7 @@ namespace SmartStore.Web.Framework.UI
             AddPartsCore(_titleParts, parts, append);
         }
 
-        public string GenerateTitle(bool addDefaultTitle)
+        public virtual string GenerateTitle(bool addDefaultTitle)
         {
             string result = "";
             var specificTitle = string.Join(_seoSettings.PageTitleSeparator, _titleParts.AsEnumerable().Reverse().ToArray());
@@ -154,7 +154,7 @@ namespace SmartStore.Web.Framework.UI
             AddPartsCore(_metaDescriptionParts, parts, append);
         }
 
-        public string GenerateMetaDescription()
+        public virtual string GenerateMetaDescription()
         {
             var metaDescription = string.Join(", ", _metaDescriptionParts.AsEnumerable().Reverse().ToArray());
             var result = !String.IsNullOrEmpty(metaDescription) ? metaDescription : _seoSettings.DefaultMetaDescription;
@@ -167,7 +167,7 @@ namespace SmartStore.Web.Framework.UI
             AddPartsCore(_metaKeywordParts, parts, append);
         }
 
-        public string GenerateMetaKeywords()
+        public virtual string GenerateMetaKeywords()
         {
             var metaKeyword = string.Join(", ", _metaKeywordParts.AsEnumerable().Reverse().ToArray());
             var result = !String.IsNullOrEmpty(metaKeyword) ? metaKeyword : _seoSettings.DefaultMetaKeywords;
@@ -406,7 +406,16 @@ namespace SmartStore.Web.Framework.UI
 			return sb.ToString();
 		}
 
-        public class WebAssetDescriptor
+		public string GenerateMetaRobots()
+		{
+			if (_seoSettings.MetaRobotsContent.HasValue())
+			{
+				return "<meta name=\"robots\" content=\"{0}\" />".FormatInvariant(_seoSettings.MetaRobotsContent);
+			}
+			return null;
+		}
+
+		public class WebAssetDescriptor
         {
             public bool ExcludeFromBundling { get; set; }
             public string Part { get; set; }

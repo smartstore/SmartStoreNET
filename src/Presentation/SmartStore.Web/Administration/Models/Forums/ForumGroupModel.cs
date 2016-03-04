@@ -6,7 +6,7 @@ using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Forums;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Forums
 {

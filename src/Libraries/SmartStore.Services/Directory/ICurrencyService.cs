@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Directory
@@ -72,40 +73,45 @@ namespace SmartStore.Services.Directory
         /// <param name="amount">Amount</param>
         /// <param name="sourceCurrencyCode">Source currency code</param>
         /// <param name="targetCurrencyCode">Target currency code</param>
+		/// <param name="store">Store to get the primary currencies from</param>
         /// <returns>Converted value</returns>
-        decimal ConvertCurrency(decimal amount, Currency sourceCurrencyCode, Currency targetCurrencyCode);
+		decimal ConvertCurrency(decimal amount, Currency sourceCurrencyCode, Currency targetCurrencyCode, Store store = null);
 
         /// <summary>
         /// Converts to primary exchange rate currency 
         /// </summary>
         /// <param name="amount">Amount</param>
         /// <param name="sourceCurrencyCode">Source currency code</param>
+		/// <param name="store">Store to get the primary exchange rate currency from</param>
         /// <returns>Converted value</returns>
-        decimal ConvertToPrimaryExchangeRateCurrency(decimal amount, Currency sourceCurrencyCode);
+		decimal ConvertToPrimaryExchangeRateCurrency(decimal amount, Currency sourceCurrencyCode, Store store = null);
 
         /// <summary>
         /// Converts from primary exchange rate currency
         /// </summary>
         /// <param name="amount">Amount</param>
         /// <param name="targetCurrencyCode">Target currency code</param>
+		/// <param name="store">Store to get the primary exchange rate currency from</param>
         /// <returns>Converted value</returns>
-        decimal ConvertFromPrimaryExchangeRateCurrency(decimal amount, Currency targetCurrencyCode);
+		decimal ConvertFromPrimaryExchangeRateCurrency(decimal amount, Currency targetCurrencyCode, Store store = null);
 
         /// <summary>
         /// Converts to primary store currency 
         /// </summary>
         /// <param name="amount">Amount</param>
         /// <param name="sourceCurrencyCode">Source currency code</param>
+		/// <param name="store">Store to get the primary store currency from</param>
         /// <returns>Converted value</returns>
-        decimal ConvertToPrimaryStoreCurrency(decimal amount, Currency sourceCurrencyCode);
+		decimal ConvertToPrimaryStoreCurrency(decimal amount, Currency sourceCurrencyCode, Store store = null);
 
         /// <summary>
         /// Converts from primary store currency
         /// </summary>
         /// <param name="amount">Amount</param>
         /// <param name="targetCurrencyCode">Target currency code</param>
+		/// <param name="store">Store to get the primary store currency from</param>
         /// <returns>Converted value</returns>
-        decimal ConvertFromPrimaryStoreCurrency(decimal amount, Currency targetCurrencyCode);
+		decimal ConvertFromPrimaryStoreCurrency(decimal amount, Currency targetCurrencyCode, Store store = null);
        
 
         

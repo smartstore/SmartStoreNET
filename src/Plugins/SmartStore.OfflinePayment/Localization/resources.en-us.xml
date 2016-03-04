@@ -33,7 +33,7 @@
       <LocaleResource Name="PaymentInfoDescription">
         <Value>
           <![CDATA[
-            Once your order is placed, you will be contacted by our stuff to confirm the order.
+            Once your order is placed, you will be contacted by our staff to confirm the order.
           ]]>
         </Value>
       </LocaleResource>
@@ -54,7 +54,7 @@
       <LocaleResource Name="PaymentInfoDescription">
         <Value>
           <![CDATA[
-            Once your order is placed, you will be contacted by our stuff to confirm the order.
+            Once your order is placed, you will be contacted by our staff to confirm the order.
           ]]>
         </Value>
       </LocaleResource>
@@ -96,7 +96,7 @@
       <LocaleResource Name="PaymentInfoDescription">
         <Value>
           <![CDATA[
-            Once your order is placed, you will be contacted by our stuff to confirm the order.
+            Once your order is placed, you will be contacted by our staff to confirm the order.
           ]]>
         </Value>
       </LocaleResource>
@@ -115,10 +115,16 @@
         </Value>
       </LocaleResource>
       <LocaleResource Name="Fields.TransactMode">
-        <Value>After checkout mark payment as</Value>
+        <Value>Payment status after order completion</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.TransactMode.Hint">
-        <Value>Specify transaction mode.</Value>
+        <Value>Specifies the payment status after order completion.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ExcludedCreditCards">
+        <Value>Excluded credit cards</Value>
+      </LocaleResource>
+      <LocaleResource Name="ExcludedCreditCards.Hint">
+        <Value>Credit cards that customers may not pay with.</Value>
       </LocaleResource>
     </Children>
   </LocaleResource>
@@ -137,7 +143,7 @@
       <LocaleResource Name="PaymentInfoDescription">
         <Value>
           <![CDATA[
-             Once your order is placed, you will be contacted by our stuff to confirm the order.
+             Once your order is placed, you will be contacted by our staff to confirm the order.
           ]]>
         </Value>
       </LocaleResource>
@@ -207,5 +213,21 @@
     </Children>
   </LocaleResource>
 
+  <!-- PuchaseOrderNumber -->
+  <LocaleResource Name="Plugins.FriendlyName.Payments.PuchaseOrder" AppendRootKey="false">
+    <Value>Purchase order</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.PuchaseOrder" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[ ]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="PurchaseOrderNumber">
+        <Value>PO Number</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
  
 </Language>

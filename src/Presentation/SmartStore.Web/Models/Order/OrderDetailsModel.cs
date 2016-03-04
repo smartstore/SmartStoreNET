@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Models.Order
@@ -89,6 +89,7 @@ namespace SmartStore.Web.Models.Order
             public int ProductId { get; set; }
             public string ProductName { get; set; }
             public string ProductSeName { get; set; }
+			public string ProductUrl { get; set; }
 			public ProductType ProductType { get; set; }
             public string UnitPrice { get; set; }
             public string SubTotal { get; set; }
@@ -106,6 +107,7 @@ namespace SmartStore.Web.Models.Order
 			public string Sku { get; set; }
 			public string ProductName { get; set; }
 			public string ProductSeName { get; set; }
+			public string ProductUrl { get; set; }
 			public bool VisibleIndividually { get; set; }
 			public int Quantity { get; set; }
 			public int DisplayOrder { get; set; }
@@ -124,7 +126,8 @@ namespace SmartStore.Web.Models.Order
         {
             public string CouponCode { get; set; }
             public string Amount { get; set; }
-        }
+			public string Remaining { get; set; }
+		}
 
         public partial class OrderNote : ModelBase
         {

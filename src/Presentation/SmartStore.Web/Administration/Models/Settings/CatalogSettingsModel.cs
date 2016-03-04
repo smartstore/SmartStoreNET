@@ -72,14 +72,20 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerPictures")]
         public bool ShowManufacturerPictures { get; set; }
 
-        #endregion
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideCategoryDefaultPictures")]
+		public bool HideCategoryDefaultPictures { get; set; }
 
-        #region Product lists
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideProductDefaultPictures")]
+		public bool HideProductDefaultPictures { get; set; }
 
-        #region Navigation
+		#endregion
 
-        //filter
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductsFromSubcategories")]
+		#region Product lists
+
+		#region Navigation
+
+		//filter
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductsFromSubcategories")]
         public bool ShowProductsFromSubcategories { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IncludeFeaturedProductsInNormalLists")]
@@ -103,6 +109,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ExpandAllFilterCriteria")]
         public bool ExpandAllFilterCriteria { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SortFilterResultsByMatches")]
+		public bool SortFilterResultsByMatches { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SubCategoryDisplayType")]
 		public SubCategoryDisplayType SubCategoryDisplayType { get; set; }
 		public SelectList AvailableSubCategoryDisplayTypes { get; set; }
@@ -118,11 +127,19 @@ namespace SmartStore.Admin.Models.Settings
         public string DefaultViewMode { get; set; }
         public IList<SelectListItem> AvailableDefaultViewModes { get; private set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultSortOrderMode")]
+        public ProductSortingEnum DefaultSortOrder { get; set; }
+        public SelectList AvailableSortOrderModes { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowProductViewModeChanging")]
         public bool AllowProductViewModeChanging { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultPageSizeOptions")]
         public string DefaultPageSizeOptions { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.PriceDisplayType")]
+		public PriceDisplayType PriceDisplayType { get; set; }
+		public SelectList AvailablePriceDisplayTypes { get; set; }
 
         #endregion
 
@@ -264,7 +281,10 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SuppressSkuSearch")]
         public bool SuppressSkuSearch { get; set; }
 
-        #endregion 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SearchDescriptions")]
+		public bool SearchDescriptions { get; set; }
 
-    }
+		#endregion
+
+	}
 }

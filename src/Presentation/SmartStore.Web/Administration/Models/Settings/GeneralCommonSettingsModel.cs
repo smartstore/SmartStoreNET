@@ -4,10 +4,11 @@ using System.Web.Mvc;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
 using SmartStore.Admin.Validators.Settings;
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Localization;
+using System.Collections;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {
@@ -77,14 +78,29 @@ namespace SmartStore.Admin.Models.Settings
             [AllowHtml]
             public string DefaultMetaDescription { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.ConvertNonWesternChars")]
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.MetaRobotsContent")]
+			public string MetaRobotsContent { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.ConvertNonWesternChars")]
             public bool ConvertNonWesternChars { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CanonicalUrlsEnabled")]
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.AllowUnicodeCharsInUrls")]
+			public bool AllowUnicodeCharsInUrls { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SeoNameCharConversion")]
+			public string SeoNameCharConversion { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.TestSeoNameCreation")]
+			public string TestSeoNameCreation { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CanonicalUrlsEnabled")]
             public bool CanonicalUrlsEnabled { get; set; }
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CanonicalHostNameRule")]
 			public CanonicalHostNameRule CanonicalHostNameRule { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.ExtraRobotsDisallows")]
+            public string ExtraRobotsDisallows { get; set; }
         }
 
 		public partial class SecuritySettingsModel
@@ -153,6 +169,12 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.PdfLogo")]
             [UIHint("Picture")]
             public int LogoPictureId { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.AttachOrderPdfToOrderPlacedEmail")]
+			public bool AttachOrderPdfToOrderPlacedEmail { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.AttachOrderPdfToOrderCompletedEmail")]
+			public bool AttachOrderPdfToOrderCompletedEmail { get; set; }
         }
 
 		public partial class LocalizationSettingsModel

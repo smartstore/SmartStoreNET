@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.OfflinePayment.Models
 {
@@ -97,4 +97,10 @@ namespace SmartStore.OfflinePayment.Models
 	{
 	}
 
+    public class PurchaseOrderNumberPaymentInfoModel : PaymentInfoModelBase
+	{
+        [SmartResourceDisplayName("Plugins.Payment.PurchaseOrder.PurchaseOrderNumber")]
+        [AllowHtml]
+        public string PurchaseOrderNumber { get; set; }
+	}
 }

@@ -16,6 +16,11 @@ namespace SmartStore.Services.Shipping
             this.Items = new List<OrganizedShoppingCartItem>();
         }
 
+		/// <summary>
+		/// The context store identifier
+		/// </summary>
+		public int StoreId { get; set; }
+
         /// <summary>
         /// Gets or sets a customer
         /// </summary>

@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 
@@ -15,6 +18,13 @@ namespace SmartStore.Services.Media
         /// <param name="downloadId">Download identifier</param>
         /// <returns>Download</returns>
         Download GetDownloadById(int downloadId);
+
+		/// <summary>
+		/// Gets downloads by identifiers
+		/// </summary>
+		/// <param name="downloadIds">Download identifiers</param>
+		/// <returns>List of download entities</returns>
+		IList<Download> GetDownloadsByIds(int[] downloadIds);
 
         /// <summary>
         /// Gets a download by GUID

@@ -2,9 +2,23 @@
 @using SmartStore.Core;
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Utilities;
+
+@functions {
+	private bool TransientUpload
+	{
+		get
+		{
+			if (ViewData.ContainsKey("transientUpload"))
+			{
+				var x = ViewData["transientUpload"].Convert<bool>();
+				return x;
+			}
+			return false;
+		}
+	}
+}
+
 @{
-    
-    //other variables
     var random = CommonHelper.GenerateRandomInteger();
     var clientId = "picture" + random;
     var pictureService = EngineContext.Current.Resolve<SmartStore.Services.Media.IPictureService>();
@@ -15,7 +29,7 @@
     Html.AddCssFileParts("~/css/fileupload");
 }
 
-<div id="@clientId" class="fileupload" style="display: inline-block;">
+<div id="@clientId" class="fileupload" style="display: inline-block;" data-upload-url='@Url.Action("AsyncUpload", "Picture", new { isTransient = TransientUpload, area = "Admin" })'>
     
     @Html.HiddenFor(x => x, new { @class = "hidden"} )
 
@@ -59,7 +73,7 @@
             elRemove = el.find('.remove');
 
         $('#@clientId').fileupload({
-            url: '@(Url.Content("~/Admin/Picture/AsyncUpload"))',
+            url: el.data('upload-url'),
             dataType: 'json',
             //acceptFileTypes: /^image\/(gif|jpeg|jpg|png)$/,
             acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,

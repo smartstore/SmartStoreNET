@@ -1,7 +1,6 @@
 ﻿@model Telerik.Web.Mvc.GridModel<DiscountModel>
 @using Telerik.Web.Mvc.UI
 @{
-    //page title
     ViewBag.Title = T("Admin.Promotions.Discounts").Text;
 }
 <div class="section-header">
@@ -9,9 +8,14 @@
         @T("Admin.Promotions.Discounts")
     </div>
     <div class="options">
+		@Html.Widget("admin_button_toolbar_before")
+
         <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+
+		@Html.Widget("admin_button_toolbar_after")
     </div>
 </div>
+
 <table class="adminContent">
     <tr>
         <td>

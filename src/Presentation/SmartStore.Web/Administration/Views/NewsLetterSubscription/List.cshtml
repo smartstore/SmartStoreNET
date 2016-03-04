@@ -1,7 +1,6 @@
 ﻿@model NewsLetterSubscriptionListModel
 @using Telerik.Web.Mvc.UI
 @{
-  
     ViewBag.Title = T("Admin.Promotions.newsLetterSubscriptions").Text;
 }
 <div class="section-header">
@@ -10,12 +9,9 @@
         @T("Admin.Promotions.newsLetterSubscriptions")
     </div>
     <div class="options">
-        <a href="@Url.Action("ExportCsv")" class="btn">
-			<i class="fa fa-arrow-circle-o-down"></i>&nbsp;@T("Admin.Common.ExportToCsv")
-		</a>
-        <a href="#importcsv-window" data-toggle="modal" class="btn">
-			<i class="fa fa-arrow-circle-o-up"></i>&nbsp;@T("Admin.Common.ImportFromCsv")
-		</a>
+		@Html.Widget("admin_button_toolbar_before")
+
+		@Html.Widget("admin_button_toolbar_after")
     </div>
 </div>
 
@@ -28,14 +24,17 @@
             @Html.EditorFor(model => Model.SearchEmail)
         </td>
     </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.StoreId)
-        </td>
-        <td class="adminData">
-            @Html.DropDownList("StoreId", Model.AvailableStores)
-        </td>
-    </tr>
+	@if (Model.AvailableStores.Count > 1)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.StoreId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("StoreId", Model.AvailableStores, T("Admin.Common.All"))
+			</td>
+		</tr>
+	}
     <tr>
 		<td class="adminTitle">
 			&nbsp;
@@ -68,6 +67,7 @@
 								.Centered()
                                 .Width(100);
 							columns.Bound(x => x.StoreName)
+								.Hidden(Model.AvailableStores.Count <= 1)
 								.ReadOnly();
                             columns.Bound(x => x.CreatedOn)
                                 .ReadOnly()
@@ -114,34 +114,4 @@
         alert(e.XMLHttpRequest.responseText);
         e.preventDefault();
     }
-</script>
-
-@*import emails form*@
-@{Html.SmartStore().Window()
-        .Name("importcsv-window")
-        .Title(T("Admin.Common.ImportFromCsv").Text)
-        .Content(@<text>
-    @using (Html.BeginForm("ImportCsv", "NewsLetterSubscription", FormMethod.Post, new { enctype = "multipart/form-data" }))
-    {
-        <div>
-             @T("Admin.Common.CsvFile"): <input type="file" id="importcsvfile" name="importcsvfile" />
-        </div>
-    }
-    </text>)
-    .FooterContent(@<text>
-        <button id="importcsv" type="button" class="btn btn-primary">@T("Admin.Common.ImportFromCsv")</button>
-    </text>)
-        .Width(400)
-        .Modal(true)
-        .Visible(false)
-        .Render();
-}
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        $("#importcsv").click(function (e) {
-            e.preventDefault();
-            $('#importcsv-window').find('form').submit();
-        });
-    });
 </script>

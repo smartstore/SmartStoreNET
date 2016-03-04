@@ -5,10 +5,10 @@ using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Shipping
 {
-    /// <summary>
-    /// Represents a shipping method (used for offline shipping rate computation methods)
-    /// </summary>
-    [DataContract]
+	/// <summary>
+	/// Represents a shipping method (used for offline shipping rate computation methods)
+	/// </summary>
+	[DataContract]
 	public partial class ShippingMethod : BaseEntity, ILocalizedEntity
     {
         private ICollection<Country> _restrictedCountries;

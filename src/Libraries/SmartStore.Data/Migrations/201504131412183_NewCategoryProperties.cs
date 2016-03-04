@@ -18,7 +18,7 @@ namespace SmartStore.Data.Migrations
 
 			if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
 			{
-				this.SqlFile("LatestProductLoadAllPaged.sql");
+				this.SqlFileOrResource("LatestProductLoadAllPaged.sql");
 			}
         }
         

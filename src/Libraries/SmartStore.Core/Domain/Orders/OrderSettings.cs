@@ -83,5 +83,9 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public int MinimumOrderPlacementInterval { get; set; }
 
-    }
+		/// <summary>
+		/// Gets or sets a value indicating whether to display all orders of all stores to a customer
+		/// </summary>
+		public bool DisplayOrdersOfAllStores { get; set; }
+	}
 }

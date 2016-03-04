@@ -64,11 +64,20 @@ namespace SmartStore.Web.Framework.UI
             html.AppendMetaKeywordParts(parts);
             return MvcHtmlString.Create(html.Encode(pageAssetsBuilder.GenerateMetaKeywords()));
         }
-        #endregion
+		#endregion
 
+		#region MetaMisc
 
-        #region ScriptParts
-        public static void AddScriptParts(this HtmlHelper html, params string[] parts)
+		public static MvcHtmlString SmartMetaRobots(this HtmlHelper html)
+		{
+			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+			return MvcHtmlString.Create(pageAssetsBuilder.GenerateMetaRobots());
+		}
+
+		#endregion
+
+		#region ScriptParts
+		public static void AddScriptParts(this HtmlHelper html, params string[] parts)
         {
             AddScriptParts(html, ResourceLocation.Foot, false, parts);
         }

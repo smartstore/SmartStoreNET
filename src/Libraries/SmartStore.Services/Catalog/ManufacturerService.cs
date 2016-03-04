@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -89,6 +90,32 @@ namespace SmartStore.Services.Catalog
             UpdateManufacturer(manufacturer);
         }
 
+		public virtual IQueryable<Manufacturer> GetManufacturers(bool showHidden = false, int storeId = 0)
+		{
+			var query = _manufacturerRepository.Table
+				.Where(m => !m.Deleted);
+
+			if (!showHidden)
+				query = query.Where(m => m.Published);
+
+			if (!QuerySettings.IgnoreMultiStore && storeId > 0)
+			{
+				query = from m in query
+						join sm in _storeMappingRepository.Table
+						on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
+						from sm in m_sm.DefaultIfEmpty()
+						where !m.LimitedToStores || storeId == sm.StoreId
+						select m;
+
+				query = from m in query
+						group m by m.Id into mGroup
+						orderby mGroup.Key
+						select mGroup.FirstOrDefault();
+			}
+
+			return query;
+		}
+
         /// <summary>
         /// Gets all manufacturers
         /// </summary>
@@ -96,65 +123,43 @@ namespace SmartStore.Services.Catalog
         /// <returns>Manufacturer collection</returns>
         public virtual IList<Manufacturer> GetAllManufacturers(bool showHidden = false)
         {
-            return GetAllManufacturers(null, showHidden);
+            return GetAllManufacturers(null, 0, showHidden);
         }
 
         /// <summary>
         /// Gets all manufacturers
         /// </summary>
         /// <param name="manufacturerName">Manufacturer name</param>
+		/// <param name="storeId">Whether to filter result by store identifier</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Manufacturer collection</returns>
-        public virtual IList<Manufacturer> GetAllManufacturers(string manufacturerName, bool showHidden = false)
+        public virtual IList<Manufacturer> GetAllManufacturers(string manufacturerName, int storeId = 0, bool showHidden = false)
         {
-            var query = _manufacturerRepository.Table;
-            if (!showHidden)
-                query = query.Where(m => m.Published);
-            if (!String.IsNullOrWhiteSpace(manufacturerName))
-                query = query.Where(m => m.Name.Contains(manufacturerName));
-            query = query.Where(m => !m.Deleted);
-            query = query.OrderBy(m => m.DisplayOrder);
+			var query = GetManufacturers(showHidden, storeId);
 
-			//Store mapping
-			if (!showHidden)
-			{
-				//Store mapping
-				if (!QuerySettings.IgnoreMultiStore)
-				{
-					var currentStoreId = _storeContext.CurrentStore.Id;
-					query = from m in query
-							join sm in _storeMappingRepository.Table
-							on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
-							from sm in m_sm.DefaultIfEmpty()
-							where !m.LimitedToStores || currentStoreId == sm.StoreId
-							select m;
-				}
+			if (manufacturerName.HasValue())
+				query = query.Where(m => m.Name.Contains(manufacturerName));
 
-				//only distinct manufacturers (group by ID)
-				query = from m in query
-						group m by m.Id	into mGroup
-						orderby mGroup.Key
-						select mGroup.FirstOrDefault();
-
-				query = query.OrderBy(m => m.DisplayOrder);
-			}
+			query = query.OrderBy(m => m.DisplayOrder)
+				.ThenBy(m => m.Name);
 
             var manufacturers = query.ToList();
             return manufacturers;
         }
-        
-        /// <summary>
-        /// Gets all manufacturers
-        /// </summary>
-        /// <param name="manufacturerName">Manufacturer name</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Manufacturers</returns>
-        public virtual IPagedList<Manufacturer> GetAllManufacturers(string manufacturerName,
-            int pageIndex, int pageSize, bool showHidden = false)
+
+		/// <summary>
+		/// Gets all manufacturers
+		/// </summary>
+		/// <param name="manufacturerName">Manufacturer name</param>
+		/// <param name="pageIndex">Page index</param>
+		/// <param name="pageSize">Page size</param>
+		/// <param name="storeId">Whether to filter result by store identifier</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>Manufacturers</returns>
+		public virtual IPagedList<Manufacturer> GetAllManufacturers(string manufacturerName,
+            int pageIndex, int pageSize, int storeId = 0, bool showHidden = false)
         {
-            var manufacturers = GetAllManufacturers(manufacturerName, showHidden);
+            var manufacturers = GetAllManufacturers(manufacturerName, storeId, showHidden);
             return new PagedList<Manufacturer>(manufacturers, pageIndex, pageSize);
         }
 
@@ -335,6 +340,40 @@ namespace SmartStore.Services.Catalog
 					return productManufacturers;
 				});
         }
+
+		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByManufacturerIds(int[] manufacturerIds)
+		{
+			Guard.ArgumentNotNull(() => manufacturerIds);
+
+			var query = _productManufacturerRepository.TableUntracked
+				.Where(x => manufacturerIds.Contains(x.ManufacturerId))
+				.OrderBy(x => x.DisplayOrder);
+
+			var map = query
+				.ToList()
+				.ToMultimap(x => x.ManufacturerId, x => x);
+
+			return map;
+		}
+
+		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByProductIds(int[] productIds)
+		{
+			Guard.ArgumentNotNull(() => productIds);
+
+			var query =
+				from pm in _productManufacturerRepository.TableUntracked.Expand(x => x.Manufacturer).Expand(x => x.Manufacturer.Picture)
+				join m in _manufacturerRepository.TableUntracked on pm.ManufacturerId equals m.Id
+				where productIds.Contains(pm.ProductId)
+				select pm;
+
+			var map = query
+				.OrderBy(x => x.ProductId)
+				.ThenBy(x => x.DisplayOrder)
+				.ToList()
+				.ToMultimap(x => x.ProductId, x => x);
+
+			return map;
+		}
         
         /// <summary>
         /// Gets a product manufacturer mapping 

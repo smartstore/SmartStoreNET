@@ -62,7 +62,7 @@
 		    if (data.GalleryHtml) {
 		        var cnt = $('#pd-gallery-container');
 		        cnt.stop(true, true).transition({ opacity: 0 }, 300, "ease-out", function () {
-		            gallery.reset();
+		        	gallery.reset();
 		            cnt.html(data.GalleryHtml);
 		            self.createGallery(data.GalleryStartIndex);
 
@@ -169,7 +169,8 @@
                     zoomType: opts.zoomType
 				},
 				box: {
-					enabled: true
+					enabled: true,
+					hidePageScrollbars: false
 				}
 			});
 		}

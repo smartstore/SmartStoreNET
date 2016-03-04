@@ -11,7 +11,6 @@ namespace SmartStore.Utilities
     {
         private const string _defaultDelim = " \t\n\r\f";
         private readonly string _delim;
-        private readonly string[] _delims = new string[0];
         private readonly string _text;
         private readonly bool _returnDelims;
 
@@ -36,8 +35,8 @@ namespace SmartStore.Utilities
 
         #region IEnumerable[<string>] Members
 
-        private int _pos = 0;
-        private string _token = null;
+        private int _pos;
+        private string _token;
 
         private string GetNext()
         {

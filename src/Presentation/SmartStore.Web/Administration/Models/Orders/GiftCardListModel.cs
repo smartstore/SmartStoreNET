@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Orders
 {
@@ -11,6 +11,8 @@ namespace SmartStore.Admin.Models.Orders
         {
             ActivatedList = new List<SelectListItem>();
         }
+
+		public int GridPageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.GiftCards.List.CouponCode")]
         [AllowHtml]

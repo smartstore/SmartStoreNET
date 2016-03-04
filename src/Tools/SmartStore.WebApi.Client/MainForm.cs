@@ -14,38 +14,59 @@ namespace SmartStoreNetWebApiClient
 		{
 			InitializeComponent();
 
-			this.FormClosing += MainForm_Closing;
-
 			this.Text = Program.AppName;
 
-			cboMethod.SelectedIndex = 0;
-			radioJson.Checked = true;
-			radioOdata.Checked = true;
-			txtPublicKey.Text = Settings.Default.ApiPublicKey;
-			txtSecretKey.Text = Settings.Default.ApiSecretKey;
-			cboPath.Items.FromString(Settings.Default.ApiPaths);
-			cboQuery.Items.FromString(Settings.Default.ApiQuery);
-			cboContent.Items.FromString(Settings.Default.ApiContent);
+			this.Load += (object sender, EventArgs e) =>
+			{
+				var s = Settings.Default;
+				s.Reload();
 
-			if (cboPath.Items.Count <= 0)
-				cboPath.Items.Add("/Customers");
+				cboMethod.SelectedIndex = 0;
+				radioJson.Checked = true;
+				radioOdata.Checked = true;
+				txtPublicKey.Text = s.ApiPublicKey;
+				txtSecretKey.Text = s.ApiSecretKey;
+				txtUrl.Text = s.ApiUrl;
+				txtVersion.Text = s.ApiVersion;
+				cboPath.Items.FromString(s.ApiPaths);
+				cboQuery.Items.FromString(s.ApiQuery);
+				cboContent.Items.FromString(s.ApiContent);
 
-			cboMethod_changeCommitted(null, null);
-			radioApi_CheckedChanged(null, null);
+				if (cboPath.Items.Count <= 0)
+					cboPath.Items.Add("/Customers");
 
-			openFileDialog1.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
-			openFileDialog1.DefaultExt = ".jpg";
-			openFileDialog1.FileName = "";
-			openFileDialog1.Title = "Please select an image file to upload";
-			openFileDialog1.Multiselect = true;
+				cboMethod_changeCommitted(null, null);
+				radioApi_CheckedChanged(null, null);
+
+				openFileDialog1.Filter = "Supported files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png, *.csv, *.xlsx, *.txt, *.tab, *.zip) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png; *.csv; *.xlsx; *.txt; *.tab; *.zip";
+				openFileDialog1.DefaultExt = ".jpg";
+				openFileDialog1.FileName = "";
+				openFileDialog1.Title = "Please select files to upload";
+				openFileDialog1.Multiselect = true;
+			};
+
+			this.FormClosing += (object sender, FormClosingEventArgs e) =>
+			{
+				var s = Settings.Default;
+
+				s.ApiPublicKey = txtPublicKey.Text;
+				s.ApiSecretKey = txtSecretKey.Text;
+				s.ApiUrl = txtUrl.Text;
+				s.ApiVersion = txtVersion.Text;
+				Settings.Default[radioOdata.Checked ? "ApiPaths" : "ApiPaths2"] = cboPath.Items.IntoString();
+				s.ApiQuery = cboQuery.Items.IntoString();
+				s.ApiContent = cboContent.Items.IntoString();
+
+				s.Save();
+			};
 		}
 
 		private void CallTheApi()
 		{
-			if (!string.IsNullOrWhiteSpace(txtUrl.Text) && !txtUrl.Text.EndsWith("/"))
+			if (txtUrl.Text.HasValue() && !txtUrl.Text.EndsWith("/"))
 				txtUrl.Text = txtUrl.Text + "/";
 
-			if (!string.IsNullOrWhiteSpace(cboPath.Text) && !cboPath.Text.StartsWith("/"))
+			if (cboPath.Text.HasValue() && !cboPath.Text.StartsWith("/"))
 				cboPath.Text = "/" + cboPath.Text;
 
 			var context = new WebApiRequestContext
@@ -57,7 +78,7 @@ namespace SmartStoreNetWebApiClient
 				HttpAcceptType = (radioJson.Checked ? ApiConsumer.JsonAcceptType : ApiConsumer.XmlAcceptType)
 			};
 
-			if (!string.IsNullOrWhiteSpace(cboQuery.Text))
+			if (cboQuery.Text.HasValue())
 				context.Url = string.Format("{0}?{1}", context.Url, cboQuery.Text);
 
 			if (!context.IsValid)
@@ -76,13 +97,42 @@ namespace SmartStoreNetWebApiClient
 			lblRequest.Text = "Request: " + context.HttpMethod + " " + context.Url;
 			lblRequest.Refresh();
 
-			if (radioApi.Checked && !string.IsNullOrEmpty(txtFile.Text) && cboPath.Text.StartsWith("/Upload"))
-				multiPartData = apiConsumer.CreateProductImageMultipartData(txtFile.Text, txtProductId.Text.ToInt(), txtProductSku.Text);
+			if (radioApi.Checked && txtFile.Text.HasValue())
+			{
+				var id1 = txtIdentfier1.Text.ToInt();
+				var id2 = txtIdentfier2.Text;
+				var keyForId1 = "Id";
+				var keyForId2 = "";
+
+				multiPartData = new Dictionary<string, object>();
+
+				if (cboPath.Text.StartsWith("/Uploads/ProductImages"))
+				{
+					// only one identifier required: product id, sku or gtin
+					keyForId2 = "Sku";
+				}
+				else if (cboPath.Text.StartsWith("/Uploads/ImportFiles"))
+				{
+					// only one identifier required: import profile id or profile name
+					keyForId2 = "Name";
+
+					// to delete existing import files:
+					//multiPartData.Add("deleteExisting", true);
+				}
+
+				if (id1 != 0)
+					multiPartData.Add(keyForId1, id1);
+
+				if (id2.HasValue())
+					multiPartData.Add(keyForId2, id2);
+
+				apiConsumer.AddApiFileParameter(multiPartData, txtFile.Text);
+			}
 
 			var webRequest = apiConsumer.StartRequest(context, cboContent.Text, multiPartData, out requestContent);
 			txtRequest.Text = requestContent.ToString();
 
-			bool result = apiConsumer.ProcessResponse(webRequest, response);
+			var result = apiConsumer.ProcessResponse(webRequest, response);
 
 			lblResponse.Text = "Response: " + response.Status;
 
@@ -94,10 +144,9 @@ namespace SmartStoreNetWebApiClient
 
 				if (customers != null)
 				{
-					sb.AppendLine(string.Format("Parsed {0} customer(s):", customers.Count));
+					sb.AppendLine("Parsed {0} customer(s):".FormatInvariant(customers.Count));
 
-					foreach (var customer in customers)
-						sb.AppendLine(customer.ToString());
+					customers.ForEach(x => sb.AppendLine(x.ToString()));
 
 					sb.Append("\r\n");
 				}
@@ -119,16 +168,6 @@ namespace SmartStoreNetWebApiClient
 			cboPath.Text = "";
 			cboPath.Items.Clear();
 			cboPath.Items.FromString(odata ? Settings.Default.ApiPaths : Settings.Default.ApiPaths2);
-		}
-
-		private void MainForm_Closing(object sender, FormClosingEventArgs e)
-		{
-			Settings.Default["ApiPublicKey"] = txtPublicKey.Text;
-			Settings.Default["ApiSecretKey"] = txtSecretKey.Text;
-			Settings.Default[radioOdata.Checked ? "ApiPaths" : "ApiPaths2"] = cboPath.Items.IntoString();
-			Settings.Default["ApiQuery"] = cboQuery.Items.IntoString();
-			Settings.Default["ApiContent"] = cboContent.Items.IntoString();
-			Settings.Default.Save();
 		}
 		
 		private void MainForm_Shown(object sender, EventArgs e)
@@ -203,10 +242,10 @@ namespace SmartStoreNetWebApiClient
 			lblFile.Visible = show;
 			txtFile.Visible = show;
 			btnFileOpen.Visible = show;
-			lblProductId.Visible = show;
-			txtProductId.Visible = show;
-			lblProductSku.Visible = show;
-			txtProductSku.Visible = show;
+			lblIdentifier1.Visible = show;
+			txtIdentfier1.Visible = show;
+			lblIdentfier2.Visible = show;
+			txtIdentfier2.Visible = show;
 		}
 
 		private void btnFileOpen_Click(object sender, EventArgs e)

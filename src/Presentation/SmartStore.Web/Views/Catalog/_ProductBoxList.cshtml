@@ -33,9 +33,12 @@
 
 <div class="pull-left" style="width:@leftContentWidth">
     <figure class="picture">
-        <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })" title="@Model.DefaultPictureModel.Title">
-            <img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl" title="@Model.DefaultPictureModel.Title" />
-        </a>
+		@if (Model.DefaultPictureModel.ImageUrl.HasValue())
+		{
+			<a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })" title="@Model.DefaultPictureModel.Title">
+				<img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl" title="@Model.DefaultPictureModel.Title" />
+			</a>
+		}
         @if (Model.ColorAttributes.Any())
         {
             <div class="colors">
@@ -216,7 +219,7 @@
                             data-form-selector="#product-details-form"
                             data-type="wishlist"
                             data-action="add">
-                            <i class="fa fa-gift"></i>
+                            <i class="fa fa-heart"></i>
                             @T("Categories.Wishlist")
                         </a>
                     }
@@ -228,7 +231,7 @@
 						    rel="nofollow"
                             data-type="compare"
                             data-action="add">
-                            <i class="fa fa-retweet"></i>
+                            <i class="fa fa-file-text"></i>
                             @T("Categories.Compare")
                         </a>
                     }
@@ -250,7 +253,7 @@
                             data-type="cart"
                             data-action="add">
                             @(Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
-                            <i class="fa fa-shopping-cart"></i>      
+                            <i class="fa fa-lg fa-cart-arrow-down"></i>      
                         </a>
 					}
 					else

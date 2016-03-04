@@ -1,21 +1,11 @@
 ﻿using System;
-using System.IO;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Messages;
-using SmartStore.Core.Data;
 
 namespace SmartStore.Services.Messages
 {
-    public partial interface INewsLetterSubscriptionService
-    {
-
-        /// <summary>
-        /// Executes a bulk import of subscriber data from a CSV source
-        /// </summary>
-        /// <param name="stream">The input file stream</param>
-        /// <returns>The import result</returns>
-        ImportResult ImportSubscribers(Stream stream);
-        
+	public partial interface INewsLetterSubscriptionService
+    {       
         /// <summary>
         /// Inserts a newsletter subscription
         /// </summary>
@@ -37,12 +27,21 @@ namespace SmartStore.Services.Messages
         /// <param name="publishSubscriptionEvents">if set to <c>true</c> [publish subscription events].</param>
         void DeleteNewsLetterSubscription(NewsLetterSubscription newsLetterSubscription, bool publishSubscriptionEvents = true);
 
-        /// <summary>
-        /// Gets a newsletter subscription by newsletter subscription identifier
-        /// </summary>
-        /// <param name="newsLetterSubscriptionId">The newsletter subscription identifier</param>
-        /// <returns>NewsLetter subscription</returns>
-        NewsLetterSubscription GetNewsLetterSubscriptionById(int newsLetterSubscriptionId);
+		/// <summary>
+		/// Adds or deletes a newsletter subscription
+		/// </summary>
+		/// <param name="add"><c>true</c> add subscription, <c>false</c> delete</param>
+		/// <param name="email">Email address</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <returns><c>true</c> added subscription, <c>false</c> removed subscription, <c>null</c> did nothing</returns>
+		bool? AddNewsLetterSubscriptionFor(bool add, string email, int storeId);
+
+		/// <summary>
+		/// Gets a newsletter subscription by newsletter subscription identifier
+		/// </summary>
+		/// <param name="newsLetterSubscriptionId">The newsletter subscription identifier</param>
+		/// <returns>NewsLetter subscription</returns>
+		NewsLetterSubscription GetNewsLetterSubscriptionById(int newsLetterSubscriptionId);
 
         /// <summary>
         /// Gets a newsletter subscription by newsletter subscription GUID

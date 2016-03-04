@@ -1,6 +1,3 @@
-
-
-
 using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Orders

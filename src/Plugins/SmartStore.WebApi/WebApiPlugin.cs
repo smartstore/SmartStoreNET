@@ -34,7 +34,7 @@ namespace SmartStore.WebApi
 		{
 			_permissionService.InstallPermissions(new WebApiPermissionProvider());
 
-			var apiSettings = new WebApiSettings()
+			var apiSettings = new WebApiSettings
 			{
 				LogUnauthorized = true,
 				ValidMinutePeriod = WebApiGlobal.DefaultTimePeriodMinutes
@@ -58,9 +58,6 @@ namespace SmartStore.WebApi
 			_settingService.DeleteSetting<WebApiSettings>();
 
 			_permissionService.UninstallPermissions(new WebApiPermissionProvider());
-
-			_localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
-            _localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.Api.WebApi", false);
 
 			base.Uninstall();
 		}

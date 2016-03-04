@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
@@ -17,6 +17,8 @@ namespace SmartStore.Web.Models.ShoppingCart
         }
 
         public bool Enabled { get; set; }
+
+		public string ShippingInfoUrl { get; set; }
 
         public IList<ShippingOptionModel> ShippingOptions { get; set; }
 
@@ -36,6 +38,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         public partial class ShippingOptionModel : ModelBase
         {
+			public int ShippingMethodId { get; set; }
+
             public string Name { get; set; }
 
             public string Description { get; set; }

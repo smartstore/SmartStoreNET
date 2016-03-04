@@ -79,8 +79,9 @@ namespace SmartStore.Web.Controllers
 			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
 
-            if (cacheModel == null)
+            if (cacheModel == null || !cacheModel.IncludeInSitemap)
 				return HttpNotFound();
+
             return View("TopicDetails", cacheModel);
         }
 

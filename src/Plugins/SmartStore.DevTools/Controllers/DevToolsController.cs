@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using SmartStore.Core;
+﻿using System.Web.Mvc;
+using SmartStore.DevTools.Models;
 using SmartStore.Services;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.DevTools.Controllers
@@ -15,40 +10,27 @@ namespace SmartStore.DevTools.Controllers
 
 	public class DevToolsController : SmartController
     {
-		private readonly IWorkContext _workContext;
-		private readonly IStoreContext _storeContext;
-		private readonly IStoreService _storeService;
-		private readonly ISettingService _settingService;
+		private readonly ICommonServices _services;
 
-		public DevToolsController(
-			IWorkContext workContext,
-			IStoreContext storeContext,
-			IStoreService storeService,
-			ISettingService settingService)
+		public DevToolsController(ICommonServices services)
 		{
-			_workContext = workContext;
-			_storeContext = storeContext;
-			_storeService = storeService;
-			_settingService = settingService;
+			_services = services;
 		}
 
-		[AdminAuthorize]
-		[ChildActionOnly]
+		[AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure()
 		{
 			// load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
-			var settings = _settingService.LoadSetting<ProfilerSettings>(storeScope);
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var settings = _services.Settings.LoadSetting<ProfilerSettings>(storeScope);
 
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettingHelper.GetOverrideKeys(settings, settings, storeScope, _settingService);
+			storeDependingSettingHelper.GetOverrideKeys(settings, settings, storeScope, _services.Settings);
 
 			return View(settings);
 		}
 
-		[AdminAuthorize]
-		[HttpPost]
-		[ChildActionOnly]
+		[HttpPost, AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure(ProfilerSettings model, FormCollection form)
 		{
 			if (!ModelState.IsValid)
@@ -58,10 +40,10 @@ namespace SmartStore.DevTools.Controllers
 
 			// load settings for a chosen store scope
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
 
-			storeDependingSettingHelper.UpdateSettings(model /*settings*/, form, storeScope, _settingService);
-			_settingService.ClearCache();
+			storeDependingSettingHelper.UpdateSettings(model /*settings*/, form, storeScope, _services.Settings);
+			_services.Settings.ClearCache();
 
 			return Configure();
 		}
@@ -73,8 +55,8 @@ namespace SmartStore.DevTools.Controllers
 
         public ActionResult WidgetZone(string widgetZone)
         {
-            var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
-            var settings = _settingService.LoadSetting<ProfilerSettings>(storeScope);
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var settings = _services.Settings.LoadSetting<ProfilerSettings>(storeScope);
 
             if (settings.DisplayWidgetZones)
             { 
@@ -86,5 +68,15 @@ namespace SmartStore.DevTools.Controllers
             return new EmptyResult();
         }
 
+		[AdminAuthorize]
+		public ActionResult BackendExtension()
+		{
+			var model = new BackendExtensionModel
+			{
+				Welcome = "Hello world!"
+			};
+
+			return View(model);
+		}
 	}
 }

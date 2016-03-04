@@ -16,8 +16,10 @@ namespace SmartStore.Services.Seo
     {
         #region Constants
 
-        private const string URLRECORD_ACTIVE_BY_ID_NAME_LANGUAGE_KEY = "SmartStore.urlrecord.active.id-name-language-{0}-{1}-{2}";
-        private const string URLRECORD_PATTERN_KEY = "SmartStore.urlrecord.";
+		// {0} = id, {1} = name, {2} = language
+        private const string URLRECORD_KEY = "SmartStore.urlrecord.{0}-{1}-{2}";
+		private const string URLRECORD_ALL_ACTIVESLUGS_KEY = "SmartStore.urlrecord.all-active-slugs";
+		private const string URLRECORD_PATTERN_KEY = "SmartStore.urlrecord.";
 
         #endregion
 
@@ -25,15 +27,17 @@ namespace SmartStore.Services.Seo
 
         private readonly IRepository<UrlRecord> _urlRecordRepository;
         private readonly ICacheManager _cacheManager;
+		private readonly SeoSettings _seoSettings;
 
         #endregion
 
         #region Ctor
 
-        public UrlRecordService(ICacheManager cacheManager, IRepository<UrlRecord> urlRecordRepository)
+        public UrlRecordService(ICacheManager cacheManager, IRepository<UrlRecord> urlRecordRepository, SeoSettings seoSettings)
         {
             this._cacheManager = cacheManager;
             this._urlRecordRepository = urlRecordRepository;
+			this._seoSettings = seoSettings;
         }
 
         #endregion
@@ -59,6 +63,18 @@ namespace SmartStore.Services.Seo
             return urlRecord;
         }
 
+		public virtual IList<UrlRecord> GetUrlRecordsByIds(int[] urlRecordIds)
+		{
+			if (urlRecordIds == null || urlRecordIds.Length == 0)
+				return new List<UrlRecord>();
+
+			var urlRecords = _urlRecordRepository
+				.Where(x => urlRecordIds.Contains(x.Id))
+				.ToList();
+
+			return urlRecords;
+		}
+
         public virtual void InsertUrlRecord(UrlRecord urlRecord)
         {
             if (urlRecord == null)
@@ -81,27 +97,29 @@ namespace SmartStore.Services.Seo
             _cacheManager.RemoveByPattern(URLRECORD_PATTERN_KEY);
         }
 
-        public virtual UrlRecord GetBySlug(string slug)
-        {
-            if (String.IsNullOrEmpty(slug))
-                return null;
-
-            var query = from ur in _urlRecordRepository.Table
-                        where ur.Slug == slug
-                        select ur;
-            var urlRecord = query.FirstOrDefault();
-            return urlRecord;
-        }
-
-        public virtual IPagedList<UrlRecord> GetAllUrlRecords(string slug, int pageIndex, int pageSize)
+        public virtual IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, int? entityId, int? languageId, bool? isActive)
         {
             var query = _urlRecordRepository.Table;
-            if (!String.IsNullOrWhiteSpace(slug))
-                query = query.Where(ur => ur.Slug.Contains(slug));
-                query = query.OrderBy(ur => ur.Slug);
 
-                var urlRecords = new PagedList<UrlRecord>(query, pageIndex, pageSize);
-                return urlRecords;
+			if (slug.HasValue())
+				query = query.Where(x => x.Slug.Contains(slug));
+
+			if (entityName.HasValue())
+				query = query.Where(x => x.EntityName == entityName);
+
+			if (entityId.HasValue)
+				query = query.Where(x => x.EntityId == entityId.Value);
+
+			if (isActive.HasValue)
+				query = query.Where(x => x.IsActive == isActive.Value);
+
+			if (languageId.HasValue)
+				query = query.Where(x => x.LanguageId == languageId);
+
+			query = query.OrderBy(x => x.Slug);
+
+			var urlRecords = new PagedList<UrlRecord>(query, pageIndex, pageSize);
+			return urlRecords;
         }
 
 		public virtual IList<UrlRecord> GetUrlRecordsFor(string entityName, int entityId, bool activeOnly = false)
@@ -121,21 +139,63 @@ namespace SmartStore.Services.Seo
 			return query.ToList();
 		}
 
+		public virtual UrlRecord GetBySlug(string slug)
+		{
+			// INFO: (mc) Caching unnecessary here. This is not a 'bottleneck' function.
+			if (String.IsNullOrEmpty(slug))
+				return null;
+
+			var query = from ur in _urlRecordRepository.Table
+						where ur.Slug == slug
+						select ur;
+			var urlRecord = query.FirstOrDefault();
+			return urlRecord;
+		}
+
         public virtual string GetActiveSlug(int entityId, string entityName, int languageId)
-        {   
-            string key = string.Format(URLRECORD_ACTIVE_BY_ID_NAME_LANGUAGE_KEY, entityId, entityName, languageId);
-            return _cacheManager.Get(key, () =>
-            {
-                var query = from ur in _urlRecordRepository.Table
-                            where ur.EntityId == entityId &&
-                            ur.EntityName == entityName &&
-                            ur.LanguageId == languageId &&
-                            ur.IsActive
-                            orderby ur.Id descending 
-                            select ur.Slug;
-                var slug = query.FirstOrDefault();
-                return slug ?? "";
-            });
+        {
+			string slug = null;
+
+			if (_seoSettings.LoadAllUrlAliasesOnStartup)
+			{
+				var allActiveSlugs = _cacheManager.Get(URLRECORD_ALL_ACTIVESLUGS_KEY, () =>
+				{
+					var query = from x in _urlRecordRepository.TableUntracked
+								where x.IsActive
+								orderby x.Id descending
+								select x;
+
+					var result = query.ToDictionary(
+						x => GenerateKey(x.EntityId, x.EntityName, x.LanguageId), // Key
+						x => x.Slug, // Value
+						StringComparer.OrdinalIgnoreCase);
+
+					return result;
+				});
+
+				var key = GenerateKey(entityId, entityName, languageId);
+				if (!allActiveSlugs.TryGetValue(key, out slug))
+				{
+					return string.Empty;
+				}
+			}
+			else
+			{
+				string cacheKey = string.Format(URLRECORD_KEY, entityId, entityName, languageId);
+				slug = _cacheManager.Get(cacheKey, () =>
+				{
+					var query = from ur in _urlRecordRepository.Table
+								where ur.EntityId == entityId &&
+								ur.EntityName == entityName &&
+								ur.LanguageId == languageId &&
+								ur.IsActive
+								orderby ur.Id descending
+								select ur.Slug;
+					return query.FirstOrDefault() ?? string.Empty;
+				});
+			}
+
+			return slug;
         }
 
         public virtual UrlRecord SaveSlug<T>(T entity, string slug, int languageId) where T : BaseEntity, ISlugSupported
@@ -263,6 +323,41 @@ namespace SmartStore.Services.Seo
 			existingSeName = entity.ValidateSeName(existingSeName, name, true);
 
 			return SaveSlug(entity, existingSeName, 0);
+		}
+
+		private string GenerateKey(int entityId, string entityName, int languageId)
+		{
+			return "{0}.{1}.{2}".FormatInvariant(entityId, entityName, languageId);
+		}
+
+		public virtual Dictionary<int, int> CountSlugsPerEntity(int[] urlRecordIds)
+		{
+			if (urlRecordIds == null || urlRecordIds.Length == 0)
+				return new Dictionary<int, int>();
+
+			var query =
+				from x in _urlRecordRepository.TableUntracked
+				where urlRecordIds.Contains(x.Id)
+				select new
+				{
+					Id = x.Id,
+					Count = _urlRecordRepository.TableUntracked.Where(y => y.EntityName == x.EntityName && y.EntityId == x.EntityId).Count()
+				};
+
+			var result = query
+				.ToList()
+				.ToDictionary(x => x.Id, x => x.Count);
+
+			return result;
+		}
+
+		public virtual int CountSlugsPerEntity(string entityName, int entityId)
+		{
+			var count = _urlRecordRepository.Table
+				.Where(x => x.EntityName == entityName && x.EntityId == entityId)
+				.Count();
+
+			return count;
 		}
 
         #endregion

@@ -1,0 +1,272 @@
+﻿@model FeedGoogleMerchantCenterModel
+@using SmartStore.GoogleMerchantCenter;
+@using SmartStore.GoogleMerchantCenter.Models;
+@using SmartStore.GoogleMerchantCenter.Providers;
+@using SmartStore.Web.Framework;
+@using Telerik.Web.Mvc.UI;
+@using SmartStore.Web.Framework.UI;
+
+@{
+	Layout = "";
+	
+	Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
+	Html.AddCssFileParts(true, "~/Plugins/SmartStore.GoogleMerchantCenter/Content/smartstore.gmc.css");
+	Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
+}
+
+<div class="plugin-configuration">
+	<div>
+		<div class="alert alert-info">
+			<button class="close" data-dismiss="alert">×</button>
+			@Html.Raw(@T("Plugins.Feed.Froogle.AdminInstruction"))
+		</div>
+		<div>
+			@Html.Action("InfoProfile", "Export", new { systemName = GmcXmlExportProvider.SystemName, returnUrl = Request.RawUrl, area = "admin" })
+		</div>
+	</div>
+	<div>
+		<a href="http://www.google.com/merchants/" rel="nofollow" target="_blank">
+			<img src="@Url.Content("~/Plugins/SmartStore.GoogleMerchantCenter/Content/branding.png")" alt="Google Merchant Center" />
+		</a>
+	</div>
+</div>
+
+<p>&nbsp;</p>
+
+<div>
+	<table class="adminContent">
+		<tr>
+			<td>
+
+				<table class="adminContent gmc-product-search">
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(m => m.SearchProductName)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(m => m.SearchProductName)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(m => m.SearchIsTouched)
+						</td>
+						<td class="adminData">
+							@Html.DropDownList("SearchIsTouched", new List<SelectListItem>
+							{
+								new SelectListItem { Text = T("Common.Unspecified"), Value = "" },
+								new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Touched"), Value = "touched" },
+								new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Untouched"), Value = "untouched" }
+							})
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">&nbsp;</td>
+						<td class="adminData">
+							<button type="submit" id="search-products" value="search-product" class="btn">
+								<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+							</button>
+						</td>
+					</tr>
+				</table>
+
+			</td>
+		</tr>
+		<tr>
+			<td>
+				@(Html.Telerik().Grid<GoogleProductModel>()
+					.Name("gmc-products-grid")
+					.DataKeys(keys =>
+					{
+						keys.Add(x => x.ProductId).RouteKey("ProductId");
+					})
+					.Columns(c =>
+					{
+						c.Bound(x => x.ProductId)
+							.ReadOnly()
+							.Visible(false);
+						c.Bound(x => x.Name)
+							.ReadOnly().Visible(true)
+							.Template(x => @Html.LabeledProductName(x.ProductId, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName("ProductId", "Name"));
+						c.Bound(x => x.SKU)
+							.ReadOnly()
+							.Visible(true);
+						c.Bound(x => x.Export2)
+							.ClientTemplate(Html.XEditableLink("Export2", "select2"));
+						c.Bound(x => x.Taxonomy)
+							.ClientTemplate(Html.XEditableLink("Taxonomy", "typeahead"));
+						c.Bound(x => x.Gender)
+							.ClientTemplate(Html.XEditableLink("Gender", "select2"));
+						c.Bound(x => x.AgeGroup)
+							.ClientTemplate(Html.XEditableLink("AgeGroup", "select2"));
+						c.Bound(x => x.IsAdult)
+							.ClientTemplate(Html.XEditableLink("IsAdult", "select2"));
+						c.Bound(x => x.Color)
+							.ClientTemplate(Html.XEditableLink("Color", "text"));
+						c.Bound(x => x.Size)
+							.ClientTemplate(Html.XEditableLink("Size", "text"));
+						c.Bound(x => x.Material)
+							.ClientTemplate(Html.XEditableLink("Material", "text"));
+						c.Bound(x => x.Pattern)
+							.ClientTemplate(Html.XEditableLink("Pattern", "text"));
+						c.Bound(x => x.Multipack2)
+							.ClientTemplate(Html.XEditableLink("Multipack2", "text"));
+						c.Bound(x => x.IsBundle)
+							.ClientTemplate(Html.XEditableLink("IsBundle", "select2"));
+						c.Bound(x => x.EnergyEfficiencyClass)
+							.ClientTemplate(Html.XEditableLink("EnergyEfficiencyClass", "select2"));
+						c.Bound(x => x.CustomLabel0)
+							.ClientTemplate(Html.XEditableLink("CustomLabel0", "text"));
+						c.Bound(x => x.CustomLabel1)
+							.ClientTemplate(Html.XEditableLink("CustomLabel1", "text"));
+						c.Bound(x => x.CustomLabel2)
+							.ClientTemplate(Html.XEditableLink("CustomLabel2", "text"));
+						c.Bound(x => x.CustomLabel3)
+							.ClientTemplate(Html.XEditableLink("CustomLabel3", "text"));
+						c.Bound(x => x.CustomLabel4)
+							.ClientTemplate(Html.XEditableLink("CustomLabel4", "text"));
+					})
+					.ClientEvents(e =>
+					{
+						e.OnDataBound("OnGridDataBound");
+						e.OnDataBinding("OnGridDataBinding");
+						e.OnError("OnGridError");
+					})
+					.DataBinding(dataBinding =>
+					{
+						dataBinding.Ajax().Select("GoogleProductList", "FeedGoogleMerchantCenter");
+					})
+					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+					.PreserveGridState()
+					.EnableCustomBinding(true)
+				)
+			</td>
+		</tr>
+	</table>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$.fn.editable.defaults.mode = 'inline';
+	});
+
+	$('#search-products').click(function () {
+		var grid = $('#gmc-products-grid').data('tGrid');
+		grid.currentPage = 1;
+		grid.ajaxRequest();
+		return false;
+	});
+
+	function OnGridError(e) {
+		e.preventDefault();
+		alert(e.XMLHttpRequest.responseText);
+	}
+
+	function OnGridDataBinding(e) {
+		e.data = {
+			searchProductName: $('#SearchProductName').val(),
+			touched: $('#SearchIsTouched').val()
+		};
+	}
+
+	function OnGridDataBound(e) {
+		var grid = $('#gmc-products-grid');
+
+		var emptyCell = '@T("Plugins.Feed.Froogle.EmptyGridCell")';
+
+		var options = {
+			emptytext: emptyCell,
+			url: '@Url.Action("GoogleProductEdit", "FeedGoogleMerchantCenter", new { Namespaces = "SmartStore.GoogleMerchantCenter.Controllers", area = GoogleMerchantCenterFeedPlugin.SystemName })'
+		};
+		var select2Options = {
+			placeholder: emptyCell,
+			minimumResultsForSearch: 20,
+			allowClear: true
+		};
+		var boolSource = [
+			{ id: 'true', text: '@T("Admin.Common.Yes")' },
+			{ id: 'false', text: '@T("Admin.Common.No")' }
+		];
+
+		grid.find('a.edit-link-export2').editable($.extend({}, options, {
+			select2: {
+				minimumResultsForSearch: 20
+			},
+			source: boolSource
+		}));
+
+		grid.find('a.edit-link-gender').editable($.extend({}, options, {
+			select2: select2Options,
+			source: [
+				{ id: 'male', text: '@T("Plugins.Feed.Froogle.GenderMale")' },
+				{ id: 'female', text: '@T("Plugins.Feed.Froogle.GenderFemale")' },
+				{ id: 'unisex', text: '@T("Plugins.Feed.Froogle.GenderUnisex")' }
+			]
+		}));
+
+		grid.find('a.edit-link-agegroup').editable($.extend({}, options, {
+			select2: select2Options,
+			source: [
+				{ id: 'adult', text: '@T("Plugins.Feed.Froogle.AgeGroupAdult").Text' },
+				{ id: 'kids', text: '@T("Plugins.Feed.Froogle.AgeGroupKids").Text' }
+			]
+		}));
+
+		grid.find('a.edit-link-isadult').editable($.extend({}, options, {
+			select2: select2Options,
+			source: boolSource
+		}));
+
+		grid.find('a.edit-link-color').editable(options);
+
+		grid.find('a.edit-link-size').editable(options);
+
+		grid.find('a.edit-link-material').editable(options);
+
+		grid.find('a.edit-link-pattern').editable(options);
+
+		grid.find('a.edit-link-multipack2').editable($.extend({}, options, {
+			validate: function(value) {
+				if (value.length !== 0) {
+					var regex = /^[0-9]+$/;
+					if (!regex.test(value)) {
+						return '@T("Admin.System.Warnings.DigitsOnly")';
+					}
+				}
+				return null;
+			}
+		}));
+
+		grid.find('a.edit-link-isbundle').editable($.extend({}, options, {
+			select2: select2Options,
+			source: boolSource
+		}));
+
+		grid.find('a.edit-link-energyefficiencyclass').editable($.extend({}, options, {
+			select2: select2Options,
+			source: [
+				@if (Model.EnergyEfficiencyClasses != null && Model.EnergyEfficiencyClasses.Length > 0)
+					{
+						foreach (var str in Model.EnergyEfficiencyClasses.Select(x => x.Replace("'", "\"")))
+						{
+							<text>{ id: '@str', text: '@str' },</text>
+						}
+					}
+			]
+		}));
+
+		grid.find('a.edit-link-customlabel0').editable(options);
+		grid.find('a.edit-link-customlabel1').editable(options);
+		grid.find('a.edit-link-customlabel2').editable(options);
+		grid.find('a.edit-link-customlabel3').editable(options);
+		grid.find('a.edit-link-customlabel4').editable(options);
+
+		grid.find('a.edit-link-taxonomy').editable($.extend({}, options, {
+			select2: {
+				minimumResultsForSearch: 20
+			},
+			source: @Html.Raw(Model.AvailableGoogleCategoriesAsJson)
+		}));
+	}
+</script>

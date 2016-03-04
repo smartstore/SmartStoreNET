@@ -18,7 +18,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// </summary>
     [DataContract]
 	public partial class Product : BaseEntity, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IMergedData
-    {
+	{
         private ICollection<ProductCategory> _productCategories;
         private ICollection<ProductManufacturer> _productManufacturers;
         private ICollection<ProductPicture> _productPictures;
@@ -103,6 +103,12 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
 		[DataMember]
 		public bool ShowOnHomePage { get; set; }
+
+		/// <summary>
+		/// Gets or sets the display order for homepage products
+		/// </summary>
+		[DataMember]
+		public int HomePageDisplayOrder { get; set; }
 
         /// <summary>
         /// Gets or sets the meta keywords
@@ -246,7 +252,7 @@ namespace SmartStore.Core.Domain.Catalog
 		public bool AutomaticallyAddRequiredProducts { get; set; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the product is download
+		/// Gets or sets a value indicating whether the product is a download
 		/// </summary>
 		[DataMember]
 		public bool IsDownload { get; set; }
@@ -387,7 +393,7 @@ namespace SmartStore.Core.Domain.Catalog
 			[DebuggerStepThrough]
 			get
 			{
-				return this.GetMergedDataValue<int>("StockQuantity", _stockQuantity);
+				return this.GetMergedDataValue("StockQuantity", _stockQuantity);
 			}
 			set
 			{
@@ -559,7 +565,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets a value indicating whether this product has tier prices configured
 		/// <remarks>The same as if we run this.TierPrices.Count > 0
 		/// We use this property for performance optimization:
-		/// if this property is set to false, then we do not need to load tier prices navifation property
+		/// if this property is set to false, then we do not need to load tier prices navigation property
 		/// </remarks>
 		/// </summary>
 		[DataMember]
@@ -1040,5 +1046,5 @@ namespace SmartStore.Core.Domain.Catalog
 			get { return _productBundleItems ?? (_productBundleItems = new HashSet<ProductBundleItem>()); }
 			protected set { _productBundleItems = value; }
 		}
-    }
+	}
 }

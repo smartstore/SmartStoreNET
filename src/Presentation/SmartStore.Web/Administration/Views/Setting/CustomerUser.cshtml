@@ -3,7 +3,6 @@
 @using SmartStore.Core.Domain.Customers;
 @using SmartStore.Core.Domain.Security;
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Settings.CustomerUser").Text;
 }
 @using (Html.BeginForm())
@@ -77,15 +76,29 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.UsernamesEnabled)
             </td>
         </tr>
+
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberEnabled)
+                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberMethod)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.CustomerNumberEnabled)
-                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberEnabled)
+                @Html.SettingOverrideCheckbox(model => Model.CustomerSettings.CustomerNumberMethod)
+                @Html.DropDownListFor(model => model.CustomerSettings.CustomerNumberMethod, Model.CustomerSettings.AvailableCustomerNumberMethods)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberMethod)
             </td>
         </tr>
+
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberVisibility)
+            </td>
+            <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => Model.CustomerSettings.CustomerNumberVisibility)
+                @Html.DropDownListFor(model => model.CustomerSettings.CustomerNumberVisibility, Model.CustomerSettings.AvailableCustomerNumberVisibilities)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberVisibility)
+            </td>
+        </tr>
+
         <tr id="pnlAllowUsersToChangeUsernames">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)
@@ -112,6 +125,16 @@
 				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.UserRegistrationType)
                 @Html.DropDownListFor(model => model.CustomerSettings.UserRegistrationType, ((UserRegistrationType)Model.CustomerSettings.UserRegistrationType).ToSelectList())
                 @Html.ValidationMessageFor(model => model.CustomerSettings.UserRegistrationType)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.RegisterCustomerRoleId)
+            </td>
+            <td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.CustomerSettings.RegisterCustomerRoleId)
+                @Html.DropDownListFor(model => model.CustomerSettings.RegisterCustomerRoleId, Model.CustomerSettings.AvailableRegisterCustomerRoles, T("Common.Unspecified"))
+                @Html.ValidationMessageFor(model => model.CustomerSettings.RegisterCustomerRoleId)
             </td>
         </tr>
         <tr>

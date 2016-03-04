@@ -8,7 +8,8 @@ namespace SmartStore.Core.Domain.Customers
 		public CustomerSettings()
 		{
 			UsernamesEnabled = true;
-            CustomerNumberEnabled = true;
+            CustomerNumberMethod = Customers.CustomerNumberMethod.Disabled;
+            CustomerNumberVisibility = Customers.CustomerNumberVisibility.None;
 			DefaultPasswordFormat = PasswordFormat.Hashed;
 			HashedPasswordFormat = "SHA1";
 			PasswordMinLength = 6;
@@ -31,9 +32,14 @@ namespace SmartStore.Core.Domain.Customers
         public bool UsernamesEnabled { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether customers can enter a customer id
+        /// Gets or sets the customer number method
         /// </summary>
-        public bool CustomerNumberEnabled { get; set; }
+        public CustomerNumberMethod CustomerNumberMethod { get; set; }
+
+        /// <summary>
+        /// Gets or sets the customer number visibility
+        /// </summary>
+        public CustomerNumberVisibility CustomerNumberVisibility { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether users can check the availability of usernames (when registering or changing in 'My Account')
@@ -145,7 +151,6 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public bool StoreLastVisitedPage { get; set; }
 
-
         #region Form fields
 
         /// <summary>
@@ -240,8 +245,12 @@ namespace SmartStore.Core.Domain.Customers
 
         #endregion
 
-        // codehint: sm-add (no ui, only db edit)
         public string PrefillLoginUsername { get; set; }
         public string PrefillLoginPwd { get; set; }
-    }
+
+		/// <summary>
+		/// Identifier of a customer role that new registered customers will be assigned to
+		/// </summary>
+		public int RegisterCustomerRoleId { get; set; }
+	}
 }

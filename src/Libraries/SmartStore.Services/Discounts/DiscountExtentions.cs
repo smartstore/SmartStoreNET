@@ -29,7 +29,6 @@ namespace SmartStore.Services.Discounts
 
             return result;
         }
-
         
         public static Discount GetPreferredDiscount(this IList<Discount> discounts, decimal amount)
         {
@@ -46,21 +45,6 @@ namespace SmartStore.Services.Discounts
             }
 
             return preferredDiscount;
-        }
-
-        public static bool ContainsDiscount(this IList<Discount> discounts, Discount discount)
-        {
-            if (discounts == null)
-                throw new ArgumentNullException("discounts");
-
-            if (discount == null)
-                throw new ArgumentNullException("discount");
-
-            foreach (var dis1 in discounts)
-                if (discount.Id == dis1.Id)
-                    return true;
-
-            return false;
         }
     }
 }

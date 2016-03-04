@@ -159,7 +159,6 @@ namespace SmartStore.Web.Framework.UI
 
     public abstract class NavigationItemWithContent : NavigationItem, IContentContainer, IHideObjectMembers
     {
-
         public NavigationItemWithContent()
         {
             this.ContentHtmlAttributes = new RouteValueDictionary();
@@ -170,7 +169,6 @@ namespace SmartStore.Web.Framework.UI
         public IDictionary<string, object> ContentHtmlAttributes { get; private set; }
 
         public HelperResult Content { get; set; }
-
     }
 
 }

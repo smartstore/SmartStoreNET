@@ -9,6 +9,7 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.DiscountRules.Controllers
 {
@@ -31,12 +32,7 @@ namespace SmartStore.DiscountRules.Controllers
             this._customerService = customerService;
 			this._countryService = countryService;
 			this._storeService = storeService;
-
-			T = NullLocalizer.Instance;
         }
-
-		public Localizer T { get; set; }
-
 
 		#region Global
 

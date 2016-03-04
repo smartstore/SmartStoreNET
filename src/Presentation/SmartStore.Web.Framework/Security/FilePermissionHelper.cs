@@ -158,6 +158,7 @@ namespace SmartStore.Web.Framework.Security
             dirsToCheck.Add(Path.Combine(rootDir, "bin"));
             dirsToCheck.Add(Path.Combine(rootDir, "content"));
             dirsToCheck.Add(Path.Combine(rootDir, "content\\files\\exportimport"));
+			dirsToCheck.Add(Path.Combine(rootDir, "Exchange"));
             dirsToCheck.Add(Path.Combine(rootDir, "media"));
             dirsToCheck.Add(Path.Combine(rootDir, "media\\thumbs"));
             dirsToCheck.Add(Path.Combine(rootDir, "media\\uploaded"));

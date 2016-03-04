@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Core.Domain.DataExchange;
 
 namespace SmartStore.Core.Plugins
 {
@@ -66,6 +67,16 @@ namespace SmartStore.Core.Plugins
 		/// A provider is editable if the user is allowed to change display order and/or localize display name
 		/// </remarks>
 		public bool IsEditable { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the provider is hidden (by decorating with <see cref="IsHiddenAttribute"/>)
+		/// </summary>
+		public bool IsHidden { get; set; }
+
+		/// <summary>
+		/// Gets or sets flags that reflects what features of export data processing is supported by a provider
+		/// </summary>
+		public ExportFeatures ExportFeatures { get; set; }
 
 		/// <summary>
 		/// Gets or sets an array of widget system names, which depend on the current provider

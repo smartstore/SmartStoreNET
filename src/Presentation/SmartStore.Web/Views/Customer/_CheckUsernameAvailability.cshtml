@@ -1,6 +1,6 @@
 ﻿<script type="text/javascript">
     $(function () {
-        $('#Username').closest(".input-append").after('<figure id="cua-loader" class="ajax-loader-small hide" style="margin-left: 4px"></figure>');
+        $('#Username').closest(".input-append").after(createCircularSpinner(24).attr('id', 'cua-loader').css('margin-left', '10px'));
         $('#Username').bind({
             change: function () {
                 $('#username-availabilty').text('');
@@ -15,7 +15,7 @@
             var btn = $('#check-availability-button');
             $('#username-availabilty').text('');
             if ($("#Username").val().length > 0) {
-                $('#cua-loader').removeClass("hide");
+                $('#cua-loader').addClass("active");
                 btn.attr('disabled', 'disabled');
                 $.ajax({
                     cache: false,
@@ -36,7 +36,7 @@
                     },
                     complete: function () {
                         btn.removeAttr('disabled');
-                        $('#cua-loader').addClass("hide");
+                        $('#cua-loader').removeClass("active");
                     }
                 });
             } else {

@@ -18,7 +18,7 @@ namespace SmartStore.Services.Localization
         #region Constants
 
         private const string LOCALIZEDPROPERTY_KEY = "SmartStore.localizedproperty.value-{0}-{1}-{2}-{3}";
-        private const string LOCALIZEDPROPERTY_ENTITYID_KEY = "SmartStore.localizedproperty.entityid-{0}-{1}-{2}";
+		private const string LOCALIZEDPROPERTY_ALL_KEY = "SmartStore.localizedproperty.all";
         private const string LOCALIZEDPROPERTY_PATTERN_KEY = "SmartStore.localizedproperty.";
 
         #endregion
@@ -27,6 +27,7 @@ namespace SmartStore.Services.Localization
 
         private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
         private readonly ICacheManager _cacheManager;
+		private readonly LocalizationSettings _localizationSettings;
 
         #endregion
 
@@ -37,11 +38,11 @@ namespace SmartStore.Services.Localization
         /// </summary>
         /// <param name="cacheManager">Cache manager</param>
         /// <param name="localizedPropertyRepository">Localized property repository</param>
-        public LocalizedEntityService(ICacheManager cacheManager,
-            IRepository<LocalizedProperty> localizedPropertyRepository)
+        public LocalizedEntityService(ICacheManager cacheManager, IRepository<LocalizedProperty> localizedPropertyRepository, LocalizationSettings localizationSettings)
         {
             this._cacheManager = cacheManager;
             this._localizedPropertyRepository = localizedPropertyRepository;
+			this._localizationSettings = localizationSettings;
         }
 
         #endregion
@@ -87,21 +88,42 @@ namespace SmartStore.Services.Localization
         /// <returns>Found localized value</returns>
         public virtual string GetLocalizedValue(int languageId, int entityId, string localeKeyGroup, string localeKey)
         {
-            string key = string.Format(LOCALIZEDPROPERTY_KEY, languageId, entityId, localeKeyGroup, localeKey);
-            return _cacheManager.Get(key, () =>
-            {
-                var query = from lp in _localizedPropertyRepository.Table
-                            where lp.EntityId == entityId &&
-                            lp.LocaleKey == localeKey &&
-							lp.LocaleKeyGroup == localeKeyGroup &&
-							lp.LanguageId == languageId
-                            select lp.LocaleValue;
-                var localeValue = query.FirstOrDefault();
-                //little hack here. nulls aren't cacheable so set it to ""
-                if (localeValue == null)
-                    localeValue = "";
-                return localeValue;
-            });
+			string val = null;
+			
+			if (_localizationSettings.LoadAllLocalizedPropertiesOnStartup)
+			{
+				var allValues = _cacheManager.Get(LOCALIZEDPROPERTY_ALL_KEY, () =>
+				{
+					var result = _localizedPropertyRepository.TableUntracked.ToDictionary(
+						x => GenerateKey(x.LanguageId, x.LocaleKeyGroup, x.LocaleKey, x.EntityId),
+						x => x.LocaleValue);
+					return result;
+				});
+
+				string key = GenerateKey(languageId, localeKeyGroup, localeKey, entityId);
+
+				if (!allValues.TryGetValue(key, out val))
+				{
+					return string.Empty;
+				}
+			}
+			else
+			{
+				string cacheKey = string.Format(LOCALIZEDPROPERTY_KEY, languageId, entityId, localeKeyGroup, localeKey);
+				val = _cacheManager.Get(cacheKey, () =>
+				{
+					var query = from lp in _localizedPropertyRepository.TableUntracked
+								where lp.EntityId == entityId &&
+								lp.LocaleKey == localeKey &&
+								lp.LocaleKeyGroup == localeKeyGroup &&
+								lp.LanguageId == languageId
+								select lp.LocaleValue;
+					
+					return query.FirstOrDefault().EmptyNull();
+				});
+			}
+
+			return val;
         }
 
         /// <summary>
@@ -237,6 +259,11 @@ namespace SmartStore.Services.Localization
                 }
             }
         }
+
+		private string GenerateKey(int languageId, string localeKeyGroup, string localeKey, int entityId)
+		{
+			return "{0}.{1}.{2}.{3}".FormatInvariant(languageId, localeKeyGroup, localeKey, entityId);
+		}
 
         #endregion
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -52,7 +53,7 @@ namespace SmartStore.Core.Plugins
                 if (_brandImageFileName == null)
                 {
                     // "null" means we haven't checked yet!
-                    var filesToCheck = new string[] { "branding.png", "branding.gif", "branding.jpg", "branding.jpeg" };
+                    var filesToCheck = new [] { "branding.png", "branding.gif", "branding.jpg", "branding.jpeg" };
                     var dir = this.PhysicalPath;
                     foreach (var file in filesToCheck)
                     {
@@ -234,7 +235,8 @@ namespace SmartStore.Core.Plugins
             return Instance<IPlugin>();
         }
 
-        public int CompareTo(PluginDescriptor other)
+		[SuppressMessage("ReSharper", "StringCompareToIsCultureSpecific")]
+		public int CompareTo(PluginDescriptor other)
         {
 			if (DisplayOrder != other.DisplayOrder)
 				return DisplayOrder.CompareTo(other.DisplayOrder);

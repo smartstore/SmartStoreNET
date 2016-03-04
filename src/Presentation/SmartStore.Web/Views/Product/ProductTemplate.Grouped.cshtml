@@ -1,27 +1,29 @@
 ﻿@model ProductDetailsModel
 @using SmartStore.Core;
-@using SmartStore.Core.Domain.Common;
+@using SmartStore.Core.Domain.Media;
 @using SmartStore.Core.Domain.Seo;
 @using SmartStore.Core.Infrastructure;
 @using SmartStore.Web;
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web.Framework.UI;
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+	Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 
-    //title, meta
-    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
-    Html.AddMetaDescriptionParts(Model.MetaDescription);
-    Html.AddMetaKeywordParts(Model.MetaKeywords);
+	//title, meta
+	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+	Html.AddMetaDescriptionParts(Model.MetaDescription);
+	Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-    Html.AddScriptParts("~/Scripts/public.product-detail.js");
-    
-    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
-    if (canonicalUrlsEnabled)
-    {
-        var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-        Html.AddCanonicalUrlParts(productUrl);
-    }
+	Html.AddScriptParts("~/Scripts/public.product-detail.js");
+
+	int pictureSize = EngineContext.Current.Resolve<MediaSettings>().ProductDetailsPictureSize;
+
+	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+	if (canonicalUrlsEnabled)
+	{
+		var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+		Html.AddCanonicalUrlParts(productUrl);
+	}
 }
 
 <div class="page product-details-page">
@@ -165,7 +167,7 @@
 <script type="text/javascript">
     $(function () {
         var settings = {
-            galleryHeight: 300,
+            galleryHeight: @pictureSize,
             galleryStartIndex: @(Model.DetailsPictureModel.GalleryStartIndex),
             showImageDescription: false,
             enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)'),

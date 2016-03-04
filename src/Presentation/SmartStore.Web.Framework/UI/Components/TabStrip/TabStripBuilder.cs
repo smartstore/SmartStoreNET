@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.UI
-{
-    
+{  
     public class TabStripBuilder : ComponentBuilder<TabStrip, TabStripBuilder>
     {
-
         public TabStripBuilder(TabStrip Component, HtmlHelper htmlHelper)
             : base(Component, htmlHelper)
         {
@@ -17,7 +12,7 @@ namespace SmartStore.Web.Framework.UI
 
         public TabStripBuilder Items(Action<TabFactory> addAction)
         {
-            TabFactory factory = new TabFactory(base.Component.Items);
+            var factory = new TabFactory(base.Component.Items, this.HtmlHelper);
             addAction(factory);
             return this;
         }
@@ -75,7 +70,5 @@ namespace SmartStore.Web.Framework.UI
 			base.Component.OnAjaxComplete = value;
 			return this;
 		}
-
     }
-
 }

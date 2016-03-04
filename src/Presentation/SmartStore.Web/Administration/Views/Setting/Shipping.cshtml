@@ -1,6 +1,5 @@
 ﻿@model ShippingSettingsModel
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Settings.Shipping").Text;
 }
 @using (Html.BeginForm())
@@ -82,14 +81,14 @@
                 @Html.ValidationMessageFor(model => model.DisplayShipmentEventsToCustomers)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.LabelFor(model => model.ShippingOriginAddress, new { style="font-weight: bold" })
-            </td>
+		<tr class="adminGroup">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShippingOriginAddress)
+			</td>
 			<td class="adminData">
 				@Html.SettingOverrideCheckbox(model => Model.ShippingOriginAddress, "#pnlShippingOriginAddress")
 			</td>
-        </tr>
+		</tr>
         <tr>
             <td id="pnlShippingOriginAddress" colspan="2">
                 @Html.EditorFor(model => model.ShippingOriginAddress, "Address")

@@ -65,10 +65,10 @@
 	        $.throbber.show(opt.curtainTitle);
 	    }
 	    else if (opt.throbber) {
-	        $(opt.throbber).removeData('throbber').throbber({ white: true, small: true });
+	        $(opt.throbber).removeData('throbber').throbber({ white: true, small: true, message: '' });
 	    }
 	    else if (opt.smallIcon) {
-	        $(opt.smallIcon).append('<span class="ajax-loader-small"></span>');
+	        $(opt.smallIcon).append(window.createCircularSpinner(16, true));
 	    }
 	}
 
@@ -77,8 +77,9 @@
 	        $.throbber.hide(true);
 	    if (opt.throbber)
 	        $(opt.throbber).data('throbber').hide(true);
-	    if (opt.smallIcon)
-	        $(opt.smallIcon).find('span.ajax-loader-small').remove();
+	    if (opt.smallIcon) {
+	        $(opt.smallIcon).find('.spinner').remove();
+	    }  
 	}
 
 	function doRequest(opt) {

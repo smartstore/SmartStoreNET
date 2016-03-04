@@ -9,6 +9,7 @@
 }
 
 .sg-image-wrapper {
+    position: relative !important;
 	width: 100%;
     min-height: 300px; /* just to avoid page load flickering. This is overwritten per inline css anyway */
 	margin-bottom: 5px;
@@ -16,8 +17,6 @@
 	overflow: hidden;
 	outline: 1px solid transparent;
     text-align: center;
-	/*background-color: #fff;
-	border: 1px solid #d5d5d5;*/
 }
 
 .sg-image-wrapper > img {
@@ -27,9 +26,10 @@
 .sg-loader {
 	position: absolute;
 	z-index: 10;
-	top: 48%;
-	left: 48%;
-	border: 1px solid #ccc;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }
 
 .sg-image {

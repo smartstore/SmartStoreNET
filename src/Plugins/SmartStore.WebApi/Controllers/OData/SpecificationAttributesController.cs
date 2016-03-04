@@ -36,9 +36,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		[WebApiQueryable]
 		public IQueryable<SpecificationAttributeOption> GetSpecificationAttributeOptions(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<SpecificationAttributeOption>>(key, x => x.SpecificationAttributeOptions);
-
-			return entity.SpecificationAttributeOptions.AsQueryable();
+			return GetRelatedCollection(key, x => x.SpecificationAttributeOptions);
 		}
 	}
 }

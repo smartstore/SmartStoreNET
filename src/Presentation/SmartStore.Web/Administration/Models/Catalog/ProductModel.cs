@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
-using AutoMapper;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.Stores;
@@ -10,12 +9,11 @@ using SmartStore.Admin.Validators.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Mvc;
-using Telerik.Web.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Catalog
 {
-    [Validator(typeof(ProductValidator))]
+	[Validator(typeof(ProductValidator))]
     public class ProductModel : TabbableModel, ILocalizedModel<ProductLocalizedModel>
     {
         public ProductModel()
@@ -83,6 +81,9 @@ namespace SmartStore.Admin.Models.Catalog
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ShowOnHomePage")]
         public bool ShowOnHomePage { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.HomePageDisplayOrder")]
+		public int HomePageDisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.MetaKeywords")]
         [AllowHtml]
@@ -484,43 +485,6 @@ namespace SmartStore.Admin.Models.Catalog
 			public bool Product2Published { get; set; }
         }
 
-        public class AddRelatedProductModel : ModelBase
-        {
-            public AddRelatedProductModel()
-            {
-                AvailableCategories = new List<SelectListItem>();
-                AvailableManufacturers = new List<SelectListItem>();
-				AvailableStores = new List<SelectListItem>();
-				AvailableProductTypes = new List<SelectListItem>();
-            }
-            public GridModel<ProductModel> Products { get; set; }
-
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
-            [AllowHtml]
-            public string SearchProductName { get; set; }
-
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
-            public int SearchCategoryId { get; set; }
-
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
-            public int SearchManufacturerId { get; set; }
-
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
-			public int SearchStoreId { get; set; }
-
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
-			public int SearchProductTypeId { get; set; }
-
-            public IList<SelectListItem> AvailableCategories { get; set; }
-            public IList<SelectListItem> AvailableManufacturers { get; set; }
-			public IList<SelectListItem> AvailableStores { get; set; }
-			public IList<SelectListItem> AvailableProductTypes { get; set; }
-
-            public int ProductId { get; set; }
-
-            public int[] SelectedProductIds { get; set; }
-        }
-
 		public partial class AssociatedProductModel : EntityModelBase
 		{
 			[SmartResourceDisplayName("Admin.Catalog.Products.AssociatedProducts.Fields.Product")]
@@ -538,37 +502,6 @@ namespace SmartStore.Admin.Models.Catalog
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
 			public bool Published { get; set; }
-		}
-		public partial class AddAssociatedProductModel : ModelBase
-		{
-			public AddAssociatedProductModel()
-			{
-				AvailableCategories = new List<SelectListItem>();
-				AvailableManufacturers = new List<SelectListItem>();
-				AvailableStores = new List<SelectListItem>();
-				AvailableProductTypes = new List<SelectListItem>();
-			}
-
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
-			[AllowHtml]
-			public string SearchProductName { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
-			public int SearchCategoryId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
-			public int SearchManufacturerId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
-			public int SearchStoreId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
-			public int SearchProductTypeId { get; set; }
-
-			public IList<SelectListItem> AvailableCategories { get; set; }
-			public IList<SelectListItem> AvailableManufacturers { get; set; }
-			public IList<SelectListItem> AvailableStores { get; set; }
-			public IList<SelectListItem> AvailableProductTypes { get; set; }
-
-			public int ProductId { get; set; }
-
-			public int[] SelectedProductIds { get; set; }
 		}
 
 		public partial class BundleItemModel : EntityModelBase
@@ -600,39 +533,6 @@ namespace SmartStore.Admin.Models.Catalog
 			[SmartResourceDisplayName("Admin.Catalog.Products.BundleItems.Fields.Published")]
 			public bool Published { get; set; }
 		}
-		public partial class AddBundleItemModel : ModelBase
-		{
-			public AddBundleItemModel()
-			{
-				AvailableCategories = new List<SelectListItem>();
-				AvailableManufacturers = new List<SelectListItem>();
-				AvailableStores = new List<SelectListItem>();
-				AvailableProductTypes = new List<SelectListItem>();
-			}
-
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
-			[AllowHtml]
-			public string SearchProductName { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
-			public int SearchCategoryId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
-			public int SearchManufacturerId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
-			public int SearchStoreId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
-			public int SearchProductTypeId { get; set; }
-
-			public IList<SelectListItem> AvailableCategories { get; set; }
-			public IList<SelectListItem> AvailableManufacturers { get; set; }
-			public IList<SelectListItem> AvailableStores { get; set; }
-			public IList<SelectListItem> AvailableProductTypes { get; set; }
-
-			public int ProductId { get; set; }
-			public bool IsPerItemPricing { get; set; }
-			public bool IsPerItemShipping { get; set; }
-
-			public int[] SelectedProductIds { get; set; }
-		}
 
         public class CrossSellProductModel : EntityModelBase
         {
@@ -650,42 +550,6 @@ namespace SmartStore.Admin.Models.Catalog
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Published")]
 			public bool Product2Published { get; set; }
-        }
-        public class AddCrossSellProductModel : ModelBase
-        {
-            public AddCrossSellProductModel()
-            {
-                AvailableCategories = new List<SelectListItem>();
-                AvailableManufacturers = new List<SelectListItem>();
-				AvailableStores = new List<SelectListItem>();
-				AvailableProductTypes = new List<SelectListItem>();
-            }
-            public GridModel<ProductModel> Products { get; set; }
-
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
-            [AllowHtml]
-            public string SearchProductName { get; set; }
-
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
-            public int SearchCategoryId { get; set; }
-
-            [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
-            public int SearchManufacturerId { get; set; }
-
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
-			public int SearchStoreId { get; set; }
-
-			[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
-			public int SearchProductTypeId { get; set; }
-
-            public IList<SelectListItem> AvailableCategories { get; set; }
-            public IList<SelectListItem> AvailableManufacturers { get; set; }
-			public IList<SelectListItem> AvailableStores { get; set; }
-			public IList<SelectListItem> AvailableProductTypes { get; set; }
-
-            public int ProductId { get; set; }
-
-            public int[] SelectedProductIds { get; set; }
         }
 
 		public class TierPriceModel : EntityModelBase
@@ -764,6 +628,7 @@ namespace SmartStore.Admin.Models.Catalog
 				Locales = new List<ProductVariantAttributeValueLocalizedModel>();
 			}
 
+			public int ProductId { get; set; }
 			public int ProductVariantAttributeId { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Alias")]
@@ -812,41 +677,6 @@ namespace SmartStore.Admin.Models.Catalog
 			public string QuantityInfo { get; set; }
 
 			public IList<ProductVariantAttributeValueLocalizedModel> Locales { get; set; }
-
-			public class AddProductLinkageModel : ModelBase
-			{
-				public AddProductLinkageModel()
-				{
-					AvailableCategories = new List<SelectListItem>();
-					AvailableManufacturers = new List<SelectListItem>();
-					AvailableStores = new List<SelectListItem>();
-					AvailableProductTypes = new List<SelectListItem>();
-				}
-				public GridModel<ProductModel> Products { get; set; }
-
-				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
-				[AllowHtml]
-				public string SearchProductName { get; set; }
-
-				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
-				public int SearchCategoryId { get; set; }
-
-				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
-				public int SearchManufacturerId { get; set; }
-
-				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchStore")]
-				public int SearchStoreId { get; set; }
-
-				[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
-				public int SearchProductTypeId { get; set; }
-
-				public IList<SelectListItem> AvailableCategories { get; set; }
-				public IList<SelectListItem> AvailableManufacturers { get; set; }
-				public IList<SelectListItem> AvailableStores { get; set; }
-				public IList<SelectListItem> AvailableProductTypes { get; set; }
-
-				public int ProductId { get; set; }
-			}
 		}
 
 		public class ProductVariantAttributeValueLocalizedModel : ILocalizedModelLocal

@@ -1,0 +1,25 @@
+﻿@model ScheduleTaskModel
+@{
+	Layout = null;
+}
+
+@if (Model.NextRun.HasValue)
+{
+	if (Model.IsOverdue)
+	{
+		<span class="text-success"><strong>@Model.NextRunPretty</strong></span>
+	}
+	else
+	{
+		<div>@Model.NextRun.Value.ToString("g")</div>
+		<div class="muted">@Model.NextRunPretty</div>
+	}
+}
+else
+{
+	<div class="muted">@T("Common.Never")</div>
+}
+
+
+
+

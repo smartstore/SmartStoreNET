@@ -22,31 +22,6 @@ namespace SmartStore.Core.Html.CodeFormatter
         /// </summary>
         /// <param name="match">Match</param>
         /// <returns>Formatted text</returns>
-        private static string CodeEvaluator(Match match)
-        {
-            if (!match.Success)
-                return match.Value;
-
-            var options = new HighlightOptions();
-
-            options.Language = match.Groups["lang"].Value;
-            options.Code = match.Groups["code"].Value;
-            options.DisplayLineNumbers = match.Groups["linenumbers"].Value == "on" ? true : false;
-            options.Title = match.Groups["title"].Value;
-            options.AlternateLineNumbers = match.Groups["altlinenumbers"].Value == "on" ? true : false;
-
-            string result = match.Value.Replace(match.Groups["begin"].Value, "");
-            result = result.Replace(match.Groups["end"].Value, "");
-            result = Highlight(options, result);
-            return result;
-
-        }
-
-        /// <summary>
-        /// Code evaluator method
-        /// </summary>
-        /// <param name="match">Match</param>
-        /// <returns>Formatted text</returns>
         private static string CodeEvaluatorSimple(Match match)
         {
             if (!match.Success)

@@ -10,11 +10,14 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
+using Autofac;
+using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services
 {
 	public class CommonServices : ICommonServices
 	{
+		private readonly IComponentContext _container;
 		private readonly Lazy<ICacheManager> _cache;
 		private readonly Lazy<IDbContext> _dbContext;
 		private readonly Lazy<IStoreContext> _storeContext;
@@ -27,9 +30,11 @@ namespace SmartStore.Services
 		private readonly Lazy<IPermissionService> _permissions;
 		private readonly Lazy<ISettingService> _settings;
 		private readonly Lazy<IStoreService> _storeService;
-		
+		private readonly Lazy<IDateTimeHelper> _dateTimeHelper;
+
 		public CommonServices(
-			Func<string, Lazy<ICacheManager>> cache,
+			IComponentContext container,
+            Func<string, Lazy<ICacheManager>> cache,
 			Lazy<IDbContext> dbContext,
 			Lazy<IStoreContext> storeContext,
 			Lazy<IWebHelper> webHelper,
@@ -40,8 +45,10 @@ namespace SmartStore.Services
 			Lazy<INotifier> notifier,
 			Lazy<IPermissionService> permissions,
 			Lazy<ISettingService> settings,
-			Lazy<IStoreService> storeService)
+			Lazy<IStoreService> storeService,
+			Lazy<IDateTimeHelper> dateTimeHelper)
 		{
+			this._container = container;
 			this._cache = cache("static");
 			this._dbContext = dbContext;
 			this._storeContext = storeContext;
@@ -54,8 +61,17 @@ namespace SmartStore.Services
 			this._permissions = permissions;
 			this._settings = settings;
 			this._storeService = storeService;
+			this._dateTimeHelper = dateTimeHelper;
 		}
-		
+
+		public IComponentContext Container
+		{
+			get
+			{
+				return _container;
+			}
+		}
+
 		public ICacheManager Cache
 		{
 			get
@@ -150,6 +166,14 @@ namespace SmartStore.Services
 			get
 			{
 				return _storeService.Value;
+			}
+		}
+
+		public IDateTimeHelper DateTimeHelper
+		{
+			get
+			{
+				return _dateTimeHelper.Value;
 			}
 		}
 	}

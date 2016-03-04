@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Optimization;
 using BundleTransformer.Core.Bundles;
-using SmartStore.Web.Framework.Mvc.Bundles;
+using SmartStore.Web.Framework.Bundling;
 
 namespace SmartStore.Web.Infrastructure
 {

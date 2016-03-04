@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
@@ -22,6 +23,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
@@ -122,16 +124,11 @@ namespace SmartStore.Web.Controllers
 			this._localizationSettings = localizationSettings;
 			this._captchaSettings = captchaSettings;
 			this._helper = helper;
-            this._downloadService = downloadService;
-            this._localizationService = localizationService;
-
-			T = NullLocalizer.Instance;
+			this._downloadService = downloadService;
+			this._localizationService = localizationService;
         }
         
         #endregion
-
-		public Localizer T { get; set; }
-
 
 		#region Products
 
@@ -172,8 +169,11 @@ namespace SmartStore.Web.Controllers
 			}
 
 			//prepare the model
-			var selectedAttributes = new FormCollection();
-			selectedAttributes.ConvertAttributeQueryData(_productAttributeParser.DeserializeQueryData(attributes), product.Id);
+			var selectedAttributes = new NameValueCollection();
+
+			selectedAttributes.ConvertAttributeQueryData(
+				_productAttributeParser.DeserializeQueryData(attributes),
+				product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing ? 0 : product.Id);
 
 			var model = _helper.PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes);
 
@@ -306,9 +306,10 @@ namespace SmartStore.Web.Controllers
 			else
 			{
 				//Errors
-				foreach (string error in addToCartContext.Warnings)
-					ModelState.AddModelError("", error);
-
+                foreach (string error in addToCartContext.Warnings)
+                {
+                    this.NotifyError(error);
+                }
 				//If we got this far, something failed, redisplay form
 				var model = _helper.PrepareProductDetailsPageModel(parentProduct);
 
@@ -354,7 +355,7 @@ namespace SmartStore.Web.Controllers
 		{
 			var product = _productService.GetProductById(id);
 			if (product == null)
-				throw new ArgumentException("No product found with the specified id");
+				throw new ArgumentException(T("Products.NotFound", id));
 
 			var model = new ProductReviewOverviewModel()
 			{
@@ -371,7 +372,7 @@ namespace SmartStore.Web.Controllers
 		{
 			var product = _productService.GetProductById(productId);
 			if (product == null)
-				throw new ArgumentException("No product found with the specified id");
+				throw new ArgumentException(T("Products.NotFound", productId));
 
 			var model = _helper.PrepareProductSpecificationModel(product);
 
@@ -402,7 +403,7 @@ namespace SmartStore.Web.Controllers
 
 			var product = _productService.GetProductById(productId);
 			if (product == null)
-				throw new ArgumentException("No product found with the specified id");
+				throw new ArgumentException(T("Products.NotFound", productId));
 
 			if (!product.HasTierPrices)
 				return Content(""); //no tier prices
@@ -445,7 +446,7 @@ namespace SmartStore.Web.Controllers
 			if (products.Count == 0)
 				return Content("");
 
-			var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList();
+			var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize, false, false, false, false, true).ToList();
 
 			return PartialView(model);
 		}
@@ -472,7 +473,7 @@ namespace SmartStore.Web.Controllers
 				return Content("");
 
 			// prepare model
-			var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList();
+            var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize, false, false, false, false, true).ToList();
 
 			return PartialView(model);
 		}
@@ -521,7 +522,7 @@ namespace SmartStore.Web.Controllers
 		{
 			var product = _productService.GetProductById(id);
 			if (product == null || product.Deleted)
-				throw new ArgumentException("No product found with the specified id");
+				throw new ArgumentException(T("Products.NotFound", id));
 
 			var model = new BackInStockSubscribeModel();
 			model.ProductId = product.Id;
@@ -550,7 +551,7 @@ namespace SmartStore.Web.Controllers
 		{
 			var product = _productService.GetProductById(id);
 			if (product == null || product.Deleted)
-				throw new ArgumentException("No product found with the specified id");
+				throw new ArgumentException(T("Products.NotFound", id));
 
 			if (!_services.WorkContext.CurrentCustomer.IsRegistered())
 				return Content(T("BackInStockSubscriptions.OnlyRegistered"));
@@ -628,9 +629,10 @@ namespace SmartStore.Web.Controllers
 				bundleItems = _productService.GetBundleItems(product.Id);
 				if (form.Count > 0)
 				{
+					// may add elements to form if they are preselected by bundle item filter
 					foreach (var itemData in bundleItems)
 					{
-						var tempModel = _helper.PrepareProductDetailsPageModel(itemData.Item.Product, false, itemData, null, form);
+						var unused = _helper.PrepareProductDetailsPageModel(itemData.Item.Product, false, itemData, null, form);
 					}
 				}
 			}
@@ -662,14 +664,16 @@ namespace SmartStore.Web.Controllers
 				}
 				else
 				{
-					var allCombinationImageIds = new List<int>();
+					var allCombinationPictureIds = _productAttributeService.GetAllProductVariantAttributeCombinationPictureIds(product.Id);	
 
-					_productAttributeService
-						.GetAllProductVariantAttributeCombinations(product.Id)
-						.GetAllCombinationImageIds(allCombinationImageIds);
-
-					_helper.PrepareProductDetailsPictureModel(pictureModel, pictures, product.GetLocalized(x => x.Name), allCombinationImageIds,
-						false, bundleItem, m.CombinationSelected);
+					_helper.PrepareProductDetailsPictureModel(
+						pictureModel, 
+						pictures, 
+						product.GetLocalized(x => x.Name), 
+						allCombinationPictureIds,
+						false, 
+						bundleItem, 
+						m.SelectedCombination);
 
 					galleryStartIndex = pictureModel.GalleryStartIndex;
 					galleryHtml = this.RenderPartialViewToString("_PictureGallery", pictureModel);
@@ -758,7 +762,7 @@ namespace SmartStore.Web.Controllers
 		{
 			var product = _productService.GetProductById(productId);
 			if (product == null)
-				throw new ArgumentException("No product found with the specified id");
+				throw new ArgumentException(T("Products.NotFound", productId));
 
 			var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_BY_PRODUCT_MODEL_KEY, product.Id, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
 			var cacheModel = _services.Cache.Get(cacheKey, () =>
@@ -889,7 +893,7 @@ namespace SmartStore.Web.Controllers
 		{
 			var productReview = _customerContentService.GetCustomerContentById(productReviewId) as ProductReview;
 			if (productReview == null)
-				throw new ArgumentException("No product review found with the specified id");
+				throw new ArgumentException(T("Reviews.NotFound", productReviewId));
 
 			if (_services.WorkContext.CurrentCustomer.IsGuest() && !_catalogSettings.AllowAnonymousUsersToReviewProduct)
 			{
@@ -1028,7 +1032,7 @@ namespace SmartStore.Web.Controllers
 				}
 				else
 				{
-					ModelState.AddModelError("", "Fehler beim Versenden der Email. Bitte versuchen Sie es später erneut.");
+					ModelState.AddModelError("", T("Common.Error.SendMail"));
 				}
 			}
 

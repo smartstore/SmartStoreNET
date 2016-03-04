@@ -1,0 +1,61 @@
+﻿@using SmartStore.Admin.Models.DataExchange
+@model ExportProfileModel
+@{
+	Layout = null;
+}
+
+<div>
+	@if(Model.AvailableProviders.Count > 0)
+	{
+		<form method="POST" class="export-profile-form" action="@Url.Action("Create", "Export")">
+			<table class="adminContent">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.ProviderSystemName)
+					</td>
+					<td class="adminData">
+						<select name="@Html.FieldNameFor(x => x.ProviderSystemName)" id="@Html.FieldIdFor(x => x.ProviderSystemName)" class="large-select2 control-large">
+							@foreach (var item in Model.AvailableProviders.OrderBy(x => x.FriendlyName))
+							{
+								<option value="@item.SystemName" data-id="@item.Id" data-imageurl="@item.ImageUrl">@item.FriendlyName</option>
+							}
+						</select>
+					</td>
+				</tr>
+				@if(Model.AvailableProfiles.Count > 0)
+				{
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.CloneProfileId)
+						</td>
+						<td class="adminData">
+							<select name="@Html.FieldNameFor(x => x.CloneProfileId)" id="@Html.FieldIdFor(x => x.CloneProfileId)" class="large-select2 control-large" 
+									data-placeholder="@Model.UnspecifiedString">
+								<option></option>
+								@foreach (var item in Model.AvailableProfiles.OrderBy(x => x.FriendlyName))
+								{
+									<option value="@item.Id" data-systemname="@item.SystemName" data-imageurl="@item.ImageUrl">@item.FriendlyName</option>
+								}
+							</select>
+						</td>
+					</tr>
+				}
+				<tr>
+					<td class="adminTitle">
+						&nbsp;
+					</td>
+					<td class="adminData" style="width: 510px; max-width: 510px;">
+						@foreach (var item in Model.AvailableProviders)
+						{
+							<span id="ExportProviderDescription@(item.Id)" class="export-provider-description">@item.Description</span>
+						}
+					</td>
+				</tr>
+			</table>
+		</form>
+	}
+	else
+	{
+		@T("Admin.DataExchange.Export.NoExportProvider")
+	}
+</div>

@@ -1,12 +1,10 @@
-﻿@model dynamic
+﻿@model IList<ScheduleTaskModel>
 @using Telerik.Web.Mvc.UI;
 @using System.Linq;
 @{
-    //page title
     ViewBag.Title = T("Admin.System.ScheduleTasks").Text;
-
-	var runJobUrl = Url.Content("~/Admin/ScheduleTask/RunJob/");
 }
+
 <div class="section-header">
     <div class="title">
 		<i class="fa fa-clock-o"></i>
@@ -14,69 +12,86 @@
     </div>
 </div>
 
-<div class="alert alert-info fade in">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    @T("Admin.System.ScheduleTasks.RestartApplication")
-</div>
-
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<ScheduleTaskModel>()
-                    .Name("schedule-tasks-grid")
-                    .DataKeys(x =>
-                    {
-                        x.Add(y => y.Id).RouteKey("Id");
-                    })
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Name).ClientTemplate("<strong><#= Name #></strong>");
-                        columns.Bound(x => x.Seconds);
-                        columns.Bound(x => x.Enabled)
-                            .ClientTemplate(@Html.SymbolForBool("Enabled"))
-                            .Centered()
-                            .Width(100);
-                        columns.Bound(x => x.StopOnError)
-                            .ClientTemplate(@Html.SymbolForBool("StopOnError"))
-                            .Centered()
-                            .Width(100);
-						//columns.Bound(x => x.LastStartUtc).ReadOnly();
-						//columns.Bound(x => x.LastEndUtc).ReadOnly();
-						//columns.Bound(x => x.LastSuccessUtc).ReadOnly();
-						columns.Bound(x => x.Id)
-							.ClientTemplate("<# if (LastStartUtc.length) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastStart") + ":</span> <span class='muted'><#= LastStartUtc #></span></div><# } #>" +
-											"<# if (!LastEndUtc && !IsRunning) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastStart") + ":</span> <span class='muted'>" + @T("Common.Never") + "</span></div><# } #>" +
-											"<# if (Duration.length) {#><div><span>" + @T("Common.Duration") + ":</span> <span class='muted'><#= Duration #></span></div><# } #>" +
-											"<# if (LastError.length) {#><div class='text-error'><strong>" + @T("Common.Error") + ":</strong> <span><#= LastError #></span></div><# } #>" +								
-											"<# if (LastSuccessUtc != LastEndUtc) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastSuccess") + ":</span> <span class='muted'><#= LastSuccessUtc #></span></div><# } #>" +
-											"<# if (!IsRunning) {#><a href='" + @runJobUrl + "<#= Id #>' class='btn btn-success' style='margin-top: 12px'><i class='fa fa-play'></i> " + @T("Admin.System.ScheduleTasks.RunNow") + "</a><# } #>" +
-											"<# if (IsRunning) {#><div style='margin-top: 12px'><i class='fa fa-refresh fa-spin'></i> " + @T("Admin.System.ScheduleTasks.RunNow.IsRunning") + "</div><# } #>")
-							.Title(T("Common.Execution").Text)
-							.ReadOnly();
-                        columns.Command(commands =>
-                        {
-                            commands.Edit().Text(T("Admin.Common.Edit").Text);
-                        }).Width(180).Title(T("Admin.Common.Edit").Text);
-
-                    })
-                    .Editable(x =>
-                    {
-                        x.Mode(GridEditMode.InLine);
-                    })
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax().Select("List", "ScheduleTask")
-                            .Update("TaskUpdate", "ScheduleTask");
-                    })
-                    .ClientEvents(x => x.OnError("grid_onError"))
-                    .EnableCustomBinding(true))
-            <script type="text/javascript">
-                function grid_onError(e) {
-                    alert(e.XMLHttpRequest.responseText);
-                    e.preventDefault();
-                }
-            </script>
-        </td>
-    </tr>
+<table class="table" id="schedule-tasks-grid">
+	<thead>
+		<tr>
+			<th>@T("Admin.System.ScheduleTasks.Name")</th>
+			<th>@T("Admin.System.ScheduleTasks.Enabled")</th>
+			<th>@T("Admin.System.ScheduleTasks.CronExpression")</th>
+			<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
+			<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
+			<th>@T("Admin.Common.Actions")</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var task in Model)
+		{
+			<tr data-task-id='@task.Id' style='@(task.Enabled ? "" : "background: #fafafa")'>
+				<td>
+					<a href='@task.EditUrl'>@task.Name</a>
+				</td>
+				<td>@Html.SymbolForBool(task.Enabled)</td>
+				<td>
+					<div>@task.CronExpression</div>
+					@if (task.CronDescription.HasValue())
+					{
+						<div class="muted">@task.CronDescription</div>
+					}
+				</td>
+				<!-- LastStart -->
+				<td>
+					<div class="last-run-info">
+						@Html.Partial("_LastRun", task)
+					</div>
+				</td>
+				<!-- NextRun -->
+				<td style="min-width: 300px">
+					<div class="next-run-info">
+						@Html.Partial("_NextRun", task)
+					</div>
+					<div class='task-progress text-success@(task.IsRunning ? "" : " hide")' data-task-id='@task.Id' data-running='@(task.IsRunning ? "true" : "false")'></div>
+				</td>
+				<!-- Actions -->
+				<td>
+					<a href='@task.EditUrl' class="btn btn-small" style="margin-bottom: 4px">@T("Common.Edit")</a>
+					<a href='@task.ExecuteUrl' data-task-id='@task.Id' class='btn btn-small btn-success btn-run-task@(task.IsRunning ? " hide" : "")' style="margin-bottom: 4px">
+						@T("Admin.System.ScheduleTasks.RunNow")
+					</a>
+					<a href='@task.CancelUrl' data-task-id='@task.Id' class='btn btn-small btn-danger btn-cancel-task@(!task.IsRunning ? " hide" : "")' onclick="return confirm('@T("Admin.Common.AreYouSure")');" style="margin-bottom: 4px">
+						@T("Common.Cancel")
+					</a>
+				</td>
+			</tr>
+		}
+	</tbody>
 </table>
+
+<script>
+	$(function () {
+		Admin.TaskWatcher.startWatching({
+			context: $('#schedule-tasks-grid'),
+			elementsSelector: '.task-progress',
+			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
+			pollUrl: '@Url.Action("GetRunningTasks")',
+			onTaskStarted: function (task, el) {
+				el.closest('tr').find('.btn-run-task').addClass('hide').next().removeClass('hide');
+				el.closest('tr').find('.next-run-info').addClass('hide');
+			},
+			onTaskCompleted: function (taskId, el) {
+				el.closest('tr').find('.btn-run-task').removeClass('hide').next().addClass('hide');
+				$.ajax({
+					cache: false,
+					global: false,
+					type: 'POST',
+					url: '@Url.Action("GetTaskRunInfo")',
+					data: { id: taskId },
+					success: function (data) {
+						el.closest('tr').find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
+						el.closest('tr').find('.last-run-info').html(data.lastRunHtml);
+					}
+				});
+			}
+		});
+	});
+</script>
 

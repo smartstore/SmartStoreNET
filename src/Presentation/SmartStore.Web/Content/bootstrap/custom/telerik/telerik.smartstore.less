@@ -17,10 +17,6 @@
 	.reset-filter();
     color: @grayDark;
     text-shadow: 0 1px 1px rgba(255,255,255, .75);
-
-	.no-cssgradients & {
-		background: #e9e9e9 /*@btnBackgroundHighlight*/ url('gradient.png') repeat-x 0 center;
-	}
 }
 .t-menu-vertical, .t-editor, .t-tooltip, .t-tabstrip {
     background-position: 0 -48px;
@@ -89,7 +85,7 @@
     color: #3b3b3b;
 }
 .t-button, button.t-button.t-state-disabled:hover, a.t-button.t-state-disabled:hover, .t-state-disabled .t-button:hover {
-    background: #d2d5d9 url('gradient.png') repeat-x 0 center;
+    background: #d2d5d9;
 }
 .t-button:hover {
     border-color: #f3d64a;
@@ -153,7 +149,7 @@
 }
 
 .t-numerictextbox .t-input {
-    width: 252px;
+    width: 301px;
 	padding: 6px 8px 6px 3px;
 }
 .t-numerictextbox.small .t-input {

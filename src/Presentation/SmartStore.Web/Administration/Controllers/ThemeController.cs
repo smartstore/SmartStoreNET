@@ -21,8 +21,10 @@ using SmartStore.Services.Stores;
 using SmartStore.Services.Themes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
-using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -62,11 +64,7 @@ namespace SmartStore.Admin.Controllers
 			this._services = services;
 			this._themeContext = themeContext;
 			this._themeFileResolver = themeFileResolver;
-
-			this.T = NullLocalizer.Instance;
 		}
-
-		public Localizer T { get; set; }
 
 		#endregion 
 
@@ -207,7 +205,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		public ActionResult Configure(string theme, int storeId, IDictionary<string, object> values, bool continueEditing)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
@@ -397,11 +395,7 @@ namespace SmartStore.Admin.Controllers
                 if (file != null && file.ContentLength > 0)
                 {
                     int importedCount = 0;
-                    using (var sr = new StreamReader(file.InputStream, Encoding.UTF8))
-                    {
-                        string content = sr.ReadToEnd();
-                        importedCount = _themeVarService.ImportVariables(theme, storeId, content);
-                    }
+					importedCount = _themeVarService.ImportVariables(theme, storeId, file.InputStream.AsString());
 
                     // activity log
                     try

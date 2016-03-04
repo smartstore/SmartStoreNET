@@ -212,16 +212,26 @@ namespace SmartStore.Shipping.Services
             {
                 return true; // catch all
             }
-            
+
+            var patterns = pattern.Contains(",")
+                ? pattern.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
+                : new string[] { pattern };
+
             try
             {
-                var wildcard = new Wildcard(pattern);
-                return wildcard.IsMatch(zip);
+                foreach (var entry in patterns)
+                {
+                    var wildcard = new Wildcard(entry);
+                    if (wildcard.IsMatch(zip))
+                        return true;
+                }
             }
             catch
             {
                 return zip.IsCaseInsensitiveEqual(pattern);
             }
+
+            return false;
         }
 
         /// <summary>

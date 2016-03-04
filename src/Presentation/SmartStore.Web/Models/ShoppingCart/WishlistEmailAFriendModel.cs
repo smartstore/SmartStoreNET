@@ -1,7 +1,7 @@
 ﻿using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Validators.ShoppingCart;
 
 namespace SmartStore.Web.Models.ShoppingCart

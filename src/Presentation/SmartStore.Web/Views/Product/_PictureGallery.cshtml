@@ -9,11 +9,13 @@
 
 <div id="pd-gallery" class="picture pd-gallery">
     <div class="sg-image-wrapper">
-        <img alt="@Model.DefaultPictureModel.AlternateText"
-            title="@Model.DefaultPictureModel.Title"  
-            src="@Model.DefaultPictureModel.ImageUrl"
-            itemprop="image" />   
-        
+		@if (Model.DefaultPictureModel.ImageUrl.HasValue())
+		{
+			<img alt="@Model.DefaultPictureModel.AlternateText"
+				title="@Model.DefaultPictureModel.Title"  
+				src="@Model.DefaultPictureModel.ImageUrl"
+				itemprop="image" />   
+		}
     </div>
 
     <div class="sg-nav">
@@ -31,9 +33,8 @@
 							</a>
                         </li>
                     }
-
                 } 
-                else 
+                else if (Model.DefaultPictureModel.ThumbImageUrl.HasValue())
                 {     
                     <li data-picture-id="@Model.DefaultPictureModel.PictureId">
 						<a href="@Model.DefaultPictureModel.FullSizeImageUrl" data-medium-image="@Model.DefaultPictureModel.ImageUrl" data-gallery="default">

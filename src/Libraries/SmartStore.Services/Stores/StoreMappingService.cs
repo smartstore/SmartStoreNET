@@ -219,7 +219,7 @@ namespace SmartStore.Services.Stores
 		public virtual int[] GetStoresIdsWithAccess<T>(T entity) where T : BaseEntity, IStoreMappingSupported
 		{
 			if (entity == null)
-				throw new ArgumentNullException("entity");
+				return new int[0];
 
 			int entityId = entity.Id;
 			string entityName = typeof(T).Name;

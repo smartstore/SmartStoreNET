@@ -1,31 +1,28 @@
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
-using System.Xml.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Events;
-using SmartStore.Data;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
-using System.Text.RegularExpressions;
-using System.Collections.Concurrent;
-using System.Web.Mvc;
-using System.Collections;
 
 namespace SmartStore.Services.Localization
 {
-    /// <summary>
-    /// Provides information about localization
-    /// </summary>
-    public partial class LocalizationService : ILocalizationService
+	/// <summary>
+	/// Provides information about localization
+	/// </summary>
+	public partial class LocalizationService : ILocalizationService
     {
         #region Constants
         private const string LOCALESTRINGRESOURCES_ALL_KEY = "SmartStore.lsr.all-{0}";
@@ -432,98 +429,70 @@ namespace SmartStore.Services.Localization
             ImportModeFlags mode = ImportModeFlags.Insert | ImportModeFlags.Update,
             bool updateTouchedResources = false)
 		{            
-            var autoCommit = _lsrRepository.AutoCommitEnabled;
-            var validateOnSave = _lsrRepository.Context.ValidateOnSaveEnabled;
-            var autoDetectChanges = _lsrRepository.Context.AutoDetectChangesEnabled;
-            var proxyCreation = _lsrRepository.Context.ProxyCreationEnabled;
+			using (var scope = new DbContextScope(autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
+			{
+				var toAdd = new List<LocaleStringResource>();
+				var toUpdate = new List<LocaleStringResource>();
+				var nodes = xmlDocument.SelectNodes(@"//Language/LocaleResource");
 
-            try
-            {
-                _lsrRepository.Context.ValidateOnSaveEnabled = false;
-                _lsrRepository.Context.AutoDetectChangesEnabled = false;
-                _lsrRepository.Context.ProxyCreationEnabled = false;
+				foreach (var xel in nodes.Cast<XmlElement>())
+				{
+					string name = xel.GetAttribute("Name").TrimSafe();
+					string value = "";
+					var valueNode = xel.SelectSingleNode("Value");
+					if (valueNode != null)
+						value = valueNode.InnerText;
 
-                var toAdd = new List<LocaleStringResource>();
-                var toUpdate = new List<LocaleStringResource>();
-                var nodes = xmlDocument.SelectNodes(@"//Language/LocaleResource");
+					if (String.IsNullOrEmpty(name))
+						continue;
 
-                foreach (var xel in nodes.Cast<XmlElement>())
-                {
+					if (rootKey.HasValue())
+					{
+						if (!xel.GetAttributeText("AppendRootKey").IsCaseInsensitiveEqual("false"))
+							name = "{0}.{1}".FormatWith(rootKey, name);
+					}
 
-                    string name = xel.GetAttribute("Name").TrimSafe();
-                    string value = "";
-                    var valueNode = xel.SelectSingleNode("Value");
-                    if (valueNode != null)
-                        value = valueNode.InnerText;
+					// do not use "Insert"/"Update" methods because they clear cache
+					// let's bulk insert
+					var resource = language.LocaleStringResources.Where(x => x.ResourceName.Equals(name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+					if (resource != null)
+					{
+						if (mode.HasFlag(ImportModeFlags.Update))
+						{
+							if (updateTouchedResources || !resource.IsTouched.GetValueOrDefault())
+							{
+								resource.ResourceValue = value;
+								resource.IsTouched = null;
+								toUpdate.Add(resource);
+							}
+						}
+					}
+					else
+					{
+						if (mode.HasFlag(ImportModeFlags.Insert))
+						{
+							toAdd.Add(
+								new LocaleStringResource()
+								{
+									LanguageId = language.Id,
+									ResourceName = name,
+									ResourceValue = value,
+									IsFromPlugin = sourceIsPlugin
+								});
+						}
+					}
+				}
 
-                    if (String.IsNullOrEmpty(name))
-                        continue;
+				_lsrRepository.AutoCommitEnabled = true;
+				_lsrRepository.InsertRange(toAdd, 500);
+				toAdd.Clear();
 
-                    if (rootKey.HasValue())
-                    {
-                        if (!xel.GetAttributeText("AppendRootKey").IsCaseInsensitiveEqual("false"))
-                            name = "{0}.{1}".FormatWith(rootKey, name);
-                    }
+				_lsrRepository.UpdateRange(toUpdate);
+				toUpdate.Clear();
 
-                    // do not use "Insert"/"Update" methods because they clear cache
-                    // let's bulk insert
-                    var resource = language.LocaleStringResources.Where(x => x.ResourceName.Equals(name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-                    if (resource != null)
-                    {
-                        if (mode.IsSet<ImportModeFlags>(ImportModeFlags.Update))
-                        {
-                            if (updateTouchedResources || !resource.IsTouched.GetValueOrDefault())
-                            {
-                                resource.ResourceValue = value;
-                                resource.IsTouched = null;
-                                toUpdate.Add(resource);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (mode.IsSet<ImportModeFlags>(ImportModeFlags.Insert))
-                        {
-                            toAdd.Add(
-                                new LocaleStringResource()
-                                {
-                                    LanguageId = language.Id,
-                                    ResourceName = name,
-                                    ResourceValue = value,
-                                    IsFromPlugin = sourceIsPlugin
-                                });
-                        }
-                    }
-                }
-
-                _lsrRepository.AutoCommitEnabled = true;
-                _lsrRepository.InsertRange(toAdd, 500);
-                toAdd.Clear();
-
-                _lsrRepository.AutoCommitEnabled = false;
-                toUpdate.Each(x =>
-                {
-                    _lsrRepository.Update(x);
-                });
-                
-                _lsrRepository.Context.SaveChanges();
-                toUpdate.Clear();
-
-                //clear cache
-                _cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                _lsrRepository.AutoCommitEnabled = autoCommit;
-                _lsrRepository.Context.ValidateOnSaveEnabled = validateOnSave;
-                _lsrRepository.Context.AutoDetectChangesEnabled = autoDetectChanges;
-                _lsrRepository.Context.ProxyCreationEnabled = proxyCreation;
-            }
-
+				//clear cache
+				_cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
+			}
 		}
 
 		/// <summary>

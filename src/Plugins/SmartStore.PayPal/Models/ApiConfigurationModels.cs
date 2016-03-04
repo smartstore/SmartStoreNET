@@ -1,22 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Web.Mvc;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.PayPal.Models
 {
-    public abstract class ApiConfigurationModel: ModelBase
+	public abstract class ApiConfigurationModel: ModelBase
 	{
         public string[] ConfigGroups { get; set; }
 
         [SmartResourceDisplayName("Plugins.Payments.PayPal.UseSandbox")]
 		public bool UseSandbox { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.IpnChangesPaymentStatus")]
+		public bool IpnChangesPaymentStatus { get; set; }
+
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.TransactMode")]
 		public int TransactMode { get; set; }
 		public SelectList TransactModeValues { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.SecurityProtocol")]
+		public SecurityProtocolType? SecurityProtocol { get; set; }
+		public List<SelectListItem> AvailableSecurityProtocols { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.ApiAccountName")]
 		public string ApiAccountName { get; set; }
@@ -41,7 +50,9 @@ namespace SmartStore.PayPal.Models
         {
             if (fromSettings)
             {
-                UseSandbox = settings.UseSandbox;
+				SecurityProtocol = settings.SecurityProtocol;
+				UseSandbox = settings.UseSandbox;
+				IpnChangesPaymentStatus = settings.IpnChangesPaymentStatus;
                 TransactMode = Convert.ToInt32(settings.TransactMode);
                 ApiAccountName = settings.ApiAccountName;
                 ApiAccountPassword = settings.ApiAccountPassword;
@@ -51,7 +62,9 @@ namespace SmartStore.PayPal.Models
             }
             else
             {
-                settings.UseSandbox = UseSandbox;
+				settings.SecurityProtocol = SecurityProtocol;
+				settings.UseSandbox = UseSandbox;
+				settings.IpnChangesPaymentStatus = IpnChangesPaymentStatus;
                 settings.TransactMode = (TransactMode)TransactMode;
                 settings.ApiAccountName = ApiAccountName;
                 settings.ApiAccountPassword = ApiAccountPassword;
@@ -64,10 +77,10 @@ namespace SmartStore.PayPal.Models
 
     public class PayPalExpressConfigurationModel : ApiConfigurationModel
     {
-        [SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.DisplayCheckoutButton")]
-        public bool DisplayCheckoutButton { get; set; }
+		[SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.ShowButtonInMiniShoppingCart")]
+		public bool ShowButtonInMiniShoppingCart { get; set; }
 
-        [SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.ConfirmedShipment")]
+		[SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.ConfirmedShipment")]
         public bool ConfirmedShipment { get; set; }
 
         [SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.NoShipmentAddress")]
@@ -83,14 +96,16 @@ namespace SmartStore.PayPal.Models
         {
             if (fromSettings)
             {
-                UseSandbox = settings.UseSandbox;
-                TransactMode = Convert.ToInt32(settings.TransactMode);
-                ApiAccountName = settings.ApiAccountName;
+				SecurityProtocol = settings.SecurityProtocol;
+				UseSandbox = settings.UseSandbox;
+				IpnChangesPaymentStatus = settings.IpnChangesPaymentStatus;
+				TransactMode = Convert.ToInt32(settings.TransactMode);
+				ApiAccountName = settings.ApiAccountName;
                 ApiAccountPassword = settings.ApiAccountPassword;
                 Signature = settings.Signature;
                 AdditionalFee = settings.AdditionalFee;
                 AdditionalFeePercentage = settings.AdditionalFeePercentage;
-                DisplayCheckoutButton = settings.DisplayCheckoutButton;
+				ShowButtonInMiniShoppingCart = settings.ShowButtonInMiniShoppingCart;
                 ConfirmedShipment = settings.ConfirmedShipment;
                 NoShipmentAddress = settings.NoShipmentAddress;
                 CallbackTimeout = settings.CallbackTimeout;
@@ -98,22 +113,21 @@ namespace SmartStore.PayPal.Models
             }
             else
 			{
-                settings.UseSandbox = UseSandbox;
+				settings.SecurityProtocol = SecurityProtocol;
+				settings.UseSandbox = UseSandbox;
+				settings.IpnChangesPaymentStatus = IpnChangesPaymentStatus;
                 settings.TransactMode = (TransactMode)TransactMode;
-                settings.ApiAccountName = ApiAccountName;
+				settings.ApiAccountName = ApiAccountName;
                 settings.ApiAccountPassword = ApiAccountPassword;
                 settings.Signature = Signature;
                 settings.AdditionalFee = AdditionalFee;
                 settings.AdditionalFeePercentage = AdditionalFeePercentage;
-                settings.DisplayCheckoutButton = DisplayCheckoutButton;
+				settings.ShowButtonInMiniShoppingCart = ShowButtonInMiniShoppingCart;
                 settings.ConfirmedShipment = ConfirmedShipment;
                 settings.NoShipmentAddress = NoShipmentAddress;
                 settings.CallbackTimeout = CallbackTimeout;
                 settings.DefaultShippingPrice = DefaultShippingPrice;
             }
         }
-
     }
-
-
 }

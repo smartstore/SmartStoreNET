@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Checkout
 {
@@ -19,6 +19,7 @@ namespace SmartStore.Web.Models.Checkout
 
         public partial class ShippingMethodModel : ModelBase
         {
+			public int ShippingMethodId { get; set; }
             public string ShippingRateComputationMethodSystemName { get; set; }
             public string Name { get; set; }
             public string BrandUrl { get; set; }

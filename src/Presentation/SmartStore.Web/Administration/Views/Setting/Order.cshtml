@@ -116,6 +116,18 @@
                 </td>
             </tr>
         }
+		@if (Model.StoreCount > 1)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.DisplayOrdersOfAllStores)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.DisplayOrdersOfAllStores)
+					@Html.ValidationMessageFor(model => model.DisplayOrdersOfAllStores)
+				</td>
+			</tr>
+		}
     </table>
 }
 

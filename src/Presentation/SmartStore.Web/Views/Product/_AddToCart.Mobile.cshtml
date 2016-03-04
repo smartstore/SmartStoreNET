@@ -46,7 +46,7 @@
                 <div data-role="fieldcontain">
                     <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
                         @Html.LabelFor(model => model.AddToCart.EnteredQuantity, new { @class = "qty-label" })
-                        @Html.DropDownListFor(model => model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown" })
+                        @Html.DropDownListFor(model => model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown" , data_native_menu = "false" })
                     </fieldset>
                 </div>
             }

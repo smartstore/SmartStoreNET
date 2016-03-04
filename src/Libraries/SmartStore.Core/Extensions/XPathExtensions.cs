@@ -27,7 +27,7 @@ namespace SmartStore
 					if (xpath.IsEmpty())
 					{
 						if (node.Value.HasValue())
-							return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(null, culture == null ? CultureInfo.InvariantCulture : culture, node.Value);
+							return node.Value.Convert<T>(culture);
 
 						return defaultValue;
 					}
@@ -38,7 +38,7 @@ namespace SmartStore
 					var n = node.SelectSingleNode(xpath);
 
 					if (n != null && n.Value.HasValue())
-						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(null, culture == null ? CultureInfo.InvariantCulture : culture, n.Value);
+						return n.Value.Convert<T>(culture);
 				}
 			}
 			catch (Exception exc)

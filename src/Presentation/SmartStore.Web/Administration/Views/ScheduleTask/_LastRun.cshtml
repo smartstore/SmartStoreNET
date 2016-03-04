@@ -1,0 +1,30 @@
+﻿@model ScheduleTaskModel
+@{
+	Layout = null;
+}
+
+@if (!Model.IsRunning && !Model.LastEnd.HasValue)
+{
+	<div class="muted">@T("Common.Never")</div>
+}
+else if (Model.LastStart.HasValue)
+{
+	<div>@Model.LastStart.Value.ToString("g")</div>
+	<div class="muted">@Model.LastStartPretty</div>
+	if (Model.Duration.HasValue())
+	{
+		<div><span>@T("Common.Duration"): </span> <span class="muted">@Model.Duration</span></div>
+	}
+	if (Model.LastError.HasValue())
+	{
+		<div class="text-error" style="margin-top: 8px"><strong>@T("Common.Error"): </strong> <span>@Model.LastError</span></div>
+		if (Model.LastSuccess.HasValue && Model.LastSuccess != Model.LastEnd)
+		{
+			<div><span>@T("Admin.System.ScheduleTasks.LastSuccess"): </span> <span class="muted">@Model.LastSuccess.Value.ToString("g")</span></div>
+		}
+	}
+}
+
+
+
+

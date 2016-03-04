@@ -54,18 +54,18 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 * and many more...
 
 ## Project Status
-SmartStore.NET V2.2.1 has been released on May 15, 2015. The highlights are:
+SmartStore.NET V2.5.0 has been released on March 03, 2016. The highlights are:
 
-* Overall performance increase
-* Added multistore support for forums
-* New option to display product thumbnails in instant search
-* New mobile theme: _MobileLight_ (a light variant of the default mobile theme)
-* Quantity unit management
-* Limit country settings to stores
-* Web API: Support for file upload and multipart mime
-* More reliable mobile device detection
-* Performance: product list rendering up to 10x (!) faster now
-* Lots of bug fixes
+ * New import/export framework (profiles, filters, mapping, projections, scheduling, deployment... just everything!)
+ * TaskScheduler: Rewritten from scratch to be suitable for Web Farms (including support for cron expressions)
+ * Payment and shipping methods by customer roles
+ * Restrict payment methods to countries
+ * Restrict payment methods to shipping methods
+ * Email attachment support for message templates
+ * Attach order invoice PDF automatically to order notification emails
+ * Overall performance increase
+ * Lots of bug fixes
+
 
 
 ##Try it online

@@ -66,7 +66,8 @@ namespace SmartStore.Web.Controllers
                 MetaDescription = topic.GetLocalized(x => x.MetaDescription),
                 MetaTitle = topic.GetLocalized(x => x.MetaTitle),
                 TitleTag = titleTag,
-            };
+				RenderAsWidget = topic.RenderAsWidget
+			};
             return model;
         }
 
@@ -79,7 +80,7 @@ namespace SmartStore.Web.Controllers
 			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
             var cacheModel = _cacheManager.Get(cacheKey, () => PrepareTopicModel(systemName));
 
-            if (cacheModel == null || !cacheModel.IncludeInSitemap)
+			if (cacheModel == null || (cacheModel.RenderAsWidget && !cacheModel.IncludeInSitemap))
 				return HttpNotFound();
 
             return View("TopicDetails", cacheModel);

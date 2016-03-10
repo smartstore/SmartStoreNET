@@ -369,7 +369,7 @@ namespace SmartStore.Services.Customers.Importer
 		{
 			get
 			{
-				return new string[] { "Id", "CustomerGuid" };
+				return new string[] { "CustomerGuid" };
 			}
 		}
 

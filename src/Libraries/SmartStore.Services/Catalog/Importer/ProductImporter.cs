@@ -729,7 +729,7 @@ namespace SmartStore.Services.Catalog.Importer
 		{
 			get
 			{
-				return new string[] { "Id", "Sku", "Gtin", "ManufacturerPartNumber" };
+				return new string[] { "Sku", "Gtin", "ManufacturerPartNumber" };
 			}
 		}
 

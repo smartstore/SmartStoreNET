@@ -412,7 +412,7 @@ namespace SmartStore.Services.Catalog.Importer
 		{
 			get
 			{
-				return new string[] { };
+				return new string[] { "Name", "Id" };
 			}
 		}
 

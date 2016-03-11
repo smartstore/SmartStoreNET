@@ -1286,13 +1286,13 @@ namespace SmartStore.Admin.Controllers
 				var product = _productService.GetProductById(copyModel.Id);
                 var newProduct = _copyProductService.CopyProduct(product, copyModel.Name, copyModel.Published, copyModel.CopyImages);
 
-                NotifySuccess("The product is copied");
+                NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
 
                 return RedirectToAction("Edit", new { id = newProduct.Id });
             }
             catch (Exception exc)
             {
-				NotifyError(exc.Message);
+				NotifyError(exc.ToAllMessages());
                 return RedirectToAction("Edit", new { id = copyModel.Id });
             }
         }

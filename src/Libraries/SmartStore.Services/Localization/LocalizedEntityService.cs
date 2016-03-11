@@ -228,8 +228,11 @@ namespace SmartStore.Services.Localization
                 else
                 {
                     // update
-                    prop.LocaleValue = localeValueStr;
-                    UpdateLocalizedProperty(prop);
+					if (prop.LocaleValue != localeValueStr)
+					{
+						prop.LocaleValue = localeValueStr;
+						UpdateLocalizedProperty(prop);
+					}
                 }
             }
             else

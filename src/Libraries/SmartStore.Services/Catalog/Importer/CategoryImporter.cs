@@ -420,9 +420,7 @@ namespace SmartStore.Services.Catalog.Importer
 		{
 			var srcToDestId = new Dictionary<int, ImportCategoryMapping>();
 
-			var templateViewPaths = _categoryTemplateService.GetAllCategoryTemplates()
-				.GroupBy(x => x.ViewPath, StringComparer.OrdinalIgnoreCase)
-				.ToDictionary(x => x.Key, x => x.First().Id);
+			var templateViewPaths = _categoryTemplateService.GetAllCategoryTemplates().ToDictionarySafe(x => x.ViewPath, x => x.Id);
 
 			using (var scope = new DbContextScope(ctx: _categoryRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{

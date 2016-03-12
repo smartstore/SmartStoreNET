@@ -154,7 +154,7 @@ namespace SmartStore.Services.Catalog
                         _categoryRepository.Update(subcategory);
                     }
 
-                    var existingAclRecords = _aclService.GetAclRecords(subcategory).ToDictionary(x => x.CustomerRoleId);
+                    var existingAclRecords = _aclService.GetAclRecords(subcategory).ToDictionarySafe(x => x.CustomerRoleId);
 
                     foreach (var customerRole in allCustomerRoles)
                     {
@@ -186,7 +186,7 @@ namespace SmartStore.Services.Catalog
                         _productRepository.Update(product);
                     }
 
-                    var existingAclRecords = _aclService.GetAclRecords(product).ToDictionary(x => x.CustomerRoleId);
+                    var existingAclRecords = _aclService.GetAclRecords(product).ToDictionarySafe(x => x.CustomerRoleId);
 
                     foreach (var customerRole in allCustomerRoles)
                     {

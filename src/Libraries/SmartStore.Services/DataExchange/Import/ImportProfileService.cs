@@ -261,7 +261,7 @@ namespace SmartStore.Services.DataExchange.Import
 						var container = context.MetadataWorkspace.GetEntityContainer(context.DefaultContainerName, DataSpace.CSpace);
 
 						var allLanguages = _languageService.GetAllLanguages(true);
-						var allLanguageNames = allLanguages.ToDictionary(x => x.UniqueSeoCode, x => LocalizationHelper.GetLanguageNativeName(x.LanguageCulture) ?? x.Name);
+						var allLanguageNames = allLanguages.ToDictionarySafe(x => x.UniqueSeoCode, x => LocalizationHelper.GetLanguageNativeName(x.LanguageCulture) ?? x.Name);
 
 						var localizableProperties = new Dictionary<ImportEntityType, string[]>
 						{

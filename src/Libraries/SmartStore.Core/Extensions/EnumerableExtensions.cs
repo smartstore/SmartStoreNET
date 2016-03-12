@@ -129,6 +129,77 @@ namespace SmartStore
 			return new ReadOnlyCollection<T>(source.ToArray());
         }
 
+		/// <summary>
+		/// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
+		/// </summary>
+		/// <param name="source">source</param>
+		/// <param name="keySelector">keySelector</param>
+		/// <returns>Result as dictionary</returns>
+		public static Dictionary<TKey, TSource> ToDictionarySafe<TSource, TKey>(
+			this IEnumerable<TSource> source,
+			 Func<TSource, TKey> keySelector)
+		{
+			return source.ToDictionarySafe(keySelector, new Func<TSource, TSource>(src => src), null);
+		}
+
+		/// <summary>
+		/// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
+		/// </summary>
+		/// <param name="source">source</param>
+		/// <param name="keySelector">keySelector</param>
+		/// <param name="comparer">comparer</param>
+		/// <returns>Result as dictionary</returns>
+		public static Dictionary<TKey, TSource> ToDictionarySafe<TSource, TKey>(
+			this IEnumerable<TSource> source,
+			 Func<TSource, TKey> keySelector,
+			 IEqualityComparer<TKey> comparer)
+		{
+			return source.ToDictionarySafe(keySelector, new Func<TSource, TSource>(src => src), comparer);
+		}
+
+		/// <summary>
+		/// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
+		/// </summary>
+		/// <param name="source">source</param>
+		/// <param name="keySelector">keySelector</param>
+		/// <param name="elementSelector">elementSelector</param>
+		/// <returns>Result as dictionary</returns>
+		public static Dictionary<TKey, TElement> ToDictionarySafe<TSource, TKey, TElement>(
+			this IEnumerable<TSource> source,
+			 Func<TSource, TKey> keySelector,
+			 Func<TSource, TElement> elementSelector)
+		{
+			return source.ToDictionarySafe(keySelector, elementSelector, null);
+		}
+
+		/// <summary>
+		/// Converts an enumerable to a dictionary while tolerating duplicate entries (last wins)
+		/// </summary>
+		/// <param name="source">source</param>
+		/// <param name="keySelector">keySelector</param>
+		/// <param name="elementSelector">elementSelector</param>
+		/// <param name="comparer">comparer</param>
+		/// <returns>Result as dictionary</returns>
+		public static Dictionary<TKey, TElement> ToDictionarySafe<TSource, TKey, TElement>(
+			this IEnumerable<TSource> source,
+			 Func<TSource, TKey> keySelector,
+			 Func<TSource, TElement> elementSelector,
+			 IEqualityComparer<TKey> comparer)
+		{
+			Guard.ArgumentNotNull(() => source);
+			Guard.ArgumentNotNull(() => keySelector);
+			Guard.ArgumentNotNull(() => elementSelector);
+
+			var dictionary = new Dictionary<TKey, TElement>(comparer);
+
+			foreach (var local in source)
+			{
+				dictionary[keySelector(local)] = elementSelector(local);
+			}
+
+			return dictionary;
+		}
+
         #endregion
 
         #region Multimap

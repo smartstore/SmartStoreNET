@@ -38,7 +38,7 @@ namespace SmartStore.Services.Localization
 			{
 				if (_localizationSettings.LoadAllLocalizedPropertiesOnStartup)
 				{
-					var props = _localizedPropertyRepository.TableUntracked.ToDictionary(
+					var props = _localizedPropertyRepository.TableUntracked.ToDictionarySafe(
 						x => GenerateKey(x.LanguageId, x.LocaleKeyGroup, x.LocaleKey, x.EntityId),
 						x => x.LocaleValue.EmptyNull());
 					return new ConcurrentDictionary<string, string>(props);

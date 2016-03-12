@@ -165,9 +165,9 @@ namespace SmartStore.Services.Seo
 								orderby x.Id descending
 								select x;
 
-					var result = query.ToDictionary(
-						x => GenerateKey(x.EntityId, x.EntityName, x.LanguageId), // Key
-						x => x.Slug, // Value
+					var result = query.ToDictionarySafe(
+						x => GenerateKey(x.EntityId, x.EntityName, x.LanguageId),
+						x => x.Slug,
 						StringComparer.OrdinalIgnoreCase);
 
 					return result;

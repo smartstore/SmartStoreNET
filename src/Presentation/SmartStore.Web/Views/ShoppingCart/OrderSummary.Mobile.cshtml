@@ -292,6 +292,27 @@
     {
         @T("ShoppingCart.CartIsEmpty")
     }
+
+	@if (!Model.IsEditable)
+	{
+		<div class="order-options">
+			@if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
+			{
+				<label>
+					<input type="checkbox" name="SubscribeToNewsLetter" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
+					@T("Checkout.SubscribeToNewsLetter")
+				</label>
+			}
+			@if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+			{
+				<label>
+					<input type="checkbox" name="AcceptThirdPartyEmailHandOver" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
+					@Model.ThirdPartyEmailHandOverLabel
+				</label>
+			}
+		</div>
+	}
+
     @Html.Widget("mobile_order_summary_content_after")
 </div>
 

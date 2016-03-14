@@ -258,19 +258,31 @@
         @Html.Partial("_CommentBox", Model)
     }
 
-	@if (!Model.IsEditable && Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
+	@if (!Model.IsEditable && (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None || Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None))
 	{
 		<div class="block block-bordered newsletter-subscription">
 			<div class="block-title">
 				@T("Common.Options")
 			</div>
 			<div class="block-body">
-				<div class="checkbox">
-					<label style="margin-bottom: 0;">
-						<input type="checkbox" name="SubscribeToNewsLetter" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
-						@T("Checkout.SubscribeToNewsLetter")
-					</label>
-				</div>
+				@if (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None)
+				{
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="SubscribeToNewsLetter" @(Model.NewsLetterSubscription == CheckoutNewsLetterSubscription.Activated ? "checked='checked'" : "") />
+							@T("Checkout.SubscribeToNewsLetter")
+						</label>
+					</div>
+				}
+				@if (Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+				{
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" name="AcceptThirdPartyEmailHandOver" @(Model.ThirdPartyEmailHandOver == CheckoutThirdPartyEmailHandOver.Activated ? "checked='checked'" : "") />
+							@Model.ThirdPartyEmailHandOverLabel
+						</label>
+					</div>
+				}
 			</div>
 		</div>
 	}

@@ -892,6 +892,14 @@
                 <hr />
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AcceptThirdPartyEmailHandOver)
+			</td>
+			<td class="adminData">
+				@(Model.AcceptThirdPartyEmailHandOver ? T("Common.Yes") : T("Common.No"))
+			</td>
+		</tr>
         <tr>
             <td colspan="2">
                 @if (Model.CustomerComment.HasValue())

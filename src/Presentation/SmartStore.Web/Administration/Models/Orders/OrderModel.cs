@@ -229,7 +229,10 @@ namespace SmartStore.Admin.Models.Orders
 		[SmartResourceDisplayName("Common.UpdatedOn")]
 		public DateTime UpdatedOn { get; set; }
 
-        public string CustomerComment { get; set; }
+		[SmartResourceDisplayName("Admin.Orders.Fields.AcceptThirdPartyEmailHandOver")]
+		public bool AcceptThirdPartyEmailHandOver { get; set; }
+
+		public string CustomerComment { get; set; }
 
         //checkout attributes
         public string CheckoutAttributeInfo { get; set; }

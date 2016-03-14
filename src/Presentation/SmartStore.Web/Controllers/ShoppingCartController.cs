@@ -666,7 +666,16 @@ namespace SmartStore.Web.Controllers
 			model.GiftCardBox.Display = _shoppingCartSettings.ShowGiftCardBox;
 			model.DisplayCommentBox = _shoppingCartSettings.ShowCommentBox;
 			model.NewsLetterSubscription = _shoppingCartSettings.NewsLetterSubscription;
+			model.ThirdPartyEmailHandOver = _shoppingCartSettings.ThirdPartyEmailHandOver;
 			model.DisplayEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
+
+			if (_shoppingCartSettings.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+			{
+				model.ThirdPartyEmailHandOverLabel = _shoppingCartSettings.GetLocalized(x => x.ThirdPartyEmailHandOverLabel, _workContext.WorkingLanguage.Id, true, false);
+
+				if (model.ThirdPartyEmailHandOverLabel.IsEmpty())
+					model.ThirdPartyEmailHandOverLabel = T("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel.Default");
+			}
 
 			//cart warnings
 			var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, validateCheckoutAttributes);

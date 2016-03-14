@@ -429,7 +429,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.NewsLetterSubscription",
 				"Subscribe to newsletters",
 				"Abonnieren von Newslettern",
-				"Specifies id customers can subscribe to newsletters when ordering and if the checkbox is enabled by default.",
+				"Specifies if customers can subscribe to newsletters when ordering and if the checkbox is enabled by default.",
 				"Legt fest, ob Kunden bei einer Bestellung Newsletter abonnieren können und ob die Checkbox standardmäßig aktiviert ist.");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Orders.CheckoutNewsLetterSubscription.None", "Do not show", "Nicht anzeigen");

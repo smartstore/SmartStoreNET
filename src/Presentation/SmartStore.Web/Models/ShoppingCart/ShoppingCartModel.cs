@@ -55,6 +55,10 @@ namespace SmartStore.Web.Models.ShoppingCart
 		public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
 		public bool? SubscribeToNewsLetter { get; set; }
 
+		public CheckoutThirdPartyEmailHandOver ThirdPartyEmailHandOver { get; set; }
+		public string ThirdPartyEmailHandOverLabel { get; set; }
+		public bool? AcceptThirdPartyEmailHandOver { get; set; }
+
 		public bool DisplayEsdRevocationWaiverBox { get; set; }
 
 		#region Nested Classes

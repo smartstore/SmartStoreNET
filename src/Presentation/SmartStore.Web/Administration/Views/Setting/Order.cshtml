@@ -170,7 +170,7 @@
 					@Html.SmartLabelFor(model => model.Locales[item].ReturnRequestReasons)
 				</td>
 				<td class="adminData">
-					@Html.TextBoxFor(model => Model.Locales[item].ReturnRequestReasons, new { style = "min-width: 800px;" })
+					@Html.TextBoxFor(model => Model.Locales[item].ReturnRequestReasons, new { @class = "input-xlarge" })
 					@Html.ValidationMessageFor(model => model.Locales[item].ReturnRequestReasons)
 				</td>
 			</tr>
@@ -179,7 +179,7 @@
 					@Html.SmartLabelFor(model => model.Locales[item].ReturnRequestActions)
 				</td>
 				<td class="adminData">
-					@Html.TextBoxFor(model => model.Locales[item].ReturnRequestActions, new { style = "min-width: 800px;" })
+					@Html.TextBoxFor(model => model.Locales[item].ReturnRequestActions, new { @class = "input-xlarge" })
 					@Html.ValidationMessageFor(model => model.Locales[item].ReturnRequestActions)
 				</td>
 			</tr>
@@ -196,7 +196,7 @@
 					@Html.SmartLabelFor(model => model.ReturnRequestReasons)
 				</td>
 				<td class="adminData">
-					@Html.TextBoxFor(model => model.ReturnRequestReasons, new { style = "min-width: 800px;" })
+					@Html.TextBoxFor(model => model.ReturnRequestReasons, new { @class = "input-xlarge" })
 					@Html.ValidationMessageFor(model => model.ReturnRequestReasons)
 				</td>
 			</tr>
@@ -205,7 +205,7 @@
 					@Html.SmartLabelFor(model => model.ReturnRequestActions)
 				</td>
 				<td class="adminData">
-					@Html.TextBoxFor(x => x.ReturnRequestActions, new { style = "min-width: 800px;" })
+					@Html.TextBoxFor(x => x.ReturnRequestActions, new { @class = "input-xlarge" })
 					@Html.ValidationMessageFor(model => model.ReturnRequestActions)
 				</td>
 			</tr>

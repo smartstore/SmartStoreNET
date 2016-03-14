@@ -832,6 +832,7 @@ namespace SmartStore.Web.Controllers
                 var placeOrderExtraData = new Dictionary<string, string>();
                 placeOrderExtraData["CustomerComment"] = form["customercommenthidden"];
 				placeOrderExtraData["SubscribeToNewsLetter"] = form["SubscribeToNewsLetterHidden"];
+				placeOrderExtraData["AcceptThirdPartyEmailHandOver"] = form["AcceptThirdPartyEmailHandOverHidden"];
 
 				var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, placeOrderExtraData);
 

@@ -456,14 +456,20 @@ namespace SmartStore.Core.Domain.Orders
 		[DataMember]
 		public bool HasNewPaymentNotification { get; set; }
 
-        #endregion
+		/// <summary>
+		/// Gets or sets a value indicating whether the customer accepted to hand over email address to third party
+		/// </summary>
+		[DataMember]
+		public bool AcceptThirdPartyEmailHandOver { get; set; }
 
-        #region Navigation properties
+		#endregion
 
-        /// <summary>
-        /// Gets or sets the customer
-        /// </summary>
-        [DataMember]
+		#region Navigation properties
+
+		/// <summary>
+		/// Gets or sets the customer
+		/// </summary>
+		[DataMember]
         public virtual Customer Customer { get; set; }
 
         /// <summary>

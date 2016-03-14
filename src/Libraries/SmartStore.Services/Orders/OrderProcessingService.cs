@@ -1065,6 +1065,11 @@ namespace SmartStore.Services.Orders
                             CustomerOrderComment = extraData.ContainsKey("CustomerComment") ? extraData["CustomerComment"] : ""
                         };
 
+						if (extraData.ContainsKey("AcceptThirdPartyEmailHandOver") && _shoppingCartSettings.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+						{
+							order.AcceptThirdPartyEmailHandOver = extraData["AcceptThirdPartyEmailHandOver"].ToBool();
+						}
+
                         _orderService.InsertOrder(order);
 
                         result.PlacedOrder = order;

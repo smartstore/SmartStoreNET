@@ -653,6 +653,8 @@ namespace SmartStore.Web.Controllers
 				HasContactUsPage = (_topicService.GetTopicBySystemName("ContactUs", store.Id) != null)
 			};
 
+			model.DisplayLoginLink = _storeInfoSettings.StoreClosed && !model.DisplayAdminLink;
+
             return PartialView(model);
         }
 

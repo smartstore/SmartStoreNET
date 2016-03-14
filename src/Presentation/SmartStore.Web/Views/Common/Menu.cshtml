@@ -50,7 +50,7 @@
     @Html.Widget("header_menu_after")
 </ul>
 
-@if (Model.NewsEnabled || Model.BlogEnabled || Model.ForumEnabled || Model.DisplayAdminLink)
+@if (Model.NewsEnabled || Model.BlogEnabled || Model.ForumEnabled || Model.DisplayAdminLink || Model.DisplayLoginLink)
 {
     <ul class="pull-left special">
 		@if (Model.NewsEnabled)
@@ -89,6 +89,15 @@
                 </a>
             </li>
         }
+		else if (Model.DisplayLoginLink)
+		{
+			<li>
+				<a href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })" rel="nofollow">
+					<i class="fa fa-sign-in"></i>
+					@T("Account.Login")
+				</a>
+			</li>
+		}
     </ul>
 }
 

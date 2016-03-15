@@ -11,6 +11,8 @@ using SmartStore.Core.Async;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Logging;
 using SmartStore.Collections;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Caching;
 
 namespace SmartStore.Services.Tasks
 {
@@ -22,7 +24,6 @@ namespace SmartStore.Services.Tasks
         private System.Timers.Timer _timer;
         private bool _shuttingDown;
 		private int _errCount;
-        private readonly ConcurrentDictionary<string, bool> _authTokens = new ConcurrentDictionary<string, bool>();
 
         public DefaultTaskScheduler()
         {
@@ -92,13 +93,35 @@ namespace SmartStore.Services.Tasks
 			return cts;
 		}
 
+		private string CreateAuthToken()
+		{
+			string authToken = Guid.NewGuid().ToString();
+
+			var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
+			cacheManager.Set(GenerateAuthTokenCacheKey(authToken), true, 1);
+
+			return authToken;
+		}
+
+		private string GenerateAuthTokenCacheKey(string authToken)
+		{
+			return "Scheduler.AuthToken." + authToken;
+		}
+
         public bool VerifyAuthToken(string authToken)
         {
             if (authToken.IsEmpty())
                 return false;
 
-            bool val = false;
-            return _authTokens.TryRemove(authToken, out val);
+			var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
+			var cacheKey = GenerateAuthTokenCacheKey(authToken);
+			if (cacheManager.Contains(cacheKey))
+			{
+				cacheManager.Remove(cacheKey);
+				return true;
+			}
+
+			return false;
         }
 
         public void RunSingleTask(int scheduleTaskId, IDictionary<string, string> taskParameters = null)
@@ -150,8 +173,7 @@ namespace SmartStore.Services.Tasks
             req.ContentType = "text/plain";
 			req.ContentLength = 0;
 
-            string authToken = Guid.NewGuid().ToString();
-            _authTokens.TryAdd(authToken, true);
+            string authToken = CreateAuthToken();
             req.Headers.Add("X-AUTH-TOKEN", authToken);
 
             req.GetResponseAsync().ContinueWith(t =>

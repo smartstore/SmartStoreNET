@@ -656,6 +656,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.AvailableThirdPartyEmailHandOver, mo => mo.Ignore())
 				.ForMember(dest => dest.Locales, mo => mo.Ignore());
 			Mapper.CreateMap<ShoppingCartSettingsModel, ShoppingCartSettings>()
+				.ForMember(dest => dest.Id, mo => mo.Ignore())
 				.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore())
 				.ForMember(dest => dest.ShowItemsFromWishlistToCartButton, mo => mo.Ignore());
 			Mapper.CreateMap<MediaSettings, MediaSettingsModel>()

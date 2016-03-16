@@ -4,6 +4,7 @@
 
 ### New Features
 * #571 Option to display another checkbox on confirm page to let the customer accept that his email address can be handed over to a third party
+* #870 Implement address import for customers (both billing & shipping address)
 
 
 ## SmartStore.NET 2.5

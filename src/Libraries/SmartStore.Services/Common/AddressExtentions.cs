@@ -44,6 +44,30 @@ namespace SmartStore.Services.Common
                 ((a.CountryId.IsNullOrDefault() && countryId.IsNullOrDefault()) || a.CountryId == countryId));
         }
 
+		/// <summary>
+		/// Find first occurrence of address
+		/// </summary>
+		/// <param name="source">Addresses to be searched</param>
+		/// <param name="address">Address to find</param>
+		/// <returns>First occurrence of address</returns>
+		public static Address FindAddress(this List<Address> source, Address address)
+		{
+			return source.FindAddress(
+				address.FirstName,
+				address.LastName,
+				address.PhoneNumber,
+				address.Email,
+				address.FaxNumber,
+				address.Company,
+				address.Address1,
+				address.Address2,
+				address.City,
+				address.StateProvinceId,
+				address.ZipPostalCode,
+				address.CountryId
+			);
+		}
+
 		/// <summary>Returns the full name of the address.</summary>
 		public static string GetFullName(this Address address)
 		{

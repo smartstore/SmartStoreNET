@@ -109,10 +109,15 @@
 		}
 
 		function getFilterConfiguration(url, container) {
-			$.get(url, function (html) {
-				container.append(html);
-				if (++i < configUrls.length)
-					getFilterConfiguration(configUrls[i], container);
+			$.ajax({
+				url: url,
+				cache: false,
+				dataType: 'html',
+				success: function (html) {
+					container.append(html);
+					if (++i < configUrls.length)
+						getFilterConfiguration(configUrls[i], container);
+				}
 			});
 		}
     });

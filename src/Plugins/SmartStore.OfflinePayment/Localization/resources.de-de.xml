@@ -218,7 +218,7 @@
   </LocaleResource>
 
   <!-- PuchaseOrderNumber -->
-  <LocaleResource Name="Plugins.FriendlyName.Payments.PuchaseOrder" AppendRootKey="false">
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.PurchaseOrderNumber" AppendRootKey="false">
     <Value>Bestellnummer</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Payments.PuchaseOrder" AppendRootKey="false">

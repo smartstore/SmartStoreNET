@@ -980,7 +980,7 @@ namespace SmartStore.Services.DataExchange.Export
 				//var productValues = new Dictionary<string, object>();
 				var dbContext = _dbContext as DbContext;
 
-				_dbContext.Attach(product);
+				product = _dbContext.Attach(product);
 
 				var entry = dbContext.Entry(product);
 

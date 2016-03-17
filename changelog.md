@@ -8,6 +8,7 @@
 
 ### Bugfixes
 * Fixed ajax cache issue when saving payment or shipping restrictions. Internet Explorer showed the old data state (before storage).
+* "The provider failed at the Execute method: Member 'CurrentValues' cannot be called for the entity of type 'Product'" when exporting product attribute combinations
 
 
 ## SmartStore.NET 2.5

@@ -830,10 +830,18 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Order.ShippingZipPostalCode", order.ShippingAddress != null ? order.ShippingAddress.ZipPostalCode : ""));
             tokens.Add(new Token("Order.ShippingCountry", order.ShippingAddress != null && order.ShippingAddress.Country != null ? order.ShippingAddress.Country.GetLocalized(x => x.Name) : ""));
 
+			string paymentMethodName = null;
 			var paymentMethod = _providerManager.GetProvider<IPaymentMethod>(order.PaymentMethodSystemName);
-			var paymentMethodName = paymentMethod != null ? GetLocalizedValue(paymentMethod.Metadata, "FriendlyName", x => x.FriendlyName) : order.PaymentMethodSystemName;
+			if (paymentMethod != null)
+			{
+				paymentMethodName = GetLocalizedValue(paymentMethod.Metadata, "FriendlyName", x => x.FriendlyName);
+			}
+			if (paymentMethodName.IsEmpty())
+			{
+				paymentMethodName = order.PaymentMethodSystemName;
+			}
 
-            tokens.Add(new Token("Order.PaymentMethod", paymentMethodName));
+			tokens.Add(new Token("Order.PaymentMethod", paymentMethodName));
             tokens.Add(new Token("Order.VatNumber", order.VatNumber));
             tokens.Add(new Token("Order.Product(s)", ProductListToHtmlTable(order, language), true));
             tokens.Add(new Token("Order.CustomerComment", order.CustomerOrderComment, true));

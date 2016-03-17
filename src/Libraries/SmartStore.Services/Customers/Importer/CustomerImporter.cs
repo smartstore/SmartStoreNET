@@ -72,16 +72,11 @@ namespace SmartStore.Services.Customers.Importer
 			_dataExchangeSettings = dataExchangeSettings;
 		}
 
-		private int? CountryCodeToId(Dictionary<int, Tuple<string, string>> allCountries, string code)
+		private int? CountryCodeToId(Dictionary<string, int> allCountries, string code)
 		{
-			if (code.HasValue())
+			if (code.HasValue() && allCountries.ContainsKey(code))
 			{
-				int countryId = 0;
-
-				if (code.Length == 2)
-					countryId = allCountries.FirstOrDefault(x => x.Value.Item1.IsCaseInsensitiveEqual(code)).Key;
-				else if (code.Length == 3)
-					countryId = allCountries.FirstOrDefault(x => x.Value.Item2.IsCaseInsensitiveEqual(code)).Key;
+				var countryId = allCountries[code];
 
 				if (countryId != 0)
 					return countryId;
@@ -89,14 +84,19 @@ namespace SmartStore.Services.Customers.Importer
 			return null;
 		}
 
-		private int? StateAbbreviationToId(Dictionary<int, Tuple<int, string>> allStateProvinces, int? countryId, string abbreviation)
+		private int? StateAbbreviationToId(Dictionary<Tuple<int, string>, int> allStateProvinces, int? countryId, string abbreviation)
 		{
 			if (countryId.HasValue && abbreviation.HasValue())
 			{
-				var stateId = allStateProvinces.FirstOrDefault(x => x.Value.Item1 == countryId && x.Value.Item2.IsCaseInsensitiveEqual(abbreviation)).Key;
+				var key = Tuple.Create<int, string>(countryId.Value, abbreviation);
 
-				if (stateId != 0)
-					return stateId;
+				if (allStateProvinces.ContainsKey(key))
+				{
+					var stateId = allStateProvinces[key];
+
+					if (stateId != 0)
+						return stateId;
+				}
 			}
 			return null;
 		}
@@ -177,8 +177,8 @@ namespace SmartStore.Services.Customers.Importer
 		private void ImportAddress(
 			string fieldPrefix,
 			ImportRow<Customer> row,
-			Dictionary<int, Tuple<string, string>> allCountries,
-			Dictionary<int, Tuple<int, string>> allStateProvinces)
+			Dictionary<string, int> allCountries,
+			Dictionary<Tuple<int, string>, int> allStateProvinces)
 		{
 			// last name is mandatory for an address to be imported
 			var lastName = row.GetDataValue<string>(fieldPrefix + "LastName");
@@ -231,8 +231,8 @@ namespace SmartStore.Services.Customers.Importer
 
 		private void ProcessGenericAttributes(IImportExecuteContext context,
 			ImportRow<Customer>[] batch,
-			Dictionary<int, Tuple<string, string>> allCountries,
-			Dictionary<int, Tuple<int, string>> allStateProvinces,
+			Dictionary<string, int> allCountries,
+			Dictionary<Tuple<int, string>, int> allStateProvinces,
 			List<string> allCustomerNumbers)
 		{
 			foreach (var row in batch)
@@ -489,11 +489,18 @@ namespace SmartStore.Services.Customers.Importer
 				.Select(x => x.Id)
 				.ToList();
 
-			var allCountries = _countryService.GetAllCountries(true)
-				.ToDictionary(x => x.Id, x => new Tuple<string, string>(x.TwoLetterIsoCode, x.ThreeLetterIsoCode));
+			var allCountries = new Dictionary<string, int>();
+			foreach (var country in _countryService.GetAllCountries(true))
+			{
+				if (!allCountries.ContainsKey(country.TwoLetterIsoCode))
+					allCountries.Add(country.TwoLetterIsoCode, country.Id);
+
+				if (!allCountries.ContainsKey(country.ThreeLetterIsoCode))
+					allCountries.Add(country.ThreeLetterIsoCode, country.Id);
+			}
 
 			var allStateProvinces = _stateProvinceService.GetAllStateProvinces(true)
-				.ToDictionary(x => x.Id, x => new Tuple<int, string>(x.CountryId, x.Abbreviation));
+				.ToDictionarySafe(x => new Tuple<int, string>(x.CountryId, x.Abbreviation), x => x.Id);
 
 			var allCustomerNumbers = _genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, _attributeKeyGroup)
 				.Select(x => x.Value)

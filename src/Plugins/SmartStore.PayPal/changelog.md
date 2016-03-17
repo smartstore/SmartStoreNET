@@ -1,5 +1,9 @@
 ﻿#Release Notes
 
+##Paypal 2.5.0.1
+###Bugfixes
+* PayPal Standard: The order amount transmitted to PayPal was wrong if gift cards or reward points were applied
+
 ##Paypal 2.2.0.4
 ###New Features
 * Option for API security protocol

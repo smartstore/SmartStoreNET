@@ -496,14 +496,12 @@ namespace SmartStore.PayPal
                 if (cartItems.Count() <= 0)
                     return;
 
-                //decimal totalSmartStore = Math.Round(postProcessPaymentRequest.Order.OrderSubtotalExclTax, 2);
-				decimal totalSmartStore = Math.Round(postProcessPaymentRequest.Order.OrderTotal, 2);
+                decimal totalSmartStore = Math.Round(postProcessPaymentRequest.Order.OrderSubtotalExclTax, 2);
 				decimal totalPayPal = decimal.Zero;
-                decimal delta, portion, rest;
+				decimal delta, portion, rest;
 
 				// calculate what PayPal calculates
-				//cartItems.Each(x => totalPayPal += (x.AmountRounded * x.Quantity));
-				paypalItems.Each(x => totalPayPal += (x.AmountRounded * x.Quantity));
+				cartItems.Each(x => totalPayPal += (x.AmountRounded * x.Quantity));
 				totalPayPal = Math.Round(totalPayPal, 2, MidpointRounding.AwayFromZero);
 
 				// calculate difference

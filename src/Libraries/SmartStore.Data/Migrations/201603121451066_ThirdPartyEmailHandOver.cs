@@ -54,6 +54,10 @@ namespace SmartStore.Data.Migrations
 				"Akzeptiert Weitergabe der E-Mail",
 				"Indicates whether the customer has accepted to hand over his email address to third party.",
 				"Gibt an, ob der Kunde bei der Bestellung einer Weitergabe seiner E-Mail Adresse an Dritte zugestimmt hat oder nicht.");
+
+			builder.AddOrUpdate("Admin.OrderNotice.OrderCaptureError",
+				"Unable to capture payment for order {0}.",
+				"Es ist ein Fehler bei der Zahlungsbuchung zu Auftrag {0} aufgetreten.");
 		}
 	}
 }

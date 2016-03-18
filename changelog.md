@@ -11,6 +11,7 @@
 * "The provider failed at the Execute method: Member 'CurrentValues' cannot be called for the entity of type 'Product'" when exporting product attribute combinations
 * Bundles without selected attributes could throw an exception on product detail page
 * GMC feed did not export the product type (category path)
+* The error message of a payment provider when capturing a payment was not displayed
 
 
 ## SmartStore.NET 2.5

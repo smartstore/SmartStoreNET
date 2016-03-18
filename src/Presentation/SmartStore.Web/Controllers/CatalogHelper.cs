@@ -236,11 +236,15 @@ namespace SmartStore.Web.Controllers
 				{
 					var item = itemData.Item;
 					var bundleItemAttributes = new NameValueCollection();
-					var keyPrefix = "product_attribute_{0}_{1}".FormatInvariant(item.ProductId, item.Id);
 
-					foreach (var key in selectedAttributes.AllKeys.Where(x => x.HasValue() && x.StartsWith(keyPrefix)))
+					if (selectedAttributes != null)
 					{
-						bundleItemAttributes.Add(key, selectedAttributes[key]);
+						var keyPrefix = "product_attribute_{0}_{1}".FormatInvariant(item.ProductId, item.Id);
+
+						foreach (var key in selectedAttributes.AllKeys.Where(x => x.HasValue() && x.StartsWith(keyPrefix)))
+						{
+							bundleItemAttributes.Add(key, selectedAttributes[key]);
+						}
 					}
 
 					var bundledProductModel = PrepareProductDetailsPageModel(item.Product, false, itemData, null, bundleItemAttributes);

@@ -595,7 +595,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			dynObject._CategoryName = null;
 
-			if (ctx.Categories.Count > 0 && ctx.CategoryPathes.Count > 0)
+			if (ctx.Categories.Count > 0)
 			{
 				dynObject._CategoryPath = _categoryService.Value.GetCategoryPath(
 					product,

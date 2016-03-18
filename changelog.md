@@ -6,6 +6,9 @@
 * #571 Option to display another checkbox on confirm page to let the customer accept that his email address can be handed over to a third party
 * #870 Implement address import for customers (both billing & shipping address)
 
+### Improvements
+* Exports the product detail link including the attribute query string when exporting attribute combinations
+
 ### Bugfixes
 * Fixed ajax cache issue when saving payment or shipping restrictions. Internet Explorer showed the old data state (before storage).
 * "The provider failed at the Execute method: Member 'CurrentValues' cannot be called for the entity of type 'Product'" when exporting product attribute combinations

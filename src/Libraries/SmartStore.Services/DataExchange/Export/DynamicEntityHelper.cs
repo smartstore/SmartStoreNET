@@ -591,7 +591,18 @@ namespace SmartStore.Services.DataExchange.Export
 
 			dynObject._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
 
-			dynObject._DetailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)dynObject.SeName;
+			var detailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)dynObject.SeName;
+
+			if (combination != null)
+			{
+				var attributeQueryString = _productAttributeParser.Value.SerializeQueryData(combination.AttributesXml, product.Id);
+				if (attributeQueryString.HasValue())
+				{
+					detailUrl = string.Concat(detailUrl, detailUrl.Contains("?") ? "&" : "?", "attributes=", attributeQueryString);
+				}
+			}
+
+			dynObject._DetailUrl = detailUrl;
 
 			dynObject._CategoryName = null;
 

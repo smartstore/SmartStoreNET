@@ -39,15 +39,6 @@
 			@Html.ValidationMessageFor(x => x.Projection.CustomerId)
 		</td>
 	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(x => x.Projection.NumberOfPictures)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(x => x.Projection.NumberOfPictures)
-			@Html.ValidationMessageFor(x => x.Projection.NumberOfPictures)
-		</td>
-	</tr>
 
 	@if (Model.Provider.EntityType == ExportEntityType.Product)
 	{	
@@ -105,7 +96,7 @@
 				@Html.SmartLabelFor(x => x.Projection.PriceType)
 			</td>
 			<td class="adminData">
-				@Html.DropDownListFor(x => x.Projection.PriceType, Model.Projection.AvailablePriceTypes, Model.UnspecifiedString)
+				@Html.DropDownListFor(x => x.Projection.PriceType, Model.Projection.AvailablePriceTypes, T("Admin.Catalog.Products.Fields.Price"))
 				@Html.ValidationMessageFor(x => x.Projection.PriceType)
 			</td>
 		</tr>
@@ -153,6 +144,16 @@
 				</td>
 			</tr>
 		}
+
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Projection.NumberOfPictures)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Projection.NumberOfPictures)
+				@Html.ValidationMessageFor(x => x.Projection.NumberOfPictures)
+			</td>
+		</tr>
 
 		if (Model.Provider.Feature.HasFlag(ExportFeatures.CanIncludeMainPicture))
 		{

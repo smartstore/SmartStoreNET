@@ -39,52 +39,45 @@ namespace SmartStore.Services.DataExchange.Export
 				string description = "";
 
 				// description merging
-				if (ctx.Projection.DescriptionMerging != ExportDescriptionMerging.None)
-				{
-					if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescriptionOrNameIfEmpty)
-					{
-						description = dynObject.FullDescription;
-
-						if (description.IsEmpty())
-							description = dynObject.ShortDescription;
-						if (description.IsEmpty())
-							description = dynObject.Name;
-					}
-					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescription)
-					{
-						description = dynObject.ShortDescription;
-					}
-					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.Description)
-					{
-						description = dynObject.FullDescription;
-					}
-					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.NameAndShortDescription)
-					{
-						description = ((string)dynObject.Name).Grow((string)dynObject.ShortDescription, " ");
-					}
-					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.NameAndDescription)
-					{
-						description = ((string)dynObject.Name).Grow((string)dynObject.FullDescription, " ");
-					}
-					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription ||
-						ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndDescription)
-					{
-						var productManus = ctx.ProductExportContext.ProductManufacturers.Load(product.Id);
-
-						if (productManus != null && productManus.Any())
-							description = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
-
-						description = description.Grow((string)dynObject.Name, " ");
-
-						if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription)
-							description = description.Grow((string)dynObject.ShortDescription, " ");
-						else
-							description = description.Grow((string)dynObject.FullDescription, " ");
-					}
-				}
-				else
+				if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescriptionOrNameIfEmpty)
 				{
 					description = dynObject.FullDescription;
+
+					if (description.IsEmpty())
+						description = dynObject.ShortDescription;
+					if (description.IsEmpty())
+						description = dynObject.Name;
+				}
+				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescription)
+				{
+					description = dynObject.ShortDescription;
+				}
+				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.Description || ctx.Projection.DescriptionMerging == ExportDescriptionMerging.None)
+				{
+					description = dynObject.FullDescription;
+				}
+				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.NameAndShortDescription)
+				{
+					description = ((string)dynObject.Name).Grow((string)dynObject.ShortDescription, " ");
+				}
+				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.NameAndDescription)
+				{
+					description = ((string)dynObject.Name).Grow((string)dynObject.FullDescription, " ");
+				}
+				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription ||
+					ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndDescription)
+				{
+					var productManus = ctx.ProductExportContext.ProductManufacturers.Load(product.Id);
+
+					if (productManus != null && productManus.Any())
+						description = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
+
+					description = description.Grow((string)dynObject.Name, " ");
+
+					if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription)
+						description = description.Grow((string)dynObject.ShortDescription, " ");
+					else
+						description = description.Grow((string)dynObject.FullDescription, " ");
 				}
 
 				// append text

@@ -24,16 +24,13 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.CustomerId")]
 		public int? CustomerId { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.NumberOfPictures")]
-		public int? NumberOfPictures { get; set; }
-
 		#endregion
 
 		#region Product
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.DescriptionMerging")]
 		public int DescriptionMergingId { get; set; }
-		public SelectList AvailableDescriptionMergings { get; set; }
+		public List<SelectListItem> AvailableDescriptionMergings { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.DescriptionToPlainText")]
 		public bool DescriptionToPlainText { get; set; }
@@ -52,13 +49,16 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.PriceType")]
 		public PriceDisplayType? PriceType { get; set; }
-		public SelectList AvailablePriceTypes { get; set; }
+		public IList<SelectListItem> AvailablePriceTypes { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.ConvertNetToGrossPrices")]
 		public bool ConvertNetToGrossPrices { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.Brand")]
 		public string Brand { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.NumberOfPictures")]
+		public int? NumberOfPictures { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.PictureSize")]
 		public int PictureSize { get; set; }

@@ -58,6 +58,9 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.OrderNotice.OrderCaptureError",
 				"Unable to capture payment for order {0}.",
 				"Es ist ein Fehler bei der Zahlungsbuchung zu Auftrag {0} aufgetreten.");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.None",
+				"Description", "Detailbeschreibung");
 		}
 	}
 }

@@ -257,6 +257,9 @@ namespace SmartStore.Admin.Controllers
 				OrderStatusChangeId = projection.OrderStatusChangeId
 			};
 
+			if (model.Projection.DescriptionMergingId == 0)
+				model.Projection.DescriptionMergingId = (int)ExportDescriptionMerging.Description;
+
 			model.Projection.AvailableStores = allStores
 				.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
 				.ToList();
@@ -323,9 +326,17 @@ namespace SmartStore.Admin.Controllers
 					var allManufacturers = _manufacturerService.GetAllManufacturers(true);
 					var allProductTags = _productTagService.GetAllProductTags();
 
-					model.Projection.AvailableDescriptionMergings = ExportDescriptionMerging.Description.ToSelectList(false);
-					model.Projection.AvailablePriceTypes = PriceDisplayType.LowestPrice.ToSelectList(false);
 					model.Projection.AvailableAttributeCombinationValueMerging = ExportAttributeValueMerging.AppendAllValuesToName.ToSelectList(false);
+
+					model.Projection.AvailableDescriptionMergings = ExportDescriptionMerging.Description
+						.ToSelectList(false)
+						.Where(x => x.Value != ((int)ExportDescriptionMerging.None).ToString())
+						.ToList();
+
+					model.Projection.AvailablePriceTypes = PriceDisplayType.LowestPrice
+						.ToSelectList(false)
+						.Where(x => x.Value != ((int)PriceDisplayType.Hide).ToString())
+						.ToList();
 
 					model.Projection.SerializedAppendDescriptionText = string.Join(",", projection.AppendDescriptionText.SplitSafe(",").Select(x => x.EncodeJsString()));
 					model.Projection.SerializedCriticalCharacters = string.Join(",", projection.CriticalCharacters.SplitSafe(",").Select(x => x.EncodeJsString()));

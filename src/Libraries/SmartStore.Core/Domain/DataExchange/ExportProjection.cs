@@ -52,12 +52,7 @@ namespace SmartStore.Core.Domain.DataExchange
 		{
 			get
 			{
-				var descriptionMerging = (ExportDescriptionMerging)DescriptionMergingId;
-
-				if (descriptionMerging == ExportDescriptionMerging.None)
-					return ExportDescriptionMerging.Description;
-
-				return descriptionMerging;
+				return (ExportDescriptionMerging)DescriptionMergingId;
 			}
 			set
 			{

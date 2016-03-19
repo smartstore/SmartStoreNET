@@ -257,9 +257,6 @@ namespace SmartStore.Admin.Controllers
 				OrderStatusChangeId = projection.OrderStatusChangeId
 			};
 
-			if (model.Projection.DescriptionMergingId == 0)
-				model.Projection.DescriptionMergingId = (int)ExportDescriptionMerging.Description;
-
 			model.Projection.AvailableStores = allStores
 				.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
 				.ToList();
@@ -328,10 +325,7 @@ namespace SmartStore.Admin.Controllers
 
 					model.Projection.AvailableAttributeCombinationValueMerging = ExportAttributeValueMerging.AppendAllValuesToName.ToSelectList(false);
 
-					model.Projection.AvailableDescriptionMergings = ExportDescriptionMerging.Description
-						.ToSelectList(false)
-						.Where(x => x.Value != ((int)ExportDescriptionMerging.None).ToString())
-						.ToList();
+					model.Projection.AvailableDescriptionMergings = ExportDescriptionMerging.Description.ToSelectList(false);
 
 					model.Projection.AvailablePriceTypes = PriceDisplayType.LowestPrice
 						.ToSelectList(false)

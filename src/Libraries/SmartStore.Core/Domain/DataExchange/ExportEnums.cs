@@ -40,7 +40,7 @@ namespace SmartStore.Core.Domain.DataExchange
 	/// </summary>
 	public enum ExportDescriptionMerging
 	{
-		None = 0,	// obsolete
+		None = 0,
 		ShortDescriptionOrNameIfEmpty,
 		ShortDescription,
 		Description,

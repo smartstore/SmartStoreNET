@@ -39,7 +39,11 @@ namespace SmartStore.Services.DataExchange.Export
 				string description = "";
 
 				// description merging
-				if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescriptionOrNameIfEmpty)
+				if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.None)
+				{
+					// export empty description
+				}
+				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescriptionOrNameIfEmpty)
 				{
 					description = dynObject.FullDescription;
 
@@ -52,7 +56,7 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					description = dynObject.ShortDescription;
 				}
-				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.Description || ctx.Projection.DescriptionMerging == ExportDescriptionMerging.None)
+				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.Description)
 				{
 					description = dynObject.FullDescription;
 				}
@@ -100,7 +104,7 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 
 				// convert to plain text
-				if (ctx.Projection.DescriptionToPlainText)
+				if (description.HasValue() && ctx.Projection.DescriptionToPlainText)
 				{
 					//Regex reg = new Regex("<[^>]+>", RegexOptions.IgnoreCase);
 					//description = HttpUtility.HtmlDecode(reg.Replace(description, ""));

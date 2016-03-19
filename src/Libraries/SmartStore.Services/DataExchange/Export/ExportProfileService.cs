@@ -108,7 +108,8 @@ namespace SmartStore.Services.DataExchange.Export
 						RemoveCriticalCharacters = true,
 						CriticalCharacters = "¼,½,¾",
 						PriceType = PriceDisplayType.PreSelectedPrice,
-						NoGroupedProducts = (features.HasFlag(ExportFeatures.CanOmitGroupedProducts) ? true : false)
+						NoGroupedProducts = (features.HasFlag(ExportFeatures.CanOmitGroupedProducts) ? true : false),
+						DescriptionMerging = ExportDescriptionMerging.Description
 					};
 
 					var filter = new ExportFilter

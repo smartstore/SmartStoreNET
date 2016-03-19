@@ -60,7 +60,7 @@ namespace SmartStore.Data.Migrations
 				"Es ist ein Fehler bei der Zahlungsbuchung zu Auftrag {0} aufgetreten.");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.None",
-				"Description", "Detailbeschreibung");
+				"None", "Keine");
 		}
 	}
 }

@@ -53,6 +53,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly ILanguageService _languageService;
 		private readonly ICurrencyService _currencyService;
 		private readonly IEmailAccountService _emailAccountService;
+		private readonly ICountryService _countryService;
 		private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly DataExchangeSettings _dataExchangeSettings;
 		private readonly ITaskScheduler _taskScheduler;
@@ -70,6 +71,7 @@ namespace SmartStore.Admin.Controllers
 			ILanguageService languageService,
 			ICurrencyService currencyService,
 			IEmailAccountService emailAccountService,
+			ICountryService countryService,
 			IDateTimeHelper dateTimeHelper,
 			DataExchangeSettings dataExchangeSettings,
 			ITaskScheduler taskScheduler,
@@ -86,6 +88,7 @@ namespace SmartStore.Admin.Controllers
 			_languageService = languageService;
 			_currencyService = currencyService;
 			_emailAccountService = emailAccountService;
+			_countryService = countryService;
 			_dateTimeHelper = dateTimeHelper;
 			_dataExchangeSettings = dataExchangeSettings;
 			_taskScheduler = taskScheduler;
@@ -206,6 +209,9 @@ namespace SmartStore.Admin.Controllers
 			var filter = XmlHelper.Deserialize<ExportFilter>(profile.Filtering);
 			var projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
 
+			var language = _services.WorkContext.WorkingLanguage;
+			var store = _services.StoreContext.CurrentStore;
+
 			var allStores = _services.StoreService.GetAllStores();
 			var allLanguages = _languageService.GetAllLanguages(true);
 			var allCurrencies = _currencyService.GetAllCurrencies(true);
@@ -223,7 +229,7 @@ namespace SmartStore.Admin.Controllers
 			model.CreateZipArchive = profile.CreateZipArchive;
 			model.Cleanup = profile.Cleanup;
 
-			model.FileNamePatternExample = profile.ResolveFileNamePattern(_services.StoreContext.CurrentStore, 1, _dataExchangeSettings.MaxFileNameLength);
+			model.FileNamePatternExample = profile.ResolveFileNamePattern(store, 1, _dataExchangeSettings.MaxFileNameLength);
 
 			model.AvailableEmailAccounts = allEmailAccounts
 				.Select(x => new SelectListItem { Text = x.FriendlyName, Value = x.Id.ToString() })
@@ -286,6 +292,14 @@ namespace SmartStore.Admin.Controllers
 				WithoutManufacturers = filter.WithoutManufacturers,
 				ProductTagId = filter.ProductTagId,
 				FeaturedProducts = filter.FeaturedProducts,
+				IsActiveCustomer = filter.IsActiveCustomer,
+				IsTaxExempt = filter.IsTaxExempt,
+				BillingCountryIds = filter.BillingCountryIds,
+				ShippingCountryIds = filter.ShippingCountryIds,
+				LastActivityFrom = filter.LastActivityFrom,
+				LastActivityTo = filter.LastActivityTo,
+				HasSpentAtLeastAmount = filter.HasSpentAtLeastAmount,
+				HasPlacedAtLeastOrders = filter.HasPlacedAtLeastOrders,
 				ProductType = filter.ProductType,
 				IdMinimum = filter.IdMinimum,
 				IdMaximum = filter.IdMaximum,
@@ -351,20 +365,27 @@ namespace SmartStore.Admin.Controllers
 						.ToList();
 
 				}
-				else if (model.Provider.EntityType == ExportEntityType.Order)
+				else if (model.Provider.EntityType == ExportEntityType.Customer)
 				{
 					var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-
-					model.Projection.AvailableOrderStatusChange = ExportOrderStatusChange.Processing.ToSelectList(false);
-
-					model.Filter.AvailableOrderStates = OrderStatus.Pending.ToSelectList(false).ToList();
-					model.Filter.AvailablePaymentStates = PaymentStatus.Pending.ToSelectList(false).ToList();
-					model.Filter.AvailableShippingStates = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
+					var allCountries = _countryService.GetAllCountries(true);
 
 					model.Filter.AvailableCustomerRoles = allCustomerRoles
 						.OrderBy(x => x.Name)
 						.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
 						.ToList();
+
+					model.Filter.AvailableCountries = allCountries
+						.Select(x => new SelectListItem { Text = x.GetLocalized(y => y.Name, language.Id, true, false), Value = x.Id.ToString() })
+						.ToList();
+				}
+				else if (model.Provider.EntityType == ExportEntityType.Order)
+				{
+					model.Projection.AvailableOrderStatusChange = ExportOrderStatusChange.Processing.ToSelectList(false);
+
+					model.Filter.AvailableOrderStates = OrderStatus.Pending.ToSelectList(false).ToList();
+					model.Filter.AvailablePaymentStates = PaymentStatus.Pending.ToSelectList(false).ToList();
+					model.Filter.AvailableShippingStates = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
 				}
 
 				try
@@ -727,6 +748,14 @@ namespace SmartStore.Admin.Controllers
 					WithoutManufacturers = model.Filter.WithoutManufacturers,
 					ProductTagId = model.Filter.ProductTagId,
 					FeaturedProducts = model.Filter.FeaturedProducts,
+					IsActiveCustomer = model.Filter.IsActiveCustomer,
+					IsTaxExempt = model.Filter.IsTaxExempt,
+					BillingCountryIds = model.Filter.BillingCountryIds,
+					ShippingCountryIds = model.Filter.ShippingCountryIds,
+					LastActivityFrom = model.Filter.LastActivityFrom,
+					LastActivityTo = model.Filter.LastActivityTo,
+					HasSpentAtLeastAmount = model.Filter.HasSpentAtLeastAmount,
+					HasPlacedAtLeastOrders = model.Filter.HasPlacedAtLeastOrders,
 					ProductType = model.Filter.ProductType,
 					IdMinimum = model.Filter.IdMinimum,
 					IdMaximum = model.Filter.IdMaximum,

@@ -248,6 +248,7 @@
 @helper TabFilter()
 {
 	if (Model.Provider.EntityType == ExportEntityType.Product ||
+		Model.Provider.EntityType == ExportEntityType.Customer ||
 		Model.Provider.EntityType == ExportEntityType.Order || 
 		Model.Provider.EntityType == ExportEntityType.NewsLetterSubscription)
 	{

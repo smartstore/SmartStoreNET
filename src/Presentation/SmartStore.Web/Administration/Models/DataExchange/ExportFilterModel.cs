@@ -20,6 +20,12 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CreatedTo")]
 		public DateTime? CreatedTo { get; set; }
 
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CustomerRoleIds")]
+		public int[] CustomerRoleIds { get; set; }
+		public List<SelectListItem> AvailableCustomerRoles { get; set; }
+
+		public List<SelectListItem> AvailableCountries { get; set; }
+
 		#endregion
 
 		#region Product
@@ -72,6 +78,34 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		#endregion
 
+		#region Customer
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.IsActiveCustomer")]
+		public bool? IsActiveCustomer { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.IsTaxExempt")]
+		public bool? IsTaxExempt { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.BillingCountryIds")]
+		public int[] BillingCountryIds { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.ShippingCountryIds")]
+		public int[] ShippingCountryIds { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.LastActivityFrom")]
+		public DateTime? LastActivityFrom { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.LastActivityTo")]
+		public DateTime? LastActivityTo { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.HasSpentAtLeastAmount")]
+		public decimal? HasSpentAtLeastAmount { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.HasPlacedAtLeastOrders")]
+		public int? HasPlacedAtLeastOrders { get; set; }
+
+		#endregion
+
 		#region Order
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.OrderStatusIds")]
@@ -85,10 +119,6 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.ShippingStatusIds")]
 		public int[] ShippingStatusIds { get; set; }
 		public List<SelectListItem> AvailableShippingStates { get; set; }
-
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CustomerRoleIds")]
-		public int[] CustomerRoleIds { get; set; }
-		public List<SelectListItem> AvailableCustomerRoles { get; set; }
 
 		#endregion
 

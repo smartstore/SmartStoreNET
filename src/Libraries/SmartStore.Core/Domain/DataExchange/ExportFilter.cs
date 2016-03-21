@@ -112,10 +112,54 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// </summary>
 		public int[] ShippingStatusIds { get; set; }
 
+		#endregion
+
+		#region Customer
+
+		/// <summary>
+		/// Filter by active or inactive customers
+		/// </summary>
+		public bool? IsActiveCustomer { get; set; }
+
+		/// <summary>
+		/// Filter by tax exempt customers
+		/// </summary>
+		public bool? IsTaxExempt { get; set; }
+
 		/// <summary>
 		/// Identifiers of customer roles
 		/// </summary>
 		public int[] CustomerRoleIds { get; set; }
+
+		/// <summary>
+		/// Filter by billing country identifiers
+		/// </summary>
+		public int[] BillingCountryIds { get; set; }
+
+		/// <summary>
+		/// Filter by shipping country identifiers
+		/// </summary>
+		public int[] ShippingCountryIds { get; set; }
+
+		/// <summary>
+		/// Filter by last activity date from
+		/// </summary>
+		public DateTime? LastActivityFrom { get; set; }
+
+		/// <summary>
+		/// Filter by last activity date to
+		/// </summary>
+		public DateTime? LastActivityTo { get; set; }
+
+		/// <summary>
+		/// Filter by at least spent amount
+		/// </summary>
+		public decimal? HasSpentAtLeastAmount { get; set; }
+
+		/// <summary>
+		/// Filter by at least placed orders
+		/// </summary>
+		public int? HasPlacedAtLeastOrders { get; set; }
 
 		#endregion
 

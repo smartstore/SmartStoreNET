@@ -704,7 +704,7 @@ namespace SmartStore.Services.DataExchange.Export
 				null,
 				null);
 
-			if (ctx.Request.EntitiesToExport.Count > 0)
+			if (ctx.Request.EntitiesToExport.Any())
 				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
 
 			query = query.OrderByDescending(x => x.CreatedOnUtc);
@@ -769,7 +769,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			var query = _categoryService.Value.GetCategories(null, showHidden, null, true, storeId);
 
-			if (ctx.Request.EntitiesToExport.Count > 0)
+			if (ctx.Request.EntitiesToExport.Any())
 				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
 
 			query = query
@@ -804,7 +804,62 @@ namespace SmartStore.Services.DataExchange.Export
 				.Expand(x => x.CustomerRoles)
 				.Where(x => !x.Deleted);
 
-			if (ctx.Request.EntitiesToExport.Count > 0)
+			if (ctx.Filter.IsActiveCustomer.HasValue)
+				query = query.Where(x => x.Active == ctx.Filter.IsActiveCustomer.Value);
+
+			if (ctx.Filter.IsTaxExempt.HasValue)
+				query = query.Where(x => x.IsTaxExempt == ctx.Filter.IsTaxExempt.Value);
+
+			if (ctx.Filter.CustomerRoleIds != null && ctx.Filter.CustomerRoleIds.Length > 0)
+				query = query.Where(x => x.CustomerRoles.Select(y => y.Id).Intersect(ctx.Filter.CustomerRoleIds).Any());
+
+			if (ctx.Filter.BillingCountryIds != null && ctx.Filter.BillingCountryIds.Length > 0)
+				query = query.Where(x => x.BillingAddress != null && ctx.Filter.BillingCountryIds.Contains(x.BillingAddress.Id));
+
+			if (ctx.Filter.ShippingCountryIds != null && ctx.Filter.ShippingCountryIds.Length > 0)
+				query = query.Where(x => x.ShippingAddress != null && ctx.Filter.ShippingCountryIds.Contains(x.ShippingAddress.Id));
+
+			if (ctx.Filter.LastActivityFrom.HasValue)
+			{
+				var activityFrom = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.LastActivityFrom.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				query = query.Where(x => activityFrom <= x.LastActivityDateUtc);
+			}
+
+			if (ctx.Filter.LastActivityTo.HasValue)
+			{
+				var activityTo = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.LastActivityTo.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				query = query.Where(x => activityTo >= x.LastActivityDateUtc);
+			}
+
+			if (ctx.Filter.HasSpentAtLeastAmount.HasValue)
+			{
+				query = query
+					.Join(_orderRepository.Value.Table, x => x.Id, y => y.CustomerId, (x, y) => new { Customer = x, Order = y })
+					.GroupBy(x => x.Customer.Id)
+					.Select(x => new
+					{
+						Customer = x.FirstOrDefault().Customer,
+						OrderTotal = x.Sum(y => y.Order.OrderTotal)
+					})
+					.Where(x => x.OrderTotal >= ctx.Filter.HasSpentAtLeastAmount.Value)
+					.Select(x => x.Customer);
+			}
+
+			if (ctx.Filter.HasPlacedAtLeastOrders.HasValue)
+			{
+				query = query
+					.Join(_orderRepository.Value.Table, x => x.Id, y => y.CustomerId, (x, y) => new { Customer = x, Order = y })
+					.GroupBy(x => x.Customer.Id)
+					.Select(x => new
+					{
+						Customer = x.FirstOrDefault().Customer,
+						OrderCount = x.Count()
+					})
+					.Where(x => x.OrderCount >= ctx.Filter.HasPlacedAtLeastOrders.Value)
+					.Select(x => x.Customer);
+			}
+
+			if (ctx.Request.EntitiesToExport.Any())
 				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
 
 			query = query.OrderByDescending(x => x.CreatedOnUtc);
@@ -851,7 +906,7 @@ namespace SmartStore.Services.DataExchange.Export
 				query = query.Where(x => createdTo >= x.CreatedOnUtc);
 			}
 
-			if (ctx.Request.EntitiesToExport.Count > 0)
+			if (ctx.Request.EntitiesToExport.Any())
 				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
 
 			query = query

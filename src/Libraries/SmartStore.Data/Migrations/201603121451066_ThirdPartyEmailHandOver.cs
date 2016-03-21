@@ -87,6 +87,54 @@ namespace SmartStore.Data.Migrations
 				"Nur aktive Abonnenten",
 				"Filter by active or inactive newsletter subscriber.",
 				"Nach aktiven bzw. inaktiven Newsletter Abonnenten filtern.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.IsActiveCustomer",
+				"Only active customers",
+				"Nur aktive Kunden",
+				"Filter by active or inactive customers.",
+				"Nach aktiven bzw. inaktiven Kunden filtern.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.IsTaxExempt",
+				"Only tax exempt customers",
+				"Nur MwSt. befreite Kunden",
+				"Filter by tax exempt customers.",
+				"Nach MwSt. befreiten Kunden filtern.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.BillingCountryIds",
+				"Billing countries",
+				"Rechnungsländer",
+				"Filter by billing countries.",
+				"Nach Rechnungsländern filtern.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.ShippingCountryIds",
+				"Shipping countries",
+				"Versandländer",
+				"Filter by shipping countries.",
+				"Nach Versandländern filtern.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.LastActivityFrom",
+				"Last activity from",
+				"Zuletzt aktiv von",
+				"Filter by date of last store activity.",
+				"Nach dem Datum der letzten Shop Aktivität filtern.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.LastActivityTo",
+				"Last activity to",
+				"Zuletzt aktiv bis",
+				"Filter by date of last store activity.",
+				"Nach dem Datum der letzten Shop Aktivität filtern.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.HasSpentAtLeastAmount",
+				"Has spent x amount",
+				"Hat Betrag x ausgegeben",
+				"Filter by spent amount.",
+				"Nach dem insgesamt ausgegebenen Betrag filtern.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.HasPlacedAtLeastOrders",
+				"Has x placed orders",
+				"Hat x Bestellungen",
+				"Filter by number of placed orders.",
+				"Nach der Anzahl der getätigten Bestellungen filtern.");
 		}
 	}
 }

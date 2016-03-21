@@ -73,6 +73,10 @@ namespace SmartStore.Data.Migrations
 				"Standardbild bei Herstellern ausblenden",
 				"Specifies whether to hide the default image for manufacturers. The default image is shown when no image is assigned to a manufacturer.",
 				"Legt fest, ob das Standardbild bei Herstellern ausgeblendet werden soll. Das Standardbild wird angezeigt, wenn dem Hersteller kein Bild zugeordnet ist.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Partition.Note",
+				"You can partition the data to be exported with the following settings. This includes<ul><li>Skipping the first n records</li><li>The maximum number of records to be exported</li><li>The number of records per export file</li><li>Export data for each shop in a separate file</li></ul>By default, all data of a store will be exported into one file.",
+				"Mit den folgenden Einstellungen lassen sich die zu exportierenden Daten aufteilen. Dazu z‰hlt<ul><li>Das ‹berspringen der ersten n Datens‰tze</li><li>Die maximale Anzahl zu exportierender Datens‰tze</li><li>Die Anzahl der Datens‰tze pro Exportdatei</li><li>Daten von jedem Shop in eine separate Datei exportieren</li></ul>Standardm‰ﬂig werden alle Daten eines Shops in eine Datei exportiert.");
 		}
 	}
 }

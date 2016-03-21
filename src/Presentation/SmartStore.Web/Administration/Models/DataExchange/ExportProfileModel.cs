@@ -53,10 +53,10 @@ namespace SmartStore.Admin.Models.DataExchange
 		public int Offset { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.RecordsTake")]
-		public int Limit { get; set; }
+		public int? Limit { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.BatchSize")]
-		public int BatchSize { get; set; }
+		public int? BatchSize { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.PerStore")]
 		public bool PerStore { get; set; }

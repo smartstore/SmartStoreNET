@@ -215,8 +215,8 @@ namespace SmartStore.Admin.Controllers
 			model.UnspecifiedString = T("Common.Unspecified");
 			model.StoreCount = allStores.Count;
 			model.Offset = profile.Offset;
-			model.Limit = profile.Limit;
-			model.BatchSize = profile.BatchSize;
+			model.Limit = (profile.Limit == 0 ? (int?)null : profile.Limit);
+			model.BatchSize = (profile.BatchSize == 0 ? (int?)null : profile.BatchSize);
 			model.PerStore = profile.PerStore;
 			model.EmailAccountId = profile.EmailAccountId;
 			model.CompletedEmailAddresses = profile.CompletedEmailAddresses;
@@ -662,8 +662,8 @@ namespace SmartStore.Admin.Controllers
 			profile.FolderName = model.FolderName;
 			profile.Enabled = model.Enabled;
 			profile.Offset = model.Offset;
-			profile.Limit = model.Limit;
-			profile.BatchSize = model.BatchSize;
+			profile.Limit = model.Limit ?? 0;
+			profile.BatchSize = model.BatchSize ?? 0;
 			profile.PerStore = model.PerStore;
 			profile.CompletedEmailAddresses = model.CompletedEmailAddresses;
 			profile.EmailAccountId = model.EmailAccountId ?? 0;

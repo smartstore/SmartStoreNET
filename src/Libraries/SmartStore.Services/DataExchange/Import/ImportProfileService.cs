@@ -108,6 +108,22 @@ namespace SmartStore.Services.DataExchange.Import
 			return result;
 		}
 
+		public string GetNewProfileName(ImportEntityType entityType)
+		{
+			var defaultNames = _localizationService.GetResource("Admin.DataExchange.Import.DefaultProfileNames").SplitSafe(";");
+
+			var result = defaultNames.SafeGet((int)entityType);
+
+			if (result.IsEmpty())
+				result = entityType.ToString();
+
+			var profileCount = _importProfileRepository.Table.Count(x => x.EntityTypeId == (int)entityType);
+
+			result = string.Concat(result, " ", profileCount + 1);
+
+			return result;
+		}
+
 		public virtual ImportProfile InsertImportProfile(string fileName, string name, ImportEntityType entityType)
 		{
 			Guard.ArgumentNotEmpty(() => fileName);

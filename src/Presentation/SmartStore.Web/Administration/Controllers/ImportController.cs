@@ -33,7 +33,7 @@ namespace SmartStore.Admin.Controllers
 	public class ImportController : AdminControllerBase
 	{
 		private readonly ICommonServices _services;
-		private readonly IImportProfileService _importService;
+		private readonly IImportProfileService _importProfileService;
 		private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly ILanguageService _languageService;
@@ -46,7 +46,7 @@ namespace SmartStore.Admin.Controllers
 			ILanguageService languageService)
 		{
 			_services = services;
-			_importService = importService;
+			_importProfileService = importService;
 			_dateTimeHelper = dateTimeHelper;
 			_taskScheduler = taskScheduler;
 			_languageService = languageService;
@@ -60,9 +60,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				if (model.Name.IsEmpty())
 				{
-					var defaultNames = T("Admin.DataExchange.Import.DefaultProfileNames").Text.SplitSafe(";");
-
-					model.Name = defaultNames.SafeGet((int)model.EntityType);
+					model.Name = _importProfileService.GetNewProfileName(model.EntityType);
 				}
 
 				model.ExistingFileNames = new List<string>();
@@ -127,7 +125,7 @@ namespace SmartStore.Admin.Controllers
 				var map = (invalidMap ?? storedMap) ?? new ColumnMap();
 
 				// property name to localized property name
-				var allProperties = _importService.GetImportableEntityProperties(profile.EntityType);
+				var allProperties = _importProfileService.GetImportableEntityProperties(profile.EntityType);
 
 				switch (profile.EntityType)
 				{
@@ -276,7 +274,7 @@ namespace SmartStore.Admin.Controllers
 				AvailableEntityTypes = ImportEntityType.Product.ToSelectList(false).ToList()
 			};
 
-			var profiles = _importService.GetImportProfiles().ToList();
+			var profiles = _importProfileService.GetImportProfiles().ToList();
 
 			foreach (var profile in profiles)
 			{
@@ -296,7 +294,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 			{
-				var profile = _importService.GetImportProfileById(profileId);
+				var profile = _importProfileService.GetImportProfileById(profileId);
 				if (profile != null)
 				{
 					var importResult = XmlHelper.Deserialize<SerializableImportResult>(profile.ResultInfo);
@@ -342,7 +340,7 @@ namespace SmartStore.Admin.Controllers
 			}
 			else if (ModelState.IsValid)
 			{
-				var profile = _importService.InsertImportProfile(model.TempFileName, model.Name, model.EntityType);
+				var profile = _importProfileService.InsertImportProfile(model.TempFileName, model.Name, model.EntityType);
 
 				if (profile != null && profile.Id != 0)
 				{
@@ -363,7 +361,7 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
-			var profile = _importService.GetImportProfileById(id);
+			var profile = _importProfileService.GetImportProfileById(id);
 			if (profile == null)
 				return RedirectToAction("List");
 
@@ -380,7 +378,7 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
-			var profile = _importService.GetImportProfileById(model.Id);
+			var profile = _importProfileService.GetImportProfileById(model.Id);
 			if (profile == null)
 				return RedirectToAction("List");
 
@@ -396,7 +394,7 @@ namespace SmartStore.Admin.Controllers
 
 				if (allPropertyKeys.Any())
 				{
-					var entityProperties = _importService.GetImportableEntityProperties(profile.EntityType);
+					var entityProperties = _importProfileService.GetImportableEntityProperties(profile.EntityType);
 
 					foreach (var key in allPropertyKeys)
 					{
@@ -477,7 +475,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (!hasErrors)
 			{
-				_importService.UpdateImportProfile(profile);
+				_importProfileService.UpdateImportProfile(profile);
 
 				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
@@ -500,12 +498,12 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
-			var profile = _importService.GetImportProfileById(id);
+			var profile = _importProfileService.GetImportProfileById(id);
 			if (profile == null)
 				return RedirectToAction("List");
 
 			profile.ColumnMapping = null;
-			_importService.UpdateImportProfile(profile);
+			_importProfileService.UpdateImportProfile(profile);
 
 			NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
 
@@ -518,13 +516,13 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
-			var profile = _importService.GetImportProfileById(id);
+			var profile = _importProfileService.GetImportProfileById(id);
 			if (profile == null)
 				return RedirectToAction("List");
 
 			try
 			{
-				_importService.DeleteImportProfile(profile);
+				_importProfileService.DeleteImportProfile(profile);
 
 				NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
 
@@ -562,7 +560,7 @@ namespace SmartStore.Admin.Controllers
 					}
 					else
 					{
-						var profile = _importService.GetImportProfileById(id);
+						var profile = _importProfileService.GetImportProfileById(id);
 						if (profile != null)
 						{
 							var files = profile.GetImportFiles();
@@ -587,7 +585,7 @@ namespace SmartStore.Admin.Controllers
 									if (fileType != profile.FileType)
 									{
 										profile.FileType = fileType;
-										_importService.UpdateImportProfile(profile);
+										_importProfileService.UpdateImportProfile(profile);
 									}
 								}
 							}
@@ -614,7 +612,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			// permissions checked internally by DataImporter
 
-			var profile = _importService.GetImportProfileById(id);
+			var profile = _importProfileService.GetImportProfileById(id);
 			if (profile == null)
 				return RedirectToAction("List");
 
@@ -633,7 +631,7 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
-			var profile = _importService.GetImportProfileById(id);
+			var profile = _importProfileService.GetImportProfileById(id);
 			if (profile != null)
 			{
 				var path = profile.GetImportLogPath();
@@ -655,7 +653,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 			{
-				var profile = _importService.GetImportProfileById(id);
+				var profile = _importProfileService.GetImportProfileById(id);
 				if (profile != null)
 				{
 					var path = Path.Combine(profile.GetImportFolder(true), name);
@@ -691,7 +689,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 			{
-				var profile = _importService.GetImportProfileById(id);
+				var profile = _importProfileService.GetImportProfileById(id);
 				if (profile != null)
 				{
 					var importFiles = profile.GetImportFiles();

@@ -56,8 +56,12 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			Guard.ArgumentNotEmpty(() => providerSystemName);
 
+			var profileCount = _exportProfileRepository.Table.Count(x => x.ProviderSystemName == providerSystemName);
+
 			if (name.IsEmpty())
 				name = providerSystemName;
+
+			name = string.Concat(name, " ", profileCount + 1);
 
 			var cloneProfile = GetExportProfileById(cloneFromProfileId);
 

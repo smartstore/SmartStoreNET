@@ -61,6 +61,18 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.None",
 				"None", "Keine");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturerPicturesInProductDetail",
+				"Show manufacturer pictures",
+				"Bilder von Herstellern anzeigen",
+				"Specifies whether to show manufacturer pictures on product detail page.",
+				"Legt fest, ob Herstellerbilder auf der Produktdetailseite angezeigt werden sollen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.HideManufacturerDefaultPictures",
+				"Hide default picture for manufacturers",
+				"Standardbild bei Herstellern ausblenden",
+				"Specifies whether to hide the default image for manufacturers. The default image is shown when no image is assigned to a manufacturer.",
+				"Legt fest, ob das Standardbild bei Herstellern ausgeblendet werden soll. Das Standardbild wird angezeigt, wenn dem Hersteller kein Bild zugeordnet ist.");
 		}
 	}
 }

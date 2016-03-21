@@ -320,7 +320,12 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult ProductManufacturers(int productId, bool preparePictureModel = false)
 		{
-			string cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_MANUFACTURERS_MODEL_KEY, productId, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_MANUFACTURERS_MODEL_KEY,
+				productId,
+				!_catalogSettings.HideManufacturerDefaultPictures,
+				_services.WorkContext.WorkingLanguage.Id,
+				_services.StoreContext.CurrentStore.Id);
+
 			var cacheModel = _services.Cache.Get(cacheKey, () =>
 			{
 				var model = _manufacturerService.GetProductManufacturersByProductId(productId)
@@ -329,7 +334,8 @@ namespace SmartStore.Web.Controllers
 						var m = x.Manufacturer.ToModel();
 						if (preparePictureModel)
 						{
-							m.PictureModel.ImageUrl = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault());
+							m.PictureModel.ImageUrl = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault(), 0, !_catalogSettings.HideManufacturerDefaultPictures);
+
 							var picture = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault());
 							if (picture != null)
 							{

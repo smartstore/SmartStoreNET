@@ -5,6 +5,7 @@
 ### New Features
 * #571 Option to display another checkbox on confirm page to let the customer accept that his email address can be handed over to a third party
 * #870 Implement address import for customers (both billing & shipping address)
+* #886 Add setting to hide manufacturer images on product detail page and to hide default image for manufacturers
 
 ### Improvements
 * Exports the product detail link including the attribute query string when exporting attribute combinations

@@ -21,6 +21,18 @@ namespace SmartStore.Admin.Validators.DataExchange
 			RuleFor(x => x.FileNamePattern)
 				.NotEmpty()
 				.WithMessage(localization.GetResource("Admin.DataExchange.Export.FolderAndFileName.Validate"));
+
+			RuleFor(x => x.Offset)
+				.GreaterThanOrEqualTo(0)
+				.WithMessage(localization.GetResource("Admin.DataExchange.Export.Partition.Validate"));
+
+			RuleFor(x => x.Limit)
+				.GreaterThanOrEqualTo(0)
+				.WithMessage(localization.GetResource("Admin.DataExchange.Export.Partition.Validate"));
+
+			RuleFor(x => x.BatchSize)
+				.GreaterThanOrEqualTo(0)
+				.WithMessage(localization.GetResource("Admin.DataExchange.Export.Partition.Validate"));
 		}
 	}
 }

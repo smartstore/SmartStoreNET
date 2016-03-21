@@ -77,6 +77,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Export.Partition.Note",
 				"You can partition the data to be exported with the following settings. This includes<ul><li>Skipping the first n records</li><li>The maximum number of records to be exported</li><li>The number of records per export file</li><li>Export data for each shop in a separate file</li></ul>By default, all data of a store will be exported into one file.",
 				"Mit den folgenden Einstellungen lassen sich die zu exportierenden Daten aufteilen. Dazu zählt<ul><li>Das Überspringen der ersten n Datensätze</li><li>Die maximale Anzahl zu exportierender Datensätze</li><li>Die Anzahl der Datensätze pro Exportdatei</li><li>Daten von jedem Shop in eine separate Datei exportieren</li></ul>Standardmäßig werden alle Daten eines Shops in eine Datei exportiert.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Partition.Validate",
+				"Partitioning settings must be greater than or equal to 0.",
+				"Einstellungen zur Aufteilung müssen größer oder gleich 0 sein.");
 		}
 	}
 }

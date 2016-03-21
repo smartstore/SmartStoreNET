@@ -274,13 +274,13 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private IExportDataSegmenterProvider CreateSegmenter(DataExporterContext ctx, int pageIndex = 0)
 		{
-			var offset = ctx.Request.Profile.Offset + (pageIndex * PageSize);
+			var offset = Math.Max(ctx.Request.Profile.Offset, 0) + (pageIndex * PageSize);
 
-			var limit = (ctx.IsPreview ? PageSize : ctx.Request.Profile.Limit);
+			var limit = (ctx.IsPreview ? PageSize : Math.Max(ctx.Request.Profile.Limit, 0));
 
-			var recordsPerSegment = (ctx.IsPreview ? 0 : ctx.Request.Profile.BatchSize);
+			var recordsPerSegment = (ctx.IsPreview ? 0 : Math.Max(ctx.Request.Profile.BatchSize, 0));
 
-			var totalCount = ctx.Request.Profile.Offset + ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
+			var totalCount = Math.Max(ctx.Request.Profile.Offset, 0) + ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
 
 			switch (ctx.Request.Provider.Value.EntityType)
 			{

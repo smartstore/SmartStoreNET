@@ -103,8 +103,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.CategoryIds,
-						new MultiSelectList(Model.Filter.AvailableCategories, "Value", "Text"),
-						new { multiple = "multiple" })
+					 new MultiSelectList(Model.Filter.AvailableCategories, "Value", "Text"),
+					 new { multiple = "multiple" })
 				@Html.ValidationMessageFor(x => x.Filter.CategoryIds)
 			</td>
 		</tr>
@@ -183,8 +183,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.OrderStatusIds,
-						new MultiSelectList(Model.Filter.AvailableOrderStates, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-xlarge" })
+					 new MultiSelectList(Model.Filter.AvailableOrderStates, "Value", "Text"),
+					 new { multiple = "multiple", @class = "control-xlarge" })
 				@Html.ValidationMessageFor(x => x.Filter.OrderStatusIds)
 			</td>
 		</tr>
@@ -194,8 +194,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.PaymentStatusIds,
-						new MultiSelectList(Model.Filter.AvailablePaymentStates, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-xlarge" })
+					 new MultiSelectList(Model.Filter.AvailablePaymentStates, "Value", "Text"),
+					 new { multiple = "multiple", @class = "control-xlarge" })
 				@Html.ValidationMessageFor(x => x.Filter.PaymentStatusIds)
 			</td>
 		</tr>
@@ -205,8 +205,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.ShippingStatusIds,
-						new MultiSelectList(Model.Filter.AvailableShippingStates, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-xlarge" })
+					 new MultiSelectList(Model.Filter.AvailableShippingStates, "Value", "Text"),
+					 new { multiple = "multiple", @class = "control-xlarge" })
 				@Html.ValidationMessageFor(x => x.Filter.ShippingStatusIds)
 			</td>
 		</tr>
@@ -216,9 +216,39 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.CustomerRoleIds,
-						new MultiSelectList(Model.Filter.AvailableCustomerRoles, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-xlarge" })
+					 new MultiSelectList(Model.Filter.AvailableCustomerRoles, "Value", "Text"),
+					 new { multiple = "multiple", @class = "control-xlarge" })
 				@Html.ValidationMessageFor(x => x.Filter.CustomerRoleIds)
+			</td>
+		</tr>
+	}
+	else if (Model.Provider.EntityType == ExportEntityType.NewsLetterSubscription)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.IsActiveSubscriber)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Filter.IsActiveSubscriber)
+				@Html.ValidationMessageFor(x => x.Filter.IsActiveSubscriber)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.CreatedFrom)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Filter.CreatedFrom)
+				@Html.ValidationMessageFor(x => x.Filter.CreatedFrom)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.CreatedTo)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Filter.CreatedTo)
+				@Html.ValidationMessageFor(x => x.Filter.CreatedTo)
 			</td>
 		</tr>
 	}

@@ -81,6 +81,12 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Export.Partition.Validate",
 				"Partitioning settings must be greater than or equal to 0.",
 				"Einstellungen zur Aufteilung müssen größer oder gleich 0 sein.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.IsActiveSubscriber",
+				"Only active subscriber",
+				"Nur aktive Abonnenten",
+				"Filter by active or inactive newsletter subscriber.",
+				"Nach aktiven bzw. inaktiven Newsletter Abonnenten filtern.");
 		}
 	}
 }

@@ -91,5 +91,12 @@ namespace SmartStore.Admin.Models.DataExchange
 		public List<SelectListItem> AvailableCustomerRoles { get; set; }
 
 		#endregion
+
+		#region Newsletter Subscription
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.IsActiveSubscriber")]
+		public bool? IsActiveSubscriber { get; set; }
+
+		#endregion
 	}
 }

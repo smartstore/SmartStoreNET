@@ -292,7 +292,8 @@ namespace SmartStore.Admin.Controllers
 				OrderStatusIds = filter.OrderStatusIds,
 				PaymentStatusIds = filter.PaymentStatusIds,
 				ShippingStatusIds = filter.ShippingStatusIds,
-				CustomerRoleIds = filter.CustomerRoleIds
+				CustomerRoleIds = filter.CustomerRoleIds,
+				IsActiveSubscriber = filter.IsActiveSubscriber
 			};
 
 			model.Filter.AvailableStores = allStores
@@ -732,7 +733,8 @@ namespace SmartStore.Admin.Controllers
 					OrderStatusIds = model.Filter.OrderStatusIds,
 					PaymentStatusIds = model.Filter.PaymentStatusIds,
 					ShippingStatusIds = model.Filter.ShippingStatusIds,
-					CustomerRoleIds = model.Filter.CustomerRoleIds
+					CustomerRoleIds = model.Filter.CustomerRoleIds,
+					IsActiveSubscriber = model.Filter.IsActiveSubscriber
 				};
 
 				profile.Filtering = XmlHelper.Serialize<ExportFilter>(filter);

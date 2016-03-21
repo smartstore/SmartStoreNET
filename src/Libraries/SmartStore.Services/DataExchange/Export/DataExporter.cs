@@ -836,6 +836,21 @@ namespace SmartStore.Services.DataExchange.Export
 			if (storeId > 0)
 				query = query.Where(x => x.StoreId == storeId);
 
+			if (ctx.Filter.IsActiveSubscriber.HasValue)
+				query = query.Where(x => x.Active == ctx.Filter.IsActiveSubscriber.Value);
+
+			if (ctx.Filter.CreatedFrom.HasValue)
+			{
+				var createdFrom = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				query = query.Where(x => createdFrom <= x.CreatedOnUtc);
+			}
+
+			if (ctx.Filter.CreatedTo.HasValue)
+			{
+				var createdTo = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				query = query.Where(x => createdTo >= x.CreatedOnUtc);
+			}
+
 			if (ctx.Request.EntitiesToExport.Count > 0)
 				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
 

@@ -247,7 +247,9 @@
 
 @helper TabFilter()
 {
-	if (Model.Provider.EntityType == ExportEntityType.Product || Model.Provider.EntityType == ExportEntityType.Order)
+	if (Model.Provider.EntityType == ExportEntityType.Product ||
+		Model.Provider.EntityType == ExportEntityType.Order || 
+		Model.Provider.EntityType == ExportEntityType.NewsLetterSubscription)
 	{
 		<div class="alert alert-info">@Html.Raw(T("Admin.DataExchange.Export.Filter.Note"))</div>
 		@Html.Partial("_Tab.Filter", Model)

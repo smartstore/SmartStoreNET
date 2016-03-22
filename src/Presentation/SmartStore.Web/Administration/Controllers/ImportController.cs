@@ -56,17 +56,6 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareProfileModel(ImportProfileModel model, ImportProfile profile, bool forEdit, ColumnMap invalidMap = null)
 		{
-			if (profile == null)
-			{
-				if (model.Name.IsEmpty())
-				{
-					model.Name = _importProfileService.GetNewProfileName(model.EntityType);
-				}
-
-				model.ExistingFileNames = new List<string>();
-				return;
-			}
-
 			model.Id = profile.Id;
 			model.Name = profile.Name;
 			model.EntityType = profile.EntityType;
@@ -311,22 +300,6 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult CreateUploadFile(ImportEntityType entityType)
-		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
-				return AccessDeniedView();
-
-			var model = new ImportProfileModel
-			{
-				EntityType = entityType
-			};
-
-			PrepareProfileModel(model, null, true);
-
-			return View("Create", model);
-		}
-
-		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing"), FormValueRequired("save", "save-continue")]
 		public ActionResult Create(ImportProfileModel model)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
@@ -334,11 +307,7 @@ namespace SmartStore.Admin.Controllers
 
 			var importFile = Path.Combine(FileSystemHelper.TempDir(), model.TempFileName.EmptyNull());
 
-			if (!System.IO.File.Exists(importFile))
-			{
-				ModelState.AddModelError("", T("Admin.DataExchange.Import.MissingImportFile"));
-			}
-			else if (ModelState.IsValid)
+			if (System.IO.File.Exists(importFile))
 			{
 				var profile = _importProfileService.InsertImportProfile(model.TempFileName, model.Name, model.EntityType);
 
@@ -351,9 +320,12 @@ namespace SmartStore.Admin.Controllers
 					return RedirectToAction("Edit", new { id = profile.Id });
 				}
 			}
+			else
+			{
+				NotifyError(T("Admin.DataExchange.Import.MissingImportFile"));
+			}
 
-			PrepareProfileModel(model, null, true);
-			return View(model);
+			return RedirectToAction("List");
 		}
 
 		public ActionResult Edit(int id)
@@ -604,7 +576,7 @@ namespace SmartStore.Admin.Controllers
 			if (error.HasValue())
 				NotifyError(error);
 
-			return Json(new { success = success, tempFile = tempFile });
+			return Json(new { success = success, tempFile = tempFile, error = error });
 		}
 
 		[HttpPost]

@@ -8,16 +8,9 @@
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.TempFileName)
-@Html.HiddenFor(x => x.EntityType)
+@Html.HiddenFor(model => model.EntityType)
 
-@if (Model.Id == 0)
-{
-	<div class="alert alert-info">
-		<button type="button" class="close" data-dismiss="alert">&#215;</button>
-		@T("Admin.DataExchange.Import.ProfileCreationNote")
-	</div>
-}
-else if (Model.ExistingFileNames.Count > 1)
+@if (Model.ExistingFileNames.Count > 1)
 {
 	<div class="alert alert-warning">
 		<button type="button" class="close" data-dismiss="alert">&#215;</button>
@@ -98,26 +91,23 @@ else if (Model.ExistingFileNames.Count > 1)
 		<tr>
 			<td colspan="2">&nbsp;</td>
 		</tr>
-		@if (Model.Id != 0)
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.Enabled)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(x => x.Enabled)
-					@Html.ValidationMessageFor(x => x.Enabled)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.EntityTypeName)
-				</td>
-				<td class="adminData">
-					@Html.DisplayFor(x => x.EntityTypeName)
-				</td>
-			</tr>
-		}
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Enabled)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Enabled)
+				@Html.ValidationMessageFor(x => x.Enabled)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.EntityTypeName)
+			</td>
+			<td class="adminData">
+				@Html.DisplayFor(x => x.EntityTypeName)
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Name)
@@ -127,88 +117,82 @@ else if (Model.ExistingFileNames.Count > 1)
 				@Html.ValidationMessageFor(x => x.Name)
 			</td>
 		</tr>
-		@if (Model.Id != 0)
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.KeyFieldNames)
+			</td>
+			<td class="adminData">
+				@*ListBoxFor is insufficient here because the user cannot influence the stored order*@
+				<select class="control-large" multiple="multiple" name="@Html.FieldNameFor(x => x.KeyFieldNames)" id="@Html.FieldIdFor(x => x.KeyFieldNames)">
+					@foreach (var field in Model.KeyFieldNames)
+					{
+						var availableKey = Model.AvailableKeyFieldNames.FirstOrDefault(x => x.Value == field);
+						<option value="@field" selected="selected">@(availableKey != null ? availableKey.Text : field)</option>
+					}
+					@foreach (var field in Model.AvailableKeyFieldNames)
+					{
+						var selectedKey = Model.KeyFieldNames.FirstOrDefault(x => x == field.Value);
+						if (!selectedKey.HasValue())
+						{
+							<option value="@field.Value">@field.Text</option>
+						}
+					}
+				</select>
+				@Html.ValidationMessageFor(model => model.KeyFieldNames)
+			</td>
+		</tr>
+		@if (Model.KeyFieldNames != null && Model.KeyFieldNames.Contains("Id", StringComparer.OrdinalIgnoreCase))
 		{
 			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.KeyFieldNames)
-				</td>
-				<td class="adminData">
-					@*ListBoxFor is insufficient here because the user cannot influence the stored order*@
-					<select class="control-large" multiple="multiple" name="@Html.FieldNameFor(x => x.KeyFieldNames)" id="@Html.FieldIdFor(x => x.KeyFieldNames)">
-						@foreach (var field in Model.KeyFieldNames)
-						{
-							var availableKey = Model.AvailableKeyFieldNames.FirstOrDefault(x => x.Value == field);
-							<option value="@field" selected="selected">@(availableKey != null ? availableKey.Text : field)</option>
-						}
-						@foreach (var field in Model.AvailableKeyFieldNames)
-						{
-							var selectedKey = Model.KeyFieldNames.FirstOrDefault(x => x == field.Value);
-							if (!selectedKey.HasValue())
-							{
-								<option value="@field.Value">@field.Text</option>
-							}
-						}
-					</select>
-					@Html.ValidationMessageFor(model => model.KeyFieldNames)
-				</td>
-			</tr>
-			if (Model.KeyFieldNames != null && Model.KeyFieldNames.Contains("Id", StringComparer.OrdinalIgnoreCase))
-			{
-				<tr>
-					<td colspan="2">
-						<div class="alert alert-warning">
-							@T("Admin.DataExchange.Import.KeyFieldNames.Note")
-						</div>
-					</td>
-				</tr>
-			}
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.Skip)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(x => x.Skip)
-					@Html.ValidationMessageFor(x => x.Skip)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.Take)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(x => x.Take)
-					@Html.ValidationMessageFor(x => x.Take)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.UpdateOnly)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(x => x.UpdateOnly)
-					@Html.ValidationMessageFor(x => x.UpdateOnly)
+				<td colspan="2">
+					<div class="alert alert-warning">
+						@T("Admin.DataExchange.Import.KeyFieldNames.Note")
+					</div>
 				</td>
 			</tr>
 		}
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Skip)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Skip)
+				@Html.ValidationMessageFor(x => x.Skip)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Take)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Take)
+				@Html.ValidationMessageFor(x => x.Take)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.UpdateOnly)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.UpdateOnly)
+				@Html.ValidationMessageFor(x => x.UpdateOnly)
+			</td>
+		</tr>
 	</table>
 </div>
 
-@if (Model.Id != 0)
+@if (Model.CsvConfiguration != null)
 {
-	if (Model.CsvConfiguration != null)
-	{
-		var viewData = new ViewDataDictionary();
-		viewData.Add("ShowGroupCaption", true);
-		viewData.TemplateInfo.HtmlFieldPrefix = "CsvConfiguration";
-		viewData.ModelState.Merge(ViewData.ModelState);
-		@Html.Partial("CsvConfiguration", Model.CsvConfiguration, viewData)
-	}
+	var viewData = new ViewDataDictionary();
+	viewData.Add("ShowGroupCaption", true);
+	viewData.TemplateInfo.HtmlFieldPrefix = "CsvConfiguration";
+	viewData.ModelState.Merge(ViewData.ModelState);
+	@Html.Partial("CsvConfiguration", Model.CsvConfiguration, viewData)
+}
 
-	if (Model.ExistingFileNames.Any())
-	{
-		@Html.Partial("_ColumnMappings")
-	}
+@if (Model.ExistingFileNames.Any())
+{
+	@Html.Partial("_ColumnMappings")
 }
 
 <script type="text/javascript">

@@ -127,7 +127,9 @@ namespace SmartStore.Services.DataExchange.Import
 		public virtual ImportProfile InsertImportProfile(string fileName, string name, ImportEntityType entityType)
 		{
 			Guard.ArgumentNotEmpty(() => fileName);
-			Guard.ArgumentNotEmpty(() => name);
+
+			if (name.IsEmpty())
+				name = GetNewProfileName(entityType);
 
 			var task = new ScheduleTask
 			{

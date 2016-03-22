@@ -1,8 +1,10 @@
 ﻿@using SmartStore.Core.Domain.DataExchange;
 @using SmartStore.Admin.Models.DataExchange;
-@using Telerik.Web.Mvc.UI;
 @model ImportProfileListModel
 @{
+	Html.AddScriptParts("~/bundles/fileupload");
+	Html.AddCssFileParts("~/css/fileupload");
+
 	ViewBag.Title = T("Common.Import").Text;
 }
 
@@ -17,10 +19,6 @@
 		</a>
     </div>
 </div>
-
-<form id="ProfileImportForm" method="POST" action="@Url.Action("Execute", "Import", new { area = "Admin" })">
-	<input type="hidden" name="Id" value="" />
-</form>
 
 @if(Model.Profiles.Any())
 {
@@ -107,8 +105,14 @@ else
 	</div>
 }
 
-<form method="POST" action="@Url.Action("CreateUploadFile", "Import", new { area = "Admin" })">
+<form id="ProfileImportForm" method="POST" action="@Url.Action("Execute", "Import", new { area = "Admin" })">
+	<input type="hidden" name="Id" value="" />
+</form>
+
+<form method="POST" action="@Url.Action("Create", "Import", new { area = "Admin" })">
 	<div id="import-profile-dialog" class="modal modal-large hide fade" tabindex="-1" data-profile="@T("Common.Profile")">
+		<input type="hidden" name="TempFileName" />
+
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
 			<h4 class="caption">@T("Common.Profile") - @T("Admin.Common.AddNew")</h4>
@@ -116,7 +120,7 @@ else
 		<div class="modal-body">
 			<div class="alert alert-info">
 				<button type="button" class="close" data-dismiss="alert">&#215;</button>
-				@T("Admin.DataExchange.Import.ProfileEntitySelectNote")
+				@T("Admin.DataExchange.Import.ProfileCreationNote")
 			</div>
 			<div>
 				<table class="adminContent">
@@ -128,12 +132,48 @@ else
 							@Html.DropDownListFor(x => x.EntityType, Model.AvailableEntityTypes)
 						</td>
 					</tr>
+					<tr id="ImportFileUploadContainer">
+						<td class="adminTitle">
+							&nbsp;
+						</td>
+						<td class="adminData">
+
+							<div id="ImportFileUploader" class="fileupload">
+								<span class="btn btn-primary fileinput-button">
+									<i class="fa fa-upload"></i>
+									<span>@T("Admin.DataExchange.Import.FileUpload")</span>
+									<input id="ImportFileUpload" type="file" name="importfile" />
+								</span>
+
+								<button class="btn btn-warning cancel">
+									<i class="fa fa-times"></i>
+									<span>@T("Common.Fileuploader.Cancel")</span>
+								</button>
+
+								<div class="span5 fileupload-progress fade">
+									<div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+										<div class="bar" style="width:0%;"></div>
+									</div>
+									<div class="progress-extended">&nbsp;</div>
+								</div>
+							</div>
+
+						</td>
+					</tr>
+					<tr id="ImportFileListContainer">
+						<td class="adminTitle">
+							&nbsp;
+						</td>
+						<td id="ImportFileList" class="adminData">
+							&nbsp;
+						</td>
+					</tr>
 				</table>
 			</div>
 			<p>&nbsp;</p>
 		</div>
 		<div class="modal-footer">
-			<button type="submit" class="btn btn-primary">@T("Common.OK")</button>
+			<button type="submit" class="btn btn-primary" disabled="disabled">@T("Common.OK")</button>
 			<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
 		</div>
 	</div>
@@ -147,6 +187,27 @@ else
 			e.preventDefault();
 			$('#import-profile-dialog').modal('show');
 			return false;
+		});
+
+		// upload import file
+		$('#ImportFileUploader').fileupload({
+			url: '@Url.Action("FileUpload", new { id = Model.Id })',
+			dataType: 'json',
+			acceptFileTypes: /(\.|\/)(csv|xlsx|txt|tab)$/i,
+			done: function (e, data) {
+				if (data.result.success) {
+					if (!_.isEmpty(data.result.tempFile)) {
+						$('#import-profile-dialog').find('input[name=TempFileName]').val(data.result.tempFile);
+						$('#ImportFileList').html(data.result.tempFile);
+						$('#ImportFileListContainer').show();
+						$('#ImportFileUploadContainer').hide();		// just one initial file to specify the file type
+						$('#import-profile-dialog').find('.btn-primary').prop('disabled', false);
+					}
+					else if (!_.isEmpty(data.result.error)) {
+						alert(data.result.error);
+					}
+				}
+			}
 		});
 
 		// start task

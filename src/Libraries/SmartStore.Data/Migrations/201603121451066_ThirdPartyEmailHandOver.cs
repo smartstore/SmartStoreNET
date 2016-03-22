@@ -144,6 +144,12 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.AddNewProfile",
 				"New profile",
 				"Neues Profil");
+
+			builder.AddOrUpdate("Admin.DataExchange.Import.ProfileCreationNote",
+				"Please select the import object and upload an import file.",
+				"Wählen Sie bitte das zu importierende Objekt und laden Sie eine Importdatei hoch.");
+
+			builder.Delete("Admin.DataExchange.Import.ProfileEntitySelectNote");
 		}
 	}
 }

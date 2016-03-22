@@ -519,8 +519,7 @@
     <Content Include="Views\Export\ProfileFileCount.cshtml" />
     <Content Include="Views\Export\ProfileFileDetails.cshtml" />
     <Content Include="Views\Import\List.cshtml" />
-    <Content Include="Views\Import\Create.cshtml" />
-    <Content Include="Views\Import\_CreateOrUpdate.cshtml" />
+    <Content Include="Views\Import\_Update.cshtml" />
     <Content Include="Views\Import\Edit.cshtml" />
     <Content Include="Views\Shared\CsvConfiguration.cshtml" />
     <Content Include="Views\Import\_ColumnMappings.cshtml" />

@@ -13,18 +13,17 @@
     </div>
 </div>
 
-<div id="ExportProfileListContainer">
-	@if (hasUserProfiles)
-	{
-		<div>
-			@Html.Partial("_ProfileList", Model.Where(x => !x.IsSystemProfile), new ViewDataDictionary { { "IsSystemProfile", false } })
-		</div>
-	}
+@if (!hasUserProfiles && !hasSystemProfiles)
+{
+	<div class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+		@T("Admin.DataExchange.Export.NoProfiles")
+	</div>
+}
 
-	<div class="btn-below">
-		<a href="javascript:void(0)" data-url="@Url.Action("Create")" class="btn btn-primary export-profile-button">
-			<i class="fa fa-plus"></i>&nbsp;@T("Admin.DataExchange.AddNewProfile")
-		</a>
+<div id="ExportProfileListContainer">
+	<div>
+		@Html.Partial("_ProfileList", Model.Where(x => !x.IsSystemProfile), new ViewDataDictionary { { "IsSystemProfile", false } })
 	</div>
 
 	@if (hasSystemProfiles)
@@ -39,14 +38,6 @@
 		</div>
 	}
 </div>
-
-@if (!hasUserProfiles && !hasSystemProfiles)
-{
-	<div class="alert alert-info">
-		<button type="button" class="close" data-dismiss="alert">&#215;</button>
-		@T("Admin.DataExchange.Export.NoProfiles")
-	</div>
-}
 
 <form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin" })">
 	<input type="hidden" name="Id" value="" />
@@ -245,7 +236,7 @@
 				tr.find('.btn-log').addClass('hide');
 				tr.find('.next-run-info').addClass('hide');
 				
-				$('body').animate({ scrollTop: tr.offset().top - 60 }, 'slow');
+				$('body').animate({ scrollTop: tr.offset().top }, 'slow');
 			},
 			onTaskCompleted: function (taskId, el) {
 				var tr = el.closest('tr'),

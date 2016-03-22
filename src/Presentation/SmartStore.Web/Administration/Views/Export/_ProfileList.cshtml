@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<ExportProfileModel>
 @using SmartStore.Admin.Models.DataExchange;
 @{
-	//var isSystemProfiles = (bool)ViewData["IsSystemProfile"];
+	var isSystemProfiles = (bool)ViewData["IsSystemProfile"];
 }
 <table class="table admin-table export-profile-list" style="margin-bottom: 0;">
 	<thead>
@@ -61,6 +61,19 @@
 					<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })" target="LogFile"
 						class="btn btn-block btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " hide" : "")">
 						<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+					</a>
+				</td>
+			</tr>
+		}
+		@if (!isSystemProfiles)
+		{
+			<tr>
+				<td colspan="7">
+					&nbsp;
+				</td>
+				<td style="width: 200px">
+					<a href="javascript:void(0)" data-url="@Url.Action("Create")" class="btn btn-block btn-primary export-profile-button">
+						<i class="fa fa-plus"></i>&nbsp;@T("Admin.DataExchange.AddNewProfile")
 					</a>
 				</td>
 			</tr>

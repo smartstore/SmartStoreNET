@@ -1,101 +1,56 @@
-﻿@using SmartStore.Core.Domain.DataExchange;
-@using SmartStore.Admin.Models.DataExchange;
-@using Telerik.Web.Mvc.UI;
+﻿@using SmartStore.Admin.Models.DataExchange;
 @model List<ExportProfileModel>
 @{
 	ViewBag.Title = T("Common.Export").Text;
+
+	var hasUserProfiles = Model.Any(x => !x.IsSystemProfile);
+	var hasSystemProfiles = Model.Any(x => x.IsSystemProfile);
 }
 
 <div class="section-header">
     <div class="title">
-		<i class="fa fa-upload"></i>
-        @T("Common.Export")
-    </div>
-    <div class="options">
-        <a href="javascript:void(0)" data-url="@Url.Action("Create")" class="btn btn-primary export-profile-button">
-			<i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")
-		</a>
+		<i class="fa fa-upload"></i>&nbsp;@T("Common.Export")
     </div>
 </div>
 
-<form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin" })">
-	<input type="hidden" name="Id" value="" />
-</form>
+<div id="ExportProfileListContainer">
+	@if (hasUserProfiles)
+	{
+		<div>
+			@Html.Partial("_ProfileList", Model.Where(x => !x.IsSystemProfile), new ViewDataDictionary { { "IsSystemProfile", false } })
+		</div>
+	}
 
-@if(Model.Count > 0)
-{
-	<table id="export-profile-list" class="table admin-table">
-		<thead>
-			<tr>
-				<th class="ac"></th>
-				<th>@T("Admin.DataExchange.Export.Name")</th>
-				<th>@T("Admin.DataExchange.Export.EntityType")</th>
-				<th class="ac">@T("Admin.DataExchange.Export.FileExtension")</th>
-				<th class="ac">@T("Admin.DataExchange.Export.ExportFiles")</th>
-				<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
-				<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
-				<th>@T("Admin.Common.Actions")</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var profile in Model.OrderBy(x => x.Name))
-			{
-				<tr data-profile-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
-					<td class="ac">
-						<img src="@profile.Provider.ThumbnailUrl" alt="@profile.Provider.FriendlyName" class="@(profile.Enabled ? "" : "o40")" />
-					</td>
-					<td>
-						<a href="@Url.Action("Edit", new { id = profile.Id })"><strong>@profile.Name</strong></a>
-						<div class="muted">@profile.ProviderSystemName</div>
-					</td>
-					<td>
-						@profile.Provider.EntityTypeName.NaIfEmpty()
-					</td>
-					<td class="ac">
-						@Html.IconForFileExtension(profile.Provider.FileExtension, true)
-					</td>
-					<td id="ExportFileCount@(profile.Id)" class="ac">
-						@Html.Partial("ProfileFileCount", profile.Details)
-					</td>
-					<td>
-						<div class="last-run-info">
-							@Html.Partial("~/Administration/Views/ScheduleTask/_LastRun.cshtml", profile.TaskModel)
-						</div>
-					</td>
-					<td class="progress-info">
-						<div class="next-run-info">
-							@Html.Partial("~/Administration/Views/ScheduleTask/_NextRun.cshtml", profile.TaskModel)
-						</div>
-						<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
-					</td>
-					<td style="width: 200px">
-						<button type="button" class="btn btn-block btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")" 
-								data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId">
-							<i class="fa fa-play"></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
-						</button>
+	<div class="btn-below">
+		<a href="javascript:void(0)" data-url="@Url.Action("Create")" class="btn btn-primary export-profile-button">
+			<i class="fa fa-plus"></i>&nbsp;@T("Admin.DataExchange.AddNewProfile")
+		</a>
+	</div>
 
-						<a href="@Url.Action("CancelJob", "ScheduleTask", new { id = profile.ScheduleTaskId })" class="btn btn-block btn-danger btn-cancel-task@(!profile.IsTaskRunning ? " hide" : "")" 
-						   data-task-id="@profile.ScheduleTaskId" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
-							@T("Common.Cancel")
-						</a>
+	@if (hasSystemProfiles)
+	{
+		<div class="alert alert-info" @Html.Attr("style", "margin-top:40px", true)>
+			<button type="button" class="close" data-dismiss="alert">&#215;</button>
+			@T("Admin.DataExchange.Export.SystemProfileNote")
+		</div>
 
-						<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })" target="LogFile"
-						   class="btn btn-block btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " hide" : "")">
-							<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
-						</a>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
-}
-else
+		<div>
+			@Html.Partial("_ProfileList", Model.Where(x => x.IsSystemProfile), new ViewDataDictionary { { "IsSystemProfile", true } })
+		</div>
+	}
+</div>
+
+@if (!hasUserProfiles && !hasSystemProfiles)
 {
 	<div class="alert alert-info">
 		<button type="button" class="close" data-dismiss="alert">&#215;</button>
 		@T("Admin.DataExchange.Export.NoProfiles")
 	</div>
 }
+
+<form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin" })">
+	<input type="hidden" name="Id" value="" />
+</form>
 
 <div id="export-profile-dialog" class="modal modal-large hide fade" tabindex="-1" data-profile="@T("Common.Profile")">
 	<div class="modal-header">
@@ -278,16 +233,19 @@ else
 		});
 
 		Admin.TaskWatcher.startWatching({
-			context: $('#export-profile-list'),
+			context: $('#ExportProfileListContainer'),
 			elementsSelector: '.task-progress',
 			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
 			pollUrl: '@Url.Action("GetRunningTasks", "ScheduleTask")',
 			onTaskStarted: function (task, el) {
 				var tr = el.closest('tr');
+
 				tr.find('.btn-run-task').addClass('hide');
 				tr.find('.btn-cancel-task').removeClass('hide');
 				tr.find('.btn-log').addClass('hide');
 				tr.find('.next-run-info').addClass('hide');
+				
+				$('body').animate({ scrollTop: tr.offset().top - 60 }, 'slow');
 			},
 			onTaskCompleted: function (taskId, el) {
 				var tr = el.closest('tr'),
@@ -304,7 +262,7 @@ else
 					url: '@Url.Action("GetTaskRunInfo", "ScheduleTask")',
 					data: { id: taskId },
 					success: function (data) {
-						tr.find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
+						tr.find('.next-run-info').html(data.nextRunHtml).removeClass('hide');
 						tr.find('.last-run-info').html(data.lastRunHtml);
 					}
 				});

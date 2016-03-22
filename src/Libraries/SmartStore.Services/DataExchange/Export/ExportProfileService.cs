@@ -61,6 +61,9 @@ namespace SmartStore.Services.DataExchange.Export
 			if (name.IsEmpty())
 				name = providerSystemName;
 
+			if (!isSystemProfile)
+				name = string.Concat(_localizationService.GetResource("Common.My"), " ", name);
+
 			name = string.Concat(name, " ", profileCount + 1);
 
 			var cloneProfile = GetExportProfileById(cloneFromProfileId);
@@ -263,7 +266,6 @@ namespace SmartStore.Services.DataExchange.Export
 
 			query = query
 				.OrderBy(x => x.IsSystemProfile)
-				//.ThenBy(x => x.ProviderSystemName)
 				.ThenBy(x => x.Name);
 
 			return query;

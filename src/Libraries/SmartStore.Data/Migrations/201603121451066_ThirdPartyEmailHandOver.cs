@@ -28,6 +28,7 @@ namespace SmartStore.Data.Migrations
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
 			builder.AddOrUpdate("Admin.Common.Ignore", "Ignore", "Ignorieren");
+			builder.AddOrUpdate("Common.My", "My", "Mein");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Orders.CheckoutThirdPartyEmailHandOver.None", "Do not show", "Nicht anzeigen");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Orders.CheckoutThirdPartyEmailHandOver.Deactivated", "Show deactivated", "Deaktiviert anzeigen");
@@ -135,6 +136,14 @@ namespace SmartStore.Data.Migrations
 				"Hat x Bestellungen",
 				"Filter by number of placed orders.",
 				"Nach der Anzahl der getätigten Bestellungen filtern.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.SystemProfileNote",
+				"The following list contains system profiles intended to export data in the SmartStore.NET own format. There are additional export buttons available for these imports. You can find them over the object lists, such as the product or order list.",
+				"Die folgende Liste enthält Systemprofile, über die Daten im SmartStore.NET eigenen Format exportiert werden können. Für diese Importe stehen zusätzliche Export-Buttons zur Verfügung. Sie finden diese über den entsprechenden Listen, wie z.B. der Produkt- oder Auftragsliste.");
+
+			builder.AddOrUpdate("Admin.DataExchange.AddNewProfile",
+				"New profile",
+				"Neues Profil");
 		}
 	}
 }

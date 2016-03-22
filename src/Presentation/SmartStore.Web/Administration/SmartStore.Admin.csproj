@@ -526,6 +526,7 @@
     <Content Include="Views\Import\_ColumnMappings.cshtml" />
     <Content Include="Views\Import\ProfileImportResult.cshtml" />
     <Content Include="Views\Setting\DataExchange.cshtml" />
+    <Content Include="Views\Export\_ProfileList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

@@ -1,0 +1,69 @@
+﻿@model IEnumerable<ExportProfileModel>
+@using SmartStore.Admin.Models.DataExchange;
+@{
+	//var isSystemProfiles = (bool)ViewData["IsSystemProfile"];
+}
+<table class="table admin-table export-profile-list" style="margin-bottom: 0;">
+	<thead>
+		<tr>
+			<th class="ac"></th>
+			<th>@T("Admin.DataExchange.Export.Name")</th>
+			<th>@T("Admin.DataExchange.Export.EntityType")</th>
+			<th class="ac">@T("Admin.DataExchange.Export.FileExtension")</th>
+			<th class="ac">@T("Admin.DataExchange.Export.ExportFiles")</th>
+			<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
+			<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
+			<th>@T("Admin.Common.Actions")</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var profile in Model.OrderBy(x => x.Name))
+		{
+			<tr data-profile-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
+				<td class="ac">
+					<img src="@profile.Provider.ThumbnailUrl" alt="@profile.Provider.FriendlyName" class="@(profile.Enabled ? "" : "o40")" />
+				</td>
+				<td>
+					<a href="@Url.Action("Edit", new { id = profile.Id })"><strong>@profile.Name</strong></a>
+					<div class="muted">@profile.ProviderSystemName</div>
+				</td>
+				<td>
+					@profile.Provider.EntityTypeName.NaIfEmpty()
+				</td>
+				<td class="ac">
+					@Html.IconForFileExtension(profile.Provider.FileExtension, true)
+				</td>
+				<td id="ExportFileCount@(profile.Id)" class="ac">
+					@Html.Partial("ProfileFileCount", profile.Details)
+				</td>
+				<td>
+					<div class="last-run-info">
+						@Html.Partial("~/Administration/Views/ScheduleTask/_LastRun.cshtml", profile.TaskModel)
+					</div>
+				</td>
+				<td class="progress-info">
+					<div class="next-run-info">
+						@Html.Partial("~/Administration/Views/ScheduleTask/_NextRun.cshtml", profile.TaskModel)
+					</div>
+					<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
+				</td>
+				<td style="width: 200px">
+					<button type="button" class="btn btn-block btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"
+							data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId">
+						<i class="fa fa-play"></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
+					</button>
+
+					<a href="@Url.Action("CancelJob", "ScheduleTask", new { id = profile.ScheduleTaskId })" class="btn btn-block btn-danger btn-cancel-task@(!profile.IsTaskRunning ? " hide" : "")"
+						data-task-id="@profile.ScheduleTaskId" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						@T("Common.Cancel")
+					</a>
+
+					<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })" target="LogFile"
+						class="btn btn-block btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " hide" : "")">
+						<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+					</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

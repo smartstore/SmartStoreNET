@@ -150,6 +150,10 @@ namespace SmartStore.Data.Migrations
 				"Wählen Sie bitte das zu importierende Objekt und laden Sie eine Importdatei hoch.");
 
 			builder.Delete("Admin.DataExchange.Import.ProfileEntitySelectNote");
+
+			builder.AddOrUpdate("Admin.Configuration.Restriction.SaveBeforeEdit",
+				"You need to save the data before you can specify restrictions.",
+				"Sie müssen zunächst speichern, bevor Sie Einschränkungen festlegen können.");
 		}
 	}
 }

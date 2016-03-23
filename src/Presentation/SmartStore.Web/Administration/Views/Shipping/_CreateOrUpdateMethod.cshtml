@@ -87,7 +87,13 @@
 
 @helper TabRestrictions()
 {
-	if (Model.FilterConfigurationUrls.Count == 0)
+	if (Model.Id == 0)
+	{
+		<div class="alert alert-warning">
+			@T("Admin.Configuration.Restriction.SaveBeforeEdit")
+		</div>
+	}
+	else if (Model.FilterConfigurationUrls.Count == 0)
 	{
 		<div class="alert alert-info">
 			@T("Admin.Configuration.Shipping.Methods.RestrictionNote")

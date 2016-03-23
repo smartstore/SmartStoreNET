@@ -16,6 +16,7 @@
 * Bundles without selected attributes could throw an exception on product detail page
 * GMC feed did not export the product type (category path)
 * The error message of a payment provider when capturing a payment was not displayed
+* Adding new shipping method throws an exception
 
 
 ## SmartStore.NET 2.5

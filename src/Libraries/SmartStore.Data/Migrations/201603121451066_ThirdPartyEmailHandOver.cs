@@ -154,6 +154,27 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Restriction.SaveBeforeEdit",
 				"You need to save the data before you can specify restrictions.",
 				"Sie müssen zunächst speichern, bevor Sie Einschränkungen festlegen können.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerNumberMethod",
+				"Customer numbers",
+				"Kundennummern",
+				"Specifies whether to assign customer numbers and whether these should be created automatically.",
+				"Legt fest, ob Kundennummern vergeben werden und ob diese automatisch vergeben werden sollen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerNumberVisibility",
+				"Customer number presentation",
+				"Darstellung der Kundennummer",
+				"Specifies the presentation and handling of the customer number to the customer.",
+				"Legt die Darstellung und Handhabung der Kundennummer gegenüber dem Kunden fest.");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerNumberMethod.Disabled", "Disabled", "Deaktiviert");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerNumberMethod.Enabled", "Enabled", "Aktiviert");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerNumberMethod.AutomaticallySet", "Automatically assigned", "Automatisch vergeben");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerNumberVisibility.None",	"Do not display", "Nicht anzeigen");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerNumberVisibility.Display", "Display", "Anzeigen");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerNumberVisibility.EditableIfEmpty", "Editable if empty", "Editierbar falls leer");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerNumberVisibility.Editable", "Always editable", "Stets editierbar");
 		}
 	}
 }

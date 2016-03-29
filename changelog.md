@@ -17,6 +17,7 @@
 * GMC feed did not export the product type (category path)
 * The error message of a payment provider when capturing a payment was not displayed
 * Adding new shipping method throws an exception
+* Attribute Values: Assigning IsPreselected to more than one value causes an error
 
 
 ## SmartStore.NET 2.5

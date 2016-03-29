@@ -88,7 +88,7 @@ namespace SmartStore
 							var ctrlAttributes = collection[controlId];
 							if (ctrlAttributes.HasValue())
 							{
-								int selectedAttributeId = int.Parse(ctrlAttributes);
+								var selectedAttributeId = ctrlAttributes.SplitSafe(",").SafeGet(0).ToInt();
 								if (selectedAttributeId > 0)
 									selectedAttributes = productAttributeParser.AddProductAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
 							}
@@ -102,7 +102,7 @@ namespace SmartStore
 							{
 								foreach (var item in cblAttributes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
 								{
-									int selectedAttributeId = int.Parse(item);
+									var selectedAttributeId = item.SplitSafe(",").SafeGet(0).ToInt();
 									if (selectedAttributeId > 0)
 										selectedAttributes = productAttributeParser.AddProductAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
 								}

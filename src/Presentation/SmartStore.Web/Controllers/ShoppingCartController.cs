@@ -1065,14 +1065,17 @@ namespace SmartStore.Web.Controllers
         {
             string selectedAttributes = "";
             var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes();
+
             if (!cart.RequiresShipping())
             {
                 //remove attributes which require shippable products
                 checkoutAttributes = checkoutAttributes.RemoveShippableAttributes();
             }
+
             foreach (var attribute in checkoutAttributes)
             {
                 string controlId = string.Format("checkout_attribute_{0}", attribute.Id);
+
                 switch (attribute.AttributeControlType)
                 {
                     case AttributeControlType.DropdownList:
@@ -1082,13 +1085,13 @@ namespace SmartStore.Web.Controllers
                             var rblAttributes = form[controlId];
                             if (!String.IsNullOrEmpty(rblAttributes))
                             {
-                                int selectedAttributeId = int.Parse(rblAttributes);
+                                var selectedAttributeId = rblAttributes.SplitSafe(",").SafeGet(0).ToInt();
                                 if (selectedAttributeId > 0)
-                                    selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes,
-                                        attribute, selectedAttributeId.ToString());
+                                    selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
                             }
                         }
                         break;
+
                     case AttributeControlType.Checkboxes:
                         {
                             var cblAttributes = form[controlId];
@@ -1096,14 +1099,14 @@ namespace SmartStore.Web.Controllers
                             {
                                 foreach (var item in cblAttributes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                                 {
-                                    int selectedAttributeId = int.Parse(item);
-                                    if (selectedAttributeId > 0)
-                                        selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes,
-                                            attribute, selectedAttributeId.ToString());
+                                    var selectedAttributeId = item.SplitSafe(",").SafeGet(0).ToInt();
+									if (selectedAttributeId > 0)
+                                        selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
                                 }
                             }
                         }
                         break;
+
                     case AttributeControlType.TextBox:    
                     case AttributeControlType.MultilineTextbox:
                         {
@@ -1111,29 +1114,31 @@ namespace SmartStore.Web.Controllers
                             if (!String.IsNullOrEmpty(txtAttribute))
                             {
                                 string enteredText = txtAttribute.Trim();
-                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes,
-                                    attribute, enteredText);
+                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, enteredText);
                             }
                         }
                         break;
+
                     case AttributeControlType.Datepicker:
                         {
                             var date = form[controlId + "_day"];
                             var month = form[controlId + "_month"];
                             var year = form[controlId + "_year"];
                             DateTime? selectedDate = null;
+
                             try
                             {
                                 selectedDate = new DateTime(Int32.Parse(year), Int32.Parse(month), Int32.Parse(date));
                             }
                             catch { }
+
                             if (selectedDate.HasValue)
                             {
-                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes,
-                                    attribute, selectedDate.Value.ToString("D"));
+                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedDate.Value.ToString("D"));
                             }
                         }
                         break;
+
                     case AttributeControlType.FileUpload:
                         {
                             var postedFile = this.Request.Files[controlId].ToPostedFileResult();
@@ -1166,6 +1171,7 @@ namespace SmartStore.Web.Controllers
                             }
                         }
                         break;
+
                     default:
                         break;
                 }

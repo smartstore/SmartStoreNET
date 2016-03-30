@@ -45,6 +45,30 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Common
         }
 
         [Test]
+        public void Should_have_error_when_email_doesnt_match()
+        {
+            var validator = new AddressValidator(_localizationService,
+                new AddressSettings());
+
+            var model = new AddressModel();
+            model.Email = "admin@example.com";
+            model.EmailMatch = "amin@example.com";
+            validator.ShouldHaveValidationErrorFor(x => x.EmailMatch, model);
+        }
+
+        [Test]
+        public void Should_not_have_error_when_email_match()
+        {
+            var validator = new AddressValidator(_localizationService,
+                new AddressSettings());
+
+            var model = new AddressModel();
+            model.Email = "admin@example.com";
+            model.EmailMatch = "admin@example.com";
+            validator.ShouldNotHaveValidationErrorFor(x => x.EmailMatch, model);
+        }
+
+        [Test]
         public void Should_have_error_when_firstName_is_null_or_empty()
         {
             var validator = new AddressValidator(_localizationService,

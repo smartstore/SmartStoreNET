@@ -7,7 +7,7 @@ namespace SmartStore.Core.Domain.Common
     {
 		public AddressSettings()
 		{
-            ValidateEmailAddress = false;
+            ValidateEmailAddress = true;
 			CompanyEnabled = true;
 			StreetAddressEnabled = true;
 			StreetAddressRequired = true;

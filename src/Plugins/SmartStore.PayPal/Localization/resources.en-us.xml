@@ -78,6 +78,15 @@
       <LocaleResource Name="PartialRefundMemo">
         <Value>Partial refund of {0}</Value>
       </LocaleResource>
+      <LocaleResource Name="PaymentMethodFee">
+        <Value>Payment method fee</Value>
+      </LocaleResource>
+      <LocaleResource Name="ThreadrockDiscount">
+        <Value>Discount</Value>
+      </LocaleResource>
+      <LocaleResource Name="GiftcardApplied">
+        <Value>Giftcard Applied</Value>
+      </LocaleResource>
     </Children>
   </LocaleResource>
   
@@ -303,9 +312,6 @@
       </LocaleResource>
       <LocaleResource Name="ShippingFee">
         <Value>Shipping fee</Value>
-      </LocaleResource>
-      <LocaleResource Name="PaymentMethodFee">
-        <Value>Payment method fee</Value>
       </LocaleResource>
       <LocaleResource Name="SalesTax">
         <Value>Sales tax</Value>

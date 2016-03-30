@@ -78,6 +78,15 @@
       <LocaleResource Name="PartialRefundMemo">
         <Value>Teilerstattung von {0}</Value>
       </LocaleResource>
+      <LocaleResource Name="PaymentMethodFee">
+        <Value>Zahlartgebühren</Value>
+      </LocaleResource>
+      <LocaleResource Name="ThreadrockDiscount">
+        <Value>Rabatt</Value>
+      </LocaleResource>
+      <LocaleResource Name="GiftcardApplied">
+        <Value>Angewendeter Geschenkgutschein</Value>
+      </LocaleResource>
     </Children>
   </LocaleResource>
   
@@ -303,9 +312,6 @@
       </LocaleResource>
       <LocaleResource Name="ShippingFee">
         <Value>Versandgebühren</Value>
-      </LocaleResource>
-      <LocaleResource Name="PaymentMethodFee">
-        <Value>Zahlungsgebühren</Value>
       </LocaleResource>
       <LocaleResource Name="SalesTax">
         <Value>Umsatzsteuer</Value>

@@ -208,7 +208,7 @@ namespace SmartStore.PayPal
             var additionalHandlingFee = GetAdditionalHandlingFee(cart);
             cartItems.Add(new PaymentDetailsItemType()
             {
-                Name = "Zahlartgebühren",
+                Name = T("Plugins.Payments.PayPal.PaymentMethodFee").Text,
                 Quantity = "1",
                 Amount = new BasicAmountType()  
                 {
@@ -260,7 +260,7 @@ namespace SmartStore.PayPal
             {
                 cartItems.Add(new PaymentDetailsItemType()
                 {
-                    Name = "Threadrock Discount",
+                    Name = T("Plugins.Payments.PayPal.ThreadrockDiscount").Text,
                     Quantity = "1",
                     Amount = new BasicAmountType() // this is the total discount
                     {
@@ -297,7 +297,7 @@ namespace SmartStore.PayPal
 
                             cartItems.Add(new PaymentDetailsItemType()
                             {
-                                Name = "Giftcard Applied",
+                                Name = T("Plugins.Payments.PayPal.GiftcardApplied").Text,
                                 Quantity = "1",
                                 Amount = new BasicAmountType()
                                 {

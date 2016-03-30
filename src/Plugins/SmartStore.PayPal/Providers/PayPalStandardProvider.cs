@@ -450,7 +450,7 @@ namespace SmartStore.PayPal
                 var item = new PayPalLineItem
                 {
                     Type = PayPalItemType.PaymentFee,
-                    Name = T("Plugins.Payments.PayPalStandard.PaymentMethodFee").Text,
+                    Name = T("Plugins.Payments.PayPal.PaymentMethodFee").Text,
                     Quantity = 1,
                     Amount = order.PaymentMethodAdditionalFeeExclTax
                 };

@@ -859,7 +859,9 @@ namespace SmartStore.Web.Controllers
                 "/Product/EmailAFriend",
 				"/Search",
 				"/Config",
-				"/Settings"
+				"/Settings",
+				"/Login",
+				"/Register"
             };
 
 

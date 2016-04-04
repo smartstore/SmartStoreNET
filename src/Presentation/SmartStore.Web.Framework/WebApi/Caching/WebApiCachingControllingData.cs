@@ -39,6 +39,7 @@ namespace SmartStore.Web.Framework.WebApi.Caching
 						{
 							ValidMinutePeriod = settings.ValidMinutePeriod,
 							NoRequestTimestampValidation = settings.NoRequestTimestampValidation,
+							AllowEmptyMd5Hash = settings.AllowEmptyMd5Hash,
 							LogUnauthorized = settings.LogUnauthorized,
 							ApiUnavailable = (plugin == null || !plugin.Installed),
 							PluginVersion = (plugin == null ? "1.0" : plugin.Version.ToString())
@@ -57,6 +58,7 @@ namespace SmartStore.Web.Framework.WebApi.Caching
 		public bool ApiUnavailable { get; set; }
 		public int ValidMinutePeriod { get; set; }
 		public bool NoRequestTimestampValidation { get; set; }
+		public bool AllowEmptyMd5Hash { get; set; }
 		public bool LogUnauthorized { get; set; }
 		public string PluginVersion { get; set; }
 
@@ -64,7 +66,7 @@ namespace SmartStore.Web.Framework.WebApi.Caching
 		{
 			get
 			{
-				return "{0} {1}".FormatWith(WebApiGlobal.MaxApiVersion, PluginVersion);
+				return "{0} {1}".FormatInvariant(WebApiGlobal.MaxApiVersion, PluginVersion);
 			}
 		}
 	}

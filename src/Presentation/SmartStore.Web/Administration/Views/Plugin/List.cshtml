@@ -289,6 +289,10 @@
             btnExecuteTasks = $('#btn-execute-tasks');
 
 		// Execute filtering
+		setTimeout(function() {
+			$('#filter-query').focus();
+		}, 800);
+
 		var mainContainer = $('#local-plugins');
 		$('#filter-query').on('keyup', function (e) {
 			var el = $(this);

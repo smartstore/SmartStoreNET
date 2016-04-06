@@ -60,8 +60,7 @@ namespace SmartStore.Services.Security
 			{
 				if (!_hasActiveAcl.HasValue)
 				{
-					var query = _aclRecordRepository.Where(x => !x.IsIdle);
-					_hasActiveAcl = query.Any();
+					_hasActiveAcl = _aclRecordRepository.TableUntracked.Any(x => !x.IsIdle);
 				}
 				return _hasActiveAcl.Value;
 			}

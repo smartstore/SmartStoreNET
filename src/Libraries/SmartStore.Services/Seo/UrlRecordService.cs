@@ -68,7 +68,7 @@ namespace SmartStore.Services.Seo
 			if (urlRecordIds == null || urlRecordIds.Length == 0)
 				return new List<UrlRecord>();
 
-			var urlRecords = _urlRecordRepository
+			var urlRecords = _urlRecordRepository.Table
 				.Where(x => urlRecordIds.Contains(x.Id))
 				.ToList();
 

@@ -10,22 +10,6 @@ namespace SmartStore.Core.Data
     
     public static class RepositoryExtensions
     {
-
-        public static IEnumerable<T> LoadAll<T>(this IRepository<T> rs) where T : BaseEntity
-        {
-            return rs.Table.AsEnumerable();
-        }
-
-        public static IEnumerable<T> Where<T>(this IRepository<T> rs, Func<T, bool> predicate) where T : BaseEntity
-        {
-            return rs.Table.Where(predicate);
-        }
-
-        public static T GetSingle<T>(this IRepository<T> rs, Func<T, bool> predicate) where T : BaseEntity
-        {
-            return rs.Table.SingleOrDefault(predicate);
-        }
-
         public static T GetFirst<T>(this IRepository<T> rs, Func<T, bool> predicate) where T : BaseEntity
         {
             return rs.Table.FirstOrDefault(predicate);

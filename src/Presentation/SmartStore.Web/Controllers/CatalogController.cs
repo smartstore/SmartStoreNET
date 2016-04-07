@@ -561,7 +561,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult ManufacturerAll()
         {
             var model = new List<ManufacturerModel>();
-            var manufacturers = _manufacturerService.GetAllManufacturers();
+            var manufacturers = _manufacturerService.GetAllManufacturers(null, _services.StoreContext.CurrentStore.Id);
             foreach (var manufacturer in manufacturers)
             {
                 var modelMan = manufacturer.ToModel();
@@ -590,7 +590,8 @@ namespace SmartStore.Web.Controllers
             {
                 var currentManufacturer = _manufacturerService.GetManufacturerById(currentManufacturerId);
 
-                var manufacturers = _manufacturerService.GetAllManufacturers();
+                var manufacturers = _manufacturerService.GetAllManufacturers(null, _services.StoreContext.CurrentStore.Id);
+
                 var model = new ManufacturerNavigationModel
                 {
                     TotalManufacturers = manufacturers.Count,

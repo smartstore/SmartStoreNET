@@ -28,6 +28,7 @@ namespace SmartStore.PayPal
 			_settingService.SaveSetting<PayPalExpressPaymentSettings>(new PayPalExpressPaymentSettings());
 			_settingService.SaveSetting<PayPalDirectPaymentSettings>(new PayPalDirectPaymentSettings());
 			_settingService.SaveSetting<PayPalStandardPaymentSettings>(new PayPalStandardPaymentSettings());
+			_settingService.SaveSetting<PayPalPlusPaymentSettings>(new PayPalPlusPaymentSettings());
 
 			_localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
@@ -39,6 +40,7 @@ namespace SmartStore.PayPal
             _settingService.DeleteSetting<PayPalExpressPaymentSettings>();
             _settingService.DeleteSetting<PayPalDirectPaymentSettings>();
             _settingService.DeleteSetting<PayPalStandardPaymentSettings>();
+			_settingService.DeleteSetting<PayPalPlusPaymentSettings>();
 
 			_localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 

@@ -130,4 +130,41 @@ namespace SmartStore.PayPal.Models
             }
         }
     }
+
+
+	public class PayPalPlusConfigurationModel : ApiConfigurationModel
+	{
+		[SmartResourceDisplayName("Plugins.SmartStore.PayPal.ShowButtonInMiniShoppingCart")]
+		public bool ShowButtonInMiniShoppingCart { get; set; }
+
+		public void Copy(PayPalPlusPaymentSettings settings, bool fromSettings)
+		{
+			if (fromSettings)
+			{
+				SecurityProtocol = settings.SecurityProtocol;
+				UseSandbox = settings.UseSandbox;
+				IpnChangesPaymentStatus = settings.IpnChangesPaymentStatus;
+				TransactMode = Convert.ToInt32(settings.TransactMode);
+				ApiAccountName = settings.ApiAccountName;
+				ApiAccountPassword = settings.ApiAccountPassword;
+				Signature = settings.Signature;
+				AdditionalFee = settings.AdditionalFee;
+				AdditionalFeePercentage = settings.AdditionalFeePercentage;
+				ShowButtonInMiniShoppingCart = settings.ShowButtonInMiniShoppingCart;
+			}
+			else
+			{
+				settings.SecurityProtocol = SecurityProtocol;
+				settings.UseSandbox = UseSandbox;
+				settings.IpnChangesPaymentStatus = IpnChangesPaymentStatus;
+				settings.TransactMode = (TransactMode)TransactMode;
+				settings.ApiAccountName = ApiAccountName;
+				settings.ApiAccountPassword = ApiAccountPassword;
+				settings.Signature = Signature;
+				settings.AdditionalFee = AdditionalFee;
+				settings.AdditionalFeePercentage = AdditionalFeePercentage;
+				settings.ShowButtonInMiniShoppingCart = ShowButtonInMiniShoppingCart;
+			}
+		}
+	}
 }

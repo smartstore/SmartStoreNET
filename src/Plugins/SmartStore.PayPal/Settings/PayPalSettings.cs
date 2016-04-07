@@ -36,6 +36,7 @@ namespace SmartStore.PayPal.Settings
 		public string Signature { get; set; }
 	}
 
+
     public class PayPalDirectPaymentSettings : PayPalApiSettingsBase, ISettings
     {
 		public PayPalDirectPaymentSettings()
@@ -84,7 +85,20 @@ namespace SmartStore.PayPal.Settings
         public decimal DefaultShippingPrice { get; set; }
     }
 
-    public class PayPalStandardPaymentSettings : PayPalSettingsBase, ISettings
+	public class PayPalPlusPaymentSettings : PayPalApiSettingsBase, ISettings
+	{
+		public PayPalPlusPaymentSettings()
+		{
+			UseSandbox = true;
+		}
+
+		/// <summary>
+		/// Specifies whether to display the checkout button in mini shopping cart
+		/// </summary>
+		public bool ShowButtonInMiniShoppingCart { get; set; }
+	}
+
+	public class PayPalStandardPaymentSettings : PayPalSettingsBase, ISettings
     {
 		public PayPalStandardPaymentSettings()
 		{
@@ -101,18 +115,13 @@ namespace SmartStore.PayPal.Settings
         public string IpnUrl { get; set; }
     }
 
-    /// <summary>
-    /// Represents payment processor transaction mode
-    /// </summary>
-    public enum TransactMode : int
+
+	/// <summary>
+	/// Represents payment processor transaction mode
+	/// </summary>
+	public enum TransactMode
     {
-        /// <summary>
-        /// Authorize
-        /// </summary>
         Authorize = 1,
-        /// <summary>
-        /// Authorize and capture
-        /// </summary>
         AuthorizeAndCapture = 2
     }
 }

@@ -4,7 +4,23 @@
     <Value>PayPal Zahlungsarten</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.PayPal" AppendRootKey="false">
-    <Value>Stellt die PayPal-Zahlungsarten PayPal Express, PayPal Standard und PayPal Direct zur Verfügung.</Value>
+    <Value>Stellt die PayPal-Zahlungsarten PayPal Standard, PayPal Direct, PayPal Express und PayPal Plus zur Verfügung.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="ConfigGroups">
+    <Value>API Zugang;Datenaustausch;Sonstiges</Value>
+  </LocaleResource>
+  <LocaleResource Name="ModeAuth">
+    <Value>Autorisierung sofort, Abbuchung später</Value>
+  </LocaleResource>
+  <LocaleResource Name="ModeAuthAndCapture">
+    <Value>Sofort abbuchen</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShowButtonInMiniShoppingCart">
+    <Value>Button im Miniwarenkorb anzeigen</Value>
+  </LocaleResource>
+  <LocaleResource Name="ShowButtonInMiniShoppingCart.Hint">
+    <Value>Legt fest, ob der Checkout-Button im Miniwarenkorb angezeigt werden soll.</Value>
   </LocaleResource>
 
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
@@ -89,8 +105,8 @@
       </LocaleResource>
     </Children>
   </LocaleResource>
-  
-	<LocaleResource Name="Plugins.FriendlyName.Payments.PayPalExpress" AppendRootKey="false">
+
+  <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalExpress" AppendRootKey="false">
 		<Value>PayPal Express</Value>
 	</LocaleResource>
   <LocaleResource Name="Plugins.Payments.PayPalExpress" AppendRootKey="false">
@@ -333,5 +349,37 @@ Zahlungsgebühr: {10}]]>
         </Value>
       </LocaleResource>
     </Children>
-  </LocaleResource>  
+  </LocaleResource>
+
+  <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalPlus" AppendRootKey="false">
+    <Value>PayPal Plus</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.PayPalPlus" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[<p>Stellen Sie bitte sicher, dass PayPal die Primärwährung Ihres Shops unterstützt.</p>
+            <ol>
+            <li>Loggen Sie sich in Ihr PayPal-Konto ein.</li>
+            <li>Klicken Sie auf den Register <b>Mein Profil</b>.</li>
+            <li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>API-Zugriff</b>.</li>
+            <li>Klicken Sie auf <b>API-Berechtigung anfordern</b>.</li>
+            <li>Wählen Sie die Option <b>Fordern Sie eine API-Signature an</b>.</li>
+            <li>Klicken Sie auf <b>Zustimmen und senden</b>.</li>
+            </ol>
+            <p>Aktivieren Sie optional den PayPal-Service zum Empfang von IPN-Nachrichten (Instant Payment Notification):</p>
+            <ol>
+            <li>In Ihr Premier- oder Business-Konto einloggen.</li>
+            <li>Auf den Register <b>Mein Profil</b> klicken.</li>
+            <li>Unter <b>Sprach-Kodierung > Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
+            <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
+            <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
+            <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalPlus/IPNHandler</b>) eingeben.</li>
+            <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
+            </ol>]]>
+        </Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
 </Language>

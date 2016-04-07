@@ -1,6 +1,7 @@
 ﻿@using SmartStore.PayPal.Models;
 @using SmartStore.Web.Framework;
-@model PayPalDirectConfigurationModel
+@using SmartStore.Web.Framework.UI;
+@model PayPalPlusConfigurationModel
 @{
 	Layout = "";
 	Html.AddCssFileParts(true, "~/Plugins/SmartStore.PayPal/Content/smartstore.paypal.css");
@@ -9,8 +10,8 @@
 <div class="plugin-configuration">
 	<div>
 		<div class="alert alert-info">
-			<button class="close" data-dismiss="alert">×</button>
-			@Html.Raw(T("Plugins.Payments.PayPalDirect.AdminInstruction"))
+			<button class="close" data-dismiss="alert">&#215;</button>
+			@Html.Raw(T("Plugins.Payments.PayPalPlus.AdminInstruction"))
 		</div>
 	</div>
 	<div>
@@ -24,22 +25,14 @@
 
 @using (Html.BeginForm())
 {
-    <table class="adminContent configure-paypal-direct">        
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.TransactMode)
-            </td>
-            <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.TransactMode)
-                @Html.DropDownListFor(model => model.TransactMode, Model.TransactModeValues)
-            </td>
-        </tr>
+    <table class="adminContent configure-paypal-plus">
 		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SecurityProtocol)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.SecurityProtocol, Model.AvailableSecurityProtocols, T("Common.Unspecified"))
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">
+						@Model.ConfigGroups.SafeGet(0)
+					</div>
+				</div>
 			</td>
 		</tr>
         <tr>
@@ -79,6 +72,32 @@
                 @Html.ValidationMessageFor(model => model.Signature)
             </td>
         </tr>
+		<tr class="adminSeparator">
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">
+						@Model.ConfigGroups.SafeGet(1)
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SecurityProtocol)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.SecurityProtocol, Model.AvailableSecurityProtocols, T("Common.Unspecified"))
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.TransactMode)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.TransactMode)
+				@Html.DropDownListFor(model => model.TransactMode, Model.TransactModeValues)
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.IpnChangesPaymentStatus)
@@ -88,28 +107,46 @@
 				@Html.ValidationMessageFor(model => model.IpnChangesPaymentStatus)
 			</td>
 		</tr>
+		<tr class="adminSeparator">
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">
+						@Model.ConfigGroups.SafeGet(2)
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowButtonInMiniShoppingCart)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowButtonInMiniShoppingCart)
+				@Html.ValidationMessageFor(model => model.ShowButtonInMiniShoppingCart)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AdditionalFee)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.AdditionalFee)
+				@Html.ValidationMessageFor(model => model.AdditionalFee)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AdditionalFeePercentage)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.AdditionalFeePercentage)
+				@Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
+			</td>
+		</tr>
         <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AdditionalFee)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.AdditionalFee)
-                @Html.ValidationMessageFor(model => model.AdditionalFee)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.AdditionalFeePercentage)
-                @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                &nbsp;
-            </td>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
             <td class="adminData">
                 <button type="submit" name="save" class="btn btn-primary" value="save">
                     <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")

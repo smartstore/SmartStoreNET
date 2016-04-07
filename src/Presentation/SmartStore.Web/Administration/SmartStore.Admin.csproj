@@ -465,12 +465,8 @@
     <Content Include="Scripts\jquery-1.8.3.min.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
     <Content Include="Scripts\admin.globalinit.js" />
-    <Content Include="Scripts\smartstore.download.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Scripts\smartstore.discountrules.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Scripts\smartstore.download.js" />
+    <Content Include="Scripts\smartstore.discountrules.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="sitemap.config">
       <SubType>Designer</SubType>

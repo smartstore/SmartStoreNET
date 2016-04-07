@@ -48,6 +48,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <FilesToIncludeForPublish>AllFilesInProjectFolder</FilesToIncludeForPublish>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -57,7 +58,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <FilesToIncludeForPublish>AllFilesInTheProject</FilesToIncludeForPublish>
+    <FilesToIncludeForPublish>AllFilesInProjectFolder</FilesToIncludeForPublish>
     <PrecompileBeforePublish>false</PrecompileBeforePublish>
     <PackageAsSingleFile>false</PackageAsSingleFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -1058,7 +1059,6 @@
     <Content Include="Content\install\variables.less" />
     <Content Include="Content\bootstrap\custom\colorpicker.less" />
     <Content Include="favicon.readme.txt" />
-    <Content Include="Media\Thumbs\placeholder.txt" />
     <Content Include="Media\Uploaded\placeholder.txt" />
     <Content Include="Refresh.html" />
     <Content Include="Scripts\2012.2.607\jquery-1.7.1.min.js" />
@@ -1076,6 +1076,7 @@
     <Content Include="Scripts\2012.2.607\telerik.textbox.min.js" />
     <Content Include="Scripts\2012.2.607\telerik.treeview.min.js" />
     <Content Include="Content\bootstrap\custom\spinner.less" />
+    <Content Include="Media\Thumbs\placeholder.txt" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-AE.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-BH.js" />
@@ -1541,7 +1542,6 @@
     <Content Include="Scripts\underscore.min.map" />
     <None Include="Scripts\_references.js" />
     <Content Include="Content\bootstrap\custom\throbber.less" />
-    <Content Include="Content\Images\uploaded\placeholder.txt" />
     <Content Include="Content\samples\category_accessories.jpg" />
     <Content Include="Content\samples\category_accessories_apparel.jpg" />
     <Content Include="Content\samples\category_apparel_shoes.jpeg" />
@@ -1550,7 +1550,6 @@
     <Content Include="Content\samples\category_electronics.jpeg" />
     <Content Include="Content\samples\product_AcerAspireOne_1.jpeg" />
     <Content Include="Content\samples\product_AcerAspireOne_2.jpeg" />
-    <Content Include="Content\Images\Thumbs\placeholder.txt" />
     <Content Include="Content\bootstrap\custom\select2.less" />
     <Content Include="Content\bootstrap\custom\images\select2.png" />
     <Content Include="Global.asax" />
@@ -2137,15 +2136,8 @@
     <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
-    xcopy /s /y "$(SolutionDir)..\lib\sqlce\x86\*.*" "$(TargetDir)x86"
-    xcopy /s /y "$(SolutionDir)..\lib\ClearScript.V8\Native\x86\*.*" "$(TargetDir)x86"
-if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
-    xcopy /s /y "$(SolutionDir)..\lib\sqlce\amd64\*.*" "$(TargetDir)amd64"
-    xcopy /s /y "$(SolutionDir)..\lib\ClearScript.V8\Native\amd64\*.*" "$(TargetDir)amd64"
-
-if not exist "$(TargetDir)ClearScript.V8" md "$(TargetDir)ClearScript.V8"
-     xcopy /s /y "$(SolutionDir)..\lib\ClearScript.V8\lib\*.*" "$(TargetDir)ClearScript.V8"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
@@ -2156,9 +2148,80 @@ if not exist "$(TargetDir)ClearScript.V8" md "$(TargetDir)ClearScript.V8"
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="ExcludeRootBinariesDeployment">
+    <ItemGroup>
+      <RootBinFiles Include="bin\*">
+        <InProject>false</InProject>
+      </RootBinFiles>
+    </ItemGroup>
+    <PropertyGroup>
+      <ExcludeFilesFromDeployment>
+		**\*.cs;
+		**\*.orig;
+		**\*.bak;
+		**\*.log;
+		**\*.csproj;
+		**\*.csproj.user;
+		**\*.DotSettings.user;
+		**\packages.config;
+		**\*.Debug.config;
+		**\*.Release.config;
+		**\obj\**;
+		**\bin\*.xml;
+		**\bin\HostRestart\**;
+		Administration\bin\**;
+		App_Data\_Backup\**;
+		App_Data\_temp\**;
+		App_Data\ExportProfiles\**;
+		App_Data\ImportProfiles\**;
+		App_Data\Migrations\**;
+		App_Data\InstalledPlugins.txt;
+		App_Data\Licenses.lic;
+		App_Data\Settings.txt;
+		App_Data\SmartStore.Db.sdf;
+		Exchange\**; 
+		Content\Files\ExportImport\**;
+		Content\Images\Thumbs\**;
+		Media\**\*.png;
+		Media\**\*.jpg;
+		Media\**\*.jpeg;
+		Media\**\*.gif;
+		Media\**\*.pdf;
+		Media\**\*.docx;
+		Properties\**;
+		Plugins\*\bin\**;				
+      </ExcludeFilesFromDeployment>
+    </PropertyGroup>
+  </Target>
+  <Target Name="ExcludeRootBinariesPackage" DependsOnTargets="ExcludeRootBinariesDeployment" BeforeTargets="ExcludeFilesFromPackage">
+    <ItemGroup>
+      <ExcludeFromPackageFiles Include="$(ExcludeFilesFromDeployment)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="CopyNativeBinaries">
+    <ItemGroup>
+      <SqlCeBinariesx86 Include="$(SolutionDir)..\lib\sqlce\x86\**\*" />
+      <SqlCeBinariesx64 Include="$(SolutionDir)..\lib\sqlce\amd64\**\*" />
+      <ClearScriptV8Binaries Include="$(SolutionDir)..\lib\ClearScript.V8\lib\**\*" />
+      <ClearScriptV8Nativex86 Include="$(SolutionDir)..\lib\ClearScript.V8\Native\x86\**\*" />
+      <ClearScriptV8Nativex64 Include="$(SolutionDir)..\lib\ClearScript.V8\Native\amd64\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SqlCeBinariesx86)" DestinationFolder="$(OutputPath)\x86\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(SqlCeBinariesx64)" DestinationFolder="$(OutputPath)\amd64\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ClearScriptV8Binaries)" DestinationFolder="$(OutputPath)\ClearScript.V8\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ClearScriptV8Nativex86)" DestinationFolder="$(OutputPath)\x86\%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(ClearScriptV8Nativex64)" DestinationFolder="$(OutputPath)\amd64\%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PlaceholderFile>$(ProjectDir)Media\Thumbs\placeholder.txt</PlaceholderFile>
   </PropertyGroup>
+  <Target Name="CreateEmptyFolders">
+    <Copy SourceFiles="$(PlaceholderFile)" DestinationFolder="$(ProjectDir)Plugins\bin\" ContinueOnError="true" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="AfterBuild" DependsOnTargets="MvcBuildViews">
+    <CallTarget Targets="ExcludeRootBinariesDeployment" />
+    <CallTarget Targets="CopyNativeBinaries" />
+    <CallTarget Targets="CreateEmptyFolders" />
+  </Target>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

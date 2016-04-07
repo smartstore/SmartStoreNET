@@ -8,6 +8,7 @@
 * #886 Add setting to hide manufacturer images on product detail page and to hide default image for manufacturers
 
 ### Improvements
+* (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.
 * Exports the product detail link including the attribute query string when exporting attribute combinations
 
 ### Bugfixes

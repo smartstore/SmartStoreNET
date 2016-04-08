@@ -1099,10 +1099,17 @@ namespace SmartStore.Admin.Controllers
 				var path = profile.GetExportLogPath();
 				if (System.IO.File.Exists(path))
 				{
-					var stream = new FileStream(path, FileMode.Open);
-					var result = new FileStreamResult(stream, MediaTypeNames.Text.Plain);
+					try
+					{
+						var stream = new FileStream(path, FileMode.Open);
+						var result = new FileStreamResult(stream, MediaTypeNames.Text.Plain);
 
-					return result;
+						return result;
+					}
+					catch (IOException)
+					{
+						NotifyWarning(T("Admin.Common.FileInUse"));
+					}
 				}
 			}
 
@@ -1125,12 +1132,19 @@ namespace SmartStore.Admin.Controllers
 
 					if (System.IO.File.Exists(path))
 					{
-						var stream = new FileStream(path, FileMode.Open);
+						try
+						{
+							var stream = new FileStream(path, FileMode.Open);
 
-						var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path));
-						result.FileDownloadName = Path.GetFileName(path);
+							var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path));
+							result.FileDownloadName = Path.GetFileName(path);
 
-						return result;
+							return result;
+						}
+						catch (IOException)
+						{
+							NotifyWarning(T("Admin.Common.FileInUse"));
+						}
 					}
 				}
 			}

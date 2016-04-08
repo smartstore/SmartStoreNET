@@ -175,6 +175,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerNumberVisibility.Display", "Display", "Anzeigen");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerNumberVisibility.EditableIfEmpty", "Editable if empty", "Editierbar falls leer");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Customers.CustomerNumberVisibility.Editable", "Always editable", "Stets editierbar");
+
+			builder.AddOrUpdate("Admin.Common.FileInUse",
+				"The file is in use and cannot be opened.",
+				"Die Datei ist in Benutzung und kann nicht geöffnet werden.");
 		}
 	}
 }

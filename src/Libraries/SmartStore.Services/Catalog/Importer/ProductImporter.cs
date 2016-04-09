@@ -430,57 +430,68 @@ namespace SmartStore.Services.Catalog.Importer
 
 		private int ProcessSlugs(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
-			var slugMap = new Dictionary<string, UrlRecord>(100);
+			var entityName = typeof(Product).Name;
+			var slugMap = new Dictionary<string, UrlRecord>();
+
 			Func<string, UrlRecord> slugLookup = ((s) =>
 			{
-				if (slugMap.ContainsKey(s))
-				{
-					return slugMap[s];
-				}
-				return (UrlRecord)null;
+				return (slugMap.ContainsKey(s) ? slugMap[s] : null);
 			});
-
-			var entityName = typeof(Product).Name;
 
 			foreach (var row in batch)
 			{
-				if (row.IsNew || row.NameChanged || row.Segmenter.HasColumn("SeName"))
+				if (!row.IsNew && !row.NameChanged)
+					continue;
+
+				try
 				{
-					try
+					UrlRecord urlRecord = null;
+					var seName = row.GetDataValue<string>("SeName");
+					seName = row.Entity.ValidateSeName(seName, row.Entity.Name, true, _urlRecordService, _seoSettings, extraSlugLookup: slugLookup);
+
+					if (row.IsNew)
 					{
-						string seName = row.GetDataValue<string>("SeName");
-						seName = row.Entity.ValidateSeName(seName, row.Entity.Name, true, _urlRecordService, _seoSettings, extraSlugLookup: slugLookup);
-
-						UrlRecord urlRecord = null;
-
-						if (row.IsNew)
+						// dont't bother validating SeName for new entities.
+						urlRecord = new UrlRecord
 						{
-							// dont't bother validating SeName for new entities.
-							urlRecord = new UrlRecord
+							EntityId = row.Entity.Id,
+							EntityName = entityName,
+							Slug = seName,
+							LanguageId = 0,
+							IsActive = true,
+						};
+						_urlRecordRepository.Insert(urlRecord);
+					}
+					else
+					{
+						urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, 0);
+					}
+
+					if (urlRecord != null)
+					{
+						// a new record was inserted to the store: keep track of it for this batch.
+						slugMap[seName] = urlRecord;
+					}
+
+					foreach (var lang in context.Languages)
+					{
+						if (row.Segmenter.HasColumn("SeName", lang.UniqueSeoCode))
+						{
+							seName = row.GetDataValue<string>("SeName", lang.UniqueSeoCode);
+							seName = row.Entity.ValidateSeName(seName, null, false, _urlRecordService, _seoSettings, lang.Id, slugLookup);
+
+							urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, lang.Id);
+
+							if (urlRecord != null)
 							{
-								EntityId = row.Entity.Id,
-								EntityName = entityName,
-								Slug = seName,
-								LanguageId = 0,
-								IsActive = true,
-							};
-							_urlRecordRepository.Insert(urlRecord);
-						}
-						else
-						{
-							urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, 0);
-						}
-
-						if (urlRecord != null)
-						{
-							// a new record was inserted to the store: keep track of it for this batch.
-							slugMap[seName] = urlRecord;
+								slugMap[seName] = urlRecord;
+							}
 						}
 					}
-					catch (Exception exception)
-					{
-						context.Result.AddWarning(exception.Message, row.GetRowInfo(), "SeName");
-					}
+				}
+				catch (Exception exception)
+				{
+					context.Result.AddWarning(exception.Message, row.GetRowInfo(), "SeName");
 				}
 			}
 

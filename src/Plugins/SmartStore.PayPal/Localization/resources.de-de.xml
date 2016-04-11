@@ -4,11 +4,14 @@
     <Value>PayPal Zahlungsarten</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.PayPal" AppendRootKey="false">
-    <Value>Stellt die PayPal-Zahlungsarten PayPal Standard, PayPal Direct, PayPal Express und PayPal Plus zur Verfügung.</Value>
+    <Value>Stellt die PayPal-Zahlungsarten PayPal Standard, PayPal Direct, PayPal Express und PayPal PLUS zur Verfügung.</Value>
   </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
     <Value>API Zugang;Datenaustausch;Sonstiges</Value>
+  </LocaleResource>
+  <LocaleResource Name="OrderNoteStrings">
+    <Value><![CDATA[Antwort von PayPal:<br />{0}]]></Value>
   </LocaleResource>
   <LocaleResource Name="ModeAuth">
     <Value>Autorisierung sofort, Abbuchung später</Value>
@@ -16,13 +19,28 @@
   <LocaleResource Name="ModeAuthAndCapture">
     <Value>Sofort abbuchen</Value>
   </LocaleResource>
-  <LocaleResource Name="ShowButtonInMiniShoppingCart">
-    <Value>Button im Miniwarenkorb anzeigen</Value>
+  <LocaleResource Name="CreateNow">
+    <Value>Jetzt erstellen</Value>
   </LocaleResource>
-  <LocaleResource Name="ShowButtonInMiniShoppingCart.Hint">
-    <Value>Legt fest, ob der Checkout-Button im Miniwarenkorb angezeigt werden soll.</Value>
+  <LocaleResource Name="ClientId">
+    <Value>Client-ID</Value>
   </LocaleResource>
-
+  <LocaleResource Name="ClientId.Hint">
+    <Value>Legt die API Client-ID fest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Secret">
+    <Value>Secret</Value>
+  </LocaleResource>
+  <LocaleResource Name="Secret.Hint">
+    <Value>Legt die API Secret fest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ExperienceProfileId">
+    <Value>Experience Profil-ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="ExperienceProfileId.Hint">
+    <Value>Legt die Experience Profil-ID fest. Das Profil beinhaltet globale Daten wie z.B. Shop-Name und -Logo. Ein Profil braucht nur einmalig angelegt werden.</Value>
+  </LocaleResource>
+  
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
     <Children>
       <LocaleResource Name="UseSandbox">
@@ -352,7 +370,7 @@ Zahlungsgebühr: {10}]]>
   </LocaleResource>
 
   <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalPlus" AppendRootKey="false">
-    <Value>PayPal Plus</Value>
+    <Value>PayPal PLUS</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Payments.PayPalPlus" AppendRootKey="false">
     <Children>

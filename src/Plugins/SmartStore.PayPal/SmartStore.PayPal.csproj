@@ -68,6 +68,10 @@
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -123,7 +127,9 @@
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Filters\PayPalExpressCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalExpressWidgetZoneFilter.cs" />
+    <Compile Include="Filters\PayPalPlusCheckoutFilter.cs" />
     <Compile Include="Models\ApiConfigurationModels.cs" />
+    <Compile Include="Models\PayPalPlusCheckoutModel.cs" />
     <Compile Include="Models\PayPalStandardConfigurationModel.cs" />
     <Compile Include="Models\PayPalDirectPaymentInfoModel.cs" />
     <Compile Include="Models\PayPalExpressPaymentInfoModel.cs" />
@@ -132,9 +138,9 @@
     <Compile Include="Providers\PayPalProviderBase.cs" />
     <Compile Include="Providers\PayPalDirectProvider.cs" />
     <Compile Include="Providers\PayPalStandardProvider.cs" />
-    <Compile Include="Services\PayPalLineItem.cs" />
+    <Compile Include="Services\IPayPalService.cs" />
+    <Compile Include="Services\PayPalService.cs" />
     <Compile Include="Settings\PayPalSettings.cs" />
-    <Compile Include="Services\PayPalProcessPaymentRequest.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -274,6 +280,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\PayPalPlus\Configure.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PayPalPlus\PaymentWall.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PayPalPlus\PaymentWall.Mobile.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Web References\PayPalSvc\CoreComponentTypes.xsd">

@@ -1,4 +1,5 @@
-﻿@using SmartStore.PayPal.Models;
+﻿@using SmartStore.PayPal;
+@using SmartStore.PayPal.Models;
 @using SmartStore.Web.Framework;
 @using SmartStore.Web.Framework.UI;
 @model PayPalPlusConfigurationModel
@@ -15,13 +16,15 @@
 		</div>
 	</div>
 	<div>
-		<a href="https://www.paypal.com/" target="_blank">
+		<a href="https://www.paypal.de/paypal-plus" target="_blank">
 			<img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/branding.png")" alt="PayPal" />
 		</a>
 	</div>
 </div>
 
 @Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+
+@Html.ValidationSummary(false)
 
 @using (Html.BeginForm())
 {
@@ -47,29 +50,34 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ApiAccountName)
+                @Html.SmartLabelFor(model => model.ClientId)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ApiAccountName)
-                @Html.ValidationMessageFor(model => model.ApiAccountName)
+                @Html.SettingEditorFor(model => model.ClientId)
+                @Html.ValidationMessageFor(model => model.ClientId)
             </td>
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ApiAccountPassword)
+                @Html.SmartLabelFor(model => model.Secret)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ApiAccountPassword)
-                @Html.ValidationMessageFor(model => model.ApiAccountPassword)
+                @Html.SettingEditorFor(model => model.Secret)
+                @Html.ValidationMessageFor(model => model.Secret)
             </td>
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Signature)
+                @Html.SmartLabelFor(model => model.ExperienceProfileId)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.Signature)
-                @Html.ValidationMessageFor(model => model.Signature)
+                @Html.SettingEditorFor(model => model.ExperienceProfileId)
+
+				<a id="CreateExperienceProfile" href="javascript:void(0)" data-url="@Url.Action("CreateExperienceProfile", "PayPalPlus", new { area = Plugin.SystemName })" class="btn btn-warning">
+					<i class="fa fa-gear"></i>&nbsp;@(T("Plugins.SmartStore.PayPal.CreateNow"))!
+				</a>
+
+                @Html.ValidationMessageFor(model => model.ExperienceProfileId)
             </td>
         </tr>
 		<tr class="adminSeparator">
@@ -118,15 +126,6 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowButtonInMiniShoppingCart)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowButtonInMiniShoppingCart)
-				@Html.ValidationMessageFor(model => model.ShowButtonInMiniShoppingCart)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.AdditionalFee)
 			</td>
 			<td class="adminData">
@@ -155,3 +154,23 @@
         </tr>
     </table>
 }
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		$('#CreateExperienceProfile').click(function () {
+			$(this).doAjax({
+				ask: '@T("Admin.Common.AreYouSure")',
+				callbackSuccess: function (response) {
+					if (!_.isEmpty(response.id)) {
+						$('#@Html.FieldIdFor(x => x.ExperienceProfileId)').val(response);
+					}
+					if (!_.isEmpty(response.error)) {
+						EventBroker.publish('message', { title: response.error, type: 'error' });
+					}
+				}
+			});
+		});
+
+	});
+</script>

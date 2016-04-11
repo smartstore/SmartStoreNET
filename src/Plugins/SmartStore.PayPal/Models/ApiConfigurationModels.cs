@@ -134,8 +134,14 @@ namespace SmartStore.PayPal.Models
 
 	public class PayPalPlusConfigurationModel : ApiConfigurationModel
 	{
-		[SmartResourceDisplayName("Plugins.SmartStore.PayPal.ShowButtonInMiniShoppingCart")]
-		public bool ShowButtonInMiniShoppingCart { get; set; }
+		[SmartResourceDisplayName("Plugins.SmartStore.PayPal.ClientId")]
+		public string ClientId { get; set; }
+
+		[SmartResourceDisplayName("Plugins.SmartStore.PayPal.Secret")]
+		public string Secret { get; set; }
+
+		[SmartResourceDisplayName("Plugins.SmartStore.PayPal.ExperienceProfileId")]
+		public string ExperienceProfileId { get; set; }
 
 		public void Copy(PayPalPlusPaymentSettings settings, bool fromSettings)
 		{
@@ -150,7 +156,10 @@ namespace SmartStore.PayPal.Models
 				Signature = settings.Signature;
 				AdditionalFee = settings.AdditionalFee;
 				AdditionalFeePercentage = settings.AdditionalFeePercentage;
-				ShowButtonInMiniShoppingCart = settings.ShowButtonInMiniShoppingCart;
+
+				ClientId = settings.ClientId;
+				Secret = settings.Secret;
+				ExperienceProfileId = settings.ExperienceProfileId;
 			}
 			else
 			{
@@ -163,7 +172,10 @@ namespace SmartStore.PayPal.Models
 				settings.Signature = Signature;
 				settings.AdditionalFee = AdditionalFee;
 				settings.AdditionalFeePercentage = AdditionalFeePercentage;
-				settings.ShowButtonInMiniShoppingCart = ShowButtonInMiniShoppingCart;
+
+				settings.ClientId = ClientId;
+				settings.Secret = Secret;
+				settings.ExperienceProfileId = ExperienceProfileId;
 			}
 		}
 	}

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.PayPal.Models;
+using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
@@ -13,15 +14,19 @@ namespace SmartStore.PayPal.Controllers
 {
 	public class PayPalPlusController : PayPalControllerBase<PayPalPlusPaymentSettings>
 	{
+		private readonly IPayPalService _payPalService;
+
 		public PayPalPlusController(
 			IPaymentService paymentService,
 			IOrderService orderService,
-			IOrderProcessingService orderProcessingService) : base(
+			IOrderProcessingService orderProcessingService,
+			IPayPalService payPalService) : base(
 				PayPalPlusProvider.SystemName,
 				paymentService,
 				orderService,
 				orderProcessingService)
 		{
+			_payPalService = payPalService;
 		}
 
 		[NonAction]
@@ -93,5 +98,48 @@ namespace SmartStore.PayPal.Controllers
 			return Configure();
 		}
 
+		[AdminAuthorize]
+		public ActionResult CreateExperienceProfile()
+		{
+			string profileId = null;
+			string error = null;
+
+			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(storeScope);
+
+			var store = Services.StoreService.GetStoreById(storeScope == 0 ? Services.StoreContext.CurrentStore.Id : storeScope);
+
+			var result = _payPalService.SetCheckoutExperience(settings, store);
+
+			if (result.Success)
+			{
+				profileId = (string)result.Json.id;
+			}
+			else
+			{
+				error = result.ErrorName.EmptyNull().EnsureEndsWith(".").Grow(result.ErrorMessage, " ");
+			}
+
+			return new JsonResult { Data = new { id = profileId, error = error}, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+		}
+
+		public ActionResult PaymentInfo()
+		{
+			return new EmptyResult();
+		}
+
+		public ActionResult PaymentWall()
+		{
+			var model = new PayPalPlusCheckoutModel();
+
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult PaymentWall(FormCollection form)
+		{
+
+			return RedirectToAction("Confirm", "Checkout", new { area = "" });
+		}
 	}
 }

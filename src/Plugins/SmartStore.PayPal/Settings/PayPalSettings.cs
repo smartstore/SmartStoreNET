@@ -9,16 +9,19 @@ namespace SmartStore.PayPal.Settings
 		{
 			SecurityProtocol = SecurityProtocolType.Tls12;
 			IpnChangesPaymentStatus = true;
+			AddOrderNotes = true;
 		}
 
 		public SecurityProtocolType? SecurityProtocol { get; set; }
 
 		public bool UseSandbox { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether to "additional fee" is specified as percentage. true - percentage, false - fixed value.
-        /// </summary>
-        public bool AdditionalFeePercentage { get; set; }
+		public bool AddOrderNotes { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to "additional fee" is specified as percentage. true - percentage, false - fixed value.
+		/// </summary>
+		public bool AdditionalFeePercentage { get; set; }
         
         public decimal AdditionalFee { get; set; }
 
@@ -34,6 +37,9 @@ namespace SmartStore.PayPal.Settings
 		public string ApiAccountName { get; set; }
 		public string ApiAccountPassword { get; set; }
 		public string Signature { get; set; }
+
+		public string ClientId { get; set; }
+		public string Secret { get; set; }
 	}
 
 
@@ -41,8 +47,8 @@ namespace SmartStore.PayPal.Settings
     {
 		public PayPalDirectPaymentSettings()
 		{
+			UseSandbox = true;
 			TransactMode = TransactMode.Authorize;
-            UseSandbox = true;
 		}
     }
 
@@ -87,15 +93,12 @@ namespace SmartStore.PayPal.Settings
 
 	public class PayPalPlusPaymentSettings : PayPalApiSettingsBase, ISettings
 	{
+		public string ExperienceProfileId { get; set; }
+
 		public PayPalPlusPaymentSettings()
 		{
 			UseSandbox = true;
 		}
-
-		/// <summary>
-		/// Specifies whether to display the checkout button in mini shopping cart
-		/// </summary>
-		public bool ShowButtonInMiniShoppingCart { get; set; }
 	}
 
 	public class PayPalStandardPaymentSettings : PayPalSettingsBase, ISettings

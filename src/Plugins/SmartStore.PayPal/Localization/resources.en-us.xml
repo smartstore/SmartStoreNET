@@ -4,11 +4,14 @@
     <Value>PayPal Payment Methods</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.PayPal" AppendRootKey="false">
-    <Value>Provides the PayPal payment methods PayPal Standard, PayPal Direct, PayPal Express and PayPal Plus.</Value>
+    <Value>Provides the PayPal payment methods PayPal Standard, PayPal Direct, PayPal Express and PayPal PLUS.</Value>
   </LocaleResource>
 
   <LocaleResource Name="ConfigGroups">
     <Value>API access;Data exchange;Miscellaneous</Value>
+  </LocaleResource>
+  <LocaleResource Name="OrderNoteStrings">
+    <Value><![CDATA[Response from PayPal:<br />{0}]]></Value>
   </LocaleResource>
   <LocaleResource Name="ModeAuth">
     <Value>Authorize immediately, debit later</Value>
@@ -16,11 +19,26 @@
   <LocaleResource Name="ModeAuthAndCapture">
     <Value>Immediately debit</Value>
   </LocaleResource>
-  <LocaleResource Name="ShowButtonInMiniShoppingCart">
-    <Value>Show button in mini shopping cart</Value>
+  <LocaleResource Name="CreateNow">
+    <Value>Create now</Value>
   </LocaleResource>
-  <LocaleResource Name="ShowButtonInMiniShoppingCart.Hint">
-    <Value>Soecifies to show the checkout button in the mini shopping cart.</Value>
+  <LocaleResource Name="ClientId">
+    <Value>Client ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="ClientId.Hint">
+    <Value>Specifies the API client ID.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Secret">
+    <Value>Secret</Value>
+  </LocaleResource>
+  <LocaleResource Name="Secret.Hint">
+    <Value>Specifies the API secret.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ExperienceProfileId">
+    <Value>Experience profile ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="ExperienceProfileId.Hint">
+    <Value>Specifies the experience profile ID. The profile conatins global data like shop name and logo. A profile needs to be created only once.</Value>
   </LocaleResource>
 
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
@@ -352,7 +370,7 @@ Payment fee: {10}]]>
   </LocaleResource>
 
   <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalPlus" AppendRootKey="false">
-    <Value>PayPal Plus</Value>
+    <Value>PayPal PLUS</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Payments.PayPalPlus" AppendRootKey="false">
     <Children>

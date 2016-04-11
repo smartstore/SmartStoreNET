@@ -12,7 +12,6 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.PayPal.Controllers;
 using SmartStore.PayPal.PayPalSvc;
-using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -576,4 +575,13 @@ namespace SmartStore.PayPal
             return result;
         }
     }
+
+
+	public class PayPalProcessPaymentRequest : ProcessPaymentRequest
+	{
+		/// <summary>
+		/// Gets or sets an order Discount Amount
+		/// </summary>
+		public decimal Discount { get; set; }
+	}
 }

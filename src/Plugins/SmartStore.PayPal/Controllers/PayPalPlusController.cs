@@ -102,7 +102,6 @@ namespace SmartStore.PayPal.Controllers
 		public ActionResult CreateExperienceProfile()
 		{
 			string profileId = null;
-			string error = null;
 
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(storeScope);
@@ -110,17 +109,19 @@ namespace SmartStore.PayPal.Controllers
 			var store = Services.StoreService.GetStoreById(storeScope == 0 ? Services.StoreContext.CurrentStore.Id : storeScope);
 
 			var result = _payPalService.SetCheckoutExperience(settings, store);
-
-			if (result.Success)
+			if (result != null)
 			{
-				profileId = (string)result.Json.id;
-			}
-			else
-			{
-				error = result.ErrorName.EmptyNull().EnsureEndsWith(".").Grow(result.ErrorMessage, " ");
+				if (result.Success)
+				{
+					profileId = (string)result.Json.id;
+				}
+				else if (result.ErrorMessage.HasValue())
+				{
+					NotifyError(result.ErrorMessage);
+				}
 			}
 
-			return new JsonResult { Data = new { id = profileId, error = error}, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+			return new JsonResult { Data = new { id = profileId }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
 		}
 
 		public ActionResult PaymentInfo()

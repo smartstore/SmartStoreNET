@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SmartStore.Core.Domain.Logging;
@@ -100,7 +101,7 @@ namespace SmartStore.PayPal.Services
 
 		public PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data, IList<string> errors = null)
 		{
-			var encoding = Encoding.UTF8;
+			var encoding = Encoding.ASCII;
 			var result = new PayPalResponse();
 			HttpWebResponse webResponse = null;
 
@@ -119,11 +120,23 @@ namespace SmartStore.PayPal.Services
 			var request = (HttpWebRequest)WebRequest.Create(url);
 			request.Method = method;
 			request.Accept = "application/json";
-			request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+			request.ContentType = "application/x-www-form-urlencoded";
+
+			if (HttpContext.Current != null && HttpContext.Current.Request != null)
+			{
+				request.UserAgent = HttpContext.Current.Request.UserAgent;
+			}
+			else
+			{
+				request.UserAgent = Plugin.SystemName;
+			}
 
 			if (path.EmptyNull().EndsWith("/token"))
 			{
-				request.Credentials = new NetworkCredential(settings.ClientId, settings.Secret);
+				// see https://github.com/paypal/sdk-core-dotnet/blob/master/Source/SDK/OAuthTokenCredential.cs
+				byte[] credentials = Encoding.UTF8.GetBytes("{0}:{1}".FormatInvariant(settings.ClientId, settings.Secret));
+
+				request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(credentials));
 			}
 			else
 			{
@@ -167,7 +180,7 @@ namespace SmartStore.PayPal.Services
 			{
 				if (webResponse != null)
 				{
-					using (var reader = new StreamReader(webResponse.GetResponseStream(), encoding))
+					using (var reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
 					{
 						var rawResponse = reader.ReadToEnd();
 						if (rawResponse.HasValue())
@@ -181,17 +194,21 @@ namespace SmartStore.PayPal.Services
 							{
 								if (!result.Success)
 								{
-									result.ErrorName = (string)result.Json.name;
-									result.ErrorMessage = (string)result.Json.message;
+									var name = (string)result.Json.name;
+									var message = (string)result.Json.message;
 
-									var details = (string)result.Json.details;
-									if (details.IsEmpty())
-										details = webResponse.StatusDescription;
+									if (name.IsEmpty())
+										name = (string)result.Json.error;
 
-									if (details.HasValue())
-										result.ErrorMessage = result.ErrorMessage.EnsureEndsWith(".").Grow(details, " ");
+									if (message.IsEmpty())
+										message = (string)result.Json.error_description;
 
-									LogError(null, result.ErrorName, result.ErrorMessage, false, errors);
+									if (message.IsEmpty())
+										message = webResponse.StatusDescription;
+
+									result.ErrorMessage = "{0} ({1}).".FormatInvariant(message.NaIfEmpty(), name.NaIfEmpty());
+
+									LogError(null, result.ErrorMessage, result.Json.ToString(), false, errors);
 								}
 							}
 						}
@@ -214,7 +231,7 @@ namespace SmartStore.PayPal.Services
 			return result;
 		}
 
-		public bool EnsureAccessToken(PayPalSessionData session, PayPalApiSettingsBase settings)
+		public PayPalResponse EnsureAccessToken(PayPalSessionData session, PayPalApiSettingsBase settings)
 		{
 			if (session.AccessToken.IsEmpty() || DateTime.UtcNow >= session.TokenExpiration)
 			{
@@ -231,16 +248,25 @@ namespace SmartStore.PayPal.Services
 
 					session.TokenExpiration = DateTime.UtcNow.AddSeconds(expireSeconds);
 				}
+				else
+				{
+					return result;
+				}
 			}
 
-			return session.AccessToken.HasValue();
+			return new PayPalResponse
+			{
+				Success = session.AccessToken.HasValue()
+			};
 		}
 
 		public PayPalResponse SetCheckoutExperience(PayPalApiSettingsBase settings, Store store)
 		{
 			var session = new PayPalSessionData();
-			if (!EnsureAccessToken(session, settings))
-				return null;
+			var result = EnsureAccessToken(session, settings);
+
+			if (!result.Success)
+				return result;
 
 			var logo = _pictureService.Value.GetPictureById(store.LogoPictureId);
 
@@ -262,13 +288,7 @@ namespace SmartStore.PayPal.Services
 			data.Add("presentation", presentation);
 			data.Add("input_fields", inpuFields);
 
-			var result = CallApi("POST", "/v1/payment-experience/webprofiles", session.AccessToken, settings, JsonConvert.SerializeObject(data));
-
-			if (result.Success)
-			{
-
-				//return (string)result.Json.id;
-			}
+			result = CallApi("POST", "/v1/payment-experience/webprofiles", session.AccessToken, settings, JsonConvert.SerializeObject(data));
 
 			return result;
 		}
@@ -279,7 +299,6 @@ namespace SmartStore.PayPal.Services
 	{
 		public bool Success { get; set; }
 		public dynamic Json { get; set; }
-		public string ErrorName { get; set; }
 		public string ErrorMessage { get; set; }
 	}
 

@@ -14,7 +14,7 @@ namespace SmartStore.PayPal.Services
 
 		PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data, IList<string> errors = null);
 
-		bool EnsureAccessToken(PayPalSessionData session, PayPalApiSettingsBase settings);
+		PayPalResponse EnsureAccessToken(PayPalSessionData session, PayPalApiSettingsBase settings);
 
 		PayPalResponse SetCheckoutExperience(PayPalApiSettingsBase settings, Store store);
 	}

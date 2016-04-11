@@ -53,7 +53,8 @@
                 @Html.SmartLabelFor(model => model.ClientId)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ClientId)
+				@Html.SettingOverrideCheckbox(model => model.ClientId)
+                @Html.TextBoxFor(model => model.ClientId, new { @class = "control-xlarge" })
                 @Html.ValidationMessageFor(model => model.ClientId)
             </td>
         </tr>
@@ -62,7 +63,8 @@
                 @Html.SmartLabelFor(model => model.Secret)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.Secret)
+				@Html.SettingOverrideCheckbox(model => model.Secret)
+                @Html.TextBoxFor(model => model.Secret, new { @class = "control-xlarge" })
                 @Html.ValidationMessageFor(model => model.Secret)
             </td>
         </tr>
@@ -164,9 +166,6 @@
 				callbackSuccess: function (response) {
 					if (!_.isEmpty(response.id)) {
 						$('#@Html.FieldIdFor(x => x.ExperienceProfileId)').val(response);
-					}
-					if (!_.isEmpty(response.error)) {
-						EventBroker.publish('message', { title: response.error, type: 'error' });
 					}
 				}
 			});

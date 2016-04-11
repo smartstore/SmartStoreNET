@@ -53,7 +53,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             if (cookie != null && !String.IsNullOrEmpty(cookie.Value))
                 cookieLanguageCode = cookie.Value;
 
-            // ensure it's available (it could be delete since the previous installation)
+            // ensure it's available (it could be deleted since the previous installation)
             var availableLanguages = GetAvailableLanguages();
 
             var language = availableLanguages
@@ -79,7 +79,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 		private bool MatchLanguageByCurrentCulture(InstallationLanguage language)
 		{
-			var curCulture = CultureInfo.GetCultureInfoByIetfLanguageTag("tr-TR"); // Thread.CurrentThread.CurrentCulture;
+			var curCulture = Thread.CurrentThread.CurrentUICulture;
 
 			if (language.Code.IsCaseInsensitiveEqual(curCulture.IetfLanguageTag))
 				return true;

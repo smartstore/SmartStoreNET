@@ -1059,7 +1059,8 @@ namespace SmartStore.Web.Controllers
 			bool prepareColorAttributes = false,
 			bool prepareManufacturers = false,
             bool isCompact = false,
-			bool prepareFullDescription = false)
+			bool prepareFullDescription = false,
+			bool isCompareList = false)
 		{
 			if (products == null)
 				throw new ArgumentNullException("products");
@@ -1395,7 +1396,7 @@ namespace SmartStore.Web.Controllers
 					model.Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), cachedManufacturerModels, false);
 				}
 
-				if (_catalogSettings.ShowBasePriceInProductLists)
+				if (_catalogSettings.ShowBasePriceInProductLists || isCompareList)
 				{
                     model.BasePriceInfo = contextProduct.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService,  workingCurrency);
 				}

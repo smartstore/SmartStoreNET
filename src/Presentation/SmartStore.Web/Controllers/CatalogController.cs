@@ -1017,7 +1017,7 @@ namespace SmartStore.Web.Controllers
 
 			var products = _compareProductsService.GetComparedProducts();
 
-			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, prepareFullDescription: true)
+			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, prepareFullDescription: true, isCompareList: true)
 				.ToList()
 				.ForEach(model.Products.Add);
 
@@ -1067,7 +1067,7 @@ namespace SmartStore.Web.Controllers
 
 			var products = _compareProductsService.GetComparedProducts();
 
-			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true)
+			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, isCompareList: true)
 				.ToList()
 				.ForEach(model.Products.Add);
 

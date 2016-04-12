@@ -11,6 +11,7 @@
 ### Improvements
 * (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.
 * Exports the product detail link including the attribute query string when exporting attribute combinations
+* #918 Compare products: Display base price information
 
 ### Bugfixes
 * Fixed ajax cache issue when saving payment or shipping restrictions. Internet Explorer showed the old data state (before storage).

@@ -138,8 +138,8 @@ namespace SmartStore.Data.Migrations
 				"Nach der Anzahl der getätigten Bestellungen filtern.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.SystemProfileNote",
-				"The following list contains system profiles intended to export data in the SmartStore.NET own format. There are additional export buttons available for these imports. You can find them over the object lists, such as the product or order list.",
-				"Die folgende Liste enthält Systemprofile, über die Daten im SmartStore.NET eigenen Format exportiert werden können. Für diese Importe stehen zusätzliche Export-Buttons zur Verfügung. Sie finden diese über den entsprechenden Listen, wie z.B. der Produkt- oder Auftragsliste.");
+				"The following list contains system profiles, which are provided by plugins such as the <a href='http://community.smartstore.com/index.php?/files/file/85-smartstorenet-common-export-providers/' target='_blank'>Data Export Plugin</a>. You can customize system profiles as desired, but cannot create new ones. These profiles also add additional action buttons. You will find these above data lists, such as the product or order list.",
+				"Die folgende Liste enthält Systemprofile, die von Plugins wie bspw. dem <a href='http://community.smartstore.com/index.php?/files/file/85-smartstorenet-common-export-providers/' target='_blank'>Datenexporte Plugin</a> bereitgestellt werden. Sie können Systemprofile nach Belieben anpassen, aber keine Neuen erstellen. Für diese Profile stehen außerdem zusätzliche Aktions-Buttons zur Verfügung. Sie finden diese über den entsprechenden Listen, wie z.B. der Produkt- oder Auftragsliste.");
 
 			builder.AddOrUpdate("Admin.DataExchange.AddNewProfile",
 				"New profile",
@@ -179,6 +179,14 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Common.FileInUse",
 				"The file is in use and cannot be opened.",
 				"Die Datei ist in Benutzung und kann nicht geöffnet werden.");
+
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.UserProfilesTitle",
+				"User profiles",
+				"Benutzerprofile");
+			builder.AddOrUpdate("Admin.DataExchange.Export.SystemProfilesTitle",
+				"System profiles",
+				"Systemprofile");
 		}
 	}
 }

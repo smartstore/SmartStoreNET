@@ -13,30 +13,9 @@
     </div>
 </div>
 
-@if (!hasUserProfiles && !hasSystemProfiles)
-{
-	<div class="alert alert-info">
-		<button type="button" class="close" data-dismiss="alert">&#215;</button>
-		@T("Admin.DataExchange.Export.NoProfiles")
-	</div>
-}
-
 <div id="ExportProfileListContainer">
-	<div>
-		@Html.Partial("_ProfileList", Model.Where(x => !x.IsSystemProfile), new ViewDataDictionary { { "IsSystemProfile", false } })
-	</div>
-
-	@if (hasSystemProfiles)
-	{
-		<div class="alert alert-info" @Html.Attr("style", "margin-top:40px", true)>
-			<button type="button" class="close" data-dismiss="alert">&#215;</button>
-			@T("Admin.DataExchange.Export.SystemProfileNote")
-		</div>
-
-		<div>
-			@Html.Partial("_ProfileList", Model.Where(x => x.IsSystemProfile), new ViewDataDictionary { { "IsSystemProfile", true } })
-		</div>
-	}
+	@Html.Partial("_ProfileList", Model.Where(x => !x.IsSystemProfile), new ViewDataDictionary { { "IsSystemProfile", false } })
+	@Html.Partial("_ProfileList", Model.Where(x => x.IsSystemProfile), new ViewDataDictionary { { "IsSystemProfile", true } })
 </div>
 
 <form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin" })">

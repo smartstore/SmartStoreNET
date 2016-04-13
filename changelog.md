@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 2.5.1
 
@@ -21,6 +21,7 @@
 * The error message of a payment provider when capturing a payment was not displayed
 * Adding new shipping method throws an exception
 * Attribute Values: Assigning IsPreselected to more than one value causes an error
+* BizImporter: fixed redirection bug when default file extension in .biz wasn't .html
 
 
 ## SmartStore.NET 2.5

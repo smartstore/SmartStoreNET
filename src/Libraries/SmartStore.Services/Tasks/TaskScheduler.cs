@@ -168,7 +168,8 @@ namespace SmartStore.Services.Tasks
                 return;
             
             var req = (HttpWebRequest)WebRequest.Create(url);
-            req.UserAgent = "SmartStore.NET";
+			req.ServerCertificateValidationCallback += (sender, cert, chain, errors) => true;
+			req.UserAgent = "SmartStore.NET";
             req.Method = "POST";
             req.ContentType = "text/plain";
 			req.ContentLength = 0;

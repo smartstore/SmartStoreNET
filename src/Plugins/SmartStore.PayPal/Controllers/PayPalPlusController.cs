@@ -99,29 +99,29 @@ namespace SmartStore.PayPal.Controllers
 		}
 
 		[AdminAuthorize]
-		public ActionResult CreateExperienceProfile()
+		public ActionResult UpsertExperienceProfile(string profileId)
 		{
-			string profileId = null;
-
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(storeScope);
 
 			var store = Services.StoreService.GetStoreById(storeScope == 0 ? Services.StoreContext.CurrentStore.Id : storeScope);
 
-			var result = _payPalService.SetCheckoutExperience(settings, store);
+			var result = _payPalService.UpsertCheckoutExperience(settings, store, profileId);
 			if (result != null)
 			{
-				if (result.Success)
+				if (result.Success && result.Id.HasValue())
 				{
-					profileId = (string)result.Json.id;
+					settings.ExperienceProfileId = result.Id;
+
+					Services.Settings.SaveSetting(settings, storeScope);
 				}
-				else if (result.ErrorMessage.HasValue())
+				else
 				{
 					NotifyError(result.ErrorMessage);
 				}
 			}
 
-			return new JsonResult { Data = new { id = profileId }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+			return RedirectToAction("ConfigureProvider", "Plugin", new { area = "admin", systemName = PayPalPlusProvider.SystemName });
 		}
 
 		public ActionResult PaymentInfo()

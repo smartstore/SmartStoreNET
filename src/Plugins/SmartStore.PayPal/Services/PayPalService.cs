@@ -101,35 +101,32 @@ namespace SmartStore.PayPal.Services
 
 		public PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data, IList<string> errors = null)
 		{
-			var encoding = Encoding.ASCII;
+			var isJson = (data.HasValue() && data.StartsWith("{"));
+			var encoding = (isJson ? Encoding.UTF8 : Encoding.ASCII);
 			var result = new PayPalResponse();
 			HttpWebResponse webResponse = null;
 
 			var url = GetApiUrl(settings.UseSandbox) + path.EnsureStartsWith("/");
 
 			if (method.IsCaseInsensitiveEqual("GET") && data.HasValue())
-			{
 				url = url.EnsureEndsWith("?") + data;
-			}
 
 			if (settings.SecurityProtocol.HasValue)
-			{
 				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
-			}
 
 			var request = (HttpWebRequest)WebRequest.Create(url);
 			request.Method = method;
 			request.Accept = "application/json";
-			request.ContentType = "application/x-www-form-urlencoded";
+			request.ContentType = (isJson ? "application/json" : "application/x-www-form-urlencoded");
 
-			if (HttpContext.Current != null && HttpContext.Current.Request != null)
+			try
 			{
-				request.UserAgent = HttpContext.Current.Request.UserAgent;
+				if (HttpContext.Current != null && HttpContext.Current.Request != null)
+					request.UserAgent = HttpContext.Current.Request.UserAgent;
+				else
+					request.UserAgent = Plugin.SystemName;
 			}
-			else
-			{
-				request.UserAgent = Plugin.SystemName;
-			}
+			catch { }
 
 			if (path.EmptyNull().EndsWith("/token"))
 			{
@@ -144,7 +141,7 @@ namespace SmartStore.PayPal.Services
 			}
 
 
-			if ((method.IsCaseInsensitiveEqual("POST") || method.IsCaseInsensitiveEqual("PATCH")) && data.HasValue())
+			if (data.HasValue() && (method.IsCaseInsensitiveEqual("POST") || method.IsCaseInsensitiveEqual("PUT") || method.IsCaseInsensitiveEqual("PATCH")))
 			{
 				byte[] bytes = encoding.GetBytes(data);
 
@@ -163,7 +160,7 @@ namespace SmartStore.PayPal.Services
 			try
 			{
 				webResponse = request.GetResponse() as HttpWebResponse;
-				result.Success = (webResponse.StatusCode == HttpStatusCode.OK);
+				result.Success = ((int)webResponse.StatusCode < 400);
 			}
 			catch (WebException wexc)
 			{
@@ -185,31 +182,40 @@ namespace SmartStore.PayPal.Services
 						var rawResponse = reader.ReadToEnd();
 						if (rawResponse.HasValue())
 						{
-							if (rawResponse.StartsWith("["))
-								result.Json = JArray.Parse(rawResponse);
-							else
-								result.Json = JObject.Parse(rawResponse);
-
-							if (result.Json != null)
+							if (webResponse.ContentType.IsCaseInsensitiveEqual("application/json"))
 							{
-								if (!result.Success)
+								if (rawResponse.StartsWith("["))
+									result.Json = JArray.Parse(rawResponse);
+								else
+									result.Json = JObject.Parse(rawResponse);
+
+								if (result.Json != null)
 								{
-									var name = (string)result.Json.name;
-									var message = (string)result.Json.message;
+									if (!result.Success)
+									{
+										var name = (string)result.Json.name;
+										var message = (string)result.Json.message;
 
-									if (name.IsEmpty())
-										name = (string)result.Json.error;
+										if (name.IsEmpty())
+											name = (string)result.Json.error;
 
-									if (message.IsEmpty())
-										message = (string)result.Json.error_description;
+										if (message.IsEmpty())
+											message = (string)result.Json.error_description;
 
-									if (message.IsEmpty())
-										message = webResponse.StatusDescription;
+										if (message.IsEmpty())
+											message = webResponse.StatusDescription;
 
-									result.ErrorMessage = "{0} ({1}).".FormatInvariant(message.NaIfEmpty(), name.NaIfEmpty());
+										result.ErrorMessage = "{0} ({1}).".FormatInvariant(message.NaIfEmpty(), name.NaIfEmpty());
 
-									LogError(null, result.ErrorMessage, result.Json.ToString(), false, errors);
+										LogError(null, result.ErrorMessage, result.Json.ToString(), false, errors);
+									}
 								}
+							}
+							else if (!result.Success)
+							{							
+								result.ErrorMessage = rawResponse;
+
+								LogError(null, result.ErrorMessage, null, false, errors);
 							}
 						}
 					}
@@ -235,10 +241,7 @@ namespace SmartStore.PayPal.Services
 		{
 			if (session.AccessToken.IsEmpty() || DateTime.UtcNow >= session.TokenExpiration)
 			{
-				var data = new Dictionary<string, object>();
-				data.Add("grant_type", "client_credentials");
-
-				var result = CallApi("POST", "/v1/oauth2/token", null, settings, JsonConvert.SerializeObject(data));
+				var result = CallApi("POST", "/v1/oauth2/token", null, settings, "grant_type=client_credentials");
 
 				if (result.Success)
 				{
@@ -260,7 +263,7 @@ namespace SmartStore.PayPal.Services
 			};
 		}
 
-		public PayPalResponse SetCheckoutExperience(PayPalApiSettingsBase settings, Store store)
+		public PayPalResponse UpsertCheckoutExperience(PayPalApiSettingsBase settings, Store store, string profileId)
 		{
 			var session = new PayPalSessionData();
 			var result = EnsureAccessToken(session, settings);
@@ -268,13 +271,32 @@ namespace SmartStore.PayPal.Services
 			if (!result.Success)
 				return result;
 
+			var name = store.Name;
 			var logo = _pictureService.Value.GetPictureById(store.LogoPictureId);
+			var path = "/v1/payment-experience/web-profiles";
 
 			var data = new Dictionary<string, object>();
 			var presentation = new Dictionary<string, object>();
 			var inpuFields = new Dictionary<string, object>();
 
-			presentation.Add("brand_name", store.Name);
+			if (profileId.IsEmpty())
+			{
+				result = CallApi("GET", path, session.AccessToken, settings, null);
+				if (result.Success && result.Json != null)
+				{
+					foreach (var profile in result.Json)
+					{
+						var profileName = (string)profile.name;
+						if (profileName.IsCaseInsensitiveEqual(name))
+						{
+							profileId = (string)profile.id;
+							break;
+						}
+					}
+				}
+			}
+
+			presentation.Add("brand_name", name);
 			presentation.Add("locale_code", _services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToUpper());
 
 			if (logo != null)
@@ -284,11 +306,22 @@ namespace SmartStore.PayPal.Services
 			inpuFields.Add("no_shipping", 0);
 			inpuFields.Add("address_override", 1);
 
-			data.Add("name", store.Name);
+			data.Add("name", name);
 			data.Add("presentation", presentation);
 			data.Add("input_fields", inpuFields);
 
-			result = CallApi("POST", "/v1/payment-experience/webprofiles", session.AccessToken, settings, JsonConvert.SerializeObject(data));
+			if (profileId.HasValue())
+				path = string.Concat(path, "/", HttpUtility.UrlPathEncode(profileId));
+
+			result = CallApi(profileId.HasValue() ? "PUT" : "POST", path, session.AccessToken, settings, JsonConvert.SerializeObject(data));
+
+			if (result.Success)
+			{
+				if (result.Json != null)
+					result.Id = (string)result.Json.id;
+				else
+					result.Id = profileId;
+			}
 
 			return result;
 		}
@@ -300,6 +333,7 @@ namespace SmartStore.PayPal.Services
 		public bool Success { get; set; }
 		public dynamic Json { get; set; }
 		public string ErrorMessage { get; set; }
+		public string Id { get; set; }
 	}
 
 	public class PayPalSessionData

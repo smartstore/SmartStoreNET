@@ -75,8 +75,10 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.ExperienceProfileId)
 
-				<a id="CreateExperienceProfile" href="javascript:void(0)" data-url="@Url.Action("CreateExperienceProfile", "PayPalPlus", new { area = Plugin.SystemName })" class="btn btn-warning">
-					<i class="fa fa-gear"></i>&nbsp;@(T("Plugins.SmartStore.PayPal.CreateNow"))!
+				<a id="UpsertExperienceProfile" class="btn btn-warning" onclick="return confirm('@T("Admin.Common.AreYouSure")');"
+				   href="@Url.Action("UpsertExperienceProfile", "PayPalPlus", new { area = Plugin.SystemName, profileId = Model.ExperienceProfileId })">
+					<i class="fa fa-gear"></i>&nbsp;
+					<span id="UpsertExperienceProfileButtonLabel"></span>!
 				</a>
 
                 @Html.ValidationMessageFor(model => model.ExperienceProfileId)
@@ -160,16 +162,11 @@
 <script type="text/javascript">
 	jQuery(document).ready(function () {
 
-		$('#CreateExperienceProfile').click(function () {
-			$(this).doAjax({
-				ask: '@T("Admin.Common.AreYouSure")',
-				callbackSuccess: function (response) {
-					if (!_.isEmpty(response.id)) {
-						$('#@Html.FieldIdFor(x => x.ExperienceProfileId)').val(response);
-					}
-				}
-			});
-		});
+		// set upsert experience profile button label
+		$('#@Html.FieldIdFor(x => x.ExperienceProfileId)').change(function () {
+			var labelText = (_.isEmpty($(this).val()) ? '@T("Plugins.SmartStore.PayPal.CreateNow")' : '@T("Plugins.SmartStore.PayPal.UpdateNow")');
+			$('#UpsertExperienceProfileButtonLabel').html(labelText);
+		}).trigger('change');
 
 	});
 </script>

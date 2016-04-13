@@ -22,6 +22,9 @@
   <LocaleResource Name="CreateNow">
     <Value>Create now</Value>
   </LocaleResource>
+  <LocaleResource Name="UpdateNow">
+    <Value>Update now</Value>
+  </LocaleResource>
   <LocaleResource Name="ClientId">
     <Value>Client ID</Value>
   </LocaleResource>
@@ -38,7 +41,7 @@
     <Value>Experience profile ID</Value>
   </LocaleResource>
   <LocaleResource Name="ExperienceProfileId.Hint">
-    <Value>Specifies the experience profile ID. The profile conatins global data like shop name and logo. A profile needs to be created only once.</Value>
+    <Value>Specifies the experience profile ID. The profile contains global data like shop name and logo. A profile needs to be created only once. Using the button, you can create a new profile or update an existing one.</Value>
   </LocaleResource>
 
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">

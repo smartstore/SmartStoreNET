@@ -13,7 +13,7 @@ namespace SmartStore.PayPal.Models
 	{
         public string[] ConfigGroups { get; set; }
 
-        [SmartResourceDisplayName("Plugins.Payments.PayPal.UseSandbox")]
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.UseSandbox")]
 		public bool UseSandbox { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.IpnChangesPaymentStatus")]

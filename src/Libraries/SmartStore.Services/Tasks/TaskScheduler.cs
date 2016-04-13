@@ -222,7 +222,10 @@ namespace SmartStore.Services.Tasks
 				{
 					using (var response = wex.Response as HttpWebResponse)
 					{
-						msg += " HTTP {0}, {1}".FormatCurrent((int)response.StatusCode, response.StatusDescription);
+						if (response != null)
+						{
+							msg += " HTTP {0}, {1}".FormatCurrent((int)response.StatusCode, response.StatusDescription);
+						}
 						logger.Error(msg);
 					}
 				}

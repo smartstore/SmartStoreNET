@@ -159,7 +159,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			if (headContentMd5.HasValue() && headContentMd5 != contentMd5)
 				return HmacResult.ContentMd5NotMatching;
 
-			string messageRepresentation = _hmac.CreateMessageRepresentation(context, contentMd5, headTimestamp);
+			string messageRepresentation = _hmac.CreateMessageRepresentation(context, headContentMd5.HasValue() ? contentMd5 : "", headTimestamp);
 
 			if (string.IsNullOrEmpty(messageRepresentation))
 				return HmacResult.MissingMessageRepresentationParameter;

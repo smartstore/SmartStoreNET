@@ -1,7 +1,9 @@
 namespace SmartStore.Data.Migrations
 {
 	using System.Data.Entity.Migrations;
-	using Setup;
+	using SmartStore.Data.Setup;
+	using SmartStore.Core.Domain.Media;
+	using System.Linq;
 
 	public partial class ThirdPartyEmailHandOver : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
 	{
@@ -23,6 +25,17 @@ namespace SmartStore.Data.Migrations
 		public void Seed(SmartObjectContext context)
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
+
+			// Some users have disabled the "TransientMediaClearTask" due to a bug.
+			// When the task is enabled again, it would delete media files, which are marked as transient
+			// but are permanent actually. To avoid this, we have to set IsTransient to false.
+			var transientPictures = context.Set<Picture>().Where(x => x.IsTransient == true).ToList();
+			transientPictures.Each(x => x.IsTransient = false);
+
+			var transientDownloads = context.Set<Download>().Where(x => x.IsTransient == true).ToList();
+			transientDownloads.Each(x => x.IsTransient = false);
+
+			context.SaveChanges();
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

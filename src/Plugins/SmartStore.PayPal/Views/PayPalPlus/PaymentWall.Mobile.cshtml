@@ -6,10 +6,14 @@
 	Html.AddTitleParts(T("PageTitle.Checkout").Text);
 	//Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.PayPal/Content/smartstore.paypal.css"));
 }
+
+@Html.Partial("PaymentWallScripting")
+
 <div class="page checkout-page">
 	<div class="page-title">
 		<h1>@T("Checkout.SelectPaymentMethod")</h1>
 	</div>
 	<div class="page-body checkout-data">
+		<div id="PayPalPlusPaymentWall"></div>
 	</div>
 </div>

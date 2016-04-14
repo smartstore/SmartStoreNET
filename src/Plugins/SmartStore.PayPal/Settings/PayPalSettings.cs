@@ -40,6 +40,7 @@ namespace SmartStore.PayPal.Settings
 
 		public string ClientId { get; set; }
 		public string Secret { get; set; }
+		public string ExperienceProfileId { get; set; }
 	}
 
 
@@ -93,8 +94,6 @@ namespace SmartStore.PayPal.Settings
 
 	public class PayPalPlusPaymentSettings : PayPalApiSettingsBase, ISettings
 	{
-		public string ExperienceProfileId { get; set; }
-
 		public PayPalPlusPaymentSettings()
 		{
 			UseSandbox = true;

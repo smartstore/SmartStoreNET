@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Services;
@@ -14,9 +15,11 @@ namespace SmartStore.PayPal.Controllers
 {
 	public class PayPalPlusController : PayPalControllerBase<PayPalPlusPaymentSettings>
 	{
+		private readonly HttpContextBase _httpContext;
 		private readonly IPayPalService _payPalService;
 
 		public PayPalPlusController(
+			HttpContextBase httpContext,
 			IPaymentService paymentService,
 			IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
@@ -26,6 +29,7 @@ namespace SmartStore.PayPal.Controllers
 				orderService,
 				orderProcessingService)
 		{
+			_httpContext = httpContext;
 			_payPalService = payPalService;
 		}
 
@@ -105,10 +109,12 @@ namespace SmartStore.PayPal.Controllers
 			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(storeScope);
 
 			var store = Services.StoreService.GetStoreById(storeScope == 0 ? Services.StoreContext.CurrentStore.Id : storeScope);
+			var session = new PayPalSessionData();
 
-			var result = _payPalService.UpsertCheckoutExperience(settings, store, profileId);
-			if (result != null)
+			var result = _payPalService.EnsureAccessToken(session, settings);
+			if (result.Success)
 			{
+				result = _payPalService.UpsertCheckoutExperience(settings, session, store, profileId);
 				if (result.Success && result.Id.HasValue())
 				{
 					settings.ExperienceProfileId = result.Id;
@@ -119,6 +125,10 @@ namespace SmartStore.PayPal.Controllers
 				{
 					NotifyError(result.ErrorMessage);
 				}
+			}
+			else
+			{
+				NotifyError(result.ErrorMessage);
 			}
 
 			return RedirectToAction("ConfigureProvider", "Plugin", new { area = "admin", systemName = PayPalPlusProvider.SystemName });
@@ -131,15 +141,67 @@ namespace SmartStore.PayPal.Controllers
 
 		public ActionResult PaymentWall()
 		{
+			var store = Services.StoreContext.CurrentStore;
+			var customer = Services.WorkContext.CurrentCustomer;
+			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(store.Id);
+
 			var model = new PayPalPlusCheckoutModel();
+			var state = _httpContext.GetCheckoutState();
+
+			if (!state.CustomProperties.ContainsKey(PayPalPlusProvider.SystemName))
+				state.CustomProperties.Add(PayPalPlusProvider.SystemName, new PayPalSessionData());
+
+			var session = state.CustomProperties[PayPalPlusProvider.SystemName] as PayPalSessionData;
+
+			model.UseSandbox = settings.UseSandbox;
+			model.HasPaymentFee = (settings.AdditionalFee > decimal.Zero);
+			model.LanguageCulture = (Services.WorkContext.WorkingLanguage.LanguageCulture ?? "de_DE").Replace("-", "_");
+
+			if (customer.BillingAddress != null && customer.BillingAddress.Country != null)
+			{
+				model.BillingAddressCountryCode = customer.BillingAddress.Country.TwoLetterIsoCode;
+			}
+
+			var protocol = (store.SslEnabled ? "https" : "http");
+			var returnUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
+			var cancelUrl = Url.Action("CheckoutCancel", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
+
+
+			var result = _payPalService.EnsureAccessToken(session, settings);
+			if (result.Success)
+			{
+				result = _payPalService.UpsertPayment(settings, session, null, returnUrl, cancelUrl);
+				if (result.Success && result.Json != null)
+				{
+					foreach (var link in result.Json.links)
+					{
+						if (((string)link.rel).IsCaseInsensitiveEqual("approval_url"))
+						{
+							model.ApprovalUrl = link.href;
+							break;
+						}
+					}
+				}
+				else if (result.ErrorMessage.HasValue())
+				{
+					ModelState.AddModelError("", result.ErrorMessage);
+				}
+			}
+			else if (result.ErrorMessage.HasValue())
+			{
+				ModelState.AddModelError("", result.ErrorMessage);
+			}
 
 			return View(model);
 		}
 
-		[HttpPost]
-		public ActionResult PaymentWall(FormCollection form)
+		public ActionResult CheckoutReturn()
 		{
+			return RedirectToAction("Confirm", "Checkout", new { area = "" });
+		}
 
+		public ActionResult CheckoutCancel()
+		{
 			return RedirectToAction("Confirm", "Checkout", new { area = "" });
 		}
 	}

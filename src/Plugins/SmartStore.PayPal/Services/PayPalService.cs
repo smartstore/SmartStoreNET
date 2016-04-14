@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
@@ -263,14 +264,9 @@ namespace SmartStore.PayPal.Services
 			};
 		}
 
-		public PayPalResponse UpsertCheckoutExperience(PayPalApiSettingsBase settings, Store store, string profileId)
+		public PayPalResponse UpsertCheckoutExperience(PayPalApiSettingsBase settings, PayPalSessionData session, Store store, string profileId)
 		{
-			var session = new PayPalSessionData();
-			var result = EnsureAccessToken(session, settings);
-
-			if (!result.Success)
-				return result;
-
+			PayPalResponse result;
 			var name = store.Name;
 			var logo = _pictureService.Value.GetPictureById(store.LogoPictureId);
 			var path = "/v1/payment-experience/web-profiles";
@@ -325,6 +321,52 @@ namespace SmartStore.PayPal.Services
 
 			return result;
 		}
+
+		public PayPalResponse UpsertPayment(
+			PayPalApiSettingsBase settings,
+			PayPalSessionData session,
+			string paymentId,
+			string returnUrl,
+			string cancelUrl)
+		{
+			var path = "/v1/payments/payment";
+			var data = new Dictionary<string, object>();
+			var redirectUrls = new Dictionary<string, object>();
+
+			if (paymentId.HasValue())
+				path = string.Concat(path, "/", HttpUtility.UrlPathEncode(paymentId));
+
+			data.Add("intent", settings.TransactMode == TransactMode.AuthorizeAndCapture ? "sale" : "authorize");
+
+			if (settings.ExperienceProfileId.HasValue())
+				data.Add("experience_profile_id", settings.ExperienceProfileId);
+
+			if (returnUrl.HasValue())
+				redirectUrls.Add("return_url", returnUrl);
+
+			if (cancelUrl.HasValue())
+				redirectUrls.Add("cancel_url", cancelUrl);
+
+			if (redirectUrls.Any())
+				data.Add("redirect_urls", redirectUrls);
+
+			if (paymentId.IsEmpty())
+			{
+				// TODO: add line items
+			}
+
+			var result = CallApi(paymentId.HasValue() ? "PATCH" : "POST", path, session.AccessToken, settings, JsonConvert.SerializeObject(data));
+
+			if (result.Success)
+			{
+				if (result.Json != null)
+					result.Id = (string)result.Json.id;
+				else
+					result.Id = paymentId;
+			}
+
+			return result;
+		}
 	}
 
 
@@ -341,5 +383,4 @@ namespace SmartStore.PayPal.Services
 		public string AccessToken { get; set; }
 		public DateTime TokenExpiration { get; set; }
 	}
-
 }

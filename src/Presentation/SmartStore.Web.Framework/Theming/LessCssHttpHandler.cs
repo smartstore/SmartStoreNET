@@ -2,22 +2,24 @@
 using System.Web;
 using System.Web.Caching;
 using BundleTransformer.Core;
+using BundleTransformer.Core.Assets;
 using BundleTransformer.Core.Configuration;
 using BundleTransformer.Core.FileSystem;
+using BundleTransformer.Core.Transformers;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
+using BundleTransformer.Less.Translators;
 
 namespace SmartStore.Web.Framework.Theming
 {
-	public class LessCssHttpHandler : BundleTransformer.Less.HttpHandlers.LessAssetHandlerBase 
-    {
-		
+	public class LessCssHttpHandler : BundleTransformer.Core.HttpHandlers.StyleAssetHandlerBase
+	{
 		public LessCssHttpHandler()
             : this(HttpContext.Current.Cache,
-				BundleTransformerContext.Current.GetVirtualFileSystemWrapper(),
-                BundleTransformerContext.Current.GetCoreConfiguration().AssetHandler)
+				BundleTransformerContext.Current.FileSystem.GetVirtualFileSystemWrapper(),
+				BundleTransformerContext.Current.Configuration.GetCoreSettings().AssetHandler)
         { }
 
         public LessCssHttpHandler(
@@ -28,7 +30,12 @@ namespace SmartStore.Web.Framework.Theming
         {
 		}
 
-        private bool IsThemeableRequest()
+		protected override bool IsStaticAsset
+		{
+			get { return false; }
+		}
+
+		private bool IsThemeableRequest()
         {
 			if (!DataSettings.DatabaseIsInstalled())
             {
@@ -46,12 +53,12 @@ namespace SmartStore.Web.Framework.Theming
             }
         }
 
-        public override string GetCacheKey(string assetUrl)
-        {
-            string cacheKey = base.GetCacheKey(assetUrl);
+		protected override string GetCacheKey(string assetVirtualPath, string bundleVirtualPath)
+		{
+			string cacheKey = base.GetCacheKey(assetVirtualPath, bundleVirtualPath);
 
-            if (IsThemeableRequest())
-            {
+			if (IsThemeableRequest())
+			{
 				var httpContext = HttpContext.Current;
 				if (httpContext != null && httpContext.Request != null)
 				{
@@ -69,12 +76,17 @@ namespace SmartStore.Web.Framework.Theming
 						}
 					}
 				}
-				
+
 				cacheKey += "_" + EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName + "_" + EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
-            }
+			}
 
-            return cacheKey;
-        }
+			return cacheKey;
+		}
 
-    }
+		protected override IAsset TranslateAsset(IAsset asset, ITransformer transformer, bool isDebugMode)
+		{
+			var processedAsset = InnerTranslateAsset<LessTranslator>("LessTranslator", asset, transformer, isDebugMode);
+			return processedAsset;
+		}
+	}
 }

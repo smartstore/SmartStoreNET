@@ -43,7 +43,6 @@
                 @Html.SmartLabelFor(model => model.UseSandbox)
             </td>
             <td class="adminData">
-				@*multistore context not possible, see IPN handling*@
                 @Html.EditorFor(model => model.UseSandbox)
                 @Html.ValidationMessageFor(model => model.UseSandbox)
             </td>
@@ -76,6 +75,7 @@
                 @Html.SettingEditorFor(model => model.ExperienceProfileId)
 
 				<a id="UpsertExperienceProfile" class="btn btn-warning" onclick="return confirm('@T("Admin.Common.AreYouSure")');"
+				   @(Model.ClientId.HasValue() && Model.Secret.HasValue() ? "" : "disabled='disabled'")
 				   href="@Url.Action("UpsertExperienceProfile", "PayPalPlus", new { area = Plugin.SystemName, profileId = Model.ExperienceProfileId })">
 					<i class="fa fa-gear"></i>&nbsp;
 					<span id="UpsertExperienceProfileButtonLabel"></span>!

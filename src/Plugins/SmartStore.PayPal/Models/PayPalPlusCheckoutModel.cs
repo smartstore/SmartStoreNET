@@ -9,5 +9,6 @@ namespace SmartStore.PayPal.Models
 		public string BillingAddressCountryCode { get; set; }
 		public string LanguageCulture { get; set; }
 		public string ApprovalUrl { get; set; }
+		public string ErrorMessage { get; set; }
 	}
 }

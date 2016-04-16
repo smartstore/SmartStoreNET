@@ -11,11 +11,6 @@
 	@Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment })
 }
 
-@if (!ViewData.ModelState.IsValid)
-{
-	@Html.ValidationSummary()
-}
-
 @Html.Partial("PaymentWallScripting")
 
 <div id="PayPalPlusPage" class="page payment-method-page">
@@ -26,6 +21,15 @@
 		@using (Html.BeginForm())
 		{
 			@Html.Widget("checkout_payment_method_top")
+
+			if (Model.ErrorMessage.HasValue())
+			{
+				<div class="alert alert-error">
+					@Html.Raw(T("Plugins.Payments.PayPalPlus.MethodUnavailable"))
+					<br />
+					@Model.ErrorMessage
+				</div>
+			}
 
 			<div id="PayPalPlusPaymentWall"></div>
 

@@ -162,35 +162,40 @@ namespace SmartStore.PayPal.Controllers
 				model.BillingAddressCountryCode = customer.BillingAddress.Country.TwoLetterIsoCode;
 			}
 
-			var protocol = (store.SslEnabled ? "https" : "http");
-			var returnUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
-			var cancelUrl = Url.Action("CheckoutCancel", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
-
-
-			var result = _payPalService.EnsureAccessToken(session, settings);
-			if (result.Success)
+			if (session.PaymentId.IsEmpty() || session.ApprovalUrl.IsEmpty())
 			{
-				result = _payPalService.UpsertPayment(settings, session, null, returnUrl, cancelUrl);
-				if (result.Success && result.Json != null)
+				var result = _payPalService.EnsureAccessToken(session, settings);
+				if (result.Success)
 				{
-					foreach (var link in result.Json.links)
+					var protocol = (store.SslEnabled ? "https" : "http");
+					var returnUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
+					var cancelUrl = Url.Action("CheckoutCancel", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
+
+					result = _payPalService.CreatePayment(settings, session, PayPalPlusProvider.SystemName, returnUrl, cancelUrl);
+					if (result.Success && result.Json != null)
 					{
-						if (((string)link.rel).IsCaseInsensitiveEqual("approval_url"))
+						foreach (var link in result.Json.links)
 						{
-							model.ApprovalUrl = link.href;
-							break;
+							if (((string)link.rel).IsCaseInsensitiveEqual("approval_url"))
+							{
+								session.PaymentId = result.Id;
+								session.ApprovalUrl = link.href;
+								break;
+							}
 						}
 					}
+					else
+					{
+						model.ErrorMessage = result.ErrorMessage;
+					}
 				}
-				else if (result.ErrorMessage.HasValue())
+				else
 				{
-					ModelState.AddModelError("", result.ErrorMessage);
+					model.ErrorMessage = result.ErrorMessage;
 				}
 			}
-			else if (result.ErrorMessage.HasValue())
-			{
-				ModelState.AddModelError("", result.ErrorMessage);
-			}
+
+			model.ApprovalUrl = session.ApprovalUrl;
 
 			return View(model);
 		}

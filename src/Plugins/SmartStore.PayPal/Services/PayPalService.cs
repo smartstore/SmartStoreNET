@@ -7,15 +7,22 @@ using System.Text;
 using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.Customers;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Payments;
+using SmartStore.Services.Tax;
 
 namespace SmartStore.PayPal.Services
 {
@@ -23,15 +30,27 @@ namespace SmartStore.PayPal.Services
 	{
 		private readonly ICommonServices _services;
 		private readonly IOrderService _orderService;
+		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
+		private readonly IPaymentService _paymentService;
+		private readonly IPriceCalculationService _priceCalculationService;
+		private readonly ITaxService _taxService;
 		private readonly Lazy<IPictureService> _pictureService;
 
 		public PayPalService(
 			ICommonServices services,
 			IOrderService orderService,
+			IOrderTotalCalculationService orderTotalCalculationService,
+			IPaymentService paymentService,
+			IPriceCalculationService priceCalculationService,
+			ITaxService taxService,
 			Lazy<IPictureService> pictureService)
 		{
 			_services = services;
 			_orderService = orderService;
+			_orderTotalCalculationService = orderTotalCalculationService;
+			_paymentService = paymentService;
+			_priceCalculationService = priceCalculationService;
+			_taxService = taxService;
 			_pictureService = pictureService;
 
 			T = NullLocalizer.Instance;
@@ -322,25 +341,48 @@ namespace SmartStore.PayPal.Services
 			return result;
 		}
 
-		public PayPalResponse UpsertPayment(
-			PayPalApiSettingsBase settings,
-			PayPalSessionData session,
-			string paymentId,
-			string returnUrl,
-			string cancelUrl)
+		public PayPalResponse CreatePayment(PayPalApiSettingsBase settings, PayPalSessionData session, string providerSystemName, string returnUrl, string cancelUrl)
 		{
+			var store = _services.StoreContext.CurrentStore;
+			var customer = _services.WorkContext.CurrentCustomer;
+			var language = _services.WorkContext.WorkingLanguage;
+			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+			var currencyCode = store.PrimaryStoreCurrency.CurrencyCode;
+
+			Discount orderAppliedDiscount;
+			List<AppliedGiftCard> appliedGiftCards;
+			int redeemedRewardPoints = 0;
+			decimal redeemedRewardPointsAmount;
+			decimal orderDiscountInclTax;
+			decimal totalOrderItems = decimal.Zero;
+
+			var includingTax = (_services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id) == TaxDisplayType.IncludingTax);
+
+			var shipping = (_orderTotalCalculationService.GetShoppingCartShippingTotal(cart) ?? decimal.Zero);
+
+			var paymentFee = _paymentService.GetAdditionalHandlingFee(cart, providerSystemName);
+
+			var total = (_orderTotalCalculationService.GetShoppingCartTotal(cart, out orderDiscountInclTax, out orderAppliedDiscount, out appliedGiftCards,
+				out redeemedRewardPoints, out redeemedRewardPointsAmount) ?? decimal.Zero);
+
 			var path = "/v1/payments/payment";
 			var data = new Dictionary<string, object>();
 			var redirectUrls = new Dictionary<string, object>();
+			var payer = new Dictionary<string, object>();
+			var transaction = new Dictionary<string, object>();
+			var amount = new Dictionary<string, object>();
+			var amountDetails = new Dictionary<string, object>();
+			var items = new List<Dictionary<string, object>>();
 
-			if (paymentId.HasValue())
-				path = string.Concat(path, "/", HttpUtility.UrlPathEncode(paymentId));
+			if (session.PaymentId.HasValue())
+				path = string.Concat(path, "/", HttpUtility.UrlPathEncode(session.PaymentId));
 
 			data.Add("intent", settings.TransactMode == TransactMode.AuthorizeAndCapture ? "sale" : "authorize");
 
 			if (settings.ExperienceProfileId.HasValue())
 				data.Add("experience_profile_id", settings.ExperienceProfileId);
 
+			// redirect urls
 			if (returnUrl.HasValue())
 				redirectUrls.Add("return_url", returnUrl);
 
@@ -350,19 +392,78 @@ namespace SmartStore.PayPal.Services
 			if (redirectUrls.Any())
 				data.Add("redirect_urls", redirectUrls);
 
-			if (paymentId.IsEmpty())
+			// payer
+			payer.Add("payment_method", "paypal");
+			data.Add("payer", payer);
+
+			// line items
+			foreach (var item in cart)
 			{
-				// TODO: add line items
+				decimal unitPriceTaxRate = decimal.Zero;
+				decimal unitPrice = _priceCalculationService.GetUnitPrice(item, true);
+				decimal productPrice = _taxService.GetProductPrice(item.Item.Product, unitPrice, includingTax, customer, out unitPriceTaxRate);
+
+				var line = new Dictionary<string, object>();
+				line.Add("quantity", item.Item.Quantity);
+				line.Add("name", item.Item.Product.GetLocalized(x => x.Name, language.Id, true, false).Truncate(127));
+				line.Add("price", Math.Round(productPrice, 2));
+				line.Add("currency", currencyCode);
+				line.Add("sku", item.Item.Product.Sku.Truncate(50));
+				items.Add(line);
+
+				totalOrderItems += (productPrice * item.Item.Quantity);
 			}
 
-			var result = CallApi(paymentId.HasValue() ? "PATCH" : "POST", path, session.AccessToken, settings, JsonConvert.SerializeObject(data));
+			var itemsPlusMisc = (totalOrderItems + shipping + paymentFee);
 
-			if (result.Success)
+			if (total != itemsPlusMisc)
 			{
-				if (result.Json != null)
-					result.Id = (string)result.Json.id;
-				else
-					result.Id = paymentId;
+				var line = new Dictionary<string, object>();
+				line.Add("quantity", "1");
+				line.Add("name", T("Plugins.SmartStore.PayPal.Other").Text.Truncate(127));
+				line.Add("price", Math.Round(total - itemsPlusMisc, 2));
+				line.Add("currency", currencyCode);
+				items.Add(line);
+
+				totalOrderItems += (total - itemsPlusMisc);
+			}			
+
+			// transactions
+			amountDetails.Add("shipping", Math.Round(shipping, 2));
+			amountDetails.Add("subtotal", Math.Round(totalOrderItems, 2));
+			if (!includingTax)
+			{
+				// To avoid rounding errors we recommend not submitting tax amounts on line item basis. 
+				// Calculated tax amounts for the entire shopping basket may be submitted in the amount objects.
+				// In this case the item amounts will be treated as amounts excluding tax.
+				// In a B2C scenario, where taxes are included, no taxes should be submitted to PayPal.
+
+				SortedDictionary<decimal, decimal> taxRates = null;
+				var taxTotal = _orderTotalCalculationService.GetTaxTotal(cart, out taxRates);
+
+				amountDetails.Add("tax", Math.Round(taxTotal, 2));
+			}
+			if (paymentFee != decimal.Zero)
+			{
+				amountDetails.Add("handling_fee", Math.Round(paymentFee, 2));
+			}
+
+			amount.Add("total", Math.Round(total, 2));
+			amount.Add("currency", currencyCode);
+			amount.Add("details", amountDetails);
+
+			transaction.Add("amount", amount);
+			transaction.Add("item_list", new Dictionary<string, object>	{ { "items" , items } });
+
+			data.Add("transactions", new List<Dictionary<string, object>> { transaction });
+
+			var result = CallApi("POST", path, session.AccessToken, settings, JsonConvert.SerializeObject(data));
+
+			if (result.Success && result.Json != null)
+			{
+				result.Id = (string)result.Json.id;
+
+				Logger.InsertLog(LogLevel.Information, "PayPal PLUS", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + result.Json.ToString());
 			}
 
 			return result;
@@ -382,5 +483,7 @@ namespace SmartStore.PayPal.Services
 	{
 		public string AccessToken { get; set; }
 		public DateTime TokenExpiration { get; set; }
+		public string PaymentId { get; set; }
+		public string ApprovalUrl { get; set; }
 	}
 }

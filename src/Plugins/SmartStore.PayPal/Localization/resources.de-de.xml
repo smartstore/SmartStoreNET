@@ -25,6 +25,9 @@
   <LocaleResource Name="UpdateNow">
     <Value>Jetzt aktualisieren</Value>
   </LocaleResource>
+  <LocaleResource Name="Other">
+    <Value>Sonstiges</Value>
+  </LocaleResource>
   <LocaleResource Name="ClientId">
     <Value>Client-ID</Value>
   </LocaleResource>
@@ -379,26 +382,12 @@ Zahlungsgebühr: {10}]]>
     <Children>
       <LocaleResource Name="AdminInstruction">
         <Value>
-          <![CDATA[<p>Stellen Sie bitte sicher, dass PayPal die Primärwährung Ihres Shops unterstützt.</p>
-            <ol>
-            <li>Loggen Sie sich in Ihr PayPal-Konto ein.</li>
-            <li>Klicken Sie auf den Register <b>Mein Profil</b>.</li>
-            <li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>API-Zugriff</b>.</li>
-            <li>Klicken Sie auf <b>API-Berechtigung anfordern</b>.</li>
-            <li>Wählen Sie die Option <b>Fordern Sie eine API-Signature an</b>.</li>
-            <li>Klicken Sie auf <b>Zustimmen und senden</b>.</li>
-            </ol>
-            <p>Aktivieren Sie optional den PayPal-Service zum Empfang von IPN-Nachrichten (Instant Payment Notification):</p>
-            <ol>
-            <li>In Ihr Premier- oder Business-Konto einloggen.</li>
-            <li>Auf den Register <b>Mein Profil</b> klicken.</li>
-            <li>Unter <b>Sprach-Kodierung > Weitere Einstellungen</b> wählen Sie bitte UTF-8.</li>
-            <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
-            <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
-            <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>https://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalPlus/IPNHandler</b>) eingeben.</li>
-            <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
-            </ol>]]>
+          <![CDATA[<p>PayPal PLUS bietet die Möglichkeit per PayPal, Kreditkarte, Lastschriftverfahren und per Rechnung zu bezahlen.
+Die Bezahlung auf Rechnung steht möglicherweise nicht allen Händlern zur Verfügung. PayPal PLUS ist im Moment nur in Deutschland verfügbar.</p>]]>
         </Value>
+      </LocaleResource>
+      <LocaleResource Name="MethodUnavailable">
+        <Value>Wir können Ihnen leider keine PayPal PLUS Zahlungsart anbieten. Bitte versuchen Sie er später erneut.</Value>
       </LocaleResource>
     </Children>
   </LocaleResource>

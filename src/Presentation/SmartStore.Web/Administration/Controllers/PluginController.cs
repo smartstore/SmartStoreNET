@@ -255,8 +255,8 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
                 return AccessDeniedView();
 
-            //restart application
-			_services.WebHelper.RestartAppDomain();
+            // restart application
+			_services.WebHelper.RestartAppDomain(aggressive: true);
 
             return RedirectToAction("List");
         }

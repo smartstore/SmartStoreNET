@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 2.5.1
 
@@ -6,10 +6,12 @@
 * #571 Option to display another checkbox on confirm page to let the customer accept that his email address can be handed over to a third party
 * #870 Implement address import for customers (both billing & shipping address)
 * #886 Add setting to hide manufacturer images on product detail page and to hide default image for manufacturers
+* Import localized SEO names for product and categories
 
 ### Improvements
 * (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.
 * Exports the product detail link including the attribute query string when exporting attribute combinations
+* #918 Compare products: Display base price information
 
 ### Bugfixes
 * Fixed ajax cache issue when saving payment or shipping restrictions. Internet Explorer showed the old data state (before storage).
@@ -19,6 +21,7 @@
 * The error message of a payment provider when capturing a payment was not displayed
 * Adding new shipping method throws an exception
 * Attribute Values: Assigning IsPreselected to more than one value causes an error
+* BizImporter: fixed redirection bug when default file extension in .biz wasn't .html
 
 
 ## SmartStore.NET 2.5

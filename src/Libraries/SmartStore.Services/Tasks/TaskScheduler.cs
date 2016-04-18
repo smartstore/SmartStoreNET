@@ -168,7 +168,8 @@ namespace SmartStore.Services.Tasks
                 return;
             
             var req = (HttpWebRequest)WebRequest.Create(url);
-            req.UserAgent = "SmartStore.NET";
+			req.ServerCertificateValidationCallback += (sender, cert, chain, errors) => true;
+			req.UserAgent = "SmartStore.NET";
             req.Method = "POST";
             req.ContentType = "text/plain";
 			req.ContentLength = 0;
@@ -222,7 +223,10 @@ namespace SmartStore.Services.Tasks
 				{
 					using (var response = wex.Response as HttpWebResponse)
 					{
-						msg += " HTTP {0}, {1}".FormatCurrent((int)response.StatusCode, response.StatusDescription);
+						if (response != null)
+						{
+							msg += " HTTP {0}, {1}".FormatCurrent((int)response.StatusCode, response.StatusDescription);
+						}
 						logger.Error(msg);
 					}
 				}

@@ -317,11 +317,11 @@ namespace SmartStore.Services.Shipping
             Customer customer = cart.GetCustomer();
 
             decimal totalWeight = decimal.Zero;
-            //shopping cart items
+            // shopping cart items
             foreach (var shoppingCartItem in cart)
                 totalWeight += GetShoppingCartItemTotalWeight(shoppingCartItem);
 
-            //checkout attributes
+            // checkout attributes
             if (customer != null)
             {
 				var checkoutAttributesXml = customer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
@@ -332,6 +332,7 @@ namespace SmartStore.Services.Shipping
 						totalWeight += caValue.WeightAdjustment;
 				}
             }
+
             return totalWeight;
         }
 

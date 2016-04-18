@@ -561,7 +561,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult ManufacturerAll()
         {
             var model = new List<ManufacturerModel>();
-            var manufacturers = _manufacturerService.GetAllManufacturers();
+            var manufacturers = _manufacturerService.GetAllManufacturers(null, _services.StoreContext.CurrentStore.Id);
             foreach (var manufacturer in manufacturers)
             {
                 var modelMan = manufacturer.ToModel();
@@ -590,7 +590,8 @@ namespace SmartStore.Web.Controllers
             {
                 var currentManufacturer = _manufacturerService.GetManufacturerById(currentManufacturerId);
 
-                var manufacturers = _manufacturerService.GetAllManufacturers();
+                var manufacturers = _manufacturerService.GetAllManufacturers(null, _services.StoreContext.CurrentStore.Id);
+
                 var model = new ManufacturerNavigationModel
                 {
                     TotalManufacturers = manufacturers.Count,
@@ -1016,7 +1017,7 @@ namespace SmartStore.Web.Controllers
 
 			var products = _compareProductsService.GetComparedProducts();
 
-			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, prepareFullDescription: true)
+			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, prepareFullDescription: true, isCompareList: true)
 				.ToList()
 				.ForEach(model.Products.Add);
 
@@ -1066,7 +1067,7 @@ namespace SmartStore.Web.Controllers
 
 			var products = _compareProductsService.GetComparedProducts();
 
-			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true)
+			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, isCompareList: true)
 				.ToList()
 				.ForEach(model.Products.Add);
 

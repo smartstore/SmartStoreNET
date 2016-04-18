@@ -1,4 +1,5 @@
-﻿using SmartStore.Web.Framework.Modelling;
+﻿using System.Collections.Generic;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.PayPal.Models
 {
@@ -10,5 +11,15 @@ namespace SmartStore.PayPal.Models
 		public string LanguageCulture { get; set; }
 		public string ApprovalUrl { get; set; }
 		public string ErrorMessage { get; set; }
+
+		public List<ThirdPartyPaymentMethod> ThirdPartyPaymentMethods { get; set; }
+
+		public class ThirdPartyPaymentMethod
+		{
+			public string RedirectUrl { get; set; }
+			public string MethodName { get; set; }
+			public string ImageUrl { get; set; }
+			public string Description { get; set; }
+		}
 	}
 }

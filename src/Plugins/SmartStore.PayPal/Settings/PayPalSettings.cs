@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net;
 using SmartStore.Core.Configuration;
 
@@ -38,8 +39,19 @@ namespace SmartStore.PayPal.Settings
 		public string ApiAccountPassword { get; set; }
 		public string Signature { get; set; }
 
+		/// <summary>
+		/// PayPal client id
+		/// </summary>
 		public string ClientId { get; set; }
+
+		/// <summary>
+		/// PayPal secret
+		/// </summary>
 		public string Secret { get; set; }
+
+		/// <summary>
+		/// PayPal experience profile id
+		/// </summary>
 		public string ExperienceProfileId { get; set; }
 	}
 
@@ -98,6 +110,21 @@ namespace SmartStore.PayPal.Settings
 		{
 			UseSandbox = true;
 		}
+
+		/// <summary>
+		/// Specifies other payment methods to be offered in payment wall
+		/// </summary>
+		public List<string> ThirdPartyPaymentMethods { get; set; }
+
+		/// <summary>
+		/// Specifies whether to display the logo of a third party payment method
+		/// </summary>
+		public bool DisplayPaymentMethodLogo { get; set; }
+
+		/// <summary>
+		/// Specifies whether to display the description of a third party payment method
+		/// </summary>
+		public bool DisplayPaymentMethodDescription { get; set; }
 	}
 
 	public class PayPalStandardPaymentSettings : PayPalSettingsBase, ISettings

@@ -101,24 +101,6 @@
 				@Html.DropDownListFor(model => model.SecurityProtocol, Model.AvailableSecurityProtocols, T("Common.Unspecified"))
 			</td>
 		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.TransactMode)
-			</td>
-			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => model.TransactMode)
-				@Html.DropDownListFor(model => model.TransactMode, Model.TransactModeValues)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.IpnChangesPaymentStatus)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.IpnChangesPaymentStatus)
-				@Html.ValidationMessageFor(model => model.IpnChangesPaymentStatus)
-			</td>
-		</tr>
 		<tr class="adminSeparator">
 			<td colspan="2">
 				<div class="admin-config-group">
@@ -126,6 +108,36 @@
 						@Model.ConfigGroups.SafeGet(2)
 					</div>
 				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ThirdPartyPaymentMethods)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.ThirdPartyPaymentMethods)
+				@Html.ListBoxFor(x => x.ThirdPartyPaymentMethods,
+					 new MultiSelectList(Model.AvailableThirdPartyPaymentMethods, "Value", "Text"),
+					 new { multiple = "multiple", @class = "control-xlarge" })
+				@Html.ValidationMessageFor(model => model.ThirdPartyPaymentMethods)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DisplayPaymentMethodLogo)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.DisplayPaymentMethodLogo)
+				@Html.ValidationMessageFor(model => model.DisplayPaymentMethodLogo)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DisplayPaymentMethodDescription)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.DisplayPaymentMethodDescription)
+				@Html.ValidationMessageFor(model => model.DisplayPaymentMethodDescription)
 			</td>
 		</tr>
 		<tr>

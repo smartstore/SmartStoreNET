@@ -18,6 +18,12 @@ namespace SmartStore.PayPal.Services
 
 		PayPalResponse UpsertCheckoutExperience(PayPalApiSettingsBase settings, PayPalSessionData session, Store store, string profileId);
 
-		PayPalResponse CreatePayment(PayPalApiSettingsBase settings, PayPalSessionData session, string providerSystemName, string returnUrl, string cancelUrl);
+		PayPalResponse CreatePayment(
+			PayPalApiSettingsBase settings,
+			PayPalSessionData session,
+			List<OrganizedShoppingCartItem> cart,
+			string providerSystemName,
+			string returnUrl,
+			string cancelUrl);
 	}
 }

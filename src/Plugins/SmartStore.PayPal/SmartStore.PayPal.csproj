@@ -149,6 +149,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="RouteProvider.cs" />
+    <Compile Include="Validators\PayPalPlusConfigValidator.cs" />
     <Compile Include="Validators\PayPalDirectPaymentInfoValidator.cs" />
     <Compile Include="Validators\PayPalExpressPaymentInfoValidator.cs" />
     <Compile Include="Web References\PayPalSvc\Reference.cs">

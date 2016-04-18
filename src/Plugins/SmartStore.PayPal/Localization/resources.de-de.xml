@@ -13,12 +13,6 @@
   <LocaleResource Name="OrderNoteStrings">
     <Value><![CDATA[Antwort von PayPal:<br />{0}]]></Value>
   </LocaleResource>
-  <LocaleResource Name="ModeAuth">
-    <Value>Autorisierung sofort, Abbuchung später</Value>
-  </LocaleResource>
-  <LocaleResource Name="ModeAuthAndCapture">
-    <Value>Sofort abbuchen</Value>
-  </LocaleResource>
   <LocaleResource Name="CreateNow">
     <Value>Jetzt erstellen</Value>
   </LocaleResource>
@@ -39,6 +33,9 @@
   </LocaleResource>
   <LocaleResource Name="Secret.Hint">
     <Value>Legt die API Secret fest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ValidateClientIdAndSecret">
+    <Value>Bitte geben Sie Ihre API Zugangsdaten ein.</Value>
   </LocaleResource>
   <LocaleResource Name="ExperienceProfileId">
     <Value>Experience Profil-ID</Value>
@@ -383,11 +380,32 @@ Zahlungsgebühr: {10}]]>
       <LocaleResource Name="AdminInstruction">
         <Value>
           <![CDATA[<p>PayPal PLUS bietet die Möglichkeit per PayPal, Kreditkarte, Lastschriftverfahren und per Rechnung zu bezahlen.
-Die Bezahlung auf Rechnung steht möglicherweise nicht allen Händlern zur Verfügung. PayPal PLUS ist im Moment nur in Deutschland verfügbar.</p>]]>
+Die Bezahlung auf Rechnung steht möglicherweise nicht allen Händlern zur Verfügung. PayPal PLUS unterstützt nur den Transaktionstyp der sofortigen Buchung und ist derzeit nur in Deutschland verfügbar.</p>]]>
         </Value>
       </LocaleResource>
       <LocaleResource Name="MethodUnavailable">
         <Value>Wir können Ihnen leider keine PayPal PLUS Zahlungsart anbieten. Bitte versuchen Sie er später erneut.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ThirdPartyPaymentMethods">
+        <Value>Weitere Zahlarten</Value>
+      </LocaleResource>
+      <LocaleResource Name="ThirdPartyPaymentMethods.Hint">
+        <Value>Sie können bis zu 5 weitere Zahlarten festlegen. Diese werden zusammen mit den PayPal PLUS Zahlarten im Kassenbereich angeboten.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ValidateThirdPartyPaymentMethods">
+        <Value>Es können maximal 5 weitere Zahlarten festgelegt werden.</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodLogo">
+        <Value>Logo der Zahlarten anzeigen</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodLogo.Hint">
+        <Value>Legt fest, ob für die weiteren Zahlarten deren Logo angezeigt werden soll. SSL erforderlich.</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodDescription">
+        <Value>Beschreibung der Zahlarten anzeigen</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodDescription.Hint">
+        <Value>Legt fest, ob für die weiteren Zahlarten deren Beschreibung angezeigt werden soll.</Value>
       </LocaleResource>
     </Children>
   </LocaleResource>

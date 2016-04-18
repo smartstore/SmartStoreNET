@@ -341,12 +341,17 @@ namespace SmartStore.PayPal.Services
 			return result;
 		}
 
-		public PayPalResponse CreatePayment(PayPalApiSettingsBase settings, PayPalSessionData session, string providerSystemName, string returnUrl, string cancelUrl)
+		public PayPalResponse CreatePayment(
+			PayPalApiSettingsBase settings,
+			PayPalSessionData session,
+			List<OrganizedShoppingCartItem> cart,
+			string providerSystemName,
+			string returnUrl,
+			string cancelUrl)
 		{
 			var store = _services.StoreContext.CurrentStore;
 			var customer = _services.WorkContext.CurrentCustomer;
 			var language = _services.WorkContext.WorkingLanguage;
-			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 			var currencyCode = store.PrimaryStoreCurrency.CurrencyCode;
 
 			Discount orderAppliedDiscount;
@@ -377,7 +382,11 @@ namespace SmartStore.PayPal.Services
 			if (session.PaymentId.HasValue())
 				path = string.Concat(path, "/", HttpUtility.UrlPathEncode(session.PaymentId));
 
-			data.Add("intent", settings.TransactMode == TransactMode.AuthorizeAndCapture ? "sale" : "authorize");
+			// "PayPal PLUS only supports transaction type “Sale” (instant settlement)"
+			if (providerSystemName == PayPalPlusProvider.SystemName)
+				data.Add("intent", "sale");
+			else
+				data.Add("intent", settings.TransactMode == TransactMode.AuthorizeAndCapture ? "sale" : "authorize");
 
 			if (settings.ExperienceProfileId.HasValue())
 				data.Add("experience_profile_id", settings.ExperienceProfileId);
@@ -463,7 +472,7 @@ namespace SmartStore.PayPal.Services
 			{
 				result.Id = (string)result.Json.id;
 
-				Logger.InsertLog(LogLevel.Information, "PayPal PLUS", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + result.Json.ToString());
+				//Logger.InsertLog(LogLevel.Information, "PayPal PLUS", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + result.Json.ToString());
 			}
 
 			return result;

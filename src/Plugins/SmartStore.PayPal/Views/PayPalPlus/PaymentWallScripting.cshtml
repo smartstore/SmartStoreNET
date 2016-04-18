@@ -5,26 +5,46 @@
 	try {
 
 		var ppp = PAYPAL.apps.PPP({
-			approvalUrl: '@Html.Raw(Model.ApprovalUrl)',
-			placeholder: 'PayPalPlusPaymentWall',
-			mode: '@(Model.UseSandbox ? "sandbox" : "live")',
-			country: '@(Model.BillingAddressCountryCode ?? "DE")',
-			buttonLocation: 'outside',
-			language: '@Html.Raw(Model.LanguageCulture ?? "de_DE")',
-			useraction: 'continue',
-			//surcharging: @Model.HasPaymentFee.ToString().ToLower(),
-			//showLoadingIndicator: true,
-			enableContinue: 'PayPalPlusNextCheckoutStep',
-			disableContinue: 'PayPalPlusNextCheckoutStep',
+			approvalUrl: "@Html.Raw(Model.ApprovalUrl)",
+			placeholder: "PayPalPlusPaymentWall",
+			mode: "@(Model.UseSandbox ? "sandbox" : "live")",
+			country: "@(Model.BillingAddressCountryCode ?? "DE")",
+			buttonLocation: "outside",
+			language: "@Html.Raw(Model.LanguageCulture ?? "de_DE")",
+			useraction: "continue",
+			surcharging: @Model.HasPaymentFee.ToString().ToLower(),
+			showLoadingIndicator: true,
+			//showPuiOnSandbox: true,
+			enableContinue: "PayPalPlusNextCheckoutStep",
+			disableContinue: "PayPalPlusNextCheckoutStep",
 			//enableContinue: function () {
 			//	$('#PayPalPlusNextCheckoutStep').prop('disabled', false);
 			//},
 			//disableContinue: function () {
 			//	$('#PayPalPlusNextCheckoutStep').prop('disabled', true);
 			//},
-			//onLoad: function () {
-			//	$('#PayPalPlusNextCheckoutStep').fadeIn();
-			//}
+			onLoad: function () {
+				$('#PayPalPlusNextCheckoutStep').fadeIn();
+			},
+			@if (Model.ThirdPartyPaymentMethods.Any())
+			{
+				<text>thirdPartyPaymentMethods: [</text>
+				foreach (var method in Model.ThirdPartyPaymentMethods)
+				{
+					<text>{ redirectUrl: "</text>@Html.Raw(method.RedirectUrl)<text>",</text>
+					<text>methodName: </text>@Html.Raw(method.MethodName)<text>,</text>
+					if (method.ImageUrl.HasValue())
+					{
+					<text>imageUrl: "</text>@Html.Raw(method.ImageUrl)<text>",</text>
+					}
+					if (method.Description.HasValue())
+					{
+					<text>description: </text>@Html.Raw(method.Description)<text>,</text>
+					}
+					<text> }, </text>
+				}
+				<text>]</text>
+			}
 		});
 
 	}

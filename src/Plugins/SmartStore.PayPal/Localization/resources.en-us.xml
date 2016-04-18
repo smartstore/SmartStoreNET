@@ -13,12 +13,6 @@
   <LocaleResource Name="OrderNoteStrings">
     <Value><![CDATA[Response from PayPal:<br />{0}]]></Value>
   </LocaleResource>
-  <LocaleResource Name="ModeAuth">
-    <Value>Authorize immediately, debit later</Value>
-  </LocaleResource>
-  <LocaleResource Name="ModeAuthAndCapture">
-    <Value>Immediately debit</Value>
-  </LocaleResource>
   <LocaleResource Name="CreateNow">
     <Value>Create now</Value>
   </LocaleResource>
@@ -39,6 +33,9 @@
   </LocaleResource>
   <LocaleResource Name="Secret.Hint">
     <Value>Specifies the API secret.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ValidateClientIdAndSecret">
+    <Value>Please enter your API credentials.</Value>
   </LocaleResource>
   <LocaleResource Name="ExperienceProfileId">
     <Value>Experience profile ID</Value>
@@ -383,11 +380,32 @@ Payment fee: {10}]]>
       <LocaleResource Name="AdminInstruction">
         <Value>
           <![CDATA[<p>PayPal PLUS is a solution where PayPal offers PayPal, Credit Card, Direct Debit (ELV) and pay upon invoice as individual payment options on the payment selection page.
-Pay upon invoice may not be available for all merchants. PayPal PLUS is only available in Germany at the moment.</p>]]>
+Pay upon invoice may not be available for all merchants. PayPal PLUS only supports the transaction type of instant settlement and is only available in Germany at the moment.</p>]]>
         </Value>
       </LocaleResource>
       <LocaleResource Name="MethodUnavailable">
         <Value>Unfortunately we cannot offer you a PayPal PLUS payment method. Please try again later.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ThirdPartyPaymentMethods">
+        <Value>More payment methods</Value>
+      </LocaleResource>
+      <LocaleResource Name="ThirdPartyPaymentMethods.Hint">
+        <Value>You can set up to 5 more payment methods. These are offered along with the PayPal PLUS payment methods during the checkout process.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ValidateThirdPartyPaymentMethods">
+        <Value>Maximum of 5 third party payment methods can be specified.</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodLogo">
+        <Value>Display logo of other payment methods</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodLogo.Hint">
+        <Value>Specifies whether to display the logo for other payment methods. SSL required.</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodDescription">
+        <Value>Display description of other payment methods</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodDescription.Hint">
+        <Value>Specifies whether to display the description for other payment methods.</Value>
       </LocaleResource>
     </Children>
   </LocaleResource>

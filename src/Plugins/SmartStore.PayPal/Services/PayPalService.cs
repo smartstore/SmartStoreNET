@@ -65,6 +65,37 @@ namespace SmartStore.PayPal.Services
 			return sandbox ? "https://api.sandbox.paypal.com" : "https://api.paypal.com";
 		}
 
+		public static Dictionary<SecurityProtocolType, string> GetSecurityProtocols()
+		{
+			var dic = new Dictionary<SecurityProtocolType, string>();
+
+			foreach (SecurityProtocolType protocol in Enum.GetValues(typeof(SecurityProtocolType)))
+			{
+				string friendlyName = null;
+				switch (protocol)
+				{
+					case SecurityProtocolType.Ssl3:
+						friendlyName = "SSL 3.0";
+						break;
+					case SecurityProtocolType.Tls:
+						friendlyName = "TLS 1.0";
+						break;
+					case SecurityProtocolType.Tls11:
+						friendlyName = "TLS 1.1";
+						break;
+					case SecurityProtocolType.Tls12:
+						friendlyName = "TLS 1.2";
+						break;
+					default:
+						friendlyName = protocol.ToString().ToUpper();
+						break;
+				}
+
+				dic.Add(protocol, friendlyName);
+			}
+			return dic;
+		}
+
 		public void AddOrderNote(PayPalSettingsBase settings, Order order, string anyString)
 		{
 			try
@@ -185,6 +216,7 @@ namespace SmartStore.PayPal.Services
 			catch (WebException wexc)
 			{
 				result.Success = false;
+				result.ErrorMessage = wexc.ToString();
 				webResponse = wexc.Response as HttpWebResponse;
 			}
 			catch (Exception exception)
@@ -222,22 +254,23 @@ namespace SmartStore.PayPal.Services
 										if (message.IsEmpty())
 											message = (string)result.Json.error_description;
 
-										if (message.IsEmpty())
-											message = webResponse.StatusDescription;
-
 										result.ErrorMessage = "{0} ({1}).".FormatInvariant(message.NaIfEmpty(), name.NaIfEmpty());
-
-										LogError(null, result.ErrorMessage, result.Json.ToString(), false, errors);
 									}
 								}
 							}
 							else if (!result.Success)
 							{							
 								result.ErrorMessage = rawResponse;
-
-								LogError(null, result.ErrorMessage, null, false, errors);
 							}
 						}
+					}
+
+					if (!result.Success)
+					{
+						if (result.ErrorMessage.IsEmpty())
+							result.ErrorMessage = webResponse.StatusDescription;
+
+						LogError(null, result.ErrorMessage, result.Json == null ? null : result.Json.ToString(), false, errors);
 					}
 				}
 			}
@@ -336,6 +369,20 @@ namespace SmartStore.PayPal.Services
 					result.Id = (string)result.Json.id;
 				else
 					result.Id = profileId;
+			}
+
+			return result;
+		}
+
+		public PayPalResponse GetPayment(PayPalApiSettingsBase settings, PayPalSessionData session)
+		{
+			var result = CallApi("GET", "/v1/payments/payment/" + session.PaymentId, session.AccessToken, settings, null);
+
+			if (result.Success && result.Json != null)
+			{
+				result.Id = (string)result.Json.id;
+
+				Logger.InsertLog(LogLevel.Information, "PayPal PLUS", result.Json.ToString());
 			}
 
 			return result;
@@ -476,6 +523,11 @@ namespace SmartStore.PayPal.Services
 			}
 
 			return result;
+		}
+
+		public PayPalResponse PatchPayment(PayPalApiSettingsBase settings, PayPalSessionData session)
+		{
+			return null;
 		}
 	}
 

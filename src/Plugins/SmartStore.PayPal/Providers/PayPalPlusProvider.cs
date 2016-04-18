@@ -10,7 +10,7 @@ namespace SmartStore.PayPal
 	[SystemName("Payments.PayPalPlus")]
     [FriendlyName("PayPal Plus")]
     [DisplayOrder(1)]
-    public partial class PayPalPlusProvider : PayPalProviderBase<PayPalPlusPaymentSettings>
+    public partial class PayPalPlusProvider : PayPalRestApiProviderBase<PayPalPlusPaymentSettings>
     {
         public PayPalPlusProvider()
         {
@@ -29,21 +29,6 @@ namespace SmartStore.PayPal
 			}
 		}
 
-		protected override string GetResourceRootKey()
-		{
-			return "Plugins.Payments.PayPalPlus";
-		}
-
-		protected override string GetControllerName()
-		{
-			return "PayPalPlus";
-		}
-
-		/// <summary>
-		/// Process a payment
-		/// </summary>
-		/// <param name="processPaymentRequest">Payment info required for an order processing</param>
-		/// <returns>Process payment result</returns>
 		public override ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
         {
 			var result = new ProcessPaymentResult

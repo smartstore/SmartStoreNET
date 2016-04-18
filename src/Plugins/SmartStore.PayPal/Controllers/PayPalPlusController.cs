@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Html;
@@ -25,12 +24,13 @@ using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.PayPal.Controllers
 {
-	public class PayPalPlusController : PayPalControllerBase<PayPalPlusPaymentSettings>
+	public class PayPalPlusController : PaymentControllerBase
 	{
 		private readonly HttpContextBase _httpContext;
 		private readonly PluginMediator _pluginMediator;
 		private readonly IPayPalService _payPalService;
 		private readonly IGenericAttributeService _genericAttributeService;
+		private readonly IPaymentService _paymentService;
 
 		public PayPalPlusController(
 			HttpContextBase httpContext,
@@ -39,29 +39,30 @@ namespace SmartStore.PayPal.Controllers
 			IOrderProcessingService orderProcessingService,
 			PluginMediator pluginMediator,
 			IPayPalService payPalService,
-			IGenericAttributeService genericAttributeService) : base(
-				PayPalPlusProvider.SystemName,
-				paymentService,
-				orderService,
-				orderProcessingService)
+			IGenericAttributeService genericAttributeService)
 		{
 			_httpContext = httpContext;
 			_pluginMediator = pluginMediator;
 			_payPalService = payPalService;
 			_genericAttributeService = genericAttributeService;
+			_paymentService = paymentService;
 		}
 
 		private string GetPaymentMethodName(Provider<IPaymentMethod> provider)
 		{
-			var name = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
+			if (provider != null)
+			{
+				var name = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
 
-			if (name.IsEmpty())
-				name = provider.Metadata.FriendlyName;
+				if (name.IsEmpty())
+					name = provider.Metadata.FriendlyName;
 
-			if (name.IsEmpty())
-				name = provider.Metadata.SystemName;
+				if (name.IsEmpty())
+					name = provider.Metadata.SystemName;
 
-			return name;
+				return name;
+			}
+			return "";
 		}
 
 		private PayPalPlusCheckoutModel.ThirdPartyPaymentMethod GetThirdPartyPaymentMethodModel(
@@ -71,14 +72,14 @@ namespace SmartStore.PayPal.Controllers
 		{
 			var model = new PayPalPlusCheckoutModel.ThirdPartyPaymentMethod();
 			model.MethodName = GetPaymentMethodName(provider).EncodeJsString();
-			model.RedirectUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName }, store.SslEnabled ? "https" : "http");
+			model.RedirectUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName, systemName = provider.Metadata.SystemName }, store.SslEnabled ? "https" : "http");
 
 			try
 			{
 				if (settings.DisplayPaymentMethodDescription)
 				{
 					// not the short description, the full description is intended for frontend
-					var paymentMethod = PaymentService.GetPaymentMethodBySystemName(provider.Metadata.SystemName);
+					var paymentMethod = _paymentService.GetPaymentMethodBySystemName(provider.Metadata.SystemName);
 					if (paymentMethod != null)
 					{
 						var description = paymentMethod.GetLocalized(x => x.FullDescription);
@@ -140,12 +141,12 @@ namespace SmartStore.PayPal.Controllers
 				ConfigGroups = T("Plugins.SmartStore.PayPal.ConfigGroups").Text.SplitSafe(";")
 			};
 
-			model.AvailableSecurityProtocols = GetSecurityProtocols()
+			model.AvailableSecurityProtocols = PayPalService.GetSecurityProtocols()
 				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
 				.ToList();
 
 			// it's better to also offer inactive methods here but filter them out in frontend
-			var methods = PaymentService.LoadAllPaymentMethods(storeScope);
+			var methods = _paymentService.LoadAllPaymentMethods(storeScope);
 
 			model.AvailableThirdPartyPaymentMethods = methods
 				.Where(x => 
@@ -240,7 +241,7 @@ namespace SmartStore.PayPal.Controllers
 			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(store.Id);
 			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
-			var methods = PaymentService.LoadActivePaymentMethods(customer, cart, store.Id, null, false);
+			var methods = _paymentService.LoadActivePaymentMethods(customer, cart, store.Id, null, false);
 			var state = _httpContext.GetCheckoutState();
 
 			if (!state.CustomProperties.ContainsKey(PayPalPlusProvider.SystemName))
@@ -309,22 +310,37 @@ namespace SmartStore.PayPal.Controllers
 		}
 
 		[ValidateInput(false)]
-		public ActionResult CheckoutReturn()
+		public ActionResult CheckoutReturn(string systemName, string paymentId)
 		{
+			// Request.QueryString:
+			// paymentId: PAY-0TC88803RP094490KK4KM6AI, token: EC-5P379249AL999154U, PayerID: 5L9K773HHJLPN
+
 			var customer = Services.WorkContext.CurrentCustomer;
 			var store = Services.StoreContext.CurrentStore;
+			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(store.Id);
+			var state = _httpContext.GetCheckoutState();
 
-			_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, Plugin.SystemName, store.Id);
+			if (!state.CustomProperties.ContainsKey(PayPalPlusProvider.SystemName))
+				state.CustomProperties.Add(PayPalPlusProvider.SystemName, new PayPalSessionData());
 
-			// this is ugly...
+			var session = state.CustomProperties[PayPalPlusProvider.SystemName] as PayPalSessionData;
+
+			if (systemName.IsEmpty())
+				systemName = PayPalPlusProvider.SystemName;
+
+			if (paymentId.HasValue() && session.PaymentId.IsEmpty())
+				session.PaymentId = paymentId;
+
+			_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, systemName, store.Id);
+
 			var paymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
 			if (paymentRequest == null)
 			{
-				_httpContext.Session["OrderPaymentInfo"] = new ProcessPaymentRequest();
+				_httpContext.Session["OrderPaymentInfo"] = new ProcessPaymentRequest
+				{
+					PaymentMethodSystemName = systemName
+				};
 			}
-
-			Logger.InsertLog(LogLevel.Information, "PayPal PLUS Return", string.Join(", ", Request.QueryString.AllKeys.Select(key => key + ": " + Request.QueryString[key]).ToArray()));
-
 
 			return RedirectToAction("Confirm", "Checkout", new { area = "" });
 		}

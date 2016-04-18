@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.PayPalSvc;
+using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.PayPal.Validators;
 using SmartStore.Services.Common;
@@ -109,7 +110,7 @@ namespace SmartStore.PayPal.Controllers
 
             model.TransactModeValues = TransactModeValues(settings.TransactMode);
 
-			model.AvailableSecurityProtocols = GetSecurityProtocols()
+			model.AvailableSecurityProtocols = PayPalService.GetSecurityProtocols()
 				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
 				.ToList();
 

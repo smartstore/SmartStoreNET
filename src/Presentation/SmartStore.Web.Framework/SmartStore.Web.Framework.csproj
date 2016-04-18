@@ -255,6 +255,7 @@
     <Compile Include="Plugins\ProviderManager.cs" />
     <Compile Include="Seo\CanonicalHostNameAttribute.cs" />
     <Compile Include="SmartUrlRoutingModule.cs" />
+    <Compile Include="Theming\CssHttpHandlerBase.cs" />
     <Compile Include="Theming\LocalizedDisplayMode.cs" />
     <Compile Include="Theming\ThemeFileResolver.cs" />
     <Compile Include="Theming\InheritedVirtualThemeFile.cs" />

@@ -1227,6 +1227,15 @@
     <Content Include="Scripts\jquery.serialScroll.js" />
     <Content Include="Scripts\underscore.js" />
     <Content Include="Scripts\underscore.min.js" />
+    <Content Include="Themes\NewAlpha\Content\images\ajax_loader_small.gif" />
+    <Content Include="Themes\NewAlpha\Content\images\color-overlay.png" />
+    <Content Include="Themes\NewAlpha\Content\images\deliv-bg-aero.png" />
+    <Content Include="Themes\NewAlpha\Content\images\loading.gif" />
+    <Content Include="Themes\NewAlpha\Content\images\star-off-12.png" />
+    <Content Include="Themes\NewAlpha\Content\images\star-off.png" />
+    <Content Include="Themes\NewAlpha\Content\images\star-on-12.png" />
+    <Content Include="Themes\NewAlpha\Content\images\star-on.png" />
+    <Content Include="Themes\NewAlpha\preview.png" />
     <Content Include="Themes\AlphaBlack\preview.png" />
     <Content Include="Themes\AlphaBlue\preview.png" />
     <Content Include="Themes\Alpha\Content\images\color-overlay.png" />
@@ -1862,9 +1871,66 @@
     <Content Include="Views\Common\EntityPicker.cshtml" />
     <Content Include="Views\Common\EntityPickerList.cshtml" />
     <Content Include="Views\Widget\TabWidgets.cshtml" />
+    <Content Include="Themes\NewAlpha\Content\bs4\.csscomb.json" />
+    <Content Include="Themes\NewAlpha\Content\bs4\.scss-lint.yml" />
+    <Content Include="Themes\NewAlpha\Content\bs4\bootstrap-flex.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\bootstrap-grid.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\bootstrap-reboot.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\bootstrap.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_alert.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_animation.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_breadcrumb.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_button-group.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_buttons.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_card.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_carousel.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_close.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_code.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_custom-forms.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_dropdown.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_forms.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_grid.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_images.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_input-group.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_jumbotron.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_labels.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_list-group.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_media.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_mixins.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_modal.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_nav.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_navbar.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_normalize.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_pager.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_pagination.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_popover.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_print.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_progress.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_reboot.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_responsive-embed.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_tables.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_tooltip.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_type.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_utilities-background.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_utilities-responsive.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_utilities-spacing.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_utilities.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\_variables.scss" />
+    <None Include="Themes\NewAlpha\Content\theme.scss" />
+    <Content Include="Themes\NewAlpha\theme.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Themes\NewAlpha\Views\Shared\Head.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Themes\NewAlpha\Views\Shared\_ColumnsOne.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_ColumnsThree.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_ColumnsTwo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />
+    <Folder Include="Themes\NewAlpha\Content\bs4\mixins\" />
     <Folder Include="Views\TaskScheduler\" />
   </ItemGroup>
   <ItemGroup>

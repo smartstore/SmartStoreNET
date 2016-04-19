@@ -43,14 +43,13 @@ using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Common;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Web.Controllers
 {
 	public partial class CommonController : PublicControllerBase
     {
 		private readonly static string[] s_hints = new string[] { "Shopsystem", "Onlineshop Software", "Shopsoftware", "E-Commerce Solution" };
-
-		#region Fields
 
 		private readonly ICommonServices _services;
 		private readonly ITopicService _topicService;
@@ -62,6 +61,7 @@ namespace SmartStore.Web.Controllers
         private readonly Lazy<IGenericAttributeService> _genericAttributeService;
         private readonly Lazy<IMobileDeviceHelper> _mobileDeviceHelper;
 		private readonly Lazy<ICompareProductsService> _compareProductsService;
+		private readonly Lazy<IUrlRecordService> _urlRecordService;
 
 		private readonly StoreInformationSettings _storeInfoSettings;
 		private readonly CustomerSettings _customerSettings;
@@ -85,10 +85,6 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<ICategoryService> _categoryService;
 		private readonly Lazy<IProductService> _productService;
 
-        #endregion
-
-        #region Constructors
-
         public CommonController(
 			ICommonServices services,
 			ITopicService topicService,
@@ -100,6 +96,7 @@ namespace SmartStore.Web.Controllers
             Lazy<IGenericAttributeService> genericAttributeService, 
 			Lazy<IMobileDeviceHelper> mobileDeviceHelper,
 			Lazy<ICompareProductsService> compareProductsService,
+			Lazy<IUrlRecordService> urlRecordService,
 			StoreInformationSettings storeInfoSettings,
             CustomerSettings customerSettings, 
             TaxSettings taxSettings, 
@@ -132,6 +129,7 @@ namespace SmartStore.Web.Controllers
             this._genericAttributeService = genericAttributeService;
             this._mobileDeviceHelper = mobileDeviceHelper;
 			this._compareProductsService = compareProductsService;
+			this._urlRecordService = urlRecordService;
 
 			this._storeInfoSettings = storeInfoSettings;
 			this._customerSettings = customerSettings;
@@ -157,8 +155,6 @@ namespace SmartStore.Web.Controllers
 			this._productService = productService;
         }
 
-        #endregion
-
         #region Utilities
 
         [NonAction]
@@ -183,7 +179,7 @@ namespace SmartStore.Web.Controllers
 
 			var workingLanguage = _services.WorkContext.WorkingLanguage;
 
-            var model = new LanguageSelectorModel()
+            var model = new LanguageSelectorModel
             {
                 CurrentLanguageId = workingLanguage.Id,
                 AvailableLanguages = availableLanguages,
@@ -194,9 +190,10 @@ namespace SmartStore.Web.Controllers
 
             foreach (var lang in model.AvailableLanguages)
             {
-                var helper = new LocalizedUrlHelper(HttpContext.Request, true);
+                //var helper = new LocalizedUrlHelper(HttpContext.Request, true);
+				var helper = CreateUrlHelperForLanguageSelector(lang, workingLanguage.Id);
 
-                if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
+				if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
                 {
                     if (lang.SeoCode == defaultSeoCode && (int)(_localizationSettings.DefaultLanguageRedirectBehaviour) > 0)
                     {
@@ -213,6 +210,40 @@ namespace SmartStore.Web.Controllers
 
             return model;
         }
+
+		private LocalizedUrlHelper CreateUrlHelperForLanguageSelector(LanguageModel model, int currentLanguageId)
+		{
+			if (currentLanguageId != model.Id)
+			{
+				var routeValues = this.Request.RequestContext.RouteData.Values;
+				var controller = routeValues["controller"].ToString();
+
+				object val;
+				if (!routeValues.TryGetValue(controller + "id", out val))
+				{
+					controller = routeValues["action"].ToString();
+					routeValues.TryGetValue(controller + "id", out val);
+				}
+
+				int entityId = 0;
+				if (val != null)
+				{
+					entityId = val.Convert<int>();
+				}
+
+				if (entityId > 0)
+				{
+					var activeSlug = _urlRecordService.Value.GetActiveSlug(entityId, controller, model.Id);
+					if (activeSlug.HasValue())
+					{
+						var helper = new LocalizedUrlHelper(Request.ApplicationPath, activeSlug, false);
+						return helper;
+					}
+				}
+			}
+
+			return new LocalizedUrlHelper(HttpContext.Request, true);
+		}
 
         [NonAction]
         protected CurrencySelectorModel PrepareCurrencySelectorModel()

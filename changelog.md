@@ -10,6 +10,7 @@
 
 ### Improvements
 * (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.
+* Localization & SEO: language switcher now takes language specific SEO slugs into account when building links
 * Exports the product detail link including the attribute query string when exporting attribute combinations
 * #918 Compare products: Display base price information
 

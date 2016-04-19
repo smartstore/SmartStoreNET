@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
@@ -17,6 +18,7 @@ using SmartStore.Core.Logging;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -59,6 +61,36 @@ namespace SmartStore.PayPal.Services
 
 		public Localizer T { get; set; }
 		public ILogger Logger { get; set; }
+
+		private Dictionary<string, object> CreateAddress(Address addr)
+		{
+			var dic = new Dictionary<string, object>();
+
+			dic.Add("line1", addr.Address1.Truncate(100));
+
+			if (addr.Address2.HasValue())
+			{
+				dic.Add("line2", addr.Address2.Truncate(100));
+			}
+
+			dic.Add("city", addr.City.Truncate(50));
+
+			if (addr.CountryId != 0 && addr.Country != null)
+			{
+				dic.Add("country_code", addr.Country.TwoLetterIsoCode);
+			}
+
+			dic.Add("postal_code", addr.ZipPostalCode.Truncate(20));
+
+			if (addr.StateProvinceId != 0 && addr.StateProvince != null)
+			{
+				dic.Add("state", addr.StateProvince.Abbreviation.Truncate(100));
+			}
+
+			dic.Add("recipient_name", addr.GetFullName().Truncate(50));
+
+			return dic;
+		}
 
 		public static string GetApiUrl(bool sandbox)
 		{
@@ -381,8 +413,6 @@ namespace SmartStore.PayPal.Services
 			if (result.Success && result.Json != null)
 			{
 				result.Id = (string)result.Json.id;
-
-				Logger.InsertLog(LogLevel.Information, "PayPal PLUS", result.Json.ToString());
 			}
 
 			return result;
@@ -425,6 +455,7 @@ namespace SmartStore.PayPal.Services
 			var amount = new Dictionary<string, object>();
 			var amountDetails = new Dictionary<string, object>();
 			var items = new List<Dictionary<string, object>>();
+			var itemList = new Dictionary<string, object>();
 
 			if (session.PaymentId.HasValue())
 				path = string.Concat(path, "/", HttpUtility.UrlPathEncode(session.PaymentId));
@@ -482,17 +513,23 @@ namespace SmartStore.PayPal.Services
 				items.Add(line);
 
 				totalOrderItems += (total - itemsPlusMisc);
-			}			
+			}
+
+			itemList.Add("items", items);
+			if (customer.ShippingAddress != null)
+			{
+				itemList.Add("shipping_address", CreateAddress(customer.ShippingAddress));
+			}
 
 			// transactions
 			amountDetails.Add("shipping", Math.Round(shipping, 2));
 			amountDetails.Add("subtotal", Math.Round(totalOrderItems, 2));
 			if (!includingTax)
 			{
-				// To avoid rounding errors we recommend not submitting tax amounts on line item basis. 
+				// "To avoid rounding errors we recommend not submitting tax amounts on line item basis. 
 				// Calculated tax amounts for the entire shopping basket may be submitted in the amount objects.
 				// In this case the item amounts will be treated as amounts excluding tax.
-				// In a B2C scenario, where taxes are included, no taxes should be submitted to PayPal.
+				// In a B2C scenario, where taxes are included, no taxes should be submitted to PayPal."
 
 				SortedDictionary<decimal, decimal> taxRates = null;
 				var taxTotal = _orderTotalCalculationService.GetTaxTotal(cart, out taxRates);
@@ -509,7 +546,8 @@ namespace SmartStore.PayPal.Services
 			amount.Add("details", amountDetails);
 
 			transaction.Add("amount", amount);
-			transaction.Add("item_list", new Dictionary<string, object>	{ { "items" , items } });
+			transaction.Add("item_list", itemList);
+			transaction.Add("invoice_number", session.OrderGuid.ToString());
 
 			data.Add("transactions", new List<Dictionary<string, object>> { transaction });
 
@@ -525,9 +563,21 @@ namespace SmartStore.PayPal.Services
 			return result;
 		}
 
-		public PayPalResponse PatchPayment(PayPalApiSettingsBase settings, PayPalSessionData session)
+		public PayPalResponse ExecutePayment(PayPalApiSettingsBase settings, PayPalSessionData session)
 		{
-			return null;
+			var data = new Dictionary<string, object>();
+			data.Add("payer_id", session.PayerId);
+
+			var result = CallApi("POST", "/v1/payments/payment/{0}/execute".FormatInvariant(session.PaymentId), session.AccessToken, settings, JsonConvert.SerializeObject(data));
+
+			if (result.Success && result.Json != null)
+			{
+				result.Id = (string)result.Json.id;
+
+				//Logger.InsertLog(LogLevel.Information, "PayPal PLUS", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + result.Json.ToString());
+			}
+
+			return result;
 		}
 	}
 
@@ -542,9 +592,16 @@ namespace SmartStore.PayPal.Services
 
 	public class PayPalSessionData
 	{
+		public PayPalSessionData()
+		{
+			OrderGuid = Guid.NewGuid();
+		}
+
 		public string AccessToken { get; set; }
 		public DateTime TokenExpiration { get; set; }
 		public string PaymentId { get; set; }
+		public string PayerId { get; set; }
 		public string ApprovalUrl { get; set; }
+		public Guid OrderGuid { get; private set; }
 	}
 }

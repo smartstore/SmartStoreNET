@@ -242,12 +242,7 @@ namespace SmartStore.PayPal.Controllers
 			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
 			var methods = _paymentService.LoadActivePaymentMethods(customer, cart, store.Id, null, false);
-			var state = _httpContext.GetCheckoutState();
-
-			if (!state.CustomProperties.ContainsKey(PayPalPlusProvider.SystemName))
-				state.CustomProperties.Add(PayPalPlusProvider.SystemName, new PayPalSessionData());
-
-			var session = state.CustomProperties[PayPalPlusProvider.SystemName] as PayPalSessionData;
+			var session = _httpContext.GetPayPalSessionData();
 
 			var model = new PayPalPlusCheckoutModel();
 			model.ThirdPartyPaymentMethods = new List<PayPalPlusCheckoutModel.ThirdPartyPaymentMethod>();
@@ -310,7 +305,7 @@ namespace SmartStore.PayPal.Controllers
 		}
 
 		[ValidateInput(false)]
-		public ActionResult CheckoutReturn(string systemName, string paymentId)
+		public ActionResult CheckoutReturn(string systemName, string paymentId, string PayerID)
 		{
 			// Request.QueryString:
 			// paymentId: PAY-0TC88803RP094490KK4KM6AI, token: EC-5P379249AL999154U, PayerID: 5L9K773HHJLPN
@@ -318,18 +313,15 @@ namespace SmartStore.PayPal.Controllers
 			var customer = Services.WorkContext.CurrentCustomer;
 			var store = Services.StoreContext.CurrentStore;
 			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(store.Id);
-			var state = _httpContext.GetCheckoutState();
-
-			if (!state.CustomProperties.ContainsKey(PayPalPlusProvider.SystemName))
-				state.CustomProperties.Add(PayPalPlusProvider.SystemName, new PayPalSessionData());
-
-			var session = state.CustomProperties[PayPalPlusProvider.SystemName] as PayPalSessionData;
+			var session = _httpContext.GetPayPalSessionData();
 
 			if (systemName.IsEmpty())
 				systemName = PayPalPlusProvider.SystemName;
 
 			if (paymentId.HasValue() && session.PaymentId.IsEmpty())
 				session.PaymentId = paymentId;
+
+			session.PayerId = PayerID;
 
 			_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, systemName, store.Id);
 

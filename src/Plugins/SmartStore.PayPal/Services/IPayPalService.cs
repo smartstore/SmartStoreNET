@@ -28,6 +28,6 @@ namespace SmartStore.PayPal.Services
 			string returnUrl,
 			string cancelUrl);
 
-		PayPalResponse PatchPayment(PayPalApiSettingsBase settings, PayPalSessionData session);
+		PayPalResponse ExecutePayment(PayPalApiSettingsBase settings, PayPalSessionData session);
 	}
 }

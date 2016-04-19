@@ -43,6 +43,9 @@
   <LocaleResource Name="ExperienceProfileId.Hint">
     <Value>Legt die Experience Profil-ID fest. Das Profil beinhaltet globale Daten wie z.B. Shop-Name und -Logo. Ein Profil braucht nur einmalig angelegt werden. Über den Button können Sie ein neues Profil erstellen oder ein vorhandenes aktualisieren.</Value>
   </LocaleResource>
+  <LocaleResource Name="PaymentExecuteFailed">
+    <Value>Die Ausführung der Zahlung wurde durch PayPal abgelehnt.</Value>
+  </LocaleResource>
   
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
     <Children>

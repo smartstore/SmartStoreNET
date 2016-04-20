@@ -14,18 +14,15 @@
 			useraction: "continue",
 			surcharging: @Model.HasPaymentFee.ToString().ToLower(),
 			showLoadingIndicator: true,
-			//showPuiOnSandbox: true,
 			enableContinue: "PayPalPlusNextCheckoutStep",
 			disableContinue: "PayPalPlusNextCheckoutStep",
-			//enableContinue: function () {
-			//	$('#PayPalPlusNextCheckoutStep').prop('disabled', false);
-			//},
-			//disableContinue: function () {
-			//	$('#PayPalPlusNextCheckoutStep').prop('disabled', true);
-			//},
 			onLoad: function () {
 				$('#PayPalPlusNextCheckoutStep').fadeIn();
 			},
+			@if (Model.UseSandbox)
+			{
+				<text>showPuiOnSandbox: true,</text>
+			}
 			@if (Model.ThirdPartyPaymentMethods.Any())
 			{
 				<text>thirdPartyPaymentMethods: [</text>

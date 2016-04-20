@@ -46,6 +46,15 @@
   <LocaleResource Name="PaymentExecuteFailed">
     <Value>Die Ausführung der Zahlung wurde durch PayPal abgelehnt.</Value>
   </LocaleResource>
+  <LocaleResource Name="PayUponInvoiceLegalNote">
+    <Value>{0} hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.àr.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.àr.l. et Cie, S.C.A. geleistet werden.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ManualBankTransferNote">
+    <Value>Bitte überweisen Sie den fälligen Betrag auf folgendes Konto.</Value>
+  </LocaleResource>
+  <LocaleResource Name="PaymentInstructionStrings">
+    <Value>Referenz;Bankleitzahl;Bank;BIC;IBAN;Kontoinhaber;Kontonummer;Betrag;Zahlung fällig am;Details</Value>
+  </LocaleResource>
   
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
     <Children>

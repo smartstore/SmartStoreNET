@@ -23,6 +23,10 @@ namespace SmartStore.PayPal
 				builder.RegisterType<PayPalPlusCheckoutFilter>()
 					.AsActionFilterFor<CheckoutController>(x => x.PaymentMethod())
 					.InstancePerRequest();
+
+				builder.RegisterType<PayPalPlusWidgetZoneFilter>()
+					.AsActionFilterFor<CheckoutController>(x => x.Completed())
+					.InstancePerRequest();
 			}
 		}
 

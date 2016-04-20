@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -20,6 +21,7 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
@@ -36,7 +38,9 @@ namespace SmartStore.PayPal.Services
 		private readonly IPaymentService _paymentService;
 		private readonly IPriceCalculationService _priceCalculationService;
 		private readonly ITaxService _taxService;
+		private readonly Lazy<ICurrencyService> _currencyService;
 		private readonly Lazy<IPictureService> _pictureService;
+		private readonly Lazy<CompanyInformationSettings> _companyInfoSettings;
 
 		public PayPalService(
 			ICommonServices services,
@@ -45,7 +49,9 @@ namespace SmartStore.PayPal.Services
 			IPaymentService paymentService,
 			IPriceCalculationService priceCalculationService,
 			ITaxService taxService,
-			Lazy<IPictureService> pictureService)
+			Lazy<ICurrencyService> currencyService,
+			Lazy<IPictureService> pictureService,
+			Lazy<CompanyInformationSettings> companyInfoSettings)
 		{
 			_services = services;
 			_orderService = orderService;
@@ -53,7 +59,9 @@ namespace SmartStore.PayPal.Services
 			_paymentService = paymentService;
 			_priceCalculationService = priceCalculationService;
 			_taxService = taxService;
+			_currencyService = currencyService;
 			_pictureService = pictureService;
+			_companyInfoSettings = companyInfoSettings;
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
@@ -180,6 +188,125 @@ namespace SmartStore.PayPal.Services
 			{
 				errors.Add(shortMessage);
 			}
+		}
+
+		public PayPalPaymentInstruction ParsePaymentInstruction(dynamic json)
+		{
+			if (json == null)
+				return null;
+
+			DateTime dt;
+			var result = new PayPalPaymentInstruction();
+
+			try
+			{
+				result.ReferenceNumber = (string)json.reference_number;
+				result.Type = (string)json.instruction_type;
+				result.Note = (string)json.note;
+
+				if (DateTime.TryParse((string)json.payment_due_date, CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+				{
+					result.DueDate = dt;
+				}
+
+				if (json.amount != null)
+				{
+					result.AmountCurrencyCode = (string)json.amount.currency;
+					result.Amount = decimal.Parse((string)json.amount.value, CultureInfo.InvariantCulture);
+				}
+
+				var rbi = json.recipient_banking_instruction;
+
+				if (rbi != null)
+				{
+					result.RecipientBanking = new PayPalPaymentInstruction.RecipientBankingInstruction();
+					result.RecipientBanking.BankName = (string)rbi.bank_name;
+					result.RecipientBanking.AccountHolderName = (string)rbi.account_holder_name;
+					result.RecipientBanking.AccountNumber = (string)rbi.account_number;
+					result.RecipientBanking.RoutingNumber = (string)rbi.routing_number;
+					result.RecipientBanking.Iban = (string)rbi.international_bank_account_number;
+					result.RecipientBanking.Bic = (string)rbi.bank_identifier_code;
+				}
+
+				if (json.links != null)
+				{
+					result.Link = (string)json.links[0].href;
+				}
+			}
+			catch { }
+
+			return result;
+		}
+
+		public string CreatePaymentInstruction(PayPalPaymentInstruction instruct)
+		{
+			if (instruct == null || instruct.RecipientBanking == null)
+				return null;
+
+			if (!instruct.IsManualBankTransfer && !instruct.IsPayUponInvoice)
+				return null;
+
+			var sb = new StringBuilder("<div>");
+			var paragraphTemplate = "<div style='margin-bottom:10px;'>{0}</div>";
+			var rowTemplate = "<span style='min-width:120px;'>{0}</span>: {1}<br />";
+			var instructStrings = T("Plugins.SmartStore.PayPal.PaymentInstructionStrings").Text.SplitSafe(";");
+
+			if (instruct.IsManualBankTransfer)
+			{
+				sb.AppendFormat(paragraphTemplate, T("Plugins.SmartStore.PayPal.ManualBankTransferNote"));
+
+				sb.AppendFormat(rowTemplate, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.Reference), instruct.ReferenceNumber);
+				sb.AppendFormat(rowTemplate, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.AccountNumber), instruct.RecipientBanking.AccountNumber);
+				sb.AppendFormat(rowTemplate, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.AccountHolder), instruct.RecipientBanking.AccountHolderName);
+
+				sb.AppendFormat(rowTemplate, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.Bank), instruct.RecipientBanking.BankName);
+				sb.AppendFormat(rowTemplate, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.Iban), instruct.RecipientBanking.Iban);
+				sb.AppendFormat(rowTemplate, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.Bic), instruct.RecipientBanking.Bic);
+			}
+			else if (instruct.IsPayUponInvoice)
+			{
+				string amount = null;
+				var culture = new CultureInfo(_services.WorkContext.WorkingLanguage.LanguageCulture ?? "de-DE");
+
+				try
+				{
+					var currency = _currencyService.Value.GetCurrencyByCode(instruct.AmountCurrencyCode);
+					var format = (currency != null && currency.CustomFormatting.HasValue() ? currency.CustomFormatting : "C");
+
+					amount = instruct.Amount.ToString(format, culture);
+				}
+				catch { }
+
+				if (amount.IsEmpty())
+				{
+					amount = string.Concat(instruct.Amount.ToString("N"), " ", instruct.AmountCurrencyCode);
+				}
+
+				var intro = T("Plugins.SmartStore.PayPal.PayUponInvoiceLegalNote", _companyInfoSettings.Value.CompanyName.NaIfEmpty());
+
+				if (instruct.Link.HasValue())
+				{
+					intro = "{0} <a href='{1}'>{2}</a>.".FormatInvariant(intro, instruct.Link, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.Details));
+				}
+
+				sb.AppendFormat(paragraphTemplate, intro);
+
+				sb.AppendFormat(rowTemplate, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.Bank), instruct.RecipientBanking.BankName);
+				sb.AppendFormat(rowTemplate, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.AccountHolder), instruct.RecipientBanking.AccountHolderName);
+				sb.AppendFormat(rowTemplate, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.Iban), instruct.RecipientBanking.Iban);
+				sb.AppendFormat(rowTemplate, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.Bic), instruct.RecipientBanking.Bic);
+				sb.Append("<br />");
+				sb.AppendFormat(rowTemplate, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.Amount), amount);
+				if (instruct.DueDate.HasValue)
+				{
+					sb.AppendFormat(rowTemplate, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.PaymentDueDate), instruct.DueDate.Value.ToString("d", culture));
+				}
+				sb.AppendFormat(rowTemplate, instructStrings.SafeGet((int)PayPalPaymentInstructionItem.Reference), instruct.ReferenceNumber);
+			}
+
+			sb.Append("</div>");
+
+			return sb.ToString();
 		}
 
 		public PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data, IList<string> errors = null)
@@ -451,6 +578,7 @@ namespace SmartStore.PayPal.Services
 			var data = new Dictionary<string, object>();
 			var redirectUrls = new Dictionary<string, object>();
 			var payer = new Dictionary<string, object>();
+			var payerInfo = new Dictionary<string, object>();
 			var transaction = new Dictionary<string, object>();
 			var amount = new Dictionary<string, object>();
 			var amountDetails = new Dictionary<string, object>();
@@ -481,6 +609,14 @@ namespace SmartStore.PayPal.Services
 
 			// payer
 			payer.Add("payment_method", "paypal");
+
+			if (customer.BillingAddress != null)
+			{
+				payerInfo.Add("billing_address", CreateAddress(customer.BillingAddress));
+
+				payer.Add("payer_info", payerInfo);
+			}
+
 			data.Add("payer", payer);
 
 			// line items
@@ -603,5 +739,39 @@ namespace SmartStore.PayPal.Services
 		public string PayerId { get; set; }
 		public string ApprovalUrl { get; set; }
 		public Guid OrderGuid { get; private set; }
+		public PayPalPaymentInstruction PaymentInstruction { get; set; }
+	}
+
+	public class PayPalPaymentInstruction
+	{
+		public string ReferenceNumber { get; set; }
+		public string Type { get; set; }
+		public decimal Amount { get; set; }
+		public string AmountCurrencyCode { get; set; }
+		public DateTime? DueDate { get; set; }
+		public string Note { get; set; }
+		public string Link { get; set; }
+
+		public RecipientBankingInstruction RecipientBanking { get; set; }
+
+		public bool IsManualBankTransfer
+		{
+			get { return Type.IsCaseInsensitiveEqual("MANUAL_BANK_TRANSFER"); }
+		}
+
+		public bool IsPayUponInvoice
+		{
+			get { return Type.IsCaseInsensitiveEqual("PAY_UPON_INVOICE"); }
+		}
+
+		public class RecipientBankingInstruction
+		{
+			public string BankName { get; set; }
+			public string AccountHolderName { get; set; }
+			public string AccountNumber { get; set; }
+			public string RoutingNumber { get; set; }
+			public string Iban { get; set; }
+			public string Bic { get; set; }
+		}
 	}
 }

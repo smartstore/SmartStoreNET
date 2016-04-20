@@ -1,0 +1,48 @@
+﻿using System;
+using System.Web.Mvc;
+using SmartStore.Web.Framework.UI;
+
+namespace SmartStore.PayPal.Filters
+{
+	public class PayPalPlusWidgetZoneFilter : IActionFilter, IResultFilter
+	{
+		private readonly Lazy<IWidgetProvider> _widgetProvider;
+
+        public PayPalPlusWidgetZoneFilter(Lazy<IWidgetProvider> widgetProvider)
+		{
+			_widgetProvider = widgetProvider;
+		}
+
+		public void OnActionExecuting(ActionExecutingContext filterContext)
+		{
+		}
+
+		public void OnActionExecuted(ActionExecutedContext filterContext)
+		{
+		}
+
+		public void OnResultExecuting(ResultExecutingContext filterContext)
+		{
+			if (filterContext.IsChildAction)
+				return;
+
+			// should only run on a full view rendering result
+			var result = filterContext.Result as ViewResultBase;
+			if (result == null)
+				return;
+
+			var controller = filterContext.RouteData.Values["controller"] as string;
+			var action = filterContext.RouteData.Values["action"] as string;
+
+			if (action.IsCaseInsensitiveEqual("Completed") && controller.IsCaseInsensitiveEqual("Checkout"))
+			{
+				_widgetProvider.Value.RegisterAction("checkout_completed_top", "CheckoutCompleted", "PayPalPlus", new { area = Plugin.SystemName });
+				_widgetProvider.Value.RegisterAction("mobile_checkout_completed_top", "CheckoutCompleted", "PayPalPlus", new { area = Plugin.SystemName });
+			}
+		}
+
+		public void OnResultExecuted(ResultExecutedContext filterContext)
+		{
+		}
+	}
+}

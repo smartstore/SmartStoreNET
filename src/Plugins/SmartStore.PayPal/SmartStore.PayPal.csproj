@@ -128,6 +128,7 @@
     <Compile Include="Filters\PayPalExpressCheckoutFilter.cs" />
     <Compile Include="Filters\PayPalExpressWidgetZoneFilter.cs" />
     <Compile Include="Filters\PayPalPlusCheckoutFilter.cs" />
+    <Compile Include="Filters\PayPalPlusWidgetZoneFilter.cs" />
     <Compile Include="Models\ApiConfigurationModels.cs" />
     <Compile Include="Models\PayPalPlusCheckoutModel.cs" />
     <Compile Include="Models\PayPalStandardConfigurationModel.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Providers\PayPalDirectProvider.cs" />
     <Compile Include="Providers\PayPalStandardProvider.cs" />
     <Compile Include="Services\IPayPalService.cs" />
+    <Compile Include="Services\PayPalEnums.cs" />
     <Compile Include="Services\PayPalService.cs" />
     <Compile Include="Settings\PayPalSettings.cs" />
     <Compile Include="Plugin.cs" />

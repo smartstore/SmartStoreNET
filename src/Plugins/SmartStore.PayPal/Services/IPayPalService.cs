@@ -12,6 +12,10 @@ namespace SmartStore.PayPal.Services
 
 		void LogError(Exception exception, string shortMessage = null, string fullMessage = null, bool notify = false, IList<string> errors = null, bool isWarning = false);
 
+		PayPalPaymentInstruction ParsePaymentInstruction(dynamic json);
+
+		string CreatePaymentInstruction(PayPalPaymentInstruction instruct);
+
 		PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data, IList<string> errors = null);
 
 		PayPalResponse EnsureAccessToken(PayPalSessionData session, PayPalApiSettingsBase settings);

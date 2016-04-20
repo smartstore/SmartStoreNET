@@ -343,5 +343,17 @@ namespace SmartStore.PayPal.Controllers
 			// back to where he came from
 			return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
 		}
+
+		public ActionResult CheckoutCompleted()
+		{
+			var instruct = _httpContext.Session[PayPalPlusProvider.CheckoutCompletedKey] as string;
+
+			if (instruct.HasValue())
+			{
+				return Content(instruct);
+			}
+
+			return new EmptyResult();
+		}
 	}
 }

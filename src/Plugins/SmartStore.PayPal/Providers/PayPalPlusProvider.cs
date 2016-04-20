@@ -15,14 +15,11 @@ namespace SmartStore.PayPal
     public partial class PayPalPlusProvider : PayPalRestApiProviderBase<PayPalPlusPaymentSettings>
     {
 		private readonly HttpContextBase _httpContext;
-		private readonly IPayPalService _payPalService;
 
 		public PayPalPlusProvider(
-			HttpContextBase httpContext,
-			IPayPalService payPalService)
+			HttpContextBase httpContext)
         {
 			_httpContext = httpContext;
-			_payPalService = payPalService;
         }
 
 		public static string SystemName
@@ -62,7 +59,7 @@ namespace SmartStore.PayPal
 
 			processPaymentRequest.OrderGuid = session.OrderGuid;
 
-			var apiResult = _payPalService.ExecutePayment(settings, session);
+			var apiResult = PayPalService.ExecutePayment(settings, session);
 
 			if (apiResult.Success && apiResult.Json != null)
 			{
@@ -99,7 +96,7 @@ namespace SmartStore.PayPal
 							}
 						}
 
-						session.PaymentInstruction = _payPalService.ParsePaymentInstruction(apiResult.Json.payment_instruction) as PayPalPaymentInstruction;
+						session.PaymentInstruction = PayPalService.ParsePaymentInstruction(apiResult.Json.payment_instruction) as PayPalPaymentInstruction;
 					}
 				}
 				else
@@ -122,7 +119,7 @@ namespace SmartStore.PayPal
 			if (postProcessPaymentRequest.Order.PaymentStatus == PaymentStatus.Paid)
 				return;
 
-			var instruction = _payPalService.CreatePaymentInstruction(_httpContext.GetPayPalSessionData().PaymentInstruction);
+			var instruction = PayPalService.CreatePaymentInstruction(_httpContext.GetPayPalSessionData().PaymentInstruction);
 
 			if (instruction.HasValue())
 			{

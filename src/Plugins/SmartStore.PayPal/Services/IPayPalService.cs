@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.PayPal.Settings;
+using SmartStore.Services.Payments;
 
 namespace SmartStore.PayPal.Services
 {
@@ -33,5 +34,7 @@ namespace SmartStore.PayPal.Services
 			string cancelUrl);
 
 		PayPalResponse ExecutePayment(PayPalApiSettingsBase settings, PayPalSessionData session);
+
+		PayPalResponse Refund(PayPalApiSettingsBase settings, PayPalSessionData session, RefundPaymentRequest request);
 	}
 }

@@ -715,6 +715,35 @@ namespace SmartStore.PayPal.Services
 
 			return result;
 		}
+
+		public PayPalResponse Refund(PayPalApiSettingsBase settings, PayPalSessionData session, RefundPaymentRequest request)
+		{
+			var data = new Dictionary<string, object>();
+			var saleId = request.Order.CaptureTransactionId;
+
+			if (request.IsPartialRefund)
+			{
+				var store = _services.StoreService.GetStoreById(request.Order.StoreId);
+
+				var amount = new Dictionary<string, object>();
+				amount.Add("total", Math.Round(request.AmountToRefund, 2));
+				amount.Add("currency", store.PrimaryStoreCurrency.CurrencyCode);
+
+				data.Add("amount", amount);
+			}
+
+			var result = CallApi("POST", "/v1/payments/sale/{0}/refund".FormatInvariant(saleId), session.AccessToken, settings,
+				data.Any() ? JsonConvert.SerializeObject(data) : null);
+
+			if (result.Success && result.Json != null)
+			{
+				result.Id = (string)result.Json.id;
+
+				//Logger.InsertLog(LogLevel.Information, "PayPal Refund", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + result.Json.ToString());
+			}
+
+			return result;
+		}
 	}
 
 

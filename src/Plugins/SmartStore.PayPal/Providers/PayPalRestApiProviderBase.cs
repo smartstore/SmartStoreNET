@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Web.Routing;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services;
 using SmartStore.Services.Orders;
@@ -23,6 +25,7 @@ namespace SmartStore.PayPal
 		public ICommonServices Services { get; set; }
 		public IOrderService OrderService { get; set; }
         public IOrderTotalCalculationService OrderTotalCalculationService { get; set; }
+		public IPayPalService PayPalService { get; set; }
 
 		protected string GetControllerName()
 		{
@@ -89,10 +92,29 @@ namespace SmartStore.PayPal
 			};
 
 			var settings = Services.Settings.LoadSetting<TSetting>(request.Order.StoreId);
+			var session = new PayPalSessionData();
 
-			var transactionId = request.Order.CaptureTransactionId;
+			var apiResult = PayPalService.EnsureAccessToken(session, settings);
+			if (result.Success)
+			{
+				apiResult = PayPalService.Refund(settings, session, request);
 
-			// TODO
+				if (apiResult.Success && apiResult.Json != null)
+				{
+					if (request.IsPartialRefund)
+						result.NewPaymentStatus = PaymentStatus.PartiallyRefunded;
+					else
+						result.NewPaymentStatus = PaymentStatus.Refunded;
+				}
+				else
+				{
+					result.Errors.Add(apiResult.ErrorMessage);
+				}
+			}
+			else
+			{
+				result.Errors.Add(apiResult.ErrorMessage);
+			}
 
 			return result;
         }

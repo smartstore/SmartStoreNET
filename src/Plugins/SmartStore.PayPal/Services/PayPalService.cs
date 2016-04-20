@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Localization;
@@ -307,6 +308,56 @@ namespace SmartStore.PayPal.Services
 			sb.Append("</div>");
 
 			return sb.ToString();
+		}
+
+		public PaymentStatus GetPaymentStatus(string state, string reasonCode, PaymentStatus defaultStatus)
+		{
+			var result = defaultStatus;
+
+			if (state == null)
+				state = string.Empty;
+
+			if (reasonCode == null)
+				reasonCode = string.Empty;
+
+			switch (state.ToLowerInvariant())
+			{
+				case "authorized":
+					result = PaymentStatus.Authorized;
+					break;
+				case "pending":
+					switch (reasonCode.ToLowerInvariant())
+					{
+						case "authorization":
+							result = PaymentStatus.Authorized;
+							break;
+						default:
+							result = PaymentStatus.Pending;
+							break;
+					}
+					break;
+				case "completed":
+				case "captured":
+				case "partially_captured":
+				case "canceled_reversal":
+					result = PaymentStatus.Paid;
+					break;
+				case "denied":
+				case "expired":
+				case "failed":
+				case "voided":
+					result = PaymentStatus.Voided;
+					break;
+				case "reversed":
+				case "refunded":
+					result = PaymentStatus.Refunded;
+					break;
+				case "partially_refunded":
+					result = PaymentStatus.PartiallyRefunded;
+					break;
+			}
+
+			return result;
 		}
 
 		public PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data, IList<string> errors = null)
@@ -745,6 +796,45 @@ namespace SmartStore.PayPal.Services
 				result.Id = (string)result.Json.id;
 
 				//Logger.InsertLog(LogLevel.Information, "PayPal Refund", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + result.Json.ToString());
+			}
+
+			return result;
+		}
+
+		public PayPalResponse Capture(PayPalApiSettingsBase settings, PayPalSessionData session, CapturePaymentRequest request)
+		{
+			var data = new Dictionary<string, object>();
+			//var isAuthorize = request.Order.AuthorizationTransactionCode.IsCaseInsensitiveEqual("authorize");
+
+			var path = "/v1/payments/authorization/{0}/capture".FormatInvariant(request.Order.AuthorizationTransactionId);
+
+			var store = _services.StoreService.GetStoreById(request.Order.StoreId);
+
+			var amount = new Dictionary<string, object>();
+			amount.Add("total", Math.Round(request.Order.OrderTotal, 2));
+			amount.Add("currency", store.PrimaryStoreCurrency.CurrencyCode);
+
+			data.Add("amount", amount);
+
+			var result = CallApi("POST", path, session.AccessToken, settings, JsonConvert.SerializeObject(data));
+
+			if (result.Success && result.Json != null)
+			{
+				result.Id = (string)result.Json.id;
+			}
+
+			return result;
+		}
+
+		public PayPalResponse Void(PayPalApiSettingsBase settings, PayPalSessionData session, VoidPaymentRequest request)
+		{
+			var path = "/v1/payments/authorization/{0}/void".FormatInvariant(request.Order.AuthorizationTransactionId);
+
+			var result = CallApi("POST", path, session.AccessToken, settings, null);
+
+			if (result.Success && result.Json != null)
+			{
+				result.Id = (string)result.Json.id;
 			}
 
 			return result;

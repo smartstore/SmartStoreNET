@@ -93,6 +93,8 @@ namespace SmartStore.PayPal
 			if (apiResult.Success && apiResult.Json != null)
 			{
 				var state = (string)apiResult.Json.state;
+				string reasonCode = null;
+				dynamic relatedObject = null;
 
 				if (!state.IsCaseInsensitiveEqual("failed"))
 				{
@@ -100,34 +102,32 @@ namespace SmartStore.PayPal
 					// info required cause API has different endpoints for different intents.
 					result.AuthorizationTransactionCode = (string)apiResult.Json.intent;
 
-					var sale = apiResult.Json.transactions[0].related_resources[0].sale;
-
-					if (sale != null)
+					if (result.AuthorizationTransactionCode.IsCaseInsensitiveEqual("sale"))
 					{
-						state = (string)sale.state;
-
-						result.AuthorizationTransactionResult = state;
-						result.AuthorizationTransactionId = (string)sale.id;
-
-						result.NewPaymentStatus = PaymentStatus.Authorized;
-
-						if (state.IsCaseInsensitiveEqual("completed") || state.IsCaseInsensitiveEqual("processed"))
-						{
-							result.CaptureTransactionResult = state;
-							result.CaptureTransactionId = (string)sale.id;
-
-							result.NewPaymentStatus = PaymentStatus.Paid;
-						}
-						else if (state.IsCaseInsensitiveEqual("pending"))
-						{
-							var reasonCode = (string)sale.reason_code;
-							if (reasonCode.IsCaseInsensitiveEqual("ECHECK"))
-							{
-								result.NewPaymentStatus = PaymentStatus.Pending;
-							}
-						}
+						relatedObject = apiResult.Json.transactions[0].related_resources[0].sale;
 
 						session.PaymentInstruction = PayPalService.ParsePaymentInstruction(apiResult.Json.payment_instruction) as PayPalPaymentInstruction;
+					}
+					else
+					{
+						relatedObject = apiResult.Json.transactions[0].related_resources[0].authorization;
+					}
+
+					if (relatedObject != null)
+					{
+						state = (string)relatedObject.state;
+						reasonCode = (string)relatedObject.reason_code;
+
+						result.AuthorizationTransactionResult = state;
+						result.AuthorizationTransactionId = (string)relatedObject.id;
+
+						result.NewPaymentStatus = PayPalService.GetPaymentStatus(state, reasonCode, PaymentStatus.Authorized);
+
+						if (result.NewPaymentStatus == PaymentStatus.Paid)
+						{
+							result.CaptureTransactionResult = result.AuthorizationTransactionResult;
+							result.CaptureTransactionId = result.AuthorizationTransactionId;
+						}
 					}
 				}
 				else
@@ -168,33 +168,48 @@ namespace SmartStore.PayPal
 			};
 
 			var settings = Services.Settings.LoadSetting<TSetting>(capturePaymentRequest.Order.StoreId);
-			var currencyCode = Services.WorkContext.WorkingCurrency.CurrencyCode ?? "EUR";
-
-			var authorizationId = capturePaymentRequest.Order.AuthorizationTransactionId;		
-			
-			// TODO	
-
-            return result;
-        }
-
-        public override RefundPaymentResult Refund(RefundPaymentRequest request)
-        {
-			var result = new RefundPaymentResult
-			{
-				NewPaymentStatus = request.Order.PaymentStatus
-			};
-
-			var settings = Services.Settings.LoadSetting<TSetting>(request.Order.StoreId);
 			var session = new PayPalSessionData();
 
 			var apiResult = PayPalService.EnsureAccessToken(session, settings);
 			if (result.Success)
 			{
-				apiResult = PayPalService.Refund(settings, session, request);
+				apiResult = PayPalService.Capture(settings, session, capturePaymentRequest);
 
-				if (apiResult.Success && apiResult.Json != null)
+				if (apiResult.Success)
 				{
-					if (request.IsPartialRefund)
+					result.NewPaymentStatus = PaymentStatus.Paid;
+				}
+				else
+				{
+					result.Errors.Add(apiResult.ErrorMessage);
+				}
+			}
+			else
+			{
+				result.Errors.Add(apiResult.ErrorMessage);
+			}
+
+			return result;
+        }
+
+        public override RefundPaymentResult Refund(RefundPaymentRequest refundPaymentRequest)
+        {
+			var result = new RefundPaymentResult
+			{
+				NewPaymentStatus = refundPaymentRequest.Order.PaymentStatus
+			};
+
+			var settings = Services.Settings.LoadSetting<TSetting>(refundPaymentRequest.Order.StoreId);
+			var session = new PayPalSessionData();
+
+			var apiResult = PayPalService.EnsureAccessToken(session, settings);
+			if (result.Success)
+			{
+				apiResult = PayPalService.Refund(settings, session, refundPaymentRequest);
+
+				if (apiResult.Success)
+				{
+					if (refundPaymentRequest.IsPartialRefund)
 						result.NewPaymentStatus = PaymentStatus.PartiallyRefunded;
 					else
 						result.NewPaymentStatus = PaymentStatus.Refunded;
@@ -212,21 +227,33 @@ namespace SmartStore.PayPal
 			return result;
         }
 
-        public override VoidPaymentResult Void(VoidPaymentRequest request)
+        public override VoidPaymentResult Void(VoidPaymentRequest voidPaymentRequest)
         {
 			var result = new VoidPaymentResult
 			{
-				NewPaymentStatus = request.Order.PaymentStatus
+				NewPaymentStatus = voidPaymentRequest.Order.PaymentStatus
 			};
 
-			var settings = Services.Settings.LoadSetting<TSetting>(request.Order.StoreId);
+			var settings = Services.Settings.LoadSetting<TSetting>(voidPaymentRequest.Order.StoreId);
+			var session = new PayPalSessionData();
 
-			var transactionId = request.Order.AuthorizationTransactionId;
-
-            if (transactionId.IsEmpty())
-                transactionId = request.Order.CaptureTransactionId;
-
-			// TODO
+			var apiResult = PayPalService.EnsureAccessToken(session, settings);
+			if (result.Success)
+			{
+				apiResult = PayPalService.Void(settings, session, voidPaymentRequest);
+				if (apiResult.Success)
+				{
+					result.NewPaymentStatus = PaymentStatus.Voided;
+				}
+				else
+				{
+					result.Errors.Add(apiResult.ErrorMessage);
+				}
+			}
+			else
+			{
+				result.Errors.Add(apiResult.ErrorMessage);
+			}
 
 			return result;
         }

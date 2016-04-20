@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services.Payments;
@@ -16,6 +17,8 @@ namespace SmartStore.PayPal.Services
 		PayPalPaymentInstruction ParsePaymentInstruction(dynamic json);
 
 		string CreatePaymentInstruction(PayPalPaymentInstruction instruct);
+
+		PaymentStatus GetPaymentStatus(string state, string reasonCode, PaymentStatus defaultStatus);
 
 		PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data, IList<string> errors = null);
 
@@ -36,5 +39,9 @@ namespace SmartStore.PayPal.Services
 		PayPalResponse ExecutePayment(PayPalApiSettingsBase settings, PayPalSessionData session);
 
 		PayPalResponse Refund(PayPalApiSettingsBase settings, PayPalSessionData session, RefundPaymentRequest request);
+
+		PayPalResponse Capture(PayPalApiSettingsBase settings, PayPalSessionData session, CapturePaymentRequest request);
+
+		PayPalResponse Void(PayPalApiSettingsBase settings, PayPalSessionData session, VoidPaymentRequest request);
 	}
 }

@@ -1,0 +1,199 @@
+﻿@model ForumPageModel
+@using SmartStore.Core.Domain.Forums;
+@using SmartStore.Services.Customers;
+@using SmartStore.Services.Forums;
+@using SmartStore.Services.Seo;
+@using SmartStore.Web;
+@using SmartStore.Web.Models;
+@using SmartStore.Web.Models.Boards;
+@using SmartStore.Web.Models.Common;
+@using SmartStore.Web.Framework.UI;
+@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
+    Html.AddTitleParts(Model.Name);
+    Html.AddMetaDescriptionParts(Model.Name);
+}
+<script type="text/javascript">
+    function handleForumWatch(context) {
+        var btn = $('#watch-forum');
+        btn.text(context.Text);
+        setButtonWatchState(btn, context.Subscribed);
+    }
+    function setButtonWatchState(btn, subscribed) {
+        subscribed = (subscribed !== undefined) ? subscribed : toBool(btn.data("subscribed"));
+        btn.find("i").remove(); // remove icon
+        btn.prepend('<i class="fa fa-bookmark" />&nbsp;').toggleClass("btn-warning", subscribed);
+    }
+    $(function () {
+        setButtonWatchState($('#watch-forum'));
+    });
+</script>
+<div class="page forum">
+    @Html.Action("ForumBreadcrumb", new { forumId = Model.Id })    
+
+    <div class="clearfix">
+        <h2 class="pull-left page-title">
+            
+            @if (Model.ForumFeedsEnabled)
+            {
+                <a href="@Url.Action("ForumRSS", new { id = @Model.Id })" class="link-rss" title="@T("Forum.ForumRSSLinkTitle")" rel="tooltip">
+                    <i class="fa fa-rss muted"></i>
+                    @T("Forum.RSS")
+                </a>
+            }
+            @Model.Name
+        </h2>
+        @Html.Partial("_SearchBox")
+    </div>
+    <div class="top clearfix">        
+        <h3 class="pull-left">
+            @Model.Description
+        </h3>
+    </div>
+
+    <div>
+    
+        <div class="actions pull-left">
+            <a href='@Url.Action("TopicCreate", new { id = Model.Id })' class="btn btn-primary newtopic" rel="nofollow">
+                <i class="fa fa-plus"></i>
+                @T("Forum.NewTopic")
+            </a>
+            @if (Model.IsCustomerAllowedToSubscribe)
+            {
+                @Ajax.ActionLink(Model.WatchForumText,
+                            "ForumWatch",
+                            new { id = @Model.Id },
+                            new AjaxOptions { HttpMethod = "Post", OnSuccess = "handleForumWatch" },
+                            new { id = "watch-forum", @class = "btn watch-forum", data_subscribed = Model.WatchForumSubscribed })
+            }
+
+            @*@if (Model.ForumFeedsEnabled)
+            {
+                <button class="btn btn-warning" onclick="setLocation('@Url.Action("ForumRSS", new { id = @Model.Id })')" title="@T("Forum.ForumRSSLinkTitle")">
+                    <i class="fa fa-rss"></i>
+                    @T("Forum.RSS")
+                </button>
+            }*@
+
+        </div>
+
+        @{
+            var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
+                                        .Name("paginator")
+                                        .ShowSummary(false)
+                                        .Route("ForumSlug", new RouteValues { id = Model.Id, slug = Model.SeName })
+                                        .Alignment(PagerAlignment.Right);
+        }
+        @pager
+    </div>
+
+    <div class="topics-group clearfix">
+        <table class="table">
+            @if (Model.ForumTopics.Count > 0)
+            {
+                <thead>
+                    <tr class="forum-header">
+                        <th></th>
+                        <th class="topic-name">
+                            @T("Forum.TopicTitle")
+                        </th>
+                        <th class="replies">
+                            @T("Forum.Replies")
+                        </th>
+                        <th class="views">
+                            @T("Forum.Views")
+                        </th>
+                        <th class="last-post">
+                            @T("Forum.LatestPost")
+                        </th>
+                    </tr>
+                </thead>
+            }
+            @foreach (var topic in @Model.ForumTopics)
+            {
+                <tr class="topic">
+                    <td class="image">
+                        @{
+                            var topicType = "post";
+                            var topicText = String.Empty;
+                            var topicIcon = "fa fa-comment-o";
+                            switch (topic.ForumTopicType)
+                            {
+                                case ForumTopicType.Normal:
+                                    topicType = "post";
+                                    topicIcon = "fa fa-comment-o";
+                                    break;
+                                case ForumTopicType.Sticky:
+                                    topicType = "poststicky";
+									topicIcon = "fa fa-thumb-tack";
+                                    topicText = string.Format("<label class='label label-important'>{0}</label>", @T("Forum.Sticky").ToString());
+                                    break;
+                                case ForumTopicType.Announcement:
+                                    topicType = "post-annoucement";
+                                    topicIcon = "fa fa-bullhorn";
+                                    topicText = string.Format("<label class='label label-success'>{0}</label>", @T("Forum.Announcement").ToString());
+                                    break;
+                                default:
+                                    topicType = "post";
+                                    topicIcon = "fa fa-comment-o";
+                                    break;
+                            }
+                            <div class="@topicType">
+                                <i class="icon @topicIcon"></i>
+                            </div>
+                        }
+                    </td>
+                    <td class="topic-name">
+                        @if (!String.IsNullOrEmpty(@topicText))
+                        {
+                            <span class="topictype">@Html.Raw(topicText)</span>
+                        }
+                        @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
+                        
+                        <div>
+                            <div class="topic-starter muted pull-left">
+                                @if (@topic.CustomerId > 0)
+                                {
+                                    if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
+                                    {
+                                    @T("Forum.Author")<text>:</text> @Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })
+                                    }
+                                    else
+                                    {
+                                    @T("Forum.Author")<text>:</text> @topic.CustomerName
+                                    }
+                                }
+                            </div>
+                            @if (topic.NumPosts > Model.PostsPageSize)
+                            {   
+                                @(Html.SmartStore().Pager(topic.TotalPostPages)
+                                        .HtmlAttributes(new { @class = "topics-pager" })
+                                        .WithRenderer<ForumTopicPagerRenderer>()
+                                        .ShowPrevious(false)
+                                        .ShowNext(false)
+                                        .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
+                                        .Alignment(PagerAlignment.Left)
+                                        .Size(PagerSize.Mini)
+                                        .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
+                            }
+                        </div>
+
+                    </td>
+                    <td class="replies">
+                        @topic.NumReplies
+                    </td>
+                    <td class="views">
+                        @topic.Views
+                    </td>
+                    <td class="last-post">
+                        @Html.Action("LastPost", new { forumPostId = @topic.LastPostId, showTopic = false })
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+
+    @pager
+
+</div>

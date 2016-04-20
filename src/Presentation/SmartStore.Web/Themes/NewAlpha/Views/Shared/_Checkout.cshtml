@@ -1,0 +1,15 @@
+﻿@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+    Html.AddBodyCssClass("checkout-page");
+}
+
+@section teaser {
+    @RenderSection("orderProgress")
+}
+
+@*@section left {
+    
+}*@
+
+@RenderBody()
+

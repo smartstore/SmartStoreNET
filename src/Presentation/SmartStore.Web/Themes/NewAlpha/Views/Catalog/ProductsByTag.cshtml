@@ -1,0 +1,84 @@
+﻿@model ProductsByTagModel
+@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web;
+@using SmartStore.Web.Framework.UI;
+@using SmartStore.Core.Domain.Seo;
+
+@{
+    Layout = "~/Views/Shared/_ColumnsThree.cshtml";
+
+    //title
+    Html.AddTitleParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
+    Html.AddMetaDescriptionParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
+    
+    //canonical URL
+	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+	if (canonicalUrlsEnabled)
+	{
+        var byTagUrl = Url.RouteUrl("ProductsByTag", new { productTagId = Model.Id, SeName = Model.TagName }, this.Request.Url.Scheme);
+        Html.AddCanonicalUrlParts(byTagUrl);
+	}
+}
+
+@functions{
+    private bool ShowListOptions() {
+        return Model.Products.Count > 0 &&
+               (Model.PagingFilteringContext.AllowProductViewModeChanging ||
+               Model.PagingFilteringContext.AllowProductSorting ||
+               Model.PagingFilteringContext.AllowCustomersToSelectPageSize);
+    }
+}
+
+<div class="page product-tag-page">
+    <div class="page-title">
+        <h1>@String.Format(T("Products.Tags.ProductsTaggedWith").Text, Model.TagName)</h1>
+    </div>
+    <div class="clear">
+    </div>
+    <div class="page-body">
+        @Html.Widget("productsbytag_top")
+
+        @if (ShowListOptions()) {
+            @Html.Partial("_ProductListOptions", Model.PagingFilteringContext)
+        }
+
+        @Html.Widget("productsbytag_before_product_list")
+        @*product list*@
+        @if (Model.Products.Count > 0)
+        {
+            if (Model.PagingFilteringContext.ViewMode == "list")
+            {
+            @*list mode*@
+            <div class="product-list">
+                @foreach (var product in Model.Products)
+                {
+                    <article class="item-box details">
+                        @Html.Partial("_ProductBoxList", product)
+                    </article>
+                }
+            </div>     
+            }
+            else
+            {
+            @*grid mode*@
+            <div class="product-grid">
+                @(Html.DataList<ProductOverviewModel>(Model.Products, 3,
+                    @<article class="item-box">
+                        @Html.Partial("_ProductBox", @item)
+                    </article>
+                ))
+            </div>
+            }
+        }
+        <div class="clear">
+        </div>
+
+        @Html.SmartStore().Pager(Model.PagingFilteringContext).Name("pagination-bottom").QueryParam("pagenumber")
+
+        @Html.Widget("productsbytag_bottom")
+    </div>
+</div>

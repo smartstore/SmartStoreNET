@@ -1,0 +1,10 @@
+﻿@model ProductDetailsModel
+@using SmartStore.Web.Models.Catalog;
+@if (Model.HasSampleDownload)
+{
+    <div class="download-sample">
+        <span class="download-sample-button">
+            <a href="@Url.Action("Sample", "Download", new { id = Model.Id })">@T("Products.DownloadSample")</a>
+        </span>
+    </div>
+}

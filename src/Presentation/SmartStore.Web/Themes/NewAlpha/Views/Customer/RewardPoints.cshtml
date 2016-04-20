@@ -1,0 +1,81 @@
+﻿@model CustomerRewardPointsModel
+@using SmartStore.Web.Models.Customer;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Account").Text);
+}
+@section left
+{
+    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
+}
+<div class="page account-page reward-points-page">
+    <h4 class="muted">@T("Account.MyAccount")</h4>
+    <div class="page-title">
+        <h1>@T("Account.RewardPoints")</h1>
+    </div>
+
+    <div class="page-body">
+        <div class="reward-points-overview">
+            @Model.RewardPointsBalance
+        </div>
+
+        <div class="block">
+            <div class="block-title">
+                @T("RewardPoints.History")
+            </div>
+            <div class="block-body">
+                <div class="reward-points-history">
+                    @if (Model.RewardPoints.Count > 0)
+                    {
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        @T("Common.CreatedOn")
+                                    </th>
+                                    <th>
+                                        @T("RewardPoints.Fields.Points")
+                                    </th>
+                                    <th>
+                                        @T("RewardPoints.Fields.PointsBalance")
+                                    </th>
+                                    <th>
+                                        @T("RewardPoints.Fields.Message")
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.RewardPoints.Count; i++)
+                                {
+                                    var item = Model.RewardPoints[i];
+                                    <tr>
+                                        <td>
+                                            @item.CreatedOn
+                                        </td>
+                                        <td>
+                                            @item.Points
+                                        </td>
+                                        <td>
+                                            @item.PointsBalance
+                                        </td>
+                                        <td>
+                                            @item.Message
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        @T("RewardPoints.NoHistory")
+                    }
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>

@@ -1,0 +1,28 @@
+﻿@model HomePageProductsModel
+@using SmartStore.Web.Models.Catalog;
+@if (Model.Products.Count > 0)
+{
+    <div class="product-grid home-page-product-grid block">
+        <div class="block-title">
+            @T("HomePage.Products")
+        </div>
+        <div class="block-body">
+        @if (Model.UseSmallProductBox)
+        {
+            @(Html.DataList<ProductOverviewModel>(Model.Products, 4,
+            @<div class="item-box product-compact">
+                @Html.Partial("_ProductBoxCompact", @item)
+            </div>
+            ))
+        }
+        else
+        {
+            @(Html.DataList<ProductOverviewModel>(Model.Products, 3,
+            @<div class="item-box">
+                @Html.Partial("_ProductBox", @item)
+            </div>
+            ))
+        }
+        </div>
+    </div>
+}

@@ -1227,6 +1227,8 @@
     <Content Include="Scripts\jquery.serialScroll.js" />
     <Content Include="Scripts\underscore.js" />
     <Content Include="Scripts\underscore.min.js" />
+    <Content Include="Themes\NewAlpha\Content\bs4\js\bootstrap.js" />
+    <Content Include="Themes\NewAlpha\Content\bs4\js\bootstrap.min.js" />
     <Content Include="Themes\NewAlpha\Content\images\ajax_loader_small.gif" />
     <Content Include="Themes\NewAlpha\Content\images\color-overlay.png" />
     <Content Include="Themes\NewAlpha\Content\images\deliv-bg-aero.png" />
@@ -1235,6 +1237,7 @@
     <Content Include="Themes\NewAlpha\Content\images\star-off.png" />
     <Content Include="Themes\NewAlpha\Content\images\star-on-12.png" />
     <Content Include="Themes\NewAlpha\Content\images\star-on.png" />
+    <Content Include="Themes\NewAlpha\Content\output\theme.css" />
     <Content Include="Themes\NewAlpha\preview.png" />
     <Content Include="Themes\AlphaBlack\preview.png" />
     <Content Include="Themes\AlphaBlue\preview.png" />
@@ -1871,52 +1874,92 @@
     <Content Include="Views\Common\EntityPicker.cshtml" />
     <Content Include="Views\Common\EntityPickerList.cshtml" />
     <Content Include="Views\Widget\TabWidgets.cshtml" />
-    <Content Include="Themes\NewAlpha\Content\bs4\.csscomb.json" />
-    <Content Include="Themes\NewAlpha\Content\bs4\.scss-lint.yml" />
-    <Content Include="Themes\NewAlpha\Content\bs4\bootstrap-flex.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\bootstrap-grid.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\bootstrap-reboot.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\bootstrap.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_alert.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_animation.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_breadcrumb.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_button-group.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_buttons.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_card.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_carousel.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_close.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_code.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_custom-forms.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_dropdown.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_forms.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_grid.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_images.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_input-group.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_jumbotron.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_labels.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_list-group.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_media.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_mixins.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_modal.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_nav.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_navbar.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_normalize.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_pager.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_pagination.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_popover.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_print.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_progress.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_reboot.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_responsive-embed.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_tables.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_tooltip.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_type.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_utilities-background.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_utilities-responsive.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_utilities-spacing.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_utilities.scss" />
-    <Content Include="Themes\NewAlpha\Content\bs4\_variables.scss" />
-    <None Include="Themes\NewAlpha\Content\theme.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\bootstrap-flex.scss">
+      <Compile>False</Compile>
+      <Minify>True</Minify>
+      <IgnoreWarnings>True</IgnoreWarnings>
+      <IgnoreErrors>True</IgnoreErrors>
+      <CompileStyle>Nested</CompileStyle>
+      <DebugInfo>False</DebugInfo>
+    </Content>
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\bootstrap-grid.scss">
+      <Compile>False</Compile>
+      <Minify>True</Minify>
+      <IgnoreWarnings>True</IgnoreWarnings>
+      <IgnoreErrors>True</IgnoreErrors>
+      <CompileStyle>Nested</CompileStyle>
+      <DebugInfo>False</DebugInfo>
+    </Content>
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\bootstrap-reboot.scss">
+      <Compile>False</Compile>
+      <Minify>True</Minify>
+      <IgnoreWarnings>True</IgnoreWarnings>
+      <IgnoreErrors>True</IgnoreErrors>
+      <CompileStyle>Nested</CompileStyle>
+      <DebugInfo>False</DebugInfo>
+    </Content>
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\bootstrap.scss">
+      <Compile>False</Compile>
+      <Minify>True</Minify>
+      <OutputFolder>.</OutputFolder>
+      <IgnoreWarnings>True</IgnoreWarnings>
+      <IgnoreErrors>True</IgnoreErrors>
+      <CompileStyle>Nested</CompileStyle>
+      <DebugInfo>False</DebugInfo>
+    </Content>
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_alert.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_animation.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_breadcrumb.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_button-group.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_buttons.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_card.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_carousel.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_close.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_code.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_custom-forms.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_dropdown.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_forms.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_grid.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_images.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_input-group.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_jumbotron.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_labels.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_list-group.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_media.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_mixins.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_modal.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_nav.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_navbar.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_normalize.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_pager.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_pagination.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_popover.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_print.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_progress.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_reboot.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_responsive-embed.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_tables.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_tooltip.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_type.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_utilities-background.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_utilities-responsive.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_utilities-spacing.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_utilities.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\scss\_variables.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\custom\_utils.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\custom\_buttons.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\custom\_forms.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\custom\_accordion.scss" />
+    <Content Include="Themes\NewAlpha\Content\bs4\custom\_colors.scss" />
+    <None Include="Themes\NewAlpha\Content\theme.scss">
+      <Compile>True</Compile>
+      <Minify>True</Minify>
+      <OutputFolder>.\output</OutputFolder>
+      <IgnoreWarnings>True</IgnoreWarnings>
+      <IgnoreErrors>True</IgnoreErrors>
+      <CompileStyle>Nested</CompileStyle>
+      <DebugInfo>False</DebugInfo>
+    </None>
     <Content Include="Themes\NewAlpha\theme.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1927,10 +1970,213 @@
     <Content Include="Themes\NewAlpha\Views\Shared\_ColumnsOne.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Shared\_ColumnsThree.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Shared\_ColumnsTwo.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_Root.Head.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\ConditionalComments.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\ConfigureTheme.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\Error.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\Header.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\LanguageAttributes.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\LicenseRequired.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\NotFound.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_Checkout.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_ClientRes.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_CreateOrUpdateAddress.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_Notifications.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_Print.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_ProductBox.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_ProductBoxCompact.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_Root.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_RootPopup.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Blog\BlogMonths.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Blog\BlogPost.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Blog\BlogTags.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Blog\List.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\ActiveDiscussions.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\ActiveDiscussionsSmall.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\Forum.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\ForumBreadcrumb.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\ForumGroup.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\Index.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\LastPost.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\PostCreate.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\PostEdit.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\Search.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\Topic.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\TopicCreate.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\TopicEdit.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\TopicMove.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\_ActiveTopics.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\_CreateUpdatePost.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\_CreateUpdateTopic.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\_ForumGroupPartial.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\_ForumPost.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Boards\_SearchBox.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\CategoryNavigation.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\CompareProducts.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\CompareProductsButton.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\FlyoutCompare.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\HomepageBestSellers.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\HomepageCategories.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\HomepageProducts.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\ManufacturerAll.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\ManufacturerNavigation.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\ManufacturerTemplate.ProductsInGridOrLines.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\MegaMenu.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\PopularProductTags.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\ProductBreadcrumb.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\ProductsByTag.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\ProductTagsAll.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\RecentlyAddedProducts.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\RecentlyViewedProducts.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\RecentlyViewedProductsBlock.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\Search.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\SearchBox.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\_FilterPriceBox.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\_FilterSpecsBox.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\_ProductBoxList.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Catalog\_ProductListOptions.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Checkout\BillingAddress.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Checkout\CheckoutProgress.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Checkout\Completed.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Checkout\Confirm.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Checkout\PaymentMethod.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Checkout\ShippingAddress.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Checkout\ShippingMethod.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\AccountDropdown.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\ChangeDeviceBlock.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\CurrencySelector.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\EntityPicker.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\EntityPickerList.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\Favicon.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\Footer.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\InfoBlock.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\JavaScriptDisabledWarning.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\LanguageSelector.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\List.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\Menu.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\PaymentInfo.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\PdfReceiptFooter.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\PdfReceiptHeader.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\Settings.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\ShippingInfo.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\ShopBar.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\StoreThemeSelector.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\TaxTypeSelector.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\AccountActivation.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\AddressAdd.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\AddressEdit.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\Addresses.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\Avatar.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\BackInStockSubscriptions.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\ChangePassword.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\DownloadableProducts.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\ForumSubscriptions.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\Info.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\Login.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\MyAccount.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\MyAccountNavigation.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\Orders.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\PasswordRecovery.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\PasswordRecoveryConfirm.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\Register.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\RegisterResult.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\ReturnRequests.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\RewardPoints.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\UserAgreement.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\_CheckUsernameAvailability.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Customer\_ExternalAuthentication.AssociateMessage.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ExternalAuthentication\ExternalMethods.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Filter\Products.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Filter\ProductsMultiSelect.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Home\ContactUs.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Home\ContentSlider.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Home\Index.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Home\Sitemap.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Home\StoreClosed.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Install\Index.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\News\HomePageNews.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\News\List.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\News\NewsItem.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Newsletter\NewsletterBox.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Newsletter\SubscriptionActivation.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Order\Details.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Order\Details.Print.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Order\ShipmentDetails.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Poll\HomePagePolls.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Poll\PollBlock.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Poll\_Poll.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\PrivateMessages\Inbox.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\PrivateMessages\Index.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\PrivateMessages\Send.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\PrivateMessages\SentItems.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\PrivateMessages\View.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\AskQuestion.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\AskQuestionButton.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\BackInStockSubscribePopup.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\CrossSellProducts.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\EmailAFriend.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\EmailAFriendButton.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\ProductDetailReviews.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\ProductManufacturers.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\ProductsAlsoPurchased.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\ProductSpecifications.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\ProductTags.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\ProductTemplate.Grouped.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\ProductTemplate.Simple.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\ProductTierPrices.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\RelatedProducts.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\ReviewOverview.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\Reviews.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\ShareButton.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\_AddToCart.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\_Attributes.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\_BackInStockSubscription.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\_BundleItems.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\_BundleItemsAddToCart.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\_DownloadSample.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\_GiftCardInfo.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\_PictureGallery.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\_Price.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\_ProductTemplate.Grouped.AssociatedProduct.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\_ReviewHelpfulness.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Product\_SKU_Man_Stock.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Profile\Index.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Profile\Info.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Profile\Posts.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ReturnRequest\ReturnRequest.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\EditorTemplates\BlockInput.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\EditorTemplates\Boolean.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\EditorTemplates\ButtonType.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\EditorTemplates\Color.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\EditorTemplates\DateTime.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\EditorTemplates\Decimal.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\EditorTemplates\Double.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\EditorTemplates\Int32.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\EditorTemplates\Time.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\Cart.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\EmailWishlist.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\EstimateShipping.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\FlyoutShoppingCart.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\FlyoutWishlist.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\OrderSummary.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\OrderTotals.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\Wishlist.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\_CheckoutAttributes.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\_CommentBox.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\_DiscountBox.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\_GiftCardBox.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\_OrderReviewData.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Topic\TopicBlock.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Topic\TopicDetails.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Topic\TopicWidget.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Widget\TabWidgets.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Widget\WidgetsByZone.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />
-    <Folder Include="Themes\NewAlpha\Content\bs4\mixins\" />
+    <Folder Include="Themes\NewAlpha\Content\bs4\scss\mixins\" />
+    <Folder Include="Themes\NewAlpha\Scripts\" />
     <Folder Include="Views\TaskScheduler\" />
   </ItemGroup>
   <ItemGroup>

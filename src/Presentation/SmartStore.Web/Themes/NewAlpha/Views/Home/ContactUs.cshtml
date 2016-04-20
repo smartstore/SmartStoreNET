@@ -1,0 +1,81 @@
+﻿@model ContactUsModel
+@using SmartStore.Web.Models.Common;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.ContactUs").Text);
+}
+<div class="page contact-page">
+    @Html.Action("TopicBlock", "Topic", new { systemName = "ContactUs" })
+
+    <div class="page-body">
+        @Html.Widget("contactus_top")
+        @if (Model.SuccessfullySent)
+        {
+            <div class="alert alert-info fade in">
+                <button class="close" data-dismiss="alert">x</button>
+                @Model.Result
+            </div>        
+        }
+        else
+        {
+            using (Html.BeginRouteForm("ContactUs", FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+            <fieldset>
+
+                @if (!ViewData.ModelState.IsValid) 
+                {
+                    @Html.ValidationSummary(true)
+                }
+
+                <legend>@T("PageTitle.ContactUs")</legend>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.FullName, new { @class="control-label required" , @for="FullName" } )
+                    <div class="controls">
+                        @Html.TextBoxFor(model => model.FullName, new { @class = "fullname", placeholder = T("ContactUs.FullName.Hint") })
+                        @Html.ValidationMessageFor(model => model.FullName)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.Email, new { @class="control-label required" , @for="Email" } )
+                    <div class="controls">
+                        @Html.TextBoxFor(model => model.Email, new { @class = "email", placeholder = T("ContactUs.Email.Hint") })
+                        @Html.ValidationMessageFor(model => model.Email)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.Enquiry, new { @class="control-label required" , @for="Enquiry" } )
+                    <div class="controls">
+                        @Html.TextAreaFor(model => model.Enquiry, new { @class = "enquiry", placeholder = T("ContactUs.Enquiry.Hint") })
+                        @Html.ValidationMessageFor(model => model.Enquiry)
+                    </div>
+                </div>
+                
+                @if (Model.DisplayCaptcha)
+                {
+                    <div class="control-group">
+                        <div class="controls captcha-box">
+                            @Html.Raw(Html.GenerateCaptcha())
+                        </div>
+                    </div>
+                }
+                
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" name="send-email" class="btn btn-primary">
+							<i class="fa fa-check"></i>
+							@T("ContactUs.Button")
+						</button>
+                    </div>
+                </div>
+
+            </fieldset> 
+            }
+        }
+        @Html.Widget("contactus_bottom")
+    </div>
+</div>

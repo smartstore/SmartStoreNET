@@ -1,0 +1,246 @@
+﻿@model IList<ProductDetailsModel.ProductVariantAttributeModel>
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core;
+@using System.Text;
+@using System.Globalization;
+@using SmartStore.Services.Customers;
+@using SmartStore.Services.Security;
+@using SmartStore.Web;
+@using SmartStore.Utilities;
+
+@{
+    var storeUrl = EngineContext.Current.Resolve<IWebHelper>().GetStoreLocation(false);
+}
+
+<div class="attributes">
+        
+    @foreach (var attribute in Model.Where(x => x.ShouldBeRendered()))
+    {		
+        string controlId = string.Format("product_attribute_{0}_{1}_{2}_{3}", attribute.ProductId, attribute.BundleItemId, attribute.ProductAttributeId, attribute.Id);
+        string textPrompt = !string.IsNullOrEmpty(attribute.TextPrompt) ? attribute.TextPrompt : attribute.Name;
+		string disabled = (attribute.IsDisabled ? " disabled=\"disabled\"" : null);
+		
+        <div class="control-group">
+            <label class='control-label@(attribute.IsRequired ? " required" : "")' for="@(controlId)">@textPrompt</label>
+
+            @if (!string.IsNullOrEmpty(attribute.Description))
+            {
+                <div class="attribute-description">
+                    @Html.Raw(attribute.Description)
+                </div>
+            }
+                
+            <div class="controls">
+                @switch (attribute.AttributeControlType)
+                {
+                    case AttributeControlType.DropdownList:
+                        {
+                    <select name="@(controlId)" id="@(controlId)" style="width:100%"@(Html.Raw(disabled))>
+                        @if (!attribute.IsRequired)
+                        {
+                            <option value="0">@T("Common.Unspecified")</option>
+						}
+						else if (attribute.Values.Count > 0 && !attribute.Values.Any(x => x.IsPreSelected))
+						{
+							<option value="0">@T("Common.PleaseSelect")</option>
+						}
+                        @foreach (var pvaValue in attribute.Values)
+                        {
+                            <option value="@pvaValue.Id" @Html.Attr("selected", "selected", pvaValue.IsPreSelected) @Html.Attr("data-imageurl", pvaValue.ImageUrl, pvaValue.ImageUrl.HasValue())>@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</option>
+                        }
+                    </select>
+                        }
+                        break;
+                    case AttributeControlType.RadioList:
+                        {
+                            foreach (var pvaValue in attribute.Values)
+                            {
+                                if (pvaValue.ImageUrl.HasValue())
+                                {
+                                    if (!String.IsNullOrEmpty(pvaValue.SeName))
+                                    { 
+                                        <a href="@Url.RouteUrl("Product", new { SeName = pvaValue.SeName })" class="attribute-value-image-checkbox">
+                                            <img src="@(pvaValue.ImageUrl)" />
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <img src="@(pvaValue.ImageUrl)" class="attribute-value-image-checkbox" />
+                                    }
+                                }
+
+                                <label for="@(controlId)_@(pvaValue.Id)" class="radio @(pvaValue.ImageUrl.HasValue() ? "image-has-value" : "")">
+									<input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" @Html.Attr("checked", "checked", pvaValue.IsPreSelected)@(Html.Raw(disabled)) />
+                                        @(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())
+                                </label>
+                            }
+
+                        }
+                        break;
+                    case AttributeControlType.Checkboxes:
+                        {
+                            foreach (var pvaValue in attribute.Values)
+                            {
+                                if (pvaValue.ImageUrl.HasValue())
+                                {
+                                    if (!String.IsNullOrEmpty(pvaValue.SeName))
+                                    { 
+                                        <a href="@Url.RouteUrl("Product", new { SeName = pvaValue.SeName })" class="attribute-value-image-checkbox">
+                                            <img src="@(pvaValue.ImageUrl)" />
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <img src="@(pvaValue.ImageUrl)" class="attribute-value-image-checkbox" />
+                                    }
+                                }
+                                
+                                <label for="@(controlId)_@(pvaValue.Id)" class="checkbox @(pvaValue.ImageUrl.HasValue() ? "image-has-value" : "")">
+									<input id="@(controlId)_@(pvaValue.Id)" type="checkbox" name="@(controlId)" value="@pvaValue.Id" @Html.Attr("checked", "checked", pvaValue.IsPreSelected)@(Html.Raw(disabled)) />
+                                    @(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())
+                                </label>
+                            }
+                        }
+                        break;
+                    case AttributeControlType.TextBox:
+                        {
+							<input name="@(controlId)" type="text" class="textbox input-block-level" id="@(controlId)" value="@attribute.TextValue"@(Html.Raw(disabled)) />
+                        }
+                        break;
+                    case AttributeControlType.MultilineTextbox:
+                        {
+							<textarea cols="20" id="@(controlId)" class="input-block-level" name="@(controlId)"@(Html.Raw(disabled))>@attribute.TextValue</textarea>
+                        }
+                        break;
+                    case AttributeControlType.Datepicker:
+                        {
+							@Html.DatePickerDropDowns(controlId + "_day", controlId + "_month", controlId + "_year", attribute.BeginYear, attribute.EndYear, attribute.SelectedDay, attribute.SelectedMonth, attribute.SelectedYear, true, attribute.IsDisabled)
+						}
+						break;
+					case AttributeControlType.FileUpload:
+						{
+							Html.AddScriptParts("~/bundles/fileupload");
+							Html.AddCssFileParts("~/css/fileupload");
+
+							var random = CommonHelper.GenerateRandomInteger();
+							var clientId = "upload" + CommonHelper.GenerateRandomInteger();
+
+							//ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+							var allowedFileExtensions = string.Join("|", attribute.AllowedFileExtensions.Select(x => x.Trim()).ToList());
+
+
+                            <div id="@clientId" class="fileupload">
+    
+                                <input id="@(controlId)" name="@(controlId)" type="hidden" class="hidden" />
+
+                                <button class="btn remove" @Html.Attr("style", "display:none", true)>
+                                    <i class="fa fa-trash-o"></i>
+                                    @T("Common.Remove")
+                                </button>
+
+                                <span class="btn btn-primary fileinput-button"@(Html.Raw(disabled))>
+                                    <i class="fa fa-upload"></i>
+                                    <span>@T("Common.Fileuploader.Upload")</span>
+                                    <input id="fileupload-@random" type="file" name="file"@(Html.Raw(disabled)) />
+                                </span>
+
+                                <button class="btn btn-warning cancel">
+                                    <i class="fa fa-times"></i>
+                                    <span>@T("Common.Fileuploader.Cancel")</span>
+                                </button>
+
+                                <!-- The global progress information -->
+                                <div class="fileupload-progress fade" style="width: 200px">
+                                    <!-- The global progress bar -->
+                                    <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                                        <div class="bar" style="width:0%;"></div>
+                                    </div>
+                                    <!-- The extended global progress information -->
+                                    <div class="progress-extended">&nbsp;</div>
+                                </div>
+
+                                <div class="uploaded-file hide">
+                                </div>
+
+                            </div>
+                                    
+                    <script type="text/javascript">
+                        $(function () {                   
+
+                            var el = $('#@clientId'),
+                                elHidden = el.find('.hidden'),
+                                elRemove = el.find('.remove'),
+                                elFile = el.find('.uploaded-file');
+
+                            $('#@clientId').fileupload({
+                                url: '@Html.Raw(Url.Action("UploadFileProductAttribute", "ShoppingCart", new { productId = attribute.ProductId, productAttributeId = attribute.ProductAttributeId }))',
+                                dataType: 'json',
+                                acceptFileTypes: new RegExp('@(allowedFileExtensions)', 'i'),
+                                done: function (e, data) {
+                                    var result = data.result;
+                                    elHidden.val(result.downloadGuid);
+
+                                    var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + result.downloadGuid;
+                                    var fileName = data.files[0].name;
+                                    var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
+
+                                    elFile.html(fileLink).removeClass("hide");
+
+                                    if (result.message) {
+                                        displayNotification(result.message, "success");
+                                    }
+                                    elRemove.show();
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    if (errorThrown === 'abort') {
+                                        displayNotification('File Upload has been canceled', "error");
+                                    }
+                                }
+                            });
+
+                            elRemove.click(function (e) {
+                                elFile.html("").addClass("hide");
+                                elHidden.val(0);
+                                $(this).hide();
+                                e.preventDefault();
+                            });
+                                    
+                        });
+                    </script>
+                        }
+                        break;
+
+                    case AttributeControlType.ColorSquares:
+                        {
+                        <ul class="option-list color-squares clearfix" id="color-squares-@(attribute.Id)">
+                            @foreach (var pvaValue in attribute.Values)
+                            {
+                                <li @(pvaValue.IsPreSelected ? @Html.Raw(" class=\"selected-value\"") : null)>
+                                    <label for="@(controlId)_@(pvaValue.Id)">
+										<span class="color-container tooltip-toggle" title="@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())">
+											<span class="color" style="background-color:@(pvaValue.ColorSquaresRgb);">&nbsp;</span>
+										</span>
+										<input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" @Html.Attr("checked", "checked", pvaValue.IsPreSelected) @Html.Raw(disabled) />
+                                        @*uncomment below to display attribute value name*@
+                                        @*<span class="name">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</span>*@
+                                    </label>
+                                </li>
+                            }
+                        </ul>
+                        <script type="text/javascript">
+                            $(document).ready(function() {
+                                $('.attributes #color-squares-@(attribute.Id)').delegate('input', 'click', function(event) {
+                                    $('.attributes #color-squares-@(attribute.Id)').find('li').removeClass('selected-value');
+                                    $(this).closest('li').addClass('selected-value');
+                                });
+                            });
+                        </script>
+                        }
+                        break;
+                }
+            </div>
+        </div>
+    }
+</div>

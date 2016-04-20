@@ -1,0 +1,29 @@
+﻿@model Dictionary<string, object>
+
+@{
+	if (false == (bool)Model["IsChildAction"])
+	{
+		Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
+		Html.AddTitleParts(T("Admin.Plugins.AddOnLicensing").Text);
+	}
+}
+@if (Model["Message"] != null && ((string)Model["Message"]).HasValue())
+{
+	<div class="page">
+		<div class="page-body">
+			<div class="alert alert-error fade in">
+				<h4>@T("Admin.Plugins.AddOnLicensing")</h4>
+				<p>
+					<strong>Systemname:</strong> @Model["SystemName"]
+					<br />
+					<strong>Controller:</strong> @Model["ControllerName"],
+					<strong>Action:</strong> @Model["ActionName"]
+				</p>
+				<p>
+					<span>@Html.Raw(Model["Message"])</span>
+				</p>
+			</div>
+		</div>
+	</div>
+}

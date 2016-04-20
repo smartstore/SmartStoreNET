@@ -1,0 +1,27 @@
+﻿@model CurrencySelectorModel
+@using SmartStore.Web.Models.Common;
+@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Infrastructure.DependencyManagement;
+@using System.Globalization;
+
+@if (Model.AvailableCurrencies.Count > 1)
+{
+    
+    var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+    
+    <div  id="currency-selector" class="regional-selector">
+        <ul class=" unstyled clearfix">
+        @foreach (var currency in Model.AvailableCurrencies)
+        {
+            var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeCurrency", new { customercurrency = currency.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null);
+            <li @Html.Attr("class", "selected", currency.Id == Model.CurrentCurrencyId)>
+                <a class="currency regional-label" href="@href" rel="tooltip nofollow" title="@currency.Name">
+                    @currency.Symbol
+                </a>
+            </li>
+        }
+        </ul>
+    </div>
+
+}

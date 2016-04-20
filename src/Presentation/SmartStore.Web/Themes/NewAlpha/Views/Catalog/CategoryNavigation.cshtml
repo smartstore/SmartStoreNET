@@ -1,0 +1,77 @@
+﻿@model NavigationModel
+@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Collections;
+
+@functions {
+    private string GetCssClassForNode(NodePathState state) 
+    {
+        var liClasses = new List<string>();
+
+        if ((state & NodePathState.Parent) == NodePathState.Parent)
+        {
+            liClasses.Add("parent");
+        }
+
+        if ((state & NodePathState.Expanded) == NodePathState.Expanded)
+        {
+            liClasses.Add("expanded");
+        }
+
+        if ((state & NodePathState.Selected) == NodePathState.Selected)
+        {
+            liClasses.Add("selected");
+        }
+
+        return liClasses.Count > 0 ? String.Join(" ", liClasses) : null;
+    }
+
+    private bool ShouldRenderChildren(NodePathState state)
+    {
+        if (!((state & NodePathState.Parent) == NodePathState.Parent) || !Model.Path.Any())
+            return false;
+
+        if ((state & NodePathState.Expanded) == NodePathState.Expanded || (state & NodePathState.Selected) == NodePathState.Selected)
+        {
+            return true;
+        }
+        
+        return false;
+    }
+}
+
+@if (Model.Root.HasChildren)
+{
+    <div class="block block-bordered block-category-navigation">
+        <div class="block-title">
+            @T("Categories")
+        </div>
+        <div class="block-body listbox">
+            <nav class="nav-category">
+                @CreateMenu(Model.Root.Children, "level-1")
+            </nav>
+        </div>
+    </div>
+}
+
+@helper CreateMenu(IEnumerable<TreeNode<MenuItem>> nodes, string menuSelector) {
+    <ul class="@menuSelector">
+        @foreach (var node in nodes)
+        {
+            var state = node.GetNodePathState(Model.Path);
+			var url = node.Value.GenerateUrl(this.Url);
+            <li class="@GetCssClassForNode(state)">
+                <a href="@url">@node.Value.Text
+                    @if ((node.Value.ElementsCount ?? 0) > 0)
+                    {
+                        <text> (@(node.Value.ElementsCount))</text>
+                    }
+                </a>
+                @if (ShouldRenderChildren(state))
+                {
+                    @CreateMenu(node.Children, "sub-level-" + (node.Depth + 2))
+                }
+            </li>
+        }
+    </ul>
+}

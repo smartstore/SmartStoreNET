@@ -1,0 +1,185 @@
+﻿@model AddressModel
+@using SmartStore.Web.Models.Common;
+
+@if (Model.CountryEnabled && Model.StateProvinceEnabled)
+{
+<script type="text/javascript">
+        $(function () {
+            $("#@Html.FieldIdFor(model => model.CountryId)").change(function () {
+                var selectedItem = $(this).val();
+                var ddlStates = $("#@Html.FieldIdFor(model => model.StateProvinceId)");
+                var statesProgress = $("#states-loading-progress");
+                statesProgress.show();
+                $.ajax({
+                    cache: false,
+                    type: "GET",
+                    url: "@(Url.Action("GetStatesByCountryId", "Country"))",
+                    data: { "countryId": selectedItem, "addEmptyStateIfRequired": "true" },
+                    success: function (data) {
+                        ddlStates.html('');
+                        $.each(data, function (id, option) {
+                            ddlStates.append($('<option></option>').val(option.id).html(option.name));
+                        });
+                        ddlStates.trigger("change");
+                        statesProgress.hide();
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert('Failed to retrieve states.');
+                        statesProgress.hide();
+                    }  
+                });
+            });
+        });
+</script>
+}
+@Html.HiddenFor(model => model.Id)
+
+<div class="form-horizontal">  
+    @if (Model.CompanyEnabled)
+    {
+    <div class="control-group">
+        @Html.LabelFor(model => model.Company, new { @class="control-label" + (Model.CompanyRequired ? " required" : "") , @for="Company" } )
+        <div class="controls">
+            @Html.TextBoxFor(model => model.Company, (Model.CompanyRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.ValidationMessageFor(model => model.Company)
+        </div>
+    </div>
+    }
+    
+    <div><hr /></div>
+
+    <div class="control-group">
+        @Html.LabelFor(model => model.FirstName, new { @class="control-label required" , @for="FirstName" } )
+        <div class="controls">
+            @Html.EditorFor(model => model.FirstName)
+            @Html.ValidationMessageFor(model => model.FirstName)
+        </div>
+    </div>
+
+    <div class="control-group">
+        @Html.LabelFor(model => model.LastName, new { @class="control-label required" , @for="LastName" } )
+        <div class="controls">
+            @Html.EditorFor(model => model.LastName)
+            @Html.ValidationMessageFor(model => model.LastName)
+        </div>
+    </div>
+
+    @if (Model.StreetAddressEnabled)
+    {
+    <div class="control-group">
+        @Html.LabelFor(model => model.Address1, new { @class="control-label" + (Model.StreetAddressRequired ? " required" : "") , @for="Address1" } )
+        <div class="controls">
+            @Html.TextBoxFor(model => model.Address1, (Model.StreetAddressRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.ValidationMessageFor(model => model.Address1)
+        </div>
+    </div>
+    }
+
+    @if (Model.StreetAddress2Enabled)
+    {
+    <div class="control-group">
+        @Html.LabelFor(model => model.Address2, new { @class="control-label" + (Model.StreetAddress2Required ? " required" : "") , @for="Address2" } )
+        <div class="controls">
+            @Html.TextBoxFor(model => model.Address2, (Model.StreetAddress2Required ? null : new { placeholder = "Optional" } ) )
+            @Html.ValidationMessageFor(model => model.Address2)
+        </div>
+    </div>
+    }
+
+    @if (Model.ZipPostalCodeEnabled)
+    {
+    <div class="control-group">
+        @Html.LabelFor(model => model.ZipPostalCode, new { @class="control-label" + (Model.ZipPostalCodeRequired ? " required" : "") , @for="ZipPostalCode" } )
+        <div class="controls">
+            @Html.TextBoxFor(model => model.ZipPostalCode, (Model.ZipPostalCodeRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.ValidationMessageFor(model => model.ZipPostalCode)
+        </div>
+    </div>
+    }
+
+    @if (Model.CityEnabled)
+    {
+    <div class="control-group">
+        @Html.LabelFor(model => model.City, new { @class="control-label" + (Model.CityRequired ? " required": ""), @for="City" } )
+        <div class="controls">
+            @Html.TextBoxFor(model => model.City, (Model.CityRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.ValidationMessageFor(model => model.City)
+        </div>
+    </div>
+    }
+
+    @if (Model.CountryEnabled)
+    {
+    <div class="control-group">
+        @Html.LabelFor(model => model.CountryId, new { @class="control-label required" , @for="CountryId" } )
+        <div class="controls">
+            @Html.DropDownListFor(model => model.CountryId, Model.AvailableCountries, new { style = "min-width:289px" } )
+            @Html.ValidationMessageFor(model => model.CountryId)
+        </div>
+    </div>
+    }
+
+    @if (Model.CountryEnabled && Model.StateProvinceEnabled)
+    {
+    <div class="control-group">
+        @Html.LabelFor(model => model.StateProvinceId, new { @class="control-label" , @for="StateProvinceId" } )
+        <div class="controls">
+            @Html.DropDownListFor(model => model.StateProvinceId, Model.AvailableStates, new { style="min-width:289px" })
+            <span id="states-loading-progress" style="display: none;">@T("Common.Wait...")
+                <img src='@Url.Content("~/Content/Images/ajax_loader_small.gif")' alt="@T("Common.Wait...")" />
+            </span>
+            @Html.ValidationMessageFor(model => model.StateProvinceId)
+        </div>
+    </div>
+    }
+
+    <div><hr /></div>
+
+    <div class="control-group">
+        @Html.LabelFor(model => model.Email, new { @class="control-label required" , @for="Email" } )
+        <div class="controls">
+            @Html.EditorFor(model => model.Email)
+            @Html.ValidationMessageFor(model => model.Email)
+        </div>
+    </div>
+    
+    @if (Model.ValidateEmailAddress)
+    {
+        <div class="control-group">
+            @Html.LabelFor(model => model.EmailMatch, new { @class = "control-label required", @for = "EmailMatch" })
+            <div class="controls">
+                @Html.EditorFor(model => model.EmailMatch)
+                @Html.ValidationMessageFor(model => model.EmailMatch)
+            </div>
+        </div>    
+    }
+    
+    @if (Model.PhoneEnabled)
+    {
+    <div class="control-group">
+        @Html.LabelFor(model => model.PhoneNumber, new { @class="control-label" + (Model.PhoneRequired ? " required" : "") , @for="PhoneNumber" } )
+        <div class="controls">
+            @Html.TextBoxFor(model => model.PhoneNumber, (Model.PhoneRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.ValidationMessageFor(model => model.PhoneNumber)
+        </div>
+    </div>
+    }
+
+    @if (Model.FaxEnabled)
+    {
+    <div class="control-group">
+        @Html.LabelFor(model => model.FaxNumber, new { @class="control-label" + (Model.FaxRequired ? " required" : ""), @for="FaxNumber" } )
+        <div class="controls">
+            @Html.TextBoxFor(model => model.FaxNumber, (Model.FaxRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.ValidationMessageFor(model => model.FaxNumber)
+        </div>
+    </div>
+    }
+
+    <div class="control-group">
+        <div class="controls muted address-required-hint">
+            @T("Address.Fields.Required.Hint")
+        </div>
+    </div>
+
+</div>

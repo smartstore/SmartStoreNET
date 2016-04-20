@@ -1,0 +1,168 @@
+﻿@model LoginModel
+@using SmartStore.Web.Models.Customer;
+@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Infrastructure.DependencyManagement;
+
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Login").Text);
+    
+    //register URL with return URL (if specified)
+    var registerUrl = Url.RouteUrl("Register");
+    if (!String.IsNullOrEmpty(this.Context.Request.QueryString["returnUrl"]))
+    {
+        var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+        registerUrl = webHelper.ModifyQueryString(registerUrl, "returnurl=" + HttpUtility.UrlEncode(this.Context.Request.QueryString["returnUrl"]), null);
+    }
+}
+
+<div class="page login-page">
+    <div class="page-title">
+        <h1>@T("Account.Login.Welcome")</h1>
+    </div>
+
+    @Html.Action("TopicBlock", "Topic", new { systemName = "LoginRegistrationInfo" })
+
+    @Html.Partial("_ExternalAuthentication.AssociateMessage")
+
+    <div class="page-body">
+        
+        <div class="login-wrapper clearfix">
+            @if (Model.CheckoutAsGuest)
+            {
+                <div class="login-block login-block-register equalized-column">
+                    <div class="block login-block-inner checkout-as-guest-or-register-block">
+                        <div class="block-title">
+                            @T("Account.Login.CheckoutAsGuestOrRegister")
+                        </div>
+                        <div class="block-body">
+                            <p>@Html.Action("TopicBlock", "Topic", new { systemName = "CheckoutAsGuestOrRegister" })</p>
+                            <div class="buttons">
+                                <a class="btn pull-left checkout-as-guest-button" href="@Url.RouteUrl("Checkout")">
+                                    @T("Account.Login.CheckoutAsGuest")
+                                </a>
+                                <a class="btn btn-primary pull-right register-button" href="@registerUrl">
+                                    @T("Account.Register")
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="login-block login-block-register equalized-column">
+                    <div class="block login-block-inner">
+                        <div class="block-title">
+                            @T("Account.Login.NewCustomer")
+                        </div>
+                        <div class="block-body">
+                            <p>@T("Account.Login.NewCustomerText")</p>
+                            <div class="buttons">
+                                <a class="btn btn-primary register-button" href="@registerUrl">
+                                    @T("Account.Register")
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="login-block login-block-login equalized-column">
+
+                <div class="block">
+                    <div class="block-title">
+                        @T("Account.Login.ReturningCustomer")
+                    </div>
+                    <div class="block-body">
+
+                        <form action="@ViewContext.HttpContext.Request.RawUrl" method="post" class="form-horizontal">
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                @Html.ValidationSummary(true, T("Account.Login.Unsuccessful").Text)
+                            }
+
+                            @if (Model.UsernamesEnabled)
+                            {
+                                <div class="control-group">
+                                    @Html.LabelFor(model => model.Username, new { @class = "control-label", @for = "Username" })
+                                    <div class="controls">
+                                        @Html.TextBoxFor(m => m.Username, new { @class = "username input-block-level" })
+                                        @Html.ValidationMessageFor(m => m.Username)
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="control-group">
+                                    @Html.LabelFor(model => model.Email, new { @class = "control-label", @for = "Email" })
+                                    <div class="controls">
+                                        @Html.TextBoxFor(m => m.Email, new { @class = "email input-block-level" })
+                                        @Html.ValidationMessageFor(m => m.Email)
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="control-group pwd">
+                                @Html.LabelFor(model => model.Password, new { @class = "control-label", @for = "Password" })
+                                <div class="controls">
+                                    <input type="password"
+                                           class="password input-block-level"
+                                           autocomplete="off"
+                                           id="@Html.FieldIdFor(m => m.Password)"
+                                           name="@Html.FieldNameFor(m => m.Password)"
+                                           value="@(Model.Password.HasValue() ? Model.Password : null)" />
+                                    @Html.ValidationMessageFor(m => m.Password)
+                                    <div class="forgot-password">
+                                        @Html.ActionLink(T("Account.Login.ForgotPassword").Text, "PasswordRecovery", "Customer")
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="control-group signin">
+                                <div class="controls clearfix">
+                                    <label class="checkbox inline">
+                                        @Html.CheckBoxFor(m => m.RememberMe)
+                                        @T("Account.Login.Fields.RememberMe")
+                                    </label>
+                                    <div class="pull-right">
+                                        <button type="submit" class="btn login-button">
+                                            <i class="fa fa-sign-in hide"></i>
+                                            @T("Account.Login.LoginButton")
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <div class="controls">
+
+                                    @if (Model.DisplayCaptcha)
+                                    {
+                                        <div class="captcha-box">
+                                            @Html.Raw(Html.GenerateCaptcha())
+                                        </div>
+                                    }
+
+                                    <div class="externalauthentication clearfix">@Html.Action("ExternalMethods", "ExternalAuthentication")</div>
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        applyCommonPlugins($(".page.login-page"));
+    });
+</script>

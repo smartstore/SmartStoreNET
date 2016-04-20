@@ -1,0 +1,99 @@
+﻿@model PdfReceiptHeaderFooterModel
+@using SmartStore.Web.Framework.Pdf;
+
+@{
+	Layout = ViewBag.IsPartial == true ? "" : "~/Views/Shared/_Print.cshtml";
+	
+	var company = Model.MerchantCompanyInfo;
+	var bank = Model.MerchantBankAccount;
+	var contact = Model.MerchantContactData;
+	
+}
+
+@functions {
+	private IHtmlString JoinValues(string[] values, string separator = " ")
+	{
+		var normalized = values.Where(x => x.HasValue());
+		return MvcHtmlString.Create(String.Join(separator, normalized));
+	}
+}
+
+<footer>
+	@Html.Widget("invoice_footer_before")
+	<table class="text-muted text-smallest">
+		<tr>
+			<td style="width: 33%;">
+				@if (company.CompanyName.HasValue())
+				{
+					<div>@company.CompanyName</div>
+				}
+				@{
+					var fullName = JoinValues(new string[] { company.Salutation, company.Title, company.Firstname, company.Lastname });
+				}
+				@if (fullName.ToString().HasValue())
+				{
+					<div>@fullName</div>
+				}				
+				
+				<div>@JoinValues(new string[] { company.Street, company.Street2 }, " &middot; ")</div>
+				<div>@JoinValues(new string[] { company.ZipCode, company.City })</div>
+				<div>@JoinValues(new string[] { company.CountryName, company.StateName }, ", ")</div>
+			</td>
+			<td style="width: 33%;">
+				<div>@T("PDFInvoice.Footer.Url", Model.StoreUrl)</div>
+				@if (contact.ContactEmailAddress.HasValue())
+				{
+					<div>@T("PDFInvoice.Footer.Mail", contact.ContactEmailAddress)</div>
+				}
+				@if (contact.CompanyTelephoneNumber.HasValue())
+				{
+					<div>@T("PDFInvoice.Footer.Fon", contact.CompanyTelephoneNumber)</div>
+				}
+				@if (contact.CompanyFaxNumber.HasValue())
+				{
+					<div>@T("PDFInvoice.Footer.Fax", contact.CompanyFaxNumber)</div>
+				}
+				@if (company.TaxNumber.HasValue())
+				{
+					<div>@T("PDFInvoice.TaxNumber") @company.TaxNumber</div>
+				}
+				@if (company.VatId.HasValue())
+				{
+					<div>@T("PDFInvoice.VatId") @company.VatId</div>
+				}
+				@if (company.CommercialRegister.HasValue())
+				{
+					<div>@T("PDFInvoice.CommercialRegisterHeading") @company.CommercialRegister</div>
+				}
+			</td>
+			<td style="width: 33%;">
+				@if (bank.Bankname.HasValue())
+				{
+					<div>@bank.Bankname</div>
+				}
+				@if (bank.Bankcode.HasValue())
+				{
+					<div>@T("PDFInvoice.Footer.Bankcode", bank.Bankcode)</div>
+				}				
+				@if (bank.AccountNumber.HasValue())
+				{
+					<div>@T("PDFInvoice.Footer.AccountNumber", bank.AccountNumber)</div>
+				}					
+				@if (bank.AccountHolder.HasValue())
+				{
+					<div>@T("PDFInvoice.Footer.AccountHolder", bank.AccountHolder)</div>
+				}					
+				@if (bank.Iban.HasValue())
+				{
+					<div>@T("PDFInvoice.Footer.Iban", bank.Iban)</div>
+				}					
+				@if (bank.Bic.HasValue())
+				{
+					<div>@T("PDFInvoice.Footer.Bic", bank.Bic)</div>
+				}						
+			</td>
+		</tr>
+	</table>
+	@Html.Widget("invoice_footer_after")
+</footer>
+

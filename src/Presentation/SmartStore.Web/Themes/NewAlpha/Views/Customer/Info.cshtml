@@ -1,0 +1,324 @@
+﻿@model CustomerInfoModel
+@using SmartStore.Web.Models.Customer;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Account").Text);
+}
+@section left
+{
+    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
+}
+@if (Model.CountryEnabled && Model.StateProvinceEnabled)
+{
+    <script type="text/javascript">
+     $(function() {
+            $("#@Html.FieldIdFor(model => model.CountryId)").change(function() {
+                var selectedItem = $(this).val();
+                var ddlStates = $("#@Html.FieldIdFor(model => model.StateProvinceId)");
+                var statesProgress = $("#states-loading-progress");
+                statesProgress.show();
+                $.ajax({
+                    cache: false,
+                    type: "GET",
+                    url: "@(Url.Action("GetStatesByCountryId", "Country"))",
+                    data: { "countryId": selectedItem, "addEmptyStateIfRequired": "true" },
+                    success: function (data) {
+                        ddlStates.html('');
+                        $.each(data, function(id, option) {
+                            ddlStates.append($('<option></option>').val(option.id).html(option.name));
+                        });
+                        ddlStates.trigger("change");
+                        statesProgress.hide();
+                    },
+                    error:function (xhr, ajaxOptions, thrownError){
+                        alert('Failed to retrieve states.');
+                        statesProgress.hide();
+                    }  
+                });
+            });
+        });
+    </script>
+}
+<div class="page account-page customer-info-page">
+    <h4 class="muted">@T("Account.MyAccount")</h4>
+    <div class="page-title">
+        <h1>@T("Account.CustomerInfo")</h1>
+    </div>
+
+    <div class="page-body">
+        @using (Html.BeginForm("Info", "Customer", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.AntiForgeryToken()
+
+            if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(true)
+            }
+          
+            <fieldset class="form-fields">
+                <legend>@T("Account.YourPersonalDetails")</legend>
+
+                @if (Model.GenderEnabled)
+                {
+                    <div class="control-group">
+                        
+                        <label class="control-label" for="gender-male">@T("Account.Fields.Gender")</label>
+                        <div class="controls form-inline">
+                            <label class="inline radio">
+                                @Html.RadioButton("Gender", "M", (Model.Gender == "M"), new { id = "gender-male" }) 
+                                @T("Account.Fields.Gender.Male")
+                            </label>
+
+                            <label class="inline radio">
+                                @Html.RadioButton("Gender", "F", (Model.Gender == "F"), new { id = "gender-female" }) 
+                                @T("Account.Fields.Gender.Female")
+                            </label>
+                        </div>
+                    </div>
+                }
+
+                @Html.ControlGroupFor(model => model.FirstName, required: true)
+                @Html.ControlGroupFor(model => model.LastName, required: true)
+
+                @if (Model.DateOfBirthEnabled)
+                {
+                    <div class="control-group">
+                        <label class="control-label" for="DateOfBirthDay">@T("Account.Fields.DateOfBirth")</label>
+                        <div class="controls">
+                            @Html.DatePickerDropDowns(Html.FieldNameFor(x => x.DateOfBirthDay),
+                                        Html.FieldNameFor(x => x.DateOfBirthMonth),
+                                        Html.FieldNameFor(x => x.DateOfBirthYear),
+                                        DateTime.Now.Year - 110,
+                                        DateTime.Now.Year,
+                                        Model.DateOfBirthDay,
+                                        Model.DateOfBirthMonth,
+                                        Model.DateOfBirthYear)
+                            @Html.ValidationMessageFor(model => model.DateOfBirthDay)
+                            @Html.ValidationMessageFor(model => model.DateOfBirthMonth)
+                            @Html.ValidationMessageFor(model => model.DateOfBirthYear)
+                        </div>
+                    </div>
+                }
+
+                @Html.ControlGroupFor(model => model.Email, required: true)
+
+                @if (Model.UsernamesEnabled)
+                {
+                    <div class="control-group">
+                        @Html.LabelFor(model => model.Username, new { @class = "control-label required", @for = "Username" })
+                        @if (Model.AllowUsersToChangeUsernames)
+                        {
+                            <div class="controls">
+                                @if (Model.CheckUsernameAvailabilityEnabled)
+                                {
+                                    <div class="input-append">
+                                        @Html.EditorFor(model => model.Username)
+                                        @Html.Partial("_CheckUsernameAvailability")
+                                    </div>
+                                }
+                                else
+                                {
+                                    @Html.EditorFor(model => model.Username)
+                                }
+                                @Html.ValidationMessageFor(model => model.Username)
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="controls">
+                                @Model.Username
+                            </div>
+                        }
+                    </div>
+                }
+                
+                @if(Model.DisplayCustomerNumber)
+                {
+                    <div class="control-group">
+                        @Html.LabelFor(model => model.CustomerNumber, new { @class = "control-label", @for = "CustomerNumber" })
+                        <div class="controls">
+                            @Html.TextBoxFor(model => model.CustomerNumber, !Model.CustomerNumberEnabled ? new { @readonly = "true" } : null)
+                        </div>
+                    </div>
+                }
+                
+           </fieldset>
+            
+                if (Model.AssociatedExternalAuthRecords.Count > 0)
+                {
+                <fieldset class="form-fields">
+                    <legend>@T("Account.AssociatedExternalAuth")</legend>
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @T("Account.AssociatedExternalAuth.AuthMethodName")
+                                </th>
+                                <th>
+                                    @T("Account.AssociatedExternalAuth.Email")
+                                </th>
+                                <th>
+                                    @T("Account.AssociatedExternalAuth.ExternalIdentifier")
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.AssociatedExternalAuthRecords)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.AuthMethodName
+                                    </td>
+                                    <td>
+                                        @item.Email
+                                    </td>
+                                    <td>
+                                        @item.ExternalIdentifier
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </fieldset>
+                }
+
+                if (Model.CompanyEnabled || Model.DisplayVatNumber)
+                {
+                <fieldset class="form-fields">
+                    <legend>@T("Account.CompanyDetails")</legend>
+                        
+                    @if (Model.CompanyEnabled)
+                    {
+                        @Html.ControlGroupFor(model => model.Company, required: Model.CompanyRequired)
+                    }
+                    @if (Model.DisplayVatNumber)
+                    {
+                        <div class="control-group">
+                            @Html.LabelFor(model => model.VatNumber, new { @class = "control-label", @for = "VatNumber" })
+                            <div class="controls">
+                                @Html.TextBoxFor(model => model.VatNumber, new { placeholder = "Optional" })&nbsp;&nbsp;&nbsp;@Model.VatNumberStatusNote
+                                <span class="help-block muted vat-note">@T("Account.Fields.VatNumber.Note")</span>
+                            </div>
+                        </div>
+                    }
+                </fieldset>
+                }
+
+                if (Model.StreetAddressEnabled ||
+                                Model.StreetAddress2Enabled ||
+                                Model.ZipPostalCodeEnabled ||
+                                Model.CityEnabled ||
+                                Model.CountryEnabled)
+                {                
+                <fieldset class="form-fields">
+                    <legend>@T("Account.YourAddress")</legend>
+                
+                    @if (Model.StreetAddressEnabled)
+                    {
+                        @Html.ControlGroupFor(model => model.StreetAddress, required: Model.StreetAddressRequired)
+                    }
+                    @if (Model.StreetAddress2Enabled)
+                    {
+                        @Html.ControlGroupFor(model => model.StreetAddress2, required: Model.StreetAddress2Required)
+                    }
+                    @if (Model.ZipPostalCodeEnabled)
+                    {
+                        @Html.ControlGroupFor(model => model.ZipPostalCode, required: Model.ZipPostalCodeRequired)
+                    }
+                    @if (Model.CityEnabled)
+                    {
+                        @Html.ControlGroupFor(model => model.City, required: Model.CityRequired)
+                    }
+                    @if (Model.CountryEnabled)
+                    {
+                        <div class="control-group">
+                            @Html.LabelFor(model => model.CountryId, new { @class = "control-label", @for = "CountryId" })
+                            <div class="controls">
+                                @Html.DropDownList("CountryId", Model.AvailableCountries)
+                            </div>
+                        </div>
+                    }
+                    @if (Model.CountryEnabled && Model.StateProvinceEnabled)
+                    {
+                        <div class="control-group">
+                            @Html.LabelFor(model => model.StateProvinceId, new { @class = "control-label", @for = "StateProvinceId" })
+                            <div class="controls">
+                                @Html.DropDownList("StateProvinceId", Model.AvailableStates, new { style = "width: 280px" })
+                                <span id="states-loading-progress" style="display: none;">@T("Common.Wait...")
+                                    <img src='@Url.Content("~/Content/Images/ajax_loader_small.gif")' alt="@T("Common.Wait...")"
+                                />
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </fieldset>            
+                }
+
+                if (Model.PhoneEnabled || Model.FaxEnabled)
+                {
+                    <fieldset class="form-fields">
+                        <legend>@T("Account.YourContactInformation")</legend>
+                    
+                        @if (Model.PhoneEnabled)
+                        {
+                            @Html.ControlGroupFor(model => model.Phone, required: Model.PhoneRequired)
+                        }
+                        @if (Model.FaxEnabled)
+                        {
+                            @Html.ControlGroupFor(model => model.Fax, required: Model.FaxRequired)
+                        }
+                    
+                    </fieldset>
+                }
+
+                if (Model.NewsletterEnabled)
+                {
+                    <fieldset class="form-fields">
+                        <legend>@T("Account.Options")</legend>
+                        @Html.ControlGroupFor(model => model.Newsletter, editorType: InputEditorType.Checkbox)
+                    </fieldset>
+                }
+
+                if (Model.AllowCustomersToSetTimeZone || Model.SignatureEnabled)
+                {
+                    <fieldset class="form-fields">
+                        <legend>@T("Account.Preferences")</legend>
+                
+                        @if (Model.AllowCustomersToSetTimeZone)
+                        {
+                            <div class="control-group">
+                                @Html.LabelFor(model => model.TimeZoneId, new { @class = "control-label", @for = "TimeZoneId" })
+                                <div class="controls">
+                                    @Html.DropDownList("TimeZoneId", Model.AvailableTimeZones)
+                                    @Html.ValidationMessageFor(model => model.TimeZoneId)
+                                </div>
+                            </div>
+                        }
+                        @if (Model.SignatureEnabled)
+                        {   
+                            <div class="control-group">
+                                @Html.LabelFor(model => model.Signature, new { @class = "control-label", @for = "Signature" })
+                                <div class="controls">
+                                    @Html.TextAreaFor(model => model.Signature, new { placeholder = "Optional", @class = "account-signature-text" })
+                                </div>
+                            </div>
+                        }
+                
+                    </fieldset>
+                }
+
+                <div class="control-group buttons">
+                    <div class="controls">
+                        <button type="submit" name="save-info-button" class="btn btn-primary save-customer-info-button">
+							<i class="fa fa-floppy-o"></i>
+                            @T("Common.Save")
+                        </button>
+                    </div>
+                </div>
+                                
+        }
+
+    </div>
+</div>

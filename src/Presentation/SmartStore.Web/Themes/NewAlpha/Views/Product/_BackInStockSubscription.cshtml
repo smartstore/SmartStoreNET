@@ -1,0 +1,33 @@
+﻿@model ProductDetailsModel
+@using SmartStore.Web.Models.Catalog;
+@if (Model.DisplayBackInStockSubscription)
+{
+    <div class="back-in-stock-subscription">
+        @if (Model.IsCurrentCustomerRegistered)
+        {
+            <a class="read subscribe-for-back-in-stock" data-toggle="modal" href="#back-in-stock-subscription-modal" rel="nofollow">
+                @T("BackInStockSubscriptions.NotifyMeWhenAvailable")
+            </a>
+            
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $(".subscribe-for-back-in-stock").click(function () {
+                        $("#back-in-stock-subscription-modal .modal-body").html('<iframe id="iframe-backinstocksubsription" src="@Url.Action("BackInStockSubscribe", new { id = @Model.Id })" width="600" height="170" scrolling="no" frameBorder="0" />');
+                    });
+                });
+            </script>
+            
+            <div id="back-in-stock-subscription-modal" class="modal hide fade" tabindex="-1">
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal">@T("Common.OK")</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <a href='@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })' rel="nofollow">@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
+        }
+    </div>
+}

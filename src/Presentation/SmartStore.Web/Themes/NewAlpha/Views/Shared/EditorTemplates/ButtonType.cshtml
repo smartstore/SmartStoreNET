@@ -1,0 +1,39 @@
+@model string
+@functions{
+    private string Value
+    {
+        get
+        {
+            string value = null;
+            if (ViewData.Model != null)
+            {
+                value = Convert.ToString(ViewData.Model);
+            }
+            return value;
+        }
+    }    
+
+    private List<SelectListItem> ButtonTypes
+    {
+        get
+        {
+            return new List<SelectListItem> {
+                new SelectListItem { Text = T("Common.Buttons.Default").ToString(), Value = String.Empty, Selected = (Value == String.Empty) },
+                new SelectListItem { Text = T("Common.Buttons.Primary").ToString(), Value = "btn-primary", Selected = (Value == "btn-primary") },
+                new SelectListItem { Text = T("Common.Buttons.Info").ToString(), Value = "btn-info", Selected = (Value == "btn-info") },
+                new SelectListItem { Text = T("Common.Buttons.Success").ToString(), Value = "btn-success", Selected = (Value == "btn-success") },
+                new SelectListItem { Text = T("Common.Buttons.Warning").ToString(), Value = "btn-warning", Selected = (Value == "btn-warning") },
+                new SelectListItem { Text = T("Common.Buttons.Danger").ToString(), Value = "btn-danger", Selected = (Value == "btn-danger") },
+                new SelectListItem { Text = T("Common.Buttons.Inverse").ToString(), Value = "btn-inverse", Selected = (Value == "btn-inverse") },
+                new SelectListItem { Text = T("Common.Buttons.Link").ToString(), Value = "btn-link", Selected = (Value == "btn-link") }
+            };
+        }
+    }
+}
+
+@{
+    var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+    var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+}
+
+@Html.DropDownList(string.Empty, ButtonTypes, new { @value = Value })

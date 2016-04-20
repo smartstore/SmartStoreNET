@@ -1,0 +1,83 @@
+﻿@model CustomerNavigationModel           
+@using SmartStore.Web.Models.Customer;
+<div class="block block-bordered block-account-navigation">
+    <div class="block-title">
+        @T("Account.Navigation")
+    </div>
+    <div class="block-body listbox">
+        <ul>
+            @Html.Widget("account_navigation_before")
+            @if (!Model.HideInfo)
+            {
+                <li><a href="@Url.Action("Info", "Customer")" rel="nofollow" class="@if (Model.SelectedTab == CustomerNavigationEnum.Info)
+                                                                   {<text>active</text>}
+                                                                   else
+                                                                   {<text>inactive</text>}">@T("Account.CustomerInfo")</a></li>
+            }
+            @if (!Model.HideAddresses)
+            {
+                <li><a href="@Url.Action("Addresses", "Customer")" rel="nofollow" class="@if (Model.SelectedTab == CustomerNavigationEnum.Addresses)
+																		  {<text>active</text>}
+																		  else
+																		  {<text>inactive</text>}">@T("Account.CustomerAddresses")</a></li>
+			}
+            @if (!Model.HideOrders)
+			{ 
+                <li><a href="@Url.Action("Orders", "Customer")" rel="nofollow" class="@if (Model.SelectedTab == CustomerNavigationEnum.Orders)
+																	   {<text>active</text>}
+																	   else
+																	   {<text>inactive</text>}">@T("Account.CustomerOrders")</a></li>
+			}
+            @if (!Model.HideReturnRequests)
+			{ 
+                <li><a href="@Url.Action("ReturnRequests", "Customer")" rel="nofollow" class="@if (Model.SelectedTab == CustomerNavigationEnum.ReturnRequests)
+																			   {<text>active</text>}
+																			   else
+																			   {<text>inactive</text>}">@T("Account.CustomerReturnRequests")</a></li>
+			}
+            @if (!Model.HideDownloadableProducts)
+			{ 
+                <li><a href="@Url.Action("DownloadableProducts", "Customer")" rel="nofollow" class="@if (Model.SelectedTab == CustomerNavigationEnum.DownloadableProducts)
+                                                                                   {<text>active</text>}
+                                                                                   else
+                                                                                   {<text>inactive</text>}">@T("Account.DownloadableProducts")</a></li>
+            }
+            @if (!Model.HideBackInStockSubscriptions)
+            { 
+                <li><a href="@Url.Action("BackInStockSubscriptions")" rel="nofollow" class="@if (Model.SelectedTab == CustomerNavigationEnum.BackInStockSubscriptions)
+                                                                                   {<text>active</text>}
+                                                                                   else
+                                                                                   {<text>inactive</text>}">@T("Account.BackInStockSubscriptions")</a></li>
+            }
+            @if (!Model.HideRewardPoints)
+            { 
+                <li><a href="@Url.Action("RewardPoints")" rel="nofollow" class="@if (Model.SelectedTab == CustomerNavigationEnum.RewardPoints)
+                                                                           {<text>active</text>}
+                                                                           else
+                                                                           {<text>inactive</text>}">@T("Account.RewardPoints")</a></li>
+            }
+            @if (!Model.HideChangePassword)
+            { 
+                <li><a href="@Url.Action("ChangePassword")" rel="nofollow" class="@if (Model.SelectedTab == CustomerNavigationEnum.ChangePassword)
+                                                                             {<text>active</text>}
+                                                                             else
+                                                                             {<text>inactive</text>}">@T("Account.ChangePassword")</a></li>
+            }
+            @if (!Model.HideAvatar)
+            { 
+                <li><a href="@Url.Action("Avatar")" rel="nofollow" class="@if (Model.SelectedTab == CustomerNavigationEnum.Avatar)
+                                                                     {<text>active</text>}
+                                                                     else
+                                                                     {<text>inactive</text>}">@T("Account.Avatar")</a></li> 
+            }
+            @if (!Model.HideForumSubscriptions)
+            { 
+                <li><a href="@Url.Action("ForumSubscriptions")" rel="nofollow" class="@if (Model.SelectedTab == CustomerNavigationEnum.ForumSubscriptions)
+                                                                                 {<text>active</text>}
+                                                                                 else
+                                                                                 {<text>inactive</text>}">@T("Account.ForumSubscriptions")</a></li>
+            }
+            @Html.Widget("account_navigation_after")
+        </ul>
+    </div>
+</div>

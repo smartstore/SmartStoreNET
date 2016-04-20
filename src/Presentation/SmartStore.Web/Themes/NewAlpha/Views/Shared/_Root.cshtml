@@ -1,0 +1,46 @@
+﻿@{
+    Layout = "~/Views/Shared/_Root.Head.cshtml";
+}
+@Html.Widget("body_start_html_tag_after")
+@Html.Partial("_Notifications")
+<div id="page">
+
+    @if (IsSectionDefined("header"))
+    {
+        @RenderSection("header")
+    }
+    else {
+        <section id="header">
+            @Html.Action("ShopBar", "Common", new { area = "" })
+            @Html.Action("Header", "Common", new { area = "" })
+            @Html.Action("MegaMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" })
+        </section>
+    }
+
+    @Html.Action("JavaScriptDisabledWarning", "Common", new { area = "" })
+    <div id="content-wrapper">
+
+        <!-- Terms of service -->
+        <section id="content" class="container drop-shadow lifted">
+            @Html.Widget("content_before")
+            @RenderSection("teaser", required: false)
+            <div id="content-body" class="row">
+                @RenderBody()
+                @Html.Widget("content_after")
+            </div>
+        </section>
+    </div>
+
+    @if (IsSectionDefined("footer"))
+    {
+        @RenderSection("footer")
+    }
+    else {
+        <div id="footer-wrapper">
+            @Html.Action("Footer", "Common", new { area = "" })
+        </div>
+    }
+
+</div>
+@Html.Widget("body_end_html_tag_before")
+

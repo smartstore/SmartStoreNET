@@ -1,0 +1,43 @@
+﻿@model ShoppingCartModel.DiscountBoxModel
+@using SmartStore.Web.Models.ShoppingCart;
+@if (Model.Display)
+{
+    <div class="coupon-box cart-box well well-small">
+        <h4 class="title">@T("ShoppingCart.DiscountCouponCode")</h4>
+        
+        @if (!String.IsNullOrEmpty(Model.Message))
+        {
+            <div class="alert alert-info fade in">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                @Model.Message
+            </div>
+        }
+
+        <div class="coupon-code input-append">
+            <input name="discountcouponcode" type="text" class="prompt discount-coupon-code" placeholder="@T("ShoppingCart.DiscountCouponCode.Tooltip")" />
+            <button type="submit" 
+                    class="btn btn-warning tooltip-toggle apply-discount-coupon-code-button"
+                    title="@T("ShoppingCart.DiscountCouponCode.Button")" 
+                    name="applydiscountcouponcode"
+                    value="applydiscountcouponcode">
+                <i class="fa fa-check"></i>
+            </button>
+        </div>
+        @if (!String.IsNullOrEmpty(Model.CurrentCode))
+        {
+            <div class="current-code clearfix">
+                <button type="submit" 
+                        class="btn btn-mini tooltip-toggle remove-discount-button"
+                        title="@T("Common.Remove")" 
+                        name="removediscountcouponcode"
+                        value="removediscountcouponcode">
+                    <i class="fa fa-times" style="font-size: 10px"></i>
+                </button>
+                <span style="vertical-align: middle">@string.Format(T("ShoppingCart.DiscountCouponCode.CurrentCode").Text, Model.CurrentCode)</span>
+            </div>
+        }
+
+        
+    </div>
+    
+}

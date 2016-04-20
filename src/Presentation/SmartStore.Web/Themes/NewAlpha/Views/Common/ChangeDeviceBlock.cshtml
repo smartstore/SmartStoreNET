@@ -1,0 +1,6 @@
+﻿<div class="change-device">
+    @using (Html.BeginRouteForm("ChangeDevice", new { dontusemobileversion = false }, FormMethod.Post))
+    {
+        <button type="submit" class="btn btn-info">@T("Mobile.ViewMobileVersion")</button>
+    }
+</div>

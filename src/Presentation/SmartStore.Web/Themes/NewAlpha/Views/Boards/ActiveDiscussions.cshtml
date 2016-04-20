@@ -1,0 +1,10 @@
+﻿@model ActiveDiscussionsModel
+@using SmartStore.Web.Models.Boards;
+@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
+    Html.AddTitleParts(T("Forum.PageTitle.ActiveDiscussions").Text);
+}
+<div class="page active-discussions-page">
+    @Html.Partial("_ActiveTopics", @Model)
+</div>

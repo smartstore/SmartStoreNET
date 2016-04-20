@@ -1,0 +1,14 @@
+﻿@model IList<ManufacturerModel>
+@using SmartStore.Web.Models.Catalog;
+@if (Model.Count > 0)
+{
+    for (int i = 0; i < Model.Count; i++)
+    {
+        var item = Model[i];
+        <a href="@Url.RouteUrl("Manufacturer", new { SeName = item.SeName })">@item.Name</a>
+        if (i != Model.Count - 1)
+        {
+        <text>,</text>
+        }
+    }
+}

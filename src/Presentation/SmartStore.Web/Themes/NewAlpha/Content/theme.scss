@@ -2,7 +2,22 @@
 /* Theme: NEW ALPHA 
 ------------------------------ */
 
+$enable-flex:               true;
+$enable-rounded:            true;
+$enable-shadows:            true;
+$enable-gradients:          false;
+$enable-transitions:        true;
+$enable-hover-media-query:  false; 
+$enable-grid-classes:       true;
+
 // Bootstrap
-@import "bs4/bootstrap.scss";
+@import "bs4/scss/bootstrap.scss"; 
+
+// Bootstrap custom
+@import 'bs4/custom/_colors.scss';
+@import 'bs4/custom/_buttons.scss';
+@import 'bs4/custom/_forms.scss';
+@import 'bs4/custom/_accordion.scss';
+@import "bs4/custom/_utils.scss";
 
 // Main

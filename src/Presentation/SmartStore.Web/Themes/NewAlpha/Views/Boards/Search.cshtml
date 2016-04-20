@@ -1,0 +1,227 @@
+﻿@model SearchModel
+@using SmartStore.Core.Domain.Forums;
+@using SmartStore.Web;
+@using SmartStore.Web.Models;
+@using SmartStore.Web.Models.Boards;
+@using SmartStore.Web.Models.Common;
+@using SmartStore.Web.Framework.UI;
+
+@{   
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
+    Html.AddTitleParts(T("Forum.PageTitle.Search").Text);    
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        toggleAdvancedSearch();
+        $('#adv').click(function () {
+            toggleAdvancedSearch();
+        });
+    });
+    function toggleAdvancedSearch() {
+        if ($('#adv').is(':checked')) {
+            $('#advanced-search-block').show();
+        }
+        else {
+            $('#advanced-search-block').hide();
+        }
+    }
+</script>
+<div class="page forum-search">
+    @Html.Action("ForumBreadcrumb")
+    
+    <div class="forum-search-panel">
+        <div class="page-title">
+            <h1>@T("Forum.Search")</h1>
+        </div>
+
+        <div class="search-input">
+            @using (Html.BeginRouteForm("BoardSearch", FormMethod.Get))
+            {        
+                <div class="input-append">
+                    @Html.TextBox("searchterms", null, new { @class = "forum-search-text" })
+                    <input type="submit" class="btn btn-warning" value="@T("Forum.SearchButton")" />
+                </div>
+                <table class="basic-search">
+                    <tbody>
+                        <tr>
+                            <td class="title">
+                                @Html.CheckBox("adv", @Model.ShowAdvancedSearch, new { style="vertical-align:top" })
+                                @Html.Label("adv", @T("Forum.Search.AdvancedSearch").Text, new { style="display:inline-block" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="title">
+                                <div id="advanced-search-block" style="display: none;">
+                                    <table class="adv-search">
+                                        <tbody>
+                                            <tr>
+                                                <td class="title">
+                                                    @T("Forum.Search.SearchInForum")
+                                                </td>
+                                                <td class="data">
+                                                    @Html.DropDownList("forumId", new SelectList(Model.ForumList, "Value", "Text", Model.ForumIdSelected), new { style = "min-width:300px;" })
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="title">
+                                                    @T("Forum.Search.SearchWithin")
+                                                </td>
+                                                <td class="data">
+                                                    @Html.DropDownList("within", new SelectList(Model.WithinList, "Value", "Text", Model.WithinSelected), new { style = "min-width:300px;" })
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="title">
+                                                    @T("Forum.Search.LimitResultsToPrevious")
+                                                </td>
+                                                <td class="data">
+                                                    @Html.DropDownList("limitDays", new SelectList(Model.LimitList, "Value", "Text", Model.LimitDaysSelected), new { style = "min-width:300px;" })
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            }
+        </div>
+        <div class="search-error">
+            @Model.Error
+        </div>
+
+        @{
+            var searchterms = Model.SearchTerms;
+            string adv = null;
+            string within = null;
+            string limitDays = null;
+            string forumId = null;
+
+            if (Model.ShowAdvancedSearch)
+            {
+                adv = "true";
+                within = Model.WithinSelected.ToString();
+                limitDays = Model.LimitDaysSelected.ToString();
+                forumId = Model.ForumIdSelected.ToString();
+            }
+
+            var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
+                            .Name("paginator")
+							.Alignment(PagerAlignment.Right)
+							.Route("BoardSearch", new ForumSearchRouteValues { adv = adv, searchterms = searchterms, forumId = forumId, within = within, limitDays = limitDays });
+        }
+        @pager
+
+        <div class="search-results">
+            @if (@Model.NoResultsVisisble == true)
+            {   
+                <span class="result">@T("Forum.SearchNoResultsText")</span>                
+            }
+            <div class="topics-group">
+                @if (@Model.SearchResultsVisible == true)
+                {   
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="topic-name" colspan="2">
+                                    @T("Forum.TopicTitle")
+                                </th>
+                                <th class="replies">
+                                    @T("Forum.Replies")
+                                </th>
+                                <th class="views">
+                                    @T("Forum.Views")
+                                </th>
+                                <th class="last-post">
+                                    @T("Forum.LatestPost")
+                                </th>
+                            </tr>
+                        </thead>
+                        @foreach (var topic in @Model.ForumTopics)
+                        {
+                            <tr class="topic">
+                                <td class="image">
+                                    @{
+                                        var topicType = "post";
+                                        var topicText = String.Empty;
+                                        var topicIcon = "fa fa-comment-o";
+                                        switch (topic.ForumTopicType)
+                                        {
+                                            case ForumTopicType.Normal:
+                                                topicType = "post";
+                                                topicIcon = "fa fa-comment-o";
+                                                break;
+                                            case ForumTopicType.Sticky:
+                                                topicType = "poststicky";
+												topicIcon = "fa fa-thumb-tack";
+                                                topicText = string.Format("<label class='label label-important'>{0}</label>", @T("Forum.Sticky").ToString());
+                                                break;
+                                            case ForumTopicType.Announcement:
+                                                topicType = "post-annoucement";
+                                                topicIcon = "fa fa-bullhorn";
+                                                topicText = string.Format("<label class='label label-success'>{0}</label>", @T("Forum.Announcement").ToString());
+                                                break;
+                                            default:
+                                                topicType = "post";
+                                                topicIcon = "fa fa-comment-o";
+                                                break;
+                                        }
+                                        <div class="@topicType">
+                                            <i class="icon @topicIcon"></i>
+                                        </div>
+                                    }
+                                </td>
+                                <td class="topic-name">
+                                    @if (!String.IsNullOrEmpty(@topicText))
+                                    {
+                                        <span class="topictype">@Html.Raw(topicText)</span>
+                                    }
+                                    @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
+                                    @if (@topic.NumPosts > Model.PostsPageSize)
+                                    {
+                                        @(Html.SmartStore().Pager(topic.TotalPostPages)
+                                                .HtmlAttributes(new { @class = "topics-pager" })
+                                                .WithRenderer<ForumTopicPagerRenderer>()
+                                                .ShowPrevious(false)
+                                                .ShowNext(false)
+                                                .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
+                                                .Alignment(PagerAlignment.Left)
+                                                .Size(PagerSize.Mini)
+                                                .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
+                                    }
+                                    <div class="topic-starter">
+                                        @if (@topic.CustomerId > 0)
+                                        {
+                                            if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)
+                                            {
+                                            @T("Forum.Author")<text>:</text> @Html.RouteLink(topic.CustomerName, "CustomerProfile", new { Id = topic.CustomerId })
+                                            }
+                                            else
+                                            {
+                                            @T("Forum.Author")<text>:</text> @topic.CustomerName
+                                            }
+                                        }
+                                    </div>
+                                </td>
+                                <td class="replies">
+                                    @topic.NumReplies
+                                </td>
+                                <td class="views">
+                                    @topic.Views
+                                </td>
+                                <td class="last-post">
+                                    @Html.Action("LastPost", new { forumPostId = @topic.LastPostId, showTopic = false })
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                }
+            </div>
+        </div>
+
+        @pager
+
+    </div>
+</div>

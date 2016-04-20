@@ -1,0 +1,30 @@
+﻿@model ShopHeaderModel
+@using SmartStore.Web.Models.Common;
+
+<div id="logobar" class="container">
+
+    <a href="@Url.RouteUrl("HomePage")" class="brand@(Model.LogoUploaded ? "" : " textual")">
+            
+        @if (Model.LogoUploaded) 
+        {
+            <img src='@Url.Content(Model.LogoUrl)' 
+                alt="@Model.LogoTitle" 
+                title="@Model.LogoTitle"
+                @Html.Attr("width", Model.LogoWidth.ToString(), Model.LogoWidth > 0)
+                @Html.Attr("height", Model.LogoHeight.ToString(), Model.LogoHeight > 0) />
+        }
+        else
+        {
+            @Model.LogoTitle    
+        }
+    </a>
+
+    <nav id="nav-home" class="clearfix">
+        @Html.Action("Menu", "Common")
+    </nav>
+
+    <div class="regional-selectors">
+        @Html.Action("LanguageSelector", "Common")
+        @Html.Action("CurrencySelector", "Common")
+    </div>
+</div>

@@ -1,0 +1,42 @@
+﻿@using SmartStore.Core.Logging;
+
+@if (this.HasMessages)
+{
+	<script type="text/javascript">
+        $(function () {
+        	var items = $("#notification-list").find("> .msg");
+            items.each(function (i, el) {
+                el = $(el);
+                var type = el.data("type");
+                var sticky = type != "success" && type != "info";
+                var delay = type == "success" ? 2000 : 5000;
+                var notify = function () {
+                	EventBroker.publish("message", { text: el.html(), type: type, delay: delay, hide: !sticky });
+                };
+                _.delay(notify, 100 * i);
+            });
+        })
+	</script>
+
+	<div id="notification-list" style="display:none; position:absolute; left:-9999px">
+		@foreach (var message in this.GetMessages(NotifyType.Error))
+		{
+			<div class="msg" data-type="error">@Html.Raw(message)</div>
+		}
+		@foreach (var message in this.GetMessages(NotifyType.Success))
+		{
+			<div class="msg" data-type="success">@Html.Raw(message)</div>
+		}
+		@foreach (var message in this.GetMessages(NotifyType.Info))
+		{
+			<div class="msg" data-type="info">@Html.Raw(message)</div>
+		}
+		@foreach (var message in this.GetMessages(NotifyType.Warning))
+		{
+			<div class="msg" data-type="warning">@Html.Raw(message)</div>
+		}
+	</div>
+
+	@Html.Widget("notifications")
+}
+

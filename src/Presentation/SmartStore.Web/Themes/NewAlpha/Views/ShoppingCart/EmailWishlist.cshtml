@@ -1,0 +1,74 @@
+﻿@model WishlistEmailAFriendModel
+@using SmartStore.Web.Models.ShoppingCart;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.WishlistEmailAFriend").Text);
+}
+<div class="page email-a-friend-page">
+    <div class="page-title">
+        <h1>@T("Wishlist.EmailAFriend.Title")</h1>
+    </div>
+    <div class="clear">
+    </div>
+    <div class="page-body">
+        @if (Model.SuccessfullySent)
+        {
+            <div class="result">
+                @Model.Result
+            </div>
+        }
+        else
+        {
+            using (Html.BeginForm("EmailWishlist", null, FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+            <fieldset>
+                <p class="message-error">
+                    @Html.ValidationSummary(true)
+                </p>
+                
+                <div class="control-group">
+                    @Html.LabelFor(model => model.FriendEmail, new { @class="control-label" , @for="FriendEmail" } )
+                    <div class="controls">
+                        @Html.TextBoxFor(model => model.FriendEmail, new { @class = "friend-email", placeholder = T("Wishlist.EmailAFriend.FriendEmail.Hint") })
+                        @Html.ValidationMessageFor(model => model.FriendEmail)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.YourEmailAddress, new { @class="control-label" , @for="FriendEmail" } )
+                    <div class="controls">
+                        @Html.TextBoxFor(model => model.YourEmailAddress, new { @class = "your-email", placeholder = T("Wishlist.EmailAFriend.YourEmailAddress.Hint") })
+                        @Html.ValidationMessageFor(model => model.YourEmailAddress)
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    @Html.LabelFor(model => model.PersonalMessage, new { @class="control-label" , @for="PersonalMessage" } )
+                    <div class="controls">
+                        @Html.TextAreaFor(model => model.PersonalMessage, new { @class = "personal-message", placeholder = T("Wishlist.EmailAFriend.PersonalMessage.Hint") })
+                        @Html.ValidationMessageFor(model => model.PersonalMessage)
+                    </div>
+                </div>
+
+                @if (Model.DisplayCaptcha)
+                {
+                    <div class="captcha-box">
+                        @Html.Raw(Html.GenerateCaptcha())
+                    </div>
+                }
+                
+                <input type="hidden" name="send-email" value="send-email">
+
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" name="send-email" class="btn send-email-a-friend-button">@T("Wishlist.EmailAFriend.Button")</button>
+                    </div>
+                </div>
+
+            </fieldset>
+            }
+        }
+    </div>
+</div>

@@ -719,9 +719,15 @@ namespace SmartStore.PayPal.Services
 		public PayPalResponse Refund(PayPalApiSettingsBase settings, PayPalSessionData session, RefundPaymentRequest request)
 		{
 			var data = new Dictionary<string, object>();
-			var saleId = request.Order.CaptureTransactionId;
+			var isSale = request.Order.AuthorizationTransactionCode.IsCaseInsensitiveEqual("sale");
 
-			if (request.IsPartialRefund)
+			var path = "/v1/payments/{0}/{1}/refund".FormatInvariant(isSale ? "sale" : "capture", request.Order.CaptureTransactionId);
+
+			if (isSale && !request.IsPartialRefund)
+			{
+				// no body required
+			}
+			else
 			{
 				var store = _services.StoreService.GetStoreById(request.Order.StoreId);
 
@@ -732,8 +738,7 @@ namespace SmartStore.PayPal.Services
 				data.Add("amount", amount);
 			}
 
-			var result = CallApi("POST", "/v1/payments/sale/{0}/refund".FormatInvariant(saleId), session.AccessToken, settings,
-				data.Any() ? JsonConvert.SerializeObject(data) : null);
+			var result = CallApi("POST", path, session.AccessToken, settings, data.Any() ? JsonConvert.SerializeObject(data) : null);
 
 			if (result.Success && result.Json != null)
 			{

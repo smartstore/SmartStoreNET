@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Routing;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Orders;
@@ -22,6 +23,7 @@ namespace SmartStore.PayPal
 		}
 
 		public ILogger Logger { get; set; }
+		public HttpContextBase HttpContext { get; set; }
 		public ICommonServices Services { get; set; }
 		public IOrderService OrderService { get; set; }
         public IOrderTotalCalculationService OrderTotalCalculationService { get; set; }
@@ -30,6 +32,11 @@ namespace SmartStore.PayPal
 		protected string GetControllerName()
 		{
 			return GetControllerType().Name.EmptyNull().Replace("Controller", "");
+		}
+
+		public static string CheckoutCompletedKey
+		{
+			get { return "PayPalCheckoutCompleted"; }
 		}
 
 		public override bool SupportCapture
@@ -67,7 +74,93 @@ namespace SmartStore.PayPal
 			return result;
         }
 
-        public override CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
+		public override ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
+		{
+			var result = new ProcessPaymentResult
+			{
+				NewPaymentStatus = PaymentStatus.Pending
+			};
+
+			HttpContext.Session.SafeRemove(CheckoutCompletedKey);
+
+			var settings = Services.Settings.LoadSetting<TSetting>(processPaymentRequest.StoreId);
+			var session = HttpContext.GetPayPalSessionData();
+
+			processPaymentRequest.OrderGuid = session.OrderGuid;
+
+			var apiResult = PayPalService.ExecutePayment(settings, session);
+
+			if (apiResult.Success && apiResult.Json != null)
+			{
+				var state = (string)apiResult.Json.state;
+
+				if (!state.IsCaseInsensitiveEqual("failed"))
+				{
+					// intent: "sale" for immediate payment, "authorize" for pre-authorized payments and "order" for an order.
+					// info required cause API has different endpoints for different intents.
+					result.AuthorizationTransactionCode = (string)apiResult.Json.intent;
+
+					var sale = apiResult.Json.transactions[0].related_resources[0].sale;
+
+					if (sale != null)
+					{
+						state = (string)sale.state;
+
+						result.AuthorizationTransactionResult = state;
+						result.AuthorizationTransactionId = (string)sale.id;
+
+						result.NewPaymentStatus = PaymentStatus.Authorized;
+
+						if (state.IsCaseInsensitiveEqual("completed") || state.IsCaseInsensitiveEqual("processed"))
+						{
+							result.CaptureTransactionResult = state;
+							result.CaptureTransactionId = (string)sale.id;
+
+							result.NewPaymentStatus = PaymentStatus.Paid;
+						}
+						else if (state.IsCaseInsensitiveEqual("pending"))
+						{
+							var reasonCode = (string)sale.reason_code;
+							if (reasonCode.IsCaseInsensitiveEqual("ECHECK"))
+							{
+								result.NewPaymentStatus = PaymentStatus.Pending;
+							}
+						}
+
+						session.PaymentInstruction = PayPalService.ParsePaymentInstruction(apiResult.Json.payment_instruction) as PayPalPaymentInstruction;
+					}
+				}
+				else
+				{
+					var failureReason = (string)apiResult.Json.failure_reason;
+
+					result.Errors.Add(T("Plugins.SmartStore.PayPal.PaymentExecuteFailed").Text.Grow(failureReason, " "));
+				}
+			}
+			else
+			{
+				result.Errors.Add(apiResult.ErrorMessage);
+			}
+
+			return result;
+		}
+
+		public override void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
+		{
+			if (postProcessPaymentRequest.Order.PaymentStatus == PaymentStatus.Paid)
+				return;
+
+			var instruction = PayPalService.CreatePaymentInstruction(HttpContext.GetPayPalSessionData().PaymentInstruction);
+
+			if (instruction.HasValue())
+			{
+				HttpContext.Session[CheckoutCompletedKey] = instruction;
+
+				OrderService.AddOrderNote(postProcessPaymentRequest.Order, instruction, true);
+			}
+		}
+
+		public override CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
         {
 			var result = new CapturePaymentResult
 			{

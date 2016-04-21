@@ -9,11 +9,15 @@
 
 	var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
 
+	var cssRoot = "~/Themes/NewAlpha/Content/css/";
+	var jsRoot = "~/Themes/NewAlpha/Scripts/";
+	var bootstrapJsRoot = "~/Themes/NewAlpha/Content/bs4/js/";
+
 	// add css assets
 	Html.AppendCssFileParts(
-		"~/Content/font-awesome.css",
-		"~/Content/jquery.pnotify.default.css",
-		"~/Content/jquery.pnotify.default.icons.css");
+		cssRoot + "font-awesome.css",
+		cssRoot + "jquery.pnotify.default.css",
+		cssRoot + "jquery.pnotify.default.icons.css");
 
 	Html.AppendScriptParts(ResourceLocation.Head,
 		"~/Scripts/modernizr-2.7.2.js",
@@ -24,7 +28,6 @@
 	Html.AddScriptParts(ResourceLocation.Head, true,
 		"~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()));
 
-	var bootstrapJsRoot = "~/Content/bootstrap/js/";
 	Html.AppendScriptParts(ResourceLocation.Foot,
 		// jQuery UI Core
 		"~/Scripts/jquery-ui/effect.js",
@@ -35,45 +38,49 @@
 		"~/Scripts/jquery.unobtrusive-ajax.js",
 		"~/Scripts/jquery.validate.js",
 		"~/Scripts/jquery.validate.unobtrusive.js",
+		jsRoot + "jquery.validate.unobtrusive.custom.js",
 		// SmartStore system
-		"~/Scripts/smartstore.system.js",
+		jsRoot + "smartstore.system.js",
 		"~/Scripts/underscore.js",
 		"~/Scripts/underscore.string.js",
 		"~/Scripts/underscore.mixins.js",
-		"~/Scripts/smartstore.jquery.utils.js",
-		"~/Scripts/jquery.ba-outside-events.js",
-		"~/Scripts/jquery.preload.js",
-		"~/Scripts/jquery.transit.js",
-		"~/Scripts/jquery.menu-aim.js",
-		"~/Scripts/smartstore.doAjax.js",
-		"~/Scripts/jquery.addeasing.js",
-		"~/Scripts/smartstore.eventbroker.js",
-		"~/Scripts/smartstore.hacks.js",
-		"~/Scripts/smartstore.common.js",
+		jsRoot + "smartstore.jquery.utils.js",
+		jsRoot + "jquery.ba-outside-events.js",
+		jsRoot + "jquery.preload.js",
+		jsRoot + "jquery.transit.js",
+		jsRoot + "jquery.menu-aim.js",
+		jsRoot + "jquery.mobile-events.min.js",
+		jsRoot + "smartstore.doAjax.js",
+		jsRoot + "jquery.addeasing.js",
+		jsRoot + "smartstore.eventbroker.js",
+		jsRoot + "smartstore.hacks.js",
+		jsRoot + "smartstore.common.js",
 		// Bootstrap
-		"~/Themes/NewAlpha/bs4/js/bootstrap.js",
+		jsRoot + "tether.js",
+		bootstrapJsRoot + "bootstrap.js",
 		// Bootstrap custom
-		bootstrapJsRoot + "custom/bootstrap-datetimepicker.js",
+		bootstrapJsRoot + "bootstrap-datetimepicker.js",
 		// Shared UI
-		"~/Scripts/smartstore.placeholder.js",
-		"~/Scripts/select2.js",
-		"~/Scripts/smartstore.selectwrapper.js",
-		"~/Scripts/smartstore.throbber.js",
-		"~/Scripts/smartstore.navbar.js",
-		"~/Scripts/smartstore.thumbzoomer.js",
-		"~/Scripts/smartstore.column-equalizer.js",
-		"~/Scripts/smartstore.shrinkmenu.js",
-		"~/Scripts/smartstore.scrollbutton.js",
-		"~/Scripts/jquery.pnotify.js",
-		"~/Scripts/jquery.scrollTo.js",
-		"~/Scripts/jquery.serialScroll.js",
-		"~/Scripts/smartstore.globalize.adapter.js",
+		jsRoot + "smartstore.viewport.js",
+		jsRoot + "smartstore.placeholder.js",
+		jsRoot + "select2.js",
+		jsRoot + "smartstore.selectwrapper.js",
+		jsRoot + "smartstore.throbber.js",
+		jsRoot + "smartstore.navbar.js",
+		jsRoot + "smartstore.thumbzoomer.js",
+		jsRoot + "smartstore.column-equalizer.js",
+		jsRoot + "smartstore.shrinkmenu.js",
+		jsRoot + "smartstore.scrollbutton.js",
+		jsRoot + "jquery.pnotify.js",
+		jsRoot + "jquery.scrollTo.js",
+		jsRoot + "jquery.serialScroll.js",
+		jsRoot + "smartstore.globalize.adapter.js",
 		// Shop
-		"~/Scripts/public.common.js",
-		"~/Scripts/public.ajaxcart.js",
-		"~/Scripts/public.shopbar.js",
-		"~/Scripts/public.product-list-scroller.js",
-		"~/Scripts/public.product-filter.js");
+		jsRoot + "public.common.js",
+		jsRoot + "public.ajaxcart.js",
+		jsRoot + "public.shopbar.js",
+		jsRoot + "public.product-list-scroller.js",
+		jsRoot + "public.product-filter.js");
 }
 <!DOCTYPE html>
 <html @Html.Partial("LanguageAttributes")>

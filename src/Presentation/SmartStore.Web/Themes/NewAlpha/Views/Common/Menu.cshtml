@@ -1,26 +1,26 @@
 ﻿@model MenuModel
 @using SmartStore.Web.Models.Common;
 
-<ul class="pull-left">
+<ul class="list-inline pull-left">
     @Html.Widget("header_menu_before")
 
     @if (Model.IsCustomerImpersonated)
     {
-        <li class="finish-impersonation">
+        <li class="list-inline-item finish-impersonation">
             <a href="@Url.RouteUrl("Logout")" title="@T("Account.ImpersonatedAs.Finish.Hint")" rel="nofollow">
                 <i class="fa fa-sign-out"></i>
                 @Model.CustomerEmailUsername
             </a>
         </li>
     }
-    <li>
+    <li class="list-inline-item">
         <a href="@Url.RouteUrl("HomePage")">
             @T("HomePage")
         </a>
     </li>
     @if (Model.AllowPrivateMessages)
     {
-        <li>
+        <li class="list-inline-item">
             <a href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" rel="nofollow">
                 @T("PrivateMessages.Inbox")
                 @if (Model.UnreadPrivateMessages > 0) 
@@ -32,18 +32,18 @@
     }
     @if (Model.RecentlyAddedProductsEnabled)
     {
-        <li>
+        <li class="list-inline-item">
             <a href="@Url.RouteUrl("RecentlyAddedProducts")">
                 @T("Products.NewProducts")
             </a>
         </li>
     }
-    <li>
+    <li class="list-inline-item">
         <a href="@Url.RouteUrl("ProductSearch")">@T("Search")</a>
     </li>
 	@if (Model.HasContactUsPage)
 	{
-		<li>
+		<li class="list-inline-item">
 			<a href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
 		</li>
 	}
@@ -52,10 +52,10 @@
 
 @if (Model.NewsEnabled || Model.BlogEnabled || Model.ForumEnabled || Model.DisplayAdminLink || Model.DisplayLoginLink)
 {
-    <ul class="pull-left special">
+    <ul class="list-inline pull-left special">
 		@if (Model.NewsEnabled)
 		{
-			<li>
+			<li class="list-inline-item">
 				<a class="special-news" href="@Url.RouteUrl("NewsArchive")">
 					<i class="fa fa-rss-square"></i>
 					@T("News")
@@ -64,7 +64,7 @@
 		}
         @if (Model.BlogEnabled)
         {
-            <li>
+            <li class="list-inline-item">
                 <a class="special-blog" href="@Url.RouteUrl("Blog")">
                     <i class="fa fa-pencil-square-o"></i>
                     @T("Blog")
@@ -73,7 +73,7 @@
         }
         @if (Model.ForumEnabled)
         {
-            <li>
+            <li class="list-inline-item">
                 <a class="special-forum" href="@Url.RouteUrl("Boards")">
                     <i class="fa fa-users"></i>
                     @T("Forum.Forums")
@@ -82,7 +82,7 @@
         }
         @if (Model.DisplayAdminLink)
         {
-            <li>
+            <li class="list-inline-item">
                 <a href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
                     <i class="fa fa-cog"></i> 
                     @T("Account.Administration")
@@ -91,7 +91,7 @@
         }
 		else if (Model.DisplayLoginLink)
 		{
-			<li>
+			<li class="list-inline-item">
 				<a href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })" rel="nofollow">
 					<i class="fa fa-sign-in"></i>
 					@T("Account.Login")

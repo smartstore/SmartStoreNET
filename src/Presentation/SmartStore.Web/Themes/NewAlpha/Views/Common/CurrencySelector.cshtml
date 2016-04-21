@@ -6,16 +6,15 @@
 @using System.Globalization;
 
 @if (Model.AvailableCurrencies.Count > 1)
-{
-    
+{    
     var webHelper = EngineContext.Current.Resolve<IWebHelper>();
     
     <div  id="currency-selector" class="regional-selector">
-        <ul class=" unstyled clearfix">
+        <ul class="list-inline clearfix">
         @foreach (var currency in Model.AvailableCurrencies)
         {
             var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeCurrency", new { customercurrency = currency.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null);
-            <li @Html.Attr("class", "selected", currency.Id == Model.CurrentCurrencyId)>
+            <li class="list-inline-item@(currency.Id == Model.CurrentCurrencyId ? " selected" : "")">
                 <a class="currency regional-label" href="@href" rel="tooltip nofollow" title="@currency.Name">
                     @currency.Symbol
                 </a>

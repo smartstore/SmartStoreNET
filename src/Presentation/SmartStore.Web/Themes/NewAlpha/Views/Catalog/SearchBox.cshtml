@@ -10,17 +10,20 @@
 
 @using (Html.BeginRouteForm("ProductSearch", FormMethod.Get, new { @class = "form-search pull-right" }))
 {
-    <div class="input-append" style="position: relative">    
+    <div class="input-group">    
 		<input type="text"
 			   id="instantsearch"
+			   class="form-control"
 			   placeholder="@T("Search.SearchBox.Tooltip")"
 			   data-minlength="@(Model.SearchTermMinimumLength.ToString())"
 			   data-showthumbs="@(Model.ShowProductImagesInSearchAutoComplete.ToString().ToLower())"
 			   data-url="@Url.RouteUrl("ProductSearchAutoComplete")"
 			   @(Model.AutoCompleteEnabled ? Html.Raw(" autocomplete=\"off\"") : null) name="q" />
-        <button type="submit" class="btn btn-warning" title="@T("Search")">
-			<i class="fa fa-search"></i>
-		</button>
+		<span class="input-group-btn">
+			<button type="submit" class="btn btn-icon btn-warning" title="@T("Search")">
+				<i class="fa fa-search"></i>
+			</button>
+		</span>
     </div>
     @Html.Widget("searchbox")
 }

@@ -177,24 +177,40 @@
                 var title = (Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"));
                 <a data-href='@addtocartlink' 
                     href="#"
-                    class="btn btn-warning ajax-cart-link"
+                    class="btn btn-warning btn-block btn-animate btn-animate-right ajax-cart-link hidden-xs-up"
                     title="@title" 
                     rel="tooltip nofollow"
                     data-type="cart"
                     data-action="add">
-                    <i class="fa fa-lg fa-cart-arrow-down"></i>      
+					<span>
+						<i class="fa fa-cart-arrow-down"></i>
+						@title
+					</span>
                 </a>
+
+				<a data-href='@addtocartlink'
+				   href="#"
+				   class="btn btn-warning btn-block btn-labeled xicon-right ajax-cart-link"
+				   title="@title"
+				   rel="tooltip nofollow"
+				   data-type="cart"
+				   data-action="add">
+					@title
+					<b>
+						<i class="fa fa-cart-arrow-down"></i>
+					</b>
+				</a>
 			}
 			else
 			{
-				<a class="btn btn-primary add-to-cart-button" rel="nofollow"
-				   href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })"
-				   title="@T("Products.CallForPrice.GoToForm")">
+				<a class="btn btn-primary btn-block add-to-cart-button" rel="nofollow"
+				   href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })">
 					<i class="fa fa-envelope"></i>
+					<span>@T("Products.CallForPrice.GoToForm")</span>
 				</a>
 			}
 		}
-        <a href='@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })' class="btn btn-secondary">
+        <a href='@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })' class="btn btn-secondary hidden-xs-up">
             <i class="fa fa-info-circle"></i>
             @T("Products.Details")
         </a>

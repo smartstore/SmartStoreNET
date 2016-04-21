@@ -13,7 +13,7 @@
 @using SmartStore.Web;
 
 @{
-	Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+	Layout = "~/Views/Shared/_ColumnsOne.cshtml";
 
 	//title, meta
 	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
@@ -43,9 +43,15 @@
         {
             <article itemscope itemtype="http://schema.org/Product">
 
-                <div class="row-fluid top-content">
+				<div class="page-title alpha">
+					<h1 class="product-name" itemprop="name">
+						@Model.Name
+					</h1>
+				</div>
 
-                <div class="product-image span12">
+                <div class="row top-content">
+
+                <div class="product-image col-md-6">
                         @Html.Widget("productdetails_before_pictures")
                         <!--product pictures-->
                         <div id="pd-gallery-container-outer">
@@ -157,20 +163,14 @@
                         </table>
                     </div>
 
-                <div class="product-data span12">
+                <div class="product-data col-md-6">
 
                     @if (Model.DisplayAdminLink) { 
-						<a class="btn btn-default btn-mini btn-edit-product" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
+						<a class="btn btn-secondary btn-mini btn-edit-product" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
 							<i class="fa fa-pencil-square-o"></i>
 							@T("Common.Catalog.EditProduct")
 						</a>
                     }
-
-                    <div class="page-title alpha">
-                        <h1 class="product-name" itemprop="name">
-                            @Model.Name
-                        </h1>
-                    </div>
                        
                     @Html.Widget("productdetails_overview_top")
 

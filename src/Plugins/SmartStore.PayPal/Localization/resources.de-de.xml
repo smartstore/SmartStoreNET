@@ -22,6 +22,19 @@
   <LocaleResource Name="Other">
     <Value>Sonstiges</Value>
   </LocaleResource>
+  <LocaleResource Name="PayUponInvoiceLegalNote">
+    <Value>{0} hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.àr.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.àr.l. et Cie, S.C.A. geleistet werden.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ManualBankTransferNote">
+    <Value>Bitte überweisen Sie den fälligen Betrag auf folgendes Konto.</Value>
+  </LocaleResource>
+  <LocaleResource Name="PaymentInstructionStrings">
+    <Value>Referenz;Bankleitzahl;Bank;BIC;IBAN;Kontoinhaber;Kontonummer;Betrag;Zahlung fällig am;Details</Value>
+  </LocaleResource>
+  <LocaleResource Name="WebhookValidationFailed">
+    <Value>Validierung einer Webhook-Nachricht ist fehlgeschlagen</Value>
+  </LocaleResource>
+
   <LocaleResource Name="ClientId">
     <Value>Client-ID</Value>
   </LocaleResource>
@@ -43,17 +56,26 @@
   <LocaleResource Name="ExperienceProfileId.Hint">
     <Value>Legt die Experience Profil-ID fest. Das Profil beinhaltet globale Daten wie z.B. Shop-Name und -Logo. Ein Profil braucht nur einmalig angelegt werden. Über den Button können Sie ein neues Profil erstellen oder ein vorhandenes aktualisieren.</Value>
   </LocaleResource>
-  <LocaleResource Name="PaymentExecuteFailed">
-    <Value>Die Ausführung der Zahlung wurde durch PayPal abgelehnt.</Value>
+  <LocaleResource Name="ExperienceProfileId">
+    <Value>Experience Profil-ID</Value>
   </LocaleResource>
-  <LocaleResource Name="PayUponInvoiceLegalNote">
-    <Value>{0} hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.àr.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.àr.l. et Cie, S.C.A. geleistet werden.</Value>
+  <LocaleResource Name="WebhookId">
+    <Value>Webhook-ID</Value>
   </LocaleResource>
-  <LocaleResource Name="ManualBankTransferNote">
-    <Value>Bitte überweisen Sie den fälligen Betrag auf folgendes Konto.</Value>
+  <LocaleResource Name="WebhookId.Hint">
+    <Value>Legt die Webhook-ID fest. Über einen Webhook sendet PayPal Statusänderungen von Zahlungen an Ihren Shop, wodurch der Zahlungsstatus Ihrer Aufträge automatisch aktualisert werden kann.</Value>
   </LocaleResource>
-  <LocaleResource Name="PaymentInstructionStrings">
-    <Value>Referenz;Bankleitzahl;Bank;BIC;IBAN;Kontoinhaber;Kontonummer;Betrag;Zahlung fällig am;Details</Value>
+  <LocaleResource Name="WebhookValidation">
+    <Value>Validierung von Nachrichten</Value>
+  </LocaleResource>
+  <LocaleResource Name="WebhookValidation.Hint">
+    <Value>Legt fest, ob und wie Webhook-Nachrichten validiert werden sollen.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Enums.SmartStore.PayPal.Services.PayPalWebhookValidation.None" AppendRootKey="false">
+    <Value>Keine</Value>
+  </LocaleResource>
+  <LocaleResource Name="Enums.SmartStore.PayPal.Services.PayPalWebhookValidation.Simple" AppendRootKey="false">
+    <Value>Einfach</Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">

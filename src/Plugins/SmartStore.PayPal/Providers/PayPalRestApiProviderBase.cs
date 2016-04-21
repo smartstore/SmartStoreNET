@@ -137,10 +137,9 @@ namespace SmartStore.PayPal
 					result.Errors.Add(T("Plugins.SmartStore.PayPal.PaymentExecuteFailed").Text.Grow(failureReason, " "));
 				}
 			}
-			else
-			{
+
+			if (!apiResult.Success)
 				result.Errors.Add(apiResult.ErrorMessage);
-			}
 
 			return result;
 		}
@@ -171,23 +170,16 @@ namespace SmartStore.PayPal
 			var session = new PayPalSessionData();
 
 			var apiResult = PayPalService.EnsureAccessToken(session, settings);
-			if (result.Success)
+			if (apiResult.Success)
 			{
 				apiResult = PayPalService.Capture(settings, session, capturePaymentRequest);
 
 				if (apiResult.Success)
-				{
 					result.NewPaymentStatus = PaymentStatus.Paid;
-				}
-				else
-				{
-					result.Errors.Add(apiResult.ErrorMessage);
-				}
 			}
-			else
-			{
+
+			if (!apiResult.Success)
 				result.Errors.Add(apiResult.ErrorMessage);
-			}
 
 			return result;
         }
@@ -203,10 +195,9 @@ namespace SmartStore.PayPal
 			var session = new PayPalSessionData();
 
 			var apiResult = PayPalService.EnsureAccessToken(session, settings);
-			if (result.Success)
+			if (apiResult.Success)
 			{
 				apiResult = PayPalService.Refund(settings, session, refundPaymentRequest);
-
 				if (apiResult.Success)
 				{
 					if (refundPaymentRequest.IsPartialRefund)
@@ -214,15 +205,10 @@ namespace SmartStore.PayPal
 					else
 						result.NewPaymentStatus = PaymentStatus.Refunded;
 				}
-				else
-				{
-					result.Errors.Add(apiResult.ErrorMessage);
-				}
 			}
-			else
-			{
+
+			if (!apiResult.Success)
 				result.Errors.Add(apiResult.ErrorMessage);
-			}
 
 			return result;
         }
@@ -238,22 +224,17 @@ namespace SmartStore.PayPal
 			var session = new PayPalSessionData();
 
 			var apiResult = PayPalService.EnsureAccessToken(session, settings);
-			if (result.Success)
+			if (apiResult.Success)
 			{
 				apiResult = PayPalService.Void(settings, session, voidPaymentRequest);
 				if (apiResult.Success)
 				{
 					result.NewPaymentStatus = PaymentStatus.Voided;
 				}
-				else
-				{
-					result.Errors.Add(apiResult.ErrorMessage);
-				}
 			}
-			else
-			{
+
+			if (!apiResult.Success)
 				result.Errors.Add(apiResult.ErrorMessage);
-			}
 
 			return result;
         }

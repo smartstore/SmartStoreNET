@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -99,6 +100,46 @@ namespace SmartStore.PayPal.Services
 			dic.Add("recipient_name", addr.GetFullName().Truncate(50));
 
 			return dic;
+		}
+
+		private bool IsValidMessage(PayPalApiSettingsBase settings, dynamic json)
+		{
+			try
+			{
+				if (settings.WebhookValidation == PayPalWebhookValidation.Simple)
+				{
+					// own, low level validation
+					var paymentId = (string)json.resource.parent_payment;
+
+					if (paymentId.IsEmpty() || settings.WebhookId.IsEmpty() || !settings.WebhookId.IsCaseInsensitiveEqual(settings.WebhookId))
+						return false;
+
+
+				}
+
+				// validating against PayPal SDK frequently failing:
+				//var webhookId = setting.WebhookId;	// or (string)json.id for simulator
+				//var apiContext = new global::PayPal.Api.APIContext
+				//{
+				//	AccessToken = "I do not have one here",
+				//	Config = new Dictionary<string, string>
+				//		{
+				//			{ "mode", settings.UseSandbox ? "sandbox" : "live" },
+				//			{ "clientId", settings.ClientId },
+				//			{ "clientSecret", settings.Secret },
+				//			{ "webhook.id", webhookId },
+				//		}
+				//};
+				//var result = global::PayPal.Api.WebhookEvent.ValidateReceivedEvent(apiContext, headers, rawJson, webhookId);
+				//}
+			}
+			catch (Exception exception)
+			{
+				LogError(exception, T("Plugins.SmartStore.PayPal.WebhookValidationFailed"), isWarning: true);
+				return false;
+			}
+
+			return true;
 		}
 
 		public static string GetApiUrl(bool sandbox)
@@ -360,7 +401,7 @@ namespace SmartStore.PayPal.Services
 			return result;
 		}
 
-		public PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data, IList<string> errors = null)
+		public PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data)
 		{
 			var isJson = (data.HasValue() && data.StartsWith("{"));
 			var encoding = (isJson ? Encoding.UTF8 : Encoding.ASCII);
@@ -432,7 +473,8 @@ namespace SmartStore.PayPal.Services
 			catch (Exception exception)
 			{
 				result.Success = false;
-				LogError(exception, errors: errors);
+				result.ErrorMessage = exception.ToString();
+				LogError(exception);
 			}
 
 			try
@@ -480,13 +522,13 @@ namespace SmartStore.PayPal.Services
 						if (result.ErrorMessage.IsEmpty())
 							result.ErrorMessage = webResponse.StatusDescription;
 
-						LogError(null, result.ErrorMessage, result.Json == null ? null : result.Json.ToString(), false, errors);
+						LogError(null, result.ErrorMessage, result.Json == null ? null : result.Json.ToString(), false);
 					}
 				}
 			}
 			catch (Exception exception)
 			{
-				LogError(exception, errors: errors);
+				LogError(exception);
 			}
 			finally
 			{
@@ -524,64 +566,6 @@ namespace SmartStore.PayPal.Services
 			{
 				Success = session.AccessToken.HasValue()
 			};
-		}
-
-		public PayPalResponse UpsertCheckoutExperience(PayPalApiSettingsBase settings, PayPalSessionData session, Store store, string profileId)
-		{
-			PayPalResponse result;
-			var name = store.Name;
-			var logo = _pictureService.Value.GetPictureById(store.LogoPictureId);
-			var path = "/v1/payment-experience/web-profiles";
-
-			var data = new Dictionary<string, object>();
-			var presentation = new Dictionary<string, object>();
-			var inpuFields = new Dictionary<string, object>();
-
-			if (profileId.IsEmpty())
-			{
-				result = CallApi("GET", path, session.AccessToken, settings, null);
-				if (result.Success && result.Json != null)
-				{
-					foreach (var profile in result.Json)
-					{
-						var profileName = (string)profile.name;
-						if (profileName.IsCaseInsensitiveEqual(name))
-						{
-							profileId = (string)profile.id;
-							break;
-						}
-					}
-				}
-			}
-
-			presentation.Add("brand_name", name);
-			presentation.Add("locale_code", _services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToUpper());
-
-			if (logo != null)
-				presentation.Add("logo_image", _pictureService.Value.GetPictureUrl(logo, showDefaultPicture: false, storeLocation: store.Url));
-
-			inpuFields.Add("allow_note", false);
-			inpuFields.Add("no_shipping", 0);
-			inpuFields.Add("address_override", 1);
-
-			data.Add("name", name);
-			data.Add("presentation", presentation);
-			data.Add("input_fields", inpuFields);
-
-			if (profileId.HasValue())
-				path = string.Concat(path, "/", HttpUtility.UrlPathEncode(profileId));
-
-			result = CallApi(profileId.HasValue() ? "PUT" : "POST", path, session.AccessToken, settings, JsonConvert.SerializeObject(data));
-
-			if (result.Success)
-			{
-				if (result.Json != null)
-					result.Id = (string)result.Json.id;
-				else
-					result.Id = profileId;
-			}
-
-			return result;
 		}
 
 		public PayPalResponse GetPayment(PayPalApiSettingsBase settings, PayPalSessionData session)
@@ -838,6 +822,134 @@ namespace SmartStore.PayPal.Services
 			}
 
 			return result;
+		}
+
+		public PayPalResponse UpsertCheckoutExperience(PayPalApiSettingsBase settings, PayPalSessionData session, Store store)
+		{
+			PayPalResponse result;
+			var name = store.Name;
+			var logo = _pictureService.Value.GetPictureById(store.LogoPictureId);
+			var path = "/v1/payment-experience/web-profiles";
+
+			var data = new Dictionary<string, object>();
+			var presentation = new Dictionary<string, object>();
+			var inpuFields = new Dictionary<string, object>();
+
+			// find existing profile id, only one profile per profile name possible
+			if (settings.ExperienceProfileId.IsEmpty())
+			{
+				result = CallApi("GET", path, session.AccessToken, settings, null);
+				if (result.Success && result.Json != null)
+				{
+					foreach (var profile in result.Json)
+					{
+						var profileName = (string)profile.name;
+						if (profileName.IsCaseInsensitiveEqual(name))
+						{
+							settings.ExperienceProfileId = (string)profile.id;
+							break;
+						}
+					}
+				}
+			}
+
+			presentation.Add("brand_name", name);
+			presentation.Add("locale_code", _services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToUpper());
+
+			if (logo != null)
+				presentation.Add("logo_image", _pictureService.Value.GetPictureUrl(logo, showDefaultPicture: false, storeLocation: store.Url));
+
+			inpuFields.Add("allow_note", false);
+			inpuFields.Add("no_shipping", 0);
+			inpuFields.Add("address_override", 1);
+
+			data.Add("name", name);
+			data.Add("presentation", presentation);
+			data.Add("input_fields", inpuFields);
+
+			if (settings.ExperienceProfileId.HasValue())
+				path = string.Concat(path, "/", HttpUtility.UrlPathEncode(settings.ExperienceProfileId));
+
+			result = CallApi(settings.ExperienceProfileId.HasValue() ? "PUT" : "POST", path, session.AccessToken, settings, JsonConvert.SerializeObject(data));
+
+			if (result.Success)
+			{
+				if (result.Json != null)
+					result.Id = (string)result.Json.id;
+				else
+					result.Id = settings.ExperienceProfileId;
+			}
+
+			return result;
+		}
+
+		public PayPalResponse DeleteCheckoutExperience(PayPalApiSettingsBase settings, PayPalSessionData session)
+		{
+			var result = CallApi("DELETE", "/v1/payment-experience/web-profiles/" + settings.ExperienceProfileId, session.AccessToken, settings, null);
+
+			if (result.Success && result.Json != null)
+			{
+				result.Id = (string)result.Json.id;
+			}
+
+			return result;
+		}
+
+		public PayPalResponse CreateWebhook(PayPalApiSettingsBase settings, PayPalSessionData session, string url)
+		{
+			var data = new Dictionary<string, object>();
+			var events = new List<Dictionary<string, object>>();
+
+			events.Add(new Dictionary<string, object> { { "name", "*" } });
+
+			data.Add("url", url);
+			data.Add("event_types", events);
+
+			var result = CallApi("POST", "/v1/notifications/webhooks", session.AccessToken, settings, JsonConvert.SerializeObject(data));
+
+			if (result.Success && result.Json != null)
+			{
+				result.Id = (string)result.Json.id;
+			}
+
+			return result;
+		}
+
+		public PayPalResponse DeleteWebhook(PayPalApiSettingsBase settings, PayPalSessionData session)
+		{
+			var result = CallApi("DELETE", "/v1/notifications/webhooks/" + settings.WebhookId, session.AccessToken, settings, null);
+
+			if (result.Success && result.Json != null)
+			{
+				result.Id = (string)result.Json.id;
+			}
+
+			return result;
+		}
+
+		/// <remarks>return 503 (HttpStatusCode.ServiceUnavailable) to ask paypal to resend it at later time</remarks>
+		public HttpStatusCode ProcessWebhook(PayPalApiSettingsBase settings, NameValueCollection headers, string rawJson)
+		{
+			if (rawJson.IsEmpty())
+				return HttpStatusCode.OK;
+
+			dynamic json = JObject.Parse(rawJson);
+
+			//foreach (var key in headers.AllKeys)"{0}: {1}".FormatInvariant(key, headers[key]).Dump();
+			//string data = JsonConvert.SerializeObject(json, Formatting.Indented);data.Dump();
+
+			var isValid = (bool)IsValidMessage(settings, json);
+
+			if (!isValid)
+			{
+				LogError(null, T("Plugins.SmartStore.PayPal.WebhookValidationFailed"), rawJson, isWarning: true);
+				return HttpStatusCode.OK;
+			}
+
+			// TODO
+
+
+			return HttpStatusCode.OK;
 		}
 	}
 

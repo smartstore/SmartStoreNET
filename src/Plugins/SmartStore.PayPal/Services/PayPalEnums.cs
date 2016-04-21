@@ -14,4 +14,10 @@ namespace SmartStore.PayPal.Services
 		PaymentDueDate,
 		Details
 	}
+
+	public enum PayPalWebhookValidation
+	{
+		None = 0,
+		Simple
+	}
 }

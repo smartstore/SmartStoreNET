@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Net;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Stores;
@@ -20,11 +22,9 @@ namespace SmartStore.PayPal.Services
 
 		PaymentStatus GetPaymentStatus(string state, string reasonCode, PaymentStatus defaultStatus);
 
-		PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data, IList<string> errors = null);
+		PayPalResponse CallApi(string method, string path, string accessToken, PayPalApiSettingsBase settings, string data);
 
 		PayPalResponse EnsureAccessToken(PayPalSessionData session, PayPalApiSettingsBase settings);
-
-		PayPalResponse UpsertCheckoutExperience(PayPalApiSettingsBase settings, PayPalSessionData session, Store store, string profileId);
 
 		PayPalResponse GetPayment(PayPalApiSettingsBase settings, PayPalSessionData session);
 
@@ -43,5 +43,15 @@ namespace SmartStore.PayPal.Services
 		PayPalResponse Capture(PayPalApiSettingsBase settings, PayPalSessionData session, CapturePaymentRequest request);
 
 		PayPalResponse Void(PayPalApiSettingsBase settings, PayPalSessionData session, VoidPaymentRequest request);
+
+		PayPalResponse UpsertCheckoutExperience(PayPalApiSettingsBase settings, PayPalSessionData session, Store store);
+
+		PayPalResponse DeleteCheckoutExperience(PayPalApiSettingsBase settings, PayPalSessionData session);
+
+		PayPalResponse CreateWebhook(PayPalApiSettingsBase settings, PayPalSessionData session, string url);
+
+		PayPalResponse DeleteWebhook(PayPalApiSettingsBase settings, PayPalSessionData session);
+
+		HttpStatusCode ProcessWebhook(PayPalApiSettingsBase settings, NameValueCollection headers, string rawJson);
 	}
 }

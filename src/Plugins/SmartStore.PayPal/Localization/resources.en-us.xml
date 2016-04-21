@@ -22,6 +22,22 @@
   <LocaleResource Name="Other">
     <Value>Miscellaneous</Value>
   </LocaleResource>
+  <LocaleResource Name="PaymentExecuteFailed">
+    <Value>The execution of the payment has been declined by PayPal.</Value>
+  </LocaleResource>
+  <LocaleResource Name="PayUponInvoiceLegalNote">
+    <Value>{0} hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.àr.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.àr.l. et Cie, S.C.A. geleistet werden.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ManualBankTransferNote">
+    <Value>Please transfer the due amount to the following bank account.</Value>
+  </LocaleResource>
+  <LocaleResource Name="PaymentInstructionStrings">
+    <Value>Reference;Bank routing number;Bank;BIC;IBAN;Account holder;Account number;Amount;Payment due date;Details</Value>
+  </LocaleResource>
+  <LocaleResource Name="WebhookValidationFailed">
+    <Value>Validation of a webhook message has failed</Value>
+  </LocaleResource>
+
   <LocaleResource Name="ClientId">
     <Value>Client ID</Value>
   </LocaleResource>
@@ -43,17 +59,23 @@
   <LocaleResource Name="ExperienceProfileId.Hint">
     <Value>Specifies the experience profile ID. The profile contains global data like shop name and logo. A profile needs to be created only once. Using the button, you can create a new profile or update an existing one.</Value>
   </LocaleResource>
-  <LocaleResource Name="PaymentExecuteFailed">
-    <Value>The execution of the payment has been declined by PayPal.</Value>
+  <LocaleResource Name="WebhookId">
+    <Value>Webhook ID</Value>
   </LocaleResource>
-  <LocaleResource Name="PayUponInvoiceLegalNote">
-    <Value>{0} hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.àr.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.àr.l. et Cie, S.C.A. geleistet werden.</Value>
+  <LocaleResource Name="WebhookId.Hint">
+    <Value>Specifies the webhook ID. PayPal sends payment status changes via a webhook to your shop, whereby the payment status of your orders can be automatically synced.</Value>
   </LocaleResource>
-  <LocaleResource Name="ManualBankTransferNote">
-    <Value>Please transfer the due amount to the following bank account.</Value>
+  <LocaleResource Name="WebhookValidation">
+    <Value>Message validation</Value>
   </LocaleResource>
-  <LocaleResource Name="PaymentInstructionStrings">
-    <Value>Reference;Bank routing number;Bank;BIC;IBAN;Account holder;Account number;Amount;Payment due date;Details</Value>
+  <LocaleResource Name="WebhookValidation.Hint">
+    <Value>Specifies if and how webhook messages should be validated.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Enums.SmartStore.PayPal.Services.PayPalWebhookValidation.None" AppendRootKey="false">
+    <Value>None</Value>
+  </LocaleResource>
+  <LocaleResource Name="Enums.SmartStore.PayPal.Services.PayPalWebhookValidation.Simple" AppendRootKey="false">
+    <Value>Simple</Value>
   </LocaleResource>
 
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">

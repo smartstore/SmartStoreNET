@@ -17,6 +17,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
@@ -24,11 +25,10 @@ using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.PayPal.Controllers
 {
-	public class PayPalPlusController : PaymentControllerBase
+	public class PayPalPlusController : PayPalRestApiControllerBase<PayPalPlusPaymentSettings>
 	{
 		private readonly HttpContextBase _httpContext;
 		private readonly PluginMediator _pluginMediator;
-		private readonly IPayPalService _payPalService;
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IPaymentService _paymentService;
 
@@ -39,11 +39,12 @@ namespace SmartStore.PayPal.Controllers
 			IOrderProcessingService orderProcessingService,
 			PluginMediator pluginMediator,
 			IPayPalService payPalService,
-			IGenericAttributeService genericAttributeService)
+			IGenericAttributeService genericAttributeService) : base(
+				PayPalPlusProvider.SystemName,
+				payPalService)
 		{
 			_httpContext = httpContext;
 			_pluginMediator = pluginMediator;
-			_payPalService = payPalService;
 			_genericAttributeService = genericAttributeService;
 			_paymentService = paymentService;
 		}
@@ -141,9 +142,11 @@ namespace SmartStore.PayPal.Controllers
 				ConfigGroups = T("Plugins.SmartStore.PayPal.ConfigGroups").Text.SplitSafe(";")
 			};
 
-			model.AvailableSecurityProtocols = PayPalService.GetSecurityProtocols()
+			model.AvailableSecurityProtocols = PayPal.Services.PayPalService.GetSecurityProtocols()
 				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
 				.ToList();
+
+			model.AvailableWebhookValidations = PayPalWebhookValidation.Simple.ToSelectList(false);
 
 			// it's better to also offer inactive methods here but filter them out in frontend
 			var methods = _paymentService.LoadAllPaymentMethods(storeScope);
@@ -196,38 +199,6 @@ namespace SmartStore.PayPal.Controllers
 			return Configure();
 		}
 
-		[AdminAuthorize]
-		public ActionResult UpsertExperienceProfile(string profileId)
-		{
-			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
-			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(storeScope);
-
-			var store = Services.StoreService.GetStoreById(storeScope == 0 ? Services.StoreContext.CurrentStore.Id : storeScope);
-			var session = new PayPalSessionData();
-
-			var result = _payPalService.EnsureAccessToken(session, settings);
-			if (result.Success)
-			{
-				result = _payPalService.UpsertCheckoutExperience(settings, session, store, profileId);
-				if (result.Success && result.Id.HasValue())
-				{
-					settings.ExperienceProfileId = result.Id;
-
-					Services.Settings.SaveSetting(settings, storeScope);
-				}
-				else
-				{
-					NotifyError(result.ErrorMessage);
-				}
-			}
-			else
-			{
-				NotifyError(result.ErrorMessage);
-			}
-
-			return RedirectToAction("ConfigureProvider", "Plugin", new { area = "admin", systemName = PayPalPlusProvider.SystemName });
-		}
-
 		public ActionResult PaymentInfo()
 		{
 			return new EmptyResult();
@@ -268,14 +239,14 @@ namespace SmartStore.PayPal.Controllers
 
 			if (session.PaymentId.IsEmpty() || session.ApprovalUrl.IsEmpty())
 			{
-				var result = _payPalService.EnsureAccessToken(session, settings);
+				var result = PayPalService.EnsureAccessToken(session, settings);
 				if (result.Success)
 				{
 					var protocol = (store.SslEnabled ? "https" : "http");
 					var returnUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
 					var cancelUrl = Url.Action("CheckoutCancel", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
 
-					result = _payPalService.CreatePayment(settings, session, cart, PayPalPlusProvider.SystemName, returnUrl, cancelUrl);
+					result = PayPalService.CreatePayment(settings, session, cart, PayPalPlusProvider.SystemName, returnUrl, cancelUrl);
 					if (result.Success && result.Json != null)
 					{
 						foreach (var link in result.Json.links)
@@ -302,6 +273,18 @@ namespace SmartStore.PayPal.Controllers
 			model.ApprovalUrl = session.ApprovalUrl;
 
 			return View(model);
+		}
+
+		public ActionResult CheckoutCompleted()
+		{
+			var instruct = _httpContext.Session[PayPalPlusProvider.CheckoutCompletedKey] as string;
+
+			if (instruct.HasValue())
+			{
+				return Content(instruct);
+			}
+
+			return new EmptyResult();
 		}
 
 		[ValidateInput(false)]
@@ -342,18 +325,6 @@ namespace SmartStore.PayPal.Controllers
 		{
 			// back to where he came from
 			return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
-		}
-
-		public ActionResult CheckoutCompleted()
-		{
-			var instruct = _httpContext.Session[PayPalPlusProvider.CheckoutCompletedKey] as string;
-
-			if (instruct.HasValue())
-			{
-				return Content(instruct);
-			}
-
-			return new EmptyResult();
 		}
 	}
 }

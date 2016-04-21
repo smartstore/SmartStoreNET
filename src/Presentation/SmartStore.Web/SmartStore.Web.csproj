@@ -2013,6 +2013,7 @@
     <Content Include="Themes\NewAlpha\Content\css\fonts\fontawesome-webfont.woff" />
     <Content Include="Themes\NewAlpha\Content\css\fonts\fontawesome-webfont.woff2" />
     <Content Include="Themes\NewAlpha\Content\css\fonts\FontAwesome.otf" />
+    <Content Include="Themes\NewAlpha\Content\bs4\custom\_typo.scss" />
     <None Include="Themes\NewAlpha\Content\theme.scss">
       <Compile>True</Compile>
       <Minify>True</Minify>

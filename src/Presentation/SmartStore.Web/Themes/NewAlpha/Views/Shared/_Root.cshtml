@@ -36,8 +36,10 @@
         @RenderSection("footer")
     }
     else {
-        <div id="footer-wrapper">
-            @Html.Action("Footer", "Common", new { area = "" })
+        <div id="footer-wrapper" class="p-t-1 m-t-1">
+			<footer class="container">
+				@Html.Action("Footer", "Common", new { area = "" })
+			</footer>
         </div>
     }
 

@@ -1,4 +1,4 @@
-/// <reference path="_vars.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
 
 // Font weight Helpers
 // ===================
@@ -25,4 +25,30 @@ $font-weight-bold:        700;
 }
 .fw-bold {
     font-weight: $font-weight-bold !important;
+}
+
+
+
+// jQuery UI stuff
+// ===================
+
+.ui-effects-transfer, .transfer {
+	border: 2px dotted $body-color !important;
+	background: transparent;
+	z-index: $zindex-modal+1;
+
+}
+
+
+// Utils
+// ===================
+
+@mixin font-inherit() {
+	font-family: inherit;
+	font-weight: inherit;
+	font-style: inherit;
+	color: inherit;
+	font-size: inherit;
+	color: inherit;
+	text-decoration: inherit;
 }

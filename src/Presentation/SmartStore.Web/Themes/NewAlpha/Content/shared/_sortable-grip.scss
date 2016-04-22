@@ -1,0 +1,32 @@
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+// Sortable gripp
+// ------------------------------
+
+.sortable-grip {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 100%;
+	width: 5px;
+	cursor: move;
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity 0.1s ease-in-out;
+	background: transparent url('img/grippy.png') 0 0 repeat;
+}
+
+.sortable-item:hover .sortable-grip {
+	visibility: visible;
+	opacity: 1;
+}
+
+.sortable-dragging {
+	//border: 1px dashed #CCC;
+	//background: none;
+}
+
+.sortable-placeholder {
+	border: 1px dotted #ccc;
+	background: #f5f5f5;
+}

@@ -40,49 +40,24 @@ $btn-padding-y-lg:          1rem;
 $popover-border-color:      #ddd;
 $card-border-color:         rgba(0,0,0, 0.12);*/
 
-
-// Spacers
-
-$spacer:                     1rem;
-$spacer-x:                   $spacer !default;
-$spacer-y:                   $spacer !default;
-$spacers: (
-  0: (
-    x:   0,
-    y:   0
-  ),
-  '05': (
-    x:   ($spacer-x * 0.5),
-    y:   ($spacer-x * 0.5)
-  ),
-  1: (
-    x:   $spacer-x,
-    y:   $spacer-y
-  ),
-  2: (
-    x:   ($spacer-x * 1.5),
-    y:   ($spacer-y * 1.5)
-  ),
-  3: (
-    x:   ($spacer-x * 3),
-    y:   ($spacer-y * 3)
-  ),
-  4: (
-    x:   ($spacer-x * 6),
-    y:   ($spacer-y * 6)
-  )
-);
-
+// Pre Bootstrap
+@import "shared/_spacers.scss"; 
 
 // Bootstrap
 @import "bs4/scss/bootstrap.scss"; 
 
-// Bootstrap custom
-@import 'bs4/custom/_colors.scss';
-@import 'bs4/custom/_typo.scss';
-@import 'bs4/custom/_buttons.scss';
-@import 'bs4/custom/_forms.scss';
-@import 'bs4/custom/_accordion.scss';
-@import "bs4/custom/_utils.scss";
+// Global
+@import 'shared/_colors.scss';
+@import 'shared/_typo.scss';
+@import 'shared/_buttons.scss';
+@import 'shared/_forms.scss';
+@import 'shared/_accordion.scss';
+@import "shared/_modal-flex.scss";
+@import "shared/_throbber.scss";
+@import "shared/_spinner.scss";
+@import "shared/_scrollbutton.scss";
+@import "shared/_star-rating.scss";
+@import "shared/_sortable-grip.scss";
+@import "shared/_utils.scss";
 
 // Main

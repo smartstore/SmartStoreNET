@@ -13,6 +13,9 @@
   <LocaleResource Name="OrderNoteStrings">
     <Value><![CDATA[Antwort von PayPal:<br />{0}]]></Value>
   </LocaleResource>
+  <LocaleResource Name="MessageStrings">
+    <Value>Mitteilung;Ereignis;Ereignis-ID;Status;Betrag;Zahlungs-ID</Value>
+  </LocaleResource>
   <LocaleResource Name="CreateNow">
     <Value>Jetzt erstellen</Value>
   </LocaleResource>
@@ -31,8 +34,14 @@
   <LocaleResource Name="PaymentInstructionStrings">
     <Value>Referenz;Bankleitzahl;Bank;BIC;IBAN;Kontoinhaber;Kontonummer;Betrag;Zahlung fällig am;Details</Value>
   </LocaleResource>
-  <LocaleResource Name="WebhookValidationFailed">
-    <Value>Validierung einer Webhook-Nachricht ist fehlgeschlagen</Value>
+  <LocaleResource Name="MissingPaymentId">
+    <Value>Fehlende Payment-ID.</Value>
+  </LocaleResource>
+  <LocaleResource Name="FoundOrderForPayment">
+    <Value>Keine Statusaktualisierung, da {0} Aufträge mit der Payment-ID {1} gefunden wurden.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CurrencyNotEqual">
+    <Value>Währung {0} entspricht nicht der Leitwährung des Shops {1}.</Value>
   </LocaleResource>
 
   <LocaleResource Name="ClientId">
@@ -64,18 +73,6 @@
   </LocaleResource>
   <LocaleResource Name="WebhookId.Hint">
     <Value>Legt die Webhook-ID fest. Über einen Webhook sendet PayPal Statusänderungen von Zahlungen an Ihren Shop, wodurch der Zahlungsstatus Ihrer Aufträge automatisch aktualisert werden kann.</Value>
-  </LocaleResource>
-  <LocaleResource Name="WebhookValidation">
-    <Value>Validierung von Nachrichten</Value>
-  </LocaleResource>
-  <LocaleResource Name="WebhookValidation.Hint">
-    <Value>Legt fest, ob und wie Webhook-Nachrichten validiert werden sollen.</Value>
-  </LocaleResource>
-  <LocaleResource Name="Enums.SmartStore.PayPal.Services.PayPalWebhookValidation.None" AppendRootKey="false">
-    <Value>Keine</Value>
-  </LocaleResource>
-  <LocaleResource Name="Enums.SmartStore.PayPal.Services.PayPalWebhookValidation.Simple" AppendRootKey="false">
-    <Value>Einfach</Value>
   </LocaleResource>
   
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">

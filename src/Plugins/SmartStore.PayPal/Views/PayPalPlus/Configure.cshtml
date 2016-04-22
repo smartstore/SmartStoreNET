@@ -135,15 +135,6 @@
 				@Html.ValidationMessageFor(model => model.WebhookId)
 			</td>
 		</tr>
-		<tr class="@(Model.WebhookId.HasValue() ? "" : "hide")">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.WebhookValidation)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(model => model.WebhookValidation, Model.AvailableWebhookValidations)
-				@Html.ValidationMessageFor(model => model.WebhookValidation)
-			</td>
-		</tr>
 		<tr class="adminSeparator">
 			<td colspan="2">
 				<div class="admin-config-group">

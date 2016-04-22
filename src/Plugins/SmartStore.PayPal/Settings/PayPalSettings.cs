@@ -35,11 +35,6 @@ namespace SmartStore.PayPal.Settings
 
     public abstract class PayPalApiSettingsBase : PayPalSettingsBase
 	{
-		public PayPalApiSettingsBase()
-		{
-			WebhookValidation = PayPalWebhookValidation.Simple;
-		}
-
 		public TransactMode TransactMode { get; set; }
 		public string ApiAccountName { get; set; }
 		public string ApiAccountPassword { get; set; }
@@ -64,11 +59,6 @@ namespace SmartStore.PayPal.Settings
 		/// PayPal webhook id
 		/// </summary>
 		public string WebhookId { get; set; }
-
-		/// <summary>
-		/// Indicates if and how webhook messages should be validated
-		/// </summary>
-		public PayPalWebhookValidation WebhookValidation { get; set; }
 	}
 
 

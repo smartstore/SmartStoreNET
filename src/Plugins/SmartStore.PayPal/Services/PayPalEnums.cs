@@ -15,9 +15,13 @@ namespace SmartStore.PayPal.Services
 		Details
 	}
 
-	public enum PayPalWebhookValidation
+	public enum PayPalMessage
 	{
-		None = 0,
-		Simple
+		Message = 0,
+		Event,
+		EventId,
+		State,
+		Amount,
+		PaymentId
 	}
 }

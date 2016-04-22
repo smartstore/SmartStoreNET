@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Net;
 using System.Web.Mvc;
 using SmartStore.Core.Configuration;
 using SmartStore.PayPal.Services;
@@ -150,15 +152,24 @@ namespace SmartStore.PayPal.Controllers
 		[ValidateInput(false)]
 		public ActionResult Webhook()
 		{
-			string json = null;
-			using (var reader = new StreamReader(Request.InputStream))
+			HttpStatusCode result = HttpStatusCode.OK;
+
+			try
 			{
-				json = reader.ReadToEnd();
+				string json = null;
+				using (var reader = new StreamReader(Request.InputStream))
+				{
+					json = reader.ReadToEnd();
+				}
+
+				var settings = Services.Settings.LoadSetting<TSetting>();
+
+				result = PayPalService.ProcessWebhook(settings, Request.Headers, json, PayPalPlusProvider.SystemName);
 			}
-
-			var settings = Services.Settings.LoadSetting<TSetting>();
-
-			var result = PayPalService.ProcessWebhook(settings, Request.Headers, json);
+			catch (Exception exception)
+			{
+				PayPalService.LogError(exception, isWarning: true);
+			}
 
 			return new HttpStatusCodeResult(result);
 		}

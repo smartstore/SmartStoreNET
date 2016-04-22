@@ -98,11 +98,14 @@ namespace SmartStore.PayPal
 
 				if (!state.IsCaseInsensitiveEqual("failed"))
 				{
+					// the payment id is required to find the order during webhook message processing
+					result.AuthorizationTransactionCode = apiResult.Id;
+
 					// intent: "sale" for immediate payment, "authorize" for pre-authorized payments and "order" for an order.
 					// info required cause API has different endpoints for different intents.
-					result.AuthorizationTransactionCode = (string)apiResult.Json.intent;
+					var intent = (string)apiResult.Json.intent;
 
-					if (result.AuthorizationTransactionCode.IsCaseInsensitiveEqual("sale"))
+					if (intent.IsCaseInsensitiveEqual("sale"))
 					{
 						relatedObject = apiResult.Json.transactions[0].related_resources[0].sale;
 
@@ -118,7 +121,8 @@ namespace SmartStore.PayPal
 						state = (string)relatedObject.state;
 						reasonCode = (string)relatedObject.reason_code;
 
-						result.AuthorizationTransactionResult = state;
+						// see PayPalService.Refund()
+						result.AuthorizationTransactionResult = "{0} ({1})".FormatInvariant(state.NaIfEmpty(), intent.NaIfEmpty());
 						result.AuthorizationTransactionId = (string)relatedObject.id;
 
 						result.NewPaymentStatus = PayPalService.GetPaymentStatus(state, reasonCode, PaymentStatus.Authorized);

@@ -52,6 +52,10 @@ namespace SmartStore.PayPal.Services
 
 		PayPalResponse DeleteWebhook(PayPalApiSettingsBase settings, PayPalSessionData session);
 
-		HttpStatusCode ProcessWebhook(PayPalApiSettingsBase settings, NameValueCollection headers, string rawJson);
+		HttpStatusCode ProcessWebhook(
+			PayPalApiSettingsBase settings,
+			NameValueCollection headers,
+			string rawJson,
+			string providerSystemName);
 	}
 }

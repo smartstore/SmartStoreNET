@@ -13,6 +13,9 @@
   <LocaleResource Name="OrderNoteStrings">
     <Value><![CDATA[Response from PayPal:<br />{0}]]></Value>
   </LocaleResource>
+  <LocaleResource Name="MessageStrings">
+    <Value>Message;Event;Event-ID;State;Amount;Payment-ID</Value>
+  </LocaleResource>
   <LocaleResource Name="CreateNow">
     <Value>Create now</Value>
   </LocaleResource>
@@ -34,8 +37,14 @@
   <LocaleResource Name="PaymentInstructionStrings">
     <Value>Reference;Bank routing number;Bank;BIC;IBAN;Account holder;Account number;Amount;Payment due date;Details</Value>
   </LocaleResource>
-  <LocaleResource Name="WebhookValidationFailed">
-    <Value>Validation of a webhook message has failed</Value>
+  <LocaleResource Name="MissingPaymentId">
+    <Value>Missing payment ID.</Value>
+  </LocaleResource>
+  <LocaleResource Name="FoundOrderForPayment">
+    <Value>No status update because {0} orders with payment ID {1} found.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CurrencyNotEqual">
+    <Value>Currency {0} does not equal primary store currency {1}.</Value>
   </LocaleResource>
 
   <LocaleResource Name="ClientId">
@@ -64,18 +73,6 @@
   </LocaleResource>
   <LocaleResource Name="WebhookId.Hint">
     <Value>Specifies the webhook ID. PayPal sends payment status changes via a webhook to your shop, whereby the payment status of your orders can be automatically synced.</Value>
-  </LocaleResource>
-  <LocaleResource Name="WebhookValidation">
-    <Value>Message validation</Value>
-  </LocaleResource>
-  <LocaleResource Name="WebhookValidation.Hint">
-    <Value>Specifies if and how webhook messages should be validated.</Value>
-  </LocaleResource>
-  <LocaleResource Name="Enums.SmartStore.PayPal.Services.PayPalWebhookValidation.None" AppendRootKey="false">
-    <Value>None</Value>
-  </LocaleResource>
-  <LocaleResource Name="Enums.SmartStore.PayPal.Services.PayPalWebhookValidation.Simple" AppendRootKey="false">
-    <Value>Simple</Value>
   </LocaleResource>
 
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">

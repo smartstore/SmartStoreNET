@@ -146,8 +146,6 @@ namespace SmartStore.PayPal.Controllers
 				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
 				.ToList();
 
-			model.AvailableWebhookValidations = PayPalWebhookValidation.Simple.ToSelectList(false);
-
 			// it's better to also offer inactive methods here but filter them out in frontend
 			var methods = _paymentService.LoadAllPaymentMethods(storeScope);
 

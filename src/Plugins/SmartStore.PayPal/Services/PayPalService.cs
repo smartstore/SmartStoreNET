@@ -9,6 +9,7 @@ using System.Text;
 using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Logging;
@@ -34,8 +35,10 @@ namespace SmartStore.PayPal.Services
 {
 	public class PayPalService : IPayPalService
 	{
+		private readonly Lazy<IRepository<Order>> _orderRepository;
 		private readonly ICommonServices _services;
 		private readonly IOrderService _orderService;
+		private readonly IOrderProcessingService _orderProcessingService;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		private readonly IPaymentService _paymentService;
 		private readonly IPriceCalculationService _priceCalculationService;
@@ -45,8 +48,10 @@ namespace SmartStore.PayPal.Services
 		private readonly Lazy<CompanyInformationSettings> _companyInfoSettings;
 
 		public PayPalService(
+			Lazy<IRepository<Order>> orderRepository,
 			ICommonServices services,
 			IOrderService orderService,
+			IOrderProcessingService orderProcessingService,
 			IOrderTotalCalculationService orderTotalCalculationService,
 			IPaymentService paymentService,
 			IPriceCalculationService priceCalculationService,
@@ -55,8 +60,10 @@ namespace SmartStore.PayPal.Services
 			Lazy<IPictureService> pictureService,
 			Lazy<CompanyInformationSettings> companyInfoSettings)
 		{
+			_orderRepository = orderRepository;
 			_services = services;
 			_orderService = orderService;
+			_orderProcessingService = orderProcessingService;
 			_orderTotalCalculationService = orderTotalCalculationService;
 			_paymentService = paymentService;
 			_priceCalculationService = priceCalculationService;
@@ -102,44 +109,39 @@ namespace SmartStore.PayPal.Services
 			return dic;
 		}
 
-		private bool IsValidMessage(PayPalApiSettingsBase settings, dynamic json)
+		private string ToInfoString(dynamic json)
 		{
+			var sb = new StringBuilder();
+
 			try
 			{
-				if (settings.WebhookValidation == PayPalWebhookValidation.Simple)
+				string[] strings = T("Plugins.SmartStore.PayPal.MessageStrings").Text.SplitSafe(";");
+				var message = (string)json.summary;
+				var eventType = (string)json.event_type;
+				var eventId = (string)json.id;
+				string state = null;
+				string amount = null;
+				string paymentId = null;
+
+				if (json.resource != null)
 				{
-					// own, low level validation
-					var paymentId = (string)json.resource.parent_payment;
+					state = (string)json.resource.state;
+					paymentId = (string)json.resource.parent_payment;
 
-					if (paymentId.IsEmpty() || settings.WebhookId.IsEmpty() || !settings.WebhookId.IsCaseInsensitiveEqual(settings.WebhookId))
-						return false;
-
-
+					if (json.resource.amount != null)
+						amount = string.Concat((string)json.resource.amount.total, " ", (string)json.resource.amount.currency);
 				}
 
-				// validating against PayPal SDK frequently failing:
-				//var webhookId = setting.WebhookId;	// or (string)json.id for simulator
-				//var apiContext = new global::PayPal.Api.APIContext
-				//{
-				//	AccessToken = "I do not have one here",
-				//	Config = new Dictionary<string, string>
-				//		{
-				//			{ "mode", settings.UseSandbox ? "sandbox" : "live" },
-				//			{ "clientId", settings.ClientId },
-				//			{ "clientSecret", settings.Secret },
-				//			{ "webhook.id", webhookId },
-				//		}
-				//};
-				//var result = global::PayPal.Api.WebhookEvent.ValidateReceivedEvent(apiContext, headers, rawJson, webhookId);
-				//}
+				sb.AppendLine("{0}: {1}".FormatInvariant(strings.SafeGet((int)PayPalMessage.Message), message.NaIfEmpty()));
+				sb.AppendLine("{0}: {1}".FormatInvariant(strings.SafeGet((int)PayPalMessage.Event), eventType.NaIfEmpty()));
+				sb.AppendLine("{0}: {1}".FormatInvariant(strings.SafeGet((int)PayPalMessage.EventId), eventId.NaIfEmpty()));
+				sb.AppendLine("{0}: {1}".FormatInvariant(strings.SafeGet((int)PayPalMessage.PaymentId), paymentId.NaIfEmpty()));
+				sb.AppendLine("{0}: {1}".FormatInvariant(strings.SafeGet((int)PayPalMessage.State), state.NaIfEmpty()));
+				sb.AppendLine("{0}: {1}".FormatInvariant(strings.SafeGet((int)PayPalMessage.Amount), amount.NaIfEmpty()));
 			}
-			catch (Exception exception)
-			{
-				LogError(exception, T("Plugins.SmartStore.PayPal.WebhookValidationFailed"), isWarning: true);
-				return false;
-			}
+			catch { }
 
-			return true;
+			return sb.ToString();
 		}
 
 		public static string GetApiUrl(bool sandbox)
@@ -754,7 +756,7 @@ namespace SmartStore.PayPal.Services
 		public PayPalResponse Refund(PayPalApiSettingsBase settings, PayPalSessionData session, RefundPaymentRequest request)
 		{
 			var data = new Dictionary<string, object>();
-			var isSale = request.Order.AuthorizationTransactionCode.IsCaseInsensitiveEqual("sale");
+			var isSale = request.Order.AuthorizationTransactionResult.Contains("(sale)");
 
 			var path = "/v1/payments/{0}/{1}/refund".FormatInvariant(isSale ? "sale" : "capture", request.Order.CaptureTransactionId);
 
@@ -900,7 +902,17 @@ namespace SmartStore.PayPal.Services
 			var data = new Dictionary<string, object>();
 			var events = new List<Dictionary<string, object>>();
 
-			events.Add(new Dictionary<string, object> { { "name", "*" } });
+			events.Add(new Dictionary<string, object> { { "name", "PAYMENT.AUTHORIZATION.VOIDED" } });
+			events.Add(new Dictionary<string, object> { { "name", "PAYMENT.CAPTURE.COMPLETED" } });
+			events.Add(new Dictionary<string, object> { { "name", "PAYMENT.CAPTURE.DENIED" } });
+			events.Add(new Dictionary<string, object> { { "name", "PAYMENT.CAPTURE.PENDING" } });
+			events.Add(new Dictionary<string, object> { { "name", "PAYMENT.CAPTURE.REFUNDED" } });
+			events.Add(new Dictionary<string, object> { { "name", "PAYMENT.CAPTURE.REVERSED" } });
+			events.Add(new Dictionary<string, object> { { "name", "PAYMENT.SALE.COMPLETED" } });
+			events.Add(new Dictionary<string, object> { { "name", "PAYMENT.SALE.DENIED" } });
+			events.Add(new Dictionary<string, object> { { "name", "PAYMENT.SALE.PENDING" } });
+			events.Add(new Dictionary<string, object> { { "name", "PAYMENT.SALE.REFUNDED" } });
+			events.Add(new Dictionary<string, object> { { "name", "PAYMENT.SALE.REVERSED" } });
 
 			data.Add("url", url);
 			data.Add("event_types", events);
@@ -928,26 +940,107 @@ namespace SmartStore.PayPal.Services
 		}
 
 		/// <remarks>return 503 (HttpStatusCode.ServiceUnavailable) to ask paypal to resend it at later time</remarks>
-		public HttpStatusCode ProcessWebhook(PayPalApiSettingsBase settings, NameValueCollection headers, string rawJson)
+		public HttpStatusCode ProcessWebhook(
+			PayPalApiSettingsBase settings,
+			NameValueCollection headers,
+			string rawJson,
+			string providerSystemName)
 		{
 			if (rawJson.IsEmpty())
 				return HttpStatusCode.OK;
 
 			dynamic json = JObject.Parse(rawJson);
+			var eventType = (string)json.event_type;
 
 			//foreach (var key in headers.AllKeys)"{0}: {1}".FormatInvariant(key, headers[key]).Dump();
 			//string data = JsonConvert.SerializeObject(json, Formatting.Indented);data.Dump();
 
-			var isValid = (bool)IsValidMessage(settings, json);
+			if (eventType.IsEmpty() || json.resource == null)
+				return HttpStatusCode.OK;
 
-			if (!isValid)
+			// validating against PayPal SDK failing using sandbox, so better we do not use it:
+			//var apiContext = new global::PayPal.Api.APIContext
+			//{
+			//	AccessToken = "I do not have one here",
+			//	Config = new Dictionary<string, string>
+			//		{
+			//			{ "mode", settings.UseSandbox ? "sandbox" : "live" },
+			//			{ "clientId", settings.ClientId },
+			//			{ "clientSecret", settings.Secret },
+			//			{ "webhook.id", setting.WebhookId },
+			//		}
+			//};
+			//var result = global::PayPal.Api.WebhookEvent.ValidateReceivedEvent(apiContext, headers, rawJson, webhookId);
+			//}
+
+			var paymentId = (string)json.resource.parent_payment;
+			if (paymentId.IsEmpty())
 			{
-				LogError(null, T("Plugins.SmartStore.PayPal.WebhookValidationFailed"), rawJson, isWarning: true);
+				LogError(null, T("Plugins.SmartStore.PayPal.MissingPaymentId"), JsonConvert.SerializeObject(json, Formatting.Indented), isWarning: true);
 				return HttpStatusCode.OK;
 			}
 
-			// TODO
+			var orders = _orderRepository.Value.Table
+				.Where(x => x.PaymentMethodSystemName == providerSystemName && x.AuthorizationTransactionCode == paymentId)
+				.ToList();
 
+			if (orders.Count != 1)
+			{
+				LogError(null, T("Plugins.SmartStore.PayPal.FoundOrderForPayment", orders.Count, paymentId), JsonConvert.SerializeObject(json, Formatting.Indented), isWarning: true);
+				return HttpStatusCode.OK;
+			}
+
+			var order = orders.First();
+			var store = _services.StoreService.GetStoreById(order.StoreId);
+
+			var total = decimal.Zero;
+			var currency = (string)json.resource.amount.currency;
+			var primaryCurrency = store.PrimaryStoreCurrency.CurrencyCode;
+
+			if (!primaryCurrency.IsCaseInsensitiveEqual(currency))
+			{
+				LogError(null, T("Plugins.SmartStore.PayPal.CurrencyNotEqual", currency.NaIfEmpty(), primaryCurrency), JsonConvert.SerializeObject(json, Formatting.Indented), isWarning: true);
+				return HttpStatusCode.OK;
+			}
+
+			eventType = eventType.Substring(eventType.LastIndexOf('.') + 1);
+
+			var newPaymentStatus = GetPaymentStatus(eventType, "authorization", order.PaymentStatus);
+
+			var isValidTotal = decimal.TryParse((string)json.resource.amount.total, NumberStyles.Currency, CultureInfo.InvariantCulture, out total);
+
+			if (newPaymentStatus == PaymentStatus.Refunded && (Math.Abs(order.OrderTotal) - Math.Abs(total)) > decimal.Zero)
+			{
+				newPaymentStatus = PaymentStatus.PartiallyRefunded;
+			}
+
+			switch (newPaymentStatus)
+			{
+				case PaymentStatus.Pending:
+					break;
+				case PaymentStatus.Authorized:
+					if (_orderProcessingService.CanMarkOrderAsAuthorized(order))
+						_orderProcessingService.MarkAsAuthorized(order);
+					break;
+				case PaymentStatus.Paid:
+					if (_orderProcessingService.CanMarkOrderAsPaid(order))
+						_orderProcessingService.MarkOrderAsPaid(order);
+					break;
+				case PaymentStatus.Refunded:
+					if (_orderProcessingService.CanRefundOffline(order))
+						_orderProcessingService.RefundOffline(order);
+					break;
+				case PaymentStatus.PartiallyRefunded:
+					if (_orderProcessingService.CanPartiallyRefundOffline(order, Math.Abs(total)))
+						_orderProcessingService.PartiallyRefundOffline(order, Math.Abs(total));
+					break;
+				case PaymentStatus.Voided:
+					if (_orderProcessingService.CanVoidOffline(order))
+						_orderProcessingService.VoidOffline(order);
+					break;
+			}
+
+			AddOrderNote(settings, order, (string)ToInfoString(json));
 
 			return HttpStatusCode.OK;
 		}

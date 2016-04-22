@@ -50,10 +50,6 @@ namespace SmartStore.PayPal.Models
 		[SmartResourceDisplayName("Plugins.SmartStore.PayPal.WebhookId")]
 		public string WebhookId { get; set; }
 
-		[SmartResourceDisplayName("Plugins.SmartStore.PayPal.WebhookValidation")]
-		public PayPalWebhookValidation WebhookValidation { get; set; }
-		public SelectList AvailableWebhookValidations { get; set; }
-
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.AdditionalFee")]
 		public decimal AdditionalFee { get; set; }
 
@@ -175,7 +171,6 @@ namespace SmartStore.PayPal.Models
 				Secret = settings.Secret;
 				ExperienceProfileId = settings.ExperienceProfileId;
 				WebhookId = settings.WebhookId;
-				WebhookValidation = settings.WebhookValidation;
 				ThirdPartyPaymentMethods = settings.ThirdPartyPaymentMethods;
 				DisplayPaymentMethodLogo = settings.DisplayPaymentMethodLogo;
 				DisplayPaymentMethodDescription = settings.DisplayPaymentMethodDescription;
@@ -191,7 +186,6 @@ namespace SmartStore.PayPal.Models
 				settings.Secret = Secret;
 				settings.ExperienceProfileId = ExperienceProfileId;
 				settings.WebhookId = WebhookId;
-				settings.WebhookValidation = WebhookValidation;
 				settings.ThirdPartyPaymentMethods = ThirdPartyPaymentMethods;
 				settings.DisplayPaymentMethodLogo = DisplayPaymentMethodLogo;
 				settings.DisplayPaymentMethodDescription = DisplayPaymentMethodDescription;

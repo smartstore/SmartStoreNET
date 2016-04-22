@@ -16,12 +16,6 @@
   <LocaleResource Name="MessageStrings">
     <Value>Message;Event;Event-ID;State;Amount;Payment-ID</Value>
   </LocaleResource>
-  <LocaleResource Name="CreateNow">
-    <Value>Create now</Value>
-  </LocaleResource>
-  <LocaleResource Name="UpdateNow">
-    <Value>Update now</Value>
-  </LocaleResource>
   <LocaleResource Name="Other">
     <Value>Miscellaneous</Value>
   </LocaleResource>
@@ -411,7 +405,16 @@ Payment fee: {10}]]>
       <LocaleResource Name="AdminInstruction">
         <Value>
           <![CDATA[<p>PayPal PLUS is a solution where PayPal offers PayPal, Credit Card, Direct Debit (ELV) and pay upon invoice as individual payment options on the payment selection page.
-Pay upon invoice may not be available for all merchants. PayPal PLUS only supports the transaction type of instant settlement and is only available in Germany at the moment.</p>]]>
+Pay upon invoice may not be available for all merchants. PayPal PLUS only supports the transaction type of instant settlement and is only available in Germany at the moment.</p>
+<p>PayPal PLUS replaces the list of payment methods in checkout by the PayPal payment wall. You can add up to 5 offline or redirection payment methods to the payment wall.</p>
+<p>How to set up PayPal PLUS:
+<ol>
+<li>Create a new REST API application under <a href="https://developer.paypal.com/developer/applications/" target="paypal">My Apps & Credentials</a>.
+Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal">Manage your applications</a> to get more information about PayPal applications.</li>
+<li>Click the name of the application and enter <b>Client-ID</b> and <b>Secret</b> below on this page. Save.</li>
+<li>Optional: Click <b>Add</b> next to <b>Experience profile ID</b> to create a new profile. Your shop data (name, logo etc.) can now be displayed to customers when paying on PayPal pages.</li>
+<li>Optional: Click <b>Add</b> next to <b>Webhook-ID</b> to create a webhook. The payment state of your orders can be updated through a webhook.</li>
+</ol></p>]]>
         </Value>
       </LocaleResource>
       <LocaleResource Name="MethodUnavailable">

@@ -16,12 +16,6 @@
   <LocaleResource Name="MessageStrings">
     <Value>Mitteilung;Ereignis;Ereignis-ID;Status;Betrag;Zahlungs-ID</Value>
   </LocaleResource>
-  <LocaleResource Name="CreateNow">
-    <Value>Jetzt erstellen</Value>
-  </LocaleResource>
-  <LocaleResource Name="UpdateNow">
-    <Value>Jetzt aktualisieren</Value>
-  </LocaleResource>
   <LocaleResource Name="Other">
     <Value>Sonstiges</Value>
   </LocaleResource>
@@ -411,7 +405,16 @@ Zahlungsgebühr: {10}]]>
       <LocaleResource Name="AdminInstruction">
         <Value>
           <![CDATA[<p>PayPal PLUS bietet die Möglichkeit per PayPal, Kreditkarte, Lastschriftverfahren und per Rechnung zu bezahlen.
-Die Bezahlung auf Rechnung steht möglicherweise nicht allen Händlern zur Verfügung. PayPal PLUS unterstützt nur den Transaktionstyp der sofortigen Buchung und ist derzeit nur in Deutschland verfügbar.</p>]]>
+Die Bezahlung auf Rechnung steht möglicherweise nicht allen Händlern zur Verfügung. PayPal PLUS unterstützt nur den Transaktionstyp der sofortigen Buchung und ist derzeit nur in Deutschland verfügbar.</p>
+<p>PayPal PLUS ersetzt die Zahlartenliste im Kassenbereich durch die PayPal Payment Wall. Sie können der Payment Wall jedoch bis zu 5 weitere Offline- bzw. Weiterleitungszahlarten hinzufügen.</p>
+<p>So richten Sie PayPal PLUS ein:
+<ol>
+<li>Legen Sie unter <a href="https://developer.paypal.com/developer/applications/" target="paypal">My Apps & Credentials</a> eine neue REST API Anwendung an.
+Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal">Manage your applications</a> finden Sie weitere Informationen zum Thema PayPal Anwendungen (Englisch).</li>
+<li>Klicken Sie auf den Namen der Anwendung und tragen Sie <b>Client-ID</b> und <b>Secret</b> weiter unten auf dieser Seite ein. Speichern.</li>
+<li>Optional: Klicken Sie unten bei <b>Experience Profil-ID</b> auf <b>Hinzufügen</b>, um ein Profil zu erstellen. Ihre Shop-Daten (Name, Logo etc.) werden Käufern dadurch beim Bezahlen auf den PayPal-Seiten angezeigt.</li>
+<li>Optional: Klicken Sie unten bei <b>Webhook-ID</b> auf <b>Hinzufügen</b>, um einen Webhook zu erstellen. Über einen Webhook wird der Zahlungsstatus Ihrer Aufträge aktualisiert.</li>
+</ol></p>]]>
         </Value>
       </LocaleResource>
       <LocaleResource Name="MethodUnavailable">

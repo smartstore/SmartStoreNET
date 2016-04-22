@@ -939,7 +939,7 @@ namespace SmartStore.PayPal.Services
 			return result;
 		}
 
-		/// <remarks>return 503 (HttpStatusCode.ServiceUnavailable) to ask paypal to resend it at later time</remarks>
+		/// <remarks>return 503 (HttpStatusCode.ServiceUnavailable) to ask paypal to resend it at later time again</remarks>
 		public HttpStatusCode ProcessWebhook(
 			PayPalApiSettingsBase settings,
 			NameValueCollection headers,
@@ -1039,6 +1039,8 @@ namespace SmartStore.PayPal.Services
 						_orderProcessingService.VoidOffline(order);
 					break;
 			}
+
+			order.HasNewPaymentNotification = true;
 
 			AddOrderNote(settings, order, (string)ToInfoString(json));
 

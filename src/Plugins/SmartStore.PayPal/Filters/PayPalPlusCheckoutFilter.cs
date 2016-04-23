@@ -28,7 +28,7 @@ namespace SmartStore.PayPal.Filters
 			if (!_paymentService.IsPaymentMethodActive(PayPalPlusProvider.SystemName, store.Id))
 				return;
 
-			var routeValues = new RouteValueDictionary(new { action = "PaymentWall", controller = "PayPalPlus" });
+			var routeValues = new RouteValueDictionary(new { action = "PaymentWall", controller = "PayPalPlus", area = Plugin.SystemName });
 
 			filterContext.Result = new RedirectToRouteResult("SmartStore.PayPalPlus", routeValues);
 		}

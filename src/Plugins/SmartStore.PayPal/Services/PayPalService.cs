@@ -670,7 +670,7 @@ namespace SmartStore.PayPal.Services
 				var line = new Dictionary<string, object>();
 				line.Add("quantity", item.Item.Quantity);
 				line.Add("name", item.Item.Product.GetLocalized(x => x.Name, language.Id, true, false).Truncate(127));
-				line.Add("price", Math.Round(productPrice, 2));
+				line.Add("price", productPrice.FormatInvariant());
 				line.Add("currency", currencyCode);
 				line.Add("sku", item.Item.Product.Sku.Truncate(50));
 				items.Add(line);
@@ -685,7 +685,7 @@ namespace SmartStore.PayPal.Services
 				var line = new Dictionary<string, object>();
 				line.Add("quantity", "1");
 				line.Add("name", T("Plugins.SmartStore.PayPal.Other").Text.Truncate(127));
-				line.Add("price", Math.Round(total - itemsPlusMisc, 2));
+				line.Add("price", (total - itemsPlusMisc).FormatInvariant());
 				line.Add("currency", currencyCode);
 				items.Add(line);
 
@@ -699,8 +699,8 @@ namespace SmartStore.PayPal.Services
 			}
 
 			// transactions
-			amountDetails.Add("shipping", Math.Round(shipping, 2));
-			amountDetails.Add("subtotal", Math.Round(totalOrderItems, 2));
+			amountDetails.Add("shipping", shipping.FormatInvariant());
+			amountDetails.Add("subtotal", totalOrderItems.FormatInvariant());
 			if (!includingTax)
 			{
 				// "To avoid rounding errors we recommend not submitting tax amounts on line item basis. 
@@ -711,14 +711,14 @@ namespace SmartStore.PayPal.Services
 				SortedDictionary<decimal, decimal> taxRates = null;
 				var taxTotal = _orderTotalCalculationService.GetTaxTotal(cart, out taxRates);
 
-				amountDetails.Add("tax", Math.Round(taxTotal, 2));
+				amountDetails.Add("tax", taxTotal.FormatInvariant());
 			}
 			if (paymentFee != decimal.Zero)
 			{
-				amountDetails.Add("handling_fee", Math.Round(paymentFee, 2));
+				amountDetails.Add("handling_fee", paymentFee.FormatInvariant());
 			}
 
-			amount.Add("total", Math.Round(total, 2));
+			amount.Add("total", total.FormatInvariant());
 			amount.Add("currency", currencyCode);
 			amount.Add("details", amountDetails);
 
@@ -766,7 +766,7 @@ namespace SmartStore.PayPal.Services
 			var path = "/v1/payments/{0}/{1}/refund".FormatInvariant(isSale ? "sale" : "capture", request.Order.CaptureTransactionId);
 
 			var amount = new Dictionary<string, object>();
-			amount.Add("total", Math.Round(request.AmountToRefund, 2));
+			amount.Add("total", request.AmountToRefund.FormatInvariant());
 			amount.Add("currency", store.PrimaryStoreCurrency.CurrencyCode);
 
 			data.Add("amount", amount);
@@ -776,9 +776,9 @@ namespace SmartStore.PayPal.Services
 			if (result.Success && result.Json != null)
 			{
 				result.Id = (string)result.Json.id;
-
-				//Logger.InsertLog(LogLevel.Information, "PayPal Refund", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + result.Json.ToString());
 			}
+
+			//Logger.InsertLog(LogLevel.Information, "PayPal Refund", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + (result.Json != null ? result.Json.ToString() : ""));
 
 			return result;
 		}
@@ -793,7 +793,7 @@ namespace SmartStore.PayPal.Services
 			var store = _services.StoreService.GetStoreById(request.Order.StoreId);
 
 			var amount = new Dictionary<string, object>();
-			amount.Add("total", Math.Round(request.Order.OrderTotal, 2));
+			amount.Add("total", request.Order.OrderTotal.FormatInvariant());
 			amount.Add("currency", store.PrimaryStoreCurrency.CurrencyCode);
 
 			data.Add("amount", amount);

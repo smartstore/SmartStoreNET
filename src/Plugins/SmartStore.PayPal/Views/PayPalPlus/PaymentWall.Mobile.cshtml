@@ -4,16 +4,56 @@
 @{
 	Layout = "~/Views/Shared/_Root.cshtml";
 	Html.AddTitleParts(T("PageTitle.Checkout").Text);
-	//Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.PayPal/Content/smartstore.paypal.css"));
 }
 
 @Html.Partial("PaymentWallScripting")
 
-<div class="page checkout-page">
+<div id="PayPalPlusPage" class="page checkout-page">
 	<div class="page-title">
 		<h1>@T("Checkout.SelectPaymentMethod")</h1>
 	</div>
-	<div class="page-body checkout-data">
+	<div class="page-body checkout-data" style="padding-bottom: 20px;">
+		@Html.Widget("mobile_checkout_payment_method_top")
+
+		@if (Model.ErrorMessage.HasValue())
+		{
+			<div class="message-error">
+				<ul>
+					<li>@Html.Raw(T("Plugins.Payments.PayPalPlus.MethodUnavailable"))</li>
+					<li>
+						@if (!Model.ApprovalUrl.HasValue())
+						{
+							@T("Plugins.SmartStore.PayPal.NoApprovalUrlReturned")
+						}
+						@Model.ErrorMessage
+					</li>
+				</ul>
+			</div>
+		}
+		else if (Model.PayPalPlusPseudoMessageFlag.HasValue() && Model.PayPalPlusPseudoMessageFlag == "1")
+		{
+			<div class="message-error">
+				<ul>
+					<li>@Html.Raw(T("Plugins.Payments.PayPalPlus.SorryFailure"))</li>
+				</ul>
+			</div>
+		}
+
+		@if (Model.FullDescription.HasValue())
+		{
+			<div class="payment-method-description">
+				@Html.Raw(Model.FullDescription)
+			</div>
+		}
+
 		<div id="PayPalPlusPaymentWall"></div>
+
+		<div class="clear"></div>
+
+		<div class="select-button">
+			<input id="PayPalPlusNextCheckoutStep" type="submit" name="nextstep" value="@T("Checkout.NextButton")" />
+		</div>
+
+		@Html.Widget("mobile_checkout_payment_method_bottom")
 	</div>
 </div>

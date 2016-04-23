@@ -40,6 +40,13 @@
 				</div>
 			}
 
+			if (Model.FullDescription.HasValue())
+			{
+				<div class="payment-method-description">
+					@Html.Raw(Model.FullDescription)
+				</div>
+			}
+
 			<div id="PayPalPlusPaymentWall"></div>
 
 			<div class="select-button clearfix">

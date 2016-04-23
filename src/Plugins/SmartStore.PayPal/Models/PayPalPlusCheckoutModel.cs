@@ -12,6 +12,7 @@ namespace SmartStore.PayPal.Models
 		public string ApprovalUrl { get; set; }
 		public string ErrorMessage { get; set; }
 		public string PayPalPlusPseudoMessageFlag { get; set; }
+		public string FullDescription { get; set; }
 
 		public List<ThirdPartyPaymentMethod> ThirdPartyPaymentMethods { get; set; }
 

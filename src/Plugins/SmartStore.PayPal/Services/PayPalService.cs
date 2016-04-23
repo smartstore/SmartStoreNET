@@ -735,7 +735,7 @@ namespace SmartStore.PayPal.Services
 				result.Id = (string)result.Json.id;
 			}
 
-			Logger.InsertLog(LogLevel.Information, "PayPal PLUS", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + (result.Json != null ? result.Json.ToString() : ""));
+			//Logger.InsertLog(LogLevel.Information, "PayPal PLUS", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + (result.Json != null ? result.Json.ToString() : ""));
 
 			return result;
 		}

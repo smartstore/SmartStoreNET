@@ -210,6 +210,8 @@ namespace SmartStore.PayPal.Controllers
 			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(store.Id);
 			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
+			var pppMethod = _paymentService.GetPaymentMethodBySystemName(PayPalPlusProvider.SystemName);
+
 			var methods = _paymentService.LoadActivePaymentMethods(customer, cart, store.Id, null, false);
 			var session = _httpContext.GetPayPalSessionData();
 
@@ -219,6 +221,11 @@ namespace SmartStore.PayPal.Controllers
 			model.HasPaymentFee = (settings.AdditionalFee > decimal.Zero);
 			model.LanguageCulture = (language.LanguageCulture ?? "de_DE").Replace("-", "_");
 			model.PayPalPlusPseudoMessageFlag = TempData["PayPalPlusPseudoMessageFlag"] as string;
+
+			if (pppMethod != null)
+			{
+				model.FullDescription = pppMethod.GetLocalized(x => x.FullDescription, language.Id);
+			}
 
 			if (customer.BillingAddress != null && customer.BillingAddress.Country != null)
 			{

@@ -11,6 +11,7 @@ namespace SmartStore.PayPal.Models
 		public string LanguageCulture { get; set; }
 		public string ApprovalUrl { get; set; }
 		public string ErrorMessage { get; set; }
+		public string PayPalPlusPseudoMessageFlag { get; set; }
 
 		public List<ThirdPartyPaymentMethod> ThirdPartyPaymentMethods { get; set; }
 

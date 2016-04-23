@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
@@ -79,7 +80,7 @@ namespace SmartStore.PayPal.Services
 		public Localizer T { get; set; }
 		public ILogger Logger { get; set; }
 
-		private Dictionary<string, object> CreateAddress(Address addr)
+		private Dictionary<string, object> CreateAddress(Address addr, bool addRecipientName)
 		{
 			var dic = new Dictionary<string, object>();
 
@@ -104,7 +105,10 @@ namespace SmartStore.PayPal.Services
 				dic.Add("state", addr.StateProvince.Abbreviation.Truncate(100));
 			}
 
-			dic.Add("recipient_name", addr.GetFullName().Truncate(50));
+			if (addRecipientName)
+			{
+				dic.Add("recipient_name", addr.GetFullName().Truncate(50));
+			}
 
 			return dic;
 		}
@@ -595,6 +599,8 @@ namespace SmartStore.PayPal.Services
 			var language = _services.WorkContext.WorkingLanguage;
 			var currencyCode = store.PrimaryStoreCurrency.CurrencyCode;
 
+			var dateOfBirth = customer.GetAttribute<DateTime?>(SystemCustomerAttributeNames.DateOfBirth);
+
 			Discount orderAppliedDiscount;
 			List<AppliedGiftCard> appliedGiftCards;
 			int redeemedRewardPoints = 0;
@@ -611,7 +617,6 @@ namespace SmartStore.PayPal.Services
 			var total = (_orderTotalCalculationService.GetShoppingCartTotal(cart, out orderDiscountInclTax, out orderAppliedDiscount, out appliedGiftCards,
 				out redeemedRewardPoints, out redeemedRewardPointsAmount) ?? decimal.Zero);
 
-			var path = "/v1/payments/payment";
 			var data = new Dictionary<string, object>();
 			var redirectUrls = new Dictionary<string, object>();
 			var payer = new Dictionary<string, object>();
@@ -621,9 +626,6 @@ namespace SmartStore.PayPal.Services
 			var amountDetails = new Dictionary<string, object>();
 			var items = new List<Dictionary<string, object>>();
 			var itemList = new Dictionary<string, object>();
-
-			if (session.PaymentId.HasValue())
-				path = string.Concat(path, "/", HttpUtility.UrlPathEncode(session.PaymentId));
 
 			// "PayPal PLUS only supports transaction type “Sale” (instant settlement)"
 			if (providerSystemName == PayPalPlusProvider.SystemName)
@@ -644,16 +646,18 @@ namespace SmartStore.PayPal.Services
 			if (redirectUrls.Any())
 				data.Add("redirect_urls", redirectUrls);
 
-			// payer
-			payer.Add("payment_method", "paypal");
-
+			// payer, payer_info
+			if (dateOfBirth.HasValue)
+			{
+				payerInfo.Add("birth_date", dateOfBirth.Value.ToString("yyyy-MM-dd"));
+			}
 			if (customer.BillingAddress != null)
 			{
-				payerInfo.Add("billing_address", CreateAddress(customer.BillingAddress));
-
-				payer.Add("payer_info", payerInfo);
+				payerInfo.Add("billing_address", CreateAddress(customer.BillingAddress, false));
 			}
 
+			payer.Add("payment_method", "paypal");
+			payer.Add("payer_info", payerInfo);
 			data.Add("payer", payer);
 
 			// line items
@@ -691,7 +695,7 @@ namespace SmartStore.PayPal.Services
 			itemList.Add("items", items);
 			if (customer.ShippingAddress != null)
 			{
-				itemList.Add("shipping_address", CreateAddress(customer.ShippingAddress));
+				itemList.Add("shipping_address", CreateAddress(customer.ShippingAddress, true));
 			}
 
 			// transactions
@@ -724,14 +728,14 @@ namespace SmartStore.PayPal.Services
 
 			data.Add("transactions", new List<Dictionary<string, object>> { transaction });
 
-			var result = CallApi("POST", path, session.AccessToken, settings, JsonConvert.SerializeObject(data));
+			var result = CallApi("POST", "/v1/payments/payment", session.AccessToken, settings, JsonConvert.SerializeObject(data));
 
 			if (result.Success && result.Json != null)
 			{
 				result.Id = (string)result.Json.id;
-
-				//Logger.InsertLog(LogLevel.Information, "PayPal PLUS", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + result.Json.ToString());
 			}
+
+			Logger.InsertLog(LogLevel.Information, "PayPal PLUS", JsonConvert.SerializeObject(data, Formatting.Indented) + "\r\n\r\n" + (result.Json != null ? result.Json.ToString() : ""));
 
 			return result;
 		}
@@ -756,24 +760,16 @@ namespace SmartStore.PayPal.Services
 		public PayPalResponse Refund(PayPalApiSettingsBase settings, PayPalSessionData session, RefundPaymentRequest request)
 		{
 			var data = new Dictionary<string, object>();
+			var store = _services.StoreService.GetStoreById(request.Order.StoreId);
 			var isSale = request.Order.AuthorizationTransactionResult.Contains("(sale)");
 
 			var path = "/v1/payments/{0}/{1}/refund".FormatInvariant(isSale ? "sale" : "capture", request.Order.CaptureTransactionId);
 
-			if (isSale && !request.IsPartialRefund)
-			{
-				// no body required
-			}
-			else
-			{
-				var store = _services.StoreService.GetStoreById(request.Order.StoreId);
+			var amount = new Dictionary<string, object>();
+			amount.Add("total", Math.Round(request.AmountToRefund, 2));
+			amount.Add("currency", store.PrimaryStoreCurrency.CurrencyCode);
 
-				var amount = new Dictionary<string, object>();
-				amount.Add("total", Math.Round(request.AmountToRefund, 2));
-				amount.Add("currency", store.PrimaryStoreCurrency.CurrencyCode);
-
-				data.Add("amount", amount);
-			}
+			data.Add("amount", amount);
 
 			var result = CallApi("POST", path, session.AccessToken, settings, data.Any() ? JsonConvert.SerializeObject(data) : null);
 
@@ -955,8 +951,6 @@ namespace SmartStore.PayPal.Services
 			//foreach (var key in headers.AllKeys)"{0}: {1}".FormatInvariant(key, headers[key]).Dump();
 			//string data = JsonConvert.SerializeObject(json, Formatting.Indented);data.Dump();
 
-			if (eventType.IsEmpty() || json.resource == null)
-				return HttpStatusCode.OK;
 
 			// validating against PayPal SDK failing using sandbox, so better we do not use it:
 			//var apiContext = new global::PayPal.Api.APIContext
@@ -976,7 +970,7 @@ namespace SmartStore.PayPal.Services
 			var paymentId = (string)json.resource.parent_payment;
 			if (paymentId.IsEmpty())
 			{
-				LogError(null, T("Plugins.SmartStore.PayPal.MissingPaymentId"), JsonConvert.SerializeObject(json, Formatting.Indented), isWarning: true);
+				LogError(null, T("Plugins.SmartStore.PayPal.FoundOrderForPayment", 0, "".NaIfEmpty()), JsonConvert.SerializeObject(json, Formatting.Indented), isWarning: true);
 				return HttpStatusCode.OK;
 			}
 

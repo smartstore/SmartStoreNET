@@ -11,7 +11,7 @@
     <Value>API access;Data exchange;Miscellaneous</Value>
   </LocaleResource>
   <LocaleResource Name="OrderNoteStrings">
-    <Value><![CDATA[Response from PayPal:<br />{0}]]></Value>
+    <Value><![CDATA[Message from PayPal:<br />{0}]]></Value>
   </LocaleResource>
   <LocaleResource Name="MessageStrings">
     <Value>Message;Event;Event-ID;State;Amount;Payment-ID</Value>
@@ -31,14 +31,14 @@
   <LocaleResource Name="PaymentInstructionStrings">
     <Value>Reference;Bank routing number;Bank;BIC;IBAN;Account holder;Account number;Amount;Payment due date;Details</Value>
   </LocaleResource>
-  <LocaleResource Name="MissingPaymentId">
-    <Value>Missing payment ID.</Value>
-  </LocaleResource>
   <LocaleResource Name="FoundOrderForPayment">
-    <Value>No status update because {0} orders with payment ID {1} found.</Value>
+    <Value>Message has been ignored because {0} orders with payment ID {1} found.</Value>
   </LocaleResource>
   <LocaleResource Name="CurrencyNotEqual">
     <Value>Currency {0} does not equal primary store currency {1}.</Value>
+  </LocaleResource>
+  <LocaleResource Name="NoApprovalUrlReturned">
+    <Value>No redirect URL received from PayPal.</Value>
   </LocaleResource>
 
   <LocaleResource Name="ClientId">
@@ -413,12 +413,15 @@ Pay upon invoice may not be available for all merchants. PayPal PLUS only suppor
 Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal">Manage your applications</a> to get more information about PayPal applications.</li>
 <li>Click the name of the application and enter <b>Client-ID</b> and <b>Secret</b> below on this page. Save.</li>
 <li>Optional: Click <b>Add</b> next to <b>Experience profile ID</b> to create a new profile. Your shop data (name, logo etc.) can now be displayed to customers when paying on PayPal pages.</li>
-<li>Optional: Click <b>Add</b> next to <b>Webhook-ID</b> to create a webhook. The payment state of your orders can be updated through a webhook.</li>
+<li>Optional: Click <b>Add</b> next to <b>Webhook-ID</b> to create a webhook. Through a webhook the shop receives PayPal messages und possibly updates the payment state of your orders.</li>
 </ol></p>]]>
         </Value>
       </LocaleResource>
       <LocaleResource Name="MethodUnavailable">
         <Value>Unfortunately we cannot offer you a PayPal PLUS payment method. Please try again later.</Value>
+      </LocaleResource>
+      <LocaleResource Name="SorryFailure">
+        <Value>I'm sorry, that just didn't work. Please try again or select another payment method.</Value>
       </LocaleResource>
       <LocaleResource Name="ThirdPartyPaymentMethods">
         <Value>More payment methods</Value>

@@ -11,7 +11,7 @@
     <Value>API Zugang;Datenaustausch;Sonstiges</Value>
   </LocaleResource>
   <LocaleResource Name="OrderNoteStrings">
-    <Value><![CDATA[Antwort von PayPal:<br />{0}]]></Value>
+    <Value><![CDATA[Mitteilung von PayPal:<br />{0}]]></Value>
   </LocaleResource>
   <LocaleResource Name="MessageStrings">
     <Value>Mitteilung;Ereignis;Ereignis-ID;Status;Betrag;Zahlungs-ID</Value>
@@ -28,14 +28,14 @@
   <LocaleResource Name="PaymentInstructionStrings">
     <Value>Referenz;Bankleitzahl;Bank;BIC;IBAN;Kontoinhaber;Kontonummer;Betrag;Zahlung fällig am;Details</Value>
   </LocaleResource>
-  <LocaleResource Name="MissingPaymentId">
-    <Value>Fehlende Payment-ID.</Value>
-  </LocaleResource>
   <LocaleResource Name="FoundOrderForPayment">
-    <Value>Keine Statusaktualisierung, da {0} Aufträge mit der Payment-ID {1} gefunden wurden.</Value>
+    <Value>Mitteilung wurde ignoriert, da {0} Aufträge mit der Payment-ID {1} gefunden wurden.</Value>
   </LocaleResource>
   <LocaleResource Name="CurrencyNotEqual">
     <Value>Währung {0} entspricht nicht der Leitwährung des Shops {1}.</Value>
+  </LocaleResource>
+  <LocaleResource Name="NoApprovalUrlReturned">
+    <Value>Keine Weiterleitungs-URL von PayPal erhalten.</Value>
   </LocaleResource>
 
   <LocaleResource Name="ClientId">
@@ -413,12 +413,15 @@ Die Bezahlung auf Rechnung steht möglicherweise nicht allen Händlern zur Verf�
 Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal">Manage your applications</a> finden Sie weitere Informationen zum Thema PayPal Anwendungen (Englisch).</li>
 <li>Klicken Sie auf den Namen der Anwendung und tragen Sie <b>Client-ID</b> und <b>Secret</b> weiter unten auf dieser Seite ein. Speichern.</li>
 <li>Optional: Klicken Sie unten bei <b>Experience Profil-ID</b> auf <b>Hinzufügen</b>, um ein Profil zu erstellen. Ihre Shop-Daten (Name, Logo etc.) werden Käufern dadurch beim Bezahlen auf den PayPal-Seiten angezeigt.</li>
-<li>Optional: Klicken Sie unten bei <b>Webhook-ID</b> auf <b>Hinzufügen</b>, um einen Webhook zu erstellen. Über einen Webhook wird der Zahlungsstatus Ihrer Aufträge aktualisiert.</li>
+<li>Optional: Klicken Sie unten bei <b>Webhook-ID</b> auf <b>Hinzufügen</b>, um einen Webhook zu erstellen. Über einen Webhook empfängt der Shop PayPal-Mitteilungen und aktualisiert u.U. den Zahlungsstatus Ihrer Aufträge.</li>
 </ol></p>]]>
         </Value>
       </LocaleResource>
       <LocaleResource Name="MethodUnavailable">
         <Value>Wir können Ihnen leider keine PayPal PLUS Zahlungsart anbieten. Bitte versuchen Sie er später erneut.</Value>
+      </LocaleResource>
+      <LocaleResource Name="SorryFailure">
+        <Value>Entschuldigung, das hat gerade nicht funktioniert. Bitte versuchen Sie es erneut oder wählen Sie eine andere Zahlungsmethode.</Value>
       </LocaleResource>
       <LocaleResource Name="ThirdPartyPaymentMethods">
         <Value>Weitere Zahlarten</Value>

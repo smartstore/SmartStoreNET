@@ -218,6 +218,7 @@ namespace SmartStore.PayPal.Controllers
 			model.UseSandbox = settings.UseSandbox;
 			model.HasPaymentFee = (settings.AdditionalFee > decimal.Zero);
 			model.LanguageCulture = (language.LanguageCulture ?? "de_DE").Replace("-", "_");
+			model.PayPalPlusPseudoMessageFlag = TempData["PayPalPlusPseudoMessageFlag"] as string;
 
 			if (customer.BillingAddress != null && customer.BillingAddress.Country != null)
 			{
@@ -321,6 +322,17 @@ namespace SmartStore.PayPal.Controllers
 		[ValidateInput(false)]
 		public ActionResult CheckoutCancel()
 		{
+			// Request.QueryString:
+			// token: EC-6JM38216F6718012L, ppp_msg: 1
+
+			// undocumented
+			var pseudoMessageFlag = Request.QueryString["ppp_msg"] as string;
+
+			if (pseudoMessageFlag.HasValue())
+			{
+				TempData["PayPalPlusPseudoMessageFlag"] = pseudoMessageFlag;
+			}
+
 			// back to where he came from
 			return RedirectToAction("PaymentMethod", "Checkout", new { area = "" });
 		}

@@ -4,7 +4,6 @@
 @{
 	Layout = "~/Views/Shared/_Checkout.cshtml";
 	Html.AddTitleParts(T("PageTitle.Checkout").Text);
-	//Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.PayPal/Content/smartstore.paypal.css"));
 }
 @section orderProgress
 {
@@ -27,7 +26,17 @@
 				<div class="alert alert-error">
 					@Html.Raw(T("Plugins.Payments.PayPalPlus.MethodUnavailable"))
 					<br />
+					@if (!Model.ApprovalUrl.HasValue())
+					{
+						@T("Plugins.SmartStore.PayPal.NoApprovalUrlReturned")
+					}
 					@Model.ErrorMessage
+				</div>
+			}
+			else if (Model.PayPalPlusPseudoMessageFlag.HasValue() && Model.PayPalPlusPseudoMessageFlag == "1")
+			{
+				<div class="alert alert-error">
+					@Html.Raw(T("Plugins.Payments.PayPalPlus.SorryFailure"))
 				</div>
 			}
 
@@ -37,8 +46,6 @@
 				<a class="btn pull-left" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })">
 					<i class="fa fa-caret-left"></i>&nbsp;@T("Common.Back")
 				</a>
-
-				@*TODO: reward points*@
 
 				<button id="PayPalPlusNextCheckoutStep" class="btn btn-warning pull-right payment-method-next-step-button hide">
 					@T("Checkout.NextButton")&nbsp;<i class="fa fa-caret-right"></i>

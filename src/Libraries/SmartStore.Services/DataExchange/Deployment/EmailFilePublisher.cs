@@ -35,7 +35,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 				{
 					From = emailAccount.Email,
 					FromName = emailAccount.DisplayName,
-					SendManually = true,
+					SendManually = false,
 					To = email,
 					Subject = deployment.EmailSubject.NaIfEmpty(),
 					CreatedOnUtc = DateTime.UtcNow,

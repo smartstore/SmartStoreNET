@@ -26,6 +26,7 @@
 * Adding new shipping method throws an exception
 * Attribute Values: Assigning IsPreselected to more than one value causes an error
 * BizImporter: fixed redirection bug when default file extension in .biz wasn't .html
+* Fixed: Export deployment emails were always send manually
 
 
 ## SmartStore.NET 2.5

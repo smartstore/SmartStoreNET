@@ -212,6 +212,8 @@ namespace SmartStore.Data.Migrations
 				"E-Mail Adressen an",
 				"Specifies the email addresses where to send the data.",
 				"Legt die E-Mail Adressen fest, an die die Daten verschickt werden soll.");
+
+			builder.AddOrUpdate("Admin.Common.FileNotFound", "File not found", "Datei nicht gefunden");
 		}
 	}
 }

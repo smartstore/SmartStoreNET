@@ -150,9 +150,6 @@ namespace SmartStore.PayPal
 
 		public override void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
 		{
-			if (postProcessPaymentRequest.Order.PaymentStatus == PaymentStatus.Paid)
-				return;
-
 			var instruction = PayPalService.CreatePaymentInstruction(HttpContext.GetPayPalSessionData().PaymentInstruction);
 
 			if (instruction.HasValue())

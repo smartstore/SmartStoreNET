@@ -294,7 +294,7 @@ namespace SmartStore.PayPal.Services
 			if (!instruct.IsManualBankTransfer && !instruct.IsPayUponInvoice)
 				return null;
 
-			var sb = new StringBuilder("<div>");
+			var sb = new StringBuilder("<div style='text-align:left;'>");
 			var paragraphTemplate = "<div style='margin-bottom:10px;'>{0}</div>";
 			var rowTemplate = "<span style='min-width:120px;'>{0}</span>: {1}<br />";
 			var instructStrings = T("Plugins.SmartStore.PayPal.PaymentInstructionStrings").Text.SplitSafe(";");

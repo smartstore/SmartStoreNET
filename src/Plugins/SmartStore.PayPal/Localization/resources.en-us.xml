@@ -4,7 +4,69 @@
     <Value>PayPal Payment Methods</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.PayPal" AppendRootKey="false">
-    <Value>Provides the PayPal payment methods PayPal Express, PayPal Standard and PayPal Direct.</Value>
+    <Value>Provides the PayPal payment methods PayPal Standard, PayPal Direct, PayPal Express and PayPal PLUS.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="ConfigGroups">
+    <Value>API access;Data exchange;Miscellaneous</Value>
+  </LocaleResource>
+  <LocaleResource Name="OrderNoteStrings">
+    <Value><![CDATA[Status notification from PayPal:<br />{0}]]></Value>
+  </LocaleResource>
+  <LocaleResource Name="MessageStrings">
+    <Value>Message;Event;Event-ID;State;Amount;Payment-ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="Other">
+    <Value>Miscellaneous</Value>
+  </LocaleResource>
+  <LocaleResource Name="PaymentExecuteFailed">
+    <Value>The execution of the payment has been declined by PayPal.</Value>
+  </LocaleResource>
+  <LocaleResource Name="PayUponInvoiceLegalNote">
+    <Value>{0} hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.àr.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.àr.l. et Cie, S.C.A. geleistet werden.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ManualBankTransferNote">
+    <Value>Please transfer the due amount to the following bank account.</Value>
+  </LocaleResource>
+  <LocaleResource Name="PaymentInstructionStrings">
+    <Value>Reference;Bank routing number;Bank;BIC;IBAN;Account holder;Account number;Amount;Payment due date;Details</Value>
+  </LocaleResource>
+  <LocaleResource Name="FoundOrderForPayment">
+    <Value>Message has been ignored because {0} orders with payment ID {1} found.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CurrencyNotEqual">
+    <Value>Currency {0} does not equal primary store currency {1}.</Value>
+  </LocaleResource>
+  <LocaleResource Name="NoApprovalUrlReturned">
+    <Value>No redirect URL received from PayPal.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="ClientId">
+    <Value>Client ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="ClientId.Hint">
+    <Value>Specifies the API client ID.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Secret">
+    <Value>Secret</Value>
+  </LocaleResource>
+  <LocaleResource Name="Secret.Hint">
+    <Value>Specifies the API secret.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ValidateClientIdAndSecret">
+    <Value>Please enter your API credentials.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ExperienceProfileId">
+    <Value>Experience profile ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="ExperienceProfileId.Hint">
+    <Value>Specifies the experience profile ID. The profile contains global data like shop name and logo. A profile needs to be created only once. Using the button, you can create a new profile or update an existing one.</Value>
+  </LocaleResource>
+  <LocaleResource Name="WebhookId">
+    <Value>Webhook ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="WebhookId.Hint">
+    <Value>Specifies the webhook ID. PayPal sends payment status changes via a webhook to your shop, whereby the payment status of your orders can be automatically synced.</Value>
   </LocaleResource>
 
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
@@ -334,4 +396,58 @@ Payment fee: {10}]]>
       </LocaleResource>
     </Children>
   </LocaleResource>
+
+  <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalPlus" AppendRootKey="false">
+    <Value>PayPal PLUS</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.PayPalPlus" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[<p>PayPal PLUS is a solution where PayPal offers PayPal, Credit Card, Direct Debit (ELV) and pay upon invoice as individual payment options on the payment selection page.
+Pay upon invoice may not be available for all merchants. PayPal PLUS only supports the transaction type of instant settlement and is only available in Germany at the moment.</p>
+<p>PayPal PLUS replaces the list of payment methods in checkout by the PayPal payment wall. You can add up to 5 offline or redirection payment methods to the payment wall.</p>
+<p>How to set up PayPal PLUS:
+<ol>
+<li>Create a new REST API application under <a href="https://developer.paypal.com/developer/applications/" target="paypal">My Apps & Credentials</a>.
+Go to <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal">Manage your applications</a> to get more information about PayPal applications.</li>
+<li>Click the name of the application and enter <b>Client-ID</b> and <b>Secret</b> below on this page. Save.</li>
+<li>Optional: Click <b>Add</b> next to <b>Experience profile ID</b> to create a new profile. Your shop data (name, logo etc.) can now be displayed to customers when paying on PayPal pages.</li>
+<li>Optional: Click <b>Add</b> next to <b>Webhook-ID</b> to create a webhook. Through a webhook the shop receives PayPal messages und possibly updates the payment state of your orders.</li>
+</ol></p>]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="MethodUnavailable">
+        <Value>Unfortunately we cannot offer you a PayPal PLUS payment method. Please try again later.</Value>
+      </LocaleResource>
+      <LocaleResource Name="SorryFailure">
+        <Value>I'm sorry, that just didn't work. Please try again or select another payment method.</Value>
+      </LocaleResource>
+      <LocaleResource Name="PaymentFeeMessage">
+        <Value><![CDATA[The payment fee is <span id="PayPalPlusFeeAmount"></span>.]]></Value>
+      </LocaleResource>
+      <LocaleResource Name="ThirdPartyPaymentMethods">
+        <Value>More payment methods</Value>
+      </LocaleResource>
+      <LocaleResource Name="ThirdPartyPaymentMethods.Hint">
+        <Value>You can set up to 5 more payment methods. These are offered along with the PayPal PLUS payment methods during the checkout process.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ValidateThirdPartyPaymentMethods">
+        <Value>Maximum of 5 third party payment methods can be specified.</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodLogo">
+        <Value>Display logo of other payment methods</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodLogo.Hint">
+        <Value>Specifies whether to display the logo for other payment methods. SSL required.</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodDescription">
+        <Value>Display description of other payment methods</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodDescription.Hint">
+        <Value>Specifies whether to display the description for other payment methods.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
 </Language>

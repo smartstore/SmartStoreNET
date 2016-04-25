@@ -200,6 +200,20 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Export.SystemProfilesTitle",
 				"System profiles",
 				"Systemprofile");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.CompletedEmailAddresses",
+				"Email addresses to",
+				"E-Mail Adressen an",
+				"Specifies the email addresses where to send the notification message.",
+				"Legt die E-Mail Adressen fest, an die die Benachrichtigung geschickt werden soll.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.EmailAddresses",
+				"Email addresses to",
+				"E-Mail Adressen an",
+				"Specifies the email addresses where to send the data.",
+				"Legt die E-Mail Adressen fest, an die die Daten verschickt werden soll.");
+
+			builder.AddOrUpdate("Admin.Common.FileNotFound", "File not found", "Datei nicht gefunden");
 		}
 	}
 }

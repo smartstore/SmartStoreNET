@@ -1,6 +1,9 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 2.5.1
+
+### Highlights
+* #637 Integrate PayPal PLUS Provider
 
 ### New Features
 * #571 Option to display another checkbox on confirm page to let the customer accept that his email address can be handed over to a third party
@@ -13,6 +16,7 @@
 * Localization & SEO: language switcher now takes language specific SEO slugs into account when building links
 * Exports the product detail link including the attribute query string when exporting attribute combinations
 * #918 Compare products: Display base price information
+* Export email attachments needs to be stored in database because the temp file may not exist anymore when sending the email
 
 ### Bugfixes
 * Fixed ajax cache issue when saving payment or shipping restrictions. Internet Explorer showed the old data state (before storage).
@@ -20,9 +24,11 @@
 * Bundles without selected attributes could throw an exception on product detail page
 * GMC feed did not export the product type (category path)
 * The error message of a payment provider when capturing a payment was not displayed
-* Adding new shipping method throws an exception
+* Adding new shipping method threw an exception
 * Attribute Values: Assigning IsPreselected to more than one value causes an error
 * BizImporter: fixed redirection bug when default file extension in .biz wasn't .html
+* Fixed: Export deployment emails were always send manually
+* Manually notifying gift card recipient threw an exception
 
 
 ## SmartStore.NET 2.5

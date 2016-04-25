@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Web.Mvc;
+using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
@@ -13,7 +14,7 @@ namespace SmartStore.PayPal.Models
 	{
         public string[] ConfigGroups { get; set; }
 
-        [SmartResourceDisplayName("Plugins.Payments.PayPal.UseSandbox")]
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.UseSandbox")]
 		public bool UseSandbox { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.IpnChangesPaymentStatus")]
@@ -36,6 +37,18 @@ namespace SmartStore.PayPal.Models
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.Signature")]
 		public string Signature { get; set; }
+
+		[SmartResourceDisplayName("Plugins.SmartStore.PayPal.ClientId")]
+		public string ClientId { get; set; }
+
+		[SmartResourceDisplayName("Plugins.SmartStore.PayPal.Secret")]
+		public string Secret { get; set; }
+
+		[SmartResourceDisplayName("Plugins.SmartStore.PayPal.ExperienceProfileId")]
+		public string ExperienceProfileId { get; set; }
+
+		[SmartResourceDisplayName("Plugins.SmartStore.PayPal.WebhookId")]
+		public string WebhookId { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.AdditionalFee")]
 		public decimal AdditionalFee { get; set; }
@@ -130,4 +143,53 @@ namespace SmartStore.PayPal.Models
             }
         }
     }
+
+
+	public class PayPalPlusConfigurationModel : ApiConfigurationModel
+	{
+		[SmartResourceDisplayName("Plugins.Payments.PayPalPlus.ThirdPartyPaymentMethods")]
+		public List<string> ThirdPartyPaymentMethods { get; set; }
+		public List<SelectListItem> AvailableThirdPartyPaymentMethods { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.PayPalPlus.DisplayPaymentMethodLogo")]
+		public bool DisplayPaymentMethodLogo { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Payments.PayPalPlus.DisplayPaymentMethodDescription")]
+		public bool DisplayPaymentMethodDescription { get; set; }
+
+
+		public void Copy(PayPalPlusPaymentSettings settings, bool fromSettings)
+		{
+			if (fromSettings)
+			{
+				SecurityProtocol = settings.SecurityProtocol;
+				UseSandbox = settings.UseSandbox;
+				AdditionalFee = settings.AdditionalFee;
+				AdditionalFeePercentage = settings.AdditionalFeePercentage;
+
+				ClientId = settings.ClientId;
+				Secret = settings.Secret;
+				ExperienceProfileId = settings.ExperienceProfileId;
+				WebhookId = settings.WebhookId;
+				ThirdPartyPaymentMethods = settings.ThirdPartyPaymentMethods;
+				DisplayPaymentMethodLogo = settings.DisplayPaymentMethodLogo;
+				DisplayPaymentMethodDescription = settings.DisplayPaymentMethodDescription;
+			}
+			else
+			{
+				settings.SecurityProtocol = SecurityProtocol;
+				settings.UseSandbox = UseSandbox;
+				settings.AdditionalFee = AdditionalFee;
+				settings.AdditionalFeePercentage = AdditionalFeePercentage;
+
+				settings.ClientId = ClientId;
+				settings.Secret = Secret;
+				settings.ExperienceProfileId = ExperienceProfileId;
+				settings.WebhookId = WebhookId;
+				settings.ThirdPartyPaymentMethods = ThirdPartyPaymentMethods;
+				settings.DisplayPaymentMethodLogo = DisplayPaymentMethodLogo;
+				settings.DisplayPaymentMethodDescription = DisplayPaymentMethodDescription;
+			}
+		}
+	}
 }

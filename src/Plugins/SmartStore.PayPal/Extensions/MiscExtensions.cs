@@ -1,9 +1,12 @@
 ﻿using System.Net;
+using System.Web;
+using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
+using SmartStore.Services.Orders;
 
 namespace SmartStore.PayPal
 {
-	public static class MiscExtensions
+	internal static class MiscExtensions
 	{
 		public static string GetPayPalUrl(this PayPalSettingsBase settings)
 		{
@@ -21,6 +24,17 @@ namespace SmartStore.PayPal
 
 			var request = (HttpWebRequest)WebRequest.Create(GetPayPalUrl(settings));
 			return request;
+		}
+
+		public static PayPalSessionData GetPayPalSessionData(this HttpContextBase httpContext, CheckoutState state = null)
+		{
+			if (state == null)
+				state = httpContext.GetCheckoutState();
+
+			if (!state.CustomProperties.ContainsKey(PayPalPlusProvider.SystemName))
+				state.CustomProperties.Add(PayPalPlusProvider.SystemName, new PayPalSessionData());
+
+			return state.CustomProperties[PayPalPlusProvider.SystemName] as PayPalSessionData;
 		}
 	}
 }

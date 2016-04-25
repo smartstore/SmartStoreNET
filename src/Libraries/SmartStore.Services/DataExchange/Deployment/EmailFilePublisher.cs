@@ -35,21 +35,21 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 				{
 					From = emailAccount.Email,
 					FromName = emailAccount.DisplayName,
-					SendManually = true,
+					SendManually = false,
 					To = email,
 					Subject = deployment.EmailSubject.NaIfEmpty(),
 					CreatedOnUtc = DateTime.UtcNow,
 					EmailAccountId = deployment.EmailAccountId
 				};
 
-				foreach (string path in context.DeploymentFiles)
+				foreach (var path in context.DeploymentFiles)
 				{
-					string name = Path.GetFileName(path);
+					var name = Path.GetFileName(path);
 
 					queuedEmail.Attachments.Add(new QueuedEmailAttachment
 					{
-						StorageLocation = EmailAttachmentStorageLocation.Path,
-						Path = path,
+						StorageLocation = EmailAttachmentStorageLocation.Blob,
+						Data = File.ReadAllBytes(path),
 						Name = name,
 						MimeType = MimeTypes.MapNameToMimeType(name)
 					});

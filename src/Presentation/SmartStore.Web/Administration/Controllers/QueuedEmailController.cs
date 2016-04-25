@@ -279,6 +279,18 @@ namespace SmartStore.Admin.Controllers
 				{
 					path = CommonHelper.MapPath(VirtualPathUtility.ToAppRelative(path), false);
 				}
+
+				if (!System.IO.File.Exists(path))
+				{
+					NotifyError(string.Concat(T("Admin.Common.FileNotFound"), ": ", path));
+
+					var referrer = Services.WebHelper.GetUrlReferrer();
+					if (referrer.HasValue())
+						return Redirect(referrer);
+					
+					return RedirectToAction("List");
+				}
+
 				return File(path, qea.MimeType, qea.Name);
 			}
 
@@ -290,7 +302,6 @@ namespace SmartStore.Admin.Controllers
 
 			NotifyError(T("Admin.System.QueuedEmails.CouldNotDownloadAttachment"));
 			return RedirectToAction("List");
-
 		}
 	}
 }

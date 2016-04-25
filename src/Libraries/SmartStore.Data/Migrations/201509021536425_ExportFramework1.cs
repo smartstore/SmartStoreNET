@@ -81,9 +81,9 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.CompletedEmailAddresses",
 				"Email addresses to",
-				"E-Mail-Addressen an",
+				"E-Mail Adressen an",
 				"Specifies the email addresses where to send the notification message.",
-				"Legt die E-Mail Addressen fest, an die die Benachrichtigung geschickt werden soll.");
+				"Legt die E-Mail Adressen fest, an die die Benachrichtigung geschickt werden soll.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.CompletedEmail.Subject",
 				"Export of profile \"{0}\" has been finished",

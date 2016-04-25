@@ -1,8 +1,8 @@
 ﻿FriendlyName: PayPal
-Description: Provides the PayPal payment methods PayPal Express, PayPal Standard and PayPal Direct.
+Description: Provides the PayPal payment methods PayPal Standard, PayPal Direct, PayPal Express and PayPal PLUS.
 SystemName: SmartStore.PayPal
 Group: Payment
-Version: 2.5.0.1
+Version: 2.5.0.2
 MinAppVersion: 2.5.0
 DisplayOrder: 1
 FileName: SmartStore.PayPal.dll

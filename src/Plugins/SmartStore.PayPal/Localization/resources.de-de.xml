@@ -4,9 +4,71 @@
     <Value>PayPal Zahlungsarten</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.PayPal" AppendRootKey="false">
-    <Value>Stellt die PayPal-Zahlungsarten PayPal Express, PayPal Standard und PayPal Direct zur Verfügung.</Value>
+    <Value>Stellt die PayPal-Zahlungsarten PayPal Standard, PayPal Direct, PayPal Express und PayPal PLUS zur Verfügung.</Value>
   </LocaleResource>
 
+  <LocaleResource Name="ConfigGroups">
+    <Value>API Zugang;Datenaustausch;Sonstiges</Value>
+  </LocaleResource>
+  <LocaleResource Name="OrderNoteStrings">
+    <Value><![CDATA[Statusmeldung von PayPal:<br />{0}]]></Value>
+  </LocaleResource>
+  <LocaleResource Name="MessageStrings">
+    <Value>Mitteilung;Ereignis;Ereignis-ID;Status;Betrag;Zahlungs-ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="Other">
+    <Value>Sonstiges</Value>
+  </LocaleResource>
+  <LocaleResource Name="PayUponInvoiceLegalNote">
+    <Value>{0} hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.àr.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.àr.l. et Cie, S.C.A. geleistet werden.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ManualBankTransferNote">
+    <Value>Bitte überweisen Sie den fälligen Betrag auf folgendes Konto.</Value>
+  </LocaleResource>
+  <LocaleResource Name="PaymentInstructionStrings">
+    <Value>Referenz;Bankleitzahl;Bank;BIC;IBAN;Kontoinhaber;Kontonummer;Betrag;Zahlung fällig am;Details</Value>
+  </LocaleResource>
+  <LocaleResource Name="FoundOrderForPayment">
+    <Value>Mitteilung wurde ignoriert, da {0} Aufträge mit der Payment-ID {1} gefunden wurden.</Value>
+  </LocaleResource>
+  <LocaleResource Name="CurrencyNotEqual">
+    <Value>Währung {0} entspricht nicht der Leitwährung des Shops {1}.</Value>
+  </LocaleResource>
+  <LocaleResource Name="NoApprovalUrlReturned">
+    <Value>Keine Weiterleitungs-URL von PayPal erhalten.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="ClientId">
+    <Value>Client-ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="ClientId.Hint">
+    <Value>Legt die API Client-ID fest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Secret">
+    <Value>Secret</Value>
+  </LocaleResource>
+  <LocaleResource Name="Secret.Hint">
+    <Value>Legt die API Secret fest.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ValidateClientIdAndSecret">
+    <Value>Bitte geben Sie Ihre API Zugangsdaten ein.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ExperienceProfileId">
+    <Value>Experience Profil-ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="ExperienceProfileId.Hint">
+    <Value>Legt die Experience Profil-ID fest. Das Profil beinhaltet globale Daten wie z.B. Shop-Name und -Logo. Ein Profil braucht nur einmalig angelegt werden. Über den Button können Sie ein neues Profil erstellen oder ein vorhandenes aktualisieren.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ExperienceProfileId">
+    <Value>Experience Profil-ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="WebhookId">
+    <Value>Webhook-ID</Value>
+  </LocaleResource>
+  <LocaleResource Name="WebhookId.Hint">
+    <Value>Legt die Webhook-ID fest. Über einen Webhook sendet PayPal Statusänderungen von Zahlungen an Ihren Shop, wodurch der Zahlungsstatus Ihrer Aufträge automatisch aktualisert werden kann.</Value>
+  </LocaleResource>
+  
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
     <Children>
       <LocaleResource Name="UseSandbox">
@@ -89,8 +151,8 @@
       </LocaleResource>
     </Children>
   </LocaleResource>
-  
-	<LocaleResource Name="Plugins.FriendlyName.Payments.PayPalExpress" AppendRootKey="false">
+
+  <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalExpress" AppendRootKey="false">
 		<Value>PayPal Express</Value>
 	</LocaleResource>
   <LocaleResource Name="Plugins.Payments.PayPalExpress" AppendRootKey="false">
@@ -333,5 +395,59 @@ Zahlungsgebühr: {10}]]>
         </Value>
       </LocaleResource>
     </Children>
-  </LocaleResource>  
+  </LocaleResource>
+
+  <LocaleResource Name="Plugins.FriendlyName.Payments.PayPalPlus" AppendRootKey="false">
+    <Value>PayPal PLUS</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.PayPalPlus" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[<p>PayPal PLUS bietet die Möglichkeit per PayPal, Kreditkarte, Lastschriftverfahren und per Rechnung zu bezahlen.
+Die Bezahlung auf Rechnung steht möglicherweise nicht allen Händlern zur Verfügung. PayPal PLUS unterstützt nur den Transaktionstyp der sofortigen Buchung und ist derzeit nur in Deutschland verfügbar.</p>
+<p>PayPal PLUS ersetzt die Zahlartenliste im Kassenbereich durch die PayPal Payment Wall. Sie können der Payment Wall jedoch bis zu 5 weitere Offline- bzw. Weiterleitungszahlarten hinzufügen.</p>
+<p>So richten Sie PayPal PLUS ein:
+<ol>
+<li>Legen Sie unter <a href="https://developer.paypal.com/developer/applications/" target="paypal">My Apps & Credentials</a> eine neue REST API Anwendung an.
+Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/" target="paypal">Manage your applications</a> finden Sie weitere Informationen zum Thema PayPal Anwendungen (Englisch).</li>
+<li>Klicken Sie auf den Namen der Anwendung und tragen Sie <b>Client-ID</b> und <b>Secret</b> weiter unten auf dieser Seite ein. Speichern.</li>
+<li>Optional: Klicken Sie unten bei <b>Experience Profil-ID</b> auf <b>Hinzufügen</b>, um ein Profil zu erstellen. Ihre Shop-Daten (Name, Logo etc.) werden Käufern dadurch beim Bezahlen auf den PayPal-Seiten angezeigt.</li>
+<li>Optional: Klicken Sie unten bei <b>Webhook-ID</b> auf <b>Hinzufügen</b>, um einen Webhook zu erstellen. Über einen Webhook empfängt der Shop PayPal-Mitteilungen und aktualisiert u.U. den Zahlungsstatus Ihrer Aufträge.</li>
+</ol></p>]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="MethodUnavailable">
+        <Value>Wir können Ihnen leider keine PayPal PLUS Zahlungsart anbieten. Bitte versuchen Sie er später erneut.</Value>
+      </LocaleResource>
+      <LocaleResource Name="SorryFailure">
+        <Value>Entschuldigung, das hat gerade nicht funktioniert. Bitte versuchen Sie es erneut oder wählen Sie eine andere Zahlungsmethode.</Value>
+      </LocaleResource>
+      <LocaleResource Name="PaymentFeeMessage">
+        <Value><![CDATA[Die Zahlungsgebühr beträgt <span id="PayPalPlusFeeAmount"></span>.]]></Value>
+      </LocaleResource>
+      <LocaleResource Name="ThirdPartyPaymentMethods">
+        <Value>Weitere Zahlarten</Value>
+      </LocaleResource>
+      <LocaleResource Name="ThirdPartyPaymentMethods.Hint">
+        <Value>Sie können bis zu 5 weitere Zahlarten festlegen. Diese werden zusammen mit den PayPal PLUS Zahlarten im Kassenbereich angeboten.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ValidateThirdPartyPaymentMethods">
+        <Value>Es können maximal 5 weitere Zahlarten festgelegt werden.</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodLogo">
+        <Value>Logo der Zahlarten anzeigen</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodLogo.Hint">
+        <Value>Legt fest, ob für die weiteren Zahlarten deren Logo angezeigt werden soll. SSL erforderlich.</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodDescription">
+        <Value>Beschreibung der Zahlarten anzeigen</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayPaymentMethodDescription.Hint">
+        <Value>Legt fest, ob für die weiteren Zahlarten deren Beschreibung angezeigt werden soll.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
 </Language>

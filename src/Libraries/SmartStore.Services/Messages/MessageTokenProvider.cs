@@ -927,15 +927,24 @@ namespace SmartStore.Services.Messages
 
         public virtual void AddGiftCardTokens(IList<Token> tokens, GiftCard giftCard)
         {
-			var order = giftCard.PurchasedWithOrderItem.Order;
-			var remainingAmount = _currencyService.ConvertCurrency(giftCard.GetGiftCardRemainingAmount(), order.CurrencyRate);	
+			var order = (giftCard.PurchasedWithOrderItem != null ? giftCard.PurchasedWithOrderItem.Order : null);
+
+			if (order != null)
+			{
+				var remainingAmount = _currencyService.ConvertCurrency(giftCard.GetGiftCardRemainingAmount(), order.CurrencyRate);
+
+				tokens.Add(new Token("GiftCard.RemainingAmount", _priceFormatter.FormatPrice(remainingAmount, true, false)));
+			}
+			else
+			{
+				tokens.Add(new Token("GiftCard.RemainingAmount", ""));
+			}
 
 			tokens.Add(new Token("GiftCard.SenderName", giftCard.SenderName));
             tokens.Add(new Token("GiftCard.SenderEmail", giftCard.SenderEmail));
             tokens.Add(new Token("GiftCard.RecipientName", giftCard.RecipientName));
             tokens.Add(new Token("GiftCard.RecipientEmail", giftCard.RecipientEmail));
             tokens.Add(new Token("GiftCard.Amount", _priceFormatter.FormatPrice(giftCard.Amount, true, false)));
-			tokens.Add(new Token("GiftCard.RemainingAmount", _priceFormatter.FormatPrice(remainingAmount, true, false)));
 			tokens.Add(new Token("GiftCard.CouponCode", giftCard.GiftCardCouponCode));
 
 			var giftCardMesage = !String.IsNullOrWhiteSpace(giftCard.Message) ?

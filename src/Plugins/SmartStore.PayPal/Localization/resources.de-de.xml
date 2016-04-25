@@ -423,6 +423,9 @@ Unter <a href="https://developer.paypal.com/docs/integration/admin/manage-apps/"
       <LocaleResource Name="SorryFailure">
         <Value>Entschuldigung, das hat gerade nicht funktioniert. Bitte versuchen Sie es erneut oder wählen Sie eine andere Zahlungsmethode.</Value>
       </LocaleResource>
+      <LocaleResource Name="PaymentFeeMessage">
+        <Value><![CDATA[Die Zahlungsgebühr beträgt <span id="PayPalPlusFeeAmount"></span>.]]></Value>
+      </LocaleResource>
       <LocaleResource Name="ThirdPartyPaymentMethods">
         <Value>Weitere Zahlarten</Value>
       </LocaleResource>

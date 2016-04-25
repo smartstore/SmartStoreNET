@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Customers;
@@ -12,12 +13,13 @@ using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.PayPal.Validators;
+using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Web.Framework;
+using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
@@ -31,15 +33,19 @@ namespace SmartStore.PayPal.Controllers
 		private readonly PluginMediator _pluginMediator;
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IPaymentService _paymentService;
+		private readonly ITaxService _taxService;
+		private readonly ICurrencyService _currencyService;
+		private readonly IPriceFormatter _priceFormatter;
 
 		public PayPalPlusController(
 			HttpContextBase httpContext,
-			IPaymentService paymentService,
-			IOrderService orderService,
-			IOrderProcessingService orderProcessingService,
 			PluginMediator pluginMediator,
 			IPayPalService payPalService,
-			IGenericAttributeService genericAttributeService) : base(
+			IGenericAttributeService genericAttributeService,
+			IPaymentService paymentService,
+			ITaxService taxService,
+			ICurrencyService currencyService,
+			IPriceFormatter priceFormatter) : base(
 				PayPalPlusProvider.SystemName,
 				payPalService)
 		{
@@ -47,6 +53,9 @@ namespace SmartStore.PayPal.Controllers
 			_pluginMediator = pluginMediator;
 			_genericAttributeService = genericAttributeService;
 			_paymentService = paymentService;
+			_taxService = taxService;
+			_currencyService = currencyService;
+			_priceFormatter = priceFormatter;
 		}
 
 		private string GetPaymentMethodName(Provider<IPaymentMethod> provider)
@@ -66,13 +75,26 @@ namespace SmartStore.PayPal.Controllers
 			return "";
 		}
 
+		private string GetPaymentFee(Provider<IPaymentMethod> provider, List<OrganizedShoppingCartItem> cart)
+		{
+			var paymentMethodAdditionalFee = provider.Value.GetAdditionalHandlingFee(cart);
+			var rateBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, Services.WorkContext.CurrentCustomer);
+			var rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, Services.WorkContext.WorkingCurrency);
+
+			if (rate != decimal.Zero)
+			{
+				return _priceFormatter.FormatPaymentMethodAdditionalFee(rate, true);
+			}
+			return "";
+		}
+
 		private PayPalPlusCheckoutModel.ThirdPartyPaymentMethod GetThirdPartyPaymentMethodModel(
 			Provider<IPaymentMethod> provider,
 			PayPalPlusPaymentSettings settings,
 			Store store)
 		{
 			var model = new PayPalPlusCheckoutModel.ThirdPartyPaymentMethod();
-			model.MethodName = GetPaymentMethodName(provider).EncodeJsString();
+			model.MethodName = GetPaymentMethodName(provider);
 			model.RedirectUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName, systemName = provider.Metadata.SystemName }, store.SslEnabled ? "https" : "http");
 
 			try
@@ -204,6 +226,7 @@ namespace SmartStore.PayPal.Controllers
 
 		public ActionResult PaymentWall()
 		{
+			var sb = new StringBuilder();
 			var store = Services.StoreContext.CurrentStore;
 			var customer = Services.WorkContext.CurrentCustomer;
 			var language = Services.WorkContext.WorkingLanguage;
@@ -211,6 +234,7 @@ namespace SmartStore.PayPal.Controllers
 			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
 			var pppMethod = _paymentService.GetPaymentMethodBySystemName(PayPalPlusProvider.SystemName);
+			var pppProvider = _paymentService.LoadPaymentMethodBySystemName(PayPalPlusProvider.SystemName, false, store.Id);
 
 			var methods = _paymentService.LoadActivePaymentMethods(customer, cart, store.Id, null, false);
 			var session = _httpContext.GetPayPalSessionData();
@@ -218,9 +242,10 @@ namespace SmartStore.PayPal.Controllers
 			var model = new PayPalPlusCheckoutModel();
 			model.ThirdPartyPaymentMethods = new List<PayPalPlusCheckoutModel.ThirdPartyPaymentMethod>();
 			model.UseSandbox = settings.UseSandbox;
-			model.HasPaymentFee = (settings.AdditionalFee > decimal.Zero);
 			model.LanguageCulture = (language.LanguageCulture ?? "de_DE").Replace("-", "_");
 			model.PayPalPlusPseudoMessageFlag = TempData["PayPalPlusPseudoMessageFlag"] as string;
+			model.PayPalFee = GetPaymentFee(pppProvider, cart);
+			model.HasAnyFees = model.PayPalFee.HasValue();
 
 			if (pppMethod != null)
 			{
@@ -239,9 +264,17 @@ namespace SmartStore.PayPal.Controllers
 				{
 					var methodModel = GetThirdPartyPaymentMethodModel(provider, settings, store);
 					model.ThirdPartyPaymentMethods.Add(methodModel);
+
+					var fee = GetPaymentFee(provider, cart);
+					if (fee.HasValue())
+						model.HasAnyFees = true;
+					if (sb.Length > 0)
+						sb.Append(", ");
+					sb.AppendFormat("['{0}','{1}']", methodModel.MethodName.Replace("'", ""), fee);
 				}
 			}
 
+			model.ThirdPartyFees = sb.ToString();
 
 			if (session.PaymentId.IsEmpty() || session.ApprovalUrl.IsEmpty())
 			{

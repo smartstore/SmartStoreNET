@@ -46,6 +46,13 @@
 			</div>
 		}
 
+		@if (Model.HasAnyFees)
+		{
+			<div id="PayPalPlusPaymentFeeContainer" class="payment-fee" style="visibility:hidden; margin-bottom:0;">
+				@T("Plugins.Payments.PayPalPlus.PaymentFeeMessage")
+			</div>
+		}
+
 		<div id="PayPalPlusPaymentWall"></div>
 
 		<div class="clear"></div>

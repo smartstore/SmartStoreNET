@@ -2,7 +2,7 @@
 
 ##Paypal 2.5.0.2
 ###New Features
-* PayPal Plus payment provider
+* PayPal PLUS payment provider
 
 ##Paypal 2.5.0.1
 ###Bugfixes

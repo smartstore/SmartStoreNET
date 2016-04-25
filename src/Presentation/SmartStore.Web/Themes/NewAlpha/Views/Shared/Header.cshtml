@@ -1,9 +1,9 @@
 ﻿@model ShopHeaderModel
 @using SmartStore.Web.Models.Common;
 
-<div id="logobar" class="container">
+<div id="logobar" class="container clearfix">
 
-    <a href="@Url.RouteUrl("HomePage")" class="brand@(Model.LogoUploaded ? "" : " textual")">
+    <a href="@Url.RouteUrl("HomePage")" class="pull-left brand@(Model.LogoUploaded ? "" : " textual")">
             
         @if (Model.LogoUploaded) 
         {
@@ -19,11 +19,11 @@
         }
     </a>
 
-    <nav id="nav-home" class="clearfix">
+    <nav id="nav-home pull-left" class="clearfix">
         @Html.Action("Menu", "Common")
     </nav>
 
-    <div class="regional-selectors">
+    <div class="regional-selectors pull-left">
         @Html.Action("LanguageSelector", "Common")
         @Html.Action("CurrencySelector", "Common")
     </div>

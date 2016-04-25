@@ -18,16 +18,16 @@
 
             return this.each(function () {
 
-                var btn = $(this).hide(); // the actual shrink container
+            	var btn = $(this).attr("hidden", "hidden"); // the actual shrink container
+            	var menu = btn.find('.dropdown-menu').first(); // the dropdown-menu within btn
                 var btnWidth;
-                var menu; // the dropdown-menu within btn
                 var nav = btn.prev(); // the actual navbar should definitely be before the shrinker
                 var containerWidth;
 
                 function reset() {
-                    nav.children(":hidden").show();
-                    nav.find("> .dropdown > .pull-right").removeClass("pull-right");
-                    btn.hide();
+                    nav.children(":hidden").removeAttr("hidden");
+                    nav.find("> .dropdown > .dropdown-menu-right").removeClass("dropdown-menu-right");
+                    btn.attr("hidden", "hidden");
                     if (menu) menu.empty();
                 }
 
@@ -45,12 +45,6 @@
                 function doShrink(resize, availWidth) {
                     containerWidth = getContainerWidth();
                     var totalButtonsWidth = nav.horizontalCushioning(true);
-
-                    if (!menu) {
-                        menu = $('<div class="dropdown-menu-inner"><ul class="drop-list" /></div>')
-                                    .appendTo(btn.find("> .dropdown > .dropdown-menu").empty())
-                                    .find(".drop-list");
-                    }
 
                     /* lis including dividers */
                     var navElements = $.makeArray(nav.children().not(btn)),
@@ -72,7 +66,7 @@
                             shift: function (el) {
                                 if (!el.hasClass("divider-vertical")) {
                                     var a = el.find(">a");
-                                    var html = '<li class="drop-list-item"><a href="' + a.attr('href') + '">' + a.text() + '</a></li>';
+                                    var html = '<a class="dropdown-item" href="' + a.attr('href') + '">' + a.text() + '</li>';
                                     menu.append(html);
                                 }
 
@@ -102,19 +96,17 @@
                          
                         // as the last drop will likely exceed the layout boundaries
                         if (lastVisible.is(".dropdown")) {
-                            lastVisible.find("> .dropdown-menu").addClass("pull-right");
+                            lastVisible.find("> .dropdown-menu").addClass("dropdown-menu-right");
                         }
                     }
 
                     // finalize navbar
                     if (exceedButtons.length > 0) {
-                        btn.show();
+                        btn.removeAttr("hidden");
                         if (resize) {
                             if ($.isFunction(options.onChange)) options.onChange.call(this, menu);
                         }
                     }
-
-                    nav.closest('.navbar-inner').css('overflow', 'visible');
                 } 
 
                 // SHRINK IT!

@@ -11,7 +11,7 @@
     <Value>API Zugang;Datenaustausch;Sonstiges</Value>
   </LocaleResource>
   <LocaleResource Name="OrderNoteStrings">
-    <Value><![CDATA[Mitteilung von PayPal:<br />{0}]]></Value>
+    <Value><![CDATA[Statusmeldung von PayPal:<br />{0}]]></Value>
   </LocaleResource>
   <LocaleResource Name="MessageStrings">
     <Value>Mitteilung;Ereignis;Ereignis-ID;Status;Betrag;Zahlungs-ID</Value>

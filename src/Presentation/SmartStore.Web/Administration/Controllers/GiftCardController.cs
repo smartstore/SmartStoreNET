@@ -270,6 +270,8 @@ namespace SmartStore.Admin.Controllers
                 {
                     giftCard.IsRecipientNotified = true;
                     _giftCardService.UpdateGiftCard(giftCard);
+
+					NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
                 }
             }
             catch (Exception exc)

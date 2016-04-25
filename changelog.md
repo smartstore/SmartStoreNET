@@ -24,10 +24,11 @@
 * Bundles without selected attributes could throw an exception on product detail page
 * GMC feed did not export the product type (category path)
 * The error message of a payment provider when capturing a payment was not displayed
-* Adding new shipping method throws an exception
+* Adding new shipping method threw an exception
 * Attribute Values: Assigning IsPreselected to more than one value causes an error
 * BizImporter: fixed redirection bug when default file extension in .biz wasn't .html
 * Fixed: Export deployment emails were always send manually
+* Manually notifying gift card recipient threw an exception
 
 
 ## SmartStore.NET 2.5

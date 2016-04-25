@@ -1,0 +1,207 @@
+﻿@using SmartStore.PayPal;
+@using SmartStore.PayPal.Models;
+@using SmartStore.Web.Framework;
+@using SmartStore.Web.Framework.UI;
+@model PayPalPlusConfigurationModel
+@{
+	Layout = "";
+	Html.AddCssFileParts(true, "~/Plugins/SmartStore.PayPal/Content/smartstore.paypal.css");
+
+	var hasCredentials = (Model.ClientId.HasValue() && Model.Secret.HasValue());
+}
+
+<div class="plugin-configuration">
+	<div>
+		<div class="alert alert-info">
+			<button class="close" data-dismiss="alert">&#215;</button>
+			@Html.Raw(T("Plugins.Payments.PayPalPlus.AdminInstruction"))
+		</div>
+	</div>
+	<div>
+		<a href="https://www.paypal.de/paypal-plus" target="_blank">
+			<img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/branding.png")" alt="PayPal" />
+		</a>
+	</div>
+</div>
+
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+
+@Html.ValidationSummary(false)
+
+@using (Html.BeginForm())
+{
+    <table class="adminContent configure-paypal-plus">
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">
+						@Model.ConfigGroups.SafeGet(0)
+					</div>
+				</div>
+			</td>
+		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.UseSandbox)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.UseSandbox)
+                @Html.ValidationMessageFor(model => model.UseSandbox)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ClientId)
+            </td>
+            <td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.ClientId)
+                @Html.TextBoxFor(model => model.ClientId, new { @class = "control-xlarge" })
+                @Html.ValidationMessageFor(model => model.ClientId)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Secret)
+            </td>
+            <td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.Secret)
+                @Html.TextBoxFor(model => model.Secret, new { @class = "control-xlarge" })
+                @Html.ValidationMessageFor(model => model.Secret)
+            </td>
+        </tr>
+		<tr class="adminSeparator">
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">
+						@Model.ConfigGroups.SafeGet(1)
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SecurityProtocol)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.SecurityProtocol, Model.AvailableSecurityProtocols, T("Common.Unspecified"))
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ExperienceProfileId)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ExperienceProfileId)
+
+				<a class="btn btn-warning" onclick="return confirm('@T("Admin.Common.AreYouSure")');" @(hasCredentials ? "" : "disabled='disabled'")
+				   href="@Url.Action("UpsertExperienceProfile", "PayPalPlus", new { area = Plugin.SystemName })">
+					<i class="fa fa-fw @(Model.ExperienceProfileId.HasValue() ? "fa-refresh" : "fa-list-alt")"></i>&nbsp;
+					@T(Model.ExperienceProfileId.HasValue() ? "Common.Refresh" : "Common.AddNew")
+				</a>
+
+				@if (Model.ExperienceProfileId.HasValue())
+				{
+					<a class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');" @(hasCredentials ? "" : "disabled='disabled'")
+					   href="@Url.Action("DeleteExperienceProfile", "PayPalPlus", new { area = Plugin.SystemName })">
+						<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+					</a>
+				}
+
+				@Html.ValidationMessageFor(model => model.ExperienceProfileId)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.WebhookId)
+			</td>
+			<td class="adminData">
+				@* IPNs and webhook messages have no store context, so multistore configuration not possible here *@
+				@Html.EditorFor(model => model.WebhookId)
+
+				@if (Model.WebhookId.HasValue())
+				{
+					<a class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');" @(hasCredentials ? "" : "disabled='disabled'")
+					   href="@Url.Action("DeleteWebhook", "PayPalPlus", new { area = Plugin.SystemName })">
+						<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+					</a>
+				}
+				else
+				{
+					<a class="btn btn-warning" onclick="return confirm('@T("Admin.Common.AreYouSure")');" @(hasCredentials ? "" : "disabled='disabled'")
+					   href="@Url.Action("CreateWebhook", "PayPalPlus", new { area = Plugin.SystemName })">
+						<i class="fa fa-plus"></i>&nbsp;@T("Common.AddNew")
+					</a>
+				}
+
+				@Html.ValidationMessageFor(model => model.WebhookId)
+			</td>
+		</tr>
+		<tr class="adminSeparator">
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">
+						@Model.ConfigGroups.SafeGet(2)
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ThirdPartyPaymentMethods)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.ThirdPartyPaymentMethods)
+				@Html.ListBoxFor(x => x.ThirdPartyPaymentMethods,
+					 new MultiSelectList(Model.AvailableThirdPartyPaymentMethods, "Value", "Text"),
+					 new { multiple = "multiple", @class = "control-xlarge" })
+				@Html.ValidationMessageFor(model => model.ThirdPartyPaymentMethods)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DisplayPaymentMethodLogo)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.DisplayPaymentMethodLogo)
+				@Html.ValidationMessageFor(model => model.DisplayPaymentMethodLogo)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DisplayPaymentMethodDescription)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.DisplayPaymentMethodDescription)
+				@Html.ValidationMessageFor(model => model.DisplayPaymentMethodDescription)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AdditionalFee)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.AdditionalFee)
+				@Html.ValidationMessageFor(model => model.AdditionalFee)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AdditionalFeePercentage)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.AdditionalFeePercentage)
+				@Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
+			</td>
+		</tr>
+        <tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+            <td class="adminData">
+                <button type="submit" name="save" class="btn btn-primary" value="save">
+                    <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+                </button>
+            </td>
+        </tr>
+    </table>
+}

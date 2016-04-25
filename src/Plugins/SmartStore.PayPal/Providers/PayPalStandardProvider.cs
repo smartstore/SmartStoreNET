@@ -14,7 +14,6 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.PayPal.Controllers;
-using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services;
 using SmartStore.Services.Localization;
@@ -23,9 +22,6 @@ using SmartStore.Services.Payments;
 
 namespace SmartStore.PayPal
 {
-	/// <summary>
-	/// PayPalStandard provider
-	/// </summary>
 	[SystemName("Payments.PayPalStandard")]
     [FriendlyName("PayPal Standard")]
     [DisplayOrder(2)]
@@ -572,5 +568,47 @@ namespace SmartStore.PayPal
             controllerName = "PayPalStandard";
             routeValues = new RouteValueDictionary() { { "area", "SmartStore.PayPal" } };
         }
+	}
+
+
+	public class PayPalLineItem : ICloneable<PayPalLineItem>
+	{
+		public PayPalItemType Type { get; set; }
+		public string Name { get; set; }
+		public int Quantity { get; set; }
+		public decimal Amount { get; set; }
+
+		public decimal AmountRounded
+		{
+			get
+			{
+				return Math.Round(Amount, 2);
+			}
+		}
+
+		public PayPalLineItem Clone()
+		{
+			var item = new PayPalLineItem
+			{
+				Type = this.Type,
+				Name = this.Name,
+				Quantity = this.Quantity,
+				Amount = this.Amount
+			};
+			return item;
+		}
+
+		object ICloneable.Clone()
+		{
+			return this.Clone();
+		}
+	}
+
+	public enum PayPalItemType
+	{
+		CartItem = 0,
+		Shipping,
+		PaymentFee,
+		Tax
 	}
 }

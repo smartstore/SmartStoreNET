@@ -16,28 +16,23 @@
 
 @if (Model.IsAuthenticated)
 {
-    <ul class="dropdown-menu shopbar-flyout-container">
+    <div class="dropdown-menu dropdown-menu-right shopbar-flyout-container">
         @Html.Widget("account_dropdown_before")
-        <li>
-			<a href="@Url.Action("Info", "Customer")" rel="nofollow">
-				<i class="fa fa-fw fa-user"></i>
-				@T("Account.MyAccount")
-			</a>
-        </li>
+		<a class="dropdown-item" href="@Url.Action("Info", "Customer")" rel="nofollow">
+			<i class="fa fa-fw fa-user"></i>
+			@T("Account.MyAccount")
+		</a>
         @if (Model.DisplayAdminLink)
         {
-            <li>
-                <a href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
-                    <i class="fa fa-fw fa-cog"></i> 
-                    @T("Account.Administration")
-                </a>
-            </li>
+            <a class="dropdown-item" href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
+                <i class="fa fa-fw fa-cog"></i> 
+                @T("Account.Administration")
+            </a>
         }
         
         @if (Model.AllowPrivateMessages)
         {
-        <li>
-			<a href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" rel="nofollow">
+			<a class="dropdown-item" href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" rel="nofollow">
 				<i class="fa fa-fw fa-envelope"></i>
 				@T("PrivateMessages.Inbox")
 				@if (Model.UnreadPrivateMessages != "")
@@ -45,9 +40,7 @@
 					<span class="badge badge-success">@Model.UnreadPrivateMessages</span>
 				}
 			</a>
-
-        </li>
-        if (!string.IsNullOrEmpty(Model.AlertMessage))
+			if (!string.IsNullOrEmpty(Model.AlertMessage))
             {
                 <script type="text/javascript">
                     $(document).ready(function () {
@@ -61,32 +54,26 @@
 
         @if (Model.WishlistEnabled)
         {
-            <li>
-                <a href="@Url.RouteUrl("Wishlist")">
-                    <i class="fa fa-fw fa-heart"></i>
-                    @T("Wishlist") <span class="wishlist-qty badge @(Model.WishlistItems > 0 ? "badge-success" : "")">@Model.WishlistItems</span>
-				</a> 
-            </li>
+            <a class="dropdown-item" href="@Url.RouteUrl("Wishlist")">
+                <i class="fa fa-fw fa-heart"></i>
+                @T("Wishlist") <span class="wishlist-qty badge @(Model.WishlistItems > 0 ? "badge-success" : "")">@Model.WishlistItems</span>
+			</a> 
         }
         @if (Model.ShoppingCartEnabled)
         {
-            <li id="topcartlink">
-                <a href="@Url.RouteUrl("ShoppingCart")">
-                    <i class="fa fa-fw fa-shopping-cart"></i>
-                    @T("ShoppingCart") <span class="cart-qty badge @(Model.ShoppingCartItems > 0 ? "badge-success" : "")" data-bind-to="TotalProducts">@Model.ShoppingCartItems</span>
-				</a>
-            </li>
-        }
-        <li class="divider"></li>
-        <li>
-            <a href="@Url.RouteUrl("Logout")" rel="nofollow">
-                <i class="fa fa-fw fa-sign-out"></i>
-                @T("Account.Logout")
+            <a id="topcartlink" class="dropdown-item" href="@Url.RouteUrl("ShoppingCart")">
+                <i class="fa fa-fw fa-shopping-cart"></i>
+                @T("ShoppingCart") <span class="cart-qty badge @(Model.ShoppingCartItems > 0 ? "badge-success" : "")" data-bind-to="TotalProducts">@Model.ShoppingCartItems</span>
 			</a>
-        </li>
+        }
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="@Url.RouteUrl("Logout")" rel="nofollow">
+            <i class="fa fa-fw fa-sign-out"></i>
+            @T("Account.Logout")
+		</a>
 
         @Html.Widget("account_dropdown_after")
-    </ul>
+    </div>
 } 
 else 
 {

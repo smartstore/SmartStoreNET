@@ -2054,6 +2054,7 @@
     <Content Include="Themes\NewAlpha\Content\shared\_scrollbutton.scss" />
     <Content Include="Themes\NewAlpha\Content\shared\_star-rating.scss" />
     <Content Include="Themes\NewAlpha\Content\shared\_sortable-grip.scss" />
+    <Content Include="Themes\NewAlpha\Content\_shopbar.scss" />
     <None Include="Themes\NewAlpha\Content\theme.scss">
       <Compile>True</Compile>
       <Minify>True</Minify>
@@ -2073,7 +2074,7 @@
     <Content Include="Themes\NewAlpha\Views\Shared\_ColumnsOne.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Shared\_ColumnsThree.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Shared\_ColumnsTwo.cshtml" />
-    <Content Include="Themes\NewAlpha\Views\Shared\_Root.Head.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_Document.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Shared\ConditionalComments.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Shared\ConfigureTheme.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Shared\Error.cshtml" />
@@ -2088,8 +2089,8 @@
     <Content Include="Themes\NewAlpha\Views\Shared\_Print.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Shared\_ProductBox.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Shared\_ProductBoxCompact.cshtml" />
-    <Content Include="Themes\NewAlpha\Views\Shared\_Root.cshtml" />
-    <Content Include="Themes\NewAlpha\Views\Shared\_RootPopup.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_Layout.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_Layout.Popup.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Blog\BlogMonths.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Blog\BlogPost.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Blog\BlogTags.cshtml" />
@@ -2274,6 +2275,7 @@
     <Content Include="Themes\NewAlpha\Views\Topic\TopicWidget.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Widget\TabWidgets.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Widget\WidgetsByZone.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Common\ShopBar - Kopieren.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\TaskScheduler\" />

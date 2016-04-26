@@ -1,6 +1,7 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Root.Head.cshtml";
+    Layout = "_Document";
 }
+
 @Html.Widget("body_start_html_tag_after")
 @Html.Partial("_Notifications")
 <div id="page">
@@ -11,19 +12,19 @@
     }
     else {
         <header>
-			<div class="menubar">
-				<div class="container menubar--inner">
+			<div class="menubar-section" hidden>
+				<div class="container menubar-container">
 					@Html.Action("Header", "Common", new { area = "" })
 				</div>
 			</div>
-			<div class="shopbar">
-				<div class="container shopbar--inner">
+			<div class="shopbar-section">
+				<div class="container shopbar-container">
 					@Html.Action("ShopBar", "Common", new { area = "" })
 				</div>
 			</div>
-            <div class="megamenu m-b-1">
+            <div class="megamenu-section m-b-1">
 				<nav class='navbar @(GetThemeVariable<bool>("InverseNavbar") ? "navbar-dark bg-inverse" : "navbar-light bg-faded")'>
-					<div class="container megamenu--inner">
+					<div class="container megamenu-container">
 						@Html.Action("MegaMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" })
 					</div>
 				</nav>

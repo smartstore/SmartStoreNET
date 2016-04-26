@@ -8,7 +8,7 @@
 	}
 }
 
-@using (Html.BeginRouteForm("ProductSearch", FormMethod.Get, new { @class = "form-search pull-right" }))
+@using (Html.BeginRouteForm("ProductSearch", FormMethod.Get, new { @class = "form-search" }))
 {
     <div class="input-group">    
 		<input type="text"
@@ -20,10 +20,11 @@
 			   data-url="@Url.RouteUrl("ProductSearchAutoComplete")"
 			   @(Model.AutoCompleteEnabled ? Html.Raw(" autocomplete=\"off\"") : null) name="q" />
 		<span class="input-group-btn">
-			<button type="submit" class="btn btn-icon btn-warning" title="@T("Search")">
+			<button type="submit" class="btn btn-icon btn-primary" title="@T("Search")">
 				<i class="fa fa-search"></i>
 			</button>
 		</span>
     </div>
+
     @Html.Widget("searchbox")
 }

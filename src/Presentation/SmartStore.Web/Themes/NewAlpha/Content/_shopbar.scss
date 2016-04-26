@@ -1,0 +1,107 @@
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// ShopBar Styles
+// --------------------------------------------------
+
+.shopbar-section {
+    padding: 1.25rem 0;
+}
+
+.shopbar {
+    display: flex;
+    align-items: flex-end;
+    margin-left:  -0.6rem;
+    margin-right:  -0.6rem;
+}
+
+.shopbar-col {
+    flex: 0 1 auto;
+    padding: 0 0.6rem;
+}
+
+.shopbar-col--stretch {
+    flex: 1 1 auto;
+}
+
+
+//
+// Logo
+// --------------------------------------------------
+
+.shopbar-logo {
+    max-width: 16rem;
+    max-height: 6rem;
+}
+
+
+//
+// Search
+// --------------------------------------------------
+
+// ...
+
+
+//
+// ShopBar Tools
+// --------------------------------------------------
+
+.shopbar-tools {
+    @include clearfix();
+}
+
+.shopbar-tool {
+    float: left;
+    padding: 6px 10px;
+    border: 1px solid transparent;
+
+    &:hover {
+        //background-color: #f2f2f2;
+        border-color: #ddd;
+    }
+
+    &:not(:last-child) {
+        //margin-right: 0.9rem;
+    }
+
+    .shopbar-button {
+        text-decoration: none;
+    }
+
+    .shopbar-button-icon,
+    .shopbar-button-label {
+        display: inline-block;
+        vertical-align: bottom;
+        position: relative;
+    }
+
+    .shopbar-button-icon {
+        margin-bottom: 0;
+        > i {
+            font-size: 1.6rem;
+            line-height: 1.6rem;
+            color: $body-color;
+        }
+        > .label {
+		    position: absolute; 
+		    right: -3px; 
+		    top: -3px;
+            font-size: 0.7rem; 
+		    /*font-size: 11px;
+		    padding-top: 1px;
+		    padding-bottom: 1px;*/
+        }
+    }
+
+    .shopbar-button-label {
+        font-size: 0.75rem;
+        line-height: 1.2;
+        margin-left: 0.2rem;
+        color: $body-color;
+        color: rgba($body-color, 0.5);
+        color: #999;
+        vertical-align: top;
+        x-display: none;
+    }
+}
+

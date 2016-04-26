@@ -1,8 +1,8 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Root.cshtml";
-    Html.AddBodyCssClass("lyt-cols-3");
+	Layout = "_Layout";
+	Html.AddBodyCssClass("lyt-cols-3");
 
-    string[] spanWidths = GetThemeVariable<string>("GridSettings", "5/14/5").Split('/');
+	string[] spanWidths = GetThemeVariable<string>("GridSettings", "5/14/5").Split('/');
 }
 @section teaser {
   @RenderSection("teaser", required: false)

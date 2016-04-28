@@ -32,7 +32,7 @@
 		<tbody>
 			<tr class="column-mapping-new">
 				<td>
-					<select class="mapping-control-property" data-placeholder="@T("Admin.DataExchange.Import.SelectTargetProperty")" style="width: 100%;">
+					<select class="mapping-control-property noskin" data-placeholder="@T("Admin.DataExchange.Import.SelectTargetProperty")" style="width: 100%;">
 						<option></option>
 						@foreach (var property in Model.AvailableEntityProperties)
 						{
@@ -41,7 +41,7 @@
 					</select>
 				</td>
 				<td>
-					<select class="mapping-control-column" data-placeholder="@Model.IgnoreString" style="width: 100%;">
+					<select class="mapping-control-column noskin" data-placeholder="@Model.IgnoreString" style="width: 100%;">
 						<option></option>
 						@foreach (var column in Model.AvailableSourceColumns)
 						{
@@ -81,7 +81,7 @@
 				var index = Model.ColumnMappings.IndexOf(mapping) + 1;
 				<tr>
 					<td>
-						<select name="ColumnMapping.Property.@(index)" class="mapping-control-property" data-placeholder="@Model.UnspecifiedString" style="width: 100%;">
+						<select name="ColumnMapping.Property.@(index)" class="mapping-control-property noskin" data-placeholder="@Model.UnspecifiedString" style="width: 100%;">
 							<option></option>
 							@foreach (var property in Model.AvailableEntityProperties)
 							{
@@ -91,7 +91,7 @@
 						</select>
 					</td>
 					<td>
-						<select name="ColumnMapping.Column.@(index)" class="mapping-control-column" data-placeholder="@Model.IgnoreString" style="width: 100%;">
+						<select name="ColumnMapping.Column.@(index)" class="mapping-control-column noskin" data-placeholder="@Model.IgnoreString" style="width: 100%;">
 							<option></option>
 							@foreach (var column in Model.AvailableSourceColumns)
 							{

@@ -18,7 +18,7 @@
 
             return this.each(function () {
 
-            	var btn = $(this).attr("hidden", "hidden"); // the actual shrink container
+            	var btn = $(this).attr("xxx-hidden", "hidden"); // the actual shrink container
             	var menu = btn.find('.dropdown-menu').first(); // the dropdown-menu within btn
                 var btnWidth;
                 var nav = btn.prev(); // the actual navbar should definitely be before the shrinker
@@ -109,7 +109,7 @@
                     }
                 } 
 
-                // SHRINK IT!
+            	// SHRINK IT!
                 doShrink(false);
                 
                 if (options.responsive) {

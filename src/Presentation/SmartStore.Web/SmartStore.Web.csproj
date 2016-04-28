@@ -2276,6 +2276,7 @@
     <Content Include="Themes\NewAlpha\Views\Widget\TabWidgets.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Widget\WidgetsByZone.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Common\ShopBar - Kopieren.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_GoogleFonts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\TaskScheduler\" />

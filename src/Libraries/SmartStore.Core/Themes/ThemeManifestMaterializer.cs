@@ -115,17 +115,17 @@ namespace SmartStore.Core.Themes
                 throw new SmartException("The name attribute is required for the 'Var' element. Affected: '{0}' - element: {1}", _manifest.FullPath, xel.OuterXml);
             }
 
-            if (value.IsEmpty())
-            {
-                throw new SmartException("A value is required for the 'Var' element. Affected: '{0}' - element: {1}", _manifest.FullPath, xel.OuterXml);
-            }
-
             string type = xel.GetAttribute("type").ToSafe("String");
 
             string selectRef = null;
             var varType = ConvertVarType(type, xel, out selectRef);
 
-            var info = new ThemeVariableInfo
+			if (varType != ThemeVariableType.String && value.IsEmpty())
+			{
+				throw new SmartException("A value is required for non-string 'Var' elements. Affected: '{0}' - element: {1}", _manifest.FullPath, xel.OuterXml);
+			}
+
+			var info = new ThemeVariableInfo
             {
                 Name = name,
                 DefaultValue = value,

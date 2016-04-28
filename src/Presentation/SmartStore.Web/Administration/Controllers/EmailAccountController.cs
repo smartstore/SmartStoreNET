@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Mail;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Core;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Email;
 using SmartStore.Services.Configuration;
@@ -184,28 +181,32 @@ namespace SmartStore.Admin.Controllers
 
             var emailAccount = _emailAccountService.GetEmailAccountById(model.Id);
             if (emailAccount == null)
-                //No email account found with the specified id
                 return RedirectToAction("List");
 
             try
             {
-                if (String.IsNullOrWhiteSpace(model.SendTestEmailTo))
-                    throw new SmartException("Enter test email address");
+				if (model.SendTestEmailTo.IsEmpty())
+				{
+					NotifyError(T("Admin.Common.EnterEmailAdress"));
+				}
+				else
+				{
+					var to = new EmailAddress(model.SendTestEmailTo);
+					var from = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
+					var subject = string.Concat(_storeContext.CurrentStore.Name, ". ", T("Admin.Configuration.EmailAccounts.TestingEmail"));
+					var body = T("Admin.Common.EmailSuccessfullySent");
 
-				var to = new EmailAddress(model.SendTestEmailTo);
-				var from = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
-				string subject = _storeContext.CurrentStore.Name + ". Testing email functionality.";
-                string body = "Email works fine.";
+					var msg = new EmailMessage(to, subject, body, from);
 
-				var msg = new EmailMessage(to, subject, body, from);
-				
-				_emailSender.SendEmail(new SmtpContext(emailAccount), msg);
+					_emailSender.SendEmail(new SmtpContext(emailAccount), msg);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Configuration.EmailAccounts.SendTestEmail.Success"), false);
+					NotifySuccess(T("Admin.Configuration.EmailAccounts.SendTestEmail.Success"), false);
+				}
             }
-            catch (Exception exc)
+            catch (Exception exception)
             {
-				NotifyError(exc.Message, false);
+				model.TestEmailShortErrorMessage = exception.ToAllMessages();
+				model.TestEmailFullErrorMessage = exception.ToString();
             }
 
             //If we got this far, something failed, redisplay form

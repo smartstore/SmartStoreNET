@@ -100,6 +100,7 @@
         </tr>
         <tr>
             <td class="adminTitle">
+				&nbsp;
             </td>
             <td class="adminData">
                 <button type="submit" name="sendtestemail" value="sendtestemail" class="btn">
@@ -107,5 +108,14 @@
 				</button>
             </td>
         </tr>
-    }
+	}
 </table>
+
+@if (Model.TestEmailShortErrorMessage.HasValue())
+{
+	<p>
+		<div class="alert alert-error">@Model.TestEmailShortErrorMessage</div>
+		<pre>@Model.TestEmailFullErrorMessage</pre>
+	</p>
+}
+

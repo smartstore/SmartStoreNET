@@ -1,7 +1,27 @@
 ﻿@model ShopHeaderModel
 @using SmartStore.Web.Models.Common;
 
-<div id="logobar" class="container clearfix">
+<div class="menubar">
+	<nav class="menubar-group">
+		<a class="menubar-link" href="#">Suche</a>
+		<a class="menubar-link" href="#">Kontakt</a>
+		<a class="menubar-link" href="#">Hilfe &amp; Service &nbsp;<i class="fa fa-caret-down"></i></a>
+		<a class="menubar-link" href="#"><i class="fa fa-user"></i>&nbsp;&nbsp;Anmelden</a>
+	</nav>
+
+	<nav class="menubar-group">
+		<a class="menubar-link fw-600" href="#">News</a>
+		<a class="menubar-link fw-600" href="#">Blog</a>
+		<a class="menubar-link fw-600" href="#">Forum</a>
+	</nav>
+
+	<nav class="menubar-group">
+		<a class="menubar-link fw-600" href="#"><i class="fa fa-cog"></i>&nbsp;&nbsp;Admin</a>
+	</nav>
+</div>
+
+
+@*<div id="logobar" class="container clearfix">
 
     <a href="@Url.RouteUrl("HomePage")" class="pull-left brand@(Model.LogoUploaded ? "" : " textual")">
             
@@ -27,4 +47,4 @@
         @Html.Action("LanguageSelector", "Common")
         @Html.Action("CurrencySelector", "Common")
     </div>
-</div>
+</div>*@

@@ -2,7 +2,7 @@
 
 $(function () {
 
-    var shopBar = $("#shopbar");
+    var shopBar = $(".shopbar");
 
     if (shopBar.length) {
         var shopBarTop = shopBar.offset().top - parseFloat(shopBar.css('margin-top').replace(/auto/, 0));

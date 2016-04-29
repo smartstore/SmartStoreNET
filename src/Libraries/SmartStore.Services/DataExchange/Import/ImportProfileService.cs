@@ -292,7 +292,6 @@ namespace SmartStore.Services.DataExchange.Import
 						foreach (ImportEntityType type in Enum.GetValues(typeof(ImportEntityType)))
 						{
 							EntitySet entitySet = null;
-							var dic = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 							try
 							{
@@ -306,23 +305,30 @@ namespace SmartStore.Services.DataExchange.Import
 								throw new SmartException("There is no entity set for ImportEntityType {0}. Note, the enum value must equal the entity name.".FormatInvariant(type.ToString()));
 							}
 
-							foreach (var member in entitySet.ElementType.Members)
+							var dic = entitySet.ElementType.Members
+								.Where(x => !x.Name.IsCaseInsensitiveEqual("Id") && x.BuiltInTypeKind.HasFlag(BuiltInTypeKind.EdmProperty))
+								.ToDictionary(x => x.Name, x => "", StringComparer.OrdinalIgnoreCase);
+
+							// lack of abstractness?
+							if ((type == ImportEntityType.Product || type == ImportEntityType.Category) && !dic.ContainsKey("SeName"))
 							{
-								if (!member.Name.IsCaseInsensitiveEqual("Id") && member.BuiltInTypeKind.HasFlag(BuiltInTypeKind.EdmProperty))
+								dic.Add("SeName", "");
+							}
+
+							foreach (var key in dic.Keys.ToList())
+							{
+								var localizedValue = GetLocalizedPropertyName(type, key);
+
+								dic[key] = localizedValue.NaIfEmpty();
+
+								if (localizableProperties[type].Contains(key))
 								{
-									var localizedValue = GetLocalizedPropertyName(type, member.Name);
-
-									dic.Add(member.Name, localizedValue.NaIfEmpty());
-
-									if (localizableProperties[type].Contains(member.Name))
+									foreach (var language in allLanguages)
 									{
-										foreach (var language in allLanguages)
-										{
-											dic.Add(
-												"{0}[{1}]".FormatInvariant(member.Name, language.UniqueSeoCode.EmptyNull().ToLower()),
-												"{0} {1}".FormatInvariant(localizedValue.NaIfEmpty(), allLanguageNames[language.UniqueSeoCode])
-											);
-										}
+										dic.Add(
+											"{0}[{1}]".FormatInvariant(key, language.UniqueSeoCode.EmptyNull().ToLower()),
+											"{0} {1}".FormatInvariant(localizedValue.NaIfEmpty(), allLanguageNames[language.UniqueSeoCode])
+										);
 									}
 								}
 							}

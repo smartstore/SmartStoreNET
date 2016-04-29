@@ -144,8 +144,9 @@ namespace SmartStore.Services.DataExchange.Import
 					{
 						converted = converter(value, _segmenter.Culture);
 					}
-					else if (value == DBNull.Value || value.ToString().IsCaseInsensitiveEqual("NULL"))
+					else if (value == DBNull.Value || value.ToString().IsCaseInsensitiveEqual("[NULL]"))
 					{
+						// prop is set "explicitly" to null.
 						converted = GetDefaultValue(mapping, propName, defaultValue, result);
 					}
 					else

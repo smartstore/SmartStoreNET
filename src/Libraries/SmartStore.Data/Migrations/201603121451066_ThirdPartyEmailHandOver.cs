@@ -226,6 +226,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Common.EmailSuccessfullySent",
 				"The email has been successfully sent.",
 				"Die E-Mail wurde erfolgreich versendet.");
+
+			builder.AddOrUpdate("Admin.Common.SkipAndTakeGreaterThanOrEqualZero",
+				"Values for skip and limit must be greater than or equal to 0.",
+				"Werte für Überspringen und Begrenzen müssen größer oder gleich 0 sein.");
 		}
 	}
 }

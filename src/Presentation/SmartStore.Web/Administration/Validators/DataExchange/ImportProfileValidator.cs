@@ -16,6 +16,14 @@ namespace SmartStore.Admin.Validators.DataExchange
 				.NotEmpty()
 				.When(x => x.Id != 0)
 				.WithMessage(localization.GetResource("Admin.DataExchange.Import.Validate.OneKeyFieldRequired"));
+
+			RuleFor(x => x.Skip)
+				.GreaterThanOrEqualTo(0)
+				.WithMessage(localization.GetResource("Admin.Common.SkipAndTakeGreaterThanOrEqualZero"));
+
+			RuleFor(x => x.Take)
+				.GreaterThanOrEqualTo(0)
+				.WithMessage(localization.GetResource("Admin.Common.SkipAndTakeGreaterThanOrEqualZero"));
 		}
 	}
 }

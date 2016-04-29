@@ -30,7 +30,7 @@ namespace SmartStore.Services.DataExchange.Import
 				{
 					if (result != null)
 					{
-						var msg = "Failed to convert default value '{0}'. Please specify a convertable default value. {1}";
+						var msg = "Failed to convert default value '{0}'. Please specify a convertable default value. Column: {1}";
 						result.AddWarning(msg.FormatInvariant(mapping.Default, exception.Message), this.GetRowInfo(), columnName);
 					}
 				}
@@ -135,28 +135,31 @@ namespace SmartStore.Services.DataExchange.Import
 			{
 				object value;
 				var mapping = _segmenter.ColumnMap.GetMapping(propName);
-
+				
 				if (_row.TryGetValue(mapping.Property, out value))
 				{
-					// source contains field value. Set it.
-					TProp converted;
-					if (converter != null)
+					if (true /*value != null || value != DBNull.Value*/)
 					{
-						converted = converter(value, _segmenter.Culture);
-					}
-					else if (value == DBNull.Value || value.ToString().IsCaseInsensitiveEqual("[NULL]"))
-					{
-						// prop is set "explicitly" to null.
-						converted = GetDefaultValue(mapping, propName, defaultValue, result);
-					}
-					else
-					{
-						converted = value.Convert<TProp>(_segmenter.Culture);
-					}
+						// source contains field value. Set it.
+						TProp converted;
+						if (converter != null)
+						{
+							converted = converter(value, _segmenter.Culture);
+						}
+						else if (value == DBNull.Value || value.ToString().IsCaseInsensitiveEqual("[NULL]"))
+						{
+							// prop is set "explicitly" to null.
+							converted = GetDefaultValue(mapping, propName, defaultValue, result);
+						}
+						else
+						{
+							converted = value.Convert<TProp>(_segmenter.Culture);
+						}
 
-					var fastProp = FastProperty.GetProperty(target.GetUnproxiedType(), propName, PropertyCachingStrategy.EagerCached);
-					fastProp.SetValue(target, converted);
-					isPropertySet = true;
+						var fastProp = FastProperty.GetProperty(target.GetUnproxiedType(), propName, PropertyCachingStrategy.EagerCached);
+						fastProp.SetValue(target, converted);
+						isPropertySet = true;
+					}
 				}
 				else
 				{

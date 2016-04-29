@@ -92,7 +92,18 @@ namespace SmartStore.Services.DataExchange.Import
 		/// Gets a mapped column value
 		/// </summary>
 		/// <param name="sourceColumn">The name of the column to get a mapped value for.</param>
-		/// <returns>The mapped column value OR - if the name is unmapped - a value with the passed <paramref name="sourceColumn"/></returns>
+		/// <param name="index">The column index, e.g. a language code (de, en etc.)</param>
+		/// <returns>The mapped column value OR - if the name is unmapped - a value with the passed <paramref name="sourceColumn"/>[<paramref name="index"/>]</returns>
+		public ColumnMappingValue GetMapping(string sourceColumn, string index)
+		{
+			return GetMapping(CreateSourceName(sourceColumn, index));
+		}
+
+		/// <summary>
+		/// Gets a mapped column value
+		/// </summary>
+		/// <param name="sourceColumn">The name of the column to get a mapped value for.</param>
+		/// <returns>The mapped column value OR - if the name is unmapped - the value of the passed <paramref name="sourceColumn"/></returns>
 		public ColumnMappingValue GetMapping(string sourceColumn)
 		{
 			ColumnMappingValue result;
@@ -117,52 +128,6 @@ namespace SmartStore.Services.DataExchange.Import
 
 			// there is no mapping at all
 			return new ColumnMappingValue { Property = sourceColumn };
-		}
-
-		/// <summary>
-		/// Gets a mapped column value
-		/// </summary>
-		/// <param name="sourceColumn">The name of the column to get a mapped value for.</param>
-		/// <param name="index">The column index, e.g. a language code (de, en etc.)</param>
-		/// <returns>The mapped column value OR - if the name is unmapped - a value with the passed <paramref name="sourceColumn"/>[<paramref name="index"/>]</returns>
-		public ColumnMappingValue GetMapping(string sourceColumn, string index)
-		{
-			return GetMapping(CreateSourceName(sourceColumn, index));
-		}
-
-		/// <summary>
-		/// Gets a mapped property name
-		/// </summary>
-		/// <param name="sourceColumn">The name of the column to get a mapped property name for.</param>
-		/// <returns>The mapped property name OR - if the name is unmapped - the passed <paramref name="sourceColumn"/>[<paramref name="index"/>]</returns>
-		public string GetMappedProperty(string sourceColumn)
-		{
-			ColumnMappingValue result;
-
-			if (_map.TryGetValue(sourceColumn, out result))
-			{
-				return result.Property;
-			}
-
-			var crossPair = _map.FirstOrDefault(x => x.Value.Property.IsCaseInsensitiveEqual(sourceColumn));
-
-			if (crossPair.Key.HasValue())
-			{
-				return crossPair.Key;
-			}
-
-			return sourceColumn;
-		}
-
-		/// <summary>
-		/// Gets a mapped property name
-		/// </summary>
-		/// <param name="sourceColumn">The name of the column to get a mapped property name for.</param>
-		/// <param name="index">The column index, e.g. a language code (de, en etc.)</param>
-		/// <returns>The mapped property name OR - if the name is unmapped - the passed <paramref name="sourceColumn"/>[<paramref name="index"/>]</returns>
-		public string GetMappedProperty(string sourceColumn, string index)
-		{
-			return GetMappedProperty(CreateSourceName(sourceColumn, index));
 		}
 	}
 

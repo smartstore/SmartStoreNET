@@ -29,10 +29,10 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool Enabled { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.RecordsSkip")]
-		public int Skip { get; set; }
+		public int? Skip { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.RecordsTake")]
-		public int Take { get; set; }
+		public int? Take { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Import.UpdateOnly")]
 		public bool UpdateOnly { get; set; }

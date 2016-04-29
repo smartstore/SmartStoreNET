@@ -60,8 +60,8 @@ namespace SmartStore.Admin.Controllers
 			model.Name = profile.Name;
 			model.EntityType = profile.EntityType;
 			model.Enabled = profile.Enabled;
-			model.Skip = profile.Skip;
-			model.Take = profile.Take;
+			model.Skip = (profile.Skip == 0 ? (int?)null : profile.Skip);
+			model.Take = (profile.Take == 0 ? (int?)null : profile.Take);
 			model.UpdateOnly = profile.UpdateOnly;
 			model.KeyFieldNames = profile.KeyFieldNames.SplitSafe(",").Distinct().ToArray();
 			model.ScheduleTaskId = profile.SchedulingTaskId;
@@ -405,8 +405,8 @@ namespace SmartStore.Admin.Controllers
 			profile.Name = model.Name;
 			profile.EntityType = model.EntityType;
 			profile.Enabled = model.Enabled;
-			profile.Skip = model.Skip;
-			profile.Take = model.Take;
+			profile.Skip = model.Skip ?? 0;
+			profile.Take = model.Take ?? 0;
 			profile.UpdateOnly = model.UpdateOnly;
 			profile.KeyFieldNames = (model.KeyFieldNames == null ? null : string.Join(",", model.KeyFieldNames));
 

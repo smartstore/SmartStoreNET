@@ -234,6 +234,15 @@
 			return false;
 		});
 
+		// execute import
+		$('#ProfileImportButton').click(function (e) {
+			e.preventDefault();
+			if (confirm('@T("Admin.Common.AskToProceed")')) {
+				$('#ProfileImportForm').submit();
+			}
+			return false;
+		});
+
 		// reset column mappings
 		$('#ResetColumnMappings').click(function (e) {
 			e.preventDefault();
@@ -284,7 +293,7 @@
 			$(this).closest('tr').remove();
 		});
 
-		
+
 		initSelectBoxes($('#ImportColumnMappings'));
 		appendNewMappingRow();
 

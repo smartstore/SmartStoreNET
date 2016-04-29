@@ -6,6 +6,8 @@
 	ViewBag.Title = title;
 }
 
+<form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin", id = Model.Id })"></form>
+
 @using (Html.BeginForm())
 {
 	<fieldset>
@@ -19,6 +21,13 @@
 			<div class="options">
 				@if (Model.HasActiveProvider)
 				{
+					if (Model.Id != 0)
+					{
+						<a id="ProfileExportButton" href="javascript:void(0)" class="btn btn-default">
+							<i class="fa fa-gears"></i>&nbsp;@T("Common.Export")
+						</a>
+					}
+
 					<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn">
 						<i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")
 					</a>
@@ -366,6 +375,15 @@
 					$('#FileNamePatternExample').find('div:first').text(resp);
 				}
 			});
+		});
+
+		// execute export
+		$('#ProfileExportButton').click(function (e) {
+			e.preventDefault();
+			if (confirm('@T("Admin.Common.AskToProceed")')) {
+				$('#ProfileExportForm').submit();
+			}
+			return false;
 		});
 	});
 </script>

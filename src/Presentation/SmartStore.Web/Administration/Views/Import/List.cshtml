@@ -213,7 +213,7 @@ else
 		// start task
 		$(document).on('click', '.btn-run-task', function (e) {
 			e.preventDefault();
-			if (confirm('@T("Admin.Common.AreYouSure")')) {
+			if (confirm('@T("Admin.Common.AskToProceed")')) {
 				var form = $('#ProfileImportForm');
 				form.find('input[name=Id]').val($(this).attr('data-id'));
 				form.submit();

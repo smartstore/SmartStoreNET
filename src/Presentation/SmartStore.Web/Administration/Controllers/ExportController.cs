@@ -1055,6 +1055,10 @@ namespace SmartStore.Admin.Controllers
 
 			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress.DataExportTask"));
 
+			var referrer = Services.WebHelper.GetUrlReferrer();
+			if (referrer.HasValue())
+				return Redirect(referrer);
+
 			return RedirectToAction("List");
         }
 

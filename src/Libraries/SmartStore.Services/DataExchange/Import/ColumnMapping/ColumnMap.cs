@@ -73,6 +73,7 @@ namespace SmartStore.Services.DataExchange.Import
 		public bool AddMapping(string sourceColumn, string index, string entityProperty, string defaultValue = null)
 		{
 			Guard.ArgumentNotEmpty(() => sourceColumn);
+			Guard.ArgumentNotEmpty(() => entityProperty);
 
 			var isAlreadyMapped = (entityProperty.HasValue() && _map.Any(x => x.Value.Property.IsCaseInsensitiveEqual(entityProperty)));
 
@@ -110,23 +111,9 @@ namespace SmartStore.Services.DataExchange.Import
 
 			if (_map.TryGetValue(sourceColumn, out result))
 			{
-				// a) source column and property are equal or b) property should be ignored
 				return result;
 			}
 
-			var crossPair = _map.FirstOrDefault(x => x.Value.Property.IsCaseInsensitiveEqual(sourceColumn));
-
-			if (crossPair.Key.HasValue())
-			{
-				// source column and property are unequal
-				return new ColumnMappingValue
-				{
-					Property = crossPair.Key,
-					Default = (crossPair.Value != null ? crossPair.Value.Default : null)
-				};
-			}
-
-			// there is no mapping at all
 			return new ColumnMappingValue { Property = sourceColumn };
 		}
 	}

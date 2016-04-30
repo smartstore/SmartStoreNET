@@ -135,31 +135,32 @@ namespace SmartStore.Services.DataExchange.Import
 			{
 				object value;
 				var mapping = _segmenter.ColumnMap.GetMapping(propName);
-				
-				if (_row.TryGetValue(mapping.Property, out value))
-				{
-					if (true /*value != null || value != DBNull.Value*/)
-					{
-						// source contains field value. Set it.
-						TProp converted;
-						if (converter != null)
-						{
-							converted = converter(value, _segmenter.Culture);
-						}
-						else if (value == DBNull.Value || value.ToString().IsCaseInsensitiveEqual("[NULL]"))
-						{
-							// prop is set "explicitly" to null.
-							converted = GetDefaultValue(mapping, propName, defaultValue, result);
-						}
-						else
-						{
-							converted = value.Convert<TProp>(_segmenter.Culture);
-						}
 
-						var fastProp = FastProperty.GetProperty(target.GetUnproxiedType(), propName, PropertyCachingStrategy.EagerCached);
-						fastProp.SetValue(target, converted);
-						isPropertySet = true;
+				if (mapping.Default != null && mapping.Default == "[NULL]")
+				{
+					// explicitly ignore this column
+				}
+				else if (_row.TryGetValue(mapping.Property, out value))
+				{
+					// source contains field value. Set it.
+					TProp converted;
+					if (converter != null)
+					{
+						converted = converter(value, _segmenter.Culture);
 					}
+					else if (value == DBNull.Value || value.ToString().IsCaseInsensitiveEqual("[NULL]"))
+					{
+						// prop is set "explicitly" to null.
+						converted = GetDefaultValue(mapping, propName, defaultValue, result);
+					}
+					else
+					{
+						converted = value.Convert<TProp>(_segmenter.Culture);
+					}
+
+					var fastProp = FastProperty.GetProperty(target.GetUnproxiedType(), propName, PropertyCachingStrategy.EagerCached);
+					fastProp.SetValue(target, converted);
+					isPropertySet = true;
 				}
 				else
 				{

@@ -110,7 +110,7 @@ namespace SmartStore.Admin.Controllers
 				string[] availableKeyFieldNames = null;
 				var mapConverter = new ColumnMapConverter();
 				var storedMap = mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping);
-				var hasStoredMappings = (storedMap != null && storedMap.Mappings.Any());
+				//var hasStoredMappings = (storedMap != null && storedMap.Mappings.Any());
 				var map = (invalidMap ?? storedMap) ?? new ColumnMap();
 
 				// property name to localized property name
@@ -156,10 +156,17 @@ namespace SmartStore.Admin.Controllers
 					{
 						var mapping = new ColumnMappingItemModel
 						{
-							Column = (x.Value.Property.IsEmpty() ? null : x.Key),
-							Property = (x.Value.Property.IsEmpty() ? x.Key : x.Value.Property),
+							Column = x.Key,
+							Property = x.Value.Property,
 							Default = x.Value.Default
 						};
+
+						if (mapping.Default != null && mapping.Default == "[NULL]")
+						{
+							// explicitly ignore this column
+							mapping.Column = null;
+							mapping.Default = null;
+						}
 
 						// add localized to make mappings sortable
 						if (allProperties.ContainsKey(mapping.Property))
@@ -198,11 +205,16 @@ namespace SmartStore.Admin.Controllers
 						model.AvailableSourceColumns.Add(mapModel);
 
 						// auto map where field equals property name
-						if (!hasStoredMappings && !model.ColumnMappings.Any(x => x.Column == column.Name))
+						if (!model.ColumnMappings.Any(x => x.Column == column.Name))
 						{
 							var kvp = allProperties.FirstOrDefault(x => x.Key.IsCaseInsensitiveEqual(column.Name));
+							if (kvp.Key.IsEmpty())
+							{
+								var alternativeName = LightweightDataTable.GetAlternativeColumnNameFor(column.Name);
+								kvp = allProperties.FirstOrDefault(x => x.Key.IsCaseInsensitiveEqual(alternativeName));
+							}
 
-							if (kvp.Key.HasValue())
+							if (kvp.Key.HasValue() && !model.ColumnMappings.Any(x => x.Property == kvp.Key))
 							{
 								model.ColumnMappings.Add(new ColumnMappingItemModel
 								{
@@ -210,21 +222,6 @@ namespace SmartStore.Admin.Controllers
 									Property = kvp.Key,
 									ColumnLocalized = kvp.Value
 								});
-							}
-							else
-							{
-								var alternativeName = LightweightDataTable.GetAlternativeColumnNameFor(column.Name);
-								kvp = allProperties.FirstOrDefault(x => x.Key.IsCaseInsensitiveEqual(alternativeName));
-
-								if (kvp.Key.HasValue())
-								{
-									model.ColumnMappings.Add(new ColumnMappingItemModel
-									{
-										Column = column.Name,
-										Property = kvp.Key,
-										ColumnLocalized = kvp.Value
-									});
-								}
 							}
 						}
 					}
@@ -376,11 +373,15 @@ namespace SmartStore.Admin.Controllers
 						var defaultValue = form["ColumnMapping.Default." + index];
 						var result = true;
 
-						// ignored properties: column is empty means swap column and property (otherwise mapping impossible)
 						if (column.IsEmpty())
-							result = map.AddMapping(property, null, null);
-						else
+						{
+							// tell mapper to explicitly ignore this column
+							result = map.AddMapping(property, null, property, "[NULL]");
+						}
+						else if (!column.IsCaseInsensitiveEqual(property) || defaultValue.HasValue())
+						{
 							result = map.AddMapping(column, null, property, defaultValue);
+						}
 
 						if (!result)
 						{

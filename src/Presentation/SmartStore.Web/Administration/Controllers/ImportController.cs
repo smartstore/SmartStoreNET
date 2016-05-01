@@ -161,9 +161,9 @@ namespace SmartStore.Admin.Controllers
 							Default = x.Value.Default
 						};
 
-						if (mapping.Default != null && mapping.Default == "[NULL]")
+						if (x.Value.IgnoreProperty)
 						{
-							// explicitly ignore this column
+							// explicitly ignore the property
 							mapping.Column = null;
 							mapping.Default = null;
 						}
@@ -375,8 +375,8 @@ namespace SmartStore.Admin.Controllers
 
 						if (column.IsEmpty())
 						{
-							// tell mapper to explicitly ignore this column
-							result = map.AddMapping(property, null, property, "[NULL]");
+							// tell mapper to explicitly ignore the property
+							result = map.AddMapping(property, null, property, "[IGNOREPROPERTY]");
 						}
 						else if (!column.IsCaseInsensitiveEqual(property) || defaultValue.HasValue())
 						{

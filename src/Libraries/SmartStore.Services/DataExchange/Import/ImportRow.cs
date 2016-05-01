@@ -39,6 +39,14 @@ namespace SmartStore.Services.DataExchange.Import
 			return defaultValue;
 		}
 
+		private void CheckInitialized()
+		{
+			if (_initialized)
+			{
+				throw Error.InvalidOperation("A row must be initialized before interacting with the entity or the data store");
+			}
+		}
+
 		public ImportRow(ImportDataSegmenter<T> parent, IDataRow row, int position)
 		{
 			_segmenter = parent;
@@ -53,14 +61,6 @@ namespace SmartStore.Services.DataExchange.Import
 			_isNew = _entity.Id == 0;
 
 			_initialized = true;
-		}
-
-		private void CheckInitialized()
-		{
-			if (_initialized)
-			{
-				throw Error.InvalidOperation("A row must be initialized before interacting with the entity or the data store");
-			}
 		}
 
 		public bool IsTransient
@@ -136,9 +136,9 @@ namespace SmartStore.Services.DataExchange.Import
 				object value;
 				var mapping = _segmenter.ColumnMap.GetMapping(propName);
 
-				if (mapping.Default != null && mapping.Default == "[NULL]")
+				if (mapping.IgnoreProperty)
 				{
-					// explicitly ignore this column
+					// explicitly ignore this property
 				}
 				else if (_row.TryGetValue(mapping.Property, out value))
 				{

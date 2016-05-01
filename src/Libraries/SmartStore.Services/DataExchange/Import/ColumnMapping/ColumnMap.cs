@@ -130,5 +130,13 @@ namespace SmartStore.Services.DataExchange.Import
 		/// An optional default value
 		/// </summary>
 		public string Default { get; set; }
+
+		/// <summary>
+		/// Indicates whether to explicitly ignore this property
+		/// </summary>
+		public bool IgnoreProperty
+		{
+			get { return Default != null && Default == "[IGNOREPROPERTY]"; }
+		}
 	}
 }

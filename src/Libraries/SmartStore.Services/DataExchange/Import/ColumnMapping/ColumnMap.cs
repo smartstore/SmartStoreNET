@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace SmartStore.Services.DataExchange.Import
 {
@@ -119,16 +120,19 @@ namespace SmartStore.Services.DataExchange.Import
 	}
 
 
+	[JsonObject(MemberSerialization.OptIn)]
 	public class ColumnMappingValue
 	{
 		/// <summary>
 		/// The property name of the target entity
 		/// </summary>
+		[JsonProperty]
 		public string Property { get; set; }
 
 		/// <summary>
 		/// An optional default value
 		/// </summary>
+		[JsonProperty]
 		public string Default { get; set; }
 
 		/// <summary>

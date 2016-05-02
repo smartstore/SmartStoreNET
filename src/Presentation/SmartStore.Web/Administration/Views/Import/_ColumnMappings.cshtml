@@ -67,14 +67,14 @@
 				<td>
 					<div class="mapping-item mapping-property">
 						<input type="hidden" class="input-property" value="" />
-						<div class="item-inner hide" style="padding:7px 0; cursor:pointer;">
-							<span style="display: inline-block; margin-right: 0;">
+						<div class="item-inner hide">
+							<span class="property-icon">
 								<i class="text-success fa fa-fw"></i>
 							</span>
-							<span class="left-label" style="display: inline-block;"></span>
-							<span class="muted pull-right right-label" style="font-size: 0.9em; margin-right:20px;"></span>
+							<span class="left-label"></span>
+							<span class="muted right-label"></span>
 						</div>
-						<select class="select-property noskin" data-placeholder="@selectTargetProperty" style="width: 98%;">
+						<select class="select-property noskin" data-placeholder="@selectTargetProperty">
 							<option></option>
 							@foreach (var property in Model.AvailableEntityProperties)
 							{
@@ -86,10 +86,10 @@
 				<td>
 					<div class="mapping-item mapping-column">
 						<input type="hidden" class="input-column" value="" />
-						<div class="item-inner hide" style="padding:7px 0; cursor:pointer;">
-							<span class="left-label" style="display: inline-block;"></span>
+						<div class="item-inner hide">
+							<span class="left-label"></span>
 						</div>
-						<select class="select-column noskin" data-placeholder="@ignore" style="width: 98%;">
+						<select class="select-column noskin" data-placeholder="@ignore">
 							<option></option>
 							@foreach (var column in Model.AvailableSourceColumns)
 							{
@@ -99,7 +99,7 @@
 					</div>
 				</td>
 				<td>
-					<input type="text" class="input-default text-box single-line" value="" style="width: 97%;" />
+					<input type="text" class="input-default text-box single-line" value="" />
 				</td>
 				<td>
 					<button type="button" class="btn btn-block btn-warning mapping-add" disabled="disabled">
@@ -115,11 +115,11 @@
 </div>
 
 <div id="ImportColumnMappings">
-	<table class="table table-striped admin-table" data-maxindex="@Model.ColumnMappings.Count">
+	<table class="table table-striped admin-table column-mapping" data-maxindex="@Model.ColumnMappings.Count">
 		<thead>
 			<tr>
-				<th style="width: 38%;">@T("Admin.DataExchange.ColumnMapping.EntityProperty")</th>
-				<th style="width: 38%;">@T("Admin.DataExchange.ColumnMapping.ImportField")</th>			
+				<th class="column-one">@T("Admin.DataExchange.ColumnMapping.EntityProperty")</th>
+				<th class="column-two">@T("Admin.DataExchange.ColumnMapping.ImportField")</th>			
 				<th>@T("Admin.DataExchange.ColumnMapping.DefaultValue")</th>
 				<th>&nbsp;</th>
 			</tr>
@@ -132,51 +132,40 @@
 					<td>
 						<div class="mapping-item mapping-property">
 							<input type="hidden" name="ColumnMapping.Property.@(index)" value="@mapping.Property" />
-							<div class="item-inner" style="padding:7px 0; cursor:pointer;">
-								<span style="display: inline-block; margin-right: 0;">
-									<i class="text-success fa fa-fw @(mapping.Column.EndsWith("]") ? "fa-globe" : "fa-chain-broken")"></i>
+							<div class="item-inner">
+								<span class="property-icon">
+									<i class="text-success fa fa-fw @(mapping.Column.EmptyNull().EndsWith("]") ? "fa-globe" : "fa-chain-broken")"></i>
 								</span>
 								@if (mapping.Text.Length > 50)
 								{
-									<span class="left-label" style="display: inline-block;" title="@mapping.Text">@(mapping.Text.Substring(0, 50))…</span>
+									<span class="left-label" title="@mapping.Text">@(mapping.Text.Substring(0, 50))…</span>
 								}
 								else
 								{
-									<span class="left-label" style="display: inline-block;">@mapping.Text</span>
+									<span class="left-label">@mapping.Text</span>
 								}
-								<span class="muted pull-right right-label" style="font-size: 0.9em; margin-right:20px;">@mapping.Column</span>
+								<span class="muted right-label">@mapping.Column</span>
 							</div>
 						</div>
-
-						@*<select name="ColumnMapping.Property.@(index)" class="select-property noskin" data-placeholder="@T("Common.Unspecified")" style="width: 100%;">
-							<option></option>
-							@foreach (var property in Model.AvailableEntityProperties)
-							{
-								var select = property.Value.IsCaseInsensitiveEqual(mapping.Property);
-								<option value="@property.Value" @(select ? "selected='selected'" : "")>@property.Text</option>
-							}
-						</select>*@
 					</td>
 					<td>
 						<div class="mapping-item mapping-column">
 							<input type="hidden" name="ColumnMapping.Column.@(index)" value="@mapping.Column" />
-							<div class="item-inner" style="padding:7px 0; cursor:pointer;">
-								<span class="left-label" style="display: inline-block;">@mapping.Column</span>
+							<div class="item-inner">
+								@*TODO: display ignored properties in a multi-select on top of mapping table. user must be able to revise the ignoring.*@
+								@if (mapping.Column.HasValue())
+								{
+									<span class="left-label">@mapping.Column</span>
+								}
+								else
+								{
+									<span class="left-label muted">@ignore</span>
+								}
 							</div>
 						</div>
-
-						@*<select name="ColumnMapping.Column.@(index)" class="select-column noskin" data-placeholder="@T("Admin.Common.Ignore")" style="width: 100%;">
-							<option></option>
-							@foreach (var column in Model.AvailableSourceColumns)
-							{
-								var select = (mapping.Column.HasValue() && column.Column.IsCaseInsensitiveEqual(mapping.Column));
-								var text = (column.ColumnLocalized.HasValue() ? column.ColumnLocalized : column.Column);
-								<option value="@column.Column" @(select ? "selected='selected'" : "")>@text</option>
-							}
-						</select>*@
 					</td>
 					<td>
-						<input type="text" name="ColumnMapping.Default.@(index)" class="text-box single-line" value="@mapping.Default" style="width: 97%;" />
+						<input type="text" name="ColumnMapping.Default.@(index)" class="input-default text-box single-line" value="@mapping.Default" />
 					</td>
 					<td>
 						<button type="button" class="btn btn-block btn-danger mapping-delete">

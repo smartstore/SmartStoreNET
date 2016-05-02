@@ -300,9 +300,9 @@
 			var property = row.find('.select-property').select2('val'),
 				column = row.find('.select-column').select2('val');
 
-			row.find('.input-property').attr('name', 'ColumnMapping.Property.' + index).val(property).removeClass('input-property');
-			row.find('.input-column').attr('name', 'ColumnMapping.Column.' + index).val(column).removeClass('input-column');
-			row.find('.input-default').attr('name', 'ColumnMapping.Default.' + index).removeClass('input-default');
+			row.find('.input-property').attr('name', 'ColumnMapping.Property.' + index).val(property);
+			row.find('.input-column').attr('name', 'ColumnMapping.Column.' + index).val(column);
+			row.find('.input-default').attr('name', 'ColumnMapping.Default.' + index);
 
 			table.attr('data-maxindex', index);
 			row.removeClass('column-mapping-new');
@@ -329,7 +329,12 @@
 				updatePropertyLabel(item, val);
 			}
 			else {
-				item.find('.left-label').text(val);
+				if (_.isEmpty(val)) {
+					// TODO: display ignored properties in a multi-select on top of mapping table. user must be able to revise the ignoring.
+					val = '<span class="muted">@T("Admin.Common.Ignore")</span>';
+				}
+
+				item.find('.left-label').html(val);
 			}
 
 			closeAllMappingEdits();
@@ -340,7 +345,6 @@
 		});
 
 
-		//initSelectBoxes($('#ImportColumnMappings'));
 		appendNewMappingRow();
 
 
@@ -355,8 +359,8 @@
 			context.find('.right-label').text(val);
 
 			var leftLabel = context.find('.left-label');
-				isLocalized = (val.indexOf(']', val.length - 1) !== -1),
-				text = context.find('select').find('option:selected').text();
+			isLocalized = (val.indexOf(']', val.length - 1) !== -1),
+			text = context.find('select').find('option:selected').text();
 
 			if (text.length > 50) {
 				leftLabel.text(text.substring(0, 50) + '…');
@@ -410,7 +414,7 @@
 			try {
 				if (item.text.length > 0) {
 					var option = $(item.element),
-						isLocalized = (item.id.substring(item.id.length - 1) === ']'),
+						isLocalized = (item.id.indexOf(']', item.id.length - 1) !== -1),
 						html = '';
 
 					if (option.length === 0) {
@@ -424,7 +428,7 @@
 						if (option.index() === 1) {
 							mappedProperties = [];
 
-							$('#ImportColumnMappings').find('select[name^="ColumnMapping.Property."]').each(function () {
+							$('#ImportColumnMappings').find('input[name^="ColumnMapping.Property."]').each(function () {
 								var value = $(this).val();
 								if (!_.isEmpty(value)) {
 									mappedProperties.push(value);

@@ -439,15 +439,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 			foreach (var row in batch)
 			{
-				var limitedToStores = row.GetDataValue<bool?>("LimitedToStores");
 				var storeIds = row.GetDataValue<List<int>>("StoreIds");
-
-				if (limitedToStores == null && storeIds.IsNullOrEmpty())
-				{
-					// Both fields are absent. Get out!
-					continue;
-				}
-
 				if (!storeIds.IsNullOrEmpty())
 				{
 					_storeMappingService.SaveStoreMappings(row.Entity, storeIds.ToArray());
@@ -758,7 +750,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					// 3.) Import StoreMappings
 					// ===========================================================================
-					if (segmenter.HasColumn("LimitedToStores") || segmenter.HasColumn("StoreIds"))
+					if (segmenter.HasColumn("StoreIds"))
 					{
 						try
 						{

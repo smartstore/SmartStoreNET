@@ -1,5 +1,10 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
 @model ImportProfileModel
+@{
+	var delete = T("Common.Delete");
+	var ignore = @T("Admin.Common.Ignore");
+	var selectTargetProperty = T("Admin.DataExchange.Import.SelectTargetProperty");
+}
 
 <div>
 	<table class="adminContent">
@@ -27,37 +32,81 @@
 	</table>
 </div>
 
-<div id="ColumnMappingTemplate" class="hide">
+<div id="MappingTemplateProperty" class="hide">
+	<div class="mapping-edit">
+		<select class="select-property noskin" data-placeholder="@selectTargetProperty" style="width: 550px;">
+			<option></option>
+			@foreach (var property in Model.AvailableEntityProperties)
+			{
+				<option value="@property.Value">@property.Text</option>
+			}
+		</select>
+		<button type="button" class="btn btn-primary mapping-apply"><i class="fa fa-check"></i></button>
+		<button type="button" class="btn mapping-cancel"><i class="fa fa-times"></i></button>
+	</div>
+</div>
+
+<div id="MappingTemplateColumn" class="hide">
+	<div class="mapping-edit">
+		<select class="select-column noskin" data-placeholder="@ignore" style="width: 550px;">
+			<option></option>
+			@foreach (var column in Model.AvailableSourceColumns)
+			{
+				<option value="@column.Column">@column.ColumnLocalized</option>
+			}
+		</select>
+		<button type="button" class="btn btn-primary mapping-apply"><i class="fa fa-check"></i></button>
+		<button type="button" class="btn mapping-cancel"><i class="fa fa-times"></i></button>
+	</div>
+</div>
+
+<div id="MappingAddTemplate" class="hide">
 	<table>
 		<tbody>
 			<tr class="column-mapping-new">
 				<td>
-					<select class="mapping-control-property noskin" data-placeholder="@T("Admin.DataExchange.Import.SelectTargetProperty")" style="width: 100%;">
-						<option></option>
-						@foreach (var property in Model.AvailableEntityProperties)
-						{
-							<option value="@property.Value">@property.Text</option>
-						}
-					</select>
+					<div class="mapping-item mapping-property">
+						<input type="hidden" class="input-property" value="" />
+						<div class="item-inner hide" style="padding:7px 0; cursor:pointer;">
+							<span style="display: inline-block; margin-right: 0;">
+								<i class="text-success fa fa-fw"></i>
+							</span>
+							<span class="left-label" style="display: inline-block;"></span>
+							<span class="muted pull-right right-label" style="font-size: 0.9em; margin-right:20px;"></span>
+						</div>
+						<select class="select-property noskin" data-placeholder="@selectTargetProperty" style="width: 98%;">
+							<option></option>
+							@foreach (var property in Model.AvailableEntityProperties)
+							{
+								<option value="@property.Value">@property.Text</option>
+							}
+						</select>
+					</div>
 				</td>
 				<td>
-					<select class="mapping-control-column noskin" data-placeholder="@Model.IgnoreString" style="width: 100%;">
-						<option></option>
-						@foreach (var column in Model.AvailableSourceColumns)
-						{
-							<option value="@column.Column">@column.ColumnLocalized</option>
-						}
-					</select>
+					<div class="mapping-item mapping-column">
+						<input type="hidden" class="input-column" value="" />
+						<div class="item-inner hide" style="padding:7px 0; cursor:pointer;">
+							<span class="left-label" style="display: inline-block;"></span>
+						</div>
+						<select class="select-column noskin" data-placeholder="@ignore" style="width: 98%;">
+							<option></option>
+							@foreach (var column in Model.AvailableSourceColumns)
+							{
+								<option value="@column.Column">@column.ColumnLocalized</option>
+							}
+						</select>
+					</div>
 				</td>
 				<td>
-					<input type="text" class="mapping-control-default text-box single-line" value="" style="width: 97%;" />
+					<input type="text" class="input-default text-box single-line" value="" style="width: 97%;" />
 				</td>
-				<td style="width: 180px;">
-					<button type="button" class="btn btn-block btn-warning mapping-button-add" disabled="disabled">
-						<i class="fa fa-plus"></i>&nbsp;@Model.AddNewString
+				<td>
+					<button type="button" class="btn btn-block btn-warning mapping-add" disabled="disabled">
+						<i class="fa fa-plus"></i>&nbsp;@T("Common.AddNew")
 					</button>
-					<button type="button" class="btn btn-block btn-danger hide mapping-button-delete">
-						<i class="fa fa-trash"></i>&nbsp;@Model.DeleteString
+					<button type="button" class="btn btn-block btn-danger hide mapping-delete">
+						<i class="fa fa-trash"></i>&nbsp;@delete
 					</button>
 				</td>
 			</tr>
@@ -69,8 +118,8 @@
 	<table class="table table-striped admin-table" data-maxindex="@Model.ColumnMappings.Count">
 		<thead>
 			<tr>
-				<th style="width: 35%;">@T("Admin.DataExchange.ColumnMapping.EntityProperty")</th>
-				<th style="width: 35%;">@T("Admin.DataExchange.ColumnMapping.ImportField")</th>			
+				<th style="width: 38%;">@T("Admin.DataExchange.ColumnMapping.EntityProperty")</th>
+				<th style="width: 38%;">@T("Admin.DataExchange.ColumnMapping.ImportField")</th>			
 				<th>@T("Admin.DataExchange.ColumnMapping.DefaultValue")</th>
 				<th>&nbsp;</th>
 			</tr>
@@ -81,17 +130,42 @@
 				var index = Model.ColumnMappings.IndexOf(mapping) + 1;
 				<tr>
 					<td>
-						<select name="ColumnMapping.Property.@(index)" class="mapping-control-property noskin" data-placeholder="@Model.UnspecifiedString" style="width: 100%;">
+						<div class="mapping-item mapping-property">
+							<input type="hidden" name="ColumnMapping.Property.@(index)" value="@mapping.Property" />
+							<div class="item-inner" style="padding:7px 0; cursor:pointer;">
+								<span style="display: inline-block; margin-right: 0;">
+									<i class="text-success fa fa-fw @(mapping.Column.EndsWith("]") ? "fa-globe" : "fa-chain-broken")"></i>
+								</span>
+								@if (mapping.Text.Length > 50)
+								{
+									<span class="left-label" style="display: inline-block;" title="@mapping.Text">@(mapping.Text.Substring(0, 50))…</span>
+								}
+								else
+								{
+									<span class="left-label" style="display: inline-block;">@mapping.Text</span>
+								}
+								<span class="muted pull-right right-label" style="font-size: 0.9em; margin-right:20px;">@mapping.Column</span>
+							</div>
+						</div>
+
+						@*<select name="ColumnMapping.Property.@(index)" class="select-property noskin" data-placeholder="@T("Common.Unspecified")" style="width: 100%;">
 							<option></option>
 							@foreach (var property in Model.AvailableEntityProperties)
 							{
 								var select = property.Value.IsCaseInsensitiveEqual(mapping.Property);
 								<option value="@property.Value" @(select ? "selected='selected'" : "")>@property.Text</option>
 							}
-						</select>
+						</select>*@
 					</td>
 					<td>
-						<select name="ColumnMapping.Column.@(index)" class="mapping-control-column noskin" data-placeholder="@Model.IgnoreString" style="width: 100%;">
+						<div class="mapping-item mapping-column">
+							<input type="hidden" name="ColumnMapping.Column.@(index)" value="@mapping.Column" />
+							<div class="item-inner" style="padding:7px 0; cursor:pointer;">
+								<span class="left-label" style="display: inline-block;">@mapping.Column</span>
+							</div>
+						</div>
+
+						@*<select name="ColumnMapping.Column.@(index)" class="select-column noskin" data-placeholder="@T("Admin.Common.Ignore")" style="width: 100%;">
 							<option></option>
 							@foreach (var column in Model.AvailableSourceColumns)
 							{
@@ -99,14 +173,14 @@
 								var text = (column.ColumnLocalized.HasValue() ? column.ColumnLocalized : column.Column);
 								<option value="@column.Column" @(select ? "selected='selected'" : "")>@text</option>
 							}
-						</select>
+						</select>*@
 					</td>
 					<td>
-						<input type="text" name="ColumnMapping.Default.@(index)" class="mapping-control-default text-box single-line" value="@mapping.Default" style="width: 97%;" />
+						<input type="text" name="ColumnMapping.Default.@(index)" class="text-box single-line" value="@mapping.Default" style="width: 97%;" />
 					</td>
 					<td>
-						<button type="button" class="btn btn-block btn-danger mapping-button-delete">
-							<i class="fa fa-trash"></i>&nbsp;@Model.DeleteString
+						<button type="button" class="btn btn-block btn-danger mapping-delete">
+							<i class="fa fa-trash"></i>&nbsp;@delete
 						</button>
 					</td>
 				</tr>

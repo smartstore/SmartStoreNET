@@ -255,51 +255,123 @@
 		});
 
 		// mapping row handling
-		$('#ImportColumnMappings').on('change', '.mapping-control-property', function () {
+		$('#ImportColumnMappings').on('change', '.select-property', function () {
 			var row = $(this).closest('tr');
 
 			if (row.hasClass('column-mapping-new')) {
-				var hasColumn = !_.isEmpty(row.find('.mapping-control-column').select2('val')),
+				var hasColumn = !_.isEmpty(row.find('.select-column').select2('val')),
 					hasProperty = !_.isEmpty($(this).select2('val'));
 
-				row.find('.mapping-button-add').prop('disabled', !(hasProperty && hasColumn));
+				row.find('.mapping-add').prop('disabled', !(hasProperty && hasColumn));
 			}
-		}).on('change', '.mapping-control-column', function () {
+		}).on('change', '.select-column', function () {
 			var row = $(this).closest('tr');
 
 			if (row.hasClass('column-mapping-new')) {
 				var hasColumn = !_.isEmpty($(this).select2('val')),
-					hasProperty = !_.isEmpty(row.find('.mapping-control-property').select2('val'));
+					hasProperty = !_.isEmpty(row.find('.select-property').select2('val'));
 
-				row.find('.mapping-button-add').prop('disabled', !(hasProperty && hasColumn));
+				row.find('.mapping-add').prop('disabled', !(hasProperty && hasColumn));
 			}
-		}).on('click', '.mapping-button-add', function () {
+		}).on('click', '.item-inner', function () {
+			// start editing mapping item
+			var item = $(this).closest('.mapping-item');
+
+			closeAllMappingEdits();
+
+			if (item.find('select').length > 0)
+				return;
+
+			var isProperty = item.hasClass('mapping-property'),
+				template = $(isProperty ? '#MappingTemplateProperty' : '#MappingTemplateColumn').children(':first');
+
+			// hide static label
+			item.find('.item-inner').hide();
+
+			// clone edit template into mapping item
+			var select = template.clone().appendTo(item).find('select');
+			initSelectBox(select, isProperty);
+		}).on('click', '.mapping-add', function () {
+			// add mapping item
 			var row = $(this).closest('tr'),
 				table = row.closest('table'),
 				index = parseInt(table.attr('data-maxindex')) + 1;
 
-			row.find('.mapping-control-property').attr('name', 'ColumnMapping.Property.' + index);
-			row.find('.mapping-control-column').attr('name', 'ColumnMapping.Column.' + index);
-			row.find('.mapping-control-default').attr('name', 'ColumnMapping.Default.' + index);
+			var property = row.find('.select-property').select2('val'),
+				column = row.find('.select-column').select2('val');
+
+			row.find('.input-property').attr('name', 'ColumnMapping.Property.' + index).val(property).removeClass('input-property');
+			row.find('.input-column').attr('name', 'ColumnMapping.Column.' + index).val(column).removeClass('input-column');
+			row.find('.input-default').attr('name', 'ColumnMapping.Default.' + index).removeClass('input-default');
 
 			table.attr('data-maxindex', index);
-
 			row.removeClass('column-mapping-new');
-			row.find('.mapping-button-add').remove();
-			row.find('.mapping-button-delete').show();
+
+			row.find('.item-inner').removeClass('hide');
+			updatePropertyLabel(row.find('.mapping-property'), property);
+			row.find('.mapping-column .left-label').text(column);
+
+			row.find('.select-property').select2('destroy').remove();
+			row.find('.select-column').select2('destroy').remove();
+
+			row.find('.mapping-add').remove();
+			row.find('.mapping-delete').show();
 
 			appendNewMappingRow();
-		}).on('click', '.mapping-button-delete', function () {
+		}).on('click', '.mapping-apply', function () {
+			// apply mapping edit
+			var item = $(this).closest('.mapping-item'),
+				val = item.find('select').select2('val');
+
+			item.find('input[type=hidden]').val(val);
+
+			if (item.hasClass('mapping-property')) {
+				updatePropertyLabel(item, val);
+			}
+			else {
+				item.find('.left-label').text(val);
+			}
+
+			closeAllMappingEdits();
+		}).on('click', '.mapping-cancel', function () {
+			closeAllMappingEdits();
+		}).on('click', '.mapping-delete', function () {
 			$(this).closest('tr').remove();
 		});
 
 
-		initSelectBoxes($('#ImportColumnMappings'));
+		//initSelectBoxes($('#ImportColumnMappings'));
 		appendNewMappingRow();
 
 
-		function initSelectBoxes(context) {
-			var options = {
+		function closeAllMappingEdits() {
+			$('#ImportColumnMappings').find('.mapping-edit').each(function () {
+				$(this).closest('.mapping-item').find('.item-inner').show();
+				$(this).remove();
+			});
+		}
+
+		function updatePropertyLabel(context, val) {
+			context.find('.right-label').text(val);
+
+			var leftLabel = context.find('.left-label');
+				isLocalized = (val.indexOf(']', val.length - 1) !== -1),
+				text = context.find('select').find('option:selected').text();
+
+			if (text.length > 50) {
+				leftLabel.text(text.substring(0, 50) + '…');
+				leftLabel.attr('title', $('<div/>').html(text).text());
+			}
+			else {
+				leftLabel.text(text);
+				leftLabel.attr('title', '');
+			}
+
+			context.find('i').removeClass('fa-globe fa-chain-broken').addClass(isLocalized ? 'fa-globe' : 'fa-chain-broken');
+		}
+
+		function initSelectBox(element, isProperty) {
+			element.select2({
 				allowClear: true,
 				minimumResultsForSearch: 16,
 				matcher: function (term, text, opt) {
@@ -313,18 +385,10 @@
 						return true;
 
 					return false;
-				}
-			};
-
-			context.find('.mapping-control-property').select2($.extend({}, options, {
-				formatResult: selectPropertyFormatting,
-				formatSelection: selectPropertyFormatting
-			}));
-
-			context.find('.mapping-control-column').select2($.extend({}, options, {
-				formatResult: selectColumnFormatting,
-				formatSelection: selectColumnFormatting
-			}));
+				},
+				formatResult: (isProperty ? selectPropertyFormatting : selectColumnFormatting),
+				formatSelection: (isProperty ? selectPropertyFormatting : selectColumnFormatting)
+			});
 		}
 
 		function appendNewMappingRow() {
@@ -332,12 +396,14 @@
 			if (!mappings.length)
 				return;
 
-			var html = $('#ColumnMappingTemplate').find('table tbody').html();
+			var html = $('#MappingAddTemplate').find('table tbody').html();
 
 			mappings.find('table:first tbody').append(html);
 
 			var row = mappings.find('table:first tr:last');
-			initSelectBoxes(row);
+
+			initSelectBox(row.find('.select-property'), true);
+			initSelectBox(row.find('.select-column'), false);
 		}
 
 		function selectPropertyFormatting(item, container, query) {
@@ -381,8 +447,8 @@
 					html += '<span class="muted pull-right" style="font-size: 0.9em;">' + item.id + '</span>';
 
 					html += '<span class="ml4" style="display: inline-block;"';
-					if (item.text.length > 50) {
-						html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, 50) + '…';
+					if (item.text.length > 40) {
+						html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, 40) + '…';
 					}
 					else {
 						html += '>' + item.text;
@@ -410,8 +476,8 @@
 
 					if (query && item.text !== item.id) {
 						html += '<span class="muted pull-right" style="font-size: 0.9em;"'
-						if (item.text.length > 50) {
-							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, 50) + '…';
+						if (item.text.length > 40) {
+							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, 40) + '…';
 						}
 						else {
 							html += '>' + item.text;

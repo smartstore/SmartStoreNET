@@ -54,10 +54,6 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public bool LogFileExists { get; set; }
 		public string TempFileName { get; set; }
-		public string UnspecifiedString { get; set; }
-		public string AddNewString { get; set; }
-		public string DeleteString { get; set; }
-		public string IgnoreString { get; set; }
 
 		public CsvConfigurationModel CsvConfiguration { get; set; }
 
@@ -78,5 +74,10 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public string Property { get; set; }
 		public string Default { get; set; }
+
+		public string Text
+		{
+			get { return ColumnLocalized.HasValue() ? ColumnLocalized : Column; }
+		}
 	}
 }

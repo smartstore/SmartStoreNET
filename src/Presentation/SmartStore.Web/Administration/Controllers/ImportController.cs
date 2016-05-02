@@ -70,10 +70,6 @@ namespace SmartStore.Admin.Controllers
 			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
 			model.LogFileExists = System.IO.File.Exists(profile.GetImportLogPath());
 			model.EntityTypeName = profile.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
-			model.UnspecifiedString = T("Common.Unspecified");
-			model.AddNewString = T("Common.AddNew");
-			model.DeleteString = T("Common.Delete");
-			model.IgnoreString = T("Admin.Common.Ignore");
 
 			model.ExistingFileNames = profile.GetImportFiles()
 				.Select(x => Path.GetFileName(x))

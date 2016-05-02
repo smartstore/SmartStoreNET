@@ -127,7 +127,13 @@ namespace SmartStore.Services.DataExchange.Import
 				return value.Convert<TProp>(_segmenter.Culture);
 			}
 
-			return GetDefaultValue(mapping, columnName, default(TProp));
+			if (IsTransient)
+			{
+				// only transient/new entities should fallback to possible defaults.
+				return GetDefaultValue(mapping, columnName, default(TProp));
+			}
+
+			return default(TProp);
 		}
 
 		public bool SetProperty<TProp>(
@@ -163,8 +169,8 @@ namespace SmartStore.Services.DataExchange.Import
 					}
 					else if (value.ToString().IsCaseInsensitiveEqual("[NULL]"))
 					{
-						// prop is set "explicitly" to null.
-						converted = GetDefaultValue(mapping, propName, defaultValue, result);
+						// prop is "explicitly" set to null. Don't fallback to any default!
+						converted = default(TProp);
 					}
 					else
 					{
@@ -177,8 +183,12 @@ namespace SmartStore.Services.DataExchange.Import
 				}
 				else
 				{
+					// source field value does not exist or is null/empty
 					if (IsTransient)
 					{
+						// if entity is new and source field value is null, determine default value in this particular order: 
+						//		2.) Default value in field mapping table
+						//		3.) passed default value argument
 						defaultValue = GetDefaultValue(mapping, propName, defaultValue, result);
 
 						// source does not contain field data or is empty...

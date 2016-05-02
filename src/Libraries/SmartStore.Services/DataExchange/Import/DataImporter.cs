@@ -282,67 +282,18 @@ namespace SmartStore.Services.DataExchange.Import
 					if (ctx.Request.Profile.EntityType == ImportEntityType.Product)
 					{
 						importerType = typeof(ProductImporter);
-						//ctx.Importer = new ProductImporter(
-						//	_productPictureRepository.Value,
-						//	_productManufacturerRepository.Value,
-						//	_productCategoryRepository.Value,
-						//	_urlRecordRepository.Value,
-						//	_productRepository.Value,
-						//	_services,
-						//	_localizedEntityService.Value,
-						//	_pictureService.Value,
-						//	_manufacturerService.Value,
-						//	_categoryService.Value,
-						//	_productService.Value,
-						//	_urlRecordService.Value,
-						//	_productTemplateService.Value,
-						//	_storeMappingService.Value,
-						//	_fileDownloadManager.Value,
-						//	_seoSettings.Value,
-						//	_dataExchangeSettings.Value);
 					}
 					else if (ctx.Request.Profile.EntityType == ImportEntityType.Customer)
 					{
 						importerType = typeof(CustomerImporter);
-						//ctx.Importer = new CustomerImporter(
-						//	_customerRepository.Value,
-						//	_pictureRepository.Value,
-						//	_services,
-						//	_genericAttributeService.Value,
-						//	_customerService,
-						//	_pictureService.Value,
-						//	_affiliateService.Value,
-						//	_countryService.Value,
-						//	_stateProvinceService.Value,
-						//	_fileDownloadManager.Value,
-						//	_customerSettings.Value,
-						//	_dateTimeSettings.Value,
-						//	_forumSettings.Value,
-						//	_dataExchangeSettings.Value);
 					}
 					else if (ctx.Request.Profile.EntityType == ImportEntityType.NewsLetterSubscription)
 					{
 						importerType = typeof(NewsLetterSubscriptionImporter);
-						//ctx.Importer = new NewsLetterSubscriptionImporter(
-						//	_services,
-						//	_subscriptionRepository.Value);
 					}
 					else if (ctx.Request.Profile.EntityType == ImportEntityType.Category)
 					{
 						importerType = typeof(CategoryImporter);
-						//ctx.Importer = new CategoryImporter(
-						//	_categoryRepository.Value,
-						//	_urlRecordRepository.Value,
-						//	_pictureRepository.Value,
-						//	_services,
-						//	_urlRecordService.Value,
-						//	_categoryTemplateService.Value,
-						//	_storeMappingService.Value,
-						//	_pictureService.Value,
-						//	_localizedEntityService.Value,
-						//	_fileDownloadManager.Value,
-						//	_seoSettings.Value,
-						//	_dataExchangeSettings.Value);
 					}
 					else
 					{

@@ -96,6 +96,8 @@ namespace SmartStore.Services.Catalog.Importer
 			ImportRow<Product>[] batch,
 			Dictionary<int, ImportProductMapping> srcToDestId)
 		{
+			_productRepository.AutoCommitEnabled = false;
+
 			foreach (var row in batch)
 			{
 				var id = row.GetDataValue<int>("Id");
@@ -110,7 +112,6 @@ namespace SmartStore.Services.Catalog.Importer
 						if (product != null)
 						{
 							product.ParentGroupedProductId = srcToDestId[parentGroupedProductId].DestinationId;
-
 							_productRepository.Update(product);
 						}
 					}
@@ -438,10 +439,19 @@ namespace SmartStore.Services.Catalog.Importer
 
 			foreach (var row in batch)
 			{
+				// With new entities, "LimitedToStores" is an implicit field, meaning
+				// it has to be set to true if it's absent but "StoreIds" exists.
+
 				var limitedToStore = row.GetDataValue<bool?>("LimitedToStores");
+				var storeIds = row.GetDataValue<List<int>>("StoreIds");
+
+				if (row.IsTransient && !limitedToStore.HasValue)
+				{
+					continue;
+				}
+
 				if (limitedToStore.HasValue && limitedToStore.Value == true)
 				{
-					var storeIds = row.GetDataValue<List<int>>("StoreIds");
 					_storeMappingService.SaveStoreMappings(row.Entity, storeIds == null ? new int[0] : storeIds.ToArray());
 				}
 			}
@@ -745,25 +755,23 @@ namespace SmartStore.Services.Catalog.Importer
 						}
 					}
 
-					if (segmenter.HasColumn("LimitedToStores") && segmenter.HasColumn("StoreIds"))
+					// ===========================================================================
+					// 3.) Import StoreMappings
+					// ===========================================================================
+					if (segmenter.HasColumn("LimitedToStores") || segmenter.HasColumn("StoreIds"))
 					{
 						try
 						{
-							_productRepository.Context.AutoDetectChangesEnabled = true;
 							ProcessStoreMappings(context, batch);
 						}
 						catch (Exception exception)
 						{
 							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessStoreMappings");
 						}
-						finally
-						{
-							_productRepository.Context.AutoDetectChangesEnabled = false;
-						}
 					}
 
 					// ===========================================================================
-					// 3.) Import Localizations
+					// 4.) Import Localizations
 					// ===========================================================================
 					try
 					{
@@ -775,7 +783,7 @@ namespace SmartStore.Services.Catalog.Importer
 					}
 
 					// ===========================================================================
-					// 4.) Import product category mappings
+					// 5.) Import product category mappings
 					// ===========================================================================
 					if (segmenter.HasColumn("CategoryIds"))
 					{
@@ -790,7 +798,7 @@ namespace SmartStore.Services.Catalog.Importer
 					}
 
 					// ===========================================================================
-					// 5.) Import product manufacturer mappings
+					// 6.) Import product manufacturer mappings
 					// ===========================================================================
 					if (segmenter.HasColumn("ManufacturerIds"))
 					{
@@ -805,7 +813,7 @@ namespace SmartStore.Services.Catalog.Importer
 					}
 
 					// ===========================================================================
-					// 6.) Import product picture mappings
+					// 7.) Import product picture mappings
 					// ===========================================================================
 					if (segmenter.HasColumn("ImageUrls"))
 					{
@@ -821,7 +829,7 @@ namespace SmartStore.Services.Catalog.Importer
 				}
 
 				// ===========================================================================
-				// 7.) Map parent id of inserted products
+				// 8.) Map parent id of inserted products
 				// ===========================================================================
 				if (srcToDestId.Any() && segmenter.HasColumn("Id") && segmenter.HasColumn("ParentGroupedProductId"))
 				{

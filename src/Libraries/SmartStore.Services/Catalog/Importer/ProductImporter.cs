@@ -15,6 +15,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Utilities;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Catalog.Importer
 {
@@ -25,6 +26,7 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly IRepository<ProductCategory> _productCategoryRepository;
 		private readonly IRepository<UrlRecord> _urlRecordRepository;
 		private readonly IRepository<Product> _productRepository;
+		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly ICommonServices _services;
 		private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly IPictureService _pictureService;
@@ -44,6 +46,7 @@ namespace SmartStore.Services.Catalog.Importer
 			IRepository<ProductCategory> productCategoryRepository,
 			IRepository<UrlRecord> urlRecordRepository,
 			IRepository<Product> productRepository,
+			IRepository<StoreMapping> storeMappingRepository,
 			ICommonServices services,
 			ILocalizedEntityService localizedEntityService,
 			IPictureService pictureService,
@@ -62,6 +65,7 @@ namespace SmartStore.Services.Catalog.Importer
 			_productCategoryRepository = productCategoryRepository;
 			_urlRecordRepository = urlRecordRepository;
 			_productRepository = productRepository;
+			_storeMappingRepository = storeMappingRepository;
 			_services = services;
 			_localizedEntityService = localizedEntityService;
 			_pictureService = pictureService;
@@ -428,19 +432,22 @@ namespace SmartStore.Services.Catalog.Importer
 			return _urlRecordRepository.Context.SaveChanges();
 		}
 
-		private void ProcessStoreMappings(IImportExecuteContext context, ImportRow<Product>[] batch)
+		private int ProcessStoreMappings(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
+			_storeMappingRepository.AutoCommitEnabled = false;
+
 			foreach (var row in batch)
 			{
-				var limitedToStore = row.GetDataValue<bool>("LimitedToStores");
-
-				if (limitedToStore)
+				var limitedToStore = row.GetDataValue<bool?>("LimitedToStores");
+				if (limitedToStore.HasValue && limitedToStore.Value == true)
 				{
 					var storeIds = row.GetDataValue<List<int>>("StoreIds");
-
 					_storeMappingService.SaveStoreMappings(row.Entity, storeIds == null ? new int[0] : storeIds.ToArray());
 				}
 			}
+
+			// commit whole batch at once
+			return _services.DbContext.SaveChanges();
 		}
 
 		private int ProcessProducts(
@@ -449,7 +456,7 @@ namespace SmartStore.Services.Catalog.Importer
 			Dictionary<string, int> templateViewPaths,
 			Dictionary<int, ImportProductMapping> srcToDestId)
 		{
-			_productRepository.AutoCommitEnabled = true;
+			_productRepository.AutoCommitEnabled = false;
 
 			Product lastInserted = null;
 			Product lastUpdated = null;
@@ -494,7 +501,7 @@ namespace SmartStore.Services.Catalog.Importer
 					}
 
 					// a Name is required with new products.
-					if (!row.Segmenter.HasColumn("Name"))
+					if (!row.HasDataValue("Name"))
 					{
 						++context.Result.SkippedRecords;
 						context.Result.AddError("The 'Name' field is required for new products. Skipping row.", row.GetRowInfo(), "Name");
@@ -838,12 +845,11 @@ namespace SmartStore.Services.Catalog.Importer
 				}
 			}
 		}
-	}
 
-
-	internal class ImportProductMapping
-	{
-		public int DestinationId { get; set; }
-		public bool Inserted { get; set; }
+		class ImportProductMapping
+		{
+			public int DestinationId { get; set; }
+			public bool Inserted { get; set; }
+		}
 	}
 }

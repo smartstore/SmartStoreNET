@@ -439,20 +439,18 @@ namespace SmartStore.Services.Catalog.Importer
 
 			foreach (var row in batch)
 			{
-				// With new entities, "LimitedToStores" is an implicit field, meaning
-				// it has to be set to true if it's absent but "StoreIds" exists.
-
-				var limitedToStore = row.GetDataValue<bool?>("LimitedToStores");
+				var limitedToStores = row.GetDataValue<bool?>("LimitedToStores");
 				var storeIds = row.GetDataValue<List<int>>("StoreIds");
 
-				if (row.IsTransient && !limitedToStore.HasValue)
+				if (limitedToStores == null && storeIds.IsNullOrEmpty())
 				{
+					// Both fields are absent. Get out!
 					continue;
 				}
 
-				if (limitedToStore.HasValue && limitedToStore.Value == true)
+				if (!storeIds.IsNullOrEmpty())
 				{
-					_storeMappingService.SaveStoreMappings(row.Entity, storeIds == null ? new int[0] : storeIds.ToArray());
+					_storeMappingService.SaveStoreMappings(row.Entity, storeIds.ToArray());
 				}
 			}
 
@@ -623,7 +621,9 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, product, (x) => x.BundlePerItemShoppingCart);
 				row.SetProperty(context.Result, product, (x) => x.AvailableStartDateTimeUtc);
 				row.SetProperty(context.Result, product, (x) => x.AvailableEndDateTimeUtc);
-				row.SetProperty(context.Result, product, (x) => x.LimitedToStores);
+				// With new entities, "LimitedToStores" is an implicit field, meaning
+				// it has to be set to true by code if it's absent but "StoreIds" exists.
+				row.SetProperty(context.Result, product, (x) => x.LimitedToStores, !row.GetDataValue<List<int>>("StoreIds").IsNullOrEmpty());
 
 				var tvp = row.GetDataValue<string>("ProductTemplateViewPath");
 				product.ProductTemplateId = (tvp.HasValue() && templateViewPaths.ContainsKey(tvp) ? templateViewPaths[tvp] : defaultTemplateId);

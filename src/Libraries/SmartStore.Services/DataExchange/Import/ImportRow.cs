@@ -127,7 +127,7 @@ namespace SmartStore.Services.DataExchange.Import
 				return value.Convert<TProp>(_segmenter.Culture);
 			}
 
-			if (IsTransient)
+			if (IsNew)
 			{
 				// only transient/new entities should fallback to possible defaults.
 				return GetDefaultValue(mapping, columnName, default(TProp));
@@ -184,7 +184,7 @@ namespace SmartStore.Services.DataExchange.Import
 				else
 				{
 					// source field value does not exist or is null/empty
-					if (IsTransient)
+					if (IsNew)
 					{
 						// if entity is new and source field value is null, determine default value in this particular order: 
 						//		2.) Default value in field mapping table

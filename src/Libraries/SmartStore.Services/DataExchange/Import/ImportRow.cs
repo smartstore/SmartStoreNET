@@ -99,6 +99,19 @@ namespace SmartStore.Services.DataExchange.Import
 			get { return _position; }
 		}
 
+		public bool HasDataValue(string columnName)
+		{
+			return HasDataValue(columnName, null);
+		}
+
+		public bool HasDataValue(string columnName, string index)
+		{
+			object value;
+			var mapping = _segmenter.ColumnMap.GetMapping(columnName, index);
+			
+			return (_row.TryGetValue(mapping.Property, out value) && value != null && value != DBNull.Value);
+		}
+
 		public TProp GetDataValue<TProp>(string columnName)
 		{
 			return GetDataValue<TProp>(columnName, null);
@@ -109,7 +122,7 @@ namespace SmartStore.Services.DataExchange.Import
 			object value;
 			var mapping = _segmenter.ColumnMap.GetMapping(columnName, index);
 
-			if (_row.TryGetValue(mapping.Property, out value) && value != DBNull.Value)
+			if (_row.TryGetValue(mapping.Property, out value) && value != null && value != DBNull.Value)
 			{
 				return value.Convert<TProp>(_segmenter.Culture);
 			}
@@ -140,7 +153,7 @@ namespace SmartStore.Services.DataExchange.Import
 				{
 					// explicitly ignore this property
 				}
-				else if (_row.TryGetValue(mapping.Property, out value))
+				else if (_row.TryGetValue(mapping.Property, out value) && (value != null && value != DBNull.Value))
 				{
 					// source contains field value. Set it.
 					TProp converted;
@@ -148,7 +161,7 @@ namespace SmartStore.Services.DataExchange.Import
 					{
 						converted = converter(value, _segmenter.Culture);
 					}
-					else if (value == DBNull.Value || value.ToString().IsCaseInsensitiveEqual("[NULL]"))
+					else if (value.ToString().IsCaseInsensitiveEqual("[NULL]"))
 					{
 						// prop is set "explicitly" to null.
 						converted = GetDefaultValue(mapping, propName, defaultValue, result);

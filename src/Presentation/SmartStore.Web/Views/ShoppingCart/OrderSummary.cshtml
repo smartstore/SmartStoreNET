@@ -101,7 +101,7 @@
         @if (Model.DisplayWeight)
 		{
         <td class="weight nobr">
-            <span class="product-weight">@((item.Weight * item.Quantity).ToString("N2")) kg</span>
+            <span class="product-weight">@((item.Weight * item.Quantity).ToString("N2")) @Model.MeasureUnitName</span>
         </td>
         }
 		<td class="unit-price nobr">

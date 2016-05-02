@@ -93,6 +93,8 @@ namespace SmartStore.Web.Controllers
 		private readonly PluginMediator _pluginMediator;
         private readonly IQuantityUnitService _quantityUnitService;
 		private readonly Lazy<ITopicService> _topicService;
+        private readonly IMeasureService _measureService;
+        private readonly MeasureSettings _measureSettings;
 
 		#endregion
 
@@ -124,7 +126,8 @@ namespace SmartStore.Web.Controllers
             CaptchaSettings captchaSettings, AddressSettings addressSettings,
 			HttpContextBase httpContext, PluginMediator pluginMediator,
             IQuantityUnitService quantityUnitService,
-			Lazy<ITopicService> topicService)
+			Lazy<ITopicService> topicService,
+            IMeasureService measureService, MeasureSettings measureSettings)
         {
             this._productService = productService;
             this._workContext = workContext;
@@ -171,6 +174,8 @@ namespace SmartStore.Web.Controllers
 			this._pluginMediator = pluginMediator;
             this._quantityUnitService = quantityUnitService;
 			this._topicService = topicService;
+            this._measureService = measureService;
+            this._measureSettings = measureSettings;
         }
 
         #endregion
@@ -638,6 +643,13 @@ namespace SmartStore.Web.Controllers
 			model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
 			model.ShowProductBundleImages = _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;
 			model.ShowSku = _catalogSettings.ShowProductSku;
+
+            var measure = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
+            if(measure != null) 
+            {
+                model.MeasureUnitName = measure.Name;
+            }
+            
 
 			var checkoutAttributesXml = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 			model.CheckoutAttributeInfo = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(

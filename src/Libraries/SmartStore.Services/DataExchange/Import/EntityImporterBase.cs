@@ -12,22 +12,42 @@ namespace SmartStore.Services.DataExchange.Import
 	{
 		private const string _imageDownloadFolder = @"Content\DownloadedImages";
 
-		public DateTime UtcNow { get; private set; }
+		public DateTime UtcNow
+		{
+			get;
+			private set;
+		}
 
-		public Dictionary<string, string> DownloadedItems { get; private set; }
+		public Dictionary<string, string> DownloadedItems
+		{
+			get;
+			private set;
+		}
 
-		public string ImageDownloadFolder { get; private set; }
+		public string ImageDownloadFolder
+		{
+			get;
+			private set;
+		}
 
-		public string ImageFolder { get; private set; }
+		public string ImageFolder
+		{
+			get;
+			private set;
+		}
 
-		public FileDownloadManagerContext DownloaderContext { get; private set; }
-
-		protected abstract void Import(IImportExecuteContext context);
+		public FileDownloadManagerContext DownloaderContext
+		{
+			get;
+			private set;
+		}
 
 		public void Execute(IImportExecuteContext context)
 		{
 			Import(context);
 		}
+
+		protected abstract void Import(IImportExecuteContext context);
 
 		public void Init(IImportExecuteContext context, DataExchangeSettings dataExchangeSettings)
 		{

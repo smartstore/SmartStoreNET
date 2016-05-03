@@ -92,7 +92,8 @@ namespace SmartStore.Services.Catalog.Importer
 			return (int?)null;
 		}
 
-		private int ProcessProductMappings(IImportExecuteContext context,
+		protected virtual int ProcessProductMappings(
+			IImportExecuteContext context,
 			ImportRow<Product>[] batch,
 			Dictionary<int, ImportProductMapping> srcToDestId)
 		{
@@ -123,7 +124,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		private void ProcessProductPictures(IImportExecuteContext context, ImportRow<Product>[] batch)
+		protected virtual void ProcessProductPictures(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
 			// true, cause pictures must be saved and assigned an id prior adding a mapping.
 			_productPictureRepository.AutoCommitEnabled = true;
@@ -230,7 +231,7 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
-		private int ProcessProductManufacturers(IImportExecuteContext context, ImportRow<Product>[] batch)
+		protected virtual int ProcessProductManufacturers(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
 			_productManufacturerRepository.AutoCommitEnabled = false;
 
@@ -281,7 +282,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		private int ProcessProductCategories(IImportExecuteContext context, ImportRow<Product>[] batch)
+		protected virtual int ProcessProductCategories(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
 			_productCategoryRepository.AutoCommitEnabled = false;
 
@@ -332,7 +333,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		private int ProcessLocalizations(IImportExecuteContext context, ImportRow<Product>[] batch)
+		protected virtual int ProcessLocalizations(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
 			foreach (var row in batch)
 			{
@@ -376,7 +377,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		private int ProcessSlugs(IImportExecuteContext context, ImportRow<Product>[] batch)
+		protected virtual int ProcessSlugs(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
 			var entityName = typeof(Product).Name;
 			var slugMap = new Dictionary<string, UrlRecord>();
@@ -447,7 +448,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return _urlRecordRepository.Context.SaveChanges();
 		}
 
-		private int ProcessStoreMappings(IImportExecuteContext context, ImportRow<Product>[] batch)
+		protected virtual int ProcessStoreMappings(IImportExecuteContext context, ImportRow<Product>[] batch)
 		{
 			_storeMappingRepository.AutoCommitEnabled = false;
 
@@ -464,7 +465,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return _services.DbContext.SaveChanges();
 		}
 
-		private int ProcessProducts(
+		protected virtual int ProcessProducts(
 			IImportExecuteContext context,
 			ImportRow<Product>[] batch,
 			Dictionary<string, int> templateViewPaths,
@@ -865,7 +866,7 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
-		class ImportProductMapping
+		public class ImportProductMapping
 		{
 			public int DestinationId { get; set; }
 			public bool Inserted { get; set; }

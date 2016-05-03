@@ -283,14 +283,16 @@
 				return;
 
 			var isProperty = item.hasClass('mapping-property'),
-				template = $(isProperty ? '#MappingTemplateProperty' : '#MappingTemplateColumn').children(':first');
+				template = $(isProperty ? '#PropertyMappingTemplate' : '#ColumnMappingTemplate').children(':first');
 
 			// hide static label
 			item.find('.item-inner').hide();
 
 			// clone edit template into mapping item
 			var select = template.clone().appendTo(item).find('select');
-			initSelectBox(select, isProperty);
+			select = initSelectBox(select, isProperty);
+			select.select2('focus');
+
 		}).on('click', '.mapping-add', function () {
 			// add mapping item
 			var row = $(this).closest('tr'),
@@ -329,8 +331,10 @@
 				updatePropertyLabel(item, val);
 			}
 			else {
+				var row = $(this).closest('tr');
+				row.find('.input-default').prop('disabled', _.isEmpty(val));
+
 				if (_.isEmpty(val)) {
-					// TODO: display ignored properties in a multi-select on top of mapping table. user must be able to revise the ignoring.
 					val = '<span class="muted">@T("Admin.Common.Ignore")</span>';
 				}
 
@@ -375,7 +379,7 @@
 		}
 
 		function initSelectBox(element, isProperty) {
-			element.select2({
+			return element.select2({
 				allowClear: true,
 				minimumResultsForSearch: 16,
 				matcher: function (term, text, opt) {
@@ -400,7 +404,7 @@
 			if (!mappings.length)
 				return;
 
-			var html = $('#MappingAddTemplate').find('table tbody').html();
+			var html = $('#AddMappingTemplate').find('table tbody').html();
 
 			mappings.find('table:first tbody').append(html);
 

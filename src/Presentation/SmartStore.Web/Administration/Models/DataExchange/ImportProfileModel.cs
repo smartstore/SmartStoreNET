@@ -70,14 +70,15 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string Column { get; set; }
 		public string ColumnWithoutIndex { get; set; }
 		public string ColumnIndex { get; set; }
-		public string ColumnLocalized { get; set; }
 
 		public string Property { get; set; }
+		public string PropertyDescription { get; set; }
+
 		public string Default { get; set; }
 
-		public string Text
+		public bool IsDefaultDisabled
 		{
-			get { return ColumnLocalized.HasValue() ? ColumnLocalized : Column; }
+			get { return Column.IsEmpty(); }
 		}
 	}
 }

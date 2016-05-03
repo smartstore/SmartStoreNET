@@ -54,6 +54,17 @@ namespace SmartStore.Admin.Controllers
 
 		#region Utilities
 
+		private string GetPropertyDescription(Dictionary<string, string> allProperties, string property)
+		{
+			if (property.HasValue() && allProperties.ContainsKey(property))
+			{
+				var result = allProperties[property];
+				if (result.HasValue())
+					return result;
+			}
+			return property;
+		}
+
 		private void PrepareProfileModel(ImportProfileModel model, ImportProfile profile, bool forEdit, ColumnMap invalidMap = null)
 		{
 			model.Id = profile.Id;
@@ -106,7 +117,6 @@ namespace SmartStore.Admin.Controllers
 				string[] availableKeyFieldNames = null;
 				var mapConverter = new ColumnMapConverter();
 				var storedMap = mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping);
-				//var hasStoredMappings = (storedMap != null && storedMap.Mappings.Any());
 				var map = (invalidMap ?? storedMap) ?? new ColumnMap();
 
 				// property name to localized property name
@@ -157,17 +167,13 @@ namespace SmartStore.Admin.Controllers
 							Default = x.Value.Default
 						};
 
+						mapping.PropertyDescription = GetPropertyDescription(allProperties, mapping.Property);
+
 						if (x.Value.IgnoreProperty)
 						{
 							// explicitly ignore the property
 							mapping.Column = null;
 							mapping.Default = null;
-						}
-
-						// add localized to make mappings sortable
-						if (allProperties.ContainsKey(mapping.Property))
-						{
-							mapping.ColumnLocalized = allProperties[mapping.Property];
 						}
 
 						return mapping;
@@ -195,7 +201,7 @@ namespace SmartStore.Admin.Controllers
 							Column = column.Name,
 							ColumnWithoutIndex = columnWithoutIndex,
 							ColumnIndex = columnIndex,
-							ColumnLocalized = (allProperties.ContainsKey(column.Name) ? allProperties[column.Name] : column.Name)
+							PropertyDescription = GetPropertyDescription(allProperties, column.Name)
 						};
 
 						model.AvailableSourceColumns.Add(mapModel);
@@ -216,7 +222,7 @@ namespace SmartStore.Admin.Controllers
 								{
 									Column = column.Name,
 									Property = kvp.Key,
-									ColumnLocalized = kvp.Value
+									PropertyDescription = kvp.Value
 								});
 							}
 						}
@@ -224,11 +230,11 @@ namespace SmartStore.Admin.Controllers
 
 					// sorting
 					model.AvailableSourceColumns = model.AvailableSourceColumns
-						.OrderBy(x => x.ColumnLocalized)
+						.OrderBy(x => x.PropertyDescription)
 						.ToList();
 
 					model.ColumnMappings = model.ColumnMappings
-						.OrderBy(x => x.ColumnLocalized)
+						.OrderBy(x => x.PropertyDescription)
 						.ToList();
 				}
 			}

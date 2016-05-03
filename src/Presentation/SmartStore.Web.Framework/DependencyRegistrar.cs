@@ -77,6 +77,9 @@ using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using Module = Autofac.Module;
+using SmartStore.Services.Catalog.Importer;
+using SmartStore.Services.Customers.Importer;
+using SmartStore.Services.Messages.Importer;
 
 namespace SmartStore.Web.Framework
 {
@@ -104,7 +107,8 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new PackagingModule());
 			builder.RegisterModule(new ProvidersModule(typeFinder, pluginFinder));
             builder.RegisterModule(new TasksModule(typeFinder));
-        }
+			builder.RegisterModule(new DataExchangeModule(typeFinder));
+		}
 
         public int Order
         {
@@ -241,11 +245,6 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<ScheduleTaskService>().As<IScheduleTaskService>().InstancePerRequest();
 			builder.RegisterType<SyncMappingService>().As<ISyncMappingService>().InstancePerRequest();
-
-			builder.RegisterType<ExportProfileService>().As<IExportProfileService>().InstancePerRequest();
-			builder.RegisterType<ImportProfileService>().As<IImportProfileService>().InstancePerRequest();
-			builder.RegisterType<DataExporter>().As<IDataExporter>().InstancePerRequest();
-			builder.RegisterType<DataImporter>().As<IDataImporter>().InstancePerRequest();
 
 			builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
 			builder.RegisterType<UAParserUserAgent>().As<IUserAgent>().InstancePerRequest();
@@ -1082,8 +1081,42 @@ namespace SmartStore.Web.Framework
             });
 
         }
-
     }
+
+	public class DataExchangeModule : Module
+	{
+		private readonly ITypeFinder _typeFinder;
+
+		public DataExchangeModule(ITypeFinder typeFinder)
+		{
+			_typeFinder = typeFinder;
+		}
+
+		protected override void Load(ContainerBuilder builder)
+		{
+			if (!DataSettings.DatabaseIsInstalled())
+				return;
+
+			builder.RegisterType<ExportProfileService>().As<IExportProfileService>().InstancePerRequest();
+			builder.RegisterType<ImportProfileService>().As<IImportProfileService>().InstancePerRequest();
+			builder.RegisterType<DataExporter>().As<IDataExporter>().InstancePerRequest();
+			builder.RegisterType<DataImporter>().As<IDataImporter>().InstancePerRequest();
+
+			// IEntityImporter implementations
+			builder.RegisterType<ProductImporter>().Keyed<IEntityImporter>(ImportEntityType.Product).InstancePerRequest();
+			builder.RegisterType<CategoryImporter>().Keyed<IEntityImporter>(ImportEntityType.Category).InstancePerRequest();
+			builder.RegisterType<CustomerImporter>().Keyed<IEntityImporter>(ImportEntityType.Customer).InstancePerRequest();
+			builder.RegisterType<NewsLetterSubscriptionImporter>().Keyed<IEntityImporter>(ImportEntityType.NewsLetterSubscription).InstancePerRequest();		
+
+			// Register resolving delegate
+			builder.Register<Func<ImportEntityType, IEntityImporter>>(c =>
+			{
+				var cc = c.Resolve<IComponentContext>();
+				return keyed => cc.ResolveKeyed<IEntityImporter>(keyed);
+			});
+		}
+
+	}
 
 	#endregion
 

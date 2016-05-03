@@ -7,16 +7,12 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Email;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
-using SmartStore.Services.Catalog.Importer;
-using SmartStore.Services.Customers.Importer;
 using SmartStore.Services.DataExchange.Csv;
 using SmartStore.Services.DataExchange.Import.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
-using SmartStore.Services.Messages.Importer;
 using SmartStore.Services.Security;
 using SmartStore.Utilities;
 
@@ -24,11 +20,10 @@ namespace SmartStore.Services.DataExchange.Import
 {
 	public partial class DataImporter : IDataImporter
 	{
-		#region Dependencies
-
 		private readonly ICommonServices _services;
 		private readonly IImportProfileService _importProfileService;
 		private readonly ILanguageService _languageService;
+		private readonly Func<ImportEntityType, IEntityImporter> _importerFactory;
 		private readonly Lazy<IEmailAccountService> _emailAccountService;
 		private readonly Lazy<IEmailSender> _emailSender;
 		private readonly Lazy<ContactDataSettings> _contactDataSettings;
@@ -37,6 +32,7 @@ namespace SmartStore.Services.DataExchange.Import
 			ICommonServices services,
 			IImportProfileService importProfileService,
 			ILanguageService languageService,
+			Func<ImportEntityType, IEntityImporter> importerFactory,
 			Lazy<IEmailAccountService> emailAccountService,
 			Lazy<IEmailSender> emailSender,
 			Lazy<DataExchangeSettings> dataExchangeSettings,
@@ -45,14 +41,13 @@ namespace SmartStore.Services.DataExchange.Import
 			_services = services;
 			_importProfileService = importProfileService;
 			_languageService = languageService;
+			_importerFactory = importerFactory;
 			_emailAccountService = emailAccountService;
 			_emailSender = emailSender;
 			_contactDataSettings = contactDataSettings;
 
 			T = NullLocalizer.Instance;
 		}
-
-		#endregion
 
 		public Localizer T { get; set; }
 
@@ -277,30 +272,7 @@ namespace SmartStore.Services.DataExchange.Import
 					if (!HasPermission(ctx))
 						throw new SmartException("You do not have permission to perform the selected import.");
 
-					Type importerType;
-
-					if (ctx.Request.Profile.EntityType == ImportEntityType.Product)
-					{
-						importerType = typeof(ProductImporter);
-					}
-					else if (ctx.Request.Profile.EntityType == ImportEntityType.Customer)
-					{
-						importerType = typeof(CustomerImporter);
-					}
-					else if (ctx.Request.Profile.EntityType == ImportEntityType.NewsLetterSubscription)
-					{
-						importerType = typeof(NewsLetterSubscriptionImporter);
-					}
-					else if (ctx.Request.Profile.EntityType == ImportEntityType.Category)
-					{
-						importerType = typeof(CategoryImporter);
-					}
-					else
-					{
-						throw new SmartException("Unsupported entity type {0}.".FormatInvariant(ctx.Request.Profile.EntityType.ToString()));
-					}
-
-					ctx.Importer = (IEntityImporter)EngineContext.Current.ContainerManager.ResolveUnregistered(importerType);
+					ctx.Importer = _importerFactory(ctx.Request.Profile.EntityType);	
 
 					files.ForEach(x => ImportCoreInner(ctx, x));
 				}

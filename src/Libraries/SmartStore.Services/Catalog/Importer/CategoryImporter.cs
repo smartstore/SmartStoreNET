@@ -15,6 +15,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Utilities;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Catalog.Importer
 {
@@ -25,6 +26,7 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly IRepository<Picture> _pictureRepository;
 		private readonly ICommonServices _services;
 		private readonly IUrlRecordService _urlRecordService;
+		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly ICategoryTemplateService _categoryTemplateService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IPictureService _pictureService;
@@ -37,6 +39,7 @@ namespace SmartStore.Services.Catalog.Importer
 			IRepository<Category> categoryRepository,
 			IRepository<UrlRecord> urlRecordRepository,
 			IRepository<Picture> pictureRepository,
+			IRepository<StoreMapping> storeMappingRepository,
 			ICommonServices services,
 			IUrlRecordService urlRecordService,
 			ICategoryTemplateService categoryTemplateService,
@@ -50,6 +53,7 @@ namespace SmartStore.Services.Catalog.Importer
 			_categoryRepository = categoryRepository;
 			_urlRecordRepository = urlRecordRepository;
 			_pictureRepository = pictureRepository;
+			_storeMappingRepository = storeMappingRepository;
 			_services = services;
 			_urlRecordService = urlRecordService;
 			_categoryTemplateService = categoryTemplateService;
@@ -61,7 +65,7 @@ namespace SmartStore.Services.Catalog.Importer
 			_dataExchangeSettings = dataExchangeSettings;
 		}
 
-		private int ProcessSlugs(IImportExecuteContext context, ImportRow<Category>[] batch)
+		protected virtual int ProcessSlugs(IImportExecuteContext context, ImportRow<Category>[] batch)
 		{
 			var entityName = typeof(Category).Name;
 			var slugMap = new Dictionary<string, UrlRecord>();
@@ -132,7 +136,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return _urlRecordRepository.Context.SaveChanges();
 		}
 
-		private int ProcessLocalizations(IImportExecuteContext context, ImportRow<Category>[] batch)
+		protected virtual int ProcessLocalizations(IImportExecuteContext context, ImportRow<Category>[] batch)
 		{
 			foreach (var row in batch)
 			{
@@ -161,7 +165,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		private int ProcessParentMappings(IImportExecuteContext context,
+		protected virtual int ProcessParentMappings(IImportExecuteContext context,
 			ImportRow<Category>[] batch,
 			Dictionary<int, ImportCategoryMapping> srcToDestId)
 		{
@@ -192,7 +196,8 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		private int ProcessPictures(IImportExecuteContext context,
+		protected virtual int ProcessPictures(
+			IImportExecuteContext context,
 			ImportRow<Category>[] batch,
 			Dictionary<int, ImportCategoryMapping> srcToDestId)
 		{
@@ -266,22 +271,25 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		private void ProcessStoreMappings(IImportExecuteContext context, ImportRow<Category>[] batch)
+		protected virtual int ProcessStoreMappings(IImportExecuteContext context, ImportRow<Category>[] batch)
 		{
+			_storeMappingRepository.AutoCommitEnabled = false;
+
 			foreach (var row in batch)
 			{
-				var limitedToStore = row.GetDataValue<bool>("LimitedToStores");
-
-				if (limitedToStore)
+				var storeIds = row.GetDataValue<List<int>>("StoreIds");
+				if (!storeIds.IsNullOrEmpty())
 				{
-					var storeIds = row.GetDataValue<List<int>>("StoreIds");
-
-					_storeMappingService.SaveStoreMappings(row.Entity, storeIds == null ? new int[0] : storeIds.ToArray());
+					_storeMappingService.SaveStoreMappings(row.Entity, storeIds.ToArray());
 				}
 			}
+
+			// commit whole batch at once
+			return _services.DbContext.SaveChanges();
 		}
 
-		private int ProcessCategories(IImportExecuteContext context,
+		protected virtual int ProcessCategories(
+			IImportExecuteContext context,
 			ImportRow<Category>[] batch,
 			Dictionary<string, int> templateViewPaths,
 			Dictionary<int, ImportCategoryMapping> srcToDestId)
@@ -358,9 +366,11 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, category, (x) => x.HasDiscountsApplied);
 				row.SetProperty(context.Result, category, (x) => x.Published, true);
 				row.SetProperty(context.Result, category, (x) => x.DisplayOrder);
-				row.SetProperty(context.Result, category, (x) => x.LimitedToStores);
 				row.SetProperty(context.Result, category, (x) => x.Alias);
 				row.SetProperty(context.Result, category, (x) => x.DefaultViewMode);
+				// With new entities, "LimitedToStores" is an implicit field, meaning
+				// it has to be set to true by code if it's absent but "StoreIds" exists.
+				row.SetProperty(context.Result, category, (x) => x.LimitedToStores, !row.GetDataValue<List<int>>("StoreIds").IsNullOrEmpty());
 
 				var tvp = row.GetDataValue<string>("CategoryTemplateViewPath");
 				category.CategoryTemplateId = (tvp.HasValue() && templateViewPaths.ContainsKey(tvp) ? templateViewPaths[tvp] : defaultTemplateId);
@@ -486,20 +496,15 @@ namespace SmartStore.Services.Catalog.Importer
 					}
 
 					// process store mappings
-					if (segmenter.HasColumn("LimitedToStores") && segmenter.HasColumn("StoreIds"))
+					if (segmenter.HasColumn("StoreIds"))
 					{
 						try
 						{
-							_categoryRepository.Context.AutoDetectChangesEnabled = true;
 							ProcessStoreMappings(context, batch);
 						}
 						catch (Exception exception)
 						{
 							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessStoreMappings");
-						}
-						finally
-						{
-							_categoryRepository.Context.AutoDetectChangesEnabled = false;
 						}
 					}
 
@@ -555,12 +560,12 @@ namespace SmartStore.Services.Catalog.Importer
 				}
 			}
 		}
+
+		public class ImportCategoryMapping
+		{
+			public int DestinationId { get; set; }
+			public bool Inserted { get; set; }
+		}
 	}
 
-
-	internal class ImportCategoryMapping
-	{
-		public int DestinationId { get; set; }
-		public bool Inserted { get; set; }
-	}
 }

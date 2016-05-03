@@ -165,9 +165,9 @@ namespace SmartStore.Services.DataExchange.Import
 
 				return table;
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw;
+				throw ex;
 			}
 			finally
 			{
@@ -207,6 +207,8 @@ namespace SmartStore.Services.DataExchange.Import
 			}
 
 			var fieldCount = reader.FieldCount;
+
+			take = Math.Min(int.MaxValue, int.MaxValue - skip);
 
 			int i = -1;
 			while (reader.Read())

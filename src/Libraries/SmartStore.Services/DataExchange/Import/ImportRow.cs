@@ -18,6 +18,30 @@ namespace SmartStore.Services.DataExchange.Import
 		private readonly ImportDataSegmenter<T> _segmenter;
 		private readonly IDataRow _row;
 
+		public ImportRow(ImportDataSegmenter<T> parent, IDataRow row, int position)
+		{
+			_segmenter = parent;
+			_row = row;
+			_position = position;
+		}
+
+		public void Initialize(T entity, string entityDisplayName)
+		{
+			_entity = entity;
+			_entityDisplayName = entityDisplayName;
+			_isNew = _entity.Id == 0;
+
+			_initialized = true;
+		}
+
+		private void CheckInitialized()
+		{
+			if (_initialized)
+			{
+				throw Error.InvalidOperation("A row must be initialized before interacting with the entity or the data store");
+			}
+		}
+
 		private TProp GetDefaultValue<TProp>(ColumnMappingValue mapping, string columnName, TProp defaultValue, ImportResult result = null)
 		{
 			if (mapping != null && mapping.Default.HasValue())
@@ -37,30 +61,6 @@ namespace SmartStore.Services.DataExchange.Import
 			}
 
 			return defaultValue;
-		}
-
-		private void CheckInitialized()
-		{
-			if (_initialized)
-			{
-				throw Error.InvalidOperation("A row must be initialized before interacting with the entity or the data store");
-			}
-		}
-
-		public ImportRow(ImportDataSegmenter<T> parent, IDataRow row, int position)
-		{
-			_segmenter = parent;
-			_row = row;
-			_position = position;
-		}
-
-		public void Initialize(T entity, string entityDisplayName)
-		{
-			_entity = entity;
-			_entityDisplayName = entityDisplayName;
-			_isNew = _entity.Id == 0;
-
-			_initialized = true;
 		}
 
 		public bool IsTransient

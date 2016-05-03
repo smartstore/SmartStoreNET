@@ -397,7 +397,7 @@ namespace SmartStore.Services.Customers.Importer
 				var isForumModerator = row.GetDataValue<bool>("IsForumModerator");
 				var affiliateId = row.GetDataValue<int>("AffiliateId");
 
-				row.Initialize(customer, email.HasValue() ? email : id.ToString());
+				row.Initialize(customer, email ?? id.ToString());
 
 				row.SetProperty(context.Result, customer, (x) => x.CustomerGuid);
 				row.SetProperty(context.Result, customer, (x) => x.Username);

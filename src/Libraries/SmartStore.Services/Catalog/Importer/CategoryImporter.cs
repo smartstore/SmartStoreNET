@@ -335,7 +335,7 @@ namespace SmartStore.Services.Catalog.Importer
 					category = new Category();
 				}
 
-				row.Initialize(category, name);
+				row.Initialize(category, name ?? category.Name);
 
 				if (!row.IsNew && !category.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
 				{

@@ -520,7 +520,7 @@ namespace SmartStore.Services.Catalog.Importer
 						continue;
 					}
 
-					// a Name is required with new products.
+					// a Name is required for new products.
 					if (!row.HasDataValue("Name"))
 					{
 						++context.Result.SkippedRecords;
@@ -533,7 +533,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 				var name = row.GetDataValue<string>("Name");
 
-				row.Initialize(product, name);
+				row.Initialize(product, name ?? product.Name);
 
 				if (!row.IsNew)
 				{

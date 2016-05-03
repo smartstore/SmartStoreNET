@@ -134,7 +134,7 @@ namespace SmartStore.Services.Catalog.Importer
 			foreach (var row in batch)
 			{
 				var imageUrls = row.GetDataValue<List<string>>("ImageUrls");
-				if (imageUrls == null || !imageUrls.Any())
+				if (imageUrls.IsNullOrEmpty())
 					continue;
 
 				var imageNumber = 0;
@@ -239,7 +239,7 @@ namespace SmartStore.Services.Catalog.Importer
 			foreach (var row in batch)
 			{
 				var manufacturerIds = row.GetDataValue<List<int>>("ManufacturerIds");
-				if (manufacturerIds != null && manufacturerIds.Any())
+				if (!manufacturerIds.IsNullOrEmpty())
 				{
 					try
 					{
@@ -290,7 +290,7 @@ namespace SmartStore.Services.Catalog.Importer
 			foreach (var row in batch)
 			{
 				var categoryIds = row.GetDataValue<List<int>>("CategoryIds");
-				if (categoryIds != null && categoryIds.Any())
+				if (!categoryIds.IsNullOrEmpty())
 				{
 					try
 					{
@@ -338,21 +338,35 @@ namespace SmartStore.Services.Catalog.Importer
 			{
 				foreach (var lang in context.Languages)
 				{
-					var name = row.GetDataValue<string>("Name", lang.UniqueSeoCode);
-					var shortDescription = row.GetDataValue<string>("ShortDescription", lang.UniqueSeoCode);
-					var fullDescription = row.GetDataValue<string>("FullDescription", lang.UniqueSeoCode);
-					var metaKeywords = row.GetDataValue<string>("MetaKeywords", lang.UniqueSeoCode);
-					var metaDescription  = row.GetDataValue<string>("MetaDescription", lang.UniqueSeoCode);
-					var metaTitle = row.GetDataValue<string>("MetaTitle", lang.UniqueSeoCode);
-					var bundleTitleText = row.GetDataValue<string>("BundleTitleText", lang.UniqueSeoCode);
+					var code = lang.UniqueSeoCode;
 
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.Name, name, lang.Id);
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.ShortDescription, shortDescription, lang.Id);
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.FullDescription, fullDescription, lang.Id);
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaKeywords, metaKeywords, lang.Id);
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaDescription, metaDescription, lang.Id);
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaTitle, metaTitle, lang.Id);
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.BundleTitleText, bundleTitleText, lang.Id);
+					var value = row.GetDataValue<string>("Name", lang.UniqueSeoCode);
+					if (value.HasValue())
+						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.Name, value, lang.Id);
+
+					value = row.GetDataValue<string>("ShortDescription", lang.UniqueSeoCode);
+					if (value.HasValue())
+						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.ShortDescription, value, lang.Id);
+
+					value = row.GetDataValue<string>("FullDescription", lang.UniqueSeoCode);
+					if (value.HasValue())
+						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.FullDescription, value, lang.Id);
+
+					value = row.GetDataValue<string>("MetaKeywords", lang.UniqueSeoCode);
+					if (value.HasValue())
+						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaKeywords, value, lang.Id);
+
+					value = row.GetDataValue<string>("MetaDescription", lang.UniqueSeoCode);
+					if (value.HasValue())
+						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaDescription, value, lang.Id);
+
+					value = row.GetDataValue<string>("MetaTitle", lang.UniqueSeoCode);
+					if (value.HasValue())
+						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaTitle, value, lang.Id);
+
+					value = row.GetDataValue<string>("BundleTitleText", lang.UniqueSeoCode);
+					if (value.HasValue())
+						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.BundleTitleText, value, lang.Id);
 				}
 			}
 
@@ -409,9 +423,9 @@ namespace SmartStore.Services.Catalog.Importer
 
 					foreach (var lang in context.Languages)
 					{
-						if (row.Segmenter.HasColumn("SeName", lang.UniqueSeoCode))
+						seName = row.GetDataValue<string>("SeName", lang.UniqueSeoCode);
+						if (seName.HasValue())
 						{
-							seName = row.GetDataValue<string>("SeName", lang.UniqueSeoCode);
 							seName = row.Entity.ValidateSeName(seName, null, false, _urlRecordService, _seoSettings, lang.Id, slugLookup);
 
 							urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, lang.Id);
@@ -469,23 +483,28 @@ namespace SmartStore.Services.Catalog.Importer
 				
 				foreach (var keyName in context.KeyFieldNames)
 				{
-					switch (keyName)
+					var keyValue = row.GetDataValue<string>(keyName);
+
+					if (keyValue.HasValue() || id > 0)
 					{
-						case "Id":
-							product = _productService.GetProductById(id);
-							break;
-						case "Sku":
-							product = _productService.GetProductBySku(row.GetDataValue<string>("Sku"));
-							break;
-						case "Gtin":
-							product = _productService.GetProductByGtin(row.GetDataValue<string>("Gtin"));
-							break;
-						case "ManufacturerPartNumber":
-							product = _productService.GetProductByManufacturerPartNumber(row.GetDataValue<string>("ManufacturerPartNumber"));
-							break;
-						case "Name":
-							product = _productService.GetProductByName(row.GetDataValue<string>("Name"));
-							break;
+						switch (keyName)
+						{
+							case "Id":
+								product = _productService.GetProductById(id);
+								break;
+							case "Sku":
+								product = _productService.GetProductBySku(keyValue);
+								break;
+							case "Gtin":
+								product = _productService.GetProductByGtin(keyValue);
+								break;
+							case "ManufacturerPartNumber":
+								product = _productService.GetProductByManufacturerPartNumber(keyValue);
+								break;
+							case "Name":
+								product = _productService.GetProductByName(keyValue);
+								break;
+						}
 					}
 
 					if (product != null)

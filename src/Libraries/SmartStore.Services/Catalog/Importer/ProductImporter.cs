@@ -340,31 +340,31 @@ namespace SmartStore.Services.Catalog.Importer
 				{
 					var code = lang.UniqueSeoCode;
 
-					var value = row.GetDataValue<string>("Name", lang.UniqueSeoCode);
+					var value = row.GetDataValue<string>("Name", code);
 					if (value.HasValue())
 						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.Name, value, lang.Id);
 
-					value = row.GetDataValue<string>("ShortDescription", lang.UniqueSeoCode);
+					value = row.GetDataValue<string>("ShortDescription", code);
 					if (value.HasValue())
 						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.ShortDescription, value, lang.Id);
 
-					value = row.GetDataValue<string>("FullDescription", lang.UniqueSeoCode);
+					value = row.GetDataValue<string>("FullDescription", code);
 					if (value.HasValue())
 						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.FullDescription, value, lang.Id);
 
-					value = row.GetDataValue<string>("MetaKeywords", lang.UniqueSeoCode);
+					value = row.GetDataValue<string>("MetaKeywords", code);
 					if (value.HasValue())
 						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaKeywords, value, lang.Id);
 
-					value = row.GetDataValue<string>("MetaDescription", lang.UniqueSeoCode);
+					value = row.GetDataValue<string>("MetaDescription", code);
 					if (value.HasValue())
 						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaDescription, value, lang.Id);
 
-					value = row.GetDataValue<string>("MetaTitle", lang.UniqueSeoCode);
+					value = row.GetDataValue<string>("MetaTitle", code);
 					if (value.HasValue())
 						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaTitle, value, lang.Id);
 
-					value = row.GetDataValue<string>("BundleTitleText", lang.UniqueSeoCode);
+					value = row.GetDataValue<string>("BundleTitleText", code);
 					if (value.HasValue())
 						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.BundleTitleText, value, lang.Id);
 				}

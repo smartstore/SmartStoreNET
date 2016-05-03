@@ -54,6 +54,35 @@ namespace SmartStore.Admin.Controllers
 
 		#region Utilities
 
+		private bool IsDefaultValueDisabled(string column, string property, string[] disabledFieldNames)
+		{
+			if (disabledFieldNames.Contains(property))
+				return true;
+
+			string columnWithoutIndex, columnIndex;
+			if (ColumnMap.ParseSourceColumn(property, out columnWithoutIndex, out columnIndex))
+				return disabledFieldNames.Contains(columnWithoutIndex);
+
+			return false;
+		}
+
+		private string[] GetDisabledDefaultFieldNames(ImportProfile profile)
+		{
+			switch (profile.EntityType)
+			{
+				case ImportEntityType.Product:
+					return new string[] { "Name", "Sku", "ManufacturerPartNumber", "Gtin" };
+				case ImportEntityType.Category:
+					return new string[] { "Name" };
+				case ImportEntityType.Customer:
+					return new string[] { "CustomerGuid", "Email" };
+				case ImportEntityType.NewsLetterSubscription:
+					return new string[] { "Email" };
+				default:
+					return new string[0];
+			}
+		}
+
 		private string GetPropertyDescription(Dictionary<string, string> allProperties, string property)
 		{
 			if (property.HasValue() && allProperties.ContainsKey(property))
@@ -108,13 +137,14 @@ namespace SmartStore.Admin.Controllers
 
 			// column mapping
 			model.AvailableSourceColumns = new List<ColumnMappingItemModel>();
-			model.AvailableEntityProperties = new List<SelectListItem>();
+			model.AvailableEntityProperties = new List<ColumnMappingItemModel>();
 			model.AvailableKeyFieldNames = new List<SelectListItem>();
 			model.ColumnMappings = new List<ColumnMappingItemModel>();
 
 			try
 			{
 				string[] availableKeyFieldNames = null;
+				string[] disabledDefaultFieldNames = GetDisabledDefaultFieldNames(profile);
 				var mapConverter = new ColumnMapConverter();
 				var storedMap = mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping);
 				var map = (invalidMap ?? storedMap) ?? new ColumnMap();
@@ -139,8 +169,17 @@ namespace SmartStore.Admin.Controllers
 				}
 
 				model.AvailableEntityProperties = allProperties
-					.Select(x => new SelectListItem { Value = x.Key, Text = x.Value })
-					.OrderBy(x => x.Text)
+					.Select(x =>
+					{
+						var mapping = new ColumnMappingItemModel
+						{
+							Property = x.Key,
+							PropertyDescription = x.Value,
+							IsDefaultDisabled = IsDefaultValueDisabled(x.Key, x.Key, disabledDefaultFieldNames)
+						};
+
+						return mapping;
+					})
 					.ToList();
 
 				model.AvailableKeyFieldNames = availableKeyFieldNames
@@ -167,14 +206,15 @@ namespace SmartStore.Admin.Controllers
 							Default = x.Value.Default
 						};
 
-						mapping.PropertyDescription = GetPropertyDescription(allProperties, mapping.Property);
-
 						if (x.Value.IgnoreProperty)
 						{
 							// explicitly ignore the property
 							mapping.Column = null;
 							mapping.Default = null;
 						}
+
+						mapping.PropertyDescription = GetPropertyDescription(allProperties, mapping.Property);
+						mapping.IsDefaultDisabled = IsDefaultValueDisabled(mapping.Column, mapping.Property, disabledDefaultFieldNames);
 
 						return mapping;
 					})
@@ -195,16 +235,14 @@ namespace SmartStore.Admin.Controllers
 						string columnWithoutIndex, columnIndex;
 						ColumnMap.ParseSourceColumn(column.Name, out columnWithoutIndex, out columnIndex);
 
-						var mapModel = new ColumnMappingItemModel
+						model.AvailableSourceColumns.Add(new ColumnMappingItemModel
 						{
 							Index = dataTable.Columns.IndexOf(column),
 							Column = column.Name,
 							ColumnWithoutIndex = columnWithoutIndex,
 							ColumnIndex = columnIndex,
 							PropertyDescription = GetPropertyDescription(allProperties, column.Name)
-						};
-
-						model.AvailableSourceColumns.Add(mapModel);
+						});
 
 						// auto map where field equals property name
 						if (!model.ColumnMappings.Any(x => x.Column == column.Name))
@@ -222,7 +260,8 @@ namespace SmartStore.Admin.Controllers
 								{
 									Column = column.Name,
 									Property = kvp.Key,
-									PropertyDescription = kvp.Value
+									PropertyDescription = kvp.Value,
+									IsDefaultDisabled = IsDefaultValueDisabled(column.Name, kvp.Key, disabledDefaultFieldNames)
 								});
 							}
 						}
@@ -230,6 +269,10 @@ namespace SmartStore.Admin.Controllers
 
 					// sorting
 					model.AvailableSourceColumns = model.AvailableSourceColumns
+						.OrderBy(x => x.PropertyDescription)
+						.ToList();
+
+					model.AvailableEntityProperties = model.AvailableEntityProperties
 						.OrderBy(x => x.PropertyDescription)
 						.ToList();
 
@@ -382,6 +425,9 @@ namespace SmartStore.Admin.Controllers
 						}
 						else if (!column.IsCaseInsensitiveEqual(property) || defaultValue.HasValue())
 						{
+							if (defaultValue.HasValue() && GetDisabledDefaultFieldNames(profile).Contains(property))
+								defaultValue = null;
+
 							result = map.AddMapping(column, null, property, defaultValue);
 						}
 

@@ -59,7 +59,7 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public List<ColumnMappingItemModel> ColumnMappings { get; set; }
 		public List<ColumnMappingItemModel> AvailableSourceColumns { get; set; }
-		public List<SelectListItem> AvailableEntityProperties { get; set; }
+		public List<ColumnMappingItemModel> AvailableEntityProperties { get; set; }
 	}
 
 
@@ -75,10 +75,6 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string PropertyDescription { get; set; }
 
 		public string Default { get; set; }
-
-		public bool IsDefaultDisabled
-		{
-			get { return Column.IsEmpty(); }
-		}
+		public bool IsDefaultDisabled { get; set; }
 	}
 }

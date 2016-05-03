@@ -255,21 +255,15 @@
 		});
 
 		// mapping row handling
-		$('#ImportColumnMappings').on('change', '.select-property', function () {
+		$('#ImportColumnMappings').on('change', '.select-property, .select-column', function () {
 			var row = $(this).closest('tr');
-
 			if (row.hasClass('column-mapping-new')) {
-				var hasColumn = !_.isEmpty(row.find('.select-column').select2('val')),
-					hasProperty = !_.isEmpty($(this).select2('val'));
+				var properties = row.find('.select-property'),
+					hasColumn = !_.isEmpty(row.find('.select-column').select2('val')),
+					hasProperty = !_.isEmpty(properties.select2('val')),
+					isDefaultDisabled = (properties.find('option:selected').attr('data-defaultdisabled') === '1');
 
-				row.find('.mapping-add').prop('disabled', !(hasProperty && hasColumn));
-			}
-		}).on('change', '.select-column', function () {
-			var row = $(this).closest('tr');
-
-			if (row.hasClass('column-mapping-new')) {
-				var hasColumn = !_.isEmpty($(this).select2('val')),
-					hasProperty = !_.isEmpty(row.find('.select-property').select2('val'));
+				row.find('.input-default').prop('disabled', !hasColumn || isDefaultDisabled);
 
 				row.find('.mapping-add').prop('disabled', !(hasProperty && hasColumn));
 			}
@@ -294,7 +288,7 @@
 			select.select2('focus');
 
 		}).on('click', '.mapping-add', function () {
-			// add mapping item
+			// add new mapping row
 			var row = $(this).closest('tr'),
 				table = row.closest('table'),
 				index = parseInt(table.attr('data-maxindex')) + 1;
@@ -321,7 +315,7 @@
 
 			appendNewMappingRow();
 		}).on('click', '.mapping-apply', function () {
-			// apply mapping edit
+			// apply edited values
 			var item = $(this).closest('.mapping-item'),
 				val = item.find('select').select2('val');
 
@@ -331,15 +325,19 @@
 				updatePropertyLabel(item, val);
 			}
 			else {
-				var row = $(this).closest('tr');
-				row.find('.input-default').prop('disabled', _.isEmpty(val));
-
 				if (_.isEmpty(val)) {
 					val = '<span class="muted">@T("Admin.Common.Ignore")</span>';
 				}
-
 				item.find('.left-label').html(val);
 			}
+
+			var row = $(this).closest('tr'),
+				hasColumn = !_.isEmpty(row.find('input[name^="ColumnMapping.Column."]').val()),
+				property = row.find('input[name^="ColumnMapping.Property."]').val(),
+				properties = $('#PropertyMappingTemplate').find('select'),
+				isDefaultDisabled = (properties.find('option[value="' + property + '"]').attr('data-defaultdisabled') === '1');
+
+			row.find('.input-default').prop('disabled', !hasColumn || isDefaultDisabled);
 
 			closeAllMappingEdits();
 		}).on('click', '.mapping-cancel', function () {
@@ -354,8 +352,10 @@
 
 		function closeAllMappingEdits() {
 			$('#ImportColumnMappings').find('.mapping-edit').each(function () {
-				$(this).closest('.mapping-item').find('.item-inner').show();
-				$(this).remove();
+				var self = $(this);
+				self.closest('.mapping-item').find('.item-inner').show();
+				self.find('select').select2('destroy');
+				self.remove();
 			});
 		}
 

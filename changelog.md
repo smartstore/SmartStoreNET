@@ -31,6 +31,7 @@
 * Manually notifying gift card recipient threw an exception
 * Loading shipping by weight grid failed under SQL CE
 * #949 Import: ProcessSlugs does not process explicitly specified "SeName", if product name did not change in an update scenario
+* Customer import: Creates customer role duplicates for inserted customers
 
 
 ## SmartStore.NET 2.5

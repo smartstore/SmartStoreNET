@@ -321,8 +321,7 @@ namespace SmartStore.Services.Customers.Importer
 
 		private int ProcessCustomers(IImportExecuteContext context,
 			ImportRow<Customer>[] batch,
-			List<int> allAffiliateIds,
-			IList<CustomerRole> allCustomerRoles)
+			List<int> allAffiliateIds)
 		{
 			_customerRepository.AutoCommitEnabled = true;
 
@@ -330,9 +329,9 @@ namespace SmartStore.Services.Customers.Importer
 			Customer lastUpdated = null;
 			var currentCustomer = _services.WorkContext.CurrentCustomer;
 
-			var guestRole = allCustomerRoles.FirstOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests);
-			var registeredRole = allCustomerRoles.FirstOrDefault(x => x.SystemName == SystemCustomerRoleNames.Registered);
-			var forumModeratorRole = allCustomerRoles.FirstOrDefault(x => x.SystemName == SystemCustomerRoleNames.ForumModerators);
+			var guestRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests);
+			var registeredRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
+			var forumModeratorRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.ForumModerators);
 
 			foreach (var row in batch)
 			{
@@ -455,9 +454,14 @@ namespace SmartStore.Services.Customers.Importer
 			var num = _customerRepository.Context.SaveChanges();
 
 			if (lastInserted != null)
+			{
 				_services.EventPublisher.EntityInserted(lastInserted);
+			}
+
 			if (lastUpdated != null)
+			{
 				_services.EventPublisher.EntityUpdated(lastUpdated);
+			}
 
 			return num;
 		}
@@ -482,8 +486,6 @@ namespace SmartStore.Services.Customers.Importer
 		{
 			var customer = _services.WorkContext.CurrentCustomer;
 			var allowManagingCustomerRoles = _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomerRoles, customer);
-
-			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
 
 			var allAffiliateIds = _affiliateService.GetAllAffiliates(true)
 				.Select(x => x.Id)
@@ -524,7 +526,7 @@ namespace SmartStore.Services.Customers.Importer
 
 					try
 					{
-						ProcessCustomers(context, batch, allAffiliateIds, allCustomerRoles);
+						ProcessCustomers(context, batch, allAffiliateIds);
 					}
 					catch (Exception exception)
 					{

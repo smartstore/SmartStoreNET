@@ -99,16 +99,54 @@ namespace SmartStore.Services.DataExchange.Import
 			get { return _position; }
 		}
 
-		public bool HasDataValue(string columnName)
+		/// <summary>
+		/// Determines whether a specific column exists in the underlying data table 
+		/// and contains a non-null, convertible value.
+		/// </summary>
+		/// <param name="columnName">The name of the column</param>
+		/// <param name="withAnyIndex">
+		///		If <c>true</c> and a column with the passed <paramref name="columnName"/> does not exist,
+		///		this method seeks for any indexed column with the same name.
+		/// </param>
+		/// <returns><c>true</c> if the column exists and contains a value, <c>false</c> otherwise</returns>
+		/// <remarks>
+		///		This method takes mapped column names into account.
+		/// </remarks>
+		public bool HasDataValue(string columnName, bool withAnyIndex = false)
 		{
-			return HasDataValue(columnName, null);
+			var result = HasDataValue(columnName, null);
+
+			if (!result && withAnyIndex)
+			{
+				// Column does not have a value, but withAnyIndex is true:
+				// Test for values in any indexed column.
+				var indexes = _segmenter.GetColumnIndexes(columnName);
+				foreach (var idx in indexes)
+				{
+					result = HasDataValue(columnName, idx);
+					if (result)
+						break;
+				}
+			}
+
+			return result;
 		}
 
+		/// <summary>
+		/// Determines whether the column <c>name[index]</c> exists in the underlying data table 
+		/// and contains a non-null, convertible value.
+		/// </summary>
+		/// <param name="columnName">The name of the column</param>
+		/// <param name="index">The index of the column</param>
+		/// <returns><c>true</c> if the column exists and contains a value, <c>false</c> otherwise</returns>
+		/// <remarks>
+		///		This method takes mapped column names into account.
+		/// </remarks>
 		public bool HasDataValue(string columnName, string index)
 		{
-			object value;
 			var mapping = _segmenter.ColumnMap.GetMapping(columnName, index);
-			
+
+			object value;
 			return (_row.TryGetValue(mapping.Property, out value) && value != null && value != DBNull.Value);
 		}
 

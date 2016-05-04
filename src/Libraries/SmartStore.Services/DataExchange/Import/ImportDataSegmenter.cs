@@ -88,11 +88,41 @@ namespace SmartStore.Services.DataExchange.Import
 			get { return BATCHSIZE; }
 		}
 
-		public bool HasColumn(string name)
+		/// <summary>
+		/// Determines whether a specific column exists in the underlying data table.
+		/// </summary>
+		/// <param name="name">The name of the column to find</param>
+		/// <param name="withAnyIndex">
+		///		If <c>true</c> and a column with the passed <paramref name="name"/> does not exist,
+		///		this method tests for the existence of any indexed column with the same name.
+		/// </param>
+		/// <returns><c>true</c> if the column exists, <c>false</c> otherwise</returns>
+		/// <remarks>
+		///		This method takes mapped column names into account.
+		/// </remarks>
+		public bool HasColumn(string name, bool withAnyIndex = false)
 		{
-			return _table.HasColumn(_columnMap.GetMapping(name).Property);
+			var result = HasColumn(name, null);
+
+			if (!result && withAnyIndex)
+			{
+				// Column does not exist, but withAnyIndex is true:
+				// Test for existence of any indexed column.
+				result = GetColumnIndexes(name).Length > 0;
+			}
+
+			return result;
 		}
 
+		/// <summary>
+		/// Determines whether the column <c>name[index]</c> exists in the underlying data table.
+		/// </summary>
+		/// <param name="name">The name of the column to find</param>
+		/// <param name="index">The index of the column</param>
+		/// <returns><c>true</c> if the column exists, <c>false</c> otherwise</returns>
+		/// <remarks>
+		///		This method takes mapped column names into account.
+		/// </remarks>
 		public bool HasColumn(string name, string index)
 		{
 			return _table.HasColumn(_columnMap.GetMapping(name, index).Property);

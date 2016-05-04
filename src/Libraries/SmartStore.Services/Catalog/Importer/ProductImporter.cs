@@ -389,13 +389,14 @@ namespace SmartStore.Services.Catalog.Importer
 
 			foreach (var row in batch)
 			{
-				if (!(row.Segmenter.HasColumn("SeName") || row.IsNew || row.NameChanged))
+				var seName = row.GetDataValue<string>("SeName");
+
+				if (!(seName.HasValue() || row.IsNew || row.NameChanged))
 					continue;
 
 				try
 				{
 					UrlRecord urlRecord = null;
-					var seName = row.GetDataValue<string>("SeName");
 					seName = row.Entity.ValidateSeName(seName, row.Entity.Name, true, _urlRecordService, _seoSettings, extraSlugLookup: slugLookup);
 
 					if (row.IsNew)
@@ -428,9 +429,7 @@ namespace SmartStore.Services.Catalog.Importer
 						if (seName.HasValue())
 						{
 							seName = row.Entity.ValidateSeName(seName, null, false, _urlRecordService, _seoSettings, lang.Id, slugLookup);
-
 							urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, lang.Id);
-
 							if (urlRecord != null)
 							{
 								slugMap[seName] = urlRecord;

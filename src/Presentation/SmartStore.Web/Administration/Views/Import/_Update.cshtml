@@ -277,16 +277,45 @@
 				return;
 
 			var isProperty = item.hasClass('mapping-property'),
-				template = $(isProperty ? '#PropertyMappingTemplate' : '#ColumnMappingTemplate').children(':first');
+				template = $(isProperty ? '#PropertyMappingTemplate' : '#ColumnMappingTemplate').children(':first'),
+				currentValue = item.find(isProperty ? 'input[name^="ColumnMapping.Property."]' : 'input[name^="ColumnMapping.Column."]').val();
 
 			// hide static label
 			item.find('.item-inner').hide();
 
 			// clone edit template into mapping item
 			var select = template.clone().appendTo(item).find('select');
+			select.val(currentValue);
+
 			select = initSelectBox(select, isProperty);
 			select.select2('focus');
 
+		}).on('click', '.mapping-apply', function () {
+			// apply edited values
+			var item = $(this).closest('.mapping-item'),
+				val = item.find('select').select2('val');
+
+			item.find('input[type=hidden]').val(val);
+
+			if (item.hasClass('mapping-property')) {
+				updatePropertyLabel(item, val);
+			}
+			else {
+				if (_.isEmpty(val)) {
+					val = '<span class="muted">@T("Admin.Common.Ignore")</span>';
+				}
+				item.find('.left-label').html(val);
+			}
+
+			var row = $(this).closest('tr'),
+				hasColumn = !_.isEmpty(row.find('input[name^="ColumnMapping.Column."]').val()),
+				property = row.find('input[name^="ColumnMapping.Property."]').val(),
+				properties = $('#PropertyMappingTemplate').find('select'),
+				isDefaultDisabled = (properties.find('option[value="' + property + '"]').attr('data-defaultdisabled') === '1');
+
+			row.find('.input-default').prop('disabled', !hasColumn || isDefaultDisabled);
+
+			closeAllMappingEdits();
 		}).on('click', '.mapping-add', function () {
 			// add new mapping row
 			var row = $(this).closest('tr'),
@@ -314,32 +343,6 @@
 			row.find('.mapping-delete').show();
 
 			appendNewMappingRow();
-		}).on('click', '.mapping-apply', function () {
-			// apply edited values
-			var item = $(this).closest('.mapping-item'),
-				val = item.find('select').select2('val');
-
-			item.find('input[type=hidden]').val(val);
-
-			if (item.hasClass('mapping-property')) {
-				updatePropertyLabel(item, val);
-			}
-			else {
-				if (_.isEmpty(val)) {
-					val = '<span class="muted">@T("Admin.Common.Ignore")</span>';
-				}
-				item.find('.left-label').html(val);
-			}
-
-			var row = $(this).closest('tr'),
-				hasColumn = !_.isEmpty(row.find('input[name^="ColumnMapping.Column."]').val()),
-				property = row.find('input[name^="ColumnMapping.Property."]').val(),
-				properties = $('#PropertyMappingTemplate').find('select'),
-				isDefaultDisabled = (properties.find('option[value="' + property + '"]').attr('data-defaultdisabled') === '1');
-
-			row.find('.input-default').prop('disabled', !hasColumn || isDefaultDisabled);
-
-			closeAllMappingEdits();
 		}).on('click', '.mapping-cancel', function () {
 			closeAllMappingEdits();
 		}).on('click', '.mapping-delete', function () {

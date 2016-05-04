@@ -215,11 +215,11 @@ namespace SmartStore.Services.Customers.Importer
 				row.Entity.Addresses.Add(appliedAddress);
 			}
 
-			if (fieldPrefix.IsCaseInsensitiveEqual("BillTo"))
+			if (fieldPrefix == "BillingAddress.")
 			{
 				row.Entity.BillingAddress = appliedAddress;
 			}
-			else if (fieldPrefix.IsCaseInsensitiveEqual("ShipTo"))
+			else if (fieldPrefix == "ShippingAddress.")
 			{
 				row.Entity.ShippingAddress = appliedAddress;
 			}
@@ -554,7 +554,7 @@ namespace SmartStore.Services.Customers.Importer
 						_services.DbContext.AutoDetectChangesEnabled = false;
 					}
 
-					if (segmenter.HasColumn("BillToLastName") || segmenter.HasColumn("ShipToLastName"))
+					if (segmenter.HasColumn("BillingAddress.LastName") || segmenter.HasColumn("ShippingAddress.LastName"))
 					{
 						try
 						{
@@ -562,8 +562,8 @@ namespace SmartStore.Services.Customers.Importer
 
 							foreach (var row in batch)
 							{
-								ImportAddress("BillTo", row, allCountries, allStateProvinces);
-								ImportAddress("ShipTo", row, allCountries, allStateProvinces);
+								ImportAddress("BillingAddress.", row, allCountries, allStateProvinces);
+								ImportAddress("ShippingAddress.", row, allCountries, allStateProvinces);
 							}
 						}
 						catch (Exception exception)

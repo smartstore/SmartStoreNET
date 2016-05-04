@@ -77,7 +77,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 			foreach (var row in batch)
 			{
-				if (!row.IsNew && !row.NameChanged)
+				if (!(row.Segmenter.HasColumn("SeName") || row.IsNew || row.NameChanged))
 					continue;
 
 				try
@@ -112,9 +112,9 @@ namespace SmartStore.Services.Catalog.Importer
 
 					foreach (var lang in context.Languages)
 					{
-						if (row.Segmenter.HasColumn("SeName", lang.UniqueSeoCode))
+						seName = row.GetDataValue<string>("SeName", lang.UniqueSeoCode);
+						if (seName.HasValue())
 						{
-							seName = row.GetDataValue<string>("SeName", lang.UniqueSeoCode);
 							seName = row.Entity.ValidateSeName(seName, null, false, _urlRecordService, _seoSettings, lang.Id, slugLookup);
 
 							urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, lang.Id);

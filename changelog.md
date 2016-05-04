@@ -30,6 +30,7 @@
 * Fixed: Export deployment emails were always send manually
 * Manually notifying gift card recipient threw an exception
 * Loading shipping by weight grid failed under SQL CE
+* #949 Import: ProcessSlugs does not process explicitly specified "SeName", if product name did not change in an update scenario
 
 
 ## SmartStore.NET 2.5

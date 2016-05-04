@@ -389,7 +389,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 			foreach (var row in batch)
 			{
-				if (!row.IsNew && !row.NameChanged)
+				if (!(row.Segmenter.HasColumn("SeName") || row.IsNew || row.NameChanged))
 					continue;
 
 				try

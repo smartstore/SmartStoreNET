@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -16,6 +17,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Utilities;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.Catalog.Importer
 {
@@ -39,6 +41,17 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly FileDownloadManager _fileDownloadManager;
 		private readonly SeoSettings _seoSettings;
 		private readonly DataExchangeSettings _dataExchangeSettings;
+
+		private static readonly Dictionary<string, Expression<Func<Product, string>>> _localizableProperties = new Dictionary<string, Expression<Func<Product, string>>>
+		{
+			{ "Name", x => x.Name },
+			{ "ShortDescription", x => x.ShortDescription },
+			{ "FullDescription", x => x.FullDescription },
+			{ "MetaKeywords", x => x.MetaKeywords },
+			{ "MetaDescription", x => x.MetaDescription },
+			{ "MetaTitle", x => x.MetaTitle },
+			{ "BundleTitleText", x => x.BundleTitleText }
+		};
 
 		public ProductImporter(
 			IRepository<ProductPicture> productPictureRepository,
@@ -333,54 +346,52 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		protected virtual int ProcessLocalizations(IImportExecuteContext context, ImportRow<Product>[] batch)
+		protected virtual int ProcessLocalizations(
+			IImportExecuteContext context, 
+			ImportRow<Product>[] batch,
+			string[] localizedProperties)
 		{
+			if (localizedProperties.Length == 0)
+			{
+				return 0;
+			}
+
+			bool shouldSave = false;
+
 			foreach (var row in batch)
 			{
-				foreach (var lang in context.Languages)
+				foreach (var prop in localizedProperties)
 				{
-					var code = lang.UniqueSeoCode;
-
-					var value = row.GetDataValue<string>("Name", code);
-					if (value.HasValue())
-						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.Name, value, lang.Id);
-
-					value = row.GetDataValue<string>("ShortDescription", code);
-					if (value.HasValue())
-						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.ShortDescription, value, lang.Id);
-
-					value = row.GetDataValue<string>("FullDescription", code);
-					if (value.HasValue())
-						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.FullDescription, value, lang.Id);
-
-					value = row.GetDataValue<string>("MetaKeywords", code);
-					if (value.HasValue())
-						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaKeywords, value, lang.Id);
-
-					value = row.GetDataValue<string>("MetaDescription", code);
-					if (value.HasValue())
-						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaDescription, value, lang.Id);
-
-					value = row.GetDataValue<string>("MetaTitle", code);
-					if (value.HasValue())
-						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaTitle, value, lang.Id);
-
-					value = row.GetDataValue<string>("BundleTitleText", code);
-					if (value.HasValue())
-						_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.BundleTitleText, value, lang.Id);
+					var lambda = _localizableProperties[prop];
+					foreach (var lang in context.Languages)
+					{
+						var code = lang.UniqueSeoCode;
+						var value = row.GetDataValue<string>(prop /* ColumnName */, code);
+						if (value.HasValue())
+						{
+							_localizedEntityService.SaveLocalizedValue(row.Entity, lambda, value, lang.Id);
+							shouldSave = true;
+						}
+					}
 				}
 			}
 
-			// commit whole batch at once
-			var num = _productManufacturerRepository.Context.SaveChanges();
+			if (shouldSave)
+			{
+				// commit whole batch at once
+				return _productManufacturerRepository.Context.SaveChanges();
+			}
 
-			return num;
+			return 0;
 		}
 
-		protected virtual int ProcessSlugs(IImportExecuteContext context, ImportRow<Product>[] batch)
+		protected virtual int ProcessSlugs(IImportExecuteContext context, ImportRow<Product>[] batch, string[] columnIndexes)
 		{
 			var entityName = typeof(Product).Name;
 			var slugMap = new Dictionary<string, UrlRecord>();
+			var languageMap = context.Languages.ToDictionarySafe(x => x.UniqueSeoCode);
+			Language language = null;
+			UrlRecord urlRecord = null;		
 
 			Func<string, UrlRecord> slugLookup = ((s) =>
 			{
@@ -389,53 +400,56 @@ namespace SmartStore.Services.Catalog.Importer
 
 			foreach (var row in batch)
 			{
-				var seName = row.GetDataValue<string>("SeName");
-
-				if (!(seName.HasValue() || row.IsNew || row.NameChanged))
-					continue;
-
 				try
 				{
-					UrlRecord urlRecord = null;
-					seName = row.Entity.ValidateSeName(seName, row.Entity.Name, true, _urlRecordService, _seoSettings, extraSlugLookup: slugLookup);
+					var seName = row.GetDataValue<string>("SeName");
 
-					if (row.IsNew)
+					if (row.IsNew || row.NameChanged || seName.HasValue())
 					{
-						// dont't bother validating SeName for new entities.
-						urlRecord = new UrlRecord
+						seName = row.Entity.ValidateSeName(seName, row.Entity.Name, true, _urlRecordService, _seoSettings, extraSlugLookup: slugLookup);
+
+						if (row.IsNew)
 						{
-							EntityId = row.Entity.Id,
-							EntityName = entityName,
-							Slug = seName,
-							LanguageId = 0,
-							IsActive = true,
-						};
-						_urlRecordRepository.Insert(urlRecord);
-					}
-					else
-					{
-						urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, 0);
-					}
-
-					if (urlRecord != null)
-					{
-						// a new record was inserted to the store: keep track of it for this batch.
-						slugMap[seName] = urlRecord;
-					}
-
-					foreach (var lang in context.Languages)
-					{
-						seName = row.GetDataValue<string>("SeName", lang.UniqueSeoCode);
-						if (seName.HasValue())
-						{
-							seName = row.Entity.ValidateSeName(seName, null, false, _urlRecordService, _seoSettings, lang.Id, slugLookup);
-							urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, lang.Id);
-							if (urlRecord != null)
+							// dont't bother validating SeName for new entities.
+							urlRecord = new UrlRecord
 							{
-								slugMap[seName] = urlRecord;
-							}
+								EntityId = row.Entity.Id,
+								EntityName = entityName,
+								Slug = seName,
+								LanguageId = 0,
+								IsActive = true,
+							};
+							_urlRecordRepository.Insert(urlRecord);
+						}
+						else
+						{
+							urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, 0);
+						}
+
+						if (urlRecord != null)
+						{
+							// a new record was inserted to the store: keep track of it for this batch.
+							slugMap[seName] = urlRecord;
 						}
 					}
+
+					//// TODO: (mc) Think about this VERY thoroughly!!!!
+					//foreach (var idx in columnIndexes)
+					//{
+					//	if (languageMap.TryGetValue(idx, out language))
+					//	{
+					//		seName = row.GetDataValue<string>("SeName", idx);
+					//		if (seName.HasValue())
+					//		{
+					//			seName = row.Entity.ValidateSeName(seName, null, false, _urlRecordService, _seoSettings, language.Id, slugLookup);
+					//			urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, language.Id);
+					//			if (urlRecord != null)
+					//			{
+					//				slugMap[seName] = urlRecord;
+					//			}
+					//		}
+					//	}
+					//}
 				}
 				catch (Exception exception)
 				{
@@ -701,6 +715,20 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
+		private IEnumerable<string> ResolveLocalizedProperties(ImportDataSegmenter<Product> segmenter)
+		{
+			// Perf: determine whether our localizable properties actually have 
+			// counterparts in the source BEFORE import begins. This way we spare ourself
+			// to query over and over for values.
+			foreach (var kvp in _localizableProperties)
+			{
+				if (segmenter.GetColumnIndexes(kvp.Key).Length > 0)
+				{
+					yield return kvp.Key;
+				}
+			}
+		}
+
 		protected override void Import(IImportExecuteContext context)
 		{
 			var srcToDestId = new Dictionary<int, ImportProductMapping>();
@@ -710,8 +738,9 @@ namespace SmartStore.Services.Catalog.Importer
 			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
 				var segmenter = context.GetSegmenter<Product>();
-
 				Init(context, _dataExchangeSettings);
+
+				var localizedProperties = ResolveLocalizedProperties(segmenter).ToArray();
 
 				context.Result.TotalRecords = segmenter.TotalRows;
 
@@ -749,12 +778,12 @@ namespace SmartStore.Services.Catalog.Importer
 					// IMPORTANT: Unlike with Products AutoCommitEnabled must be TRUE,
 					//            as Slugs are going to be validated against existing ones in DB.
 					// ===========================================================================
-					if (segmenter.HasColumn("SeName") || batch.Any(x => x.IsNew || x.NameChanged))
+					if (segmenter.HasColumn("SeName", true) || batch.Any(x => x.IsNew || x.NameChanged))
 					{
 						try
 						{
 							_productRepository.Context.AutoDetectChangesEnabled = true;
-							ProcessSlugs(context, batch);
+							ProcessSlugs(context, batch, segmenter.GetColumnIndexes("Name"));
 						}
 						catch (Exception exception)
 						{
@@ -786,7 +815,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					try
 					{
-						ProcessLocalizations(context, batch);
+						ProcessLocalizations(context, batch, localizedProperties);
 					}
 					catch (Exception exception)
 					{

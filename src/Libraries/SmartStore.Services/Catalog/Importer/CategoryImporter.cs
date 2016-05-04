@@ -478,7 +478,7 @@ namespace SmartStore.Services.Catalog.Importer
 					context.Result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
 
 					// process slugs
-					if (segmenter.HasColumn("SeName") || batch.Any(x => x.IsNew || x.NameChanged))
+					if (segmenter.HasColumn("SeName", true) || batch.Any(x => x.IsNew || x.NameChanged))
 					{
 						try
 						{

@@ -841,16 +841,26 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (ctx.Supports(ExportFeatures.UsesSpecialPrice))
 			{
-				dynObject._SpecialPrice = null;
-				dynObject._RegularPrice = null;   // price if a special price would not exist
+				dynObject._SpecialPrice = null;			// special price which is valid now
+				dynObject._FutureSpecialPrice = null;   // special price which is valid now and in future
+				dynObject._RegularPrice = null;			// price as if a special price would not exist
 
 				if (!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
 				{
+					if (product.SpecialPrice.HasValue && product.SpecialPriceEndDateTimeUtc.HasValue)
+					{
+						var endDate = DateTime.SpecifyKind(product.SpecialPriceEndDateTimeUtc.Value, DateTimeKind.Utc);
+						if (endDate > DateTime.UtcNow)
+						{
+							dynObject._FutureSpecialPrice = ConvertPrice(ctx, product, product.SpecialPrice.Value);
+						}
+					}
+
 					var specialPrice = _priceCalculationService.Value.GetSpecialPrice(product);
 
 					dynObject._SpecialPrice = ConvertPrice(ctx, product, specialPrice);
 
-					if (specialPrice.HasValue)
+					if (specialPrice.HasValue || dynObject._FutureSpecialPrice != null)
 					{
 						decimal tmpSpecialPrice = product.SpecialPrice.Value;
 						product.SpecialPrice = null;

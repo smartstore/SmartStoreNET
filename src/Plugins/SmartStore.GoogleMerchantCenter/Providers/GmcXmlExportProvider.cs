@@ -202,7 +202,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							string category = (gmc == null ? null : gmc.Taxonomy);
 							string productType = product._CategoryPath;
 							string mainImageUrl = product._MainPictureUrl;
-							var specialPrice = product._SpecialPrice as decimal?;
+							var futureSpecialPrice = product._FutureSpecialPrice as decimal?;
 							var price = (decimal)product.Price;
 							string brand = product._Brand;
 							string gtin = product.Gtin;
@@ -295,12 +295,12 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 								writer.WriteElementString("g", "availability_date", _googleNamespace, availabilityDate);
 							}
 
-							if (config.SpecialPrice && specialPrice.HasValue && entity.SpecialPriceStartDateTimeUtc.HasValue && entity.SpecialPriceEndDateTimeUtc.HasValue)
+							if (config.SpecialPrice && futureSpecialPrice.HasValue && entity.SpecialPriceStartDateTimeUtc.HasValue && entity.SpecialPriceEndDateTimeUtc.HasValue)
 							{
 								var specialPriceDate = "{0}/{1}".FormatInvariant(
 									entity.SpecialPriceStartDateTimeUtc.Value.ToString(dateFormat), entity.SpecialPriceEndDateTimeUtc.Value.ToString(dateFormat));
 
-								writer.WriteElementString("g", "sale_price", _googleNamespace, price.FormatInvariant() + " " + (string)currency.CurrencyCode);
+								writer.WriteElementString("g", "sale_price", _googleNamespace, futureSpecialPrice.Value.FormatInvariant() + " " + (string)currency.CurrencyCode);
 								writer.WriteElementString("g", "sale_price_effective_date", _googleNamespace, specialPriceDate);
 
 								price = (product._RegularPrice as decimal?) ?? price;

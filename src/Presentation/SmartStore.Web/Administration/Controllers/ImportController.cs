@@ -54,6 +54,29 @@ namespace SmartStore.Admin.Controllers
 
 		#region Utilities
 
+		private bool IsValidImportFile(string path, out string error)
+		{
+			error = null;
+
+			try
+			{
+				using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+				{
+					var unused = LightweightDataTable.FromFile(path, stream, stream.Length, CsvConfiguration.ExcelFriendlyConfiguration, 0, 1);
+				}
+
+				return true;
+			}
+			catch (Exception exception)
+			{
+				error = exception.ToAllMessages();
+
+				FileSystemHelper.Delete(path);
+
+				return false;
+			}
+		}
+
 		private bool IsDefaultValueDisabled(string column, string property, string[] disabledFieldNames)
 		{
 			if (disabledFieldNames.Contains(property))
@@ -575,9 +598,12 @@ namespace SmartStore.Admin.Controllers
 						FileSystemHelper.Delete(path);
 
 						success = postedFile.Stream.ToFile(path);
-
 						if (success)
-							tempFile = postedFile.FileName;
+						{
+							success = IsValidImportFile(path, out error);
+							if (success)
+								tempFile = postedFile.FileName;
+						}
 					}
 					else
 					{
@@ -597,16 +623,20 @@ namespace SmartStore.Admin.Controllers
 							{
 								var folder = profile.GetImportFolder(true, true);
 								var fileName = Path.GetFileName(postedFile.FileName);
+								var path = Path.Combine(folder, fileName);
 
-								success = postedFile.Stream.ToFile(Path.Combine(folder, fileName));
-
+								success = postedFile.Stream.ToFile(path);
 								if (success)
 								{
-									var fileType = (Path.GetExtension(fileName).IsCaseInsensitiveEqual(".xlsx") ? ImportFileType.XLSX : ImportFileType.CSV);
-									if (fileType != profile.FileType)
+									success = IsValidImportFile(path, out error);
+									if (success)
 									{
-										profile.FileType = fileType;
-										_importProfileService.UpdateImportProfile(profile);
+										var fileType = (Path.GetExtension(fileName).IsCaseInsensitiveEqual(".xlsx") ? ImportFileType.XLSX : ImportFileType.CSV);
+										if (fileType != profile.FileType)
+										{
+											profile.FileType = fileType;
+											_importProfileService.UpdateImportProfile(profile);
+										}
 									}
 								}
 							}

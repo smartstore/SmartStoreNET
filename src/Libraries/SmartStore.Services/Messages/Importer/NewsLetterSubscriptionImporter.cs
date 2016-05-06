@@ -42,9 +42,6 @@ namespace SmartStore.Services.Messages.Importer
 			var utcNow = DateTime.UtcNow;
 			var currentStoreId = _services.StoreContext.CurrentStore.Id;
 
-			var toAdd = new List<NewsLetterSubscription>();
-			var toUpdate = new List<NewsLetterSubscription>();
-
 			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
 				var segmenter = context.CreateSegmenter();
@@ -55,7 +52,8 @@ namespace SmartStore.Services.Messages.Importer
 				{
 					var batch = segmenter.GetCurrentBatch<NewsLetterSubscription>();
 
-					_subscriptionRepository.Context.DetachAll(false);
+					// Perf: detach all entities
+					_subscriptionRepository.Context.DetachEntities<NewsLetterSubscription>(false);
 
 					context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
 
@@ -64,7 +62,7 @@ namespace SmartStore.Services.Messages.Importer
 						try
 						{
 							var email = row.GetDataValue<string>("Email");
-							var active = row.GetDataValue<bool>("Active");
+							var active = row.HasDataValue("Active") ? row.GetDataValue<bool>("Active") : true;
 							var storeId = row.GetDataValue<int>("StoreId");
 
 							if (storeId == 0)
@@ -122,32 +120,25 @@ namespace SmartStore.Services.Messages.Importer
 									StoreId = storeId
 								};
 
-								toAdd.Add(subscription);
-								++context.Result.NewRecords;
+								_subscriptionRepository.Insert(subscription);
+								context.Result.NewRecords++;
 							}
 							else
 							{
 								subscription.Active = active;
 
-								toUpdate.Add(subscription);
-								++context.Result.ModifiedRecords;
+								_subscriptionRepository.Update(subscription);
+								context.Result.ModifiedRecords++;
 							}
-
-							// insert new subscribers
-							_subscriptionRepository.AutoCommitEnabled = true;
-							_subscriptionRepository.InsertRange(toAdd, 500);
-							toAdd.Clear();
-
-							// update modified subscribers
-							_subscriptionRepository.UpdateRange(toUpdate);
-							toUpdate.Clear();
 						}
 						catch (Exception exception)
 						{
 							context.Result.AddError(exception.ToAllMessages(), row.GetRowInfo());
 						}
-					}
-				}
+					} // for
+
+					_subscriptionRepository.Context.SaveChanges();
+				} // while
 			}
 		}
 	}

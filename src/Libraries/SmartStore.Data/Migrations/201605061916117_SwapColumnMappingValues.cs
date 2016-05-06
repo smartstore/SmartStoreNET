@@ -25,9 +25,9 @@ namespace SmartStore.Data.Migrations
 
 		public void Seed(SmartObjectContext context)
 		{
-			var importProfiles = context.Set<ImportProfile>().ToList();
+			var importProfiles = context.Set<ImportProfile>().Where(x => x.ColumnMapping.HasValue()).ToList();
 
-			foreach (var profile in importProfiles.Where(x => x.ColumnMapping.HasValue()))
+			foreach (var profile in importProfiles)
 			{
 				var dic = new Dictionary<string, Dictionary<string, string>>();
 				var storeMapping = true;

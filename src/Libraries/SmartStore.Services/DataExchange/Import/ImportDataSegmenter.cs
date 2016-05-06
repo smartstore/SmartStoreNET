@@ -8,12 +8,12 @@ using SmartStore.Core;
 
 namespace SmartStore.Services.DataExchange.Import
 {
-	public class ImportDataSegmenter<T> where T : BaseEntity
+	public class ImportDataSegmenter
 	{
 		private const int BATCHSIZE = 100;
 
 		private readonly IDataTable _table;
-		private ImportRow<T>[] _currentBatch;
+		private object[] _currentBatch;
 		private readonly IPageable _pageable;
 		private bool _bof;
 		private CultureInfo _culture;
@@ -197,28 +197,49 @@ namespace SmartStore.Services.DataExchange.Import
 			return false;
 		}
 
-		public ImportRow<T>[] CurrentBatch
+		//public IEnumerable<ImportRow<T>> CurrentBatch
+		//{
+		//	get
+		//	{
+		//		if (_currentBatch == null)
+		//		{
+		//			int start = _pageable.FirstItemIndex - 1;
+		//			int end = _pageable.LastItemIndex - 1;
+
+		//			_currentBatch = new ImportRow<T>[(end - start) + 1];
+
+		//			// Determine values per row
+		//			int i = 0;
+		//			for (int r = start; r <= end; r++)
+		//			{
+		//				_currentBatch[i] = new ImportRow<T>(this, _table.Rows[r], r);
+		//				i++;
+		//			}
+		//		}
+
+		//		return _currentBatch.Cast<ImportRow<T>>();
+		//	}
+		//}
+
+		public IEnumerable<ImportRow<T>> GetCurrentBatch<T>() where T : BaseEntity
 		{
-			get
+			if (_currentBatch == null)
 			{
-				if (_currentBatch == null)
+				int start = _pageable.FirstItemIndex - 1;
+				int end = _pageable.LastItemIndex - 1;
+
+				_currentBatch = new ImportRow<T>[(end - start) + 1];
+
+				// Determine values per row
+				int i = 0;
+				for (int r = start; r <= end; r++)
 				{
-					int start = _pageable.FirstItemIndex - 1;
-					int end = _pageable.LastItemIndex - 1;
-
-					_currentBatch = new ImportRow<T>[(end - start) + 1];
-
-					// Determine values per row
-					int i = 0;
-					for (int r = start; r <= end; r++)
-					{
-						_currentBatch[i] = new ImportRow<T>(this, _table.Rows[r], r);
-						i++;
-					}
+					_currentBatch[i] = new ImportRow<T>(this, _table.Rows[r], r);
+					i++;
 				}
-
-				return _currentBatch;
 			}
+
+			return _currentBatch.Cast<ImportRow<T>>();
 		}
 	}
 }

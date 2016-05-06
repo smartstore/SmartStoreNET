@@ -59,7 +59,7 @@ namespace SmartStore.Services.DataExchange.Import
 		/// </summary>
 		/// <typeparam name="TEntity"></typeparam>
 		/// <returns></returns>
-		ImportDataSegmenter<TEntity> GetSegmenter<TEntity>() where TEntity : BaseEntity;
+		ImportDataSegmenter CreateSegmenter();
 
 		/// <summary>
 		/// Allows to set a progress message
@@ -135,9 +135,9 @@ namespace SmartStore.Services.DataExchange.Import
 			}
 		}
 
-		public ImportDataSegmenter<TEntity> GetSegmenter<TEntity>() where TEntity : BaseEntity
+		public ImportDataSegmenter CreateSegmenter()
 		{
-			return new ImportDataSegmenter<TEntity>(DataTable, ColumnMap);
+			return new ImportDataSegmenter(DataTable, ColumnMap);
 		}
 
 		public void SetProgress(int value, int maximum)

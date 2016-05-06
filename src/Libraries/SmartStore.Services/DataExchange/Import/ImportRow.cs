@@ -15,10 +15,10 @@ namespace SmartStore.Services.DataExchange.Import
 		private bool _isNew;
 		private ImportRowInfo _rowInfo;
 
-		private readonly ImportDataSegmenter<T> _segmenter;
+		private readonly ImportDataSegmenter _segmenter;
 		private readonly IDataRow _row;
 
-		public ImportRow(ImportDataSegmenter<T> parent, IDataRow row, int position)
+		public ImportRow(ImportDataSegmenter parent, IDataRow row, int position)
 		{
 			_segmenter = parent;
 			_row = row;
@@ -73,7 +73,7 @@ namespace SmartStore.Services.DataExchange.Import
 			get { return _isNew; }
 		}
 
-		public ImportDataSegmenter<T> Segmenter
+		public ImportDataSegmenter Segmenter
 		{
 			get { return _segmenter; }
 		}
@@ -81,6 +81,11 @@ namespace SmartStore.Services.DataExchange.Import
 		public T Entity
 		{
 			get { return _entity; }
+		}
+
+		public IDataRow DataRow
+		{
+			get { return _row; }
 		}
 
 		public string EntityDisplayName
@@ -180,7 +185,22 @@ namespace SmartStore.Services.DataExchange.Import
 			TProp defaultValue = default(TProp),
 			Func<object, CultureInfo, TProp> converter = null)
 		{
-			// TBD: (MC) do not check for perf reason?
+			return SetProperty(
+				result,
+				null, // columnName
+				prop, 
+				defaultValue, 
+				converter);
+		}
+
+		public bool SetProperty<TProp>(
+			ImportResult result,
+			string columnName,
+			Expression<Func<T, TProp>> prop,
+			TProp defaultValue = default(TProp),
+			Func<object, CultureInfo, TProp> converter = null)
+		{
+			// TBD: (MC) do not check or validate for perf reason?
 			//CheckInitialized();
 
 			var isPropertySet = false;
@@ -188,10 +208,12 @@ namespace SmartStore.Services.DataExchange.Import
 			var propName = pi.Name;
 			var target = _entity;
 
+			columnName = columnName ?? propName;
+
 			try
 			{
 				object value;
-				var mapping = _segmenter.ColumnMap.GetMapping(propName);
+				var mapping = _segmenter.ColumnMap.GetMapping(columnName);
 
 				if (mapping.IgnoreProperty)
 				{
@@ -227,7 +249,7 @@ namespace SmartStore.Services.DataExchange.Import
 						// if entity is new and source field value is null, determine default value in this particular order: 
 						//		2.) Default value in field mapping table
 						//		3.) passed default value argument
-						defaultValue = GetDefaultValue(mapping, propName, defaultValue, result);
+						defaultValue = GetDefaultValue(mapping, columnName, defaultValue, result);
 
 						// source does not contain field data or is empty...
 						if (defaultValue != null)

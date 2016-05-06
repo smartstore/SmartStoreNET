@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
@@ -74,13 +75,12 @@ namespace SmartStore.Services.Customers.Importer
 
 		private int? CountryCodeToId(Dictionary<string, int> allCountries, string code)
 		{
-			if (code.HasValue() && allCountries.ContainsKey(code))
+			int countryId;
+			if (code.HasValue() && allCountries.TryGetValue(code, out countryId) && countryId != 0)
 			{
-				var countryId = allCountries[code];
-
-				if (countryId != 0)
-					return countryId;
+				return countryId;
 			}
+
 			return null;
 		}
 
@@ -90,14 +90,13 @@ namespace SmartStore.Services.Customers.Importer
 			{
 				var key = Tuple.Create<int, string>(countryId.Value, abbreviation);
 
-				if (allStateProvinces.ContainsKey(key))
+				int stateId;
+				if (allStateProvinces.TryGetValue(key, out stateId) && stateId != 0)
 				{
-					var stateId = allStateProvinces[key];
-
-					if (stateId != 0)
-						return stateId;
+					return stateId;
 				}
 			}
+
 			return null;
 		}
 
@@ -174,9 +173,23 @@ namespace SmartStore.Services.Customers.Importer
 			}
 		}
 
+		private void ProcessAddresses(
+			IImportExecuteContext context,
+			IEnumerable<ImportRow<Customer>> batch,
+			Dictionary<string, int> allCountries,
+			Dictionary<Tuple<int, string>, int> allStateProvinces)
+		{
+			foreach (var row in batch)
+			{
+				ImportAddress("BillingAddress.", row, context, allCountries, allStateProvinces);
+				ImportAddress("ShippingAddress.", row, context, allCountries, allStateProvinces);
+			}
+		}
+
 		private void ImportAddress(
 			string fieldPrefix,
 			ImportRow<Customer> row,
+			IImportExecuteContext context,
 			Dictionary<string, int> allCountries,
 			Dictionary<Tuple<int, string>, int> allStateProvinces)
 		{
@@ -190,24 +203,26 @@ namespace SmartStore.Services.Customers.Importer
 
 			var importAddress = new Address
 			{
-				FirstName = row.GetDataValue<string>(fieldPrefix + "FirstName"),
 				LastName = lastName,
-				Email = row.GetDataValue<string>(fieldPrefix + "Email"),
-				Company = row.GetDataValue<string>(fieldPrefix + "Company"),
-				City = row.GetDataValue<string>(fieldPrefix + "City"),
-				Address1 = row.GetDataValue<string>(fieldPrefix + "Address1"),
-				Address2 = row.GetDataValue<string>(fieldPrefix + "Address2"),
-				ZipPostalCode = row.GetDataValue<string>(fieldPrefix + "ZipPostalCode"),
-				PhoneNumber = row.GetDataValue<string>(fieldPrefix + "PhoneNumber"),
-				FaxNumber = row.GetDataValue<string>(fieldPrefix + "FaxNumber"),
 				CreatedOnUtc = UtcNow,
 				CountryId = countryId,
 				StateProvinceId = stateId
 			};
 
-			var appliedAddress = row.Entity.Addresses
-				.ToList()
-				.FindAddress(importAddress);
+			var childRow = new ImportRow<Address>(row.Segmenter, row.DataRow, row.Position);
+			childRow.Initialize(importAddress, row.EntityDisplayName);
+
+			childRow.SetProperty(context.Result, fieldPrefix + "FirstName", x => x.FirstName);
+			childRow.SetProperty(context.Result, fieldPrefix + "Email", x => x.Email);
+			childRow.SetProperty(context.Result, fieldPrefix + "Company", x => x.Company);
+			childRow.SetProperty(context.Result, fieldPrefix + "City", x => x.City);
+			childRow.SetProperty(context.Result, fieldPrefix + "Address1", x => x.Address1);
+			childRow.SetProperty(context.Result, fieldPrefix + "Address2", x => x.Address2);
+			childRow.SetProperty(context.Result, fieldPrefix + "ZipPostalCode", x => x.ZipPostalCode);
+			childRow.SetProperty(context.Result, fieldPrefix + "PhoneNumber", x => x.PhoneNumber);
+			childRow.SetProperty(context.Result, fieldPrefix + "FaxNumber", x => x.FaxNumber);
+
+			var appliedAddress = row.Entity.Addresses.FindAddress(importAddress);
 
 			if (appliedAddress == null)
 			{
@@ -230,7 +245,7 @@ namespace SmartStore.Services.Customers.Importer
 		}
 
 		private void ProcessGenericAttributes(IImportExecuteContext context,
-			ImportRow<Customer>[] batch,
+			IEnumerable<ImportRow<Customer>> batch,
 			Dictionary<string, int> allCountries,
 			Dictionary<Tuple<int, string>, int> allStateProvinces,
 			List<string> allCustomerNumbers)
@@ -319,8 +334,9 @@ namespace SmartStore.Services.Customers.Importer
 			}
 		}
 
-		private int ProcessCustomers(IImportExecuteContext context,
-			ImportRow<Customer>[] batch,
+		private int ProcessCustomers(
+			IImportExecuteContext context,
+			IEnumerable<ImportRow<Customer>> batch,
 			List<int> allAffiliateIds)
 		{
 			_customerRepository.AutoCommitEnabled = true;
@@ -510,7 +526,7 @@ namespace SmartStore.Services.Customers.Importer
 
 			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
-				var segmenter = context.GetSegmenter<Customer>();
+				var segmenter = context.CreateSegmenter();
 
 				Init(context, _dataExchangeSettings);
 
@@ -518,12 +534,15 @@ namespace SmartStore.Services.Customers.Importer
 
 				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 				{
-					var batch = segmenter.CurrentBatch;
+					var batch = segmenter.GetCurrentBatch<Customer>();
 
 					_customerRepository.Context.DetachAll(false);
 
 					context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
 
+					// ===========================================================================
+					// Process customers
+					// ===========================================================================
 					try
 					{
 						ProcessCustomers(context, batch, allAffiliateIds);
@@ -541,10 +560,12 @@ namespace SmartStore.Services.Customers.Importer
 					context.Result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
 					context.Result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
 
+					// ===========================================================================
+					// Process generic attributes
+					// ===========================================================================
 					try
 					{
 						_services.DbContext.AutoDetectChangesEnabled = true;
-
 						ProcessGenericAttributes(context, batch, allCountries, allStateProvinces, allCustomerNumbers);
 					}
 					catch (Exception exception)
@@ -556,17 +577,15 @@ namespace SmartStore.Services.Customers.Importer
 						_services.DbContext.AutoDetectChangesEnabled = false;
 					}
 
+					// ===========================================================================
+					// Process addresses
+					// ===========================================================================
 					if (segmenter.HasColumn("BillingAddress.LastName") || segmenter.HasColumn("ShippingAddress.LastName"))
 					{
 						try
 						{
 							_services.DbContext.AutoDetectChangesEnabled = true;
-
-							foreach (var row in batch)
-							{
-								ImportAddress("BillingAddress.", row, allCountries, allStateProvinces);
-								ImportAddress("ShippingAddress.", row, allCountries, allStateProvinces);
-							}
+							ProcessAddresses(context, batch, allCountries, allStateProvinces);
 						}
 						catch (Exception exception)
 						{

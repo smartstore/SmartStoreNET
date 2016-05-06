@@ -47,13 +47,13 @@ namespace SmartStore.Services.Messages.Importer
 
 			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
-				var segmenter = context.GetSegmenter<NewsLetterSubscription>();
+				var segmenter = context.CreateSegmenter();
 
 				context.Result.TotalRecords = segmenter.TotalRows;
 
 				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 				{
-					var batch = segmenter.CurrentBatch;
+					var batch = segmenter.GetCurrentBatch<NewsLetterSubscription>();
 
 					_subscriptionRepository.Context.DetachAll(false);
 

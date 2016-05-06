@@ -65,7 +65,7 @@ namespace SmartStore.Services.Catalog.Importer
 			_dataExchangeSettings = dataExchangeSettings;
 		}
 
-		protected virtual int ProcessSlugs(IImportExecuteContext context, ImportRow<Category>[] batch)
+		protected virtual int ProcessSlugs(IImportExecuteContext context, IEnumerable<ImportRow<Category>> batch)
 		{
 			var entityName = typeof(Category).Name;
 			var slugMap = new Dictionary<string, UrlRecord>();
@@ -136,7 +136,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return _urlRecordRepository.Context.SaveChanges();
 		}
 
-		protected virtual int ProcessLocalizations(IImportExecuteContext context, ImportRow<Category>[] batch)
+		protected virtual int ProcessLocalizations(IImportExecuteContext context, IEnumerable<ImportRow<Category>> batch)
 		{
 			foreach (var row in batch)
 			{
@@ -165,8 +165,9 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		protected virtual int ProcessParentMappings(IImportExecuteContext context,
-			ImportRow<Category>[] batch,
+		protected virtual int ProcessParentMappings(
+			IImportExecuteContext context,
+			IEnumerable<ImportRow<Category>> batch,
 			Dictionary<int, ImportCategoryMapping> srcToDestId)
 		{
 			foreach (var row in batch)
@@ -198,7 +199,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 		protected virtual int ProcessPictures(
 			IImportExecuteContext context,
-			ImportRow<Category>[] batch,
+			IEnumerable<ImportRow<Category>> batch,
 			Dictionary<int, ImportCategoryMapping> srcToDestId)
 		{
 			Picture picture = null;
@@ -271,7 +272,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		protected virtual int ProcessStoreMappings(IImportExecuteContext context, ImportRow<Category>[] batch)
+		protected virtual int ProcessStoreMappings(IImportExecuteContext context, IEnumerable<ImportRow<Category>> batch)
 		{
 			_storeMappingRepository.AutoCommitEnabled = false;
 
@@ -290,7 +291,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 		protected virtual int ProcessCategories(
 			IImportExecuteContext context,
-			ImportRow<Category>[] batch,
+			IEnumerable<ImportRow<Category>> batch,
 			Dictionary<string, int> templateViewPaths,
 			Dictionary<int, ImportCategoryMapping> srcToDestId)
 		{
@@ -445,7 +446,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 			using (var scope = new DbContextScope(ctx: _categoryRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
-				var segmenter = context.GetSegmenter<Category>();
+				var segmenter = context.CreateSegmenter();
 
 				Init(context, _dataExchangeSettings);
 
@@ -453,7 +454,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 				{
-					var batch = segmenter.CurrentBatch;
+					var batch = segmenter.GetCurrentBatch<Category>();
 
 					// Perf: detach all entities
 					_categoryRepository.Context.DetachAll(false);
@@ -544,8 +545,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 					while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 					{
-						var batch = segmenter.CurrentBatch;
-
+						var batch = segmenter.GetCurrentBatch<Category>();
 						_categoryRepository.Context.DetachAll(false);
 
 						try

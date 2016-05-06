@@ -107,7 +107,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 		protected virtual int ProcessProductMappings(
 			IImportExecuteContext context,
-			ImportRow<Product>[] batch,
+			IEnumerable<ImportRow<Product>> batch,
 			Dictionary<int, ImportProductMapping> srcToDestId)
 		{
 			_productRepository.AutoCommitEnabled = false;
@@ -137,7 +137,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		protected virtual void ProcessProductPictures(IImportExecuteContext context, ImportRow<Product>[] batch)
+		protected virtual void ProcessProductPictures(IImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
 		{
 			// true, cause pictures must be saved and assigned an id prior adding a mapping.
 			_productPictureRepository.AutoCommitEnabled = true;
@@ -244,7 +244,7 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
-		protected virtual int ProcessProductManufacturers(IImportExecuteContext context, ImportRow<Product>[] batch)
+		protected virtual int ProcessProductManufacturers(IImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
 		{
 			_productManufacturerRepository.AutoCommitEnabled = false;
 
@@ -295,7 +295,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		protected virtual int ProcessProductCategories(IImportExecuteContext context, ImportRow<Product>[] batch)
+		protected virtual int ProcessProductCategories(IImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
 		{
 			_productCategoryRepository.AutoCommitEnabled = false;
 
@@ -347,8 +347,8 @@ namespace SmartStore.Services.Catalog.Importer
 		}
 
 		protected virtual int ProcessLocalizations(
-			IImportExecuteContext context, 
-			ImportRow<Product>[] batch,
+			IImportExecuteContext context,
+			IEnumerable<ImportRow<Product>> batch,
 			string[] localizedProperties)
 		{
 			if (localizedProperties.Length == 0)
@@ -385,7 +385,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return 0;
 		}
 
-		protected virtual int ProcessSlugs(IImportExecuteContext context, ImportRow<Product>[] batch, string[] columnIndexes)
+		protected virtual int ProcessSlugs(IImportExecuteContext context, IEnumerable<ImportRow<Product>> batch, string[] columnIndexes)
 		{
 			var entityName = typeof(Product).Name;
 			var slugMap = new Dictionary<string, UrlRecord>();
@@ -461,7 +461,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return _urlRecordRepository.Context.SaveChanges();
 		}
 
-		protected virtual int ProcessStoreMappings(IImportExecuteContext context, ImportRow<Product>[] batch)
+		protected virtual int ProcessStoreMappings(IImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
 		{
 			_storeMappingRepository.AutoCommitEnabled = false;
 
@@ -480,7 +480,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 		protected virtual int ProcessProducts(
 			IImportExecuteContext context,
-			ImportRow<Product>[] batch,
+			IEnumerable<ImportRow<Product>> batch,
 			Dictionary<string, int> templateViewPaths,
 			Dictionary<int, ImportProductMapping> srcToDestId)
 		{
@@ -715,7 +715,7 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
-		private IEnumerable<string> ResolveLocalizedProperties(ImportDataSegmenter<Product> segmenter)
+		private IEnumerable<string> ResolveLocalizedProperties(ImportDataSegmenter segmenter)
 		{
 			// Perf: determine whether our localizable properties actually have 
 			// counterparts in the source BEFORE import begins. This way we spare ourself
@@ -737,7 +737,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
-				var segmenter = context.GetSegmenter<Product>();
+				var segmenter = context.CreateSegmenter();
 				Init(context, _dataExchangeSettings);
 
 				var localizedProperties = ResolveLocalizedProperties(segmenter).ToArray();
@@ -746,7 +746,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 				{
-					var batch = segmenter.CurrentBatch;
+					var batch = segmenter.GetCurrentBatch<Product>();
 
 					// Perf: detach all entities
 					_productRepository.Context.DetachAll(false);
@@ -877,7 +877,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 					while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 					{
-						var batch = segmenter.CurrentBatch;
+						var batch = segmenter.GetCurrentBatch<Product>();
 
 						_productRepository.Context.DetachAll(false);
 

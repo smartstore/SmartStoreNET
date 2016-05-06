@@ -398,9 +398,9 @@ namespace SmartStore.Services.Customers.Importer
 
 				row.Initialize(customer, email ?? id.ToString());
 
-				row.SetProperty(context.Result, customer, (x) => x.CustomerGuid);
-				row.SetProperty(context.Result, customer, (x) => x.Username);
-				row.SetProperty(context.Result, customer, (x) => x.Email);
+				row.SetProperty(context.Result, (x) => x.CustomerGuid);
+				row.SetProperty(context.Result, (x) => x.Username);
+				row.SetProperty(context.Result, (x) => x.Email);
 
 				if (email.HasValue() && currentCustomer.Email.IsCaseInsensitiveEqual(email))
 				{
@@ -408,22 +408,22 @@ namespace SmartStore.Services.Customers.Importer
 				}
 				else
 				{
-					row.SetProperty(context.Result, customer, (x) => x.Password);
-					row.SetProperty(context.Result, customer, (x) => x.PasswordFormatId);
-					row.SetProperty(context.Result, customer, (x) => x.PasswordSalt);
+					row.SetProperty(context.Result, (x) => x.Password);
+					row.SetProperty(context.Result, (x) => x.PasswordFormatId);
+					row.SetProperty(context.Result, (x) => x.PasswordSalt);
 				}
 
-				row.SetProperty(context.Result, customer, (x) => x.AdminComment);
-				row.SetProperty(context.Result, customer, (x) => x.IsTaxExempt);
-				row.SetProperty(context.Result, customer, (x) => x.Active);
-				row.SetProperty(context.Result, customer, (x) => x.IsSystemAccount);
-				row.SetProperty(context.Result, customer, (x) => x.SystemName);
-				row.SetProperty(context.Result, customer, (x) => x.LastIpAddress);
-				row.SetProperty(context.Result, customer, (x) => x.LastLoginDateUtc);
-				row.SetProperty(context.Result, customer, (x) => x.LastActivityDateUtc);
+				row.SetProperty(context.Result, (x) => x.AdminComment);
+				row.SetProperty(context.Result, (x) => x.IsTaxExempt);
+				row.SetProperty(context.Result, (x) => x.Active);
+				row.SetProperty(context.Result, (x) => x.IsSystemAccount);
+				row.SetProperty(context.Result, (x) => x.SystemName);
+				row.SetProperty(context.Result, (x) => x.LastIpAddress);
+				row.SetProperty(context.Result, (x) => x.LastLoginDateUtc);
+				row.SetProperty(context.Result, (x) => x.LastActivityDateUtc);
 
-				row.SetProperty(context.Result, customer, (x) => x.CreatedOnUtc, UtcNow);
-				row.SetProperty(context.Result, customer, (x) => x.LastActivityDateUtc, UtcNow);
+				row.SetProperty(context.Result, (x) => x.CreatedOnUtc, UtcNow);
+				row.SetProperty(context.Result, (x) => x.LastActivityDateUtc, UtcNow);
 
 				if (affiliateId > 0 && allAffiliateIds.Contains(affiliateId))
 				{

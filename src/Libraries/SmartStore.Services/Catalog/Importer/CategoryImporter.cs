@@ -351,31 +351,31 @@ namespace SmartStore.Services.Catalog.Importer
 					row.NameChanged = true;
 				}
 
-				row.SetProperty(context.Result, category, (x) => x.Name);
-				row.SetProperty(context.Result, category, (x) => x.FullName);
-				row.SetProperty(context.Result, category, (x) => x.Description);
-				row.SetProperty(context.Result, category, (x) => x.BottomDescription);
-				row.SetProperty(context.Result, category, (x) => x.MetaKeywords);
-				row.SetProperty(context.Result, category, (x) => x.MetaDescription);
-				row.SetProperty(context.Result, category, (x) => x.MetaTitle);
-				row.SetProperty(context.Result, category, (x) => x.PageSize, 12);
-				row.SetProperty(context.Result, category, (x) => x.AllowCustomersToSelectPageSize, true);
-				row.SetProperty(context.Result, category, (x) => x.PageSizeOptions);
-				row.SetProperty(context.Result, category, (x) => x.PriceRanges);
-				row.SetProperty(context.Result, category, (x) => x.ShowOnHomePage);
-				row.SetProperty(context.Result, category, (x) => x.HasDiscountsApplied);
-				row.SetProperty(context.Result, category, (x) => x.Published, true);
-				row.SetProperty(context.Result, category, (x) => x.DisplayOrder);
-				row.SetProperty(context.Result, category, (x) => x.Alias);
-				row.SetProperty(context.Result, category, (x) => x.DefaultViewMode);
+				row.SetProperty(context.Result, (x) => x.Name);
+				row.SetProperty(context.Result, (x) => x.FullName);
+				row.SetProperty(context.Result, (x) => x.Description);
+				row.SetProperty(context.Result, (x) => x.BottomDescription);
+				row.SetProperty(context.Result, (x) => x.MetaKeywords);
+				row.SetProperty(context.Result, (x) => x.MetaDescription);
+				row.SetProperty(context.Result, (x) => x.MetaTitle);
+				row.SetProperty(context.Result, (x) => x.PageSize, 12);
+				row.SetProperty(context.Result, (x) => x.AllowCustomersToSelectPageSize, true);
+				row.SetProperty(context.Result, (x) => x.PageSizeOptions);
+				row.SetProperty(context.Result, (x) => x.PriceRanges);
+				row.SetProperty(context.Result, (x) => x.ShowOnHomePage);
+				row.SetProperty(context.Result, (x) => x.HasDiscountsApplied);
+				row.SetProperty(context.Result, (x) => x.Published, true);
+				row.SetProperty(context.Result, (x) => x.DisplayOrder);
+				row.SetProperty(context.Result, (x) => x.Alias);
+				row.SetProperty(context.Result, (x) => x.DefaultViewMode);
 				// With new entities, "LimitedToStores" is an implicit field, meaning
 				// it has to be set to true by code if it's absent but "StoreIds" exists.
-				row.SetProperty(context.Result, category, (x) => x.LimitedToStores, !row.GetDataValue<List<int>>("StoreIds").IsNullOrEmpty());
+				row.SetProperty(context.Result, (x) => x.LimitedToStores, !row.GetDataValue<List<int>>("StoreIds").IsNullOrEmpty());
 
 				var tvp = row.GetDataValue<string>("CategoryTemplateViewPath");
 				category.CategoryTemplateId = (tvp.HasValue() && templateViewPaths.ContainsKey(tvp) ? templateViewPaths[tvp] : defaultTemplateId);
 
-				row.SetProperty(context.Result, category, (x) => x.CreatedOnUtc, UtcNow);
+				row.SetProperty(context.Result, (x) => x.CreatedOnUtc, UtcNow);
 				category.UpdatedOnUtc = UtcNow;
 
 				if (id != 0 && !srcToDestId.ContainsKey(id))

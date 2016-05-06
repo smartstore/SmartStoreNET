@@ -176,7 +176,6 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public bool SetProperty<TProp>(
 			ImportResult result,
-			T target,
 			Expression<Func<T, TProp>> prop,
 			TProp defaultValue = default(TProp),
 			Func<object, CultureInfo, TProp> converter = null)
@@ -187,6 +186,7 @@ namespace SmartStore.Services.DataExchange.Import
 			var isPropertySet = false;
 			var pi = prop.ExtractPropertyInfo();
 			var propName = pi.Name;
+			var target = _entity;
 
 			try
 			{

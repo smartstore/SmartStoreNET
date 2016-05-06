@@ -48,61 +48,107 @@ namespace SmartStore.Services.DataExchange.Import
 			_dataExchangeSettings = dataExchangeSettings;
 		}
 
-		private string GetLocalizedPropertyName(ImportEntityType type, string propertyName)
+		private string GetLocalizedPropertyName(ImportEntityType type, string property)
 		{
-			if (propertyName.IsEmpty())
-				return null;
+			if (property.IsEmpty())
+				return "";
 
-			var defaultKey = "";
-			var keys = new Dictionary<string, string>
+			string key = null;
+			string prefixKey = null;
+
+			if (property.StartsWith("BillingAddress."))
+				prefixKey = "Admin.Orders.Fields.BillingAddress";
+			else if (property.StartsWith("ShippingAddress."))
+				prefixKey = "Admin.Orders.Fields.ShippingAddress";
+
+			#region Get resource key
+
+			switch (property)
 			{
-				{ "Id", "Admin.Common.Entity.Fields.Id" },
-				{ "LimitedToStores", "Admin.Common.Store.LimitedTo" },
-				{ "DisplayOrder", "Common.DisplayOrder" },
-				{ "Deleted", "Admin.Common.Deleted" },
-				{ "CreatedOnUtc", "Common.CreatedOn" },
-				{ "UpdatedOnUtc", "Common.UpdatedOn" },
-				{ "HasDiscountsApplied", "Admin.Catalog.Products.Fields.HasDiscountsApplied" },
-				{ "DefaultViewMode", "Admin.Configuration.Settings.Catalog.DefaultViewMode" },
-				{ "StoreId", "Admin.Common.Store" }
-			};
-
-			if (type == ImportEntityType.Product)
-			{
-				defaultKey = "Admin.Catalog.Products.Fields." + propertyName;
-
-				keys.Add("ParentGroupedProductId", "Admin.Catalog.Products.Fields.AssociatedToProductName");
+				case "Id":
+					key = "Admin.Common.Entity.Fields.Id";
+					break;
+				case "LimitedToStores":
+					key = "Admin.Common.Store.LimitedTo";
+					break;
+				case "DisplayOrder":
+					key = "Common.DisplayOrder";
+					break;
+				case "Deleted":
+					key = "Admin.Common.Deleted";
+					break;
+				case "CreatedOnUtc":
+				case "BillingAddress.CreatedOnUtc":
+				case "ShippingAddress.CreatedOnUtc":
+					key = "Common.CreatedOn";
+					break;
+				case "UpdatedOnUtc":
+					key = "Common.UpdatedOn";
+					break;
+				case "HasDiscountsApplied":
+					key = "Admin.Catalog.Products.Fields.HasDiscountsApplied";
+					break;
+				case "DefaultViewMode":
+					key = "Admin.Configuration.Settings.Catalog.DefaultViewMode";
+					break;
+				case "StoreId":
+					key = "Admin.Common.Store";
+					break;
+				case "ParentGroupedProductId":
+					key = "Admin.Catalog.Products.Fields.AssociatedToProductName";
+					break;
+				case "PasswordFormatId":
+					key = "Admin.Configuration.Settings.CustomerUser.DefaultPasswordFormat";
+					break;
+				case "LastIpAddress":
+					key = "Admin.Customers.Customers.Fields.IPAddress";
+					break;
+				default:
+					switch (type)
+					{
+						case ImportEntityType.Product:
+							key = "Admin.Catalog.Products.Fields." + property;
+							break;
+						case ImportEntityType.Category:
+							key = "Admin.Catalog.Categories.Fields." + property;
+							break;
+						case ImportEntityType.Customer:
+							if (property.StartsWith("BillingAddress.") || property.StartsWith("ShippingAddress."))						
+								key = "Admin.Address.Fields." + property.Substring(property.IndexOf('.') + 1);
+							else
+								key = "Admin.Customers.Customers.Fields." + property;
+							break;
+						case ImportEntityType.NewsLetterSubscription:
+							key = "Admin.Promotions.NewsLetterSubscriptions.Fields." + property;
+							break;
+					}
+					break;
 			}
-			else if (type == ImportEntityType.Category)
-			{
-				defaultKey = "Admin.Catalog.Categories.Fields." + propertyName;
-			}
-			else if (type == ImportEntityType.Customer)
-			{
-				defaultKey = "Admin.Customers.Customers.Fields." + propertyName;
 
-				keys.Add("PasswordFormatId", "Admin.Configuration.Settings.CustomerUser.DefaultPasswordFormat");
-				keys.Add("LastIpAddress", "Admin.Customers.Customers.Fields.IPAddress");
-			}
-			else if (type == ImportEntityType.NewsLetterSubscription)
-			{
-				defaultKey = "Admin.Promotions.NewsLetterSubscriptions.Fields." + propertyName;
-			}
+			#endregion
 
-			var result = _localizationService.GetResource(keys.ContainsKey(propertyName) ? keys[propertyName] : defaultKey, 0, false, "", true);
+			if (key.IsEmpty())
+				return "";
+
+			var result = _localizationService.GetResource(key, 0, false, "", true);
 
 			if (result.IsEmpty())
 			{
-				if (defaultKey.EndsWith("Id"))
-					result = _localizationService.GetResource(defaultKey.Substring(0, defaultKey.Length - 2), 0, false, "", true);
-				else if (defaultKey.EndsWith("Utc"))
-					result = _localizationService.GetResource(defaultKey.Substring(0, defaultKey.Length - 3), 0, false, "", true);
+				if (key.EndsWith("Id"))
+					result = _localizationService.GetResource(key.Substring(0, key.Length - 2), 0, false, "", true);
+				else if (key.EndsWith("Utc"))
+					result = _localizationService.GetResource(key.Substring(0, key.Length - 3), 0, false, "", true);
 			}
 
 			if (result.IsEmpty())
 			{
-				Debug.WriteLine("Missing string resource mapping for {0}.{1}".FormatInvariant(type.ToString(), propertyName));
-				return propertyName.SplitPascalCase();
+				Debug.WriteLine("Missing string resource mapping for {0} - {1}".FormatInvariant(type.ToString(), property));
+				result = property.SplitPascalCase();
+			}
+
+			if (prefixKey.HasValue())
+			{
+				result = string.Concat(_localizationService.GetResource(prefixKey, 0, false, "", true), " - ", result);
 			}
 
 			return result;
@@ -289,6 +335,14 @@ namespace SmartStore.Services.DataExchange.Import
 							{ ImportEntityType.NewsLetterSubscription, new string[] {  } }
 						};
 
+						var addressSet = container.GetEntitySetByName("Addresses", true);
+
+						var addressProperties = addressSet.ElementType.Members
+							.Where(x => !x.Name.IsCaseInsensitiveEqual("Id") && x.BuiltInTypeKind.HasFlag(BuiltInTypeKind.EdmProperty))
+							.Select(x => x.Name)
+							.ToList();
+
+
 						foreach (ImportEntityType type in Enum.GetValues(typeof(ImportEntityType)))
 						{
 							EntitySet entitySet = null;
@@ -307,7 +361,8 @@ namespace SmartStore.Services.DataExchange.Import
 
 							var dic = entitySet.ElementType.Members
 								.Where(x => !x.Name.IsCaseInsensitiveEqual("Id") && x.BuiltInTypeKind.HasFlag(BuiltInTypeKind.EdmProperty))
-								.ToDictionary(x => x.Name, x => "", StringComparer.OrdinalIgnoreCase);
+								.Select(x => x.Name)
+								.ToDictionary(x => x, x => "", StringComparer.OrdinalIgnoreCase);
 
 							// lack of abstractness?
 							if ((type == ImportEntityType.Product || type == ImportEntityType.Category) && !dic.ContainsKey("SeName"))
@@ -315,6 +370,17 @@ namespace SmartStore.Services.DataExchange.Import
 								dic.Add("SeName", "");
 							}
 
+							// shipping and billing address
+							if (type == ImportEntityType.Customer)
+							{
+								foreach (var property in addressProperties)
+								{
+									dic.Add("BillingAddress." + property, "");
+									dic.Add("ShippingAddress." + property, "");
+								}
+							}
+
+							// add localized property names
 							foreach (var key in dic.Keys.ToList())
 							{
 								var localizedValue = GetLocalizedPropertyName(type, key);

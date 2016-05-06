@@ -83,7 +83,7 @@ namespace SmartStore.Admin.Controllers
 				return true;
 
 			string columnWithoutIndex, columnIndex;
-			if (ColumnMap.ParseSourceColumn(property, out columnWithoutIndex, out columnIndex))
+			if (ColumnMap.ParseSourceName(property, out columnWithoutIndex, out columnIndex))
 				return disabledFieldNames.Contains(columnWithoutIndex);
 
 			return false;
@@ -256,7 +256,7 @@ namespace SmartStore.Admin.Controllers
 					foreach (var column in dataTable.Columns.Where(x => x.Name.HasValue()))
 					{
 						string columnWithoutIndex, columnIndex;
-						ColumnMap.ParseSourceColumn(column.Name, out columnWithoutIndex, out columnIndex);
+						ColumnMap.ParseSourceName(column.Name, out columnWithoutIndex, out columnIndex);
 
 						model.AvailableSourceColumns.Add(new ColumnMappingItemModel
 						{

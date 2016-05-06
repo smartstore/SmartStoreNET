@@ -30,22 +30,22 @@ namespace SmartStore.Services.DataExchange.Import
 			get { return _map; }
 		}
 
-		public static bool ParseSourceColumn(string sourceColumn, out string columnWithoutIndex, out string index)
+		public static bool ParseSourceName(string sourceName, out string nameWithoutIndex, out string index)
 		{
-			columnWithoutIndex = sourceColumn;
+			nameWithoutIndex = sourceName;
 			index = null;
 
 			var result = true;
 
-			if (sourceColumn.HasValue() && IsIndexed(sourceColumn))
+			if (sourceName.HasValue() && IsIndexed(sourceName))
 			{
-				var x1 = sourceColumn.IndexOf('[');
-				var x2 = sourceColumn.IndexOf(']', x1);
+				var x1 = sourceName.IndexOf('[');
+				var x2 = sourceName.IndexOf(']', x1);
 
 				if (x1 != -1 && x2 != -1 && x2 > x1)
 				{
-					columnWithoutIndex = sourceColumn.Substring(0, x1);
-					index = sourceColumn.Substring(x1 + 1, x2 - x1 - 1);
+					nameWithoutIndex = sourceName.Substring(0, x1);
+					index = sourceName.Substring(x1 + 1, x2 - x1 - 1);
 				}
 				else
 				{
@@ -66,24 +66,24 @@ namespace SmartStore.Services.DataExchange.Import
 		//	return mappings;
 		//}
 
-		public bool AddMapping(string sourceColumn, string entityProperty, string defaultValue = null)
+		public bool AddMapping(string sourceName, string mappedName, string defaultValue = null)
 		{
-			return AddMapping(sourceColumn, null, entityProperty, defaultValue);
+			return AddMapping(sourceName, null, mappedName, defaultValue);
         }
 
-		public bool AddMapping(string sourceColumn, string index, string entityProperty, string defaultValue = null)
+		public bool AddMapping(string sourceName, string index, string mappedName, string defaultValue = null)
 		{
-			Guard.ArgumentNotEmpty(() => sourceColumn);
-			Guard.ArgumentNotEmpty(() => entityProperty);
+			Guard.ArgumentNotEmpty(() => sourceName);
+			Guard.ArgumentNotEmpty(() => mappedName);
 
-			var isAlreadyMapped = (entityProperty.HasValue() && _map.Any(x => x.Value.Property.IsCaseInsensitiveEqual(entityProperty)));
+			var isAlreadyMapped = (mappedName.HasValue() && _map.Any(x => x.Value.Property.IsCaseInsensitiveEqual(mappedName)));
 
 			if (isAlreadyMapped)
 				return false;
 
-			_map[CreateSourceName(sourceColumn, index)] = new ColumnMappingValue
+			_map[CreateSourceName(sourceName, index)] = new ColumnMappingValue
 			{
-				Property = entityProperty,
+				Property = mappedName,
 				Default = defaultValue
 			};
 
@@ -93,29 +93,29 @@ namespace SmartStore.Services.DataExchange.Import
 		/// <summary>
 		/// Gets a mapped column value
 		/// </summary>
-		/// <param name="sourceColumn">The name of the column to get a mapped value for.</param>
+		/// <param name="sourceName">The name of the column to get a mapped value for.</param>
 		/// <param name="index">The column index, e.g. a language code (de, en etc.)</param>
-		/// <returns>The mapped column value OR - if the name is unmapped - a value with the passed <paramref name="sourceColumn"/>[<paramref name="index"/>]</returns>
-		public ColumnMappingValue GetMapping(string sourceColumn, string index)
+		/// <returns>The mapped column value OR - if the name is unmapped - a value with the passed <paramref name="sourceName"/>[<paramref name="index"/>]</returns>
+		public ColumnMappingValue GetMapping(string sourceName, string index)
 		{
-			return GetMapping(CreateSourceName(sourceColumn, index));
+			return GetMapping(CreateSourceName(sourceName, index));
 		}
 
 		/// <summary>
 		/// Gets a mapped column value
 		/// </summary>
-		/// <param name="sourceColumn">The name of the column to get a mapped value for.</param>
-		/// <returns>The mapped column value OR - if the name is unmapped - the value of the passed <paramref name="sourceColumn"/></returns>
-		public ColumnMappingValue GetMapping(string sourceColumn)
+		/// <param name="sourceName">The name of the column to get a mapped value for.</param>
+		/// <returns>The mapped column value OR - if the name is unmapped - the value of the passed <paramref name="sourceName"/></returns>
+		public ColumnMappingValue GetMapping(string sourceName)
 		{
 			ColumnMappingValue result;
 
-			if (_map.TryGetValue(sourceColumn, out result))
+			if (_map.TryGetValue(sourceName, out result))
 			{
 				return result;
 			}
 
-			return new ColumnMappingValue { Property = sourceColumn };
+			return new ColumnMappingValue { Property = sourceName };
 		}
 	}
 
@@ -124,7 +124,7 @@ namespace SmartStore.Services.DataExchange.Import
 	public class ColumnMappingValue
 	{
 		/// <summary>
-		/// The property name of the target entity
+		/// The mapped name
 		/// </summary>
 		[JsonProperty]
 		public string Property { get; set; }

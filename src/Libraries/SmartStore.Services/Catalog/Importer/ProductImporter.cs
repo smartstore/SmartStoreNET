@@ -379,7 +379,7 @@ namespace SmartStore.Services.Catalog.Importer
 			if (shouldSave)
 			{
 				// commit whole batch at once
-				return _productManufacturerRepository.Context.SaveChanges();
+				return _productRepository.Context.SaveChanges();
 			}
 
 			return 0;

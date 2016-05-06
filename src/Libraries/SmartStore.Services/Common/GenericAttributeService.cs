@@ -229,12 +229,12 @@ namespace SmartStore.Services.Common
 			{
 				if (string.IsNullOrWhiteSpace(valueStr))
 				{
-					//delete
+					// delete
 					DeleteAttribute(prop);
 				}
 				else
 				{
-					//update
+					// update
 					prop.Value = valueStr;
 					UpdateAttribute(prop);
 				}
@@ -243,7 +243,7 @@ namespace SmartStore.Services.Common
 			{
 				if (!string.IsNullOrWhiteSpace(valueStr))
 				{
-					//insert
+					// insert
 					prop = new GenericAttribute
 					{
 						EntityId = entityId,

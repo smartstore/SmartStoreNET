@@ -102,23 +102,45 @@ namespace SmartStore.Services.Customers.Importer
 
 		private void SaveAttribute(ImportRow<Customer> row, string key)
 		{
-			_genericAttributeService.SaveAttribute(row.Entity.Id, key, _attributeKeyGroup, row.GetDataValue<string>(key));
+
+			SaveAttribute(row, key, row.GetDataValue<string>(key));
+		}
+
+		private void SaveAttribute<TPropType>(ImportRow<Customer> row, string key)
+		{
+
+			SaveAttribute(row, key, row.GetDataValue<TPropType>(key));
+		}
+
+		private void SaveAttribute<TPropType>(ImportRow<Customer> row, string key, TPropType value)
+		{
+			if (row.IsTransient)
+				return;
+
+			if (row.IsNew || value!= null)
+			{
+				_genericAttributeService.SaveAttribute(row.Entity.Id, key, _attributeKeyGroup, value);
+			}
 		}
 
 		private void UpsertRole(ImportRow<Customer> row, CustomerRole role, bool value)
 		{
-			if (role != null)
-			{
-				var hasRole = row.Entity.CustomerRoles.Any(x => x.SystemName == role.SystemName);
+			if (role == null)
+				return;
 
-				if (value && !hasRole)
-					row.Entity.CustomerRoles.Add(role);
-				else if (!value && hasRole)
-					row.Entity.CustomerRoles.Remove(role);
+			var hasRole = row.Entity.CustomerRoles.Any(x => x.SystemName == role.SystemName);
+
+			if (value && !hasRole)
+			{
+				row.Entity.CustomerRoles.Add(role);
+			}
+			else if (!value && hasRole)
+			{
+				row.Entity.CustomerRoles.Remove(role);
 			}
 		}
 
-		private void ImportAvatar(IImportExecuteContext context, ImportRow<Customer> row)
+		protected virtual void ProcessAvatar(IImportExecuteContext context, ImportRow<Customer> row)
 		{
 			var urlOrPath = row.GetDataValue<string>("AvatarPictureUrl");
 			if (urlOrPath.IsEmpty())
@@ -147,8 +169,10 @@ namespace SmartStore.Services.Customers.Importer
 				{
 					var currentPictureId = row.Entity.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
 					if (currentPictureId != 0 && (picture = _pictureRepository.GetById(currentPictureId)) != null)
+					{
 						currentPictures.Add(picture);
-
+					}
+						
 					pictureBinary = _pictureService.ValidatePicture(pictureBinary);
 					pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
@@ -157,8 +181,7 @@ namespace SmartStore.Services.Customers.Importer
 						if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false)) != null)
 						{
 							_pictureRepository.Context.SaveChanges();
-
-							_genericAttributeService.SaveAttribute(row.Entity.Id, SystemCustomerAttributeNames.AvatarPictureId, _attributeKeyGroup, picture.Id.ToString());
+							SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, picture.Id);
 						}
 					}
 					else
@@ -173,7 +196,7 @@ namespace SmartStore.Services.Customers.Importer
 			}
 		}
 
-		private void ProcessAddresses(
+		protected virtual int ProcessAddresses(
 			IImportExecuteContext context,
 			IEnumerable<ImportRow<Customer>> batch,
 			Dictionary<string, int> allCountries,
@@ -184,6 +207,8 @@ namespace SmartStore.Services.Customers.Importer
 				ImportAddress("BillingAddress.", row, context, allCountries, allStateProvinces);
 				ImportAddress("ShippingAddress.", row, context, allCountries, allStateProvinces);
 			}
+
+			return _services.DbContext.SaveChanges();
 		}
 
 		private void ImportAddress(
@@ -240,15 +265,14 @@ namespace SmartStore.Services.Customers.Importer
 			}
 
 			_customerService.UpdateCustomer(row.Entity);
-
-			_services.DbContext.SaveChanges();
 		}
 
-		private void ProcessGenericAttributes(IImportExecuteContext context,
+		protected virtual int ProcessGenericAttributes(
+			IImportExecuteContext context,
 			IEnumerable<ImportRow<Customer>> batch,
 			Dictionary<string, int> allCountries,
 			Dictionary<Tuple<int, string>, int> allStateProvinces,
-			List<string> allCustomerNumbers)
+			HashSet<string> allCustomerNumbers)
 		{
 			foreach (var row in batch)
 			{
@@ -262,7 +286,7 @@ namespace SmartStore.Services.Customers.Importer
 					SaveAttribute(row, SystemCustomerAttributeNames.Gender);
 
 				if (_customerSettings.DateOfBirthEnabled)
-					SaveAttribute(row, SystemCustomerAttributeNames.DateOfBirth);
+					SaveAttribute<DateTime?>(row, SystemCustomerAttributeNames.DateOfBirth);
 
 				if (_customerSettings.CompanyEnabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.Company);
@@ -280,10 +304,10 @@ namespace SmartStore.Services.Customers.Importer
 					SaveAttribute(row, SystemCustomerAttributeNames.City);
 
 				if (_customerSettings.CountryEnabled)
-					SaveAttribute(row, SystemCustomerAttributeNames.CountryId);
+					SaveAttribute<int>(row, SystemCustomerAttributeNames.CountryId);
 
 				if (_customerSettings.CountryEnabled && _customerSettings.StateProvinceEnabled)
-					SaveAttribute(row, SystemCustomerAttributeNames.StateProvinceId);
+					SaveAttribute<int>(row, SystemCustomerAttributeNames.StateProvinceId);
 
 				if (_customerSettings.PhoneEnabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.Phone);
@@ -292,7 +316,7 @@ namespace SmartStore.Services.Customers.Importer
 					SaveAttribute(row, SystemCustomerAttributeNames.Fax);
 
 				if (_forumSettings.ForumsEnabled)
-					SaveAttribute(row, SystemCustomerAttributeNames.ForumPostCount);
+					SaveAttribute<int>(row, SystemCustomerAttributeNames.ForumPostCount);
 
 				if (_forumSettings.SignaturesEnabled)
 					SaveAttribute(row, SystemCustomerAttributeNames.Signature);
@@ -302,12 +326,12 @@ namespace SmartStore.Services.Customers.Importer
 
 				if (countryId.HasValue)
 				{
-					_genericAttributeService.SaveAttribute(row.Entity.Id, SystemCustomerAttributeNames.CountryId, _attributeKeyGroup, countryId.Value);
+					SaveAttribute(row, SystemCustomerAttributeNames.CountryId, countryId.Value);
 				}
 
 				if (stateId.HasValue)
 				{
-					_genericAttributeService.SaveAttribute(row.Entity.Id, SystemCustomerAttributeNames.StateProvinceId, _attributeKeyGroup, stateId.Value);
+					SaveAttribute(row, SystemCustomerAttributeNames.StateProvinceId, stateId.Value);
 				}
 
 				string customerNumber = null;
@@ -317,9 +341,9 @@ namespace SmartStore.Services.Customers.Importer
 				else
 					customerNumber = row.GetDataValue<string>("CustomerNumber");
 
-				if (customerNumber.IsEmpty() || !allCustomerNumbers.Any(x => x.IsCaseInsensitiveEqual(customerNumber)))
+				if (customerNumber.IsEmpty() || !allCustomerNumbers.Contains(customerNumber))
 				{
-					_genericAttributeService.SaveAttribute(row.Entity.Id, SystemCustomerAttributeNames.CustomerNumber, _attributeKeyGroup, customerNumber);
+					SaveAttribute(row, SystemCustomerAttributeNames.CustomerNumber, customerNumber);
 
 					if (!customerNumber.IsEmpty())
 						allCustomerNumbers.Add(customerNumber);
@@ -327,14 +351,14 @@ namespace SmartStore.Services.Customers.Importer
 
 				if (_customerSettings.AllowCustomersToUploadAvatars)
 				{
-					ImportAvatar(context, row);
+					ProcessAvatar(context, row);
 				}
-
-				_services.DbContext.SaveChanges();
 			}
+
+			return _services.DbContext.SaveChanges();
 		}
 
-		private int ProcessCustomers(
+		protected virtual int ProcessCustomers(
 			IImportExecuteContext context,
 			IEnumerable<ImportRow<Customer>> batch,
 			List<int> allAffiliateIds)
@@ -351,13 +375,6 @@ namespace SmartStore.Services.Customers.Importer
 
 			foreach (var row in batch)
 			{
-				if (row.GetDataValue<bool>("IsSystemAccount"))
-				{
-					++context.Result.SkippedRecords;
-					context.Result.AddInfo("Skipped system account.", row.GetRowInfo(), "IsSystemAccount");
-					continue;
-				}
-
 				Customer customer = null;
 				var id = row.GetDataValue<int>("Id");
 				var email = row.GetDataValue<string>("Email");
@@ -398,7 +415,7 @@ namespace SmartStore.Services.Customers.Importer
 					{
 						CustomerGuid = new Guid(),
 						AffiliateId = 0,
-						Active = true					
+						Active = true				
 					};
 				}
 				else
@@ -432,11 +449,6 @@ namespace SmartStore.Services.Customers.Importer
 				row.SetProperty(context.Result, (x) => x.AdminComment);
 				row.SetProperty(context.Result, (x) => x.IsTaxExempt);
 				row.SetProperty(context.Result, (x) => x.Active);
-				row.SetProperty(context.Result, (x) => x.IsSystemAccount);
-				row.SetProperty(context.Result, (x) => x.SystemName);
-				row.SetProperty(context.Result, (x) => x.LastIpAddress);
-				row.SetProperty(context.Result, (x) => x.LastLoginDateUtc);
-				row.SetProperty(context.Result, (x) => x.LastActivityDateUtc);
 
 				row.SetProperty(context.Result, (x) => x.CreatedOnUtc, UtcNow);
 				row.SetProperty(context.Result, (x) => x.LastActivityDateUtc, UtcNow);
@@ -520,9 +532,9 @@ namespace SmartStore.Services.Customers.Importer
 			var allStateProvinces = _stateProvinceService.GetAllStateProvinces(true)
 				.ToDictionarySafe(x => new Tuple<int, string>(x.CountryId, x.Abbreviation), x => x.Id);
 
-			var allCustomerNumbers = _genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, _attributeKeyGroup)
-				.Select(x => x.Value)
-				.ToList();
+			var allCustomerNumbers = new HashSet<string>(
+				_genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, _attributeKeyGroup).Select(x => x.Value), 
+				StringComparer.OrdinalIgnoreCase);
 
 			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
@@ -565,16 +577,11 @@ namespace SmartStore.Services.Customers.Importer
 					// ===========================================================================
 					try
 					{
-						_services.DbContext.AutoDetectChangesEnabled = true;
 						ProcessGenericAttributes(context, batch, allCountries, allStateProvinces, allCustomerNumbers);
 					}
 					catch (Exception exception)
 					{
 						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessGenericAttributes");
-					}
-					finally
-					{
-						_services.DbContext.AutoDetectChangesEnabled = false;
 					}
 
 					// ===========================================================================
@@ -584,16 +591,11 @@ namespace SmartStore.Services.Customers.Importer
 					{
 						try
 						{
-							_services.DbContext.AutoDetectChangesEnabled = true;
 							ProcessAddresses(context, batch, allCountries, allStateProvinces);
 						}
 						catch (Exception exception)
 						{
 							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessAddresses");
-						}
-						finally
-						{
-							_services.DbContext.AutoDetectChangesEnabled = false;
 						}
 					}
 				}

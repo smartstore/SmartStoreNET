@@ -224,8 +224,8 @@ namespace SmartStore.Admin.Controllers
 					{
 						var mapping = new ColumnMappingItemModel
 						{
-							Column = x.Key,
-							Property = x.Value.Property,
+							Column = x.Value.MappedName,
+							Property = x.Key,
 							Default = x.Value.Default
 						};
 
@@ -451,7 +451,7 @@ namespace SmartStore.Admin.Controllers
 							if (defaultValue.HasValue() && GetDisabledDefaultFieldNames(profile).Contains(property))
 								defaultValue = null;
 
-							result = map.AddMapping(column, null, property, defaultValue);
+							result = map.AddMapping(property, null, column, defaultValue);
 						}
 
 						if (!result)

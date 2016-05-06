@@ -152,7 +152,7 @@ namespace SmartStore.Services.DataExchange.Import
 			var mapping = _segmenter.ColumnMap.GetMapping(columnName, index);
 
 			object value;
-			return (_row.TryGetValue(mapping.Property, out value) && value != null && value != DBNull.Value);
+			return (_row.TryGetValue(mapping.MappedName, out value) && value != null && value != DBNull.Value);
 		}
 
 		public TProp GetDataValue<TProp>(string columnName)
@@ -165,7 +165,7 @@ namespace SmartStore.Services.DataExchange.Import
 			object value;
 			var mapping = _segmenter.ColumnMap.GetMapping(columnName, index);
 
-			if (_row.TryGetValue(mapping.Property, out value) && value != null && value != DBNull.Value)
+			if (_row.TryGetValue(mapping.MappedName, out value) && value != null && value != DBNull.Value)
 			{
 				return value.Convert<TProp>(_segmenter.Culture);
 			}
@@ -219,7 +219,7 @@ namespace SmartStore.Services.DataExchange.Import
 				{
 					// explicitly ignore this property
 				}
-				else if (_row.TryGetValue(mapping.Property, out value) && (value != null && value != DBNull.Value))
+				else if (_row.TryGetValue(mapping.MappedName, out value) && (value != null && value != DBNull.Value))
 				{
 					// source contains field value. Set it.
 					TProp converted;

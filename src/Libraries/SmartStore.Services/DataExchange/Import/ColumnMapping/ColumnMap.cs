@@ -76,14 +76,14 @@ namespace SmartStore.Services.DataExchange.Import
 			Guard.ArgumentNotEmpty(() => sourceName);
 			Guard.ArgumentNotEmpty(() => mappedName);
 
-			var isAlreadyMapped = (mappedName.HasValue() && _map.Any(x => x.Value.Property.IsCaseInsensitiveEqual(mappedName)));
+			var isAlreadyMapped = (mappedName.HasValue() && _map.Any(x => x.Value.MappedName.IsCaseInsensitiveEqual(mappedName)));
 
 			if (isAlreadyMapped)
 				return false;
 
 			_map[CreateSourceName(sourceName, index)] = new ColumnMappingValue
 			{
-				Property = mappedName,
+				MappedName = mappedName,
 				Default = defaultValue
 			};
 
@@ -115,7 +115,7 @@ namespace SmartStore.Services.DataExchange.Import
 				return result;
 			}
 
-			return new ColumnMappingValue { Property = sourceName };
+			return new ColumnMappingValue { MappedName = sourceName };
 		}
 	}
 
@@ -127,7 +127,7 @@ namespace SmartStore.Services.DataExchange.Import
 		/// The mapped name
 		/// </summary>
 		[JsonProperty]
-		public string Property { get; set; }
+		public string MappedName { get; set; }
 
 		/// <summary>
 		/// An optional default value

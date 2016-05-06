@@ -388,6 +388,10 @@
     <Compile Include="Migrations\201605020640016_GtinMpnIndex.Designer.cs">
       <DependentUpon>201605020640016_GtinMpnIndex.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605061916117_SwapColumnMappingValues.cs" />
+    <Compile Include="Migrations\201605061916117_SwapColumnMappingValues.Designer.cs">
+      <DependentUpon>201605061916117_SwapColumnMappingValues.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -723,6 +727,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605020640016_GtinMpnIndex.resx">
       <DependentUpon>201605020640016_GtinMpnIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605061916117_SwapColumnMappingValues.resx">
+      <DependentUpon>201605061916117_SwapColumnMappingValues.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

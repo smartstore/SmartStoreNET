@@ -125,7 +125,7 @@ namespace SmartStore.Services.DataExchange.Import
 		/// </remarks>
 		public bool HasColumn(string name, string index)
 		{
-			return _table.HasColumn(_columnMap.GetMapping(name, index).Property);
+			return _table.HasColumn(_columnMap.GetMapping(name, index).MappedName);
 		}
 
 		/// <summary>

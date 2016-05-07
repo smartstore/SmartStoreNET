@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
@@ -137,62 +136,6 @@ namespace SmartStore.Services.Customers.Importer
 			else if (!value && hasRole)
 			{
 				row.Entity.CustomerRoles.Remove(role);
-			}
-		}
-
-		protected virtual void ProcessAvatar(IImportExecuteContext context, ImportRow<Customer> row)
-		{
-			var urlOrPath = row.GetDataValue<string>("AvatarPictureUrl");
-			if (urlOrPath.IsEmpty())
-				return;
-
-			Picture picture = null;
-			var equalPictureId = 0;
-			var currentPictures = new List<Picture>();
-			var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
-			var image = CreateDownloadImage(urlOrPath, seoName, 1);
-
-			if (image == null)
-				return;
-
-			if (image.Url.HasValue() && !image.Success.HasValue)
-			{
-				AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, new FileDownloadManagerItem[] { image }));
-			}
-
-			if ((image.Success ?? false) && File.Exists(image.Path))
-			{
-				Succeeded(image);
-				var pictureBinary = File.ReadAllBytes(image.Path);
-
-				if (pictureBinary != null && pictureBinary.Length > 0)
-				{
-					var currentPictureId = row.Entity.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
-					if (currentPictureId != 0 && (picture = _pictureRepository.GetById(currentPictureId)) != null)
-					{
-						currentPictures.Add(picture);
-					}
-						
-					pictureBinary = _pictureService.ValidatePicture(pictureBinary);
-					pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
-
-					if (pictureBinary != null && pictureBinary.Length > 0)
-					{
-						if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false)) != null)
-						{
-							_pictureRepository.Context.SaveChanges();
-							SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, picture.Id);
-						}
-					}
-					else
-					{
-						context.Result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "AvatarPictureUrl");
-					}
-				}
-			}
-			else
-			{
-				context.Result.AddInfo("Download of an image failed.", row.GetRowInfo(), "AvatarPictureUrl");
 			}
 		}
 
@@ -348,10 +291,68 @@ namespace SmartStore.Services.Customers.Importer
 					if (!customerNumber.IsEmpty())
 						allCustomerNumbers.Add(customerNumber);
 				}
+			}
 
-				if (_customerSettings.AllowCustomersToUploadAvatars)
+			return _services.DbContext.SaveChanges();
+		}
+
+		protected virtual int ProcessAvatars(
+			IImportExecuteContext context,
+			IEnumerable<ImportRow<Customer>> batch)
+		{
+			foreach (var row in batch)
+			{
+				var urlOrPath = row.GetDataValue<string>("AvatarPictureUrl");
+				if (urlOrPath.IsEmpty())
+					continue;
+
+				Picture picture = null;
+				var equalPictureId = 0;
+				var currentPictures = new List<Picture>();
+				var seoName = _pictureService.GetPictureSeName(row.EntityDisplayName);
+
+				var image = CreateDownloadImage(urlOrPath, seoName, 1);
+				if (image == null)
+					continue;
+
+				if (image.Url.HasValue() && !image.Success.HasValue)
 				{
-					ProcessAvatar(context, row);
+					AsyncRunner.RunSync(() => _fileDownloadManager.DownloadAsync(DownloaderContext, new FileDownloadManagerItem[] { image }));
+				}
+
+				if ((image.Success ?? false) && File.Exists(image.Path))
+				{
+					Succeeded(image);
+					var pictureBinary = File.ReadAllBytes(image.Path);
+
+					if (pictureBinary != null && pictureBinary.Length > 0)
+					{
+						var currentPictureId = row.Entity.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
+						if (currentPictureId != 0 && (picture = _pictureRepository.GetById(currentPictureId)) != null)
+						{
+							currentPictures.Add(picture);
+						}
+
+						pictureBinary = _pictureService.ValidatePicture(pictureBinary);
+						pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
+
+						if (pictureBinary != null && pictureBinary.Length > 0)
+						{
+							if ((picture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false)) != null)
+							{
+								_pictureRepository.Context.SaveChanges();
+								SaveAttribute(row, SystemCustomerAttributeNames.AvatarPictureId, picture.Id);
+							}
+						}
+						else
+						{
+							context.Result.AddInfo("Found equal picture in data store. Skipping field.", row.GetRowInfo(), "AvatarPictureUrl");
+						}
+					}
+				}
+				else
+				{
+					context.Result.AddInfo("Download of an image failed.", row.GetRowInfo(), "AvatarPictureUrl");
 				}
 			}
 
@@ -582,6 +583,21 @@ namespace SmartStore.Services.Customers.Importer
 					catch (Exception exception)
 					{
 						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessGenericAttributes");
+					}
+
+					// ===========================================================================
+					// Process avatars
+					// ===========================================================================
+					if (_customerSettings.AllowCustomersToUploadAvatars)
+					{
+						try
+						{
+							ProcessAvatars(context, batch);
+						}
+						catch (Exception exception)
+						{
+							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessAvatars");
+						}
 					}
 
 					// ===========================================================================

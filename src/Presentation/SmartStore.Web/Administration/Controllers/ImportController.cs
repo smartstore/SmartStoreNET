@@ -419,7 +419,6 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
-			var multipleMapped = new List<string>();
 			var map = new ColumnMap();
 			var hasErrors = false;
 			var resetMappings = false;
@@ -439,25 +438,18 @@ namespace SmartStore.Admin.Controllers
 						var property = form[key];
 						var column = form["ColumnMapping.Column." + index];
 						var defaultValue = form["ColumnMapping.Default." + index];
-						var result = true;
 
 						if (column.IsEmpty())
 						{
 							// tell mapper to explicitly ignore the property
-							result = map.AddMapping(property, null, property, "[IGNOREPROPERTY]");
+							map.AddMapping(property, null, property, "[IGNOREPROPERTY]");
 						}
 						else if (!column.IsCaseInsensitiveEqual(property) || defaultValue.HasValue())
 						{
 							if (defaultValue.HasValue() && GetDisabledDefaultFieldNames(profile).Contains(property))
 								defaultValue = null;
 
-							result = map.AddMapping(property, null, column, defaultValue);
-						}
-
-						if (!result)
-						{
-							// add warning for ignored, multiple mapped properties
-							multipleMapped.Add("{0} ({1})".FormatInvariant(entityProperties.ContainsKey(property) ? entityProperties[property] : "".NaIfEmpty(), property));
+							map.AddMapping(property, null, column, defaultValue);
 						}
 					}
 				}
@@ -526,10 +518,6 @@ namespace SmartStore.Admin.Controllers
 				if (resetMappings)
 				{
 					NotifyWarning(T("Admin.DataExchange.ColumnMapping.Validate.MappingsReset"));
-				}
-				else if (multipleMapped.Any())
-				{
-					NotifyWarning(T("Admin.DataExchange.ColumnMapping.Validate.MultipleMappedIgnored", "<p>" + string.Join("<br />", multipleMapped) + "</p>"));
 				}
 			}
 

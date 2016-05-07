@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace SmartStore.Services.DataExchange.Import
@@ -56,38 +55,21 @@ namespace SmartStore.Services.DataExchange.Import
 			return result;
 		}
 
-		//public IEnumerable<KeyValuePair<string, ColumnMappingValue>> GetInvalidMappings()
-		//{
-		//	var mappings = Mappings.Where(x => 
-		//		x.Value.Property.HasValue() &&
-		//		Mappings.Count(y => y.Value.Property.IsCaseInsensitiveEqual(x.Value.Property)) > 1
-		//	);
-
-		//	return mappings;
-		//}
-
-		public bool AddMapping(string sourceName, string mappedName, string defaultValue = null)
+		public void AddMapping(string sourceName, string mappedName, string defaultValue = null)
 		{
-			return AddMapping(sourceName, null, mappedName, defaultValue);
+			AddMapping(sourceName, null, mappedName, defaultValue);
         }
 
-		public bool AddMapping(string sourceName, string index, string mappedName, string defaultValue = null)
+		public void AddMapping(string sourceName, string index, string mappedName, string defaultValue = null)
 		{
 			Guard.ArgumentNotEmpty(() => sourceName);
 			Guard.ArgumentNotEmpty(() => mappedName);
-
-			var isAlreadyMapped = (mappedName.HasValue() && _map.Any(x => x.Value.MappedName.IsCaseInsensitiveEqual(mappedName)));
-
-			if (isAlreadyMapped)
-				return false;
 
 			_map[CreateSourceName(sourceName, index)] = new ColumnMappingValue
 			{
 				MappedName = mappedName,
 				Default = defaultValue
 			};
-
-			return true;
 		}
 
 		/// <summary>

@@ -8,7 +8,7 @@ namespace SmartStore.Data.Migrations
 	using Newtonsoft.Json.Linq;
 	using Setup;
 
-	public partial class SwapColumnMappingValues : DbMigration, IDataSeeder<SmartObjectContext>
+	public partial class SwapColumnMappingValues : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
 	{
         public override void Up()
         {
@@ -25,6 +25,8 @@ namespace SmartStore.Data.Migrations
 
 		public void Seed(SmartObjectContext context)
 		{
+			context.MigrateLocaleResources(MigrateLocaleResources);
+
 			var importProfiles = context.Set<ImportProfile>().Where(x => x.ColumnMapping.HasValue()).ToList();
 
 			foreach (var profile in importProfiles)
@@ -85,6 +87,11 @@ namespace SmartStore.Data.Migrations
 			}
 
 			context.SaveChanges();
+		}
+
+		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
+		{
+			builder.Delete("Admin.DataExchange.ColumnMapping.Validate.MultipleMappedIgnored");
 		}
 	}
 }

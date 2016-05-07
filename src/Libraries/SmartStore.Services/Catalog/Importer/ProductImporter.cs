@@ -390,7 +390,6 @@ namespace SmartStore.Services.Catalog.Importer
 			var entityName = typeof(Product).Name;
 			var slugMap = new Dictionary<string, UrlRecord>();
 			var languageMap = context.Languages.ToDictionarySafe(x => x.UniqueSeoCode);
-			Language language = null;
 			UrlRecord urlRecord = null;		
 
 			Func<string, UrlRecord> slugLookup = ((s) =>

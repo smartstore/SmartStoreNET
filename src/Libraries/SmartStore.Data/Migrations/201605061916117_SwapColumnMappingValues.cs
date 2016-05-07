@@ -27,54 +27,62 @@ namespace SmartStore.Data.Migrations
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
 
-			var importProfiles = context.Set<ImportProfile>().Where(x => x.ColumnMapping.HasValue()).ToList();
+			var importProfiles = context.Set<ImportProfile>().Where(x => x.ColumnMapping != null).ToList();
 
 			foreach (var profile in importProfiles)
 			{
 				var dic = new Dictionary<string, Dictionary<string, string>>();
 				var storeMapping = true;
 
-				var json = JObject.Parse(profile.ColumnMapping);
-
-				foreach (var kvp in json)
+				try
 				{
-					dynamic value = kvp.Value;
+					var json = JObject.Parse(profile.ColumnMapping);
 
-					var mappedName = (string)value.MappedName;
-					var property = (string)value.Property;
-					var defaultValue = (string)value.Default;
+					foreach (var kvp in json)
+					{
+						dynamic value = kvp.Value;
 
-					if (mappedName.HasValue())
-					{
-						// break migration because data is already migrated
-						storeMapping = false;
-						break;
-					}
-					else if (property.HasValue())
-					{
-						if (!kvp.Key.IsCaseInsensitiveEqual(property) || defaultValue.HasValue())
+						var mappedName = (string)value.MappedName;
+						var property = (string)value.Property;
+						var defaultValue = (string)value.Default;
+
+						if (mappedName.HasValue())
 						{
-							// swap value
-							dic.Add(property, new Dictionary<string, string>
+							// break migration because data is already migrated
+							storeMapping = false;
+							break;
+						}
+						else if (property.HasValue())
+						{
+							if (!kvp.Key.IsCaseInsensitiveEqual(property) || defaultValue.HasValue())
 							{
-								{ "MappedName", kvp.Key },
-								{ "Default", defaultValue }
-							});
+								// swap value
+								dic.Add(property, new Dictionary<string, string>
+								{
+									{ "MappedName", kvp.Key },
+									{ "Default", defaultValue }
+								});
+							}
+							else
+							{
+								// ignore because persisting not required anymore
+							}
 						}
 						else
 						{
-							// ignore because persisting not required anymore
+							// explicitly ignored property
+							dic.Add(property, new Dictionary<string, string>
+							{
+								{ "MappedName", property },
+								{ "Default", "[IGNOREPROPERTY]" }
+							});
 						}
 					}
-					else
-					{
-						// explicitly ignored property
-						dic.Add(property, new Dictionary<string, string>
-						{
-							{ "MappedName", property },
-							{ "Default", "[IGNOREPROPERTY]" }
-						});
-					}
+				}
+				catch
+				{
+					storeMapping = true;
+					dic.Clear();
 				}
 
 				if (storeMapping)

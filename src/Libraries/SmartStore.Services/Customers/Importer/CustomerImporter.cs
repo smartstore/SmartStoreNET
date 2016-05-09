@@ -146,15 +146,8 @@ namespace SmartStore.Services.Customers.Importer
 		{
 			foreach (var row in batch)
 			{
-				if (row.HasDataValue("BillingAddress.LastName"))
-				{
-					ImportAddress("BillingAddress.", row, context, allCountries, allStateProvinces);
-				}
-
-				if (row.HasDataValue("ShippingAddress.LastName"))
-				{
-					ImportAddress("ShippingAddress.", row, context, allCountries, allStateProvinces);
-				}
+				ImportAddress("BillingAddress.", row, context, allCountries, allStateProvinces);
+				ImportAddress("ShippingAddress.", row, context, allCountries, allStateProvinces);
 			}
 
 			return _services.DbContext.SaveChanges();

@@ -13,6 +13,7 @@ namespace SmartStore.Services.DataExchange.Import
 		private string _entityDisplayName;
 		private readonly int _position;
 		private bool _isNew;
+		private bool _isDirty;
 		private ImportRowInfo _rowInfo;
 
 		private readonly ImportDataSegmenter _segmenter;
@@ -71,6 +72,11 @@ namespace SmartStore.Services.DataExchange.Import
 		public bool IsNew
 		{
 			get { return _isNew; }
+		}
+
+		public bool IsDirty
+		{
+			get { return _isDirty; }
 		}
 
 		public ImportDataSegmenter Segmenter
@@ -265,6 +271,11 @@ namespace SmartStore.Services.DataExchange.Import
 			catch (Exception exception)
 			{
 				result.AddWarning("Conversion failed: " + exception.Message, this.GetRowInfo(), propName);
+			}
+
+			if (isPropertySet && !_isDirty)
+			{
+				_isDirty = true;
 			}
 
 			return isPropertySet;

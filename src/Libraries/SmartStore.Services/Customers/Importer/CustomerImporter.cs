@@ -101,7 +101,6 @@ namespace SmartStore.Services.Customers.Importer
 
 		private void SaveAttribute(ImportRow<Customer> row, string key)
 		{
-
 			SaveAttribute(row, key, row.GetDataValue<string>(key));
 		}
 
@@ -169,24 +168,18 @@ namespace SmartStore.Services.Customers.Importer
 			Dictionary<Tuple<int, string>, int> allStateProvinces)
 		{
 			// last name is mandatory for an address to be imported or updated
-			var lastName = row.GetDataValue<string>(fieldPrefix + "LastName");
-			if (lastName.IsEmpty())
+			if (!row.HasDataValue(fieldPrefix + "LastName"))
 				return;
 
-			var countryId = CountryCodeToId(allCountries, row.GetDataValue<string>(fieldPrefix + "CountryCode"));
-			var stateId = StateAbbreviationToId(allStateProvinces, countryId, row.GetDataValue<string>(fieldPrefix + "StateAbbreviation"));
-
-			var importAddress = new Address
+			var address = new Address
 			{
-				LastName = lastName,
-				CreatedOnUtc = UtcNow,
-				CountryId = countryId,
-				StateProvinceId = stateId
+				CreatedOnUtc = UtcNow
 			};
 
 			var childRow = new ImportRow<Address>(row.Segmenter, row.DataRow, row.Position);
-			childRow.Initialize(importAddress, row.EntityDisplayName);
+			childRow.Initialize(address, row.EntityDisplayName);
 
+			childRow.SetProperty(context.Result, fieldPrefix + "LastName", x => x.LastName);
 			childRow.SetProperty(context.Result, fieldPrefix + "FirstName", x => x.FirstName);
 			childRow.SetProperty(context.Result, fieldPrefix + "Email", x => x.Email);
 			childRow.SetProperty(context.Result, fieldPrefix + "Company", x => x.Company);
@@ -197,11 +190,36 @@ namespace SmartStore.Services.Customers.Importer
 			childRow.SetProperty(context.Result, fieldPrefix + "PhoneNumber", x => x.PhoneNumber);
 			childRow.SetProperty(context.Result, fieldPrefix + "FaxNumber", x => x.FaxNumber);
 
-			var appliedAddress = row.Entity.Addresses.FindAddress(importAddress);
+			childRow.SetProperty(context.Result, fieldPrefix + "CountryId", x => x.CountryId);
+			if (childRow.Entity.CountryId == null)
+			{
+				// try with country code
+				childRow.SetProperty(context.Result, fieldPrefix + "CountryCode", x => x.CountryId, converter: (val, ci) => CountryCodeToId(allCountries, val.ToString()));
+			}
+
+			var countryId = childRow.Entity.CountryId;
+
+			if (countryId.HasValue)
+			{
+				childRow.SetProperty(context.Result, fieldPrefix + "StateProvinceId", x => x.StateProvinceId);
+				if (childRow.Entity.StateProvinceId == null)
+				{
+					// try with state abbreviation
+					childRow.SetProperty(context.Result, fieldPrefix + "StateAbbreviation", x => x.StateProvinceId, converter: (val, ci) => StateAbbreviationToId(allStateProvinces, countryId, val.ToString()));
+				}
+			}
+
+			if (!childRow.IsDirty)
+			{
+				// Not one single property could be set. Get out!
+				return;
+			}
+
+			var appliedAddress = row.Entity.Addresses.FindAddress(address);
 
 			if (appliedAddress == null)
 			{
-				appliedAddress = importAddress;
+				appliedAddress = address;
 				row.Entity.Addresses.Add(appliedAddress);
 			}
 
@@ -628,7 +646,6 @@ namespace SmartStore.Services.Customers.Importer
 					try
 					{
 						_services.DbContext.AutoDetectChangesEnabled = true;
-
 						ProcessAddresses(context, batch, allCountries, allStateProvinces);
 					}
 					catch (Exception exception)

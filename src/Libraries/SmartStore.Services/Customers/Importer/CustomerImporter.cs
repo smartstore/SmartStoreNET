@@ -147,8 +147,15 @@ namespace SmartStore.Services.Customers.Importer
 		{
 			foreach (var row in batch)
 			{
-				ImportAddress("BillingAddress.", row, context, allCountries, allStateProvinces);
-				ImportAddress("ShippingAddress.", row, context, allCountries, allStateProvinces);
+				if (row.HasDataValue("BillingAddress.LastName"))
+				{
+					ImportAddress("BillingAddress.", row, context, allCountries, allStateProvinces);
+				}
+
+				if (row.HasDataValue("ShippingAddress.LastName"))
+				{
+					ImportAddress("ShippingAddress.", row, context, allCountries, allStateProvinces);
+				}
 			}
 
 			return _services.DbContext.SaveChanges();
@@ -161,7 +168,7 @@ namespace SmartStore.Services.Customers.Importer
 			Dictionary<string, int> allCountries,
 			Dictionary<Tuple<int, string>, int> allStateProvinces)
 		{
-			// last name is mandatory for an address to be imported
+			// last name is mandatory for an address to be imported or updated
 			var lastName = row.GetDataValue<string>(fieldPrefix + "LastName");
 			if (lastName.IsEmpty())
 				return;
@@ -207,7 +214,7 @@ namespace SmartStore.Services.Customers.Importer
 				row.Entity.ShippingAddress = appliedAddress;
 			}
 
-			_customerService.UpdateCustomer(row.Entity);
+			_customerRepository.Update(row.Entity);
 		}
 
 		protected virtual int ProcessGenericAttributes(
@@ -374,6 +381,8 @@ namespace SmartStore.Services.Customers.Importer
 			var registeredRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
 			var forumModeratorRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.ForumModerators);
 
+			var customerQuery = _customerRepository.Table.Expand(x => x.Addresses);
+
 			foreach (var row in batch)
 			{
 				Customer customer = null;
@@ -385,18 +394,31 @@ namespace SmartStore.Services.Customers.Importer
 					switch (keyName)
 					{
 						case "Id":
-							customer = _customerService.GetCustomerById(id);
+							if (id != 0)
+							{
+								customer = customerQuery.FirstOrDefault(x => x.Id == id);
+							}
 							break;
 						case "CustomerGuid":
-							var guid = row.GetDataValue<string>("CustomerGuid");
-							if (guid.HasValue())
-								customer = _customerService.GetCustomerByGuid(new Guid(guid));
+							var customerGuid = row.GetDataValue<string>("CustomerGuid");
+							if (customerGuid.HasValue())
+							{
+								var guid = new Guid(customerGuid);
+								customer = customerQuery.FirstOrDefault(x => x.CustomerGuid == guid);
+							}
 							break;
 						case "Email":
-							customer = _customerService.GetCustomerByEmail(email);
+							if (email.HasValue())
+							{
+								customer = customerQuery.FirstOrDefault(x => x.Email == email);
+							}
 							break;
 						case "Username":
-							customer = _customerService.GetCustomerByUsername(row.GetDataValue<string>("Username"));
+							var userName = row.GetDataValue<string>("Username");
+							if (userName.HasValue())
+							{
+								customer = customerQuery.FirstOrDefault(x => x.Username == userName);
+							}
 							break;
 					}
 
@@ -603,16 +625,19 @@ namespace SmartStore.Services.Customers.Importer
 					// ===========================================================================
 					// Process addresses
 					// ===========================================================================
-					if (segmenter.HasColumn("BillingAddress.LastName") || segmenter.HasColumn("ShippingAddress.LastName"))
+					try
 					{
-						try
-						{
-							ProcessAddresses(context, batch, allCountries, allStateProvinces);
-						}
-						catch (Exception exception)
-						{
-							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessAddresses");
-						}
+						_services.DbContext.AutoDetectChangesEnabled = true;
+
+						ProcessAddresses(context, batch, allCountries, allStateProvinces);
+					}
+					catch (Exception exception)
+					{
+						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessAddresses");
+					}
+					finally
+					{
+						_services.DbContext.AutoDetectChangesEnabled = false;
 					}
 				}
 			}

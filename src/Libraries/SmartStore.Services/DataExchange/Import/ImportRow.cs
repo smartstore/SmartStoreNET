@@ -185,6 +185,39 @@ namespace SmartStore.Services.DataExchange.Import
 			return default(TProp);
 		}
 
+		public bool GetDataValue<TProp>(string columnName, out TProp value, bool force = false)
+		{
+			return GetDataValue(columnName, null, out value, force);
+		}
+
+		public bool GetDataValue<TProp>(string columnName, string index, out TProp value, bool force = false)
+		{
+			object obj;
+			var mapping = _segmenter.ColumnMap.GetMapping(columnName, index);
+
+			if (!force && mapping.IgnoreProperty)
+			{
+				value = default(TProp);
+				return false;
+			}
+
+			if (_row.TryGetValue(mapping.MappedName, out obj) && obj != null && obj != DBNull.Value)
+			{
+				value = obj.Convert<TProp>(_segmenter.Culture);
+				return true;
+			}
+
+			if (IsNew)
+			{
+				// only transient/new entities should fallback to possible defaults.
+				value = GetDefaultValue(mapping, columnName, default(TProp));
+				return true;
+			}
+
+			value = default(TProp);
+			return true;
+		}
+
 		public bool SetProperty<TProp>(
 			ImportResult result,
 			Expression<Func<T, TProp>> prop,

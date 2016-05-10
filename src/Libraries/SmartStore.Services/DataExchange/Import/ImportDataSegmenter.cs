@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using SmartStore.Core;
 
@@ -126,6 +125,29 @@ namespace SmartStore.Services.DataExchange.Import
 		public bool HasColumn(string name, string index)
 		{
 			return _table.HasColumn(_columnMap.GetMapping(name, index).MappedName);
+		}
+
+		/// <summary>
+		/// Indicates whether to ignore the property that is mapped to columnName
+		/// </summary>
+		/// <param name="columnName">The name of the column</param>
+		/// <returns><c>true</c> ignore, <c>false</c> do not ignore</returns>
+		public bool IsIgnored(string columnName)
+		{
+			return IsIgnored(columnName, null);
+		}
+
+		/// <summary>
+		/// Indicates whether to ignore the property that is mapped to columnName
+		/// </summary>
+		/// <param name="columnName">The name of the column</param>
+		/// <param name="index">The index of the column</param>
+		/// <returns><c>true</c> ignore, <c>false</c> do not ignore</returns>
+		public bool IsIgnored(string columnName, string index)
+		{
+			var mapping = _columnMap.GetMapping(columnName, index);
+
+			return mapping.IgnoreProperty;
 		}
 
 		/// <summary>

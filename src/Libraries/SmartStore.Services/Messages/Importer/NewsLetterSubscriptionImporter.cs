@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.DataExchange;
@@ -61,12 +60,22 @@ namespace SmartStore.Services.Messages.Importer
 					{
 						try
 						{
+							var active = true;
 							var email = row.GetDataValue<string>("Email");
-							var active = row.HasDataValue("Active") ? row.GetDataValue<bool>("Active") : true;
 							var storeId = row.GetDataValue<int>("StoreId");
 
 							if (storeId == 0)
+							{
 								storeId = currentStoreId;
+							}
+
+							if (row.HasDataValue("Active") && row.GetDataValue("Active", out active))
+							{
+							}
+							else
+							{
+								active = true;	// default
+							}
 
 							if (email.IsEmpty())
 							{

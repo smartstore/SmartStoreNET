@@ -9,6 +9,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Localization;
@@ -16,8 +17,6 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Utilities;
-using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.Catalog.Importer
 {
@@ -366,8 +365,9 @@ namespace SmartStore.Services.Catalog.Importer
 					foreach (var lang in context.Languages)
 					{
 						var code = lang.UniqueSeoCode;
-						var value = row.GetDataValue<string>(prop /* ColumnName */, code);
-						if (value.HasValue())
+						string value;
+
+						if (row.GetDataValue(prop /* ColumnName */, code, out value) && value.HasValue())
 						{
 							_localizedEntityService.SaveLocalizedValue(row.Entity, lambda, value, lang.Id);
 							shouldSave = true;
@@ -385,12 +385,15 @@ namespace SmartStore.Services.Catalog.Importer
 			return 0;
 		}
 
-		protected virtual int ProcessSlugs(IImportExecuteContext context, IEnumerable<ImportRow<Product>> batch, string[] columnIndexes)
+		protected virtual int ProcessSlugs(
+			IImportExecuteContext context,
+			IEnumerable<ImportRow<Product>> batch,
+			string[] columnIndexes)
 		{
 			var entityName = typeof(Product).Name;
 			var slugMap = new Dictionary<string, UrlRecord>();
-			var languageMap = context.Languages.ToDictionarySafe(x => x.UniqueSeoCode);
-			UrlRecord urlRecord = null;		
+			//var languageMap = context.Languages.ToDictionarySafe(x => x.UniqueSeoCode);
+			UrlRecord urlRecord = null;
 
 			Func<string, UrlRecord> slugLookup = ((s) =>
 			{
@@ -401,34 +404,36 @@ namespace SmartStore.Services.Catalog.Importer
 			{
 				try
 				{
-					var seName = row.GetDataValue<string>("SeName");
-
-					if (row.IsNew || row.NameChanged || seName.HasValue())
+					string seName;
+					if (row.GetDataValue("SeName", out seName, row.IsNew))
 					{
-						seName = row.Entity.ValidateSeName(seName, row.Entity.Name, true, _urlRecordService, _seoSettings, extraSlugLookup: slugLookup);
-
-						if (row.IsNew)
+						if (row.IsNew || row.NameChanged || seName.HasValue())
 						{
-							// dont't bother validating SeName for new entities.
-							urlRecord = new UrlRecord
+							seName = row.Entity.ValidateSeName(seName, row.Entity.Name, true, _urlRecordService, _seoSettings, extraSlugLookup: slugLookup);
+
+							if (row.IsNew)
 							{
-								EntityId = row.Entity.Id,
-								EntityName = entityName,
-								Slug = seName,
-								LanguageId = 0,
-								IsActive = true,
-							};
-							_urlRecordRepository.Insert(urlRecord);
-						}
-						else
-						{
-							urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, 0);
-						}
+								// dont't bother validating SeName for new entities.
+								urlRecord = new UrlRecord
+								{
+									EntityId = row.Entity.Id,
+									EntityName = entityName,
+									Slug = seName,
+									LanguageId = 0,
+									IsActive = true,
+								};
+								_urlRecordRepository.Insert(urlRecord);
+							}
+							else
+							{
+								urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, 0);
+							}
 
-						if (urlRecord != null)
-						{
-							// a new record was inserted to the store: keep track of it for this batch.
-							slugMap[seName] = urlRecord;
+							if (urlRecord != null)
+							{
+								// a new record was inserted to the store: keep track of it for this batch.
+								slugMap[seName] = urlRecord;
+							}
 						}
 					}
 
@@ -649,8 +654,11 @@ namespace SmartStore.Services.Catalog.Importer
 				// it has to be set to true by code if it's absent but "StoreIds" exists.
 				row.SetProperty(context.Result, (x) => x.LimitedToStores, !row.GetDataValue<List<int>>("StoreIds").IsNullOrEmpty());
 
-				var tvp = row.GetDataValue<string>("ProductTemplateViewPath");
-				product.ProductTemplateId = (tvp.HasValue() && templateViewPaths.ContainsKey(tvp) ? templateViewPaths[tvp] : defaultTemplateId);
+				string tvp;
+				if (row.GetDataValue("ProductTemplateViewPath", out tvp, row.IsTransient))
+				{
+					product.ProductTemplateId = (tvp.HasValue() && templateViewPaths.ContainsKey(tvp) ? templateViewPaths[tvp] : defaultTemplateId);
+				}
 
 				row.SetProperty(context.Result, (x) => x.CreatedOnUtc, UtcNow);
 				product.UpdatedOnUtc = UtcNow;
@@ -782,6 +790,7 @@ namespace SmartStore.Services.Catalog.Importer
 						try
 						{
 							_productRepository.Context.AutoDetectChangesEnabled = true;
+
 							ProcessSlugs(context, batch, segmenter.GetColumnIndexes("Name"));
 						}
 						catch (Exception exception)
@@ -870,7 +879,7 @@ namespace SmartStore.Services.Catalog.Importer
 				// ===========================================================================
 				// 8.) Map parent id of inserted products
 				// ===========================================================================
-				if (srcToDestId.Any() && segmenter.HasColumn("Id") && segmenter.HasColumn("ParentGroupedProductId"))
+				if (srcToDestId.Any() && segmenter.HasColumn("Id") && segmenter.HasColumn("ParentGroupedProductId") && !segmenter.IsIgnored("ParentGroupedProductId"))
 				{
 					segmenter.Reset();
 

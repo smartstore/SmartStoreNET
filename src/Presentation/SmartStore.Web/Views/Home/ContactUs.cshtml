@@ -42,7 +42,7 @@
                 <div class="control-group">
                     @Html.LabelFor(model => model.Email, new { @class="control-label required" , @for="Email" } )
                     <div class="controls">
-                        @Html.TextBoxFor(model => model.Email, new { @class = "email", placeholder = T("ContactUs.Email.Hint") })
+                        @Html.TextBoxFor(model => model.Email, new { @class = "email", @type = "email", placeholder = T("ContactUs.Email.Hint") })
                         @Html.ValidationMessageFor(model => model.Email)
                     </div>
                 </div>

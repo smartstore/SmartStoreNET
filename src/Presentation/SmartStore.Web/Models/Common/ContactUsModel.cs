@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
@@ -6,12 +7,13 @@ using SmartStore.Web.Validators.Common;
 
 namespace SmartStore.Web.Models.Common
 {
-    [Validator(typeof(ContactUsValidator))]
+	[Validator(typeof(ContactUsValidator))]
     public partial class ContactUsModel : ModelBase
     {
         [AllowHtml]
         [SmartResourceDisplayName("ContactUs.Email")]
-        public string Email { get; set; }
+		[DataType(DataType.EmailAddress)]
+		public string Email { get; set; }
 
         [AllowHtml]
         [SmartResourceDisplayName("ContactUs.Enquiry")]

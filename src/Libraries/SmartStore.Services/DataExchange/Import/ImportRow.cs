@@ -8,7 +8,7 @@ namespace SmartStore.Services.DataExchange.Import
 {
 	public class ImportRow<T> where T : BaseEntity
 	{
-		private const string _explicitNull = "[NULL]";
+		private const string ExplicitNull = "[NULL]";
 
 		private bool _initialized = false;
 		private T _entity;
@@ -163,33 +163,18 @@ namespace SmartStore.Services.DataExchange.Import
 			return (_row.TryGetValue(mapping.MappedName, out value) && value != null && value != DBNull.Value);
 		}
 
-		public TProp GetDataValue<TProp>(string columnName)
+		public TProp GetDataValue<TProp>(string columnName, bool force = false)
 		{
-			return GetDataValue<TProp>(columnName, null);
+			TProp value;
+			TryGetDataValue<TProp>(columnName, null, out value, force);
+			return value;
 		}
 
-		public TProp GetDataValue<TProp>(string columnName, string index)
+		public TProp GetDataValue<TProp>(string columnName, string index, bool force = false)
 		{
-			object value;
-			var mapping = _segmenter.ColumnMap.GetMapping(columnName, index);
-
-			if (_row.TryGetValue(mapping.MappedName, out value) && value != null && value != DBNull.Value)
-			{
-				if (value.ToString().IsCaseInsensitiveEqual(_explicitNull))
-				{
-					return default(TProp);
-				}
-
-				return value.Convert<TProp>(_segmenter.Culture);
-			}
-
-			if (IsNew)
-			{
-				// only transient/new entities should fallback to possible defaults.
-				return GetDefaultValue(mapping, default(TProp));
-			}
-
-			return default(TProp);
+			TProp value;
+			TryGetDataValue<TProp>(columnName, index, out value, force);
+			return value;
 		}
 
 		public bool TryGetDataValue<TProp>(string columnName, out TProp value, bool force = false)
@@ -210,14 +195,9 @@ namespace SmartStore.Services.DataExchange.Import
 
 			if (_row.TryGetValue(mapping.MappedName, out rawValue) && rawValue != null && rawValue != DBNull.Value)
 			{
-				if (rawValue.ToString().IsCaseInsensitiveEqual(_explicitNull))
-				{
-					value = default(TProp);
-				}
-				else
-				{
-					value = rawValue.Convert<TProp>(_segmenter.Culture);
-				}
+				value = rawValue.ToString().IsCaseInsensitiveEqual(ExplicitNull) 
+					? default(TProp) 
+					: rawValue.Convert<TProp>(_segmenter.Culture);
 				return true;
 			}
 
@@ -280,7 +260,7 @@ namespace SmartStore.Services.DataExchange.Import
 					{
 						converted = converter(value, _segmenter.Culture);
 					}
-					else if (value.ToString().IsCaseInsensitiveEqual(_explicitNull))
+					else if (value.ToString().IsCaseInsensitiveEqual(ExplicitNull))
 					{
 						// prop is "explicitly" set to null. Don't fallback to any default!
 						converted = default(TProp);

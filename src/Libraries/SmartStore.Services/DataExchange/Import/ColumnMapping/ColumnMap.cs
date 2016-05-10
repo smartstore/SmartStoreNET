@@ -7,7 +7,7 @@ namespace SmartStore.Services.DataExchange.Import
 	public class ColumnMap
 	{
 		// maps source column to property
-		private readonly Dictionary<string, ColumnMappingValue> _map = new Dictionary<string, ColumnMappingValue>(StringComparer.OrdinalIgnoreCase);
+		private readonly Dictionary<string, ColumnMappingItem> _map = new Dictionary<string, ColumnMappingItem>(StringComparer.OrdinalIgnoreCase);
 
 		private static bool IsIndexed(string name)
 		{
@@ -24,7 +24,7 @@ namespace SmartStore.Services.DataExchange.Import
 			return name;
 		}
 
-		public IReadOnlyDictionary<string, ColumnMappingValue> Mappings
+		public IReadOnlyDictionary<string, ColumnMappingItem> Mappings
 		{
 			get { return _map; }
 		}
@@ -65,8 +65,11 @@ namespace SmartStore.Services.DataExchange.Import
 			Guard.ArgumentNotEmpty(() => sourceName);
 			Guard.ArgumentNotEmpty(() => mappedName);
 
-			_map[CreateSourceName(sourceName, index)] = new ColumnMappingValue
+			var key = CreateSourceName(sourceName, index);
+
+			_map[key] = new ColumnMappingItem
 			{
+				SoureName = key,
 				MappedName = mappedName,
 				Default = defaultValue
 			};
@@ -78,7 +81,7 @@ namespace SmartStore.Services.DataExchange.Import
 		/// <param name="sourceName">The name of the column to get a mapped value for.</param>
 		/// <param name="index">The column index, e.g. a language code (de, en etc.)</param>
 		/// <returns>The mapped column value OR - if the name is unmapped - a value with the passed <paramref name="sourceName"/>[<paramref name="index"/>]</returns>
-		public ColumnMappingValue GetMapping(string sourceName, string index)
+		public ColumnMappingItem GetMapping(string sourceName, string index)
 		{
 			return GetMapping(CreateSourceName(sourceName, index));
 		}
@@ -88,23 +91,29 @@ namespace SmartStore.Services.DataExchange.Import
 		/// </summary>
 		/// <param name="sourceName">The name of the column to get a mapped value for.</param>
 		/// <returns>The mapped column value OR - if the name is unmapped - the value of the passed <paramref name="sourceName"/></returns>
-		public ColumnMappingValue GetMapping(string sourceName)
+		public ColumnMappingItem GetMapping(string sourceName)
 		{
-			ColumnMappingValue result;
+			ColumnMappingItem result;
 
 			if (_map.TryGetValue(sourceName, out result))
 			{
 				return result;
 			}
 
-			return new ColumnMappingValue { MappedName = sourceName };
+			return new ColumnMappingItem { SoureName = sourceName, MappedName = sourceName };
 		}
 	}
 
 
 	[JsonObject(MemberSerialization.OptIn)]
-	public class ColumnMappingValue
+	public class ColumnMappingItem
 	{
+		/// <summary>
+		/// The source name
+		/// </summary>
+		[JsonIgnore]
+		public string SoureName { get; set; }
+
 		/// <summary>
 		/// The mapped name
 		/// </summary>

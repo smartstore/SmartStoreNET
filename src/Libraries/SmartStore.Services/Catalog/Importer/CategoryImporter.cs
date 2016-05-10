@@ -81,7 +81,7 @@ namespace SmartStore.Services.Catalog.Importer
 				try
 				{
 					string seName;
-					if (row.GetDataValue("SeName", out seName, row.IsNew))
+					if (row.TryGetDataValue("SeName", out seName, row.IsNew))
 					{
 						if (row.IsNew || row.NameChanged || seName.HasValue())
 						{
@@ -115,7 +115,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 					foreach (var lang in context.Languages)
 					{
-						if (row.GetDataValue("SeName", lang.UniqueSeoCode, out seName) && seName.HasValue())
+						if (row.TryGetDataValue("SeName", lang.UniqueSeoCode, out seName) && seName.HasValue())
 						{
 							seName = row.Entity.ValidateSeName(seName, null, false, _urlRecordService, _seoSettings, lang.Id, slugLookup);
 
@@ -377,7 +377,7 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, (x) => x.LimitedToStores, !row.GetDataValue<List<int>>("StoreIds").IsNullOrEmpty());
 
 				string tvp;
-				if (row.GetDataValue("CategoryTemplateViewPath", out tvp, row.IsTransient))
+				if (row.TryGetDataValue("CategoryTemplateViewPath", out tvp, row.IsTransient))
 				{
 					category.CategoryTemplateId = (tvp.HasValue() && templateViewPaths.ContainsKey(tvp) ? templateViewPaths[tvp] : defaultTemplateId);
 				}

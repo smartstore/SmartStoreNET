@@ -43,7 +43,7 @@ namespace SmartStore.Services.DataExchange.Import
 			}
 		}
 
-		private TProp GetDefaultValue<TProp>(ColumnMappingValue mapping, string columnName, TProp defaultValue, ImportResult result = null)
+		private TProp GetDefaultValue<TProp>(ColumnMappingItem mapping, TProp defaultValue, ImportResult result = null)
 		{
 			if (mapping != null && mapping.Default.HasValue())
 			{
@@ -56,7 +56,7 @@ namespace SmartStore.Services.DataExchange.Import
 					if (result != null)
 					{
 						var msg = "Failed to convert default value '{0}'. Please specify a convertable default value. Column: {1}";
-						result.AddWarning(msg.FormatInvariant(mapping.Default, exception.Message), this.GetRowInfo(), columnName);
+						result.AddWarning(msg.FormatInvariant(mapping.Default, exception.Message), this.GetRowInfo(), mapping.SoureName);
 					}
 				}
 			}
@@ -179,18 +179,18 @@ namespace SmartStore.Services.DataExchange.Import
 			if (IsNew)
 			{
 				// only transient/new entities should fallback to possible defaults.
-				return GetDefaultValue(mapping, columnName, default(TProp));
+				return GetDefaultValue(mapping, default(TProp));
 			}
 
 			return default(TProp);
 		}
 
-		public bool GetDataValue<TProp>(string columnName, out TProp value, bool force = false)
+		public bool TryGetDataValue<TProp>(string columnName, out TProp value, bool force = false)
 		{
-			return GetDataValue(columnName, null, out value, force);
+			return TryGetDataValue(columnName, null, out value, force);
 		}
 
-		public bool GetDataValue<TProp>(string columnName, string index, out TProp value, bool force = false)
+		public bool TryGetDataValue<TProp>(string columnName, string index, out TProp value, bool force = false)
 		{
 			object obj;
 			var mapping = _segmenter.ColumnMap.GetMapping(columnName, index);
@@ -210,7 +210,7 @@ namespace SmartStore.Services.DataExchange.Import
 			if (IsNew)
 			{
 				// only transient/new entities should fallback to possible defaults.
-				value = GetDefaultValue(mapping, columnName, default(TProp));
+				value = GetDefaultValue(mapping, default(TProp));
 				return true;
 			}
 
@@ -288,7 +288,7 @@ namespace SmartStore.Services.DataExchange.Import
 						// if entity is new and source field value is null, determine default value in this particular order: 
 						//		2.) Default value in field mapping table
 						//		3.) passed default value argument
-						defaultValue = GetDefaultValue(mapping, columnName, defaultValue, result);
+						defaultValue = GetDefaultValue(mapping, defaultValue, result);
 
 						// source does not contain field data or is empty...
 						if (defaultValue != null)

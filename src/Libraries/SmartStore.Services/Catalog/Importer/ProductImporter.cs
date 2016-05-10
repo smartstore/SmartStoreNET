@@ -367,7 +367,7 @@ namespace SmartStore.Services.Catalog.Importer
 						var code = lang.UniqueSeoCode;
 						string value;
 
-						if (row.GetDataValue(prop /* ColumnName */, code, out value) && value.HasValue())
+						if (row.TryGetDataValue(prop /* ColumnName */, code, out value) && value.HasValue())
 						{
 							_localizedEntityService.SaveLocalizedValue(row.Entity, lambda, value, lang.Id);
 							shouldSave = true;
@@ -405,7 +405,7 @@ namespace SmartStore.Services.Catalog.Importer
 				try
 				{
 					string seName;
-					if (row.GetDataValue("SeName", out seName, row.IsNew))
+					if (row.TryGetDataValue("SeName", out seName, row.IsNew))
 					{
 						if (row.IsNew || row.NameChanged || seName.HasValue())
 						{
@@ -655,7 +655,7 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, (x) => x.LimitedToStores, !row.GetDataValue<List<int>>("StoreIds").IsNullOrEmpty());
 
 				string tvp;
-				if (row.GetDataValue("ProductTemplateViewPath", out tvp, row.IsTransient))
+				if (row.TryGetDataValue("ProductTemplateViewPath", out tvp, row.IsTransient))
 				{
 					product.ProductTemplateId = (tvp.HasValue() && templateViewPaths.ContainsKey(tvp) ? templateViewPaths[tvp] : defaultTemplateId);
 				}

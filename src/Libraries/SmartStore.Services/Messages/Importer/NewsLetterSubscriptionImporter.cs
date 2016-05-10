@@ -69,7 +69,7 @@ namespace SmartStore.Services.Messages.Importer
 								storeId = currentStoreId;
 							}
 
-							if (row.HasDataValue("Active") && row.GetDataValue("Active", out active))
+							if (row.HasDataValue("Active") && row.TryGetDataValue("Active", out active))
 							{
 							}
 							else

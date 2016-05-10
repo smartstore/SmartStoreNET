@@ -8,6 +8,8 @@ namespace SmartStore.Services.DataExchange.Import
 {
 	public class ImportRow<T> where T : BaseEntity
 	{
+		private const string _explicitNull = "[NULL]";
+
 		private bool _initialized = false;
 		private T _entity;
 		private string _entityDisplayName;
@@ -173,6 +175,11 @@ namespace SmartStore.Services.DataExchange.Import
 
 			if (_row.TryGetValue(mapping.MappedName, out value) && value != null && value != DBNull.Value)
 			{
+				if (value.ToString().IsCaseInsensitiveEqual(_explicitNull))
+				{
+					return default(TProp);
+				}
+
 				return value.Convert<TProp>(_segmenter.Culture);
 			}
 
@@ -192,7 +199,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public bool TryGetDataValue<TProp>(string columnName, string index, out TProp value, bool force = false)
 		{
-			object obj;
+			object rawValue;
 			var mapping = _segmenter.ColumnMap.GetMapping(columnName, index);
 
 			if (!force && mapping.IgnoreProperty)
@@ -201,9 +208,16 @@ namespace SmartStore.Services.DataExchange.Import
 				return false;
 			}
 
-			if (_row.TryGetValue(mapping.MappedName, out obj) && obj != null && obj != DBNull.Value)
+			if (_row.TryGetValue(mapping.MappedName, out rawValue) && rawValue != null && rawValue != DBNull.Value)
 			{
-				value = obj.Convert<TProp>(_segmenter.Culture);
+				if (rawValue.ToString().IsCaseInsensitiveEqual(_explicitNull))
+				{
+					value = default(TProp);
+				}
+				else
+				{
+					value = rawValue.Convert<TProp>(_segmenter.Culture);
+				}
 				return true;
 			}
 
@@ -266,7 +280,7 @@ namespace SmartStore.Services.DataExchange.Import
 					{
 						converted = converter(value, _segmenter.Culture);
 					}
-					else if (value.ToString().IsCaseInsensitiveEqual("[NULL]"))
+					else if (value.ToString().IsCaseInsensitiveEqual(_explicitNull))
 					{
 						// prop is "explicitly" set to null. Don't fallback to any default!
 						converted = default(TProp);

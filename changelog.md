@@ -17,6 +17,7 @@
 * Exports the product detail link including the attribute query string when exporting attribute combinations
 * #918 Compare products: Display base price information
 * Export email attachments needs to be stored in database because the temp file may not exist anymore when sending the email
+* #913 Use HTML5 Input types (tel, email)
 
 ### Bugfixes
 * Fixed ajax cache issue when saving payment or shipping restrictions. Internet Explorer showed the old data state (before storage).

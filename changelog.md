@@ -35,6 +35,7 @@
 * #949 Import: ProcessSlugs does not process explicitly specified "SeName", if product name did not change in an update scenario
 * Customer import: Creates customer role duplicates for inserted customers
 * GMC feed does not generate the sale price if the sale price is set for a future date
+* Mobile devices: Fixed "Uncaught Error: Syntax error, unrecognized expression: :nth-child"
 
 
 ## SmartStore.NET 2.5

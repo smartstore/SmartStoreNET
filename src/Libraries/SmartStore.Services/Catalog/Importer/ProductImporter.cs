@@ -367,7 +367,7 @@ namespace SmartStore.Services.Catalog.Importer
 						var code = lang.UniqueSeoCode;
 						string value;
 
-						if (row.TryGetDataValue(prop /* ColumnName */, code, out value) && value.HasValue())
+						if (row.TryGetDataValue(prop /* ColumnName */, code, out value))
 						{
 							_localizedEntityService.SaveLocalizedValue(row.Entity, lambda, value, lang.Id);
 							shouldSave = true;

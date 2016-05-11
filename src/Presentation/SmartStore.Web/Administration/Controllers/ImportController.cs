@@ -158,6 +158,10 @@ namespace SmartStore.Admin.Controllers
 				csvConfiguration = CsvConfiguration.ExcelFriendlyConfiguration;
 			}
 
+			// common configuration
+			var extraData = XmlHelper.Deserialize<ImportExtraData>(profile.ExtraData);
+			model.ExtraData.NumberOfPictures = extraData.NumberOfPictures;
+
 			// column mapping
 			model.AvailableSourceColumns = new List<ColumnMappingItemModel>();
 			model.AvailableEntityProperties = new List<ColumnMappingItemModel>();
@@ -501,6 +505,16 @@ namespace SmartStore.Admin.Controllers
 				{
 					var mapConverter = new ColumnMapConverter();
 					profile.ColumnMapping = mapConverter.ConvertTo(map);
+				}
+
+				if (model.ExtraData != null)
+				{
+					var extraData = new ImportExtraData
+					{
+						NumberOfPictures = model.ExtraData.NumberOfPictures
+					};
+
+					profile.ExtraData = XmlHelper.Serialize(extraData);
 				}
 			}
 			catch (Exception exception)

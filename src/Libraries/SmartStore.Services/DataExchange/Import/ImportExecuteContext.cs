@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using SmartStore.Core;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Logging;
-using SmartStore.Core.Data;
 
 namespace SmartStore.Services.DataExchange.Import
 {
@@ -54,6 +52,11 @@ namespace SmartStore.Services.DataExchange.Import
 		/// Result of the import
 		/// </summary>
 		ImportResult Result { get; set; }
+
+		/// <summary>
+		/// Extra import configuration data
+		/// </summary>
+		ImportExtraData ExtraData { get; }
 
 		/// <summary>
 		/// Indicates whether and how to abort the import
@@ -119,6 +122,8 @@ namespace SmartStore.Services.DataExchange.Import
 		public Dictionary<string, object> CustomProperties { get; set; }
 
 		public ImportResult Result { get; set; }
+
+		public ImportExtraData ExtraData { get; internal set; }
 
 		public DataExchangeAbortion Abort
 		{

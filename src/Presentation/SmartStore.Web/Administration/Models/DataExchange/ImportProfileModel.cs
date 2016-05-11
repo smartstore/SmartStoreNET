@@ -13,6 +13,11 @@ namespace SmartStore.Admin.Models.DataExchange
 	[Validator(typeof(ImportProfileValidator))]
 	public partial class ImportProfileModel : EntityModelBase
 	{
+		public ImportProfileModel()
+		{
+			ExtraData = new ExtraDataModel();
+		}
+
 		[SmartResourceDisplayName("Admin.DataExchange.Import.Name")]
 		public string Name { get; set; }
 
@@ -57,9 +62,17 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public CsvConfigurationModel CsvConfiguration { get; set; }
 
+		public ExtraDataModel ExtraData { get; set; }
+
 		public List<ColumnMappingItemModel> ColumnMappings { get; set; }
 		public List<ColumnMappingItemModel> AvailableSourceColumns { get; set; }
 		public List<ColumnMappingItemModel> AvailableEntityProperties { get; set; }
+
+		public class ExtraDataModel
+		{
+			[SmartResourceDisplayName("Admin.DataExchange.Import.NumberOfPictures")]
+			public int? NumberOfPictures { get; set; }
+		}
 	}
 
 

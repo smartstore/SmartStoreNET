@@ -10,6 +10,7 @@
 * #870 Implement address import for customers (both billing & shipping address)
 * #886 Add setting to hide manufacturer images on product detail page and to hide default image for manufacturers
 * Import localized SEO names for product and categories
+* #477 Implement option to specify the number of exported and imported pictures
 
 ### Improvements
 * (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.

@@ -1,4 +1,5 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
+@using SmartStore.Core.Domain.DataExchange;
 @model ImportProfileModel
 @{
 	Html.AddScriptParts("~/bundles/fileupload");
@@ -178,6 +179,18 @@
 				@Html.ValidationMessageFor(x => x.UpdateOnly)
 			</td>
 		</tr>
+		@if (Model.EntityType == ImportEntityType.Product)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ExtraData.NumberOfPictures)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ExtraData.NumberOfPictures)
+					@Html.ValidationMessageFor(x => x.ExtraData.NumberOfPictures)
+				</td>
+			</tr>
+		}
 	</table>
 </div>
 

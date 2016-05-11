@@ -1,8 +1,8 @@
-﻿using SmartStore.Core;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Threading;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
@@ -259,6 +259,7 @@ namespace SmartStore.Services.DataExchange.Import
 					ctx.ExecuteContext.UpdateOnly = ctx.Request.Profile.UpdateOnly;
 					ctx.ExecuteContext.KeyFieldNames = ctx.Request.Profile.KeyFieldNames.SplitSafe(",");
 					ctx.ExecuteContext.ImportFolder = ctx.Request.Profile.GetImportFolder();
+					ctx.ExecuteContext.ExtraData = XmlHelper.Deserialize<ImportExtraData>(ctx.Request.Profile.ExtraData);
 
 					{
 						var mapConverter = new ColumnMapConverter();

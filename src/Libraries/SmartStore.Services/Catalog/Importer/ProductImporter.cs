@@ -143,6 +143,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 			ProductPicture lastInserted = null;
 			var equalPictureId = 0;
+			var numberOfPictures = (context.ExtraData.NumberOfPictures ?? int.MaxValue);
 
 			foreach (var row in batch)
 			{
@@ -162,6 +163,9 @@ namespace SmartStore.Services.Catalog.Importer
 
 					if (image != null)
 						imageFiles.Add(image);
+
+					if (imageFiles.Count >= numberOfPictures)
+						break;
 				}
 
 				// download images

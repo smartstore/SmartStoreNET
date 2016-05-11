@@ -36,6 +36,17 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly SeoSettings _seoSettings;
 		private readonly DataExchangeSettings _dataExchangeSettings;
 
+		private static readonly Dictionary<string, Expression<Func<Category, string>>> _localizableProperties = new Dictionary<string, Expression<Func<Category, string>>>
+		{
+			{ "Name", x => x.Name },
+			{ "FullName", x => x.FullName },
+			{ "Description", x => x.Description },
+			{ "BottomDescription", x => x.BottomDescription },
+			{ "MetaKeywords", x => x.MetaKeywords },
+			{ "MetaDescription", x => x.MetaDescription },
+			{ "MetaTitle", x => x.MetaTitle }
+		};
+
 		public CategoryImporter(
 			IRepository<Category> categoryRepository,
 			IRepository<UrlRecord> urlRecordRepository,
@@ -139,34 +150,44 @@ namespace SmartStore.Services.Catalog.Importer
 			return _urlRecordRepository.Context.SaveChanges();
 		}
 
-		protected virtual int ProcessLocalizations(IImportExecuteContext context, IEnumerable<ImportRow<Category>> batch)
+		protected virtual int ProcessLocalizations(
+			IImportExecuteContext context,
+			IEnumerable<ImportRow<Category>> batch,
+			string[] localizedProperties)
 		{
+			if (localizedProperties.Length == 0)
+			{
+				return 0;
+			}
+
+			bool shouldSave = false;
+
 			foreach (var row in batch)
 			{
-				foreach (var lang in context.Languages)
+				foreach (var prop in localizedProperties)
 				{
-					// TODO: ignored properties
-					var name = row.GetDataValue<string>("Name", lang.UniqueSeoCode);
-					var fullName = row.GetDataValue<string>("FullName", lang.UniqueSeoCode);
-					var description = row.GetDataValue<string>("Description", lang.UniqueSeoCode);
-					var bottomDescription = row.GetDataValue<string>("BottomDescription", lang.UniqueSeoCode);
-					var metaKeywords = row.GetDataValue<string>("MetaKeywords", lang.UniqueSeoCode);
-					var metaDescription = row.GetDataValue<string>("MetaDescription", lang.UniqueSeoCode);
-					var metaTitle = row.GetDataValue<string>("MetaTitle", lang.UniqueSeoCode);
+					var lambda = _localizableProperties[prop];
+					foreach (var lang in context.Languages)
+					{
+						var code = lang.UniqueSeoCode;
+						string value;
 
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.Name, name, lang.Id);
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.FullName, fullName, lang.Id);
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.Description, description, lang.Id);
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.BottomDescription, bottomDescription, lang.Id);
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaKeywords, metaKeywords, lang.Id);
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaDescription, metaDescription, lang.Id);
-					_localizedEntityService.SaveLocalizedValue(row.Entity, x => x.MetaTitle, metaTitle, lang.Id);
+						if (row.TryGetDataValue(prop /* ColumnName */, code, out value))
+						{
+							_localizedEntityService.SaveLocalizedValue(row.Entity, lambda, value, lang.Id);
+							shouldSave = true;
+						}
+					}
 				}
 			}
 
-			var num = _categoryRepository.Context.SaveChanges();
+			if (shouldSave)
+			{
+				// commit whole batch at once
+				return context.Services.DbContext.SaveChanges();
+			}
 
-			return num;
+			return 0;
 		}
 
 		protected virtual int ProcessParentMappings(
@@ -447,7 +468,7 @@ namespace SmartStore.Services.Catalog.Importer
 
 		protected override IDictionary<string, Expression<Func<Category, string>>> GetLocalizableProperties()
 		{
-			throw new NotImplementedException();
+			return _localizableProperties;
 		}
 
 		protected override void Import(IImportExecuteContext context)
@@ -461,6 +482,8 @@ namespace SmartStore.Services.Catalog.Importer
 				var segmenter = context.CreateSegmenter();
 
 				Init(context, _dataExchangeSettings);
+
+				var localizedProperties = ResolveLocalizedProperties(segmenter).ToArray();
 
 				context.Result.TotalRecords = segmenter.TotalRows;
 
@@ -524,7 +547,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// localizations
 					try
 					{
-						ProcessLocalizations(context, batch);
+						ProcessLocalizations(context, batch, localizedProperties);
 					}
 					catch (Exception exception)
 					{

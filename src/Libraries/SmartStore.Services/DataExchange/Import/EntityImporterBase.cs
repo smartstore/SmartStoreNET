@@ -7,6 +7,8 @@ using SmartStore.Core.IO;
 using SmartStore.Utilities;
 using System.Linq.Expressions;
 using SmartStore.Core;
+using Autofac;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.DataExchange.Import
 {

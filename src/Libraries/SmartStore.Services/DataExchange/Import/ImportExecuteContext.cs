@@ -41,9 +41,9 @@ namespace SmartStore.Services.DataExchange.Import
 		ILogger Log { get; }
 
 		/// <summary>
-		/// The database context
+		/// Common Services
 		/// </summary>
-		IDbContext DbContext { get; }
+		ICommonServices Services { get; }
 
 		/// <summary>
 		/// Cancellation token
@@ -107,7 +107,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public ILogger Log { get; internal set; }
 
-		public IDbContext DbContext { get; internal set; }
+		public ICommonServices Services { get; internal set; }
 
 		public CancellationToken CancellationToken { get; private set; }
 

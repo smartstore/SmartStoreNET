@@ -27,6 +27,7 @@ namespace SmartStore.Services.DataExchange.Import
 		private readonly Lazy<IEmailAccountService> _emailAccountService;
 		private readonly Lazy<IEmailSender> _emailSender;
 		private readonly Lazy<ContactDataSettings> _contactDataSettings;
+		private readonly Lazy<DataExchangeSettings> _dataExchangeSettings;
 
 		public DataImporter(
 			ICommonServices services,
@@ -35,8 +36,8 @@ namespace SmartStore.Services.DataExchange.Import
 			Func<ImportEntityType, IEntityImporter> importerFactory,
 			Lazy<IEmailAccountService> emailAccountService,
 			Lazy<IEmailSender> emailSender,
-			Lazy<DataExchangeSettings> dataExchangeSettings,
-			Lazy<ContactDataSettings> contactDataSettings)
+			Lazy<ContactDataSettings> contactDataSettings,
+			Lazy<DataExchangeSettings> dataExchangeSettings)
 		{
 			_services = services;
 			_importProfileService = importProfileService;
@@ -45,6 +46,7 @@ namespace SmartStore.Services.DataExchange.Import
 			_emailAccountService = emailAccountService;
 			_emailSender = emailSender;
 			_contactDataSettings = contactDataSettings;
+			_dataExchangeSettings = dataExchangeSettings;
 
 			T = NullLocalizer.Instance;
 		}
@@ -253,6 +255,7 @@ namespace SmartStore.Services.DataExchange.Import
 				{
 					ctx.Log = logger;
 
+					ctx.ExecuteContext.DataExchangeSettings = _dataExchangeSettings.Value;
 					ctx.ExecuteContext.Services = _services;
 					ctx.ExecuteContext.Log = logger;
 					ctx.ExecuteContext.Languages = _languageService.GetAllLanguages(true);
@@ -269,7 +272,7 @@ namespace SmartStore.Services.DataExchange.Import
 					var files = ctx.Request.Profile.GetImportFiles();
 
 					if (files.Count == 0)
-						throw new SmartException("No files to import found.");
+						throw new SmartException("No files to import.");
 
 					if (!HasPermission(ctx))
 						throw new SmartException("You do not have permission to perform the selected import.");

@@ -34,7 +34,6 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly FileDownloadManager _fileDownloadManager;
 		private readonly SeoSettings _seoSettings;
-		private readonly DataExchangeSettings _dataExchangeSettings;
 
 		private static readonly Dictionary<string, Expression<Func<Category, string>>> _localizableProperties = new Dictionary<string, Expression<Func<Category, string>>>
 		{
@@ -59,8 +58,7 @@ namespace SmartStore.Services.Catalog.Importer
 			IPictureService pictureService,
 			ILocalizedEntityService localizedEntityService,
 			FileDownloadManager fileDownloadManager,
-			SeoSettings seoSettings,
-			DataExchangeSettings dataExchangeSettings)
+			SeoSettings seoSettings)
 		{
 			_categoryRepository = categoryRepository;
 			_urlRecordRepository = urlRecordRepository;
@@ -74,7 +72,6 @@ namespace SmartStore.Services.Catalog.Importer
 			_localizedEntityService = localizedEntityService;
 			_fileDownloadManager = fileDownloadManager;
 			_seoSettings = seoSettings;
-			_dataExchangeSettings = dataExchangeSettings;
 		}
 
 		protected virtual int ProcessSlugs(IImportExecuteContext context, IEnumerable<ImportRow<Category>> batch)
@@ -477,11 +474,11 @@ namespace SmartStore.Services.Catalog.Importer
 
 			var templateViewPaths = _categoryTemplateService.GetAllCategoryTemplates().ToDictionarySafe(x => x.ViewPath, x => x.Id);
 
-			using (var scope = new DbContextScope(ctx: _categoryRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+			using (var scope = new DbContextScope(ctx: context.Services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
 				var segmenter = context.CreateSegmenter();
 
-				Init(context, _dataExchangeSettings);
+				Initialize(context);
 
 				var localizedProperties = ResolveLocalizedProperties(segmenter).ToArray();
 

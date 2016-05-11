@@ -39,7 +39,6 @@ namespace SmartStore.Services.Customers.Importer
 		private readonly CustomerSettings _customerSettings;
 		private readonly DateTimeSettings _dateTimeSettings;
 		private readonly ForumSettings _forumSettings;
-		private readonly DataExchangeSettings _dataExchangeSettings;
 
 		public CustomerImporter(
 			IRepository<Customer> customerRepository,
@@ -54,8 +53,7 @@ namespace SmartStore.Services.Customers.Importer
 			FileDownloadManager fileDownloadManager,
 			CustomerSettings customerSettings,
 			DateTimeSettings dateTimeSettings,
-			ForumSettings forumSettings,
-			DataExchangeSettings dataExchangeSettings)
+			ForumSettings forumSettings)
 		{
 			_customerRepository = customerRepository;
 			_pictureRepository = pictureRepository;
@@ -70,7 +68,6 @@ namespace SmartStore.Services.Customers.Importer
 			_customerSettings = customerSettings;
 			_dateTimeSettings = dateTimeSettings;
 			_forumSettings = forumSettings;
-			_dataExchangeSettings = dataExchangeSettings;
 		}
 
 		private int? CountryCodeToId(Dictionary<string, int> allCountries, string code)
@@ -580,7 +577,7 @@ namespace SmartStore.Services.Customers.Importer
 			{
 				var segmenter = context.CreateSegmenter();
 
-				Init(context, _dataExchangeSettings);
+				Initialize(context);
 
 				context.Result.TotalRecords = segmenter.TotalRows;
 

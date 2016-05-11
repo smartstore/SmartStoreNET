@@ -8,6 +8,8 @@ namespace SmartStore.Services.DataExchange.Import
 {
 	public interface IImportExecuteContext
 	{
+		DataExchangeSettings DataExchangeSettings { get; }
+
 		/// <summary>
 		/// Whether to only update existing records
 		/// </summary>
@@ -66,7 +68,6 @@ namespace SmartStore.Services.DataExchange.Import
 		/// <summary>
 		/// Creates a segmenter instance
 		/// </summary>
-		/// <typeparam name="TEntity"></typeparam>
 		/// <returns></returns>
 		ImportDataSegmenter CreateSegmenter();
 
@@ -98,32 +99,86 @@ namespace SmartStore.Services.DataExchange.Import
 			Result = new ImportResult();
 		}
 
-		public IDataTable DataTable { get; internal set; }
+		public DataExchangeSettings DataExchangeSettings
+		{
+			get;
+			internal set;
+		}
 
-		public ColumnMap ColumnMap { get; internal set; }
+		public IDataTable DataTable
+		{
+			get;
+			internal set;
+		}
 
-		public bool UpdateOnly { get; internal set; }
+		public ColumnMap ColumnMap
+		{
+			get;
+			internal set;
+		}
 
-		public string[] KeyFieldNames { get; internal set; }
+		public bool UpdateOnly
+		{
+			get;
+			internal set;
+		}
 
-		public IList<Language> Languages { get; internal set; }
+		public string[] KeyFieldNames
+		{
+			get;
+			internal set;
+		}
 
-		public ILogger Log { get; internal set; }
+		public IList<Language> Languages
+		{
+			get;
+			internal set;
+		}
 
-		public ICommonServices Services { get; internal set; }
+		public ILogger Log
+		{
+			get;
+			internal set;
+		}
 
-		public CancellationToken CancellationToken { get; private set; }
+		public ICommonServices Services
+		{
+			get;
+			internal set;
+		}
 
-		public string ImportFolder { get; internal set; }
+		public CancellationToken CancellationToken
+		{
+			get;
+			private set;
+		}
+
+		public string ImportFolder
+		{
+			get;
+			internal set;
+		}
 
 		/// <summary>
 		/// Use this dictionary for any custom data required along the import
 		/// </summary>
-		public Dictionary<string, object> CustomProperties { get; set; }
+		public Dictionary<string, object> CustomProperties
+		{
+			get;
+			set;
+		}
 
-		public ImportResult Result { get; set; }
+		public ImportResult Result
+		{
+			get;
+			set;
+		}
 
-		public ImportExtraData ExtraData { get; internal set; }
+		public ImportExtraData ExtraData
+		{
+			get;
+			internal set;
+		}
 
 		public DataExchangeAbortion Abort
 		{

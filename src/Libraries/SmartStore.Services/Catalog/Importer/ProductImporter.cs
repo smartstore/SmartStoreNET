@@ -39,7 +39,6 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly FileDownloadManager _fileDownloadManager;
 		private readonly SeoSettings _seoSettings;
-		private readonly DataExchangeSettings _dataExchangeSettings;
 
 		private static readonly Dictionary<string, Expression<Func<Product, string>>> _localizableProperties = new Dictionary<string, Expression<Func<Product, string>>>
 		{
@@ -69,8 +68,7 @@ namespace SmartStore.Services.Catalog.Importer
 			IProductTemplateService productTemplateService,
 			IStoreMappingService storeMappingService,
 			FileDownloadManager fileDownloadManager,
-			SeoSettings seoSettings,
-			DataExchangeSettings dataExchangeSettings)
+			SeoSettings seoSettings)
 		{
 			_productPictureRepository = productPictureRepository;
 			_productManufacturerRepository = productManufacturerRepository;
@@ -88,9 +86,7 @@ namespace SmartStore.Services.Catalog.Importer
 			_productTemplateService = productTemplateService;
 			_storeMappingService = storeMappingService;
 			_fileDownloadManager = fileDownloadManager;
-			
 			_seoSettings = seoSettings;
-			_dataExchangeSettings = dataExchangeSettings;
 		}
 
 		private int? ZeroToNull(object value, CultureInfo culture)
@@ -740,7 +736,7 @@ namespace SmartStore.Services.Catalog.Importer
 			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
 				var segmenter = context.CreateSegmenter();
-				Init(context, _dataExchangeSettings);
+				Initialize(context);
 
 				var localizedProperties = ResolveLocalizedProperties(segmenter).ToArray();
 

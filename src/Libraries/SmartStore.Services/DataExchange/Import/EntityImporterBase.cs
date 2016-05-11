@@ -53,14 +53,16 @@ namespace SmartStore.Services.DataExchange.Import
 
 		protected abstract void Import(IImportExecuteContext context);
 
-		public void Init(IImportExecuteContext context, DataExchangeSettings dataExchangeSettings)
+		protected void Initialize(IImportExecuteContext context)
 		{
 			UtcNow = DateTime.UtcNow;
 			DownloadedItems = new Dictionary<string, string>();
 			ImageDownloadFolder = Path.Combine(context.ImportFolder, _imageDownloadFolder);
 
-			if (dataExchangeSettings.ImageImportFolder.HasValue())
-				ImageFolder = Path.Combine(context.ImportFolder, dataExchangeSettings.ImageImportFolder);
+			var settings = context.DataExchangeSettings;
+
+			if (settings.ImageImportFolder.HasValue())
+				ImageFolder = Path.Combine(context.ImportFolder, settings.ImageImportFolder);
 			else
 				ImageFolder = context.ImportFolder;
 
@@ -69,7 +71,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 			DownloaderContext = new FileDownloadManagerContext
 			{
-				Timeout = TimeSpan.FromMinutes(dataExchangeSettings.ImageDownloadTimeout),
+				Timeout = TimeSpan.FromMinutes(settings.ImageDownloadTimeout),
 				Logger = context.Log,
 				CancellationToken = context.CancellationToken
 			};

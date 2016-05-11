@@ -138,13 +138,29 @@ namespace SmartStore.Web.Framework.Controllers
 
 		protected virtual ActionResult RedirectToReferrer(string referrer, Func<ActionResult> fallbackResult)
 		{
+			bool skipLocalCheck = false;
+
 			if (referrer.IsEmpty() && Request.UrlReferrer != null && Request.UrlReferrer.ToString().HasValue())
 			{
 				referrer = Request.UrlReferrer.ToString();
+				if (referrer.HasValue())
+				{
+					var domain1 = (new Uri(referrer)).GetLeftPart(UriPartial.Authority);
+					var domain2 = this.Request.Url.GetLeftPart(UriPartial.Authority);
+					if (domain1.IsCaseInsensitiveEqual(domain2))
+					{
+						// always allow fully qualified urls from local host
+						skipLocalCheck = true;
+					}
+					else
+					{
+						referrer = null;
+					}
+				}
 			}
 
 			// addressing "Open Redirection Vulnerability" (prevent cross-domain redirects / phishing)
-			if (referrer.HasValue() && !Url.IsLocalUrl(referrer))
+			if (referrer.HasValue() && !skipLocalCheck && !Url.IsLocalUrl(referrer))
 			{
 				referrer = null;
 			}

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
@@ -200,7 +201,7 @@ namespace SmartStore.Services.DataExchange.Import
 			CsvConfiguration csvConfiguration = null;
 			var extension = Path.GetExtension(filePath);
 
-			if (extension.IsCaseInsensitiveEqual(".csv"))
+			if ((new string[] { ".csv", ".txt", ".tab" }).Contains(extension, StringComparer.OrdinalIgnoreCase))
 			{
 				var converter = new CsvConfigurationConverter();
 				csvConfiguration = converter.ConvertFrom<CsvConfiguration>(ctx.Request.Profile.FileTypeConfiguration);

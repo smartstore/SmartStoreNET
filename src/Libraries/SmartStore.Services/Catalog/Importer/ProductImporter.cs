@@ -17,6 +17,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Utilities;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.Catalog.Importer
 {
@@ -387,12 +388,10 @@ namespace SmartStore.Services.Catalog.Importer
 
 		protected virtual int ProcessSlugs(
 			ImportExecuteContext context,
-			IEnumerable<ImportRow<Product>> batch,
-			string[] columnIndexes)
+			IEnumerable<ImportRow<Product>> batch)
 		{
 			var entityName = typeof(Product).Name;
 			var slugMap = new Dictionary<string, UrlRecord>();
-			//var languageMap = context.Languages.ToDictionarySafe(x => x.UniqueSeoCode);
 			UrlRecord urlRecord = null;
 
 			Func<string, UrlRecord> slugLookup = ((s) =>
@@ -404,56 +403,50 @@ namespace SmartStore.Services.Catalog.Importer
 			{
 				try
 				{
-					string seName;
-					if (row.TryGetDataValue("SeName", out seName, row.IsNew))
+					string seName = null;
+					if (row.IsNew || row.NameChanged || row.TryGetDataValue("SeName", out seName))
 					{
-						if (row.IsNew || row.NameChanged || seName.HasValue())
+						seName = row.Entity.ValidateSeName(seName, row.Entity.Name, true, _urlRecordService, _seoSettings, extraSlugLookup: slugLookup);
+
+						if (row.IsNew)
 						{
-							seName = row.Entity.ValidateSeName(seName, row.Entity.Name, true, _urlRecordService, _seoSettings, extraSlugLookup: slugLookup);
-
-							if (row.IsNew)
+							// dont't bother validating SeName for new entities.
+							urlRecord = new UrlRecord
 							{
-								// dont't bother validating SeName for new entities.
-								urlRecord = new UrlRecord
-								{
-									EntityId = row.Entity.Id,
-									EntityName = entityName,
-									Slug = seName,
-									LanguageId = 0,
-									IsActive = true,
-								};
-								_urlRecordRepository.Insert(urlRecord);
-							}
-							else
-							{
-								urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, 0);
-							}
+								EntityId = row.Entity.Id,
+								EntityName = entityName,
+								Slug = seName,
+								LanguageId = 0,
+								IsActive = true,
+							};
+							_urlRecordRepository.Insert(urlRecord);
+						}
+						else
+						{
+							urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, 0);
+						}
 
+						if (urlRecord != null)
+						{
+							// a new record was inserted to the store: keep track of it for this batch.
+							slugMap[seName] = urlRecord;
+						}
+					}
+
+					// process localized SeNames
+					foreach (var lang in context.Languages)
+					{
+						if (row.IsNew || row.NameChanged || row.TryGetDataValue("SeName", lang.UniqueSeoCode, out seName))
+						{
+							var localizedName = row.GetDataValue<string>("Name", lang.UniqueSeoCode);
+							seName = row.Entity.ValidateSeName(seName, localizedName, false, _urlRecordService, _seoSettings, lang.Id, slugLookup);
+							urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, lang.Id);
 							if (urlRecord != null)
 							{
-								// a new record was inserted to the store: keep track of it for this batch.
 								slugMap[seName] = urlRecord;
 							}
 						}
 					}
-
-					//// TODO: (mc) Think about this VERY thoroughly!!!!
-					//foreach (var idx in columnIndexes)
-					//{
-					//	if (languageMap.TryGetValue(idx, out language))
-					//	{
-					//		seName = row.GetDataValue<string>("SeName", idx);
-					//		if (seName.HasValue())
-					//		{
-					//			seName = row.Entity.ValidateSeName(seName, null, false, _urlRecordService, _seoSettings, language.Id, slugLookup);
-					//			urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, language.Id);
-					//			if (urlRecord != null)
-					//			{
-					//				slugMap[seName] = urlRecord;
-					//			}
-					//		}
-					//	}
-					//}
 				}
 				catch (Exception exception)
 				{
@@ -780,7 +773,7 @@ namespace SmartStore.Services.Catalog.Importer
 						{
 							_productRepository.Context.AutoDetectChangesEnabled = true;
 
-							ProcessSlugs(context, batch, segmenter.GetColumnIndexes("Name"));
+							ProcessSlugs(context, batch);
 						}
 						catch (Exception exception)
 						{

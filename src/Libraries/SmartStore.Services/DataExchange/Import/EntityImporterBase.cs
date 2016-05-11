@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using SmartStore.Core;
 using Autofac;
 using SmartStore.Services.Localization;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.DataExchange.Import
 {

@@ -184,7 +184,6 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public bool TryGetDataValue<TProp>(string columnName, string index, out TProp value, bool force = false)
 		{
-			object rawValue;
 			var mapping = _segmenter.ColumnMap.GetMapping(columnName, index);
 
 			if (!force && mapping.IgnoreProperty)
@@ -193,6 +192,7 @@ namespace SmartStore.Services.DataExchange.Import
 				return false;
 			}
 
+			object rawValue;
 			if (_row.TryGetValue(mapping.MappedName, out rawValue) && rawValue != null && rawValue != DBNull.Value)
 			{
 				value = rawValue.ToString().IsCaseInsensitiveEqual(ExplicitNull) 
@@ -209,7 +209,7 @@ namespace SmartStore.Services.DataExchange.Import
 			}
 
 			value = default(TProp);
-			return true;
+			return false;
 		}
 
 		public bool SetProperty<TProp>(

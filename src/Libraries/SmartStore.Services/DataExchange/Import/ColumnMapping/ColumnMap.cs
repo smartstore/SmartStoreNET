@@ -108,6 +108,8 @@ namespace SmartStore.Services.DataExchange.Import
 	[JsonObject(MemberSerialization.OptIn)]
 	public class ColumnMappingItem
 	{
+		private bool? _ignored;
+		
 		/// <summary>
 		/// The source name
 		/// </summary>
@@ -131,7 +133,15 @@ namespace SmartStore.Services.DataExchange.Import
 		/// </summary>
 		public bool IgnoreProperty
 		{
-			get { return Default != null && Default == "[IGNOREPROPERTY]"; }
+			get
+			{
+				if (_ignored == null)
+				{
+					_ignored = Default != null && Default == "[IGNOREPROPERTY]";
+				}
+
+				return _ignored.Value;
+			}
 		}
 	}
 }

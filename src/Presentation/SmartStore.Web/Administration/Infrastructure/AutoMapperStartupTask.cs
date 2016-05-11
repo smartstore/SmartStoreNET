@@ -137,11 +137,13 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.FlagFileNames, mo => mo.Ignore());
             Mapper.CreateMap<LanguageModel, Language>()
                 .ForMember(dest => dest.LocaleStringResources, mo => mo.Ignore());
-            //email account
-            Mapper.CreateMap<EmailAccount, EmailAccountModel>()
-                .ForMember(dest => dest.IsDefaultEmailAccount, mo => mo.Ignore()) 
-                .ForMember(dest => dest.SendTestEmailTo, mo => mo.Ignore());
-            Mapper.CreateMap<EmailAccountModel, EmailAccount>();
+			//email account
+			Mapper.CreateMap<EmailAccount, EmailAccountModel>()
+				.ForMember(dest => dest.IsDefaultEmailAccount, mo => mo.Ignore())
+				.ForMember(dest => dest.SendTestEmailTo, mo => mo.Ignore())
+				.ForMember(dest => dest.TestEmailShortErrorMessage, mo => mo.Ignore())
+				.ForMember(dest => dest.TestEmailFullErrorMessage, mo => mo.Ignore());
+			Mapper.CreateMap<EmailAccountModel, EmailAccount>();
             //message template
             Mapper.CreateMap<MessageTemplate, MessageTemplateModel>()
                 .ForMember(dest => dest.TokensTree, mo => mo.Ignore())

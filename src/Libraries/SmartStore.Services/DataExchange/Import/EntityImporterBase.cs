@@ -75,6 +75,8 @@ namespace SmartStore.Services.DataExchange.Import
 				Logger = context.Log,
 				CancellationToken = context.CancellationToken
 			};
+
+			context.Result.TotalRecords = context.DataSegmenter.TotalRows;
 		}
 
 		public FileDownloadManagerItem CreateDownloadImage(string urlOrPath, string seoName, int displayOrder)

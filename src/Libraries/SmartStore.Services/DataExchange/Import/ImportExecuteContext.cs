@@ -12,6 +12,9 @@ namespace SmartStore.Services.DataExchange.Import
 		private ProgressValueSetter _progressValueSetter;
 		private string _progressInfo;
 
+		private IDataTable _dataTable;
+		private ImportDataSegmenter _segmenter;
+
 		public ImportExecuteContext(
 			CancellationToken cancellation,
 			ProgressValueSetter progressValueSetter,
@@ -39,8 +42,15 @@ namespace SmartStore.Services.DataExchange.Import
 		/// </summary>
 		public IDataTable DataTable
 		{
-			get;
-			internal set;
+			get
+			{
+				return _dataTable;
+			}
+			internal set
+			{
+				_dataTable = value;
+				_segmenter = null;
+			}
 		}
 
 		/// <summary>
@@ -168,9 +178,21 @@ namespace SmartStore.Services.DataExchange.Import
 			}
 		}
 
-		public ImportDataSegmenter CreateSegmenter()
+		public ImportDataSegmenter DataSegmenter
 		{
-			return new ImportDataSegmenter(DataTable, ColumnMap);
+			get
+			{
+				if (_segmenter == null)
+				{
+					if (this.DataTable == null || this.ColumnMap == null)
+					{
+						throw new SmartException("A DataTable and a ColumnMap must be specified before accessing the DataSegmenter property.");
+					}
+					_segmenter = new ImportDataSegmenter(DataTable, ColumnMap);
+				}
+
+				return _segmenter;
+			}
 		}
 
 		/// <summary>

@@ -735,12 +735,10 @@ namespace SmartStore.Services.Catalog.Importer
 
 			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
-				var segmenter = context.CreateSegmenter();
+				var segmenter = context.DataSegmenter;
 				Initialize(context);
 
 				var localizedProperties = ResolveLocalizedProperties(segmenter).ToArray();
-
-				context.Result.TotalRecords = segmenter.TotalRows;
 
 				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 				{

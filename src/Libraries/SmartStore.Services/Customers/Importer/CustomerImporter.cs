@@ -575,11 +575,9 @@ namespace SmartStore.Services.Customers.Importer
 
 			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
-				var segmenter = context.CreateSegmenter();
+				var segmenter = context.DataSegmenter;
 
 				Initialize(context);
-
-				context.Result.TotalRecords = segmenter.TotalRows;
 
 				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 				{

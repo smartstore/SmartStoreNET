@@ -137,7 +137,7 @@ namespace SmartStore.Services.Customers.Importer
 		}
 
 		protected virtual int ProcessAddresses(
-			IImportExecuteContext context,
+			ImportExecuteContext context,
 			IEnumerable<ImportRow<Customer>> batch,
 			Dictionary<string, int> allCountries,
 			Dictionary<Tuple<int, string>, int> allStateProvinces)
@@ -154,7 +154,7 @@ namespace SmartStore.Services.Customers.Importer
 		private void ImportAddress(
 			string fieldPrefix,
 			ImportRow<Customer> row,
-			IImportExecuteContext context,
+			ImportExecuteContext context,
 			Dictionary<string, int> allCountries,
 			Dictionary<Tuple<int, string>, int> allStateProvinces)
 		{
@@ -227,7 +227,7 @@ namespace SmartStore.Services.Customers.Importer
 		}
 
 		protected virtual int ProcessGenericAttributes(
-			IImportExecuteContext context,
+			ImportExecuteContext context,
 			IEnumerable<ImportRow<Customer>> batch,
 			Dictionary<string, int> allCountries,
 			Dictionary<Tuple<int, string>, int> allStateProvinces,
@@ -313,7 +313,7 @@ namespace SmartStore.Services.Customers.Importer
 		}
 
 		protected virtual int ProcessAvatars(
-			IImportExecuteContext context,
+			ImportExecuteContext context,
 			IEnumerable<ImportRow<Customer>> batch)
 		{
 			foreach (var row in batch)
@@ -376,7 +376,7 @@ namespace SmartStore.Services.Customers.Importer
 		}
 
 		protected virtual int ProcessCustomers(
-			IImportExecuteContext context,
+			ImportExecuteContext context,
 			IEnumerable<ImportRow<Customer>> batch,
 			List<int> allAffiliateIds)
 		{
@@ -547,7 +547,7 @@ namespace SmartStore.Services.Customers.Importer
 			throw new NotImplementedException();
 		}
 
-		protected override void Import(IImportExecuteContext context)
+		protected override void Import(ImportExecuteContext context)
 		{
 			var customer = _services.WorkContext.CurrentCustomer;
 			var allowManagingCustomerRoles = _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomerRoles, customer);

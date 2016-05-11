@@ -6,81 +6,7 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.DataExchange.Import
 {
-	public interface IImportExecuteContext
-	{
-		DataExchangeSettings DataExchangeSettings { get; }
-
-		/// <summary>
-		/// Whether to only update existing records
-		/// </summary>
-		bool UpdateOnly { get; }
-
-		/// <summary>
-		/// Name of key fields to identify existing records for updating
-		/// </summary>
-		string[] KeyFieldNames { get; }
-
-		/// <summary>
-		/// The import folder
-		/// </summary>
-		string ImportFolder { get; }
-
-		/// <summary>
-		/// Use this dictionary for any custom data required along the export
-		/// </summary>
-		Dictionary<string, object> CustomProperties { get; set; }
-
-		/// <summary>
-		/// All languages
-		/// </summary>
-		IList<Language> Languages { get; }
-
-		/// <summary>
-		/// To log information into the import log file
-		/// </summary>
-		ILogger Log { get; }
-
-		/// <summary>
-		/// Common Services
-		/// </summary>
-		ICommonServices Services { get; }
-
-		/// <summary>
-		/// Cancellation token
-		/// </summary>
-		CancellationToken CancellationToken { get; }
-
-		/// <summary>
-		/// Result of the import
-		/// </summary>
-		ImportResult Result { get; set; }
-
-		/// <summary>
-		/// Extra import configuration data
-		/// </summary>
-		ImportExtraData ExtraData { get; }
-
-		/// <summary>
-		/// Indicates whether and how to abort the import
-		/// </summary>
-		DataExchangeAbortion Abort { get; set; }
-
-		/// <summary>
-		/// Creates a segmenter instance
-		/// </summary>
-		/// <returns></returns>
-		ImportDataSegmenter CreateSegmenter();
-
-		/// <summary>
-		/// Allows to set a progress message
-		/// </summary>
-		/// <param name="value">Progress value</param>
-		/// /// <param name="maximum">Progress maximum</param>
-		void SetProgress(int value, int maximum);
-	}
-
-
-	public class ImportExecuteContext : IImportExecuteContext
+	public class ImportExecuteContext
 	{
 		private DataExchangeAbortion _abortion;
 		private ProgressValueSetter _progressValueSetter;
@@ -99,60 +25,90 @@ namespace SmartStore.Services.DataExchange.Import
 			Result = new ImportResult();
 		}
 
+		/// <summary>
+		/// Import settings
+		/// </summary>
 		public DataExchangeSettings DataExchangeSettings
 		{
 			get;
 			internal set;
 		}
 
+		/// <summary>
+		/// The data source (CSV, Excel etc.)
+		/// </summary>
 		public IDataTable DataTable
 		{
 			get;
 			internal set;
 		}
 
+		/// <summary>
+		/// Mapping information between database and data source
+		/// </summary>
 		public ColumnMap ColumnMap
 		{
 			get;
 			internal set;
 		}
 
+		/// <summary>
+		/// Whether to only update existing records
+		/// </summary>
 		public bool UpdateOnly
 		{
 			get;
 			internal set;
 		}
 
+		/// <summary>
+		/// Name of key fields to identify existing records for updating
+		/// </summary>
 		public string[] KeyFieldNames
 		{
 			get;
 			internal set;
 		}
 
+		/// <summary>
+		/// All active languages
+		/// </summary>
 		public IList<Language> Languages
 		{
 			get;
 			internal set;
 		}
 
+		/// <summary>
+		/// To log information into the import log file
+		/// </summary>
 		public ILogger Log
 		{
 			get;
 			internal set;
 		}
 
+		/// <summary>
+		/// Common Services
+		/// </summary>
 		public ICommonServices Services
 		{
 			get;
 			internal set;
 		}
 
+		/// <summary>
+		/// Cancellation token
+		/// </summary>
 		public CancellationToken CancellationToken
 		{
 			get;
 			private set;
 		}
 
+		/// <summary>
+		/// The import folder
+		/// </summary>
 		public string ImportFolder
 		{
 			get;
@@ -168,18 +124,27 @@ namespace SmartStore.Services.DataExchange.Import
 			set;
 		}
 
+		/// <summary>
+		/// Result of the import
+		/// </summary>
 		public ImportResult Result
 		{
 			get;
 			set;
 		}
 
+		/// <summary>
+		/// Extra import configuration data
+		/// </summary>
 		public ImportExtraData ExtraData
 		{
 			get;
 			internal set;
 		}
 
+		/// <summary>
+		/// Indicates whether and how to abort the import
+		/// </summary>
 		public DataExchangeAbortion Abort
 		{
 			get
@@ -208,6 +173,11 @@ namespace SmartStore.Services.DataExchange.Import
 			return new ImportDataSegmenter(DataTable, ColumnMap);
 		}
 
+		/// <summary>
+		/// Allows to set a progress message
+		/// </summary>
+		/// <param name="value">Progress value</param>
+		/// /// <param name="maximum">Progress maximum</param>
 		public void SetProgress(int value, int maximum)
 		{
 			try

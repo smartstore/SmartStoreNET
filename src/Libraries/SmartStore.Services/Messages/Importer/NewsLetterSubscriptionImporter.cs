@@ -36,7 +36,7 @@ namespace SmartStore.Services.Messages.Importer
 			}
 		}
 
-		public void Execute(IImportExecuteContext context)
+		public void Execute(ImportExecuteContext context)
 		{
 			var utcNow = DateTime.UtcNow;
 			var currentStoreId = _services.StoreContext.CurrentStore.Id;

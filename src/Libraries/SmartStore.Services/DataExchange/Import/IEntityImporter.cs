@@ -2,6 +2,6 @@
 {
 	public partial interface IEntityImporter
 	{
-		void Execute(IImportExecuteContext context);
+		void Execute(ImportExecuteContext context);
 	}
 }

@@ -46,14 +46,14 @@ namespace SmartStore.Services.DataExchange.Import
 			private set;
 		}
 
-		public void Execute(IImportExecuteContext context)
+		public void Execute(ImportExecuteContext context)
 		{
 			Import(context);
 		}
 
-		protected abstract void Import(IImportExecuteContext context);
+		protected abstract void Import(ImportExecuteContext context);
 
-		protected void Initialize(IImportExecuteContext context)
+		protected void Initialize(ImportExecuteContext context)
 		{
 			UtcNow = DateTime.UtcNow;
 			DownloadedItems = new Dictionary<string, string>();

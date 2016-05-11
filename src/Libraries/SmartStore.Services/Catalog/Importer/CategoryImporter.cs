@@ -74,7 +74,7 @@ namespace SmartStore.Services.Catalog.Importer
 			_seoSettings = seoSettings;
 		}
 
-		protected virtual int ProcessSlugs(IImportExecuteContext context, IEnumerable<ImportRow<Category>> batch)
+		protected virtual int ProcessSlugs(ImportExecuteContext context, IEnumerable<ImportRow<Category>> batch)
 		{
 			var entityName = typeof(Category).Name;
 			var slugMap = new Dictionary<string, UrlRecord>();
@@ -148,7 +148,7 @@ namespace SmartStore.Services.Catalog.Importer
 		}
 
 		protected virtual int ProcessLocalizations(
-			IImportExecuteContext context,
+			ImportExecuteContext context,
 			IEnumerable<ImportRow<Category>> batch,
 			string[] localizedProperties)
 		{
@@ -188,7 +188,7 @@ namespace SmartStore.Services.Catalog.Importer
 		}
 
 		protected virtual int ProcessParentMappings(
-			IImportExecuteContext context,
+			ImportExecuteContext context,
 			IEnumerable<ImportRow<Category>> batch,
 			Dictionary<int, ImportCategoryMapping> srcToDestId)
 		{
@@ -220,7 +220,7 @@ namespace SmartStore.Services.Catalog.Importer
 		}
 
 		protected virtual int ProcessPictures(
-			IImportExecuteContext context,
+			ImportExecuteContext context,
 			IEnumerable<ImportRow<Category>> batch,
 			Dictionary<int, ImportCategoryMapping> srcToDestId)
 		{
@@ -294,7 +294,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		protected virtual int ProcessStoreMappings(IImportExecuteContext context, IEnumerable<ImportRow<Category>> batch)
+		protected virtual int ProcessStoreMappings(ImportExecuteContext context, IEnumerable<ImportRow<Category>> batch)
 		{
 			_storeMappingRepository.AutoCommitEnabled = false;
 
@@ -312,7 +312,7 @@ namespace SmartStore.Services.Catalog.Importer
 		}
 
 		protected virtual int ProcessCategories(
-			IImportExecuteContext context,
+			ImportExecuteContext context,
 			IEnumerable<ImportRow<Category>> batch,
 			Dictionary<string, int> templateViewPaths,
 			Dictionary<int, ImportCategoryMapping> srcToDestId)
@@ -468,7 +468,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return _localizableProperties;
 		}
 
-		protected override void Import(IImportExecuteContext context)
+		protected override void Import(ImportExecuteContext context)
 		{
 			var srcToDestId = new Dictionary<int, ImportCategoryMapping>();
 

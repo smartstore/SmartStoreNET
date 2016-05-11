@@ -101,7 +101,7 @@ namespace SmartStore.Services.Catalog.Importer
 		}
 
 		protected virtual int ProcessProductMappings(
-			IImportExecuteContext context,
+			ImportExecuteContext context,
 			IEnumerable<ImportRow<Product>> batch,
 			Dictionary<int, ImportProductMapping> srcToDestId)
 		{
@@ -132,7 +132,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		protected virtual void ProcessProductPictures(IImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
+		protected virtual void ProcessProductPictures(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
 		{
 			// true, cause pictures must be saved and assigned an id prior adding a mapping.
 			_productPictureRepository.AutoCommitEnabled = true;
@@ -243,7 +243,7 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
-		protected virtual int ProcessProductManufacturers(IImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
+		protected virtual int ProcessProductManufacturers(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
 		{
 			_productManufacturerRepository.AutoCommitEnabled = false;
 
@@ -294,7 +294,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		protected virtual int ProcessProductCategories(IImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
+		protected virtual int ProcessProductCategories(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
 		{
 			_productCategoryRepository.AutoCommitEnabled = false;
 
@@ -346,7 +346,7 @@ namespace SmartStore.Services.Catalog.Importer
 		}
 
 		protected virtual int ProcessLocalizations(
-			IImportExecuteContext context,
+			ImportExecuteContext context,
 			IEnumerable<ImportRow<Product>> batch,
 			string[] localizedProperties)
 		{
@@ -386,7 +386,7 @@ namespace SmartStore.Services.Catalog.Importer
 		}
 
 		protected virtual int ProcessSlugs(
-			IImportExecuteContext context,
+			ImportExecuteContext context,
 			IEnumerable<ImportRow<Product>> batch,
 			string[] columnIndexes)
 		{
@@ -465,7 +465,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return _urlRecordRepository.Context.SaveChanges();
 		}
 
-		protected virtual int ProcessStoreMappings(IImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
+		protected virtual int ProcessStoreMappings(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
 		{
 			_storeMappingRepository.AutoCommitEnabled = false;
 
@@ -483,7 +483,7 @@ namespace SmartStore.Services.Catalog.Importer
 		}
 
 		protected virtual int ProcessProducts(
-			IImportExecuteContext context,
+			ImportExecuteContext context,
 			IEnumerable<ImportRow<Product>> batch,
 			Dictionary<string, int> templateViewPaths,
 			Dictionary<int, ImportProductMapping> srcToDestId)
@@ -727,7 +727,7 @@ namespace SmartStore.Services.Catalog.Importer
 			return _localizableProperties;
 		}
 
-		protected override void Import(IImportExecuteContext context)
+		protected override void Import(ImportExecuteContext context)
 		{
 			var srcToDestId = new Dictionary<int, ImportProductMapping>();
 

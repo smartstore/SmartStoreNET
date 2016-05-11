@@ -20,7 +20,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog.Importer
 {
-	public class ProductImporter : EntityImporterBase
+	public class ProductImporter : EntityImporterBase<Product>
 	{
 		private readonly IRepository<ProductPicture> _productPictureRepository;
 		private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
@@ -354,7 +354,7 @@ namespace SmartStore.Services.Catalog.Importer
 			{
 				return 0;
 			}
-
+			
 			bool shouldSave = false;
 
 			foreach (var row in batch)
@@ -379,7 +379,7 @@ namespace SmartStore.Services.Catalog.Importer
 			if (shouldSave)
 			{
 				// commit whole batch at once
-				return _productRepository.Context.SaveChanges();
+				return context.DbContext.SaveChanges();
 			}
 
 			return 0;
@@ -722,18 +722,9 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
-		private IEnumerable<string> ResolveLocalizedProperties(ImportDataSegmenter segmenter)
+		protected override IDictionary<string, Expression<Func<Product, string>>> GetLocalizableProperties()
 		{
-			// Perf: determine whether our localizable properties actually have 
-			// counterparts in the source BEFORE import begins. This way we spare ourself
-			// to query over and over for values.
-			foreach (var kvp in _localizableProperties)
-			{
-				if (segmenter.GetColumnIndexes(kvp.Key).Length > 0)
-				{
-					yield return kvp.Key;
-				}
-			}
+			return _localizableProperties;
 		}
 
 		protected override void Import(IImportExecuteContext context)

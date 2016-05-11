@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -19,7 +20,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog.Importer
 {
-	public class CategoryImporter : EntityImporterBase
+	public class CategoryImporter : EntityImporterBase<Category>
 	{
 		private readonly IRepository<Category> _categoryRepository;
 		private readonly IRepository<UrlRecord> _urlRecordRepository;
@@ -442,6 +443,11 @@ namespace SmartStore.Services.Catalog.Importer
 			{
 				return new string[] { "Name", "Id" };
 			}
+		}
+
+		protected override IDictionary<string, Expression<Func<Category, string>>> GetLocalizableProperties()
+		{
+			throw new NotImplementedException();
 		}
 
 		protected override void Import(IImportExecuteContext context)

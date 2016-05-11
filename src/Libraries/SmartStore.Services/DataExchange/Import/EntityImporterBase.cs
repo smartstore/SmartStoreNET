@@ -5,10 +5,12 @@ using System.Net.Mime;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.IO;
 using SmartStore.Utilities;
+using System.Linq.Expressions;
+using SmartStore.Core;
 
 namespace SmartStore.Services.DataExchange.Import
 {
-	public abstract class EntityImporterBase : IEntityImporter
+	public abstract class EntityImporterBase<TEntity> : IEntityImporter where TEntity : BaseEntity
 	{
 		private const string _imageDownloadFolder = @"Content\DownloadedImages";
 
@@ -128,5 +130,22 @@ namespace SmartStore.Services.DataExchange.Import
 				DownloadedItems.Add(item.Url, Path.GetFileName(item.Path));
 			}
 		}
+
+		protected IEnumerable<string> ResolveLocalizedProperties(ImportDataSegmenter segmenter)
+		{
+			// Perf: determine whether our localizable properties actually have 
+			// counterparts in the source BEFORE import begins. This way we spare ourself
+			// to query over and over for values.
+			var localizableProperties = GetLocalizableProperties();
+			foreach (var kvp in localizableProperties)
+			{
+				if (segmenter.GetColumnIndexes(kvp.Key).Length > 0)
+				{
+					yield return kvp.Key;
+				}
+			}
+		}
+
+		protected abstract IDictionary<string, Expression<Func<TEntity, string>>> GetLocalizableProperties();
 	}
 }

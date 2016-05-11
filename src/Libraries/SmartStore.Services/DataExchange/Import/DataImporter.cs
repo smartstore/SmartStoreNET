@@ -253,6 +253,7 @@ namespace SmartStore.Services.DataExchange.Import
 				{
 					ctx.Log = logger;
 
+					ctx.ExecuteContext.DbContext = _services.DbContext;
 					ctx.ExecuteContext.Log = logger;
 					ctx.ExecuteContext.Languages = _languageService.GetAllLanguages(true);
 					ctx.ExecuteContext.UpdateOnly = ctx.Request.Profile.UpdateOnly;

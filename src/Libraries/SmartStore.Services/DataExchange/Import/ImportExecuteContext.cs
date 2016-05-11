@@ -4,6 +4,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Services.DataExchange.Import
 {
@@ -38,6 +39,11 @@ namespace SmartStore.Services.DataExchange.Import
 		/// To log information into the import log file
 		/// </summary>
 		ILogger Log { get; }
+
+		/// <summary>
+		/// The database context
+		/// </summary>
+		IDbContext DbContext { get; }
 
 		/// <summary>
 		/// Cancellation token
@@ -100,6 +106,8 @@ namespace SmartStore.Services.DataExchange.Import
 		public IList<Language> Languages { get; internal set; }
 
 		public ILogger Log { get; internal set; }
+
+		public IDbContext DbContext { get; internal set; }
 
 		public CancellationToken CancellationToken { get; private set; }
 

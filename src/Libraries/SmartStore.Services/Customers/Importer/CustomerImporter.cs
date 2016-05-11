@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
@@ -21,7 +22,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Customers.Importer
 {
-	public class CustomerImporter : EntityImporterBase
+	public class CustomerImporter : EntityImporterBase<Customer>
 	{
 		private const string _attributeKeyGroup = "Customer";
 
@@ -542,6 +543,11 @@ namespace SmartStore.Services.Customers.Importer
 			{
 				return new string[] { "Email" };
 			}
+		}
+
+		protected override IDictionary<string, Expression<Func<Customer, string>>> GetLocalizableProperties()
+		{
+			throw new NotImplementedException();
 		}
 
 		protected override void Import(IImportExecuteContext context)

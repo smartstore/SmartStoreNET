@@ -17,7 +17,7 @@ namespace SmartStore.Services.Authentication.External
             _returnUrl = returnUrl;
             AuthenticationStatus = openAuthenticationStatus;
 
-            //in way SEO friendly language URLs will be persisted
+            // in a way SEO friendly language URLs will be persisted
             if (AuthenticationStatus == OpenAuthenticationStatus.Authenticated)
                 Result = new RedirectResult(!string.IsNullOrEmpty(_returnUrl) ? _returnUrl : "~/");
         }

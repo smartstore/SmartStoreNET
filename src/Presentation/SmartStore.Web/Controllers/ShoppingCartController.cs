@@ -1749,14 +1749,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult ContinueShopping()
         {
 			string returnUrl = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.LastContinueShoppingPage, _storeContext.CurrentStore.Id);
-            if (!String.IsNullOrEmpty(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToRoute("HomePage");
-            }
+			return RedirectToReferrer(returnUrl);
         }
 
         [ValidateInput(false)]

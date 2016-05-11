@@ -113,14 +113,53 @@ namespace SmartStore.Web.Framework.Controllers
 			Services.Notifier.Error(message, durable);
 		}
 
-		protected virtual ActionResult RedirectToReferrer()
+		protected ActionResult RedirectToReferrer()
 		{
-			if (Request.UrlReferrer != null && Request.UrlReferrer.ToString().HasValue())
+			return RedirectToReferrer(null, () => RedirectToRoute("HomePage"));
+		}
+
+		protected ActionResult RedirectToReferrer(string referrer)
+		{
+			return RedirectToReferrer(referrer, () => RedirectToRoute("HomePage"));
+		}
+
+		protected ActionResult RedirectToReferrer(string referrer, string fallbackUrl)
+		{
+			// addressing "Open Redirection Vulnerability" (prevent cross-domain redirects / phishing)
+			if (fallbackUrl.HasValue() && !Url.IsLocalUrl(fallbackUrl))
 			{
-				return Redirect(Request.UrlReferrer.ToString());
+				fallbackUrl = null;
 			}
 
-			return RedirectToRoute("HomePage");
+			return RedirectToReferrer(
+				referrer, 
+				fallbackUrl.HasValue() ? () => Redirect(fallbackUrl) : (Func<ActionResult>)null);
+		}
+
+		protected virtual ActionResult RedirectToReferrer(string referrer, Func<ActionResult> fallbackResult)
+		{
+			if (referrer.IsEmpty() && Request.UrlReferrer != null && Request.UrlReferrer.ToString().HasValue())
+			{
+				referrer = Request.UrlReferrer.ToString();
+			}
+
+			// addressing "Open Redirection Vulnerability" (prevent cross-domain redirects / phishing)
+			if (referrer.HasValue() && !Url.IsLocalUrl(referrer))
+			{
+				referrer = null;
+			}
+
+			if (referrer.HasValue())
+			{
+				return Redirect(referrer);
+			}
+
+			if (fallbackResult != null)
+			{
+				return fallbackResult();
+			}
+
+			return HttpNotFound();
 		}
 
 		protected virtual ActionResult RedirectToHomePageWithError(string reason, bool durable = true)

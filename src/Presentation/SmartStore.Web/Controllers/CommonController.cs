@@ -368,18 +368,6 @@ namespace SmartStore.Web.Controllers
             {
 				_services.WorkContext.WorkingLanguage = language;
             }
-            
-            // url referrer
-            if (String.IsNullOrEmpty(returnUrl))
-            {
-				returnUrl = _services.WebHelper.GetUrlReferrer();
-            }
-
-            // home page
-            if (String.IsNullOrEmpty(returnUrl))
-            {
-                returnUrl = Url.RouteUrl("HomePage");
-            }
 
             if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             {
@@ -388,10 +376,9 @@ namespace SmartStore.Web.Controllers
                 returnUrl = helper.GetAbsolutePath();
             }
 
-            return Redirect(returnUrl);
+            return RedirectToReferrer(returnUrl);
         }
 
-        //currency
         [ChildActionOnly]
         public ActionResult CurrencySelector()
         {
@@ -402,40 +389,31 @@ namespace SmartStore.Web.Controllers
 
             return PartialView(model);
         }
+
         public ActionResult CurrencySelected(int customerCurrency, string returnUrl = "")
         {
 			var currency = _currencyService.Value.GetCurrencyById(customerCurrency);
             if (currency != null)
+			{
 				_services.WorkContext.WorkingCurrency = currency;
+			}		
 
-            //url referrer
-            if (String.IsNullOrEmpty(returnUrl))
-				returnUrl = _services.WebHelper.GetUrlReferrer();
-            //home page
-            if (String.IsNullOrEmpty(returnUrl))
-                returnUrl = Url.RouteUrl("HomePage");
-            return Redirect(returnUrl);
+            return RedirectToReferrer(returnUrl);
         }
 
-        //tax type
         [ChildActionOnly]
         public ActionResult TaxTypeSelector()
         {
             var model = PrepareTaxTypeSelectorModel();
             return PartialView(model);
         }
+
         public ActionResult TaxTypeSelected(int customerTaxType, string returnUrl = "")
         {
             var taxDisplayType = (TaxDisplayType)Enum.ToObject(typeof(TaxDisplayType), customerTaxType);
 			_services.WorkContext.TaxDisplayType = taxDisplayType;
 
-            //url referrer
-            if (String.IsNullOrEmpty(returnUrl))
-				returnUrl = _services.WebHelper.GetUrlReferrer();
-            //home page
-            if (String.IsNullOrEmpty(returnUrl))
-                returnUrl = Url.RouteUrl("HomePage");
-            return Redirect(returnUrl);
+            return RedirectToReferrer(returnUrl);
         }
 
         //Configuration page (used on mobile devices)
@@ -763,12 +741,7 @@ namespace SmartStore.Web.Controllers
 				return Json(new { Success = true });
 			}
 
-			if (returnUrl.IsEmpty())
-			{
-				return RedirectToRoute("HomePage");
-			}
-
-			return Redirect(returnUrl);
+			return RedirectToReferrer(returnUrl);
         }
 
         [ChildActionOnly]
@@ -814,13 +787,13 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public ActionResult ChangeDevice(bool dontUseMobileVersion)
         {
-			_genericAttributeService.Value.SaveAttribute(_services.WorkContext.CurrentCustomer,
-				SystemCustomerAttributeNames.DontUseMobileVersion, dontUseMobileVersion, _services.StoreContext.CurrentStore.Id);
+			_genericAttributeService.Value.SaveAttribute(
+				_services.WorkContext.CurrentCustomer,
+				SystemCustomerAttributeNames.DontUseMobileVersion, 
+				dontUseMobileVersion, 
+				_services.StoreContext.CurrentStore.Id);
 
-			string returnurl = _services.WebHelper.GetUrlReferrer();
-            if (String.IsNullOrEmpty(returnurl))
-                returnurl = Url.RouteUrl("HomePage");
-            return Redirect(returnurl);
+            return RedirectToReferrer();
         }
 
         [ChildActionOnly]

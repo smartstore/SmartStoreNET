@@ -462,10 +462,7 @@ namespace SmartStore.Web.Controllers
                     //activity log
                     _customerActivityService.InsertActivity("PublicStore.Login", _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
 
-                    if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                        return Redirect(returnUrl);
-                    else
-                        return RedirectToRoute("HomePage");
+					return RedirectToReferrer(returnUrl);
                 }
                 else
                 {
@@ -579,12 +576,12 @@ namespace SmartStore.Web.Controllers
                 var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
                 if (registrationResult.Success)
                 {
-                    //properties
+                    // properties
 					if (_dateTimeSettings.AllowCustomersToSetTimeZone)
 					{
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
 					}
-                    //VAT number
+                    // VAT number
                     if (_taxSettings.EuVatEnabled)
                     {
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.VatNumber, model.VatNumber);
@@ -595,12 +592,12 @@ namespace SmartStore.Web.Controllers
 						_genericAttributeService.SaveAttribute(customer,
 							SystemCustomerAttributeNames.VatNumberStatusId,
 							(int)vatNumberStatus);
-						//send VAT number admin notification
+						// send VAT number admin notification
 						if (!String.IsNullOrEmpty(model.VatNumber) && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
 							_workflowMessageService.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
                     }
 
-                    //form fields
+                    // form fields
                     if (_customerSettings.GenderEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
@@ -636,10 +633,10 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && String.IsNullOrEmpty(customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber)))
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, customer.Id);
 
-                    //newsletter
+                    // newsletter
                     if (_customerSettings.NewsletterEnabled)
                     {
-                        //save newsletter value
+                        // save newsletter value
                         var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(model.Email, _storeContext.CurrentStore.Id);
                         if (newsletter != null)
                         {
@@ -718,11 +715,10 @@ namespace SmartStore.Web.Controllers
                     {
                         case UserRegistrationType.EmailValidation:
                             {
-                                //email validation message
+                                // email validation message
                                 _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AccountActivationToken, Guid.NewGuid().ToString());
                                 _workflowMessageService.SendCustomerEmailValidationMessage(customer, _workContext.WorkingLanguage.Id);
 
-                                //result
                                 return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.EmailValidation });
                             }
                         case UserRegistrationType.AdminApproval:
@@ -731,7 +727,7 @@ namespace SmartStore.Web.Controllers
                             }
                         case UserRegistrationType.Standard:
                             {
-                                //send customer welcome message
+                                // send customer welcome message
                                 _workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
 
                                 var redirectUrl = Url.RouteUrl("RegisterResult", new { resultId = (int)UserRegistrationType.Standard });
@@ -828,10 +824,8 @@ namespace SmartStore.Web.Controllers
                 default:
                     break;
             }
-            var model = new RegisterResultModel
-            {
-                Result = resultText
-            };
+
+            var model = new RegisterResultModel { Result = resultText };
             return View(model);
         }
 

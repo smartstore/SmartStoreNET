@@ -139,14 +139,14 @@ namespace SmartStore.Admin.Controllers
 			if (allStores.Count < 2)
 				return Content("");
 
-			var model = new StoreScopeConfigurationModel()
+			var model = new StoreScopeConfigurationModel
 			{
 				StoreId = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext)
 			};
 
 			foreach (var store in allStores)
 			{
-				model.AllStores.Add(new SelectListItem()
+				model.AllStores.Add(new SelectListItem
 				{
 					Text = store.Name,
 					Selected = (store.Id == model.StoreId),
@@ -154,7 +154,7 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-			model.AllStores.Insert(0, new SelectListItem()
+			model.AllStores.Insert(0, new SelectListItem
 			{
 				Text = _services.Localization.GetResource("Admin.Common.StoresAll"),
 				Selected = (0 == model.StoreId),
@@ -172,16 +172,8 @@ namespace SmartStore.Admin.Controllers
 				_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
 					SystemCustomerAttributeNames.AdminAreaStoreScopeConfiguration, storeid);
 			}
-			
-			//url referrer
-			if (String.IsNullOrEmpty(returnUrl))
-				returnUrl = _services.WebHelper.GetUrlReferrer();
-			
-			//home page
-			if (String.IsNullOrEmpty(returnUrl))
-				returnUrl = Url.Action("Index", "Home", new { area = "Admin" });
 
-			return Redirect(returnUrl);
+			return RedirectToReferrer(returnUrl, () => RedirectToAction("Index", "Home", new { area = "Admin" }));
 		}
 
         public ActionResult Blog()

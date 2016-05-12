@@ -358,11 +358,6 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
-		protected override IDictionary<string, Expression<Func<Category, string>>> GetLocalizableProperties()
-		{
-			return _localizableProperties;
-		}
-
 		protected override void Import(ImportExecuteContext context)
 		{
 			var srcToDestId = new Dictionary<int, ImportCategoryMapping>();
@@ -374,8 +369,6 @@ namespace SmartStore.Services.Catalog.Importer
 				var segmenter = context.DataSegmenter;
 
 				Initialize(context);
-
-				var localizedProperties = ResolveLocalizedProperties(segmenter).ToArray();
 
 				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 				{
@@ -437,7 +430,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// localizations
 					try
 					{
-						ProcessLocalizations(context, batch, localizedProperties);
+						ProcessLocalizations(context, batch, _localizableProperties);
 					}
 					catch (Exception exception)
 					{

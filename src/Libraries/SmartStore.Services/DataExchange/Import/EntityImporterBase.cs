@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Mime;
+using System.Linq;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.IO;
 using SmartStore.Utilities;
@@ -143,22 +144,58 @@ namespace SmartStore.Services.DataExchange.Import
 			}
 		}
 
-		protected IEnumerable<string> ResolveLocalizedProperties(ImportDataSegmenter segmenter)
+		protected virtual int ProcessLocalizations<TEntity>(
+			ImportExecuteContext context,
+			IEnumerable<ImportRow<TEntity>> batch,
+			IDictionary<string, Expression<Func<TEntity, string>>> localizableProperties) where TEntity : BaseEntity, ILocalizedEntity
 		{
+			Guard.ArgumentNotNull(() => context);
+			Guard.ArgumentNotNull(() => batch);
+			Guard.ArgumentNotNull(() => localizableProperties);
+
 			// Perf: determine whether our localizable properties actually have 
-			// counterparts in the source BEFORE import begins. This way we spare ourself
+			// counterparts in the source BEFORE import batch begins. This way we spare ourself
 			// to query over and over for values.
-			var localizableProperties = GetLocalizableProperties();
-			foreach (var kvp in localizableProperties)
+			var localizedProps = (from kvp in localizableProperties
+								  where context.DataSegmenter.GetColumnIndexes(kvp.Key).Length > 0
+								  select kvp.Key).ToArray();
+
+			if (localizedProps.Length == 0)
 			{
-				if (segmenter.GetColumnIndexes(kvp.Key).Length > 0)
+				return 0;
+			}
+
+			var localizedEntityService = context.Services.Resolve<ILocalizedEntityService>();
+
+			bool shouldSave = false;
+
+			foreach (var row in batch)
+			{
+				foreach (var prop in localizedProps)
 				{
-					yield return kvp.Key;
+					var lambda = localizableProperties[prop];
+					foreach (var lang in context.Languages)
+					{
+						var code = lang.UniqueSeoCode;
+						string value;
+
+						if (row.TryGetDataValue(prop /* ColumnName */, code, out value))
+						{
+							localizedEntityService.SaveLocalizedValue(row.Entity, lambda, value, lang.Id);
+							shouldSave = true;
+						}
+					}
 				}
 			}
-		}
 
-		protected abstract IDictionary<string, Expression<Func<T, string>>> GetLocalizableProperties();
+			if (shouldSave)
+			{
+				// commit whole batch at once
+				return context.Services.DbContext.SaveChanges();
+			}
+
+			return 0;
+		}
 
 		protected virtual int ProcessStoreMappings<TEntity>(
 			ImportExecuteContext context,

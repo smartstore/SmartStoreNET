@@ -326,46 +326,6 @@ namespace SmartStore.Services.Catalog.Importer
 			return num;
 		}
 
-		protected virtual int ProcessLocalizations(
-			ImportExecuteContext context,
-			IEnumerable<ImportRow<Product>> batch,
-			string[] localizedProperties)
-		{
-			if (localizedProperties.Length == 0)
-			{
-				return 0;
-			}
-			
-			bool shouldSave = false;
-
-			foreach (var row in batch)
-			{
-				foreach (var prop in localizedProperties)
-				{
-					var lambda = _localizableProperties[prop];
-					foreach (var lang in context.Languages)
-					{
-						var code = lang.UniqueSeoCode;
-						string value;
-
-						if (row.TryGetDataValue(prop /* ColumnName */, code, out value))
-						{
-							_localizedEntityService.SaveLocalizedValue(row.Entity, lambda, value, lang.Id);
-							shouldSave = true;
-						}
-					}
-				}
-			}
-
-			if (shouldSave)
-			{
-				// commit whole batch at once
-				return context.Services.DbContext.SaveChanges();
-			}
-
-			return 0;
-		}
-
 		protected virtual int ProcessProducts(
 			ImportExecuteContext context,
 			IEnumerable<ImportRow<Product>> batch,
@@ -606,11 +566,6 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 		}
 
-		protected override IDictionary<string, Expression<Func<Product, string>>> GetLocalizableProperties()
-		{
-			return _localizableProperties;
-		}
-
 		protected override void Import(ImportExecuteContext context)
 		{
 			var srcToDestId = new Dictionary<int, ImportProductMapping>();
@@ -620,9 +575,8 @@ namespace SmartStore.Services.Catalog.Importer
 			using (var scope = new DbContextScope(ctx: _productRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
 				var segmenter = context.DataSegmenter;
-				Initialize(context);
 
-				var localizedProperties = ResolveLocalizedProperties(segmenter).ToArray();
+				Initialize(context);
 
 				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 				{
@@ -695,7 +649,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// ===========================================================================
 					try
 					{
-						ProcessLocalizations(context, batch, localizedProperties);
+						ProcessLocalizations(context, batch, _localizableProperties);
 					}
 					catch (Exception exception)
 					{

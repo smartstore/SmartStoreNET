@@ -542,11 +542,6 @@ namespace SmartStore.Services.Customers.Importer
 			}
 		}
 
-		protected override IDictionary<string, Expression<Func<Customer, string>>> GetLocalizableProperties()
-		{
-			throw new NotSupportedException();
-		}
-
 		protected override void Import(ImportExecuteContext context)
 		{
 			var customer = _services.WorkContext.CurrentCustomer;

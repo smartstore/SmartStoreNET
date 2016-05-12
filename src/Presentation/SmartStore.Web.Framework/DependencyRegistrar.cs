@@ -1094,11 +1094,12 @@ namespace SmartStore.Web.Framework
 
 		protected override void Load(ContainerBuilder builder)
 		{
+			builder.RegisterType<ExportProfileService>().As<IExportProfileService>().InstancePerRequest();
+			builder.RegisterType<ImportProfileService>().As<IImportProfileService>().InstancePerRequest();
+
 			if (!DataSettings.DatabaseIsInstalled())
 				return;
 
-			builder.RegisterType<ExportProfileService>().As<IExportProfileService>().InstancePerRequest();
-			builder.RegisterType<ImportProfileService>().As<IImportProfileService>().InstancePerRequest();
 			builder.RegisterType<DataExporter>().As<IDataExporter>().InstancePerRequest();
 			builder.RegisterType<DataImporter>().As<IDataImporter>().InstancePerRequest();
 

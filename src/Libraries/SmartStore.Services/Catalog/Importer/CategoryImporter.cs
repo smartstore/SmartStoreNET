@@ -59,76 +59,125 @@ namespace SmartStore.Services.Catalog.Importer
 			_fileDownloadManager = fileDownloadManager;
 		}
 
-		protected virtual int ProcessLocalizations(
-			ImportExecuteContext context,
-			IEnumerable<ImportRow<Category>> batch,
-			string[] localizedProperties)
+		protected override void Import(ImportExecuteContext context)
 		{
-			if (localizedProperties.Length == 0)
-			{
-				return 0;
-			}
+			var srcToDestId = new Dictionary<int, ImportCategoryMapping>();
 
-			bool shouldSave = false;
+			var templateViewPaths = _categoryTemplateService.GetAllCategoryTemplates().ToDictionarySafe(x => x.ViewPath, x => x.Id);
 
-			foreach (var row in batch)
+			using (var scope = new DbContextScope(ctx: context.Services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
-				foreach (var prop in localizedProperties)
+				var segmenter = context.DataSegmenter;
+
+				Initialize(context);
+
+				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 				{
-					var lambda = _localizableProperties[prop];
-					foreach (var lang in context.Languages)
-					{
-						var code = lang.UniqueSeoCode;
-						string value;
+					var batch = segmenter.GetCurrentBatch<Category>();
 
-						if (row.TryGetDataValue(prop /* ColumnName */, code, out value))
+					// Perf: detach all entities
+					_categoryRepository.Context.DetachAll(false);
+
+					context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
+
+					try
+					{
+						ProcessCategories(context, batch, templateViewPaths, srcToDestId);
+					}
+					catch (Exception exception)
+					{
+						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessCategories");
+					}
+
+					// reduce batch to saved (valid) products.
+					// No need to perform import operations on errored products.
+					batch = batch.Where(x => x.Entity != null && !x.IsTransient).ToArray();
+
+					// update result object
+					context.Result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
+					context.Result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
+
+					// process slugs
+					if (segmenter.HasColumn("SeName", true) || batch.Any(x => x.IsNew || x.NameChanged))
+					{
+						try
 						{
-							_localizedEntityService.SaveLocalizedValue(row.Entity, lambda, value, lang.Id);
-							shouldSave = true;
+							_categoryRepository.Context.AutoDetectChangesEnabled = true;
+							ProcessSlugs(context, batch, typeof(Category).Name);
+						}
+						catch (Exception exception)
+						{
+							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessSlugs");
+						}
+						finally
+						{
+							_categoryRepository.Context.AutoDetectChangesEnabled = false;
+						}
+					}
+
+					// process store mappings
+					if (segmenter.HasColumn("StoreIds"))
+					{
+						try
+						{
+							ProcessStoreMappings(context, batch);
+						}
+						catch (Exception exception)
+						{
+							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessStoreMappings");
+						}
+					}
+
+					// localizations
+					try
+					{
+						ProcessLocalizations(context, batch, _localizableProperties);
+					}
+					catch (Exception exception)
+					{
+						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessLocalizedProperties");
+					}
+
+					// process pictures
+					if (srcToDestId.Any() && segmenter.HasColumn("ImageUrl") && !segmenter.IsIgnored("PictureId"))
+					{
+						try
+						{
+							_categoryRepository.Context.AutoDetectChangesEnabled = true;
+							ProcessPictures(context, batch, srcToDestId);
+						}
+						catch (Exception exception)
+						{
+							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessPictures");
+						}
+						finally
+						{
+							_categoryRepository.Context.AutoDetectChangesEnabled = false;
+						}
+					}
+				}
+
+				// map parent id of inserted categories
+				if (srcToDestId.Any() && segmenter.HasColumn("Id") && segmenter.HasColumn("ParentCategoryId") && !segmenter.IsIgnored("ParentCategoryId"))
+				{
+					segmenter.Reset();
+
+					while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
+					{
+						var batch = segmenter.GetCurrentBatch<Category>();
+						_categoryRepository.Context.DetachAll(false);
+
+						try
+						{
+							ProcessParentMappings(context, batch, srcToDestId);
+						}
+						catch (Exception exception)
+						{
+							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessParentMappings");
 						}
 					}
 				}
 			}
-
-			if (shouldSave)
-			{
-				// commit whole batch at once
-				return context.Services.DbContext.SaveChanges();
-			}
-
-			return 0;
-		}
-
-		protected virtual int ProcessParentMappings(
-			ImportExecuteContext context,
-			IEnumerable<ImportRow<Category>> batch,
-			Dictionary<int, ImportCategoryMapping> srcToDestId)
-		{
-			foreach (var row in batch)
-			{
-				var id = row.GetDataValue<int>("Id");
-				var rawParentId = row.GetDataValue<string>("ParentCategoryId");
-				var parentId = rawParentId.ToInt(-1);
-
-				if (id != 0 && parentId != -1 && srcToDestId.ContainsKey(id) && srcToDestId.ContainsKey(parentId))
-				{
-					// only touch hierarchical data if child and parent were inserted
-					if (srcToDestId[id].Inserted && srcToDestId[parentId].Inserted && srcToDestId[id].DestinationId != 0)
-					{
-						var category = _categoryRepository.GetById(srcToDestId[id].DestinationId);
-						if (category != null)
-						{
-							category.ParentCategoryId = srcToDestId[parentId].DestinationId;
-
-							_categoryRepository.Update(category);
-						}
-					}
-				}
-			}
-
-			var num = _categoryRepository.Context.SaveChanges();
-
-			return num;
 		}
 
 		protected virtual int ProcessPictures(
@@ -198,6 +247,78 @@ namespace SmartStore.Services.Catalog.Importer
 				catch (Exception exception)
 				{
 					context.Result.AddWarning(exception.ToAllMessages(), row.GetRowInfo(), "ImageUrls");
+				}
+			}
+
+			var num = _categoryRepository.Context.SaveChanges();
+
+			return num;
+		}
+
+		protected virtual int ProcessLocalizations(
+			ImportExecuteContext context,
+			IEnumerable<ImportRow<Category>> batch,
+			string[] localizedProperties)
+		{
+			if (localizedProperties.Length == 0)
+			{
+				return 0;
+			}
+
+			bool shouldSave = false;
+
+			foreach (var row in batch)
+			{
+				foreach (var prop in localizedProperties)
+				{
+					var lambda = _localizableProperties[prop];
+					foreach (var lang in context.Languages)
+					{
+						var code = lang.UniqueSeoCode;
+						string value;
+
+						if (row.TryGetDataValue(prop /* ColumnName */, code, out value))
+						{
+							_localizedEntityService.SaveLocalizedValue(row.Entity, lambda, value, lang.Id);
+							shouldSave = true;
+						}
+					}
+				}
+			}
+
+			if (shouldSave)
+			{
+				// commit whole batch at once
+				return context.Services.DbContext.SaveChanges();
+			}
+
+			return 0;
+		}
+
+		protected virtual int ProcessParentMappings(
+			ImportExecuteContext context,
+			IEnumerable<ImportRow<Category>> batch,
+			Dictionary<int, ImportCategoryMapping> srcToDestId)
+		{
+			foreach (var row in batch)
+			{
+				var id = row.GetDataValue<int>("Id");
+				var rawParentId = row.GetDataValue<string>("ParentCategoryId");
+				var parentId = rawParentId.ToInt(-1);
+
+				if (id != 0 && parentId != -1 && srcToDestId.ContainsKey(id) && srcToDestId.ContainsKey(parentId))
+				{
+					// only touch hierarchical data if child and parent were inserted
+					if (srcToDestId[id].Inserted && srcToDestId[parentId].Inserted && srcToDestId[id].DestinationId != 0)
+					{
+						var category = _categoryRepository.GetById(srcToDestId[id].DestinationId);
+						if (category != null)
+						{
+							category.ParentCategoryId = srcToDestId[parentId].DestinationId;
+
+							_categoryRepository.Update(category);
+						}
+					}
 				}
 			}
 
@@ -355,127 +476,6 @@ namespace SmartStore.Services.Catalog.Importer
 			get
 			{
 				return new string[] { "Name", "Id" };
-			}
-		}
-
-		protected override void Import(ImportExecuteContext context)
-		{
-			var srcToDestId = new Dictionary<int, ImportCategoryMapping>();
-
-			var templateViewPaths = _categoryTemplateService.GetAllCategoryTemplates().ToDictionarySafe(x => x.ViewPath, x => x.Id);
-
-			using (var scope = new DbContextScope(ctx: context.Services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
-			{
-				var segmenter = context.DataSegmenter;
-
-				Initialize(context);
-
-				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
-				{
-					var batch = segmenter.GetCurrentBatch<Category>();
-
-					// Perf: detach all entities
-					_categoryRepository.Context.DetachAll(false);
-
-					context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
-
-					try
-					{
-						ProcessCategories(context, batch, templateViewPaths, srcToDestId);
-					}
-					catch (Exception exception)
-					{
-						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessCategories");
-					}
-
-					// reduce batch to saved (valid) products.
-					// No need to perform import operations on errored products.
-					batch = batch.Where(x => x.Entity != null && !x.IsTransient).ToArray();
-
-					// update result object
-					context.Result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
-					context.Result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
-
-					// process slugs
-					if (segmenter.HasColumn("SeName", true) || batch.Any(x => x.IsNew || x.NameChanged))
-					{
-						try
-						{
-							_categoryRepository.Context.AutoDetectChangesEnabled = true;
-							ProcessSlugs(context, batch, typeof(Category).Name);
-						}
-						catch (Exception exception)
-						{
-							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessSlugs");
-						}
-						finally
-						{
-							_categoryRepository.Context.AutoDetectChangesEnabled = false;
-						}
-					}
-
-					// process store mappings
-					if (segmenter.HasColumn("StoreIds"))
-					{
-						try
-						{
-							ProcessStoreMappings(context, batch);
-						}
-						catch (Exception exception)
-						{
-							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessStoreMappings");
-						}
-					}
-
-					// localizations
-					try
-					{
-						ProcessLocalizations(context, batch, _localizableProperties);
-					}
-					catch (Exception exception)
-					{
-						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessLocalizedProperties");
-					}
-
-					// process pictures
-					if (srcToDestId.Any() && segmenter.HasColumn("ImageUrl") && !segmenter.IsIgnored("PictureId"))
-					{
-						try
-						{
-							_categoryRepository.Context.AutoDetectChangesEnabled = true;
-							ProcessPictures(context, batch, srcToDestId);
-						}
-						catch (Exception exception)
-						{
-							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessPictures");
-						}
-						finally
-						{
-							_categoryRepository.Context.AutoDetectChangesEnabled = false;
-						}
-					}
-				}
-
-				// map parent id of inserted categories
-				if (srcToDestId.Any() && segmenter.HasColumn("Id") && segmenter.HasColumn("ParentCategoryId") && !segmenter.IsIgnored("ParentCategoryId"))
-				{
-					segmenter.Reset();
-
-					while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
-					{
-						var batch = segmenter.GetCurrentBatch<Category>();
-						_categoryRepository.Context.DetachAll(false);
-
-						try
-						{
-							ProcessParentMappings(context, batch, srcToDestId);
-						}
-						catch (Exception exception)
-						{
-							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessParentMappings");
-						}
-					}
-				}
 			}
 		}
 

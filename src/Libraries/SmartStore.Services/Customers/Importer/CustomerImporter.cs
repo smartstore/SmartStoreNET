@@ -70,70 +70,263 @@ namespace SmartStore.Services.Customers.Importer
 			_forumSettings = forumSettings;
 		}
 
-		private int? CountryCodeToId(Dictionary<string, int> allCountries, string code)
+
+		protected override void Import(ImportExecuteContext context)
 		{
-			int countryId;
-			if (code.HasValue() && allCountries.TryGetValue(code, out countryId) && countryId != 0)
+			var customer = _services.WorkContext.CurrentCustomer;
+			var allowManagingCustomerRoles = _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomerRoles, customer);
+
+			var allAffiliateIds = _affiliateService.GetAllAffiliates(true)
+				.Select(x => x.Id)
+				.ToList();
+
+			var allCountries = new Dictionary<string, int>();
+			foreach (var country in _countryService.GetAllCountries(true))
 			{
-				return countryId;
+				if (!allCountries.ContainsKey(country.TwoLetterIsoCode))
+					allCountries.Add(country.TwoLetterIsoCode, country.Id);
+
+				if (!allCountries.ContainsKey(country.ThreeLetterIsoCode))
+					allCountries.Add(country.ThreeLetterIsoCode, country.Id);
 			}
 
-			return null;
+			var allStateProvinces = _stateProvinceService.GetAllStateProvinces(true)
+				.ToDictionarySafe(x => new Tuple<int, string>(x.CountryId, x.Abbreviation), x => x.Id);
+
+			var allCustomerNumbers = new HashSet<string>(
+				_genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, _attributeKeyGroup).Select(x => x.Value),
+				StringComparer.OrdinalIgnoreCase);
+
+			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
+			{
+				var segmenter = context.DataSegmenter;
+
+				Initialize(context);
+
+				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
+				{
+					var batch = segmenter.GetCurrentBatch<Customer>();
+
+					_customerRepository.Context.DetachAll(false);
+
+					context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
+
+					// ===========================================================================
+					// Process customers
+					// ===========================================================================
+					try
+					{
+						ProcessCustomers(context, batch, allAffiliateIds);
+					}
+					catch (Exception exception)
+					{
+						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessCustomers");
+					}
+
+					// reduce batch to saved (valid) records.
+					// No need to perform import operations on errored records.
+					batch = batch.Where(x => x.Entity != null && !x.IsTransient).ToArray();
+
+					// update result object
+					context.Result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
+					context.Result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
+
+					// ===========================================================================
+					// Process generic attributes
+					// ===========================================================================
+					try
+					{
+						ProcessGenericAttributes(context, batch, allCountries, allStateProvinces, allCustomerNumbers);
+					}
+					catch (Exception exception)
+					{
+						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessGenericAttributes");
+					}
+
+					// ===========================================================================
+					// Process avatars
+					// ===========================================================================
+					if (_customerSettings.AllowCustomersToUploadAvatars)
+					{
+						try
+						{
+							ProcessAvatars(context, batch);
+						}
+						catch (Exception exception)
+						{
+							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessAvatars");
+						}
+					}
+
+					// ===========================================================================
+					// Process addresses
+					// ===========================================================================
+					try
+					{
+						_services.DbContext.AutoDetectChangesEnabled = true;
+						ProcessAddresses(context, batch, allCountries, allStateProvinces);
+					}
+					catch (Exception exception)
+					{
+						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessAddresses");
+					}
+					finally
+					{
+						_services.DbContext.AutoDetectChangesEnabled = false;
+					}
+				}
+			}
 		}
 
-		private int? StateAbbreviationToId(Dictionary<Tuple<int, string>, int> allStateProvinces, int? countryId, string abbreviation)
+		protected virtual int ProcessCustomers(
+			ImportExecuteContext context,
+			IEnumerable<ImportRow<Customer>> batch,
+			List<int> allAffiliateIds)
 		{
-			if (countryId.HasValue && abbreviation.HasValue())
-			{
-				var key = Tuple.Create<int, string>(countryId.Value, abbreviation);
+			_customerRepository.AutoCommitEnabled = true;
 
-				int stateId;
-				if (allStateProvinces.TryGetValue(key, out stateId) && stateId != 0)
+			Customer lastInserted = null;
+			Customer lastUpdated = null;
+			var currentCustomer = _services.WorkContext.CurrentCustomer;
+
+			var guestRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests);
+			var registeredRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
+			var forumModeratorRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.ForumModerators);
+
+			var customerQuery = _customerRepository.Table.Expand(x => x.Addresses);
+
+			foreach (var row in batch)
+			{
+				Customer customer = null;
+				var id = row.GetDataValue<int>("Id");
+				var email = row.GetDataValue<string>("Email");
+
+				foreach (var keyName in context.KeyFieldNames)
 				{
-					return stateId;
+					switch (keyName)
+					{
+						case "Id":
+							if (id != 0)
+							{
+								customer = customerQuery.FirstOrDefault(x => x.Id == id);
+							}
+							break;
+						case "CustomerGuid":
+							var customerGuid = row.GetDataValue<string>("CustomerGuid");
+							if (customerGuid.HasValue())
+							{
+								var guid = new Guid(customerGuid);
+								customer = customerQuery.FirstOrDefault(x => x.CustomerGuid == guid);
+							}
+							break;
+						case "Email":
+							if (email.HasValue())
+							{
+								customer = customerQuery.FirstOrDefault(x => x.Email == email);
+							}
+							break;
+						case "Username":
+							var userName = row.GetDataValue<string>("Username");
+							if (userName.HasValue())
+							{
+								customer = customerQuery.FirstOrDefault(x => x.Username == userName);
+							}
+							break;
+					}
+
+					if (customer != null)
+						break;
+				}
+
+				if (customer == null)
+				{
+					if (context.UpdateOnly)
+					{
+						++context.Result.SkippedRecords;
+						continue;
+					}
+
+					customer = new Customer
+					{
+						CustomerGuid = new Guid(),
+						AffiliateId = 0,
+						Active = true
+					};
+				}
+				else
+				{
+					_customerRepository.Context.LoadCollection(customer, (Customer x) => x.CustomerRoles);
+				}
+
+				var isGuest = row.GetDataValue<bool>("IsGuest");
+				var isRegistered = row.GetDataValue<bool>("IsRegistered");
+				var isAdmin = row.GetDataValue<bool>("IsAdministrator");
+				var isForumModerator = row.GetDataValue<bool>("IsForumModerator");
+				var affiliateId = row.GetDataValue<int>("AffiliateId");
+
+				row.Initialize(customer, email ?? id.ToString());
+
+				row.SetProperty(context.Result, (x) => x.CustomerGuid);
+				row.SetProperty(context.Result, (x) => x.Username);
+				row.SetProperty(context.Result, (x) => x.Email);
+
+				if (email.HasValue() && currentCustomer.Email.IsCaseInsensitiveEqual(email))
+				{
+					context.Result.AddInfo("Security. Ignored password of current customer (who started this import).", row.GetRowInfo(), "Password");
+				}
+				else
+				{
+					row.SetProperty(context.Result, (x) => x.Password);
+					row.SetProperty(context.Result, (x) => x.PasswordFormatId);
+					row.SetProperty(context.Result, (x) => x.PasswordSalt);
+				}
+
+				row.SetProperty(context.Result, (x) => x.AdminComment);
+				row.SetProperty(context.Result, (x) => x.IsTaxExempt);
+				row.SetProperty(context.Result, (x) => x.Active);
+
+				row.SetProperty(context.Result, (x) => x.CreatedOnUtc, UtcNow);
+				row.SetProperty(context.Result, (x) => x.LastActivityDateUtc, UtcNow);
+
+				if (affiliateId > 0 && allAffiliateIds.Contains(affiliateId))
+				{
+					customer.AffiliateId = affiliateId;
+				}
+
+				if (isAdmin)
+				{
+					context.Result.AddInfo("Security. Ignored administrator role.", row.GetRowInfo(), "IsAdministrator");
+				}
+
+				UpsertRole(row, guestRole, isGuest);
+				UpsertRole(row, registeredRole, isRegistered);
+				UpsertRole(row, forumModeratorRole, isForumModerator);
+
+				if (row.IsTransient)
+				{
+					_customerRepository.Insert(customer);
+					lastInserted = customer;
+				}
+				else
+				{
+					_customerRepository.Update(customer);
+					lastUpdated = customer;
 				}
 			}
 
-			return null;
-		}
+			var num = _customerRepository.Context.SaveChanges();
 
-		private void SaveAttribute(ImportRow<Customer> row, string key)
-		{
-			SaveAttribute(row, key, row.GetDataValue<string>(key));
-		}
-
-		private void SaveAttribute<TPropType>(ImportRow<Customer> row, string key)
-		{
-
-			SaveAttribute(row, key, row.GetDataValue<TPropType>(key));
-		}
-
-		private void SaveAttribute<TPropType>(ImportRow<Customer> row, string key, TPropType value)
-		{
-			if (row.IsTransient)
-				return;
-
-			if (row.IsNew || value!= null)
+			if (lastInserted != null)
 			{
-				_genericAttributeService.SaveAttribute(row.Entity.Id, key, _attributeKeyGroup, value);
+				_services.EventPublisher.EntityInserted(lastInserted);
 			}
-		}
 
-		private void UpsertRole(ImportRow<Customer> row, CustomerRole role, bool value)
-		{
-			if (role == null)
-				return;
-
-			var hasRole = row.Entity.CustomerRoles.Any(x => x.SystemName == role.SystemName);
-
-			if (value && !hasRole)
+			if (lastUpdated != null)
 			{
-				row.Entity.CustomerRoles.Add(role);
+				_services.EventPublisher.EntityUpdated(lastUpdated);
 			}
-			else if (!value && hasRole)
-			{
-				row.Entity.CustomerRoles.Remove(role);
-			}
+
+			return num;
 		}
 
 		protected virtual int ProcessAddresses(
@@ -375,157 +568,6 @@ namespace SmartStore.Services.Customers.Importer
 			return _services.DbContext.SaveChanges();
 		}
 
-		protected virtual int ProcessCustomers(
-			ImportExecuteContext context,
-			IEnumerable<ImportRow<Customer>> batch,
-			List<int> allAffiliateIds)
-		{
-			_customerRepository.AutoCommitEnabled = true;
-
-			Customer lastInserted = null;
-			Customer lastUpdated = null;
-			var currentCustomer = _services.WorkContext.CurrentCustomer;
-
-			var guestRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests);
-			var registeredRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.Registered);
-			var forumModeratorRole = _customerService.GetCustomerRoleBySystemName(SystemCustomerRoleNames.ForumModerators);
-
-			var customerQuery = _customerRepository.Table.Expand(x => x.Addresses);
-
-			foreach (var row in batch)
-			{
-				Customer customer = null;
-				var id = row.GetDataValue<int>("Id");
-				var email = row.GetDataValue<string>("Email");
-
-				foreach (var keyName in context.KeyFieldNames)
-				{
-					switch (keyName)
-					{
-						case "Id":
-							if (id != 0)
-							{
-								customer = customerQuery.FirstOrDefault(x => x.Id == id);
-							}
-							break;
-						case "CustomerGuid":
-							var customerGuid = row.GetDataValue<string>("CustomerGuid");
-							if (customerGuid.HasValue())
-							{
-								var guid = new Guid(customerGuid);
-								customer = customerQuery.FirstOrDefault(x => x.CustomerGuid == guid);
-							}
-							break;
-						case "Email":
-							if (email.HasValue())
-							{
-								customer = customerQuery.FirstOrDefault(x => x.Email == email);
-							}
-							break;
-						case "Username":
-							var userName = row.GetDataValue<string>("Username");
-							if (userName.HasValue())
-							{
-								customer = customerQuery.FirstOrDefault(x => x.Username == userName);
-							}
-							break;
-					}
-
-					if (customer != null)
-						break;
-				}
-
-				if (customer == null)
-				{
-					if (context.UpdateOnly)
-					{
-						++context.Result.SkippedRecords;
-						continue;
-					}
-
-					customer = new Customer
-					{
-						CustomerGuid = new Guid(),
-						AffiliateId = 0,
-						Active = true				
-					};
-				}
-				else
-				{
-					_customerRepository.Context.LoadCollection(customer, (Customer x) => x.CustomerRoles);
-				}
-
-				var isGuest = row.GetDataValue<bool>("IsGuest");
-				var isRegistered = row.GetDataValue<bool>("IsRegistered");
-				var isAdmin = row.GetDataValue<bool>("IsAdministrator");
-				var isForumModerator = row.GetDataValue<bool>("IsForumModerator");
-				var affiliateId = row.GetDataValue<int>("AffiliateId");
-
-				row.Initialize(customer, email ?? id.ToString());
-
-				row.SetProperty(context.Result, (x) => x.CustomerGuid);
-				row.SetProperty(context.Result, (x) => x.Username);
-				row.SetProperty(context.Result, (x) => x.Email);
-
-				if (email.HasValue() && currentCustomer.Email.IsCaseInsensitiveEqual(email))
-				{
-					context.Result.AddInfo("Security. Ignored password of current customer (who started this import).", row.GetRowInfo(), "Password");
-				}
-				else
-				{
-					row.SetProperty(context.Result, (x) => x.Password);
-					row.SetProperty(context.Result, (x) => x.PasswordFormatId);
-					row.SetProperty(context.Result, (x) => x.PasswordSalt);
-				}
-
-				row.SetProperty(context.Result, (x) => x.AdminComment);
-				row.SetProperty(context.Result, (x) => x.IsTaxExempt);
-				row.SetProperty(context.Result, (x) => x.Active);
-
-				row.SetProperty(context.Result, (x) => x.CreatedOnUtc, UtcNow);
-				row.SetProperty(context.Result, (x) => x.LastActivityDateUtc, UtcNow);
-
-				if (affiliateId > 0 && allAffiliateIds.Contains(affiliateId))
-				{
-					customer.AffiliateId = affiliateId;
-				}
-
-				if (isAdmin)
-				{
-					context.Result.AddInfo("Security. Ignored administrator role.", row.GetRowInfo(), "IsAdministrator");
-				}
-
-				UpsertRole(row, guestRole, isGuest);
-				UpsertRole(row, registeredRole, isRegistered);
-				UpsertRole(row, forumModeratorRole, isForumModerator);
-
-				if (row.IsTransient)
-				{
-					_customerRepository.Insert(customer);
-					lastInserted = customer;
-				}
-				else
-				{
-					_customerRepository.Update(customer);
-					lastUpdated = customer;
-				}
-			}
-
-			var num = _customerRepository.Context.SaveChanges();
-
-			if (lastInserted != null)
-			{
-				_services.EventPublisher.EntityInserted(lastInserted);
-			}
-
-			if (lastUpdated != null)
-			{
-				_services.EventPublisher.EntityUpdated(lastUpdated);
-			}
-
-			return num;
-		}
-
 		public static string[] SupportedKeyFields
 		{
 			get
@@ -542,110 +584,69 @@ namespace SmartStore.Services.Customers.Importer
 			}
 		}
 
-		protected override void Import(ImportExecuteContext context)
+		private int? CountryCodeToId(Dictionary<string, int> allCountries, string code)
 		{
-			var customer = _services.WorkContext.CurrentCustomer;
-			var allowManagingCustomerRoles = _services.Permissions.Authorize(StandardPermissionProvider.ManageCustomerRoles, customer);
-
-			var allAffiliateIds = _affiliateService.GetAllAffiliates(true)
-				.Select(x => x.Id)
-				.ToList();
-
-			var allCountries = new Dictionary<string, int>();
-			foreach (var country in _countryService.GetAllCountries(true))
+			int countryId;
+			if (code.HasValue() && allCountries.TryGetValue(code, out countryId) && countryId != 0)
 			{
-				if (!allCountries.ContainsKey(country.TwoLetterIsoCode))
-					allCountries.Add(country.TwoLetterIsoCode, country.Id);
-
-				if (!allCountries.ContainsKey(country.ThreeLetterIsoCode))
-					allCountries.Add(country.ThreeLetterIsoCode, country.Id);
+				return countryId;
 			}
 
-			var allStateProvinces = _stateProvinceService.GetAllStateProvinces(true)
-				.ToDictionarySafe(x => new Tuple<int, string>(x.CountryId, x.Abbreviation), x => x.Id);
+			return null;
+		}
 
-			var allCustomerNumbers = new HashSet<string>(
-				_genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, _attributeKeyGroup).Select(x => x.Value), 
-				StringComparer.OrdinalIgnoreCase);
-
-			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
+		private int? StateAbbreviationToId(Dictionary<Tuple<int, string>, int> allStateProvinces, int? countryId, string abbreviation)
+		{
+			if (countryId.HasValue && abbreviation.HasValue())
 			{
-				var segmenter = context.DataSegmenter;
+				var key = Tuple.Create<int, string>(countryId.Value, abbreviation);
 
-				Initialize(context);
-
-				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
+				int stateId;
+				if (allStateProvinces.TryGetValue(key, out stateId) && stateId != 0)
 				{
-					var batch = segmenter.GetCurrentBatch<Customer>();
-
-					_customerRepository.Context.DetachAll(false);
-
-					context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
-
-					// ===========================================================================
-					// Process customers
-					// ===========================================================================
-					try
-					{
-						ProcessCustomers(context, batch, allAffiliateIds);
-					}
-					catch (Exception exception)
-					{
-						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessCustomers");
-					}
-
-					// reduce batch to saved (valid) records.
-					// No need to perform import operations on errored records.
-					batch = batch.Where(x => x.Entity != null && !x.IsTransient).ToArray();
-
-					// update result object
-					context.Result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
-					context.Result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
-
-					// ===========================================================================
-					// Process generic attributes
-					// ===========================================================================
-					try
-					{
-						ProcessGenericAttributes(context, batch, allCountries, allStateProvinces, allCustomerNumbers);
-					}
-					catch (Exception exception)
-					{
-						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessGenericAttributes");
-					}
-
-					// ===========================================================================
-					// Process avatars
-					// ===========================================================================
-					if (_customerSettings.AllowCustomersToUploadAvatars)
-					{
-						try
-						{
-							ProcessAvatars(context, batch);
-						}
-						catch (Exception exception)
-						{
-							context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessAvatars");
-						}
-					}
-
-					// ===========================================================================
-					// Process addresses
-					// ===========================================================================
-					try
-					{
-						_services.DbContext.AutoDetectChangesEnabled = true;
-						ProcessAddresses(context, batch, allCountries, allStateProvinces);
-					}
-					catch (Exception exception)
-					{
-						context.Result.AddError(exception, segmenter.CurrentSegment, "ProcessAddresses");
-					}
-					finally
-					{
-						_services.DbContext.AutoDetectChangesEnabled = false;
-					}
+					return stateId;
 				}
+			}
+
+			return null;
+		}
+
+		private void SaveAttribute(ImportRow<Customer> row, string key)
+		{
+			SaveAttribute(row, key, row.GetDataValue<string>(key));
+		}
+
+		private void SaveAttribute<TPropType>(ImportRow<Customer> row, string key)
+		{
+
+			SaveAttribute(row, key, row.GetDataValue<TPropType>(key));
+		}
+
+		private void SaveAttribute<TPropType>(ImportRow<Customer> row, string key, TPropType value)
+		{
+			if (row.IsTransient)
+				return;
+
+			if (row.IsNew || value != null)
+			{
+				_genericAttributeService.SaveAttribute(row.Entity.Id, key, _attributeKeyGroup, value);
+			}
+		}
+
+		private void UpsertRole(ImportRow<Customer> row, CustomerRole role, bool value)
+		{
+			if (role == null)
+				return;
+
+			var hasRole = row.Entity.CustomerRoles.Any(x => x.SystemName == role.SystemName);
+
+			if (value && !hasRole)
+			{
+				row.Entity.CustomerRoles.Add(role);
+			}
+			else if (!value && hasRole)
+			{
+				row.Entity.CustomerRoles.Remove(role);
 			}
 		}
 	}

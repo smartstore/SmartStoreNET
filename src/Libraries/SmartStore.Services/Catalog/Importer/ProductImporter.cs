@@ -404,7 +404,7 @@ namespace SmartStore.Services.Catalog.Importer
 				try
 				{
 					string seName = null;
-					if (row.IsNew || row.NameChanged || row.TryGetDataValue("SeName", out seName))
+					if (row.TryGetDataValue("SeName", out seName) || row.IsNew || row.NameChanged)
 					{
 						seName = row.Entity.ValidateSeName(seName, row.Entity.Name, true, _urlRecordService, _seoSettings, extraSlugLookup: slugLookup);
 
@@ -436,7 +436,7 @@ namespace SmartStore.Services.Catalog.Importer
 					// process localized SeNames
 					foreach (var lang in context.Languages)
 					{
-						if (row.IsNew || row.NameChanged || row.TryGetDataValue("SeName", lang.UniqueSeoCode, out seName))
+						if (row.TryGetDataValue("SeName", lang.UniqueSeoCode, out seName) || row.IsNew || row.NameChanged)
 						{
 							var localizedName = row.GetDataValue<string>("Name", lang.UniqueSeoCode);
 							seName = row.Entity.ValidateSeName(seName, localizedName, false, _urlRecordService, _seoSettings, lang.Id, slugLookup);

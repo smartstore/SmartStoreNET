@@ -18,7 +18,7 @@ namespace SmartStore.Core.Domain.Media
 			CartThumbPictureSize = 80;
 			CartThumbBundleItemPictureSize = 32;
 			MiniCartThumbPictureSize = 32;
-			AutoCompleteSearchThumbPictureSize = 20;
+			VariantValueThumbPictureSize = 20;
 			MaximumImageSize = 1280;
 			DefaultPictureZoomEnabled = true;
 			PictureZoomType = "window";
@@ -38,7 +38,7 @@ namespace SmartStore.Core.Domain.Media
         public int CartThumbPictureSize { get; set; }
 		public int CartThumbBundleItemPictureSize { get; set; }
         public int MiniCartThumbPictureSize { get; set; }
-        public int AutoCompleteSearchThumbPictureSize { get; set; }
+        public int VariantValueThumbPictureSize { get; set; }
 
 		public bool DefaultPictureZoomEnabled { get; set; }
         public string PictureZoomType { get; set; }

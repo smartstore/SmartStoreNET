@@ -668,7 +668,7 @@ namespace SmartStore.Admin.Infrastructure
                 //.ForMember(dest => dest.DefaultPictureZoomEnabled, mo => mo.Ignore())
                 .ForMember(dest => dest.DefaultImageQuality, mo => mo.Ignore())
                 .ForMember(dest => dest.MultipleThumbDirectories, mo => mo.Ignore())
-                .ForMember(dest => dest.AutoCompleteSearchThumbPictureSize, mo => mo.Ignore());
+                .ForMember(dest => dest.VariantValueThumbPictureSize, mo => mo.Ignore());
 			Mapper.CreateMap<CustomerSettings, CustomerUserSettingsModel.CustomerSettingsModel>()
 				.ForMember(dest => dest.AvailableCustomerNumberMethods, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableCustomerNumberVisibilities, mo => mo.Ignore())

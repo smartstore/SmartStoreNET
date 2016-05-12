@@ -78,7 +78,7 @@ namespace SmartStore.Services.Catalog.Importer
 			ImportExecuteContext context, 
 			IEnumerable<ImportRow<Category>> batch)
 		{
-			var entityName = typeof(Product).Name;
+			var entityName = typeof(Category).Name;
 			var slugMap = new Dictionary<string, UrlRecord>();
 			UrlRecord urlRecord = null;
 

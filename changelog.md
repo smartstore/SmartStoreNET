@@ -3,9 +3,12 @@
 ## SmartStore.NET 2.5.1
 
 ### Highlights
-* #637 Integrate PayPal PLUS Provider
+* #637 Integrated PayPal PLUS payment Provider
+* Major improvements in Importer: better field mapping, higher performance, bug fixes etc.
 
 ### New Features
+* #637 Integrated PayPal PLUS payment Provider
+* #961 Fix "Open Redirection Vulnerability"
 * #571 Option to display another checkbox on confirm page to let the customer accept that his email address can be handed over to a third party
 * #870 Implement address import for customers (both billing & shipping address)
 * #886 Add setting to hide manufacturer images on product detail page and to hide default image for manufacturers
@@ -13,6 +16,7 @@
 * #477 Implement option to specify the number of exported and imported pictures
 
 ### Improvements
+* Major improvements in Importer: better field mapping, higher performance, bug fixes etc.
 * (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.
 * Localization & SEO: language switcher now takes language specific SEO slugs into account when building links
 * Exports the product detail link including the attribute query string when exporting attribute combinations

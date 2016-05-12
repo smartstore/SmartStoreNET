@@ -84,8 +84,8 @@ namespace SmartStore.Services.Catalog
 			var utcNow = DateTime.UtcNow;
 
 			// product download & sample download
-			int downloadId = product.DownloadId;
-			int? sampleDownloadId = product.SampleDownloadId;
+			int downloadId = 0;
+			int? sampleDownloadId = null;
 
 			if (product.IsDownload)
 			{

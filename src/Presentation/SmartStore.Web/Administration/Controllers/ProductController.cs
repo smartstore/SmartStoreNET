@@ -215,7 +215,7 @@ namespace SmartStore.Admin.Controllers
 			p.GiftCardTypeId = m.GiftCardTypeId;
 			
 			p.IsDownload = m.IsDownload;
-			p.DownloadId = m.DownloadId;
+			p.DownloadId = m.DownloadId ?? 0;
 			p.UnlimitedDownloads = m.UnlimitedDownloads;
 			p.MaxNumberOfDownloads = m.MaxNumberOfDownloads;
 			p.DownloadExpirationDays = m.DownloadExpirationDays;

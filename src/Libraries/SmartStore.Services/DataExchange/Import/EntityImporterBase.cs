@@ -19,7 +19,7 @@ using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.DataExchange.Import
 {
-	public abstract class EntityImporterBase<T> : IEntityImporter where T : BaseEntity
+	public abstract class EntityImporterBase : IEntityImporter
 	{
 		private const string _imageDownloadFolder = @"Content\DownloadedImages";
 

@@ -20,7 +20,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog.Importer
 {
-	public class CategoryImporter : EntityImporterBase<Category>
+	public class CategoryImporter : EntityImporterBase
 	{
 		private readonly IRepository<Category> _categoryRepository;
 		private readonly IRepository<Picture> _pictureRepository;

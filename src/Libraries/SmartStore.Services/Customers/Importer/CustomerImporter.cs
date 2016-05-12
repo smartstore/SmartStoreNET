@@ -22,7 +22,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Customers.Importer
 {
-	public class CustomerImporter : EntityImporterBase<Customer>
+	public class CustomerImporter : EntityImporterBase
 	{
 		private const string _attributeKeyGroup = "Customer";
 

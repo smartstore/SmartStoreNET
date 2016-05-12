@@ -16,7 +16,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog.Importer
 {
-	public class ProductImporter : EntityImporterBase<Product>
+	public class ProductImporter : EntityImporterBase
 	{
 		private readonly IRepository<ProductPicture> _productPictureRepository;
 		private readonly IRepository<ProductManufacturer> _productManufacturerRepository;

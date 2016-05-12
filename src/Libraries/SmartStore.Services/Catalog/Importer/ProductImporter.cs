@@ -8,16 +8,11 @@ using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
-using SmartStore.Core.Domain.Seo;
-using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
-using SmartStore.Services.Seo;
-using SmartStore.Services.Stores;
 using SmartStore.Utilities;
-using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Services.Catalog.Importer
 {
@@ -26,20 +21,15 @@ namespace SmartStore.Services.Catalog.Importer
 		private readonly IRepository<ProductPicture> _productPictureRepository;
 		private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
 		private readonly IRepository<ProductCategory> _productCategoryRepository;
-		private readonly IRepository<UrlRecord> _urlRecordRepository;
 		private readonly IRepository<Product> _productRepository;
-		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly ICommonServices _services;
 		private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly IPictureService _pictureService;
 		private readonly IManufacturerService _manufacturerService;
 		private readonly ICategoryService _categoryService;
 		private readonly IProductService _productService;
-		private readonly IUrlRecordService _urlRecordService;
 		private readonly IProductTemplateService _productTemplateService;
-		private readonly IStoreMappingService _storeMappingService;
 		private readonly FileDownloadManager _fileDownloadManager;
-		private readonly SeoSettings _seoSettings;
 
 		private static readonly Dictionary<string, Expression<Func<Product, string>>> _localizableProperties = new Dictionary<string, Expression<Func<Product, string>>>
 		{
@@ -56,38 +46,28 @@ namespace SmartStore.Services.Catalog.Importer
 			IRepository<ProductPicture> productPictureRepository,
 			IRepository<ProductManufacturer> productManufacturerRepository,
 			IRepository<ProductCategory> productCategoryRepository,
-			IRepository<UrlRecord> urlRecordRepository,
 			IRepository<Product> productRepository,
-			IRepository<StoreMapping> storeMappingRepository,
 			ICommonServices services,
 			ILocalizedEntityService localizedEntityService,
 			IPictureService pictureService,
 			IManufacturerService manufacturerService,
 			ICategoryService categoryService,
 			IProductService productService,
-			IUrlRecordService urlRecordService,
 			IProductTemplateService productTemplateService,
-			IStoreMappingService storeMappingService,
-			FileDownloadManager fileDownloadManager,
-			SeoSettings seoSettings)
+			FileDownloadManager fileDownloadManager)
 		{
 			_productPictureRepository = productPictureRepository;
 			_productManufacturerRepository = productManufacturerRepository;
 			_productCategoryRepository = productCategoryRepository;
-			_urlRecordRepository = urlRecordRepository;
 			_productRepository = productRepository;
-			_storeMappingRepository = storeMappingRepository;
 			_services = services;
 			_localizedEntityService = localizedEntityService;
 			_pictureService = pictureService;
 			_manufacturerService = manufacturerService;
 			_categoryService = categoryService;
 			_productService = productService;
-			_urlRecordService = urlRecordService;
 			_productTemplateService = productTemplateService;
-			_storeMappingService = storeMappingService;
 			_fileDownloadManager = fileDownloadManager;
-			_seoSettings = seoSettings;
 		}
 
 		private int? ZeroToNull(object value, CultureInfo culture)
@@ -384,95 +364,6 @@ namespace SmartStore.Services.Catalog.Importer
 			}
 
 			return 0;
-		}
-
-		protected virtual int ProcessSlugs(
-			ImportExecuteContext context,
-			IEnumerable<ImportRow<Product>> batch)
-		{
-			var entityName = typeof(Product).Name;
-			var slugMap = new Dictionary<string, UrlRecord>();
-			UrlRecord urlRecord = null;
-
-			Func<string, UrlRecord> slugLookup = ((s) =>
-			{
-				return (slugMap.ContainsKey(s) ? slugMap[s] : null);
-			});
-
-			foreach (var row in batch)
-			{
-				try
-				{
-					string seName = null;
-					if (row.TryGetDataValue("SeName", out seName) || row.IsNew || row.NameChanged)
-					{
-						seName = row.Entity.ValidateSeName(seName, row.Entity.Name, true, _urlRecordService, _seoSettings, extraSlugLookup: slugLookup);
-
-						if (row.IsNew)
-						{
-							// dont't bother validating SeName for new entities.
-							urlRecord = new UrlRecord
-							{
-								EntityId = row.Entity.Id,
-								EntityName = entityName,
-								Slug = seName,
-								LanguageId = 0,
-								IsActive = true,
-							};
-							_urlRecordRepository.Insert(urlRecord);
-						}
-						else
-						{
-							urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, 0);
-						}
-
-						if (urlRecord != null)
-						{
-							// a new record was inserted to the store: keep track of it for this batch.
-							slugMap[seName] = urlRecord;
-						}
-					}
-
-					// process localized SeNames
-					foreach (var lang in context.Languages)
-					{
-						if (row.TryGetDataValue("SeName", lang.UniqueSeoCode, out seName) || row.IsNew || row.NameChanged)
-						{
-							var localizedName = row.GetDataValue<string>("Name", lang.UniqueSeoCode);
-							seName = row.Entity.ValidateSeName(seName, localizedName, false, _urlRecordService, _seoSettings, lang.Id, slugLookup);
-							urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, lang.Id);
-							if (urlRecord != null)
-							{
-								slugMap[seName] = urlRecord;
-							}
-						}
-					}
-				}
-				catch (Exception exception)
-				{
-					context.Result.AddWarning(exception.Message, row.GetRowInfo(), "SeName");
-				}
-			}
-
-			// commit whole batch at once
-			return _urlRecordRepository.Context.SaveChanges();
-		}
-
-		protected virtual int ProcessStoreMappings(ImportExecuteContext context, IEnumerable<ImportRow<Product>> batch)
-		{
-			_storeMappingRepository.AutoCommitEnabled = false;
-
-			foreach (var row in batch)
-			{
-				var storeIds = row.GetDataValue<List<int>>("StoreIds");
-				if (!storeIds.IsNullOrEmpty())
-				{
-					_storeMappingService.SaveStoreMappings(row.Entity, storeIds.ToArray());
-				}
-			}
-
-			// commit whole batch at once
-			return _services.DbContext.SaveChanges();
 		}
 
 		protected virtual int ProcessProducts(
@@ -772,8 +663,7 @@ namespace SmartStore.Services.Catalog.Importer
 						try
 						{
 							_productRepository.Context.AutoDetectChangesEnabled = true;
-
-							ProcessSlugs(context, batch);
+							ProcessSlugs(context, batch, typeof(Product).Name);
 						}
 						catch (Exception exception)
 						{

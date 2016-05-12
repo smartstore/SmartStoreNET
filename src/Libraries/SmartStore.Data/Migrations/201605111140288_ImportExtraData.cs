@@ -23,6 +23,12 @@ namespace SmartStore.Data.Migrations
 		public void Seed(SmartObjectContext context)
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
+
+            context.MigrateSettings(x =>
+            {
+                x.Add("MediaSettings.VariantValueThumbPictureSize", "20");
+                x.Delete("MediaSettings.AutoCompleteSearchThumbPictureSize");
+            });
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

@@ -42,6 +42,7 @@
 * Mobile devices: Fixed "Uncaught Error: Syntax error, unrecognized expression: :nth-child"
 * Download nor sample download were removable when editing product
 * Copied product must not share sample download of source product. Could produce "The DELETE statement conflicted with the REFERENCE constraint 'FK_dbo.Product_dbo.Download_SampleDownloadId'".
+* #921 Specification attribute options with single quotation marks are causing a Javascript error
 
 
 ## SmartStore.NET 2.5

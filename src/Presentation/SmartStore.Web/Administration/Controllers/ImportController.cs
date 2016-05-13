@@ -94,9 +94,9 @@ namespace SmartStore.Admin.Controllers
 			switch (profile.EntityType)
 			{
 				case ImportEntityType.Product:
-					return new string[] { "Name", "Sku", "ManufacturerPartNumber", "Gtin" };
+					return new string[] { "Name", "Sku", "ManufacturerPartNumber", "Gtin", "SeName" };
 				case ImportEntityType.Category:
-					return new string[] { "Name" };
+					return new string[] { "Name", "SeName" };
 				case ImportEntityType.Customer:
 					return new string[] { "CustomerGuid", "Email" };
 				case ImportEntityType.NewsLetterSubscription:

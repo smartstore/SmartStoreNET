@@ -285,7 +285,7 @@ namespace SmartStore.Services.DataExchange.Export
 			switch (ctx.Request.Provider.Value.EntityType)
 			{
 				case ExportEntityType.Product:
-					ctx.ExecuteContext.Segmenter = new ExportDataSegmenter<Product>
+					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Product>
 					(
 						skip => GetProducts(ctx, skip),
 						entities =>
@@ -310,7 +310,7 @@ namespace SmartStore.Services.DataExchange.Export
 					break;
 
 				case ExportEntityType.Order:
-					ctx.ExecuteContext.Segmenter = new ExportDataSegmenter<Order>
+					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Order>
 					(
 						skip => GetOrders(ctx, skip),
 						entities =>
@@ -329,7 +329,7 @@ namespace SmartStore.Services.DataExchange.Export
 					break;
 
 				case ExportEntityType.Manufacturer:
-					ctx.ExecuteContext.Segmenter = new ExportDataSegmenter<Manufacturer>
+					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Manufacturer>
 					(
 						skip => GetManufacturers(ctx, skip),
 						entities =>
@@ -345,7 +345,7 @@ namespace SmartStore.Services.DataExchange.Export
 					break;
 
 				case ExportEntityType.Category:
-					ctx.ExecuteContext.Segmenter = new ExportDataSegmenter<Category>
+					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Category>
 					(
 						skip => GetCategories(ctx, skip),
 						entities =>
@@ -361,7 +361,7 @@ namespace SmartStore.Services.DataExchange.Export
 					break;
 
 				case ExportEntityType.Customer:
-					ctx.ExecuteContext.Segmenter = new ExportDataSegmenter<Customer>
+					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Customer>
 					(
 						skip => GetCustomers(ctx, skip),
 						entities =>
@@ -376,7 +376,7 @@ namespace SmartStore.Services.DataExchange.Export
 					break;
 
 				case ExportEntityType.NewsLetterSubscription:
-					ctx.ExecuteContext.Segmenter = new ExportDataSegmenter<NewsLetterSubscription>
+					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<NewsLetterSubscription>
 					(
 						skip => GetNewsLetterSubscriptions(ctx, skip),
 						null,
@@ -386,11 +386,11 @@ namespace SmartStore.Services.DataExchange.Export
 					break;
 
 				default:
-					ctx.ExecuteContext.Segmenter = null;
+					ctx.ExecuteContext.DataSegmenter = null;
 					break;
 			}
 
-			return ctx.ExecuteContext.Segmenter as IExportDataSegmenterProvider;
+			return ctx.ExecuteContext.DataSegmenter as IExportDataSegmenterProvider;
 		}
 
 		private bool CallProvider(DataExporterContext ctx, string streamId, string method, string path)

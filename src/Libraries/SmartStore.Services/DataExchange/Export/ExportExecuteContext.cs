@@ -25,7 +25,7 @@ namespace SmartStore.Services.DataExchange.Export
 		/// <summary>
 		/// Provides the data to be exported
 		/// </summary>
-		public IExportDataSegmenterConsumer Segmenter { get; set; }
+		public IExportDataSegmenterConsumer DataSegmenter { get; set; }
 
 		/// <summary>
 		/// The store context to be used for the export

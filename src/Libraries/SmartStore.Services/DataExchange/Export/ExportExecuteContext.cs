@@ -18,7 +18,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_result = result;
 			_cancellation = cancellation;
 			Folder = folder;
-			ExtraDataStreams = new List<ExportExtraStreams>();
+			ExtraDataUnits = new List<ExportDataUnit>();
 			CustomProperties = new Dictionary<string, object>();
 		}
 
@@ -91,9 +91,9 @@ namespace SmartStore.Services.DataExchange.Export
 		public Stream DataStream { get; internal set; }
 
 		/// <summary>
-		/// List with extra data streams required by provider
+		/// List with extra data units/streams required by provider
 		/// </summary>
-		public List<ExportExtraStreams> ExtraDataStreams { get; set; }
+		public List<ExportDataUnit> ExtraDataUnits { get; private set; }
 
 		/// <summary>
 		/// The maximum allowed file name length
@@ -178,7 +178,7 @@ namespace SmartStore.Services.DataExchange.Export
 		}
 	}
 
-	public class ExportExtraStreams
+	public class ExportDataUnit
 	{
 		/// <summary>
 		/// Your Id to identify this stream within a list of streams

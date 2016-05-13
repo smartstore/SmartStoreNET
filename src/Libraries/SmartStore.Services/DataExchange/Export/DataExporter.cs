@@ -1116,17 +1116,16 @@ namespace SmartStore.Services.DataExchange.Export
 				if (ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard)
 				{
 					// always call OnExecuted
-					if (ctx.ExecuteContext.ExtraDataStreams.Count == 0)
-						ctx.ExecuteContext.ExtraDataStreams.Add(new ExportExtraStreams());
+					if (ctx.ExecuteContext.ExtraDataUnits.Count == 0)
+						ctx.ExecuteContext.ExtraDataUnits.Add(new ExportDataUnit());
 
-					ctx.ExecuteContext.ExtraDataStreams.ForEach(x =>
+					ctx.ExecuteContext.ExtraDataUnits.ForEach(x =>
 					{
 						var path = (x.FileName.HasValue() ? Path.Combine(ctx.ExecuteContext.Folder, x.FileName) : null);
-
 						CallProvider(ctx, x.Id, "OnExecuted", path);
 					});
 
-					ctx.ExecuteContext.ExtraDataStreams.Clear();
+					ctx.ExecuteContext.ExtraDataUnits.Clear();
 				}
 			}
 		}

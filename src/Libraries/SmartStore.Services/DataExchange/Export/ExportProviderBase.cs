@@ -28,16 +28,16 @@ namespace SmartStore.Services.DataExchange.Export
 			get { return null; }
 		}
 
+		public void Execute(ExportExecuteContext context)
+		{
+			Export(context);
+		}
+
 		/// <summary>
 		/// Export data to a file
 		/// </summary>
 		/// <param name="context">Export execution context</param>
 		protected abstract void Export(ExportExecuteContext context);
-
-		public void Execute(ExportExecuteContext context)
-		{
-			Export(context);
-		}
 
 		/// <summary>
 		/// Called once per store when export execution ended

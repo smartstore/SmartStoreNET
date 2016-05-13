@@ -153,7 +153,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 			get { return "XML"; }
 		}
 
-		protected override void Export(IExportExecuteContext context)
+		protected override void Export(ExportExecuteContext context)
 		{
 			dynamic currency = context.Currency;
 			string measureWeightSystemKey = "";

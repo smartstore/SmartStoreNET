@@ -128,7 +128,7 @@
 			{
 				var index = Model.ColumnMappings.IndexOf(mapping) + 1;
 				<tr>
-					<td>
+					<td class="mapping-item-cell">
 						<div class="mapping-item mapping-property">
 							<input type="hidden" name="ColumnMapping.Property.@(index)" value="@mapping.Property" />
 							<div class="item-inner">
@@ -147,7 +147,7 @@
 							</div>
 						</div>
 					</td>
-					<td>
+					<td class="mapping-item-cell">
 						<div class="mapping-item mapping-column">
 							<input type="hidden" name="ColumnMapping.Column.@(index)" value="@mapping.Column" />
 							<div class="item-inner">

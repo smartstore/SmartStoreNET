@@ -105,6 +105,15 @@
                 @Html.ValidationMessageFor(model => model.GiftCards_Deactivated_OrderStatusId)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.OrderListPageSize)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.OrderListPageSize)
+				@Html.ValidationMessageFor(model => model.OrderListPageSize)
+			</td>
+		</tr>
         @if (Model.OrderIdent.HasValue)
         {
             <tr>

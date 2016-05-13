@@ -23,6 +23,7 @@
 * #918 Compare products: Display base price information
 * Export email attachments needs to be stored in database because the temp file may not exist anymore when sending the email
 * #913 Use HTML5 Input types (tel, email)
+* Added paging to frontend order list
 
 ### Bugfixes
 * Fixed ajax cache issue when saving payment or shipping restrictions. Internet Explorer showed the old data state (before storage).

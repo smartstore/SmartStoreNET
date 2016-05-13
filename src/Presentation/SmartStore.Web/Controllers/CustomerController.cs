@@ -352,35 +352,40 @@ namespace SmartStore.Web.Controllers
         }
         
         [NonAction]
-        protected CustomerOrderListModel PrepareCustomerOrderListModel(Customer customer)
+        protected CustomerOrderListModel PrepareCustomerOrderListModel(Customer customer, int pageIndex)
         {
             if (customer == null)
                 throw new ArgumentNullException("customer");
 
-            var model = new CustomerOrderListModel();
+			var storeScope = (_orderSettings.DisplayOrdersOfAllStores ? 0 : _storeContext.CurrentStore.Id);
+
+			var model = new CustomerOrderListModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.Orders;
 
-			var storeScope = (_orderSettings.DisplayOrdersOfAllStores ? 0 : _storeContext.CurrentStore.Id);
+			var orders = _orderService.SearchOrders(storeScope, customer.Id, null, null, null, null, null, null, null, null, pageIndex, _orderSettings.OrderListPageSize);
 
-			var orders = _orderService.SearchOrders(storeScope, customer.Id, null, null, null, null, null, null, null, null, 0, int.MaxValue);
+			var orderModels = orders
+				.Select(x =>
+				{
+					var orderModel = new CustomerOrderListModel.OrderDetailsModel
+					{
+						Id = x.Id,
+						OrderNumber = x.GetOrderNumber(),
+						CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
+						OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
+						IsReturnRequestAllowed = _orderProcessingService.IsReturnRequestAllowed(x)
+					};
 
-            foreach (var order in orders)
-            {
-                var orderModel = new CustomerOrderListModel.OrderDetailsModel
-                {
-                    Id = order.Id,
-                    OrderNumber = order.GetOrderNumber(),
-                    CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc),
-                    OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
-                    IsReturnRequestAllowed = _orderProcessingService.IsReturnRequestAllowed(order)
-                };
+					var orderTotalInCustomerCurrency = _currencyService.ConvertCurrency(x.OrderTotal, x.CurrencyRate);
+					orderModel.OrderTotal = _priceFormatter.FormatPrice(orderTotalInCustomerCurrency, true, x.CustomerCurrencyCode, false, _workContext.WorkingLanguage);
 
-                var orderTotalInCustomerCurrency = _currencyService.ConvertCurrency(order.OrderTotal, order.CurrencyRate);
-                orderModel.OrderTotal = _priceFormatter.FormatPrice(orderTotalInCustomerCurrency, true, order.CustomerCurrencyCode, false, _workContext.WorkingLanguage);
+					return orderModel;
+				})
+				.ToList();
 
-                model.Orders.Add(orderModel);
-            }
+			model.Orders = new PagedList<CustomerOrderListModel.OrderDetailsModel>(orderModels, orders.PageIndex, orders.PageSize, orders.TotalCount);
+
 
 			var recurringPayments = _orderService.SearchRecurringPayments(_storeContext.CurrentStore.Id, customer.Id, 0, null);
 
@@ -1256,13 +1261,12 @@ namespace SmartStore.Web.Controllers
         #region Orders
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult Orders()
+        public ActionResult Orders(int? page)
         {
             if (!IsCurrentUserRegistered())
                 return new HttpUnauthorizedResult();
 
-            var customer = _workContext.CurrentCustomer;
-            var model = PrepareCustomerOrderListModel(customer);
+            var model = PrepareCustomerOrderListModel(_workContext.CurrentCustomer, Math.Max((page ?? 0) - 1, 0));
 
             return View(model);
         }
@@ -1295,7 +1299,7 @@ namespace SmartStore.Web.Controllers
             {
                 var errors = _orderProcessingService.CancelRecurringPayment(recurringPayment);
 
-                var model = PrepareCustomerOrderListModel(customer);
+                var model = PrepareCustomerOrderListModel(customer, 0);
                 model.CancelRecurringPaymentErrors = errors;
 
                 return View(model);

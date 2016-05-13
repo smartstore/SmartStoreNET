@@ -38,6 +38,19 @@ namespace SmartStore.Data.Migrations
 				"Anzahl der Bilder",
 				"Specifies the number of images per object to be imported.",
 				"Legt die Anzahl der zu importierenden Bilder pro Objekt fest.");
+
+			builder.Update("Admin.Configuration.Settings.Catalog.DefaultPageSizeOptions")
+				.Value("en", "Number of displayed products per page");
+
+			builder.AddOrUpdate("Admin.Validation.ValueGreaterZero",
+				"The value must be greater than 0.",
+				"Der Wert muss größer 0 sein.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Order.OrderListPageSize",
+				"Number of displayed orders per page",
+				"Anzahl der Aufträge pro Seite",
+				"Specifies the number of displayed orders per page.",
+				"Legt die Anzahl der dargestellten Aufträge pro Seite fest.");
 		}
 	}
 }

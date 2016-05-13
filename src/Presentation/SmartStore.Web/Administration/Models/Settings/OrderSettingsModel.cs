@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Settings;
@@ -65,6 +66,9 @@ namespace SmartStore.Admin.Models.Settings
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Order.DisplayOrdersOfAllStores")]
 		public bool DisplayOrdersOfAllStores { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Order.OrderListPageSize")]
+		public int OrderListPageSize { get; set; }
 
 		public IList<OrderSettingsLocalizedModel> Locales { get; set; }
     }

@@ -34,7 +34,7 @@
 
 <div id="PropertyMappingTemplate" class="hide">
 	<div class="mapping-edit">
-		<select class="select-property noskin" style="width: 550px;">
+		<select class="select-property noskin">
 			@foreach (var property in Model.AvailableEntityProperties)
 			{
 				<option value="@property.Property" data-defaultdisabled="@(property.IsDefaultDisabled ? "1" : "0")">@property.PropertyDescription</option>
@@ -47,7 +47,7 @@
 
 <div id="ColumnMappingTemplate" class="hide">
 	<div class="mapping-edit">
-		<select class="select-column noskin" data-placeholder="@ignore" style="width: 550px;">
+		<select class="select-column noskin" data-placeholder="@ignore">
 			<option></option>
 			@foreach (var column in Model.AvailableSourceColumns)
 			{
@@ -102,10 +102,10 @@
 				</td>
 				<td>
 					<button type="button" class="btn btn-block btn-warning mapping-add" disabled="disabled">
-						<i class="fa fa-plus"></i>&nbsp;@T("Common.AddNew")
+						<i class="fa fa-plus"></i><span class="mapping-button-label">&nbsp;@T("Common.AddNew")</span>
 					</button>
 					<button type="button" class="btn btn-block btn-danger hide mapping-delete">
-						<i class="fa fa-trash"></i>&nbsp;@delete
+						<i class="fa fa-trash"></i><span class="mapping-button-label">&nbsp;@delete</span>
 					</button>
 				</td>
 			</tr>
@@ -119,8 +119,8 @@
 			<tr>
 				<th class="column-one">@T("Admin.DataExchange.ColumnMapping.EntityProperty")</th>
 				<th class="column-two">@T("Admin.DataExchange.ColumnMapping.ImportField")</th>			
-				<th>@T("Admin.DataExchange.ColumnMapping.DefaultValue")</th>
-				<th>&nbsp;</th>
+				<th class="column-three">@T("Admin.DataExchange.ColumnMapping.DefaultValue")</th>
+				<th class="column-four">&nbsp;</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -128,16 +128,16 @@
 			{
 				var index = Model.ColumnMappings.IndexOf(mapping) + 1;
 				<tr>
-					<td class="mapping-item-cell">
+					<td>
 						<div class="mapping-item mapping-property">
 							<input type="hidden" name="ColumnMapping.Property.@(index)" value="@mapping.Property" />
 							<div class="item-inner">
 								<span class="property-icon">
 									<i class="text-success fa fa-fw @(mapping.Property.EmptyNull().EndsWith("]") ? "fa-globe" : "fa-chain-broken")"></i>
 								</span>
-								@if (mapping.PropertyDescription.Length > 50)
+								@if (mapping.PropertyDescription.Length > Model.MaxMappingLabelTextLength)
 								{
-									<span class="left-label" title="@mapping.PropertyDescription">@(mapping.PropertyDescription.Substring(0, 50))…</span>
+									<span class="left-label" title="@mapping.PropertyDescription">@(mapping.PropertyDescription.Substring(0, Model.MaxMappingLabelTextLength))…</span>
 								}
 								else
 								{
@@ -147,7 +147,7 @@
 							</div>
 						</div>
 					</td>
-					<td class="mapping-item-cell">
+					<td>
 						<div class="mapping-item mapping-column">
 							<input type="hidden" name="ColumnMapping.Column.@(index)" value="@mapping.Column" />
 							<div class="item-inner">
@@ -170,7 +170,7 @@
 					</td>
 					<td>
 						<button type="button" class="btn btn-block btn-danger mapping-delete">
-							<i class="fa fa-trash"></i>&nbsp;@delete
+							<i class="fa fa-trash"></i><span class="mapping-button-label">&nbsp;@delete</span>
 						</button>
 					</td>
 				</tr>

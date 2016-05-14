@@ -1584,15 +1584,41 @@ table.payment-method-features td {
 -------------------------------------------------------------- */
 .column-mapping {
 	.column-one, .column-two {
-		width: 38%;
+		width: 42%;
 	}
 
-	.select-property, .select-column, .input-default {
+	.select-column, .select-property, .input-default {
 		width: 98%;
+	}
+
+	th, td, .mapping-delete, .mapping-add, .mapping-apply, .mapping-cancel {
+		white-space: nowrap;
+		padding-left: 8px;
+		padding-right: 8px;
+	}
+
+	.select2-container .select2-choice span {
+		margin-right: 12px;
+		white-space: nowrap;
+	}
+
+	.mapping-edit {
+		white-space: nowrap;
+
+		.select-column, .select-property {
+			width: 84%;
+		}
+		.select2-container {
+			float: left;
+			display: inline-block;
+			min-width: 220px;
+			margin-right: 4px;
+		}
 	}
 
 	.mapping-item {
 		.item-inner {
+			white-space: nowrap;
 			cursor: pointer;
 			padding: 7px 0;
 

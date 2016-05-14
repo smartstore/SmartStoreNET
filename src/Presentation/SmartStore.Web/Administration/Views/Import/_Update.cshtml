@@ -212,6 +212,16 @@
 	var mappedProperties = [];
 
 	jQuery(document).ready(function () {
+		var isNarrowScreen = ($(window).width() <= 1280),
+			maxMappingLableLength = @(Model.MaxMappingLabelTextLength),
+			maxEditTextLength = 40;
+
+		// hide some mapping elements for narrow screen resolution
+		if (isNarrowScreen) {
+			maxMappingLableLength -= 10;
+			maxEditTextLength -= 10;
+			$('#AddMappingTemplate, #ImportColumnMappings').find('.mapping-button-label, .right-label').hide();
+		}
 
 		// upload import file
 		$('#ImportFileUploader').fileupload({
@@ -382,8 +392,8 @@
 			isLocalized = (val.indexOf(']', val.length - 1) !== -1),
 			text = context.find('select').find('option:selected').text();
 
-			if (text.length > 50) {
-				leftLabel.text(text.substring(0, 50) + '…');
+			if (text.length > maxMappingLableLength) {
+				leftLabel.text(text.substring(0, maxMappingLableLength) + '…');
 				leftLabel.attr('title', $('<div/>').html(text).text());
 			}
 			else {
@@ -468,11 +478,13 @@
 						html += '</span>';
 					}
 
-					html += '<span class="muted pull-right" style="font-size: 0.9em;">' + item.id + '</span>';
+					if (!isNarrowScreen) {
+						html += '<span class="muted pull-right" style="font-size: 0.9em;">' + item.id + '</span>';
+					}
 
 					html += '<span class="ml4" style="display: inline-block;"';
-					if (item.text.length > 40) {
-						html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, 40) + '…';
+					if (item.text.length > maxEditTextLength) {
+						html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxEditTextLength) + '…';
 					}
 					else {
 						html += '>' + item.text;
@@ -498,10 +510,10 @@
 
 					html += '<div>';
 
-					if (query && item.text !== item.id) {
+					if (query && item.text !== item.id && !isNarrowScreen) {
 						html += '<span class="muted pull-right" style="font-size: 0.9em;"'
-						if (item.text.length > 40) {
-							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, 40) + '…';
+						if (item.text.length > maxEditTextLength) {
+							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxEditTextLength) + '…';
 						}
 						else {
 							html += '>' + item.text;

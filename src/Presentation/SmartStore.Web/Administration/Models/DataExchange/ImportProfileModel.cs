@@ -68,6 +68,8 @@ namespace SmartStore.Admin.Models.DataExchange
 		public List<ColumnMappingItemModel> AvailableSourceColumns { get; set; }
 		public List<ColumnMappingItemModel> AvailableEntityProperties { get; set; }
 
+		public int MaxMappingLabelTextLength { get { return 42; } }
+
 		public class ExtraDataModel
 		{
 			[SmartResourceDisplayName("Admin.DataExchange.Import.NumberOfPictures")]

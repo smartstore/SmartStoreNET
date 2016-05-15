@@ -443,6 +443,11 @@ namespace SmartStore.Services.DataExchange.Export
 					ctx.ExecuteContext.DataStream.Dispose();
 					ctx.ExecuteContext.DataStream = null;
 				}
+
+				if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard && ctx.IsFileBasedExport && path.HasValue())
+				{
+					FileSystemHelper.Delete(path);
+				}
 			}
 
 			return (ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard);

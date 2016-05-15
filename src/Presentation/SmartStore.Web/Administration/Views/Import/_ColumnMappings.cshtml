@@ -101,10 +101,10 @@
 					<input type="text" class="input-default text-box single-line" value="" disabled="disabled" />
 				</td>
 				<td>
-					<button type="button" class="btn btn-block btn-warning mapping-add" disabled="disabled">
+					<button type="button" class="btn btn-block btn-warning mapping-add" disabled="disabled" title="@T("Common.AddNew")">
 						<i class="fa fa-plus"></i><span class="mapping-button-label">&nbsp;@T("Common.AddNew")</span>
 					</button>
-					<button type="button" class="btn btn-block btn-danger hide mapping-delete">
+					<button type="button" class="btn btn-block btn-danger hide mapping-delete" title="@delete">
 						<i class="fa fa-trash"></i><span class="mapping-button-label">&nbsp;@delete</span>
 					</button>
 				</td>
@@ -169,7 +169,7 @@
 							   @Html.Attr("disabled", "disabled", mapping.IsDefaultDisabled || !mapping.Column.HasValue()) />
 					</td>
 					<td>
-						<button type="button" class="btn btn-block btn-danger mapping-delete">
+						<button type="button" class="btn btn-block btn-danger mapping-delete" title="@delete">
 							<i class="fa fa-trash"></i><span class="mapping-button-label">&nbsp;@delete</span>
 						</button>
 					</td>

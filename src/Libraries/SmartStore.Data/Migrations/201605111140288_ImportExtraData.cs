@@ -51,6 +51,14 @@ namespace SmartStore.Data.Migrations
 				"Anzahl der Aufträge pro Seite",
 				"Specifies the number of displayed orders per page.",
 				"Legt die Anzahl der dargestellten Aufträge pro Seite fest.");
+
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.RunningError",
+				"Error while running scheduled task \"{0}\"",
+				"Fehler beim Ausführen der Aufgabe \"{0}\"");
+
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.Cancellation",
+				"The scheduled task \"{0}\" has been canceled",
+				"Die geplante Aufgabe \"{0}\" wurde abgebrochen");
 		}
 	}
 }

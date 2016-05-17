@@ -23,9 +23,10 @@ namespace SmartStore.Core
             new Version("2.5")
         };
 
-		private const string HELP_BASEURL = "http://docs.smartstore.com/display/SMNET25/";
+		//private const string HELP_BASEURL = "http://docs.smartstore.com/display/SMNET25/";
+		private const string HELP_BASEURL = "http://docs.smartstore.com/display/";
 
-        static SmartStoreVersion()
+		static SmartStoreVersion()
         {
             s_breakingChangesHistory.Reverse();
 
@@ -67,9 +68,18 @@ namespace SmartStore.Core
             }
         }
 
-		public static string GenerateHelpUrl(string path)
+		public static string GenerateHelpUrl(string languageCode, string path)
 		{
-			return HELP_BASEURL + path.Trim().TrimStart('/', '\\');
+			return String.Concat(
+				HELP_BASEURL,
+				GetUserGuideSpaceKey(languageCode),
+				"/",
+				path.EmptyNull().Trim().TrimStart('/', '\\'));
+		}
+
+		public static string GetUserGuideSpaceKey(string languageCode)
+		{
+			return "SMNET25";
 		}
 
         /// <summary>

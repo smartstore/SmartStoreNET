@@ -41,10 +41,10 @@
 		$('#ExportAll, #ExportSelected').click(function (e) {
 			e.preventDefault();
 			var form = $('#ProfileExportForm'),
-				exportAll = $(this).attr('name') === 'ExportAll';
+				exportAll = $(this).attr('id') === 'ExportAll';
 
 			if (!exportAll && selectedIds.length === 0) {
-				EventBroker.publish("message", { title: '@T("Admin.Common.NoEntriesSelected")', type: 'warning' });
+				displayNotification('@T("Admin.Common.NoEntriesSelected")', 'warning');
 				return false;
 			}
 

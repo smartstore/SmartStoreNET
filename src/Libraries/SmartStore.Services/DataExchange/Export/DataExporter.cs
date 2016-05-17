@@ -182,9 +182,7 @@ namespace SmartStore.Services.DataExchange.Export
 						totalRecords = ctx.Request.Profile.Limit;
 
 					ctx.RecordCount = Math.Min(ctx.RecordCount + loadedRecords, totalRecords);
-
 					var msg = ctx.ProgressInfo.FormatInvariant(ctx.RecordCount, totalRecords);
-
 					ctx.Request.ProgressValueSetter.Invoke(ctx.RecordCount, totalRecords, msg);
 				}
 			}
@@ -275,11 +273,8 @@ namespace SmartStore.Services.DataExchange.Export
 		private IExportDataSegmenterProvider CreateSegmenter(DataExporterContext ctx, int pageIndex = 0)
 		{
 			var offset = Math.Max(ctx.Request.Profile.Offset, 0) + (pageIndex * PageSize);
-
 			var limit = (ctx.IsPreview ? PageSize : Math.Max(ctx.Request.Profile.Limit, 0));
-
 			var recordsPerSegment = (ctx.IsPreview ? 0 : Math.Max(ctx.Request.Profile.BatchSize, 0));
-
 			var totalCount = Math.Max(ctx.Request.Profile.Offset, 0) + ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
 
 			switch (ctx.Request.Provider.Value.EntityType)
@@ -416,7 +411,9 @@ namespace SmartStore.Services.DataExchange.Export
 					if (ctx.IsFileBasedExport && path.HasValue() && ctx.ExecuteContext.DataStream.Length > 0)
 					{
 						if (!ctx.ExecuteContext.DataStream.CanSeek)
+						{
 							ctx.Log.Warning("Data stream seems to be closed!");
+						}
 
 						ctx.ExecuteContext.DataStream.Seek(0, SeekOrigin.Begin);
 
@@ -424,7 +421,6 @@ namespace SmartStore.Services.DataExchange.Export
 						using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
 						{
 							ctx.Log.Information("Creating file {0}.".FormatInvariant(path));
-
 							ctx.ExecuteContext.DataStream.CopyTo(fileStream);
 						}
 					}
@@ -1052,11 +1048,8 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			ctx.ExecuteContext.Store = ToDynamic(ctx, ctx.Store);
-
 			ctx.ExecuteContext.MaxFileNameLength = dataExchangeSettings.MaxFileNameLength;
-
 			ctx.ExecuteContext.HasPublicDeployment = ctx.Request.Profile.Deployments.Any(x => x.IsPublic && x.DeploymentType == ExportDeploymentType.FileSystem);
-
 			ctx.ExecuteContext.PublicFolderPath = (ctx.ExecuteContext.HasPublicDeployment ? Path.Combine(HttpRuntime.AppDomainAppPath, PublicFolder) : null);
 
 			var fileExtension = (ctx.Request.Provider.Value.FileExtension.HasValue() ? ctx.Request.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".") : "");
@@ -1226,7 +1219,6 @@ namespace SmartStore.Services.DataExchange.Export
 							if (ctx.Request.Profile.Deployments.Any(x => x.Enabled))
 							{
 								SetProgress(ctx, T("Common.Deployment"));
-
 								Deploy(ctx, zipPath);
 							}
 						}

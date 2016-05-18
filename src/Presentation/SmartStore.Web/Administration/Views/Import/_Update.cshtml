@@ -269,7 +269,8 @@
 		});
 
 		// mapping row handling
-		$('#ImportColumnMappings').on('change', '.select-property, .select-column', function () {
+		$('#ImportColumnMappings').on('change', '.select-property, .select-column', function (e) {
+			e.stopPropagation();
 			var row = $(this).closest('tr');
 			if (row.hasClass('column-mapping-new')) {
 				var properties = row.find('.select-property'),
@@ -281,8 +282,9 @@
 
 				row.find('.mapping-add').prop('disabled', !(hasProperty && hasColumn));
 			}
-		}).on('click', '.item-inner', function () {
+		}).on('click', '.item-inner', function (e) {
 			// start editing mapping item
+			e.stopPropagation();
 			var item = $(this).closest('.mapping-item');
 
 			closeAllMappingEdits();
@@ -303,9 +305,9 @@
 
 			select = initSelectBox(select, isProperty);
 			select.select2('focus');
-
-		}).on('click', '.mapping-apply', function () {
+		}).on('click', '.mapping-apply', function (e) {
 			// apply edited values
+			e.stopPropagation();
 			var item = $(this).closest('.mapping-item'),
 				val = item.find('select').select2('val');
 
@@ -330,8 +332,9 @@
 			row.find('.input-default').prop('disabled', !hasColumn || isDefaultDisabled);
 
 			closeAllMappingEdits();
-		}).on('click', '.mapping-add', function () {
+		}).on('click', '.mapping-add', function (e) {
 			// add new mapping row
+			e.stopPropagation();
 			var row = $(this).closest('tr'),
 				table = row.closest('table'),
 				index = parseInt(table.attr('data-maxindex')) + 1;
@@ -357,12 +360,22 @@
 			row.find('.mapping-delete').show();
 
 			appendNewMappingRow();
-		}).on('click', '.mapping-cancel', function () {
+		}).on('click', '.mapping-cancel', function (e) {
+			e.stopPropagation();
 			closeAllMappingEdits();
-		}).on('click', '.mapping-delete', function () {
+		}).on('click', '.mapping-delete', function (e) {
+			e.stopPropagation();
 			$(this).closest('tr').remove();
 		});
 
+		// close mapping edits
+		$(document).on('click', function (e) {
+			var table = $(e.target).closest('table');
+
+			if (table.length === 0 || !table.hasClass('column-mapping')) {
+				closeAllMappingEdits();
+			}
+		});
 
 		appendNewMappingRow();
 

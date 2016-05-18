@@ -541,7 +541,7 @@ namespace SmartStore.Admin.Controllers
 				_services.StoreContext.SetPreviewStore(storeId);
 			}
 
-			return Redirect(returnUrl);
+			return RedirectToReferrer(returnUrl);
 		}
 
 		[HttpPost, ActionName("PreviewTool"), FormValueRequired("PreviewMode.Exit")]
@@ -556,12 +556,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			var returnUrl = (string)TempData["PreviewModeReturnUrl"];
-			if (returnUrl.IsEmpty())
-			{
-				returnUrl = Url.Action("Index", "Home", new { area = (string)null });
-			}
-
-			return Redirect(returnUrl);
+			return RedirectToReferrer(returnUrl);
 		}
 
 		[HttpPost, ActionName("PreviewTool"), FormValueRequired("PreviewMode.Apply")]

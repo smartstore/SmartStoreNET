@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web;
+using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using StackExchange.Profiling;
 
@@ -42,6 +43,11 @@ namespace SmartStore.DevTools
 		{
 			if (app.Context == null || app.Context.Request == null)
 				return false;
+
+			if (!DataSettings.DatabaseIsInstalled())
+			{
+				return false;
+			}
 
 			var url = app.Context.Request.AppRelativeCurrentExecutionFilePath;
 			if (url.StartsWith("~/admin", StringComparison.InvariantCultureIgnoreCase) || url.StartsWith("~/mini-profiler", StringComparison.InvariantCultureIgnoreCase) || url.StartsWith("~/bundles", StringComparison.InvariantCultureIgnoreCase))

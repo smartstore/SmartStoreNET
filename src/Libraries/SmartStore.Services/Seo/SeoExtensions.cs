@@ -243,7 +243,7 @@ namespace SmartStore.Services.Seo
 				}
 			}
 
-            // validate and alter sename if it could be interpreted as SEO code
+            // validate and alter SeName if it could be interpreted as SEO code
             if (LocalizationHelper.IsValidCultureCode(seName))
             {
                 if (seName.Length == 2)

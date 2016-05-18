@@ -86,6 +86,11 @@ namespace SmartStore.Core.Domain
 		public string FileTypeConfiguration { get; set; }
 
 		/// <summary>
+		/// XML with extra data
+		/// </summary>
+		public string ExtraData { get; set; }
+
+		/// <summary>
 		/// Mapping of import columns
 		/// </summary>
 		public string ColumnMapping { get; set; }

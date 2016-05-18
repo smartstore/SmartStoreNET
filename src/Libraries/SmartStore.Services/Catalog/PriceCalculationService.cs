@@ -758,10 +758,12 @@ namespace SmartStore.Services.Catalog
 
 					var attributesTotalPrice = decimal.Zero;
 
-					var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml).ToList();
+					var pvaValuesEnum = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
 
-					if (pvaValues != null)
+					if (pvaValuesEnum != null)
 					{
+						var pvaValues = pvaValuesEnum.ToList();
+
 						foreach (var pvaValue in pvaValues)
 						{
 							attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);

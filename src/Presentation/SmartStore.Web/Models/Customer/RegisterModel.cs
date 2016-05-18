@@ -20,7 +20,8 @@ namespace SmartStore.Web.Models.Customer
 
         [SmartResourceDisplayName("Account.Fields.Email")]
         [AllowHtml]
-        public string Email { get; set; }
+		[DataType(DataType.EmailAddress)]
+		public string Email { get; set; }
 
         public bool UsernamesEnabled { get; set; }
         [SmartResourceDisplayName("Account.Fields.Username")]
@@ -104,13 +105,15 @@ namespace SmartStore.Web.Models.Customer
         public bool PhoneRequired { get; set; }
         [SmartResourceDisplayName("Account.Fields.Phone")]
         [AllowHtml]
-        public string Phone { get; set; }
+		[DataType(DataType.PhoneNumber)]
+		public string Phone { get; set; }
 
         public bool FaxEnabled { get; set; }
         public bool FaxRequired { get; set; }
         [SmartResourceDisplayName("Account.Fields.Fax")]
         [AllowHtml]
-        public string Fax { get; set; }
+		[DataType(DataType.PhoneNumber)]
+		public string Fax { get; set; }
         
         public bool NewsletterEnabled { get; set; }
         [SmartResourceDisplayName("Account.Fields.Newsletter")]

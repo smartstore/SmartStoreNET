@@ -352,35 +352,40 @@ namespace SmartStore.Web.Controllers
         }
         
         [NonAction]
-        protected CustomerOrderListModel PrepareCustomerOrderListModel(Customer customer)
+        protected CustomerOrderListModel PrepareCustomerOrderListModel(Customer customer, int pageIndex)
         {
             if (customer == null)
                 throw new ArgumentNullException("customer");
 
-            var model = new CustomerOrderListModel();
+			var storeScope = (_orderSettings.DisplayOrdersOfAllStores ? 0 : _storeContext.CurrentStore.Id);
+
+			var model = new CustomerOrderListModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.Orders;
 
-			var storeScope = (_orderSettings.DisplayOrdersOfAllStores ? 0 : _storeContext.CurrentStore.Id);
+			var orders = _orderService.SearchOrders(storeScope, customer.Id, null, null, null, null, null, null, null, null, pageIndex, _orderSettings.OrderListPageSize);
 
-			var orders = _orderService.SearchOrders(storeScope, customer.Id, null, null, null, null, null, null, null, null, 0, int.MaxValue);
+			var orderModels = orders
+				.Select(x =>
+				{
+					var orderModel = new CustomerOrderListModel.OrderDetailsModel
+					{
+						Id = x.Id,
+						OrderNumber = x.GetOrderNumber(),
+						CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
+						OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
+						IsReturnRequestAllowed = _orderProcessingService.IsReturnRequestAllowed(x)
+					};
 
-            foreach (var order in orders)
-            {
-                var orderModel = new CustomerOrderListModel.OrderDetailsModel
-                {
-                    Id = order.Id,
-                    OrderNumber = order.GetOrderNumber(),
-                    CreatedOn = _dateTimeHelper.ConvertToUserTime(order.CreatedOnUtc, DateTimeKind.Utc),
-                    OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
-                    IsReturnRequestAllowed = _orderProcessingService.IsReturnRequestAllowed(order)
-                };
+					var orderTotalInCustomerCurrency = _currencyService.ConvertCurrency(x.OrderTotal, x.CurrencyRate);
+					orderModel.OrderTotal = _priceFormatter.FormatPrice(orderTotalInCustomerCurrency, true, x.CustomerCurrencyCode, false, _workContext.WorkingLanguage);
 
-                var orderTotalInCustomerCurrency = _currencyService.ConvertCurrency(order.OrderTotal, order.CurrencyRate);
-                orderModel.OrderTotal = _priceFormatter.FormatPrice(orderTotalInCustomerCurrency, true, order.CustomerCurrencyCode, false, _workContext.WorkingLanguage);
+					return orderModel;
+				})
+				.ToList();
 
-                model.Orders.Add(orderModel);
-            }
+			model.Orders = new PagedList<CustomerOrderListModel.OrderDetailsModel>(orderModels, orders.PageIndex, orders.PageSize, orders.TotalCount);
+
 
 			var recurringPayments = _orderService.SearchRecurringPayments(_storeContext.CurrentStore.Id, customer.Id, 0, null);
 
@@ -462,10 +467,7 @@ namespace SmartStore.Web.Controllers
                     //activity log
                     _customerActivityService.InsertActivity("PublicStore.Login", _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
 
-                    if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                        return Redirect(returnUrl);
-                    else
-                        return RedirectToRoute("HomePage");
+					return RedirectToReferrer(returnUrl);
                 }
                 else
                 {
@@ -579,12 +581,12 @@ namespace SmartStore.Web.Controllers
                 var registrationResult = _customerRegistrationService.RegisterCustomer(registrationRequest);
                 if (registrationResult.Success)
                 {
-                    //properties
+                    // properties
 					if (_dateTimeSettings.AllowCustomersToSetTimeZone)
 					{
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
 					}
-                    //VAT number
+                    // VAT number
                     if (_taxSettings.EuVatEnabled)
                     {
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.VatNumber, model.VatNumber);
@@ -595,12 +597,12 @@ namespace SmartStore.Web.Controllers
 						_genericAttributeService.SaveAttribute(customer,
 							SystemCustomerAttributeNames.VatNumberStatusId,
 							(int)vatNumberStatus);
-						//send VAT number admin notification
+						// send VAT number admin notification
 						if (!String.IsNullOrEmpty(model.VatNumber) && _taxSettings.EuVatEmailAdminWhenNewVatSubmitted)
 							_workflowMessageService.SendNewVatSubmittedStoreOwnerNotification(customer, model.VatNumber, vatAddress, _localizationSettings.DefaultAdminLanguageId);
                     }
 
-                    //form fields
+                    // form fields
                     if (_customerSettings.GenderEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
@@ -636,10 +638,10 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && String.IsNullOrEmpty(customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber)))
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, customer.Id);
 
-                    //newsletter
+                    // newsletter
                     if (_customerSettings.NewsletterEnabled)
                     {
-                        //save newsletter value
+                        // save newsletter value
                         var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(model.Email, _storeContext.CurrentStore.Id);
                         if (newsletter != null)
                         {
@@ -718,11 +720,10 @@ namespace SmartStore.Web.Controllers
                     {
                         case UserRegistrationType.EmailValidation:
                             {
-                                //email validation message
+                                // email validation message
                                 _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AccountActivationToken, Guid.NewGuid().ToString());
                                 _workflowMessageService.SendCustomerEmailValidationMessage(customer, _workContext.WorkingLanguage.Id);
 
-                                //result
                                 return RedirectToRoute("RegisterResult", new { resultId = (int)UserRegistrationType.EmailValidation });
                             }
                         case UserRegistrationType.AdminApproval:
@@ -731,7 +732,7 @@ namespace SmartStore.Web.Controllers
                             }
                         case UserRegistrationType.Standard:
                             {
-                                //send customer welcome message
+                                // send customer welcome message
                                 _workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
 
                                 var redirectUrl = Url.RouteUrl("RegisterResult", new { resultId = (int)UserRegistrationType.Standard });
@@ -828,10 +829,8 @@ namespace SmartStore.Web.Controllers
                 default:
                     break;
             }
-            var model = new RegisterResultModel
-            {
-                Result = resultText
-            };
+
+            var model = new RegisterResultModel { Result = resultText };
             return View(model);
         }
 
@@ -1262,13 +1261,12 @@ namespace SmartStore.Web.Controllers
         #region Orders
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult Orders()
+        public ActionResult Orders(int? page)
         {
             if (!IsCurrentUserRegistered())
                 return new HttpUnauthorizedResult();
 
-            var customer = _workContext.CurrentCustomer;
-            var model = PrepareCustomerOrderListModel(customer);
+            var model = PrepareCustomerOrderListModel(_workContext.CurrentCustomer, Math.Max((page ?? 0) - 1, 0));
 
             return View(model);
         }
@@ -1301,7 +1299,7 @@ namespace SmartStore.Web.Controllers
             {
                 var errors = _orderProcessingService.CancelRecurringPayment(recurringPayment);
 
-                var model = PrepareCustomerOrderListModel(customer);
+                var model = PrepareCustomerOrderListModel(customer, 0);
                 model.CancelRecurringPaymentErrors = errors;
 
                 return View(model);

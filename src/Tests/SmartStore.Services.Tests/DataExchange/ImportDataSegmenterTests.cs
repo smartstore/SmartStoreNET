@@ -24,7 +24,7 @@ namespace SmartStore.Services.Tests.DataExchange
 			};
 
 			var table = new LightweightDataTable(columns, new List<object[]>());
-			var segmenter = new ImportDataSegmenter<Product>(table, new ColumnMap());
+			var segmenter = new ImportDataSegmenter(table, new ColumnMap());
 			segmenter.ColumnMap.AddMapping("Attr[Material]", "material");
 			segmenter.ColumnMap.AddMapping("Name[it]", "name_it");
 

@@ -214,6 +214,22 @@ namespace SmartStore.Data.Migrations
 				"Legt die E-Mail Adressen fest, an die die Daten verschickt werden soll.");
 
 			builder.AddOrUpdate("Admin.Common.FileNotFound", "File not found", "Datei nicht gefunden");
+
+			builder.AddOrUpdate("Admin.Common.EnterEmailAdress",
+				"Please enter an email address.",
+				"Bitte geben Sie eine E-Mail-Adresse ein.");
+
+			builder.AddOrUpdate("Admin.Configuration.EmailAccounts.TestingEmail",
+				"Testing email functionality.",
+				"Test der E-Mail-Funktion.");
+
+			builder.AddOrUpdate("Admin.Common.EmailSuccessfullySent",
+				"The email has been successfully sent.",
+				"Die E-Mail wurde erfolgreich versendet.");
+
+			builder.AddOrUpdate("Admin.Common.SkipAndTakeGreaterThanOrEqualZero",
+				"Values for skip and limit must be greater than or equal to 0.",
+				"Werte für Überspringen und Begrenzen müssen größer oder gleich 0 sein.");
 		}
 	}
 }

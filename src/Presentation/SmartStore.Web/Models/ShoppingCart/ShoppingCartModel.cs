@@ -51,6 +51,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         public bool DisplayCommentBox { get; set; }
         public string CustomerComment { get; set; }
+        public string MeasureUnitName { get; set; }
 
 		public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
 		public bool? SubscribeToNewsLetter { get; set; }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using Autofac;
 using Newtonsoft.Json;
@@ -215,7 +216,7 @@ namespace SmartStore.Admin.Controllers
 			p.GiftCardTypeId = m.GiftCardTypeId;
 			
 			p.IsDownload = m.IsDownload;
-			p.DownloadId = m.DownloadId;
+			p.DownloadId = m.DownloadId ?? 0;
 			p.UnlimitedDownloads = m.UnlimitedDownloads;
 			p.MaxNumberOfDownloads = m.MaxNumberOfDownloads;
 			p.DownloadExpirationDays = m.DownloadExpirationDays;
@@ -2313,7 +2314,7 @@ namespace SmartStore.Admin.Controllers
 						});
 					}
 
-					attr.SpecificationAttributeOptionsJsonString = JsonConvert.SerializeObject(attr.SpecificationAttributeOptions);
+					attr.SpecificationAttributeOptionsJsonString = HttpUtility.HtmlEncode(JsonConvert.SerializeObject(attr.SpecificationAttributeOptions));
 				}
 
 				model.Data = productrSpecsModel;

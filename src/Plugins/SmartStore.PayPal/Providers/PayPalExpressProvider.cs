@@ -404,7 +404,7 @@ namespace SmartStore.PayPal
             if (billingCountry != null)
                 billingCountryId = billingCountry.Id;
 
-            var billingAddress = customer.Addresses.ToList().FindAddress(
+            var billingAddress = customer.Addresses.FindAddress(
                 billingFirstName, billingLastName, billingPhoneNumber,
                 billingEmail, string.Empty, string.Empty, billingAddress1, billingAddress2, billingCity,
                 billingStateProvinceId, billingZipPostalCode, billingCountryId);
@@ -461,7 +461,7 @@ namespace SmartStore.PayPal
                 if (shippingCountry != null)
                     shippingCountryId = shippingCountry.Id;
 
-                var shippingAddress = customer.Addresses.ToList().FindAddress(
+                var shippingAddress = customer.Addresses.FindAddress(
                     shippingFirstName, shippingLastName, shippingPhoneNumber,
                     shippingEmail, string.Empty, string.Empty,
                     shippingAddress1, shippingAddress2, shippingCity,

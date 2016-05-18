@@ -182,9 +182,7 @@ namespace SmartStore.Services.DataExchange.Export
 						totalRecords = ctx.Request.Profile.Limit;
 
 					ctx.RecordCount = Math.Min(ctx.RecordCount + loadedRecords, totalRecords);
-
 					var msg = ctx.ProgressInfo.FormatInvariant(ctx.RecordCount, totalRecords);
-
 					ctx.Request.ProgressValueSetter.Invoke(ctx.RecordCount, totalRecords, msg);
 				}
 			}
@@ -275,17 +273,14 @@ namespace SmartStore.Services.DataExchange.Export
 		private IExportDataSegmenterProvider CreateSegmenter(DataExporterContext ctx, int pageIndex = 0)
 		{
 			var offset = Math.Max(ctx.Request.Profile.Offset, 0) + (pageIndex * PageSize);
-
 			var limit = (ctx.IsPreview ? PageSize : Math.Max(ctx.Request.Profile.Limit, 0));
-
 			var recordsPerSegment = (ctx.IsPreview ? 0 : Math.Max(ctx.Request.Profile.BatchSize, 0));
-
 			var totalCount = Math.Max(ctx.Request.Profile.Offset, 0) + ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
 
 			switch (ctx.Request.Provider.Value.EntityType)
 			{
 				case ExportEntityType.Product:
-					ctx.ExecuteContext.Segmenter = new ExportDataSegmenter<Product>
+					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Product>
 					(
 						skip => GetProducts(ctx, skip),
 						entities =>
@@ -310,7 +305,7 @@ namespace SmartStore.Services.DataExchange.Export
 					break;
 
 				case ExportEntityType.Order:
-					ctx.ExecuteContext.Segmenter = new ExportDataSegmenter<Order>
+					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Order>
 					(
 						skip => GetOrders(ctx, skip),
 						entities =>
@@ -329,7 +324,7 @@ namespace SmartStore.Services.DataExchange.Export
 					break;
 
 				case ExportEntityType.Manufacturer:
-					ctx.ExecuteContext.Segmenter = new ExportDataSegmenter<Manufacturer>
+					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Manufacturer>
 					(
 						skip => GetManufacturers(ctx, skip),
 						entities =>
@@ -345,7 +340,7 @@ namespace SmartStore.Services.DataExchange.Export
 					break;
 
 				case ExportEntityType.Category:
-					ctx.ExecuteContext.Segmenter = new ExportDataSegmenter<Category>
+					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Category>
 					(
 						skip => GetCategories(ctx, skip),
 						entities =>
@@ -361,7 +356,7 @@ namespace SmartStore.Services.DataExchange.Export
 					break;
 
 				case ExportEntityType.Customer:
-					ctx.ExecuteContext.Segmenter = new ExportDataSegmenter<Customer>
+					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<Customer>
 					(
 						skip => GetCustomers(ctx, skip),
 						entities =>
@@ -376,7 +371,7 @@ namespace SmartStore.Services.DataExchange.Export
 					break;
 
 				case ExportEntityType.NewsLetterSubscription:
-					ctx.ExecuteContext.Segmenter = new ExportDataSegmenter<NewsLetterSubscription>
+					ctx.ExecuteContext.DataSegmenter = new ExportDataSegmenter<NewsLetterSubscription>
 					(
 						skip => GetNewsLetterSubscriptions(ctx, skip),
 						null,
@@ -386,11 +381,11 @@ namespace SmartStore.Services.DataExchange.Export
 					break;
 
 				default:
-					ctx.ExecuteContext.Segmenter = null;
+					ctx.ExecuteContext.DataSegmenter = null;
 					break;
 			}
 
-			return ctx.ExecuteContext.Segmenter as IExportDataSegmenterProvider;
+			return ctx.ExecuteContext.DataSegmenter as IExportDataSegmenterProvider;
 		}
 
 		private bool CallProvider(DataExporterContext ctx, string streamId, string method, string path)
@@ -416,7 +411,9 @@ namespace SmartStore.Services.DataExchange.Export
 					if (ctx.IsFileBasedExport && path.HasValue() && ctx.ExecuteContext.DataStream.Length > 0)
 					{
 						if (!ctx.ExecuteContext.DataStream.CanSeek)
+						{
 							ctx.Log.Warning("Data stream seems to be closed!");
+						}
 
 						ctx.ExecuteContext.DataStream.Seek(0, SeekOrigin.Begin);
 
@@ -424,7 +421,6 @@ namespace SmartStore.Services.DataExchange.Export
 						using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
 						{
 							ctx.Log.Information("Creating file {0}.".FormatInvariant(path));
-
 							ctx.ExecuteContext.DataStream.CopyTo(fileStream);
 						}
 					}
@@ -442,6 +438,11 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					ctx.ExecuteContext.DataStream.Dispose();
 					ctx.ExecuteContext.DataStream = null;
+				}
+
+				if (ctx.ExecuteContext.Abort == DataExchangeAbortion.Hard && ctx.IsFileBasedExport && path.HasValue())
+				{
+					FileSystemHelper.Delete(path);
 				}
 			}
 
@@ -1047,11 +1048,8 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			ctx.ExecuteContext.Store = ToDynamic(ctx, ctx.Store);
-
 			ctx.ExecuteContext.MaxFileNameLength = dataExchangeSettings.MaxFileNameLength;
-
 			ctx.ExecuteContext.HasPublicDeployment = ctx.Request.Profile.Deployments.Any(x => x.IsPublic && x.DeploymentType == ExportDeploymentType.FileSystem);
-
 			ctx.ExecuteContext.PublicFolderPath = (ctx.ExecuteContext.HasPublicDeployment ? Path.Combine(HttpRuntime.AppDomainAppPath, PublicFolder) : null);
 
 			var fileExtension = (ctx.Request.Provider.Value.FileExtension.HasValue() ? ctx.Request.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".") : "");
@@ -1116,17 +1114,16 @@ namespace SmartStore.Services.DataExchange.Export
 				if (ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard)
 				{
 					// always call OnExecuted
-					if (ctx.ExecuteContext.ExtraDataStreams.Count == 0)
-						ctx.ExecuteContext.ExtraDataStreams.Add(new ExportExtraStreams());
+					if (ctx.ExecuteContext.ExtraDataUnits.Count == 0)
+						ctx.ExecuteContext.ExtraDataUnits.Add(new ExportDataUnit());
 
-					ctx.ExecuteContext.ExtraDataStreams.ForEach(x =>
+					ctx.ExecuteContext.ExtraDataUnits.ForEach(x =>
 					{
 						var path = (x.FileName.HasValue() ? Path.Combine(ctx.ExecuteContext.Folder, x.FileName) : null);
-
 						CallProvider(ctx, x.Id, "OnExecuted", path);
 					});
 
-					ctx.ExecuteContext.ExtraDataStreams.Clear();
+					ctx.ExecuteContext.ExtraDataUnits.Clear();
 				}
 			}
 		}
@@ -1222,7 +1219,6 @@ namespace SmartStore.Services.DataExchange.Export
 							if (ctx.Request.Profile.Deployments.Any(x => x.Enabled))
 							{
 								SetProgress(ctx, T("Common.Deployment"));
-
 								Deploy(ctx, zipPath);
 							}
 						}

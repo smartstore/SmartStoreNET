@@ -54,14 +54,77 @@ namespace SmartStore.Admin.Controllers
 
 		#region Utilities
 
+		private bool IsValidImportFile(string path, out string error)
+		{
+			error = null;
+
+			try
+			{
+				using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+				{
+					var unused = LightweightDataTable.FromFile(path, stream, stream.Length, CsvConfiguration.ExcelFriendlyConfiguration, 0, 1);
+				}
+
+				return true;
+			}
+			catch (Exception exception)
+			{
+				error = exception.ToAllMessages();
+
+				FileSystemHelper.Delete(path);
+
+				return false;
+			}
+		}
+
+		private bool IsDefaultValueDisabled(string column, string property, string[] disabledFieldNames)
+		{
+			if (disabledFieldNames.Contains(property))
+				return true;
+
+			string columnWithoutIndex, columnIndex;
+			if (ColumnMap.ParseSourceName(property, out columnWithoutIndex, out columnIndex))
+				return disabledFieldNames.Contains(columnWithoutIndex);
+
+			return false;
+		}
+
+		private string[] GetDisabledDefaultFieldNames(ImportProfile profile)
+		{
+			switch (profile.EntityType)
+			{
+				case ImportEntityType.Product:
+					return new string[] { "Name", "Sku", "ManufacturerPartNumber", "Gtin", "SeName" };
+				case ImportEntityType.Category:
+					return new string[] { "Name", "SeName" };
+				case ImportEntityType.Customer:
+					return new string[] { "CustomerGuid", "Email" };
+				case ImportEntityType.NewsLetterSubscription:
+					return new string[] { "Email" };
+				default:
+					return new string[0];
+			}
+		}
+
+		private string GetPropertyDescription(Dictionary<string, string> allProperties, string property)
+		{
+			if (property.HasValue() && allProperties.ContainsKey(property))
+			{
+				var result = allProperties[property];
+				if (result.HasValue())
+					return result;
+			}
+			return property;
+		}
+
 		private void PrepareProfileModel(ImportProfileModel model, ImportProfile profile, bool forEdit, ColumnMap invalidMap = null)
 		{
 			model.Id = profile.Id;
 			model.Name = profile.Name;
 			model.EntityType = profile.EntityType;
 			model.Enabled = profile.Enabled;
-			model.Skip = profile.Skip;
-			model.Take = profile.Take;
+			model.Skip = (profile.Skip == 0 ? (int?)null : profile.Skip);
+			model.Take = (profile.Take == 0 ? (int?)null : profile.Take);
 			model.UpdateOnly = profile.UpdateOnly;
 			model.KeyFieldNames = profile.KeyFieldNames.SplitSafe(",").Distinct().ToArray();
 			model.ScheduleTaskId = profile.SchedulingTaskId;
@@ -70,10 +133,6 @@ namespace SmartStore.Admin.Controllers
 			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
 			model.LogFileExists = System.IO.File.Exists(profile.GetImportLogPath());
 			model.EntityTypeName = profile.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
-			model.UnspecifiedString = T("Common.Unspecified");
-			model.AddNewString = T("Common.AddNew");
-			model.DeleteString = T("Common.Delete");
-			model.IgnoreString = T("Admin.Common.Ignore");
 
 			model.ExistingFileNames = profile.GetImportFiles()
 				.Select(x => Path.GetFileName(x))
@@ -99,18 +158,22 @@ namespace SmartStore.Admin.Controllers
 				csvConfiguration = CsvConfiguration.ExcelFriendlyConfiguration;
 			}
 
+			// common configuration
+			var extraData = XmlHelper.Deserialize<ImportExtraData>(profile.ExtraData);
+			model.ExtraData.NumberOfPictures = extraData.NumberOfPictures;
+
 			// column mapping
 			model.AvailableSourceColumns = new List<ColumnMappingItemModel>();
-			model.AvailableEntityProperties = new List<SelectListItem>();
+			model.AvailableEntityProperties = new List<ColumnMappingItemModel>();
 			model.AvailableKeyFieldNames = new List<SelectListItem>();
 			model.ColumnMappings = new List<ColumnMappingItemModel>();
 
 			try
 			{
 				string[] availableKeyFieldNames = null;
+				string[] disabledDefaultFieldNames = GetDisabledDefaultFieldNames(profile);
 				var mapConverter = new ColumnMapConverter();
 				var storedMap = mapConverter.ConvertFrom<ColumnMap>(profile.ColumnMapping);
-				var hasStoredMappings = (storedMap != null && storedMap.Mappings.Any());
 				var map = (invalidMap ?? storedMap) ?? new ColumnMap();
 
 				// property name to localized property name
@@ -133,8 +196,17 @@ namespace SmartStore.Admin.Controllers
 				}
 
 				model.AvailableEntityProperties = allProperties
-					.Select(x => new SelectListItem { Value = x.Key, Text = x.Value })
-					.OrderBy(x => x.Text)
+					.Select(x =>
+					{
+						var mapping = new ColumnMappingItemModel
+						{
+							Property = x.Key,
+							PropertyDescription = x.Value,
+							IsDefaultDisabled = IsDefaultValueDisabled(x.Key, x.Key, disabledDefaultFieldNames)
+						};
+
+						return mapping;
+					})
 					.ToList();
 
 				model.AvailableKeyFieldNames = availableKeyFieldNames
@@ -156,16 +228,20 @@ namespace SmartStore.Admin.Controllers
 					{
 						var mapping = new ColumnMappingItemModel
 						{
-							Column = (x.Value.Property.IsEmpty() ? null : x.Key),
-							Property = (x.Value.Property.IsEmpty() ? x.Key : x.Value.Property),
+							Column = x.Value.MappedName,
+							Property = x.Key,
 							Default = x.Value.Default
 						};
 
-						// add localized to make mappings sortable
-						if (allProperties.ContainsKey(mapping.Property))
+						if (x.Value.IgnoreProperty)
 						{
-							mapping.ColumnLocalized = allProperties[mapping.Property];
+							// explicitly ignore the property
+							mapping.Column = null;
+							mapping.Default = null;
 						}
+
+						mapping.PropertyDescription = GetPropertyDescription(allProperties, mapping.Property);
+						mapping.IsDefaultDisabled = IsDefaultValueDisabled(mapping.Column, mapping.Property, disabledDefaultFieldNames);
 
 						return mapping;
 					})
@@ -184,58 +260,51 @@ namespace SmartStore.Admin.Controllers
 					foreach (var column in dataTable.Columns.Where(x => x.Name.HasValue()))
 					{
 						string columnWithoutIndex, columnIndex;
-						ColumnMap.ParseSourceColumn(column.Name, out columnWithoutIndex, out columnIndex);
+						ColumnMap.ParseSourceName(column.Name, out columnWithoutIndex, out columnIndex);
 
-						var mapModel = new ColumnMappingItemModel
+						model.AvailableSourceColumns.Add(new ColumnMappingItemModel
 						{
 							Index = dataTable.Columns.IndexOf(column),
 							Column = column.Name,
 							ColumnWithoutIndex = columnWithoutIndex,
 							ColumnIndex = columnIndex,
-							ColumnLocalized = (allProperties.ContainsKey(column.Name) ? allProperties[column.Name] : column.Name)
-						};
-
-						model.AvailableSourceColumns.Add(mapModel);
+							PropertyDescription = GetPropertyDescription(allProperties, column.Name)
+						});
 
 						// auto map where field equals property name
-						if (!hasStoredMappings && !model.ColumnMappings.Any(x => x.Column == column.Name))
+						if (!model.ColumnMappings.Any(x => x.Column == column.Name))
 						{
 							var kvp = allProperties.FirstOrDefault(x => x.Key.IsCaseInsensitiveEqual(column.Name));
+							if (kvp.Key.IsEmpty())
+							{
+								var alternativeName = LightweightDataTable.GetAlternativeColumnNameFor(column.Name);
+								kvp = allProperties.FirstOrDefault(x => x.Key.IsCaseInsensitiveEqual(alternativeName));
+							}
 
-							if (kvp.Key.HasValue())
+							if (kvp.Key.HasValue() && !model.ColumnMappings.Any(x => x.Property == kvp.Key))
 							{
 								model.ColumnMappings.Add(new ColumnMappingItemModel
 								{
 									Column = column.Name,
 									Property = kvp.Key,
-									ColumnLocalized = kvp.Value
+									PropertyDescription = kvp.Value,
+									IsDefaultDisabled = IsDefaultValueDisabled(column.Name, kvp.Key, disabledDefaultFieldNames)
 								});
-							}
-							else
-							{
-								var alternativeName = LightweightDataTable.GetAlternativeColumnNameFor(column.Name);
-								kvp = allProperties.FirstOrDefault(x => x.Key.IsCaseInsensitiveEqual(alternativeName));
-
-								if (kvp.Key.HasValue())
-								{
-									model.ColumnMappings.Add(new ColumnMappingItemModel
-									{
-										Column = column.Name,
-										Property = kvp.Key,
-										ColumnLocalized = kvp.Value
-									});
-								}
 							}
 						}
 					}
 
 					// sorting
 					model.AvailableSourceColumns = model.AvailableSourceColumns
-						.OrderBy(x => x.ColumnLocalized)
+						.OrderBy(x => x.PropertyDescription)
+						.ToList();
+
+					model.AvailableEntityProperties = model.AvailableEntityProperties
+						.OrderBy(x => x.PropertyDescription)
 						.ToList();
 
 					model.ColumnMappings = model.ColumnMappings
-						.OrderBy(x => x.ColumnLocalized)
+						.OrderBy(x => x.PropertyDescription)
 						.ToList();
 				}
 			}
@@ -354,7 +423,6 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
-			var multipleMapped = new List<string>();
 			var map = new ColumnMap();
 			var hasErrors = false;
 			var resetMappings = false;
@@ -374,18 +442,18 @@ namespace SmartStore.Admin.Controllers
 						var property = form[key];
 						var column = form["ColumnMapping.Column." + index];
 						var defaultValue = form["ColumnMapping.Default." + index];
-						var result = true;
 
-						// ignored properties: column is empty means swap column and property (otherwise mapping impossible)
 						if (column.IsEmpty())
-							result = map.AddMapping(property, null, null);
-						else
-							result = map.AddMapping(column, null, property, defaultValue);
-
-						if (!result)
 						{
-							// add warning for ignored, multiple mapped properties
-							multipleMapped.Add("{0} ({1})".FormatInvariant(entityProperties.ContainsKey(property) ? entityProperties[property] : "".NaIfEmpty(), property));
+							// tell mapper to explicitly ignore the property
+							map.AddMapping(property, null, property, "[IGNOREPROPERTY]");
+						}
+						else if (!column.IsCaseInsensitiveEqual(property) || defaultValue.HasValue())
+						{
+							if (defaultValue.HasValue() && GetDisabledDefaultFieldNames(profile).Contains(property))
+								defaultValue = null;
+
+							map.AddMapping(property, null, column, defaultValue);
 						}
 					}
 				}
@@ -405,8 +473,8 @@ namespace SmartStore.Admin.Controllers
 			profile.Name = model.Name;
 			profile.EntityType = model.EntityType;
 			profile.Enabled = model.Enabled;
-			profile.Skip = model.Skip;
-			profile.Take = model.Take;
+			profile.Skip = model.Skip ?? 0;
+			profile.Take = model.Take ?? 0;
 			profile.UpdateOnly = model.UpdateOnly;
 			profile.KeyFieldNames = (model.KeyFieldNames == null ? null : string.Join(",", model.KeyFieldNames));
 
@@ -438,6 +506,16 @@ namespace SmartStore.Admin.Controllers
 					var mapConverter = new ColumnMapConverter();
 					profile.ColumnMapping = mapConverter.ConvertTo(map);
 				}
+
+				if (model.ExtraData != null)
+				{
+					var extraData = new ImportExtraData
+					{
+						NumberOfPictures = model.ExtraData.NumberOfPictures
+					};
+
+					profile.ExtraData = XmlHelper.Serialize(extraData);
+				}
 			}
 			catch (Exception exception)
 			{
@@ -454,10 +532,6 @@ namespace SmartStore.Admin.Controllers
 				if (resetMappings)
 				{
 					NotifyWarning(T("Admin.DataExchange.ColumnMapping.Validate.MappingsReset"));
-				}
-				else if (multipleMapped.Any())
-				{
-					NotifyWarning(T("Admin.DataExchange.ColumnMapping.Validate.MultipleMappedIgnored", "<p>" + string.Join("<br />", multipleMapped) + "</p>"));
 				}
 			}
 
@@ -526,9 +600,12 @@ namespace SmartStore.Admin.Controllers
 						FileSystemHelper.Delete(path);
 
 						success = postedFile.Stream.ToFile(path);
-
 						if (success)
-							tempFile = postedFile.FileName;
+						{
+							success = IsValidImportFile(path, out error);
+							if (success)
+								tempFile = postedFile.FileName;
+						}
 					}
 					else
 					{
@@ -548,16 +625,20 @@ namespace SmartStore.Admin.Controllers
 							{
 								var folder = profile.GetImportFolder(true, true);
 								var fileName = Path.GetFileName(postedFile.FileName);
+								var path = Path.Combine(folder, fileName);
 
-								success = postedFile.Stream.ToFile(Path.Combine(folder, fileName));
-
+								success = postedFile.Stream.ToFile(path);
 								if (success)
 								{
-									var fileType = (Path.GetExtension(fileName).IsCaseInsensitiveEqual(".xlsx") ? ImportFileType.XLSX : ImportFileType.CSV);
-									if (fileType != profile.FileType)
+									success = IsValidImportFile(path, out error);
+									if (success)
 									{
-										profile.FileType = fileType;
-										_importProfileService.UpdateImportProfile(profile);
+										var fileType = (Path.GetExtension(fileName).IsCaseInsensitiveEqual(".xlsx") ? ImportFileType.XLSX : ImportFileType.CSV);
+										if (fileType != profile.FileType)
+										{
+											profile.FileType = fileType;
+											_importProfileService.UpdateImportProfile(profile);
+										}
 									}
 								}
 							}
@@ -594,6 +675,10 @@ namespace SmartStore.Admin.Controllers
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 
 			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress.DataImportTask"));
+
+			var referrer = Services.WebHelper.GetUrlReferrer();
+			if (referrer.HasValue())
+				return Redirect(referrer);
 
 			return RedirectToAction("List");
 		}

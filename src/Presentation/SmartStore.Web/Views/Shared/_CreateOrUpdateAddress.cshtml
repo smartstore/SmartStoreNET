@@ -159,18 +159,18 @@
     <div class="control-group">
         @Html.LabelFor(model => model.PhoneNumber, new { @class="control-label" + (Model.PhoneRequired ? " required" : "") , @for="PhoneNumber" } )
         <div class="controls">
-            @Html.TextBoxFor(model => model.PhoneNumber, (Model.PhoneRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.TextBoxFor(model => model.PhoneNumber, new { placeholder = Model.PhoneRequired ? null : T("Common.Optional"), @type = "tel" })
             @Html.ValidationMessageFor(model => model.PhoneNumber)
         </div>
     </div>
     }
 
     @if (Model.FaxEnabled)
-    {
+	{
     <div class="control-group">
         @Html.LabelFor(model => model.FaxNumber, new { @class="control-label" + (Model.FaxRequired ? " required" : ""), @for="FaxNumber" } )
         <div class="controls">
-            @Html.TextBoxFor(model => model.FaxNumber, (Model.FaxRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.TextBoxFor(model => model.FaxNumber, new { placeholder = Model.FaxRequired ? null : T("Common.Optional"), @type = "tel" })
             @Html.ValidationMessageFor(model => model.FaxNumber)
         </div>
     </div>

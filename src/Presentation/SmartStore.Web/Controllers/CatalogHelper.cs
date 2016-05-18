@@ -571,7 +571,7 @@ namespace SmartStore.Web.Controllers
 						{
 							var linkagePicture = _pictureService.GetPicturesByProductId(pvaValue.LinkedProductId, 1).FirstOrDefault();
 							if (linkagePicture != null)
-								pvaValueModel.ImageUrl = _pictureService.GetPictureUrl(linkagePicture, _mediaSettings.AutoCompleteSearchThumbPictureSize, false);
+								pvaValueModel.ImageUrl = _pictureService.GetPictureUrl(linkagePicture, _mediaSettings.VariantValueThumbPictureSize, false);
 						}
 
 						pvaModel.Values.Add(pvaValueModel);

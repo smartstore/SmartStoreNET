@@ -1,4 +1,5 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
+@using SmartStore.Core.Domain.DataExchange;
 @model ImportProfileModel
 @{
 	Html.AddScriptParts("~/bundles/fileupload");
@@ -178,6 +179,18 @@
 				@Html.ValidationMessageFor(x => x.UpdateOnly)
 			</td>
 		</tr>
+		@if (Model.EntityType == ImportEntityType.Product)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ExtraData.NumberOfPictures)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ExtraData.NumberOfPictures)
+					@Html.ValidationMessageFor(x => x.ExtraData.NumberOfPictures)
+				</td>
+			</tr>
+		}
 	</table>
 </div>
 
@@ -199,6 +212,7 @@
 	var mappedProperties = [];
 
 	jQuery(document).ready(function () {
+		var maxMappingLableLength = @(Model.MaxMappingLabelTextLength);
 
 		// upload import file
 		$('#ImportFileUploader').fileupload({
@@ -234,6 +248,15 @@
 			return false;
 		});
 
+		// execute import
+		$('#ProfileImportButton').click(function (e) {
+			e.preventDefault();
+			if (confirm('@T("Admin.Common.AskToProceed")')) {
+				$('#ProfileImportForm').submit();
+			}
+			return false;
+		});
+
 		// reset column mappings
 		$('#ResetColumnMappings').click(function (e) {
 			e.preventDefault();
@@ -246,51 +269,147 @@
 		});
 
 		// mapping row handling
-		$('#ImportColumnMappings').on('change', '.mapping-control-property', function () {
+		$('#ImportColumnMappings').on('change', '.select-property, .select-column', function (e) {
+			e.stopPropagation();
 			var row = $(this).closest('tr');
-
 			if (row.hasClass('column-mapping-new')) {
-				var hasColumn = !_.isEmpty(row.find('.mapping-control-column').select2('val')),
-					hasProperty = !_.isEmpty($(this).select2('val'));
+				var properties = row.find('.select-property'),
+					hasColumn = !_.isEmpty(row.find('.select-column').select2('val')),
+					hasProperty = !_.isEmpty(properties.select2('val')),
+					isDefaultDisabled = (properties.find('option:selected').attr('data-defaultdisabled') === '1');
 
-				row.find('.mapping-button-add').prop('disabled', !(hasProperty && hasColumn));
+				row.find('.input-default').prop('disabled', !hasColumn || isDefaultDisabled);
+
+				row.find('.mapping-add').prop('disabled', !(hasProperty && hasColumn));
 			}
-		}).on('change', '.mapping-control-column', function () {
-			var row = $(this).closest('tr');
+		}).on('click', '.item-inner', function (e) {
+			// start editing mapping item
+			e.stopPropagation();
+			var item = $(this).closest('.mapping-item');
 
-			if (row.hasClass('column-mapping-new')) {
-				var hasColumn = !_.isEmpty($(this).select2('val')),
-					hasProperty = !_.isEmpty(row.find('.mapping-control-property').select2('val'));
+			closeAllMappingEdits();
 
-				row.find('.mapping-button-add').prop('disabled', !(hasProperty && hasColumn));
+			if (item.find('select').length > 0)
+				return;
+
+			var isProperty = item.hasClass('mapping-property'),
+				template = $(isProperty ? '#PropertyMappingTemplate' : '#ColumnMappingTemplate').children(':first'),
+				currentValue = item.find(isProperty ? 'input[name^="ColumnMapping.Property."]' : 'input[name^="ColumnMapping.Column."]').val();
+
+			// hide static label
+			item.find('.item-inner').hide();
+
+			// clone edit template into mapping item
+			var select = template.clone().appendTo(item).find('select');
+			select.val(currentValue);
+
+			select = initSelectBox(select, isProperty);
+			select.select2('focus');
+		}).on('click', '.mapping-apply', function (e) {
+			// apply edited values
+			e.stopPropagation();
+			var item = $(this).closest('.mapping-item'),
+				val = item.find('select').select2('val');
+
+			item.find('input[type=hidden]').val(val);
+
+			if (item.hasClass('mapping-property')) {
+				updatePropertyLabel(item, val);
 			}
-		}).on('click', '.mapping-button-add', function () {
+			else {
+				if (_.isEmpty(val)) {
+					val = '<span class="muted">@T("Admin.Common.Ignore")</span>';
+				}
+				item.find('.left-label').html(val);
+			}
+
+			var row = $(this).closest('tr'),
+				hasColumn = !_.isEmpty(row.find('input[name^="ColumnMapping.Column."]').val()),
+				property = row.find('input[name^="ColumnMapping.Property."]').val(),
+				properties = $('#PropertyMappingTemplate').find('select'),
+				isDefaultDisabled = (properties.find('option[value="' + property + '"]').attr('data-defaultdisabled') === '1');
+
+			row.find('.input-default').prop('disabled', !hasColumn || isDefaultDisabled);
+
+			closeAllMappingEdits();
+		}).on('click', '.mapping-add', function (e) {
+			// add new mapping row
+			e.stopPropagation();
 			var row = $(this).closest('tr'),
 				table = row.closest('table'),
 				index = parseInt(table.attr('data-maxindex')) + 1;
 
-			row.find('.mapping-control-property').attr('name', 'ColumnMapping.Property.' + index);
-			row.find('.mapping-control-column').attr('name', 'ColumnMapping.Column.' + index);
-			row.find('.mapping-control-default').attr('name', 'ColumnMapping.Default.' + index);
+			var property = row.find('.select-property').select2('val'),
+				column = row.find('.select-column').select2('val');
+
+			row.find('.input-property').attr('name', 'ColumnMapping.Property.' + index).val(property);
+			row.find('.input-column').attr('name', 'ColumnMapping.Column.' + index).val(column);
+			row.find('.input-default').attr('name', 'ColumnMapping.Default.' + index);
 
 			table.attr('data-maxindex', index);
-
 			row.removeClass('column-mapping-new');
-			row.find('.mapping-button-add').remove();
-			row.find('.mapping-button-delete').show();
+
+			row.find('.item-inner').removeClass('hide');
+			updatePropertyLabel(row.find('.mapping-property'), property);
+			row.find('.mapping-column .left-label').text(column);
+
+			row.find('.select-property').select2('destroy').remove();
+			row.find('.select-column').select2('destroy').remove();
+
+			row.find('.mapping-add').remove();
+			row.find('.mapping-delete').show();
 
 			appendNewMappingRow();
-		}).on('click', '.mapping-button-delete', function () {
+		}).on('click', '.mapping-cancel', function (e) {
+			e.stopPropagation();
+			closeAllMappingEdits();
+		}).on('click', '.mapping-delete', function (e) {
+			e.stopPropagation();
 			$(this).closest('tr').remove();
 		});
 
-		
-		initSelectBoxes($('#ImportColumnMappings'));
+		// close mapping edits
+		$(document).on('click', function (e) {
+			var table = $(e.target).closest('table');
+
+			if (table.length === 0 || !table.hasClass('column-mapping')) {
+				closeAllMappingEdits();
+			}
+		});
+
 		appendNewMappingRow();
 
 
-		function initSelectBoxes(context) {
-			var options = {
+		function closeAllMappingEdits() {
+			$('#ImportColumnMappings').find('.mapping-edit').each(function () {
+				var self = $(this);
+				self.closest('.mapping-item').find('.item-inner').show();
+				self.find('select').select2('destroy');
+				self.remove();
+			});
+		}
+
+		function updatePropertyLabel(context, val) {
+			context.find('.right-label').text(val);
+
+			var leftLabel = context.find('.left-label');
+			isLocalized = (val.indexOf(']', val.length - 1) !== -1),
+			text = context.find('select').find('option:selected').text();
+
+			if (text.length > maxMappingLableLength) {
+				leftLabel.text(text.substring(0, maxMappingLableLength) + '…');
+				leftLabel.attr('title', $('<div/>').html(text).text());
+			}
+			else {
+				leftLabel.text(text);
+				leftLabel.attr('title', '');
+			}
+
+			context.find('i').removeClass('fa-globe fa-chain-broken').addClass(isLocalized ? 'fa-globe' : 'fa-chain-broken');
+		}
+
+		function initSelectBox(element, isProperty) {
+			return element.select2({
 				allowClear: true,
 				minimumResultsForSearch: 16,
 				matcher: function (term, text, opt) {
@@ -304,18 +423,10 @@
 						return true;
 
 					return false;
-				}
-			};
-
-			context.find('.mapping-control-property').select2($.extend({}, options, {
-				formatResult: selectPropertyFormatting,
-				formatSelection: selectPropertyFormatting
-			}));
-
-			context.find('.mapping-control-column').select2($.extend({}, options, {
-				formatResult: selectColumnFormatting,
-				formatSelection: selectColumnFormatting
-			}));
+				},
+				formatResult: (isProperty ? selectPropertyFormatting : selectColumnFormatting),
+				formatSelection: (isProperty ? selectPropertyFormatting : selectColumnFormatting)
+			});
 		}
 
 		function appendNewMappingRow() {
@@ -323,23 +434,25 @@
 			if (!mappings.length)
 				return;
 
-			var html = $('#ColumnMappingTemplate').find('table tbody').html();
+			var html = $('#AddMappingTemplate').find('table tbody').html();
 
 			mappings.find('table:first tbody').append(html);
 
 			var row = mappings.find('table:first tr:last');
-			initSelectBoxes(row);
+
+			initSelectBox(row.find('.select-property'), true);
+			initSelectBox(row.find('.select-column'), false);
 		}
 
 		function selectPropertyFormatting(item, container, query) {
 			try {
 				if (item.text.length > 0) {
 					var option = $(item.element),
-						isLocalized = (item.id.substring(item.id.length - 1) === ']'),
+						isLocalized = (item.id.indexOf(']', item.id.length - 1) !== -1),
 						html = '';
 
 					if (option.length === 0) {
-						html += '<div>';
+						html += '<div class="mapping-list-item">';
 						html += '<span style="display: inline-block; margin-right: 0;">';
 						html += '<i class="fa fa-fw ' + (isLocalized ? 'fa-globe' : 'fa-chain-broken') + ' text-success" />';
 						html += '</span>';
@@ -349,7 +462,7 @@
 						if (option.index() === 1) {
 							mappedProperties = [];
 
-							$('#ImportColumnMappings').find('select[name^="ColumnMapping.Property."]').each(function () {
+							$('#ImportColumnMappings').find('input[name^="ColumnMapping.Property."]').each(function () {
 								var value = $(this).val();
 								if (!_.isEmpty(value)) {
 									mappedProperties.push(value);
@@ -360,7 +473,7 @@
 						var mappingIndex = $.inArray(item.id, mappedProperties);
 
 						html += '<div class="clear"></div>';
-						html += (mappingIndex === -1 ? '<div>' : '<div class="muted">');
+						html += '<div class="mapping-list-item' + (mappingIndex === -1 ? '' : ' muted') + '">';
 
 						html += '<span style="display: inline-block; margin-right: 0;">';
 						html += '<i class="fa fa-fw ';
@@ -369,11 +482,11 @@
 						html += '</span>';
 					}
 
-					html += '<span class="muted pull-right" style="font-size: 0.9em;">' + item.id + '</span>';
+					html += '<span class="muted right-label">' + item.id + '</span>';
 
 					html += '<span class="ml4" style="display: inline-block;"';
-					if (item.text.length > 50) {
-						html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, 50) + '…';
+					if (item.text.length > maxMappingLableLength) {
+						html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxMappingLableLength) + '…';
 					}
 					else {
 						html += '>' + item.text;
@@ -397,12 +510,12 @@
 						html += '<div class="clear"></div>';
 					}
 
-					html += '<div>';
+					html += '<div class="mapping-list-item">';
 
 					if (query && item.text !== item.id) {
-						html += '<span class="muted pull-right" style="font-size: 0.9em;"'
-						if (item.text.length > 50) {
-							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, 50) + '…';
+						html += '<span class="muted right-label"'
+						if (item.text.length > maxMappingLableLength) {
+							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxMappingLableLength) + '…';
 						}
 						else {
 							html += '>' + item.text;

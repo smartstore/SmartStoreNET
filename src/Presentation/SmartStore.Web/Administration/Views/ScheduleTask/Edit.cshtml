@@ -3,7 +3,6 @@
 @using SmartStore.Core
 @{
 	ViewBag.Title = T("Admin.System.ScheduleTasks.EditTask") + " - " + Model.Name;
-	//var cronHelpLink = WorkContext.WorkingLanguage.UniqueSeoCode.ToLower() == "de" ? "https://de.wikipedia.org/wiki/Cron" : "https://en.wikipedia.org/wiki/Cron";
 	var cronHelpLink = GenerateHelpUrl("Managing+Scheduled+Tasks#ManagingScheduledTasks-Cron");
 	var returnUrl = ((string)ViewBag.ReturnUrl).NullEmpty();
 }

@@ -24,7 +24,7 @@ namespace SmartStore
 		public static string ToAllMessages(this Exception exception)
 		{
 			var sb = new StringBuilder();
-
+			
 			while (exception != null)
 			{
 				if (!sb.ToString().EmptyNull().Contains(exception.Message))

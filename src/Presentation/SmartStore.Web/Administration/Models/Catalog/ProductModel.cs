@@ -140,7 +140,7 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Download")]
 		[UIHint("Download")]
-		public int DownloadId { get; set; }
+		public int? DownloadId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.UnlimitedDownloads")]
 		public bool UnlimitedDownloads { get; set; }
@@ -159,7 +159,7 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.SampleDownload")]
 		[UIHint("Download")]
-		public int SampleDownloadId { get; set; }
+		public int? SampleDownloadId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.HasUserAgreement")]
 		public bool HasUserAgreement { get; set; }

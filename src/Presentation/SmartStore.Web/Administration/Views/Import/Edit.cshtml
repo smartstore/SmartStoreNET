@@ -5,6 +5,8 @@
 	ViewBag.Title = title;
 }
 
+<form id="ProfileImportForm" method="POST" action="@Url.Action("Execute", "Import", new { area = "Admin", id = Model.Id })"></form>
+
 @using (Html.BeginForm())
 {
 	<fieldset>
@@ -14,6 +16,12 @@
 				@title - @Model.Name @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List")
 			</div>
 			<div class="options">
+				@if (Model.Id != 0)
+				{
+					<a id="ProfileImportButton" href="javascript:void(0)" class="btn btn-default">
+						<i class="fa fa-gears"></i>&nbsp;@T("Common.Import")
+					</a>
+				}
 				@if (Model.LogFileExists)
 				{
 					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn" target="LogFile">

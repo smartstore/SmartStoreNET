@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
@@ -7,7 +8,7 @@ using SmartStore.Web.Validators.Customer;
 
 namespace SmartStore.Web.Models.Customer
 {
-    [Validator(typeof(CustomerInfoValidator))]
+	[Validator(typeof(CustomerInfoValidator))]
     public partial class CustomerInfoModel : ModelBase
     {
         public CustomerInfoModel()
@@ -20,7 +21,8 @@ namespace SmartStore.Web.Models.Customer
 
         [SmartResourceDisplayName("Account.Fields.Email")]
         [AllowHtml]
-        public string Email { get; set; }
+		[DataType(DataType.EmailAddress)]
+		public string Email { get; set; }
 
         [SmartResourceDisplayName("Account.Fields.CustomerNumber")]
         [AllowHtml]
@@ -100,13 +102,15 @@ namespace SmartStore.Web.Models.Customer
         public bool PhoneRequired { get; set; }
         [SmartResourceDisplayName("Account.Fields.Phone")]
         [AllowHtml]
-        public string Phone { get; set; }
+		[DataType(DataType.PhoneNumber)]
+		public string Phone { get; set; }
 
         public bool FaxEnabled { get; set; }
         public bool FaxRequired { get; set; }
         [SmartResourceDisplayName("Account.Fields.Fax")]
         [AllowHtml]
-        public string Fax { get; set; }
+		[DataType(DataType.PhoneNumber)]
+		public string Fax { get; set; }
 
         public bool NewsletterEnabled { get; set; }
         [SmartResourceDisplayName("Account.Fields.Newsletter")]

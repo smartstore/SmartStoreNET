@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Web.Framework;
@@ -7,7 +8,7 @@ using SmartStore.Web.Validators.Common;
 
 namespace SmartStore.Web.Models.Common
 {
-    [Validator(typeof(AddressValidator))]
+	[Validator(typeof(AddressValidator))]
     public partial class AddressModel : EntityModelBase
     {
         public AddressModel()
@@ -26,9 +27,12 @@ namespace SmartStore.Web.Models.Common
 
         [SmartResourceDisplayName("Address.Fields.Email")]
         [AllowHtml]
-        public string Email { get; set; }
+		[DataType(DataType.EmailAddress)]
+		public string Email { get; set; }
+
         [SmartResourceDisplayName("Address.Fields.EmailMatch")]
-        public string EmailMatch { get; set; }
+		[DataType(DataType.EmailAddress)]
+		public string EmailMatch { get; set; }
         public bool ValidateEmailAddress { get; set; }
 
         [SmartResourceDisplayName("Address.Fields.Company")]
@@ -79,13 +83,15 @@ namespace SmartStore.Web.Models.Common
 
         [SmartResourceDisplayName("Address.Fields.PhoneNumber")]
         [AllowHtml]
-        public string PhoneNumber { get; set; }
+		[DataType(DataType.PhoneNumber)]
+		public string PhoneNumber { get; set; }
         public bool PhoneEnabled { get; set; }
         public bool PhoneRequired { get; set; }
 
         [SmartResourceDisplayName("Address.Fields.FaxNumber")]
         [AllowHtml]
-        public string FaxNumber { get; set; }
+		[DataType(DataType.PhoneNumber)]
+		public string FaxNumber { get; set; }
         public bool FaxEnabled { get; set; }
         public bool FaxRequired { get; set; }
 

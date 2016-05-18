@@ -1578,3 +1578,77 @@ table.payment-method-features td {
 	display: inline-block; 
 	margin-left: 10px;
 }
+
+
+/* Import column mapping
+-------------------------------------------------------------- */
+@media (max-width: 1280px) {
+	#ImportColumnMappings .right-label,
+	.column-mapping .mapping-button-label,
+	.mapping-list-item .right-label {
+		display: none;
+	}
+}
+
+.column-mapping .right-label,
+.mapping-list-item .right-label {
+	float: right;
+	font-size: 0.9em;
+}
+.mapping-list-item {
+	.ellipsis();
+}
+
+.column-mapping {
+	.column-one, .column-two {
+		width: 42%;
+	}
+
+	.select-column, .select-property, .input-default {
+		width: 98%;
+	}
+
+	th, td, .mapping-delete, .mapping-add, .mapping-apply, .mapping-cancel {
+		white-space: nowrap;
+		padding-left: 8px;
+		padding-right: 8px;
+	}
+
+	.select2-container .select2-choice span {
+		margin-right: 12px;
+		white-space: nowrap;
+	}
+
+	.mapping-edit {
+		white-space: nowrap;
+
+		.select-column, .select-property {
+			width: 84%;
+		}
+		.select2-container {
+			float: left;
+			display: inline-block;
+			min-width: 220px;
+			margin-right: 4px;
+		}
+	}
+
+	.mapping-item {
+		.item-inner {
+			white-space: nowrap;
+			cursor: pointer;
+			padding: 7px 0;
+
+			.property-icon {
+				display: inline-block;
+				margin-right: 0;
+			}
+			.left-label {
+				display: inline-block;
+			}
+			.right-label {
+				margin-right: 20px;
+			}
+		}
+	}
+}

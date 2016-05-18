@@ -1582,6 +1582,23 @@ table.payment-method-features td {
 
 /* Import column mapping
 -------------------------------------------------------------- */
+@media (max-width: 1280px) {
+	#ImportColumnMappings .right-label,
+	.column-mapping .mapping-button-label,
+	.mapping-list-item .right-label {
+		display: none;
+	}
+}
+
+.column-mapping .right-label,
+.mapping-list-item .right-label {
+	float: right;
+	font-size: 0.9em;
+}
+.mapping-list-item {
+	.ellipsis();
+}
+
 .column-mapping {
 	.column-one, .column-two {
 		width: 42%;
@@ -1630,8 +1647,6 @@ table.payment-method-features td {
 				display: inline-block;
 			}
 			.right-label {
-				float: right;
-				font-size: 0.9em;
 				margin-right: 20px;
 			}
 		}

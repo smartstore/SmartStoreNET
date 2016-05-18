@@ -212,16 +212,7 @@
 	var mappedProperties = [];
 
 	jQuery(document).ready(function () {
-		var isNarrowScreen = ($(window).width() <= 1280),
-			maxMappingLableLength = @(Model.MaxMappingLabelTextLength),
-			maxEditTextLength = 40;
-
-		// hide some mapping elements for narrow screen resolution
-		if (isNarrowScreen) {
-			maxMappingLableLength -= 10;
-			maxEditTextLength -= 10;
-			$('#AddMappingTemplate, #ImportColumnMappings').find('.mapping-button-label, .right-label').hide();
-		}
+		var maxMappingLableLength = @(Model.MaxMappingLabelTextLength);
 
 		// upload import file
 		$('#ImportFileUploader').fileupload({
@@ -448,7 +439,7 @@
 						html = '';
 
 					if (option.length === 0) {
-						html += '<div>';
+						html += '<div class="mapping-list-item">';
 						html += '<span style="display: inline-block; margin-right: 0;">';
 						html += '<i class="fa fa-fw ' + (isLocalized ? 'fa-globe' : 'fa-chain-broken') + ' text-success" />';
 						html += '</span>';
@@ -469,7 +460,7 @@
 						var mappingIndex = $.inArray(item.id, mappedProperties);
 
 						html += '<div class="clear"></div>';
-						html += (mappingIndex === -1 ? '<div>' : '<div class="muted">');
+						html += '<div class="mapping-list-item' + (mappingIndex === -1 ? '' : ' muted') + '">';
 
 						html += '<span style="display: inline-block; margin-right: 0;">';
 						html += '<i class="fa fa-fw ';
@@ -478,13 +469,11 @@
 						html += '</span>';
 					}
 
-					if (!isNarrowScreen) {
-						html += '<span class="muted pull-right" style="font-size: 0.9em;">' + item.id + '</span>';
-					}
+					html += '<span class="muted right-label">' + item.id + '</span>';
 
 					html += '<span class="ml4" style="display: inline-block;"';
-					if (item.text.length > maxEditTextLength) {
-						html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxEditTextLength) + '…';
+					if (item.text.length > maxMappingLableLength) {
+						html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxMappingLableLength) + '…';
 					}
 					else {
 						html += '>' + item.text;
@@ -508,12 +497,12 @@
 						html += '<div class="clear"></div>';
 					}
 
-					html += '<div>';
+					html += '<div class="mapping-list-item">';
 
-					if (query && item.text !== item.id && !isNarrowScreen) {
-						html += '<span class="muted pull-right" style="font-size: 0.9em;"'
-						if (item.text.length > maxEditTextLength) {
-							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxEditTextLength) + '…';
+					if (query && item.text !== item.id) {
+						html += '<span class="muted right-label"'
+						if (item.text.length > maxMappingLableLength) {
+							html += ' title="' + $('<div/>').text(item.text).html() + '">' + item.text.substring(0, maxMappingLableLength) + '…';
 						}
 						else {
 							html += '>' + item.text;

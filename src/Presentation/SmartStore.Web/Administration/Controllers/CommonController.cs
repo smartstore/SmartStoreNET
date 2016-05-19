@@ -519,7 +519,6 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			// sitemap reachability
-			HttpStatusCode? sitemapStatusCode = null;
 			string sitemapUrl = null;
 			try
 			{
@@ -530,35 +529,37 @@ namespace SmartStore.Admin.Controllers
 
 				using (var response = (HttpWebResponse)request.GetResponse())
 				{
-					sitemapStatusCode = response.StatusCode;
+					var status = response.StatusCode;
+					var warningModel = new SystemWarningModel();
+					warningModel.Level = (status == HttpStatusCode.OK ? SystemWarningLevel.Pass : SystemWarningLevel.Warning);
+
+					switch (status)
+					{
+						case HttpStatusCode.OK:
+							warningModel.Text = T("Admin.System.Warnings.SitemapReachable.OK");
+							break;
+						default:
+							if (status == HttpStatusCode.MethodNotAllowed)
+								warningModel.Text = T("Admin.System.Warnings.SitemapReachable.MethodNotAllowed");
+							else
+								warningModel.Text = T("Admin.System.Warnings.SitemapReachable.Wrong");
+
+							warningModel.Text = string.Concat(warningModel.Text, " ", T("Admin.Common.HttpStatus", (int)status, status.ToString()));
+							break;
+					}
+
+					model.Add(warningModel);
 				}
 			}
 			catch (WebException exception)
 			{
-				Logger.Warning(sitemapUrl.IsEmpty() ? "SitemapSEO" : sitemapUrl, exception);
-			}
-
-			if (sitemapStatusCode.HasValue && sitemapStatusCode.Value == HttpStatusCode.OK)
-			{
-				model.Add(new SystemWarningModel
-				{
-					Level = SystemWarningLevel.Pass,
-					Text = T("Admin.System.Warnings.SitemapReachable.OK")
-				});
-			}
-			else
-			{
-				var warningText = T("Admin.System.Warnings.SitemapReachable.Wrong");
-				if (sitemapStatusCode.HasValue)
-				{
-					warningText = string.Concat(warningText, " ", T("Admin.Common.HttpStatus", (int)sitemapStatusCode.Value, sitemapStatusCode.Value.ToString()));
-				}
-
 				model.Add(new SystemWarningModel
 				{
 					Level = SystemWarningLevel.Warning,
-					Text = warningText
+					Text = T("Admin.System.Warnings.SitemapReachable.Wrong")
 				});
+
+				Logger.Warning(sitemapUrl.IsEmpty() ? "SitemapSEO" : sitemapUrl, exception);
 			}
 
             //primary exchange rate currency

@@ -86,6 +86,40 @@ namespace SmartStore.Services.Orders
         }
 
 		/// <summary>
+		/// Gets checkout attributes
+		/// </summary>
+		/// <param name="storeId">Whether to filter result by store identifier</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>Checkout attributes query</returns>
+		public virtual IQueryable<CheckoutAttribute> GetCheckoutAttributes(int storeId = 0, bool showHidden = false)
+		{
+			var query = _checkoutAttributeRepository.Table;
+
+			if (!showHidden)
+				query = query.Where(x => x.IsActive);
+
+			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
+			{
+				query =
+					from x in query
+					join sm in _storeMappingRepository.Table on new { c1 = x.Id, c2 = "CheckoutAttribute" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into x_sm
+					from sm in x_sm.DefaultIfEmpty()
+					where !x.LimitedToStores || storeId == sm.StoreId
+					select x;
+
+				query =
+					from x in query
+					group x by x.Id into grp
+					orderby grp.Key
+					select grp.FirstOrDefault();
+			}
+
+			query = query.OrderBy(x => x.DisplayOrder);
+
+			return query;
+		}
+
+		/// <summary>
 		/// Gets all checkout attributes
 		/// </summary>
 		/// <param name="storeId">Whether to filter result by store identifier</param>
@@ -97,32 +131,10 @@ namespace SmartStore.Services.Orders
 
             return _cacheManager.Get(key, () =>
             {
-				var query = _checkoutAttributeRepository.Table;
+				var query = GetCheckoutAttributes(storeId, showHidden);
 
-				if (!showHidden)
-					query = query.Where(x => x.IsActive);
-
-				if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
-				{
-					query = 
-						from x in query
-						join sm in _storeMappingRepository.Table on new { c1 = x.Id, c2 = "CheckoutAttribute" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into x_sm
-						from sm in x_sm.DefaultIfEmpty()
-						where !x.LimitedToStores || storeId == sm.StoreId
-						select x;
-
-					query =
-						from x in query
-						group x by x.Id into grp
-						orderby grp.Key
-						select grp.FirstOrDefault();
-				}
-
-				query = query.OrderBy(x => x.DisplayOrder);
-
-                var checkoutAttributes = query.ToList();
-                return checkoutAttributes;
-            });
+                return query.ToList();
+			});
         }
 
         /// <summary>

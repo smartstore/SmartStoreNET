@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Orders
@@ -15,6 +16,14 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="checkoutAttribute">Checkout attribute</param>
         void DeleteCheckoutAttribute(CheckoutAttribute checkoutAttribute);
+
+		/// <summary>
+		/// Gets checkout attributes
+		/// </summary>
+		/// <param name="storeId">Whether to filter result by store identifier</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>Checkout attributes query</returns>
+		IQueryable<CheckoutAttribute> GetCheckoutAttributes(int storeId = 0, bool showHidden = false);
 
 		/// <summary>
 		/// Gets all checkout attributes

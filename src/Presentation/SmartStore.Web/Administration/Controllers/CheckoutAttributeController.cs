@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Orders;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
@@ -158,16 +159,17 @@ namespace SmartStore.Admin.Controllers
 
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(0, true);
+				var query = _checkoutAttributeService.GetCheckoutAttributes(0, true);
+				var pagedList = new PagedList<CheckoutAttribute>(query, command.Page - 1, command.PageSize);
 
-				model.Data = checkoutAttributes.Select(x =>
+				model.Data = pagedList.Select(x =>
 				{
 					var caModel = x.ToModel();
 					caModel.AttributeControlTypeName = x.AttributeControlType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
 					return caModel;
 				});
 
-				model.Total = checkoutAttributes.Count();
+				model.Total = pagedList.TotalCount;
 			}
 			else
 			{

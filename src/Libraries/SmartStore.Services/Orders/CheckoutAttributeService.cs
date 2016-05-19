@@ -4,18 +4,19 @@ using System.Linq;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Orders
 {
-    /// <summary>
-    /// Checkout attribute service
-    /// </summary>
-    public partial class CheckoutAttributeService : ICheckoutAttributeService
+	/// <summary>
+	/// Checkout attribute service
+	/// </summary>
+	public partial class CheckoutAttributeService : ICheckoutAttributeService
     {
         #region Constants
 
-        private const string CHECKOUTATTRIBUTES_ALL_KEY = "SmartStore.checkoutattribute.all-{0}";
+        private const string CHECKOUTATTRIBUTES_ALL_KEY = "SmartStore.checkoutattribute.all-{0}-{1}";
         private const string CHECKOUTATTRIBUTEVALUES_ALL_KEY = "SmartStore.checkoutattributevalue.all-{0}";
         private const string CHECKOUTATTRIBUTES_PATTERN_KEY = "SmartStore.checkoutattribute.";
         private const string CHECKOUTATTRIBUTEVALUES_PATTERN_KEY = "SmartStore.checkoutattributevalue.";
@@ -28,7 +29,8 @@ namespace SmartStore.Services.Orders
 
         private readonly IRepository<CheckoutAttribute> _checkoutAttributeRepository;
         private readonly IRepository<CheckoutAttributeValue> _checkoutAttributeValueRepository;
-        private readonly IEventPublisher _eventPublisher;
+		private readonly IRepository<StoreMapping> _storeMappingRepository;
+		private readonly IEventPublisher _eventPublisher;
         private readonly ICacheManager _cacheManager;
         
         #endregion
@@ -45,25 +47,31 @@ namespace SmartStore.Services.Orders
         public CheckoutAttributeService(ICacheManager cacheManager,
             IRepository<CheckoutAttribute> checkoutAttributeRepository,
             IRepository<CheckoutAttributeValue> checkoutAttributeValueRepository,
-            IEventPublisher eventPublisher)
+			IRepository<StoreMapping> storeMappingRepository,
+			IEventPublisher eventPublisher)
         {
             _cacheManager = cacheManager;
             _checkoutAttributeRepository = checkoutAttributeRepository;
             _checkoutAttributeValueRepository = checkoutAttributeValueRepository;
+			_storeMappingRepository = storeMappingRepository;
             _eventPublisher = eventPublisher;
-        }
 
-        #endregion
+			this.QuerySettings = DbQuerySettings.Default;
+		}
 
-        #region Methods
+		#endregion
 
-        #region Checkout attributes
+		public DbQuerySettings QuerySettings { get; set; }
 
-        /// <summary>
-        /// Deletes a checkout attribute
-        /// </summary>
-        /// <param name="checkoutAttribute">Checkout attribute</param>
-        public virtual void DeleteCheckoutAttribute(CheckoutAttribute checkoutAttribute)
+		#region Methods
+
+		#region Checkout attributes
+
+		/// <summary>
+		/// Deletes a checkout attribute
+		/// </summary>
+		/// <param name="checkoutAttribute">Checkout attribute</param>
+		public virtual void DeleteCheckoutAttribute(CheckoutAttribute checkoutAttribute)
         {
             if (checkoutAttribute == null)
                 throw new ArgumentNullException("checkoutAttribute");
@@ -77,13 +85,15 @@ namespace SmartStore.Services.Orders
             _eventPublisher.EntityDeleted(checkoutAttribute);
         }
 
-        /// <summary>
-        /// Gets all checkout attributes
-        /// </summary>
-        /// <returns>Checkout attribute collection</returns>
-        public virtual IList<CheckoutAttribute> GetAllCheckoutAttributes(bool showHidden = false)
+		/// <summary>
+		/// Gets all checkout attributes
+		/// </summary>
+		/// <param name="storeId">Whether to filter result by store identifier</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>Checkout attribute collection</returns>
+		public virtual IList<CheckoutAttribute> GetAllCheckoutAttributes(int storeId = 0, bool showHidden = false)
         {
-			string key = CHECKOUTATTRIBUTES_ALL_KEY.FormatInvariant(showHidden);
+			string key = CHECKOUTATTRIBUTES_ALL_KEY.FormatInvariant(storeId, showHidden);
 
             return _cacheManager.Get(key, () =>
             {
@@ -91,6 +101,22 @@ namespace SmartStore.Services.Orders
 
 				if (!showHidden)
 					query = query.Where(x => x.IsActive);
+
+				if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
+				{
+					query = 
+						from x in query
+						join sm in _storeMappingRepository.Table on new { c1 = x.Id, c2 = "CheckoutAttribute" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into x_sm
+						from sm in x_sm.DefaultIfEmpty()
+						where !x.LimitedToStores || storeId == sm.StoreId
+						select x;
+
+					query =
+						from x in query
+						group x by x.Id into grp
+						orderby grp.Key
+						select grp.FirstOrDefault();
+				}
 
 				query = query.OrderBy(x => x.DisplayOrder);
 

@@ -520,12 +520,14 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<SpecificationAttributeOptionModel, SpecificationAttributeOption>()
                 .ForMember(dest => dest.SpecificationAttribute, mo => mo.Ignore())
                 .ForMember(dest => dest.ProductSpecificationAttributes, mo => mo.Ignore());
-            //checkout attributes
-            Mapper.CreateMap<CheckoutAttribute, CheckoutAttributeModel>()
-                .ForMember(dest => dest.AvailableTaxCategories, mo => mo.Ignore())
-                .ForMember(dest => dest.AttributeControlTypeName, mo => mo.Ignore())
-                .ForMember(dest => dest.Locales, mo => mo.Ignore());
-            Mapper.CreateMap<CheckoutAttributeModel, CheckoutAttribute>()
+			//checkout attributes
+			Mapper.CreateMap<CheckoutAttribute, CheckoutAttributeModel>()
+				.ForMember(dest => dest.AvailableTaxCategories, mo => mo.Ignore())
+				.ForMember(dest => dest.AttributeControlTypeName, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
+				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore());
+			Mapper.CreateMap<CheckoutAttributeModel, CheckoutAttribute>()
                 .ForMember(dest => dest.AttributeControlType, mo => mo.Ignore())
                 .ForMember(dest => dest.CheckoutAttributeValues, mo => mo.Ignore());
             Mapper.CreateMap<CheckoutAttributeValue, CheckoutAttributeValueModel>()

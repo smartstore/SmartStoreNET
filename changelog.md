@@ -14,6 +14,7 @@
 * #886 Add setting to hide manufacturer images on product detail page and to hide default image for manufacturers
 * Import localized SEO names for product and categories
 * #477 Implement option to specify the number of exported and imported pictures
+* #859 Make checkout attributes suitable for multi-stores
 
 ### Improvements
 * Major improvements in Importer: better field mapping, higher performance, bug fixes etc.

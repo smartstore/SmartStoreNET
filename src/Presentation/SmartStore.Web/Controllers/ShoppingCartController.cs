@@ -700,7 +700,7 @@ namespace SmartStore.Web.Controllers
 
 			#region Checkout attributes
 
-			var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes();
+			var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
 			if (!cart.RequiresShipping())
 			{
 				//remove attributes which require shippable products
@@ -985,7 +985,7 @@ namespace SmartStore.Web.Controllers
                 //1. "terms of services" are enabled (OBSOLETE now)
                 //2. we have at least one checkout attribute
                 //3. min order sub-total is OK
-                var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes();
+                var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
                 if (!cart.RequiresShipping())
                 {
                     //remove attributes which require shippable products
@@ -1076,7 +1076,7 @@ namespace SmartStore.Web.Controllers
         protected void ParseAndSaveCheckoutAttributes(List<OrganizedShoppingCartItem> cart, FormCollection form)
         {
             string selectedAttributes = "";
-            var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes();
+            var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
 
             if (!cart.RequiresShipping())
             {

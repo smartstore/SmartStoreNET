@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Orders;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -51,9 +52,16 @@ namespace SmartStore.Admin.Models.Orders
         public int DisplayOrder { get; set; }
         
         public IList<CheckoutAttributeLocalizedModel> Locales { get; set; }
-    }
 
-    public class CheckoutAttributeLocalizedModel : ILocalizedModelLocal
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+		public bool LimitedToStores { get; set; }
+
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
+	}
+
+	public class CheckoutAttributeLocalizedModel : ILocalizedModelLocal
     {
         public int LanguageId { get; set; }
 

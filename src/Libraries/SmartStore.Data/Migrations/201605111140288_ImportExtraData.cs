@@ -59,6 +59,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.System.ScheduleTasks.Cancellation",
 				"The scheduled task \"{0}\" has been canceled",
 				"Die geplante Aufgabe \"{0}\" wurde abgebrochen");
+
+			builder.AddOrUpdate("Admin.Common.HttpStatus",
+				"HTTP status {0} ({1}).",
+				"HTTP-Status {0} ({1}).");
 		}
 	}
 }

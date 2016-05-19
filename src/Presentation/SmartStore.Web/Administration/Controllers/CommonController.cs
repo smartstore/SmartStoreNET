@@ -519,35 +519,45 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			// sitemap reachability
-			var sitemapReachable = false;
+			HttpStatusCode? sitemapStatusCode = null;
+			string sitemapUrl = null;
 			try
 			{
-				var sitemapUrl = Url.RouteUrl("SitemapSEO", (object)null, _securitySettings.Value.ForceSslForAllPages ? "https" : "http");
+				sitemapUrl = Url.RouteUrl("SitemapSEO", (object)null, _securitySettings.Value.ForceSslForAllPages ? "https" : "http");
 				var request = (HttpWebRequest)WebRequest.Create(sitemapUrl);
 				request.Method = "HEAD";
 				request.Timeout = 15000;
 
 				using (var response = (HttpWebResponse)request.GetResponse())
 				{
-					sitemapReachable = (response.StatusCode == HttpStatusCode.OK);
+					sitemapStatusCode = response.StatusCode;
 				}
 			}
-			catch (WebException) { }
+			catch (WebException exception)
+			{
+				Logger.Warning(sitemapUrl.IsEmpty() ? "SitemapSEO" : sitemapUrl, exception);
+			}
 
-			if (sitemapReachable)
+			if (sitemapStatusCode.HasValue && sitemapStatusCode.Value == HttpStatusCode.OK)
 			{
 				model.Add(new SystemWarningModel
 				{
 					Level = SystemWarningLevel.Pass,
-					Text = _localizationService.GetResource("Admin.System.Warnings.SitemapReachable.OK")
+					Text = T("Admin.System.Warnings.SitemapReachable.OK")
 				});
 			}
 			else
 			{
+				var warningText = T("Admin.System.Warnings.SitemapReachable.Wrong");
+				if (sitemapStatusCode.HasValue)
+				{
+					warningText = string.Concat(warningText, " ", T("Admin.Common.HttpStatus", (int)sitemapStatusCode.Value, sitemapStatusCode.Value.ToString()));
+				}
+
 				model.Add(new SystemWarningModel
 				{
 					Level = SystemWarningLevel.Warning,
-					Text = _localizationService.GetResource("Admin.System.Warnings.SitemapReachable.Wrong")
+					Text = warningText
 				});
 			}
 

@@ -53,9 +53,6 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.CreateZip")]
 		public bool CreateZip { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.IsPublic")]
-		public bool IsPublic { get; set; }
-
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.Username")]
 		public string Username { get; set; }
 
@@ -72,6 +69,9 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.FileSystemPath")]
 		public string FileSystemPath { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.SubFolder")]
+		public string SubFolder { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.EmailAddresses")]
 		public string EmailAddresses { get; set; }

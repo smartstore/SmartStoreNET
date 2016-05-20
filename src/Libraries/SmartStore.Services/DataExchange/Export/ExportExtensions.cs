@@ -4,7 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Web;
 using SmartStore.Core.Domain;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Localization;
@@ -131,6 +133,29 @@ namespace SmartStore.Services.DataExchange.Export
 				.Truncate(maxFileNameLength);
 
 			return result;
+		}
+
+		/// <summary>
+		/// Get path of the public folder
+		/// </summary>
+		/// <param name="deployment">Export deployment</param>
+		/// <returns>Public folder path</returns>
+		public static string GetPublicFolder(this ExportDeployment deployment, bool create = false)
+		{
+			string path = null;
+
+			if (deployment != null && deployment.DeploymentType == ExportDeploymentType.PublicFolder)
+			{
+				if (deployment.SubFolder.HasValue())
+					path = Path.Combine(HttpRuntime.AppDomainAppPath, DataExporter.PublicFolder, deployment.SubFolder);
+				else
+					path = Path.Combine(HttpRuntime.AppDomainAppPath, DataExporter.PublicFolder);
+
+				if (create && !System.IO.Directory.Exists(path))
+					System.IO.Directory.CreateDirectory(path);
+			}
+
+			return path;
 		}
 	}
 }

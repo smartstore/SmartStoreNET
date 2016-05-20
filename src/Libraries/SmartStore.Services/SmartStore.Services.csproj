@@ -174,6 +174,7 @@
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
     <Compile Include="Customers\Importer\CustomerImporter.cs" />
+    <Compile Include="DataExchange\Deployment\PublicFolderPublisher.cs" />
     <Compile Include="DataExchange\Import\ColumnMapping\ColumnMap.cs" />
     <Compile Include="DataExchange\Import\ColumnMapping\ColumnMapConverter.cs" />
     <Compile Include="DataExchange\Csv\CsvConfigurationConverter.cs" />

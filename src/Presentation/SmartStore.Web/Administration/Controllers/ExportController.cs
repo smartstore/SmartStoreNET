@@ -128,7 +128,7 @@ namespace SmartStore.Admin.Controllers
 				model.ZipPath = (System.IO.File.Exists(zipPath) ? zipPath : null);
 				model.ExportFiles = profile.GetExportFiles();
 
-				if (forEdit && profile.Deployments.Any(x => x.IsPublic && x.DeploymentType == ExportDeploymentType.FileSystem))
+				if (forEdit && profile.Deployments.Any(x => x.DeploymentType == ExportDeploymentType.PublicFolder))
 				{
 					var allStores = _services.StoreService.GetAllStores();
 					var publicFolder = Path.Combine(HttpRuntime.AppDomainAppPath, DataExporter.PublicFolder);
@@ -425,7 +425,6 @@ namespace SmartStore.Admin.Controllers
 				ProfileId = deployment.ProfileId,
 				Name = deployment.Name,
 				Enabled = deployment.Enabled,
-				IsPublic = deployment.IsPublic,
 				CreateZip = deployment.CreateZip,
 				DeploymentType = deployment.DeploymentType,
 				DeploymentTypeName = deployment.DeploymentType.GetLocalizedEnum(_services.Localization, _services.WorkContext),
@@ -434,6 +433,7 @@ namespace SmartStore.Admin.Controllers
 				Url = deployment.Url,
 				HttpTransmissionType = deployment.HttpTransmissionType,
 				FileSystemPath = deployment.FileSystemPath,
+				SubFolder = deployment.SubFolder,
 				EmailAddresses = deployment.EmailAddresses,
 				EmailSubject = deployment.EmailSubject,
 				EmailAccountId = deployment.EmailAccountId,
@@ -469,13 +469,13 @@ namespace SmartStore.Admin.Controllers
 			deployment.Name = model.Name;
 			deployment.Enabled = model.Enabled;
 			deployment.DeploymentType = model.DeploymentType;
-			deployment.IsPublic = model.IsPublic;
 			deployment.CreateZip = model.CreateZip;
 			deployment.Username = model.Username;
 			deployment.Password = model.Password;
 			deployment.Url = model.Url;
 			deployment.HttpTransmissionType = model.HttpTransmissionType;
 			deployment.FileSystemPath = model.FileSystemPath;
+			deployment.SubFolder = model.SubFolder;
 			deployment.EmailAddresses = model.EmailAddresses;
 			deployment.EmailSubject = model.EmailSubject;
 			deployment.EmailAccountId = model.EmailAccountId;

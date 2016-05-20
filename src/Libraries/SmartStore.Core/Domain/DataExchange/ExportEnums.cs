@@ -23,7 +23,8 @@ namespace SmartStore.Core.Domain.DataExchange
 		FileSystem = 0,
 		Email,
 		Http,
-		Ftp
+		Ftp,
+		PublicFolder
 	}
 
 	/// <summary>

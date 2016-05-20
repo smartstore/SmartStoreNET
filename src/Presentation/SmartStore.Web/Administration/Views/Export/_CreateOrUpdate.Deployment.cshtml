@@ -47,20 +47,20 @@
 	</tr>
 	<tr class="deployment-@((int)ExportDeploymentType.FileSystem)">
 		<td class="adminTitle">
-			@Html.SmartLabelFor(x => x.IsPublic)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(x => x.IsPublic)
-			@Html.ValidationMessageFor(x => x.IsPublic)
-		</td>
-	</tr>
-	<tr id="FileSystemPathContainer" class="deployment-@((int)ExportDeploymentType.FileSystem)">
-		<td class="adminTitle">
 			@Html.SmartLabelFor(x => x.FileSystemPath)
 		</td>
 		<td class="adminData">
 			@Html.EditorFor(x => x.FileSystemPath)
 			@Html.ValidationMessageFor(x => x.FileSystemPath)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.PublicFolder)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.SubFolder)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.SubFolder)
+			@Html.ValidationMessageFor(x => x.SubFolder)
 		</td>
 	</tr>
 
@@ -163,10 +163,5 @@
 			table.find('.deployment-' + $(this).val()).show();
 		}).trigger('change');
 
-		// show\hide file system path
-		$('#@(Html.FieldIdFor(x => x.IsPublic))').change(function () {
-			var val = !$(this).is(':checked') && $('#@(Html.FieldIdFor(x => x.DeploymentType))').val() == @((int)ExportDeploymentType.FileSystem);
-			$('#FileSystemPathContainer').toggle(val);
-		}).trigger('change');
 	});
 </script>

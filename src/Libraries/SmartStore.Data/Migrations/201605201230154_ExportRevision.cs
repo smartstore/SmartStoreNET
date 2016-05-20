@@ -3,18 +3,21 @@ namespace SmartStore.Data.Migrations
 	using System.Data.Entity.Migrations;
 	using System.Linq;
 	using Core.Domain;
+	using Core.Domain.DataExchange;
 	using Setup;
 
 	public partial class ExportRevision : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
 	{
         public override void Up()
         {
+            AddColumn("dbo.ExportDeployment", "SubFolder", c => c.String(maxLength: 400));
             AlterColumn("dbo.ExportProfile", "FolderName", c => c.String(nullable: false, maxLength: 400));
         }
         
         public override void Down()
         {
             AlterColumn("dbo.ExportProfile", "FolderName", c => c.String(nullable: false, maxLength: 100));
+            DropColumn("dbo.ExportDeployment", "SubFolder");
         }
 
 		public bool RollbackOnFailure
@@ -26,6 +29,7 @@ namespace SmartStore.Data.Migrations
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
 
+			// migrate folder name to folder path
 			var rootPath = "~/App_Data/ExportProfiles/";
 			var exportProfiles = context.Set<ExportProfile>().ToList();
 
@@ -38,6 +42,18 @@ namespace SmartStore.Data.Migrations
 			}
 
 			context.SaveChanges();
+
+			// migrate public file system deployment to new public deployment
+			if (context.ColumnExists("ExportDeployment", "IsPublic"))
+			{
+				var fileSystemDeploymentTypeId = (int)ExportDeploymentType.FileSystem;
+				var publicFolderDeploymentTypeId = (int)ExportDeploymentType.PublicFolder;
+
+				context.ExecuteSqlCommand("Update [ExportDeployment] Set DeploymentTypeId = {0} Where DeploymentTypeId = {1} And IsPublic = 1",
+					true, null, publicFolderDeploymentTypeId, fileSystemDeploymentTypeId);
+
+				context.ColumnDelete("ExportDeployment", "IsPublic");
+			}
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
@@ -56,7 +72,18 @@ namespace SmartStore.Data.Migrations
 				"Please enter a valid, relative folder path for the export data.",
 				"Bitte einen gültigen, relativen Ordnerpfad für die zu exportierenden Daten eingeben.");
 
-			builder.Delete("Admin.DataExchange.Export.FolderAndFileName.Validate");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.Http", "HTTP POST", "HTTP POST");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.PublicFolder", "Public folder", "Öffentlicher Ordner");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.SubFolder",
+				"Name of subfolder",
+				"Name des Unterordner",
+				"Specifies the name of a subfolder where to deploy the data.",
+				"Legt den Namen eines Unterordners fest, in den die Daten bereitgestellt werden sollen.");
+
+			builder.Delete(
+				"Admin.DataExchange.Export.FolderAndFileName.Validate",
+				"Admin.DataExchange.Export.Deployment.IsPublic");
 		}
 	}
 }

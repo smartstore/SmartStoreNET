@@ -148,9 +148,7 @@ namespace SmartStore.Services.DataExchange.Export
 				.ToValidPath()
 				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 
-			folderName = FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath("~/App_Data/ExportProfiles"), folderName);
-
-			profile.FolderName = "~/App_Data/ExportProfiles/" + folderName;
+			profile.FolderName = "~/App_Data/ExportProfiles/" + FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath("~/App_Data/ExportProfiles"), folderName);
 
 			if (profileSystemName.IsEmpty() && isSystemProfile)
 				profile.SystemName = cleanedSystemName;
@@ -173,9 +171,9 @@ namespace SmartStore.Services.DataExchange.Export
 						{
 							ProfileId = profile.Id,
 							Enabled = true,
-							IsPublic = true,
-							DeploymentType = ExportDeploymentType.FileSystem,
-							Name = profile.Name
+							DeploymentType = ExportDeploymentType.PublicFolder,
+							Name = profile.Name,
+							SubFolder = folderName
 						});
 
 						UpdateExportProfile(profile);

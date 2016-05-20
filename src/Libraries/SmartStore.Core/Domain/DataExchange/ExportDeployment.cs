@@ -21,11 +21,6 @@ namespace SmartStore.Core.Domain
 		public bool Enabled { get; set; }
 
 		/// <summary>
-		/// Whether to deploy in a folder that can be reached from the internet
-		/// </summary>
-		public bool IsPublic { get; set; }
-
-		/// <summary>
 		/// Whether to create a zip archive with the content of the export
 		/// </summary>
 		public bool CreateZip { get; set; }
@@ -85,6 +80,11 @@ namespace SmartStore.Core.Domain
 		public string FileSystemPath { get; set; }
 
 		/// <summary>
+		/// Path of a subfolder
+		/// </summary>
+		public string SubFolder { get; set; }
+
+		/// <summary>
 		/// Multiple email addresses can be separated by commas
 		/// </summary>
 		public string EmailAddresses { get; set; }
@@ -117,7 +117,6 @@ namespace SmartStore.Core.Domain
 			{
 				Name = this.Name,
 				Enabled = this.Enabled,
-				IsPublic = this.IsPublic,
 				CreateZip = this.CreateZip,
 				DeploymentTypeId = this.DeploymentTypeId,
 				Username = this.Username,
@@ -125,6 +124,7 @@ namespace SmartStore.Core.Domain
 				Url = this.Url,
 				HttpTransmissionTypeId = this.HttpTransmissionTypeId,
 				FileSystemPath = this.FileSystemPath,
+				SubFolder = this.SubFolder,
 				EmailAddresses = this.EmailAddresses,
 				EmailSubject = this.EmailSubject,
 				EmailAccountId = this.EmailAccountId,

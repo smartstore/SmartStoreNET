@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Web;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Logging;
 using SmartStore.Utilities;
@@ -12,11 +11,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 		{
 			string destinationFolder = null;
 
-			if (deployment.IsPublic)
-			{
-				destinationFolder = Path.Combine(HttpRuntime.AppDomainAppPath, DataExporter.PublicFolder);
-			}
-			else if (deployment.FileSystemPath.IsEmpty())
+			if (deployment.FileSystemPath.IsEmpty())
 			{
 				return;
 			}

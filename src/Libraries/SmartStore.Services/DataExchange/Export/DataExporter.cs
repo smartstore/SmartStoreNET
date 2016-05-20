@@ -487,6 +487,10 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						publisher = new HttpFilePublisher();
 					}
+					else if (deployment.DeploymentType == ExportDeploymentType.PublicFolder)
+					{
+						publisher = new PublicFolderPublisher();
+					}
 
 					if (publisher != null)
 					{
@@ -1052,8 +1056,10 @@ namespace SmartStore.Services.DataExchange.Export
 
 			ctx.ExecuteContext.Store = ToDynamic(ctx, ctx.Store);
 			ctx.ExecuteContext.MaxFileNameLength = dataExchangeSettings.MaxFileNameLength;
-			ctx.ExecuteContext.HasPublicDeployment = ctx.Request.Profile.Deployments.Any(x => x.IsPublic && x.DeploymentType == ExportDeploymentType.FileSystem);
-			ctx.ExecuteContext.PublicFolderPath = (ctx.ExecuteContext.HasPublicDeployment ? Path.Combine(HttpRuntime.AppDomainAppPath, PublicFolder) : null);
+
+			var publicDeployment = ctx.Request.Profile.Deployments.FirstOrDefault(x => x.DeploymentType == ExportDeploymentType.PublicFolder);
+			ctx.ExecuteContext.HasPublicDeployment = (publicDeployment != null);
+			ctx.ExecuteContext.PublicFolderPath = publicDeployment.GetPublicFolder(true);
 
 			var fileExtension = (ctx.Request.Provider.Value.FileExtension.HasValue() ? ctx.Request.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".") : "");
 

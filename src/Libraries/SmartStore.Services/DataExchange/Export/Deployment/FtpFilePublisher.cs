@@ -9,8 +9,9 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 {
 	public class FtpFilePublisher : IFilePublisher
 	{
-		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)
+		public virtual bool Publish(ExportDeploymentContext context, ExportDeployment deployment)
 		{
+			var result = true;
 			var bytesRead = 0;
 			var succeededFiles = 0;
 			var url = deployment.Url;
@@ -61,6 +62,8 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 					}
 					else
 					{
+						result = false;
+
 						var msg = "The FTP transfer might fail. {0} ({1}), {2}. File {3}".FormatInvariant(
 							response.StatusCode.ToString(), statusCode, response.StatusDescription.NaIfEmpty(), path);
 
@@ -70,6 +73,8 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 			}
 
 			context.Log.Information("{0} file(s) successfully uploaded via FTP.".FormatInvariant(succeededFiles));
+
+			return result;
 		}
 	}
 }

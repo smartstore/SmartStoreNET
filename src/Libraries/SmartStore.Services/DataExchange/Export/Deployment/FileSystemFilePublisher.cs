@@ -7,13 +7,13 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 {
 	public class FileSystemFilePublisher : IFilePublisher
 	{
-		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)
+		public virtual bool Publish(ExportDeploymentContext context, ExportDeployment deployment)
 		{
 			string destinationFolder = null;
 
 			if (deployment.FileSystemPath.IsEmpty())
 			{
-				return;
+				return false;
 			}
 			else if (Path.IsPathRooted(deployment.FileSystemPath))
 			{
@@ -42,6 +42,8 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 			FileSystemHelper.CopyDirectory(new DirectoryInfo(context.FolderContent), new DirectoryInfo(destinationFolder));
 
 			context.Log.Information("Copied export data files to " + destinationFolder);
+
+			return true;
 		}
 	}
 }

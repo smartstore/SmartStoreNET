@@ -87,6 +87,14 @@ namespace SmartStore.Data.Migrations
 				"If there are a large number of export files, it is recommended to use the option <b>Create ZIP archive</b>. This saves time and avoids problems, such as a full email mailbox.",
 				"Bei einer großen Anzahl an Exportdateien wird empfohlen die Option <b>ZIP-Archiv erstellen</b> zu benutzen. Das spart Zeit und vermeidet Probleme, wie z.B. ein volles E-Mail Postfach.");
 
+			builder.AddOrUpdate("Admin.DataExchange.Export.Cleanup",
+				"Clean up after successful deployment",
+				"Nach erfolgreicher Veröffentlichung aufräumen",
+				"Specifies whether to delete unneeded files after all deployments succeeded.",
+				"Legt fest, ob nicht mehr benötigte Dateien gelöscht werden sollen, nachdem alle Veröffentlichungen erfolgreich waren.");
+
+
+
 			builder.Delete(
 				"Admin.DataExchange.Export.FolderAndFileName.Validate",
 				"Admin.DataExchange.Export.Deployment.IsPublic",

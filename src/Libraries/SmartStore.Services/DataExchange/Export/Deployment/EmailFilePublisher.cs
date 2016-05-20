@@ -23,7 +23,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 			_queuedEmailService = queuedEmailService;
 		}
 
-		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)
+		public virtual bool Publish(ExportDeploymentContext context, ExportDeployment deployment)
 		{
 			var emailAccount = _emailAccountService.GetEmailAccountById(deployment.EmailAccountId);
 			var smtpContext = new SmtpContext(emailAccount);
@@ -60,6 +60,8 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 			}
 
 			context.Log.Information("{0} email(s) created and queued for deployment.".FormatInvariant(count));
+
+			return true;
 		}
 	}
 }

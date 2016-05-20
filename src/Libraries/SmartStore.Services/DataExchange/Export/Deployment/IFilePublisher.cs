@@ -8,7 +8,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 {
 	public interface IFilePublisher
 	{
-		void Publish(ExportDeploymentContext context, ExportDeployment deployment);
+		bool Publish(ExportDeploymentContext context, ExportDeployment deployment);
     }
 
 

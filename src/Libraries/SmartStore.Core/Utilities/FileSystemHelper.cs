@@ -114,8 +114,10 @@ namespace SmartStore.Utilities
 		/// <param name="source">Source directory</param>
 		/// <param name="target">Target directory</param>
 		/// <param name="overwrite">Whether to override existing files</param>
-		public static void CopyDirectory(DirectoryInfo source, DirectoryInfo target, bool overwrite = true)
+		public static bool CopyDirectory(DirectoryInfo source, DirectoryInfo target, bool overwrite = true)
 		{
+			var result = true;
+
 			foreach (FileInfo fi in source.GetFiles())
 			{
 				try
@@ -124,6 +126,7 @@ namespace SmartStore.Utilities
 				}
 				catch (Exception exc)
 				{
+					result = false;
 					exc.Dump();
 				}
 			}
@@ -137,9 +140,12 @@ namespace SmartStore.Utilities
 				}
 				catch (Exception exc)
 				{
+					result = false;
 					exc.Dump();
 				}
 			}
+
+			return result;
 		}
 
 		/// <summary>

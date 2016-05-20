@@ -449,8 +449,9 @@ namespace SmartStore.Services.DataExchange.Export
 			return (ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard);
 		}
 
-		private void Deploy(DataExporterContext ctx, string zipPath)
+		private bool Deploy(DataExporterContext ctx, string zipPath)
 		{
+			var result = true;
 			var context = new ExportDeploymentContext
 			{
 				Log = ctx.Log,
@@ -488,15 +489,20 @@ namespace SmartStore.Services.DataExchange.Export
 
 					if (publisher != null)
 					{
-						publisher.Publish(context, deployment);
+						if (!publisher.Publish(context, deployment))
+							result = false;
 					}
 				}
 				catch (Exception exception)
 				{
+					result = false;
+
 					ctx.Log.Error("Deployment \"{0}\" of type {1} failed: {2}".FormatInvariant(
 						deployment.Name, deployment.DeploymentType.ToString(), exception.Message), exception);
 				}
 			}
+
+			return result;
 		}
 
 		private void SendCompletionEmail(DataExporterContext ctx, string zipPath)
@@ -1136,6 +1142,7 @@ namespace SmartStore.Services.DataExchange.Export
 			if (ctx.Request.Profile == null || !ctx.Request.Profile.Enabled)
 				return;
 
+			var allDeploymentsSucceeded = false;
 			var logPath = ctx.Request.Profile.GetExportLogPath();
 			var zipPath = ctx.Request.Profile.GetExportZipPath();
 
@@ -1222,7 +1229,8 @@ namespace SmartStore.Services.DataExchange.Export
 							if (ctx.Request.Profile.Deployments.Any(x => x.Enabled))
 							{
 								SetProgress(ctx, T("Common.Deployment"));
-								Deploy(ctx, zipPath);
+
+								allDeploymentsSucceeded = Deploy(ctx, zipPath);
 							}
 						}
 
@@ -1259,9 +1267,11 @@ namespace SmartStore.Services.DataExchange.Export
 
 					try
 					{
-						if (ctx.IsFileBasedExport && ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard && ctx.Request.Profile.Cleanup)
+						if (ctx.IsFileBasedExport && ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard && ctx.Request.Profile.Cleanup && allDeploymentsSucceeded)
 						{
 							FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
+
+							logger.Information("Cleared up export folder");
 						}
 					}
 					catch (Exception exception)

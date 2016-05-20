@@ -46,7 +46,7 @@ namespace SmartStore.Services.DataExchange.Export
 		/// <returns>Folder path</returns>
 		public static string GetExportFolder(this ExportProfile profile, bool content = false, bool create = false)
 		{
-			var path = CommonHelper.MapPath(string.Concat("~/App_Data/ExportProfiles/", profile.FolderName, content ? "/Content" : ""));
+			var path = CommonHelper.MapPath(string.Concat(profile.FolderName, content ? "/Content" : ""));
 
 			if (create && !System.IO.Directory.Exists(path))
 				System.IO.Directory.CreateDirectory(path);
@@ -71,7 +71,11 @@ namespace SmartStore.Services.DataExchange.Export
 		/// <returns>ZIP file path</returns>
 		public static string GetExportZipPath(this ExportProfile profile)
 		{
-			return Path.Combine(profile.GetExportFolder(), profile.FolderName + ".zip");
+			var name = (new DirectoryInfo(profile.FolderName)).Name;
+			if (name.IsEmpty())
+				name = "ExportData";
+
+			return Path.Combine(profile.GetExportFolder(), name.ToValidFileName() + ".zip");
 		}
 
 		/// <summary>

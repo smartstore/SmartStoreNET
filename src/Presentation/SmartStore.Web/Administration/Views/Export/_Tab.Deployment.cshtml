@@ -7,7 +7,7 @@
 			@Html.SmartLabelFor(x => x.FolderName)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(x => x.FolderName)
+			@Html.TextBoxFor(x => x.FolderName, new { @class = "input-large" })
 			@Html.ValidationMessageFor(x => x.FolderName)
 		</td>
 	</tr>
@@ -22,9 +22,14 @@
 					@Html.TextBoxFor(x => x.FileNamePattern, new { @class = "input-large" })
 					@Html.ValidationMessageFor(x => x.FileNamePattern)
 				</div>
-
-				<div class="clear"></div>
-				<div class="btn-below">
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
+				<div>
 					<a id="FileNamePatternDescriptionLink" href="javascript:void(0)">@T("Admin.Common.Show")&hellip;</a>
 					<div id="FileNamePatternDescription" class="btn-below hide">
 						@FileNamePatternDescription()

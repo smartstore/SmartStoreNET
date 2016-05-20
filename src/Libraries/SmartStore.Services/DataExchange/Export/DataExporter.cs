@@ -1030,7 +1030,10 @@ namespace SmartStore.Services.DataExchange.Export
 				logHead.Append("Export profile:\t\t" + ctx.Request.Profile.Name);
 				logHead.AppendLine(ctx.Request.Profile.Id == 0 ? " (volatile)" : " (Id {0})".FormatInvariant(ctx.Request.Profile.Id));
 
-				logHead.AppendLine("Export provider:\t{0} ({1})".FormatInvariant(ctx.Request.Provider.Metadata.FriendlyName, ctx.Request.Profile.ProviderSystemName));
+				if (ctx.Request.Provider.Metadata.FriendlyName.HasValue())
+					logHead.AppendLine("Export provider:\t{0} ({1})".FormatInvariant(ctx.Request.Provider.Metadata.FriendlyName, ctx.Request.Profile.ProviderSystemName));
+				else
+					logHead.AppendLine("Export provider:\t{0}".FormatInvariant(ctx.Request.Profile.ProviderSystemName));
 
 				var plugin = ctx.Request.Provider.Metadata.PluginDescriptor;
 				logHead.Append("Plugin:\t\t\t");

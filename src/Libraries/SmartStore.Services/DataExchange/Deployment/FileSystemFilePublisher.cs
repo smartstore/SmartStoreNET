@@ -36,7 +36,11 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 
 			if (deployment.CreateZip)
 			{
-				var path = Path.Combine(folderDestination, deployment.Profile.FolderName + ".zip");
+				var name = (new DirectoryInfo(deployment.Profile.FolderName)).Name;
+				if (name.IsEmpty())
+					name = "ExportData";
+
+				var path = Path.Combine(folderDestination, name.ToValidFileName() + ".zip");
 
 				if (FileSystemHelper.Copy(context.ZipPath, path))
 					context.Log.Information("Copied ZIP archive " + path);

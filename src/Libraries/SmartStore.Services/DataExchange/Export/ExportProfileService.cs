@@ -144,11 +144,13 @@ namespace SmartStore.Services.DataExchange.Export
 				.Replace("/", "")
 				.Replace("-", "");
 
-			profile.FolderName = SeoHelper.GetSeName(cleanedSystemName, true, false)
+			var folderName = SeoHelper.GetSeName(cleanedSystemName, true, false)
 				.ToValidPath()
 				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 
-			profile.FolderName = FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath("~/App_Data/ExportProfiles"), profile.FolderName);
+			folderName = FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath("~/App_Data/ExportProfiles"), folderName);
+
+			profile.FolderName = "~/App_Data/ExportProfiles/" + folderName;
 
 			if (profileSystemName.IsEmpty() && isSystemProfile)
 				profile.SystemName = cleanedSystemName;
@@ -219,10 +221,6 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			if (profile == null)
 				throw new ArgumentNullException("profile");
-
-			profile.FolderName = profile.FolderName
-				.ToValidPath()
-				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 
 			_exportProfileRepository.Update(profile);
 

@@ -14,11 +14,11 @@ namespace SmartStore.Admin.Validators.DataExchange
 
 			RuleFor(x => x.FolderName)
 				.Must(x => x.HasValue() && !x.IsCaseInsensitiveEqual("con"))
-				.WithMessage(localization.GetResource("Admin.DataExchange.Export.FolderAndFileName.Validate"));
+				.WithMessage(localization.GetResource("Admin.DataExchange.Export.FolderName.Validate"));
 
 			RuleFor(x => x.FileNamePattern)
 				.NotEmpty()
-				.WithMessage(localization.GetResource("Admin.DataExchange.Export.FolderAndFileName.Validate"));
+				.WithMessage(localization.GetResource("Admin.DataExchange.Export.FileNamePattern.Validate"));
 
 			RuleFor(x => x.Offset)
 				.GreaterThanOrEqualTo(0)

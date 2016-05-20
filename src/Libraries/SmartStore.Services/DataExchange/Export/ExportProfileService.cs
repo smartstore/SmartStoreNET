@@ -222,6 +222,14 @@ namespace SmartStore.Services.DataExchange.Export
 			if (profile == null)
 				throw new ArgumentNullException("profile");
 
+			if (!profile.FolderName.StartsWith("~/"))
+			{
+				if (profile.FolderName.StartsWith("~"))
+					profile.FolderName = profile.FolderName.Substring(1);
+
+				profile.FolderName = (profile.FolderName.StartsWith("/") ? "~" : "~/") + profile.FolderName;
+			}
+
 			_exportProfileRepository.Update(profile);
 
 			_eventPublisher.EntityUpdated(profile);

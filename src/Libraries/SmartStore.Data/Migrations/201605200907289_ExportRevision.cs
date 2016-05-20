@@ -45,9 +45,18 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Export.FolderName",
 				"Folder path",
 				"Ordnerpfad",
-				"Specifies the path of the folder where to export the data.",
-				"Legt den Pfad des Ordners fest, in den die Daten exportiert werden.");
+				"Specifies the relative path of the folder where to export the data.",
+				"Legt den relativen Pfad des Ordners fest, in den die Daten exportiert werden.");
 
+			builder.AddOrUpdate("Admin.DataExchange.Export.FileNamePattern.Validate",
+				"Please enter a valid pattern for file names. Example for file names: %Store.Id%-%Profile.Id%-%File.Index%-%Profile.SeoName%",
+				"Bitte ein gültiges Muster für Dateinamen eingeben. Beispiel: %Store.Id%-%Profile.Id%-%File.Index%-%Profile.SeoName%");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.FolderName.Validate",
+				"Please enter a valid, relative folder path for the export data.",
+				"Bitte einen gültigen, relativen Ordnerpfad für die zu exportierenden Daten eingeben.");
+
+			builder.Delete("Admin.DataExchange.Export.FolderAndFileName.Validate");
 		}
 	}
 }

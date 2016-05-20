@@ -91,7 +91,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (System.IO.Directory.Exists(exportFolder))
 			{
-				return System.IO.Directory.EnumerateFiles(exportFolder, "*", SearchOption.TopDirectoryOnly)
+				return System.IO.Directory.EnumerateFiles(exportFolder, "*", SearchOption.AllDirectories)
 					.OrderBy(x => x)
 					.ToList();
 			}

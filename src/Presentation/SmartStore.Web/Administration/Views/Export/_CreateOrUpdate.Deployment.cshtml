@@ -7,6 +7,13 @@
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.ProfileId)
 
+@if (!Model.CreateZip)
+{
+	<div id="ZipUsageNote" class="alert alert-info">
+		@Html.Raw(T("Admin.DataExchange.Export.Deployment.ZipUsageNote"))
+	</div>
+}
+
 <table id="DeploymentTable" class="adminContent">
 	<tr class="deployment-all">
 		<td class="adminTitle">
@@ -34,15 +41,6 @@
 		<td class="adminData">
 			@Html.EditorFor(x => x.Enabled)
 			@Html.ValidationMessageFor(x => x.Enabled)
-		</td>
-	</tr>
-	<tr class="deployment-all">
-		<td class="adminTitle">
-			@Html.SmartLabelFor(x => x.CreateZip)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(x => x.CreateZip)
-			@Html.ValidationMessageFor(x => x.CreateZip)
 		</td>
 	</tr>
 	<tr class="deployment-@((int)ExportDeploymentType.FileSystem)">
@@ -157,10 +155,13 @@
 
 		// deployment type changed
 		$('#@(Html.FieldIdFor(x => x.DeploymentType))').change(function () {
-			var table = $('#DeploymentTable');
+			var table = $('#DeploymentTable'),
+				val = $(this).val();
 
 			table.find('tr:not(.deployment-all)').hide();
-			table.find('.deployment-' + $(this).val()).show();
+			table.find('.deployment-' + val).show();
+
+			$('#ZipUsageNote').toggle(val === '@((int)ExportDeploymentType.Email)' || val === '@((int)ExportDeploymentType.Http)' || val === '@((int)ExportDeploymentType.Ftp)');
 		}).trigger('change');
 
 	});

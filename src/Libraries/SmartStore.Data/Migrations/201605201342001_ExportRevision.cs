@@ -12,10 +12,12 @@ namespace SmartStore.Data.Migrations
         {
             AddColumn("dbo.ExportDeployment", "SubFolder", c => c.String(maxLength: 400));
             AlterColumn("dbo.ExportProfile", "FolderName", c => c.String(nullable: false, maxLength: 400));
+            DropColumn("dbo.ExportDeployment", "CreateZip");
         }
         
         public override void Down()
         {
+            AddColumn("dbo.ExportDeployment", "CreateZip", c => c.Boolean(nullable: false));
             AlterColumn("dbo.ExportProfile", "FolderName", c => c.String(nullable: false, maxLength: 100));
             DropColumn("dbo.ExportDeployment", "SubFolder");
         }
@@ -77,13 +79,18 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.SubFolder",
 				"Name of subfolder",
-				"Name des Unterordner",
+				"Name des Unterordners",
 				"Specifies the name of a subfolder where to deploy the data.",
 				"Legt den Namen eines Unterordners fest, in den die Daten bereitgestellt werden sollen.");
 
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.ZipUsageNote",
+				"If there are a large number of export files, it is recommended to use the option <b>Create ZIP archive</b>. This saves time and avoids problems, such as a full email mailbox.",
+				"Bei einer groﬂen Anzahl an Exportdateien wird empfohlen die Option <b>ZIP-Archiv erstellen</b> zu benutzen. Das spart Zeit und vermeidet Probleme, wie z.B. ein volles E-Mail Postfach.");
+
 			builder.Delete(
 				"Admin.DataExchange.Export.FolderAndFileName.Validate",
-				"Admin.DataExchange.Export.Deployment.IsPublic");
+				"Admin.DataExchange.Export.Deployment.IsPublic",
+				"Admin.DataExchange.Export.Deployment.CreateZip");
 		}
 	}
 }

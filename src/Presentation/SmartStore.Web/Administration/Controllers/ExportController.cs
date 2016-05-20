@@ -318,7 +318,7 @@ namespace SmartStore.Admin.Controllers
 			model.Deployments = profile.Deployments
 				.Select(x =>
 				{
-					var deploymentModel = PrepareDeploymentModel(x, null, false);
+					var deploymentModel = PrepareDeploymentModel(profile, x, null, false);
 
 					deploymentModel.ProfileDetails = PrepareProfileDetailsModel(profile, true);
 
@@ -417,7 +417,7 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private ExportDeploymentModel PrepareDeploymentModel(ExportDeployment deployment, Provider<IExportProvider> provider, bool forEdit)
+		private ExportDeploymentModel PrepareDeploymentModel(ExportProfile profile, ExportDeployment deployment, Provider<IExportProvider> provider, bool forEdit)
 		{
 			var model = new ExportDeploymentModel
 			{
@@ -425,7 +425,6 @@ namespace SmartStore.Admin.Controllers
 				ProfileId = deployment.ProfileId,
 				Name = deployment.Name,
 				Enabled = deployment.Enabled,
-				CreateZip = deployment.CreateZip,
 				DeploymentType = deployment.DeploymentType,
 				DeploymentTypeName = deployment.DeploymentType.GetLocalizedEnum(_services.Localization, _services.WorkContext),
 				Username = deployment.Username,
@@ -445,6 +444,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var allEmailAccounts = _emailAccountService.GetAllEmailAccounts();
 
+				model.CreateZip = profile.CreateZipArchive;
 				model.AvailableDeploymentTypes = ExportDeploymentType.FileSystem.ToSelectList(false).ToList();
 				model.AvailableHttpTransmissionTypes = ExportHttpTransmissionType.SimplePost.ToSelectList(false).ToList();
 
@@ -469,7 +469,6 @@ namespace SmartStore.Admin.Controllers
 			deployment.Name = model.Name;
 			deployment.Enabled = model.Enabled;
 			deployment.DeploymentType = model.DeploymentType;
-			deployment.CreateZip = model.CreateZip;
 			deployment.Username = model.Username;
 			deployment.Password = model.Password;
 			deployment.Url = model.Url;
@@ -1196,7 +1195,7 @@ namespace SmartStore.Admin.Controllers
 
 			//var fileSystemName = ExportDeploymentType.FileSystem.GetLocalizedEnum(_services.Localization, _services.WorkContext);
 
-			var model = PrepareDeploymentModel(new ExportDeployment
+			var model = PrepareDeploymentModel(profile, new ExportDeployment
 			{
 				ProfileId = id,
 				Enabled = true,
@@ -1251,7 +1250,7 @@ namespace SmartStore.Admin.Controllers
 			if (provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
-			var model = PrepareDeploymentModel(deployment, provider, true);
+			var model = PrepareDeploymentModel(deployment.Profile, deployment, provider, true);
 
 			return View(model);
 		}
@@ -1282,7 +1281,7 @@ namespace SmartStore.Admin.Controllers
 				return SmartRedirect(continueEditing, deployment.ProfileId, deployment.Id);
 			}
 
-			model = PrepareDeploymentModel(deployment, _exportService.LoadProvider(deployment.Profile.ProviderSystemName), true);
+			model = PrepareDeploymentModel(deployment.Profile, deployment, _exportService.LoadProvider(deployment.Profile.ProviderSystemName), true);
 
 			return View(model);
 		}

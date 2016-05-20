@@ -13,6 +13,7 @@ namespace SmartStore.Admin.Models.DataExchange
 	public class ExportDeploymentModel : EntityModelBase
 	{
 		public int ProfileId { get; set; }
+		public bool CreateZip { get; set; }
 
 		[SmartResourceDisplayName("Common.Image")]
 		public string ThumbnailUrl { get; set; }
@@ -44,14 +45,13 @@ namespace SmartStore.Admin.Models.DataExchange
 						return "fa-globe";
 					case ExportDeploymentType.Ftp:
 						return "fa-files-o";
+					case ExportDeploymentType.PublicFolder:
+						return "fa-unlock";
 					default:
 						return "fa-question";
 				}
 			}
 		}
-
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.CreateZip")]
-		public bool CreateZip { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.Username")]
 		public string Username { get; set; }

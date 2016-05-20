@@ -13,10 +13,6 @@
 }
 <div>
 	<i class="fa @(Model.DeploymentTypeIconClass)"></i>&nbsp;@Model.DeploymentTypeName
-	@if (Model.DeploymentType == ExportDeploymentType.FileSystem && Model.IsPublic)
-	{
-		<text>(@T("Common.Public"))</text>
-	}
 </div>
 <div style="margin: 5px 0 0 20px;">
 	@if (Model.DeploymentType == ExportDeploymentType.FileSystem)
@@ -50,5 +46,9 @@
 	else if (Model.DeploymentType == ExportDeploymentType.Ftp)
 	{
 		<div>@Model.Url</div>
+	}
+	else if (Model.DeploymentType == ExportDeploymentType.PublicFolder)
+	{
+		<div>TODO</div>
 	}
 </div>

@@ -21,11 +21,6 @@ namespace SmartStore.Core.Domain
 		public bool Enabled { get; set; }
 
 		/// <summary>
-		/// Whether to create a zip archive with the content of the export
-		/// </summary>
-		public bool CreateZip { get; set; }
-
-		/// <summary>
 		/// The deployment type identifier
 		/// </summary>
 		public int DeploymentTypeId { get; set; }
@@ -117,7 +112,6 @@ namespace SmartStore.Core.Domain
 			{
 				Name = this.Name,
 				Enabled = this.Enabled,
-				CreateZip = this.CreateZip,
 				DeploymentTypeId = this.DeploymentTypeId,
 				Username = this.Username,
 				Password = this.Password,

@@ -451,7 +451,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private void Deploy(DataExporterContext ctx, string zipPath)
 		{
-			var allFiles = System.IO.Directory.GetFiles(ctx.FolderContent, "*.*", SearchOption.AllDirectories);
+			string[] allFiles = null;
 
 			var context = new ExportDeploymentContext
 			{
@@ -462,14 +462,24 @@ namespace SmartStore.Services.DataExchange.Export
 
 			foreach (var deployment in ctx.Request.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
 			{
-				if (deployment.CreateZip)
-					context.DeploymentFiles = new string[] { zipPath };
-				else
-					context.DeploymentFiles = allFiles;
-
 				try
 				{
 					IFilePublisher publisher = null;
+
+					if (!ctx.Request.Profile.CreateZipArchive || deployment.DeploymentType == ExportDeploymentType.FileSystem)
+					{
+						if (allFiles == null)
+							allFiles = System.IO.Directory.EnumerateFiles(ctx.FolderContent, "*", SearchOption.AllDirectories).ToArray();
+
+						context.DeploymentFiles = allFiles;
+					}
+					else
+					{
+						if (File.Exists(zipPath))
+							context.DeploymentFiles = new string[] { zipPath };
+						else
+							context.DeploymentFiles = new string[0];
+					}
 
 					if (deployment.DeploymentType == ExportDeploymentType.Email)
 					{
@@ -1220,9 +1230,9 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						if (ctx.IsFileBasedExport)
 						{
-							if (ctx.Request.Profile.CreateZipArchive || ctx.Request.Profile.Deployments.Any(x => x.Enabled && x.CreateZip))
+							if (ctx.Request.Profile.CreateZipArchive)
 							{
-								ZipFile.CreateFromDirectory(ctx.FolderContent, zipPath, CompressionLevel.Fastest, true);
+								ZipFile.CreateFromDirectory(ctx.FolderContent, zipPath, CompressionLevel.Fastest, false);
 							}
 
 							if (ctx.Request.Profile.Deployments.Any(x => x.Enabled))

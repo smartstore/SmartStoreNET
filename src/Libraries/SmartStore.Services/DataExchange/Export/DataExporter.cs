@@ -451,13 +451,12 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private void Deploy(DataExporterContext ctx, string zipPath)
 		{
-			string[] allFiles = null;
-
 			var context = new ExportDeploymentContext
 			{
 				Log = ctx.Log,
 				FolderContent = ctx.FolderContent,
-				ZipPath = zipPath
+				ZipPath = zipPath,
+				CreateZipArchive = ctx.Request.Profile.CreateZipArchive
 			};
 
 			foreach (var deployment in ctx.Request.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
@@ -465,21 +464,6 @@ namespace SmartStore.Services.DataExchange.Export
 				try
 				{
 					IFilePublisher publisher = null;
-
-					if (!ctx.Request.Profile.CreateZipArchive || deployment.DeploymentType == ExportDeploymentType.FileSystem)
-					{
-						if (allFiles == null)
-							allFiles = System.IO.Directory.EnumerateFiles(ctx.FolderContent, "*", SearchOption.AllDirectories).ToArray();
-
-						context.DeploymentFiles = allFiles;
-					}
-					else
-					{
-						if (File.Exists(zipPath))
-							context.DeploymentFiles = new string[] { zipPath };
-						else
-							context.DeploymentFiles = new string[0];
-					}
 
 					if (deployment.DeploymentType == ExportDeploymentType.Email)
 					{

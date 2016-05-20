@@ -39,19 +39,9 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 				System.IO.Directory.CreateDirectory(destinationFolder);
 			}
 
-			if (deployment.Profile.CreateZipArchive)
-			{
-				var path = Path.Combine(destinationFolder, Path.GetFileName(context.ZipPath));
+			FileSystemHelper.CopyDirectory(new DirectoryInfo(context.FolderContent), new DirectoryInfo(destinationFolder));
 
-				if (FileSystemHelper.Copy(context.ZipPath, path))
-					context.Log.Information("Copied ZIP archive " + path);
-			}
-			else
-			{
-				FileSystemHelper.CopyDirectory(new DirectoryInfo(context.FolderContent), new DirectoryInfo(destinationFolder));
-
-				context.Log.Information("Copied export data files to " + destinationFolder);
-			}
+			context.Log.Information("Copied export data files to " + destinationFolder);
 		}
 	}
 }

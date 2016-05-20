@@ -30,7 +30,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 				using (var client = new HttpClient(handler))
 				using (var formData = new MultipartFormDataContent())
 				{
-					foreach (var path in context.DeploymentFiles)
+					foreach (var path in context.GetDeploymentFiles())
 					{
 						byte[] fileData = File.ReadAllBytes(path);
 						formData.Add(new ByteArrayContent(fileData), "file {0}".FormatInvariant(++count), Path.GetFileName(path));
@@ -60,7 +60,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 					if (deployment.Username.HasValue())
 						webClient.Credentials = new NetworkCredential(deployment.Username, deployment.Password);
 
-					foreach (var path in context.DeploymentFiles)
+					foreach (var path in context.GetDeploymentFiles())
 					{
 						webClient.UploadFile(url, path);
 

@@ -16,7 +16,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 			var url = deployment.Url;
 			var buffLength = 32768;
 			byte[] buff = new byte[buffLength];
-			var deploymentFiles = context.DeploymentFiles.ToList();
+			var deploymentFiles = context.GetDeploymentFiles().ToList();
 			var lastIndex = (deploymentFiles.Count - 1);
 
 			if (!url.StartsWith("ftp://", StringComparison.InvariantCultureIgnoreCase))
@@ -26,7 +26,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 			{
 				var fileUrl = url.EnsureEndsWith("/") + Path.GetFileName(path);
 
-				var request = (FtpWebRequest)System.Net.WebRequest.Create(fileUrl);
+				var request = (FtpWebRequest)WebRequest.Create(fileUrl);
 				request.Method = WebRequestMethods.Ftp.UploadFile;
 				request.KeepAlive = (deploymentFiles.IndexOf(path) != lastIndex);
 				request.UseBinary = true;

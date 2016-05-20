@@ -13,11 +13,23 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 
 			if (destinationFolder.HasValue())
 			{
-				// TODO: zip
+				if (context.CreateZipArchive)
+				{
+					if (File.Exists(context.ZipPath))
+					{
+						var destinationFile = Path.Combine(destinationFolder, Path.GetFileName(context.ZipPath));
 
-				FileSystemHelper.CopyDirectory(new DirectoryInfo(context.FolderContent), new DirectoryInfo(destinationFolder));
+						File.Copy(context.ZipPath, destinationFile, true);
 
-				context.Log.Information("Copied export data files to " + destinationFolder);
+						context.Log.Information("Copied zipped export data to " + destinationFile);
+					}
+				}
+				else
+				{
+					FileSystemHelper.CopyDirectory(new DirectoryInfo(context.FolderContent), new DirectoryInfo(destinationFolder));
+
+					context.Log.Information("Copied export data files to " + destinationFolder);
+				}
 			}
 		}
 	}

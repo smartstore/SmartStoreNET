@@ -10,28 +10,38 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 	{
 		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)
 		{
-			string folderDestination = null;
+			string destinationFolder = null;
 
 			if (deployment.IsPublic)
 			{
-				folderDestination = Path.Combine(HttpRuntime.AppDomainAppPath, DataExporter.PublicFolder);
+				destinationFolder = Path.Combine(HttpRuntime.AppDomainAppPath, DataExporter.PublicFolder);
 			}
 			else if (deployment.FileSystemPath.IsEmpty())
 			{
 				return;
 			}
-			else if (deployment.FileSystemPath.StartsWith("/") || deployment.FileSystemPath.StartsWith("\\") || !Path.IsPathRooted(deployment.FileSystemPath))
+			else if (Path.IsPathRooted(deployment.FileSystemPath))
 			{
-				folderDestination = CommonHelper.MapPath(deployment.FileSystemPath);
+				destinationFolder = deployment.FileSystemPath;
 			}
 			else
 			{
-				folderDestination = deployment.FileSystemPath;
+				destinationFolder = deployment.FileSystemPath;
+
+				if (!destinationFolder.StartsWith("~/"))
+				{
+					if (destinationFolder.StartsWith("~"))
+						destinationFolder = destinationFolder.Substring(1);
+
+					destinationFolder = (destinationFolder.StartsWith("/") ? "~" : "~/") + destinationFolder;
+				}
+
+				destinationFolder = CommonHelper.MapPath(destinationFolder);
 			}
 
-			if (!System.IO.Directory.Exists(folderDestination))
+			if (!System.IO.Directory.Exists(destinationFolder))
 			{
-				System.IO.Directory.CreateDirectory(folderDestination);
+				System.IO.Directory.CreateDirectory(destinationFolder);
 			}
 
 			if (deployment.CreateZip)
@@ -40,16 +50,16 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 				if (name.IsEmpty())
 					name = "ExportData";
 
-				var path = Path.Combine(folderDestination, name.ToValidFileName() + ".zip");
+				var path = Path.Combine(destinationFolder, name.ToValidFileName() + ".zip");
 
 				if (FileSystemHelper.Copy(context.ZipPath, path))
 					context.Log.Information("Copied ZIP archive " + path);
 			}
 			else
 			{
-				FileSystemHelper.CopyDirectory(new DirectoryInfo(context.FolderContent), new DirectoryInfo(folderDestination));
+				FileSystemHelper.CopyDirectory(new DirectoryInfo(context.FolderContent), new DirectoryInfo(destinationFolder));
 
-				context.Log.Information("Copied export data files to " + folderDestination);
+				context.Log.Information("Copied export data files to " + destinationFolder);
 			}
 		}
 	}

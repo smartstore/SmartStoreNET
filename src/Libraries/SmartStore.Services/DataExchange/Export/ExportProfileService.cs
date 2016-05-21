@@ -350,6 +350,10 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			if (deployment == null)
 				throw new ArgumentNullException("deployment");
+
+			_exportDeploymentRepository.Update(deployment);
+
+			_eventPublisher.EntityUpdated(deployment);
 		}
 
 		public virtual void DeleteExportDeployment(ExportDeployment deployment)
@@ -357,9 +361,9 @@ namespace SmartStore.Services.DataExchange.Export
 			if (deployment == null)
 				throw new ArgumentNullException("deployment");
 
-			_exportDeploymentRepository.Update(deployment);
+			_exportDeploymentRepository.Delete(deployment);
 
-			_eventPublisher.EntityUpdated(deployment);
+			_eventPublisher.EntityDeleted(deployment);
 		}
 	}
 }

@@ -21,6 +21,11 @@ namespace SmartStore.Core.Domain
 		public bool Enabled { get; set; }
 
 		/// <summary>
+		/// XML with information about the last deployment result
+		/// </summary>
+		public string ResultInfo { get; set; }
+
+		/// <summary>
 		/// The deployment type identifier
 		/// </summary>
 		public int DeploymentTypeId { get; set; }

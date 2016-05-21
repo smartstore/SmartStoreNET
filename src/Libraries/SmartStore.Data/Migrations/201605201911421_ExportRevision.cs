@@ -10,6 +10,7 @@ namespace SmartStore.Data.Migrations
 	{
         public override void Up()
         {
+            AddColumn("dbo.ExportDeployment", "ResultInfo", c => c.String());
             AddColumn("dbo.ExportDeployment", "SubFolder", c => c.String(maxLength: 400));
             AlterColumn("dbo.ExportProfile", "FolderName", c => c.String(nullable: false, maxLength: 400));
             DropColumn("dbo.ExportDeployment", "CreateZip");
@@ -20,6 +21,7 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.ExportDeployment", "CreateZip", c => c.Boolean(nullable: false));
             AlterColumn("dbo.ExportProfile", "FolderName", c => c.String(nullable: false, maxLength: 100));
             DropColumn("dbo.ExportDeployment", "SubFolder");
+            DropColumn("dbo.ExportDeployment", "ResultInfo");
         }
 
 		public bool RollbackOnFailure
@@ -93,6 +95,16 @@ namespace SmartStore.Data.Migrations
 				"Specifies whether to delete unneeded files after all deployments succeeded.",
 				"Legt fest, ob nicht mehr benötigte Dateien gelöscht werden sollen, nachdem alle Veröffentlichungen erfolgreich waren.");
 
+			builder.AddOrUpdate("Admin.Common.FtpStatus",
+				"FTP status {0} ({1}).",
+				"FTP-Status {0} ({1}).");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.CopyFileFailed",
+				"At least one file could not be copied.",
+				"Mindestens eine Datei konnte nicht kopiert werden.");
+
+			builder.AddOrUpdate("Admin.Common.LastRun",	"Last run",	"Letzte Ausführung");
+			builder.AddOrUpdate("Admin.Common.SuccessfulOn", "Successful on", "Erfolgreich am");
 
 
 			builder.Delete(

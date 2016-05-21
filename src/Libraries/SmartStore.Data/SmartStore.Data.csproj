@@ -400,9 +400,9 @@
     <Compile Include="Migrations\201605191216116_CheckoutAttributeMultiStore.Designer.cs">
       <DependentUpon>201605191216116_CheckoutAttributeMultiStore.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201605201342001_ExportRevision.cs" />
-    <Compile Include="Migrations\201605201342001_ExportRevision.Designer.cs">
-      <DependentUpon>201605201342001_ExportRevision.cs</DependentUpon>
+    <Compile Include="Migrations\201605201911421_ExportRevision.cs" />
+    <Compile Include="Migrations\201605201911421_ExportRevision.Designer.cs">
+      <DependentUpon>201605201911421_ExportRevision.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -749,8 +749,8 @@
     <EmbeddedResource Include="Migrations\201605191216116_CheckoutAttributeMultiStore.resx">
       <DependentUpon>201605191216116_CheckoutAttributeMultiStore.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201605201342001_ExportRevision.resx">
-      <DependentUpon>201605201342001_ExportRevision.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201605201911421_ExportRevision.resx">
+      <DependentUpon>201605201911421_ExportRevision.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

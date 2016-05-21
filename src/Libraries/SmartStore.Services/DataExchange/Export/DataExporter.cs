@@ -451,58 +451,78 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private bool Deploy(DataExporterContext ctx, string zipPath)
 		{
-			var result = true;
+			var allSucceeded = true;
+			var deployments = ctx.Request.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled);
+
+			if (deployments.Count() == 0)
+				return false;
+
 			var context = new ExportDeploymentContext
 			{
+				T = T,
 				Log = ctx.Log,
 				FolderContent = ctx.FolderContent,
 				ZipPath = zipPath,
 				CreateZipArchive = ctx.Request.Profile.CreateZipArchive
-			};
+			};			
 
-			foreach (var deployment in ctx.Request.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
+			foreach (var deployment in deployments)
 			{
+				IFilePublisher publisher = null;
+
+				context.Result = new DataDeploymentResult
+				{
+					LastExecutionUtc = DateTime.UtcNow
+				};
+
 				try
 				{
-					IFilePublisher publisher = null;
-
-					if (deployment.DeploymentType == ExportDeploymentType.Email)
+					switch (deployment.DeploymentType)
 					{
-						publisher = new EmailFilePublisher(_emailAccountService.Value, _queuedEmailService.Value);
-					}
-					else if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
-					{
-						publisher = new FileSystemFilePublisher();
-					}
-					else if (deployment.DeploymentType == ExportDeploymentType.Ftp)
-					{
-						publisher = new FtpFilePublisher();
-					}
-					else if (deployment.DeploymentType == ExportDeploymentType.Http)
-					{
-						publisher = new HttpFilePublisher();
-					}
-					else if (deployment.DeploymentType == ExportDeploymentType.PublicFolder)
-					{
-						publisher = new PublicFolderPublisher();
+						case ExportDeploymentType.Email:
+							publisher = new EmailFilePublisher(_emailAccountService.Value, _queuedEmailService.Value);
+							break;
+						case ExportDeploymentType.FileSystem:
+							publisher = new FileSystemFilePublisher();
+							break;
+						case ExportDeploymentType.Ftp:
+							publisher = new FtpFilePublisher();
+							break;
+						case ExportDeploymentType.Http:
+							publisher = new HttpFilePublisher();
+							break;
+						case ExportDeploymentType.PublicFolder:
+							publisher = new PublicFolderPublisher();
+							break;
 					}
 
 					if (publisher != null)
 					{
-						if (!publisher.Publish(context, deployment))
-							result = false;
+						publisher.Publish(context, deployment);
+
+						if (!context.Result.Succeeded)
+							allSucceeded = false;
 					}
 				}
 				catch (Exception exception)
 				{
-					result = false;
+					allSucceeded = false;
+
+					if (context.Result != null)
+					{
+						context.Result.LastError = exception.ToAllMessages();
+					}
 
 					ctx.Log.Error("Deployment \"{0}\" of type {1} failed: {2}".FormatInvariant(
 						deployment.Name, deployment.DeploymentType.ToString(), exception.Message), exception);
 				}
+
+				deployment.ResultInfo = XmlHelper.Serialize(context.Result);
+
+				_exportProfileService.Value.UpdateExportDeployment(deployment);
 			}
 
-			return result;
+			return allSucceeded;
 		}
 
 		private void SendCompletionEmail(DataExporterContext ctx, string zipPath)
@@ -1255,7 +1275,7 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						if (!ctx.IsPreview && ctx.Request.Profile.Id != 0)
 						{
-							ctx.Request.Profile.ResultInfo = XmlHelper.Serialize<DataExportResult>(ctx.Result);
+							ctx.Request.Profile.ResultInfo = XmlHelper.Serialize(ctx.Result);
 
 							_exportProfileService.Value.UpdateExportProfile(ctx.Request.Profile);
 						}
@@ -1269,9 +1289,9 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						if (ctx.IsFileBasedExport && ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard && ctx.Request.Profile.Cleanup && allDeploymentsSucceeded)
 						{
-							FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
+							logger.Information("Cleaning up export folder");
 
-							logger.Information("Cleared up export folder");
+							FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
 						}
 					}
 					catch (Exception exception)

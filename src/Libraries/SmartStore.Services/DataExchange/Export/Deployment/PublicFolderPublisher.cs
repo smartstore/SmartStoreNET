@@ -7,13 +7,17 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 {
 	public class PublicFolderPublisher : IFilePublisher
 	{
-		public virtual bool Publish(ExportDeploymentContext context, ExportDeployment deployment)
+		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)
 		{
 			var destinationFolder = deployment.GetPublicFolder(true);
-			var result = false;
 
 			if (destinationFolder.IsEmpty())
-				return false;
+				return;
+
+			if (!System.IO.Directory.Exists(destinationFolder))
+			{
+				System.IO.Directory.CreateDirectory(destinationFolder);
+			}
 
 			if (context.CreateZipArchive)
 			{
@@ -22,19 +26,19 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 					var destinationFile = Path.Combine(destinationFolder, Path.GetFileName(context.ZipPath));
 
 					File.Copy(context.ZipPath, destinationFile, true);
-					result = true;
 
 					context.Log.Information("Copied zipped export data to " + destinationFile);
 				}
 			}
 			else
 			{
-				result = FileSystemHelper.CopyDirectory(new DirectoryInfo(context.FolderContent), new DirectoryInfo(destinationFolder));
+				if (!FileSystemHelper.CopyDirectory(new DirectoryInfo(context.FolderContent), new DirectoryInfo(destinationFolder)))
+				{
+					context.Result.LastError = context.T("Admin.DataExchange.Export.Deployment.CopyFileFailed");
+				}
 
 				context.Log.Information("Copied export data files to " + destinationFolder);
 			}
-
-			return result;
 		}
 	}
 }

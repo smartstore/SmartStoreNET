@@ -111,23 +111,41 @@
 				<thead>
 					<tr>
 						<th>@T("Admin.DataExchange.Export.Deployment.Name")</th>
-						<th class="centered">@T("Common.Enabled")</th>
 						<th>@T("Admin.DataExchange.Export.Deployment.DeploymentType")</th>
+						<th class="ac">@T("Common.Enabled")</th>
+						<th>@T("Admin.Common.LastRun")</th>
 						<th>@T("Admin.Common.Actions")</th>
 					</tr>
 				</thead>
 				<tbody>
 					@foreach (var deployment in Model.Deployments)
 					{
+						var result = deployment.LastResult;
 						<tr class="@(deployment.Enabled ? "" : "disabled")">
 							<td>
 								<a href="@Url.Action("EditDeployment", new { id = deployment.Id })">@deployment.Name</a>
 							</td>
-							<td class="centered">
+							<td>
+								@Html.Partial("InfoDeployment", deployment)
+							</td>
+							<td class="ac">
 								@Html.SymbolForBool(deployment.Enabled)
 							</td>
-							<td style="width: 50%;">
-								@Html.Partial("InfoDeployment", deployment)
+							<td>
+								@if (result == null)
+								{
+									<div class="muted">@T("Common.Never")</div>
+								}
+								else if (result.Succeeded)
+								{
+									<div><span>@(T("Admin.Common.SuccessfulOn")): </span><span>@result.Execution.ToString("g")</span></div>
+									<div class="muted">@result.ExecutionPretty</div>
+								}
+								else
+								{
+									<div>@result.Execution.ToString("g")</div>
+									<div class="text-error" style="margin-top: 2px;"><strong>@T("Common.Error"): </strong> <span>@result.Error</span></div>
+								}
 							</td>
 							<td>
 								<a href="@Url.Action("DeleteDeployment", new { id = deployment.Id })" class="btn btn-small btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">

@@ -24,6 +24,7 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.Export;
+using SmartStore.Services.DataExchange.Export.Deployment;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -322,6 +323,17 @@ namespace SmartStore.Admin.Controllers
 
 					deploymentModel.ProfileDetails = PrepareProfileDetailsModel(profile, true);
 
+					if (x.ResultInfo.HasValue())
+					{
+						var resultInfo = XmlHelper.Deserialize<DataDeploymentResult>(x.ResultInfo);
+
+						deploymentModel.LastResult = new ExportDeploymentModel.LastResultInfo
+						{
+							Execution = _dateTimeHelper.ConvertToUserTime(resultInfo.LastExecutionUtc, DateTimeKind.Utc),
+							ExecutionPretty = resultInfo.LastExecutionUtc.RelativeFormat(true, "f"),
+							Error = resultInfo.LastError
+						};
+					}
 					return deploymentModel;
 				})
 				.ToList();

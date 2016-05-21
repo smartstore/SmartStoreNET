@@ -10,9 +10,8 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 {
 	public class HttpFilePublisher : IFilePublisher
 	{
-		public virtual bool Publish(ExportDeploymentContext context, ExportDeployment deployment)
+		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)
 		{
-			var result = true;
 			var succeeded = 0;
 			var url = deployment.Url;
 
@@ -45,11 +44,12 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 					}
 					else if (response.Content != null)
 					{
-						result = false;
+						context.Result.LastError = context.T("Admin.Common.HttpStatus", (int)response.StatusCode, response.StatusCode.ToString());
+
 						var content = response.Content.ReadAsStringAsync().Result;
 
-						var msg = "Multipart form data upload failed. {0} ({1}). Response: {2}".FormatInvariant(
-							response.StatusCode.ToString(), (int)response.StatusCode, content.NaIfEmpty().Truncate(2000, "..."));
+						var msg = "Multipart form data upload failed. HTTP status {0} ({1}). Response: {2}".FormatInvariant(
+							(int)response.StatusCode, response.StatusCode.ToString(), content.NaIfEmpty().Truncate(2000, "..."));
 
 						context.Log.Error(msg);
 					}
@@ -72,8 +72,6 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 			}
 
 			context.Log.Information("{0} file(s) successfully uploaded via HTTP ({1}).".FormatInvariant(succeeded, deployment.HttpTransmissionType.ToString()));
-
-			return result;
 		}
 	}
 }

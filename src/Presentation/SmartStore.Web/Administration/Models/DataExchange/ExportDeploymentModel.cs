@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.DataExchange;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Services.DataExchange.Export.Deployment;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 
@@ -91,5 +93,19 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool UseSsl { get; set; }
 
 		public ExportProfileDetailsModel ProfileDetails { get; set; }
+
+		public LastResultInfo LastResult { get; set; }
+
+		public class LastResultInfo
+		{
+			public DateTime Execution { get; set; }
+			public string ExecutionPretty { get; set; }
+			public string Error { get; set; }
+
+			public bool Succeeded
+			{
+				get { return Error.IsEmpty(); }
+			}
+		}
 	}
 }

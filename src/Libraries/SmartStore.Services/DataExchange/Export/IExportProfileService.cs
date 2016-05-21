@@ -108,7 +108,13 @@ namespace SmartStore.Services.DataExchange.Export
 		ExportDeployment GetExportDeploymentById(int id);
 
 		/// <summary>
-		/// Deleted a export deployment
+		/// Update an export deployment
+		/// </summary>
+		/// <param name="deployment">Export deployment</param>
+		void UpdateExportDeployment(ExportDeployment deployment);
+
+		/// <summary>
+		/// Deleted an export deployment
 		/// </summary>
 		/// <param name="deployment">Export deployment</param>
 		void DeleteExportDeployment(ExportDeployment deployment);

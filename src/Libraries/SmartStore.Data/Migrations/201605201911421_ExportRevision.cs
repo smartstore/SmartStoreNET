@@ -134,6 +134,10 @@ namespace SmartStore.Data.Migrations
 				"Specifies the type of publishing.",
 				"Legt die Art Veröffentlichung fest.");
 
+			builder.AddOrUpdate("Common.Publishing",
+				"Publishing",
+				"Veröffentlichung");
+
 
 			builder.Delete(
 				"Admin.DataExchange.Export.FolderAndFileName.Validate",

@@ -154,7 +154,6 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public string ZipPath { get; set; }
 
-		[SmartResourceDisplayName("Admin.DataExchange.Export.ExportFiles")]
 		public int ExportFileCount
 		{
 			get

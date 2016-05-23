@@ -114,7 +114,7 @@ namespace SmartStore.Admin.Controllers
 			return url;
 		}
 
-		private ExportProfileDetailsModel PrepareProfileDetailsModel(ExportProfile profile, bool forEdit)
+		private ExportProfileDetailsModel PrepareProfileDetailsModel(ExportProfile profile, Provider<IExportProvider> provider, bool forEdit)
 		{
 			var model = new ExportProfileDetailsModel
 			{
@@ -127,7 +127,7 @@ namespace SmartStore.Admin.Controllers
 				var zipPath = profile.GetExportZipPath();
 
 				model.ZipPath = (System.IO.File.Exists(zipPath) ? zipPath : null);
-				model.ExportFiles = profile.GetExportFiles();
+				model.ExportFiles = profile.GetExportFiles(provider).ToList();
 
 				if (forEdit && profile.Deployments.Any(x => x.DeploymentType == ExportDeploymentType.PublicFolder))
 				{
@@ -184,7 +184,7 @@ namespace SmartStore.Admin.Controllers
 			model.Provider = new ExportProfileModel.ProviderModel();
 			model.Provider.ThumbnailUrl = GetThumbnailUrl(provider);
 
-			model.Details = PrepareProfileDetailsModel(profile, forEdit);
+			model.Details = PrepareProfileDetailsModel(profile, provider, forEdit);
 
 			if (provider != null)
 			{
@@ -551,12 +551,16 @@ namespace SmartStore.Admin.Controllers
 				var profile = _exportService.GetExportProfileById(profileId);
 				if (profile != null)
 				{
-					var model = PrepareProfileDetailsModel(profile, false);
-
-					return Json(new
+					var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+					if (provider != null && !provider.Metadata.IsHidden)
 					{
-						exportFileCount = this.RenderPartialViewToString("ProfileFileCount", model)
-                    }, JsonRequestBehavior.AllowGet);
+						var exportFileCount = profile.GetExportFiles(provider).Count();
+
+						if (System.IO.File.Exists(profile.GetExportZipPath()))
+							++exportFileCount;
+
+						return Json(this.RenderPartialViewToString("ProfileFileCount", exportFileCount), JsonRequestBehavior.AllowGet);
+					}
 				}
 			}
 
@@ -570,9 +574,13 @@ namespace SmartStore.Admin.Controllers
 				var profile = _exportService.GetExportProfileById(profileId);
 				if (profile != null)
 				{
-					var model = PrepareProfileDetailsModel(profile, true);
+					var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+					if (provider != null && !provider.Metadata.IsHidden)
+					{
+						var model = PrepareProfileDetailsModel(profile, provider, true);
 
-					return PartialView(model);
+						return PartialView(model);
+					}
 				}
 			}
 
@@ -657,7 +665,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			var model = new ExportProfileModel();
@@ -680,7 +688,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			if (!ModelState.IsValid)
@@ -813,7 +821,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			try
@@ -842,7 +850,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			if (!profile.Enabled)
@@ -1053,7 +1061,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			var taskParams = new Dictionary<string, string>();
@@ -1180,10 +1188,8 @@ namespace SmartStore.Admin.Controllers
 		{
 			var profile = _exportService.GetExportProfileById(id);
 			
-			_services.DbContext.DetachEntity<ExportProfile>(profile);
+			_services.DbContext.DetachEntity(profile);
 			profile.FileNamePattern = pattern.EmptyNull();
-
-			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
 
 			var resolvedPattern = profile.ResolveFileNamePattern(_services.StoreContext.CurrentStore, 1, _dataExchangeSettings.MaxFileNameLength);
 
@@ -1230,7 +1236,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			if (ModelState.IsValid)
@@ -1259,7 +1265,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(deployment.Profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			var model = PrepareDeploymentModel(deployment.Profile, deployment, provider, true);
@@ -1279,7 +1285,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(deployment.Profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			if (ModelState.IsValid)
@@ -1308,7 +1314,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(deployment.Profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			int profileId = deployment.ProfileId;

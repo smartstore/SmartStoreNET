@@ -24,7 +24,7 @@ namespace SmartStore.Services.DataExchange.Export
 		/// <returns><c>true</c> provider is valid, <c>false</c> provider is invalid.</returns>
 		public static bool IsValid(this Provider<IExportProvider> provider)
 		{
-			return provider != null;
+			return provider != null && provider.Value != null;
 		}
 
 		/// <summary>
@@ -85,20 +85,21 @@ namespace SmartStore.Services.DataExchange.Export
 		/// Gets existing export files for an export profile
 		/// </summary>
 		/// <param name="profile">Export profile</param>
+		/// <param name="provider">Export provider</param>
 		/// <returns>List of file names</returns>
-		public static List<string> GetExportFiles(this ExportProfile profile)
+		public static IEnumerable<string> GetExportFiles(this ExportProfile profile, Provider<IExportProvider> provider)
 		{
 			var exportFolder = profile.GetExportFolder(true);
 
-			if (System.IO.Directory.Exists(exportFolder))
+			if (System.IO.Directory.Exists(exportFolder) && provider.Value.FileExtension.HasValue())
 			{
-				return System.IO.Directory.EnumerateFiles(exportFolder, "*", SearchOption.AllDirectories)
-					.OrderBy(x => x)
-					.ToList();
+				var filter = "*.{0}".FormatInvariant(provider.Value.FileExtension.ToLower());
+
+				return System.IO.Directory.EnumerateFiles(exportFolder, filter, SearchOption.AllDirectories).OrderBy(x => x);
 			}
 
-			return new List<string>();
-        }
+			return Enumerable.Empty<string>();
+		}
 
 		/// <summary>
 		/// Resolves the file name pattern for an export profile

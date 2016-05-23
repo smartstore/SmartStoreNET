@@ -238,7 +238,7 @@
 				});
 
 				$.get('@Url.Action("ProfileListDetails")?profileId=' + profileId, function (response) {
-					$('#ExportFileCount' + profileId).html(response.exportFileCount || '');
+					$('#ExportFileCount' + profileId).html(response || '');
 				});
 			}
 		});

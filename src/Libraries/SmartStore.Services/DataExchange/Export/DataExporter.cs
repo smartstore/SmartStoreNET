@@ -1245,7 +1245,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 							if (ctx.Request.Profile.Deployments.Any(x => x.Enabled))
 							{
-								SetProgress(ctx, T("Common.Deployment"));
+								SetProgress(ctx, T("Common.Publishing"));
 
 								allDeploymentsSucceeded = Deploy(ctx, zipPath);
 							}

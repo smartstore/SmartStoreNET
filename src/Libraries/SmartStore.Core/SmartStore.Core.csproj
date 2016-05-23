@@ -190,6 +190,7 @@
     <Compile Include="Extensions\XPathExtensions.cs" />
     <Compile Include="Fakes\FakeController.cs" />
     <Compile Include="IActivatable.cs" />
+    <Compile Include="Indexing\ISearchEngine.cs" />
     <Compile Include="Infrastructure\ContextState.cs" />
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeAccessor.cs" />
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeProvider.cs" />
@@ -607,7 +608,9 @@
   <ItemGroup>
     <Compile Include="Infrastructure\ObjectSignatureAttribute.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Indexing\Readme.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

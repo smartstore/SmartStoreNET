@@ -32,6 +32,28 @@ namespace SmartStore.Utilities
 		}
 
 		/// <summary>
+		/// Ensures that path is a valid root path
+		/// </summary>
+		/// <param name="path">Relative path</param>
+		/// <returns>Valid root path</returns>
+		public static string ValidateRootPath(string path)
+		{
+			if (path.HasValue())
+			{
+				path = path.Replace('\\', '/');
+
+				if (!path.StartsWith("~/"))
+				{
+					if (path.StartsWith("~"))
+						path = path.Substring(1);
+
+					path = (path.StartsWith("/") ? "~" : "~/") + path;
+				}
+			}
+			return path;
+		}
+
+		/// <summary>
 		/// Safe way to cleanup the temp directory. Should be called via scheduled task.
 		/// </summary>
 		public static void TempCleanup()

@@ -1109,9 +1109,6 @@ namespace SmartStore.Services.DataExchange.Export
 
 						ctx.ExecuteContext.FileName = resolvedPattern + fileExtension;
 						path = Path.Combine(ctx.ExecuteContext.Folder, ctx.ExecuteContext.FileName);
-
-						if (ctx.ExecuteContext.HasPublicDeployment)
-							ctx.ExecuteContext.PublicFileUrl = ctx.Store.Url.EnsureEndsWith("/") + PublicFolder.EnsureEndsWith("/") + ctx.ExecuteContext.FileName;
 					}
 
 					if (CallProvider(ctx, null, "Execute", path))

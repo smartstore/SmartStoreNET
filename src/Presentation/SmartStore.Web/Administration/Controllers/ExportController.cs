@@ -321,8 +321,6 @@ namespace SmartStore.Admin.Controllers
 				{
 					var deploymentModel = PrepareDeploymentModel(profile, x, null, false);
 
-					deploymentModel.ProfileDetails = PrepareProfileDetailsModel(profile, true);
-
 					if (x.ResultInfo.HasValue())
 					{
 						var resultInfo = XmlHelper.Deserialize<DataDeploymentResult>(x.ResultInfo);
@@ -451,6 +449,8 @@ namespace SmartStore.Admin.Controllers
 				PassiveMode = deployment.PassiveMode,
 				UseSsl = deployment.UseSsl
 			};
+
+			model.PublicFolderUrl = deployment.GetPublicFolderUrl(Services);
 
 			if (forEdit)
 			{

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Stores;
@@ -156,6 +157,63 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			return path;
+		}
+
+		/// <summary>
+		/// Get url of the public folder and take filtering and projection into consideration
+		/// </summary>
+		/// <param name="deployment">Export deployment</param>
+		/// <param name="services">Common services</param>
+		/// <returns>Absolute URL of the public folder</returns>
+		public static string GetPublicFolderUrl(this ExportDeployment deployment, ICommonServices services)
+		{
+			if (deployment != null && deployment.DeploymentType == ExportDeploymentType.PublicFolder)
+			{
+				var filter = XmlHelper.Deserialize<ExportFilter>(deployment.Profile.Filtering);
+				var storeId = filter.StoreId;
+
+				if (storeId == 0)
+				{
+					var projection = XmlHelper.Deserialize<ExportProjection>(deployment.Profile.Projection);
+					storeId = (projection.StoreId ?? 0);
+				}
+
+				var store = (storeId == 0 ? services.StoreContext.CurrentStore : services.StoreService.GetStoreById(storeId));
+
+				var url = string.Concat(
+					store.Url.EnsureEndsWith("/"),
+					DataExporter.PublicFolder.EnsureEndsWith("/"),
+					deployment.SubFolder.HasValue() ? deployment.SubFolder.EnsureEndsWith("/") : ""
+				);
+
+				return url;
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Get icon class for a deployment type
+		/// </summary>
+		/// <param name="type">Deployment type</param>
+		/// <returns>Icon class</returns>
+		public static string GetIconClass(this ExportDeploymentType type)
+		{
+			switch (type)
+			{
+				case ExportDeploymentType.FileSystem:
+					return "fa-folder-open-o";
+				case ExportDeploymentType.Email:
+					return "fa-envelope-o";
+				case ExportDeploymentType.Http:
+					return "fa-globe";
+				case ExportDeploymentType.Ftp:
+					return "fa-files-o";
+				case ExportDeploymentType.PublicFolder:
+					return "fa-unlock";
+				default:
+					return "fa-question";
+			}
 		}
 	}
 }

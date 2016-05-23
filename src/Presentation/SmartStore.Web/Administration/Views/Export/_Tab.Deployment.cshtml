@@ -1,5 +1,7 @@
-﻿@model ExportProfileModel
+﻿@using SmartStore.Core.Domain.DataExchange
+@using SmartStore.Services.DataExchange.Export
 @using SmartStore.Admin.Models.DataExchange
+@model ExportProfileModel
 
 <table class="adminContent">
 	<tr>
@@ -55,11 +57,30 @@
 				@Html.ValidationMessageFor(x => x.CreateZipArchive)
 				@if (Model.Details.ZipPath.HasValue())
 				{
+					@*TODO: move*@
 					<div style="display: inline-block; margin-left: 10px;">
 						@Html.IconForFileExtension(Path.GetExtension(Model.Details.ZipPath), false)
 						<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = Path.GetFileName(Model.Details.ZipPath) })" download>@Path.GetFileName(Model.Details.ZipPath)</a>
 					</div>
 				}
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.EmailAccountId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.EmailAccountId, Model.AvailableEmailAccounts, Model.UnspecifiedString)
+				@Html.ValidationMessageFor(x => x.EmailAccountId)
+			</td>
+		</tr>
+		<tr id="CompletedEmailAddressesContainer">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.CompletedEmailAddresses)
+			</td>
+			<td class="adminData">
+				@Html.HiddenFor(model => model.CompletedEmailAddresses)
+				@Html.ValidationMessageFor(x => x.CompletedEmailAddresses)
 			</td>
 		</tr>
 		<tr>
@@ -72,47 +93,31 @@
 			</td>
 		</tr>
 	}
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(x => x.EmailAccountId)
-		</td>
-		<td class="adminData">
-			@Html.DropDownListFor(x => x.EmailAccountId, Model.AvailableEmailAccounts, Model.UnspecifiedString)
-			@Html.ValidationMessageFor(x => x.EmailAccountId)
-		</td>
-	</tr>
-	<tr id="CompletedEmailAddressesContainer">
-		<td class="adminTitle">
-			@Html.SmartLabelFor(x => x.CompletedEmailAddresses)
-		</td>
-		<td class="adminData">
-			@Html.HiddenFor(model => model.CompletedEmailAddresses)
-			@Html.ValidationMessageFor(x => x.CompletedEmailAddresses)
-		</td>
-	</tr>
 </table>
 
 <p>&nbsp;</p>
 
 @if (Model.Provider.IsFileBasedExport)
 {
-	<div class="alert alert-info">
-		@Html.Raw(T("Admin.DataExchange.Export.Deployment.Note"))
+	<div class="admin-config-group">
+		<div class="head">@T("Admin.DataExchange.Export.Deployment.ProfilesTitle")</div>
 	</div>
 
-	<a href="@Url.Action("CreateDeployment", new { id = Model.Id })" class="btn btn-warning btn-above">
-		<i class="fa fa-plus"></i>&nbsp;@T("Common.AddNew")
-	</a>
+	<div class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+		@Html.Raw(T("Admin.DataExchange.Export.Deployment.Note"))
+	</div>
 
 	if (Model.Deployments.Count > 0)
 	{
 		<div>
-			<table id="export-deployment-list" class="table admin-table">
+			<table id="export-deployment-list" class="table admin-table profile-list">
 				<thead>
 					<tr>
 						<th>@T("Admin.DataExchange.Export.Deployment.Name")</th>
-						<th>@T("Admin.DataExchange.Export.Deployment.DeploymentType")</th>
+						<th>@T("Admin.DataExchange.Export.Deployment.PublishingTarget")</th>
 						<th class="ac">@T("Common.Enabled")</th>
+						<th class="ac">@T("Admin.DataExchange.Export.ExportFiles")</th>
 						<th>@T("Admin.Common.LastRun")</th>
 						<th>@T("Admin.Common.Actions")</th>
 					</tr>
@@ -123,13 +128,36 @@
 						var result = deployment.LastResult;
 						<tr class="@(deployment.Enabled ? "" : "disabled")">
 							<td>
-								<a href="@Url.Action("EditDeployment", new { id = deployment.Id })">@deployment.Name</a>
+								<div>
+									<a href="@Url.Action("EditDeployment", new { id = deployment.Id })">@deployment.Name</a>
+								</div>
+								<div class="muted">
+									<i class="fa @(deployment.DeploymentType.GetIconClass())"></i>&nbsp;@deployment.DeploymentTypeName
+								</div>
 							</td>
 							<td>
-								@Html.Partial("InfoDeployment", deployment)
+								@if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
+								{
+									@deployment.FileSystemPath.NaIfEmpty()
+								}
+								else if (deployment.DeploymentType == ExportDeploymentType.Email)
+								{
+									@deployment.EmailAddresses.NaIfEmpty()
+								}
+								else if (deployment.DeploymentType == ExportDeploymentType.Http || deployment.DeploymentType == ExportDeploymentType.Ftp)
+								{
+									@deployment.Url.NaIfEmpty()
+								}
+								else if (deployment.DeploymentType == ExportDeploymentType.PublicFolder)
+								{
+									@deployment.PublicFolderUrl.NaIfEmpty()
+								}
 							</td>
 							<td class="ac">
 								@Html.SymbolForBool(deployment.Enabled)
+							</td>
+							<td class="ac">
+								TODO
 							</td>
 							<td>
 								@if (result == null)
@@ -144,7 +172,7 @@
 								else
 								{
 									<div>@result.Execution.ToString("g")</div>
-									<div class="text-error" style="margin-top: 2px;"><strong>@T("Common.Error"): </strong> <span>@result.Error</span></div>
+									<div class="text-error"><strong>@T("Common.Error"): </strong> <span>@result.Error</span></div>
 								}
 							</td>
 							<td>
@@ -158,6 +186,14 @@
 			</table>
 		</div>
 	}
+	else
+	{
+		<div class="muted">@T("Admin.DataExchange.Export.NoProfiles")</div>
+	}
+
+	<a href="@Url.Action("CreateDeployment", new { id = Model.Id })" class="btn btn-warning">
+		<i class="fa fa-plus"></i>&nbsp;&nbsp;@T("Admin.DataExchange.AddNewProfile")
+	</a>
 }
 else
 {
@@ -209,7 +245,7 @@ else
 				<td>@Model.FileNamePatternDescriptions.SafeGet(7)</td>
 			</tr>
 		</tbody>
-</table>
+	</table>
 }
 
 <script type="text/javascript">
@@ -218,7 +254,7 @@ else
 		// show/hide file name pattern descriptions
 		$('#FileNamePatternDescriptionLink').click(function () {
 			var descriptions = $('#FileNamePatternDescription');
-			$('#FileNamePatternDescriptionLink').html((descriptions.is(':visible') ? '@T("Admin.Common.Show")' : '@T("Admin.Common.Hide")') + '...');
+			$('#FileNamePatternDescriptionLink').html((descriptions.is(':visible') ? '@T("Admin.Common.Show")' : '@T("Admin.Common.Hide")') + '…');
 			descriptions.toggle();
 		});
 	});

@@ -82,8 +82,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.SubFolder",
 				"Name of subfolder",
 				"Name des Unterordners",
-				"Specifies the name of a subfolder where to deploy the data.",
-				"Legt den Namen eines Unterordners fest, in den die Daten bereitgestellt werden sollen.");
+				"Specifies the name of a subfolder where to publish the data.",
+				"Legt den Namen eines Unterordners fest, in den die Daten veröffentlicht werden sollen.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.ZipUsageNote",
 				"If there are a large number of export files, it is recommended to use the option <b>Create ZIP archive</b>. This saves time and avoids problems, such as a full email mailbox.",
@@ -105,6 +105,34 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Common.LastRun",	"Last run",	"Letzte Ausführung");
 			builder.AddOrUpdate("Admin.Common.SuccessfulOn", "Successful on", "Erfolgreich am");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.Name",
+				"Name of profile",
+				"Name des Profils",
+				"Specifies the name of the publishing profile.",
+				"Legt den Namen des Veröffentlichungsprofils fest.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.ProfilesTitle",
+				"Publishing profiles",
+				"Veröffentlichungsprofile");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.NoProfiles",
+				"There are no publishing profiles.",
+				"Es liegen keine Veröffentlichungsprofile vor.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.Note",
+				"Click <b>New profile</b> to add one or multiple publishing profiles to specify how to further proceed with the export files.",
+				"Legen Sie über <b>Neues Profil</b> ein oder mehrere Veröffentlichungsprofile an, um festzulegen wie mit den Exportdateien weiter zu verfahren ist.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.PublishingTarget",
+				"Publishing target",
+				"Veröffentlichungsziel");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.DeploymentType",
+				"Publishing type",
+				"Art der Veröffentlichung",
+				"Specifies the type of publishing.",
+				"Legt die Art Veröffentlichung fest.");
 
 
 			builder.Delete(

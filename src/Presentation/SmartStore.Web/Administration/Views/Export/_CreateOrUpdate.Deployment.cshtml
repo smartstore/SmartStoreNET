@@ -1,6 +1,7 @@
-﻿@model ExportDeploymentModel
-@using SmartStore.Core.Domain.DataExchange;
-@using SmartStore.Admin.Models.DataExchange;
+﻿@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Services.DataExchange.Export
+@using SmartStore.Admin.Models.DataExchange
+@model ExportDeploymentModel
 
 @Html.ValidationSummary(false)
 
@@ -10,6 +11,7 @@
 @if (!Model.CreateZip)
 {
 	<div id="ZipUsageNote" class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">&#215;</button>
 		@Html.Raw(T("Admin.DataExchange.Export.Deployment.ZipUsageNote"))
 	</div>
 }
@@ -20,9 +22,14 @@
 			@Html.SmartLabelFor(x => x.DeploymentType)
 		</td>
 		<td class="adminData">
-			@Html.DropDownListFor(x => x.DeploymentType, Model.AvailableDeploymentTypes)
+			<select name="@Html.FieldNameFor(x => x.DeploymentType)" id="@Html.FieldIdFor(x => x.DeploymentType)">
+				@foreach (var item in Model.AvailableDeploymentTypes)
+				{
+					var type = (ExportDeploymentType)item.Value.ToInt();
+					<option value="@item.Value" data-icon="@(type.GetIconClass())" @Html.Attr("selected", "selected", Model.DeploymentType == type)>@item.Text</option>
+				}
+			</select>
 			@Html.ValidationMessageFor(x => x.DeploymentType)
-			
 		</td>
 	</tr>
 	<tr class="deployment-all">
@@ -151,10 +158,15 @@
 <script type="text/javascript">
 	jQuery(document).ready(function () {
 
-		$('#@(Html.FieldIdFor(x => x.EmailAddresses))').select2({ tags: [@(Html.Raw(Model.SerializedEmailAddresses))] });
+		$('#@(Html.FieldIdFor(x => x.EmailAddresses))').select2({
+			tags: [@(Html.Raw(Model.SerializedEmailAddresses))]
+		});
 
-		// deployment type changed
-		$('#@(Html.FieldIdFor(x => x.DeploymentType))').change(function () {
+		$('#@(Html.FieldIdFor(x => x.DeploymentType))').select2({
+			minimumResultsForSearch: 16,
+			formatResult: selectDeploymentType,
+			formatSelection: selectDeploymentType
+		}).change(function () {
 			var table = $('#DeploymentTable'),
 				val = $(this).val();
 
@@ -163,6 +175,29 @@
 
 			$('#ZipUsageNote').toggle(val === '@((int)ExportDeploymentType.Email)' || val === '@((int)ExportDeploymentType.Http)' || val === '@((int)ExportDeploymentType.Ftp)');
 		}).trigger('change');
+
+
+		function selectDeploymentType(item) {
+			try {
+				if (item.id.length > 0) {
+					var option = $(item.element),
+						html = '<div>';
+
+					if (option.length === 0) {
+						option = $('select[name="@(Html.FieldNameFor(x => x.DeploymentType))"]').find('option[value="' + item.id + '"]');
+					}
+
+					html += '<i class="fa ' + option.attr('data-icon') + '"></i> ';
+					html += item.text;
+
+					html += '</div>';
+					return html;
+				}
+			}
+			catch (e) { }
+
+			return item.text;
+		}
 
 	});
 </script>

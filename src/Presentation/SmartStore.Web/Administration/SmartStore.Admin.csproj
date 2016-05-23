@@ -508,7 +508,6 @@
     <Content Include="Views\Export\_Tab.Projection.cshtml" />
     <Content Include="Views\Export\InfoProfile.cshtml" />
     <Content Include="Views\Export\_Tab.Deployment.cshtml" />
-    <Content Include="Views\Export\InfoDeployment.cshtml" />
     <Content Include="Views\UrlRecord\List.cshtml" />
     <Content Include="Views\UrlRecord\Edit.cshtml" />
     <Content Include="Views\UrlRecord\_CreateOrUpdate.cshtml" />

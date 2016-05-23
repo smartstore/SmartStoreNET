@@ -21,16 +21,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 			}
 			else
 			{
-				destinationFolder = deployment.FileSystemPath;
-
-				if (!destinationFolder.StartsWith("~/"))
-				{
-					if (destinationFolder.StartsWith("~"))
-						destinationFolder = destinationFolder.Substring(1);
-
-					destinationFolder = (destinationFolder.StartsWith("/") ? "~" : "~/") + destinationFolder;
-				}
-
+				destinationFolder = FileSystemHelper.ValidateRootPath(deployment.FileSystemPath);
 				destinationFolder = CommonHelper.MapPath(destinationFolder);
 			}
 

@@ -1,42 +1,82 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
 @using SmartStore.Web.Framework;
 @model ExportProfileDetailsModel
-@helper FileDownloadLink(string path, string fileName)
+@helper FileDownloadLink(ExportProfileDetailsModel.FileInfo info)
 {
 	<div>
-		@Html.IconForFileExtension(Path.GetExtension(fileName), false)
-		<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
+		@Html.IconForFileExtension(Path.GetExtension(info.FilePath), false)
+		<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = info.FileName })" title="@Model.DownloadString" download>@info.FileRootPath</a>
 	</div>
 }
-@if (Model.ExportFiles.Count == 0)
+@if (!Model.ExportFiles.Any() && !Model.PublicFiles.Any() && Model.ZipPath == null)
 {
-	<div class="alert alert-info">@T("Admin.Common.NoTempFilesFound")</div>
+	<div class="alert alert-info">@T("Common.NoFilesAvailable")</div>
 }
 else
 {
-	<h4>@T("Admin.Common.TemporaryFiles")</h4>
-	if (Model.ZipPath.HasValue())
-	{
-		<div style="margin-bottom: 4px;">@FileDownloadLink(Model.ZipPath, Path.GetFileName(Model.ZipPath))</div>
-	}
-
-	foreach (var path in Model.ExportFiles)
-	{
-		@FileDownloadLink(path, Path.GetFileName(path))
-	}
-}
-@if (Model.PublicFiles.Count > 0)
-{
-	<p>&nbsp;</p>
-	<h4>@T("Admin.Common.PublicFiles")</h4>
-
-	foreach (var grp in Model.PublicFiles.OrderBy(x => x.StoreId).GroupBy(x => x.StoreId))
-	{
-		<p></p>
-		<div>@(grp.First().StoreName):</div>
-		foreach (var file in grp)
+	<div>
+		@if (Model.ZipPath != null)
 		{
-			<div><a href="@file.FileUrl" download>@file.FileUrl</a></div>
+			<div>@FileDownloadLink(Model.ZipPath)</div>
+			if (Model.ExportFiles.Any())
+			{
+				<p>&nbsp;</p>
+			}
 		}
-	}
+
+		@foreach (var file in Model.ExportFiles)
+		{
+			@FileDownloadLink(file)
+		}
+
+		@if (Model.PublicFiles.Count > 0)
+		{
+			<p>&nbsp;</p>
+
+			foreach (var grp in Model.PublicFiles.OrderBy(x => x.StoreId).GroupBy(x => x.StoreId))
+			{
+				<div style="margin-bottom: 10px;">
+					<div>
+						<span style="font-size: 1.15em;">@T("Admin.Common.PublicFiles")</span> <span class="smaller">(@(grp.First().StoreName))</span>
+					</div>
+
+					@foreach (var file in grp)
+					{
+						<div class="clearfix">
+							<button type="button" class="btn btn-small pull-right copy-to-clipboard">
+								<i class="fa fa-clipboard"></i>
+							</button>
+							<a href="@file.FileUrl" title="@Model.DownloadString" style="vertical-align: middle;" download>@file.FileUrl</a>
+						</div>
+					}
+				</div>
+			}
+		}
+	</div>
 }
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		// copy url to clipboard button
+		$('button.copy-to-clipboard').tooltip({
+			placement: 'bottom',
+			trigger: 'hover',
+			title: '@T("Common.CopyToClipboard")'
+		}).click(function () {
+			var self = $(this),
+				url = self.parent().find('a').attr('href');
+
+			var succeeded = window.copyTextToClipboard(url);
+
+			self.attr('data-original-title', succeeded ? '@T("Common.CopyToClipboard.Succeeded")' : '@T("Common.CopyToClipboard.Failded")')
+				.tooltip('show');
+
+			setTimeout(function () {
+				self.attr('data-original-title', '@T("Common.CopyToClipboard")')
+					.tooltip('hide');
+			}, 2000);
+		});
+
+	});
+</script>

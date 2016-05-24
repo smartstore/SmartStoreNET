@@ -138,11 +138,21 @@ namespace SmartStore.Data.Migrations
 				"Publishing",
 				"Veröffentlichung");
 
+			builder.AddOrUpdate("Common.NoFilesAvailable",
+				"There are no files available.",
+				"Es sind keine Dateien vorhanden.");
+
+			builder.AddOrUpdate("Common.CopyToClipboard", "Copy to clipboard", "In die Zwischenablage kopieren");
+			builder.AddOrUpdate("Common.CopyToClipboard.Succeeded", "Copied!", "Kopiert!");
+			builder.AddOrUpdate("Common.CopyToClipboard.Failded", "Failed to copy.", "Kopieren ist fehlgeschlagen.");
+
 
 			builder.Delete(
 				"Admin.DataExchange.Export.FolderAndFileName.Validate",
 				"Admin.DataExchange.Export.Deployment.IsPublic",
-				"Admin.DataExchange.Export.Deployment.CreateZip");
+				"Admin.DataExchange.Export.Deployment.CreateZip",
+				"Admin.Common.TemporaryFiles",
+				"Admin.Common.NoTempFilesFound");
 		}
 	}
 }

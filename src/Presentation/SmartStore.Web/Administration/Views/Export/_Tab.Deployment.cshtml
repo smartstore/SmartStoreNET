@@ -55,14 +55,6 @@
 			<td class="adminData">
 				@Html.EditorFor(x => x.CreateZipArchive)
 				@Html.ValidationMessageFor(x => x.CreateZipArchive)
-				@if (Model.Details.ZipPath.HasValue())
-				{
-					@*TODO: move*@
-					<div style="display: inline-block; margin-left: 10px;">
-						@Html.IconForFileExtension(Path.GetExtension(Model.Details.ZipPath), false)
-						<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = Path.GetFileName(Model.Details.ZipPath) })" download>@Path.GetFileName(Model.Details.ZipPath)</a>
-					</div>
-				}
 			</td>
 		</tr>
 		<tr>

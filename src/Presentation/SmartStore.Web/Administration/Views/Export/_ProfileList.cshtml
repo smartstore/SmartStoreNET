@@ -51,7 +51,7 @@
 							@Html.IconForFileExtension(profile.Provider.FileExtension, true)
 						</td>
 						<td id="ExportFileCount@(profile.Id)" class="ac">
-							@Html.Partial("ProfileFileCount", profile.Details.ExportFileCount)
+							@Html.Partial("ProfileFileCount", profile.ExportFileCount)
 						</td>
 						<td>
 							<div class="last-run-info">

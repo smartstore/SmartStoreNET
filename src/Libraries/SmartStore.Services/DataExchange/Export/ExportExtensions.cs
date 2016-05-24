@@ -102,6 +102,22 @@ namespace SmartStore.Services.DataExchange.Export
 		}
 
 		/// <summary>
+		/// Get number of existing export files
+		/// </summary>
+		/// <param name="profile">Export profile</param>
+		/// <param name="provider">Export provider</param>
+		/// <returns>Number of export files</returns>
+		public static int GetExportFileCount(this ExportProfile profile, Provider<IExportProvider> provider)
+		{
+			var result = profile.GetExportFiles(provider).Count();
+
+			if (File.Exists(profile.GetExportZipPath()))
+				++result;
+
+			return result;
+		}
+
+		/// <summary>
 		/// Resolves the file name pattern for an export profile
 		/// </summary>
 		/// <param name="profile">Export profile</param>
@@ -165,21 +181,25 @@ namespace SmartStore.Services.DataExchange.Export
 		/// </summary>
 		/// <param name="deployment">Export deployment</param>
 		/// <param name="services">Common services</param>
-		/// <returns>Absolute URL of the public folder</returns>
-		public static string GetPublicFolderUrl(this ExportDeployment deployment, ICommonServices services)
+		/// <param name="store">Store entity</param>
+		/// <returns>Absolute URL of the public folder (always ends with /) or <c>null</c></returns>
+		public static string GetPublicFolderUrl(this ExportDeployment deployment, ICommonServices services, Store store = null)
 		{
 			if (deployment != null && deployment.DeploymentType == ExportDeploymentType.PublicFolder)
 			{
-				var filter = XmlHelper.Deserialize<ExportFilter>(deployment.Profile.Filtering);
-				var storeId = filter.StoreId;
-
-				if (storeId == 0)
+				if (store == null)
 				{
-					var projection = XmlHelper.Deserialize<ExportProjection>(deployment.Profile.Projection);
-					storeId = (projection.StoreId ?? 0);
-				}
+					var filter = XmlHelper.Deserialize<ExportFilter>(deployment.Profile.Filtering);
+					var storeId = filter.StoreId;
 
-				var store = (storeId == 0 ? services.StoreContext.CurrentStore : services.StoreService.GetStoreById(storeId));
+					if (storeId == 0)
+					{
+						var projection = XmlHelper.Deserialize<ExportProjection>(deployment.Profile.Projection);
+						storeId = (projection.StoreId ?? 0);
+					}
+
+					store = (storeId == 0 ? services.StoreContext.CurrentStore : services.StoreService.GetStoreById(storeId));
+				}
 
 				var url = string.Concat(
 					store.Url.EnsureEndsWith("/"),

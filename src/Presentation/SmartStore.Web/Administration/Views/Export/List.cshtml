@@ -34,7 +34,7 @@
 	</div>
 </div>
 
-<div id="export-profile-file-dialog" class="modal modal-large hide fade" tabindex="-1">
+<div id="export-profile-file-dialog" class="modal modal-xlarge hide fade" tabindex="-1">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal"><b>&#215;</b></button>
 		<h4 class="caption">@T("Admin.DataExchange.Export.ExportFiles")</h4>
@@ -46,6 +46,7 @@
 </div>
 
 <script type="text/javascript">
+
 	jQuery(document).ready(function () {
 		var dialog = $('#export-profile-dialog');
 
@@ -122,6 +123,7 @@
 
 		// selected provider changed
 		$(document).on('change', 'select[name="ProviderSystemName"]', toggleProviderDescription);
+
 
 		function showPrimaryButton(display) {
 			var button = $('#export-profile-dialog').find('.btn-primary').toggle(display);

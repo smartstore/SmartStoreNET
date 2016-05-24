@@ -1,58 +1,50 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
 @using SmartStore.Web.Framework;
 @model ExportProfileDetailsModel
-@helper FileDownloadLink(ExportProfileDetailsModel.FileInfo info)
+@{
+	ViewBag.DownloadString = T("Common.Download").Text;
+	ViewBag.AllStoresString = T("Admin.Common.StoresAll").Text;
+}
+@if (Model.ExportFiles.Any() || Model.PublicFiles.Any())
 {
 	<div>
-		@Html.IconForFileExtension(Path.GetExtension(info.FilePath), false)
-		<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = info.FileName })" title="@Model.DownloadString" download>@info.FileRootPath</a>
+		@foreach (var grp in Model.ExportFiles.OrderBy(x => x.DisplayOrder).GroupBy(x => x.DisplayOrder))
+		{
+			foreach (var file in grp)
+			{
+				<div>
+					@Html.IconForFileExtension(file.FileExtension, false)
+					<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = file.FileName })" title="@ViewBag.DownloadString" download>@file.FileRootPath</a>
+				</div>
+			}
+			<p>&nbsp;</p>
+		}
+
+		@foreach (var grp in Model.PublicFiles.OrderBy(x => x.StoreId).GroupBy(x => x.StoreId))
+		{
+			var storeName = grp.First().StoreName;
+			<div style="margin-bottom: 10px;">
+				<div>
+					<span style="font-size: 1.15em;">@T("Admin.Common.PublicFiles")</span>
+					<span class="smaller">(@(storeName.HasValue() ? storeName : ViewBag.AllStoresString))</span>
+				</div>
+
+				@foreach (var file in grp)
+				{
+					<div class="clearfix">
+						<button type="button" class="btn btn-small pull-right copy-to-clipboard">
+							<i class="fa fa-clipboard"></i>
+						</button>
+						<a href="@file.FileUrl" title="@ViewBag.DownloadString" style="vertical-align: middle;" download>@file.FileUrl</a>
+					</div>
+				}
+			</div>
+		}
 	</div>
-}
-@if (!Model.ExportFiles.Any() && !Model.PublicFiles.Any() && Model.ZipPath == null)
-{
-	<div class="alert alert-info">@T("Common.NoFilesAvailable")</div>
 }
 else
 {
-	<div>
-		@if (Model.ZipPath != null)
-		{
-			<div>@FileDownloadLink(Model.ZipPath)</div>
-			if (Model.ExportFiles.Any())
-			{
-				<p>&nbsp;</p>
-			}
-		}
-
-		@foreach (var file in Model.ExportFiles)
-		{
-			@FileDownloadLink(file)
-		}
-
-		@if (Model.PublicFiles.Count > 0)
-		{
-			<p>&nbsp;</p>
-
-			foreach (var grp in Model.PublicFiles.OrderBy(x => x.StoreId).GroupBy(x => x.StoreId))
-			{
-				<div style="margin-bottom: 10px;">
-					<div>
-						<span style="font-size: 1.15em;">@T("Admin.Common.PublicFiles")</span> <span class="smaller">(@(grp.First().StoreName))</span>
-					</div>
-
-					@foreach (var file in grp)
-					{
-						<div class="clearfix">
-							<button type="button" class="btn btn-small pull-right copy-to-clipboard">
-								<i class="fa fa-clipboard"></i>
-							</button>
-							<a href="@file.FileUrl" title="@Model.DownloadString" style="vertical-align: middle;" download>@file.FileUrl</a>
-						</div>
-					}
-				</div>
-			}
-		}
-	</div>
+	<div class="alert alert-info">@T("Common.NoFilesAvailable")</div>
 }
 
 <script type="text/javascript">

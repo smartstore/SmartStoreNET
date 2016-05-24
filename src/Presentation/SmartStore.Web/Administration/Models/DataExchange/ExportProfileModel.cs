@@ -151,51 +151,44 @@ namespace SmartStore.Admin.Models.DataExchange
 
 	public partial class ExportProfileDetailsModel : EntityModelBase
 	{
-		public string DownloadString { get; set; }
-
 		public int ExportFileCount
 		{
 			get
 			{
-				return (ExportFiles.Count + (ZipPath != null ? 1 : 0));
+				return (ExportFiles.Count + (ZipFile != null ? 1 : 0));
 			}
 		}
 
-		public FileInfo ZipPath { get; set; }
+		public FileInfo ZipFile { get; set; }
 		public List<FileInfo> ExportFiles { get; set; }
-		public List<FileInfo> PublicFiles { get; set;	}
+
+		public FileInfo PublicZipFile { get; set; }
+		public List<FileInfo> PublicFiles { get; set; }
 
 		public class FileInfo
 		{
 			public int StoreId { get; set; }
 			public string StoreName { get; set; }
 
+			public int DisplayOrder { get; set; }
+
 			public string FilePath { get; set; }
 			public string FileUrl { get; set; }
 
-			public string FileName
-			{
-				get
-				{
-					return (FilePath.HasValue() ? Path.GetFileName(FilePath) : "");
-				}
-			}
+			public string FileName { get; set; }
+			public string FileExtension { get; set; }
 
 			public string FileRootPath
 			{
 				get
 				{
 					var rootPath = "";
+					var appPath = HttpRuntime.AppDomainAppPath;
 
-					if (FilePath.HasValue())
-					{
-						var appPath = HttpRuntime.AppDomainAppPath;
+					if (FilePath.StartsWith(appPath))
+						rootPath = FilePath.Replace(appPath, "~/");
 
-						if (FilePath.StartsWith(appPath))
-							rootPath = FilePath.Replace(appPath, "~/");
-
-						rootPath = rootPath.Replace('\\', '/');
-					}
+					rootPath = rootPath.Replace('\\', '/');
 
 					return rootPath;
 				}

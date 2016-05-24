@@ -146,6 +146,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.CopyToClipboard.Succeeded", "Copied!", "Kopiert!");
 			builder.AddOrUpdate("Common.CopyToClipboard.Failded", "Failed to copy.", "Kopieren ist fehlgeschlagen.");
 
+			builder.AddOrUpdate("Products.NoBundledItems",
+				"No bundle items available",
+				"Keine Bundle-Bestandteile vorhanden");
+
 
 			builder.Delete(
 				"Admin.DataExchange.Export.FolderAndFileName.Validate",

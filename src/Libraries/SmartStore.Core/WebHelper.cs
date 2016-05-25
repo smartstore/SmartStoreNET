@@ -11,10 +11,11 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
+using System.Net;
+using System.Text;
 
 namespace SmartStore.Core
 {
-
     public partial class WebHelper : IWebHelper
     {
 		private static bool? s_optimizedCompilationsEnabled;
@@ -598,5 +599,77 @@ namespace SmartStore.Core
 			url = string.Format("{0}://{1}{2}", request.Url.Scheme, request.Url.Authority, url);
 			return url;
 		}
-    }
+
+		public static string GetPublicIPAddress()
+		{
+			string result = string.Empty;
+
+			try
+			{
+				using (var client = new WebClient())
+				{
+					client.Headers["User-Agent"] = "Mozilla/4.0 (Compatible; Windows NT 5.1; MSIE 6.0) (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
+					try
+					{
+						byte[] arr = client.DownloadData("http://checkip.amazonaws.com/");
+						string response = Encoding.UTF8.GetString(arr);
+						result = response.Trim();
+					}
+					catch { }
+				}
+			}
+			catch { }
+
+			var checkers = new string[] 
+			{
+				"https://ipinfo.io/ip",
+				"https://api.ipify.org",
+				"https://icanhazip.com",
+				"https://wtfismyip.com/text",
+				"http://bot.whatismyipaddress.com/"
+			};
+
+			if (string.IsNullOrEmpty(result))
+			{
+				foreach (var checker in checkers)
+				{
+					try
+					{
+						using (var client = new WebClient())
+						{
+							result = client.DownloadString(checker).Replace("\n", "");
+							if (!string.IsNullOrEmpty(result))
+							{
+								break;
+							}
+						}
+					}
+					catch { }
+				}
+			}
+
+			if (string.IsNullOrEmpty(result))
+			{
+				try
+				{
+					var url = "http://checkip.dyndns.org";
+					var req = WebRequest.Create(url);
+					using (var resp = req.GetResponse())
+					{
+						using (var sr = new StreamReader(resp.GetResponseStream()))
+						{
+							var response = sr.ReadToEnd().Trim();
+							var a = response.Split(':');
+							var a2 = a[1].Substring(1);
+							var a3 = a2.Split('<');
+							result = a3[0];
+						}
+					}
+				}
+				catch { }
+			}
+
+			return result;
+		}
+	}
 }

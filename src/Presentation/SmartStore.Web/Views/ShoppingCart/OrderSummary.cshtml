@@ -226,6 +226,14 @@
 						</div>
 					</div>
 				</td>
+
+                @if (Model.DisplayWeight)
+                {
+                    <td class="weight nobr">
+                        <span class="product-weight">@((item.Weight * item.Quantity).ToString("N2")) @Model.MeasureUnitName</span>
+                    </td>
+                }
+
 				<td class="unit-price nobr">
 					@if (!String.IsNullOrWhiteSpace(item.BundleItem.PriceWithDiscount))
 					{

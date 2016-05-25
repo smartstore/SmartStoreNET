@@ -134,7 +134,24 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private ExportProfileDetailsModel PrepareProfileDetailsModel(ExportProfile profile, Provider<IExportProvider> provider)
+		private ExportFileCountModel CreateFileCountModel(ExportProfile profile, Provider<IExportProvider> provider)
+		{
+			var model = new ExportFileCountModel();
+			model.FileCount = profile.GetExportFileCount(provider);
+			model.HasItems = (model.FileCount > 0);
+
+			if (model.FileCount == 0)
+			{
+				model.HasItems = (
+					profile.Cleanup &&
+					profile.ResultInfo.HasValue() &&
+					profile.Deployments.Any(x => x.DeploymentType == ExportDeploymentType.FileSystem || x.DeploymentType == ExportDeploymentType.PublicFolder));
+			}
+
+			return model;
+		}
+
+		private ExportProfileDetailsModel CreateProfileDetailsModel(ExportProfile profile, Provider<IExportProvider> provider)
 		{
 			var model = new ExportProfileDetailsModel
 			{
@@ -214,29 +231,26 @@ namespace SmartStore.Admin.Controllers
 			model.HasActiveProvider = (provider != null);
 			model.FileNamePatternDescriptions = T("Admin.DataExchange.Export.FileNamePatternDescriptions").Text.SplitSafe(";");
 
+			model.ExportFileCount = CreateFileCountModel(profile, provider);
+
 			model.Provider = new ExportProfileModel.ProviderModel();
 			model.Provider.ThumbnailUrl = GetThumbnailUrl(provider);
 
-			model.ExportFileCount = profile.GetExportFileCount(provider);
+			var descriptor = provider.Metadata.PluginDescriptor;
 
-			if (provider != null)
+			if (descriptor != null)
 			{
-				var descriptor = provider.Metadata.PluginDescriptor;
-
-				if (descriptor != null)
-				{
-					model.Provider.Url = descriptor.Url;
-					model.Provider.Author = descriptor.Author;
-					model.Provider.Version = descriptor.Version.ToString();
-				}
-
-				model.Provider.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
-				model.Provider.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata);
-				model.Provider.EntityType = provider.Value.EntityType;
-				model.Provider.EntityTypeName = provider.Value.EntityType.GetLocalizedEnum(Services.Localization, Services.WorkContext);
-				model.Provider.FileExtension = provider.Value.FileExtension;
+				model.Provider.Url = descriptor.Url;
+				model.Provider.Author = descriptor.Author;
+				model.Provider.Version = descriptor.Version.ToString();
 			}
-        }
+
+			model.Provider.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
+			model.Provider.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata);
+			model.Provider.EntityType = provider.Value.EntityType;
+			model.Provider.EntityTypeName = provider.Value.EntityType.GetLocalizedEnum(Services.Localization, Services.WorkContext);
+			model.Provider.FileExtension = provider.Value.FileExtension;
+		}
 
 		private void PrepareProfileModelForEdit(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
 		{
@@ -587,9 +601,8 @@ namespace SmartStore.Admin.Controllers
 					var provider = _exportService.LoadProvider(profile.ProviderSystemName);
 					if (provider != null && !provider.Metadata.IsHidden)
 					{
-						var exportFileCount = profile.GetExportFileCount(provider);
-
-						return Json(this.RenderPartialViewToString("ProfileFileCount", exportFileCount), JsonRequestBehavior.AllowGet);
+						var model = CreateFileCountModel(profile, provider);
+						return Json(this.RenderPartialViewToString("ProfileFileCount", model), JsonRequestBehavior.AllowGet);
 					}
 				}
 			}
@@ -607,7 +620,7 @@ namespace SmartStore.Admin.Controllers
 					var provider = _exportService.LoadProvider(profile.ProviderSystemName);
 					if (provider != null && !provider.Metadata.IsHidden)
 					{
-						var model = PrepareProfileDetailsModel(profile, provider);
+						var model = CreateProfileDetailsModel(profile, provider);
 
 						return PartialView(model);
 					}

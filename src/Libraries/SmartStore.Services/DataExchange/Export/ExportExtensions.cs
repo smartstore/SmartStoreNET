@@ -154,24 +154,42 @@ namespace SmartStore.Services.DataExchange.Export
 		}
 
 		/// <summary>
-		/// Get path of the public folder
+		/// Get path of the deployment folder
 		/// </summary>
 		/// <param name="deployment">Export deployment</param>
-		/// <returns>Public folder path</returns>
-		public static string GetPublicFolder(this ExportDeployment deployment, bool create = false)
+		/// <returns>Deployment folder path</returns>
+		public static string GetDeploymentFolder(this ExportDeployment deployment, bool create = false)
 		{
+			if (deployment == null)
+				return null;
+
 			string path = null;
 
-			if (deployment != null && deployment.DeploymentType == ExportDeploymentType.PublicFolder)
+			if (deployment.DeploymentType == ExportDeploymentType.PublicFolder)
 			{
 				if (deployment.SubFolder.HasValue())
 					path = Path.Combine(HttpRuntime.AppDomainAppPath, DataExporter.PublicFolder, deployment.SubFolder);
 				else
 					path = Path.Combine(HttpRuntime.AppDomainAppPath, DataExporter.PublicFolder);
-
-				if (create && !System.IO.Directory.Exists(path))
-					System.IO.Directory.CreateDirectory(path);
 			}
+			else if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
+			{
+				if (deployment.FileSystemPath.IsEmpty())
+					return null;
+
+				if (Path.IsPathRooted(deployment.FileSystemPath))
+				{
+					path = deployment.FileSystemPath;
+				}
+				else
+				{
+					path = FileSystemHelper.ValidateRootPath(deployment.FileSystemPath);
+					path = CommonHelper.MapPath(path);
+				}
+			}
+
+			if (create && !System.IO.Directory.Exists(path))
+				System.IO.Directory.CreateDirectory(path);
 
 			return path;
 		}

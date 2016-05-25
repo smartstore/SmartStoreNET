@@ -1,6 +1,6 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
 @using SmartStore.Web.Framework;
-@model ExportProfileDetailsModel
+@model ExportFileDetailsModel
 @{
 	ViewBag.DownloadString = T("Common.Download").Text;
 	ViewBag.AllStoresString = T("Admin.Common.StoresAll").Text;
@@ -14,7 +14,8 @@
 			{
 				<div>
 					@Html.IconForFileExtension(file.FileExtension, false)
-					<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = file.FileName })" title="@ViewBag.DownloadString" download>@file.FileRootPath</a>
+					<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = file.FileName, isDeployment = Model.IsDeployment })"
+					   title="@ViewBag.DownloadString" download>@file.FileRootPath</a>
 				</div>
 			}
 			<p>&nbsp;</p>

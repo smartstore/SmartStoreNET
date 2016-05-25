@@ -109,11 +109,11 @@ namespace SmartStore.Admin.Controllers
 			return url;
 		}
 
-		private void AddFileInfo(List<ExportProfileDetailsModel.FileInfo> list, string path, string publicFolderUrl = null, Store store = null)
+		private void AddFileInfo(List<ExportFileDetailsModel.FileInfo> list, string path, string publicFolderUrl = null, Store store = null)
 		{
 			if (System.IO.File.Exists(path) && !list.Any(x => x.FilePath == path))
 			{
-				var fileInfo = new ExportProfileDetailsModel.FileInfo();
+				var fileInfo = new ExportFileDetailsModel.FileInfo();
 				fileInfo.FilePath = path;
 				fileInfo.FileName = Path.GetFileName(path);
 				fileInfo.FileExtension = Path.GetExtension(path);
@@ -145,41 +145,98 @@ namespace SmartStore.Admin.Controllers
 				model.HasItems = (
 					profile.Cleanup &&
 					profile.ResultInfo.HasValue() &&
-					profile.Deployments.Any(x => x.DeploymentType == ExportDeploymentType.FileSystem || x.DeploymentType == ExportDeploymentType.PublicFolder));
+					profile.Deployments.Any(x => x.DeploymentType == ExportDeploymentType.PublicFolder));
 			}
 
 			return model;
 		}
 
-		private ExportProfileDetailsModel CreateProfileDetailsModel(ExportProfile profile, Provider<IExportProvider> provider)
+		private ExportFileCountModel CreateFileCountModel(ExportProfile profile, ExportDeployment deployment)
 		{
-			var model = new ExportProfileDetailsModel
+			if (deployment.DeploymentType != ExportDeploymentType.FileSystem && deployment.DeploymentType != ExportDeploymentType.PublicFolder)
+				return null;
+
+			var model = new ExportFileCountModel();
+
+			if (profile.CreateZipArchive)
 			{
-				Id = profile.Id,
-				ExportFiles = new List<ExportProfileDetailsModel.FileInfo>(),
-				PublicFiles = new List<ExportProfileDetailsModel.FileInfo>()
+				var zipPath = profile.GetExportZipPath();
+				var path = Path.Combine(deployment.GetDeploymentFolder(), Path.GetFileName(zipPath));
+
+				model.FileCount = (System.IO.File.Exists(path) ? 1 : 0);
+				model.HasItems = (model.FileCount > 0);
+
+				return model;
+			}
+
+			var currentStore = Services.StoreContext.CurrentStore;
+			var allStores = Services.StoreService.GetAllStores();
+			var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
+
+			if (resultInfo != null && resultInfo.Files != null)
+			{
+				var deploymentFolder = deployment.GetDeploymentFolder();
+
+				model.FileCount = resultInfo.Files.Count(x => System.IO.File.Exists(Path.Combine(deploymentFolder, x.FileName)));
+				model.HasItems = (model.FileCount > 0);
+			}
+
+			return model;
+		}
+
+		private ExportFileDetailsModel CreateProfileDetailsModel(ExportProfile profile, Provider<IExportProvider> provider, ExportDeployment deployment = null)
+		{
+			var model = new ExportFileDetailsModel
+			{
+				Id = (deployment == null ? profile.Id : deployment.Id),
+				ExportFiles = new List<ExportFileDetailsModel.FileInfo>(),
+				PublicFiles = new List<ExportFileDetailsModel.FileInfo>()
 			};
 
 			try
 			{
-				var publicDeployment = profile.Deployments.FirstOrDefault(x => x.DeploymentType == ExportDeploymentType.PublicFolder);
-				var zipPath = profile.GetExportZipPath();
-
 				// add export files
-				AddFileInfo(model.ExportFiles, zipPath);
+				var currentStore = Services.StoreContext.CurrentStore;
+				var zipPath = profile.GetExportZipPath();
+				var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
 
-				foreach (var path in profile.GetExportFiles(provider))
+				if (deployment == null)
 				{
-					AddFileInfo(model.ExportFiles, path);
+					AddFileInfo(model.ExportFiles, zipPath);
+
+					foreach (var path in profile.GetExportFiles(provider))
+					{
+						AddFileInfo(model.ExportFiles, path);
+					}
+				}
+				else if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
+				{
+					var deploymentFolder = deployment.GetDeploymentFolder();
+
+					if (profile.CreateZipArchive)
+					{
+						AddFileInfo(model.ExportFiles, Path.Combine(deploymentFolder, Path.GetFileName(zipPath)));
+					}
+					else if (resultInfo.Files != null)
+					{
+						foreach (var file in resultInfo.Files)
+						{
+							AddFileInfo(model.ExportFiles, Path.Combine(deploymentFolder, file.FileName));
+						}
+					}
 				}
 
 				// add public files
+				ExportDeployment publicDeployment = null;
+
+				if (deployment == null)
+					publicDeployment = profile.Deployments.FirstOrDefault(x => x.DeploymentType == ExportDeploymentType.PublicFolder);
+				else
+					publicDeployment = (deployment.DeploymentType == ExportDeploymentType.PublicFolder ? deployment : null);
+
 				if (publicDeployment != null)
 				{
-					var currentStore = Services.StoreContext.CurrentStore;
-					var allStores = Services.StoreService.GetAllStores();
-					var publicFolder = publicDeployment.GetPublicFolder();
-					var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
+					var deploymentFolder = publicDeployment.GetDeploymentFolder();
 
 					// note public folder not cleaned up during export, so only display files that has been created during last export.
 					// otherwise the merchant might publish URLs of old export files.
@@ -187,18 +244,20 @@ namespace SmartStore.Admin.Controllers
 					{
 						AddFileInfo(
 							model.PublicFiles,
-							Path.Combine(publicFolder, Path.GetFileName(zipPath)),
+							Path.Combine(deploymentFolder, Path.GetFileName(zipPath)),
 							publicDeployment.GetPublicFolderUrl(Services, currentStore));
 					}
-					else if (resultInfo != null && resultInfo.Files != null)
+					else if (resultInfo.Files != null)
 					{
+						var allStores = Services.StoreService.GetAllStores();
+
 						foreach (var file in resultInfo.Files)
 						{
 							var store = (file.StoreId == 0 ? null : allStores.FirstOrDefault(x => x.Id == file.StoreId));
 
 							AddFileInfo(
 								model.PublicFiles,
-								Path.Combine(publicFolder, file.FileName),
+								Path.Combine(deploymentFolder, file.FileName),
 								publicDeployment.GetPublicFolderUrl(Services, store ?? currentStore),
 								store);
 						}
@@ -231,7 +290,7 @@ namespace SmartStore.Admin.Controllers
 			model.HasActiveProvider = (provider != null);
 			model.FileNamePatternDescriptions = T("Admin.DataExchange.Export.FileNamePatternDescriptions").Text.SplitSafe(";");
 
-			model.ExportFileCount = CreateFileCountModel(profile, provider);
+			model.FileCount = CreateFileCountModel(profile, provider);
 
 			model.Provider = new ExportProfileModel.ProviderModel();
 			model.Provider.ThumbnailUrl = GetThumbnailUrl(provider);
@@ -366,7 +425,7 @@ namespace SmartStore.Admin.Controllers
 			model.Deployments = profile.Deployments
 				.Select(x =>
 				{
-					var deploymentModel = PrepareDeploymentModel(profile, x, null, false);
+					var deploymentModel = CreateDeploymentModel(profile, x, null, false);
 
 					if (x.ResultInfo.HasValue())
 					{
@@ -474,7 +533,7 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private ExportDeploymentModel PrepareDeploymentModel(ExportProfile profile, ExportDeployment deployment, Provider<IExportProvider> provider, bool forEdit)
+		private ExportDeploymentModel CreateDeploymentModel(ExportProfile profile, ExportDeployment deployment, Provider<IExportProvider> provider, bool forEdit)
 		{
 			var model = new ExportDeploymentModel
 			{
@@ -517,6 +576,10 @@ namespace SmartStore.Admin.Controllers
 				{
 					model.ThumbnailUrl = GetThumbnailUrl(provider);
 				}
+			}
+			else
+			{
+				model.FileCount = CreateFileCountModel(profile, deployment);
 			}
 
 			return model;
@@ -610,18 +673,29 @@ namespace SmartStore.Admin.Controllers
 			return new EmptyResult();
         }
 
-		public ActionResult ProfileFileDetails(int profileId)
+		public ActionResult ProfileFileDetails(int profileId, int deploymentId)
 		{
 			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 			{
-				var profile = _exportService.GetExportProfileById(profileId);
-				if (profile != null)
+				if (profileId != 0)
 				{
-					var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-					if (provider != null && !provider.Metadata.IsHidden)
+					var profile = _exportService.GetExportProfileById(profileId);
+					if (profile != null)
 					{
-						var model = CreateProfileDetailsModel(profile, provider);
-
+						var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+						if (provider != null && !provider.Metadata.IsHidden)
+						{
+							var model = CreateProfileDetailsModel(profile, provider);
+							return PartialView(model);
+						}
+					}
+				}
+				else if (deploymentId != 0)
+				{
+					var deployment = _exportService.GetExportDeploymentById(deploymentId);
+					if (deployment != null)
+					{
+						var model = CreateProfileDetailsModel(deployment.Profile, null, deployment);
 						return PartialView(model);
 					}
 				}
@@ -1182,35 +1256,48 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("List");
 		}
 
-		public ActionResult DownloadExportFile(int id, string name)
+		public ActionResult DownloadExportFile(int id, string name, bool? isDeployment)
 		{
 			string message = null;
+			string path = null;
 
 			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 			{
-				var profile = _exportService.GetExportProfileById(id);
-				if (profile != null)
+				if (isDeployment ?? false)
 				{
-					var path = Path.Combine(profile.GetExportFolder(true), name);
-
-					if (!System.IO.File.Exists(path))
-						path = Path.Combine(profile.GetExportFolder(false), name);
-
-					if (System.IO.File.Exists(path))
+					var deployment = _exportService.GetExportDeploymentById(id);
+					if (deployment != null)
 					{
-						try
-						{
-							var stream = new FileStream(path, FileMode.Open);
+						var deploymentFolder = deployment.GetDeploymentFolder();
+						if (deploymentFolder.HasValue())
+							path = Path.Combine(deploymentFolder, name);
+					}
+				}
+				else
+				{
+					var profile = _exportService.GetExportProfileById(id);
+					if (profile != null)
+					{
+						path = Path.Combine(profile.GetExportFolder(true), name);
+						if (!System.IO.File.Exists(path))
+							path = Path.Combine(profile.GetExportFolder(false), name);
+					}
+				}
 
-							var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path));
-							result.FileDownloadName = Path.GetFileName(path);
+				if (System.IO.File.Exists(path))
+				{
+					try
+					{
+						var stream = new FileStream(path, FileMode.Open);
 
-							return result;
-						}
-						catch (IOException)
-						{
-							NotifyWarning(T("Admin.Common.FileInUse"));
-						}
+						var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path));
+						result.FileDownloadName = Path.GetFileName(path);
+
+						return result;
+					}
+					catch (IOException)
+					{
+						NotifyWarning(T("Admin.Common.FileInUse"));
 					}
 				}
 			}
@@ -1254,9 +1341,7 @@ namespace SmartStore.Admin.Controllers
 			if (provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
-			//var fileSystemName = ExportDeploymentType.FileSystem.GetLocalizedEnum(Services.Localization, Services.WorkContext);
-
-			var model = PrepareDeploymentModel(profile, new ExportDeployment
+			var model = CreateDeploymentModel(profile, new ExportDeployment
 			{
 				ProfileId = id,
 				Enabled = true,
@@ -1311,7 +1396,7 @@ namespace SmartStore.Admin.Controllers
 			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
-			var model = PrepareDeploymentModel(deployment.Profile, deployment, provider, true);
+			var model = CreateDeploymentModel(deployment.Profile, deployment, provider, true);
 
 			return View(model);
 		}
@@ -1342,7 +1427,7 @@ namespace SmartStore.Admin.Controllers
 				return SmartRedirect(continueEditing, deployment.ProfileId, deployment.Id);
 			}
 
-			model = PrepareDeploymentModel(deployment.Profile, deployment, _exportService.LoadProvider(deployment.Profile.ProviderSystemName), true);
+			model = CreateDeploymentModel(deployment.Profile, deployment, _exportService.LoadProvider(deployment.Profile.ProviderSystemName), true);
 
 			return View(model);
 		}

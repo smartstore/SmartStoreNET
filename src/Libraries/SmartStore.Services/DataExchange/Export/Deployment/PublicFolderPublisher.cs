@@ -9,7 +9,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 	{
 		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)
 		{
-			var destinationFolder = deployment.GetPublicFolder(true);
+			var destinationFolder = deployment.GetDeploymentFolder(true);
 
 			if (destinationFolder.IsEmpty())
 				return;

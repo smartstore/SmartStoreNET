@@ -98,7 +98,7 @@
 
 			$({}).doAjax({
 				type: 'GET',
-				url: '@Url.Action("ProfileFileDetails")?profileId=' + id,
+				url: '@Url.Action("ProfileFileDetails")?deploymentId=0&profileId=' + id,
 				smallIcon: fileDialog.find('.modal-body'),
 				callbackSuccess: function (response) {
 					fileDialog.find('.modal-body').html(response);

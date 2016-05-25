@@ -553,7 +553,7 @@ namespace SmartStore.Services.DataExchange.Export
 				body.AppendFormat("<p><a href='{0}' download>{1}</a></p>", downloadUrl + HttpUtility.UrlDecode(fileName), fileName);
 			}
 
-			if (ctx.IsFileBasedExport && ctx.Result.Files.Count > 0)
+			if (ctx.IsFileBasedExport && ctx.Result.Files.Any())
 			{
 				body.Append("<p>");
 				foreach (var file in ctx.Result.Files)
@@ -764,7 +764,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			var query = _manufacturerService.Value.GetManufacturers(showHidden, storeId);
 
-			if (ctx.Request.EntitiesToExport.Count > 0)
+			if (ctx.Request.EntitiesToExport.Any())
 				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
 
 			query = query.OrderBy(x => x.DisplayOrder);
@@ -1115,8 +1115,7 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						ctx.Log.Information("Provider reports {0} successfully exported record(s).".FormatInvariant(ctx.ExecuteContext.RecordsSucceeded));
 
-						// create info for deployment list in profile edit
-						if (ctx.IsFileBasedExport)
+						if (ctx.IsFileBasedExport && File.Exists(path))
 						{
 							ctx.Result.Files.Add(new DataExportResult.ExportFileInfo
 							{
@@ -1159,7 +1158,6 @@ namespace SmartStore.Services.DataExchange.Export
 			if (ctx.Request.Profile == null || !ctx.Request.Profile.Enabled)
 				return;
 
-			var allDeploymentsSucceeded = false;
 			var logPath = ctx.Request.Profile.GetExportLogPath();
 			var zipPath = ctx.Request.Profile.GetExportZipPath();
 
@@ -1247,7 +1245,14 @@ namespace SmartStore.Services.DataExchange.Export
 							{
 								SetProgress(ctx, T("Common.Publishing"));
 
-								allDeploymentsSucceeded = Deploy(ctx, zipPath);
+								var allDeploymentsSucceeded = Deploy(ctx, zipPath);
+
+								if (allDeploymentsSucceeded && ctx.Request.Profile.Cleanup)
+								{
+									logger.Information("Cleaning up export folder");
+
+									FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
+								}
 							}
 						}
 
@@ -1275,20 +1280,6 @@ namespace SmartStore.Services.DataExchange.Export
 							ctx.Request.Profile.ResultInfo = XmlHelper.Serialize(ctx.Result);
 
 							_exportProfileService.Value.UpdateExportProfile(ctx.Request.Profile);
-						}
-					}
-					catch (Exception exception)
-					{
-						logger.ErrorsAll(exception);
-					}
-
-					try
-					{
-						if (ctx.IsFileBasedExport && ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard && ctx.Request.Profile.Cleanup && allDeploymentsSucceeded)
-						{
-							logger.Information("Cleaning up export folder");
-
-							FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
 						}
 					}
 					catch (Exception exception)
@@ -1327,7 +1318,7 @@ namespace SmartStore.Services.DataExchange.Export
 				return;
 
 			// post process order entities
-			if (ctx.EntityIdsLoaded.Count > 0 && ctx.Request.Provider.Value.EntityType == ExportEntityType.Order && ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
+			if (ctx.EntityIdsLoaded.Any() && ctx.Request.Provider.Value.EntityType == ExportEntityType.Order && ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
 			{
 				using (var logger = new TraceLogger(logPath))
 				{
@@ -1381,38 +1372,6 @@ namespace SmartStore.Services.DataExchange.Export
 			var ctx = new DataExporterContext(request, cancellationToken);
 
 			ExportCoreOuter(ctx);
-
-			if (ctx.Result != null && ctx.Result.Succeeded && ctx.Result.Files.Count > 0)
-			{
-				string prefix = null;
-				string suffix = null;
-				var extension = Path.GetExtension(ctx.Result.Files.First().FileName);
-				var provider = request.Provider.Value;
-
-				if (provider.EntityType == ExportEntityType.Product)
-					prefix = T("Admin.Catalog.Products");
-				else if (provider.EntityType == ExportEntityType.Order)
-					prefix = T("Admin.Orders");
-				else if (provider.EntityType == ExportEntityType.Category)
-					prefix = T("Admin.Catalog.Categories");
-				else if (provider.EntityType == ExportEntityType.Manufacturer)
-					prefix = T("Admin.Catalog.Manufacturers");
-				else if (provider.EntityType == ExportEntityType.Customer)
-					prefix = T("Admin.Customers");
-				else if (provider.EntityType == ExportEntityType.NewsLetterSubscription)
-					prefix = T("Admin.Promotions.NewsLetterSubscriptions");
-				else
-					prefix = provider.EntityType.ToString();
-
-				var selectedEntityCount = (request.EntitiesToExport == null ? 0 : request.EntitiesToExport.Count);
-
-				if (selectedEntityCount == 0)
-					suffix = T("Common.All");
-				else
-					suffix = (selectedEntityCount == 1 ? request.EntitiesToExport.First().ToString() : T("Admin.Common.Selected").Text);
-
-				ctx.Result.DownloadFileName = string.Concat(prefix, "-", suffix).ToLower().ToValidFileName() + extension;
-			}
 
 			cancellationToken.ThrowIfCancellationRequested();
 

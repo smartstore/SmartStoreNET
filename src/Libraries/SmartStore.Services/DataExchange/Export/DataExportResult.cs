@@ -37,17 +37,11 @@ namespace SmartStore.Services.DataExchange.Export
 		[XmlIgnore]
 		public string FileFolder { get; set; }
 
-		/// <summary>
-		/// Suggested download file name
-		/// </summary>
-		[XmlIgnore]
-		public string DownloadFileName { get; set; }
-
 		[Serializable]
 		public class ExportFileInfo
 		{
 			/// <summary>
-			/// Store identifier
+			/// Store identifier, can be 0.
 			/// </summary>
 			public int StoreId { get; set; }
 

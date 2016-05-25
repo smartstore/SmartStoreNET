@@ -155,14 +155,12 @@ namespace SmartStore.Admin.Models.DataExchange
 		{
 			get
 			{
-				return (ExportFiles.Count + (ZipFile != null ? 1 : 0));
+				return ExportFiles.Count;
 			}
 		}
 
-		public FileInfo ZipFile { get; set; }
 		public List<FileInfo> ExportFiles { get; set; }
 
-		public FileInfo PublicZipFile { get; set; }
 		public List<FileInfo> PublicFiles { get; set; }
 
 		public class FileInfo

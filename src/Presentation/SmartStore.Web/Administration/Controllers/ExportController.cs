@@ -164,21 +164,25 @@ namespace SmartStore.Admin.Controllers
 					var publicFolder = publicDeployment.GetPublicFolder();
 					var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
 
-					AddFileInfo(
-						model.PublicFiles,
-						Path.Combine(publicFolder, Path.GetFileName(zipPath)),
-						publicDeployment.GetPublicFolderUrl(Services, currentStore));
-
-					if (resultInfo != null && resultInfo.Files != null)
+					// note public folder not cleaned up during export, so only display files that has been created during last export.
+					// otherwise the merchant might publish URLs of old export files.
+					if (profile.CreateZipArchive)
+					{
+						AddFileInfo(
+							model.PublicFiles,
+							Path.Combine(publicFolder, Path.GetFileName(zipPath)),
+							publicDeployment.GetPublicFolderUrl(Services, currentStore));
+					}
+					else if (resultInfo != null && resultInfo.Files != null)
 					{
 						foreach (var file in resultInfo.Files)
 						{
-							var store = allStores.FirstOrDefault(x => x.Id == file.StoreId) ?? currentStore;
+							var store = (file.StoreId == 0 ? null : allStores.FirstOrDefault(x => x.Id == file.StoreId));
 
 							AddFileInfo(
 								model.PublicFiles,
 								Path.Combine(publicFolder, file.FileName),
-								publicDeployment.GetPublicFolderUrl(Services, store),
+								publicDeployment.GetPublicFolderUrl(Services, store ?? currentStore),
 								store);
 						}
 					}

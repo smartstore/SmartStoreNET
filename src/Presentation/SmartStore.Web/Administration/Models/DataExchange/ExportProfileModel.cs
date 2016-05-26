@@ -91,7 +91,7 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public ScheduleTaskModel TaskModel { get; set; }
 
-		public ExportFileCountModel FileCount { get; set; }
+		public int FileCount { get; set; }
 
 		public class ProviderModel
 		{
@@ -151,18 +151,23 @@ namespace SmartStore.Admin.Models.DataExchange
 
 	public partial class ExportFileDetailsModel : EntityModelBase
 	{
-		public int ExportFileCount
+		public int FileCount
 		{
 			get
 			{
-				return ExportFiles.Count;
+				var result = ExportFiles.Count;
+
+				if (result == 0)
+					result = PublicFiles.Count;
+
+				return result;
 			}
 		}
 
 		public List<FileInfo> ExportFiles { get; set; }
 		public List<FileInfo> PublicFiles { get; set; }
 
-		public bool IsDeployment { get; set; }
+		public bool IsForDeployment { get; set; }
 
 		public class FileInfo
 		{
@@ -193,12 +198,5 @@ namespace SmartStore.Admin.Models.DataExchange
 				}
 			}
 		}
-	}
-
-
-	public partial class ExportFileCountModel : ModelBase
-	{
-		public bool HasItems { get; set; }
-		public int FileCount { get; set; }
 	}
 }

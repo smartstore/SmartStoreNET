@@ -72,7 +72,7 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public LastResultInfo LastResult { get; set; }
 
-		public ExportFileCountModel FileCount { get; set; }
+		public int FileCount { get; set; }
 
 		public class LastResultInfo
 		{

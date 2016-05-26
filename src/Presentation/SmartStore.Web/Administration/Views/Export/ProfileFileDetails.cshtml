@@ -14,7 +14,7 @@
 			{
 				<div>
 					@Html.IconForFileExtension(file.FileExtension, false)
-					<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = file.FileName, isDeployment = Model.IsDeployment })"
+					<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = file.FileName, isDeployment = Model.IsForDeployment })"
 					   title="@ViewBag.DownloadString" download>@file.FileRootPath</a>
 				</div>
 			}

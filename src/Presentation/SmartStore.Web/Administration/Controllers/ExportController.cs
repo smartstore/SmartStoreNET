@@ -174,6 +174,7 @@ namespace SmartStore.Admin.Controllers
 			var model = new ExportFileDetailsModel
 			{
 				Id = (deployment == null ? profile.Id : deployment.Id),
+				IsForDeployment = (deployment != null),
 				ExportFiles = new List<ExportFileDetailsModel.FileInfo>(),
 				PublicFiles = new List<ExportFileDetailsModel.FileInfo>()
 			};
@@ -195,20 +196,13 @@ namespace SmartStore.Admin.Controllers
 				else if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
 				{
 					var deploymentFolder = deployment.GetDeploymentFolder();
+					var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
 
-					if (profile.CreateZipArchive)
+					if (resultInfo.Files != null)
 					{
-						AddFileInfo(model.ExportFiles, Path.Combine(deploymentFolder, Path.GetFileName(zipPath)));
-					}
-					else
-					{
-						var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
-						if (resultInfo.Files != null)
+						foreach (var file in resultInfo.Files)
 						{
-							foreach (var file in resultInfo.Files)
-							{
-								AddFileInfo(model.ExportFiles, Path.Combine(deploymentFolder, file.FileName));
-							}
+							AddFileInfo(model.ExportFiles, Path.Combine(deploymentFolder, file.FileName));
 						}
 					}
 				}

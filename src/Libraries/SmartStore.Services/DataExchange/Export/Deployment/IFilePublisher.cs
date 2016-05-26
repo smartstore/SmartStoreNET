@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
@@ -29,7 +28,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 		{
 			if (!CreateZipArchive)
 			{
-				return System.IO.Directory.EnumerateFiles(FolderContent, "*", SearchOption.AllDirectories).ToArray();
+				return System.IO.Directory.EnumerateFiles(FolderContent, "*", SearchOption.AllDirectories);
 			}
 
 			if (File.Exists(ZipPath))

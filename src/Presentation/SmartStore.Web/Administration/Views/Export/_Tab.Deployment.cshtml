@@ -149,14 +149,7 @@
 								@Html.SymbolForBool(deployment.Enabled)
 							</td>
 							<td class="ac">
-								@if (deployment.FileCount == null)
-								{
-									<span title="@T("Common.Unavailable")">@Html.SymbolForBool(false)</span>
-								}
-								else
-								{
-									@Html.Partial("ProfileFileCount", deployment.FileCount)
-								}
+								@Html.Partial("ProfileFileCount", deployment.FileCount)
 							</td>
 							<td>
 								@if (result == null)

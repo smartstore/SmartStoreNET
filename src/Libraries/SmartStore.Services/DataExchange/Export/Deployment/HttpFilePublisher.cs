@@ -12,7 +12,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 	{
 		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)
 		{
-			var succeeded = 0;
+			var succeededFiles = 0;
 			var url = deployment.Url;
 
 			if (!url.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) && !url.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
@@ -20,7 +20,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 
 			if (deployment.HttpTransmissionType == ExportHttpTransmissionType.MultipartFormDataPost)
 			{
-				var count = 0;
+				var countFiles = 0;
 				ICredentials credentials = null;
 
 				if (deployment.Username.HasValue())
@@ -33,14 +33,14 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 					foreach (var path in context.GetDeploymentFiles())
 					{
 						byte[] fileData = File.ReadAllBytes(path);
-						formData.Add(new ByteArrayContent(fileData), "file {0}".FormatInvariant(++count), Path.GetFileName(path));
+						formData.Add(new ByteArrayContent(fileData), "file {0}".FormatInvariant(++countFiles), Path.GetFileName(path));
 					}
 
 					var response = client.PostAsync(url, formData).Result;
 
 					if (response.IsSuccessStatusCode)
 					{
-						succeeded = count;
+						succeededFiles = countFiles;
 					}
 					else if (response.Content != null)
 					{
@@ -66,12 +66,12 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 					{
 						webClient.UploadFile(url, path);
 
-						++succeeded;
+						++succeededFiles;
 					}
 				}
 			}
 
-			context.Log.Information("{0} file(s) successfully uploaded via HTTP ({1}).".FormatInvariant(succeeded, deployment.HttpTransmissionType.ToString()));
+			context.Log.Information("{0} file(s) successfully uploaded via HTTP ({1}).".FormatInvariant(succeededFiles, deployment.HttpTransmissionType.ToString()));
 		}
 	}
 }

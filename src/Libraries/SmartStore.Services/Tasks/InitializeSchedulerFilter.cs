@@ -43,9 +43,6 @@ namespace SmartStore.Services.Tasks
 
 					try
 					{
-						logger = EngineContext.Current.Resolve<ILogger>();
-						taskScheduler = EngineContext.Current.Resolve<ITaskScheduler>();
-
 						var taskService = EngineContext.Current.Resolve<IScheduleTaskService>();
 						var storeService = EngineContext.Current.Resolve<IStoreService>();
 						var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();

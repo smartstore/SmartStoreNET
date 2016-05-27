@@ -21,6 +21,7 @@ namespace SmartStore.Services.Tasks
 		private bool _intervalFixed;
 		private int _sweepInterval;
 		private string _baseUrl;
+		private bool _mustVerifyBaseUrl;
         private System.Timers.Timer _timer;
         private bool _shuttingDown;
 		private int _errCount;
@@ -48,7 +49,8 @@ namespace SmartStore.Services.Tasks
             {
                 CheckUrl(value);
                 _baseUrl = value.TrimEnd('/', '\\');
-            }
+				_mustVerifyBaseUrl = true;
+			}
         }
 
         public void Start()
@@ -173,67 +175,80 @@ namespace SmartStore.Services.Tasks
             req.Method = "POST";
             req.ContentType = "text/plain";
 			req.ContentLength = 0;
+			req.ServicePoint.Expect100Continue = false;
+			req.Timeout = 10000; // 10 sec.
 
             string authToken = CreateAuthToken();
             req.Headers.Add("X-AUTH-TOKEN", authToken);
 
-            req.GetResponseAsync().ContinueWith(t =>
-            {
-				if (t.IsFaulted)
+			HttpWebResponse response = null;
+
+			try
+			{
+				response = (HttpWebResponse)req.GetResponse();
+				_errCount = 0;
+				_mustVerifyBaseUrl = false;
+
+				//using (var logger = new TraceLogger())
+				//{
+				//	logger.Warning("TaskScheduler Sweep called successfully: {0}".FormatCurrent(response.GetResponseStream().AsString()));
+				//}
+			}
+			catch (Exception ex)
+			{
+				HandleException(ex, url);
+				_errCount++;
+				if (_errCount >= 10)
 				{
-					HandleException(t.Exception, url);
-					_errCount++;
-					if (_errCount >= 10)
+					// 10 failed attempts in succession. Stop the timer!
+					this.Stop();
+					using (var logger = new TraceLogger())
 					{
-						// 10 failed attempts in succession. Stop the timer!
-						this.Stop();
-						using (var logger = new TraceLogger())
-						{
-							logger.Information("Stopping TaskScheduler sweep timer. Too many failed requests in succession.");
-						}
+						logger.Information("Stopping TaskScheduler sweep timer. Too many failed requests in succession.");
 					}
 				}
-				else
-				{
-					_errCount = 0;
-					var response = t.Result;
-
-					//using (var logger = new TraceLogger())
-					//{
-					//	logger.Debug("TaskScheduler Sweep called successfully: {0}".FormatCurrent(response.GetResponseStream().AsString()));
-					//}
-
+			}
+			finally
+			{
+				if (response != null)
 					response.Dispose();
-				}
-            });
-        }
+			}
+		}
 
-		private void HandleException(AggregateException exception, string url)
+		private void HandleException(Exception exception, string url)
 		{
 			using (var logger = new TraceLogger())
 			{
 				string msg = "Error while calling TaskScheduler endpoint '{0}'.".FormatInvariant(url);
-				var wex = exception.InnerExceptions.OfType<WebException>().FirstOrDefault();
 
-				if (wex == null)
+				var wex = exception as WebException;
+
+				if (_mustVerifyBaseUrl)
 				{
-					logger.Error(msg, exception);
+					if (wex == null || wex.Response == null)
+					{
+						// a network related error occurred. Fallback to localhost!
+						_baseUrl = "http://localhost:52089/taskscheduler";
+						_mustVerifyBaseUrl = false;
+
+						logger.Information("A netwotk related error occurred while calling TaskScheduler endpoint'{0}'. Will try with 'localhost' on next sweep.".FormatInvariant(url));
+					}
+				}
+
+				if (wex != null && wex.Response != null)
+				{
+					var response = wex.Response as HttpWebResponse;
+					msg += " HTTP {0}, {1}".FormatCurrent((int)response.StatusCode, response.StatusDescription);
+					logger.Error(msg);
 				}
 				else
 				{
-					using (var response = wex.Response as HttpWebResponse)
-					{
-						if (response != null)
-						{
-							msg += " HTTP {0}, {1}".FormatCurrent((int)response.StatusCode, response.StatusDescription);
-						}
-						logger.Error(msg);
-					}
+					logger.Error(msg, exception);
 				}
 			}
 		}
 
-        private void CheckUrl(string url)
+		private void CheckUrl(string url)
         {
             if (!url.IsWebUrl())
             {

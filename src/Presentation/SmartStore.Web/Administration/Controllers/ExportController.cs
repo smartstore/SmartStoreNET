@@ -1385,6 +1385,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
+		[HttpPost]
 		public ActionResult DeleteDeployment(int id)
 		{
 			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))

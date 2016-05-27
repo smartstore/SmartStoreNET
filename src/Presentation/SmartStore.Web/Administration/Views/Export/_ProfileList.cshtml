@@ -64,9 +64,9 @@
 							</div>
 							<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
 						</td>
-						<td style="width: 200px">
+						<td style="width: 200px;">
 							<button type="button" class="btn btn-block btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"
-									data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId">
+									data-url="@Url.Action("Execute", "Export", new { area = "Admin", id = profile.Id })" data-task-id="@profile.ScheduleTaskId">
 								<i class="fa fa-play"></i>&nbsp;&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
 							</button>
 

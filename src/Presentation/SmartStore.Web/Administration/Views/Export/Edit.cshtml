@@ -6,8 +6,6 @@
 	ViewBag.Title = title;
 }
 
-<form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin", id = Model.Id })"></form>
-
 @using (Html.BeginForm())
 {
 	<fieldset>
@@ -23,9 +21,9 @@
 				{
 					if (Model.Id != 0)
 					{
-						<a id="ProfileExportButton" href="javascript:void(0)" class="btn btn-default">
+						<button type="button" id="ProfileExportButton" class="btn btn-default" data-url="@Url.Action("Execute", "Export", new { area = "Admin", id = Model.Id })">
 							<i class="fa fa-gears"></i>&nbsp;@T("Common.Export")
-						</a>
+						</button>
 					}
 
 					<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn">
@@ -380,9 +378,9 @@
 		// execute export
 		$('#ProfileExportButton').click(function (e) {
 			e.preventDefault();
-			if (confirm('@T("Admin.Common.AskToProceed")')) {
-				$('#ProfileExportForm').submit();
-			}
+			$(this).doPostData({
+				ask: '@T("Admin.Common.AskToProceed")'
+			});
 			return false;
 		});
 	});

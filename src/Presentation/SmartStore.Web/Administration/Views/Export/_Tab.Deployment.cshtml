@@ -168,9 +168,9 @@
 								}
 							</td>
 							<td>
-								<a href="@Url.Action("DeleteDeployment", new { id = deployment.Id })" class="btn btn-small btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+								<button type="button" data-url="@Url.Action("DeleteDeployment", new { id = deployment.Id })" class="btn btn-small btn-danger delete-depoyment">
 									@T("Common.Delete")
-								</a>
+								</button>
 							</td>
 						</tr>
 					}
@@ -259,6 +259,13 @@ else
 			var descriptions = $('#FileNamePatternDescription');
 			$('#FileNamePatternDescriptionLink').html((descriptions.is(':visible') ? '@T("Admin.Common.Show")' : '@T("Admin.Common.Hide")') + '…');
 			descriptions.toggle();
+		});
+
+		// delete deployment
+		$('#export-deployment-list').find('.delete-depoyment').click(function () {
+			$(this).doPostData({
+				ask: '@T("Admin.Common.AskToProceed")'
+			});
 		});
 
 		// show deployment file dialog

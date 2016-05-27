@@ -11,7 +11,6 @@ using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.IO;
-using SmartStore.Services;
 using SmartStore.Services.Catalog.Importer;
 using SmartStore.Services.Customers.Importer;
 using SmartStore.Services.DataExchange.Csv;
@@ -32,20 +31,17 @@ namespace SmartStore.Admin.Controllers
 	[AdminAuthorize]
 	public class ImportController : AdminControllerBase
 	{
-		private readonly ICommonServices _services;
 		private readonly IImportProfileService _importProfileService;
 		private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly ILanguageService _languageService;
 
 		public ImportController(
-			ICommonServices services,
 			IImportProfileService importService,
 			IDateTimeHelper dateTimeHelper,
 			ITaskScheduler taskScheduler,
 			ILanguageService languageService)
 		{
-			_services = services;
 			_importProfileService = importService;
 			_dateTimeHelper = dateTimeHelper;
 			_taskScheduler = taskScheduler;
@@ -132,7 +128,7 @@ namespace SmartStore.Admin.Controllers
 			model.IsTaskRunning = profile.ScheduleTask.IsRunning;
 			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
 			model.LogFileExists = System.IO.File.Exists(profile.GetImportLogPath());
-			model.EntityTypeName = profile.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
+			model.EntityTypeName = profile.EntityType.GetLocalizedEnum(Services.Localization, Services.WorkContext);
 
 			model.ExistingFileNames = profile.GetImportFiles()
 				.Select(x => Path.GetFileName(x))
@@ -323,7 +319,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult List()
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
 			var model = new ImportProfileListModel
@@ -340,7 +336,7 @@ namespace SmartStore.Admin.Controllers
 
 				PrepareProfileModel(profileModel, profile, false);
 
-				profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(_services.Localization, _dateTimeHelper, Url);
+				profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(Services.Localization, _dateTimeHelper, Url);
 
 				model.Profiles.Add(profileModel);
 			}
@@ -350,7 +346,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult ProfileListDetails(int profileId)
 		{
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 			{
 				var profile = _importProfileService.GetImportProfileById(profileId);
 				if (profile != null)
@@ -371,7 +367,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult Create(ImportProfileModel model)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
 			var importFile = Path.Combine(FileSystemHelper.TempDir(), model.TempFileName.EmptyNull());
@@ -399,7 +395,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult Edit(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
 			var profile = _importProfileService.GetImportProfileById(id);
@@ -416,7 +412,7 @@ namespace SmartStore.Admin.Controllers
 		[FormValueRequired("save", "save-continue")]
 		public ActionResult Edit(ImportProfileModel model, bool continueEditing, FormCollection form)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
 			var profile = _importProfileService.GetImportProfileById(model.Id);
@@ -541,7 +537,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult ResetColumnMappings(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
 			var profile = _importProfileService.GetImportProfileById(id);
@@ -559,7 +555,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, ActionName("Delete")]
 		public ActionResult DeleteConfirmed(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
 			var profile = _importProfileService.GetImportProfileById(id);
@@ -589,7 +585,7 @@ namespace SmartStore.Admin.Controllers
 			string error = null;
 			string tempFile = "";
 
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 			{
 				var postedFile = Request.ToPostedFileResult();
 				if (postedFile != null)
@@ -670,7 +666,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var taskParams = new Dictionary<string, string>();
-			taskParams.Add(TaskExecutor.CurrentCustomerIdParamName, _services.WorkContext.CurrentCustomer.Id.ToString());
+			taskParams.Add(TaskExecutor.CurrentCustomerIdParamName, Services.WorkContext.CurrentCustomer.Id.ToString());
 
 			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 
@@ -685,7 +681,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult DownloadLogFile(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 				return AccessDeniedView();
 
 			var profile = _importProfileService.GetImportProfileById(id);
@@ -715,7 +711,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			string message = null;
 
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 			{
 				var profile = _importProfileService.GetImportProfileById(id);
 				if (profile != null)
@@ -759,7 +755,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult DeleteImportFile(int id, string name)
 		{
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
+			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageImports))
 			{
 				var profile = _importProfileService.GetImportProfileById(id);
 				if (profile != null)

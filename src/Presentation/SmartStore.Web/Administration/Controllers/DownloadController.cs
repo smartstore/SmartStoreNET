@@ -73,7 +73,7 @@ namespace SmartStore.Admin.Controllers
 			var postedFile = Request.ToPostedFileResult();
 			if (postedFile == null)
 			{
-				throw new ArgumentException("No file uploaded");
+				throw new ArgumentException(T("Common.NoFileUploaded"));
 			}
 
             var download = new Download

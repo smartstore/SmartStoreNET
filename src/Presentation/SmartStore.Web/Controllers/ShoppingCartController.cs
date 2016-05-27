@@ -1480,7 +1480,7 @@ namespace SmartStore.Web.Controllers
 			var postedFile = Request.ToPostedFileResult();
 			if (postedFile == null)
 			{
-				throw new ArgumentException("No file uploaded");
+				throw new ArgumentException(T("Common.NoFileUploaded"));
 			}
 
             int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;

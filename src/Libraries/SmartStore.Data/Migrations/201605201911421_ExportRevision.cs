@@ -150,6 +150,9 @@ namespace SmartStore.Data.Migrations
 				"No bundle items available",
 				"Keine Bundle-Bestandteile vorhanden");
 
+			builder.AddOrUpdate("Common.NoFileUploaded",
+				"There was no file uploaded.",
+				"Es wurde keine Datei hochgeladen.");
 
 			builder.Delete(
 				"Admin.DataExchange.Export.FolderAndFileName.Validate",

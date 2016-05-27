@@ -167,13 +167,15 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					if (features.HasFlag(ExportFeatures.CreatesInitialPublicDeployment))
 					{
+						var subFolder = FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath("~/" + DataExporter.PublicFolder), folderName);
+
 						profile.Deployments.Add(new ExportDeployment
 						{
 							ProfileId = profile.Id,
 							Enabled = true,
 							DeploymentType = ExportDeploymentType.PublicFolder,
 							Name = profile.Name,
-							SubFolder = folderName
+							SubFolder = subFolder
 						});
 
 						UpdateExportProfile(profile);

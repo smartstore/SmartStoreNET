@@ -100,6 +100,14 @@
 		@Html.Raw(T("Admin.DataExchange.Export.Deployment.Note"))
 	</div>
 
+	if (!Model.Deployments.Any())
+	{
+		<div class="alert alert-info">
+			<button type="button" class="close" data-dismiss="alert">&#215;</button>
+			@T("Admin.DataExchange.Export.NoProfiles")
+		</div>
+	}
+
 	if (Model.Deployments.Count > 0)
 	{
 		<div>
@@ -177,10 +185,6 @@
 				</tbody>
 			</table>
 		</div>
-	}
-	else
-	{
-		<div class="muted">@T("Admin.DataExchange.Export.NoProfiles")</div>
 	}
 
 	<a href="@Url.Action("CreateDeployment", new { id = Model.Id })" class="btn btn-warning">

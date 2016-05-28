@@ -39,7 +39,13 @@
             removeDialogTabs: 'link:upload;image:upload',
             fullPage: (fullPage === true) ? true : false,
 			entities: false,
-            removePlugins: 'divarea'
+			removePlugins: 'divarea',
+			on: {
+				instanceReady: function (evt) {
+					// Fix native context menu
+					evt.editor.container.getPrivate().events.contextmenu.listeners.splice(0, 1);
+				}
+			}
         });
     });
 </script>

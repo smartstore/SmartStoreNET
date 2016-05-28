@@ -25,9 +25,12 @@
 
     <div class="news-body">
         @Html.Widget("newsitem_page_before_body")
-        <div class="news-content">
+        <div class="news-content clearfix">
             @Html.Raw(Model.Full)
         </div>
+
+		<div class="clear"></div>
+
         @Html.Widget("newsitem_page_before_comments")
 
         @if (Model.AllowComments)

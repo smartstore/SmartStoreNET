@@ -1,0 +1,168 @@
+﻿@using SmartStore.GoogleMerchantCenter.Providers
+@using SmartStore.GoogleMerchantCenter.Models;
+@model ProfileConfigurationModel
+@{
+    Layout = null;
+}
+
+<table class="adminContent">
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.DefaultGoogleCategory)
+		</td>
+		<td class="adminData">
+			@Html.TextBoxFor(m => m.DefaultGoogleCategory, new { data_provide = "typeahead", placeholder = Model.DefaultGoogleCategory, style = "width: 98%", autocomplete = "off",
+				data_items = 18, data_source = Model.AvailableGoogleCategoriesAsJson })
+			@Html.ValidationMessageFor(m => m.DefaultGoogleCategory)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.OnlineOnly)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.OnlineOnly)
+			@Html.ValidationMessageFor(m => m.OnlineOnly)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.ExpirationDays)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.ExpirationDays)
+			@Html.ValidationMessageFor(m => m.ExpirationDays)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.Condition)
+		</td>
+		<td class="adminData">
+			@Html.DropDownList("Condition", new List<SelectListItem> {
+				new SelectListItem { Text = T("Common.Auto"), Value = "" },
+				new SelectListItem { Text = T("Common.Unspecified"), Value = ProductExportXmlProvider.Unspecified },
+				new SelectListItem { Text = T("Plugins.Feed.Froogle.ConditionNew"), Value = "new" },
+				new SelectListItem { Text = T("Plugins.Feed.Froogle.ConditionUsed"), Value = "used" },
+				new SelectListItem { Text = T("Plugins.Feed.Froogle.ConditionRefurbished"), Value = "refurbished" }
+			})
+			@Html.ValidationMessageFor(m => m.Condition)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.Availability)
+		</td>
+		<td class="adminData">
+			@Html.DropDownList("Availability", new List<SelectListItem> {
+				new SelectListItem { Text = T("Common.Auto"), Value = "" },
+				new SelectListItem { Text = T("Common.Unspecified"), Value = ProductExportXmlProvider.Unspecified },
+				new SelectListItem { Text = T("Plugins.Feed.Froogle.AvailabilityInStock"), Value = "in stock" },
+				new SelectListItem { Text = T("Plugins.Feed.Froogle.AvailabilityOutOfStock"), Value = "out of stock" },
+				new SelectListItem { Text = T("Plugins.Feed.Froogle.AvailabilityPreorder"), Value = "preorder" }
+			})
+			@Html.ValidationMessageFor(m => m.Availability)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.Gender)
+		</td>
+		<td class="adminData">
+			@Html.DropDownList("Gender", new List<SelectListItem> {
+				new SelectListItem { Text = T("Common.Auto"), Value = "" },
+				new SelectListItem { Text = T("Common.Unspecified"), Value = ProductExportXmlProvider.Unspecified },
+				new SelectListItem { Text = T("Plugins.Feed.Froogle.GenderMale"), Value = "male" },
+				new SelectListItem { Text = T("Plugins.Feed.Froogle.GenderFemale"), Value = "female" },
+				new SelectListItem { Text = T("Plugins.Feed.Froogle.GenderUnisex"), Value = "unisex" }
+			})
+			@Html.ValidationMessageFor(m => m.Gender)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.AgeGroup)
+		</td>
+		<td class="adminData">
+			@Html.DropDownList("AgeGroup", new List<SelectListItem> {
+				new SelectListItem { Text = T("Common.Auto"), Value = "" },
+				new SelectListItem { Text = T("Common.Unspecified"), Value = ProductExportXmlProvider.Unspecified },
+				new SelectListItem { Text = T("Plugins.Feed.Froogle.AgeGroupAdult"), Value = "adult" },
+				new SelectListItem { Text = T("Plugins.Feed.Froogle.AgeGroupKids"), Value = "kids" }
+			})
+			@Html.ValidationMessageFor(m => m.AgeGroup)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.Color)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.Color)
+			@Html.ValidationMessageFor(m => m.Color)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.Size)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.Size)
+			@Html.ValidationMessageFor(m => m.Size)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.Material)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.Material)
+			@Html.ValidationMessageFor(m => m.Material)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.Pattern)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.Pattern)
+			@Html.ValidationMessageFor(m => m.Pattern)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.AdditionalImages)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.AdditionalImages)
+			@Html.ValidationMessageFor(m => m.AdditionalImages)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.SpecialPrice)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.SpecialPrice)
+			@Html.ValidationMessageFor(m => m.SpecialPrice)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.ExportShipping)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.ExportShipping)
+			@Html.ValidationMessageFor(m => m.ExportShipping)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.ExportBasePrice)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.ExportBasePrice)
+			@Html.ValidationMessageFor(m => m.ExportBasePrice)
+		</td>
+	</tr>
+</table>

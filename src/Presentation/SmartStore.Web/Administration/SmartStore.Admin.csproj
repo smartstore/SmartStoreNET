@@ -38,6 +38,7 @@
     <RestorePackages>true</RestorePackages>
     <MvcProjectUpgradeChecked>true</MvcProjectUpgradeChecked>
     <NuGetPackageImportStamp>1e5b888b</NuGetPackageImportStamp>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -63,25 +64,29 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac, Version=3.4.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Autofac.Integration.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Autofac.Mvc5.3.3.1\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <HintPath>..\..\..\packages\Autofac.Mvc5.3.3.4\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="AutoMapper, Version=3.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\AutoMapper.3.2.1\lib\net40\AutoMapper.dll</HintPath>
+    <Reference Include="AutoMapper, Version=4.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\AutoMapper.4.1.1\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="AutoMapper.Net4, Version=3.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\AutoMapper.3.2.1\lib\net40\AutoMapper.Net4.dll</HintPath>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="FluentValidation, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\FluentValidation.5.0.0.1\lib\Net40\FluentValidation.dll</HintPath>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -175,6 +180,7 @@
     <Compile Include="Controllers\CurrencyController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\CustomerRoleController.cs" />
+    <Compile Include="Controllers\ExportController.cs" />
     <Compile Include="Controllers\QuantityUnitController.cs" />
     <Compile Include="Controllers\DeliveryTimeController.cs" />
     <Compile Include="Controllers\DiscountController.cs" />
@@ -208,6 +214,7 @@
     <Compile Include="Controllers\ReturnRequestController.cs" />
     <Compile Include="Controllers\ScheduleTaskController.cs" />
     <Compile Include="Controllers\SecurityController.cs" />
+    <Compile Include="Controllers\UrlRecordController.cs" />
     <Compile Include="Controllers\SettingController.cs" />
     <Compile Include="Controllers\ShippingController.cs" />
     <Compile Include="Controllers\ShoppingCartController.cs" />
@@ -218,6 +225,7 @@
     <Compile Include="Controllers\TopicController.cs" />
     <Compile Include="Controllers\WidgetController.cs" />
     <Compile Include="Extensions\HtmlHelperExtensions.cs" />
+    <Compile Include="Extensions\ScheduleTaskExtensions.cs" />
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
     <Compile Include="Infrastructure\PreviewModeFilter.cs" />
     <Compile Include="Infrastructure\RouteProvider.cs" />
@@ -235,7 +243,6 @@
     <Compile Include="Models\Catalog\ProductReviewListModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerModel.cs" />
     <Compile Include="Models\Catalog\CopyProductModel.cs" />
-    <Compile Include="Models\Cms\RenderWidgetModel.cs" />
     <Compile Include="Models\Cms\WidgetModel.cs" />
     <Compile Include="Models\Common\CheckUpdateResult.cs" />
     <Compile Include="Models\Common\FeedItemModel.cs" />
@@ -244,16 +251,23 @@
     <Compile Include="Models\Common\MaintenanceModel.cs" />
     <Compile Include="Models\Common\SystemWarningModel.cs" />
     <Compile Include="Models\Common\SystemInfoModel.cs" />
-    <Compile Include="Models\Common\UrlRecordListModel.cs" />
-    <Compile Include="Models\Common\UrlRecordModel.cs" />
+    <Compile Include="Models\DataExchange\ExportDeploymentModel.cs" />
+    <Compile Include="Models\DataExchange\ExportFilterModel.cs" />
+    <Compile Include="Models\DataExchange\ProfileInfoForProviderModel.cs" />
+    <Compile Include="Models\DataExchange\ExportPreviewModel.cs" />
+    <Compile Include="Models\DataExchange\ExportProjectionModel.cs" />
     <Compile Include="Models\Directory\QuantityUnitModel.cs" />
+    <Compile Include="Models\DataExchange\ExportProfileModel.cs" />
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />
     <Compile Include="Models\Orders\ReturnRequestListModel.cs" />
+    <Compile Include="Models\Payments\PaymentMethodEditModel.cs" />
     <Compile Include="Models\Plugins\LicensePluginModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
+    <Compile Include="Models\UrlRecord\UrlRecordListModel.cs" />
+    <Compile Include="Models\UrlRecord\UrlRecordModel.cs" />
     <Compile Include="Models\Settings\ContentSliderSettingsModel.cs" />
     <Compile Include="Models\Customers\OnlineCustomerModel.cs" />
     <Compile Include="Models\Directory\DeliveryTimeModel.cs" />
@@ -308,7 +322,6 @@
     <Compile Include="Models\Themes\ThemeManifestModel.cs" />
     <Compile Include="Models\Topics\TopicListModel.cs" />
     <Compile Include="Models\Topics\TopicModel.cs" />
-    <Compile Include="Models\Shipping\ShippingMethodRestrictionModel.cs" />
     <Compile Include="Models\News\NewsCommentModel.cs" />
     <Compile Include="Models\News\NewsItemModel.cs" />
     <Compile Include="Models\Settings\NewsSettingsModel.cs" />
@@ -361,6 +374,8 @@
     <Compile Include="Validators\Common\AddressValidator.cs" />
     <Compile Include="Validators\Common\GenericAttributeValidator.cs" />
     <Compile Include="Validators\ContentSlider\ContentSliderValidator.cs" />
+    <Compile Include="Validators\DataExchange\ExportDeplomentValidator.cs" />
+    <Compile Include="Validators\DataExchange\ExportProfileValidator.cs" />
     <Compile Include="Validators\Directory\DeliveryTimeValidator.cs" />
     <Compile Include="Validators\Messages\NewsLetterSubscriptionValidator.cs" />
     <Compile Include="Validators\Orders\CheckoutAttributeValueValidator.cs" />
@@ -466,6 +481,9 @@
     <Content Include="Scripts\jquery-1.8.3.min.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
     <Content Include="Scripts\admin.globalinit.js" />
+    <Content Include="Scripts\smartstore.download.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\smartstore.discountrules.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -493,6 +511,30 @@
     <Content Include="Views\Home\UaTester.cshtml" />
     <Content Include="Views\Plugin\LicensePlugin.cshtml" />
     <Content Include="Views\Common\CheckUpdate.cshtml" />
+    <Content Include="Views\Payment\Edit.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Download.cshtml" />
+    <Content Include="Views\ScheduleTask\Edit.cshtml" />
+    <Content Include="Views\ScheduleTask\FutureSchedules.cshtml" />
+    <Content Include="Views\ScheduleTask\_LastRun.cshtml" />
+    <Content Include="Views\ScheduleTask\_NextRun.cshtml" />
+    <Content Include="Views\ScheduleTask\MinimalTask.cshtml" />
+    <Content Include="Views\ScheduleTask\_MinimalTaskWidget.cshtml" />
+    <Content Include="Views\Export\List.cshtml" />
+    <Content Include="Views\Export\Create.cshtml" />
+    <Content Include="Views\Export\Edit.cshtml" />
+    <Content Include="Views\Export\Preview.cshtml" />
+    <Content Include="Views\Export\EditDeployment.cshtml" />
+    <Content Include="Views\Export\CreateDeployment.cshtml" />
+    <Content Include="Views\Export\_CreateOrUpdate.Deployment.cshtml" />
+    <Content Include="Views\Export\_Tab.Filter.cshtml" />
+    <Content Include="Views\Export\_Tab.Projection.cshtml" />
+    <Content Include="Views\Export\InfoProfile.cshtml" />
+    <Content Include="Views\Export\_Tab.Deployment.cshtml" />
+    <Content Include="Views\Export\InfoDeployment.cshtml" />
+    <Content Include="Views\UrlRecord\List.cshtml" />
+    <Content Include="Views\UrlRecord\Edit.cshtml" />
+    <Content Include="Views\UrlRecord\_CreateOrUpdate.cshtml" />
+    <Content Include="Views\UrlRecord\NamesPerEntity.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />
@@ -720,9 +762,6 @@
     <Content Include="Views\Product\_CreateOrUpdateProductAttributeValue.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\EditorTemplates\Download.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\CheckoutAttribute\_CreateOrUpdate.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -890,9 +929,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\News\Comments.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shipping\Restrictions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Topic\_CreateOrUpdate.cshtml" />
@@ -1089,9 +1125,6 @@
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdateProductTag.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Widget\WidgetsByZone.cshtml" />
-  </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <Content Include="Views\DeliveryTime\List.cshtml" />
@@ -1128,9 +1161,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Theme\Configure.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Common\SeNames.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Store\Create.cshtml" />
@@ -1284,7 +1314,6 @@
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
-  <Import Project="..\..\..\packages\AutoMapper.3.2.1\tools\AutoMapper.targets" Condition="Exists('..\..\..\packages\AutoMapper.3.2.1\tools\AutoMapper.targets')" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

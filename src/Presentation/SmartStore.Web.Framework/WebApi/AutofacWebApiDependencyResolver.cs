@@ -4,6 +4,7 @@ using System.Security;
 using System.Web.Http.Dependencies;
 using Autofac;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 
 namespace SmartStore.Web.Framework.WebApi
 {
@@ -14,14 +15,15 @@ namespace SmartStore.Web.Framework.WebApi
 		private bool _disposed;
 		readonly ILifetimeScope _container;
 		readonly IDependencyScope _rootDependencyScope;
+		readonly ILifetimeScopeAccessor _accessor;
 
 		internal static readonly string ApiRequestTag = "AutofacWebRequest";
 
 		public AutofacWebApiDependencyResolver()
 		{
-			var container = EngineContext.Current.ContainerManager.Container;
-			_container = container;
-			_rootDependencyScope = new AutofacWebApiDependencyScope(container);
+			_container = EngineContext.Current.ContainerManager.Container;
+			_accessor = _container.Resolve<ILifetimeScopeAccessor>();
+			_rootDependencyScope = new AutofacWebApiDependencyScope(_container);
 		}
 
 		public ILifetimeScope Container
@@ -41,7 +43,8 @@ namespace SmartStore.Web.Framework.WebApi
 
 		public IDependencyScope BeginScope()
 		{
-			ILifetimeScope lifetimeScope = _container.BeginLifetimeScope(ApiRequestTag);
+			//ILifetimeScope lifetimeScope = _container.BeginLifetimeScope(ApiRequestTag);
+			ILifetimeScope lifetimeScope = _accessor.GetLifetimeScope(null);
 			return new AutofacWebApiDependencyScope(lifetimeScope);
 		}
 

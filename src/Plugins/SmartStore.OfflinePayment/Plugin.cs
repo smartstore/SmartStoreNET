@@ -41,12 +41,18 @@ namespace SmartStore.OfflinePayment
 			});
 			settings.SaveSetting(new ManualPaymentSettings
 			{
+                DescriptionText = "@Plugins.Payments.Manual.PaymentInfoDescription",
 				TransactMode = TransactMode.Pending
 			});
 			settings.SaveSetting(new DirectDebitPaymentSettings
 			{
 				DescriptionText = "@Plugins.Payments.DirectDebit.PaymentInfoDescription"
 			});
+            settings.SaveSetting(new PurchaseOrderNumberPaymentSettings
+            {
+                DescriptionText = "@Plugins.Payments.PurchaseOrderNumber.PaymentInfoDescription",
+                TransactMode = TransactMode.Pending
+            });
 
 			// add resources
 			loc.ImportPluginResourcesFromXml(this.PluginDescriptor);

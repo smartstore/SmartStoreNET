@@ -11,6 +11,7 @@ namespace SmartStore.Web
 {
 	public static class ProductDetailsExtensions
 	{
+		
 		public static string UpdateProductDetailsUrl(this ProductDetailsModel model, string itemType = null)
 		{
 			var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
@@ -24,16 +25,18 @@ namespace SmartStore.Web
 
 			return url;
 		}
+
 		public static bool RenderBundleTitle(this ProductDetailsModel model)
 		{
 			return model.BundleTitleText.HasValue() && model.BundledItems.Where(x => x.BundleItem.Visible).Count() > 0;
 		}
+
 		public static Picture GetAssignedPicture(this ProductDetailsModel model, IPictureService pictureService, IList<Picture> pictures, int productId = 0)
 		{
-			if (model != null && model.CombinationSelected != null)
+			if (model != null && model.SelectedCombination != null)
 			{
 				Picture picture = null;
-				var combiAssignedImages = model.CombinationSelected.GetAssignedPictureIds();
+				var combiAssignedImages = model.SelectedCombination.GetAssignedPictureIds();
 
 				if (combiAssignedImages.Length > 0)
 				{
@@ -51,6 +54,7 @@ namespace SmartStore.Web
 			}
 			return null;
 		}
+
 		public static string GetAttributeValueInfo(this ProductDetailsModel.ProductVariantAttributeValueModel model)
 		{
 			string result = "";
@@ -77,6 +81,7 @@ namespace SmartStore.Web
 					return true;
 			}
 		}
+
 		public static bool ShouldBeRendered(this IEnumerable<ProductDetailsModel.ProductVariantAttributeModel> variantAttributes)
 		{
 			if (variantAttributes != null)

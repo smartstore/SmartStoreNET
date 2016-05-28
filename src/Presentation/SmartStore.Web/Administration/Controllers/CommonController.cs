@@ -21,7 +21,6 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Security;
-using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Packaging;
@@ -35,11 +34,11 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
-using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
 using Telerik.Web.Mvc;
@@ -56,7 +55,6 @@ namespace SmartStore.Admin.Controllers
         private readonly Lazy<ICurrencyService> _currencyService;
         private readonly Lazy<IMeasureService> _measureService;
         private readonly ICustomerService _customerService;
-        private readonly IUrlRecordService _urlRecordService;
 		private readonly Lazy<CommonSettings> _commonSettings;
         private readonly Lazy<CurrencySettings> _currencySettings;
         private readonly Lazy<MeasureSettings> _measureSettings;
@@ -83,7 +81,6 @@ namespace SmartStore.Admin.Controllers
             Lazy<ICurrencyService> currencyService,
 			Lazy<IMeasureService> measureService,
             ICustomerService customerService,
-			IUrlRecordService urlRecordService, 
 			Lazy<CommonSettings> commonSettings,
 			Lazy<CurrencySettings> currencySettings,
             Lazy<MeasureSettings> measureSettings,
@@ -103,7 +100,6 @@ namespace SmartStore.Admin.Controllers
             this._currencyService = currencyService;
             this._measureService = measureService;
             this._customerService = customerService;
-            this._urlRecordService = urlRecordService;
 			this._commonSettings = commonSettings;
             this._currencySettings = currencySettings;
             this._measureSettings = measureSettings;
@@ -454,14 +450,15 @@ namespace SmartStore.Admin.Controllers
             model.ServerLocalTime = DateTime.Now;
             model.UtcTime = DateTime.UtcNow;
 			model.HttpHost = _services.WebHelper.ServerVariables("HTTP_HOST");
-            //Environment.GetEnvironmentVariable("USERNAME");
 
 			try
 			{
 				var mbSize = _services.DbContext.SqlQuery<decimal>("Select Sum(size)/128.0 From sysfiles").FirstOrDefault();
-				model.DatabaseSize = Convert.ToDouble(mbSize);
+				model.DatabaseSize = Convert.ToInt64(mbSize * 1024 *1024);
+				
+				model.UsedMemorySize = System.Diagnostics.Process.GetCurrentProcess().PrivateMemorySize64;
 			}
-			catch (Exception) {	}
+			catch {	}
 
 			try
 			{
@@ -471,7 +468,7 @@ namespace SmartStore.Admin.Controllers
 					model.ShrinkDatabaseEnabled = _services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance) && DataSettings.Current.IsSqlServer;
 				}
 			}
-			catch (Exception) { }
+			catch { }
 
 			try
 			{
@@ -479,7 +476,7 @@ namespace SmartStore.Admin.Controllers
 				var fi = new FileInfo(assembly.Location);
 				model.AppDate = fi.LastWriteTime.ToLocalTime();
 			}
-			catch (Exception) { }
+			catch { }
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -496,35 +493,73 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Warnings()
         {
             var model = new List<SystemWarningModel>();
+			var store = _services.StoreContext.CurrentStore;
             
             //store URL
-			var currentStoreUrl = _services.StoreContext.CurrentStore.Url.EnsureEndsWith("/");
-			if (currentStoreUrl.HasValue() && (currentStoreUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(false)) || currentStoreUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(true))))
-                model.Add(new SystemWarningModel()
-                    {
-                        Level = SystemWarningLevel.Pass,
-                        Text = _localizationService.GetResource("Admin.System.Warnings.URL.Match")
-                    });
-            else
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Warning,
-					Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.URL.NoMatch"), currentStoreUrl, _services.WebHelper.GetStoreLocation(false))
-                });
+			var storeUrl = store.Url.EnsureEndsWith("/");
+			if (storeUrl.HasValue() && (storeUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(false)) || storeUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(true))))
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.URL.Match")
+				});
+			}
+			else
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Warning,
+					Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.URL.NoMatch"), storeUrl, _services.WebHelper.GetStoreLocation(false))
+				});
+			}
 
+			// sitemap reachability
+			var sitemapReachable = false;
+			try
+			{
+				var sitemapUrl = Url.RouteUrl("SitemapSEO", (object)null, _securitySettings.Value.ForceSslForAllPages ? "https" : "http");
+				var request = (HttpWebRequest)WebRequest.Create(sitemapUrl);
+				request.Method = "HEAD";
+				request.Timeout = 15000;
+
+				using (var response = (HttpWebResponse)request.GetResponse())
+				{
+					sitemapReachable = (response.StatusCode == HttpStatusCode.OK);
+				}
+			}
+			catch (WebException) { }
+
+			if (sitemapReachable)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.SitemapReachable.OK")
+				});
+			}
+			else
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Warning,
+					Text = _localizationService.GetResource("Admin.System.Warnings.SitemapReachable.Wrong")
+				});
+			}
 
             //primary exchange rate currency
-			var perCurrency = _currencyService.Value.GetCurrencyById(_currencySettings.Value.PrimaryExchangeRateCurrencyId);
+			var perCurrency = store.PrimaryExchangeRateCurrency;
             if (perCurrency != null)
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Pass,
                     Text = _localizationService.GetResource("Admin.System.Warnings.ExchangeCurrency.Set"),
                 });
+
                 if (perCurrency.Rate != 1)
                 {
-                    model.Add(new SystemWarningModel()
+                    model.Add(new SystemWarningModel
                     {
                         Level = SystemWarningLevel.Fail,
                         Text = _localizationService.GetResource("Admin.System.Warnings.ExchangeCurrency.Rate1")
@@ -533,7 +568,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Fail,
                     Text = _localizationService.GetResource("Admin.System.Warnings.ExchangeCurrency.NotSet")
@@ -541,10 +576,10 @@ namespace SmartStore.Admin.Controllers
             }
 
             //primary store currency
-			var pscCurrency = _currencyService.Value.GetCurrencyById(_currencySettings.Value.PrimaryStoreCurrencyId);
+			var pscCurrency = store.PrimaryStoreCurrency;
             if (pscCurrency != null)
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Pass,
                     Text = _localizationService.GetResource("Admin.System.Warnings.PrimaryCurrency.Set"),
@@ -552,7 +587,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Fail,
                     Text = _localizationService.GetResource("Admin.System.Warnings.PrimaryCurrency.NotSet")
@@ -564,7 +599,7 @@ namespace SmartStore.Admin.Controllers
 			var bWeight = _measureService.Value.GetMeasureWeightById(_measureSettings.Value.BaseWeightId);
             if (bWeight != null)
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Pass,
                     Text = _localizationService.GetResource("Admin.System.Warnings.DefaultWeight.Set"),
@@ -572,7 +607,7 @@ namespace SmartStore.Admin.Controllers
 
                 if (bWeight.Ratio != 1)
                 {
-                    model.Add(new SystemWarningModel()
+                    model.Add(new SystemWarningModel
                     {
                         Level = SystemWarningLevel.Fail,
                         Text = _localizationService.GetResource("Admin.System.Warnings.DefaultWeight.Ratio1")
@@ -581,7 +616,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Fail,
                     Text = _localizationService.GetResource("Admin.System.Warnings.DefaultWeight.NotSet")
@@ -593,7 +628,7 @@ namespace SmartStore.Admin.Controllers
 			var bDimension = _measureService.Value.GetMeasureDimensionById(_measureSettings.Value.BaseDimensionId);
             if (bDimension != null)
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Pass,
                     Text = _localizationService.GetResource("Admin.System.Warnings.DefaultDimension.Set"),
@@ -601,7 +636,7 @@ namespace SmartStore.Admin.Controllers
 
                 if (bDimension.Ratio != 1)
                 {
-                    model.Add(new SystemWarningModel()
+                    model.Add(new SystemWarningModel
                     {
                         Level = SystemWarningLevel.Fail,
                         Text = _localizationService.GetResource("Admin.System.Warnings.DefaultDimension.Ratio1")
@@ -610,86 +645,118 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Fail,
                     Text = _localizationService.GetResource("Admin.System.Warnings.DefaultDimension.NotSet")
                 });
             }
 
-            // shipping rate coputation methods
-			if (_shippingService.Value.LoadActiveShippingRateComputationMethods()
-                .Where(x => x.Value.ShippingRateComputationMethodType == ShippingRateComputationMethodType.Offline)
-                .Count() > 1)
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Warning,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.Shipping.OnlyOneOffline")
-                });
+			// shipping rate coputation methods
+			int activeShippingMethodCount = 0;
+
+			try
+			{
+				activeShippingMethodCount = _shippingService.Value.LoadActiveShippingRateComputationMethods()
+					.Where(x => x.Value.ShippingRateComputationMethodType == ShippingRateComputationMethodType.Offline)
+					.Count();
+			}
+			catch { }
+
+			if (activeShippingMethodCount > 1)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Warning,
+					Text = _localizationService.GetResource("Admin.System.Warnings.Shipping.OnlyOneOffline")
+				});
+			}
 
             //payment methods
-			if (_paymentService.Value.LoadActivePaymentMethods()
-                .Count() > 0)
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Pass,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.PaymentMethods.OK")
-                });
-            else
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Fail,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.PaymentMethods.NoActive")
-                });
+			int activePaymentMethodCount = 0;
+
+			try
+			{
+				activePaymentMethodCount = _paymentService.Value.LoadActivePaymentMethods().Count();
+			}
+			catch { }
+
+			if (activePaymentMethodCount > 0)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.PaymentMethods.OK")
+				});
+			}
+			else
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Fail,
+					Text = _localizationService.GetResource("Admin.System.Warnings.PaymentMethods.NoActive")
+				});
+			}
 
             //incompatible plugins
-            if (PluginManager.IncompatiblePlugins != null)
-                foreach (var pluginName in PluginManager.IncompatiblePlugins)
-                    model.Add(new SystemWarningModel()
-                    {
-                        Level = SystemWarningLevel.Warning,
-                        Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.IncompatiblePlugin"), pluginName )
-                    });
+			if (PluginManager.IncompatiblePlugins != null)
+			{
+				foreach (var pluginName in PluginManager.IncompatiblePlugins)
+				{
+					model.Add(new SystemWarningModel
+					{
+						Level = SystemWarningLevel.Warning,
+						Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.IncompatiblePlugin"), pluginName)
+					});
+				}
+			}
 
             //validate write permissions (the same procedure like during installation)
             var dirPermissionsOk = true;
 			var dirsToCheck = FilePermissionHelper.GetDirectoriesWrite(_services.WebHelper);
-            foreach (string dir in dirsToCheck)
-                if (!FilePermissionHelper.CheckPermissions(dir, false, true, true, false))
-                {
-                    model.Add(new SystemWarningModel()
-                    {
-                        Level = SystemWarningLevel.Warning,
-                        Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.DirectoryPermission.Wrong"), WindowsIdentity.GetCurrent().Name, dir)
-                    });
-                    dirPermissionsOk = false;
-                }
-            if (dirPermissionsOk)
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Pass,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.DirectoryPermission.OK")
-                });
+			foreach (string dir in dirsToCheck)
+			{
+				if (!FilePermissionHelper.CheckPermissions(dir, false, true, true, false))
+				{
+					model.Add(new SystemWarningModel
+					{
+						Level = SystemWarningLevel.Warning,
+						Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.DirectoryPermission.Wrong"), WindowsIdentity.GetCurrent().Name, dir)
+					});
+					dirPermissionsOk = false;
+				}
+			}
+			if (dirPermissionsOk)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.DirectoryPermission.OK")
+				});
+			}
 
             var filePermissionsOk = true;
 			var filesToCheck = FilePermissionHelper.GetFilesWrite(_services.WebHelper);
-            foreach (string file in filesToCheck)
-                if (!FilePermissionHelper.CheckPermissions(file, false, true, true, true))
-                {
-                    model.Add(new SystemWarningModel
-                    {
-                        Level = SystemWarningLevel.Warning,
-                        Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.FilePermission.Wrong"), WindowsIdentity.GetCurrent().Name, file)
-                    });
-                    filePermissionsOk = false;
-                }
-            if (filePermissionsOk)
-                model.Add(new SystemWarningModel
-                {
-                    Level = SystemWarningLevel.Pass,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.FilePermission.OK")
-                });
-            
+			foreach (string file in filesToCheck)
+			{
+				if (!FilePermissionHelper.CheckPermissions(file, false, true, true, true))
+				{
+					model.Add(new SystemWarningModel
+					{
+						Level = SystemWarningLevel.Warning,
+						Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.FilePermission.Wrong"), WindowsIdentity.GetCurrent().Name, file)
+					});
+					filePermissionsOk = false;
+				}
+			}
+			if (filePermissionsOk)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.FilePermission.OK")
+				});
+			}
             
             return View(model);
         }
@@ -704,7 +771,7 @@ namespace SmartStore.Admin.Controllers
 				if (DataSettings.Current.IsSqlServer)
 				{
 					_services.DbContext.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
-					NotifySuccess(_localizationService.GetResource("Common.ShrinkDatabaseSuccessful"));
+					NotifySuccess(T("Common.ShrinkDatabaseSuccessful"));
 				}
 			}
 			catch (Exception ex)
@@ -715,7 +782,26 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToReferrer();
 		}
 
-        public ActionResult Maintenance()
+		public async Task<ActionResult> GarbageCollect()
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+				return AccessDeniedView();
+
+			try
+			{
+				GC.Collect();
+				await Task.Delay(500);
+				NotifySuccess(T("Admin.System.SystemInfo.GarbageCollectSuccessful"));
+			}
+			catch (Exception ex)
+			{
+				NotifyError(ex);
+			}
+
+			return RedirectToReferrer();
+		}
+
+		public ActionResult Maintenance()
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
@@ -742,6 +828,9 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			_imageCache.Value.DeleteCachedImages();
+
+			// get rid of cached image metadata
+			_cache("static").Clear();
 
             return RedirectToAction("Maintenance");
         }
@@ -772,38 +861,64 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             DateTime? startDateValue = (model.DeleteExportedFiles.StartDate == null) ? null
-							: (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteExportedFiles.StartDate.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				: (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteExportedFiles.StartDate.Value, _dateTimeHelper.Value.CurrentTimeZone);
 
             DateTime? endDateValue = (model.DeleteExportedFiles.EndDate == null) ? null
-							: (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteExportedFiles.EndDate.Value, _dateTimeHelper.Value.CurrentTimeZone).AddDays(1);
+				: (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteExportedFiles.EndDate.Value, _dateTimeHelper.Value.CurrentTimeZone).AddDays(1);
 
 
             model.DeleteExportedFiles.NumberOfDeletedFiles = 0;
-            string path = string.Format("{0}Content\\files\\exportimport\\", this.Request.PhysicalApplicationPath);
-            foreach (var fullPath in System.IO.Directory.GetFiles(path))
-            {
-                try
-                {
-                    var fileName = Path.GetFileName(fullPath);
-                    if (fileName.Equals("index.htm", StringComparison.InvariantCultureIgnoreCase))
-                        continue;
+			model.DeleteExportedFiles.NumberOfDeletedFolders = 0;
 
-					if (fileName.Equals("placeholder", StringComparison.InvariantCultureIgnoreCase))
-						continue;
+			var appPath = this.Request.PhysicalApplicationPath;
 
-                    var info = new FileInfo(fullPath);
-                    if ((!startDateValue.HasValue || startDateValue.Value < info.CreationTimeUtc)&&
-                        (!endDateValue.HasValue || info.CreationTimeUtc < endDateValue.Value))
-                    {
-                        System.IO.File.Delete(fullPath);
-                        model.DeleteExportedFiles.NumberOfDeletedFiles++;
-                    }
-                }
-                catch (Exception exc)
-                {
-                    NotifyError(exc, false);
-                }
-            }
+			string[] paths = new string[]
+			{
+				appPath + @"Content\files\exportimport\",
+				appPath + @"Exchange\",
+				appPath + @"App_Data\_temp\Profile\Export\"
+			};
+
+			foreach (var path in paths)
+			{
+				foreach (var fullPath in System.IO.Directory.GetFiles(path))
+				{
+					try
+					{
+						var fileName = Path.GetFileName(fullPath);
+						if (fileName.Equals("index.htm", StringComparison.InvariantCultureIgnoreCase))
+							continue;
+
+						if (fileName.Equals("placeholder", StringComparison.InvariantCultureIgnoreCase))
+							continue;
+
+						var info = new FileInfo(fullPath);
+
+						if ((!startDateValue.HasValue || startDateValue.Value < info.CreationTimeUtc) &&
+							(!endDateValue.HasValue || info.CreationTimeUtc < endDateValue.Value))
+						{
+							if (FileSystemHelper.Delete(fullPath))
+								++model.DeleteExportedFiles.NumberOfDeletedFiles;
+						}
+					}
+					catch (Exception exc)
+					{
+						NotifyError(exc, false);
+					}
+				}
+
+				var dir = new DirectoryInfo(path);
+
+				foreach (var dirInfo in dir.GetDirectories())
+				{
+					if ((!startDateValue.HasValue || startDateValue.Value < dirInfo.LastWriteTimeUtc) &&
+						(!endDateValue.HasValue || dirInfo.LastWriteTimeUtc < endDateValue.Value))
+					{
+						FileSystemHelper.ClearDirectory(dirInfo.FullName, true);
+						++model.DeleteExportedFiles.NumberOfDeletedFolders;
+					}
+				}
+			}
 
             return View(model);
         }
@@ -881,80 +996,6 @@ namespace SmartStore.Admin.Controllers
 				return Redirect(previousUrl);
 
             return RedirectToAction("Index", "Home");
-        }
-
-        #endregion
-
-        #region Search engine friendly names
-
-        public ActionResult SeNames()
-        {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
-                return AccessDeniedView();
-
-            var model = new UrlRecordListModel();
-            return View(model);
-        }
-
-        [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult SeNames(GridCommand command, UrlRecordListModel model)
-        {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
-                return AccessDeniedView();
-
-            var urlRecords = _urlRecordService.GetAllUrlRecords(model.SeName, command.Page - 1, command.PageSize);
-            var gridModel = new GridModel<UrlRecordModel>
-            {
-                Data = urlRecords.Select(x =>
-                {
-                    string languageName;
-                    if (x.LanguageId == 0)
-                    {
-                        languageName = _localizationService.GetResource("Admin.System.SeNames.Language.Standard");
-                    }
-                    else
-                    {
-                        var language = _languageService.GetLanguageById(x.LanguageId);
-                        languageName = language != null ? language.Name : "Unknown";
-                    }
-                    return new UrlRecordModel()
-                    {
-                        Id = x.Id,
-                        Name = x.Slug,
-                        EntityId = x.EntityId,
-                        EntityName = x.EntityName,
-                        IsActive = x.IsActive,
-                        Language = languageName,
-                    };
-                }),
-                Total = urlRecords.TotalCount
-            };
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
-
-        [HttpPost]
-        public ActionResult DeleteSelectedSeNames(ICollection<int> selectedIds)
-        {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
-                return AccessDeniedView();
-
-            if (selectedIds != null)
-            {
-                var urlRecords = new List<UrlRecord>();
-                foreach (var id in selectedIds)
-                {
-                    var urlRecord = _urlRecordService.GetUrlRecordById(id);
-                    if (urlRecord != null)
-                        urlRecords.Add(urlRecord);
-                }
-                foreach (var urlRecord in urlRecords)
-                    _urlRecordService.DeleteUrlRecord(urlRecord);
-            }
-
-            return Json(new { Result = true });
         }
 
         #endregion

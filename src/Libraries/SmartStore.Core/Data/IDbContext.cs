@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
-using SmartStore.Core;
 
 namespace SmartStore.Core.Data
 {
@@ -39,12 +41,12 @@ namespace SmartStore.Core.Data
 		/// <summary>Executes sql by using SQL-Server Management Objects which supports GO statements.</summary>
 		int ExecuteSqlThroughSmo(string sql);
 
-        // codehint: sm-add (required for UoW implementation)
         string Alias { get; }
 
         // increasing performance on bulk operations
         bool ProxyCreationEnabled { get; set; }
-        bool AutoDetectChangesEnabled { get; set; }
+		bool LazyLoadingEnabled { get; set; }
+		bool AutoDetectChangesEnabled { get; set; }
         bool ValidateOnSaveEnabled { get; set; }
 		bool HooksEnabled { get; set; }
         bool HasChanges { get; }
@@ -58,6 +60,12 @@ namespace SmartStore.Core.Data
 		/// Set this to <c>true</c> only during long running processes (like export)
 		/// </remarks>
 		bool ForceNoTracking { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether database write operations
+		/// originating from repositories should be committed immediately.
+		/// </summary>
+		bool AutoCommitEnabled { get; set; }
 
 		/// <summary>
 		/// Gets a list of modified properties for the specified entity
@@ -77,26 +85,21 @@ namespace SmartStore.Core.Data
         /// <typeparam name="TEntity">Type of entity</typeparam>
         /// <param name="entity">The entity instance to attach</param>
         /// <returns><c>true</c> when the entity is attched already, <c>false</c> otherwise</returns>
-        bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
+        bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity;
 
         /// <summary>
         /// Detaches an entity from the current object context if it's attached
         /// </summary>
         /// <typeparam name="TEntity">Type of entity</typeparam>
         /// <param name="entity">The entity instance to detach</param>
-        void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
+        void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity;
 
 		/// <summary>
-		/// Detaches an entity from the current object context
+		/// Detaches all entities of type <c>TEntity</c> from the current object context
 		/// </summary>
-		/// <param name="entity">The entity instance to detach</param>
-		void Detach(object entity);
-
-		/// <summary>
-		/// Detaches all entities from the current object context
-		/// </summary>
+		/// <param name="unchangedEntitiesOnly">When <c>true</c>, only entities in unchanged state get detached.</param>
 		/// <returns>The count of detached entities</returns>
-		int DetachAll();
+		int DetachEntities<TEntity>(bool unchangedEntitiesOnly = true) where TEntity : class;
 
 		/// <summary>
 		/// Change the state of an entity object
@@ -104,15 +107,15 @@ namespace SmartStore.Core.Data
 		/// <typeparam name="TEntity">Type of entity</typeparam>
 		/// <param name="entity">The entity instance</param>
 		/// <param name="newState">The new state</param>
-		void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState);
+		void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity;
 
 		/// <summary>
-		/// Changes the object state to unchanged
+		/// Reloads the entity from the database overwriting any property values with values from the database. 
+		/// The entity will be in the Unchanged state after calling this method. 
 		/// </summary>
 		/// <typeparam name="TEntity">Type of entity</typeparam>
 		/// <param name="entity">The entity instance</param>
-		/// <returns>true on success, false on failure</returns>
-		bool SetToUnchanged<TEntity>(TEntity entity);
+		void ReloadEntity<TEntity>(TEntity entity) where TEntity : BaseEntity;
 
 		/// <summary>
 		/// Begins a transaction on the underlying store connection using the specified isolation level 
@@ -127,4 +130,5 @@ namespace SmartStore.Core.Data
 		/// <param name="transaction">the external transaction</param>
 		void UseTransaction(DbTransaction transaction);
     }
+
 }

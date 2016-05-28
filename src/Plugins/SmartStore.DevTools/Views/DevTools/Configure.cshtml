@@ -15,6 +15,15 @@
                 @Html.ValidationMessageFor(model => model.EnableMiniProfilerInPublicStore)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayWidgetZones)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.DisplayWidgetZones)
+                @Html.ValidationMessageFor(model => model.DisplayWidgetZones)
+            </td>
+        </tr>
 		<tr>
 			<td class="adminTitle">
 				&nbsp;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web.ModelBinding;
@@ -25,8 +24,8 @@ using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange.Providers;
 using SmartStore.Services.Directory;
-using SmartStore.Services.ExportImport;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -37,8 +36,10 @@ using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -67,7 +68,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IStoreContext _storeContext;
         private readonly IPriceFormatter _priceFormatter;
         private readonly IOrderService _orderService;
-        private readonly IExportManager _exportManager;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly IPermissionService _permissionService;
@@ -101,7 +101,6 @@ namespace SmartStore.Admin.Controllers
 			IWorkContext workContext, IStoreContext storeContext, 
 			IPriceFormatter priceFormatter,
             IOrderService orderService,
-			IExportManager exportManager,
             ICustomerActivityService customerActivityService,
             IPriceCalculationService priceCalculationService,
             IPermissionService permissionService, AdminAreaSettings adminAreaSettings,
@@ -132,7 +131,6 @@ namespace SmartStore.Admin.Controllers
 			this._storeContext = storeContext;
             this._priceFormatter = priceFormatter;
             this._orderService = orderService;
-            this._exportManager = exportManager;
             this._customerActivityService = customerActivityService;
             this._priceCalculationService = priceCalculationService;
             this._permissionService = permissionService;
@@ -234,6 +232,7 @@ namespace SmartStore.Admin.Controllers
                 Username = customer.Username,
                 FullName = customer.GetFullName(),
                 Company = customer.GetAttribute<string>(SystemCustomerAttributeNames.Company),
+                CustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber),
                 Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone),
                 ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode),
                 CustomerRoleNames = GetCustomerRolesNames(customer.CustomerRoles.ToList()),
@@ -253,11 +252,10 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
 			{
-				model.AvailableTimeZones.Add(new SelectListItem() { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == timeZoneId) });
+				model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == timeZoneId) });
 			}
 
 			model.DisplayVatNumber = false;
-			//customer roles
 			model.AvailableCustomerRoles = _customerService
 				.GetAllCustomerRoles(true)
 				.Select(cr => cr.ToModel())
@@ -281,14 +279,15 @@ namespace SmartStore.Admin.Controllers
 			model.StateProvinceEnabled = _customerSettings.StateProvinceEnabled;
 			model.PhoneEnabled = _customerSettings.PhoneEnabled;
 			model.FaxEnabled = _customerSettings.FaxEnabled;
-
+            model.CustomerNumberEnabled = _customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled;
+            
 			if (_customerSettings.CountryEnabled)
 			{
-				model.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
+				model.AvailableCountries.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
 
 				foreach (var c in _countryService.GetAllCountries())
 				{
-					model.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = (c.Id == model.CountryId) });
+					model.AvailableCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString(), Selected = (c.Id == model.CountryId) });
 				}
 
 				if (_customerSettings.StateProvinceEnabled)
@@ -299,12 +298,12 @@ namespace SmartStore.Admin.Controllers
 					{
 						foreach (var s in states)
 						{
-							model.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
+							model.AvailableStates.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
 						}
 					}
 					else
 					{
-						model.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
+						model.AvailableStates.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
 					}
 				}
 			}
@@ -442,7 +441,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
 		[ValidateInput(false)]
         public ActionResult Create(CustomerModel model, bool continueEditing, FormCollection form)
@@ -525,6 +524,25 @@ namespace SmartStore.Admin.Controllers
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Phone, model.Phone);
                 if (_customerSettings.FaxEnabled)
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Fax, model.Fax);
+                if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && String.IsNullOrEmpty(model.CustomerNumber))
+                {
+                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, customer.Id);
+                    _eventPublisher.Publish(new CustomerRegisteredEvent { Customer = customer });
+                }
+                else
+                {
+                    var customerNumbers = _genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, "customer");
+
+                    if (customerNumbers.Where(x => x.Value == model.CustomerNumber).Any())
+                    {
+                        this.NotifyError("Common.CustomerNumberAlreadyExists");
+                    }
+                    else
+                    {
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, model.CustomerNumber);
+                    }
+                }
+                    
 
                 //password
                 if (!String.IsNullOrWhiteSpace(model.Password))
@@ -568,7 +586,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(id);
             if (customer == null || customer.Deleted)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             var model = new CustomerModel();
@@ -582,12 +599,18 @@ namespace SmartStore.Admin.Controllers
             model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
-            foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
-				model.AvailableTimeZones.Add(new SelectListItem() { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
+			
+			foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
+			{
+				model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
+			}
+
             model.DisplayVatNumber = _taxSettings.EuVatEnabled;
 			model.VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
+			
 			model.VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId))
 				.GetLocalizedEnum(_localizationService, _workContext);
+
 			model.CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
             model.LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
             model.LastIpAddress = customer.LastIpAddress;
@@ -607,6 +630,7 @@ namespace SmartStore.Admin.Controllers
             model.Gender = customer.GetAttribute<string>(SystemCustomerAttributeNames.Gender);
             model.DateOfBirth = customer.GetAttribute<DateTime?>(SystemCustomerAttributeNames.DateOfBirth);
             model.Company = customer.GetAttribute<string>(SystemCustomerAttributeNames.Company);
+            model.CustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
             model.StreetAddress = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress);
             model.StreetAddress2 = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress2);
             model.ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode);
@@ -619,6 +643,7 @@ namespace SmartStore.Admin.Controllers
             model.GenderEnabled = _customerSettings.GenderEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
             model.CompanyEnabled = _customerSettings.CompanyEnabled;
+            model.CustomerNumberEnabled = _customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled;
             model.StreetAddressEnabled = _customerSettings.StreetAddressEnabled;
             model.StreetAddress2Enabled = _customerSettings.StreetAddress2Enabled;
             model.ZipPostalCodeEnabled = _customerSettings.ZipPostalCodeEnabled;
@@ -631,10 +656,10 @@ namespace SmartStore.Admin.Controllers
             //countries and states
             if (_customerSettings.CountryEnabled)
             {
-                model.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
+                model.AvailableCountries.Add(new SelectListItem { Text = T("Admin.Address.SelectCountry"), Value = "0" });
                 foreach (var c in _countryService.GetAllCountries())
                 {
-                    model.AvailableCountries.Add(new SelectListItem()
+                    model.AvailableCountries.Add(new SelectListItem
                     {
                         Text = c.Name,
                         Value = c.Id.ToString(),
@@ -646,14 +671,17 @@ namespace SmartStore.Admin.Controllers
                 {
                     //states
                     var states = _stateProvinceService.GetStateProvincesByCountryId(model.CountryId).ToList();
-                    if (states.Count > 0)
-                    {
-                        foreach (var s in states)
-                            model.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
-                    }
-                    else
-                        model.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
-
+					if (states.Count > 0)
+					{
+						foreach (var s in states)
+						{
+							model.AvailableStates.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
+						}
+					}
+					else
+					{
+						model.AvailableStates.Add(new SelectListItem { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
+					}
                 }
             }
 
@@ -662,19 +690,21 @@ namespace SmartStore.Admin.Controllers
                 .GetAllCustomerRoles(true)
                 .Select(cr => cr.ToModel())
                 .ToList();
+
             model.SelectedCustomerRoleIds = customer.CustomerRoles.Select(cr => cr.Id).ToArray();
             model.AllowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
+
             //reward points gistory
             model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
             model.AddRewardPointsValue = 0;
-            model.AddRewardPointsMessage = "Some comment here...";
+
             //external authentication records
             model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
 
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
 		[ValidateInput(false)]
         public ActionResult Edit(CustomerModel model, bool continueEditing, FormCollection form)
@@ -684,19 +714,26 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.Id);
             if (customer == null || customer.Deleted)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             //validate customer roles
-            var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-            var newCustomerRoles = new List<CustomerRole>();
-            foreach (var customerRole in allCustomerRoles)
-                if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
-                    newCustomerRoles.Add(customerRole);
-            var customerRolesError = ValidateCustomerRoles(newCustomerRoles);
-            if (!String.IsNullOrEmpty(customerRolesError))
-                ModelState.AddModelError("", customerRolesError);
-            bool allowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
+			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+			var allowManagingCustomerRoles = _permissionService.Authorize(StandardPermissionProvider.ManageCustomerRoles);
+
+			if (allowManagingCustomerRoles)
+			{
+				var newCustomerRoles = new List<CustomerRole>();
+
+				foreach (var customerRole in allCustomerRoles)
+				{
+					if (model.SelectedCustomerRoleIds != null && model.SelectedCustomerRoleIds.Contains(customerRole.Id))
+						newCustomerRoles.Add(customerRole);
+				}
+
+				var customerRolesError = ValidateCustomerRoles(newCustomerRoles);
+				if (customerRolesError.HasValue())
+					ModelState.AddModelError("", customerRolesError);
+			}
             
             if (ModelState.IsValid)
             {
@@ -705,6 +742,7 @@ namespace SmartStore.Admin.Controllers
                     customer.AdminComment = model.AdminComment;
                     customer.IsTaxExempt = model.IsTaxExempt;
                     customer.Active = model.Active;
+
                     //email
                     if (!String.IsNullOrWhiteSpace(model.Email))
                     {
@@ -759,8 +797,10 @@ namespace SmartStore.Admin.Controllers
 						_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.TimeZoneId, model.TimeZoneId);
                     if (_customerSettings.GenderEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
+
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.LastName, model.LastName);
+
                     if (_customerSettings.DateOfBirthEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.DateOfBirth, model.DateOfBirth);
                     if (_customerSettings.CompanyEnabled)
@@ -782,6 +822,21 @@ namespace SmartStore.Admin.Controllers
                     if (_customerSettings.FaxEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Fax, model.Fax);
 
+                    //customer number
+                    if (_customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled)
+                    {
+                        var customerNumbers = _genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, "customer");
+                        var currentCustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
+
+                        if (model.CustomerNumber != currentCustomerNumber && customerNumbers.Where(x => x.Value == model.CustomerNumber).Any())
+                        {
+                            this.NotifyError("Common.CustomerNumberAlreadyExists");
+                        }
+                        else
+                        {
+                            _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, model.CustomerNumber);
+                        }
+                    }
 
                     //customer roles
                     if (allowManagingCustomerRoles)
@@ -810,6 +865,7 @@ namespace SmartStore.Admin.Controllers
                     _customerActivityService.InsertActivity("EditCustomer", _localizationService.GetResource("ActivityLog.EditCustomer"), customer.Id);
 
                     NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.Updated"));
+
                     return continueEditing ? RedirectToAction("Edit", customer.Id) : RedirectToAction("List");
                 }
                 catch (Exception exc)
@@ -823,18 +879,25 @@ namespace SmartStore.Admin.Controllers
             model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
-            foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
-                model.AvailableTimeZones.Add(new SelectListItem() { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
+
+			foreach (var tzi in _dateTimeHelper.GetSystemTimeZones())
+			{
+				model.AvailableTimeZones.Add(new SelectListItem { Text = tzi.DisplayName, Value = tzi.Id, Selected = (tzi.Id == model.TimeZoneId) });
+			}
+
             model.DisplayVatNumber = _taxSettings.EuVatEnabled;
 			model.VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId))
 				 .GetLocalizedEnum(_localizationService, _workContext);
+
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc);
             model.LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
             model.LastIpAddress = model.LastIpAddress;
             model.LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
+
             //form fields
             model.GenderEnabled = _customerSettings.GenderEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
+            model.CustomerNumberEnabled = _customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled;
             model.CompanyEnabled = _customerSettings.CompanyEnabled;
             model.StreetAddressEnabled = _customerSettings.StreetAddressEnabled;
             model.StreetAddress2Enabled = _customerSettings.StreetAddress2Enabled;
@@ -844,13 +907,14 @@ namespace SmartStore.Admin.Controllers
             model.StateProvinceEnabled = _customerSettings.StateProvinceEnabled;
             model.PhoneEnabled = _customerSettings.PhoneEnabled;
             model.FaxEnabled = _customerSettings.FaxEnabled;
+
             //countries and states
             if (_customerSettings.CountryEnabled)
             {
-                model.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
+                model.AvailableCountries.Add(new SelectListItem { Text = T("Admin.Address.SelectCountry"), Value = "0" });
                 foreach (var c in _countryService.GetAllCountries())
                 {
-                    model.AvailableCountries.Add(new SelectListItem()
+                    model.AvailableCountries.Add(new SelectListItem
                     {
                         Text = c.Name,
                         Value = c.Id.ToString(),
@@ -862,28 +926,35 @@ namespace SmartStore.Admin.Controllers
                 {
                     //states
                     var states = _stateProvinceService.GetStateProvincesByCountryId(model.CountryId).ToList();
-                    if (states.Count > 0)
-                    {
-                        foreach (var s in states)
-                            model.AvailableStates.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
-                    }
-                    else
-                        model.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
-
+					if (states.Count > 0)
+					{
+						foreach (var s in states)
+						{
+							model.AvailableStates.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == model.StateProvinceId) });
+						}
+					}
+					else
+					{
+						model.AvailableStates.Add(new SelectListItem { Text = T("Admin.Address.OtherNonUS"), Value = "0" });
+					}
                 }
             }
+
             //customer roles
             model.AvailableCustomerRoles = _customerService
                 .GetAllCustomerRoles(true)
                 .Select(cr => cr.ToModel())
                 .ToList();
+
             model.AllowManagingCustomerRoles = allowManagingCustomerRoles;
-            //reward points gistory
+            
+			//reward points gistory
             model.DisplayRewardPointsHistory = _rewardPointsSettings.Enabled;
             model.AddRewardPointsValue = 0;
-            model.AddRewardPointsMessage = "Some comment here...";
-            //external authentication records
+            
+			//external authentication records
             model.AssociatedExternalAuthRecords = GetAssociatedExternalAuthRecords(customer);
+
             return View(model);
         }
         
@@ -1000,8 +1071,8 @@ namespace SmartStore.Admin.Controllers
                 //No customer found with the specified id
                 return RedirectToAction("List");
 
-			//ensure that a non-admin user cannot impersonate as an administrator
-			//otherwise, that user can simply impersonate as an administrator and gain additional administrative privileges
+			// ensure that a non-admin user cannot impersonate as an administrator
+			// otherwise, that user can simply impersonate as an administrator and gain additional administrative privileges
 			if (!_workContext.CurrentCustomer.IsAdmin() && customer.IsAdmin())
 			{
 				NotifyError("A non-admin user cannot impersonate as an administrator");
@@ -1035,13 +1106,11 @@ namespace SmartStore.Admin.Controllers
                 if (String.IsNullOrWhiteSpace(model.SendEmail.Body))
                     throw new SmartException("Email body is empty");
 
-                var emailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
-                if (emailAccount == null)
-                    emailAccount = _emailAccountService.GetAllEmailAccounts().FirstOrDefault();
+				var emailAccount = _emailAccountService.GetDefaultEmailAccount();
                 if (emailAccount == null)
                     throw new SmartException("Email account can't be loaded");
 
-                var email = new QueuedEmail()
+                var email = new QueuedEmail
                 {
                     EmailAccountId = emailAccount.Id,
                     FromName = emailAccount.DisplayName,
@@ -1692,94 +1761,40 @@ namespace SmartStore.Admin.Controllers
 
         #region Export / Import
 
+		[Compress]
         public ActionResult ExportExcelAll()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
 
-            try
-            {
-                var customers = _customerService.GetAllCustomers(null, null, null, null,
-                    null, null, null, 0, 0, null, null, null, 
-                    false, null, 0, int.MaxValue);
-
-                byte[] bytes = null;
-                using (var stream = new MemoryStream())
-                {
-                    _exportManager.ExportCustomersToXlsx(stream, customers);
-                    bytes = stream.ToArray();
-                }
-                return File(bytes, "text/xls", "customers.xlsx");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
+			return Export(CustomerXlsxExportProvider.SystemName, null);
         }
 
+		[Compress]
         public ActionResult ExportExcelSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
 
-            var customers = new List<Customer>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                customers.AddRange(_customerService.GetCustomersByIds(ids));
-            }
-
-            byte[] bytes = null;
-            using (var stream = new MemoryStream())
-            {
-                _exportManager.ExportCustomersToXlsx(stream, customers);
-                bytes = stream.ToArray();
-            }
-            return File(bytes, "text/xls", "customers.xlsx");
+			return Export(CustomerXlsxExportProvider.SystemName, selectedIds);
         }
 
+		[Compress]
         public ActionResult ExportXmlAll()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
 
-            try
-            {
-                var customers = _customerService.GetAllCustomers(null, null, null, null,
-                    null, null, null, 0, 0, null, null, null, 
-                    false, null, 0, int.MaxValue);
-                
-                var xml = _exportManager.ExportCustomersToXml(customers);
-                return new XmlDownloadResult(xml, "customers.xml");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
+			return Export(CustomerXmlExportProvider.SystemName, null);
         }
 
+		[Compress]
         public ActionResult ExportXmlSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
 
-            var customers = new List<Customer>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                customers.AddRange(_customerService.GetCustomersByIds(ids));
-            }
-
-            var xml = _exportManager.ExportCustomersToXml(customers);
-            return new XmlDownloadResult(xml, "customers.xml");
+			return Export(CustomerXmlExportProvider.SystemName, selectedIds);
         }
 
         #endregion

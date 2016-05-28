@@ -14,6 +14,7 @@ namespace SmartStore.Admin.Models.Settings
             ShippingTaxCategories = new List<SelectListItem>();
             EuVatShopCountries = new List<SelectListItem>();
 			DefaultTaxAddress = new AddressModel();
+            VatRequired = false;
         }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.PricesIncludeTax")]
@@ -94,5 +95,8 @@ namespace SmartStore.Admin.Models.Settings
         
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatEmailAdminWhenNewVatSubmitted")]
         public bool EuVatEmailAdminWhenNewVatSubmitted { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.VatRequired")]
+        public bool VatRequired { get; set; }
     }
 }

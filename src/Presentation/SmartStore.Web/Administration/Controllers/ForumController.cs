@@ -11,6 +11,8 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -18,7 +20,7 @@ namespace SmartStore.Admin.Controllers
     public class ForumController : AdminControllerBase
     {
         private readonly IForumService _forumService;
-		private readonly ICommonServices _commonServices;
+		private readonly ICommonServices _services;
         private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ILanguageService _languageService;
@@ -26,7 +28,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IUrlRecordService _urlRecordService;
 
         public ForumController(IForumService forumService,
-			ICommonServices commonServices,
+			ICommonServices services,
             IDateTimeHelper dateTimeHelper,
 			IStoreMappingService storeMappingService,
 			ILanguageService languageService,
@@ -34,7 +36,7 @@ namespace SmartStore.Admin.Controllers
 			IUrlRecordService urlRecordService)
         {
             _forumService = forumService;
-			_commonServices = commonServices;
+			_services = services;
             _dateTimeHelper = dateTimeHelper;
 			_storeMappingService = storeMappingService;
 			_languageService = languageService;
@@ -50,7 +52,7 @@ namespace SmartStore.Admin.Controllers
 			if (model == null)
 				throw new ArgumentNullException("model");
 
-			var allStores = _commonServices.StoreService.GetAllStores();
+			var allStores = _services.StoreService.GetAllStores();
 
 			model.AvailableStores = allStores.Select(s => s.ToModel()).ToList();
 
@@ -107,7 +109,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult List()
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageForums))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
                 return AccessDeniedView();
 
             var forumGroupsModel = _forumService.GetAllForumGroups(true)
@@ -137,7 +139,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult CreateForumGroup()
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageForums))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
                 return AccessDeniedView();
 
 			var model = new ForumGroupModel { DisplayOrder = 1 };
@@ -149,10 +151,10 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult CreateForumGroup(ForumGroupModel model, bool continueEditing)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageForums))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
                 return AccessDeniedView();
 
             if (ModelState.IsValid)
@@ -171,7 +173,7 @@ namespace SmartStore.Admin.Controllers
 
 				_storeMappingService.SaveStoreMappings<ForumGroup>(forumGroup, model.SelectedStoreIds);
 
-                NotifySuccess(_commonServices.Localization.GetResource("Admin.ContentManagement.Forums.ForumGroup.Added"));
+                NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.ForumGroup.Added"));
 
                 return continueEditing ? RedirectToAction("EditForumGroup", new { forumGroup.Id }) : RedirectToAction("List");
             }
@@ -185,7 +187,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult CreateForum()
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageForums))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
                 return AccessDeniedView();
 
 			var model = new ForumModel { DisplayOrder = 1 };
@@ -201,10 +203,10 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult CreateForum(ForumModel model, bool continueEditing)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageForums))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
                 return AccessDeniedView();
 
             if (ModelState.IsValid)
@@ -219,7 +221,7 @@ namespace SmartStore.Admin.Controllers
 				model.SeName = forum.ValidateSeName(model.SeName, forum.Name, true);
 				_urlRecordService.SaveSlug(forum, model.SeName, 0);
 
-                NotifySuccess(_commonServices.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Added"));
+                NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Added"));
 
                 return continueEditing ? RedirectToAction("EditForum", new { forum.Id }) : RedirectToAction("List");
             }
@@ -239,7 +241,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult EditForumGroup(int id)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageForums))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
                 return AccessDeniedView();
 
             var forumGroup = _forumService.GetForumGroupById(id);
@@ -260,10 +262,10 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult EditForumGroup(ForumGroupModel model, bool continueEditing)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageForums))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
                 return AccessDeniedView();
 
             var forumGroup = _forumService.GetForumGroupById(model.Id);
@@ -284,7 +286,7 @@ namespace SmartStore.Admin.Controllers
 
 				_storeMappingService.SaveStoreMappings<ForumGroup>(forumGroup, model.SelectedStoreIds);
 
-                NotifySuccess(_commonServices.Localization.GetResource("Admin.ContentManagement.Forums.ForumGroup.Updated"));
+                NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.ForumGroup.Updated"));
 
                 return continueEditing ? RedirectToAction("EditForumGroup", forumGroup.Id) : RedirectToAction("List");
             }
@@ -298,7 +300,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult EditForum(int id)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageForums))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
                 return AccessDeniedView();
 
             var forum = _forumService.GetForumById(id);
@@ -322,10 +324,10 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult EditForum(ForumModel model, bool continueEditing)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageForums))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
                 return AccessDeniedView();
 
             var forum = _forumService.GetForumById(model.Id);
@@ -344,7 +346,7 @@ namespace SmartStore.Admin.Controllers
 
 				UpdateLocales(model, forum);
 
-                NotifySuccess(_commonServices.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Updated"));
+                NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Updated"));
 
                 return continueEditing ? RedirectToAction("EditForum", forum.Id) : RedirectToAction("List");
             }
@@ -365,7 +367,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult DeleteForumGroup(int id)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageForums))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
                 return AccessDeniedView();
 
             var forumGroup = _forumService.GetForumGroupById(id);
@@ -374,14 +376,14 @@ namespace SmartStore.Admin.Controllers
 
             _forumService.DeleteForumGroup(forumGroup);
 
-            NotifySuccess(_commonServices.Localization.GetResource("Admin.ContentManagement.Forums.ForumGroup.Deleted"));
+            NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.ForumGroup.Deleted"));
             return RedirectToAction("List");
         }
 
         [HttpPost]
         public ActionResult DeleteForum(int id)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageForums))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
                 return AccessDeniedView();
 
             var forum = _forumService.GetForumById(id);
@@ -390,7 +392,7 @@ namespace SmartStore.Admin.Controllers
 
             _forumService.DeleteForum(forum);
 
-            NotifySuccess(_commonServices.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Deleted"));
+            NotifySuccess(_services.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Deleted"));
             return RedirectToAction("List");
         }
 

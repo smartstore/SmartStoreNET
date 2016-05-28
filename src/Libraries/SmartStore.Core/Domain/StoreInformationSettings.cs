@@ -19,8 +19,6 @@ namespace SmartStore.Core.Domain
         /// </summary>
         public bool StoreClosedAllowForAdmins { get; set; }
 
-        // codehint: sm-delete
-
         /// <summary>
         /// Gets or sets a value indicating whether mini profiler should be displayed in public store (used for debugging)
         /// </summary>

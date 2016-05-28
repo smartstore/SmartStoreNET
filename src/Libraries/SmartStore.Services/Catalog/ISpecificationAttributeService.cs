@@ -131,7 +131,6 @@ namespace SmartStore.Services.Catalog
         /// <param name="productSpecificationAttribute">Product specification attribute mapping</param>
         void UpdateProductSpecificationAttribute(ProductSpecificationAttribute productSpecificationAttribute);
 
-		/// <remarks>codehint: sm-add</remarks>
 		void UpdateProductSpecificationMapping(int specificationAttributeId, string field, bool value);
 
         #endregion

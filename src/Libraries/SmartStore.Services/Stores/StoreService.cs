@@ -81,9 +81,12 @@ namespace SmartStore.Services.Stores
 			string key = STORES_ALL_KEY;
 			return _cacheManager.Get(key, () =>
 			{
-				var query = from s in _storeRepository.Table
-							orderby s.DisplayOrder, s.Name
-							select s;
+				var query = _storeRepository.Table
+					.Expand(x => x.PrimaryStoreCurrency)
+					.Expand(x => x.PrimaryExchangeRateCurrency)
+					.OrderBy(x => x.DisplayOrder)
+					.ThenBy(x => x.Name);
+
 				var stores = query.ToList();
 				return stores;
 			});
@@ -147,9 +150,7 @@ namespace SmartStore.Services.Stores
 		{
 			if (!_isSingleStoreMode.HasValue)
 			{
-				var query = from s in _storeRepository.Table
-							select s;
-				_isSingleStoreMode = query.Count() <= 1;
+				_isSingleStoreMode = (_storeRepository.TableUntracked.Count() <= 1);
 			}
 
 			return _isSingleStoreMode.Value;

@@ -30,7 +30,7 @@
           <li>Click the Profile subtab.</li>
           <li>Click <b>Instant Payment Notification</b> in the Selling Preferences column.</li>
           <li>Click the <b>Edit IPN Settings</b> button to update your settings.</li>
-          <li>Select <b>Receive IPN messages</b> (enabled) and enter the URL of your IPN handler (<b>http://www.yourStore.com/Plugins/PayPalExpress/IPNHandler</b>).</li>
+          <li>Select <b>Receive IPN messages</b> (enabled) and enter the URL of your IPN handler (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalExpress/IPNHandler</b>).</li>
           <li>Click <b>Save</b>, and you should get a message that you have successfully activated IPN.</li>
           </ol>]]>
 		    </Value>
@@ -40,7 +40,7 @@
 		    <Value>Use Sandbox</Value>
 	    </LocaleResource>
 	    <LocaleResource Name="Fields.UseSandbox.Hint">
-		    <Value>Check to enable Sandbox (testing environment).</Value>
+		    <Value>Check the box to enable Sandbox (testing environment).</Value>
 	    </LocaleResource>
 	    <LocaleResource Name="Fields.TransactMode">
 		    <Value>Transaction mode</Value>
@@ -167,7 +167,7 @@
           <li>Click the Profile subtab.</li>
           <li>Click <b>Instant Payment Notification</b> in the Selling Preferences column.</li>
           <li>Click the <b>Edit IPN Settings</b> button to update your settings.</li>
-          <li>Select <b>Receive IPN messages</b> (enabled) and enter the URL of your IPN handler (<b>http://www.yourStore.com/Plugins/PaymentPayPalDirect/IPNHandler</b>).</li>
+          <li>Select <b>Receive IPN messages</b> (enabled) and enter the URL of your IPN handler (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalDirect/IPNHandler</b>).</li>
           <li>Click <b>Save</b>, and you should get a message that you have successfully activated IPN.</li>
           </ol>]]>
         </Value>
@@ -176,7 +176,7 @@
         <Value>Use Sandbox</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.UseSandbox.Hint">
-        <Value>Check to enable Sandbox (testing environment).</Value>
+        <Value>Check the box to enable Sandbox (testing environment).</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.TransactMode">
         <Value>Transaction mode</Value>
@@ -260,7 +260,7 @@
           <li>Click the Profile subtab.</li>
           <li>Click <b>Website Payment Preferences</b> in the Seller Preferences column.</li>
           <li>Under <b>Auto Return for Website Payments</b>, click the On radio button.</li>
-          <li>For the Return URL, enter the URL on your site that will receive the transaction ID posted by PayPal after a customer payment (<b>http://www.yourStore.com/Plugins/PaymentPayPalStandard/PDTHandler</b>).</li>
+          <li>For the Return URL, enter the URL on your site that will receive the transaction ID posted by PayPal after a customer payment (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/PDTHandler</b>).</li>
           <li>Under <b>Payment Data Transfer</b>, click the On radio button.</li>
           <li>Click <b>Save</b>.</li>
           <li>Click <b>Website Payment Preferences</b> in the Seller Preferences column.</li>
@@ -276,7 +276,7 @@
 	          <li>Click the Profile subtab.</li>
 	          <li>Click <b>Instant Payment Notification</b> in the Selling Preferences column.</li>
 	          <li>Click the <b>Edit IPN Settings</b> button to update your settings.</li>
-	          <li>Select <b>Receive IPN messages (Enabled)</b> and enter the URL of your IPN handler (<b>http://www.yourStore.com/Plugins/PaymentPayPalStandard/IPNHandler</b>).</li>
+	          <li>Select <b>Receive IPN messages (Enabled)</b> and enter the URL of your IPN handler (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/IPNHandler</b>).</li>
 	          <li>Click <b>Save</b>, and you should get a message that you have successfully activated IPN.</li>
 	          </ol>
           </li>
@@ -290,7 +290,7 @@
         <Value>Use Sandbox</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.UseSandbox.Hint">
-        <Value>Check to enable Sandbox (testing environment).</Value>
+        <Value>Check the box to enable Sandbox (testing environment).</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.BusinessEmail">
         <Value>Business Email</Value>
@@ -308,7 +308,13 @@
         <Value>Validate order total</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.PDTValidateOrderTotal.Hint">
-        <Value>Check if the PDT handler should validate PayPal's order totals.</Value>
+        <Value>Check the box if the PDT handler should validate PayPal's order totals.</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.PdtValidateOnlyWarn">
+        <Value>Only warn</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.PdtValidateOnlyWarn.Hint">
+        <Value>Specifies whether to add an order note if the order total is unequal. Otherwise an error will be logged and the payment status is not updated.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.AdditionalFee">
         <Value>Additional fee</Value>
@@ -326,13 +332,13 @@
         <Value>Pass product names and order totals to PayPal</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.PassProductNamesAndTotals.Hint">
-        <Value>Check if product names and order totals should be passed to PayPal.</Value>
+        <Value>Check the box if product names and order totals should be passed to PayPal.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.EnableIpn">
         <Value>Enable IPN</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.EnableIpn.Hint">
-        <Value>Check if IPN (Instant Payment Notification) is enabled.</Value>
+        <Value>Check the box if IPN (Instant Payment Notification) is enabled.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.EnableIpn.Hint2">
         <Value>Leave blank to use the default IPN handler URL.</Value>
@@ -350,7 +356,7 @@
         <Value>PayPal Standard PDT. Error getting mc_gross.</Value>
       </LocaleResource>
       <LocaleResource Name="UnequalTotalOrder">
-        <Value>PayPal Standard PDT. Returned order total {0} doesn't equal order total {1}.</Value>
+        <Value>PayPal Standard PDT. Returned order total {0} doesn't equal order total {1} (not rounded {2}). The difference is {3}.</Value>
       </LocaleResource>
       <LocaleResource Name="PdtFailed">
         <Value>PayPal Standard PDT failed.</Value>
@@ -382,17 +388,17 @@
       <LocaleResource Name="PaymentNote">
         <Value>
           <![CDATA[PayPal PDT:
-          Total: {0}
-          Currency: {1}
-          Payer status: {2}
-          Payment status: {3}
-          Pending reason: {4}
-          Transaction ID: {5}
-          Payment type: {6}
-          Payer ID: {7}
-          Receiver ID: {8}
-          Invoice: {9}
-          Payment fee: {10}]]>
+Total: {0}
+Currency: {1}
+Payer status: {2}
+Payment status: {3}
+Pending reason: {4}
+Transaction ID: {5}
+Payment type: {6}
+Payer ID: {7}
+Receiver ID: {8}
+Invoice: {9}
+Payment fee: {10}]]>
         </Value>
       </LocaleResource>
     </Children>

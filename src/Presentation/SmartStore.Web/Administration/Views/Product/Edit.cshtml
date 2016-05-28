@@ -14,7 +14,7 @@
 			<a href='@Url.Action("List")'>(@T("Admin.Catalog.Products.BackToList"))</a>
         </div>
         <div class="options">
-			<button type="submit" name="preview" value="preview" onclick="javascript:OpenWindow('@Url.RouteUrl("Product", new { SeName = Model.SeName })', 1000, 600, true); return false;" class="btn">
+			<button type="submit" name="preview" value="preview" onclick="javascript:OpenWindow('@Model.ProductUrl', 1000, 600, true); return false;" class="btn">
                 <i class="fa fa-eye"></i>
                 @T("Admin.Common.Preview")
             </button>

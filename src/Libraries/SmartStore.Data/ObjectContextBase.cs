@@ -7,17 +7,15 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
-using Microsoft.SqlServer;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Events;
 
 namespace SmartStore.Data
@@ -44,6 +42,7 @@ namespace SmartStore.Data
             : base(nameOrConnectionString)
         {
 			this.HooksEnabled = true;
+			this.AutoCommitEnabled = true;
             this.Alias = null;
 			this.EventPublisher = NullEventPublisher.Instance;
         }
@@ -80,7 +79,7 @@ namespace SmartStore.Data
 			if (hooksEnabled)
 			{
 				modifiedHookEntries = modifiedEntries
-								.Select(x => new HookedEntityEntry()
+								.Select(x => new HookedEntityEntry
 								{
 									Entity = x.Entity,
 									PreSaveState = (SmartStore.Core.Data.EntityState)((int)x.State)
@@ -193,7 +192,7 @@ namespace SmartStore.Data
 				{
 					for (int i = 0; i < result.Count; i++)
 					{
-						result[i] = AttachEntityToContext(result[i]);
+						result[i] = AttachEntity(result[i]);
 					}
 				}
 			}
@@ -226,7 +225,7 @@ namespace SmartStore.Data
 				{
 					for (int i = 0; i < result.Count; i++)
 					{
-						result[i] = AttachEntityToContext(result[i]);
+						result[i] = AttachEntity(result[i]);
 					}
 				}
 				// close up the reader, we're done saving results
@@ -334,12 +333,18 @@ namespace SmartStore.Data
 			var props = new Dictionary<string, object>();
 
 			var entry = this.Entry(entity);
-			var modifiedPropertyNames = from p in entry.CurrentValues.PropertyNames
-										where entry.Property(p).IsModified
-										select p;
-			foreach (var name in modifiedPropertyNames)
+
+			// be aware of the entity state. you cannot get modified properties for detached entities.
+			if (entry.State != System.Data.Entity.EntityState.Detached)
 			{
-				props.Add(name, entry.Property(name).OriginalValue);
+				var modifiedPropertyNames = from p in entry.CurrentValues.PropertyNames
+											where entry.Property(p).IsModified
+											select p;
+
+				foreach (var name in modifiedPropertyNames)
+				{
+					props.Add(name, entry.Property(name).OriginalValue);
+				}
 			}
 
 			return props;
@@ -354,7 +359,7 @@ namespace SmartStore.Data
 			// SAVE NOW!!!
 			bool validateOnSaveEnabled = this.Configuration.ValidateOnSaveEnabled;
 			this.Configuration.ValidateOnSaveEnabled = false;
-            int result = this.Commit();
+            int result = base.SaveChanges();
             this.Configuration.ValidateOnSaveEnabled = validateOnSaveEnabled;
 
 			PerformPostSaveActions(modifiedEntries, modifiedHookEntries);
@@ -371,7 +376,7 @@ namespace SmartStore.Data
 			// SAVE NOW!!!
 			bool validateOnSaveEnabled = this.Configuration.ValidateOnSaveEnabled;
 			this.Configuration.ValidateOnSaveEnabled = false;
-			var result = this.CommitAsync();
+			var result = base.SaveChangesAsync();
 
 			result.ContinueWith((t) =>
 			{
@@ -382,7 +387,7 @@ namespace SmartStore.Data
 			return result;
 		}
 
-        // codehint: sm-add (required for UoW implementation)
+        // required for UoW implementation
         public string Alias { get; internal set; }
 
         // performance on bulk inserts
@@ -423,7 +428,21 @@ namespace SmartStore.Data
             }
         }
 
+		public bool LazyLoadingEnabled
+		{
+			get
+			{
+				return this.Configuration.LazyLoadingEnabled;
+			}
+			set
+			{
+				this.Configuration.LazyLoadingEnabled = value;
+			}
+		}
+
 		public bool ForceNoTracking { get; set; }
+
+		public bool AutoCommitEnabled { get; set; }
 
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
 		{
@@ -483,15 +502,16 @@ namespace SmartStore.Data
         /// <typeparam name="TEntity">TEntity</typeparam>
         /// <param name="entity">Entity</param>
         /// <returns>Attached entity</returns>
-        protected virtual TEntity AttachEntityToContext<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
+        protected virtual TEntity AttachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
         {
 			// little hack here until Entity Framework really supports stored procedures
 			// otherwise, navigation properties of loaded entities are not loaded until an entity is attached to the context
-			var alreadyAttached = Set<TEntity>().Local.Where(x => x.Id == entity.Id).FirstOrDefault();
+			var dbSet = Set<TEntity>();
+			var alreadyAttached = dbSet.Local.Where(x => x.Id == entity.Id).FirstOrDefault();
 			if (alreadyAttached == null)
 			{
 				// attach new entity
-				Set<TEntity>().Attach(entity);
+				dbSet.Attach(entity);
 				return entity;
 			}
 			else
@@ -501,55 +521,56 @@ namespace SmartStore.Data
 			}
         }
 
-        public bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
+        public bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity
         {
-            Guard.ArgumentNotNull(() => entity);
-            return Set<TEntity>().Local.Where(x => x.Id == entity.Id).FirstOrDefault() != null;
-        }
-
-        public void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
-        {
-            Guard.ArgumentNotNull(() => entity);
-			if (this.IsAttached(entity))
+			if (entity != null)
 			{
-				((IObjectContextAdapter)this).ObjectContext.Detach(entity);
+				return Set<TEntity>().Local.Any(x => x.Id == entity.Id);
 			}
+
+			return false;
         }
 
-		public void Detach(object entity)
-		{
-			((IObjectContextAdapter)this).ObjectContext.Detach(entity);
-		}
+        public void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity
+        {
+			this.Entry(entity).State = System.Data.Entity.EntityState.Detached;
+        }
 
-		public int DetachAll() 
+		public int DetachEntities<TEntity>(bool unchangedEntitiesOnly = true) where TEntity : class
 		{
-			var attachedEntities = this.ChangeTracker.Entries()
-				.Where(x => x.State != System.Data.Entity.EntityState.Detached)
-				.ToList();
-			attachedEntities.Each(x => this.Entry(x.Entity).State = System.Data.Entity.EntityState.Detached);
+			Func<DbEntityEntry, bool> predicate = x => 
+			{
+				if (x.Entity is TEntity)
+				{
+					if (x.State == System.Data.Entity.EntityState.Detached)
+						return false;
+
+					if (unchangedEntitiesOnly)
+						return x.State == System.Data.Entity.EntityState.Unchanged;
+
+					return true;
+				}
+
+				return false;
+			};
+			
+			var attachedEntities = this.ChangeTracker.Entries().Where(predicate).ToList();
+			attachedEntities.Each(entry => entry.State = System.Data.Entity.EntityState.Detached);
 			return attachedEntities.Count;
 		}
 
-		public void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState)
+		public void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity
 		{
-			((IObjectContextAdapter)this).ObjectContext.ObjectStateManager.ChangeObjectState(entity, newState);
+			Console.WriteLine("ChangeState ORIGINAL");
+			this.Entry(entity).State = newState;
 		}
 
-		public bool SetToUnchanged<TEntity>(TEntity entity)
+		public void ReloadEntity<TEntity>(TEntity entity) where TEntity : BaseEntity
 		{
-			try
-			{
-				ChangeState<TEntity>(entity, System.Data.Entity.EntityState.Unchanged);
-				return true;
-			}
-			catch (Exception exc)
-			{
-				exc.Dump();
-				return false;
-			}
+			this.Entry(entity).Reload();
 		}
 
-        private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)
+		private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)
         {
             var sb = new StringBuilder();
             sb.Append("Entity validation failed" + Environment.NewLine);
@@ -580,78 +601,16 @@ namespace SmartStore.Data
 				foreach (var entry in entries)
 				{
 					var entityWithPossibleMergedData = entry.Entity as IMergedData;
-
 					if (entityWithPossibleMergedData != null)
+					{
 						entityWithPossibleMergedData.MergedDataIgnore = ignore;
+					}
 				}
 			}
 			catch { }
 		}
 
         #endregion
-
-		#region EF helpers
-
-		private int Commit()
-		{
-			int result = 0;
-			bool commitFailed = false;
-			do
-			{
-				commitFailed = false;
-
-				try
-				{
-					result = base.SaveChanges();
-				}
-				catch (DbUpdateConcurrencyException ex)
-				{
-					commitFailed = true;
-
-					foreach (var entry in ex.Entries)
-					{
-						entry.Reload();
-					}
-				}
-			}
-			while (commitFailed);
-
-			return result;
-		}
-
-		private Task<int> CommitAsync()
-		{
-			var tcs = new TaskCompletionSource<int>();
-
-			base.SaveChangesAsync().ContinueWith((t) =>
-			{
-				if (!t.IsFaulted)
-				{
-					//if (t.IsCanceled)
-					//{
-					//	tcs.TrySetCanceled();
-					//	return;
-					//}
-					tcs.TrySetResult(t.Result);
-					return;
-				}
-
-				var ex = t.Exception.InnerException;
-				if (ex != null && ex is DbUpdateConcurrencyException)
-				{
-					// try again
-					tcs.TrySetResult(this.CommitAsync().Result);
-				}
-				else
-				{
-					tcs.TrySetException(ex);
-				}
-			});
-
-			return tcs.Task;
-		}
-
-		#endregion
 
 		#region Nested classes
 

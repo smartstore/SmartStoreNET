@@ -72,7 +72,6 @@ namespace SmartStore.PayPal.Settings
 		public PayPalStandardPaymentSettings()
 		{
 			UseSandbox = true;
-            PdtValidateOrderTotal = true;
             EnableIpn = true;
 		}
 
@@ -80,6 +79,7 @@ namespace SmartStore.PayPal.Settings
         public string PdtToken { get; set; }
         public bool PassProductNamesAndTotals { get; set; }
         public bool PdtValidateOrderTotal { get; set; }
+		public bool PdtValidateOnlyWarn { get; set; }
         public bool EnableIpn { get; set; }
         public string IpnUrl { get; set; }
     }

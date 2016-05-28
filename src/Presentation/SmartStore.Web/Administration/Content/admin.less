@@ -326,6 +326,41 @@ header {
     to {left: 0; width: 100%;}
 }
 
+.loading-bar {
+	height: 4px;
+	width: 100%;
+	position: relative;
+	overflow: hidden;
+	background-color: #ddd;
+}
+.loading-bar:before {
+	display: block;
+	position: absolute;
+	content: "";
+	left: -200px;
+	width: 200px;
+	height: 4px;
+	background-color: #2980b9;
+	        animation: loadingbar 2s linear infinite;
+	-webkit-animation: loadingbar 2s linear infinite;
+}
+@keyframes loadingbar {
+	from {left: -200px; width: 30%;}
+	50% {width: 30%;}
+	70% {width: 70%;}
+	80% { left: 50%;}
+	95% {left: 120%;}
+	to {left: 100%;}
+}
+@-webkit-keyframes loadingbar {
+	from {left: -200px; width: 30%;}
+	50% {width: 30%;}
+	70% {width: 70%;}
+	80% { left: 50%;}
+	95% {left: 120%;}
+	to {left: 100%;}
+}
+
 #content {
     position: relative;
     height: auto;
@@ -358,21 +393,28 @@ td.adminData > input[type="checkbox"] {
 	margin-top: -1px;
 }
 
-.admin-config-group .title,
-.admin-config-group .small-title {
-    font-family: @headingsFontFamily;
-    font-weight: @headingsFontWeight;
-    color: inherit; 
-	border-bottom: 1px solid #ddd;
-}
-.admin-config-group .title {
-    font-size: @fontSizeLarge;
-	margin: 12px 0;
-	padding: 8px 0;
-}
-.admin-config-group .small-title {
-	margin: 2px 0;
-	padding: 2px 0;
+.admin-config-group {
+	.title,
+	.small-title {
+		font-family: @headingsFontFamily;
+		font-weight: @headingsFontWeight;
+		color: inherit; 
+		border-bottom: 1px solid #ddd;
+	}
+	.title {
+		font-size: @fontSizeLarge;
+		margin: 12px 0;
+		padding: 8px 0;
+	}
+	.small-title {
+		margin: 2px 0;
+		padding: 2px 0;
+	}
+	.sub-title {
+		font-family: @baseFontFamily;
+		font-size: @baseFontSize;
+		font-weight: normal;
+	}
 }
 
 
@@ -381,6 +423,45 @@ td.adminData > input[type="checkbox"] {
 
 .select2-container:not(.autowidth) {
     min-width: 314px; /* ensures more clean look & feel */
+}
+
+
+/* select2 with large, templated items
+-------------------------------------------------------------- */
+.large-select2 {
+	.select2-choice {
+		height: 42px;
+		min-height: 42px;
+		padding-top: 4px;
+
+		> div > b {
+			padding-top: 10px;
+		}
+	}
+}
+
+.large-select2-item {
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+	height: 38px;
+
+	img {
+		margin-right: 12px;
+		vertical-align: middle;
+		text-align: center;
+		max-height: 100%;
+	}
+	> div {
+		margin-right: 0px !important;
+		display: inline-block;
+		vertical-align: top;
+		line-height: normal;
+	}
+	> div > span {
+		display: block;
+		padding-bottom: 1px;
+	}
 }
 
 
@@ -577,6 +658,7 @@ label.forcheckbox {
 		img {
 		    max-height: 32px;
 			max-width: 120px;
+			margin-right: 5px;
 		    vertical-align: top;
 		}
 		
@@ -703,7 +785,6 @@ td.adminTitle > .ctl-label {
 	label {
 		display: inline-block;
 		padding-right: 20px;
-		margin-top: 1px;
 		margin-bottom: 0;
 	}
 
@@ -748,9 +829,16 @@ td.adminData .text-box.single-line {
     width: 300px;
 }
 td.adminData input[type=text].input-large,
-td.adminData textarea.input-large {
+td.adminData textarea.input-large,
+td.adminData .control-large {
 	width: 500px;
 }
+td.adminData input[type=text].input-xlarge,
+td.adminData textarea.input-xlarge,
+td.adminData .control-xlarge {
+	width: 800px;
+}
+
 
 .t-grid .text-box.single-line {
     /* ... */
@@ -772,21 +860,33 @@ tr.adminSeparator hr {
     padding: 0;
 }
 
-.plugin-intro-table {
+.plugin-configuration {
+	display: table;
 	width: 100%;
 	clear: both;
 
-	td {
+	> div {
+		display: table-cell;
 		vertical-align: top;
 	}
-
-	td:first-child {
+	> div:first-child {
 		width: 80%;
 	}
-
-	td:last-child {
+	> div:last-child {
 		float: right;
-		padding-left: 14px;
+		padding-left: 50px;
+	}
+}
+
+.admin-table {
+	.disabled {
+		.muted();
+	}
+	.centered {
+		text-align: center;
+	}
+	.progress-info {
+		min-width: 260px;
 	}
 }
 
@@ -806,6 +906,7 @@ label {
 }
 
 .mr8 { margin-right: 8px; }
+.ml4 { margin-left: 4px; }
 
 /* MASTER HEADER */
 .header-menu,
@@ -1419,4 +1520,42 @@ table.payment-method-features td {
 .caption-container h3.bordered {
     border: 0;
     border-bottom: 1px solid #e5e5e5;
+}
+
+
+/* Download editor
+-------------------------------------------------------------- */
+
+.download-editor {
+	.panel-switcher-icon { 
+		width: 13px; 
+	}
+
+	.filename {
+		line-height: 32px; 
+		vertical-align: middle; 
+		padding-right: 10px; 
+		font-weight: bold;
+		max-width: 300px;
+		display: inline-block;
+		.ellipsis();
+	}
+}
+
+
+/* Scheduled tasks
+-------------------------------------------------------------- */
+
+.minimal-task-widget {
+	min-height: 26px;
+}
+.minimal-task-widget .task-progress {
+	width: 400px;
+}
+.minimal-task-widget .btn-cancel-task {
+	margin-left: 10px
+}
+.minimal-task-widget .btn-actions {
+	display: inline-block; 
+	margin-left: 10px;
 }

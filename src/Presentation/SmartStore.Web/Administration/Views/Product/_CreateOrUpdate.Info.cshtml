@@ -34,6 +34,10 @@
         toggleShipping();
         toggleTax();
         
+    	// show/hide homepage display order
+    	$('#ShowOnHomePage').change(function () {
+    		$('#pnlHomePageDisplayOrder').toggle($(this).is(':checked'));
+        }).trigger('change');
     });
 
     function toggleProductType() {
@@ -398,6 +402,15 @@
 				@Html.ValidationMessageFor(model => model.ShowOnHomePage)
 			</td>
 		</tr>
+		<tr id="pnlHomePageDisplayOrder">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.HomePageDisplayOrder)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.HomePageDisplayOrder)
+				@Html.ValidationMessageFor(model => model.HomePageDisplayOrder)
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Published)
@@ -585,7 +598,7 @@
 			</td>
 			<td class="adminData">
 				@Html.EditorFor(model => model.SampleDownloadId)
-				@Html.ValidationMessageFor(model => model.SampleDownloadId)
+				@*@Html.ValidationMessageFor(model => model.SampleDownloadId)*@
 			</td>
 		</tr>
 	</table>

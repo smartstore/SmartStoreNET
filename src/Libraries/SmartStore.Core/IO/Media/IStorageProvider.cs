@@ -1,4 +1,4 @@
-﻿
+﻿using System;
 using System.Collections.Generic;
 
 namespace SmartStore.Core.IO.Media
@@ -48,12 +48,12 @@ namespace SmartStore.Core.IO.Media
         /// <exception cref="ArgumentException">If the folder doesn't exist.</exception>
         void DeleteFolder(string path);
 
-        /// <summary>
-        /// Renames a folder in the storage provider.
-        /// </summary>
-        /// <param name="oldPath">The relative path to the folder to be renamed.</param>
-        /// <param name="newPath">The relative path to the new folder.</param>
-        void RenameFolder(string path, string newPath);
+		/// <summary>
+		/// Renames a folder in the storage provider.
+		/// </summary>
+		/// <param name="path">The relative path to the folder to be renamed.</param>
+		/// <param name="newPath">The relative path to the new folder.</param>
+		void RenameFolder(string path, string newPath);
 
         /// <summary>
         /// Deletes a file in the storage provider.
@@ -62,12 +62,12 @@ namespace SmartStore.Core.IO.Media
         /// <exception cref="ArgumentException">If the file doesn't exist.</exception>
         void DeleteFile(string path);
 
-        /// <summary>
-        /// Renames a file in the storage provider.
-        /// </summary>
-        /// <param name="oldPath">The relative path to the file to be renamed.</param>
-        /// <param name="newPath">The relative path to the new file.</param>
-        void RenameFile(string path, string newPath);
+		/// <summary>
+		/// Renames a file in the storage provider.
+		/// </summary>
+		/// <param name="path">The relative path to the file to be renamed.</param>
+		/// <param name="newPath">The relative path to the new file.</param>
+		void RenameFile(string path, string newPath);
 
         /// <summary>
         /// Creates a file in the storage provider.

@@ -3,7 +3,7 @@ namespace SmartStore.Core.Domain.Media
     /// <summary>
     /// Represents a picture item type
     /// </summary>
-    public enum PictureType : int
+    public enum PictureType
     {
         /// <summary>
         /// Entities (products, categories, manufacturers)
@@ -15,7 +15,6 @@ namespace SmartStore.Core.Domain.Media
         Avatar = 10,
     }
 
-    // codehint: sm-add
     public enum ThumbnailScaleMode
     {
         Auto,

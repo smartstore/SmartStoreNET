@@ -8,6 +8,7 @@ using SmartStore.ShippingByWeight.Models;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Stores;
+using SmartStore.Utilities;
 
 namespace SmartStore.ShippingByWeight.Services
 {
@@ -47,7 +48,7 @@ namespace SmartStore.ShippingByWeight.Services
 		{
 			var query = 
 				from x in _sbwRepository.Table
-				orderby x.StoreId, x.CountryId, x.ShippingMethodId, x.From
+				orderby x.StoreId, x.CountryId, x.ShippingMethodId, x.From, x.Zip
 				select x;
 
 			return query;
@@ -90,6 +91,7 @@ namespace SmartStore.ShippingByWeight.Services
 					CountryId = x.CountryId,
 					From = x.From,
 					To = x.To,
+                    Zip = (x.Zip.HasValue() ? x.Zip : "*"),
 					UsePercentage = x.UsePercentage,
 					ShippingChargePercentage = x.ShippingChargePercentage,
 					ShippingChargeAmount = x.ShippingChargeAmount,
@@ -107,7 +109,7 @@ namespace SmartStore.ShippingByWeight.Services
 			return result;
 		}
 
-		public virtual ShippingByWeightRecord FindRecord(int shippingMethodId, int storeId, int countryId, decimal weight)
+        public virtual ShippingByWeightRecord FindRecord(int shippingMethodId, int storeId, int countryId, decimal weight, string zip)
         {
             var existingRecords = GetShippingByWeightRecords()
 				.Where(x => x.ShippingMethodId == shippingMethodId && weight >= x.From && weight <= x.To)
@@ -147,7 +149,17 @@ namespace SmartStore.ShippingByWeight.Services
 				}
 			}
 
-			return matchedByCountry.FirstOrDefault();
+            //filter by zip
+            var matchedByZip = new List<ShippingByWeightRecord>();
+            foreach (var sbt in matchedByCountry)
+            {
+                if ((zip.IsEmpty() && sbt.Zip.IsEmpty()) || (ZipMatches(zip, sbt.Zip)))
+                {
+                    matchedByZip.Add(sbt);
+                }
+            }
+
+            return matchedByZip.LastOrDefault();
         }
 
         public virtual ShippingByWeightRecord GetById(int shippingByWeightRecordId)
@@ -181,6 +193,34 @@ namespace SmartStore.ShippingByWeight.Services
                 throw new ArgumentNullException("shippingByWeightRecord");
 
             _sbwRepository.Update(shippingByWeightRecord);
+        }
+
+        private bool ZipMatches(string zip, string pattern)
+        {
+            if (pattern.IsEmpty() || pattern == "*")
+            {
+                return true; // catch all
+            }
+            
+            var patterns = pattern.Contains(",")
+                ? pattern.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
+                : new string[] { pattern };
+
+            try
+            {
+                foreach (var entry in patterns)
+                {
+                    var wildcard = new Wildcard(entry);
+                    if (wildcard.IsMatch(zip))
+                        return true;
+                }
+            }
+            catch
+            {
+                return zip.IsCaseInsensitiveEqual(pattern);
+            }
+
+            return false;
         }
 
         #endregion

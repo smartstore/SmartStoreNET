@@ -33,12 +33,12 @@
                             <thead  class="t-grid-header">
                                 <tr>
                                     <th class="t-header" scope="col">
-                                        <b>@T("Admin.Configuration.ACL.Permission")</b>
+                                        <span class="t-link">@T("Admin.Configuration.ACL.Permission")</span>
                                     </th>
                                     @foreach (var cr in Model.AvailableCustomerRoles)
                                     {
                                         <th class="t-header" scope="col" style="text-align:center">
-                                            <b>@cr.Name</b>
+                                            <span class="t-link">@cr.Name</span>
                                         </th>
                                     }
                                 </tr>

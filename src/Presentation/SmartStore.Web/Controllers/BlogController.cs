@@ -6,23 +6,24 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Blogs;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
@@ -47,6 +48,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerActivityService _customerActivityService;
 		private readonly IStoreMappingService _storeMappingService;
+		private readonly ILanguageService _languageService;
 
         private readonly MediaSettings _mediaSettings;
         private readonly BlogSettings _blogSettings;
@@ -70,6 +72,7 @@ namespace SmartStore.Web.Controllers
             ICacheManager cacheManager,
 			ICustomerActivityService customerActivityService,
 			IStoreMappingService storeMappingService,
+			ILanguageService languageService,
             MediaSettings mediaSettings,
 			BlogSettings blogSettings,
             LocalizationSettings localizationSettings,
@@ -88,6 +91,7 @@ namespace SmartStore.Web.Controllers
             this._cacheManager = cacheManager;
             this._customerActivityService = customerActivityService;
 			this._storeMappingService = storeMappingService;
+			this._languageService = languageService;
 
             this._mediaSettings = mediaSettings;
             this._blogSettings = blogSettings;
@@ -117,7 +121,7 @@ namespace SmartStore.Web.Controllers
             model.Title = blogPost.Title;
             model.Body = blogPost.Body;
             model.AllowComments = blogPost.AllowComments;
-            model.AvatarPictureSize = _mediaSettings.AvatarPictureSize; // codehint: sm-add
+            model.AvatarPictureSize = _mediaSettings.AvatarPictureSize; 
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogPost.CreatedOnUtc, DateTimeKind.Utc);
             model.Tags = blogPost.ParseTags().ToList();
             model.NumberOfComments = blogPost.ApprovedCommentCount;
@@ -228,28 +232,43 @@ namespace SmartStore.Web.Controllers
             return View("List", model);
         }
 
+		[Compress]
         public ActionResult ListRss(int languageId)
         {
-            var feed = new SyndicationFeed(
-									string.Format("{0}: Blog", _storeContext.CurrentStore.Name),
-                                    "Blog",
-                                    new Uri(_webHelper.GetStoreLocation(false)),
-                                    "BlogRSS",
-                                    DateTime.UtcNow);
+			DateTime? maxAge = null;
+			var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
+			var selfLink = Url.RouteUrl("BlogRSS", new { languageId = languageId }, protocol);
+			var blogLink = Url.RouteUrl("Blog", null, protocol);
 
-            if (!_blogSettings.Enabled)
-                return new RssActionResult() { Feed = feed };
+			var title = "{0} - Blog".FormatInvariant(_storeContext.CurrentStore.Name);
 
-            var items = new List<SyndicationItem>();
-			var blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id, languageId,
-                null, null, 0, int.MaxValue);
-            foreach (var blogPost in blogPosts)
-            {
-                string blogPostUrl = Url.RouteUrl("BlogPost", new { SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
-                items.Add(new SyndicationItem(blogPost.Title, blogPost.Body, new Uri(blogPostUrl), String.Format("Blog:{0}", blogPost.Id), blogPost.CreatedOnUtc));
-            }
-            feed.Items = items;
-            return new RssActionResult() { Feed = feed };
+			if (_blogSettings.MaxAgeInDays > 0)
+				maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_blogSettings.MaxAgeInDays, 0, 0, 0));
+
+			var language = _languageService.GetLanguageById(languageId);
+			var feed = new SmartSyndicationFeed(new Uri(blogLink), title);
+
+			feed.AddNamespaces(false);
+			feed.Init(selfLink, language);
+
+			if (!_blogSettings.Enabled)
+				return new RssActionResult { Feed = feed };
+
+			var items = new List<SyndicationItem>();
+			var blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id, languageId, null, null, 0, int.MaxValue, false, maxAge);
+
+			foreach (var blogPost in blogPosts)
+			{
+				var blogPostUrl = Url.RouteUrl("BlogPost", new { SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
+
+				var item = feed.CreateItem(blogPost.Title, blogPost.Body, blogPostUrl, blogPost.CreatedOnUtc);
+
+				items.Add(item);
+			}
+
+			feed.Items = items;
+
+			return new RssActionResult { Feed = feed };
         }
 
         public ActionResult BlogPost(int blogPostId)
@@ -338,9 +357,6 @@ namespace SmartStore.Web.Controllers
                     includeImplicitMvcValues: true /*helps fill in the nulls above*/
                 );
                 return Redirect(url);
-
-                // codehint: sm-delete
-                //return RedirectToRoute("BlogPost", new { SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false) });
             }
 
             //If we got this far, something failed, redisplay form
@@ -449,11 +465,12 @@ namespace SmartStore.Web.Controllers
             if (!_blogSettings.Enabled || !_blogSettings.ShowHeaderRssUrl)
                 return Content("");
 
-            string link = string.Format("<link href=\"{0}\" rel=\"alternate\" type=\"application/rss+xml\" title=\"{1}: Blog\" />",
+            string link = string.Format("<link href=\"{0}\" rel=\"alternate\" type=\"application/rss+xml\" title=\"{1} - Blog\" />",
 				Url.RouteUrl("BlogRSS", new { languageId = _workContext.WorkingLanguage.Id }, _webHelper.IsCurrentConnectionSecured() ? "https" : "http"), _storeContext.CurrentStore.Name);
 
 			return Content(link);
         }
+
         #endregion
     }
 }

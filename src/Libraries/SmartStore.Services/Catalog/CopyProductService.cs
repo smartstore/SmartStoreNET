@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Localization;
@@ -91,7 +92,7 @@ namespace SmartStore.Services.Catalog
 				var download = _downloadService.GetDownloadById(product.DownloadId);
 				if (download != null)
 				{
-					var downloadCopy = new Download()
+					var downloadCopy = new Download
 					{
 						DownloadGuid = Guid.NewGuid(),
 						UseDownloadUrl = download.UseDownloadUrl,
@@ -102,6 +103,7 @@ namespace SmartStore.Services.Catalog
 						Extension = download.Extension,
 						IsNew = download.IsNew,
 					};
+
 					_downloadService.InsertDownload(downloadCopy);
 					downloadId = downloadCopy.Id;
 				}
@@ -111,7 +113,7 @@ namespace SmartStore.Services.Catalog
 					var sampleDownload = _downloadService.GetDownloadById(product.SampleDownloadId.GetValueOrDefault());
 					if (sampleDownload != null)
 					{
-						var sampleDownloadCopy = new Download()
+						var sampleDownloadCopy = new Download
 						{
 							DownloadGuid = Guid.NewGuid(),
 							UseDownloadUrl = sampleDownload.UseDownloadUrl,
@@ -122,6 +124,7 @@ namespace SmartStore.Services.Catalog
 							Extension = sampleDownload.Extension,
 							IsNew = sampleDownload.IsNew
 						};
+
 						_downloadService.InsertDownload(sampleDownloadCopy);
 						sampleDownloadId = sampleDownloadCopy.Id;
 					}
@@ -129,7 +132,7 @@ namespace SmartStore.Services.Catalog
 			}
 
             // product
-            productCopy = new Product()
+            productCopy = new Product
             {
 				ProductTypeId = product.ProductTypeId,
 				ParentGroupedProductId = product.ParentGroupedProductId,
@@ -140,6 +143,7 @@ namespace SmartStore.Services.Catalog
                 ProductTemplateId = product.ProductTemplateId,
                 AdminComment = product.AdminComment,
                 ShowOnHomePage = product.ShowOnHomePage,
+				HomePageDisplayOrder = product.HomePageDisplayOrder,
                 MetaKeywords = product.MetaKeywords,
                 MetaDescription = product.MetaDescription,
                 MetaTitle = product.MetaTitle,
@@ -275,8 +279,11 @@ namespace SmartStore.Services.Catalog
                         _pictureService.LoadPictureBinary(picture),
                         picture.MimeType, 
                         _pictureService.GetPictureSeName(newName), 
-                        true);
-                    _productService.InsertProductPicture(new ProductPicture()
+                        true,
+						false,
+						false);
+
+                    _productService.InsertProductPicture(new ProductPicture
                     {
                         ProductId = productCopy.Id,
                         PictureId = pictureCopy.Id,
@@ -288,7 +295,7 @@ namespace SmartStore.Services.Catalog
             // product <-> categories mappings
             foreach (var productCategory in product.ProductCategories)
             {
-                var productCategoryCopy = new ProductCategory()
+                var productCategoryCopy = new ProductCategory
                 {
                     ProductId = productCopy.Id,
                     CategoryId = productCategory.CategoryId,
@@ -302,7 +309,7 @@ namespace SmartStore.Services.Catalog
             // product <-> manufacturers mappings
             foreach (var productManufacturers in product.ProductManufacturers)
             {
-                var productManufacturerCopy = new ProductManufacturer()
+                var productManufacturerCopy = new ProductManufacturer
                 {
                     ProductId = productCopy.Id,
                     ManufacturerId = productManufacturers.ManufacturerId,
@@ -316,30 +323,28 @@ namespace SmartStore.Services.Catalog
             // product <-> releated products mappings
             foreach (var relatedProduct in _productService.GetRelatedProductsByProductId1(product.Id, true))
             {
-                _productService.InsertRelatedProduct(
-                    new RelatedProduct()
-                    {
-                        ProductId1 = productCopy.Id,
-                        ProductId2 = relatedProduct.ProductId2,
-                        DisplayOrder = relatedProduct.DisplayOrder
-                    });
+                _productService.InsertRelatedProduct(new RelatedProduct
+                {
+                    ProductId1 = productCopy.Id,
+                    ProductId2 = relatedProduct.ProductId2,
+                    DisplayOrder = relatedProduct.DisplayOrder
+                });
             }
 
             // product <-> cross sells mappings
             foreach (var csProduct in _productService.GetCrossSellProductsByProductId1(product.Id, true))
             {
-                _productService.InsertCrossSellProduct(
-                    new CrossSellProduct()
-                    {
-                        ProductId1 = productCopy.Id,
-                        ProductId2 = csProduct.ProductId2,
-                    });
+                _productService.InsertCrossSellProduct(new CrossSellProduct
+                {
+                    ProductId1 = productCopy.Id,
+                    ProductId2 = csProduct.ProductId2,
+                });
             }
 
             // product specifications
             foreach (var productSpecificationAttribute in product.ProductSpecificationAttributes)
             {
-                var psaCopy = new ProductSpecificationAttribute()
+                var psaCopy = new ProductSpecificationAttribute
                 {
                     ProductId = productCopy.Id,
                     SpecificationAttributeOptionId = productSpecificationAttribute.SpecificationAttributeOptionId,
@@ -347,6 +352,7 @@ namespace SmartStore.Services.Catalog
                     ShowOnProductPage = productSpecificationAttribute.ShowOnProductPage,
                     DisplayOrder = productSpecificationAttribute.DisplayOrder
                 };
+
                 _specificationAttributeService.InsertProductSpecificationAttribute(psaCopy);
             }
 
@@ -360,9 +366,10 @@ namespace SmartStore.Services.Catalog
 			// product <-> attributes mappings
 			var associatedAttributes = new Dictionary<int, int>();
 			var associatedAttributeValues = new Dictionary<int, int>();
+
 			foreach (var productVariantAttribute in _productAttributeService.GetProductVariantAttributesByProductId(product.Id))
 			{
-				var productVariantAttributeCopy = new ProductVariantAttribute()
+				var productVariantAttributeCopy = new ProductVariantAttribute
 				{
 					ProductId = productCopy.Id,
 					ProductAttributeId = productVariantAttribute.ProductAttributeId,
@@ -371,15 +378,17 @@ namespace SmartStore.Services.Catalog
 					AttributeControlTypeId = productVariantAttribute.AttributeControlTypeId,
 					DisplayOrder = productVariantAttribute.DisplayOrder
 				};
+
 				_productAttributeService.InsertProductVariantAttribute(productVariantAttributeCopy);
 				//save associated value (used for combinations copying)
 				associatedAttributes.Add(productVariantAttribute.Id, productVariantAttributeCopy.Id);
 
 				// product variant attribute values
 				var productVariantAttributeValues = _productAttributeService.GetProductVariantAttributeValues(productVariantAttribute.Id);
+
 				foreach (var productVariantAttributeValue in productVariantAttributeValues)
 				{
-					var pvavCopy = new ProductVariantAttributeValue()
+					var pvavCopy = new ProductVariantAttributeValue
 					{
 						ProductVariantAttributeId = productVariantAttributeCopy.Id,
 						Name = productVariantAttributeValue.Name,
@@ -392,6 +401,7 @@ namespace SmartStore.Services.Catalog
 						LinkedProductId = productVariantAttributeValue.LinkedProductId,
 						Quantity = productVariantAttributeValue.Quantity,
 					};
+
 					_productAttributeService.InsertProductVariantAttributeValue(pvavCopy);
 
 					//save associated value (used for combinations copying)
@@ -408,7 +418,12 @@ namespace SmartStore.Services.Catalog
 			}
 
 			// attribute combinations
-			foreach (var combination in _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id))
+			using (var scope = new DbContextScope(lazyLoading: false, forceNoTracking: false))
+			{
+				scope.LoadCollection(product, (Product p) => p.ProductVariantAttributeCombinations);
+			}
+
+			foreach (var combination in product.ProductVariantAttributeCombinations)
 			{
 				//generate new AttributesXml according to new value IDs
 				string newAttributesXml = "";
@@ -434,22 +449,20 @@ namespace SmartStore.Services.Catalog
 										var newPvav = _productAttributeService.GetProductVariantAttributeValueById(newPvavId);
 										if (newPvav != null)
 										{
-											newAttributesXml = _productAttributeParser.AddProductAttribute(newAttributesXml,
-												newPva, newPvav.Id.ToString());
+											newAttributesXml = _productAttributeParser.AddProductAttribute(newAttributesXml, newPva, newPvav.Id.ToString());
 										}
 									}
 								}
 								else
 								{
 									//just a text
-									newAttributesXml = _productAttributeParser.AddProductAttribute(newAttributesXml,
-										newPva, oldPvaValueStr);
+									newAttributesXml = _productAttributeParser.AddProductAttribute(newAttributesXml, newPva, oldPvaValueStr);
 								}
 							}
 						}
 					}
 				}
-				var combinationCopy = new ProductVariantAttributeCombination()
+				var combinationCopy = new ProductVariantAttributeCombination
 				{
 					ProductId = productCopy.Id,
 					AttributesXml = newAttributesXml,
@@ -468,7 +481,7 @@ namespace SmartStore.Services.Catalog
 					BasePriceAmount = combination.BasePriceAmount,
 					BasePriceBaseAmount = combination.BasePriceBaseAmount,
 					DeliveryTimeId = combination.DeliveryTimeId,
-                    QuantityUnitId = combination.QuantityUnitId,
+					QuantityUnitId = combination.QuantityUnitId,
 					IsActive = combination.IsActive
 					//IsDefaultCombination = combination.IsDefaultCombination
 				};
@@ -478,15 +491,14 @@ namespace SmartStore.Services.Catalog
 			// tier prices
 			foreach (var tierPrice in product.TierPrices)
 			{
-				_productService.InsertTierPrice(
-					new TierPrice()
-					{
-						ProductId = productCopy.Id,
-						StoreId = tierPrice.StoreId,
-						CustomerRoleId = tierPrice.CustomerRoleId,
-						Quantity = tierPrice.Quantity,
-						Price = tierPrice.Price
-					});
+				_productService.InsertTierPrice(new TierPrice
+				{
+					ProductId = productCopy.Id,
+					StoreId = tierPrice.StoreId,
+					CustomerRoleId = tierPrice.CustomerRoleId,
+					Quantity = tierPrice.Quantity,
+					Price = tierPrice.Price
+				});
 			}
 
 			// product <-> discounts mapping
@@ -504,7 +516,7 @@ namespace SmartStore.Services.Catalog
 			// associated products
 			if (copyAssociatedProducts && product.ProductType != ProductType.BundledProduct)
 			{
-				var searchContext = new ProductSearchContext()
+				var searchContext = new ProductSearchContext
 				{
 					ParentGroupedProductId = product.Id,
 					PageSize = int.MaxValue,

@@ -51,10 +51,12 @@
 			if ($('#@Html.FieldIdFor(model => model.BasePriceEnabled)').is(':checked')) {
 				$('#pnlBasePriceBaseAmount').show();
 				$('#pnlBasePriceAmount').show();
+				$('#pnlBasePriceAmountHint').show();
 			}
 			else {
 				$('#pnlBasePriceBaseAmount').hide();
 				$('#pnlBasePriceAmount').hide();
+				$('#pnlBasePriceAmountHint').hide();
 			}
 		}
 
@@ -224,6 +226,17 @@
                 <span id="BasePriceAmountInfo" class="muted">@*@T("Admin.Catalog.Products.Fields.BasePriceInfo")*@</span>
             </td>
         </tr>
+        <tr id="pnlBasePriceAmountHint">
+            <td class="adminTitle">
+                &nbsp;
+            </td>
+            <td class="adminData">
+                <div class="alert alert-info">
+                    @T("Admin.Products.BasePrice.Hint")
+                </div>
+            </td>
+        </tr>
+        
     </table>
 
     <div id="TierPriceContainer" style="margin-top:30px;">

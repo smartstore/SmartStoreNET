@@ -99,7 +99,7 @@ namespace SmartStore.Web.Framework.UI
 
         public TBuilder HtmlAttributes(object attributes)
         {
-            return this.HtmlAttributes(CollectionHelper.ObjectToDictionary(attributes));
+            return this.HtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
         }
 
         public TBuilder HtmlAttributes(IDictionary<string, object> attributes)
@@ -111,7 +111,7 @@ namespace SmartStore.Web.Framework.UI
 
         public TBuilder LinkHtmlAttributes(object attributes)
         {
-            return this.LinkHtmlAttributes(CollectionHelper.ObjectToDictionary(attributes));
+            return this.LinkHtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
         }
 
         public TBuilder LinkHtmlAttributes(IDictionary<string, object> attributes)
@@ -228,7 +228,7 @@ namespace SmartStore.Web.Framework.UI
 
         public TBuilder ContentHtmlAttributes(object attributes)
         {
-            return this.ContentHtmlAttributes(CollectionHelper.ObjectToDictionary(attributes));
+            return this.ContentHtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
         }
 
         public TBuilder ContentHtmlAttributes(IDictionary<string, object> attributes)

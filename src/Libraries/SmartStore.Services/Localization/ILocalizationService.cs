@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.DataExchange.Import;
 
 namespace SmartStore.Services.Localization
 {

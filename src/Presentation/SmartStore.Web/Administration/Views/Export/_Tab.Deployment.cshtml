@@ -1,0 +1,128 @@
+﻿@model ExportProfileModel
+@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Admin.Models.DataExchange
+
+<table class="adminContent">
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.FolderName)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.FolderName)
+			@Html.ValidationMessageFor(x => x.FolderName)
+		</td>
+	</tr>
+	@if (Model.Provider.IsFileBasedExport)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.FileNamePattern)
+			</td>
+			<td class="adminData">
+				<div>
+					@Html.TextBoxFor(x => x.FileNamePattern, new { @class = "input-large" })
+					@Html.ValidationMessageFor(x => x.FileNamePattern)
+				</div>
+				<div id="FileNamePatternExample" class="btn-below">
+					<button type="button" class="btn btn-small pull-left">
+						<i class="fa fa-refresh"></i>&nbsp;@T("Common.Example")
+					</button>
+					<span class="pull-left">&nbsp;&nbsp;</span>
+					<div class="pull-left" style="padding-top: 4px;">@Model.FileNamePatternExample</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.CreateZipArchive)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.CreateZipArchive)
+				@Html.ValidationMessageFor(x => x.CreateZipArchive)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Cleanup)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Cleanup)
+				@Html.ValidationMessageFor(x => x.Cleanup)
+			</td>
+		</tr>
+	}
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.EmailAccountId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(x => x.EmailAccountId, Model.AvailableEmailAccounts, Model.UnspecifiedString)
+			@Html.ValidationMessageFor(x => x.EmailAccountId)
+		</td>
+	</tr>
+	<tr id="CompletedEmailAddressesContainer">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.CompletedEmailAddresses)
+		</td>
+		<td class="adminData">
+			@Html.HiddenFor(model => model.CompletedEmailAddresses)
+			@Html.ValidationMessageFor(x => x.CompletedEmailAddresses)
+		</td>
+	</tr>
+</table>
+
+<p>&nbsp;</p>
+
+@if (Model.Provider.IsFileBasedExport)
+{
+	<div class="alert alert-info">
+		@Html.Raw(T("Admin.DataExchange.Export.Deployment.Note"))
+	</div>
+
+	<a href="@Url.Action("CreateDeployment", new { id = Model.Id })" class="btn btn-warning btn-above">
+		<i class="fa fa-plus"></i>&nbsp;@T("Common.AddNew")
+	</a>
+
+	if (Model.Deployments.Count > 0)
+	{
+		<div>
+			<table id="export-deployment-list" class="table admin-table">
+				<thead>
+					<tr>
+						<th>@T("Admin.DataExchange.Export.Deployment.Name")</th>
+						<th class="centered">@T("Common.Enabled")</th>
+						<th>@T("Admin.DataExchange.Export.Deployment.DeploymentType")</th>
+						<th>@T("Admin.Common.Actions")</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var deployment in Model.Deployments)
+					{
+						<tr class="@(deployment.Enabled ? "" : "disabled")">
+							<td>
+								<a href="@Url.Action("EditDeployment", new { id = deployment.Id })">@deployment.Name</a>
+							</td>
+							<td class="centered">
+								@Html.SymbolForBool(deployment.Enabled)
+							</td>
+							<td style="width: 50%;">
+								@Html.Partial("InfoDeployment", deployment)
+							</td>
+							<td>
+								<a href="@Url.Action("DeleteDeployment", new { id = deployment.Id })" class="btn btn-small btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+									@T("Common.Delete")
+								</a>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+}
+else
+{
+	<div class="alert alert-info">
+		@Html.Raw(T("Admin.DataExchange.Export.NonFileBasedExport.Note"))
+	</div>
+}

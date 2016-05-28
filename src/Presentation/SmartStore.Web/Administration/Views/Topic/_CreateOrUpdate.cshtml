@@ -177,7 +177,7 @@
                 @Html.SmartLabelFor(model => model.TitleTag)
             </td>
             <td class="adminData">
-                @Html.DropDownListFor(model => model.TitleTag, Model.AvailableTitleTags)
+                @Html.DropDownListFor(model => model.TitleTag, Model.AvailableTitleTags, new { @class = "autowidth", data_select_min_results_for_search = 100 })
                 @Html.ValidationMessageFor(model => model.TitleTag)
             </td>
         </tr>

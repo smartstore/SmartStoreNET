@@ -386,7 +386,8 @@ th label {
 	vertical-align: text-top;
 }
 
-.label-smnet {
+.label-smnet,
+.label-inline {
 	margin-right: 5px;
 }
 .label-smnet-hide {
@@ -417,51 +418,6 @@ th label {
 
 }
 
-/*.ui-menu {
-	padding: 5px 0;
-	margin: 2px 0 0; // override default ul
-	background-color: @dropdownBackground;
-	border: 1px solid #ccc; // Fallback for IE7-8
-	border: 1px solid @dropdownBorder;
-	*border-right-width: 2px;
-	*border-bottom-width: 2px;
-	border-top: none;
-	.border-radius(6px);
-	.box-shadow(0 5px 10px rgba(0,0,0,.2));
-	-webkit-background-clip: padding-box;
-		-moz-background-clip: padding;
-			background-clip: padding-box;
-}
-
-.ui-autocomplete {
-	border-color: @inputBorder; // goes nice with textboxes
-	.box-shadow(0 5px 10px rgba(0,0,0,.12));
-	border-top: none !important;
-}
-.ui-autocomplete.ui-corner-all {
-	.border-radius(0 0 @inputBorderRadius @inputBorderRadius);	
-}
-
-.ui-autocomplete-loading {
-	background-image: url('images/throbber-progress-black-16.gif');
-	background-repeat: no-repeat;
-	background-position: 98% center;
-}
-
-.ui-autocomplete .ui-menu-item a {
-	.border-radius(0);
-	padding: 3px 16px;
-	font-family: @baseFontFamily;
-    font-weight: normal;
-    color: @dropdownLinkColor;
-	.small();
-
-	&:hover,
-	&.ui-state-hover {
-		color: @dropdownLinkColorHover !important;
-		background: @dropdownLinkBackgroundHover !important;
-	}
-}*/
 
 // MVC UI adaptation
 // -------------------------
@@ -513,4 +469,28 @@ th label {
 
 .note-editable {
     background-color: #fff;
+}
+
+
+// NICER MODAL FADE
+// ------------------------------
+
+.modal.fade {
+	top: 50%;
+	.transition(~'opacity 0.12s linear, transform 0.12s ease-out');
+	.transform(~'translate(0, -40px) scale(0.9, 0.9)');
+}
+
+.modal.fade.in {
+	.transform(none);
+}
+
+.modal-backdrop, 
+.modal-backdrop.fade.in {
+	.opacity(60);
+}
+
+.modal-header .close {
+	font-size: 30px;
+	text-shadow: none;
 }

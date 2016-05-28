@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Admin.Models.Directory;
 using SmartStore.Admin.Models.Stores;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -22,16 +23,30 @@ namespace SmartStore.Admin.Controllers
 		private readonly ISettingService _settingService;
 		private readonly ILocalizationService _localizationService;
 		private readonly IPermissionService _permissionService;
+		private readonly ICurrencyService _currencyService;
 
 		public StoreController(IStoreService storeService,
 			ISettingService settingService,
 			ILocalizationService localizationService,
-			IPermissionService permissionService)
+			IPermissionService permissionService,
+			ICurrencyService currencyService)
 		{
 			this._storeService = storeService;
 			this._settingService = settingService;
 			this._localizationService = localizationService;
 			this._permissionService = permissionService;
+			this._currencyService = currencyService;
+		}
+
+		private void PrepareStoreModel(StoreModel model, Store store)
+		{
+			model.AvailableCurrencies = _currencyService.GetAllCurrencies(false, store == null ? 0 : store.Id)
+				.Select(x => new SelectListItem
+				{
+					Text = x.Name,
+					Value = x.Id.ToString()
+				})
+				.ToList();
 		}
 
 		public ActionResult List()
@@ -70,7 +85,16 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedView();
 
 			var storeModels = _storeService.GetAllStores()
-				.Select(x => x.ToModel())
+				.Select(x => 
+				{
+					var model = x.ToModel();
+
+					PrepareStoreModel(model, x);
+
+					model.Hosts = model.Hosts.EmptyNull().Replace(",", "<br />");
+
+					return model;
+				})
 				.ToList();
 
 			var gridModel = new GridModel<StoreModel>
@@ -91,10 +115,12 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedView();
 
 			var model = new StoreModel();
+			PrepareStoreModel(model, null);
+
 			return View(model);
 		}
 
-		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		public ActionResult Create(StoreModel model, bool continueEditing)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageStores))
@@ -103,6 +129,7 @@ namespace SmartStore.Admin.Controllers
 			if (ModelState.IsValid)
 			{
 				var store = model.ToEntity();
+				MediaHelper.UpdatePictureTransientStateFor(store, s => s.LogoPictureId);
 				//ensure we have "/" at the end
 				store.Url = store.Url.EnsureEndsWith("/");
 				_storeService.InsertStore(store);
@@ -112,6 +139,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			//If we got this far, something failed, redisplay form
+			PrepareStoreModel(model, null);
 			return View(model);
 		}
 
@@ -122,14 +150,15 @@ namespace SmartStore.Admin.Controllers
 
 			var store = _storeService.GetStoreById(id);
 			if (store == null)
-				//No store found with the specified id
 				return RedirectToAction("List");
 
 			var model = store.ToModel();
+			PrepareStoreModel(model, store);
+
 			return View(model);
 		}
 
-		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[FormValueRequired("save", "save-continue")]
 		public ActionResult Edit(StoreModel model, bool continueEditing)
 		{
@@ -138,12 +167,14 @@ namespace SmartStore.Admin.Controllers
 
 			var store = _storeService.GetStoreById(model.Id);
 			if (store == null)
-				//No store found with the specified id
 				return RedirectToAction("List");
 
 			if (ModelState.IsValid)
 			{
 				store = model.ToEntity(store);
+
+				MediaHelper.UpdatePictureTransientStateFor(store, s => s.LogoPictureId);
+
 				//ensure we have "/" at the end
 				store.Url = store.Url.EnsureEndsWith("/");
 				_storeService.UpdateStore(store);
@@ -153,6 +184,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			//If we got this far, something failed, redisplay form
+			PrepareStoreModel(model, store);
 			return View(model);
 		}
 
@@ -164,7 +196,6 @@ namespace SmartStore.Admin.Controllers
 
 			var store = _storeService.GetStoreById(id);
 			if (store == null)
-				//No store found with the specified id
 				return RedirectToAction("List");
 
 			try
@@ -176,18 +207,20 @@ namespace SmartStore.Admin.Controllers
 					.GetAllSettings()
 					.Where(s => s.StoreId == id)
 					.ToList();
-				foreach (var setting in settingsToDelete)
-					_settingService.DeleteSetting(setting);
+
+				settingsToDelete.ForEach(x => _settingService.DeleteSetting(x));
+
 				//when we had two stores and now have only one store, we also should delete all "per store" settings
 				var allStores = _storeService.GetAllStores();
+
 				if (allStores.Count == 1)
 				{
 					settingsToDelete = _settingService
 						.GetAllSettings()
 						.Where(s => s.StoreId == allStores[0].Id)
 						.ToList();
-					foreach (var setting in settingsToDelete)
-						_settingService.DeleteSetting(setting);
+
+					settingsToDelete.ForEach(x => _settingService.DeleteSetting(x));
 				}
 
 				NotifySuccess(_localizationService.GetResource("Admin.Configuration.Stores.Deleted"));
@@ -196,8 +229,8 @@ namespace SmartStore.Admin.Controllers
 			catch (Exception exc)
 			{
 				NotifyError(exc);
-				return RedirectToAction("Edit", new { id = store.Id });
 			}
+			return RedirectToAction("Edit", new { id = store.Id });
 		}
 	}
 }

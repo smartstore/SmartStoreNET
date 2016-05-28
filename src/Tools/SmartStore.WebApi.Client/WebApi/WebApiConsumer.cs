@@ -215,7 +215,7 @@ namespace SmartStore.Net.WebApi
 				request.Headers.Add(HttpRequestHeader.ContentMd5, contentMd5Hash);
 			}
 
-			string messageRepresentation = CreateMessageRepresentation(context, contentMd5Hash, timestamp);
+			string messageRepresentation = CreateMessageRepresentation(context, contentMd5Hash, timestamp, true);
 			//Debug.WriteLine(messageRepresentation);
 			string signature = CreateSignature(context.SecretKey, messageRepresentation);
 

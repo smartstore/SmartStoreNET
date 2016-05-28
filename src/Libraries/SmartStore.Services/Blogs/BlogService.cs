@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Blogs
 {
@@ -15,13 +15,14 @@ namespace SmartStore.Services.Blogs
     /// </summary>
     public partial class BlogService : IBlogService
     {
-
         #region Fields
 
         private readonly IRepository<BlogPost> _blogPostRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
-        private readonly ICacheManager _cacheManager;
-        private readonly IEventPublisher _eventPublisher;
+		private readonly ICommonServices _services;
+		private readonly ILanguageService _languageService;
+
+		private readonly BlogSettings _blogSettings;
 
         #endregion
 
@@ -29,13 +30,15 @@ namespace SmartStore.Services.Blogs
 
         public BlogService(IRepository<BlogPost> blogPostRepository,
 			IRepository<StoreMapping> storeMappingRepository,
-			ICacheManager cacheManager, 
-			IEventPublisher eventPublisher)
+			ICommonServices services,
+			ILanguageService languageService,
+			BlogSettings blogSettings)
         {
             _blogPostRepository = blogPostRepository;
 			_storeMappingRepository = storeMappingRepository;
-            _cacheManager = cacheManager;
-            _eventPublisher = eventPublisher;
+			_services = services;
+			_languageService = languageService;
+			_blogSettings = blogSettings;
 
 			this.QuerySettings = DbQuerySettings.Default;
         }
@@ -58,7 +61,7 @@ namespace SmartStore.Services.Blogs
             _blogPostRepository.Delete(blogPost);
 
             //event notification
-            _eventPublisher.EntityDeleted(blogPost);
+            _services.EventPublisher.EntityDeleted(blogPost);
         }
 
         /// <summary>
@@ -84,17 +87,25 @@ namespace SmartStore.Services.Blogs
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="maxAge">The maximum age of returned blog posts</param>
         /// <returns>Blog posts</returns>
 		public virtual IPagedList<BlogPost> GetAllBlogPosts(int storeId, int languageId,
-            DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false)
+			DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null)
         {
             var query = _blogPostRepository.Table;
+
             if (dateFrom.HasValue)
                 query = query.Where(b => dateFrom.Value <= b.CreatedOnUtc);
+
             if (dateTo.HasValue)
                 query = query.Where(b => dateTo.Value >= b.CreatedOnUtc);
+
             if (languageId > 0)
                 query = query.Where(b => languageId == b.LanguageId);
+
+			if (maxAge.HasValue)
+				query = query.Where(b => b.CreatedOnUtc >= maxAge.Value);
+
             if (!showHidden)
             {
                 var utcNow = DateTime.UtcNow;
@@ -202,7 +213,7 @@ namespace SmartStore.Services.Blogs
             _blogPostRepository.Insert(blogPost);
 
             //event notification
-            _eventPublisher.EntityInserted(blogPost);
+            _services.EventPublisher.EntityInserted(blogPost);
         }
 
         /// <summary>
@@ -217,7 +228,7 @@ namespace SmartStore.Services.Blogs
             _blogPostRepository.Update(blogPost);
 
             //event notification
-            _eventPublisher.EntityUpdated(blogPost);
+            _services.EventPublisher.EntityUpdated(blogPost);
         }
         
         /// <summary>

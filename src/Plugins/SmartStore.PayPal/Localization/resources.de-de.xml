@@ -1,10 +1,10 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
 
   <LocaleResource Name="Plugins.FriendlyName.SmartStore.PayPal" AppendRootKey="false">
-    <Value>PayPal Zahlungsmethoden</Value>
+    <Value>PayPal Zahlungsarten</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.PayPal" AppendRootKey="false">
-    <Value>Stellt die PayPal-Zahlungsmethoden PayPal Express, PayPal Standard und PayPal Direct zur Verfügung.</Value>
+    <Value>Stellt die PayPal-Zahlungsarten PayPal Express, PayPal Standard und PayPal Direct zur Verfügung.</Value>
   </LocaleResource>
 
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
@@ -80,7 +80,7 @@
             <li>Auf den Register <b>Mein Profil</b> klicken.</li>
             <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
             <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
-            <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>http://www.yourStore.com/Plugins/PayPalExpress/IPNHandler</b>) eingeben.</li>
+            <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalExpress/IPNHandler</b>) eingeben.</li>
             <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
             </ol>]]>
 		    </Value>
@@ -175,7 +175,7 @@
           <li>Auf den Register <b>Mein Profil</b> klicken.</li>
           <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
           <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
-          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>http://www.yourStore.com/Plugins/PaymentPayPalDirect/IPNHandler</b>) eingeben.</li>
+          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalDirect/IPNHandler</b>) eingeben.</li>
           <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
           </ol>]]>
 		    </Value>
@@ -227,7 +227,7 @@
           <li>Klicken Sie auf den Register <b>Mein Profil</b>.</li>
           <li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>Website-Einstellungen</b>.</li>
           <li>Aktivieren Sie <b>Automatische Rückleitung</b>.</li>
-          <li>Als Rückleitungs-URL geben Sie bitte die Seite Ihres Shops ein, die die Transaktions-ID von PayPal nach einer Kundenzahlung empfängt (<b>http://www.yourStore.com/Plugins/PaymentPayPalStandard/PDTHandler</b>).</li>
+          <li>Als Rückleitungs-URL geben Sie bitte die Seite Ihres Shops ein, die die Transaktions-ID von PayPal nach einer Kundenzahlung empfängt (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/PDTHandler</b>).</li>
           <li>Aktivieren Sie <b>Übertragung der Zahlungsdaten</b>.</li>
           <li>Klicken Sie auf <b>Speichern</b>.</li>
           <li>Klicken Sie unter <b>Verkäufer/Händler</b> auf <b>Website-Einstellungen</b>.</li>
@@ -243,7 +243,7 @@
 	          <li>Auf den Register <b>Mein Profil</b> klicken.</li>
 	          <li><b>Sofortige Zahlungsbestätigung</b> klicken.</li>
 	          <li><b>Einstellungen für sofortige Zahlungsbestätigungen wählen</b> klicken.</li>
-	          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>http://www.yourStore.com/Plugins/PaymentPayPalStandard/IPNHandler</b>) eingeben.</li>
+	          <li>Bei <b>Benachrichtigungs-URL</b> die URL Ihres IPN-Handlers (<b>http://www.yourStore.com/Plugins/SmartStore.PayPal/PayPalStandard/IPNHandler</b>) eingeben.</li>
 	          <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
 	          </ol>
           </li>
@@ -270,6 +270,12 @@
       </LocaleResource>
       <LocaleResource Name="Fields.PDTValidateOrderTotal.Hint">
         <Value>Aktivieren Sie diese Option, falls der durch PayPal übermittelte Gesamtbetrag überprüft werden soll.</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.PdtValidateOnlyWarn">
+        <Value>Nur warnen</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.PdtValidateOnlyWarn.Hint">
+        <Value>Legt fest, ob im Falle einer Nichtübereinstimmung des Gesamtbetrags lediglich eine Auftragsnotiz angelegt werden soll. Ansonsten wird ein Fehler erzeugt und der Zahlungsstatus wird nicht aktualisiert.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.AdditionalFee">
         <Value>Zusätzliche Gebühren</Value>
@@ -311,7 +317,7 @@
         <Value>PayPal Standard PDT. Fehler beim Abruf von mc_gross.</Value>
       </LocaleResource>
       <LocaleResource Name="UnequalTotalOrder">
-        <Value>PayPal Standard PDT. Der übermittelte Gesamtbetrag {0} entspricht nicht dem des Shops {1}.</Value>
+        <Value>PayPal Standard PDT. Der übermittelte Gesamtbetrag {0} entspricht nicht dem des Shops {1} (ungerundet {2}). Die Differenz beträgt {3}.</Value>
       </LocaleResource>
       <LocaleResource Name="PdtFailed">
         <Value>PayPal Standard PDT ist fehlgeschlagen.</Value>
@@ -343,17 +349,17 @@
       <LocaleResource Name="PaymentNote">
         <Value>
           <![CDATA[PayPal PDT:
-          Total: {0}
-          Währung: {1}
-          Zahlenderstatus: {2}
-          Zahlungsstatus: {3}
-          Ausstehend (Grund): {4}
-          Transaktions-ID: {5}
-          Zahlungstyp: {6}
-          Zahlender-ID: {7}
-          Empfänger-ID: {8}
-          Rechnung: {9}
-          Zahlungsgebühr: {10}]]>
+Total: {0}
+Währung: {1}
+Zahlenderstatus: {2}
+Zahlungsstatus: {3}
+Ausstehend (Grund): {4}
+Transaktions-ID: {5}
+Zahlungstyp: {6}
+Zahlender-ID: {7}
+Empfänger-ID: {8}
+Rechnung: {9}
+Zahlungsgebühr: {10}]]>
         </Value>
       </LocaleResource>
     </Children>

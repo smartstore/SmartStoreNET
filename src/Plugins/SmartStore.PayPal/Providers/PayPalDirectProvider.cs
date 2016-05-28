@@ -3,16 +3,13 @@ using System.Globalization;
 using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
 using SmartStore.PayPal.Controllers;
 using SmartStore.PayPal.PayPalSvc;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
-using SmartStore.Services.Directory;
 using SmartStore.Services.Payments;
 
 namespace SmartStore.PayPal
@@ -27,22 +24,17 @@ namespace SmartStore.PayPal
 	{
 		#region Fields
 
-		private readonly ICurrencyService _currencyService;
 		private readonly ICustomerService _customerService;
-		private readonly CurrencySettings _currencySettings;
 
 		#endregion
 
 		#region Ctor
 
-        public PayPalDirectProvider( ICurrencyService currencyService, 
+        public PayPalDirectProvider(
             ICustomerService customerService,
-			CurrencySettings currencySettings, 
             IComponentContext ctx)
 		{
-			_currencyService = currencyService;
 			_customerService = customerService;
-			_currencySettings = currencySettings;
 		}
 
 		#endregion
@@ -63,8 +55,9 @@ namespace SmartStore.PayPal
 		{
             var result = new ProcessPaymentResult();
 
+			var store = Services.StoreService.GetStoreById(processPaymentRequest.StoreId);
             var customer = _customerService.GetCustomerById(processPaymentRequest.CustomerId);
-			var settings = CommonServices.Settings.LoadSetting<PayPalDirectPaymentSettings>(processPaymentRequest.StoreId);
+			var settings = Services.Settings.LoadSetting<PayPalDirectPaymentSettings>(processPaymentRequest.StoreId);
             
             var req = new DoDirectPaymentReq();
             req.DoDirectPaymentRequest = new DoDirectPaymentRequestType();
@@ -72,7 +65,7 @@ namespace SmartStore.PayPal
 
             var details = new DoDirectPaymentRequestDetailsType();
             req.DoDirectPaymentRequest.DoDirectPaymentRequestDetails = details;
-            details.IPAddress = CommonServices.WebHelper.GetCurrentIpAddress();
+            details.IPAddress = Services.WebHelper.GetCurrentIpAddress();
 
 			if (details.IPAddress.IsEmpty())
                 details.IPAddress = "127.0.0.1";
@@ -110,8 +103,10 @@ namespace SmartStore.PayPal
             details.CreditCard.CardOwner.PayerName = new PersonNameType();
             details.CreditCard.CardOwner.PayerName.FirstName = customer.BillingAddress.FirstName;
             details.CreditCard.CardOwner.PayerName.LastName = customer.BillingAddress.LastName;
-            //order totals
-            var payPalCurrency = PayPalHelper.GetPaypalCurrency(_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId));
+            
+			//order totals
+            var payPalCurrency = PayPalHelper.GetPaypalCurrency(store.PrimaryStoreCurrency);
+
             details.PaymentDetails = new PaymentDetailsType();
             details.PaymentDetails.OrderTotal = new BasicAmountType();
             details.PaymentDetails.OrderTotal.Value = Math.Round(processPaymentRequest.OrderTotal, 2).ToString("N", new CultureInfo("en-us"));
@@ -143,7 +138,7 @@ namespace SmartStore.PayPal
                 DoDirectPaymentResponseType response = service.DoDirectPayment(req);
 
                 string error = "";
-                bool success = PayPalHelper.CheckSuccess(Helper, response, out error);
+                bool success = PayPalHelper.CheckSuccess(Services.Localization, response, out error);
                 if (success)
                 {
                     result.AvsResult = response.AVSCode;
@@ -180,8 +175,9 @@ namespace SmartStore.PayPal
 		{
 			var result = new ProcessPaymentResult();
 
+			var store = Services.StoreService.GetStoreById(processPaymentRequest.StoreId);
 			var customer = _customerService.GetCustomerById(processPaymentRequest.CustomerId);
-			var settings = CommonServices.Settings.LoadSetting<PayPalDirectPaymentSettings>(processPaymentRequest.StoreId);
+			var settings = Services.Settings.LoadSetting<PayPalDirectPaymentSettings>(processPaymentRequest.StoreId);
 
 			var req = new CreateRecurringPaymentsProfileReq();
 			req.CreateRecurringPaymentsProfileRequest = new CreateRecurringPaymentsProfileRequestType();
@@ -224,11 +220,11 @@ namespace SmartStore.PayPal
 
 			//schedule
 			details.ScheduleDetails = new ScheduleDetailsType();
-			details.ScheduleDetails.Description = Helper.GetResource("RecurringPayment");
+			details.ScheduleDetails.Description = T("Plugins.Payments.PayPalDirect.RecurringPayment");
 			details.ScheduleDetails.PaymentPeriod = new BillingPeriodDetailsType();
 			details.ScheduleDetails.PaymentPeriod.Amount = new BasicAmountType();
 			details.ScheduleDetails.PaymentPeriod.Amount.Value = Math.Round(processPaymentRequest.OrderTotal, 2).ToString("N", new CultureInfo("en-us"));
-			details.ScheduleDetails.PaymentPeriod.Amount.currencyID = PayPalHelper.GetPaypalCurrency(_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId));
+			details.ScheduleDetails.PaymentPeriod.Amount.currencyID = PayPalHelper.GetPaypalCurrency(store.PrimaryStoreCurrency);
 			details.ScheduleDetails.PaymentPeriod.BillingFrequency = processPaymentRequest.RecurringCycleLength;
 			switch (processPaymentRequest.RecurringCyclePeriod)
 			{
@@ -245,7 +241,7 @@ namespace SmartStore.PayPal
 					details.ScheduleDetails.PaymentPeriod.BillingPeriod = BillingPeriodType.Year;
 					break;
 				default:
-                    throw new SmartException(Helper.GetResource("NotSupportedPeriod"));
+					throw new SmartException(T("Plugins.Payments.PayPalDirect.NotSupportedPeriod"));
 			}
 			details.ScheduleDetails.PaymentPeriod.TotalBillingCycles = processPaymentRequest.RecurringTotalCycles;
 			details.ScheduleDetails.PaymentPeriod.TotalBillingCyclesSpecified = true;
@@ -257,7 +253,7 @@ namespace SmartStore.PayPal
 				CreateRecurringPaymentsProfileResponseType response = service.CreateRecurringPaymentsProfile(req);
 
 				string error = "";
-                bool success = PayPalHelper.CheckSuccess(Helper, response, out error);
+                bool success = PayPalHelper.CheckSuccess(Services.Localization, response, out error);
 				if (success)
 				{
 					result.NewPaymentStatus = PaymentStatus.Pending;

@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using Rhino.Mocks;
+using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
@@ -12,18 +15,16 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Tests;
-using NUnit.Framework;
-using Rhino.Mocks;
-using SmartStore.Core;
 
 namespace SmartStore.Services.Tests.Customers
 {
-    [TestFixture]
+	[TestFixture]
     public class CustomerRegistrationServiceTests : ServiceTest
     {
         IRepository<Customer> _customerRepo;
         IRepository<CustomerRole> _customerRoleRepo;
         IRepository<GenericAttribute> _genericAttributeRepo;
+		IRepository<RewardPointsHistory> _rewardPointsHistoryRepo;
         IGenericAttributeService _genericAttributeService;
         IEncryptionService _encryptionService;
         ICustomerService _customerService;
@@ -111,6 +112,7 @@ namespace SmartStore.Services.Tests.Customers
 
             _customerRoleRepo = MockRepository.GenerateMock<IRepository<CustomerRole>>();
             _genericAttributeRepo = MockRepository.GenerateMock<IRepository<GenericAttribute>>();
+			_rewardPointsHistoryRepo = MockRepository.GenerateMock<IRepository<RewardPointsHistory>>();
 
             _genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
             _newsLetterSubscriptionService = MockRepository.GenerateMock<INewsLetterSubscriptionService>();
@@ -119,11 +121,11 @@ namespace SmartStore.Services.Tests.Customers
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 
             _customerService = new CustomerService(new NullCache(), _customerRepo, _customerRoleRepo,
-                _genericAttributeRepo, _genericAttributeService, _eventPublisher, _rewardPointsSettings);
+                _genericAttributeRepo, _rewardPointsHistoryRepo, _genericAttributeService, _eventPublisher, _rewardPointsSettings);
 
             _customerRegistrationService = new CustomerRegistrationService(_customerService,
                 _encryptionService, _newsLetterSubscriptionService, _localizationService,
-                _rewardPointsSettings, _customerSettings, _storeContext);
+                _rewardPointsSettings, _customerSettings, _storeContext, _eventPublisher);
         }
 
         //[Test]

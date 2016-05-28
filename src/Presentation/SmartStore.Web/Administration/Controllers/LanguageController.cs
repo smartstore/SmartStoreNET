@@ -10,12 +10,15 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -154,7 +157,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(LanguageModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
@@ -213,7 +216,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Edit(LanguageModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageLanguages))
@@ -486,12 +489,7 @@ namespace SmartStore.Admin.Controllers
                 var file = Request.Files["importxmlfile"];
                 if (file != null && file.ContentLength > 0)
                 {
-                    using (var sr = new StreamReader(file.InputStream, Encoding.UTF8))
-                    {
-                        string content = sr.ReadToEnd();
-                        _localizationService.ImportResourcesFromXml(language, content, mode: mode, updateTouchedResources: updateTouched);
-                    }
-
+					_localizationService.ImportResourcesFromXml(language, file.InputStream.AsString(), mode: mode, updateTouchedResources: updateTouched);
                 }
                 else
                 {

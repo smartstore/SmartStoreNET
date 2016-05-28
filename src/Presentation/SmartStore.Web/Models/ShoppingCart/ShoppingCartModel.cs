@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
 
@@ -72,6 +72,8 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string ProductName { get; set; }
 
             public string ProductSeName { get; set; }
+
+			public string ProductUrl { get; set; }
 
 			public bool VisibleIndividually { get; set; }
 

@@ -1,50 +1,35 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
   <LocaleResource Name="Plugins.FriendlyName.SmartStore.GoogleMerchantCenter" AppendRootKey="false">
-    <Value>Google Merchant Center (GMC) Feed</Value>
+    <Value>Google Merchant Center feed</Value>
   </LocaleResource>
+  <LocaleResource Name="Plugins.Description.SmartStore.GoogleMerchantCenter" AppendRootKey="false">
+    <Value>Allows you to export product data in the feed format of Google Merchant Center (GMC).</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.FriendlyName.Feeds.GoogleMerchantCenterProductXml" AppendRootKey="false">
+    <Value>Google Merchant Center XML feed</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Description.Feeds.GoogleMerchantCenterProductXml" AppendRootKey="false">
+    <Value>Allows you to export product data in the XML feed format of Google Merchant Center (GMC).</Value>
+  </LocaleResource>
+
 	<LocaleResource Name="AdminInstruction">
 		<Value>
 			<![CDATA[<ul>
 <li>Either the GTIN (such as UPC, EAN, etc.) or manufacturer and manufacturer part number (MPN) are required for product identification. Google recommends that all three pieces of information be specified.</li>
 <li>Specify default tax and shipping values in your Google Merchant Center account settings.</li>
 <li>In order to get more info about required fields look at the following article <a href="http://support.google.com/merchants/bin/answer.py?hl=en&answer=188494" target="_blank">Product feed specification</a>.</li>
+<li>You can find a list of all Google categories <a href="http://support.google.com/merchants/bin/answer.py?hl=en&answer=160081" target="_blank">here</a>.</li>
 </ul>]]>
-		</Value>
-	</LocaleResource>
-	<LocaleResource Name="GridEditNote">
-		<Value>
-			<![CDATA[You can find a list of all Google categories <a href="http://support.google.com/merchants/bin/answer.py?hl=en&answer=160081" target="_blank">here</a>.]]>
 		</Value>
 	</LocaleResource>
 	<LocaleResource Name="MissingDefaultCategory">
 		<Value>Default Google category is not set</Value>
-	</LocaleResource>
-	<LocaleResource Name="Currency">
-		<Value>Currency</Value>
-	</LocaleResource>
-	<LocaleResource Name="Currency.Hint">
-		<Value>The default currency that will be used to generate the feed.</Value>
 	</LocaleResource>
 	<LocaleResource Name="DefaultGoogleCategory">
 		<Value>Default Google category</Value>
 	</LocaleResource>
 	<LocaleResource Name="DefaultGoogleCategory.Hint">
 		<Value>Will be used if there is no category specified on produkt level.</Value>
-	</LocaleResource>
-	<LocaleResource Name="General">
-		<Value>General</Value>
-	</LocaleResource>
-	<LocaleResource Name="ProductData">
-		<Value>Product specific data</Value>
-	</LocaleResource>
-	<LocaleResource Name="Generate">
-		<Value>Generate feed</Value>
-	</LocaleResource>
-	<LocaleResource Name="ProductPictureSize">
-		<Value>Product thumbnail image size</Value>
-	</LocaleResource>
-	<LocaleResource Name="ProductPictureSize.Hint">
-		<Value>The default size (pixels) for product thumbnail image.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.ProductName">
 		<Value>Product</Value>
@@ -70,59 +55,11 @@
 	<LocaleResource Name="Products.Pattern">
 		<Value>Pattern</Value>
 	</LocaleResource>
-	<LocaleResource Name="TaskEnabled">
-		<Value>Automatically generate feed</Value>
-	</LocaleResource>
-	<LocaleResource Name="TaskEnabled.Hint">
-		<Value>Check if you want the feed to be automatically generated.</Value>
-	</LocaleResource>
-	<LocaleResource Name="GenerateStaticFileEachMinutes">
-		<Value>A task period (minutes)</Value>
-	</LocaleResource>
-	<LocaleResource Name="GenerateStaticFileEachMinutes.Hint">
-		<Value>Specify a task period in minutes (generation of a new feed file).</Value>
-	</LocaleResource>
-	<LocaleResource Name="ConfigSaveNote">
-		<Value>Settings successfully saved. Please restart the application if "Automatically generate feed" has been changed.</Value>
-	</LocaleResource>
-	<LocaleResource Name="BuildDescription">
-		<Value>Product description</Value>
-	</LocaleResource>
-	<LocaleResource Name="BuildDescription.Hint">
-		<Value>Specify what information to use for the description of the product.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Automatic">
-		<Value>Automatic</Value>
-	</LocaleResource>
-	<LocaleResource Name="DescShort">
-		<Value>Short description</Value>
-	</LocaleResource>
-	<LocaleResource Name="DescLong">
-		<Value>Long description</Value>
-	</LocaleResource>
-	<LocaleResource Name="DescTitleAndShort">
-		<Value>Product name + short description</Value>
-	</LocaleResource>
-	<LocaleResource Name="DescTitleAndLong">
-		<Value>Product name + long description</Value>
-	</LocaleResource>
-	<LocaleResource Name="DescManuAndTitleAndShort">
-		<Value>Manufacturer + Product name + short description</Value>
-	</LocaleResource>
-	<LocaleResource Name="DescManuAndTitleAndLong">
-		<Value>Manufacturer + Product name + long description</Value>
-	</LocaleResource>
-	<LocaleResource Name="AppendDescriptionText">
-		<Value>Text 1 - 5 to be appended</Value>
-	</LocaleResource>
-	<LocaleResource Name="AppendDescriptionText.Hint">
-		<Value>One of the five text elements will be appended to the product description if long and short description are empty.</Value>
-	</LocaleResource>
 	<LocaleResource Name="AdditionalImages">
 		<Value>Additional images</Value>
 	</LocaleResource>
 	<LocaleResource Name="AdditionalImages.Hint">
-		<Value>Check if you want to export more than one image. Up to 10 are possible.</Value>
+		<Value>Check the box if you want to export more than one image. Up to 10 are possible.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Condition">
 		<Value>Condition</Value>
@@ -148,9 +85,6 @@
 	<LocaleResource Name="AvailabilityInStock">
 		<Value>In stock</Value>
 	</LocaleResource>
-	<LocaleResource Name="AvailabilityAvailableForOrder">
-		<Value>Available for order</Value>
-	</LocaleResource>
 	<LocaleResource Name="AvailabilityOutOfStock">
 		<Value>Out of stock</Value>
 	</LocaleResource>
@@ -162,18 +96,6 @@
 	</LocaleResource>
 	<LocaleResource Name="SpecialPrice.Hint">
 		<Value>Activate this option if you want to export special price and special price period.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Brand">
-		<Value>Manufacturer\Brand</Value>
-	</LocaleResource>
-	<LocaleResource Name="Brand.Hint">
-		<Value>This value is used if there's no manufacturer\brand for a product.</Value>
-	</LocaleResource>
-	<LocaleResource Name="UseOwnProductNo">
-		<Value>Own SKU</Value>
-	</LocaleResource>
-	<LocaleResource Name="UseOwnProductNo.Hint">
-		<Value>Check to export SKU as manufacturer part number (MPN) if it is missing.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Gender">
 		<Value>Gender</Value>
@@ -230,13 +152,7 @@
 		<Value>Only online available</Value>
 	</LocaleResource>
 	<LocaleResource Name="OnlineOnly.Hint">
-		<Value>Check if products can only be purchased online.</Value>
-	</LocaleResource>
-	<LocaleResource Name="DescriptionToPlainText">
-		<Value>Remove HTML</Value>
-	</LocaleResource>
-	<LocaleResource Name="DescriptionToPlainText.Hint">
-		<Value>Check if you want to remove all HTML from the product description for the export.</Value>
+		<Value>Check the box if products can only be purchased online.</Value>
 	</LocaleResource>
 	<LocaleResource Name="EmptyGridCell">
 		<Value>Empty</Value>
@@ -259,12 +175,6 @@
 	<LocaleResource Name="SearchIsTouched.Untouched">
 		<Value>Not edited yet</Value>
 	</LocaleResource>
-	<LocaleResource Name="Store">
-		<Value>Store</Value>
-	</LocaleResource>
-	<LocaleResource Name="Store.Hint">
-		<Value>Select the store that will be used to generate the feed.</Value>
-	</LocaleResource>
 	<LocaleResource Name="ExpirationDays">
 		<Value>Expires in days</Value>
 	</LocaleResource>
@@ -285,17 +195,5 @@
 	</LocaleResource>
 	<LocaleResource Name="ExportBasePrice.Hint">
 		<Value>Activate this option if you want to export the base price of the product.</Value>
-	</LocaleResource>
-	<LocaleResource Name="ConvertNetToGrossPrices">
-		<Value>Convert net into gross prices</Value>
-	</LocaleResource>
-	<LocaleResource Name="ConvertNetToGrossPrices.Hint">
-		<Value>Determines to convert net into gross prices.</Value>
-	</LocaleResource>
-	<LocaleResource Name="LanguageId">
-		<Value>Language</Value>
-	</LocaleResource>
-	<LocaleResource Name="LanguageId.Hint">
-		<Value>Determines which language to use to export language dependent values (for instance the product name).</Value>
 	</LocaleResource>
 </Language>

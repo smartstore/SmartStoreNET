@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentValidation.Attributes;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Validators.Blogs;
 
 namespace SmartStore.Web.Models.Blogs
@@ -36,7 +36,6 @@ namespace SmartStore.Web.Models.Blogs
         public IList<BlogCommentModel> Comments { get; set; }
         public AddBlogCommentModel AddNewComment { get; set; }
 
-        // codehint: sm-add
         public int AvatarPictureSize { get; set; }
 		public bool AllowCustomersToUploadAvatars { get; set; }
     }

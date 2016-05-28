@@ -5,8 +5,8 @@ namespace SmartStoreNetWebApiClient
 {
 	static class Program
 	{
-		public static string AppName { get { return "SmartStore.Net Web API Client v.1.1"; } }
-		public static string ConsumerName { get { return "My shopping data consumer v.1.1"; } }
+		public static string AppName { get { return "SmartStore.Net Web API Client v.1.2"; } }
+		public static string ConsumerName { get { return "My shopping data consumer v.1.2"; } }
 
 		/// <summary>
 		/// Der Haupteinstiegspunkt für die Anwendung.

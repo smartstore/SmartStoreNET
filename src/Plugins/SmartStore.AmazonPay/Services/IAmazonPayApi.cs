@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Web;
 using OffAmazonPaymentsService.Model;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Orders;
 using SmartStore.AmazonPay.Services;
 using SmartStore.AmazonPay.Settings;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Payments;
 
 namespace SmartStore.AmazonPay.Api
@@ -20,6 +20,8 @@ namespace SmartStore.AmazonPay.Api
 
 		OrderReferenceDetails SetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, decimal? orderTotalAmount,
 			string currencyCode, string orderGuid = null, string storeName = null);
+
+		OrderReferenceDetails SetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, string currencyCode, List<OrganizedShoppingCartItem> cart);
 
 		void ConfirmOrderReference(AmazonPayClient client, string orderReferenceId);
 

@@ -1,11 +1,11 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Web.Routing;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Orders;
-using System.Web.Routing;
 
 namespace SmartStore.Services.Payments
 {
@@ -33,6 +33,25 @@ namespace SmartStore.Services.Payments
 
 			return paymentSettings.ActivePaymentMethodSystemNames.Contains(paymentMethod.Metadata.SystemName, StringComparer.OrdinalIgnoreCase);
         }
+
+		/// <summary>
+		/// Gets an additional handling fee of a payment method
+		/// </summary>
+		/// <param name="cart">Shoping cart</param>
+		/// <param name="round">Whether to round the fee</param>
+		/// <returns>Additional handling fee</returns>
+		public static decimal GetAdditionalHandlingFee(this Provider<IPaymentMethod> paymentMethod, IList<OrganizedShoppingCartItem> cart, bool round)
+		{
+			var result = decimal.Zero;
+			if (paymentMethod != null)
+			{
+				result = paymentMethod.Value.GetAdditionalHandlingFee(cart);
+
+				if (round)
+					result = Math.Round(result, 2);
+			}
+			return result;
+		}
 
         /// <summary>
         /// Calculate payment method fee

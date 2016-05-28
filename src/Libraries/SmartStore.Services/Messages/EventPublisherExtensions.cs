@@ -1,4 +1,5 @@
-﻿using SmartStore.Core;
+﻿using System.Collections.Generic;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Events;
 
@@ -26,12 +27,12 @@ namespace SmartStore.Services.Messages
             eventPublisher.Publish(new EmailUnsubscribedEvent(email));
         }
 
-        public static void EntityTokensAdded<T, U>(this IEventPublisher eventPublisher, T entity, System.Collections.Generic.IList<U> tokens) where T : BaseEntity
+        public static void EntityTokensAdded<T, U>(this IEventPublisher eventPublisher, T entity, IList<U> tokens) where T : BaseEntity
         {
             eventPublisher.Publish(new EntityTokensAddedEvent<T, U>(entity, tokens));
         }
 
-        public static void MessageTokensAdded<U>(this IEventPublisher eventPublisher, MessageTemplate message, System.Collections.Generic.IList<U> tokens)
+        public static void MessageTokensAdded<U>(this IEventPublisher eventPublisher, MessageTemplate message, IList<U> tokens)
         {
             eventPublisher.Publish(new MessageTokensAddedEvent<U>(message, tokens));
         }

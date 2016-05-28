@@ -240,12 +240,10 @@ namespace SmartStore.Web.Controllers
                 });
             }
 
-            // codehint: sm-edit
             ViewData["PagerRouteValues"] = new RouteValues { page = page, id = customerProfileId };
 
             var model = new ProfilePostsModel(list)
             {
-                // codehint: sm-delete
                 Posts = latestPosts,
             };
 

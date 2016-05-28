@@ -1,0 +1,39 @@
+﻿@using SmartStore.Admin.Models.DataExchange
+@model ProfileInfoForProviderModel
+@{
+	Layout = null;
+}
+<table class="adminContent">
+	@if (Model.Profiles.Count == 0)
+	{
+		<tr>
+			<td colspan="2">
+				@Html.Raw(T("Admin.DataExchange.Export.NoProfilesForProvider", Model.SystemName, Url.Action("List", "Export", new { area = "Admin" })))
+			</td>
+		</tr>
+	}
+	@foreach (var profile in Model.Profiles)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(m => m.Profiles)
+			</td>
+			<td class="adminData">
+				<a href="@Url.Action("Edit", "Export", new { id = profile.Id, area = "Admin" })">
+					@profile.Name
+				</a>
+			</td>
+		</tr>
+		if (profile.ScheduleTaskId.HasValue)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabel("ProfileScheduleTask" + Model.Profiles.IndexOf(profile).ToString(), T("Common.Execution"))
+				</td>
+				<td class="adminData">
+					@Html.Action("MinimalTask", "ScheduleTask", new { taskId = profile.ScheduleTaskId.Value, returnUrl = Model.ReturnUrl, cancellable = true, area = "admin" })
+				</td>
+			</tr>
+		}
+	}
+</table>

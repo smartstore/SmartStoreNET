@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.News;
 
@@ -21,6 +23,13 @@ namespace SmartStore.Services.News
         /// <returns>News</returns>
         NewsItem GetNewsById(int newsId);
 
+		/// <summary>
+		/// Get news by identifiers
+		/// </summary>
+		/// <param name="newsIds">News identifiers</param>
+		/// <returns>News query</returns>
+		IQueryable<NewsItem> GetNewsByIds(int[] newsIds);
+
         /// <summary>
         /// Gets all news
         /// </summary>
@@ -29,9 +38,9 @@ namespace SmartStore.Services.News
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="maxAge">The maximum age of returned news</param>
         /// <returns>News items</returns>
-		IPagedList<NewsItem> GetAllNews(int languageId, int storeId,
-            int pageIndex, int pageSize, bool showHidden = false);
+		IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null);
 
         /// <summary>
         /// Inserts a news item

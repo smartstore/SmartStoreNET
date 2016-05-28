@@ -11,7 +11,7 @@
     }
 }
 
-<input type="hidden" id="@id" name="@name" class="widgetzone-chooser" value="@Model" data-available-zones="@availableZones" style="min-width: 350px" />
+<input type="hidden" id="@id" name="@name" class="widgetzone-chooser autowidth" value="@Model" data-available-zones="@availableZones" style="min-width: 600px;" />
 
 <script>
     $(function () {
@@ -22,18 +22,215 @@
             zones = _.map(zoneChooser.data("available-zones").split(",") /*list*/, function (val) { return _.str.trim(val) } /*iterator*/ );
         }
         else {
-            zones = [
-                "head_html_tag", "body_start_html_tag_after", "header", "left_side_column_before", "left_side_column_after_category_navigation",
-                "left_side_column_after", "main_column_before", "content_before", "content_after", "main_column_after", "right_side_column_before",
-                "right_side_column_after", "footer", "body_end_html_tag_before",
-                "categorydetails_after_breadcrumb", "categorydetails_top", "categorydetails_before_subcategories", "categorydetails_before_featured_products", "categorydetails_after_featured_products", "categorydetails_before_product_list", "categorydetails_bottom", "categorydetails_before_filters",
-                "productdetails_top", "productdetails_before_pictures", "productdetails_after_pictures", "productdetails_overview_top", "productdetails_overview_bottom", "productdetails_bottom",
-                "order_summary_content_before", "order_summary_content_deals", "order_summary_content_after", "order_summary_content_totals_left", "order_summary_content_totals_bottom",
-				"orderdetails_page_aftertotal",
-                "checkout_billing_address_top", "checkout_billing_address_middle", "checkout_billing_address_bottom", "checkout_shipping_address_top", "checkout_shipping_address_middle", "checkout_shipping_address_bottom",
-                "checkout_payment_method_top", "checkout_payment_method_bottom", "checkout_shipping_method_top", "checkout_shipping_method_bottom", "checkout_payment_info_top", "checkout_payment_info_bottom", "checkout_confirm_top", "checkout_confirm_before_summary", "checkout_confirm_bottom", "checkout_completed_top", "checkout_completed_bottom", "checkout_progress_before", "checkout_progress_after",
-                "contactus_top", "contactus_bottom", "home_page_top", "home_page_bottom", "mini_shopping_cart_bottom"
+        	var optGroups = [
+                {
+                	text: "Global", children: [
+						'home_page_top',
+						'home_page_bottom',
+						'main_column_before',
+						'main_column_after',
+						'left_side_column_before',
+						'left_side_column_after_category_navigation',
+						'left_side_column_after_manufacturer_navigation',
+						'left_side_column_after_tags',
+						'left_side_column_after_info',
+						'left_side_column_after_poll',
+						'left_side_column_after',
+						'right_side_column_before',
+						'right_side_column_after_recentlyviewed',
+						'right_side_column_after_poll',
+						'right_side_column_after',
+						'body_start_html_tag_after',
+						'content_before',
+						'content_after',
+						'body_end_html_tag_before',
+						'head_html_tag',
+						'admin_navbar_before',
+						'admin_navbar_after',
+						'admin_breadcrumb',
+						'admin_content_before',
+						'admin_content_after',
+						'admin_menu_before'
+                	]
+                },
+                {
+                    text: "@T("Admin.ContentManagement.Blog")", children: [
+                        'blogpost_page_before_body',
+                        'blogpost_page_before_comments',
+                        'blogpost_page_inside_comment',
+                        'blogpost_page_after_comments',
+                        'bloglist_page_before_posts',
+                        'bloglist_page_inside_post',
+                        'bloglist_page_after_posts'
+                    ]
+                },
+                {
+                	text: "@T("Admin.Catalog.Categories")", children: [
+						'categorydetails_after_breadcrumb',
+						'categorydetails_top',
+						'categorydetails_before_subcategories',
+						'categorydetails_before_featured_products',
+						'categorydetails_after_featured_products',
+						'categorydetails_before_product_list',
+						'categorydetails_bottom',
+						'categorydetails_before_filters'
+                    ]
+                },
+                {
+                    text: "@T("Admin.Catalog.Products")", children: [
+					  'productbox_add_info',
+					  'productsbytag_before_product_list',
+					  'productreviews_page_inside_review',
+					  'productdetails_overview_top',
+					  'productdetails_overview_bottom',
+					  'productsbytag_top',
+					  'productsbytag_bottom',
+					  'productdetails_add_info',
+					  'productdetails_top',
+					  'productdetails_before_pictures',
+					  'productdetails_after_pictures',
+					  'productdetails_bottom',
+                    ]
+                },
+                {
+                    text: "Navigation", children: [
+                        'productbreadcrumb_before',
+                        'productbreadcrumb_after',
+                        'header_menu_before',
+                        'header_menu_after',
+                        'megamenu_before_first_item',
+                        'megamenu_after_last_item',
+                        'account_dropdown_before',
+                        'account_dropdown_after',
+                        'header_links_before',
+                        'header_links_after',
+                        'infoblock_before',
+                        'infoblock_after',
+                        'account_navigation_before',
+                        'account_navigation_after'
+                    ]
+                },
+                {
+                    text: "PDF", children: [
+                        'invoice_footer_before',
+                        'invoice_footer_after',
+                        'invoice_header_before',
+                        'invoice_header_right',
+                        'invoice_header_after',
+                        'invoice_top',
+                        'invoice_orderinfo_top',
+                        'invoice_orderinfotable_after',
+                        'invoice_orderinfo_bottom',
+                        'invoice_lines_before',
+                        'invoice_checkoutattributes_before',
+                        'invoice_ordertotals_before',
+                        'invoice_ordernotes_before',
+                        'invoice_bottom',
+                        'pdfcatalog_cover_top',
+                        'pdfcatalog_cover_logo_after',
+                        'pdfcatalog_cover_storename_after',
+                        'pdfcatalog_productdetail_top',
+                        'pdfcatalog_productdetail_fulldescription_before',
+                        'pdfcatalog_productdetail_picture_before',
+                        'pdfcatalog_productdetail_specificationattributes_before',
+                        'pdfcatalog_productdetail_bundleditems_before',
+                        'pdfcatalog_productdetail_associatedproducts_before'
+                    ]
+                },
+                {
+                    text: "@T("Admin.Catalog.Manufacturers")", children: [
+                        'manufacturerdetails_top',
+                        'manufacturerdetails_before_featured_products',
+                        'manufacturerdetails_after_featured_products',
+                        'manufacturerdetails_before_filters',
+                        'manufacturerdetails_before_product_list',
+                        'manufacturerdetails_bottom'
+                    ]
+                },
+                {
+                    text: "@T("Common.Misc")", children: [
+                        'compareproducts_row',
+                        'productsearch_page_advanced',
+                        'productsearch_page_basic',
+                        'productsearch_page_advanced',
+                        'searchbox',
+                        'footer',
+                        'contactus_top',
+                        'contactus_bottom',
+                        'productreviews_page_top',
+                        'productreviews_page_inside_review',
+                        'productreviews_page_bottom',
+                        'profile_page_info_userdetails',
+                        'profile_page_info_userstats',
+                        'notifications',
+                        'shipmentdetails_top',
+                        'shipmentdetails_orderinfo_top',
+                        'shipmentdetails_orderinfotable_after',
+                        'shipmentdetails_orderinfo_bottom',
+                        'shipmentdetails_lines_before'
+                    ]
+                },
+                {
+                    text: "@T("Admin.ContentManagement.News")", children: [
+                        'newslist_page_before_items',
+                        'newslist_page_inside_item',
+                        'newslist_page_after_items',
+                        'newsitem_page_before_body',
+                        'newsitem_page_before_comments',
+                        'newsitem_page_inside_comment',
+                         'newsitem_page_after_comments'
+                    ]
+                },
+                {
+                    text: "@T("Admin.Orders")", children: [
+                        'orderdetails_page_top',
+                        'orderdetails_page_overview',
+                        'orderdetails_page_beforeproducts',
+                        'orderdetails_page_afterproducts',
+                        'orderdetails_page_aftertotal',
+                        'orderdetails_page_bottom'
+                    ]
+                },
+                {
+                    text: "@T("Admin.Configuration.Settings.ShoppingCart.Checkout")", children: [
+                        'checkout_billing_address_top',
+                        'checkout_billing_address_middle',
+                        'checkout_billing_address_bottom',
+                        'checkout_progress_before',
+                        'checkout_progress_after',
+                        'checkout_completed_top',
+                        'checkout_completed_bottom',
+                        'checkout_confirm_top',
+                        'checkout_confirm_before_summary',
+                        'checkout_confirm_bottom',
+                        'checkout_payment_method_top',
+                        'checkout_payment_method_bottom',
+                        'checkout_shipping_address_top',
+                        'checkout_shipping_address_middle',
+                        'checkout_shipping_address_bottom',
+                        'checkout_shipping_method_top',
+                        'checkout_shipping_method_bottom'
+        	        ]
+                },
+                {
+                    text: "@T("Shoppingcart")", children: [
+                        'mini_shopping_cart_bottom',
+                        'order_summary_content_before',
+                        'order_summary_content_totals_left',
+                        'order_summary_content_deals',
+                        'order_summary_content_totals_bottom',
+                        'order_summary_content_after'
+                    ]
+                }
             ];
+
+        	zones = [];
+        	_.each(optGroups, function (val, i) {
+        		zones.push({
+        			text: val.text,
+        			children: _.map(val.children, function (val) { return { id: val, text: val } })
+        		});
+        	});
         }
 
         zoneChooser.select2({

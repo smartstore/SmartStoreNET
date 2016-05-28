@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.OData;
+using System.Data.Entity;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
@@ -24,17 +27,23 @@ namespace SmartStore.WebApi.Controllers.OData
 		private readonly Lazy<IPriceCalculationService> _priceCalculationService;
 		private readonly Lazy<IUrlRecordService> _urlRecordService;
 		private readonly Lazy<IProductAttributeService> _productAttributeService;
+		private readonly Lazy<ICategoryService> _categoryService;
+		private readonly Lazy<IManufacturerService> _manufacturerService;
 
 		public ProductsController(
 			Lazy<IWorkContext> workContext,
 			Lazy<IPriceCalculationService> priceCalculationService,
 			Lazy<IUrlRecordService> urlRecordService,
-			Lazy<IProductAttributeService> productAttributeService)
+			Lazy<IProductAttributeService> productAttributeService,
+			Lazy<ICategoryService> categoryService,
+			Lazy<IManufacturerService> manufacturerService)
 		{
 			_workContext = workContext;
 			_priceCalculationService = priceCalculationService;
 			_urlRecordService = urlRecordService;
 			_productAttributeService = productAttributeService;
+			_categoryService = categoryService;
+			_manufacturerService = manufacturerService;
 		}
 
 		protected override IQueryable<Product> GetEntitySet()
@@ -79,99 +88,136 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		// navigation properties
 
-		public DeliveryTime GetDeliveryTime(int key)
+		public HttpResponseMessage NavigationProductCategories(int key, int relatedKey)
 		{
-			return GetExpandedProperty<DeliveryTime>(key, x => x.DeliveryTime);
+			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
+			var productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey);
+
+			if (Request.Method == HttpMethod.Post)
+			{
+				if (productCategory == null)
+				{
+					productCategory = new ProductCategory { ProductId = key, CategoryId = relatedKey };
+
+					_categoryService.Value.InsertProductCategory(productCategory);
+
+					return Request.CreateResponse(HttpStatusCode.Created, productCategory);
+				}
+			}
+			else if (Request.Method == HttpMethod.Delete)
+			{
+				if (productCategory != null)
+					_categoryService.Value.DeleteProductCategory(productCategory);
+
+				return Request.CreateResponse(HttpStatusCode.NoContent);
+			}
+
+			return Request.CreateResponseForEntity(productCategory, relatedKey);
 		}
 
-		public QuantityUnit GetQuantityUnit(int key)
+		public HttpResponseMessage NavigationProductManufacturers(int key, int relatedKey)
 		{
-			return GetExpandedProperty<QuantityUnit>(key, x => x.QuantityUnit);
+			var productManufacturers = _manufacturerService.Value.GetProductManufacturersByProductId(key, true);
+			var productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey);
+
+			if (Request.Method == HttpMethod.Post)
+			{
+				if (productManufacturer == null)
+				{
+					productManufacturer = new ProductManufacturer { ProductId = key, ManufacturerId = relatedKey };
+
+					_manufacturerService.Value.InsertProductManufacturer(productManufacturer);
+
+					return Request.CreateResponse(HttpStatusCode.Created, productManufacturer);
+				}
+			}
+			else if (Request.Method == HttpMethod.Delete)
+			{
+				if (productManufacturer != null)
+					_manufacturerService.Value.DeleteProductManufacturer(productManufacturer);
+
+				return Request.CreateResponse(HttpStatusCode.NoContent);
+			}
+
+			return Request.CreateResponseForEntity(productManufacturer, relatedKey);
 		}
 
-		public Download GetSampleDownload(int key)
+		[WebApiQueryable]
+		public SingleResult<DeliveryTime> GetDeliveryTime(int key)
 		{
-			return GetExpandedProperty<Download>(key, x => x.SampleDownload);
+			return GetRelatedEntity(key, x => x.DeliveryTime);
+		}
+
+		[WebApiQueryable]
+		public SingleResult<QuantityUnit> GetQuantityUnit(int key)
+		{
+			return GetRelatedEntity(key, x => x.QuantityUnit);
+		}
+
+		[WebApiQueryable]
+		public SingleResult<Download> GetSampleDownload(int key)
+		{
+			return GetRelatedEntity(key, x => x.SampleDownload);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductCategory> GetProductCategories(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductCategory>>(key, x => x.ProductCategories);
-
-			return entity.ProductCategories.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductCategories);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductManufacturer> GetProductManufacturers(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductManufacturer>>(key, x => x.ProductManufacturers);
-
-			return entity.ProductManufacturers.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductManufacturers);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductPicture> GetProductPictures(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductPicture>>(key, x => x.ProductPictures);
-
-			return entity.ProductPictures.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductPictures);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductSpecificationAttribute> GetProductSpecificationAttributes(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductSpecificationAttribute>>(key, x => x.ProductSpecificationAttributes);
-
-			return entity.ProductSpecificationAttributes.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductSpecificationAttributes);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductTag> GetProductTags(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductTag>>(key, x => x.ProductTags);
-
-			return entity.ProductTags.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductTags);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<TierPrice> GetTierPrices(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<TierPrice>>(key, x => x.TierPrices);
-
-			return entity.TierPrices.AsQueryable();
+			return GetRelatedCollection(key, x => x.TierPrices);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<Discount> GetAppliedDiscounts(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<Discount>>(key, x => x.AppliedDiscounts);
-
-			return entity.AppliedDiscounts.AsQueryable();
+			return GetRelatedCollection(key, x => x.AppliedDiscounts);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductVariantAttribute> GetProductVariantAttributes(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductVariantAttribute>>(key, x => x.ProductVariantAttributes);
-
-			return entity.ProductVariantAttributes.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductVariantAttributes);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductVariantAttributeCombination> GetProductVariantAttributeCombinations(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductVariantAttributeCombination>>(key, x => x.ProductVariantAttributeCombinations);
-
-			return entity.ProductVariantAttributeCombinations.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductVariantAttributeCombinations);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductBundleItem> GetProductBundleItems(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductBundleItem>>(key, x => x.ProductBundleItems);
-
-			return entity.ProductBundleItems.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductBundleItems);
 		}
 
 		// actions
@@ -188,7 +234,7 @@ namespace SmartStore.WebApi.Controllers.OData
 				{
 					if (entity.ProductType == ProductType.GroupedProduct)
 					{
-						var searchContext = new ProductSearchContext()
+						var searchContext = new ProductSearchContext
 						{
 							Query = this.GetExpandedEntitySet(requiredProperties),
 							ParentGroupedProductId = entity.Id,
@@ -199,17 +245,17 @@ namespace SmartStore.WebApi.Controllers.OData
 						Product lowestPriceProduct;
 						var associatedProducts = Service.PrepareProductSearchQuery(searchContext);
 
-						result = _priceCalculationService.Value.GetLowestPrice(entity, associatedProducts, out lowestPriceProduct);
+						result = _priceCalculationService.Value.GetLowestPrice(entity, null, associatedProducts, out lowestPriceProduct);
 					}
 					else
 					{
 						bool displayFromMessage;
-						result = _priceCalculationService.Value.GetLowestPrice(entity, out displayFromMessage);
+						result = _priceCalculationService.Value.GetLowestPrice(entity, null, out displayFromMessage);
 					}
 				}
 				else
 				{
-					result = _priceCalculationService.Value.GetPreselectedPrice(entity);
+					result = _priceCalculationService.Value.GetPreselectedPrice(entity, null);
 				}
 				return null;
 			});
@@ -345,22 +391,5 @@ namespace SmartStore.WebApi.Controllers.OData
 
 			return entity.ProductVariantAttributes.AsQueryable();
 		}
-
-
-		//[HttpGet, WebApiQueryable]
-		//public IQueryable<RelatedProduct> GetRelatedProducts(int key)
-		//{
-		//	if (!ModelState.IsValid)
-		//		throw this.ExceptionInvalidModelState();
-
-		//	var repository = EngineContext.Current.Resolve<IRepository<RelatedProduct>>();
-
-		//	var query =
-		//		from x in repository.Table
-		//		where x.ProductId1 == key
-		//		select x;
-
-		//	return query;
-		//}
 	}
 }

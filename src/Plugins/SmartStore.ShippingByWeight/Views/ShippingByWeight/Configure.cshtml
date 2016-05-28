@@ -17,6 +17,7 @@
                     {
 						columns.Bound(x => x.StoreName).ReadOnly();
                         columns.Bound(x => x.CountryName).ReadOnly();
+                        columns.Bound(x => x.Zip);
                         columns.Bound(x => x.ShippingMethodName).ReadOnly();
 						columns.Bound(x => x.From)
 							.Format("{0:0.00}");
@@ -104,6 +105,15 @@
                 @Html.ValidationMessageFor(model => model.AddCountryId)
             </td>
         </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.AddZip)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.AddZip)
+                    @Html.ValidationMessageFor(model => model.AddZip)
+                </td>
+            </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AddShippingMethodId)

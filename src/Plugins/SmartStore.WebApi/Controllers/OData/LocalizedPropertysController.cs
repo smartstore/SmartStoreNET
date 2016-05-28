@@ -31,9 +31,10 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		// navigation properties
 
-		public Language GetLanguage(int key)
+		[WebApiQueryable]
+		public SingleResult<Language> GetLanguage(int key)
 		{
-			return GetExpandedProperty<Language>(key, x => x.Language);
+			return GetRelatedEntity(key, x => x.Language);
 		}
 	}
 }

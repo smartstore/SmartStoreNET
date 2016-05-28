@@ -1,0 +1,63 @@
+﻿@model UrlRecordModel
+@using SmartStore.Admin.Models.UrlRecord;
+@using Telerik.Web.Mvc.UI;
+
+@Html.ValidationSummary()
+@Html.HiddenFor(model => model.Id)
+
+<table class="adminContent">
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.Id)
+		</td>
+		<td class="adminData">
+			@Html.DisplayFor(model => model.Id)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.IsActive)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.IsActive)
+			@Html.ValidationMessageFor(model => model.IsActive)
+		</td>
+	</tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Slug)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Slug)
+            @Html.ValidationMessageFor(model => model.Slug)
+			@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = Model.EntityName, entityId = @Model.EntityId })
+        </td>
+    </tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.EntityName)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.EntityName)
+			@Html.ValidationMessageFor(model => model.EntityName)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.EntityId)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.EntityId)
+			@Html.ValidationMessageFor(model => model.EntityId)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.LanguageId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(x => x.LanguageId, Model.AvailableLanguages)
+			@Html.ValidationMessageFor(x => x.LanguageId)
+		</td>
+	</tr>
+</table>

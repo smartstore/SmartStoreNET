@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Services.DataExchange.ExportTask;
 using SmartStore.Services.Localization;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework.Controllers
-{
-	
+{	
 	[AdminThemed]
     [RequireHttpsByConfig(SslRequirement.Yes)]
     [AdminValidateIpAddress]
@@ -69,6 +71,7 @@ namespace SmartStore.Web.Framework.Controllers
         /// Access denied view
         /// </summary>
         /// <returns>Access denied view</returns>
+        [SuppressMessage("ReSharper", "Mvc.AreaNotResolved")]
         protected ActionResult AccessDeniedView()
         {
             return RedirectToAction("AccessDenied", "Security", new { pageUrl = this.Request.RawUrl, area = "Admin" });
@@ -82,5 +85,20 @@ namespace SmartStore.Web.Framework.Controllers
 			return PartialView("~/Administration/Views/Security/AccessDenied.cshtml");
 		}
 
+		protected ActionResult Export(string providerSystemName, string selectedIds)
+		{
+			string error = null;
+			var fileStreamResult = ExportProfileTask.Export(providerSystemName, selectedIds, null, out error);
+
+			if (error.HasValue() || fileStreamResult == null)
+			{
+				NotifyError(string.Concat("<p>", T("Admin.Common.UnknownError"), "</p>", error.NaIfEmpty()));
+			}
+
+			if (fileStreamResult != null)
+				return fileStreamResult;
+
+			return RedirectToAction("List");
+		}
     }
 }

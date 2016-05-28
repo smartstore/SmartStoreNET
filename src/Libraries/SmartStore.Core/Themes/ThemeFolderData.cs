@@ -23,7 +23,7 @@ namespace SmartStore.Core.Themes
 				if (BaseTheme == null)
 					return null;
 
-				return new string[] { BaseTheme };
+				return new [] { BaseTheme };
 			}
 		}
 	}

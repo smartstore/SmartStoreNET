@@ -6,7 +6,6 @@
 @{
     Layout = "~/Views/Shared/_ColumnsOne.cshtml";
 
-    //title
     Html.AddTitleParts(T("PageTitle.Wishlist").Text);
 }
 
@@ -38,7 +37,7 @@
 			</td>
 		}
 		<td class="product">
-			<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
+			<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 
 			@if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
 			{
@@ -144,7 +143,7 @@
 							<div class="bundle-item-name">
 								@if (item.VisibleIndividually)
 								{
-									<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@T("Products.Details")">@item.ProductName</a>
+									<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 								}
 								else
 								{
@@ -314,7 +313,7 @@
                         @if (Model.DisplayAddToCart)
                         {
                             <button type="submit" name="addtocartbutton" value="addtocartbutton" class="btn btn-primary pull-right wishlist-add-to-cart-button">
-                                <i class="fa fa-shopping-cart"></i>
+                                <i class="fa fa-cart-arrow-down"></i>
                                 @T("ShoppingCart.AddToCart")
                             </button>
                         }						

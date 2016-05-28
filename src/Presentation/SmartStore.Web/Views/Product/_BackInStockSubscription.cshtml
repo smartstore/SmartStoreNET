@@ -27,7 +27,7 @@
         }
         else
         {
-            <a href='@Url.RouteUrl("Login")' rel="nofollow">@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
+            <a href='@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })' rel="nofollow">@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
         }
     </div>
 }

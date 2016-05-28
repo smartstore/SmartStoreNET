@@ -101,9 +101,11 @@ namespace SmartStore.WebApi.Controllers.Api
 				{
 					FileName = file.Headers.ContentDisposition.FileName.ToUnquoted(),
 					Name = file.Headers.ContentDisposition.Name.ToUnquoted(),
-					MediaType = file.Headers.ContentType.MediaType.ToUnquoted(),
 					ContentDisposition = file.Headers.ContentDisposition.Parameters
 				};
+
+				if (file.Headers.ContentType != null)
+					image.MediaType = file.Headers.ContentType.MediaType.ToUnquoted();
 
 				if (image.FileName.IsEmpty())
 					image.FileName = entity.Name;
@@ -120,7 +122,7 @@ namespace SmartStore.WebApi.Controllers.Api
 					{
 						var seoName = _pictureService.Value.GetPictureSeName(Path.GetFileNameWithoutExtension(image.FileName));
 
-						var newPicture = _pictureService.Value.InsertPicture(pictureBinary, image.MediaType, seoName, true, false);
+						var newPicture = _pictureService.Value.InsertPicture(pictureBinary, image.MediaType, seoName, true, false, false);
 
 						if (newPicture != null)
 						{

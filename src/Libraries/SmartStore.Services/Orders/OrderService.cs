@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -182,6 +183,60 @@ namespace SmartStore.Services.Orders
 			return query.FirstOrDefault();
 		}
 
+		public virtual IQueryable<Order> GetOrders(
+			int storeId,
+			int customerId,
+			DateTime? startTime,
+			DateTime? endTime,
+			int[] orderStatusIds,
+			int[] paymentStatusIds,
+			int[] shippingStatusIds,
+			string billingEmail,
+			string orderNumber,
+			string billingName = null)
+		{
+			var query = _orderRepository.Table;
+
+			if (storeId > 0)
+				query = query.Where(x => x.StoreId == storeId);
+
+			if (customerId > 0)
+				query = query.Where(x => x.CustomerId == customerId);
+
+			if (startTime.HasValue)
+				query = query.Where(x => startTime.Value <= x.CreatedOnUtc);
+
+			if (endTime.HasValue)
+				query = query.Where(x => endTime.Value >= x.CreatedOnUtc);
+
+			if (billingEmail.HasValue())
+				query = query.Where(x => x.BillingAddress != null && !String.IsNullOrEmpty(x.BillingAddress.Email) && x.BillingAddress.Email.Contains(billingEmail));
+
+			if (billingName.HasValue())
+			{
+				query = query.Where(x => x.BillingAddress != null && (
+					(!String.IsNullOrEmpty(x.BillingAddress.LastName) && x.BillingAddress.LastName.Contains(billingName)) ||
+					(!String.IsNullOrEmpty(x.BillingAddress.FirstName) && x.BillingAddress.FirstName.Contains(billingName))
+				));
+			}
+
+			if (orderNumber.HasValue())
+				query = query.Where(x => x.OrderNumber.ToLower().Contains(orderNumber.ToLower()));
+
+			if (orderStatusIds != null && orderStatusIds.Count() > 0)
+				query = query.Where(x => orderStatusIds.Contains(x.OrderStatusId));
+
+			if (paymentStatusIds != null && paymentStatusIds.Count() > 0)
+				query = query.Where(x => paymentStatusIds.Contains(x.PaymentStatusId));
+
+			if (shippingStatusIds != null && shippingStatusIds.Count() > 0)
+				query = query.Where(x => shippingStatusIds.Contains(x.ShippingStatusId));
+
+			query = query.Where(x => !x.Deleted);
+
+			return query;
+		}
+
         /// <summary>
         /// Search orders
         /// </summary>
@@ -203,51 +258,17 @@ namespace SmartStore.Services.Orders
 			int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
 			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingName = null)
         {
-            var query = _orderRepository.Table;
+			var query = GetOrders(storeId, customerId, startTime, endTime, orderStatusIds, paymentStatusIds, shippingStatusIds,
+				billingEmail, orderNumber, billingName);
 
-			if (storeId > 0)
-				query = query.Where(o => o.StoreId == storeId);
+			query = query.OrderByDescending(x => x.CreatedOnUtc);
 
-			if (customerId > 0)
-				query = query.Where(o => o.CustomerId == customerId);
-
-            if (startTime.HasValue)
-                query = query.Where(o => startTime.Value <= o.CreatedOnUtc);
-
-            if (endTime.HasValue)
-                query = query.Where(o => endTime.Value >= o.CreatedOnUtc);
-
-            if (!String.IsNullOrEmpty(billingEmail))
-                query = query.Where(o => o.BillingAddress != null && !String.IsNullOrEmpty(o.BillingAddress.Email) && o.BillingAddress.Email.Contains(billingEmail));
-
-			if (billingName.HasValue())
-			{
-				query = query.Where(o => o.BillingAddress != null && (
-					(!String.IsNullOrEmpty(o.BillingAddress.LastName) && o.BillingAddress.LastName.Contains(billingName)) ||
-					(!String.IsNullOrEmpty(o.BillingAddress.FirstName) && o.BillingAddress.FirstName.Contains(billingName))
-				));
-			}
-
-            if (orderNumber.HasValue())
-                query = query.Where(o => o.OrderNumber.ToLower().Contains(orderNumber.ToLower()));
-
-			if (orderStatusIds != null && orderStatusIds.Count() > 0)
-				query = query.Where(x => orderStatusIds.Contains(x.OrderStatusId));
-
-			if (paymentStatusIds != null && paymentStatusIds.Count() > 0)
-				query = query.Where(x => paymentStatusIds.Contains(x.PaymentStatusId));
-
-			if (shippingStatusIds != null && shippingStatusIds.Count() > 0)
-				query = query.Where(x => shippingStatusIds.Contains(x.ShippingStatusId));
-
-            query = query.Where(o => !o.Deleted);
-            query = query.OrderByDescending(o => o.CreatedOnUtc);
-
-			if (!String.IsNullOrEmpty(orderGuid))
+			if (orderGuid.HasValue())
 			{
 				//filter by GUID. Filter in BLL because EF doesn't support casting of GUID to string
 				var orders = query.ToList();
-				orders = orders.FindAll(o => o.OrderGuid.ToString().ToLowerInvariant().Contains(orderGuid.ToLowerInvariant()));
+				orders = orders.FindAll(x => x.OrderGuid.ToString().ToLowerInvariant().Contains(orderGuid.ToLowerInvariant()));
+
 				return new PagedList<Order>(orders, pageIndex, pageSize);
 			}
 			else
@@ -468,6 +489,23 @@ namespace SmartStore.Services.Orders
             var orderItems = query.ToList();
             return orderItems;
         }
+
+		public virtual Multimap<int, OrderItem> GetOrderItemsByOrderIds(int[] orderIds)
+		{
+			Guard.ArgumentNotNull(() => orderIds);
+
+			var query =
+				from x in _orderItemRepository.TableUntracked.Expand(x => x.Product)
+				where orderIds.Contains(x.OrderId)
+				select x;
+
+			var map = query
+				.OrderBy(x => x.OrderId)
+				.ToList()
+				.ToMultimap(x => x.OrderId, x => x);
+
+			return map;
+		}
 
         /// <summary>
         /// Delete an Order item

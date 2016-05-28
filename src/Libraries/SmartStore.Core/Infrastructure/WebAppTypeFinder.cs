@@ -15,8 +15,8 @@ namespace SmartStore.Core.Infrastructure
     {
         #region Fields
 
-        private bool _ensureBinFolderAssembliesLoaded = true;
-        private bool _binFolderAssembliesLoaded = false;
+        private bool _ensureBinFolderAssembliesLoaded;
+        private bool _binFolderAssembliesLoaded;
 
         #endregion
 
@@ -69,7 +69,6 @@ namespace SmartStore.Core.Infrastructure
             {
                 _binFolderAssembliesLoaded = true;
                 string binPath = GetBinDirectory();
-                //binPath = _webHelper.MapPath("~/bin");
                 LoadMatchingAssemblies(binPath);
             }
 

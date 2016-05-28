@@ -68,13 +68,9 @@ namespace SmartStore.Web.Controllers
 			this._sitemapGenerator = sitemapGenerator;
 			this._captchaSettings = captchaSettings;
 			this._commonSettings = commonSettings;
-
-			T = NullLocalizer.Instance;
         }
         
         #endregion
-
-		public Localizer T { get; set; }
 
         [RequireHttpsByConfigAttribute(SslRequirement.No)]
         public ActionResult Index()
@@ -145,9 +141,7 @@ namespace SmartStore.Web.Controllers
 				string fullName = model.FullName;
 				string subject = T("ContactUs.EmailSubject", _services.StoreContext.CurrentStore.Name);
 
-				var emailAccount = _emailAccountService.Value.GetEmailAccountById(EngineContext.Current.Resolve<EmailAccountSettings>().DefaultEmailAccountId);
-				if (emailAccount == null)
-					emailAccount = _emailAccountService.Value.GetAllEmailAccounts().FirstOrDefault();
+				var emailAccount = _emailAccountService.Value.GetDefaultEmailAccount();
 
 				string from = null;
 				string fromName = null;
@@ -254,7 +248,6 @@ namespace SmartStore.Web.Controllers
 						Id = product.Id,
 						Name = product.GetLocalized(x => x.Name).EmptyNull(),
 						ShortDescription = product.GetLocalized(x => x.ShortDescription),
-						FullDescription = product.GetLocalized(x => x.FullDescription),
 						SeName = product.GetSeName(),
 					}).ToList();
 				}

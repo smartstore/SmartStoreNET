@@ -43,9 +43,12 @@ namespace SmartStore.DevTools.Services
 			}
 
 			IDisposable step;
-			if (this.steps[key].TryPop(out step))
+			if (this.steps.ContainsKey(key))
 			{
-				step.Dispose();
+				if (this.steps[key].TryPop(out step))
+				{
+					step.Dispose();
+				}
 			}
 		}
 

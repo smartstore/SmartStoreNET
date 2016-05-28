@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace SmartStore.Utilities
@@ -12,7 +14,7 @@ namespace SmartStore.Utilities
 		/// <param name="subDirectory">Name of a sub directory to be created and returned (optional)</param>
 		public static string TempDir(string subDirectory = null)
 		{
-			string path = CommonHelper.GetAppSetting<string>("sm:TempDirectory", "~/App_Data/_temp");
+			string path = CommonHelper.GetAppSetting("sm:TempDirectory", "~/App_Data/_temp");
 			path = CommonHelper.MapPath(path);
 
 			if (!Directory.Exists(path))
@@ -36,26 +38,25 @@ namespace SmartStore.Utilities
 		{
 			try
 			{
-				string dir = FileSystemHelper.TempDir();
+				var dir = TempDir();
 
 				if (Directory.Exists(dir))
 				{
-					FileInfo fi;
 					var oldestDate = DateTime.Now.Subtract(new TimeSpan(0, 5, 0, 0));
 					var files = Directory.EnumerateFiles(dir);
 
 					foreach (string file in files)
 					{
-						fi = new FileInfo(file);
+						var fi = new FileInfo(file);
 
-						if (fi != null && fi.LastWriteTime < oldestDate)
-							FileSystemHelper.Delete(file);
+						if (fi.LastWriteTime < oldestDate)
+							Delete(file);
 					}
 				}
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				exc.Dump();
+				ex.Dump();
 			}
 		}
 
@@ -72,7 +73,7 @@ namespace SmartStore.Utilities
 			{
 				if (Directory.Exists(path))
 				{
-					throw new MemberAccessException("Deleting folders cause of security reasons not possible: {0}".FormatWith(path));
+					throw new MemberAccessException("Deleting folders due to security reasons not possible: {0}".FormatWith(path));
 				}
 
 				File.Delete(path);	// no exception, if file doesn't exists
@@ -82,6 +83,7 @@ namespace SmartStore.Utilities
 				result = false;
 				exc.Dump();
 			}
+
 			return result;
 		}
 
@@ -144,7 +146,9 @@ namespace SmartStore.Utilities
 		/// Safe way to delete all directory content
 		/// </summary>
 		/// <param name="directoryPath">A directory path</param>
-		public static void ClearDirectory(string directoryPath, bool selfToo)
+		/// <param name="selfToo">Delete directoryPath too</param>
+		/// <param name="exceptFileNames">Name of files not to be deleted</param>
+		public static void ClearDirectory(string directoryPath, bool selfToo, List<string> exceptFileNames = null)
 		{
 			if (directoryPath.IsEmpty())
 				return;
@@ -155,6 +159,9 @@ namespace SmartStore.Utilities
 
 				foreach (var fi in dir.GetFiles())
 				{
+					if (exceptFileNames != null && exceptFileNames.Any(x => x.IsCaseInsensitiveEqual(fi.Name)))
+						continue;
+
 					try
 					{
 						fi.IsReadOnly = false;

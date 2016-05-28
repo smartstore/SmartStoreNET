@@ -13,6 +13,7 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.PrivateMessages;
 using SmartStore.Core.Logging;
+using SmartStore.Web.Framework.Filters;
 
 namespace SmartStore.Web.Controllers
 {
@@ -146,13 +147,11 @@ namespace SmartStore.Web.Controllers
                 });
             }
 
-            // codehint: sm-edit
             ViewData["PagerRouteValues"] = new PrivateMessageRouteValues { page = page, tab = tab };
 
             var model = new PrivateMessageListModel(list)
             {
                 Messages = inbox
-                // codehint: sm-delete
             };
 
             return PartialView(model);
@@ -192,13 +191,11 @@ namespace SmartStore.Web.Controllers
                 });
             }
 
-            // codehint: sm-edit
             ViewData["PagerRouteValues"] = new PrivateMessageRouteValues { page = page, tab = tab };
 
             var model = new PrivateMessageListModel(list)
             {
                 Messages = sentItems
-                // codehint: sm-delete
             };
 
             return PartialView(model);

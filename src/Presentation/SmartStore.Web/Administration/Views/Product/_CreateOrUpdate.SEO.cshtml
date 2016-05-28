@@ -79,6 +79,10 @@
             </td>
             <td class="adminData">
                 @Html.TextAreaFor(x => x.SeName, new { @class = "input-large" })
+				@if (Model.Id != 0)
+				{
+					@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "Product", entityId = @Model.Id })
+				}
                 @Html.ValidationMessageFor(model => model.SeName)
             </td>
         </tr>

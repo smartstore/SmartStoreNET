@@ -5,6 +5,7 @@ using System.Text;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Customers;
 using System.Diagnostics;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Logging
 {
@@ -12,7 +13,7 @@ namespace SmartStore.Core.Logging
 	{
 		private readonly TraceSource _traceSource;
 
-		public TraceLogger() : this("SmartStore.log")
+		public TraceLogger() : this(CommonHelper.MapPath("~/App_Data/SmartStore.log"))
 		{
 		}
 
@@ -85,12 +86,17 @@ namespace SmartStore.Core.Logging
 		public void InsertLog(LogContext context)
 		{
 			var type = LogLevelToEventType(context.LogLevel);
-			_traceSource.TraceEvent(type, (int)type, "{0}: {1}".FormatCurrent(type.ToString().ToUpper(), context.ShortMessage));
+			var msg = context.ShortMessage.Grow(context.FullMessage, Environment.NewLine);
+
+			if (msg.HasValue())
+			{
+				_traceSource.TraceEvent(type, (int)type, "{0}: {1}".FormatCurrent(type.ToString().ToUpper(), msg));
+			}
 		}
 
 		public void InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
 		{
-			var context = new LogContext()
+			var context = new LogContext
 			{
 				LogLevel = logLevel,
 				ShortMessage = shortMessage,
@@ -120,6 +126,7 @@ namespace SmartStore.Core.Logging
 
 		public void Flush()
 		{
+			_traceSource.Flush();
 		}
 
 		protected override void OnDispose(bool disposing)

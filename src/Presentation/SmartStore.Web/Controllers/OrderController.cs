@@ -10,7 +10,6 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
-using SmartStore.Core.Localization;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
@@ -25,6 +24,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
@@ -48,6 +48,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICountryService _countryService;
 		private readonly IProductService _productService;
 		private readonly IProductAttributeFormatter _productAttributeFormatter;
+		private readonly IProductAttributeParser _productAttributeParser;
 		private readonly IStoreService _storeService;
         private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
 		private readonly PluginMediator _pluginMediator;
@@ -73,6 +74,7 @@ namespace SmartStore.Web.Controllers
 			IStoreService storeService,
 			IProductService productService,
 			IProductAttributeFormatter productAttributeFormatter,
+			IProductAttributeParser productAttributeParser,
 			Lazy<IPictureService> pictureService,
 			PluginMediator pluginMediator,
 			ICommonServices services,
@@ -90,15 +92,13 @@ namespace SmartStore.Web.Controllers
             this._countryService = countryService;
 			this._productService = productService;
 			this._productAttributeFormatter = productAttributeFormatter;
+			this._productAttributeParser = productAttributeParser;
 			this._storeService = storeService;
             this._checkoutAttributeFormatter = checkoutAttributeFormatter;
 			this._pluginMediator = pluginMediator;
 			this._services = services;
             this._quantityUnitService = quantityUnitService;
-			T = NullLocalizer.Instance;
         }
-
-		public Localizer T { get; set; }
 
         #endregion
 
@@ -171,7 +171,7 @@ namespace SmartStore.Web.Controllers
             model.CanRePostProcessPayment = _paymentService.CanRePostProcessPayment(order);
 
             //purchase order number (we have to find a better to inject this information because it's related to a certain plugin)
-            if (paymentMethod != null && paymentMethod.Metadata.SystemName.Equals("Payments.PurchaseOrder", StringComparison.InvariantCultureIgnoreCase))
+            if (paymentMethod != null && paymentMethod.Metadata.SystemName.Equals("SmartStore.PurchaseOrderNumber", StringComparison.InvariantCultureIgnoreCase))
             {
                 model.DisplayPurchaseOrderNumber = true;
                 model.PurchaseOrderNumber = order.PurchaseOrderNumber;
@@ -344,17 +344,20 @@ namespace SmartStore.Web.Controllers
 			var catalogSettings = _services.Settings.LoadSetting<CatalogSettings>(store.Id);
 			var shippingSettings = _services.Settings.LoadSetting<ShippingSettings>(store.Id);
 
-            var model = new ShipmentDetailsModel();
-            
-            model.Id = shipment.Id;
+			var model = new ShipmentDetailsModel
+			{
+				Id = shipment.Id,
+				TrackingNumber = shipment.TrackingNumber
+			};
+
             if (shipment.ShippedDateUtc.HasValue)
                 model.ShippedDate = _dateTimeHelper.ConvertToUserTime(shipment.ShippedDateUtc.Value, DateTimeKind.Utc);
+
             if (shipment.DeliveryDateUtc.HasValue)
                 model.DeliveryDate = _dateTimeHelper.ConvertToUserTime(shipment.DeliveryDateUtc.Value, DateTimeKind.Utc);
             
-            //tracking number and shipment information
-            model.TrackingNumber = shipment.TrackingNumber;
             var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(order.ShippingRateComputationMethodSystemName);
+
             if (srcm != null && srcm.IsShippingRateComputationMethodActive(shippingSettings))
             {
                 var shipmentTracker = srcm.Value.ShipmentTracker;
@@ -364,25 +367,30 @@ namespace SmartStore.Web.Controllers
 					if (shippingSettings.DisplayShipmentEventsToCustomers)
                     {
                         var shipmentEvents = shipmentTracker.GetShipmentEvents(shipment.TrackingNumber);
-                        if (shipmentEvents != null)
-                            foreach (var shipmentEvent in shipmentEvents)
-                            {
-                                var shipmentStatusEventModel = new ShipmentDetailsModel.ShipmentStatusEventModel();
-                                var shipmentEventCountry = _countryService.GetCountryByTwoLetterIsoCode(shipmentEvent.CountryCode);
-                                shipmentStatusEventModel.Country = shipmentEventCountry != null
-                                                                       ? shipmentEventCountry.GetLocalized(x => x.Name)
-                                                                       : shipmentEvent.CountryCode;
-                                shipmentStatusEventModel.Date = shipmentEvent.Date;
-                                shipmentStatusEventModel.EventName = shipmentEvent.EventName;
-                                shipmentStatusEventModel.Location = shipmentEvent.Location;
-                                model.ShipmentStatusEvents.Add(shipmentStatusEventModel);
-                            }
+						if (shipmentEvents != null)
+						{
+							foreach (var shipmentEvent in shipmentEvents)
+							{
+								var shipmentEventCountry = _countryService.GetCountryByTwoLetterIsoCode(shipmentEvent.CountryCode);
+
+								var shipmentStatusEventModel = new ShipmentDetailsModel.ShipmentStatusEventModel
+								{
+									Country = (shipmentEventCountry != null ? shipmentEventCountry.GetLocalized(x => x.Name) : shipmentEvent.CountryCode),
+									Date = shipmentEvent.Date,
+									EventName = shipmentEvent.EventName,
+									Location = shipmentEvent.Location
+								};
+
+								model.ShipmentStatusEvents.Add(shipmentStatusEventModel);
+							}
+						}
                     }
                 }
             }
             
             //products in this shipment
 			model.ShowSku = catalogSettings.ShowProductSku;
+
             foreach (var shipmentItem in shipment.ShipmentItems)
             {
                 var orderItem = _orderService.GetOrderItemById(shipmentItem.OrderItemId);
@@ -390,7 +398,10 @@ namespace SmartStore.Web.Controllers
                     continue;
 
                 orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
-                var shipmentItemModel = new ShipmentDetailsModel.ShipmentItemModel()
+
+				var attributeQueryData = new List<List<int>>();
+
+                var shipmentItemModel = new ShipmentDetailsModel.ShipmentItemModel
                 {
                     Id = shipmentItem.Id,
                     Sku = orderItem.Product.Sku,
@@ -399,12 +410,25 @@ namespace SmartStore.Web.Controllers
                     ProductSeName = orderItem.Product.GetSeName(),
                     AttributeInfo = orderItem.AttributeDescription,
                     QuantityOrdered = orderItem.Quantity,
-                    QuantityShipped = shipmentItem.Quantity,
+                    QuantityShipped = shipmentItem.Quantity
                 };
+
+				if (orderItem.Product.ProductType != ProductType.BundledProduct)
+				{
+					_productAttributeParser.DeserializeQueryData(attributeQueryData, orderItem.AttributesXml, orderItem.ProductId);
+				}
+				else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
+				{
+					var bundleData = orderItem.GetBundleData();
+
+					bundleData.ForEach(x => _productAttributeParser.DeserializeQueryData(attributeQueryData, x.AttributesXml, x.ProductId, x.BundleItemId));
+				}
+
+				shipmentItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, shipmentItemModel.ProductSeName);
+
                 model.Items.Add(shipmentItemModel);
             }
 
-            //order details model
             model.Order = PrepareOrderDetailsModel(order);
             
             return model;
@@ -412,9 +436,11 @@ namespace SmartStore.Web.Controllers
 
 		private OrderDetailsModel.OrderItemModel PrepareOrderItemModel(Order order, OrderItem orderItem)
 		{
+			var attributeQueryData = new List<List<int>>();
+
 			orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
 
-			var model = new OrderDetailsModel.OrderItemModel()
+			var model = new OrderDetailsModel.OrderItemModel
 			{
 				Id = orderItem.Id,
 				Sku = orderItem.Product.Sku,
@@ -426,8 +452,13 @@ namespace SmartStore.Web.Controllers
 				AttributeInfo = orderItem.AttributeDescription
 			};
 
+			if (orderItem.Product.ProductType != ProductType.BundledProduct)
+			{
+				_productAttributeParser.DeserializeQueryData(attributeQueryData, orderItem.AttributesXml, orderItem.ProductId);
+			}
+
             var quantityUnit = _quantityUnitService.GetQuantityUnitById(orderItem.Product.QuantityUnitId);
-            model.QuantityUnit = quantityUnit == null ? "" : quantityUnit.GetLocalized(x => x.Name);
+            model.QuantityUnit = (quantityUnit == null ? "" : quantityUnit.GetLocalized(x => x.Name));
             
 			if (orderItem.Product.ProductType == ProductType.BundledProduct && orderItem.BundleData.HasValue())
 			{
@@ -438,7 +469,7 @@ namespace SmartStore.Web.Controllers
 
 				foreach (var bundleItem in bundleData)
 				{
-					var bundleItemModel = new OrderDetailsModel.BundleItemModel()
+					var bundleItemModel = new OrderDetailsModel.BundleItemModel
 					{
 						Sku = bundleItem.Sku,
 						ProductName = bundleItem.ProductName,
@@ -448,6 +479,13 @@ namespace SmartStore.Web.Controllers
 						DisplayOrder = bundleItem.DisplayOrder,
 						AttributeInfo = bundleItem.AttributesInfo
 					};
+
+					bundleItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(bundleItem.AttributesXml, bundleItem.ProductId, bundleItemModel.ProductSeName);
+
+					if (orderItem.Product.BundlePerItemPricing)
+					{
+						_productAttributeParser.DeserializeQueryData(attributeQueryData, bundleItem.AttributesXml, bundleItem.ProductId, bundleItem.BundleItemId);
+					}
 
 					if (model.BundlePerItemShoppingCart)
 					{
@@ -471,6 +509,7 @@ namespace SmartStore.Web.Controllers
 						model.SubTotal = _priceFormatter.FormatPrice(priceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, false, false);
 					}
 					break;
+
 				case TaxDisplayType.IncludingTax:
 					{
 						var unitPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceInclTax, order.CurrencyRate);
@@ -481,6 +520,9 @@ namespace SmartStore.Web.Controllers
 					}
 					break;
 			}
+
+			model.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, model.ProductSeName);
+
 			return model;
 		}
 
@@ -516,8 +558,9 @@ namespace SmartStore.Web.Controllers
 				return new HttpUnauthorizedResult();
 
 			var model = PrepareOrderDetailsModel(order);
+			var fileName = T("Order.PdfInvoiceFileName", order.Id);
 
-			return PrintCore(new List<OrderDetailsModel> { model }, pdf, "order-{0}.pdf".FormatWith(order.Id));
+			return PrintCore(new List<OrderDetailsModel> { model }, pdf, fileName);
 		}
 
 		[AdminAuthorize]
@@ -612,27 +655,22 @@ namespace SmartStore.Web.Controllers
 			if (IsUnauthorizedOrder(order))
 				return new HttpUnauthorizedResult();
 
-            if (!_paymentService.CanRePostProcessPayment(order))
-				return RedirectToAction("Details", "Order", new { id = order.Id });
+			if (_paymentService.CanRePostProcessPayment(order))
+			{
+				var postProcessPaymentRequest = new PostProcessPaymentRequest
+				{
+					Order = order,
+					IsRePostProcessPayment = true
+				};
 
-            var postProcessPaymentRequest = new PostProcessPaymentRequest()
-            {
-                Order = order,
-				IsRePostProcessPayment = true
-            };
-            _paymentService.PostProcessPayment(postProcessPaymentRequest);
+				_paymentService.PostProcessPayment(postProcessPaymentRequest);
 
-            if (_services.WebHelper.IsRequestBeingRedirected || _services.WebHelper.IsPostBeingDone)
-            {
-                //redirection or POST has been done in PostProcessPayment
-                return Content("Redirected");
-            }
-            else
-            {
-                //if no redirection has been done (to a third-party payment page)
-                //theoretically it's not possible
-				return RedirectToAction("Details", "Order", new { id = order.Id });
-            }
+				if (postProcessPaymentRequest.RedirectUrl.HasValue())
+				{
+					return Redirect(postProcessPaymentRequest.RedirectUrl);
+				}
+			}
+			return RedirectToAction("Details", "Order", new { id = order.Id });
         }
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]

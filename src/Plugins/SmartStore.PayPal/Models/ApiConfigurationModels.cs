@@ -1,8 +1,9 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.PayPal.Models
 {
@@ -21,6 +22,7 @@ namespace SmartStore.PayPal.Models
 		public string ApiAccountName { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.ApiAccountPassword")]
+		[DataType(DataType.Password)]
 		public string ApiAccountPassword { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPal.Signature")]

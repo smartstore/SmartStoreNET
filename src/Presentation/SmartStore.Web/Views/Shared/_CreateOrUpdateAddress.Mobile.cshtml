@@ -60,6 +60,16 @@
     @Html.EditorFor(model => model.Email)
     @Html.ValidationMessageFor(model => model.Email)
 </div>
+
+@if (Model.ValidateEmailAddress)
+{
+    <div>
+        @Html.LabelFor(model => model.EmailMatch, new { @class = "control-label required", @for = "EmailMatch" })
+        @Html.EditorFor(model => model.EmailMatch)
+        @Html.ValidationMessageFor(model => model.EmailMatch)
+    </div>
+}
+
 @if (Model.StreetAddressEnabled)
 {
     <div>
@@ -96,7 +106,7 @@
 {
     <div>
         @Html.LabelFor(model => model.CountryId, new { @class = "control-label required", @for = "CountryId" })
-        @Html.DropDownListFor(model => model.CountryId, Model.AvailableCountries)
+        @Html.DropDownListFor(model => model.CountryId, Model.AvailableCountries, new { data_native_menu = "false" })
         @Html.ValidationMessageFor(model => model.CountryId)
     </div>
 }
@@ -104,7 +114,7 @@
 {
     <div>
         @Html.LabelFor(model => model.StateProvinceId, new { @class = "control-label", @for = "StateProvinceId" })
-        @Html.DropDownListFor(model => model.StateProvinceId, Model.AvailableStates)
+        @Html.DropDownListFor(model => model.StateProvinceId, Model.AvailableStates, new { data_native_menu = "false" })
         @Html.ValidationMessageFor(model => model.StateProvinceId)
     </div>
 }

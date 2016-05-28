@@ -6,7 +6,7 @@ using System.Web.WebPages;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Plugins;
 using SmartStore.Core;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Admin.Extensions
 {

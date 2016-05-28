@@ -2,7 +2,7 @@
 using System.IO;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Messages;
-using SmartStore.Core.Data;
+using SmartStore.Services.DataExchange.Import;
 
 namespace SmartStore.Services.Messages
 {

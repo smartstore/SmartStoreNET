@@ -62,7 +62,7 @@
 		    if (data.GalleryHtml) {
 		        var cnt = $('#pd-gallery-container');
 		        cnt.stop(true, true).transition({ opacity: 0 }, 300, "ease-out", function () {
-		            gallery.reset();
+		        	gallery.reset();
 		            cnt.html(data.GalleryHtml);
 		            self.createGallery(data.GalleryStartIndex);
 
@@ -130,7 +130,15 @@
 		    updateAttrLine(".attr-length", data.Measure.Length.Text);
 		    updateAttrLine(".attr-width", data.Measure.Width.Text);
 		    updateAttrLine(".attr-height", data.Measure.Height.Text);
-		    updateAttrLine(".attr-stock", data.Stock.Availability.Text);
+
+		    if (data.Stock.Quantity.Show)
+		    {
+		        updateAttrLine(".attr-stock", data.Stock.Availability.Text);
+		    }
+		    else
+		    {
+		        updateAttrLine(".attr-stock", "");
+		    }
 
 		    context.find('.add-to-cart .form-inline').toggle(data.Stock.Availability.Available);
 
@@ -152,6 +160,8 @@
 			var self  = this;
 			var opts = this.options;
 
+			console.log(opts.galleryHeight);
+
 			gallery = $('#pd-gallery').smartGallery({
 			    height: opts.galleryHeight,
 				enableDescription: opts.showImageDescription,
@@ -161,7 +171,8 @@
                     zoomType: opts.zoomType
 				},
 				box: {
-					enabled: true	
+					enabled: true,
+					hidePageScrollbars: false
 				}
 			});
 		}

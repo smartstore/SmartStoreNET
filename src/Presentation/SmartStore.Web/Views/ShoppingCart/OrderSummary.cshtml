@@ -25,7 +25,7 @@
 			</td>
 		}
 		<td class="product">
-			<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@T("Products.Details")">@item.ProductName</a>
+			<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 
 			@if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
 			{
@@ -151,7 +151,7 @@
 					<div class="bundle-item">
 						@if (Model.ShowProductBundleImages)
 						{
-							<div class="bundle-item-image" style="@("min-width: {0}px; min-height: {0}px;".FormatWith(Model.BundleThumbSize + 10))">
+							<div class="bundle-item-image" style="@("min-width: {0}px; min-height: {0}px;".FormatInvariant(Model.BundleThumbSize + 10))">
 								@if (!item.BundleItem.HideThumbnail)
 								{
 									<img class="img-polaroid" src="@item.Picture.ImageUrl" alt="@item.Picture.AlternateText" title="@item.Picture.Title" />
@@ -162,7 +162,7 @@
 							<div class="bundle-item-name">
 								@if (item.VisibleIndividually)
 								{
-									<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@T("Products.Details")">@item.ProductName</a>
+									<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 								}
 								else
 								{

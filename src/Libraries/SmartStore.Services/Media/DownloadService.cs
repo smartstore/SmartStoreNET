@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
@@ -23,13 +26,7 @@ namespace SmartStore.Services.Media
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="downloadRepository">Download repository</param>
-        /// <param name="eventPubisher"></param>
-        public DownloadService(IRepository<Download> downloadRepository,
-            IEventPublisher eventPubisher)
+        public DownloadService(IRepository<Download> downloadRepository, IEventPublisher eventPubisher)
         {
             _downloadRepository = downloadRepository;
             _eventPubisher = eventPubisher;
@@ -39,11 +36,6 @@ namespace SmartStore.Services.Media
 
         #region Methods
 
-        /// <summary>
-        /// Gets a download
-        /// </summary>
-        /// <param name="downloadId">Download identifier</param>
-        /// <returns>Download</returns>
         public virtual Download GetDownloadById(int downloadId)
         {
             if (downloadId == 0)
@@ -53,11 +45,25 @@ namespace SmartStore.Services.Media
             return download;
         }
 
-        /// <summary>
-        /// Gets a download by GUID
-        /// </summary>
-        /// <param name="downloadGuid">Download GUID</param>
-        /// <returns>Download</returns>
+		public virtual IList<Download> GetDownloadsByIds(int[] downloadIds)
+		{
+			if (downloadIds == null || downloadIds.Length == 0)
+				return new List<Download>();
+
+			var query = from dl in _downloadRepository.Table
+						where downloadIds.Contains(dl.Id)
+						select dl;
+
+			var downloads = query.ToList();
+
+			// sort by passed identifier sequence
+			var sortQuery = from i in downloadIds
+							join d in downloads on i equals d.Id
+							select d;
+
+			return sortQuery.ToList();
+		}
+
         public virtual Download GetDownloadByGuid(Guid downloadGuid)
         {
             if (downloadGuid == Guid.Empty)
@@ -70,10 +76,6 @@ namespace SmartStore.Services.Media
             return order;
         }
 
-        /// <summary>
-        /// Deletes a download
-        /// </summary>
-        /// <param name="download">Download</param>
         public virtual void DeleteDownload(Download download)
         {
             if (download == null)
@@ -84,39 +86,28 @@ namespace SmartStore.Services.Media
             _eventPubisher.EntityDeleted(download);
         }
 
-        /// <summary>
-        /// Inserts a download
-        /// </summary>
-        /// <param name="download">Download</param>
         public virtual void InsertDownload(Download download)
         {
             if (download == null)
                 throw new ArgumentNullException("download");
 
+			download.UpdatedOnUtc = DateTime.UtcNow;
             _downloadRepository.Insert(download);
 
             _eventPubisher.EntityInserted(download);
         }
 
-        /// <summary>
-        /// Updates the download
-        /// </summary>
-        /// <param name="download">Download</param>
         public virtual void UpdateDownload(Download download)
         {
             if (download == null)
                 throw new ArgumentNullException("download");
 
+			download.UpdatedOnUtc = DateTime.UtcNow;
             _downloadRepository.Update(download);
 
             _eventPubisher.EntityUpdated(download);
         }
 
-        /// <summary>
-        /// Gets a value indicating whether download is allowed
-        /// </summary>
-        /// <param name="orderItem">Order item to check</param>
-        /// <returns>True if download is allowed; otherwise, false.</returns>
         public virtual bool IsDownloadAllowed(OrderItem orderItem)
         {
             if (orderItem == null)
@@ -182,11 +173,6 @@ namespace SmartStore.Services.Media
             return false;
         }
 
-        /// <summary>
-        /// Gets a value indicating whether license download is allowed
-        /// </summary>
-        /// <param name="orderItem">Order item to check</param>
-        /// <returns>True if license download is allowed; otherwise, false.</returns>
         public virtual bool IsLicenseDownloadAllowed(OrderItem orderItem)
         {
             if (orderItem == null)

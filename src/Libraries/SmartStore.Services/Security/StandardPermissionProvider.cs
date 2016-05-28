@@ -49,6 +49,7 @@ namespace SmartStore.Services.Security
         public static readonly PermissionRecord ManageMaintenance = new PermissionRecord { Name = "Admin area. Manage Maintenance", SystemName = "ManageMaintenance", Category = "Configuration" };
         public static readonly PermissionRecord UploadPictures = new PermissionRecord { Name = "Admin area. Upload Pictures", SystemName = "UploadPictures", Category = "Configuration" };
         public static readonly PermissionRecord ManageScheduleTasks = new PermissionRecord { Name = "Admin area. Manage Schedule Tasks", SystemName = "ManageScheduleTasks", Category = "Configuration" };
+		public static readonly PermissionRecord ManageExports = new PermissionRecord { Name = "Admin area. Manage Exports", SystemName = "ManageExports", Category = "Configuration" };
 
 
         //public store permissions
@@ -103,6 +104,7 @@ namespace SmartStore.Services.Security
                 ManageMaintenance,
                 UploadPictures,
                 ManageScheduleTasks,
+				ManageExports,
                 DisplayPrices,
                 EnableShoppingCart,
                 EnableWishlist,
@@ -160,6 +162,7 @@ namespace SmartStore.Services.Security
                         ManageMaintenance,
                         UploadPictures,
                         ManageScheduleTasks,
+						ManageExports,
                         DisplayPrices,
                         EnableShoppingCart,
                         EnableWishlist,

@@ -14,7 +14,7 @@ namespace SmartStore.Clickatell
         private readonly IPluginFinder _pluginFinder;
         private readonly IOrderService _orderService;
 		private readonly IStoreContext _storeContext;
-		private readonly ISettingService _settingService;	// codehint: sm-add
+		private readonly ISettingService _settingService;
 
         public OrderPlacedEventConsumer(ClickatellSettings clickatellSettings,
             IPluginFinder pluginFinder,
@@ -26,7 +26,7 @@ namespace SmartStore.Clickatell
             this._pluginFinder = pluginFinder;
             this._orderService = orderService;
 			this._storeContext = storeContext;
-			this._settingService = settingService;	// codehint: sm-add
+			this._settingService = settingService;
         }
 
         /// <summary>

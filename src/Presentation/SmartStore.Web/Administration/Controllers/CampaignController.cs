@@ -10,6 +10,8 @@ using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -117,7 +119,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(CampaignModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCampaigns))
@@ -157,7 +159,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
         [HttpPost]
-        [ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
         public ActionResult Edit(CampaignModel model, bool continueEditing)
         {
@@ -200,14 +202,14 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-                var emailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
+				var emailAccount = _emailAccountService.GetDefaultEmailAccount();
                 if (emailAccount == null)
                     throw new SmartException("Email account could not be loaded");
 
                 var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(model.TestEmail);
                 if (subscription != null)
                 {
-                    //there's a subscription. let's use it
+                    // there's a subscription. let's use it
                     var subscriptions = new List<NewsLetterSubscription>();
                     subscriptions.Add(subscription);
                     _campaignService.SendCampaign(campaign, emailAccount, subscriptions);
@@ -245,7 +247,7 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-                var emailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
+				var emailAccount = _emailAccountService.GetDefaultEmailAccount();
                 if (emailAccount == null)
                     throw new SmartException("Email account could not be loaded");
 

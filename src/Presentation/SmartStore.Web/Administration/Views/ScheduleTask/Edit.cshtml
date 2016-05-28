@@ -1,0 +1,168 @@
+﻿@model ScheduleTaskModel
+@using SmartStore
+@using SmartStore.Core
+@{
+	ViewBag.Title = T("Admin.System.ScheduleTasks.EditTask") + " - " + Model.Name;
+	//var cronHelpLink = WorkContext.WorkingLanguage.UniqueSeoCode.ToLower() == "de" ? "https://de.wikipedia.org/wiki/Cron" : "https://en.wikipedia.org/wiki/Cron";
+	var cronHelpLink = GenerateHelpUrl("Managing+Scheduled+Tasks#ManagingScheduledTasks-Cron");
+	var returnUrl = ((string)ViewBag.ReturnUrl).NullEmpty();
+}
+
+@using (Html.BeginForm())
+{
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(model => model.Id)
+	@Html.Hidden("returnUrl", returnUrl)
+
+	<div class="section-header">
+		<div class="title">
+			<i class="fa fa-clock-o"></i>
+			@ViewBag.Title
+			<a href='@(returnUrl ?? Url.Action("List"))'>(@T("Common.Back"))</a>
+		</div>
+		<div class="options">
+			<button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+			<button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
+			@if (!Model.IsRunning)
+			{
+				<a href="@Model.ExecuteUrl" class="btn"><i class='fa fa-play'></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")</a>
+			}
+		</div>
+	</div>
+	
+	@Html.ValidationSummary(false)
+	
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Name)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Name)
+				@Html.ValidationMessageFor(model => model.Name)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Enabled)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Enabled)
+				@Html.ValidationMessageFor(model => model.Enabled)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.StopOnError)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.StopOnError)
+				@Html.ValidationMessageFor(model => model.StopOnError)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.LastStart)
+			</td>
+			<td class="adminData">
+
+				@(Model.LastStart.HasValue ? Model.LastStart.Value.ToString("g") : T("Common.Never").Text)
+			</td>
+		</tr>
+		@if (Model.Duration.HasValue())
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Duration)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(model => model.Duration)
+				</td>
+			</tr>
+		}
+		@if (Model.LastError.HasValue())
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.LastError)
+				</td>
+				<td class="adminData">
+					<span class="text-error">@Html.DisplayFor(model => model.LastError)</span>
+				</td>
+			</tr>
+			if (Model.LastSuccess.HasValue && Model.LastSuccess != Model.LastEnd)
+			{
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.LastSuccess)
+					</td>
+					<td class="adminData">
+						@Model.LastSuccess.Value.ToString("g")
+					</td>
+				</tr>
+			}
+		}
+		@if (Model.NextRun.HasValue)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.NextRun)
+				</td>
+				<td class="adminData">
+					@Model.NextRun.Value.ToString("g")
+				</td>
+			</tr>
+		}
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CronExpression)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.CronExpression )
+				@Html.ValidationMessageFor(model => model.CronExpression)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">&nbsp;</td>
+			<td class="adminData">
+				<div class="muted">@T("Admin.System.ScheduleTasks.CronHelp", cronHelpLink)</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">&nbsp;</td>
+			<td class="adminData">
+				<div id="future-schedules"></div>
+			</td>
+		</tr>
+	</table>
+}
+
+<script>
+	$(function () {
+		$('#@Html.FieldIdFor(m => m.CronExpression)').on('input propertychange paste', function (e) {
+			getFutureSchedules.apply(this);
+		});
+
+		getFutureSchedules.apply($('#@Html.FieldIdFor(m => m.CronExpression)')[0]);
+
+		function getFutureSchedules() {
+			var input = $(this);
+
+			if (!input.val().length)
+				return;
+
+			$.ajax({
+				cache: false,
+				type: 'POST',
+				url: '@Url.Action("FutureSchedules")',
+				data: { expression: input.val() },
+				success: function (data) {
+					$('#future-schedules').html(data);
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+
+				}
+			});
+		}
+	});
+</script>

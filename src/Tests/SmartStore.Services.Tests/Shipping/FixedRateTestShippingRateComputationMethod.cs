@@ -28,12 +28,14 @@ namespace SmartStore.Services.Tests.Shipping
             var response = new GetShippingOptionResponse();
             response.ShippingOptions.Add(new ShippingOption()
                 {
+					ShippingMethodId = 1,
                     Name = "Shipping option 1",
                     Description = "",
                     Rate = GetRate()
                 }); 
             response.ShippingOptions.Add(new ShippingOption()
                 {
+					ShippingMethodId = 2,
                     Name = "Shipping option 2",
                     Description = "",
                     Rate = GetRate()

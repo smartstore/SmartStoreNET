@@ -2,19 +2,19 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Orders;
-using SmartStore.Core;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Logging;
+using SmartStore.Services;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -29,35 +29,31 @@ namespace SmartStore.Admin.Controllers
         private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly LocalizationSettings _localizationSettings;
-        private readonly ICurrencyService _currencyService;
-        private readonly CurrencySettings _currencySettings;
-        private readonly ILocalizationService _localizationService;
         private readonly ILanguageService _languageService;
         private readonly ICustomerActivityService _customerActivityService;
-        private readonly IPermissionService _permissionService;
+		private readonly ICommonServices _services;
 
         #endregion
 
         #region Constructors
 
         public GiftCardController(IGiftCardService giftCardService,
-            IPriceFormatter priceFormatter, IWorkflowMessageService workflowMessageService,
-            IDateTimeHelper dateTimeHelper, LocalizationSettings localizationSettings,
-            ICurrencyService currencyService, CurrencySettings currencySettings,
-            ILocalizationService localizationService, ILanguageService languageService,
-            ICustomerActivityService customerActivityService, IPermissionService permissionService)
+            IPriceFormatter priceFormatter,
+			IWorkflowMessageService workflowMessageService,
+            IDateTimeHelper dateTimeHelper,
+			LocalizationSettings localizationSettings,
+            ILanguageService languageService,
+            ICustomerActivityService customerActivityService,
+			ICommonServices services)
         {
             this._giftCardService = giftCardService;
             this._priceFormatter = priceFormatter;
             this._workflowMessageService = workflowMessageService;
             this._dateTimeHelper = dateTimeHelper;
             this._localizationSettings = localizationSettings;
-            this._currencyService = currencyService;
-            this._currencySettings = currencySettings;
-            this._localizationService = localizationService;
             this._languageService = languageService;
             this._customerActivityService = customerActivityService;
-            this._permissionService = permissionService;
+			this._services = services;
         }
 
         #endregion
@@ -72,7 +68,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult List()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageGiftCards))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
                 return AccessDeniedView();
 
             var model = new GiftCardListModel();
@@ -80,17 +76,17 @@ namespace SmartStore.Admin.Controllers
                 {
                     Value = "0",
                     Selected = true,
-                    Text = _localizationService.GetResource("Common.All", logIfNotFound: false, defaultValue: "All")
+                    Text = _services.Localization.GetResource("Common.All", logIfNotFound: false, defaultValue: "All")
                 });
             model.ActivatedList.Add(new SelectListItem()
             {
                 Value = "1",
-                Text = _localizationService.GetResource("Common.Activated", logIfNotFound: false, defaultValue: "Activated")
+                Text = _services.Localization.GetResource("Common.Activated", logIfNotFound: false, defaultValue: "Activated")
             });
             model.ActivatedList.Add(new SelectListItem()
             {
                 Value = "2",
-                Text = _localizationService.GetResource("Common.Deactivated", logIfNotFound: false, defaultValue: "Deactivated")
+                Text = _services.Localization.GetResource("Common.Deactivated", logIfNotFound: false, defaultValue: "Deactivated")
             });
             return View(model);
         }
@@ -98,7 +94,7 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult GiftCardList(GridCommand command, GiftCardListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageGiftCards))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
                 return AccessDeniedView();
 
             bool? isGiftCardActivated = null;
@@ -127,19 +123,19 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Create()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageGiftCards))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
                 return AccessDeniedView();
 
             var model = new GiftCardModel();
-            model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(GiftCardModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageGiftCards))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
                 return AccessDeniedView();
 
             if (ModelState.IsValid)
@@ -149,20 +145,21 @@ namespace SmartStore.Admin.Controllers
                 _giftCardService.InsertGiftCard(giftCard);
 
                 //activity log
-                _customerActivityService.InsertActivity("AddNewGiftCard", _localizationService.GetResource("ActivityLog.AddNewGiftCard"), giftCard.GiftCardCouponCode);
+                _customerActivityService.InsertActivity("AddNewGiftCard", _services.Localization.GetResource("ActivityLog.AddNewGiftCard"), giftCard.GiftCardCouponCode);
 
-                NotifySuccess(_localizationService.GetResource("Admin.GiftCards.Added"));
+                NotifySuccess(_services.Localization.GetResource("Admin.GiftCards.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = giftCard.Id }) : RedirectToAction("List");
             }
 
             //If we got this far, something failed, redisplay form
-            model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
+
             return View(model);
         }
 
         public ActionResult Edit(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageGiftCards))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
                 return AccessDeniedView();
 
             var giftCard = _giftCardService.GetGiftCardById(id);
@@ -175,16 +172,16 @@ namespace SmartStore.Admin.Controllers
             model.RemainingAmountStr = _priceFormatter.FormatPrice(giftCard.GetGiftCardRemainingAmount(), true, false);
             model.AmountStr = _priceFormatter.FormatPrice(giftCard.Amount, true, false);
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(giftCard.CreatedOnUtc, DateTimeKind.Utc);
-            model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
         public ActionResult Edit(GiftCardModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageGiftCards))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
                 return AccessDeniedView();
 
             var giftCard = _giftCardService.GetGiftCardById(model.Id);
@@ -193,7 +190,7 @@ namespace SmartStore.Admin.Controllers
             model.RemainingAmountStr = _priceFormatter.FormatPrice(giftCard.GetGiftCardRemainingAmount(), true, false);
             model.AmountStr = _priceFormatter.FormatPrice(giftCard.Amount, true, false);
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(giftCard.CreatedOnUtc, DateTimeKind.Utc);
-            model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 
             if (ModelState.IsValid)
             {
@@ -201,9 +198,9 @@ namespace SmartStore.Admin.Controllers
                 _giftCardService.UpdateGiftCard(giftCard);
 
                 //activity log
-                _customerActivityService.InsertActivity("EditGiftCard", _localizationService.GetResource("ActivityLog.EditGiftCard"), giftCard.GiftCardCouponCode);
+                _customerActivityService.InsertActivity("EditGiftCard", _services.Localization.GetResource("ActivityLog.EditGiftCard"), giftCard.GiftCardCouponCode);
 
-                NotifySuccess(_localizationService.GetResource("Admin.GiftCards.Updated"));
+                NotifySuccess(_services.Localization.GetResource("Admin.GiftCards.Updated"));
                 return continueEditing ? RedirectToAction("Edit", giftCard.Id) : RedirectToAction("List");
             }
 
@@ -221,7 +218,7 @@ namespace SmartStore.Admin.Controllers
         [FormValueRequired("notifyRecipient")]
         public ActionResult NotifyRecipient(GiftCardModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageGiftCards))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
                 return AccessDeniedView();
 
             var giftCard = _giftCardService.GetGiftCardById(model.Id);
@@ -231,7 +228,7 @@ namespace SmartStore.Admin.Controllers
             model.RemainingAmountStr = _priceFormatter.FormatPrice(giftCard.GetGiftCardRemainingAmount(), true, false);
             model.AmountStr = _priceFormatter.FormatPrice(giftCard.Amount, true, false);
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(giftCard.CreatedOnUtc, DateTimeKind.Utc);
-            model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 
             try
             {
@@ -272,7 +269,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageGiftCards))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
                 return AccessDeniedView();
 
             var giftCard = _giftCardService.GetGiftCardById(id);
@@ -283,9 +280,9 @@ namespace SmartStore.Admin.Controllers
             _giftCardService.DeleteGiftCard(giftCard);
 
             //activity log
-            _customerActivityService.InsertActivity("DeleteGiftCard", _localizationService.GetResource("ActivityLog.DeleteGiftCard"), giftCard.GiftCardCouponCode);
+            _customerActivityService.InsertActivity("DeleteGiftCard", _services.Localization.GetResource("ActivityLog.DeleteGiftCard"), giftCard.GiftCardCouponCode);
 
-            NotifySuccess(_localizationService.GetResource("Admin.GiftCards.Deleted"));
+            NotifySuccess(_services.Localization.GetResource("Admin.GiftCards.Deleted"));
             return RedirectToAction("List");
         }
         
@@ -293,7 +290,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult UsageHistoryList(int giftCardId, GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageGiftCards))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageGiftCards))
                 return AccessDeniedView();
 
             var giftCard = _giftCardService.GetGiftCardById(giftCardId);

@@ -38,6 +38,7 @@ namespace SmartStore.Web.Framework.WebApi.Caching
 						data = new WebApiControllingCacheData
 						{
 							ValidMinutePeriod = settings.ValidMinutePeriod,
+							NoRequestTimestampValidation = settings.NoRequestTimestampValidation,
 							LogUnauthorized = settings.LogUnauthorized,
 							ApiUnavailable = (plugin == null || !plugin.Installed),
 							PluginVersion = (plugin == null ? "1.0" : plugin.Version.ToString())
@@ -55,6 +56,7 @@ namespace SmartStore.Web.Framework.WebApi.Caching
 	{
 		public bool ApiUnavailable { get; set; }
 		public int ValidMinutePeriod { get; set; }
+		public bool NoRequestTimestampValidation { get; set; }
 		public bool LogUnauthorized { get; set; }
 		public string PluginVersion { get; set; }
 

@@ -26,7 +26,7 @@ namespace SmartStore.Data.Migrations
 				new ScheduleTask
 				{
 					Name = "Cleanup temporary files",
-					Seconds = 86400,
+					CronExpression = "30 3 * * *",
 					Type = "SmartStore.Services.Common.TempFileCleanupTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false

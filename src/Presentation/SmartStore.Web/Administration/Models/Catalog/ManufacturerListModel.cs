@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Catalog

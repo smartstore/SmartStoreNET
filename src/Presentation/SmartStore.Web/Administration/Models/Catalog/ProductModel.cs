@@ -10,7 +10,7 @@ using SmartStore.Admin.Validators.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Catalog
@@ -83,6 +83,9 @@ namespace SmartStore.Admin.Models.Catalog
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ShowOnHomePage")]
         public bool ShowOnHomePage { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.HomePageDisplayOrder")]
+		public int HomePageDisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.MetaKeywords")]
         [AllowHtml]
@@ -392,8 +395,7 @@ namespace SmartStore.Admin.Models.Catalog
             {
                 AvailableAttributes = new List<SelectListItem>();
                 AvailableOptions = new List<SelectListItem>();
-
-				AllowFiltering = true;		// codehint: sm-add
+				AllowFiltering = true;
             }
             
             [SmartResourceDisplayName("Admin.Catalog.Products.SpecificationAttributes.Fields.SpecificationAttribute")]

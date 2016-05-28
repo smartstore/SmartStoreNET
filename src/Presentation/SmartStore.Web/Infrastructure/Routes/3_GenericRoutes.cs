@@ -1,7 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Mvc.Routes;
+using SmartStore.Web.Framework.Routing;
 using SmartStore.Web.Framework.Seo;
 
 namespace SmartStore.Web.Infrastructure

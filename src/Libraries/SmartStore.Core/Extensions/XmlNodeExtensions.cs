@@ -17,7 +17,7 @@ namespace SmartStore
 					XmlAttribute attr = node.Attributes[attributeName];
 					if (attr != null) 
                     {
-						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(attr.InnerText);
+						return attr.InnerText.Convert<T>();
 					}
 				}
 			}
@@ -43,13 +43,13 @@ namespace SmartStore
 				if (node != null) 
                 {
 					if (xpath.IsEmpty())
-						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(node.InnerText);
+						return node.InnerText.Convert<T>();
 
 					var n = node.SelectSingleNode(xpath);
 
 					if (n != null && n.InnerText.HasValue())
-						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(null, culture == null ? CultureInfo.InvariantCulture : culture, n.InnerText);
-				}
+						return n.InnerText.Convert<T>(culture);
+                }
 			}
 			catch (Exception exc) 
             {

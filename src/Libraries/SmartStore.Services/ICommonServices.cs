@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -10,12 +9,18 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
+using Autofac;
+using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services
-{
-	
+{	
 	public interface ICommonServices
 	{
+		IComponentContext Container
+		{
+			get;
+		}
+
 		ICacheManager Cache 
 		{ 
 			get;
@@ -75,6 +80,10 @@ namespace SmartStore.Services
 		{
 			get;
 		}
-	}
 
+		IDateTimeHelper DateTimeHelper
+		{
+			get;
+		}
+	}
 }

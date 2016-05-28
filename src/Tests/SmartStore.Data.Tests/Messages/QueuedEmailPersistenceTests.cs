@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Tests;
 using NUnit.Framework;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Data.Tests.Messages
 {
@@ -11,7 +14,7 @@ namespace SmartStore.Data.Tests.Messages
         [Test]
         public void Can_save_and_load_queuedEmail()
         {
-            var qe = new QueuedEmail()
+            var qe = new QueuedEmail
             {
                 Priority = 1,
                 From = "From",
@@ -35,10 +38,8 @@ namespace SmartStore.Data.Tests.Messages
                     Password = "111",
                     EnableSsl = true,
                     UseDefaultCredentials = true
-                }
-
+                },
             };
-
 
             var fromDb = SaveAndLoadEntity(qe);
             fromDb.ShouldNotBeNull();
@@ -58,5 +59,91 @@ namespace SmartStore.Data.Tests.Messages
             fromDb.EmailAccount.ShouldNotBeNull();
             fromDb.EmailAccount.DisplayName.ShouldEqual("Administrator");
         }
+
+		[Test]
+		public void Can_cascade_delete_attachment()
+		{
+			var account = new EmailAccount
+			{
+				Email = "admin@yourstore.com",
+				Host = "127.0.0.1",
+				Username = "John",
+				Password = "111"
+			};
+
+			var download = new Download
+			{
+				ContentType = "text/plain",
+				DownloadBinary = new byte[10],
+				DownloadGuid = Guid.NewGuid(),
+				Extension = "txt",
+				Filename = "file"
+			};
+
+			// add attachment
+			var attach = new QueuedEmailAttachment
+			{
+				StorageLocation = EmailAttachmentStorageLocation.FileReference,
+				Name = "file.txt",
+				MimeType = "text/plain",
+				File = download
+			};
+			
+			var qe = new QueuedEmail
+			{
+				Priority = 1,
+				From = "From",
+				To = "To",
+				Subject = "Subject",
+				CreatedOnUtc = DateTime.UtcNow,
+				EmailAccount = account
+			};
+
+			qe.Attachments.Add(attach);
+
+			var fromDb = SaveAndLoadEntity(qe);
+			fromDb.ShouldNotBeNull();
+
+			Assert.AreEqual(fromDb.Attachments.Count, 1);
+			attach = fromDb.Attachments.FirstOrDefault();
+			attach.ShouldNotBeNull();
+
+			download = attach.File;
+			download.ShouldNotBeNull();
+
+			var attachId = attach.Id;
+			var downloadId = download.Id;
+
+			// delete Attachment.Download
+			context.Set<Download>().Remove(download);
+			context.SaveChanges();
+			base.ReloadContext();
+
+			attach = context.Set<QueuedEmailAttachment>().Find(attachId);
+			attach.ShouldBeNull();
+
+			// add new attachment
+			attach = new QueuedEmailAttachment
+			{
+				StorageLocation = EmailAttachmentStorageLocation.FileReference,
+				Name = "file.txt",
+				MimeType = "text/plain"
+			};
+
+			qe = context.Set<QueuedEmail>().FirstOrDefault();
+			qe.Attachments.Add(attach);
+
+			fromDb = SaveAndLoadEntity(qe);
+			fromDb.ShouldNotBeNull();
+
+			// delete QueuedEmail
+			context.Set<QueuedEmail>().Remove(fromDb);
+			context.SaveChanges();
+			base.ReloadContext();
+
+			// Attachment should also be gone now
+			attach = context.Set<QueuedEmailAttachment>().FirstOrDefault();
+			attach.ShouldBeNull();
+		}
     }
 }

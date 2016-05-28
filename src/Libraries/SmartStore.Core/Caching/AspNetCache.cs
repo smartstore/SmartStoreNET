@@ -4,20 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Caching;
-using SmartStore.Core.Fakes;
 
 namespace SmartStore.Core.Caching
 {
     
     public partial class AspNetCache : ICache
     {
-        private const string REGION_NAME = "$$SmartStoreNET$$";
-
-		// AspNetCache object does not have a ContainsKey() method:
-		// Therefore we put a special string into cache if value is null,
-		// otherwise our 'Contains()' would always return false,
-		// which is bad if we intentionally wanted to save NULL values.
-		private const string FAKE_NULL = "__[NULL]__";
+        private const string RegionName = "$$SmartStoreNET$$";
 
         public IEnumerable<KeyValuePair<string, object>> Entries
         {
@@ -28,9 +21,9 @@ namespace SmartStore.Core.Caching
 
 				return from entry in HttpRuntime.Cache.Cast<DictionaryEntry>()
                        let key = entry.Key.ToString()
-                       where key.StartsWith(REGION_NAME)
+                       where key.StartsWith(RegionName)
                        select new KeyValuePair<string, object>(
-                           key.Substring(REGION_NAME.Length),
+                           key.Substring(RegionName.Length),
                            entry.Value);
             }
         }
@@ -40,12 +33,7 @@ namespace SmartStore.Core.Caching
 			if (HttpRuntime.Cache == null)
                 return null;
 
-			var value = HttpRuntime.Cache.Get(BuildKey(key));
-
-			if (value.Equals(FAKE_NULL))
-				return null;
-
-			return value;
+			return HttpRuntime.Cache.Get(BuildKey(key));
         }
 
 		public void Set(string key, object value, int? cacheTime)
@@ -62,7 +50,7 @@ namespace SmartStore.Core.Caching
 				absoluteExpiration = DateTime.UtcNow + TimeSpan.FromMinutes(cacheTime.Value);
 			}
 
-			HttpRuntime.Cache.Insert(key, value ?? FAKE_NULL, null, absoluteExpiration, Cache.NoSlidingExpiration);
+			HttpRuntime.Cache.Insert(key, value, null, absoluteExpiration, Cache.NoSlidingExpiration);
 		}
 
         public bool Contains(string key)
@@ -83,7 +71,7 @@ namespace SmartStore.Core.Caching
 
         public static string BuildKey(string key)
         {
-            return key.HasValue() ? REGION_NAME + key : null;
+            return key.HasValue() ? RegionName + key : null;
         }
 
 		public bool IsSingleton

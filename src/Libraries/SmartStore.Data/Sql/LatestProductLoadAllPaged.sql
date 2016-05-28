@@ -24,8 +24,16 @@
 	@PageSize			int = 2147483644,
 	@ShowHidden			bit = 0,
 	@LoadFilterableSpecificationAttributeOptionIds bit = 0, --a value indicating whether we should load the specification attribute option identifiers applied to loaded products (all pages)
-	@WithoutCategories	bit = 0,
-	@WithoutManufacturers bit = 0,
+	@WithoutCategories	bit = null,
+	@WithoutManufacturers bit = null,
+	@IsPublished		bit = null,
+	@HomePageProducts	bit = null,
+	@IdMin				int = 0,
+	@IdMax				int = 0,
+	@AvailabilityMin	int = null,
+	@AvailabilityMax	int = null,
+	@CreatedFromUtc		nvarchar(MAX) = null,
+	@CreatedToUtc		nvarchar(MAX) = null,
 	@FilterableSpecificationAttributeOptionIds nvarchar(MAX) = null OUTPUT, --the specification attribute option identifiers applied to loaded products (all pages). returned as a comma separated list of identifiers
 	@TotalRecords		int = null OUTPUT
 )
@@ -396,12 +404,38 @@ BEGIN
 		SET @sql = @sql + '
 		AND pptm.ProductTag_Id = ' + CAST(@ProductTagId AS nvarchar(max))
 	END
-	
+
+	--homepage products
+	IF (@HomePageProducts is not null)
+	BEGIN
+		SET @sql = @sql + '
+		AND p.ShowOnHomePage = ' + CAST(@HomePageProducts AS nvarchar(max))
+	END
+
+	--is published
+	IF (@IsPublished is null)
+	BEGIN
+		IF @ShowHidden = 0
+		BEGIN
+			SET @sql = @sql + '
+			AND p.Published = 1'
+		END
+	END
+	ELSE IF (@IsPublished = 1)
+	BEGIN
+		SET @sql = @sql + '
+		AND p.Published = 1'
+	END
+	ELSE IF (@IsPublished = 0)
+	BEGIN
+		SET @sql = @sql + '
+		AND p.Published = 0'
+	END
+
 	--show hidden
 	IF @ShowHidden = 0
 	BEGIN
 		SET @sql = @sql + '
-		AND p.Published = 1
 		AND p.Deleted = 0
 		AND (getutcdate() BETWEEN ISNULL(p.AvailableStartDateTimeUtc, ''1/1/1900'') and ISNULL(p.AvailableEndDateTimeUtc, ''1/1/2999''))'
 	END
@@ -472,6 +506,45 @@ BEGIN
 			WHERE [sm].EntityId = p.Id AND [sm].EntityName = ''Product'' and [sm].StoreId=' + CAST(@StoreId AS nvarchar(max)) + '
 			))'
 	END
+
+	--filter by product identifier
+	IF @IdMin != 0
+	BEGIN
+		SET @sql = @sql + '
+		AND p.Id >= ' + CAST(@IdMin AS nvarchar(max))
+	END
+
+	IF @IdMax != 0
+	BEGIN
+		SET @sql = @sql + '
+		AND p.Id <= ' + CAST(@IdMax AS nvarchar(max))
+	END
+
+	--filter by availability
+	IF @AvailabilityMin is not null
+	BEGIN
+		SET @sql = @sql + '
+		AND p.StockQuantity >= ' + CAST(@AvailabilityMin AS nvarchar(max))
+	END
+
+	IF @AvailabilityMax is not null
+	BEGIN
+		SET @sql = @sql + '
+		AND p.StockQuantity <= ' + CAST(@AvailabilityMax AS nvarchar(max))
+	END
+
+	--filter by creation date
+	IF @CreatedFromUtc is not null
+	BEGIN
+		SET @sql = @sql + '
+		AND p.CreatedOnUtc >= ''' + CAST(@CreatedFromUtc AS nvarchar(max)) + ''''
+	END
+
+	IF @CreatedToUtc is not null
+	BEGIN
+		SET @sql = @sql + '
+		AND p.CreatedOnUtc <= ''' + CAST(@CreatedToUtc AS nvarchar(max)) + ''''
+	END
 	
 	--filter by specs
 	IF @SpecAttributesCount > 0
@@ -488,22 +561,32 @@ BEGIN
 			)'
 	END
 
-	IF @WithoutCategories = 1
+	IF (@WithoutCategories is not null)
 	BEGIN
-		SET @sql = @sql + '
-		AND NOT EXISTS (
-			SELECT 1 FROM [Product_Category_Mapping] pcm with (NOLOCK)
-			WHERE [pcm].[ProductId] = p.Id
-		)'
+		IF (@WithoutCategories = 1)
+		BEGIN
+			SET @sql = @sql + '
+			AND NOT EXISTS (SELECT 1 FROM [Product_Category_Mapping] pcm with (NOLOCK) WHERE [pcm].[ProductId] = p.Id)'
+		END
+		ELSE IF (@WithoutCategories = 0)
+		BEGIN
+			SET @sql = @sql + '
+			AND EXISTS (SELECT 1 FROM [Product_Category_Mapping] pcm with (NOLOCK) WHERE [pcm].[ProductId] = p.Id)'
+		END
 	END
 
-	IF @WithoutManufacturers = 1
+	IF (@WithoutManufacturers is not null)
 	BEGIN
-		SET @sql = @sql + '
-		AND NOT EXISTS (
-			SELECT 1 FROM [Product_Manufacturer_Mapping] pmm with (NOLOCK)
-			WHERE [pmm].[ProductId] = p.Id
-		)'
+		IF (@WithoutManufacturers = 1)
+		BEGIN
+			SET @sql = @sql + '
+			AND NOT EXISTS (SELECT 1 FROM [Product_Manufacturer_Mapping] pmm with (NOLOCK) WHERE [pmm].[ProductId] = p.Id)'
+		END
+		ELSE IF (@WithoutManufacturers = 0)
+		BEGIN
+			SET @sql = @sql + '
+			AND EXISTS (SELECT 1 FROM [Product_Manufacturer_Mapping] pmm with (NOLOCK) WHERE [pmm].[ProductId] = p.Id)'
+		END
 	END
 	
 	--sorting

@@ -1,11 +1,11 @@
-﻿using System.Web.Mvc;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Controllers
 {
-
     public abstract partial class PluginControllerBase : SmartController
     {
 		///// <summary>
@@ -24,6 +24,7 @@ namespace SmartStore.Web.Framework.Controllers
 		/// Access denied view
 		/// </summary>
 		/// <returns>Access denied view</returns>
+		[SuppressMessage("ReSharper", "Mvc.AreaNotResolved")]
 		protected ActionResult AccessDeniedView()
 		{
 			return RedirectToAction("AccessDenied", "Security", new { pageUrl = this.Request.RawUrl, area = "Admin" });

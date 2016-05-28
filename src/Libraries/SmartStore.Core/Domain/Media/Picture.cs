@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
 using System.Runtime.Serialization;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartStore.Core.Domain.Media
 {
@@ -8,9 +10,14 @@ namespace SmartStore.Core.Domain.Media
     /// Represents a picture
     /// </summary>
 	[DataContract]
-	public partial class Picture : BaseEntity
+	public partial class Picture : BaseEntity, ITransient
     {
-        private ICollection<ProductPicture> _productPictures;
+		public Picture()
+		{
+			this.UpdatedOnUtc = DateTime.UtcNow;
+		}
+		
+		private ICollection<ProductPicture> _productPictures;
         /// <summary>
         /// Gets or sets the picture binary
         /// </summary>
@@ -33,6 +40,20 @@ namespace SmartStore.Core.Domain.Media
         /// </summary>
 		[DataMember]
 		public bool IsNew { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the entity transient/preliminary
+		/// </summary>
+		[DataMember]
+		[Index("IX_UpdatedOn_IsTransient", 1)]
+		public bool IsTransient { get; set; }
+
+		/// <summary>
+		/// Gets or sets the date and time of instance update
+		/// </summary>
+		[DataMember]
+		[Index("IX_UpdatedOn_IsTransient", 0)]
+		public DateTime UpdatedOnUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the product pictures

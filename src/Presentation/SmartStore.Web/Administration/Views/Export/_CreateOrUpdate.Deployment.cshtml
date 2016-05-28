@@ -1,0 +1,172 @@
+﻿@model ExportDeploymentModel
+@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Admin.Models.DataExchange;
+
+@Html.ValidationSummary(false)
+
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.ProfileId)
+
+<table id="DeploymentTable" class="adminContent">
+	<tr class="deployment-all">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.DeploymentType)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(x => x.DeploymentType, Model.AvailableDeploymentTypes)
+			@Html.ValidationMessageFor(x => x.DeploymentType)
+			
+		</td>
+	</tr>
+	<tr class="deployment-all">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Name)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.Name)
+			@Html.ValidationMessageFor(x => x.Name)
+		</td>
+	</tr>
+	<tr class="deployment-all">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Enabled)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.Enabled)
+			@Html.ValidationMessageFor(x => x.Enabled)
+		</td>
+	</tr>
+	<tr class="deployment-all">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.CreateZip)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.CreateZip)
+			@Html.ValidationMessageFor(x => x.CreateZip)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.FileSystem)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.IsPublic)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.IsPublic)
+			@Html.ValidationMessageFor(x => x.IsPublic)
+		</td>
+	</tr>
+	<tr id="FileSystemPathContainer" class="deployment-@((int)ExportDeploymentType.FileSystem)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.FileSystemPath)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.FileSystemPath)
+			@Html.ValidationMessageFor(x => x.FileSystemPath)
+		</td>
+	</tr>
+
+	<tr class="deployment-@((int)ExportDeploymentType.Email)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.EmailAccountId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(x => x.EmailAccountId, Model.AvailableEmailAccounts)
+			@Html.ValidationMessageFor(x => x.EmailAccountId)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.Email)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.EmailAddresses)
+		</td>
+		<td class="adminData">
+			@Html.HiddenFor(x => x.EmailAddresses)
+			@Html.ValidationMessageFor(x => x.EmailAddresses)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.Email)">
+		<td class=" adminTitle">
+			@Html.SmartLabelFor(x => x.EmailSubject)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.EmailSubject)
+			@Html.ValidationMessageFor(x => x.EmailSubject)
+		</td>
+	</tr>
+
+	<tr class="deployment-@((int)ExportDeploymentType.Http) deployment-@((int)ExportDeploymentType.Ftp)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Url)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.Url)
+			@Html.ValidationMessageFor(x => x.Url)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.Http)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.HttpTransmissionType)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(x => x.HttpTransmissionType, Model.AvailableHttpTransmissionTypes)
+			@Html.ValidationMessageFor(x => x.HttpTransmissionType)
+		</td>
+	</tr>
+
+	<tr class="deployment-@((int)ExportDeploymentType.Http) deployment-@((int)ExportDeploymentType.Ftp)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Username)
+		</td>
+		<td class="adminData">
+			@Html.TextBoxFor(x => x.Username, new { autocomplete = "off", @class = "text-box single-line" })
+			@Html.ValidationMessageFor(x => x.Username)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.Http) deployment-@((int)ExportDeploymentType.Ftp)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Password)
+		</td>
+		<td class="adminData">
+			@Html.TextBoxFor(x => x.Password, new { autocomplete = "off", type = "password", @class = "text-box single-line password" })
+			@Html.ValidationMessageFor(x => x.Password)
+		</td>
+	</tr>
+
+	<tr class="deployment-@((int)ExportDeploymentType.Ftp)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.PassiveMode)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.PassiveMode)
+			@Html.ValidationMessageFor(x => x.PassiveMode)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.Ftp)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.UseSsl)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.UseSsl)
+			@Html.ValidationMessageFor(x => x.UseSsl)
+		</td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		$('#@(Html.FieldIdFor(x => x.EmailAddresses))').select2({ tags: [@(Html.Raw(Model.SerializedEmailAddresses))] });
+
+		// deployment type changed
+		$('#@(Html.FieldIdFor(x => x.DeploymentType))').change(function () {
+			var table = $('#DeploymentTable');
+
+			table.find('tr:not(.deployment-all)').hide();
+			table.find('.deployment-' + $(this).val()).show();
+		}).trigger('change');
+
+		// show\hide file system path
+		$('#@(Html.FieldIdFor(x => x.IsPublic))').change(function () {
+			var val = !$(this).is(':checked') && $('#@(Html.FieldIdFor(x => x.DeploymentType))').val() == @((int)ExportDeploymentType.FileSystem);
+			$('#FileSystemPathContainer').toggle(val);
+		}).trigger('change');
+	});
+</script>

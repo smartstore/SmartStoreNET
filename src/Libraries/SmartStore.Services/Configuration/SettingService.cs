@@ -2,19 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Configuration;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Events;
-using Fasterflect;
 using System.Linq.Expressions;
 using System.Reflection;
-using SmartStore.Core.Plugins;
-using System.ComponentModel;
-using SmartStore.Utilities;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Services.Configuration
 {
@@ -81,7 +76,7 @@ namespace SmartStore.Services.Configuration
 							orderby s.Name, s.StoreId
 							select s;
 				var settings = query.ToList();
-				var dictionary = new Dictionary<string, IList<SettingForCaching>>();
+				var dictionary = new Dictionary<string, IList<SettingForCaching>>(StringComparer.OrdinalIgnoreCase);
 				foreach (var s in settings)
 				{
 					var settingName = s.Name.ToLowerInvariant();
@@ -151,7 +146,6 @@ namespace SmartStore.Services.Configuration
             _eventPublisher.EntityUpdated(setting);
         }
 
-		/// <remarks>codehint: sm-add</remarks>
 		private T LoadSettingsJson<T>(int storeId = 0)
 		{
 			Type t = typeof(T);
@@ -164,6 +158,7 @@ namespace SmartStore.Services.Configuration
 			{
 				JsonConvert.PopulateObject(rawSetting, settings);
 			}
+
 			return settings;
 		}
 
@@ -240,6 +235,7 @@ namespace SmartStore.Services.Configuration
 				if (setting != null)
 					return setting.Value.Convert<T>();
 			}
+
             return defaultValue;
         }
 
@@ -304,52 +300,53 @@ namespace SmartStore.Services.Configuration
 
 			var settings = Activator.CreateInstance<T>();
 
-			foreach (var prop in typeof(T).GetProperties())
+			foreach (var fastProp in FastProperty.GetProperties(typeof(T)).Values)
 			{
+				var prop = fastProp.Property;
+				
 				// get properties we can read and write to
-				if (!prop.CanRead || !prop.CanWrite)
+				if (!prop.CanWrite)
 					continue;
 
 				var key = typeof(T).Name + "." + prop.Name;
 				//load by store
 				string setting = GetSettingByKey<string>(key, storeId: storeId, loadSharedValueIfNotFound: true);
 
-                if (setting == null)
-                {
-                    if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(List<>)) 
-                    {   
-                        // convenience: don't return null for simple list types
-                        var listArg = prop.PropertyType.GetGenericArguments()[0];
-                        object list = null;
+				if (setting == null && !fastProp.IsSequenceType)
+				{
+					#region Obsolete ('EnumerableConverter' can handle this case now)
+					//if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
+					//{
+					//	// convenience: don't return null for simple list types
+					//	var listArg = prop.PropertyType.GetGenericArguments()[0];
+					//	object list = null;
 
-                        if (listArg == typeof(int))
-                            list = new List<int>();
-                        else if (listArg == typeof(decimal))
-                            list = new List<decimal>();
-                        else if (listArg == typeof(string))
-                            list = new List<string>();
+					//	if (listArg == typeof(int))
+					//		list = new List<int>();
+					//	else if (listArg == typeof(decimal))
+					//		list = new List<decimal>();
+					//	else if (listArg == typeof(string))
+					//		list = new List<string>();
 
-                        if (list != null)
-                        {
-                            prop.SetValue(settings, list, null);
-                        }
-                    }
+					//	if (list != null)
+					//	{
+					//		fastProp.SetValue(settings, list);
+					//	}
+					//}
+					#endregion
 
-                    continue;          
-                }
+					continue;
+				}
 
-				var converter = CommonHelper.GetTypeConverter(prop.PropertyType);
+				var converter = TypeConverterFactory.GetConverter(prop.PropertyType);
 
                 if (converter == null || !converter.CanConvertFrom(typeof(string)))
 					continue;
 
-                if (!converter.IsValid(setting))
-					continue;
-
-                object value = converter.ConvertFromInvariantString(setting);
+                object value = converter.ConvertFrom(setting);
 
 				//set property
-				prop.SetValue(settings, value, null);
+				fastProp.SetValue(settings, value);
 			}
 
 			return settings;
@@ -368,7 +365,7 @@ namespace SmartStore.Services.Configuration
             Guard.ArgumentNotEmpty(() => key);
 
             key = key.Trim().ToLowerInvariant();
-			string valueStr = CommonHelper.GetTypeConverter(typeof(T)).ConvertToInvariantString(value);
+			var str = value.Convert<string>();
 
 			var allSettings = GetAllSettingsCached();
 			var settingForCaching = allSettings.ContainsKey(key) ?
@@ -378,16 +375,16 @@ namespace SmartStore.Services.Configuration
 			{
 				//update
 				var setting = GetSettingById(settingForCaching.Id);
-				setting.Value = valueStr;
+				setting.Value = str;
 				UpdateSetting(setting, clearCache);
 			}
 			else
 			{
 				//insert
-				var setting = new Setting()
+				var setting = new Setting
 				{
 					Name = key,
-					Value = valueStr,
+					Value = str,
 					StoreId = storeId
 				};
 				InsertSetting(setting, clearCache);
@@ -411,18 +408,19 @@ namespace SmartStore.Services.Configuration
 			/* We do not clear cache after each setting update.
 			 * This behavior can increase performance because cached settings will not be cleared 
 			 * and loaded from database after each update */
-			foreach (var prop in typeof(T).GetProperties())
+			foreach (var prop in FastProperty.GetProperties(typeof(T)).Values)
 			{
 				// get properties we can read and write to
-				if (!prop.CanRead || !prop.CanWrite)
+				if (!prop.IsPublicSettable)
 					continue;
 
-				if (!CommonHelper.GetTypeConverter(prop.PropertyType).CanConvertFrom(typeof(string)))
+				var converter = TypeConverterFactory.GetConverter(prop.Property.PropertyType);
+				if (converter == null || !converter.CanConvertFrom(typeof(string)))
 					continue;
 
 				string key = typeof(T).Name + "." + prop.Name;
-				//Duck typing is not supported in C#. That's why we're using dynamic type
-				dynamic value = settings.TryGetPropertyValue(prop.Name);
+				// Duck typing is not supported in C#. That's why we're using dynamic type
+				dynamic value = prop.GetValue(settings);
 
 				SetSetting(key, value ?? "", storeId, false);
 			}
@@ -460,13 +458,13 @@ namespace SmartStore.Services.Configuration
 			}
 
 			string key = typeof(T).Name + "." + propInfo.Name;
-			//Duck typing is not supported in C#. That's why we're using dynamic type
-			dynamic value = settings.TryGetPropertyValue(propInfo.Name);
+			// Duck typing is not supported in C#. That's why we're using dynamic type
+			var fastProp = FastProperty.GetProperty(propInfo, PropertyCachingStrategy.EagerCached);
+			dynamic value = fastProp.GetValue(settings);
 
 			SetSetting(key, value ?? "", storeId, false);
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
 		public virtual void UpdateSetting<T, TPropType>(T settings, Expression<Func<T, TPropType>> keySelector, bool overrideForStore, int storeId = 0)  where T : ISettings, new()
 		{
 			if (overrideForStore || storeId == 0)

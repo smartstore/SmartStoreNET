@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
-using SmartStore.Core.Plugins;
 using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Shipping
@@ -123,6 +123,24 @@ namespace SmartStore.Services.Shipping
             return sortedOrders;
         }
 
+		public virtual Multimap<int, Shipment> GetShipmentsByOrderIds(int[] orderIds)
+		{
+			Guard.ArgumentNotNull(() => orderIds);
+
+			var query =
+				from x in _shipmentRepository.TableUntracked.Expand(x => x.ShipmentItems)
+				where orderIds.Contains(x.OrderId)
+				select x;
+
+			var map = query
+				.OrderBy(x => x.OrderId)
+				.ThenBy(x => x.CreatedOnUtc)
+				.ToList()
+				.ToMultimap(x => x.OrderId, x => x);
+
+			return map;
+		}
+
         /// <summary>
         /// Gets a shipment
         /// </summary>
@@ -221,7 +239,20 @@ namespace SmartStore.Services.Shipping
 
             //event notifications
             _eventPublisher.EntityInserted(shipmentItem);
-			_eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
+
+			if (shipmentItem.Shipment != null && shipmentItem.Shipment.Order != null)
+			{
+				_eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
+			}
+			else
+			{
+				var shipment = _shipmentRepository.Table
+					.Expand(x => x.Order)
+					.FirstOrDefault(x => x.Id == shipmentItem.ShipmentId);
+
+				if (shipment != null)
+					_eventPublisher.PublishOrderUpdated(shipment.Order);	
+			}
         }
 
         /// <summary>
@@ -237,7 +268,20 @@ namespace SmartStore.Services.Shipping
 
             //event notifications
             _eventPublisher.EntityUpdated(shipmentItem);
-			_eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
+
+			if (shipmentItem.Shipment != null && shipmentItem.Shipment.Order != null)
+			{
+				_eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
+			}
+			else
+			{
+				var shipment = _shipmentRepository.Table
+					.Expand(x => x.Order)
+					.FirstOrDefault(x => x.Id == shipmentItem.ShipmentId);
+
+				if (shipment != null)
+					_eventPublisher.PublishOrderUpdated(shipment.Order);
+			}
         }
         
 		#endregion

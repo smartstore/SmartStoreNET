@@ -3,11 +3,13 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
@@ -33,6 +35,12 @@ namespace SmartStore.WebApi
 
 			config.Action("Cancel")
 				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
+
+			var addShipment = config.Action("AddShipment")
+				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
+
+			addShipment.Parameter<string>("TrackingNumber");
+			addShipment.Parameter<bool?>("SetAsShipped");
 		}
 
 		private void AddActionsToProduct(EntityTypeConfiguration<Product> config)
@@ -72,6 +80,7 @@ namespace SmartStore.WebApi
 			m.EntitySet<OrderNote>(WebApiOdataEntitySet.OrderNotes);
 			m.EntitySet<Order>(WebApiOdataEntitySet.Orders);
 			m.EntitySet<OrderItem>(WebApiOdataEntitySet.OrderItems);
+			m.EntitySet<PaymentMethod>(WebApiOdataEntitySet.PaymentMethods);
 			m.EntitySet<Picture>(WebApiOdataEntitySet.Pictures);
 			m.EntitySet<ProductAttribute>(WebApiOdataEntitySet.ProductAttributes);
 			m.EntitySet<ProductBundleItem>(WebApiOdataEntitySet.ProductBundleItems);
@@ -89,6 +98,7 @@ namespace SmartStore.WebApi
 			m.EntitySet<ReturnRequest>(WebApiOdataEntitySet.ReturnRequests);
 			m.EntitySet<Setting>(WebApiOdataEntitySet.Settings);
 			m.EntitySet<Shipment>(WebApiOdataEntitySet.Shipments);
+			m.EntitySet<ShipmentItem>(WebApiOdataEntitySet.ShipmentItems);
 			m.EntitySet<ShippingMethod>(WebApiOdataEntitySet.ShippingMethods);
 			m.EntitySet<SpecificationAttributeOption>(WebApiOdataEntitySet.SpecificationAttributeOptions);
 			m.EntitySet<SpecificationAttribute>(WebApiOdataEntitySet.SpecificationAttributes);
@@ -97,6 +107,7 @@ namespace SmartStore.WebApi
 			m.EntitySet<StoreMapping>(WebApiOdataEntitySet.StoreMappings);
 			m.EntitySet<TierPrice>(WebApiOdataEntitySet.TierPrices);
 			m.EntitySet<UrlRecord>(WebApiOdataEntitySet.UrlRecords);
+			m.EntitySet<SyncMapping>(WebApiOdataEntitySet.SyncMappings);
 
 			AddActionsToOrder(m.Entity<Order>());
 			AddActionsToProduct(m.Entity<Product>());
@@ -123,6 +134,7 @@ namespace SmartStore.WebApi
 		public static string OrderNotes { get { return "OrderNotes"; } }
 		public static string Orders { get { return "Orders"; } }
 		public static string OrderItems { get { return "OrderItems"; } }
+		public static string PaymentMethods { get { return "PaymentMethods"; } }
 		public static string Pictures { get { return "Pictures"; } }
 		public static string ProductAttributes { get { return "ProductAttributes"; } }
 		public static string ProductBundleItems { get { return "ProductBundleItems"; } }
@@ -140,6 +152,7 @@ namespace SmartStore.WebApi
 		public static string ReturnRequests { get { return "ReturnRequests"; } }
 		public static string Settings { get { return "Settings"; } }
 		public static string Shipments { get { return "Shipments"; } }
+		public static string ShipmentItems { get { return "ShipmentItems"; } }
 		public static string ShippingMethods { get { return "ShippingMethods"; } }
 		public static string SpecificationAttributeOptions { get { return "SpecificationAttributeOptions"; } }
 		public static string SpecificationAttributes { get { return "SpecificationAttributes"; } }
@@ -148,5 +161,6 @@ namespace SmartStore.WebApi
 		public static string StoreMappings { get { return "StoreMappings"; } }
 		public static string TierPrices { get { return "TierPrices"; } }
 		public static string UrlRecords { get { return "UrlRecords"; } }
+		public static string SyncMappings { get { return "SyncMappings"; } }
 	}
 }

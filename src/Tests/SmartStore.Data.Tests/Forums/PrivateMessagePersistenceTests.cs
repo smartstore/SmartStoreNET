@@ -1,9 +1,9 @@
 ﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Data.Tests.Stores;
 using SmartStore.Tests;
-using NUnit.Framework;
-using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Data.Tests.Forums
 {
@@ -13,7 +13,7 @@ namespace SmartStore.Data.Tests.Forums
         [Test]
         public void Can_save_and_load_privatemessage()
         {
-			var store = GetTestStore();
+			var store = StorePersistenceTests.GetTestStore();
 			var storeFromDb = SaveAndLoadEntity(store);
 			storeFromDb.ShouldNotBeNull();
 
@@ -59,15 +59,5 @@ namespace SmartStore.Data.Tests.Forums
                 LastActivityDateUtc = new DateTime(2010, 01, 02)
             };
         }
-
-		protected Store GetTestStore()
-		{
-			return new Store
-			{
-				Name = "Store 1",
-				Url = "http://www.test.com",
-				DisplayOrder = 1
-			};
-		}
     }
 }

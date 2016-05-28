@@ -14,6 +14,8 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -154,7 +156,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(NewsItemModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
@@ -209,7 +211,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Edit(NewsItemModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
@@ -261,6 +263,22 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Deleted"));
             return RedirectToAction("List");
         }
+
+		[HttpPost]
+		public ActionResult DeleteSelected(ICollection<int> selectedIds)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
+				return AccessDeniedView();
+
+			if (selectedIds != null)
+			{
+				var news = _newsService.GetNewsByIds(selectedIds.ToArray()).ToList();
+
+				news.ForEach(x => _newsService.DeleteNews(x));
+			}
+
+			return Json(new { Result = true });
+		}
 
         #endregion
 

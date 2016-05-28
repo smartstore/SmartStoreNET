@@ -8,14 +8,13 @@
 
 	<LocaleResource Name="AdminInstruction">
 		<Value>
-			<![CDATA[<p>Registrieren Sie sich bei <a href="https://payments.amazon.de/preregistration/lpa">Amazon Payments</a> an.</p>
+			<![CDATA[<p>Registrieren Sie sich zunächst bei <a href="https://payments.amazon.de/preregistration/lpa?ld=SPEXDEAPA-SmartStore.Net-CP-DP">Amazon Payments</a>.</p>
 <p>So richten Sie "Bezahlen mit Amazon" ein:</p><ul>
 <li>Tragen Sie Ihre Amazon-Zugangsdaten unten in die dafür vorgesehenen Felder ein. Sie finden diese Daten in Ihrem <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> Konto.</li>
 <li>Ihre Händlernummer finden Sie dort rechts oben unter Einstellungen - Integrationseinstellungen.</li>
 <li>Die beiden Zugangsschlüssel finden Sie dort links oben unter Integration - MWS Access Key. In <a href="http://download.smartstore.com/pub/docs/14_Amazon_Payments_Getting_AWS_Keys_DE.pdf">diesem Dokument</a> finden Sie Bilder, wie Sie diese erstellen.</li>
 <li>Falls Sie Sofortbenachrichtigungen (IPN) erhalten möchten (SSL zwingend erforderlich!), so tragen Sie die unten aufgeführte IPN URL unter Einstellungen - Integrationseinstellungen - Sofortbenachrichtigungs-Einstellungen - Händler-URL ein.</li>
 </ul>
-<p>Hinweis! Die Rechnungsadresse des Kunden erhalten Sie erst nach Bestätigung der Zahlungsautorisierung von Amazon, also i.d.R. erst kurz nach Versand der Bestellbestätigungs-Email. Um Missverständnisse zu vermeiden ist es ratsam, den Platzhalter für die Rechnungsadresse aus der Nachrichtenvorlage für die Bestellbestätigung zu entfernen.</p>
 <p>Bitte fügen Sie Informationen zu "Bezahlen mit Amazon" auf Ihrer Seite der Zahlungsarten ein (siehe CMS - Seiten). Bildmaterial finden Sie <a href="https://payments.amazon.de/resources#marks">hier</a>.
 Textvorschläge:<ul>
 <li>Option 1: Bezahlen mit Amazon: Zahlen Sie jetzt mit den Zahl- und Lieferinformationen aus Ihrem Amazon-Konto.</li>
@@ -24,17 +23,20 @@ Textvorschläge:<ul>
 </ul></p>]]>
 		</Value>
 	</LocaleResource>
+  <LocaleResource Name="BillingAddressMessageNote">
+    <Value>Bitte beachten Sie, dass es sich bei dieser Rechnungsadresse unter Umständen nicht um die für diese Bestellung gültige handelt!</Value>
+  </LocaleResource>
 	<LocaleResource Name="MissingOrderReferenceId">
 		<Value>Es wurde keine Auftrags-Referenz-ID durch Amazon übermittelt!</Value>
 	</LocaleResource>
 	<LocaleResource Name="PaymentMethodNotActive">
-		<Value>Zahlungsmethode "Bezahlen mit Amazon" ist für Shop "{0}" nicht verfügbar.</Value>
+		<Value>Die Zahlungsart "Bezahlen mit Amazon" ist für Shop "{0}" nicht verfügbar.</Value>
 	</LocaleResource>
 	<LocaleResource Name="MissingCheckoutSessionState">
 		<Value>Fehlender Checkout-Sitzungsstatus für "Bezahlen mit Amazon". Ihre Zahlung kann leider nicht bearbeitet werden. Bitte gehen Sie zurück in den Warenkorb und Durchlaufen Sie den Checkout erneut.</Value>
 	</LocaleResource>
 	<LocaleResource Name="OrderNotFound">
-		<Value>Ein Auftrag mit der Zahlungsmethode "Bezahlen mit Amazon" und der Kennung {0} wurde nicht gefunden.</Value>
+		<Value>Ein Auftrag mit der Zahlungsart "Bezahlen mit Amazon" und der Kennung {0} wurde nicht gefunden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizationHardDeclineMessage">
 		<Value>

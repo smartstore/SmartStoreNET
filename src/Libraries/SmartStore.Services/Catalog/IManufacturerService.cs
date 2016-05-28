@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 
@@ -14,6 +16,14 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="manufacturer">Manufacturer</param>
         void DeleteManufacturer(Manufacturer manufacturer);
+
+		/// <summary>
+		/// Get manufacturer query
+		/// </summary>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <returns>Manufacturer query</returns>
+		IQueryable<Manufacturer> GetManufacturers(bool showHidden = false, int storeId = 0);
 
         /// <summary>
         /// Gets all manufacturers
@@ -84,6 +94,20 @@ namespace SmartStore.Services.Catalog
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Product manufacturer mapping collection</returns>
         IList<ProductManufacturer> GetProductManufacturersByProductId(int productId, bool showHidden = false);
+
+		/// <summary>
+		/// Get product manufacturers by manufacturer identifiers
+		/// </summary>
+		/// <param name="manufacturerIds">Manufacturer identifiers</param>
+		/// <returns>Product manufacturers</returns>
+		Multimap<int, ProductManufacturer> GetProductManufacturersByManufacturerIds(int[] manufacturerIds);
+
+		/// <summary>
+		/// Get product manufacturers by product identifiers
+		/// </summary>
+		/// <param name="productIds">Product identifiers</param>
+		/// <returns>Product manufacturers</returns>
+		Multimap<int, ProductManufacturer> GetProductManufacturersByProductIds(int[] productIds);
 
         /// <summary>
         /// Gets a product manufacturer mapping 

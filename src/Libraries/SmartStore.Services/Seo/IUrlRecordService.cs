@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Seo;
@@ -23,6 +24,13 @@ namespace SmartStore.Services.Seo
         /// <returns>URL record</returns>
         UrlRecord GetUrlRecordById(int urlRecordId);
 
+		/// <summary>
+		/// Gets URL records by identifiers
+		/// </summary>
+		/// <param name="urlRecordIds"></param>
+		/// <returns>List of URL records</returns>
+		IList<UrlRecord> GetUrlRecordsByIds(int[] urlRecordIds);
+
         /// <summary>
         /// Inserts an URL record
         /// </summary>
@@ -45,11 +53,24 @@ namespace SmartStore.Services.Seo
         /// <summary>
         /// Gets all URL records
         /// </summary>
-        /// <param name="slug">Slug</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+		/// <param name="slug">Slug</param>
+		/// <param name="entityName">Entity name</param>
+		/// <param name="entityId">Entity identifier</param>
+		/// <param name="isActive">Whether to load only active records</param>
+		/// <param name="languageId">Language identifier</param>
         /// <returns>Customer collection</returns>
-        IPagedList<UrlRecord> GetAllUrlRecords(string slug, int pageIndex, int pageSize);
+		IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, int? entityId, int? languageId, bool? isActive);
+
+		/// <summary>
+		/// Gets all URL records for the specified entity
+		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
+		/// <param name="entity">Entity</param>
+		/// <param name="activeOnly">Specifies whether only active URL records should be returned</param>
+		/// <returns>List of URL records</returns>
+		IList<UrlRecord> GetUrlRecordsFor(string entityName, int entityId, bool activeOnly = false);
 
         /// <summary>
         /// Find slug
@@ -80,5 +101,20 @@ namespace SmartStore.Services.Seo
 		/// <param name="nameProperty">Name of a property</param>
 		/// <returns>Url record</returns>
 		UrlRecord SaveSlug<T>(T entity, Expression<Func<T, string>> nameProperty) where T : BaseEntity, ISlugSupported;
+
+		/// <summary>
+		/// Get number of slugs per entity
+		/// </summary>
+		/// <param name="urlRecordIds">URL record identifier</param>
+		/// <returns>Dictionary of slugs per entity count</returns>
+		Dictionary<int, int> CountSlugsPerEntity(int[] urlRecordIds);
+
+		/// <summary>
+		/// Get number of slugs per entity
+		/// </summary>
+		/// <param name="entityName">Entity name</param>
+		/// <param name="entityId">Entity identifier</param>
+		/// <returns>Number of slugs per entity</returns>
+		int CountSlugsPerEntity(string entityName, int entityId);
     }
 }

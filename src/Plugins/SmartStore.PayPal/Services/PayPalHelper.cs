@@ -6,7 +6,7 @@ using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.PayPal.PayPalSvc;
 using SmartStore.PayPal.Settings;
-using SmartStore.Web.Framework.Plugins;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.PayPal.Services
 {
@@ -71,7 +71,7 @@ namespace SmartStore.PayPal.Services
         /// <param name="abstractResponse">response</param>
         /// <param name="errorMsg">Error message if exists</param>
         /// <returns>True - response OK; otherwise, false</returns>
-		public static bool CheckSuccess(PluginHelper helper, AbstractResponseType abstractResponse, out string errorMsg)
+		public static bool CheckSuccess(ILocalizationService localization, AbstractResponseType abstractResponse, out string errorMsg)
         {
             bool success = false;
             StringBuilder sb = new StringBuilder();
@@ -92,8 +92,8 @@ namespace SmartStore.PayPal.Services
                     {
                         sb.Append(Environment.NewLine);
                     }
-					sb.AppendLine("{0}: {1}".FormatWith(helper.GetResource("Admin.System.Log.Fields.FullMessage"), errorType.LongMessage));
-					sb.AppendLine("{0}: {1}".FormatWith(helper.GetResource("Admin.System.Log.Fields.ShortMessage"), errorType.ShortMessage));
+					sb.AppendLine("{0}: {1}".FormatWith(localization.GetResource("Admin.System.Log.Fields.FullMessage"), errorType.LongMessage));
+					sb.AppendLine("{0}: {1}".FormatWith(localization.GetResource("Admin.System.Log.Fields.ShortMessage"), errorType.ShortMessage));
                     sb.Append("Code: ").Append(errorType.ErrorCode).Append(Environment.NewLine);
                 }
             }

@@ -63,21 +63,21 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AjaxMin, Version=5.8.5172.27703, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\AjaxMin.5.8.5172.27710\lib\net40\AjaxMin.dll</HintPath>
+    <Reference Include="AjaxMin, Version=5.14.5506.26196, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AjaxMin.5.14.5506.26202\lib\net40\AjaxMin.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac, Version=3.4.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Autofac.Integration.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Autofac.Mvc5.3.3.1\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <HintPath>..\..\packages\Autofac.Mvc5.3.3.4\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="BundleTransformer.Core, Version=1.8.23.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -96,30 +96,31 @@
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServerCompact, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.3\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
     </Reference>
-    <Reference Include="FluentValidation, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\FluentValidation.5.0.0.1\lib\Net40\FluentValidation.dll</HintPath>
+    <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="FluentValidation.Mvc, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\FluentValidation.MVC4.5.0.0.1\lib\Net40\FluentValidation.Mvc.dll</HintPath>
+    <Reference Include="FluentValidation.Mvc, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentValidation.MVC5.5.6.2.0\lib\Net45\FluentValidation.Mvc.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="JavaScriptEngineSwitcher.Core, Version=1.1.3.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Core.1.1.3\lib\net40\JavaScriptEngineSwitcher.Core.dll</HintPath>
+    <Reference Include="JavaScriptEngineSwitcher.Core, Version=1.2.4.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Core.1.2.4\lib\net40\JavaScriptEngineSwitcher.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="JavaScriptEngineSwitcher.Msie">
-      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Msie.1.1.4\lib\net40\JavaScriptEngineSwitcher.Msie.dll</HintPath>
+    <Reference Include="JavaScriptEngineSwitcher.Msie, Version=1.2.11.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Msie.1.2.11\lib\net40\JavaScriptEngineSwitcher.Msie.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="JavaScriptEngineSwitcher.V8, Version=1.1.1.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -129,8 +130,9 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="MsieJavaScriptEngine">
-      <HintPath>..\..\packages\MsieJavaScriptEngine.1.4.2\lib\net40\MsieJavaScriptEngine.dll</HintPath>
+    <Reference Include="MsieJavaScriptEngine, Version=1.5.6.0, Culture=neutral, PublicKeyToken=a3a2846a37ac0d3e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MsieJavaScriptEngine.1.5.6\lib\net40\MsieJavaScriptEngine.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -253,10 +255,10 @@
     <Compile Include="Controllers\FilterController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ReturnRequestController.cs" />
-    <Compile Include="Controllers\KeepAliveController.cs" />
     <Compile Include="Controllers\ExternalAuthenticationController.cs" />
     <Compile Include="Controllers\InstallController.cs" />
     <Compile Include="Controllers\PollController.cs" />
+    <Compile Include="Controllers\TaskSchedulerController.cs" />
     <Compile Include="Controllers\ThemeController.cs" />
     <Compile Include="Controllers\WidgetController.cs" />
     <Compile Include="Controllers\PrivateMessagesController.cs" />
@@ -280,6 +282,7 @@
     <Compile Include="Infrastructure\DefaultBundles.cs" />
     <Compile Include="Infrastructure\DefaultWidgetSelector.cs" />
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
+    <Compile Include="Infrastructure\Installation\PtBRSeedData.cs" />
     <Compile Include="Infrastructure\Routes\2_DefaultRoutes.cs" />
     <Compile Include="Infrastructure\Routes\3_GenericRoutes.cs" />
     <Compile Include="Infrastructure\Installation\DeDESeedData.cs" />
@@ -337,6 +340,7 @@
     <Compile Include="Models\Catalog\ManufacturerModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerNavigationModel.cs" />
     <Compile Include="Models\Catalog\ProductDetailsModel.cs" />
+    <Compile Include="Models\CheckoutBillingAddressModel.cs" />
     <Compile Include="Models\Checkout\CheckoutShippingAddressModel.cs" />
     <Compile Include="Models\Checkout\CheckoutProgressModel.cs" />
     <Compile Include="Models\Checkout\CheckoutBillingAddressModel.cs" />
@@ -448,10 +452,13 @@
     <Content Include="App_Data\Localization\App\de\head.txt" />
     <Content Include="App_Data\Localization\App\en\all.smres.xml" />
     <Content Include="App_Data\Localization\App\en\head.txt" />
+    <Content Include="App_Data\Localization\App\pt\all.smres.xml" />
+    <Content Include="App_Data\Localization\App\pt\head.txt" />
     <Content Include="App_Data\Localization\Installation\installation.de.xml" />
     <Content Include="App_Data\Localization\Installation\installation.en.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="App_Data\Localization\Installation\installation.pt.xml" />
     <Content Include="Content\2012.2.607\Default\editor.png" />
     <Content Include="Content\2012.2.607\Default\imagebrowser.png" />
     <Content Include="Content\2012.2.607\Default\loading.gif" />
@@ -906,7 +913,6 @@
     <Content Include="Content\filemanager\LICENSE.txt" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
-    <Content Include="Content\fonts\Fontastic.svg" />
     <Content Include="App_GlobalResources\MvcLocalization.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MvcLocalization.de.Designer.cs</LastGenOutput>
@@ -916,10 +922,6 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="Content\files\ExportImport\placeholder" />
-    <Content Include="Content\fonts\fontawesome-webfont.eot" />
-    <Content Include="Content\fonts\fontawesome-webfont.ttf" />
-    <Content Include="Content\fonts\fontawesome-webfont.woff" />
-    <Content Include="Content\fonts\FontAwesome.otf" />
     <Content Include="Content\bootstrap\custom\datetimepicker.less" />
     <Content Include="Content\filemanager\asp_net\main.ashx" />
     <Content Include="Content\filemanager\conf.json" />
@@ -941,11 +943,11 @@
     <Content Include="Config\Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="Content\fonts\raw\fonts\Fontastic.svg" />
-    <None Include="Content\fonts\raw\index.html" />
-    <None Include="Content\fonts\raw\license.txt" />
-    <None Include="Content\fonts\raw\lte-ie7.js" />
-    <None Include="Content\fonts\raw\style.css" />
+    <Content Include="Content\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\fonts\FontAwesome.otf" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\image-gallery\css\blueimp-gallery-custom.css" />
     <Content Include="Content\image-gallery\css\blueimp-gallery-indicator.css" />
@@ -966,6 +968,7 @@
     <Content Include="Content\image-gallery\js\blueimp-gallery.js" />
     <Content Include="Content\Images\default-image.jpg" />
     <Content Include="Content\Images\grippy.png" />
+    <Content Include="Content\Images\logo.png" />
     <Content Include="Content\Images\sad.png" />
     <Content Include="Content\Images\smartstore.net-200-black.png" />
     <Content Include="Content\Images\smartstore.net-200-white.png" />
@@ -1519,14 +1522,6 @@
     <Content Include="Content\Images\flags\za.png" />
     <Content Include="Content\Images\flags\zm.png" />
     <Content Include="Content\Images\flags\zw.png" />
-    <None Include="Content\fonts\raw\fonts\Fontastic.eot" />
-    <None Include="Content\fonts\raw\fonts\Fontastic.ttf" />
-    <None Include="Content\fonts\raw\fonts\Fontastic.woff" />
-    <Content Include="Content\fonts\Fontastic.eot" />
-    <Content Include="Content\fonts\fontastic.less" />
-    <Content Include="Content\fonts\Fontastic.ttf" />
-    <Content Include="Content\fonts\Fontastic.woff" />
-    <None Include="Content\fonts\raw\IcoMoon Session.json" />
     <Content Include="Content\jquery.pnotify.default.css" />
     <Content Include="Content\jquery.pnotify.default.icons.css" />
     <Content Include="Content\bootstrap\custom\scrollbutton.less" />
@@ -1596,6 +1591,7 @@
     <Content Include="Themes\Alpha\preview.png" />
     <Content Include="Themes\MobileLight\Content\jquery.mobile.theme-1.3.2.css" />
     <Content Include="Themes\MobileLight\Content\jquery.mobile.theme-1.3.2.min.css" />
+    <Content Include="Themes\MobileLight\Content\user.css" />
     <Content Include="Themes\MobileLight\preview.png" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.gif" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.png" />
@@ -1867,6 +1863,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />
+    <Folder Include="Views\TaskScheduler\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">
@@ -1981,7 +1978,6 @@
     <Content Include="Views\Customer\AccountActivation.cshtml" />
     <Content Include="Views\Home\ContactUs.cshtml" />
     <Content Include="Views\Common\CurrencySelector.cshtml" />
-    <Content Include="Views\Common\HeaderLinks.cshtml" />
     <Content Include="Views\Common\InfoBlock.cshtml" />
     <Content Include="Views\Common\LanguageSelector.cshtml" />
     <Content Include="Views\Common\List.cshtml" />

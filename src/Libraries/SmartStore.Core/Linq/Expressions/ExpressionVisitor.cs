@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 
@@ -21,6 +22,7 @@ namespace SmartStore.Linq.Expressions
     /// for anyone outside of Microsoft to be using...
     /// </remarks>
     [DebuggerStepThrough, DebuggerNonUserCode]
+    [SuppressMessage("ReSharper", "PossibleUnintendedReferenceComparison")]
     public abstract class ExpressionVisitor
     {
         ///<summary>

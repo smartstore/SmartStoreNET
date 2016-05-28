@@ -8,11 +8,9 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Tax
 {
@@ -44,7 +42,6 @@ namespace SmartStore.Services.Tax
         private readonly IPluginFinder _pluginFinder;
         private readonly IDictionary<TaxRateCacheKey, decimal> _cachedTaxRates;
 		private readonly IDictionary<TaxAddressKey, Address> _cachedTaxAddresses;
-		private readonly ISettingService _settingService;
 		private readonly IProviderManager _providerManager;
 		private readonly IGeoCountryLookup _geoCountryLookup;
 
@@ -65,10 +62,8 @@ namespace SmartStore.Services.Tax
             TaxSettings taxSettings,
 			ShoppingCartSettings cartSettings,
             IPluginFinder pluginFinder,
-			ISettingService settingService,
 			IGeoCountryLookup geoCountryLookup,
-			IProviderManager providerManager
-			)
+			IProviderManager providerManager)
         {
             this._addressService = addressService;
 			this._workContext = workContext;
@@ -77,7 +72,6 @@ namespace SmartStore.Services.Tax
 			this._pluginFinder = pluginFinder;
 			this._cachedTaxRates = new Dictionary<TaxRateCacheKey, decimal>();
 			this._cachedTaxAddresses = new Dictionary<TaxAddressKey, Address>();
-			this._settingService = settingService;
 			this._providerManager = providerManager;
 			this._geoCountryLookup = geoCountryLookup;
         }
@@ -274,9 +268,7 @@ namespace SmartStore.Services.Tax
             if (taxProvider == null)
             {
                 taxProvider = LoadAllTaxProviders().FirstOrDefault();
-                _taxSettings.ActiveTaxProviderSystemName = taxProvider.Metadata.SystemName;
-                _settingService.SaveSetting(_taxSettings);
-            }
+			}
             return taxProvider;
         }
 
@@ -355,7 +347,12 @@ namespace SmartStore.Services.Tax
 			{
 				return decimal.Zero;
 			}
-			
+
+            if (IsTaxExempt(product, customer))
+            {
+                return decimal.Zero;
+            }
+
 			// tax request
             var calculateTaxRequest = CreateCalculateTaxRequest(product, taxCategoryId, customer);
 

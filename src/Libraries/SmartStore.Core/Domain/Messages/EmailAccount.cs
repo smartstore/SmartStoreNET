@@ -54,9 +54,10 @@ namespace SmartStore.Core.Domain.Messages
         {
             get
             {
-                if (!String.IsNullOrWhiteSpace(this.DisplayName))
-                    return this.Email + " (" + this.DisplayName + ")";
-                return this.Email;
+				if (DisplayName.IsEmpty())
+					return Email;
+
+				return "{0} ({1})".FormatInvariant(DisplayName, Email);
             }
         }
 

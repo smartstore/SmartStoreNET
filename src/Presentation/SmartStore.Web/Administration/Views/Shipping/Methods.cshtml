@@ -2,9 +2,9 @@
 @using Telerik.Web.Mvc.UI;
 @using System.Linq;
 @{    
-    //page title
     ViewBag.Title = T("Admin.Configuration.Shipping.Methods").Text;
 }
+
 <div class="section-header">
     <div class="title">
         <i class="fa fa-truck"></i>
@@ -14,6 +14,7 @@
         <a href="@Url.Action("CreateMethod")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
     </div>
 </div>
+
 <table class="adminContent">
     <tr>
         <td>
@@ -25,22 +26,18 @@
                     })
                     .Columns(columns =>
                     {
-                        columns.Bound(x => x.Name);
+						columns.Bound(x => x.Name)
+							.Template(x => Html.ActionLink(x.Name, "EditMethod", new { id = x.Id }))
+							.ClientTemplate("<a href=\"EditMethod/<#= Id #>\"><#= Name #></a>");
                         columns.Bound(x => x.Description);
                         columns.Bound(x => x.IgnoreCharges)
                             .Template(item => @Html.SymbolForBool(item.IgnoreCharges))
                             .ClientTemplate(@Html.SymbolForBool("IgnoreCharges"))
-                            .Width(160)
+                            .Width(250)
                             .Centered();
                         columns.Bound(x => x.DisplayOrder)
                             .Width(160)
                             .Centered();
-                        columns.Bound(x => x.Id)
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "EditMethod", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"EditMethod/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Width(160)
-                            .Centered()
-                            .HeaderTemplate(T("Admin.Common.Edit").Text);
                     })
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("Methods", "Shipping"))
                     .EnableCustomBinding(true))

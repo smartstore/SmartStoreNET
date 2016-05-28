@@ -141,6 +141,42 @@
             </td>
         </tr>
     }
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.PrimaryStoreCurrencyStores)
+		</td>
+		<td class="adminData">
+			@if (Model.PrimaryStoreCurrencyStores != null && Model.PrimaryStoreCurrencyStores.Count > 0)
+			{
+				foreach (var store in Model.PrimaryStoreCurrencyStores)
+				{
+					<a href="@store.Value">@store.Text.NaIfEmpty()</a><br />
+				}
+			}
+			else
+			{
+				<span class="muted">@T("Common.Unspecified")</span>
+			}
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.PrimaryExchangeRateCurrencyStores)
+		</td>
+		<td class="adminData">
+			@if (Model.PrimaryExchangeRateCurrencyStores != null && Model.PrimaryExchangeRateCurrencyStores.Count > 0)
+			{
+				foreach (var store in Model.PrimaryExchangeRateCurrencyStores)
+				{
+					<a href="@store.Value">@store.Text.NaIfEmpty()</a><br />
+				}
+			}
+			else
+			{
+				<span class="muted">@T("Common.Unspecified")</span>
+			}
+		</td>
+	</tr>
 </table>
 }
 

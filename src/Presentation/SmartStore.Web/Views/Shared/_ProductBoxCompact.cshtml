@@ -25,6 +25,16 @@
         </a>
     </h3>
     <div class="prices" data-equalized-part="prices">
-        <div class="text-success product-price"><span class="price">@Model.ProductPrice.Price</span></div>
+        <div class="text-success product-price">
+            <span class="price">@Model.ProductPrice.Price</span>
+        </div>
+        <div>
+            @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(Model.BasePriceInfo))
+            {
+                <span class="base-price muted">
+                    @Model.BasePriceInfo
+                </span>
+            }
+        </div>
     </div>
 </div>

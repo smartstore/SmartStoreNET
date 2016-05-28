@@ -23,7 +23,6 @@ namespace SmartStore.Data
         public EfRepository(IDbContext context)
         {
             this._context = context;
-            this.AutoCommitEnabled = true;
         }
 
         #region interface members
@@ -56,28 +55,33 @@ namespace SmartStore.Data
 			}
 		}
 
-        public T Create()
+        public virtual T Create()
         {
             return this.Entities.Create();
         }
 
-        public T GetById(object id)
+		public virtual T GetById(object id)
         {
             return this.Entities.Find(id);
         }
 
-        public void Insert(T entity)
+		public virtual T Attach(T entity)
+		{
+			return this.Entities.Attach(entity);
+		}
+
+		public virtual void Insert(T entity)
         {
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
             this.Entities.Add(entity);
-			
-            if (this.AutoCommitEnabled)
+
+			if (this.AutoCommitEnabledInternal)
                 _context.SaveChanges();
         }
 
-        public void InsertRange(IEnumerable<T> entities, int batchSize = 100)
+		public virtual void InsertRange(IEnumerable<T> entities, int batchSize = 100)
         {
             try
             {
@@ -90,7 +94,7 @@ namespace SmartStore.Data
                     {
                         // insert all in one step
                         entities.Each(x => this.Entities.Add(x));
-                        if (this.AutoCommitEnabled)
+						if (this.AutoCommitEnabledInternal)
                             _context.SaveChanges();
                     }
                     else
@@ -103,7 +107,7 @@ namespace SmartStore.Data
                             saved = false;
                             if (i % batchSize == 0)
                             {
-                                if (this.AutoCommitEnabled)
+								if (this.AutoCommitEnabledInternal)
                                     _context.SaveChanges();
                                 i = 0;
                                 saved = true;
@@ -113,7 +117,7 @@ namespace SmartStore.Data
 
                         if (!saved)
                         {
-                            if (this.AutoCommitEnabled)
+							if (this.AutoCommitEnabledInternal)
                                 _context.SaveChanges();
                         }
                     }
@@ -125,61 +129,45 @@ namespace SmartStore.Data
             }
         }
 
-        public void Update(T entity)
+		public virtual void Update(T entity)
         {
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
-            if (this.AutoCommitEnabled)
-            {
-				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
-				{
-					InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-				}
+			SetEntityStateToModifiedIfApplicable(entity);
+
+			if (this.AutoCommitEnabledInternal)
+			{
 				_context.SaveChanges();
-            }
-            else
-            {
-                try
-                {
-                    this.Entities.Attach(entity);
-                    InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-                }
-                finally { }
-            }
+			}
         }
 
-		public void UpdateRange(IEnumerable<T> entities)
+		public virtual void UpdateRange(IEnumerable<T> entities)
 		{
 			if (entities == null)
 				throw new ArgumentNullException("entities");
 
-			if (this.AutoCommitEnabled)
+			entities.Each(entity =>
 			{
-				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
-				{
-					entities.Each(entity =>
-					{
-						InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-					});
-				}
+				SetEntityStateToModifiedIfApplicable(entity);
+			});
+
+			if (this.AutoCommitEnabledInternal)
+			{
 				_context.SaveChanges();
-			}
-			else
-			{
-				try
-				{
-					entities.Each(entity =>
-					{
-						this.Entities.Attach(entity);
-						InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;				
-					});
-				}
-				finally { }
 			}
 		}
 
-        public void Delete(T entity)
+		private void SetEntityStateToModifiedIfApplicable(T entity)
+		{
+			var entry = InternalContext.Entry(entity);
+			if (entry.State == System.Data.Entity.EntityState.Detached || (this.AutoCommitEnabledInternal && !InternalContext.Configuration.AutoDetectChangesEnabled))
+			{
+				entry.State = System.Data.Entity.EntityState.Modified;
+			}
+		}
+
+		public virtual void Delete(T entity)
         {
             if (entity == null)
                 throw new ArgumentNullException("entity");
@@ -191,18 +179,26 @@ namespace SmartStore.Data
 			
             this.Entities.Remove(entity);
 
-            if (this.AutoCommitEnabled)
+			if (this.AutoCommitEnabledInternal)
                 _context.SaveChanges();
         }
 
-		public void DeleteRange(IEnumerable<T> entities)
+		public virtual void DeleteRange(IEnumerable<T> entities)
 		{
 			if (entities == null)
 				throw new ArgumentNullException("entities");
 
+			entities.Each(entity =>
+			{
+				if (InternalContext.Entry(entity).State == System.Data.Entity.EntityState.Detached)
+				{
+					this.Entities.Attach(entity);
+				}
+			});
+
 			this.Entities.RemoveRange(entities);
 
-			if (this.AutoCommitEnabled)
+			if (this.AutoCommitEnabledInternal)
 				_context.SaveChanges();
 		}
 
@@ -224,7 +220,7 @@ namespace SmartStore.Data
             return query.Include(path);
         }
 
-		public bool IsModified(T entity)
+		public virtual bool IsModified(T entity)
 		{
 			Guard.ArgumentNotNull(() => entity);
 			var ctx = InternalContext;
@@ -239,17 +235,25 @@ namespace SmartStore.Data
 			return false;
 		}
 
-        public IDictionary<string, object> GetModifiedProperties(T entity)
+		public virtual IDictionary<string, object> GetModifiedProperties(T entity)
         {
 			return InternalContext.GetModifiedProperties(entity);
         }
 
-        public IDbContext Context
+		public virtual IDbContext Context
         {
             get { return _context; }
         }
 
-        public bool AutoCommitEnabled { get; set; }
+        public bool? AutoCommitEnabled { get; set; }
+
+		private bool AutoCommitEnabledInternal
+		{
+			get
+			{
+				return this.AutoCommitEnabled ?? _context.AutoCommitEnabled;
+			}
+		}
 
         #endregion
 

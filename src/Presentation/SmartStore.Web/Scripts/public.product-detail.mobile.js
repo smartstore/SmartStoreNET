@@ -106,7 +106,7 @@
 		    updateAttrLine(".attr-height", data.Measure.Height.Text);
 		    updateAttrLine(".attr-stock", data.Stock.Availability.Text);
 
-		    console.log(data.Stock.Availability.Text);
+		    UpdateMainImage(imageUrls[data.GalleryStartIndex]);
 
 		    context.find('.add-to-cart .form-inline').toggle(data.Stock.Availability.Available);
 

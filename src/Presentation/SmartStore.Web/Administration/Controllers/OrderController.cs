@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -21,8 +20,8 @@ using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange.Providers;
 using SmartStore.Services.Directory;
-using SmartStore.Services.ExportImport;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -36,9 +35,10 @@ using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -63,7 +63,6 @@ namespace SmartStore.Admin.Controllers
         private readonly ICountryService _countryService;
         private readonly IStateProvinceService _stateProvinceService;
         private readonly IProductService _productService;
-        private readonly IExportManager _exportManager;
         private readonly IPermissionService _permissionService;
 	    private readonly IWorkflowMessageService _workflowMessageService;
 	    private readonly ICategoryService _categoryService;
@@ -107,7 +106,7 @@ namespace SmartStore.Admin.Controllers
             IMeasureService measureService,
             IAddressService addressService, ICountryService countryService,
             IStateProvinceService stateProvinceService, IProductService productService,
-            IExportManager exportManager, IPermissionService permissionService,
+            IPermissionService permissionService,
             IWorkflowMessageService workflowMessageService,
             ICategoryService categoryService, IManufacturerService manufacturerService,
             IProductAttributeService productAttributeService, IProductAttributeParser productAttributeParser,
@@ -140,7 +139,6 @@ namespace SmartStore.Admin.Controllers
             this._countryService = countryService;
             this._stateProvinceService = stateProvinceService;
             this._productService = productService;
-            this._exportManager = exportManager;
             this._permissionService = permissionService;
             this._workflowMessageService = workflowMessageService;
             this._categoryService = categoryService;
@@ -187,7 +185,7 @@ namespace SmartStore.Admin.Controllers
                 throw new ArgumentNullException("model");
 
 			var store = _storeService.GetStoreById(order.StoreId);
-			var primaryStoreCurrency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+			var primaryStoreCurrency = store.PrimaryStoreCurrency;
 
             model.Id = order.Id;
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext);
@@ -346,7 +344,7 @@ namespace SmartStore.Admin.Controllers
             var pm = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
 			if (pm != null)
 			{
-				if (pm.Metadata.SystemName.Equals("Payments.PurchaseOrder", StringComparison.InvariantCultureIgnoreCase))
+                if (pm.Metadata.SystemName.Equals("SmartStore.PurchaseOrderNumber", StringComparison.InvariantCultureIgnoreCase))
 				{
 					model.DisplayPurchaseOrderNumber = true;
 					model.PurchaseOrderNumber = order.PurchaseOrderNumber;
@@ -470,7 +468,7 @@ namespace SmartStore.Admin.Controllers
                     hasDownloadableItems = true;
 
                 orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
-                var orderItemModel = new OrderModel.OrderItemModel()
+                var orderItemModel = new OrderModel.OrderItemModel
                 {
                     Id = orderItem.Id,
 					ProductId = orderItem.ProductId,
@@ -496,7 +494,7 @@ namespace SmartStore.Admin.Controllers
 
 					foreach (var bundleItem in bundleData)
 					{
-						var bundleItemModel = new OrderModel.BundleItemModel()
+						var bundleItemModel = new OrderModel.BundleItemModel
 						{
 							ProductId = bundleItem.ProductId,
 							Sku = bundleItem.Sku,
@@ -874,94 +872,40 @@ namespace SmartStore.Admin.Controllers
 
         #region Export / Import
 
+		[Compress]
         public ActionResult ExportXmlAll()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            try
-            {
-				var orders = _orderService.SearchOrders(0, 0, null, null, null,
-                    null, null, null, null, null, 0, int.MaxValue);
-
-                var xml = _exportManager.ExportOrdersToXml(orders);
-                return new XmlDownloadResult(xml, "orders.xml");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
+			return Export(OrderXmlExportProvider.SystemName, null);
         }
 
-		[HttpPost]
+		[HttpPost, Compress]
         public ActionResult ExportXmlSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var orders = new List<Order>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                orders.AddRange(_orderService.GetOrdersByIds(ids));
-            }
-
-            var xml = _exportManager.ExportOrdersToXml(orders);
-            return new XmlDownloadResult(xml, "orders.xml");
+			return Export(OrderXmlExportProvider.SystemName, selectedIds);
         }
 
+		[Compress]
 	    public ActionResult ExportExcelAll()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            try
-            {
-				var orders = _orderService.SearchOrders(0, 0, null, null, null,
-                    null, null, null, null, null, 0, int.MaxValue);
-                
-                byte[] bytes = null;
-                using (var stream = new MemoryStream())
-                {
-                    _exportManager.ExportOrdersToXlsx(stream, orders);
-                    bytes = stream.ToArray();
-                }
-                return File(bytes, "text/xls", "orders.xlsx");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
+			return Export(OrderXlsxExportProvider.SystemName, null);
         }
 
-		[HttpPost]
+		[HttpPost, Compress]
         public ActionResult ExportExcelSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var orders = new List<Order>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                orders.AddRange(_orderService.GetOrdersByIds(ids));
-            }
-
-            byte[] bytes = null;
-            using (var stream = new MemoryStream())
-            {
-                _exportManager.ExportOrdersToXlsx(stream, orders);
-                bytes = stream.ToArray();
-            }
-            return File(bytes, "text/xls", "orders.xlsx");
+			return Export(OrderXlsxExportProvider.SystemName, selectedIds);
         }
 
 		public ActionResult ExportPdf(bool all, string selectedIds = null)
@@ -1642,7 +1586,7 @@ namespace SmartStore.Admin.Controllers
             if (!orderItem.Product.IsDownload)
                 throw new ArgumentException("Product is not downloadable");
 
-            var model = new OrderModel.UploadLicenseModel()
+            var model = new OrderModel.UploadLicenseModel
             {
                 LicenseDownloadId = orderItem.LicenseDownloadId.HasValue ? orderItem.LicenseDownloadId.Value : 0,
                 OrderId = order.Id,
@@ -1673,6 +1617,9 @@ namespace SmartStore.Admin.Controllers
                 orderItem.LicenseDownloadId = model.LicenseDownloadId;
             else
                 orderItem.LicenseDownloadId = null;
+
+			MediaHelper.UpdateDownloadTransientStateFor(orderItem, x => x.LicenseDownloadId);
+
             _orderService.UpdateOrder(order);
 
             //success
@@ -1701,6 +1648,7 @@ namespace SmartStore.Admin.Controllers
 
             //attach license
             orderItem.LicenseDownloadId = null;
+			MediaHelper.UpdateDownloadTransientStateFor(orderItem, x => x.LicenseDownloadId);
             _orderService.UpdateOrder(order);
 
             //success
@@ -1877,7 +1825,7 @@ namespace SmartStore.Admin.Controllers
                 string attributeDescription = _productAttributeFormatter.FormatAttributes(product, attributes, order.Customer);
 
                 //save item
-                var orderItem = new OrderItem()
+                var orderItem = new OrderItem
                 {
                     OrderItemGuid = Guid.NewGuid(),
                     Order = order,
@@ -2163,7 +2111,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
         public ActionResult AddShipment(int orderId, FormCollection form, bool continueEditing)
         {
@@ -2172,84 +2120,39 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(orderId);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
-            Shipment shipment = null;
+			var quantities = new Dictionary<int, int>();
+			var trackingNumber = form["TrackingNumber"];
 
-            decimal? totalWeight = null;
-            foreach (var orderItem in order.OrderItems)
-            {
-                //is shippable
-                if (!orderItem.Product.IsShipEnabled)
-                    continue;
+			foreach (var orderItem in order.OrderItems)
+			{
+				foreach (string formKey in form.AllKeys)
+				{
+					if (formKey.Equals(string.Format("qtyToAdd{0}", orderItem.Id), StringComparison.InvariantCultureIgnoreCase))
+					{
+						quantities.Add(orderItem.Id, form[formKey].ToInt());
+						break;
+					}
+				}
+			}
 
-                //ensure that this product can be shipped (have at least one item to ship)
-                var maxQtyToAdd = orderItem.GetTotalNumberOfItemsCanBeAddedToShipment();
-                if (maxQtyToAdd <= 0)
-                    continue;
+			var shipment = _orderProcessingService.AddShipment(order, trackingNumber, quantities);
 
-                int qtyToAdd = 0; //parse quantity
-                foreach (string formKey in form.AllKeys)
-                    if (formKey.Equals(string.Format("qtyToAdd{0}", orderItem.Id), StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        int.TryParse(form[formKey], out qtyToAdd);
-                        break;
-                    }
+			if (shipment != null)
+			{
+				NotifySuccess(_localizationService.GetResource("Admin.Orders.Shipments.Added"));
 
-                //validate quantity
-                if (qtyToAdd <= 0)
-                    continue;
-                if (qtyToAdd > maxQtyToAdd)
-                    qtyToAdd = maxQtyToAdd;
-
-                //ok. we have at least one item. let's create a shipment (if it does not exist)
-
-                var orderItemTotalWeight = orderItem.ItemWeight.HasValue ? orderItem.ItemWeight * qtyToAdd : null;
-                if (orderItemTotalWeight.HasValue)
-                {
-                    if (!totalWeight.HasValue)
-                        totalWeight = 0;
-                    totalWeight += orderItemTotalWeight.Value;
-                }
-
-                if (shipment == null)
-                {
-                    shipment = new Shipment()
-                    {
-                        OrderId = order.Id,
-                        TrackingNumber = form["TrackingNumber"],
-                        TotalWeight = null,
-                        ShippedDateUtc = null,
-                        DeliveryDateUtc = null,
-                        CreatedOnUtc = DateTime.UtcNow,
-                    };
-                }
-                //create a shipment item
-                var shipmentItem = new ShipmentItem()
-                {
-                    OrderItemId = orderItem.Id,
-                    Quantity = qtyToAdd,
-                };
-                shipment.ShipmentItems.Add(shipmentItem);
-            }
-
-            //if we have at least one item in the shipment, then save it
-            if (shipment != null && shipment.ShipmentItems.Count > 0)
-            {
-                shipment.TotalWeight = totalWeight;
-                _shipmentService.InsertShipment(shipment);
-
-                NotifySuccess(_localizationService.GetResource("Admin.Orders.Shipments.Added"));
-                return continueEditing
-                           ? RedirectToAction("ShipmentDetails", new {id = shipment.Id})
-                           : RedirectToAction("Edit", new { id = orderId });
-            }
-            else
-            {
+				return continueEditing
+				   ? RedirectToAction("ShipmentDetails", new { id = shipment.Id })
+				   : RedirectToAction("Edit", new { id = orderId });
+			}
+			else
+			{
 				NotifyError(_localizationService.GetResource("Admin.Orders.Shipments.NoProductsSelected"));
+
 				return RedirectToAction("AddShipment", new { orderId = orderId });
-            }
+			}
         }
 
         public ActionResult ShipmentDetails(int id)

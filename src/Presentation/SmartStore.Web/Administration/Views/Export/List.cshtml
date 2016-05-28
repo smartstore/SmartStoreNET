@@ -1,0 +1,305 @@
+﻿@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Admin.Models.DataExchange;
+@using Telerik.Web.Mvc.UI;
+@model List<ExportProfileModel>
+@{
+	ViewBag.Title = T("Common.Export").Text;
+}
+
+<div class="section-header">
+    <div class="title">
+		<i class="fa fa-arrow-circle-o-down"></i>
+        @T("Common.Export")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary export-profile-button"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+    </div>
+</div>
+
+<form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin" })">
+	<input type="hidden" name="Id" value="" />
+	<input type="hidden" name="ExportAll" value="true" />
+</form>
+
+@if(Model.Count > 0)
+{
+	<table id="export-profile-list" class="table admin-table">
+		<thead>
+			<tr>
+				<th class="centered">@T("Common.Image")</th>
+				<th>@T("Admin.DataExchange.Export.Name")</th>
+				<th>@T("Common.Provider")</th>
+				<th class="centered">@T("Common.Enabled")</th>
+				<th>@T("Admin.DataExchange.Export.EntityType")</th>
+				<th class="centered">@T("Admin.DataExchange.Export.FileExtension")</th>
+				<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
+				<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
+				<th>@T("Admin.Common.Actions")</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var profile in Model)
+			{
+				<tr data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
+					<td class="centered">
+						<img src="@profile.Provider.ThumbnailUrl" alt="@profile.Provider.FriendlyName" />
+					</td>
+					<td>
+						<a href="@Url.Action("Edit", new { id = profile.Id })">@profile.Name</a>
+					</td>
+					<td>
+						@if (profile.Provider.ConfigurationUrl.HasValue())
+						{
+							<a href="@profile.Provider.ConfigurationUrl">@profile.Provider.FriendlyName.NaIfEmpty()</a>
+						}
+						<div class="muted">@profile.ProviderSystemName</div>
+					</td>
+					<td class="centered">
+						@Html.SymbolForBool(profile.Enabled)
+					</td>
+					<td>
+						@profile.Provider.EntityTypeName.NaIfEmpty()
+					</td>
+					<td class="centered">
+						@Html.IconForFileExtension(profile.Provider.FileExtension, true)
+					</td>
+					<td>
+						<div class="last-run-info">
+							@Html.Partial("~/Administration/Views/ScheduleTask/_LastRun.cshtml", profile.TaskModel)
+						</div>
+					</td>
+					<td class="progress-info">
+						<div class="next-run-info">
+							@Html.Partial("~/Administration/Views/ScheduleTask/_NextRun.cshtml", profile.TaskModel)
+						</div>
+						<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
+					</td>
+					<td>
+						<button type="button" class="btn btn-small btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"
+							data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId">
+							<i class="fa fa-play"></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
+						</button>
+
+						<a href="@Url.Action("CancelJob", "ScheduleTask", new { id = profile.ScheduleTaskId })" class="btn btn-small btn-danger btn-cancel-task@(!profile.IsTaskRunning ? " hide" : "")"
+						   data-task-id="@profile.ScheduleTaskId" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+							@T("Common.Cancel")
+						</a>
+
+						<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })"
+						   class="btn btn-small btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " hide" : "")">
+							<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+						</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+else
+{
+	<div class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		@T("Admin.DataExchange.Export.NoProfiles")
+	</div>
+}
+
+<div id="export-profile-dialog" class="modal modal-large hide fade" tabindex="-1" data-urldelete="@Url.Action("Delete")" data-profile="@T("Common.Profile")">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal"><b>x</b></button>
+		<h4 class="caption"></h4>
+	</div>
+	<div class="modal-body"></div>
+	<div class="modal-ask-delete hide">@T("Admin.Common.DeleteConfirmation")</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary">@T("Common.OK")</button>
+		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
+	</div>
+</div>
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+		var dialog = $('#export-profile-dialog');
+
+		// show profile dialog
+		$(document).on('click', '.export-profile-button', function (e) {
+			e.preventDefault();
+			var isDelete = $(this).hasClass('export-profile-delete');
+
+			if (isDelete) {
+				$({}).doAjax({
+					type: 'POST',
+					url: dialog.attr('data-urldelete'),
+					ask: dialog.find('.modal-ask-delete').text(),
+					callbackSuccess: function (resp) {
+						refreshGrid(forExport);
+					}
+				});
+				return false;
+			}
+
+			dialog.find('.modal-body').empty();
+			dialog.find('.caption').text(dialog.attr('data-profile') + ' - ' + $.trim($(this).text()));
+			showPrimaryButton(false);
+
+			$(this).doAjax({
+				type: 'GET',
+				smallIcon: dialog.find('.modal-body'),
+				callbackSuccess: function (resp) {
+					dialog.find('.modal-body').html(resp);
+
+					$('select[name="ProviderSystemName"]').select2({
+						minimumResultsForSearch: 16,
+						formatResult: providerSelectItemFormatting,
+						formatSelection: providerSelectItemFormatting
+					});
+
+					toggleProviderDescription();
+
+					$('select[name="CloneProfileId"]').select2({
+						allowClear: true,
+						minimumResultsForSearch: 16,
+						formatResult: profileSelectItemFormatting,
+						formatSelection: profileSelectItemFormatting
+					});
+				},
+				callbackComplete: function () {
+					showPrimaryButton(true);
+				}
+			});
+
+			dialog.modal('show');
+			return false;
+		});
+
+		// submit dialog form
+		dialog.on('click', '.btn-primary', function () {
+			var form = dialog.find('.export-profile-form');
+
+			if (!form.length) {
+				dialog.modal('hide');
+				return;
+			}
+
+			form.submit();
+		});
+
+		// selected provider changed
+		$(document).on('change', 'select[name="ProviderSystemName"]', toggleProviderDescription);
+
+		function refreshGrid() {
+			setTimeout(function () {
+				$('#export-profile-list').data('tGrid').ajaxRequest();
+			}, 500);
+		}
+
+		function showPrimaryButton(display) {
+			var button = $('#export-profile-dialog').find('.btn-primary').toggle(display);
+		}
+
+		function toggleProviderDescription() {
+			dialog.find('.export-provider-description').hide();
+
+			var option = dialog.find('select[name="ProviderSystemName"]').find(':selected');
+			$('#ExportProviderDescription' + option.attr('data-id')).fadeIn('fast');
+		}
+
+		function providerSelectItemFormatting(item) {
+			try {
+				var option = $(item.element);
+
+				// item.element is undefined for selection formatting
+				if (option.length === 0) {
+					option = $('select[name="ProviderSystemName"]').find('option[value="' + item.id + '"]');
+				}
+
+				var html = '<div class="large-select2-item">',
+					imageUrl = option.data('imageurl');
+
+				if (imageUrl)
+					html += '<img src="' + imageUrl + '" />';
+
+				html += '<div>';
+				html += '<span>' + item.text + '</span>';
+				html += '<span class="muted">' + option.attr('value') + '</span>';
+				html += '</div>';
+				html += '</div>';
+
+				return html;
+			}
+			catch (e) { }
+
+			return item.text;
+		}
+
+		function profileSelectItemFormatting(item) {
+			try {
+				var option = $(item.element);
+
+				// item.element is undefined for selection formatting
+				if (option.length === 0) {
+					option = $('select[name="CloneProfileId"]').find('option[value="' + item.id + '"]');
+				}
+
+				var html = '<div class="large-select2-item">',
+					imageUrl = option.data('imageurl');
+
+				if (imageUrl)
+					html += '<img src="' + imageUrl + '" />';
+
+				html += '<div>';
+				html += '<span>' + item.text + '</span>';
+				html += '<span class="muted">' + option.attr('data-systemname') + '</span>';
+				html += '</div>';
+				html += '</div>';
+
+				return html;
+			}
+			catch (e) { }
+
+			return item.text;
+		}
+
+
+		// start task
+		$(document).on('click', '.btn-run-task', function (e) {
+			e.preventDefault();
+			if (confirm('@T("Admin.Common.AreYouSure")')) {
+				var form = $('#ProfileExportForm');
+				form.find('input[name=Id]').val($(this).attr('data-id'));
+				form.submit();
+			}
+			return false;
+		});
+
+		Admin.TaskWatcher.startWatching({
+			context: $('#export-profile-list'),
+			elementsSelector: '.task-progress',
+			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
+			pollUrl: '@Url.Action("GetRunningTasks", "ScheduleTask")',
+			onTaskStarted: function (task, el) {
+				var tr = el.closest('tr');
+				tr.find('.btn-run-task').addClass('hide');
+				tr.find('.btn-cancel-task').removeClass('hide');
+				tr.find('.btn-log').addClass('hide');
+				tr.find('.next-run-info').addClass('hide');
+			},
+			onTaskCompleted: function (taskId, el) {
+				var tr = el.closest('tr');
+				tr.find('.btn-run-task').removeClass('hide');
+				tr.find('.btn-cancel-task').addClass('hide');
+				tr.find('.btn-log').removeClass('hide');
+				$.ajax({
+					cache: false,
+					global: false,
+					type: 'POST',
+					url: '@Url.Action("GetTaskRunInfo", "ScheduleTask")',
+					data: { id: taskId },
+					success: function (data) {
+						tr.find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
+						tr.find('.last-run-info').html(data.lastRunHtml);
+					}
+				});
+			}
+		});
+	});
+</script>

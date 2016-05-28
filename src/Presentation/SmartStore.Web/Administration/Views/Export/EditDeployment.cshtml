@@ -1,0 +1,27 @@
+﻿@model ExportDeploymentModel
+@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Admin.Models.DataExchange;
+@{
+	var title = string.Concat(T("Admin.Common.Edit"), " ", T("Common.Deployment"));	
+	ViewBag.Title = title;
+}
+
+@using (Html.BeginForm())
+{
+	<div class="section-header">
+		<div class="title">
+			<img src="@Url.Content(Model.ThumbnailUrl)" />
+			@title - @Model.Name @Html.ActionLink("(" + T("Common.Back") + ")", "Edit", new { id = Model.ProfileId })
+		</div>
+		<div class="options">
+			<button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+			<button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
+			<button type="submit" name="export-deployment-delete" id="export-deployment-delete" value="export-deployment-delete" class="btn btn-danger">
+				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+			</button>
+		</div>
+	</div>
+	@Html.Partial("_CreateOrUpdate.Deployment", Model)
+}
+
+@Html.DeleteConfirmation("DeleteDeployment", "export-deployment-delete")

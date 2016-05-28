@@ -9,7 +9,7 @@
 		}
 		else
 		{
-            <a href="@Url.RouteUrl("Login")" data-role="button">@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
+            <a href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })" data-role="button">@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
         }
     </div>
 }

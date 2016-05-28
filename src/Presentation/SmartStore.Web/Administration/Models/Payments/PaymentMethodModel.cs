@@ -3,7 +3,7 @@ using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Services.Payments;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Admin.Models.Payments
 {

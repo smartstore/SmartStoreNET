@@ -1,26 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using System.Web;
 using System.Linq;
 using System.Text;
-using System.Globalization;
-using System.Collections.Generic;
+using System.Web;
 using OffAmazonPaymentsService;
 using OffAmazonPaymentsService.Model;
-using SmartStore.Utilities;
-using SmartStore.AmazonPay.Services;
 using SmartStore.AmazonPay.Extensions;
+using SmartStore.AmazonPay.Services;
 using SmartStore.AmazonPay.Settings;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Services.Payments;
-using SmartStore.Services.Directory;
-using SmartStore.Services.Orders;
-using SmartStore.Services.Localization;
-using SmartStore.Services.Common;
-using SmartStore.Services.Helpers;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
+using SmartStore.Services;
+using SmartStore.Services.Common;
+using SmartStore.Services.Directory;
+using SmartStore.Services.Helpers;
+using SmartStore.Services.Orders;
+using SmartStore.Services.Payments;
+using SmartStore.Utilities;
 
 namespace SmartStore.AmazonPay.Api
 {
@@ -29,24 +31,30 @@ namespace SmartStore.AmazonPay.Api
 		private readonly ICountryService _countryService;
 		private readonly IStateProvinceService _stateProvinceService;
 		private readonly IOrderService _orderService;
-		private readonly ILocalizationService _localizationService;
 		private readonly IAddressService _addressService;
 		private readonly IDateTimeHelper _dateTimeHelper;
+		private readonly CurrencySettings _currencySettings;
+		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
+		private readonly ICommonServices _services;
 
 		public AmazonPayApi(
 			ICountryService countryService,
 			IStateProvinceService stateProvinceService,
 			IOrderService orderService,
-			ILocalizationService localizationService,
 			IAddressService addressService,
-			IDateTimeHelper dateTimeHelper)
+			IDateTimeHelper dateTimeHelper,
+			CurrencySettings currencySettings,
+			IOrderTotalCalculationService orderTotalCalculationService,
+			ICommonServices services)
 		{
 			_countryService = countryService;
 			_stateProvinceService = stateProvinceService;
 			_orderService = orderService;
-			_localizationService = localizationService;
 			_addressService = addressService;
 			_dateTimeHelper = dateTimeHelper;
+			_currencySettings = currencySettings;
+			_orderTotalCalculationService = orderTotalCalculationService;
+			_services = services;
 		}
 
 		private string GetRandomId(string prefix)
@@ -210,16 +218,16 @@ namespace SmartStore.AmazonPay.Api
 
 			if (orderTotalAmount.HasValue)
 			{
-				attributes.OrderTotal = new OrderTotal()
+				attributes.OrderTotal = new OrderTotal
 				{
 					Amount = orderTotalAmount.Value.ToString("0.00", CultureInfo.InvariantCulture),
-					CurrencyCode = currencyCode
+					CurrencyCode = currencyCode ?? "EUR"
 				};
 			}
 
 			if (orderGuid.HasValue())
 			{
-				attributes.SellerOrderAttributes = new SellerOrderAttributes()
+				attributes.SellerOrderAttributes = new SellerOrderAttributes
 				{
 					SellerOrderId = orderGuid,
 					StoreName = storeName
@@ -237,6 +245,25 @@ namespace SmartStore.AmazonPay.Api
 				if (detailsResult.IsSetOrderReferenceDetails())
 					return detailsResult.OrderReferenceDetails;
 			}
+			return null;
+		}
+
+		public OrderReferenceDetails SetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, string currencyCode, List<OrganizedShoppingCartItem> cart)
+		{
+			decimal orderTotalDiscountAmountBase = decimal.Zero;
+			Discount orderTotalAppliedDiscount = null;
+			List<AppliedGiftCard> appliedGiftCards = null;
+			int redeemedRewardPoints = 0;
+			decimal redeemedRewardPointsAmount = decimal.Zero;
+
+			decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart,
+				out orderTotalDiscountAmountBase, out orderTotalAppliedDiscount, out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount);
+
+			if (shoppingCartTotalBase.HasValue)
+			{
+				return SetOrderReferenceDetails(client, orderReferenceId, shoppingCartTotalBase, currencyCode);
+			}
+
 			return null;
 		}
 
@@ -404,15 +431,17 @@ namespace SmartStore.AmazonPay.Api
 			result.NewPaymentStatus = capture.Order.PaymentStatus;
 
 			var request = new CaptureRequest();
+			var store = _services.StoreService.GetStoreById(capture.Order.StoreId);
+
 			request.SellerId = client.Settings.SellerId;
 			request.AmazonAuthorizationId = capture.Order.AuthorizationTransactionId;
 			request.CaptureReferenceId = GetRandomId("Capture");
 			//request.SellerCaptureNote = client.Settings.SellerNoteCapture.Truncate(255);
 
-			request.CaptureAmount = new Price()
+			request.CaptureAmount = new Price
 			{
 				Amount = capture.Order.OrderTotal.ToString("0.00", CultureInfo.InvariantCulture),
-				CurrencyCode = capture.Order.CustomerCurrencyCode ?? "EUR"
+				CurrencyCode = store.PrimaryStoreCurrency.CurrencyCode
 			};
 
 			var response = client.Service.Capture(request);
@@ -499,16 +528,18 @@ namespace SmartStore.AmazonPay.Api
 			result.NewPaymentStatus = refund.Order.PaymentStatus;
 
 			string amazonRefundId = null;
+			var store = _services.StoreService.GetStoreById(refund.Order.StoreId);
+
 			var request = new RefundRequest();
 			request.SellerId = client.Settings.SellerId;
 			request.AmazonCaptureId = refund.Order.CaptureTransactionId;
 			request.RefundReferenceId = GetRandomId("Refund");
 			//request.SellerRefundNote = client.Settings.SellerNoteRefund.Truncate(255);
 
-			request.RefundAmount = new Price()
+			request.RefundAmount = new Price
 			{
 				Amount = refund.AmountToRefund.ToString("0.00", CultureInfo.InvariantCulture),
-				CurrencyCode = refund.Order.CustomerCurrencyCode ?? "EUR"
+				CurrencyCode = store.PrimaryStoreCurrency.CurrencyCode
 			};
 
 			var response = client.Service.Refund(request);
@@ -594,7 +625,7 @@ namespace SmartStore.AmazonPay.Api
 
 			try
 			{
-				string[] strings = _localizationService.GetResource("Plugins.Payments.AmazonPay.MessageStrings").SplitSafe(";");
+				string[] strings = _services.Localization.GetResource("Plugins.Payments.AmazonPay.MessageStrings").SplitSafe(";");
 
 				string state = data.State.Grow(data.ReasonCode, " ");
 				if (data.ReasonDescription.HasValue())

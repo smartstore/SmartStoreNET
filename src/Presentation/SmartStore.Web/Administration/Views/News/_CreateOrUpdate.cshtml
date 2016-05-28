@@ -128,6 +128,10 @@
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.SeName)
+				@if (Model.Id != 0)
+				{
+					@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = "NewsItem", entityId = @Model.Id })
+				}
                 @Html.ValidationMessageFor(model => model.SeName)
             </td>
         </tr>

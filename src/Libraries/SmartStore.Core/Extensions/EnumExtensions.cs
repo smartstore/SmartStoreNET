@@ -9,54 +9,6 @@ namespace SmartStore
     {
 
         /// <summary>
-        /// Gets the <see cref="EnumFriendlyNameAttribute" /> of an <see cref="Enum" /> 
-        /// type value.
-        /// </summary>
-        /// <param name="value">The <see cref="Enum" /> type value.</param>
-        /// <returns>A string containing the text of the
-        /// <see cref="EnumFriendlyNameAttribute"/>.</returns>
-        public static string GetFriendlyName(this Enum value)
-        {
-            Guard.ArgumentNotNull(value, "value");
-
-            string friendlyName = value.ToString();
-            FieldInfo fieldInfo = value.GetType().GetField(friendlyName);
-
-            var attributes = (EnumFriendlyNameAttribute[])fieldInfo.GetCustomAttributes(typeof(EnumFriendlyNameAttribute), false);
-
-            if (attributes != null && attributes.Length == 1)
-            {
-                friendlyName = attributes[0].FriendlyName;
-            }
-            return friendlyName;
-        }
-
-        /// <summary>
-        /// Gets the <see cref="EnumDescriptionAttribute" /> of an <see cref="Enum" /> 
-        /// type value.
-        /// </summary>
-        /// <param name="value">The <see cref="Enum" /> type value.</param>
-        /// <returns>A string containing the text of the
-        /// <see cref="DescriptionAttribute"/>.</returns>
-        public static string GetDescription(this Enum value)
-        {
-            Guard.ArgumentNotNull(value, "value");
-
-            string description = value.ToString();
-            FieldInfo fieldInfo = value.GetType().GetField(description);
-
-            EnumDescriptionAttribute[] attributes =
-               (EnumDescriptionAttribute[])
-             fieldInfo.GetCustomAttributes(typeof(EnumDescriptionAttribute), false);
-
-            if (attributes != null && attributes.Length == 1)
-            {
-                description = attributes[0].Description;
-            }
-            return description;
-        }
-
-        /// <summary>
         /// Checks if the specified enum flag is set on a flagged enumeration type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -117,11 +69,11 @@ namespace SmartStore
             }
         }
 
-        /// <SUMMARY>   
-        /// Helper function for handling the value types. Boxes the params to   
-        /// object so that the cast can be called on them.   
-        /// </SUMMARY>   
-        private static bool BoxUnbox<T>(object value, object flags, Func<T, T, bool> op)
+		/// <summary>   
+		/// Helper function for handling the value types. Boxes the params to   
+		/// object so that the cast can be called on them.   
+		/// </summary>   
+		private static bool BoxUnbox<T>(object value, object flags, Func<T, T, bool> op)
         {
             return op((T)value, (T)flags);
         }

@@ -6,7 +6,7 @@ using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Blogs;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Blogs
 {

@@ -33,9 +33,10 @@ namespace SmartStore.Services.Blogs
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="maxAge">The maximum age of returned blog posts</param>
         /// <returns>Blog posts</returns>
 		IPagedList<BlogPost> GetAllBlogPosts(int storeId, int languageId,
-            DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false);
+			DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null);
 
         /// <summary>
         /// Gets all blog posts

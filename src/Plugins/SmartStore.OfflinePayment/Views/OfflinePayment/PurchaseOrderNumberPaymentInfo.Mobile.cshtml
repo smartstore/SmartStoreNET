@@ -1,0 +1,10 @@
+﻿@{
+    Layout = "";
+}
+@using SmartStore.Web.Framework;
+@using SmartStore.OfflinePayment.Models;
+@model PurchaseOrderNumberPaymentInfoModel
+
+@Html.SmartLabelFor(model => model.PurchaseOrderNumber, false)
+@Html.TextBoxFor(model => model.PurchaseOrderNumber, new { autocomplete = "off" })
+@Html.ValidationMessageFor(model => model.PurchaseOrderNumber)

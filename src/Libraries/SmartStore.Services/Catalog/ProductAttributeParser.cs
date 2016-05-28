@@ -1,12 +1,19 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Xml;
-using SmartStore.Core.Domain.Catalog;
-using SmartStore.Collections;
-using Newtonsoft.Json;
+using System.Linq;
+using System.Text;
 using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
+using System.Xml;
+using System.Xml.Linq;
+using Newtonsoft.Json;
+using SmartStore.Collections;
+using SmartStore.Core.Caching;
+using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Catalog;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Catalog
 {
@@ -15,30 +22,40 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public partial class ProductAttributeParser : IProductAttributeParser
     {
-        private readonly IProductAttributeService _productAttributeService;
+		// 0 = ProductId, 1 = AttributeXml Hash
+		private const string ATTRIBUTECOMBINATION_BY_ID_HASH = "SmartStore.parsedattributecombination.id-{0}-{1}";
 
-        public ProductAttributeParser(IProductAttributeService productAttributeService)
+		private readonly IProductAttributeService _productAttributeService;
+		private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
+		private readonly ICacheManager _cacheManager;
+
+		public ProductAttributeParser(
+			IProductAttributeService productAttributeService,
+			IRepository<ProductVariantAttributeCombination> pvacRepository,
+			ICacheManager cacheManager)
         {
-            this._productAttributeService = productAttributeService;
+            _productAttributeService = productAttributeService;
+			_pvacRepository = pvacRepository;
+			_cacheManager = cacheManager;
         }
 
-        #region Product attributes
+		#region Product attributes
 
-        /// <summary>
+		/// <summary>
         /// Gets selected product variant attribute identifiers
         /// </summary>
-        /// <param name="attributes">Attributes</param>
+        /// <param name="attributesXml">Attributes</param>
         /// <returns>Selected product variant attribute identifiers</returns>
-        private IEnumerable<int> ParseProductVariantAttributeIds(string attributes)
+        private IEnumerable<int> ParseProductVariantAttributeIds(string attributesXml)
         {
             var ids = new List<int>();
-            if (String.IsNullOrEmpty(attributes))
+            if (String.IsNullOrEmpty(attributesXml))
                 yield break;
 
             try
             {
                 var xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(attributes);
+                xmlDoc.LoadXml(attributesXml);
 
                 var nodeList = xmlDoc.SelectNodes(@"//Attributes/ProductVariantAttribute");
                 foreach (var node in nodeList.Cast<XmlElement>())
@@ -55,126 +72,182 @@ namespace SmartStore.Services.Catalog
                 }
             }
             finally { }
-
         }
 
-        public virtual Multimap<int, string> DeserializeProductVariantAttributes(string attributes)
+		//public virtual Multimap<int, string> DeserializeProductVariantAttributes(string attributesXml)
+		//{
+		//    var attrs = new Multimap<int, string>();
+		//    if (String.IsNullOrEmpty(attributesXml))
+		//        return attrs;
+
+		//    try
+		//    {
+		//        var xmlDoc = new XmlDocument();
+		//        xmlDoc.LoadXml(attributesXml);
+
+		//        var nodeList1 = xmlDoc.SelectNodes(@"//Attributes/ProductVariantAttribute");
+		//        foreach (var node1 in nodeList1.Cast<XmlElement>())
+		//        {
+		//            string sid = node1.GetAttribute("ID").Trim();
+		//            if (sid.HasValue())
+		//            {
+		//                int id = 0;
+		//                if (int.TryParse(sid, out id))
+		//                {
+
+		//                    var nodeList2 = node1.SelectNodes(@"ProductVariantAttributeValue/Value").Cast<XmlElement>();
+		//                    foreach (var node2 in nodeList2)
+		//                    {
+		//                        string value = node2.InnerText.Trim();
+		//                        attrs.Add(id, value);
+		//                    }
+		//                }
+		//            }
+		//        }
+		//    }
+		//    catch (Exception exc)
+		//    {
+		//        Debug.Write(exc.ToString());
+		//    }
+
+		//    return attrs;
+		//}
+
+		public virtual Multimap<int, string> DeserializeProductVariantAttributes(string attributesXml)
+		{
+			var attrs = new Multimap<int, string>();
+			if (String.IsNullOrEmpty(attributesXml))
+				return attrs;
+
+			try
+			{
+				var doc = XDocument.Parse(attributesXml);
+
+				// Attributes/ProductVariantAttribute
+				foreach (var node1 in doc.Descendants("ProductVariantAttribute"))
+				{
+					string sid = node1.Attribute("ID").Value;
+					if (sid.HasValue())
+					{
+						int id = 0;
+						if (int.TryParse(sid, out id))
+						{
+							// ProductVariantAttributeValue/Value
+							foreach (var node2 in node1.Descendants("Value"))
+							{
+								attrs.Add(id, node2.Value);
+							}
+						}
+					}
+				}
+			}
+			catch (Exception exc)
+			{
+				Debug.Write(exc.ToString());
+			}
+
+			return attrs;
+		}
+
+		/// <summary>
+		/// Gets selected product variant attributes
+		/// </summary>
+		/// <param name="attributesXml">Attributes</param>
+		/// <returns>Selected product variant attributes</returns>
+		public virtual IList<ProductVariantAttribute> ParseProductVariantAttributes(string attributesXml)
+		{
+			var ids = ParseProductVariantAttributeIds(attributesXml);
+
+			return _productAttributeService.GetProductVariantAttributesByIds(ids.ToList());
+		}
+
+        public virtual IEnumerable<ProductVariantAttributeValue> ParseProductVariantAttributeValues(string attributeXml)
         {
-            var attrs = new Multimap<int, string>();
-            if (String.IsNullOrEmpty(attributes))
-                return attrs;
+            //var pvaValues = Enumerable.Empty<ProductVariantAttributeValue>();
 
-            try
-            {
-                var xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(attributes);
-
-                var nodeList1 = xmlDoc.SelectNodes(@"//Attributes/ProductVariantAttribute");
-                foreach (var node1 in nodeList1.Cast<XmlElement>())
-                {
-                    string sid = node1.GetAttribute("ID").Trim();
-                    if (sid.HasValue())
-                    {
-                        int id = 0;
-                        if (int.TryParse(sid, out id))
-                        {
-                            
-                            var nodeList2 = node1.SelectNodes(@"ProductVariantAttributeValue/Value").Cast<XmlElement>();
-                            foreach (var node2 in nodeList2)
-                            {
-                                string value = node2.InnerText.Trim();
-                                attrs.Add(id, value);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception exc)
-            {
-                Debug.Write(exc.ToString());
-            }
-
-            return attrs;
-        }
-
-        /// <summary>
-        /// Gets selected product variant attributes
-        /// </summary>
-        /// <param name="attributes">Attributes</param>
-        /// <returns>Selected product variant attributes</returns>
-        public virtual IList<ProductVariantAttribute> ParseProductVariantAttributes(string attributes)
-        {
-            var pvaCollection = new List<ProductVariantAttribute>();
-
-            // codehint: sm-edit
-            var ids = ParseProductVariantAttributeIds(attributes);
-            return this.ParseProductVariantAttributes(ids.ToList()).ToList();
-        }
-
-        public virtual IEnumerable<ProductVariantAttribute> ParseProductVariantAttributes(ICollection<int> ids)
-        {
-
-            if (ids != null)
-            {
-                if (ids.Count == 1)
-                {
-                    var pva = _productAttributeService.GetProductVariantAttributeById(ids.ElementAt(0));
-                    if (pva != null)
-                    {
-                        return new ProductVariantAttribute[] { pva };
-                    }
-                }
-                else
-                {
-                    return _productAttributeService.GetProductVariantAttributesByIds(ids.ToArray()).ToList();
-                }
-            }
-
-            return Enumerable.Empty<ProductVariantAttribute>();
-        }
-
-        /// <summary>
-        /// Get product variant attribute values
-        /// </summary>
-        /// <param name="attributes">Attributes</param>
-        /// <returns>Product variant attribute values</returns>
-        public virtual IEnumerable<ProductVariantAttributeValue> ParseProductVariantAttributeValues(string attributes)
-        {
-            var pvaValues = Enumerable.Empty<ProductVariantAttributeValue>();
-
-            var attrs = DeserializeProductVariantAttributes(attributes);
-            var pvaCollection = ParseProductVariantAttributes(attrs.Keys);
+			var allIds = new List<int>();
+            var attrs = DeserializeProductVariantAttributes(attributeXml);
+			var pvaCollection = _productAttributeService.GetProductVariantAttributesByIds(attrs.Keys);
 
             foreach (var pva in pvaCollection)
             {
                 if (!pva.ShouldHaveValues())
                     continue;
 
-                var pvaValuesStr = attrs[pva.Id]; //ParseValues(attributes, pva.Id);
-                var ids = from id in pvaValuesStr
-                          where id.HasValue()
-                          select id.ToInt();
-                var values = _productAttributeService.GetProductVariantAttributeValuesByIds(ids.ToArray());
+                var pvaValuesStr = attrs[pva.Id];
 
-                pvaValues = pvaValues.Concat(values);
+                var ids =
+					from id in pvaValuesStr
+					where id.HasValue()
+					select id.ToInt();
+
+				allIds.AddRange(ids);
+
+                //var values = _productAttributeService.GetProductVariantAttributeValuesByIds(ids.ToArray());
+                //pvaValues = pvaValues.Concat(values);
             }
 
-            return pvaValues;
+			int[] allDistinctIds = allIds.Distinct().ToArray();
+
+			var values = _productAttributeService.GetProductVariantAttributeValuesByIds(allDistinctIds);
+
+            return values;
         }
+
+		public IList<string> ParseProductVariantAttributeValues(string attributesXml, IEnumerable<ProductVariantAttribute> attributes, int languageId = 0)
+		{
+			var values = new List<string>();
+
+			if (attributesXml.IsEmpty())
+				return values;
+
+			var allValueIds = new List<int>();
+			var combinedAttributes = DeserializeProductVariantAttributes(attributesXml);
+
+			foreach (var pva in attributes.Where(x => x.ShouldHaveValues()).OrderBy(x => x.DisplayOrder))
+			{
+				if (combinedAttributes.ContainsKey(pva.Id))
+				{
+					var pvaValuesStr = combinedAttributes[pva.Id];
+					var ids = pvaValuesStr.Where(x => x.HasValue()).Select(x => x.ToInt());
+
+					allValueIds.AddRange(ids);
+				}
+			}
+
+			foreach (int id in allValueIds.Distinct())
+			{
+				foreach (var attribute in attributes)
+				{
+					var attributeValue = attribute.ProductVariantAttributeValues.FirstOrDefault(x => x.Id == id);
+					if (attributeValue != null)
+					{
+						var value = attributeValue.GetLocalized(x => x.Name, languageId, true, false);
+
+						if (!values.Any(x => x.IsCaseInsensitiveEqual(value)))
+							values.Add(value);
+						break;
+					}
+				}
+			}
+
+			return values;
+		}
+
 
         /// <summary>
         /// Gets selected product variant attribute value
         /// </summary>
-        /// <param name="attributes">Attributes</param>
+        /// <param name="attributesXml">Attributes</param>
         /// <param name="productVariantAttributeId">Product variant attribute identifier</param>
         /// <returns>Product variant attribute value</returns>
-        public virtual IList<string> ParseValues(string attributes, int productVariantAttributeId)
+        public virtual IList<string> ParseValues(string attributesXml, int productVariantAttributeId)
         {
             var selectedProductVariantAttributeValues = new List<string>();
             try
             {
                 var xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(attributes);
+                xmlDoc.LoadXml(attributesXml);
 
                 var nodeList1 = xmlDoc.SelectNodes(@"//Attributes/ProductVariantAttribute");
                 foreach (XmlNode node1 in nodeList1)
@@ -209,85 +282,80 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Adds an attribute
         /// </summary>
-        /// <param name="attributes">Attributes</param>
+        /// <param name="attributesXml">Attributes</param>
         /// <param name="pva">Product variant attribute</param>
         /// <param name="value">Value</param>
         /// <returns>Attributes</returns>
-        public virtual string AddProductAttribute(string attributes, ProductVariantAttribute pva, string value)
+        public virtual string AddProductAttribute(string attributesXml, ProductVariantAttribute pva, string value)
         {
-			return pva.AddProductAttribute(attributes, value);
+			return pva.AddProductAttribute(attributesXml, value);
         }
 
-        /// <summary>
-        /// Are attributes equal
-        /// </summary>
-        /// <param name="attributes1">The attributes of the first product</param>
-        /// <param name="attributes2">The attributes of the second product</param>
-        /// <returns>Result</returns>
-        public virtual bool AreProductAttributesEqual(string attributes1, string attributes2)
+		public virtual bool AreProductAttributesEqual(string attributeXml1, string attributeXml2)
         {
-            var attrs1 = DeserializeProductVariantAttributes(attributes1);
-            var attrs2 = DeserializeProductVariantAttributes(attributes2);
+			if (attributeXml1.IsCaseInsensitiveEqual(attributeXml2))
+				return true;
 
-            if (attrs1.Count == attrs2.Count)
-            {
-                var pva1Collection = ParseProductVariantAttributes(attrs2.Keys);
-                var pva2Collection = ParseProductVariantAttributes(attrs1.Keys);
-                foreach (var pva1 in pva1Collection)
-                {
-                    foreach (var pva2 in pva2Collection)
-                    {
-                        if (pva1.Id == pva2.Id)
-                        {
-                            var pvaValues1Str = attrs2[pva1.Id]; // ParseValues(attributes2, pva1.Id);
-                            var pvaValues2Str = attrs1[pva2.Id]; // ParseValues(attributes1, pva2.Id);
-                            if (pvaValues1Str.Count == pvaValues2Str.Count)
-                            {
-                                foreach (string str1 in pvaValues1Str)
-                                {
-                                    bool hasAttribute = pvaValues2Str.Any(x => x.IsCaseInsensitiveEqual(str1));
-                                    if (!hasAttribute)
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                return false;
-            }
+			var attributes1 = DeserializeProductVariantAttributes(attributeXml1);
+            var attributes2 = DeserializeProductVariantAttributes(attributeXml2);
+
+			if (attributes1.Count != attributes2.Count)
+				return false;		
+
+			foreach (var kvp in attributes1)
+			{
+				if (!attributes2.ContainsKey(kvp.Key))
+				{
+					// the second list does not contain this id: not equal!
+					return false;
+				}
+
+				// compare the values
+				var values1 = kvp.Value;
+				var values2 = attributes2[kvp.Key];
+
+				if (values1.Count != values2.Count)
+				{
+					// number of values differ: not equal!
+					return false;
+				}
+
+				foreach (var value1 in values1)
+				{
+					var str1 = value1.TrimSafe();
+
+					if (!values2.Any(x => x.TrimSafe().IsCaseInsensitiveEqual(str1)))
+					{
+						// the second values list for this attribute does not contain this value: not equal!
+						return false;
+					}
+				}
+			}
 
             return true;
         }
 
-        /// <summary>
-        /// Finds a product variant attribute combination by attributes stored in XML 
-        /// </summary>
-		/// <param name="product">Product</param>
-        /// <param name="attributesXml">Attributes in XML format</param>
-        /// <returns>Found product variant attribute combination</returns>
-		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(Product product, string attributesXml)
-        {
-			if (product == null)
-				throw new ArgumentNullException("product");
-
-            return FindProductVariantAttributeCombination(product.Id, attributesXml);
-        }
-
-		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml)
+		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(
+			int productId, 
+			string attributesXml)
 		{
-			if (attributesXml.HasValue())
+			if (attributesXml.IsEmpty())
+				return null;
+
+			var attributesHash = attributesXml.Hash(Encoding.UTF8);
+            var cacheKey = ATTRIBUTECOMBINATION_BY_ID_HASH.FormatInvariant(productId, attributesHash);
+
+			var result = _cacheManager.Get(cacheKey, () => 
 			{
-				//existing combinations
-				var combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(productId);
+				var query = from x in _pvacRepository.TableUntracked
+							where x.ProductId == productId
+							select new
+							{
+								x.Id,
+								x.AttributesXml
+							};
+
+				var combinations = query.ToList();
 				if (combinations.Count == 0)
 					return null;
 
@@ -295,61 +363,103 @@ namespace SmartStore.Services.Catalog
 				{
 					bool attributesEqual = AreProductAttributesEqual(combination.AttributesXml, attributesXml);
 					if (attributesEqual)
-						return combination;
+						return _productAttributeService.GetProductVariantAttributeCombinationById(combination.Id);
 				}
-			}
-			return null;
+
+				return null;
+			});
+
+			return result;
 		}
 
-		/// <summary>
-		/// Deserializes attribute data from an URL query string
-		/// </summary>
-		/// <param name="jsonData">Json data query string</param>
-		/// <returns>List items with following structure: Product.Id, ProductAttribute.Id, Product_ProductAttribute_Mapping.Id, ProductVariantAttributeValue.Id</returns>
 		public virtual List<List<int>> DeserializeQueryData(string jsonData)
 		{
 			if (jsonData.HasValue())
 			{
 				if (jsonData.StartsWith("["))
+				{
 					return JsonConvert.DeserializeObject<List<List<int>>>(jsonData);
+				}
 
-				return new List<List<int>>() { JsonConvert.DeserializeObject<List<int>>(jsonData) };
+				return new List<List<int>> { JsonConvert.DeserializeObject<List<int>>(jsonData) };
 			}
 			return new List<List<int>>();
 		}
-		
-		/// <summary>
-		/// Serializes attribute data
-		/// </summary>
-		/// <param name="productId">Product identifier</param>
-		/// <param name="attributesXml">Attribute XML string</param>
-		/// <param name="urlEncode">Whether to URL encode</param>
-		/// <returns>Json string with attribute data</returns>
-		public virtual string SerializeQueryData(int productId, string attributesXml, bool urlEncode = true)
+
+		public virtual void DeserializeQueryData(List<List<int>> queryData, string attributesXml, int productId, int bundleItemId = 0)
 		{
+			Guard.ArgumentNotNull(() => queryData);
+
 			if (attributesXml.HasValue() && productId != 0)
 			{
-				var data = new List<List<int>>();
 				var attributeValues = ParseProductVariantAttributeValues(attributesXml).ToList();
 
 				foreach (var value in attributeValues)
 				{
-					data.Add(new List<int>
+					var lst = new List<int>
 					{
 						productId,
 						value.ProductVariantAttribute.ProductAttributeId,
 						value.ProductVariantAttributeId,
 						value.Id
-					});
-				}
+					};
 
-				if (data.Count > 0)
-				{
-					string result = JsonConvert.SerializeObject(data);
-					return (urlEncode ? HttpUtility.UrlEncode(result) : result);
+					if (bundleItemId != 0)
+						lst.Add(bundleItemId);
+
+					queryData.Add(lst);
 				}
 			}
+		}
+
+		public virtual string SerializeQueryData(string attributesXml, int productId, bool urlEncode = true)
+		{
+			var data = new List<List<int>>();
+
+			DeserializeQueryData(data, attributesXml, productId);
+
+			return SerializeQueryData(data, urlEncode);
+		}
+
+		public virtual string SerializeQueryData(List<List<int>> queryData, bool urlEncode = true)
+		{
+			if (queryData.Count > 0)
+			{
+				var result = JsonConvert.SerializeObject(queryData);
+
+				return (urlEncode ? HttpUtility.UrlEncode(result) : result);
+			}
+
 			return "";
+		}
+
+		private string CreateProductUrl(string queryString, string productSeName)
+		{
+			var url = UrlHelper.GenerateUrl(
+				"Product",
+				null,
+				null,
+				new RouteValueDictionary(new { SeName = productSeName }),
+				RouteTable.Routes,
+				HttpContext.Current.Request.RequestContext,
+				false);
+
+			if (queryString.HasValue())
+			{
+				url = string.Concat(url, url.Contains("?") ? "&" : "?", "attributes=", queryString);
+			}
+
+			return url;
+		}
+
+		public virtual string GetProductUrlWithAttributes(string attributesXml, int productId, string productSeName)
+		{
+			return CreateProductUrl(SerializeQueryData(attributesXml, productId), productSeName);
+		}
+
+		public virtual string GetProductUrlWithAttributes(List<List<int>> queryData, string productSeName)
+		{
+			return CreateProductUrl(SerializeQueryData(queryData), productSeName);
 		}
 
         #endregion
@@ -359,14 +469,14 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Add gift card attrbibutes
         /// </summary>
-        /// <param name="attributes">Attributes</param>
+        /// <param name="attributesXml">Attributes</param>
         /// <param name="recipientName">Recipient name</param>
         /// <param name="recipientEmail">Recipient email</param>
         /// <param name="senderName">Sender name</param>
         /// <param name="senderEmail">Sender email</param>
         /// <param name="giftCardMessage">Message</param>
         /// <returns>Attributes</returns>
-        public string AddGiftCardAttribute(string attributes, string recipientName,
+        public string AddGiftCardAttribute(string attributesXml, string recipientName,
             string recipientEmail, string senderName, string senderEmail, string giftCardMessage)
         {
             string result = string.Empty;
@@ -378,14 +488,14 @@ namespace SmartStore.Services.Catalog
                 senderEmail = senderEmail.Trim();
 
                 var xmlDoc = new XmlDocument();
-                if (String.IsNullOrEmpty(attributes))
+                if (String.IsNullOrEmpty(attributesXml))
                 {
                     var element1 = xmlDoc.CreateElement("Attributes");
                     xmlDoc.AppendChild(element1);
                 }
                 else
                 {
-                    xmlDoc.LoadXml(attributes);
+                    xmlDoc.LoadXml(attributesXml);
                 }
 
                 var rootElement = (XmlElement)xmlDoc.SelectSingleNode(@"//Attributes");
@@ -429,13 +539,13 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Get gift card attrbibutes
         /// </summary>
-        /// <param name="attributes">Attributes</param>
+        /// <param name="attributesXml">Attributes</param>
         /// <param name="recipientName">Recipient name</param>
         /// <param name="recipientEmail">Recipient email</param>
         /// <param name="senderName">Sender name</param>
         /// <param name="senderEmail">Sender email</param>
         /// <param name="giftCardMessage">Message</param>
-        public void GetGiftCardAttribute(string attributes, out string recipientName,
+        public void GetGiftCardAttribute(string attributesXml, out string recipientName,
             out string recipientEmail, out string senderName,
             out string senderEmail, out string giftCardMessage)
         {
@@ -448,7 +558,7 @@ namespace SmartStore.Services.Catalog
             try
             {
                 var xmlDoc = new XmlDocument();
-                xmlDoc.LoadXml(attributes);
+                xmlDoc.LoadXml(attributesXml);
 
                 var recipientNameElement = (XmlElement)xmlDoc.SelectSingleNode(@"//Attributes/GiftCardInfo/RecipientName");
                 var recipientEmailElement = (XmlElement)xmlDoc.SelectSingleNode(@"//Attributes/GiftCardInfo/RecipientEmail");

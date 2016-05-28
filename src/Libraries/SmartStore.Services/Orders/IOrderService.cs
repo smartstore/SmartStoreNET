@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -68,6 +69,32 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="order">The order</param>
         void DeleteOrder(Order order);
+
+		/// <summary>
+		/// Get orders
+		/// </summary>
+		/// <param name="storeId">Store identifier; null to load all orders</param>
+		/// <param name="customerId">Customer identifier; null to load all orders</param>
+		/// <param name="startTime">Order start time; null to load all orders</param>
+		/// <param name="endTime">Order end time; null to load all orders</param>
+		/// <param name="orderStatusIds">Filter by order status</param>
+		/// <param name="paymentStatusIds">Filter by payment status</param>
+		/// <param name="shippingStatusIds">Filter by shipping status</param>
+		/// <param name="billingEmail">Billing email. Leave empty to load all records.</param>
+		/// <param name="orderNumber">Filter by order number</param>
+		/// <param name="billingName">Billing name. Leave empty to load all records.</param>
+		/// <returns>Order query</returns>
+		IQueryable<Order> GetOrders(
+			int storeId,
+			int customerId,
+			DateTime? startTime,
+			DateTime? endTime,
+			int[] orderStatusIds,
+			int[] paymentStatusIds,
+			int[] shippingStatusIds,
+			string billingEmail,
+			string orderNumber,
+			string billingName = null);
 
         /// <summary>
         /// Search orders
@@ -172,6 +199,13 @@ namespace SmartStore.Services.Orders
            int? customerId, DateTime? startTime, DateTime? endTime,
            OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
            bool loadDownloableProductsOnly = false);
+
+		/// <summary>
+		/// Get order items by order identifiers
+		/// </summary>
+		/// <param name="orderIds">Order identifiers</param>
+		/// <returns>Order items</returns>
+		Multimap<int, OrderItem> GetOrderItemsByOrderIds(int[] orderIds);
 
         /// <summary>
         /// Delete an order item

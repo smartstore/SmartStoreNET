@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Affiliates;
@@ -47,6 +48,7 @@ namespace SmartStore.Services.Tests.Orders
         IShippingService _shippingService;
         IShipmentService _shipmentService;
         IPaymentService _paymentService;
+		IProviderManager _providerManager;
         ICheckoutAttributeParser _checkoutAttributeParser;
         IDiscountService _discountService;
         IGiftCardService _giftCardService;
@@ -87,11 +89,11 @@ namespace SmartStore.Services.Tests.Orders
 		IAffiliateService _affiliateService;
 		ISettingService _settingService;
 		IDownloadService _downloadService;
-		ICommonServices _commonServices;
+		ICommonServices _services;
 		HttpRequestBase _httpRequestBase;
 		IGeoCountryLookup _geoCountryLookup;
-
 		Store _store;
+		ITypeFinder _typeFinder;
 
         [SetUp]
         public new void SetUp()
@@ -119,6 +121,7 @@ namespace SmartStore.Services.Tests.Orders
 
             _localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			_settingService = MockRepository.GenerateMock<ISettingService>();
+			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
 
             //shipping
             _shippingSettings = new ShippingSettings();
@@ -126,6 +129,7 @@ namespace SmartStore.Services.Tests.Orders
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add("FixedRateTestShippingRateComputationMethod");
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
             _logger = new NullLogger();
+
             _shippingService = new ShippingService(cacheManager,
                 _shippingMethodRepository,
                 _logger,
@@ -137,10 +141,13 @@ namespace SmartStore.Services.Tests.Orders
                 _shippingSettings, pluginFinder, 
                 _eventPublisher, _shoppingCartSettings,
 				_settingService,
-				this.ProviderManager);
+				this.ProviderManager,
+				_typeFinder);
+
             _shipmentService = MockRepository.GenerateMock<IShipmentService>();
             
             _paymentService = MockRepository.GenerateMock<IPaymentService>();
+			_providerManager = MockRepository.GenerateMock<IProviderManager>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
             _giftCardService = MockRepository.GenerateMock<IGiftCardService>();
             
@@ -153,19 +160,19 @@ namespace SmartStore.Services.Tests.Orders
             _addressService = MockRepository.GenerateMock<IAddressService>();
             _addressService.Expect(x => x.GetAddressById(_taxSettings.DefaultTaxAddressId)).Return(new Address() { Id = _taxSettings.DefaultTaxAddressId });
 			_downloadService = MockRepository.GenerateMock<IDownloadService>();
-			_commonServices = MockRepository.GenerateMock<ICommonServices>();
+			_services = MockRepository.GenerateMock<ICommonServices>();
 			_httpRequestBase = MockRepository.GenerateMock<HttpRequestBase>();
 			_geoCountryLookup = MockRepository.GenerateMock<IGeoCountryLookup>();
 
-			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _shoppingCartSettings, pluginFinder, _settingService, _geoCountryLookup, this.ProviderManager);
+			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _shoppingCartSettings, pluginFinder, _geoCountryLookup, this.ProviderManager);
 
             _rewardPointsSettings = new RewardPointsSettings();
 
 			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings,
-				_productAttributeService, _downloadService, _commonServices, _httpRequestBase, _taxService);
+				_productAttributeService, _downloadService, _services, _httpRequestBase, _taxService);
 
             _orderTotalCalcService = new OrderTotalCalculationService(_workContext, _storeContext,
-                _priceCalcService, _taxService, _shippingService, _paymentService,
+                _priceCalcService, _taxService, _shippingService, _providerManager,
                 _checkoutAttributeParser, _discountService, _giftCardService, _genericAttributeService, _productAttributeParser,
                 _taxSettings, _rewardPointsSettings, _shippingSettings, _shoppingCartSettings, _catalogSettings);
 

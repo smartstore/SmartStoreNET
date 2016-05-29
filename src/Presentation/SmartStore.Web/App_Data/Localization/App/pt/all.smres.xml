@@ -1018,7 +1018,7 @@
 		<Value>Show advertisements</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog">
-		<Value>Catalog</Value>
+		<Value>Catalogo</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes">
 		<Value>Attributes</Value>
@@ -2939,10 +2939,10 @@
 		<Value>Quantity</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.TierPrices.Fields.Store">
-		<Value>Store</Value>
+		<Value>Loja</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.TierPrices.Fields.Store.Hint">
-		<Value>Store</Value>
+		<Value>Loja</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.TierPrices.SaveBeforeEdit">
 		<Value>You need to save the product before you can add tier prices for this product page.</Value>
@@ -3266,7 +3266,7 @@
 		<Value>Yes</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration">
-		<Value>Configuration</Value>
+		<Value>Configuração</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.ACL">
 		<Value>Access control list</Value>
@@ -4775,7 +4775,7 @@
 		<Value>Check to disable the searching of product SKUs. This setting can increase the performance of searching.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.UserSettings">
-		<Value>Customers</Value>
+		<Value>Clientes</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser">
 		<Value>Customer settings</Value>
@@ -9501,7 +9501,7 @@
 		<Value>Payment &amp; Gateways</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Plugins.KnownGroup.Sales">
-		<Value>Sales</Value>
+		<Value>Vendas</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Plugins.KnownGroup.Security">
 		<Value>Security</Value>
@@ -9525,7 +9525,7 @@
 		<Value>Promotion feeds</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions">
-		<Value>Promotions</Value>
+		<Value>Promoções</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Promotions.Campaigns">
 		<Value>Campaigns</Value>
@@ -10020,7 +10020,7 @@
 		<Value>This Year</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.SalesReport.Average.SumTodayOrders">
-		<Value>Today</Value>
+		<Value>Hoje</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.SalesReport.Bestsellers">
 		<Value>Bestsellers</Value>
@@ -10125,7 +10125,7 @@
 		<Value>In order to proceed, the record must be saved first.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System">
-		<Value>System</Value>
+		<Value>Sistema</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.Log">
 		<Value>Log</Value>
@@ -11268,7 +11268,7 @@
 		<Value>Cart</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.Progress.Complete">
-		<Value>Complete</Value>
+		<Value>Completo</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.Progress.Confirm">
 		<Value>Confirm</Value>
@@ -11400,7 +11400,7 @@
 		<Value>Cancel</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Cancelled">
-		<Value>Cancelled</Value>
+		<Value>Cancelado</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Catalog.EditProduct">
 		<Value>Edit product</Value>
@@ -12018,10 +12018,10 @@
 		<Value>Complete</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.ThinkStore.Core.Domain.Orders.OrderStatus.Pending">
-		<Value>Pending</Value>
+		<Value>Pendente</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.ThinkStore.Core.Domain.Orders.OrderStatus.Processing">
-		<Value>Processing</Value>
+		<Value>Processando</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.ThinkStore.Core.Domain.Orders.ReturnRequestStatus.Cancelled">
 		<Value>Cancelled</Value>
@@ -13755,7 +13755,7 @@
 		<Value>Profile: {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="Profile.Statistics">
-		<Value>Statistics</Value>
+		<Value>Estatísticas</Value>
 	</LocaleResource>
 	<LocaleResource Name="Profile.Topic">
 		<Value>Topic</Value>

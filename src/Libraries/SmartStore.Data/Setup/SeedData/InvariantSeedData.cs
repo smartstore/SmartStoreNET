@@ -72,18 +72,18 @@ namespace SmartStore.Data.Setup
 		{
 			var seName = GetSeName("company-logo");
 			var imgCompanyLogo = _ctx.Set<Picture>().Where(x => x.SeoFilename == seName).FirstOrDefault();
-			
-			var entities = new List<Store>()
+
+            var entities = new List<Store>()
 			{
 				new Store()
 				{
-					Name = "Your store name",
-					Url = "http://www.yourStore.com/",
-					Hosts = "yourstore.com,www.yourstore.com",
+					Name = "Think Store",
+					Url = "http://www.thinkam.net/thinkstore",
+					Hosts = "www.thinkam.net/thinkstore",
 					SslEnabled = false,
 					DisplayOrder = 1,
 					LogoPictureId = imgCompanyLogo.Id
-				}
+                }
 			};
 			this.Alter(entities);
 			return entities;
@@ -267,6 +267,7 @@ namespace SmartStore.Data.Setup
 			var entities = new List<Currency>()
 			{
 				CreateCurrency("en-US", published: true, rate: 1M, order: 0),
+                CreateCurrency("pt-BR", published: true, rate: 1M, order: 1),
 				CreateCurrency("en-GB", published: true, rate: 0.61M, order: 5),
 				CreateCurrency("en-AU", published: true, rate: 0.94M, order: 10),
 				CreateCurrency("en-CA", published: true, rate: 0.98M, order: 15),
@@ -844,9 +845,215 @@ namespace SmartStore.Data.Setup
 				Published = true,
 				DisplayOrder = 1,
 			});
-			#endregion
+            #endregion
 
-			var entities = new List<Country>()
+            var cBrasil = new Country
+            {
+                Name = "Brasil",
+                AllowsBilling = true,
+                AllowsShipping = true,
+                TwoLetterIsoCode = "BR",
+                ThreeLetterIsoCode = "BRA",
+                NumericIsoCode = 76,
+                SubjectToVat = false,
+                DisplayOrder = 100,
+                Published = true
+            };
+
+            #region BR Regions
+
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Acre",
+                Abbreviation = "AC",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Alagoas",
+                Abbreviation = "AL",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Amapá",
+                Abbreviation = "AP",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Amazonas",
+                Abbreviation = "AM",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Bahia",
+                Abbreviation = "BA",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Ceará",
+                Abbreviation = "CE",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Distrito Federal",
+                Abbreviation = "DF",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Espírito Santo",
+                Abbreviation = "ES",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Goiás",
+                Abbreviation = "GO",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Maranhão",
+                Abbreviation = "MA",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Mato Grosso",
+                Abbreviation = "MT",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Mato Grosso do Sul",
+                Abbreviation = "MS",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Minas Gerais",
+                Abbreviation = "MG",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Pará",
+                Abbreviation = "PA",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Paraíba",
+                Abbreviation = "PB",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Paraná",
+                Abbreviation = "PR",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Pernambuco",
+                Abbreviation = "PE",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Piauí",
+                Abbreviation = "PI",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Rio de Janeiro",
+                Abbreviation = "RJ",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Rio Grande do Norte",
+                Abbreviation = "RN",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Rio Grande do Sul",
+                Abbreviation = "RS",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Rondônia",
+                Abbreviation = "RO",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Roraima",
+                Abbreviation = "RR",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Santa Catarina",
+                Abbreviation = "SC",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "São Paulo",
+                Abbreviation = "SP",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Sergipe",
+                Abbreviation = "SE",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            cBrasil.StateProvinces.Add(new StateProvince()
+            {
+                Name = "Tocantins",
+                Abbreviation = "TO",
+                Published = true,
+                DisplayOrder = 1,
+            });
+            #endregion
+
+            var entities = new List<Country>()
 			{
 				new Country()
 				{
@@ -887,6 +1094,7 @@ namespace SmartStore.Data.Setup
 				},
 			    cUsa,
 				cCanada,
+                cBrasil,
 
 				//other countries
 				new Country
@@ -1044,19 +1252,7 @@ namespace SmartStore.Data.Setup
 					SubjectToVat = false,
 					DisplayOrder = 100,
 					Published = true
-				},
-				new Country
-				{
-					Name = "Brazil",
-					AllowsBilling = true,
-					AllowsShipping = true,
-					TwoLetterIsoCode = "BR",
-					ThreeLetterIsoCode = "BRA",
-					NumericIsoCode = 76,
-					SubjectToVat = false,
-					DisplayOrder = 100,
-					Published = true
-				},
+				},				
 				new Country
 				{
 					Name = "Bulgaria",

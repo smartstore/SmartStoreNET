@@ -1,0 +1,193 @@
+﻿<Language Name="Portugues" IsDefault="true" IsRightToLeft="false" LanguageCulture="pt-BR" FlagImageFileName="br.png">
+  <LocaleResource Name="AdminEmail">
+    <Value>E-Mail Administrador</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdminEmailRequired">
+    <Value>E-mail de Administrador é requerido</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdminPassword">
+    <Value>Senha de Administrador</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdminPasswordRequired">
+    <Value>Informe a senha de administrador</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConfigureDirectoryPermissions">
+    <Value>A conta '{0}' não é concedida com permissão Modificar na pasta '{1}'. Por favor configurar essas permissões.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConfigureFilePermissions">
+    <Value>A conta '{0}' não é concedida com permissão Modificar no arquivo '{1}'. Por favor configurar essas permissões.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConfirmPassword">
+    <Value>Confirme a senha</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConfirmPasswordRequired">
+    <Value>Informe a senha de confirmação</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConnectionString">
+    <Value>String de Conexão</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConnectionStringRequired">
+    <Value>A SQL string de conexão é obrigatória</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConnectionStringValues">
+    <Value>Informe os valores da conexão SQL</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConnectionStringWrongFormat">
+    <Value>String de conexão SQL em um formato errado</Value>
+  </LocaleResource>
+  <LocaleResource Name="CreateDatabaseIfDoesNotExist">
+    <Value>Criar o banco de dados caso não exista</Value>
+  </LocaleResource>
+  <LocaleResource Name="CreateSampleData">
+    <Value>Criar dados de exemplo</Value>
+  </LocaleResource>
+  <LocaleResource Name="CustomCollation">
+    <Value>Especifique SQL Server collation personalizada</Value>
+  </LocaleResource>
+  <LocaleResource Name="DatabaseCreationError">
+    <Value>Ocorreu um erro ao criar o banco de dados: {0}</Value>
+  </LocaleResource>
+  <LocaleResource Name="DatabaseInformation">
+    <Value>Informação do Banco de Dados</Value>
+  </LocaleResource>
+  <LocaleResource Name="DatabaseName">
+    <Value>Nome do banco de dados</Value>
+  </LocaleResource>
+  <LocaleResource Name="DatabaseNameRequired">
+    <Value>Nome do banco de dados é obrigatório</Value>
+  </LocaleResource>
+  <LocaleResource Name="DatabaseNotExists">
+    <Value>Banco de dados não existe ou você não tem permissões para se conectar a ele</Value>
+  </LocaleResource>
+  <LocaleResource Name="DataProviderRequired">
+    <Value>Escolha um provedor de dados</Value>
+  </LocaleResource>
+  <LocaleResource Name="Example">
+    <Value>Exemplo</Value>
+  </LocaleResource>
+  <LocaleResource Name="Install">
+    <Value>Instalar</Value>
+  </LocaleResource>
+  <LocaleResource Name="Installing">
+    <Value>Instalando ThinkStore.NET...</Value>
+  </LocaleResource>
+  <LocaleResource Name="PasswordsDoNotMatch">
+    <Value>As senhas não coincidem</Value>
+  </LocaleResource>
+  <LocaleResource Name="RawConnectionString">
+    <Value>Digite a connection string completa (avancado)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Recommended">
+    <Value>[Recomendado]</Value>
+  </LocaleResource>
+  <LocaleResource Name="RestartInstallation">
+    <Value>Reiniciar instalação</Value>
+  </LocaleResource>
+  <LocaleResource Name="RestartInstallationTooltip">
+    <Value>Clique para reiniciar o processo de instalação (apagar todos os valores em cache)</Value>
+  </LocaleResource>
+  <LocaleResource Name="SetupFailed">
+    <Value>A instalação falhou: {0}</Value>
+  </LocaleResource>
+  <LocaleResource Name="FindMoreInfo">
+    <Value>Encontre mais informacoes</Value>
+  </LocaleResource>
+  <LocaleResource Name="Here">
+    <Value>aqui</Value>
+  </LocaleResource>
+  <LocaleResource Name="SqlAuthentication">
+    <Value>Utilize um usuário do SQL Server</Value>
+  </LocaleResource>
+  <LocaleResource Name="SqlCompact">
+    <Value>Use built-in de armazenamento de dados (SQL Server Compact)</Value>
+  </LocaleResource>
+  <LocaleResource Name="SqlServerName">
+    <Value>Servidor SQL Server</Value>
+  </LocaleResource>
+  <LocaleResource Name="SqlServerNameRequired">
+    <Value>Servidor SQL Server é obrigatório</Value>
+  </LocaleResource>
+  <LocaleResource Name="SqlServerPassword">
+    <Value>Senha do SQL Server</Value>
+  </LocaleResource>
+  <LocaleResource Name="SqlServerPasswordRequired">
+    <Value>Senha do SQL Server é obrigatória</Value>
+  </LocaleResource>
+  <LocaleResource Name="SqlServerUsername">
+    <Value>Usuário do SQL Server</Value>
+  </LocaleResource>
+  <LocaleResource Name="SqlServerUsernameRequired">
+    <Value>Usuário do SQL Server é obrigatório</Value>
+  </LocaleResource>
+  <LocaleResource Name="SqlStandard">
+    <Value>Use o banco de dados SQL Server (ou SQL Express)</Value>
+  </LocaleResource>
+  <LocaleResource Name="StoreInformation">
+    <Value>Informações da Loja</Value>
+  </LocaleResource>
+  <LocaleResource Name="Title">
+    <Value>Instalação</Value>
+  </LocaleResource>
+  <LocaleResource Name="Tooltip1">
+    <Value>ThinkStore.NET é a principal solução de e-commerce loja on-line. Este assistente irá guiá-lo através do processo de configuração da ThinkStore.NET</Value>
+  </LocaleResource>
+  <LocaleResource Name="Tooltip2">
+    <Value>Para concluir este assistente, você deve saber algumas informações sobre seu servidor de banco de dados ("connection string"). Entre em contato conosco se necessário. Se você está instalando em uma máquina ou um servidor local, você pode precisar de informações do seu administrador do sistema.</Value>
+  </LocaleResource>
+  <LocaleResource Name="WindowsAuthentication">
+    <Value>Use autenticação Windows integrada</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="PrimaryLanguage">
+    <Value>Linguagem preferida</Value>
+  </LocaleResource>
+  <LocaleResource Name="PrimaryLanguageRequired">
+    <Value>Linguagem preferida é obrigatória</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConfirmInstall">
+    <Value>Você quer instalar ThinkStore.NET agora?</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdminEmailValue">
+    <Value>admin@thinkam.net</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="MediaStorage.Label">
+    <Value>Tipo de Armazenamento</Value>
+  </LocaleResource>
+  <LocaleResource Name="MediaStorage.Hint">
+    <Value>Escolha 'File system' se o seu banco de dados não dispuser de espaço suficiente em disco (&lt; 500 MB). Caso contrário, recomendamos 'Database'.</Value>
+  </LocaleResource>
+  <LocaleResource Name="MediaStorage.DB">
+    <Value>Database</Value>
+  </LocaleResource>
+  <LocaleResource Name="MediaStorage.FS">
+    <Value>File system</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Common.Notification">
+    <Value>Alerta</Value>
+  </LocaleResource>
+  <LocaleResource Name="Common.StartShop">
+    <Value>Parabéns! A instalação foi concluída com êxito. Obrigado pela preferência, aguarde que estamos iniciando...</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="Progress.CheckingRequirements">
+    <Value>Verificando os requisitos</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.BuildingDatabase">
+    <Value>Construindo o banco de dados</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.InstallingPlugins">
+    <Value>Instalando plugin {0} de {1}</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.Finalizing">
+    <Value>Finalizando instalação</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.CreatingRequiredData">
+    <Value>Criando dados obrigatórios</Value>
+  </LocaleResource>
+  <LocaleResource Name="Progress.CreatingSampleData">
+    <Value>Criação de dados de exemplo</Value>
+  </LocaleResource>
+
+</Language>

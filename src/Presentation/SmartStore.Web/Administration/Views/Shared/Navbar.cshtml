@@ -18,7 +18,7 @@
 <div class="navbar-inner">
     
     <a class="brand" href="@Url.Action("Index", "Home", new { area = "Admin" })">
-        <img src="~/Administration/Content/images/smnet.png" alt="smartstore.NET" />
+        <img src="~/Administration/Content/images/smnet.png" alt="thinkstore.NET" />
     </a>
 
     @Html.Widget("admin_menu_before")
@@ -40,7 +40,7 @@
 					<li>
 						<a href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })">
 							<i class="fa fa-fw fa-user"></i>
-							Account
+							Conta
 						</a>
 					</li>
 					<li>
@@ -81,7 +81,7 @@
 				<li>
 					<a href="@Url.Action("About", "Home", new { area = "Admin" })">
 						<i class="fa fa-fw fa-info-circle"></i>
-						@T("Admin.Common.About") SmartStore.NET
+						@T("Admin.Common.About") ThinkStore.NET
 					</a>
 				</li>
 			</ul>

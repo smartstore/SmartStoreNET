@@ -54,6 +54,16 @@ namespace SmartStore.Web.Infrastructure
                     m.For(em => em.FlagImageFileName, "de.png");
                 })
                 .InstancePerRequest();
+            builder.RegisterType<PtBRSeedData>()
+                .As<InvariantSeedData>()
+                .WithMetadata<InstallationAppLanguageMetadata>(m =>
+                {
+                    m.For(em => em.Culture, "pt-BR");
+                    m.For(em => em.Name, "Portugues");
+                    m.For(em => em.UniqueSeoCode, "pt");
+                    m.For(em => em.FlagImageFileName, "br.png");
+                })
+                .InstancePerRequest();
         }
 
         public int Order

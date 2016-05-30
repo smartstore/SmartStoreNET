@@ -18,11 +18,13 @@ namespace SmartStore.Core
 {
     public partial class WebHelper : IWebHelper
     {
+		private static object s_lock = new object();
 		private static bool? s_optimizedCompilationsEnabled;
 		private static AspNetHostingPermissionLevel? s_trustLevel;
 		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static readonly Regex s_htmlPathPattern = new Regex(@"(?<=(?:href|src)=(?:""|'))(?!https?://)(?<url>[^(?:""|')]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 		private static readonly Regex s_cssPathPattern = new Regex(@"url\('(?<url>.+)'\)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
+		private static string s_safeLocalHostName = null;
 
 		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
@@ -631,11 +633,11 @@ namespace SmartStore.Core
 
 			if (string.IsNullOrEmpty(result))
 			{
-				foreach (var checker in checkers)
+				using (var client = new WebClient())
 				{
-					try
+					foreach (var checker in checkers)
 					{
-						using (var client = new WebClient())
+						try
 						{
 							result = client.DownloadString(checker).Replace("\n", "");
 							if (!string.IsNullOrEmpty(result))
@@ -643,8 +645,8 @@ namespace SmartStore.Core
 								break;
 							}
 						}
+						catch { }
 					}
-					catch { }
 				}
 			}
 
@@ -670,6 +672,57 @@ namespace SmartStore.Core
 			}
 
 			return result;
+		}
+
+		public static HttpWebRequest CreateHttpRequestForSafeLocalCall(Uri requestUri)
+		{
+			Guard.ArgumentNotNull(() => requestUri);
+
+			EnsureSafeLocalHostNameDetermined(requestUri);
+
+			var uri = requestUri;
+
+			if (!requestUri.Host.Equals(s_safeLocalHostName, StringComparison.OrdinalIgnoreCase))
+			{
+				var url = String.Format("{0}://{1}{2}",
+					requestUri.Scheme,
+					requestUri.Port == 80 ? s_safeLocalHostName : s_safeLocalHostName + ":" + requestUri.Port,
+					requestUri.PathAndQuery);
+				uri = new Uri(url);
+			}
+
+			var request = WebRequest.CreateHttp(uri);
+			request.ServerCertificateValidationCallback += (sender, cert, chain, errors) => true;
+			request.ServicePoint.Expect100Continue = false;
+			request.UserAgent = "SmartStore.NET {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
+
+			return request;
+		}
+
+		private static void EnsureSafeLocalHostNameDetermined(Uri requestUri)
+		{
+			if (s_safeLocalHostName == null)
+			{
+				lock (s_lock)
+				{
+					if (s_safeLocalHostName == null)
+					{
+						//var hosts = new string[]
+						//{
+						//	requestUri.Host,
+						//	"localhost",
+						//	Dns.GetHostName(), // TODO: add local IPs also
+						//	"127.0.0.1"
+						//};
+
+						//foreach (var host in hosts)
+						//{
+						//	// ...
+						//}
+						s_safeLocalHostName = "localhost"; // TBD: what about ssl and differing ports?
+					}
+				}
+			}
 		}
 	}
 }

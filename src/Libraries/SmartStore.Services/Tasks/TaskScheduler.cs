@@ -13,6 +13,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Collections;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Caching;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Tasks
 {
@@ -21,7 +22,6 @@ namespace SmartStore.Services.Tasks
 		private bool _intervalFixed;
 		private int _sweepInterval;
 		private string _baseUrl;
-		private bool _mustVerifyBaseUrl;
         private System.Timers.Timer _timer;
         private bool _shuttingDown;
 		private int _errCount;
@@ -49,7 +49,6 @@ namespace SmartStore.Services.Tasks
             {
                 CheckUrl(value);
                 _baseUrl = value.TrimEnd('/', '\\');
-				_mustVerifyBaseUrl = true;
 			}
         }
 
@@ -137,7 +136,7 @@ namespace SmartStore.Services.Tasks
 				query = qs.ToString();
 			}
 
-			CallEndpoint("{0}/Execute/{1}{2}".FormatInvariant(_baseUrl, scheduleTaskId, query));
+			CallEndpoint(new Uri("{0}/Execute/{1}{2}".FormatInvariant(_baseUrl, scheduleTaskId, query)));
         }
 
 		private void Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -155,7 +154,7 @@ namespace SmartStore.Services.Tasks
 						_intervalFixed = true;
 					}
 
-					CallEndpoint(_baseUrl + "/Sweep");
+					CallEndpoint(new Uri(_baseUrl + "/Sweep"));
                 }
             }
             finally
@@ -164,86 +163,76 @@ namespace SmartStore.Services.Tasks
             }
         }
 
-        protected internal virtual void CallEndpoint(string url)
+        protected internal virtual void CallEndpoint(Uri uri)
         {
             if (_shuttingDown)
                 return;
             
-            var req = (HttpWebRequest)WebRequest.Create(url);
-			req.ServerCertificateValidationCallback += (sender, cert, chain, errors) => true;
-			req.UserAgent = "SmartStore.NET";
+            var req = WebHelper.CreateHttpRequestForSafeLocalCall(uri);
             req.Method = "POST";
             req.ContentType = "text/plain";
 			req.ContentLength = 0;
-			req.ServicePoint.Expect100Continue = false;
 			req.Timeout = 10000; // 10 sec.
 
             string authToken = CreateAuthToken();
             req.Headers.Add("X-AUTH-TOKEN", authToken);
 
-			HttpWebResponse response = null;
-
-			try
+			req.GetResponseAsync().ContinueWith(t =>
 			{
-				response = (HttpWebResponse)req.GetResponse();
-				_errCount = 0;
-				_mustVerifyBaseUrl = false;
-
-				//using (var logger = new TraceLogger())
-				//{
-				//	logger.Warning("TaskScheduler Sweep called successfully: {0}".FormatCurrent(response.GetResponseStream().AsString()));
-				//}
-			}
-			catch (Exception ex)
-			{
-				HandleException(ex, url);
-				_errCount++;
-				if (_errCount >= 10)
+				if (t.IsFaulted)
 				{
-					// 10 failed attempts in succession. Stop the timer!
-					this.Stop();
-					using (var logger = new TraceLogger())
+					HandleException(t.Exception, uri);
+					_errCount++;
+					if (_errCount >= 10)
 					{
-						logger.Information("Stopping TaskScheduler sweep timer. Too many failed requests in succession.");
+						// 10 failed attempts in succession. Stop the timer!
+						this.Stop();
+						using (var logger = new TraceLogger())
+						{
+							logger.Information("Stopping TaskScheduler sweep timer. Too many failed requests in succession.");
+						}
 					}
-				}
-			}
-			finally
-			{
-				if (response != null)
-					response.Dispose();
-			}
-		}
-
-		private void HandleException(Exception exception, string url)
-		{
-			using (var logger = new TraceLogger())
-			{
-				string msg = "Error while calling TaskScheduler endpoint '{0}'.".FormatInvariant(url);
-
-				var wex = exception as WebException;
-
-				if (_mustVerifyBaseUrl)
-				{
-					if (wex == null || wex.Response == null)
-					{
-						// a network related error occurred. Fallback to localhost!
-						_baseUrl = "http://localhost:52089/taskscheduler";
-						_mustVerifyBaseUrl = false;
-
-						logger.Information("A netwotk related error occurred while calling TaskScheduler endpoint'{0}'. Will try with 'localhost' on next sweep.".FormatInvariant(url));
-					}
-				}
-
-				if (wex != null && wex.Response != null)
-				{
-					var response = wex.Response as HttpWebResponse;
-					msg += " HTTP {0}, {1}".FormatCurrent((int)response.StatusCode, response.StatusDescription);
-					logger.Error(msg);
 				}
 				else
 				{
-					logger.Error(msg, exception);
+					_errCount = 0;
+					var response = t.Result;
+
+					//using (var logger = new TraceLogger())
+					//{
+					//	logger.Debug("TaskScheduler Sweep called successfully: {0}".FormatCurrent(response.GetResponseStream().AsString()));
+					//}
+
+					response.Dispose();
+				}
+			});
+		}
+
+		private void HandleException(AggregateException exception, Uri uri)
+		{
+			using (var logger = new TraceLogger())
+			{
+				string msg = "Error while calling TaskScheduler endpoint '{0}'.".FormatInvariant(uri.OriginalString);
+				var wex = exception.InnerExceptions.OfType<WebException>().FirstOrDefault();
+
+				if (wex == null)
+				{
+					logger.Error(msg, exception.InnerException);
+				}
+				else if (wex.Response == null)
+				{
+					logger.Error(msg, wex);
+				}
+				else
+				{
+					using (var response = wex.Response as HttpWebResponse)
+					{
+						if (response != null)
+						{
+							msg += " HTTP {0}, {1}".FormatCurrent((int)response.StatusCode, response.StatusDescription);
+						}
+						logger.Error(msg);
+					}
 				}
 			}
 		}

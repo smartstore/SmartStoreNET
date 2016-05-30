@@ -37,7 +37,7 @@ namespace SmartStore.Utilities
 			
 			url = WebHelper.GetAbsoluteUrl(url, _httpRequest);
 
-			var req = (HttpWebRequest)WebRequest.Create(url);
+			var req = WebRequest.CreateHttp(url);
 			req.UserAgent = "SmartStore.NET";
 
 			if (timeout.HasValue)

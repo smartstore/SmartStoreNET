@@ -309,17 +309,23 @@ namespace SmartStore.Services.Catalog
 		/// <param name="priceCalculationService">Price calculation service</param>
 		/// <param name="currency">Target currency</param>
 		/// <param name="priceAdjustment">Price adjustment</param>
-		/// <param name="languageIndependent">Whether the result string should be language independent</param>
+		/// <param name="languageInsensitive">Whether the result string should be language insensitive</param>
         /// <returns>The base price info</returns>
-        public static string GetBasePriceInfo(this Product product, ILocalizationService localizationService, IPriceFormatter priceFormatter,
-            ICurrencyService currencyService, ITaxService taxService, IPriceCalculationService priceCalculationService,
-            Currency currency, decimal priceAdjustment = decimal.Zero, bool languageIndependent = false)
+        public static string GetBasePriceInfo(this Product product,
+			ILocalizationService localizationService,
+			IPriceFormatter priceFormatter,
+            ICurrencyService currencyService,
+			ITaxService taxService,
+			IPriceCalculationService priceCalculationService,
+            Currency currency,
+			decimal priceAdjustment = decimal.Zero,
+			bool languageInsensitive = false)
         {
-            if (product == null)
-                throw new ArgumentNullException("product");
-
-			if (localizationService == null && !languageIndependent)
-                throw new ArgumentNullException("localizationService");
+			Guard.ArgumentNotNull(() => product);
+			Guard.ArgumentNotNull(() => currencyService);
+			Guard.ArgumentNotNull(() => taxService);
+			Guard.ArgumentNotNull(() => priceCalculationService);
+			Guard.ArgumentNotNull(() => currency);
 
             if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
             {
@@ -331,7 +337,7 @@ namespace SmartStore.Services.Catalog
                 
                 price = currencyService.ConvertFromPrimaryStoreCurrency(price, currency);
 
-				return product.GetBasePriceInfo(price, localizationService, priceFormatter, currency, languageIndependent);
+				return product.GetBasePriceInfo(price, localizationService, priceFormatter, currency, languageInsensitive);
 			}
 
 			return "";
@@ -345,34 +351,36 @@ namespace SmartStore.Services.Catalog
 		/// <param name="localizationService">Localization service</param>
 		/// <param name="priceFormatter">Price formatter</param>
 		/// <param name="currency">Target currency</param>
-		/// <param name="languageIndependent">Whether the result string should be language independent</param>
+		/// <param name="languageInsensitive">Whether the result string should be language insensitive</param>
 		/// <returns>The base price info</returns>
 		public static string GetBasePriceInfo(this Product product,
 			decimal productPrice,
 			ILocalizationService localizationService,
 			IPriceFormatter priceFormatter,
 			Currency currency,
-			bool languageIndependent = false)
+			bool languageInsensitive = false)
 		{
+			Guard.ArgumentNotNull(() => product);
+			Guard.ArgumentNotNull(() => localizationService);
+			Guard.ArgumentNotNull(() => priceFormatter);
+			Guard.ArgumentNotNull(() => currency);
+
 			if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
 			{
 				var value = Convert.ToDecimal((productPrice / product.BasePriceAmount) * product.BasePriceBaseAmount);
 				var valueFormatted = priceFormatter.FormatPrice(value, true, currency);
 				var amountFormatted = Math.Round(product.BasePriceAmount.Value, 2).ToString("G29");
 
-				var result = "{0} {1} ({2} / {3} {1})".FormatInvariant(
+				var infoTemplate = localizationService.GetResource(languageInsensitive ? "Products.BasePriceInfo.LanguageInsensitive" : "Products.BasePriceInfo");
+
+				var result = infoTemplate.FormatInvariant(
 					amountFormatted,
 					product.BasePriceMeasureUnit,
 					valueFormatted,
 					product.BasePriceBaseAmount
 				);
 
-				if (languageIndependent)
-				{
-					return result;
-				}
-
-				return string.Concat(localizationService.GetResource("Common.Content"), ": ", result);
+				return result;
 			}
 
 			return "";

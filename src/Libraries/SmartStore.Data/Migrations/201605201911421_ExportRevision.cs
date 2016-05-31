@@ -154,17 +154,20 @@ namespace SmartStore.Data.Migrations
 				"There was no file uploaded.",
 				"Es wurde keine Datei hochgeladen.");
 
-			builder.AddOrUpdate("Common.Content",
-				"Content",
-				"Inhalt");
+			builder.AddOrUpdate("Products.BasePriceInfo",
+				"Content: {0} {1} ({2} / {3} {1})",
+				"Inhalt: {0} {1} ({2} / {3} {1})");
+
+			builder.AddOrUpdate("Products.BasePriceInfo.LanguageInsensitive",
+				"{0} {1} ({2} / {3} {1})",
+				"{0} {1} ({2} / {3} {1})");
 
 			builder.Delete(
 				"Admin.DataExchange.Export.FolderAndFileName.Validate",
 				"Admin.DataExchange.Export.Deployment.IsPublic",
 				"Admin.DataExchange.Export.Deployment.CreateZip",
 				"Admin.Common.TemporaryFiles",
-				"Admin.Common.NoTempFilesFound",
-				"Products.BasePriceInfo");
+				"Admin.Common.NoTempFilesFound");
 		}
 	}
 }

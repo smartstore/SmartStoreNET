@@ -26,6 +26,7 @@
 * #913 Use HTML5 Input types (tel, email)
 * Added paging to frontend order list
 * Added paging to backend checkout attribute list
+* #977 Show PAngV base/delivery amount also
 
 ### Bugfixes
 * Fixed ajax cache issue when saving payment or shipping restrictions. Internet Explorer showed the old data state (before storage).

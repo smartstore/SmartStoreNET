@@ -48,7 +48,8 @@
 * Copied product must not share sample download of source product. Could produce "The DELETE statement conflicted with the REFERENCE constraint 'FK_dbo.Product_dbo.Download_SampleDownloadId'".
 * #921 Specification attribute options with single quotation marks are causing a Javascript error
 * #971 Product is added to cart automatically if it has a non-required file upload attribute
-* #973 Bundle item upload is nowhere linked 
+* #973 Bundle item upload is nowhere linked
+* Base price in product list ignored PriceDisplayType (catalog settings) and possibly displayed the wrong base price info
 
 
 ## SmartStore.NET 2.5

@@ -1108,6 +1108,7 @@ namespace SmartStore.Web.Controllers
 			foreach (var product in products)
 			{
 				var contextProduct = product;
+				var finalPrice = decimal.Zero;
 
 				var model = new ProductOverviewModel
 				{
@@ -1188,7 +1189,7 @@ namespace SmartStore.Web.Controllers
 										decimal taxRate = decimal.Zero;
 										decimal oldPriceBase = _taxService.GetProductPrice(contextProduct, contextProduct.OldPrice, out taxRate);
 										decimal finalPriceBase = _taxService.GetProductPrice(contextProduct, displayPrice.Value, out taxRate);
-										decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
+										finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
 
 										priceModel.OldPrice = null;
 
@@ -1256,7 +1257,7 @@ namespace SmartStore.Web.Controllers
 								decimal finalPriceBase = _taxService.GetProductPrice(product, displayPrice, out taxRate);
 
 								decimal oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, workingCurrency);
-								decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
+								finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
 
 								priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
 
@@ -1396,16 +1397,19 @@ namespace SmartStore.Web.Controllers
 					model.Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), cachedManufacturerModels, false);
 				}
 
-				if (_catalogSettings.ShowBasePriceInProductLists || isCompareList)
+				if (finalPrice != decimal.Zero && (_catalogSettings.ShowBasePriceInProductLists || isCompareList))
 				{
-                    model.BasePriceInfo = contextProduct.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService,  workingCurrency);
+					model.BasePriceInfo = contextProduct.GetBasePriceInfo(finalPrice, _localizationService,	_priceFormatter, workingCurrency);
 				}
 
-				var addShippingPrice = _currencyService.ConvertCurrency(contextProduct.AdditionalShippingCharge, currentStore.PrimaryStoreCurrency, workingCurrency);
-
-				if (addShippingPrice > 0 && displayPrices)
+				if (displayPrices)
 				{
-					model.TransportSurcharge = res["Common.AdditionalShippingSurcharge"].Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, true, false));
+					var addShippingPrice = _currencyService.ConvertCurrency(contextProduct.AdditionalShippingCharge, currentStore.PrimaryStoreCurrency, workingCurrency);
+
+					if (addShippingPrice > 0)
+					{
+						model.TransportSurcharge = res["Common.AdditionalShippingSurcharge"].Text.FormatCurrent(_priceFormatter.FormatPrice(addShippingPrice, true, false));
+					}
 				}
 
 				if (contextProduct.Weight > 0)
@@ -1416,7 +1420,7 @@ namespace SmartStore.Web.Controllers
 				// IsNew
 				if (_catalogSettings.LabelAsNewForMaxDays.HasValue)
 				{
-					model.IsNew = (DateTime.UtcNow - product.CreatedOnUtc).Days <= _catalogSettings.LabelAsNewForMaxDays.Value;
+					model.IsNew = ((DateTime.UtcNow - product.CreatedOnUtc).Days <= _catalogSettings.LabelAsNewForMaxDays.Value);
 				}
 
 				models.Add(model);

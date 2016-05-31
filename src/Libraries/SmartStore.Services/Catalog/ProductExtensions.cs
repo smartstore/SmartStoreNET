@@ -14,7 +14,7 @@ using SmartStore.Services.Tax;
 
 namespace SmartStore.Services.Catalog
 {
-    public static class ProductExtensions
+	public static class ProductExtensions
     {
 		public static ProductVariantAttributeCombination MergeWithCombination(this Product product, string selectedAttributes)
         {
@@ -299,7 +299,7 @@ namespace SmartStore.Services.Catalog
 		}
 
         /// <summary>
-        /// Gets the base price
+        /// Gets the base price info
         /// </summary>
         /// <param name="product">Product</param>
         /// <param name="localizationService">Localization service</param>
@@ -310,7 +310,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="currency">Target currency</param>
 		/// <param name="priceAdjustment">Price adjustment</param>
 		/// <param name="languageIndependent">Whether the result string should be language independent</param>
-        /// <returns>The base price</returns>
+        /// <returns>The base price info</returns>
         public static string GetBasePriceInfo(this Product product, ILocalizationService localizationService, IPriceFormatter priceFormatter,
             ICurrencyService currencyService, ITaxService taxService, IPriceCalculationService priceCalculationService,
             Currency currency, decimal priceAdjustment = decimal.Zero, bool languageIndependent = false)
@@ -331,8 +331,33 @@ namespace SmartStore.Services.Catalog
                 
                 price = currencyService.ConvertFromPrimaryStoreCurrency(price, currency);
 
-				var value = Convert.ToDecimal((price / product.BasePriceAmount) * product.BasePriceBaseAmount);
-                var valueFormatted = priceFormatter.FormatPrice(value, true, currency);
+				return product.GetBasePriceInfo(price, localizationService, priceFormatter, currency, languageIndependent);
+			}
+
+			return "";
+        }
+
+		/// <summary>
+		/// Gets the base price info
+		/// </summary>
+		/// <param name="product">Product</param>
+		/// <param name="productPrice">The calculated product price</param>
+		/// <param name="localizationService">Localization service</param>
+		/// <param name="priceFormatter">Price formatter</param>
+		/// <param name="currency">Target currency</param>
+		/// <param name="languageIndependent">Whether the result string should be language independent</param>
+		/// <returns>The base price info</returns>
+		public static string GetBasePriceInfo(this Product product,
+			decimal productPrice,
+			ILocalizationService localizationService,
+			IPriceFormatter priceFormatter,
+			Currency currency,
+			bool languageIndependent = false)
+		{
+			if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
+			{
+				var value = Convert.ToDecimal((productPrice / product.BasePriceAmount) * product.BasePriceBaseAmount);
+				var valueFormatted = priceFormatter.FormatPrice(value, true, currency);
 				var amountFormatted = Math.Round(product.BasePriceAmount.Value, 2).ToString("G29");
 
 				var result = "{0} {1} ({2} / {3} {1})".FormatInvariant(
@@ -351,7 +376,7 @@ namespace SmartStore.Services.Catalog
 			}
 
 			return "";
-        }
+		}
 
 		public static string GetProductTypeLabel(this Product product, ILocalizationService localizationService)
 		{

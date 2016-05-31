@@ -251,6 +251,12 @@ namespace SmartStore.Services.Catalog
 				if (selectedCombination != null && selectedCombination.IsActive && selectedCombination.Price.HasValue)
 				{
 					product.MergedDataValues = new Dictionary<string, object> { { "Price", selectedCombination.Price.Value } };
+
+					if (selectedCombination.BasePriceAmount.HasValue)
+						product.MergedDataValues.Add("BasePriceAmount", selectedCombination.BasePriceAmount.Value);
+
+					if (selectedCombination.BasePriceBaseAmount.HasValue)
+						product.MergedDataValues.Add("BasePriceBaseAmount", selectedCombination.BasePriceBaseAmount.Value);
 				}
 			}
 

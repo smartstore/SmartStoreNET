@@ -31,14 +31,24 @@ namespace SmartStore.Utilities
 		/// <param name="url">The URL to download the file from (either a fully qualified URL or an app relative/absolute path)</param>
 		/// <param name="sendAuthCookie">Specifies whether the FormsAuthenticationCookie should be sent</param>
 		/// <param name="timeout">Timeout in milliseconds</param>
-		public FileDownloadResponse DownloadFile(string url, bool sendAuthCookie = false, int? timeout = null)
+		/// <param name="isLocal">Specifiers whether the file is located on the local server</param>
+		public FileDownloadResponse DownloadFile(string url, bool sendAuthCookie = false, int? timeout = null, bool isLocal = false)
 		{
 			Guard.ArgumentNotEmpty(() => url);
 			
 			url = WebHelper.GetAbsoluteUrl(url, _httpRequest);
 
-			var req = WebRequest.CreateHttp(url);
-			req.UserAgent = "SmartStore.NET";
+			HttpWebRequest req;
+
+			if (isLocal)
+			{
+				req = WebHelper.CreateHttpRequestForSafeLocalCall(new Uri(url));
+			}
+			else
+			{
+				req = WebRequest.CreateHttp(url);
+				req.UserAgent = "SmartStore.NET";
+			}
 
 			if (timeout.HasValue)
 			{

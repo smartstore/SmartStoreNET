@@ -2,6 +2,7 @@ using System;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
@@ -13,6 +14,9 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
 using System.Net;
 using System.Text;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Net.Sockets;
 
 namespace SmartStore.Core
 {
@@ -24,7 +28,7 @@ namespace SmartStore.Core
 		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static readonly Regex s_htmlPathPattern = new Regex(@"(?<=(?:href|src)=(?:""|'))(?!https?://)(?<url>[^(?:""|')]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 		private static readonly Regex s_cssPathPattern = new Regex(@"url\('(?<url>.+)'\)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
-		private static string s_safeLocalHostName = null;
+		private static ConcurrentDictionary<int, string> s_safeLocalHostNames = new ConcurrentDictionary<int, string>();
 
 		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
@@ -678,15 +682,15 @@ namespace SmartStore.Core
 		{
 			Guard.ArgumentNotNull(() => requestUri);
 
-			EnsureSafeLocalHostNameDetermined(requestUri);
+			var safeHostName = GetSafeLocalHostName(requestUri);
 
 			var uri = requestUri;
 
-			if (!requestUri.Host.Equals(s_safeLocalHostName, StringComparison.OrdinalIgnoreCase))
+			if (!requestUri.Host.Equals(safeHostName, StringComparison.OrdinalIgnoreCase))
 			{
 				var url = String.Format("{0}://{1}{2}",
 					requestUri.Scheme,
-					requestUri.Port == 80 ? s_safeLocalHostName : s_safeLocalHostName + ":" + requestUri.Port,
+					requestUri.IsDefaultPort ? safeHostName : safeHostName + ":" + requestUri.Port,
 					requestUri.PathAndQuery);
 				uri = new Uri(url);
 			}
@@ -699,30 +703,58 @@ namespace SmartStore.Core
 			return request;
 		}
 
-		private static void EnsureSafeLocalHostNameDetermined(Uri requestUri)
+		private static string GetSafeLocalHostName(Uri requestUri)
 		{
-			if (s_safeLocalHostName == null)
+			return s_safeLocalHostNames.GetOrAdd(requestUri.Port, (port) => 
 			{
-				lock (s_lock)
-				{
-					if (s_safeLocalHostName == null)
-					{
-						//var hosts = new string[]
-						//{
-						//	requestUri.Host,
-						//	"localhost",
-						//	Dns.GetHostName(), // TODO: add local IPs also
-						//	"127.0.0.1"
-						//};
+				var hostName = Dns.GetHostName();
+				var hosts = new List<string> { requestUri.Host, "localhost", hostName, "127.0.0.1" };
 
-						//foreach (var host in hosts)
-						//{
-						//	// ...
-						//}
-						s_safeLocalHostName = "localhost"; // TBD: what about ssl and differing ports?
+				// now add all local IP addresses
+				var ipAddresses = Dns.GetHostAddresses(hostName).Where(x => x.AddressFamily == AddressFamily.InterNetwork).Select(x => x.ToString());
+				hosts.AddRange(ipAddresses);
+
+				var firstHost = true;
+
+				foreach (var host in hosts)
+				{
+					var url = String.Format("{0}://{1}/taskscheduler/noop",
+						requestUri.Scheme,
+						requestUri.IsDefaultPort ? host : host + ":" + requestUri.Port);
+					var uri = new Uri(url);
+
+					var request = WebRequest.CreateHttp(uri);
+					request.ServerCertificateValidationCallback += (sender, cert, chain, errors) => true;
+					request.ServicePoint.Expect100Continue = false;
+					request.UserAgent = "SmartStore.NET";
+					request.Timeout = firstHost ? 5000 : 500;
+
+					firstHost = false;
+
+					HttpWebResponse response = null;
+
+					try
+					{
+						response = (HttpWebResponse)request.GetResponse();
+						if (response.StatusCode == HttpStatusCode.OK)
+						{
+							return host;
+						}
+					}
+					catch
+					{
+						// try the next host
+					}
+					finally
+					{
+						if (response != null)
+							response.Dispose();
 					}
 				}
-			}
+
+				// None of the hosts are callable. WTF?
+				return requestUri.Host;
+			});
 		}
 	}
 }

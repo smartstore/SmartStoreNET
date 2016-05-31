@@ -1,7 +1,6 @@
 ﻿@model ProductDetailsModel
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web;
-@using System.Text.RegularExpressions;
 
 @foreach (var item in Model.BundledItems.Where(x => x.BundleItem.Visible))
 {
@@ -35,8 +34,8 @@
 
 			@if (!String.IsNullOrWhiteSpace(item.ShortDescription))
 			{
-                var strippedShortDesc = Regex.Replace(item.ShortDescription, @"<[^>]*>", String.Empty);
-                
+				var strippedShortDesc = item.ShortDescription.RemoveHtml();
+
                 <div class="bundle-item-description" title="@(item.ShortDescription.Length < 170 ? "" : strippedShortDesc)">
                     @Html.Raw(strippedShortDesc.Truncate(170, "..."))
                 </div>

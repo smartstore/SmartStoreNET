@@ -198,12 +198,12 @@ namespace SmartStore.Core
 
 				if (_currentStore != null)
 				{
-					var securityMode = _currentStore.GetSecurityMode(useSsl);
+					var securityMode = _currentStore.GetSecurityMode();
 
 					if (httpHost.IsEmpty())
 					{
-						//HTTP_HOST variable is not available.
-						//It's possible only when HttpContext is not available (for example, running in a schedule task)
+						// HTTP_HOST variable is not available.
+						// It's possible only when HttpContext is not available (for example, running in a schedule task)
 						result = _currentStore.Url.EnsureEndsWith("/");
 
 						appPathPossiblyAppended = true;
@@ -707,54 +707,75 @@ namespace SmartStore.Core
 		{
 			return s_safeLocalHostNames.GetOrAdd(requestUri.Port, (port) => 
 			{
-				var hostName = Dns.GetHostName();
-				var hosts = new List<string> { requestUri.Host, "localhost", hostName, "127.0.0.1" };
+				// first try original host
+				if (TestHost(requestUri, requestUri.Host, 5000))
+				{
+					return requestUri.Host;
+				}
 
-				// now add all local IP addresses
+				// try loopback
+				var hostName = Dns.GetHostName();
+				var hosts = new List<string> { "localhost", hostName, "127.0.0.1" };
+				foreach (var host in hosts)
+				{
+					if (TestHost(requestUri, host, 500))
+					{
+						return host;
+					}
+				}
+
+				// try local IP addresses
+				hosts.Clear();
 				var ipAddresses = Dns.GetHostAddresses(hostName).Where(x => x.AddressFamily == AddressFamily.InterNetwork).Select(x => x.ToString());
 				hosts.AddRange(ipAddresses);
 
-				var firstHost = true;
-
 				foreach (var host in hosts)
 				{
-					var url = String.Format("{0}://{1}/taskscheduler/noop",
-						requestUri.Scheme,
-						requestUri.IsDefaultPort ? host : host + ":" + requestUri.Port);
-					var uri = new Uri(url);
-
-					var request = WebRequest.CreateHttp(uri);
-					request.ServerCertificateValidationCallback += (sender, cert, chain, errors) => true;
-					request.ServicePoint.Expect100Continue = false;
-					request.UserAgent = "SmartStore.NET";
-					request.Timeout = firstHost ? 5000 : 500;
-
-					firstHost = false;
-
-					HttpWebResponse response = null;
-
-					try
+					if (TestHost(requestUri, host, 500))
 					{
-						response = (HttpWebResponse)request.GetResponse();
-						if (response.StatusCode == HttpStatusCode.OK)
-						{
-							return host;
-						}
-					}
-					catch
-					{
-						// try the next host
-					}
-					finally
-					{
-						if (response != null)
-							response.Dispose();
+						return host;
 					}
 				}
 
 				// None of the hosts are callable. WTF?
 				return requestUri.Host;
 			});
+		}
+
+		private static bool TestHost(Uri originalUri, string host, int timeout)
+		{
+			var url = String.Format("{0}://{1}/taskscheduler/noop",
+				originalUri.Scheme,
+				originalUri.IsDefaultPort ? host : host + ":" + originalUri.Port);
+			var uri = new Uri(url);
+
+			var request = WebRequest.CreateHttp(uri);
+			request.ServerCertificateValidationCallback += (sender, cert, chain, errors) => true;
+			request.ServicePoint.Expect100Continue = false;
+			request.UserAgent = "SmartStore.NET";
+			request.Timeout = timeout;
+
+			HttpWebResponse response = null;
+
+			try
+			{
+				response = (HttpWebResponse)request.GetResponse();
+				if (response.StatusCode == HttpStatusCode.OK)
+				{
+					return true;
+				}
+			}
+			catch
+			{
+				// try the next host
+			}
+			finally
+			{
+				if (response != null)
+					response.Dispose();
+			}
+
+			return false;
 		}
 	}
 }

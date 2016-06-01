@@ -522,7 +522,7 @@ namespace SmartStore.Admin.Controllers
 			string sitemapUrl = null;
 			try
 			{
-				sitemapUrl = Url.RouteUrl("SitemapSEO", (object)null, _securitySettings.Value.ForceSslForAllPages ? "https" : "http");
+				sitemapUrl = WebHelper.GetAbsoluteUrl(Url.RouteUrl("SitemapSEO"), this.Request);
 				var request = WebHelper.CreateHttpRequestForSafeLocalCall(new Uri(sitemapUrl));
 				request.Method = "HEAD";
 				request.Timeout = 15000;

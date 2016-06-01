@@ -167,9 +167,9 @@ namespace SmartStore.Services.Tasks
         {
             if (_shuttingDown)
                 return;
-            
-            var req = WebHelper.CreateHttpRequestForSafeLocalCall(uri);
-            req.Method = "POST";
+
+			var req = WebHelper.CreateHttpRequestForSafeLocalCall(uri);
+			req.Method = "POST";
             req.ContentType = "text/plain";
 			req.ContentLength = 0;
 			req.Timeout = 10000; // 10 sec.

@@ -162,6 +162,16 @@ namespace SmartStore.Data.Migrations
 				"{0} {1} ({2} / {3} {1})",
 				"{0} {1} ({2} / {3} {1})");
 
+			builder.AddOrUpdate("PrivateMessages.Disabled",
+				"Private messages are disabled.",
+				"Private Nachrichten sind deaktiviert.");
+
+			builder.AddOrUpdate("Common.MethodNotSupportedForGuests",
+				"This function is not available for guests.",
+				"Diese Funktion steht für Gäste nicht zur Verfügung.");
+
+
+
 			builder.Delete(
 				"Admin.DataExchange.Export.FolderAndFileName.Validate",
 				"Admin.DataExchange.Export.Deployment.IsPublic",

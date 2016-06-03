@@ -52,6 +52,7 @@
 * #971 Product is added to cart automatically if it has a non-required file upload attribute
 * #973 Bundle item upload is nowhere linked
 * Base price in product list ignored PriceDisplayType (catalog settings) and possibly displayed the wrong base price info
+* Private messages: Fixes "No route in the route table matches the supplied values"
 
 
 ## SmartStore.NET 2.5

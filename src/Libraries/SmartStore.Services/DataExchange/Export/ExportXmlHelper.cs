@@ -335,6 +335,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("Description", (string)category.Description);
 			_writer.Write("BottomDescription", (string)category.BottomDescription);
 			_writer.Write("CategoryTemplateId", entity.CategoryTemplateId.ToString());
+			_writer.Write("CategoryTemplateViewPath", (string)category._CategoryTemplateViewPath);
 			_writer.Write("MetaKeywords", (string)category.MetaKeywords);
 			_writer.Write("MetaDescription", (string)category.MetaDescription);
 			_writer.Write("MetaTitle", (string)category.MetaTitle);

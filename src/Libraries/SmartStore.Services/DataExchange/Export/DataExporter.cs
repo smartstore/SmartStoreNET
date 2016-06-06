@@ -61,7 +61,8 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<IProductAttributeParser> _productAttributeParser;
 		private readonly Lazy<IProductAttributeService> _productAttributeService;
 		private readonly Lazy<IProductTemplateService> _productTemplateService;
-        private readonly Lazy<IProductService> _productService;
+		private readonly Lazy<ICategoryTemplateService> _categoryTemplateService;
+		private readonly Lazy<IProductService> _productService;
 		private readonly Lazy<IOrderService> _orderService;
 		private readonly Lazy<IManufacturerService> _manufacturerService;
 		private readonly ICustomerService _customerService;
@@ -101,6 +102,7 @@ namespace SmartStore.Services.DataExchange.Export
 			Lazy<IProductAttributeParser> productAttributeParser,
 			Lazy<IProductAttributeService> productAttributeService,
 			Lazy<IProductTemplateService> productTemplateService,
+			Lazy<ICategoryTemplateService> categoryTemplateService,
 			Lazy<IProductService> productService,
 			Lazy<IOrderService> orderService,
 			Lazy<IManufacturerService> manufacturerService,
@@ -138,6 +140,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_productAttributeParser = productAttributeParser;
 			_productAttributeService = productAttributeService;
 			_productTemplateService = productTemplateService;
+			_categoryTemplateService = categoryTemplateService;
 			_productService = productService;
 			_orderService = orderService;
 			_manufacturerService = manufacturerService;
@@ -1199,7 +1202,8 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						ctx.DeliveryTimes = _deliveryTimeService.Value.GetAllDeliveryTimes().ToDictionary(x => x.Id);
 						ctx.QuantityUnits = _quantityUnitService.Value.GetAllQuantityUnits().ToDictionary(x => x.Id);
-						ctx.ProductTemplates = _productTemplateService.Value.GetAllProductTemplates().ToDictionary(x => x.Id);
+						ctx.ProductTemplates = _productTemplateService.Value.GetAllProductTemplates().ToDictionary(x => x.Id, x => x.ViewPath);
+						ctx.CategoryTemplates = _categoryTemplateService.Value.GetAllCategoryTemplates().ToDictionary(x => x.Id, x => x.ViewPath);
 
 						if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Product)
 						{
@@ -1293,6 +1297,7 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						ctx.NewsletterSubscriptions.Clear();
 						ctx.ProductTemplates.Clear();
+						ctx.CategoryTemplates.Clear();
 						ctx.Countries.Clear();
 						ctx.Languages.Clear();
 						ctx.QuantityUnits.Clear();

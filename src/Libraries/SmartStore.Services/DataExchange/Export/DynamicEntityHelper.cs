@@ -487,6 +487,11 @@ namespace SmartStore.Services.DataExchange.Export
 
 			result.Picture = null;
 
+			if (ctx.CategoryTemplates.ContainsKey(category.CategoryTemplateId))
+				result._CategoryTemplateViewPath = ctx.CategoryTemplates[category.CategoryTemplateId];
+			else
+				result._CategoryTemplateViewPath = "";
+
 			result._Localized = GetLocalized(ctx, category,
 				x => x.Name,
 				x => x.FullName,
@@ -547,7 +552,6 @@ namespace SmartStore.Services.DataExchange.Export
 			product.MergeWithCombination(combination);
 
 			var languageId = (ctx.Projection.LanguageId ?? 0);
-			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
 			var pictureSize = _mediaSettings.Value.ProductDetailsPictureSize;
 			var numberOfPictures = (ctx.Projection.NumberOfPictures ?? int.MaxValue);
 			int[] pictureIds = (combination == null ? new int[0] : combination.GetAssignedPictureIds());
@@ -586,7 +590,10 @@ namespace SmartStore.Services.DataExchange.Export
 			dynObject._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
 				_priceCalculationService.Value, ctx.ContextCurrency, decimal.Zero, true);
 
-			dynObject._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
+			if (ctx.ProductTemplates.ContainsKey(product.ProductTemplateId))
+				dynObject._ProductTemplateViewPath = ctx.ProductTemplates[product.ProductTemplateId];
+			else
+				dynObject._ProductTemplateViewPath = "";
 
 			var detailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)dynObject.SeName;
 
@@ -1081,9 +1088,11 @@ namespace SmartStore.Services.DataExchange.Export
 				.Select(e =>
 				{
 					dynamic dyn = ToDynamic(ctx, e);
-					var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == e.Product.ProductTemplateId);
 
-					dyn.Product._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
+					if (ctx.ProductTemplates.ContainsKey(e.Product.ProductTemplateId))
+						dyn.Product._ProductTemplateViewPath = ctx.ProductTemplates[e.Product.ProductTemplateId];
+					else
+						dyn.Product._ProductTemplateViewPath = "";
 
 					dyn.Product._BasePriceInfo = e.Product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
 						_priceCalculationService.Value, ctx.ContextCurrency, decimal.Zero, true);

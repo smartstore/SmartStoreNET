@@ -796,18 +796,22 @@ namespace SmartStore.Web.Controllers
         [ValidateInput(false)]
         public ActionResult ConfirmOrder(FormCollection form)
         {
-            //validation
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+			//validation
+			var storeId = _storeContext.CurrentStore.Id;
+			var customer = _workContext.CurrentCustomer;
+			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
 
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+            if ((customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
 
-            //model
             var model = new CheckoutConfirmModel();
-            try
+			PlaceOrderResult placeOrderResult = null;
+			PostProcessPaymentRequest postProcessPaymentRequest = null;
+
+			try
             {
                 var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
                 if (processPaymentRequest == null)
@@ -820,55 +824,68 @@ namespace SmartStore.Web.Controllers
                 }
                 
                 //prevent 2 orders being placed within an X seconds time frame
-                if (!IsMinimumOrderPlacementIntervalValid(_workContext.CurrentCustomer))
-                    throw new Exception(_localizationService.GetResource("Checkout.MinOrderPlacementInterval"));
+                if (!IsMinimumOrderPlacementIntervalValid(customer))
+                    throw new Exception(T("Checkout.MinOrderPlacementInterval"));
 
                 //place order
-				processPaymentRequest.StoreId = _storeContext.CurrentStore.Id;
-                processPaymentRequest.CustomerId = _workContext.CurrentCustomer.Id;
-				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
-					 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
+				processPaymentRequest.StoreId = storeId;
+                processPaymentRequest.CustomerId = customer.Id;
+				processPaymentRequest.PaymentMethodSystemName = customer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, storeId);
 
                 var placeOrderExtraData = new Dictionary<string, string>();
                 placeOrderExtraData["CustomerComment"] = form["customercommenthidden"];
 				placeOrderExtraData["SubscribeToNewsLetter"] = form["SubscribeToNewsLetterHidden"];
 				placeOrderExtraData["AcceptThirdPartyEmailHandOver"] = form["AcceptThirdPartyEmailHandOverHidden"];
 
-				var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, placeOrderExtraData);
+				placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, placeOrderExtraData);
 
-                if (placeOrderResult.Success)
-                {
-					var postProcessPaymentRequest = new PostProcessPaymentRequest
-					{
-						Order = placeOrderResult.PlacedOrder
-					};
-
-					_paymentService.PostProcessPayment(postProcessPaymentRequest);
-
-					_httpContext.Session["PaymentData"] = null;
-					_httpContext.Session["OrderPaymentInfo"] = null;
-					_httpContext.RemoveCheckoutState();
-
-					if (postProcessPaymentRequest.RedirectUrl.HasValue())
-					{
-						return Redirect(postProcessPaymentRequest.RedirectUrl);
-					}
-
-					return RedirectToAction("Completed");
-                }
-                else
+                if (!placeOrderResult.Success)
                 {
 					model.Warnings.AddRange(placeOrderResult.Errors.Select(x => HtmlUtils.ConvertPlainTextToHtml(x)));
                 }
             }
-            catch (Exception exc)
+            catch (Exception exception)
             {
-				Logger.Warning(exc.Message, exc);
-                model.Warnings.Add(exc.Message);
+				Logger.Warning(exception.Message, exception);
+
+				if (!model.Warnings.Any(x => x == exception.Message))
+				{
+					model.Warnings.Add(exception.Message);
+				}
             }
 
-            return View(model);
-        }
+			if (placeOrderResult == null || !placeOrderResult.Success || model.Warnings.Any())
+			{
+				return View(model);
+			}
+
+			try
+			{
+				postProcessPaymentRequest = new PostProcessPaymentRequest
+				{
+					Order = placeOrderResult.PlacedOrder
+				};
+
+				_paymentService.PostProcessPayment(postProcessPaymentRequest);
+			}
+			catch (Exception exception)
+			{
+				NotifyError(exception);
+			}
+			finally
+			{
+				_httpContext.Session["PaymentData"] = null;
+				_httpContext.Session["OrderPaymentInfo"] = null;
+				_httpContext.RemoveCheckoutState();
+			}
+
+			if (postProcessPaymentRequest != null && postProcessPaymentRequest.RedirectUrl.HasValue())
+			{
+				return Redirect(postProcessPaymentRequest.RedirectUrl);
+			}
+
+			return RedirectToAction("Completed");
+		}
 
 
         public ActionResult Completed()

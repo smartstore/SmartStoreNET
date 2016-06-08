@@ -6,6 +6,11 @@
     //title
     Html.AddTitleParts(Model.ProductName);
     Html.AddTitleParts(T("PageTitle.ProductReviews").Text);
+    
+    if (Model.Items.Count == 0)
+    {
+        Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex follow\">");
+    }
 }
 <div class="page product-reviews-page">
     <h4 class="muted">@T("Reviews.ProductReviewsFor")</h4>

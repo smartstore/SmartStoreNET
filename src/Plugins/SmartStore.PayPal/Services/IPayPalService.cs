@@ -12,7 +12,7 @@ namespace SmartStore.PayPal.Services
 {
 	public interface IPayPalService
 	{
-		void AddOrderNote(PayPalSettingsBase settings, Order order, string anyString);
+		void AddOrderNote(PayPalSettingsBase settings, Order order, string anyString, bool isIpn = false);
 
 		void LogError(Exception exception, string shortMessage = null, string fullMessage = null, bool notify = false, IList<string> errors = null, bool isWarning = false);
 

@@ -87,7 +87,10 @@
 	}
 	else
 	{
-		<div class="muted">@T("Admin.DataExchange.Export.NoProfiles")</div>
+		<div class="alert alert-info">
+			<button type="button" class="close" data-dismiss="alert">&#215;</button>
+			@T("Admin.DataExchange.Export.NoProfiles")
+		</div>
 	}
 
 	@if (!isSystemProfiles)

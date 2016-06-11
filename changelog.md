@@ -3,7 +3,8 @@
 ## SmartStore.NET 2.5.1
 
 ### Highlights
-* #637 Integrated PayPal PLUS payment Provider
+* #637 Integrated PayPal PLUS payment provider
+* #932 Implement paydirekt payment plugin
 * Major improvements in Importer: better field mapping, higher performance, bug fixes etc.
 
 ### New Features

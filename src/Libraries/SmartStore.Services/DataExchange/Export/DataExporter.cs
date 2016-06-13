@@ -535,7 +535,7 @@ namespace SmartStore.Services.DataExchange.Export
 			if (emailAccount == null)
 				emailAccount = _emailAccountService.Value.GetDefaultEmailAccount();
 
-			var downloadUrl = "{0}Admin/Export/DownloadExportFile/{1}?name=".FormatInvariant(_services.WebHelper.GetStoreLocation(false), ctx.Request.Profile.Id);
+			var downloadUrl = "{0}Admin/Export/DownloadExportFile/{1}?name=".FormatInvariant(_services.WebHelper.GetStoreLocation(ctx.Store.SslEnabled), ctx.Request.Profile.Id);
 
 			var languageId = ctx.Projection.LanguageId ?? 0;
 			var smtpContext = new SmtpContext(emailAccount);
@@ -553,7 +553,7 @@ namespace SmartStore.Services.DataExchange.Export
 			if (ctx.IsFileBasedExport && File.Exists(zipPath))
 			{
 				var fileName = Path.GetFileName(zipPath);
-				body.AppendFormat("<p><a href='{0}' download>{1}</a></p>", downloadUrl + HttpUtility.UrlDecode(fileName), fileName);
+				body.AppendFormat("<p><a href='{0}{1}' download>{2}</a></p>", downloadUrl, HttpUtility.UrlEncode(fileName), fileName);
 			}
 
 			if (ctx.IsFileBasedExport && ctx.Result.Files.Any())
@@ -561,7 +561,7 @@ namespace SmartStore.Services.DataExchange.Export
 				body.Append("<p>");
 				foreach (var file in ctx.Result.Files)
 				{
-					body.AppendFormat("<div><a href='{0}' download>{1}</a></div>", downloadUrl + HttpUtility.UrlDecode(file.FileName), file.FileName);
+					body.AppendFormat("<div><a href='{0}{1}' download>{2}</a></div>", downloadUrl, HttpUtility.UrlEncode(file.FileName), file.FileName);
 				}
 				body.Append("</p>");
 			}
@@ -570,9 +570,6 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (ctx.Request.Profile.CompletedEmailAddresses.HasValue())
 				message.To.AddRange(ctx.Request.Profile.CompletedEmailAddresses.SplitSafe(",").Where(x => x.IsEmail()).Select(x => new EmailAddress(x)));
-
-			if (message.To.Count == 0 && _contactDataSettings.Value.WebmasterEmailAddress.HasValue())
-				message.To.Add(new EmailAddress(_contactDataSettings.Value.WebmasterEmailAddress));
 
 			if (message.To.Count == 0 && _contactDataSettings.Value.CompanyEmailAddress.HasValue())
 				message.To.Add(new EmailAddress(_contactDataSettings.Value.CompanyEmailAddress));

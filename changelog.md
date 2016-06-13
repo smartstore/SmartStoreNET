@@ -3,9 +3,10 @@
 ## SmartStore.NET 2.5.1
 
 ### Highlights
+* Major improvements in Importer: better field mapping, higher performance, bug fixes etc.
 * #637 Integrated PayPal PLUS payment provider
 * #932 Implement paydirekt payment plugin
-* Major improvements in Importer: better field mapping, higher performance, bug fixes etc.
+* New Viveum payment plugin
 
 ### New Features
 * #637 Integrated PayPal PLUS payment Provider
@@ -54,6 +55,7 @@
 * #973 Bundle item upload is nowhere linked
 * Base price in product list ignored PriceDisplayType (catalog settings) and possibly displayed the wrong base price info
 * Private messages: Fixes "No route in the route table matches the supplied values"
+* Payone: Hash string incorrect for frontend API payments where the order has more than 9 products
 
 
 ## SmartStore.NET 2.5

@@ -606,8 +606,8 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 			}
 
+			dynObject._IsChild = (combination != null);
 			dynObject._DetailUrl = detailUrl;
-
 			dynObject._CategoryName = null;
 
 			if (ctx.Categories.Count > 0)

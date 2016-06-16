@@ -17,6 +17,7 @@
 * Import localized SEO names for product and categories
 * #477 Implement option to specify the number of exported and imported pictures
 * #859 Make checkout attributes suitable for multi-stores
+* Product details: Select attribute and gift card values by query string parameters
 
 ### Improvements
 * Major improvements in Importer: better field mapping, higher performance, bug fixes etc.

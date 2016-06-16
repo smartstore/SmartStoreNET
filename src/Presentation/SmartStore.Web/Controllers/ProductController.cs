@@ -177,6 +177,8 @@ namespace SmartStore.Web.Controllers
 
 			var model = _helper.PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes);
 
+			_helper.SelectProductAttributeValues(model, Request.QueryString);
+
 			//save as recently viewed
 			_recentlyViewedProductsService.AddProductToRecentlyViewedList(product.Id);
 

@@ -296,7 +296,18 @@
 				viewData.TemplateInfo.HtmlFieldPrefix = "CustomProperties[ProviderConfigData]";
 				viewData.ModelState.Merge(ViewData.ModelState);
 				@Html.Hidden("CustomProperties[ProviderConfigData].__Type__", Model.Provider.ConfigDataType.AssemblyQualifiedName)
-				@Html.Partial(Model.Provider.ConfigPartialViewName, Model.Provider.ConfigData, viewData)
+
+				try
+				{
+					@Html.Partial(Model.Provider.ConfigPartialViewName, Model.Provider.ConfigData, viewData)
+				}
+				catch (Exception exception)
+				{
+					<div class="alert alert-error">
+						@T("Admin.Configuration.Plugins.UnknownError")
+					</div>
+					<pre>@exception.ToString()</pre>
+				}
 			}
 			else
 			{

@@ -168,7 +168,7 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			//prepare the model
+			// prepare the model
 			var selectedAttributes = new NameValueCollection();
 
 			selectedAttributes.ConvertAttributeQueryData(

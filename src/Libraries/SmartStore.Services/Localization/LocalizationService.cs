@@ -16,6 +16,8 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.Core.Localization;
+using System.Globalization;
 
 namespace SmartStore.Services.Localization
 {
@@ -172,6 +174,7 @@ namespace SmartStore.Services.Localization
 
             if (localeStringResource == null && logIfNotFound)
                 _logger.Warning(string.Format("Resource string ({0}) not found. Language ID = {1}", resourceName, languageId));
+
             return localeStringResource;
         }
 
@@ -415,6 +418,182 @@ namespace SmartStore.Services.Localization
             return stringWriter.ToString();
         }
 
+		public virtual void ImportPluginResourcesFromXml(
+			PluginDescriptor pluginDescriptor,
+			IList<LocaleStringResource> targetList = null,
+			bool updateTouchedResources = true,
+			IList<Language> filterLanguages = null)
+		{
+			var directory = new DirectoryInfo(Path.Combine(pluginDescriptor.OriginalAssemblyFile.Directory.FullName, "Localization"));
+
+			if (!directory.Exists)
+				return;
+
+			if (targetList == null && updateTouchedResources)
+			{
+				DeleteLocaleStringResources(pluginDescriptor.ResourceRootKey);
+			}
+
+			var unprocessedLanguages = new List<Language>();
+
+			var defaultLanguageId = _languageService.GetDefaultLanguageId();
+			var languages = filterLanguages ?? _languageService.GetAllLanguages(true);
+
+			string code = null;
+			foreach (var language in languages)
+			{
+				code = ImportPluginResourcesForLanguage(
+					language,
+					null,
+					directory,
+					pluginDescriptor.ResourceRootKey,
+					targetList,
+					updateTouchedResources,
+					false);
+
+				if (code == null)
+				{
+					unprocessedLanguages.Add(language);
+				}
+			}
+
+			if (filterLanguages == null && unprocessedLanguages.Count > 0)
+			{
+				// There were unprocessed languages (no corresponding resource file could be found).
+				// In order for GetResource() to be able to gracefully fallback to the default language's resources,
+				// we need to import resources for the current default language....
+				var processedLanguages = languages.Except(unprocessedLanguages).ToList();
+				if (!processedLanguages.Any(x => x.Id == defaultLanguageId))
+				{
+					// ...but only if no resource file could be mapped to the default language before,
+					// namely because in this case the following operation would be redundant.
+					var defaultLanguage = _languageService.GetLanguageById(_languageService.GetDefaultLanguageId());
+					if (defaultLanguage != null)
+					{
+						ImportPluginResourcesForLanguage(
+							defaultLanguage,
+							"en-us",
+							directory,
+							pluginDescriptor.ResourceRootKey,
+							targetList,
+							updateTouchedResources,
+							true);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Resolves a resource file for the specified language and processes the import
+		/// </summary>
+		/// <param name="language">Language</param>
+		/// <returns>The culture code of the processed resource file</returns>
+		private string ImportPluginResourcesForLanguage(
+			Language language,
+			string fileCode,
+			DirectoryInfo directory,
+			string resourceRootKey,
+			IList<LocaleStringResource> targetList,
+			bool updateTouchedResources,
+			bool canFallBackToAnyResourceFile)
+		{
+			var fileNamePattern = "resources.{0}.xml";
+
+			var codeCandidates = GetResourceFileCodeCandidates(
+				fileCode ?? language.LanguageCulture,
+				directory,
+				canFallBackToAnyResourceFile);
+
+			string path = null;
+			string code = null;
+
+			foreach (var candidate in codeCandidates)
+			{
+				var pathCandidate = Path.Combine(directory.FullName, fileNamePattern.FormatInvariant(candidate));
+				if (File.Exists(pathCandidate))
+				{
+					code = candidate;
+					path = pathCandidate;
+					break;
+				}
+			}
+
+			if (code != null)
+			{
+				var doc = new XmlDocument();
+
+				doc.Load(path);
+				doc = FlattenResourceFile(doc);
+
+				if (targetList == null)
+				{
+					ImportResourcesFromXml(language, doc, resourceRootKey, true, updateTouchedResources: updateTouchedResources);
+				}
+				else
+				{
+					var nodes = doc.SelectNodes(@"//Language/LocaleResource");
+					foreach (XmlNode node in nodes)
+					{
+						var valueNode = node.SelectSingleNode("Value");
+						var res = new LocaleStringResource()
+						{
+							ResourceName = node.Attributes["Name"].InnerText.Trim(),
+							ResourceValue = (valueNode == null ? "" : valueNode.InnerText),
+							LanguageId = language.Id,
+							IsFromPlugin = true
+						};
+
+						if (res.ResourceName.HasValue())
+						{
+							targetList.Add(res);
+						}
+					}
+				}
+			}
+
+			return code;
+		}
+
+		private IEnumerable<string> GetResourceFileCodeCandidates(string code, DirectoryInfo directory, bool canFallBackToAnyResourceFile)
+		{
+			// exact match (de-DE)
+			yield return code;
+
+			// neutral culture (de)
+			var ci = CultureInfo.GetCultureInfo(code);
+			if (ci.Parent != null && !ci.IsNeutralCulture)
+			{
+				code = ci.Parent.Name;
+				yield return code;
+			}
+
+			var rgFileName = new Regex("^resources.(.+?).xml$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+			// any other region with same language (de-*)
+			foreach (var fi in directory.EnumerateFiles("resources.{0}-*.xml".FormatInvariant(code), SearchOption.TopDirectoryOnly))
+			{
+				code = rgFileName.Match(fi.Name).Groups[1].Value;
+				if (LocalizationHelper.IsValidCultureCode(code))
+				{
+					yield return code;
+					yield break;
+				}
+			}
+
+			if (canFallBackToAnyResourceFile)
+			{
+				foreach (var fi in directory.EnumerateFiles("resources.*.xml", SearchOption.TopDirectoryOnly))
+				{
+					code = rgFileName.Match(fi.Name).Groups[1].Value;
+					if (LocalizationHelper.IsValidCultureCode(code))
+					{
+						yield return code;
+						yield break;
+					}
+				}
+			}
+		}
+
 		/// <summary>
 		/// Import language resources from XML file
 		/// </summary>
@@ -490,77 +669,8 @@ namespace SmartStore.Services.Localization
 				_lsrRepository.UpdateRange(toUpdate);
 				toUpdate.Clear();
 
-				//clear cache
+				// clear cache
 				_cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
-			}
-		}
-
-		/// <summary>
-		/// Import plugin resources from xml files in plugin's localization directory.
-		/// </summary>
-		/// <param name="pluginDescriptor">Descriptor of the plugin</param>
-		/// <param name="forceToList">Load them into list rather than into database</param>
-		/// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>	
-		/// <param name="filterLanguages">Import only files for particular languages</param>
-		public virtual void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor,
-			List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true, IList<Language> filterLanguages = null)
-		{
-			string pluginDir = pluginDescriptor.OriginalAssemblyFile.Directory.FullName;
-			string localizationDir = Path.Combine(pluginDir, "Localization");
-
-			if (!System.IO.Directory.Exists(localizationDir))
-				return;
-
-			if (forceToList == null && updateTouchedResources)
-				DeleteLocaleStringResources(pluginDescriptor.ResourceRootKey);
-
-			var languages = _languageService.GetAllLanguages(true);
-			var doc = new XmlDocument();
-
-			foreach (var filePath in System.IO.Directory.EnumerateFiles(localizationDir, "*.xml"))
-			{
-				Match match = Regex.Match(Path.GetFileName(filePath), Regex.Escape("resources.") + "(.*?)" + Regex.Escape(".xml"));
-				string languageCode = match.Groups[1].Value;
-
-				Language language = languages.Where(l => l.LanguageCulture.IsCaseInsensitiveEqual(languageCode)).FirstOrDefault();
-				if (language != null)
-				{
-					language = _languageService.GetLanguageById(language.Id);
-				}
-
-				if (languageCode.HasValue() && language != null)
-				{
-					if (filterLanguages != null && !filterLanguages.Any(x => x.Id == language.Id))
-					{
-						continue;
-					}
-
-					doc.Load(filePath);
-					doc = FlattenResourceFile(doc);
-
-					if (forceToList == null)
-					{
-						ImportResourcesFromXml(language, doc, pluginDescriptor.ResourceRootKey, true, updateTouchedResources: updateTouchedResources);
-					}
-					else
-					{
-						var nodes = doc.SelectNodes(@"//Language/LocaleResource");
-						foreach (XmlNode node in nodes)
-						{
-							var valueNode = node.SelectSingleNode("Value");
-							var res = new LocaleStringResource()
-							{
-								ResourceName = node.Attributes["Name"].InnerText.Trim(),
-								ResourceValue = (valueNode == null ? "" : valueNode.InnerText),
-								LanguageId = language.Id,
-								IsFromPlugin = true
-							};
-
-							if (res.ResourceName.HasValue())
-								forceToList.Add(res);
-						}
-					}
-				}
 			}
 		}
 

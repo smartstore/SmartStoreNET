@@ -16,6 +16,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Events;
+using System.Data.Entity.Core.Objects;
 
 namespace SmartStore.Data
 {
@@ -138,7 +139,7 @@ namespace SmartStore.Data
 
         public virtual string CreateDatabaseScript()
         {
-            return ((IObjectContextAdapter)this).ObjectContext.CreateDatabaseScript();
+            return ObjectContext.CreateDatabaseScript();
         }
 
 		public new DbSet<TEntity> Set<TEntity>() where TEntity : BaseEntity
@@ -219,7 +220,7 @@ namespace SmartStore.Data
 
 				// database call
 				var reader = cmd.ExecuteReader();
-				var result = ((IObjectContextAdapter)(this)).ObjectContext.Translate<TEntity>(reader).ToList();
+				var result = ObjectContext.Translate<TEntity>(reader).ToList();
 				if (!ForceNoTracking)
 				{
 					for (int i = 0; i < result.Count; i++)
@@ -263,8 +264,8 @@ namespace SmartStore.Data
             if (timeout.HasValue)
             {
                 //store previous timeout
-                previousTimeout = ((IObjectContextAdapter)this).ObjectContext.CommandTimeout;
-                ((IObjectContextAdapter)this).ObjectContext.CommandTimeout = timeout;
+                previousTimeout = ObjectContext.CommandTimeout;
+                ObjectContext.CommandTimeout = timeout;
             }
 
             var transactionalBehavior = doNotEnsureTransaction
@@ -275,7 +276,7 @@ namespace SmartStore.Data
             if (timeout.HasValue)
             {
                 //Set previous timeout back
-                ((IObjectContextAdapter)this).ObjectContext.CommandTimeout = previousTimeout;
+                ObjectContext.CommandTimeout = previousTimeout;
             }
 
             return result;
@@ -498,27 +499,29 @@ namespace SmartStore.Data
 
 		public TEntity Attach<TEntity>(TEntity entity) where TEntity : BaseEntity
         {
-			var dbSet = Set<TEntity>();
-			var alreadyAttached = dbSet.Local.FirstOrDefault(x => x.Id == entity.Id);
-
-			if (alreadyAttached == null)
+			ObjectStateEntry entry;
+			if (ObjectContext.ObjectStateManager.TryGetObjectStateEntry(entity, out entry))
 			{
-				dbSet.Attach(entity);
-				return entity;
+				if (entry.State != System.Data.Entity.EntityState.Detached)
+				{
+					return (TEntity)entry.Entity;
+				}
 			}
 
-			return alreadyAttached;
+			Set<TEntity>().Attach(entity);
+			return entity;
 		}
 
 		public bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity
         {
-			if (entity != null)
+			ObjectStateEntry entry;
+			if (ObjectContext.ObjectStateManager.TryGetObjectStateEntry(entity, out entry))
 			{
-				return Set<TEntity>().Local.Any(x => x.Id == entity.Id);
+				return (entry.State != System.Data.Entity.EntityState.Detached);
 			}
-
+			
 			return false;
-        }
+		}
 
         public void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity
         {
@@ -550,13 +553,17 @@ namespace SmartStore.Data
 
 		public void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity
 		{
-			Console.WriteLine("ChangeState ORIGINAL");
 			this.Entry(entity).State = newState;
 		}
 
 		public void ReloadEntity<TEntity>(TEntity entity) where TEntity : BaseEntity
 		{
 			this.Entry(entity).Reload();
+		}
+
+		internal ObjectContext ObjectContext
+		{
+			get { return ((IObjectContextAdapter)this).ObjectContext; }
 		}
 
 		private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)

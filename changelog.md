@@ -23,6 +23,7 @@
 * Major improvements in Importer: better field mapping, higher performance, bug fixes etc.
 * (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.
 * Localization & SEO: language switcher now takes language specific SEO slugs into account when building links
+* Smarter import of plugin resource files with graceful fallbacks (de-DE > de > de-* > en-US > en > en-* > *)
 * Exports the product detail link including the attribute query string when exporting attribute combinations
 * #918 Compare products: Display base price information
 * Export email attachments needs to be stored in database because the temp file may not exist anymore when sending the email

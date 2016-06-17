@@ -273,6 +273,7 @@ namespace SmartStore.Services.Localization
 
             string cacheKey = string.Format(LOCALESTRINGRESOURCES_ALL_KEY, languageId);
             var dict = _cacheManager.Get(cacheKey, () => {
+				// TODO: make result cacheable in distributed cache (IDictionary<string, CustomTuple>)
                 var result = new ConcurrentDictionary<string, Tuple<int, string>>(8, 2000, StringComparer.CurrentCultureIgnoreCase);
                 if (forceAll || _localizationSettings.LoadAllLocaleRecordsOnStartup)
                 {
@@ -594,13 +595,7 @@ namespace SmartStore.Services.Localization
 			}
 		}
 
-		/// <summary>
-		/// Import language resources from XML file
-		/// </summary>
-		/// <param name="language">Language</param>
-		/// <param name="xmlDocument">XML document</param>
-		/// <param name="rootKey">Prefix for resource key name</param>
-		public virtual void ImportResourcesFromXml(
+		public virtual int ImportResourcesFromXml(
             Language language, 
             XmlDocument xmlDocument, 
             string rootKey = null, 
@@ -608,11 +603,15 @@ namespace SmartStore.Services.Localization
             ImportModeFlags mode = ImportModeFlags.Insert | ImportModeFlags.Update,
             bool updateTouchedResources = false)
 		{            
-			using (var scope = new DbContextScope(autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
+			using (var scope = new DbContextScope(autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false, forceNoTracking: true, hooksEnabled: false))
 			{
 				var toAdd = new List<LocaleStringResource>();
 				var toUpdate = new List<LocaleStringResource>();
 				var nodes = xmlDocument.SelectNodes(@"//Language/LocaleResource");
+
+				var resources = language.LocaleStringResources.ToDictionarySafe(x => x.ResourceName, StringComparer.OrdinalIgnoreCase);
+
+				LocaleStringResource resource;
 
 				foreach (var xel in nodes.Cast<XmlElement>())
 				{
@@ -631,18 +630,23 @@ namespace SmartStore.Services.Localization
 							name = "{0}.{1}".FormatWith(rootKey, name);
 					}
 
+					resource = null;
+
 					// do not use "Insert"/"Update" methods because they clear cache
 					// let's bulk insert
-					var resource = language.LocaleStringResources.Where(x => x.ResourceName.Equals(name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-					if (resource != null)
+					//var resource = language.LocaleStringResources.Where(x => x.ResourceName.Equals(name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+					if (resources.TryGetValue(name, out resource))
 					{
 						if (mode.HasFlag(ImportModeFlags.Update))
 						{
 							if (updateTouchedResources || !resource.IsTouched.GetValueOrDefault())
 							{
-								resource.ResourceValue = value;
-								resource.IsTouched = null;
-								toUpdate.Add(resource);
+								if (value != resource.ResourceValue)
+								{
+									resource.ResourceValue = value;
+									resource.IsTouched = null;
+									toUpdate.Add(resource);
+								}
 							}
 						}
 					}
@@ -651,7 +655,7 @@ namespace SmartStore.Services.Localization
 						if (mode.HasFlag(ImportModeFlags.Insert))
 						{
 							toAdd.Add(
-								new LocaleStringResource()
+								new LocaleStringResource
 								{
 									LanguageId = language.Id,
 									ResourceName = name,
@@ -662,15 +666,25 @@ namespace SmartStore.Services.Localization
 					}
 				}
 
-				_lsrRepository.AutoCommitEnabled = true;
-				_lsrRepository.InsertRange(toAdd, 500);
-				toAdd.Clear();
+				//_lsrRepository.AutoCommitEnabled = true;
 
-				_lsrRepository.UpdateRange(toUpdate);
-				toUpdate.Clear();
+				if (toAdd.Any() || toUpdate.Any())
+				{
+					_lsrRepository.InsertRange(toAdd);
+					toAdd.Clear();
 
-				// clear cache
-				_cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
+					_lsrRepository.UpdateRange(toUpdate);
+					toUpdate.Clear();
+
+					int num = _lsrRepository.Context.SaveChanges();
+
+					// clear cache
+					_cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
+
+					return num;
+				}
+
+				return 0;
 			}
 		}
 

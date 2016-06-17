@@ -117,9 +117,10 @@ namespace SmartStore.Services.Localization
 		/// <param name="language">Language</param>
 		/// <param name="xmlDocument">XML document</param>
 		/// <param name="rootKey">Prefix for resource key name</param>
-        /// <param name="mode">Specifies whether resource should be inserted or updated (or both)</param>
-        /// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>
-        void ImportResourcesFromXml(Language language,
+		/// <param name="mode">Specifies whether resource should be inserted or updated (or both)</param>
+		/// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>
+		/// <returns>The number of processed (added or updated) resource entries</returns>
+		int ImportResourcesFromXml(Language language,
             XmlDocument xmlDocument,
             string rootKey = null,
             bool sourceIsPlugin = false,

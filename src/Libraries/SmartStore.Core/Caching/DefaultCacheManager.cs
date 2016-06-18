@@ -31,6 +31,21 @@ namespace SmartStore.Core.Caching
             this._cache = fn(typeof(TCache));
         }
 
+		public bool TryGet<T>(string key, out T item)
+		{
+			Guard.ArgumentNotNull(() => key);
+
+			item = default(T);
+
+			if (_cache.Contains(key))
+			{
+				item = (T)_cache.Get(key);
+				return true;
+			}
+
+			return false;
+		}
+
         public T Get<T>(string key, Func<T> acquirer, int? cacheTime = null)
         {
 			Guard.ArgumentNotEmpty(() => key);

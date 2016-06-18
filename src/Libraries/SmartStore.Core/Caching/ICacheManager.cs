@@ -6,16 +6,24 @@ namespace SmartStore.Core.Caching
     /// </summary>
     public interface ICacheManager
     {
-        /// <summary>
-        /// Gets a cache item associated with the specified key or adds the item
-        /// if it doesn't exist in the cache.
-        /// </summary>
-        /// <typeparam name="T">The type of the item to get or add</typeparam>
-        /// <param name="key">The cache item key</param>
-        /// <param name="acquirer">Func which returns value to be added to the cache</param>
-        /// <param name="cacheTime">Expiration time in minutes</param>
-        /// <returns>Cached item value</returns>
-        T Get<T>(string key, Func<T> acquirer, int? cacheTime = null);
+		/// <summary>
+		/// Tries to get a cache item associated with the specified key
+		/// </summary>
+		/// <param name="key">The cache item key</param>
+		/// <param name="item">The cached item instance, or <c>null</c> when item does not exist in cache.</param>
+		/// <returns><c>true</c> when an item exists, <c>false</c> otherwise</returns>
+		bool TryGet<T>(string key, out T item);
+
+		/// <summary>
+		/// Gets a cache item associated with the specified key or adds the item
+		/// if it doesn't exist in the cache.
+		/// </summary>
+		/// <typeparam name="T">The type of the item to get or add</typeparam>
+		/// <param name="key">The cache item key</param>
+		/// <param name="acquirer">Func which returns value to be added to the cache</param>
+		/// <param name="cacheTime">Expiration time in minutes</param>
+		/// <returns>Cached item value</returns>
+		T Get<T>(string key, Func<T> acquirer, int? cacheTime = null);
 
 		/// <summary>
 		/// Adds a cache item with the specified key

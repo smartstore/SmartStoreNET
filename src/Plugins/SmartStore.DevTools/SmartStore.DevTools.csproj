@@ -104,7 +104,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -162,9 +162,11 @@
     <Compile Include="DevToolsPlugin.cs" />
     <Compile Include="Models\BackendExtensionModel.cs" />
     <Compile Include="OutputCache\ChildActionDataSerializer.cs" />
+    <Compile Include="OutputCache\DonutHoleFilter.cs" />
     <Compile Include="OutputCache\DonutHoleProcessor.cs" />
-    <Compile Include="OutputCache\OutoutCacheItem.cs" />
+    <Compile Include="OutputCache\OutputCacheItem.cs" />
     <Compile Include="OutputCache\OutputCacheFilter.cs" />
+    <Compile Include="OutputCache\OutputCacheSettings.cs" />
     <Compile Include="ProfilerHttpModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteProvider.cs" />

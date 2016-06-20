@@ -7,11 +7,10 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Framework.Filters
 {
-
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
 	public class NotifyAttribute : ActionFilterAttribute
 	{
-		internal const string NotificationsKey = "sm.notifications.all";
+		public const string NotificationsKey = "sm.notifications.all";
 
 		public INotifier Notifier { get; set; }
 

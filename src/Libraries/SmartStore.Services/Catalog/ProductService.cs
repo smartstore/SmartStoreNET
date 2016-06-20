@@ -798,7 +798,7 @@ namespace SmartStore.Services.Catalog
 			{
 				allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
 			}
-
+			
 			// products
 			var query = ctx.Query ?? _productRepository.Table;
 			query = query.Where(p => !p.Deleted);

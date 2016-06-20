@@ -24,23 +24,26 @@ namespace SmartStore.DevTools.OutputCache
 			return s_rgDonutHoles.Replace(content, match => match.Groups[2].Value);
 		}
 
-		public string ReplaceHole(string content, ControllerContext filterContext)
+		public string ReplaceHoles(string content, ControllerContext filterContext)
 		{
 			return s_rgDonutHoles.Replace(content, match =>
 			{
 				var actionSettings = _actionDataSerialiser.Deserialise(match.Groups[1].Value);
 				
-				return InvokeAction(
+				var result = InvokeAction(
 					filterContext.Controller,
 					actionSettings.ActionName,
 					actionSettings.ControllerName,
 					actionSettings.RouteValues
 				);
+
+				return result;
 			});
 		}
 
 		private static string InvokeAction(ControllerBase controller, string actionName, string controllerName, RouteValueDictionary routeValues)
 		{
+			
 			var viewContext = new ViewContext(
 				controller.ControllerContext,
 				new WebFormView(controller.ControllerContext, "tmp"),
@@ -50,6 +53,8 @@ namespace SmartStore.DevTools.OutputCache
 			);
 
 			var htmlHelper = new HtmlHelper(viewContext, new ViewPage());
+
+			routeValues["OutputCache.InvokingChildAction"] = true;
 
 			return htmlHelper.Action(actionName, controllerName, routeValues).ToString();
 		}

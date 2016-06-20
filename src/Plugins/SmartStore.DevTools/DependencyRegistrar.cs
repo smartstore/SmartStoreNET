@@ -31,6 +31,7 @@ namespace SmartStore.DevTools
 
 				// OutputCache
 				builder.RegisterType<OutputCacheFilter>().AsActionFilterFor<SmartController>();
+				builder.RegisterType<DonutHoleFilter>().AsActionFilterFor<SmartController>();
 			}
         }
 

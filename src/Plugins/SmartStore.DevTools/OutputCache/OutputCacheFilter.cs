@@ -1,4 +1,7 @@
 ﻿using SmartStore.Core.Caching;
+using SmartStore.Core.Data;
+using SmartStore.Services;
+using SmartStore.Web.Framework.Theming;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -13,16 +16,28 @@ namespace SmartStore.DevTools.OutputCache
 {
 	public class OutputCacheFilter : IActionFilter, IResultFilter, IExceptionFilter
 	{
+		private static readonly string[] CacheableContentTypes = { "text/html", "text/xml", "text/json", "text/plain" };
 		private const string CacheKeyPrefix = "OutputCache://";
 
 		private readonly ICacheManager _cache;
+		private readonly ICommonServices _services;
+		private readonly IThemeContext _themeContext;
 		private readonly DonutHoleProcessor _donutHoleProcessor;
-		private bool _isCachingRequest;
+		private readonly OutputCacheSettings _settings;
 
-		public OutputCacheFilter(Func<string, ICacheManager> cache)
+		private bool _isCachingRequest;
+		private string _cacheKey;
+
+		public OutputCacheFilter(
+			Func<string, ICacheManager> cache, 
+			ICommonServices services,
+			IThemeContext themeContext)
 		{
 			_cache = cache("static");
+			_services = services;
+			_themeContext = themeContext;
 			_donutHoleProcessor = new DonutHoleProcessor();
+			_settings = new OutputCacheSettings();
 		}
 
 		public virtual void OnException(ExceptionContext filterContext)
@@ -32,54 +47,55 @@ namespace SmartStore.DevTools.OutputCache
 
 		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
 		{
+			if (!DataSettings.DatabaseIsInstalled())
+				return;
+
+			if (!_settings.IsEnabled || _settings.DefaultCacheDuration < 1)
+				return;
+
 			if (filterContext.IsChildAction)
 				return;
 
 			if (!filterContext.HttpContext.Request.HttpMethod.Equals("GET", StringComparison.OrdinalIgnoreCase))
 				return;
 
-			//if (filterContext.HttpContext.User.Identity.IsAuthenticated)
-			//	return;
+			if (!_settings.CacheAuthenticatedRequests && filterContext.HttpContext.User.Identity.IsAuthenticated)
+				return;
 
 			if (filterContext.HttpContext.Request.IsAdminArea())
 				return;
 
-			dynamic cacheSettings = new ExpandoObject();
-			cacheSettings.IsServerCachingEnabled = true;
-			cacheSettings.Duration = 300;
+			// TODO: NoCache when: Notifications are available, a redirect is in action, result is binary, OutputCacheAttribute is present
+			// TODO: Thread synchro (?)
+			// TODO: Debug mode
+			// TODO: CacheControlAttribute
 
-			dynamic cacheControlStrategy = new ExpandoObject();
-			cacheControlStrategy.IsServerCachingEnabled = true;
-
-			var cacheKey = ComputeCacheKey(filterContext, GetCacheKeyParameters(filterContext));
+			_cacheKey = String.Intern(ComputeCacheKey(filterContext, GetCacheKeyParameters(filterContext)));
 
 			// If we are unable to generate a cache key it means we can't do anything
-			if (string.IsNullOrEmpty(cacheKey))
+			if (string.IsNullOrEmpty(_cacheKey))
 			{
 				return;
 			}
 
-			// Are we actually storing data on the server side ?
-			if (cacheSettings.IsServerCachingEnabled)
+			// Are we actually storing data on the server side?
+			OutputCacheItem cachedItem = null;
+
+			_cache.TryGet(_cacheKey, out cachedItem);
+
+			// We have a cached version on the server side
+			if (cachedItem != null)
 			{
-				OutputCacheItem cachedItem = null;
-
-				_cache.TryGet(cacheKey, out cachedItem);
-
-				// We have a cached version on the server side
-				if (cachedItem != null)
+				// We inject the previous result into the MVC pipeline
+				// The MVC action won't execute as we injected the previous cached result.
+				filterContext.Result = new ContentResult
 				{
-					// We inject the previous result into the MVC pipeline
-					// The MVC action won't execute as we injected the previous cached result.
-					filterContext.Result = new ContentResult
-					{
-						Content = _donutHoleProcessor.ReplaceHole(cachedItem.Content, filterContext),
-						ContentType = cachedItem.ContentType
-					};
-				}
+					Content = _donutHoleProcessor.ReplaceHoles(cachedItem.Content, filterContext),
+					ContentType = cachedItem.ContentType
+				};
 			}
 
-			// Did we already injected something ?
+			// Did we already inject something ?
 			if (filterContext.Result != null)
 			{
 				return; // No need to continue 
@@ -94,12 +110,13 @@ namespace SmartStore.DevTools.OutputCache
 			filterContext.HttpContext.Response.Output = cachingWriter;
 
 			_isCachingRequest = true;
+			filterContext.HttpContext.Items["OutputCache.IsCachingRequest"] = true;
 
 			// Will be called back by OnResultExecuted -> ExecuteCallback
-			filterContext.HttpContext.Items[cacheKey] = new Action<bool>(hasErrors =>
+			filterContext.HttpContext.Items[_cacheKey] = new Action<bool>(hasErrors =>
 			{
 				// Removing this executing action from the context
-				filterContext.HttpContext.Items.Remove(cacheKey);
+				filterContext.HttpContext.Items.Remove(_cacheKey);
 
 				// We restore the original writer for response
 				filterContext.HttpContext.Response.Output = originalWriter;
@@ -116,11 +133,11 @@ namespace SmartStore.DevTools.OutputCache
 					ContentType = filterContext.HttpContext.Response.ContentType
 				};
 
-				filterContext.HttpContext.Response.Write(_donutHoleProcessor.RemoveHoleWrappers(cacheItem.Content, filterContext));
+				filterContext.HttpContext.Response.Write(_donutHoleProcessor.ReplaceHoles(cacheItem.Content, filterContext));
 
-				if (cacheSettings.IsServerCachingEnabled && filterContext.HttpContext.Response.StatusCode == 200)
+				if (filterContext.HttpContext.Response.StatusCode == 200)
 				{
-					_cache.Set(cacheKey, cacheItem, (int)cacheSettings.Duration);
+					_cache.Set(_cacheKey, cacheItem, _settings.DefaultCacheDuration);
 				}
 			});
 		}
@@ -136,9 +153,20 @@ namespace SmartStore.DevTools.OutputCache
 		public virtual void OnResultExecuted(ResultExecutedContext filterContext)
 		{
 			if (!_isCachingRequest)
-			{
 				return;
-			}
+
+			var result = filterContext.Result;
+
+			// only cache view results
+			if (!(result is ViewResultBase))
+				return;
+
+			// do not cache file results
+			if (!(result is FileResult))
+				return;
+
+			if (!CacheableContentTypes.Contains(filterContext.HttpContext.Response.ContentType))
+				return;
 
 			// See OnActionExecuting
 			ExecuteCallback(filterContext, filterContext.Exception != null);
@@ -154,14 +182,12 @@ namespace SmartStore.DevTools.OutputCache
 		/// <param name="hasErrors">if set to <c>true</c> [has errors].</param>
 		private void ExecuteCallback(ControllerContext context, bool hasErrors)
 		{
-			var cacheKey = ComputeCacheKey(context, GetCacheKeyParameters(context));
-
-			if (string.IsNullOrEmpty(cacheKey))
+			if (string.IsNullOrEmpty(_cacheKey))
 			{
 				return;
 			}
 
-			var callback = context.HttpContext.Items[cacheKey] as Action<bool>;
+			var callback = context.HttpContext.Items[_cacheKey] as Action<bool>;
 
 			if (callback != null)
 			{
@@ -176,8 +202,8 @@ namespace SmartStore.DevTools.OutputCache
 		protected virtual void SetCacheHeaders(HttpResponseBase response)
 		{
 			response.Cache.SetCacheability(HttpCacheability.Public);
-			response.Cache.SetExpires(DateTime.Now.AddSeconds(300));
-			response.Cache.SetMaxAge(new TimeSpan(0, 0, 300));
+			response.Cache.SetExpires(DateTime.Now.AddSeconds(_settings.DefaultCacheDuration));
+			response.Cache.SetMaxAge(new TimeSpan(0, 0, _settings.DefaultCacheDuration));
 
 			//response.Cache.SetNoStore();
 		}
@@ -228,9 +254,54 @@ namespace SmartStore.DevTools.OutputCache
 			return string.Format("{0}={1}#", fragment.Key.ToLowerInvariant(), value);
 		}
 
-		protected virtual IDictionary<string, object> GetCacheKeyParameters(ControllerContext context)
+		protected virtual IDictionary<string, object> GetCacheKeyParameters(ActionExecutingContext context)
 		{
-			return new Dictionary<string, object>(context.RouteData.Values);
+			var result = new Dictionary<string, object>();
+
+			// Vary by action parameters.
+			foreach (var p in context.ActionParameters)
+			{
+				result.Add(p.Key, p.Value);
+			}
+
+			// Vary by query string parameters.
+			foreach (var key in context.HttpContext.Request.QueryString.AllKeys)
+			{
+				if (key == null || result.ContainsKey(key.ToLowerInvariant()))
+				{
+					// already added as ActionParamater per mvc model binding
+					continue;
+				}
+
+				var item = context.HttpContext.Request.QueryString[key];
+				result.Add(
+					key.ToLowerInvariant(),
+					item != null
+						? item.ToLowerInvariant()
+						: string.Empty
+				);
+			}
+
+			// Vary by customer roles 'CacheAuthenticatedRequests' is true
+			if (context.HttpContext.User.Identity.IsAuthenticated)
+			{
+				var roleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id);
+				result.Add("$roles", String.Join(",", roleIds));
+			}
+
+			// Vary by language
+			result.Add("$lang", _services.WorkContext.WorkingLanguage.Id);
+
+			// Vary by currency
+			result.Add("$cur", _services.WorkContext.WorkingCurrency.Id);
+
+			// Vary by store
+			result.Add("$store", _services.StoreContext.CurrentStore.Id);
+
+			// Vary by theme
+			result.Add("$theme", _themeContext.CurrentTheme.ThemeName);
+
+			return result;
 		}
 	}
 }

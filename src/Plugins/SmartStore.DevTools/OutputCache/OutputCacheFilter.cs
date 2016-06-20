@@ -16,14 +16,14 @@ namespace SmartStore.DevTools.OutputCache
 {
 	public class OutputCacheFilter : IActionFilter, IResultFilter, IExceptionFilter
 	{
-		private static readonly string[] CacheableContentTypes = { "text/html", "text/xml", "text/json", "text/plain" };
-		private const string CacheKeyPrefix = "OutputCache://";
+		internal const string CacheKeyPrefix = "OutputCache://";
 
 		private readonly ICacheManager _cache;
 		private readonly ICommonServices _services;
 		private readonly IThemeContext _themeContext;
 		private readonly DonutHoleProcessor _donutHoleProcessor;
 		private readonly OutputCacheSettings _settings;
+		private readonly IOutputCacheControlPolicy _policy;
 
 		private bool _isCachingRequest;
 		private string _cacheKey;
@@ -38,6 +38,7 @@ namespace SmartStore.DevTools.OutputCache
 			_themeContext = themeContext;
 			_donutHoleProcessor = new DonutHoleProcessor();
 			_settings = new OutputCacheSettings();
+			_policy = new OutputCacheControlPolicy();
 		}
 
 		public virtual void OnException(ExceptionContext filterContext)
@@ -47,28 +48,11 @@ namespace SmartStore.DevTools.OutputCache
 
 		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
 		{
-			if (!DataSettings.DatabaseIsInstalled())
+			if (!_policy.IsRequestCacheable(filterContext))
 				return;
 
-			if (!_settings.IsEnabled || _settings.DefaultCacheDuration < 1)
-				return;
-
-			if (filterContext.IsChildAction)
-				return;
-
-			if (!filterContext.HttpContext.Request.HttpMethod.Equals("GET", StringComparison.OrdinalIgnoreCase))
-				return;
-
-			if (!_settings.CacheAuthenticatedRequests && filterContext.HttpContext.User.Identity.IsAuthenticated)
-				return;
-
-			if (filterContext.HttpContext.Request.IsAdminArea())
-				return;
-
-			// TODO: NoCache when: Notifications are available, a redirect is in action, result is binary, OutputCacheAttribute is present
 			// TODO: Thread synchro (?)
 			// TODO: Debug mode
-			// TODO: CacheControlAttribute
 
 			_cacheKey = String.Intern(ComputeCacheKey(filterContext, GetCacheKeyParameters(filterContext)));
 
@@ -144,10 +128,12 @@ namespace SmartStore.DevTools.OutputCache
 
 		public void OnActionExecuted(ActionExecutedContext filterContext)
 		{
+			// nada
 		}
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)
 		{
+			// nada
 		}
 
 		public virtual void OnResultExecuted(ResultExecutedContext filterContext)
@@ -155,17 +141,7 @@ namespace SmartStore.DevTools.OutputCache
 			if (!_isCachingRequest)
 				return;
 
-			var result = filterContext.Result;
-
-			// only cache view results
-			if (!(result is ViewResultBase))
-				return;
-
-			// do not cache file results
-			if (!(result is FileResult))
-				return;
-
-			if (!CacheableContentTypes.Contains(filterContext.HttpContext.Response.ContentType))
+			if (!_policy.IsResultCacheable(filterContext))
 				return;
 
 			// See OnActionExecuting

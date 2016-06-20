@@ -374,15 +374,20 @@ namespace SmartStore.Services.Catalog
 
 		public virtual List<List<int>> DeserializeQueryData(string jsonData)
 		{
-			if (jsonData.HasValue())
+			try
 			{
-				if (jsonData.StartsWith("["))
+				if (jsonData.HasValue())
 				{
-					return JsonConvert.DeserializeObject<List<List<int>>>(jsonData);
-				}
+					if (jsonData.StartsWith("["))
+					{
+						return JsonConvert.DeserializeObject<List<List<int>>>(jsonData);
+					}
 
-				return new List<List<int>> { JsonConvert.DeserializeObject<List<int>>(jsonData) };
+					return new List<List<int>> { JsonConvert.DeserializeObject<List<int>>(jsonData) };
+				}
 			}
+			catch { }
+
 			return new List<List<int>>();
 		}
 

@@ -8,7 +8,6 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Localization;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -31,7 +30,7 @@ using SmartStore.Web.Models.Catalog;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class ProductController : PublicControllerBase
+	public partial class ProductController : PublicControllerBase
 	{
 		#region Fields
 
@@ -168,16 +167,16 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			// prepare the model
 			var selectedAttributes = new NameValueCollection();
 
-			selectedAttributes.ConvertAttributeQueryData(
+			// get selected attributes from query string
+			selectedAttributes.GetSelectedAttributes(
+				Request.QueryString,
 				_productAttributeParser.DeserializeQueryData(attributes),
 				product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing ? 0 : product.Id);
 
-			var model = _helper.PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes);
-
-			_helper.SelectProductAttributeValues(model, Request.QueryString);
+			// prepare the view model
+			var model = _helper.PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes, queryData: Request.QueryString);
 
 			//save as recently viewed
 			_recentlyViewedProductsService.AddProductToRecentlyViewedList(product.Id);

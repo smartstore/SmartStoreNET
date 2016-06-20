@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Collections;
@@ -25,14 +25,12 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
+using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
-using SmartStore.Core.Data;
-using System.Collections.Specialized;
-using SmartStore.Services.Topics;
 
 namespace SmartStore.Web.Controllers
 {
@@ -152,7 +150,8 @@ namespace SmartStore.Web.Controllers
 			bool isAssociatedProduct = false,
 			ProductBundleItemData productBundleItem = null, 
 			IList<ProductBundleItemData> productBundleItems = null, 
-			NameValueCollection selectedAttributes = null)
+			NameValueCollection selectedAttributes = null,
+			NameValueCollection queryData = null)
 		{
 			if (product == null)
 				throw new ArgumentNullException("product");
@@ -186,6 +185,30 @@ namespace SmartStore.Web.Controllers
 				HasSampleDownload = product.IsDownload && product.HasSampleDownload,
 				IsCurrentCustomerRegistered = _services.WorkContext.CurrentCustomer.IsRegistered()
 			};
+
+			// get gift card values from query string
+			if (queryData != null && queryData.Count > 0)
+			{
+				var giftCardItems = queryData.AllKeys
+					.Where(x => x.EmptyNull().StartsWith("giftcard_"))
+					.SelectMany(queryData.GetValues, (k, v) => new { key = k, value = v.TrimSafe() });
+
+				foreach (var item in giftCardItems)
+				{
+					var key = item.key.EmptyNull().ToLower();
+
+					if (key.EndsWith("recipientname"))
+						model.GiftCard.RecipientName = item.value;
+					else if (key.EndsWith("recipientemail"))
+						model.GiftCard.RecipientEmail = item.value;
+					else if (key.EndsWith("sendername"))
+						model.GiftCard.SenderName = item.value;
+					else if (key.EndsWith("senderemail"))
+						model.GiftCard.SenderEmail = item.value;
+					else if (key.EndsWith("message"))
+						model.GiftCard.Message = item.value;
+				}
+			}
 
 			// Back in stock subscriptions
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
@@ -283,92 +306,6 @@ namespace SmartStore.Web.Controllers
 			PrepareProductDetailsPictureModel(model.DetailsPictureModel, pictures, model.Name, combinationPictureIds, isAssociatedProduct, productBundleItem, combination);
 
 			return model;
-		}
-
-		public void SelectProductAttributeValues(ProductDetailsModel model, NameValueCollection queryData)
-		{
-			Guard.ArgumentNotNull(() => model);
-
-			if (queryData == null || queryData.Count <= 0)
-				return;
-
-			try
-			{
-				var items = queryData.AllKeys
-					.Where(x => x.EmptyNull().StartsWith("product_attribute_"))
-					.SelectMany(queryData.GetValues, (k, v) => new { key = k, value = v });
-
-				foreach (var item in items)
-				{
-					var ids = item.key.Replace("product_attribute_", "").SplitSafe("_");
-					if (ids.Count() > 3)
-					{
-						var productId = ids[0].ToInt();
-						var bundleItemId = ids[1].ToInt();
-						var productAttributeId = ids[2].ToInt();
-						//var attributeId = ids[3].ToInt();
-
-						var attribute = model.ProductVariantAttributes.FirstOrDefault(x =>
-							x.ProductId == productId &&
-							x.BundleItemId == bundleItemId &&
-							x.ProductAttributeId == productAttributeId);
-
-						if (attribute != null)
-						{
-							switch (attribute.AttributeControlType)
-							{
-								case AttributeControlType.DropdownList:
-								case AttributeControlType.RadioList:
-								case AttributeControlType.Checkboxes:
-								case AttributeControlType.ColorSquares:
-									var attributeValue = attribute.Values.FirstOrDefault(x => x.Name.IsCaseInsensitiveEqual(item.value));
-									if (attributeValue != null)
-									{
-										attribute.Values.Each(x => x.IsPreSelected = false);
-										attributeValue.IsPreSelected = true;
-									}
-									break;
-								case AttributeControlType.TextBox:
-								case AttributeControlType.MultilineTextbox:
-									attribute.TextValue = item.value;
-									break;
-								case AttributeControlType.Datepicker:
-									if (item.value.Length == 8)
-									{
-										attribute.SelectedYear = item.value.Substring(0, 4).ToInt();
-										attribute.SelectedMonth = item.value.Substring(4, 2).ToInt();
-										attribute.SelectedDay = item.value.Substring(6, 2).ToInt();
-									}
-									break;
-							}
-						}
-					}
-				}
-
-				items = queryData.AllKeys
-					.Where(x => x.EmptyNull().StartsWith("giftcard_"))
-					.SelectMany(queryData.GetValues, (k, v) => new { key = k, value = v });
-
-				foreach (var item in items)
-				{
-					var key = item.key.EmptyNull().ToLower();
-
-					if (key.EndsWith("recipientname"))
-						model.GiftCard.RecipientName = item.value;
-					else if (key.EndsWith("recipientemail"))
-						model.GiftCard.RecipientEmail = item.value;
-					else if (key.EndsWith("sendername"))
-						model.GiftCard.SenderName = item.value;
-					else if (key.EndsWith("senderemail"))
-						model.GiftCard.SenderEmail = item.value;
-					else if (key.EndsWith("message"))
-						model.GiftCard.Message = item.value;
-				}
-			}
-			catch (Exception exception)
-			{
-				Logger.Warning(exception.ToAllMessages(), exception);
-			}
 		}
 
 		public void PrepareProductReviewsModel(ProductReviewsModel model, Product product)
@@ -591,9 +528,31 @@ namespace SmartStore.Web.Controllers
 							pvaModel.BeginYear = match.Groups[1].Value.ToInt();
 							pvaModel.EndYear = match.Groups[2].Value.ToInt();
 						}
+
+						if (hasSelectedAttributes)
+						{
+							var attributeKey = "product_attribute_{0}_{1}_{2}_{3}".FormatInvariant(product.Id, bundleItemId, attribute.ProductAttributeId, attribute.Id);
+							var day = selectedAttributes[attributeKey + "_day"].ToInt();
+							var month = selectedAttributes[attributeKey + "_month"].ToInt();
+							var year = selectedAttributes[attributeKey + "_year"].ToInt();
+							if (day > 0 && month > 0 && year > 0)
+							{
+								pvaModel.SelectedDay = day;
+								pvaModel.SelectedMonth = month;
+								pvaModel.SelectedYear = year;
+							}
+						}
+					}
+					else if (attribute.AttributeControlType == AttributeControlType.TextBox || attribute.AttributeControlType == AttributeControlType.MultilineTextbox)
+					{
+						if (hasSelectedAttributes)
+						{
+							var attributeKey = "product_attribute_{0}_{1}_{2}_{3}".FormatInvariant(product.Id, bundleItemId, attribute.ProductAttributeId, attribute.Id);
+							pvaModel.TextValue = selectedAttributes[attributeKey];
+						}
 					}
 
-					int preSelectedValueId = 0;
+					var preSelectedValueId = 0;
 					var pvaValues = (attribute.ShouldHaveValues() ? _productAttributeService.GetProductVariantAttributeValues(attribute.Id) : new List<ProductVariantAttributeValue>());
 
 					foreach (var pvaValue in pvaValues)

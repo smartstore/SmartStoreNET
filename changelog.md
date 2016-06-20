@@ -7,6 +7,7 @@
 * #637 Integrated PayPal PLUS payment provider
 * #932 Implement paydirekt payment plugin
 * New Viveum payment plugin
+* #979 Implement BeezUP product feed
 
 ### New Features
 * #637 Integrated PayPal PLUS payment Provider

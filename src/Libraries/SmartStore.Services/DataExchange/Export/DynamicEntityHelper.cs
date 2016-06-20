@@ -578,14 +578,14 @@ namespace SmartStore.Services.DataExchange.Export
 
 			#region gerneral data
 
+			dynObject._CategoryName = null;
+			dynObject._CategoryPath = null;
+			dynObject._AttributeCombination = null;
+			dynObject._AttributeCombinationValues = null;
+			dynObject._AttributeCombinationId = (combination == null ? 0 : combination.Id);
+			dynObject._DetailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)dynObject.SeName;
+
 			dynObject.Price = CalculatePrice(ctx, product, combination != null);
-
-			if (combination != null && ctx.Projection.AttributeCombinationValueMerging == ExportAttributeValueMerging.AppendAllValuesToName)
-			{
-				var values = _productAttributeParser.Value.ParseProductVariantAttributeValues(combination.AttributesXml, productAttributes, ctx.Projection.LanguageId ?? 0);
-
-				dynObject.Name = ((string)dynObject.Name).Grow(string.Join(", ", values), " ");
-			}
 
 			dynObject._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
 				_priceCalculationService.Value, ctx.ContextCurrency, decimal.Zero, true);
@@ -595,20 +595,33 @@ namespace SmartStore.Services.DataExchange.Export
 			else
 				dynObject._ProductTemplateViewPath = "";
 
-			var detailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)dynObject.SeName;
-
 			if (combination != null)
 			{
+				if (ctx.Supports(ExportFeatures.UsesAttributeCombination) ||
+					ctx.Projection.AttributeCombinationValueMerging == ExportAttributeValueMerging.AppendAllValuesToName)
+				{
+					var variantAttributes = _productAttributeParser.Value.DeserializeProductVariantAttributes(combination.AttributesXml);
+					var variantAttributeValues = _productAttributeParser.Value.ParseProductVariantAttributeValues(variantAttributes, productAttributes, languageId);
+
+					if (ctx.Supports(ExportFeatures.UsesAttributeCombination))
+					{
+						dynObject._AttributeCombination = variantAttributes;
+						dynObject._AttributeCombinationValues = variantAttributeValues;
+					}
+
+					if (ctx.Projection.AttributeCombinationValueMerging == ExportAttributeValueMerging.AppendAllValuesToName)
+					{
+						dynObject.Name = ((string)dynObject.Name).Grow(string.Join(", ", variantAttributeValues), " ");
+					}
+				}
+
 				var attributeQueryString = _productAttributeParser.Value.SerializeQueryData(combination.AttributesXml, product.Id);
 				if (attributeQueryString.HasValue())
 				{
-					detailUrl = string.Concat(detailUrl, detailUrl.Contains("?") ? "&" : "?", "attributes=", attributeQueryString);
+					var url = (string)dynObject._DetailUrl;
+					dynObject._DetailUrl = string.Concat(url, url.Contains("?") ? "&" : "?", "attributes=", attributeQueryString);
 				}
 			}
-
-			dynObject._IsChild = (combination != null);
-			dynObject._DetailUrl = detailUrl;
-			dynObject._CategoryName = null;
 
 			if (ctx.Categories.Count > 0)
 			{
@@ -621,13 +634,8 @@ namespace SmartStore.Services.DataExchange.Export
 					productCategories.OrderBy(x => x.DisplayOrder).FirstOrDefault()
 				);
 			}
-			else
-			{
-				dynObject._CategoryPath = null;
-			}
 
 			ToDeliveryTime(ctx, dynObject, product.DeliveryTimeId);
-
 			ToQuantityUnit(ctx, dynObject, product.QuantityUnitId);
 
 			dynObject.ProductPictures = productPictures

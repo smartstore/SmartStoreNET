@@ -194,21 +194,20 @@ namespace SmartStore.Services.Catalog
             return values;
         }
 
-		public IList<string> ParseProductVariantAttributeValues(string attributesXml, IEnumerable<ProductVariantAttribute> attributes, int languageId = 0)
+		public virtual IList<string> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes, int languageId = 0)
 		{
 			var values = new List<string>();
 
-			if (attributesXml.IsEmpty())
+			if (attributeCombination == null || !attributeCombination.Any())
 				return values;
 
 			var allValueIds = new List<int>();
-			var combinedAttributes = DeserializeProductVariantAttributes(attributesXml);
 
 			foreach (var pva in attributes.Where(x => x.ShouldHaveValues()).OrderBy(x => x.DisplayOrder))
 			{
-				if (combinedAttributes.ContainsKey(pva.Id))
+				if (attributeCombination.ContainsKey(pva.Id))
 				{
-					var pvaValuesStr = combinedAttributes[pva.Id];
+					var pvaValuesStr = attributeCombination[pva.Id];
 					var ids = pvaValuesStr.Where(x => x.HasValue()).Select(x => x.ToInt());
 
 					allValueIds.AddRange(ids);

@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Discounts
 {
@@ -317,18 +318,18 @@ namespace SmartStore.Services.Discounts
             }
 
             //check date range
-            DateTime now = DateTime.UtcNow;
-			int storeId = _storeContext.CurrentStore.Id;
+            var now = DateTime.UtcNow;
+			var store = _storeContext.CurrentStore;
 
             if (discount.StartDateUtc.HasValue)
             {
-                DateTime startDate = DateTime.SpecifyKind(discount.StartDateUtc.Value, DateTimeKind.Utc);
+                var startDate = DateTime.SpecifyKind(discount.StartDateUtc.Value, DateTimeKind.Utc);
                 if (startDate.CompareTo(now) > 0)
                     return false;
             }
             if (discount.EndDateUtc.HasValue)
             {
-                DateTime endDate = DateTime.SpecifyKind(discount.EndDateUtc.Value, DateTimeKind.Utc);
+                var endDate = DateTime.SpecifyKind(discount.EndDateUtc.Value, DateTimeKind.Utc);
                 if (endDate.CompareTo(now) < 0)
                     return false;
             }
@@ -336,32 +337,35 @@ namespace SmartStore.Services.Discounts
             if (!CheckDiscountLimitations(discount, customer))
                 return false;
 
-            // discount requirements
-            var requirements = discount.DiscountRequirements;
-            foreach (var req in requirements)
-            {
-				var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName, storeId);
-                if (requirementRule == null)
-                    continue;
-
-                var request = new CheckDiscountRequirementRequest()
-                {
-                    DiscountRequirement = req,
-                    Customer = customer,
-					Store = _storeContext.CurrentStore
-                };
-                if (!requirementRule.Value.CheckRequirement(request))
-                    return false;
-            }
-
 			// better not to apply discounts if there are gift cards in the cart cause the customer could "earn" money through that.
 			if (discount.DiscountType == DiscountType.AssignedToOrderTotal || discount.DiscountType == DiscountType.AssignedToOrderSubTotal)
 			{
-				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
+				var cart = customer.ShoppingCartItems
+					.Filter(ShoppingCartType.ShoppingCart, store.Id)
+					.ToList();
 
-				if (cart.Any(x => x.Item.Product.IsGiftCard))
+				if (cart.Any(x => x.Product.IsGiftCard))
 					return false;
 			}
+
+			// discount requirements
+			var requirements = discount.DiscountRequirements;
+            foreach (var req in requirements)
+            {
+				var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName, store.Id);
+                if (requirementRule == null)
+                    continue;
+
+                var request = new CheckDiscountRequirementRequest
+                {
+                    DiscountRequirement = req,
+                    Customer = customer,
+					Store = store
+                };
+
+                if (!requirementRule.Value.CheckRequirement(request))
+                    return false;
+            }
 
             return true;
         }

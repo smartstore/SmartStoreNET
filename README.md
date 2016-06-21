@@ -14,7 +14,7 @@ A comprehensive set of tools for CRM & CMS, sales, marketing, payment & shipping
 
 The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 5`, `Entity Framework 6` and Domain Driven Design approach - makes it easy to extend, extremely flexible and essentially fun to work with ;-)
 
-* **Website:** [http://www.smartstore.com/net](http://www.smartstore.com/net)
+* **Website:** [http://www.smartstore.com/en/net](http://www.smartstore.com/en/net)
 * **Forum:** [http://community.smartstore.com](http://community.smartstore.com)
 * **Marketplace:** [http://community.smartstore.com/marketplace](http://community.smartstore.com/marketplace)
 * **Documentation:** [SmartStore.NET Documentation in English](http://docs.smartstore.com/display/SMNET/SmartStore.NET+Documentation+Home)

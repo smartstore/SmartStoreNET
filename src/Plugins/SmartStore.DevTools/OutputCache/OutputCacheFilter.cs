@@ -16,8 +16,6 @@ namespace SmartStore.DevTools.OutputCache
 {
 	public class OutputCacheFilter : IActionFilter, IResultFilter, IExceptionFilter
 	{
-		internal const string CacheKeyPrefix = "OutputCache://";
-
 		private readonly ICacheManager _cache;
 		private readonly ICommonServices _services;
 		private readonly IThemeContext _themeContext;
@@ -51,16 +49,25 @@ namespace SmartStore.DevTools.OutputCache
 			if (!_policy.IsRequestCacheable(filterContext))
 				return;
 
-			// TODO: Thread synchro (?)
 			// TODO: Debug mode
 
-			_cacheKey = String.Intern(ComputeCacheKey(filterContext, GetCacheKeyParameters(filterContext)));
+			var routeKey = CacheHelpers.GetRouteKey(filterContext);
+
+			// Get out if we are unable to generate a route key (Area/Controller/Action)
+			if (string.IsNullOrEmpty(routeKey))
+				return;
+
+			var cacheableRoute = _policy.GetCacheableRoute(routeKey);
+
+			// do not cache when route is not in white list or its caching duration is <= 0
+			if (cacheableRoute == null || (cacheableRoute.Duration.HasValue && cacheableRoute.Duration.Value < 1))
+				return;
+
+			_cacheKey = String.Intern(CacheHelpers.ComputeCacheKey(routeKey, GetCacheKeyParameters(filterContext)));
 
 			// If we are unable to generate a cache key it means we can't do anything
 			if (string.IsNullOrEmpty(_cacheKey))
-			{
 				return;
-			}
 
 			// Are we actually storing data on the server side?
 			OutputCacheItem cachedItem = null;
@@ -121,7 +128,7 @@ namespace SmartStore.DevTools.OutputCache
 
 				if (filterContext.HttpContext.Response.StatusCode == 200)
 				{
-					_cache.Set(_cacheKey, cacheItem, _settings.DefaultCacheDuration);
+					_cache.Set(_cacheKey, cacheItem, cacheableRoute.Duration ?? _settings.DefaultCacheDuration);
 				}
 			});
 		}
@@ -182,52 +189,6 @@ namespace SmartStore.DevTools.OutputCache
 			response.Cache.SetMaxAge(new TimeSpan(0, 0, _settings.DefaultCacheDuration));
 
 			//response.Cache.SetNoStore();
-		}
-
-		private string ComputeCacheKey(ControllerContext context, IDictionary<string, object> parameters)
-		{
-			string areaName = context.RouteData.GetAreaName();
-			string controllerName = context.RouteData.Values["controller"].ToString();
-			string actionName = context.RouteData.Values["action"].ToString();
-
-			if (string.IsNullOrEmpty(actionName) || string.IsNullOrEmpty(controllerName))
-			{
-				return null;
-			}
-
-			var builder = new StringBuilder(CacheKeyPrefix);
-
-			if (areaName != null)
-			{
-				builder.AppendFormat("{0}/", areaName.ToLowerInvariant());
-			}
-
-			if (controllerName != null)
-			{
-				builder.AppendFormat("{0}/", controllerName.ToLowerInvariant());
-			}
-
-			if (actionName != null)
-			{
-				builder.AppendFormat("{0}#", actionName.ToLowerInvariant());
-			}
-
-			if (parameters != null)
-			{
-				foreach (var p in parameters)
-				{
-					builder.Append(BuildKeyFragment(p));
-				}
-			}
-
-			return builder.ToString();
-		}
-
-		public string BuildKeyFragment(KeyValuePair<string, object> fragment)
-		{
-			var value = fragment.Value == null ? "<null>" : fragment.Value.ToString().ToLowerInvariant();
-
-			return string.Format("{0}={1}#", fragment.Key.ToLowerInvariant(), value);
 		}
 
 		protected virtual IDictionary<string, object> GetCacheKeyParameters(ActionExecutingContext context)

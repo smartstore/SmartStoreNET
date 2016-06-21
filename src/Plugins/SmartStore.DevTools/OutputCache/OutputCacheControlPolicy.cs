@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI;
 
 namespace SmartStore.DevTools.OutputCache
 {
@@ -12,6 +13,7 @@ namespace SmartStore.DevTools.OutputCache
 	{
 		bool IsRequestCacheable(ActionExecutingContext context);
 		bool IsResultCacheable(ResultExecutedContext context);
+		CacheableRoute GetCacheableRoute(string route);
 	}
 
 	public class OutputCacheControlPolicy : IOutputCacheControlPolicy
@@ -24,7 +26,7 @@ namespace SmartStore.DevTools.OutputCache
 			_settings = new OutputCacheSettings();
 		}
 
-		public bool IsRequestCacheable(ActionExecutingContext context)
+		public virtual bool IsRequestCacheable(ActionExecutingContext context)
 		{
 			// TODO: NoCache when: Notifications are available, a redirect is in action, result is binary, OutputCacheAttribute is present
 			// TODO: CacheControlAttribute
@@ -55,10 +57,25 @@ namespace SmartStore.DevTools.OutputCache
 			if (context.HttpContext.Request.IsAdminArea())
 				return false;
 
+			// Respect OutputCacheAttribute if applied.
+			var actionAttrs = context.ActionDescriptor.GetCustomAttributes(typeof(OutputCacheAttribute), true);
+			var controllerAttrs = context.ActionDescriptor.ControllerDescriptor.GetCustomAttributes(typeof(OutputCacheAttribute), true);
+			var attr = actionAttrs.Concat(controllerAttrs).Cast<OutputCacheAttribute>().FirstOrDefault();
+			if (attr != null)
+			{
+				if (attr.Duration <= 0 || attr.NoStore)
+					return false;
+			}
+
 			return true;
 		}
 
-		public bool IsResultCacheable(ResultExecutedContext context)
+		public virtual CacheableRoute GetCacheableRoute(string route)
+		{
+			return _settings.CacheableRoutes.FirstOrDefault(x => x.Route.IsCaseInsensitiveEqual(route));
+		}
+
+		public virtual bool IsResultCacheable(ResultExecutedContext context)
 		{
 			var result = context.Result;
 

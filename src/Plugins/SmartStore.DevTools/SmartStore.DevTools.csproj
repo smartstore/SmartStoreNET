@@ -161,6 +161,7 @@
     <Compile Include="Filters\Samples\SampleActionFilter.cs" />
     <Compile Include="DevToolsPlugin.cs" />
     <Compile Include="Models\BackendExtensionModel.cs" />
+    <Compile Include="OutputCache\CacheHelpers.cs" />
     <Compile Include="OutputCache\ChildActionDataSerializer.cs" />
     <Compile Include="OutputCache\DonutHoleFilter.cs" />
     <Compile Include="OutputCache\DonutHoleProcessor.cs" />

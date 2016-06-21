@@ -10,6 +10,13 @@ namespace SmartStore.DevTools.OutputCache
 {
 	public class DonutHoleFilter : IActionFilter
 	{
+		private readonly IOutputCacheControlPolicy _policy;
+
+		public DonutHoleFilter()
+		{
+			_policy = new OutputCacheControlPolicy();
+		}
+
 		public void OnActionExecuting(ActionExecutingContext filterContext)
 		{
 			if (!filterContext.IsChildAction)
@@ -24,18 +31,23 @@ namespace SmartStore.DevTools.OutputCache
 			if (!DataSettings.DatabaseIsInstalled())
 				return;
 
+			var routeKey = CacheHelpers.GetRouteKey(filterContext);
+
+			// Get out if we are unable to generate a route key (Area/Controller/Action)
+			if (string.IsNullOrEmpty(routeKey))
+				return;
+
+			var cacheableRoute = _policy.GetCacheableRoute(routeKey);
+
+			// do not donut cache when child action route is not in white list
+			if (cacheableRoute == null)
+				return;
+
 			var data = GetActionData(filterContext);
 
-			// TEMP
-			if (!data.ActionName.IsCaseInsensitiveEqual("ShopBar"))
-				return;
-			// TEMP
-
-			var serializedData = JsonConvert.SerializeObject(data);
-			
 			filterContext.Result = new ContentResult
 			{
-				Content = string.Format("<!--Donut#{0}#-->{1}<!--EndDonut-->", serializedData, "ReplaceMe")
+				Content = string.Format("<!--Donut#{0}#-->{1}<!--EndDonut-->", JsonConvert.SerializeObject(data), "ReplaceMe")
 			};
 		}
 

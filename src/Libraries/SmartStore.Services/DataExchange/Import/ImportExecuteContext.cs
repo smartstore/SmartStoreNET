@@ -209,5 +209,19 @@ namespace SmartStore.Services.DataExchange.Import
 			}
 			catch { }
 		}
+
+        /// <summary>
+        /// Allows to set a message
+        /// </summary>
+        /// <param name="message">Message to display</param>
+        public void SetProgress(string message)
+        {
+            try
+            {
+                if (_progressValueSetter != null && message.HasValue())
+                    _progressValueSetter.Invoke(0, 0, message);
+            }
+            catch { }
+        }
 	}
 }

@@ -1,15 +1,16 @@
 ﻿# Release Notes
 
-## SmartStore.NET 2.5.1
+## SmartStore.NET 2.6
 
 ### Highlights
-* Major improvements in Importer: better field mapping, higher performance, bug fixes etc.
-* #637 Integrated PayPal PLUS payment provider
-* #932 Implement paydirekt payment plugin
-* New Viveum payment plugin
+* Major improvements in Importer & Exporter: better field mapping, higher performance, bug fixes etc.
+* 'PayPal PLUS' payment plugin
+* 'paydirekt' payment plugin
+* 'Viveum' payment plugin
+* 'BeezUP' export provider
+* (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.
 
 ### New Features
-* #637 Integrated PayPal PLUS payment Provider
 * #961 Fix "Open Redirection Vulnerability"
 * #571 Option to display another checkbox on confirm page to let the customer accept that his email address can be handed over to a third party
 * #870 Implement address import for customers (both billing & shipping address)
@@ -60,6 +61,7 @@
 * Private messages: Fixes "No route in the route table matches the supplied values"
 * Payone: Hash string incorrect for frontend API payments where the order has more than 9 products
 * Export mail notification: Download link not working if SSL is enabled
+* Discount rule has spent amount including sub total option can cause wrong discount calculation if the cart contains a product several times
 
 
 ## SmartStore.NET 2.5

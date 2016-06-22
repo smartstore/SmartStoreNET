@@ -1065,8 +1065,12 @@ namespace SmartStore.Services.DataExchange.Export
 
 				logHead.AppendLine("Entity:\t\t\t" + ctx.Request.Provider.Value.EntityType.ToString());
 
-				var storeInfo = (ctx.Request.Profile.PerStore ? "{0} (Id {1})".FormatInvariant(ctx.Store.Name, ctx.Store.Id) : "All stores");
-				logHead.AppendLine("Store:\t\t\t" + storeInfo);
+				try
+				{
+					var uri = new Uri(store.Url);
+					logHead.AppendLine("Store:\t\t\t{0} (Id {1})".FormatInvariant(uri.DnsSafeHost.NaIfEmpty(), ctx.Store.Id));
+				}
+				catch {	}
 
 				var customer = _services.WorkContext.CurrentCustomer;
 				logHead.Append("Executed by:\t\t" + (customer.Email.HasValue() ? customer.Email : customer.SystemName));

@@ -7,19 +7,6 @@ using Newtonsoft.Json;
 
 namespace SmartStore.DevTools.OutputCache
 {
-	public class ChildActionDataSerializer
-	{
-		public string Serialise(ChildActionData actionData)
-		{
-			return JsonConvert.SerializeObject(actionData);
-		}
-
-		public ChildActionData Deserialise(string serialisedActionData)
-		{
-			return JsonConvert.DeserializeObject<ChildActionData>(serialisedActionData);
-		}
-	}
-
 	public class ChildActionData
 	{
 		public string ActionName { get; set; }

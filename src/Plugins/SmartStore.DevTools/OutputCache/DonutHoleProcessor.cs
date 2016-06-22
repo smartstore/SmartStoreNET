@@ -12,24 +12,15 @@ namespace SmartStore.DevTools.OutputCache
 	{
 		private static readonly Regex s_rgDonutHoles = new Regex("<!--Donut#(.*?)#-->(.*?)<!--EndDonut-->", RegexOptions.Compiled | RegexOptions.Singleline);
 
-		private readonly ChildActionDataSerializer _actionDataSerialiser;
-
 		public DonutHoleProcessor()
 		{
-			_actionDataSerialiser = new ChildActionDataSerializer();
-		}
-
-		public string RemoveHoleWrappers(string content, ControllerContext filterContext)
-		{
-			return s_rgDonutHoles.Replace(content, match => match.Groups[2].Value);
 		}
 
 		public string ReplaceHoles(string content, ControllerContext filterContext)
 		{
 			return s_rgDonutHoles.Replace(content, match =>
 			{
-				var actionSettings = _actionDataSerialiser.Deserialise(match.Groups[1].Value);
-				
+				var actionSettings = JsonConvert.DeserializeObject<ChildActionData>(match.Groups[1].Value);
 				var result = InvokeAction(
 					filterContext.Controller,
 					actionSettings.ActionName,
@@ -42,8 +33,7 @@ namespace SmartStore.DevTools.OutputCache
 		}
 
 		private static string InvokeAction(ControllerBase controller, string actionName, string controllerName, RouteValueDictionary routeValues)
-		{
-			
+		{		
 			var viewContext = new ViewContext(
 				controller.ControllerContext,
 				new WebFormView(controller.ControllerContext, "tmp"),

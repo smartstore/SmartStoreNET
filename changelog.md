@@ -1,13 +1,14 @@
 ﻿# Release Notes
 
-## SmartStore.NET 2.5.1
+## SmartStore.NET 2.6
 
 ### Highlights
-* Major improvements in Importer: better field mapping, higher performance, bug fixes etc.
-* #637 Integrated PayPal PLUS payment provider
-* #932 Implement paydirekt payment plugin
-* New Viveum payment plugin
-* #979 Implement BeezUP product feed
+* Major improvements in Importer & Exporter: better field mapping, higher performance, bug fixes etc.
+* 'PayPal PLUS' payment plugin
+* 'paydirekt' payment plugin
+* 'Viveum' payment plugin
+* 'BeezUP' export provider
+* (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.
 
 ### New Features
 * #961 Fix "Open Redirection Vulnerability"

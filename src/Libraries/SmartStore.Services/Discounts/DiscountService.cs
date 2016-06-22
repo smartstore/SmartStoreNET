@@ -363,7 +363,8 @@ namespace SmartStore.Services.Discounts
 					Store = store
                 };
 
-                if (!requirementRule.Value.CheckRequirement(request))
+				// TODO: cache result... CheckRequirement is very often called
+				if (!requirementRule.Value.CheckRequirement(request))
                     return false;
             }
 

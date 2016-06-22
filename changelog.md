@@ -60,6 +60,7 @@
 * Private messages: Fixes "No route in the route table matches the supplied values"
 * Payone: Hash string incorrect for frontend API payments where the order has more than 9 products
 * Export mail notification: Download link not working if SSL is enabled
+* Discount rule has spent amount including sub total option can cause wrong discount calculation if the cart contains a product several times
 
 
 ## SmartStore.NET 2.5

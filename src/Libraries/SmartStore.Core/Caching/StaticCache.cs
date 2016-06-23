@@ -5,6 +5,7 @@ using System.Threading;
 using System.Runtime.Caching;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
+using System.Text.RegularExpressions;
 
 namespace SmartStore.Core.Caching
 {

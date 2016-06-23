@@ -538,9 +538,19 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<StaticCache>().Keyed<ICache>(typeof(StaticCache)).SingleInstance();
-			builder.RegisterType<AspNetCache>().Keyed<ICache>(typeof(AspNetCache)).SingleInstance();
-			builder.RegisterType<RequestCache>().Keyed<ICache>(typeof(RequestCache)).InstancePerRequest();
+			builder.RegisterType<DisplayedEntities>().As<IDisplayedEntities>().InstancePerRequest();
+
+			builder.RegisterType<StaticCache>()
+				.Keyed<ICache>(typeof(StaticCache))
+				.Named<ICache>("static")
+				.SingleInstance();
+			builder.RegisterType<AspNetCache>()
+				.Keyed<ICache>(typeof(AspNetCache))
+				.Named<ICache>("aspnet")
+				.SingleInstance();
+			builder.RegisterType<RequestCache>()
+				.Keyed<ICache>(typeof(RequestCache))
+				.InstancePerRequest();
 
 			builder.RegisterType<CacheManager<RequestCache>>()
 				.As<ICacheManager>()

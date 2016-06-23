@@ -16,27 +16,30 @@ namespace SmartStore.DevTools.OutputCache
 {
 	public class OutputCacheFilter : IActionFilter, IResultFilter, IExceptionFilter
 	{
-		private readonly ICacheManager _cache;
+		private readonly MemoryOutputCacheProvider _outputCache;
 		private readonly ICommonServices _services;
 		private readonly IThemeContext _themeContext;
-		private readonly DonutHoleProcessor _donutHoleProcessor;
 		private readonly OutputCacheSettings _settings;
 		private readonly IOutputCacheControlPolicy _policy;
+		private readonly IDisplayedEntities _displayedEntities;
 
 		private bool _isCachingRequest;
+		private string _routeKey;
 		private string _cacheKey;
+		private CacheableRoute _cacheableRoute;
+		private DateTime _now;
 
 		public OutputCacheFilter(
-			Func<string, ICacheManager> cache, 
 			ICommonServices services,
-			IThemeContext themeContext)
+			IThemeContext themeContext,
+			IDisplayedEntities displayedEntities)
 		{
-			_cache = cache("static");
+			_outputCache = new MemoryOutputCacheProvider();
 			_services = services;
 			_themeContext = themeContext;
-			_donutHoleProcessor = new DonutHoleProcessor();
 			_settings = new OutputCacheSettings();
 			_policy = new OutputCacheControlPolicy();
+			_displayedEntities = displayedEntities;
 		}
 
 		public virtual void OnException(ExceptionContext filterContext)
@@ -51,37 +54,46 @@ namespace SmartStore.DevTools.OutputCache
 
 			// TODO: Debug mode
 
-			var routeKey = CacheHelpers.GetRouteKey(filterContext);
+			_now = DateTime.UtcNow;
+
+			_routeKey = CacheUtility.GetRouteKey(filterContext);
 
 			// Get out if we are unable to generate a route key (Area/Controller/Action)
-			if (string.IsNullOrEmpty(routeKey))
+			if (string.IsNullOrEmpty(_routeKey))
 				return;
 
-			var cacheableRoute = _policy.GetCacheableRoute(routeKey);
+			_cacheableRoute = _policy.GetCacheableRoute(_routeKey);
 
 			// do not cache when route is not in white list or its caching duration is <= 0
-			if (cacheableRoute == null || (cacheableRoute.Duration.HasValue && cacheableRoute.Duration.Value < 1))
+			if (_cacheableRoute == null || (_cacheableRoute.Duration.HasValue && _cacheableRoute.Duration.Value < 1))
 				return;
 
-			_cacheKey = String.Intern(CacheHelpers.ComputeCacheKey(routeKey, GetCacheKeyParameters(filterContext)));
+			_cacheKey = String.Intern(CacheUtility.ComputeCacheKey(_routeKey, GetCacheKeyParameters(filterContext)));
 
 			// If we are unable to generate a cache key it means we can't do anything
 			if (string.IsNullOrEmpty(_cacheKey))
 				return;
 
 			// Are we actually storing data on the server side?
-			OutputCacheItem cachedItem = null;
+			var cachedItem = _outputCache.Get(_cacheKey);
 
-			_cache.TryGet(_cacheKey, out cachedItem);
+			var response = filterContext.HttpContext.Response;
 
 			// We have a cached version on the server side
 			if (cachedItem != null)
 			{
+				// Adds some debug information to the response header if requested.
+				if (_settings.DebugMode)
+				{
+					response.AddHeader("X-Cached-On", cachedItem.CachedOnUtc.ToString("r"));
+					response.AddHeader("X-Cached-Until", cachedItem.ValidUntilUtc.ToString("r"));
+				}
+
 				// We inject the previous result into the MVC pipeline
 				// The MVC action won't execute as we injected the previous cached result.
 				filterContext.Result = new ContentResult
 				{
-					Content = _donutHoleProcessor.ReplaceHoles(cachedItem.Content, filterContext),
+					Content = CacheUtility.ReplaceDonutHoles(cachedItem.Content, filterContext),
 					ContentType = cachedItem.ContentType
 				};
 			}
@@ -96,9 +108,9 @@ namespace SmartStore.DevTools.OutputCache
 			// by something we own and later eventually gonna cache
 			var cachingWriter = new StringWriter(CultureInfo.InvariantCulture);
 
-			var originalWriter = filterContext.HttpContext.Response.Output;
+			var originalWriter = response.Output;
 
-			filterContext.HttpContext.Response.Output = cachingWriter;
+			response.Output = cachingWriter;
 
 			_isCachingRequest = true;
 			filterContext.HttpContext.Items["OutputCache.IsCachingRequest"] = true;
@@ -110,25 +122,47 @@ namespace SmartStore.DevTools.OutputCache
 				filterContext.HttpContext.Items.Remove(_cacheKey);
 
 				// We restore the original writer for response
-				filterContext.HttpContext.Response.Output = originalWriter;
+				response.Output = originalWriter;
 
 				if (hasErrors)
 				{
 					return; // Something went wrong, we are not going to cache something bad
 				}
 
-				// Now we use owned caching writer to actually store data
-				var cacheItem = new OutputCacheItem
-				{
-					Content = cachingWriter.ToString(),
-					ContentType = filterContext.HttpContext.Response.ContentType
-				};
+				var shouldSaveItem = true;
 
-				filterContext.HttpContext.Response.Write(_donutHoleProcessor.ReplaceHoles(cacheItem.Content, filterContext));
-
-				if (filterContext.HttpContext.Response.StatusCode == 200)
+				// Page might now have been rendered and cached by another request: double check!
+				var cacheItem = _outputCache.Get(_cacheKey);
+				if (cacheItem == null)
 				{
-					_cache.Set(_cacheKey, cacheItem, cacheableRoute.Duration ?? _settings.DefaultCacheDuration);
+					cacheItem = new OutputCacheItem
+					{
+						CacheKey = _cacheKey,
+						RouteKey = _routeKey,
+						CachedOnUtc = _now,
+						Url = filterContext.HttpContext.Request.Url.AbsolutePath,
+						QueryString = filterContext.HttpContext.Request.Url.Query,
+						Duration = _cacheableRoute.Duration ?? _settings.DefaultCacheDuration,
+						Tags = _displayedEntities.GetCacheControlTags().ToArray(),
+						Theme = "", // TODO
+						StoreId = 0, // TODO
+						LanguageId = 0, // TODO
+						CurrencyId = 0, // TODO
+						CustomerRoles = null, // TODO
+						Content = cachingWriter.ToString(),
+						ContentType = response.ContentType,
+					};
+				}
+				else
+				{
+					shouldSaveItem = false;
+				}
+
+				response.Write(CacheUtility.ReplaceDonutHoles(cacheItem.Content, filterContext));
+
+				if (response.StatusCode == 200 && shouldSaveItem)
+				{
+					_outputCache.Set(_cacheKey, cacheItem);
 				}
 			});
 		}
@@ -184,9 +218,11 @@ namespace SmartStore.DevTools.OutputCache
 		/// <param name="response">The HTTP response.</param>
 		protected virtual void SetCacheHeaders(HttpResponseBase response)
 		{
+			var duration = _cacheableRoute.Duration ?? _settings.DefaultCacheDuration;
+
 			response.Cache.SetCacheability(HttpCacheability.Public);
-			response.Cache.SetExpires(DateTime.Now.AddSeconds(_settings.DefaultCacheDuration));
-			response.Cache.SetMaxAge(new TimeSpan(0, 0, _settings.DefaultCacheDuration));
+			response.Cache.SetExpires(DateTime.Now.AddSeconds(duration));
+			response.Cache.SetMaxAge(new TimeSpan(0, 0, duration));
 
 			//response.Cache.SetNoStore();
 		}

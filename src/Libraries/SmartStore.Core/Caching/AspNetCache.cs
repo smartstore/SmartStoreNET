@@ -2,17 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Caching;
 
 namespace SmartStore.Core.Caching
-{
-    
+{  
     public partial class AspNetCache : ICache
     {
         private const string RegionName = "$$SmartStoreNET$$";
 
-        public IEnumerable<KeyValuePair<string, object>> Entries
+		public IEnumerable<KeyValuePair<string, object>> Entries
         {
             get
             {

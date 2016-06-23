@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+
 namespace SmartStore.Core.Caching
 {
     /// <summary>
@@ -7,12 +9,12 @@ namespace SmartStore.Core.Caching
     public interface ICacheManager
     {
 		/// <summary>
-		/// Tries to get a cache item associated with the specified key
+		/// Gets a cache item associated with the specified key
 		/// </summary>
+		/// <typeparam name="T">The type of the item to get</typeparam>
 		/// <param name="key">The cache item key</param>
-		/// <param name="item">The cached item instance, or <c>null</c> when item does not exist in cache.</param>
-		/// <returns><c>true</c> when an item exists, <c>false</c> otherwise</returns>
-		bool TryGet<T>(string key, out T item);
+		/// <returns>Cached item value or <c>null</c> if item with specified key does not exist in the cache</returns>
+		T Get<T>(string key);
 
 		/// <summary>
 		/// Gets a cache item associated with the specified key or adds the item
@@ -46,11 +48,18 @@ namespace SmartStore.Core.Caching
         /// <param name="key">/key</param>
         void Remove(string key);
 
-        /// <summary>
-        /// Removes items by pattern
-        /// </summary>
-        /// <param name="pattern">pattern</param>
-        void RemoveByPattern(string pattern);
+		/// <summary>
+		/// Scans for all all keys in the underlying cache
+		/// </summary>
+		/// <param name="pattern">A key pattern. Can be <c>null</c>.</param>
+		/// <returns>The sequence of matching keys</returns>
+		IEnumerable<string> Keys(string pattern);
+
+		/// <summary>
+		/// Removes items by pattern
+		/// </summary>
+		/// <param name="pattern">pattern</param>
+		void RemoveByPattern(string pattern);
 
         /// <summary>
         /// Clear all cache data

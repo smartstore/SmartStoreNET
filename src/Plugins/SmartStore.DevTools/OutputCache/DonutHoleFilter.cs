@@ -31,7 +31,7 @@ namespace SmartStore.DevTools.OutputCache
 			if (!DataSettings.DatabaseIsInstalled())
 				return;
 
-			var routeKey = CacheHelpers.GetRouteKey(filterContext);
+			var routeKey = CacheUtility.GetRouteKey(filterContext);
 
 			// Get out if we are unable to generate a route key (Area/Controller/Action)
 			if (string.IsNullOrEmpty(routeKey))

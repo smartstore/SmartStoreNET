@@ -1032,6 +1032,8 @@ namespace SmartStore.Web.Controllers
 
 			#endregion
 
+			_services.DisplayedEntities.Add(product);
+
 			return model;
 		}
 
@@ -1201,6 +1203,8 @@ namespace SmartStore.Web.Controllers
 						if (associatedProducts.Count > 0)
 						{
 							contextProduct = associatedProducts.OrderBy(x => x.DisplayOrder).First();
+
+							_services.DisplayedEntities.Add(contextProduct);
 
 							if (displayPrices && _catalogSettings.PriceDisplayType != PriceDisplayType.Hide)
 							{
@@ -1387,6 +1391,7 @@ namespace SmartStore.Web.Controllers
 							Title = string.Format(res["Media.Product.ImageLinkTitleFormat"], model.Name),
 							AlternateText = string.Format(res["Media.Product.ImageAlternateTextFormat"], model.Name)
 						};
+
 						return pictureModel;
 					});
 
@@ -1470,6 +1475,8 @@ namespace SmartStore.Web.Controllers
 
 				models.Add(model);
 			}
+
+			_services.DisplayedEntities.AddRange(products);
 
 			return models;
 		}

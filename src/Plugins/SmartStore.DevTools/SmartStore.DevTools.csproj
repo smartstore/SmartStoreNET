@@ -161,11 +161,12 @@
     <Compile Include="Filters\Samples\SampleActionFilter.cs" />
     <Compile Include="DevToolsPlugin.cs" />
     <Compile Include="Models\BackendExtensionModel.cs" />
-    <Compile Include="OutputCache\CacheHelpers.cs" />
+    <Compile Include="OutputCache\CacheUtility.cs" />
     <Compile Include="OutputCache\ChildActionData.cs" />
     <Compile Include="OutputCache\DonutHoleFilter.cs" />
-    <Compile Include="OutputCache\DonutHoleProcessor.cs" />
+    <Compile Include="OutputCache\MemoryOutputCacheProvider.cs" />
     <Compile Include="OutputCache\OutputCacheControlPolicy.cs" />
+    <Compile Include="OutputCache\OutputCacheInvalidationHook.cs" />
     <Compile Include="OutputCache\OutputCacheItem.cs" />
     <Compile Include="OutputCache\OutputCacheFilter.cs" />
     <Compile Include="OutputCache\OutputCacheSettings.cs" />

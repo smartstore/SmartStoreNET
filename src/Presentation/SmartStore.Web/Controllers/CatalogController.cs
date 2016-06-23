@@ -153,6 +153,8 @@ namespace SmartStore.Web.Controllers
             
             var model = category.ToModel();
 
+			_services.DisplayedEntities.Add(category);
+
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
             {
                 AllowCustomersToSelectPageSize = category.AllowCustomersToSelectPageSize,
@@ -199,14 +201,16 @@ namespace SmartStore.Web.Controllers
                         Name = subCatName,
                         SeName = x.GetSeName(),
                     };
+
+					_services.DisplayedEntities.Add(x);
 					
-                    //prepare picture model
+                    // prepare picture model
                     int pictureSize = _mediaSettings.CategoryThumbPictureSize;
 					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, x.Id, pictureSize, true, _services.WorkContext.WorkingLanguage.Id, _services.WebHelper.IsCurrentConnectionSecured(), _services.StoreContext.CurrentStore.Id);
                     subCatModel.PictureModel = _services.Cache.Get(categoryPictureCacheKey, () =>
                     {
 						var picture = _pictureService.GetPictureById(x.PictureId.GetValueOrDefault());
-						var pictureModel = new PictureModel()
+						var pictureModel = new PictureModel
                         {
 							PictureId = x.PictureId.GetValueOrDefault(),
 							FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
@@ -214,6 +218,9 @@ namespace SmartStore.Web.Controllers
                             Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), subCatName),
                             AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), subCatName)
                         };
+
+						_services.DisplayedEntities.Add(picture);
+
                         return pictureModel;
                     });
 
@@ -326,7 +333,7 @@ namespace SmartStore.Web.Controllers
                 model.PagingFilteringContext.SpecificationFilter.PrepareSpecsFilters(alreadyFilteredSpecOptionIds,
                     ctx2.FilterableSpecificationAttributeOptionIds,
                     _specificationAttributeService, _services.WebHelper, _services.WorkContext);
-            }
+			}
 
             // template
             var templateCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_TEMPLATE_MODEL_KEY, category.CategoryTemplateId);

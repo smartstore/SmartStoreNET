@@ -29,11 +29,12 @@ namespace SmartStore.DevTools
 				//// intercept CheckoutController's Index action (to hijack the checkout or payment workflow)
 				//builder.RegisterType<SampleCheckoutFilter>().AsActionFilterFor<CheckoutController>(x => x.Index()).InstancePerRequest();
 
-				// OutputCache
+				// TEMP: OutputCache
 				builder.RegisterType<OutputCacheFilter>().AsActionFilterFor<SmartController>();
 				builder.RegisterType<DonutHoleFilter>().AsActionFilterFor<SmartController>();
+				// TEMP: OutputCache
 			}
-        }
+		}
 
         public int Order
         {

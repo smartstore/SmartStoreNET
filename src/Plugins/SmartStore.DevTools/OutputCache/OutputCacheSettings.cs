@@ -11,7 +11,10 @@ namespace SmartStore.DevTools.OutputCache
 		{
 			IsEnabled = true; // true;
 			DefaultCacheDuration = 300;
+			AutomaticInvalidationEnabled = true;
 			CacheAuthenticatedRequests = true;
+			IgnoreNoCache = true;
+			DebugMode = true;
 
 			CacheableRoutes = new List<CacheableRoute>
 			{
@@ -29,8 +32,9 @@ namespace SmartStore.DevTools.OutputCache
 
 		public bool IsEnabled { get; set; }
 		public int DefaultCacheDuration { get; set; }
-		//public int DefaultMaxAge { get; set; }
+		public bool AutomaticInvalidationEnabled { get; set; }
 		public bool CacheAuthenticatedRequests { get; set; }
+		public bool IgnoreNoCache { get; set; }
 		public bool DebugMode { get; set; }
 
 		public IList<CacheableRoute> CacheableRoutes { get; set; }

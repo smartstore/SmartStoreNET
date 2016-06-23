@@ -146,6 +146,8 @@
     <Compile Include="Async\AsyncState.cs" />
     <Compile Include="Caching\DefaultCacheManager.cs" />
     <Compile Include="Caching\AspNetCache.cs" />
+    <Compile Include="Caching\DisplayedEntities.cs" />
+    <Compile Include="Caching\IDisplayedEntities.cs" />
     <Compile Include="Caching\RequestCache.cs" />
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />

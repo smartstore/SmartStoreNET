@@ -26,6 +26,11 @@ namespace SmartStore.Services
 			get;
 		}
 
+		IDisplayedEntities DisplayedEntities
+		{
+			get;
+		}
+
 		IDbContext DbContext
 		{
 			get;

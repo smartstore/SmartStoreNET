@@ -9,11 +9,10 @@ namespace SmartStore.Core.Caching
     /// </summary>
     public interface ICache
     {
-
-        /// <summary>
-        /// Gets all entries in the cache
-        /// </summary>
-        IEnumerable<KeyValuePair<string, object>> Entries { get; }
+		/// <summary>
+		/// Gets all entries in the cache
+		/// </summary>
+		IEnumerable<KeyValuePair<string, object>> Entries { get; }
 
         /// <summary>
         /// Gets a cache item associated with the specified key

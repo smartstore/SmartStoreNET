@@ -2,20 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Linq;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Core.Caching
 {
-
-	public static class ICacheManagerExtensions
-	{
-		public static T Get<T>(this ICacheManager cacheManager, string key)
-		{
-			return cacheManager.Get(key, () => default(T));
-		}
-	}
-
     public partial class CacheManager<TCache> : ICacheManager where TCache : ICache
     {
 		private readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
@@ -31,19 +23,16 @@ namespace SmartStore.Core.Caching
             this._cache = fn(typeof(TCache));
         }
 
-		public bool TryGet<T>(string key, out T item)
+		public T Get<T>(string key)
 		{
 			Guard.ArgumentNotNull(() => key);
 
-			item = default(T);
-
 			if (_cache.Contains(key))
 			{
-				item = (T)_cache.Get(key);
-				return true;
+				return GetExisting<T>(key);
 			}
 
-			return false;
+			return default(T);
 		}
 
         public T Get<T>(string key, Func<T> acquirer, int? cacheTime = null)
@@ -106,20 +95,25 @@ namespace SmartStore.Core.Caching
 			}
         }
 
-        public void RemoveByPattern(string pattern)
+		public IEnumerable<string> Keys(string pattern)
+		{
+			var keys = _cache.Entries.Select(x => x.Key);
+
+			if (pattern.IsEmpty())
+			{
+				return keys;
+			}
+
+			var matcher = CreateMatcher(pattern);
+
+			return keys.Where(x => matcher.IsMatch(x));
+		}
+
+		public void RemoveByPattern(string pattern)
         {
 			Guard.ArgumentNotEmpty(() => pattern);
-			
-			var regex = new Regex(pattern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            var keysToRemove = new List<String>();
 
-            foreach (var item in _cache.Entries)
-            {
-                if (regex.IsMatch(item.Key))
-                {
-                    keysToRemove.Add(item.Key);
-                }
-            }
+            var keysToRemove = Keys(pattern).ToArray();
 
 			using (EnterWriteLock())
 			{
@@ -132,11 +126,7 @@ namespace SmartStore.Core.Caching
 
         public void Clear()
         {
-            var keysToRemove = new List<string>();
-            foreach (var item in _cache.Entries)
-            {
-                keysToRemove.Add(item.Key);
-            }
+            var keysToRemove = Keys(null).ToArray();
 
 			using (EnterWriteLock())
 			{
@@ -146,6 +136,11 @@ namespace SmartStore.Core.Caching
 				}
 			}
         }
+
+		private static Regex CreateMatcher(string pattern)
+		{
+			return new Regex(pattern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		}
 
 		private IDisposable EnterReadLock()
 		{

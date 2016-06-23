@@ -49,6 +49,10 @@ namespace SmartStore.DevTools.OutputCache
 			if (!_settings.CacheAuthenticatedRequests && context.HttpContext.User.Identity.IsAuthenticated)
 				return false;
 
+			// don't cache when "Cache-Control" HTTP header is set to "no-cache"
+			if (_settings.IgnoreNoCache == false && context.HttpContext.Request.Headers["Cache-Control"] == "no-cache")
+				return false;
+
 			// don't cache when notifications are about to be shown
 			if (context.Controller.TempData.ContainsKey(NotifyAttribute.NotificationsKey))
 				return false;

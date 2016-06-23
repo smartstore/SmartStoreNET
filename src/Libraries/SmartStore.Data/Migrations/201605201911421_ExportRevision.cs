@@ -5,6 +5,7 @@ namespace SmartStore.Data.Migrations
 	using Core.Domain;
 	using Core.Domain.DataExchange;
 	using Setup;
+	using Utilities;
 
 	public partial class ExportRevision : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
 	{
@@ -58,6 +59,9 @@ namespace SmartStore.Data.Migrations
 
 				context.ColumnDelete("ExportDeployment", "IsPublic");
 			}
+
+			var oldFileManagerPath = CommonHelper.MapPath("~/Content/filemanager");
+			FileSystemHelper.ClearDirectory(oldFileManagerPath, true);
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

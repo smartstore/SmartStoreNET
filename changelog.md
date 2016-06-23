@@ -19,6 +19,7 @@
 * #477 Implement option to specify the number of exported and imported pictures
 * #859 Make checkout attributes suitable for multi-stores
 * Product details: Select attribute and gift card values by query string parameters
+* #950 make contact form comply with current German law
 
 ### Improvements
 * Major improvements in Importer: better field mapping, higher performance, bug fixes etc.
@@ -62,6 +63,7 @@
 * Payone: Hash string incorrect for frontend API payments where the order has more than 9 products
 * Export mail notification: Download link not working if SSL is enabled
 * Discount rule has spent amount including sub total option can cause wrong discount calculation if the cart contains a product several times
+* #986 File uploads possible through /content/filemanager/index.html
 
 
 ## SmartStore.NET 2.5

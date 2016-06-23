@@ -29,7 +29,7 @@
 
 <script type="text/javascript">
     $(function () {
-        var roxyFileman = '@Url.Content("~/Content/filemanager/index.html")';
+    	var roxyFileman = '@Url.Content("~/Administration/Content/filemanager/index.html")';
         var fullPage = $('#@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)').data("fullpage");
         CKEDITOR.replace('@ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty)', {
 			language: '@lang',

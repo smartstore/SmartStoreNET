@@ -259,6 +259,15 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StoreLastVisitedPage)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.DisplayPrivacyAgreementOnContactUs)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.DisplayPrivacyAgreementOnContactUs)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.DisplayPrivacyAgreementOnContactUs)
+            </td>
+        </tr>
     </table>
 }
 @helper TabCustomerFormFields()

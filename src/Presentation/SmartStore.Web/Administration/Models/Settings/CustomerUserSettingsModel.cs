@@ -89,6 +89,9 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StoreLastVisitedPage")]
             public bool StoreLastVisitedPage { get; set; }
 
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs")]
+            public bool DisplayPrivacyAgreementOnContactUs { get; set; }
+
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.GenderEnabled")]
             public bool GenderEnabled { get; set; }
 

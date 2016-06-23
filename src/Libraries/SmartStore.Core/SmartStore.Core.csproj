@@ -148,6 +148,9 @@
     <Compile Include="Caching\AspNetCache.cs" />
     <Compile Include="Caching\DisplayedEntities.cs" />
     <Compile Include="Caching\IDisplayedEntities.cs" />
+    <Compile Include="Caching\IOutputCacheProvider.cs" />
+    <Compile Include="Caching\NullOutputCacheProvider.cs" />
+    <Compile Include="Caching\OutputCacheItem.cs" />
     <Compile Include="Caching\RequestCache.cs" />
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />

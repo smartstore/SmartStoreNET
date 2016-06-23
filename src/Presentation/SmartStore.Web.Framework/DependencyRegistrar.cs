@@ -538,8 +538,11 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
+			// Output cache
 			builder.RegisterType<DisplayedEntities>().As<IDisplayedEntities>().InstancePerRequest();
+			builder.RegisterType<NullOutputCacheProvider>().As<IOutputCacheProvider>().InstancePerRequest().PreserveExistingDefaults();
 
+			// Model/Business cache
 			builder.RegisterType<StaticCache>()
 				.Keyed<ICache>(typeof(StaticCache))
 				.Named<ICache>("static")

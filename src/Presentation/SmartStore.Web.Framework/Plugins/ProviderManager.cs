@@ -7,7 +7,6 @@ using SmartStore.Services;
 
 namespace SmartStore.Web.Framework.Plugins
 {
-	
 	public partial class ProviderManager : IProviderManager
 	{
 		private readonly IComponentContext _ctx;

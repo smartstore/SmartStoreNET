@@ -301,15 +301,17 @@ namespace SmartStore.Services.Configuration
 
 			var settings = Activator.CreateInstance<T>();
 
+			var prefix = typeof(T).Name;
+
 			foreach (var fastProp in FastProperty.GetProperties(typeof(T)).Values)
 			{
 				var prop = fastProp.Property;
-				
+
 				// get properties we can read and write to
 				if (!prop.CanWrite)
 					continue;
 
-				var key = typeof(T).Name + "." + prop.Name;
+				var key = prefix + "." + prop.Name;
 				// load by store
 				string setting = GetSettingByKey<string>(key, storeId: storeId, loadSharedValueIfNotFound: true);
 
@@ -317,7 +319,7 @@ namespace SmartStore.Services.Configuration
 				{
 					if (fastProp.IsSequenceType)
                     {
-                        if ((fastProp.GetValue(settings) as IEnumerable) != null)
+						if ((fastProp.GetValue(settings) as IEnumerable) != null)
                         {
                             // Instance of IEnumerable<> was already created, most likely in the constructor of the settings concrete class.
                             // In this case we shouldn't let the EnumerableConverter create a new instance but keep this one.

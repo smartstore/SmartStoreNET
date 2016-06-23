@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Diagnostics;
 
-namespace SmartStore.DevTools.OutputCache
+namespace SmartStore.Core.Caching
 {
 	[Serializable]
+	[DebuggerDisplay("{CacheKey}, Url: {Url}, Query: {QueryString}, Duration: {Duration}, Tags: {Tags}")]
 	public class OutputCacheItem
 	{
 		public string CacheKey { get; set; }
@@ -33,6 +32,14 @@ namespace SmartStore.DevTools.OutputCache
 		public bool IsValid(DateTime utcNow)
 		{
 			return utcNow < ValidUntilUtc;
+		}
+
+		public string JoinTags()
+		{
+			if (Tags == null || Tags.Length == 0)
+				return "";
+
+			return String.Join(";", Tags);
 		}
 	}
 }

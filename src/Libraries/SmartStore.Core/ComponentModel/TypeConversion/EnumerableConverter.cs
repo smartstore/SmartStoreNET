@@ -146,21 +146,25 @@ namespace SmartStore.ComponentModel
 		{
 			if (!String.IsNullOrEmpty(input))
 			{
-				var splitChar = '|';
+				var splitBy = "|";
 
-				if (input.IndexOf(splitChar) < 0)
+				if (input.IndexOf(splitBy) < 0)
 				{
 					if (input.IndexOf(';') > -1)
 					{
-						splitChar = ';';
+						splitBy = ";";
 					}
 					else if (input.IndexOf(',') > -1)
 					{
-						splitChar = ',';
+						splitBy = ",";
+					}
+					else if (input.IndexOf(Environment.NewLine) > -1)
+					{
+						splitBy = Environment.NewLine;
 					}
 				}
 
-				var result = input.Split(new char[] { splitChar }, StringSplitOptions.RemoveEmptyEntries);
+				var result = input.Split(new string[] { splitBy }, StringSplitOptions.RemoveEmptyEntries);
 				// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
 				Array.ForEach(result, s => s.Trim());
 				return result;

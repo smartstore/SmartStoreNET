@@ -7,8 +7,6 @@ using SmartStore.DevTools.Filters;
 using SmartStore.DevTools.Services;
 using SmartStore.Web.Framework.Controllers;
 
-using SmartStore.DevTools.OutputCache;
-
 namespace SmartStore.DevTools
 {
 	public class DependencyRegistrar : IDependencyRegistrar
@@ -28,11 +26,6 @@ namespace SmartStore.DevTools
 				//builder.RegisterType<SampleActionFilter>().AsActionFilterFor<PublicControllerBase>().InstancePerRequest();
 				//// intercept CheckoutController's Index action (to hijack the checkout or payment workflow)
 				//builder.RegisterType<SampleCheckoutFilter>().AsActionFilterFor<CheckoutController>(x => x.Index()).InstancePerRequest();
-
-				// TEMP: OutputCache
-				builder.RegisterType<OutputCacheFilter>().AsActionFilterFor<SmartController>();
-				builder.RegisterType<DonutHoleFilter>().AsActionFilterFor<SmartController>();
-				// TEMP: OutputCache
 			}
 		}
 

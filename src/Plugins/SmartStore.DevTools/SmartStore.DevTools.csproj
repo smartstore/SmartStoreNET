@@ -102,10 +102,6 @@
       <HintPath>..\..\packages\MiniProfiler.EF6.3.0.11\lib\net40\MiniProfiler.EntityFramework6.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -161,15 +157,6 @@
     <Compile Include="Filters\Samples\SampleActionFilter.cs" />
     <Compile Include="DevToolsPlugin.cs" />
     <Compile Include="Models\BackendExtensionModel.cs" />
-    <Compile Include="OutputCache\CacheUtility.cs" />
-    <Compile Include="OutputCache\ChildActionData.cs" />
-    <Compile Include="OutputCache\DonutHoleFilter.cs" />
-    <Compile Include="OutputCache\MemoryOutputCacheProvider.cs" />
-    <Compile Include="OutputCache\OutputCacheControlPolicy.cs" />
-    <Compile Include="OutputCache\OutputCacheInvalidationHook.cs" />
-    <Compile Include="OutputCache\OutputCacheItem.cs" />
-    <Compile Include="OutputCache\OutputCacheFilter.cs" />
-    <Compile Include="OutputCache\OutputCacheSettings.cs" />
     <Compile Include="ProfilerHttpModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteProvider.cs" />

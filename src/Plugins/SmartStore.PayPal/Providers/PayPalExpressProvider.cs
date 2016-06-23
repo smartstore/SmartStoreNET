@@ -12,7 +12,6 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.PayPal.Controllers;
 using SmartStore.PayPal.PayPalSvc;
-using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -208,7 +207,7 @@ namespace SmartStore.PayPal
             var additionalHandlingFee = GetAdditionalHandlingFee(cart);
             cartItems.Add(new PaymentDetailsItemType()
             {
-                Name = "Zahlartgebühren",
+                Name = T("Plugins.Payments.PayPal.PaymentMethodFee").Text,
                 Quantity = "1",
                 Amount = new BasicAmountType()  
                 {
@@ -260,7 +259,7 @@ namespace SmartStore.PayPal
             {
                 cartItems.Add(new PaymentDetailsItemType()
                 {
-                    Name = "Threadrock Discount",
+                    Name = T("Plugins.Payments.PayPal.ThreadrockDiscount").Text,
                     Quantity = "1",
                     Amount = new BasicAmountType() // this is the total discount
                     {
@@ -297,7 +296,7 @@ namespace SmartStore.PayPal
 
                             cartItems.Add(new PaymentDetailsItemType()
                             {
-                                Name = "Giftcard Applied",
+                                Name = T("Plugins.Payments.PayPal.GiftcardApplied").Text,
                                 Quantity = "1",
                                 Amount = new BasicAmountType()
                                 {
@@ -405,7 +404,7 @@ namespace SmartStore.PayPal
             if (billingCountry != null)
                 billingCountryId = billingCountry.Id;
 
-            var billingAddress = customer.Addresses.ToList().FindAddress(
+            var billingAddress = customer.Addresses.FindAddress(
                 billingFirstName, billingLastName, billingPhoneNumber,
                 billingEmail, string.Empty, string.Empty, billingAddress1, billingAddress2, billingCity,
                 billingStateProvinceId, billingZipPostalCode, billingCountryId);
@@ -462,7 +461,7 @@ namespace SmartStore.PayPal
                 if (shippingCountry != null)
                     shippingCountryId = shippingCountry.Id;
 
-                var shippingAddress = customer.Addresses.ToList().FindAddress(
+                var shippingAddress = customer.Addresses.FindAddress(
                     shippingFirstName, shippingLastName, shippingPhoneNumber,
                     shippingEmail, string.Empty, string.Empty,
                     shippingAddress1, shippingAddress2, shippingCity,
@@ -576,4 +575,13 @@ namespace SmartStore.PayPal
             return result;
         }
     }
+
+
+	public class PayPalProcessPaymentRequest : ProcessPaymentRequest
+	{
+		/// <summary>
+		/// Gets or sets an order Discount Amount
+		/// </summary>
+		public decimal Discount { get; set; }
+	}
 }

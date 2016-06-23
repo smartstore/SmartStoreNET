@@ -43,7 +43,7 @@ namespace SmartStore.Services.Media
 			{
 				using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false))
 				{
-					var pictures = _pictureRepository.Where(x => x.IsTransient && x.UpdatedOnUtc < olderThan).ToList();
+					var pictures = _pictureRepository.Table.Where(x => x.IsTransient && x.UpdatedOnUtc < olderThan).ToList();
 					foreach (var picture in pictures)
 					{
 						_pictureService.DeletePicture(picture);

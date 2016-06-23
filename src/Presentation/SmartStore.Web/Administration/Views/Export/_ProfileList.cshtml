@@ -1,0 +1,102 @@
+﻿@model IEnumerable<ExportProfileModel>
+@using SmartStore.Admin.Models.DataExchange;
+@{
+	var isSystemProfiles = (bool)ViewData["IsSystemProfile"];
+	var titleResKey = isSystemProfiles ? "Admin.DataExchange.Export.SystemProfilesTitle" : "Admin.DataExchange.Export.UserProfilesTitle";
+}
+
+<div style="margin-bottom: 20px">
+	<div class="admin-config-group">
+		<div class="head">@T(titleResKey)</div>
+	</div>
+
+	@if (isSystemProfiles)
+	{
+		<div class="alert alert-info">
+			<button type="button" class="close" data-dismiss="alert">&#215;</button>
+			@Html.Raw(T("Admin.DataExchange.Export.SystemProfileNote"))
+		</div>
+	}
+
+	@if (Model.Any())
+	{
+		<table class="table admin-table export-profile-list profile-list">
+			<thead>
+				<tr>
+					<th class="ac"></th>
+					<th>@T("Admin.DataExchange.Export.Name")</th>
+					<th>@T("Admin.DataExchange.Export.EntityType")</th>
+					<th class="ac">@T("Admin.DataExchange.Export.FileExtension")</th>
+					<th class="ac">@T("Admin.DataExchange.Export.ExportFiles")</th>
+					<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
+					<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
+					<th>@T("Admin.Common.Actions")</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var profile in Model.OrderBy(x => x.Name))
+				{
+					<tr data-profile-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
+						<td class="ac">
+							<img src="@profile.Provider.ThumbnailUrl" alt="@profile.Provider.FriendlyName" class="@(profile.Enabled ? "" : "o40")" />
+						</td>
+						<td>
+							<a href="@Url.Action("Edit", new { id = profile.Id })"><strong>@profile.Name</strong></a>
+							<div class="muted">@profile.ProviderSystemName</div>
+						</td>
+						<td>
+							@profile.Provider.EntityTypeName.NaIfEmpty()
+						</td>
+						<td class="ac">
+							@Html.IconForFileExtension(profile.Provider.FileExtension, true)
+						</td>
+						<td id="ExportFileCount@(profile.Id)" class="ac">
+							@Html.Partial("ProfileFileCount", profile.FileCount)
+						</td>
+						<td>
+							<div class="last-run-info">
+								@Html.Partial("~/Administration/Views/ScheduleTask/_LastRun.cshtml", profile.TaskModel)
+							</div>
+						</td>
+						<td class="progress-info">
+							<div class="next-run-info">
+								@Html.Partial("~/Administration/Views/ScheduleTask/_NextRun.cshtml", profile.TaskModel)
+							</div>
+							<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
+						</td>
+						<td style="width: 200px;">
+							<button type="button" class="btn btn-block btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"
+									data-url="@Url.Action("Execute", "Export", new { area = "Admin", id = profile.Id })" data-task-id="@profile.ScheduleTaskId">
+								<i class="fa fa-play"></i>&nbsp;&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
+							</button>
+
+							<a href="@Url.Action("CancelJob", "ScheduleTask", new { id = profile.ScheduleTaskId })" class="btn btn-block btn-danger btn-cancel-task@(!profile.IsTaskRunning ? " hide" : "")"
+							   data-task-id="@profile.ScheduleTaskId" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+								@T("Common.Cancel")
+							</a>
+
+							<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })" target="LogFile"
+							   class="btn btn-block btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " hide" : "")">
+								<i class="fa fa-file-text-o"></i>&nbsp;&nbsp;@T("Admin.Configuration.ActivityLog")
+							</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+	else
+	{
+		<div class="alert alert-info">
+			<button type="button" class="close" data-dismiss="alert">&#215;</button>
+			@T("Admin.DataExchange.Export.NoProfiles")
+		</div>
+	}
+
+	@if (!isSystemProfiles)
+	{
+		<a href="javascript:void(0)" data-url="@Url.Action("Create")" class="btn btn-warning export-profile-button">
+			<i class="fa fa-plus"></i>&nbsp;&nbsp;@T("Admin.DataExchange.AddNewProfile")
+		</a>
+	}
+</div>

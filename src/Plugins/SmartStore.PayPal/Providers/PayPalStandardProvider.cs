@@ -14,7 +14,6 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.PayPal.Controllers;
-using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services;
 using SmartStore.Services.Localization;
@@ -23,9 +22,6 @@ using SmartStore.Services.Payments;
 
 namespace SmartStore.PayPal
 {
-	/// <summary>
-	/// PayPalStandard provider
-	/// </summary>
 	[SystemName("Payments.PayPalStandard")]
     [FriendlyName("PayPal Standard")]
     [DisplayOrder(2)]
@@ -450,7 +446,7 @@ namespace SmartStore.PayPal
                 var item = new PayPalLineItem
                 {
                     Type = PayPalItemType.PaymentFee,
-                    Name = T("Plugins.Payments.PayPalStandard.PaymentMethodFee").Text,
+                    Name = T("Plugins.Payments.PayPal.PaymentMethodFee").Text,
                     Quantity = 1,
                     Amount = order.PaymentMethodAdditionalFeeExclTax
                 };
@@ -496,14 +492,12 @@ namespace SmartStore.PayPal
                 if (cartItems.Count() <= 0)
                     return;
 
-                //decimal totalSmartStore = Math.Round(postProcessPaymentRequest.Order.OrderSubtotalExclTax, 2);
-				decimal totalSmartStore = Math.Round(postProcessPaymentRequest.Order.OrderTotal, 2);
+                decimal totalSmartStore = Math.Round(postProcessPaymentRequest.Order.OrderSubtotalExclTax, 2);
 				decimal totalPayPal = decimal.Zero;
-                decimal delta, portion, rest;
+				decimal delta, portion, rest;
 
 				// calculate what PayPal calculates
-				//cartItems.Each(x => totalPayPal += (x.AmountRounded * x.Quantity));
-				paypalItems.Each(x => totalPayPal += (x.AmountRounded * x.Quantity));
+				cartItems.Each(x => totalPayPal += (x.AmountRounded * x.Quantity));
 				totalPayPal = Math.Round(totalPayPal, 2, MidpointRounding.AwayFromZero);
 
 				// calculate difference
@@ -574,5 +568,47 @@ namespace SmartStore.PayPal
             controllerName = "PayPalStandard";
             routeValues = new RouteValueDictionary() { { "area", "SmartStore.PayPal" } };
         }
+	}
+
+
+	public class PayPalLineItem : ICloneable<PayPalLineItem>
+	{
+		public PayPalItemType Type { get; set; }
+		public string Name { get; set; }
+		public int Quantity { get; set; }
+		public decimal Amount { get; set; }
+
+		public decimal AmountRounded
+		{
+			get
+			{
+				return Math.Round(Amount, 2);
+			}
+		}
+
+		public PayPalLineItem Clone()
+		{
+			var item = new PayPalLineItem
+			{
+				Type = this.Type,
+				Name = this.Name,
+				Quantity = this.Quantity,
+				Amount = this.Amount
+			};
+			return item;
+		}
+
+		object ICloneable.Clone()
+		{
+			return this.Clone();
+		}
+	}
+
+	public enum PayPalItemType
+	{
+		CartItem = 0,
+		Shipping,
+		PaymentFee,
+		Tax
 	}
 }

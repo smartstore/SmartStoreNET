@@ -13,7 +13,8 @@ namespace SmartStore.Web.Models.Common
         public int UnreadPrivateMessages { get; set; }
 
         public bool IsAuthenticated { get; set; }
-        public bool DisplayAdminLink { get; set; }
+		public bool DisplayLoginLink { get; set; }
+		public bool DisplayAdminLink { get; set; }
         public bool IsCustomerImpersonated { get; set; }
         public string CustomerEmailUsername { get; set; }
 

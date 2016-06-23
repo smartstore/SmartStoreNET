@@ -55,22 +55,17 @@
                         </div>
                         @Html.Widget("productdetails_after_pictures")
 
-                        @if (Model.Manufacturers.Any(x => x.PictureModel != null))
-                        {
-                            <div class="manufacturer-pics">
-
-                            @foreach (var manufacturer in Model.Manufacturers.Where(x => x.PictureModel != null))
-                            {
-                                <div class="manufacturer-item">
-                                    <div class="picture">
-                                        <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" title="@manufacturer.PictureModel.Title">
-                                            <img alt="@manufacturer.PictureModel.AlternateText" src="@manufacturer.PictureModel.ImageUrl" title="@manufacturer.PictureModel.Title" /></a>
-                                    </div>
-                                </div>
-                            }
-
-                            </div>
-                        }
+                        <div class="manufacturer-pics manufacturer-pics-container">
+							@foreach (var manufacturer in Model.Manufacturers.Where(x => x.PictureModel != null && x.PictureModel.ImageUrl.HasValue()))
+							{
+								<div class="manufacturer-item">
+									<div class="picture">
+										<a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" title="@manufacturer.PictureModel.Title">
+											<img alt="@manufacturer.PictureModel.AlternateText" src="@manufacturer.PictureModel.ImageUrl" title="@manufacturer.PictureModel.Title" /></a>
+									</div>
+								</div>
+							}
+                        </div>
 
                         <!-- attributes -->
                         <table id="ProductAttributes" class="attributes">

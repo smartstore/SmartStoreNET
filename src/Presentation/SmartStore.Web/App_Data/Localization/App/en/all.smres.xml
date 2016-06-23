@@ -3232,6 +3232,12 @@
 	<LocaleResource Name="Admin.Common.Edit">
 		<Value>Edit</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.EmailSuccessfullySent">
+		<Value>The email has been successfully sent.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.EnterEmailAdress">
+		<Value>Please enter an email address.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Entity">
 		<Value>Object</Value>
 	</LocaleResource>
@@ -3283,6 +3289,12 @@
 	<LocaleResource Name="Admin.Common.ExportToXml">
 		<Value>Export to XML</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.FileInUse">
+		<Value>The file is in use and cannot be opened.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.FileNotFound">
+		<Value>File not found</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.FilesDeleted">
 		<Value>{0} files were deleted</Value>
 	</LocaleResource>
@@ -3291,6 +3303,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.FoldersDeleted">
 		<Value>{0} folders were deleted</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.FtpStatus">
+		<Value>FTP status {0} ({1}).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.General">
 		<Value>General</Value>
@@ -3316,6 +3331,12 @@
 	<LocaleResource Name="Admin.Common.Hide">
 		<Value>Hide</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.HttpStatus">
+		<Value>HTTP status {0} ({1}).</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.Ignore">
+		<Value>Ignore</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.ImportFile">
 		<Value>Import file</Value>
 	</LocaleResource>
@@ -3327,6 +3348,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Info">
 		<Value>Info</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.LastRun">
+		<Value>Last run</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.License">
 		<Value>License</Value>
@@ -3351,9 +3375,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.NoEntriesSelected">
 		<Value>No entries have been selected.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Common.NoTempFilesFound">
-		<Value>There are no temporary files.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Of">
 		<Value>of</Value>
@@ -3424,6 +3445,9 @@
 	<LocaleResource Name="Admin.Common.Show">
 		<Value>Show</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.SkipAndTakeGreaterThanOrEqualZero">
+		<Value>Values for skip and limit must be greater than or equal to 0.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Skipped">
 		<Value>Skipped</Value>
 	</LocaleResource>
@@ -3457,11 +3481,11 @@
 	<LocaleResource Name="Admin.Common.StoresAll">
 		<Value>All stores</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.SuccessfulOn">
+		<Value>Successful on</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.TaskSuccessfullyProcessed">
 		<Value>The task was successfully processed.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Common.TemporaryFiles">
-		<Value>Temporary files</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.TotalRows">
 		<Value>Total rows</Value>
@@ -4171,6 +4195,9 @@
 	<LocaleResource Name="Admin.Configuration.EmailAccounts.SendTestEmail.Success">
 		<Value>Email has been successfully sent.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.EmailAccounts.TestingEmail">
+		<Value>Testing email functionality.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.EmailAccounts.Updated">
 		<Value>The email account has been updated successfully.</Value>
 	</LocaleResource>
@@ -4627,6 +4654,9 @@
 	<LocaleResource Name="Admin.Configuration.RegionalSettings">
 		<Value>Regional Settings</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Restriction.SaveBeforeEdit">
+		<Value>You need to save before you can specify restrictions.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings">
 		<Value>Settings</Value>
 	</LocaleResource>
@@ -4751,7 +4781,7 @@
 		<Value>Check the box to allow customers to use the 'Compare Products' option in your store</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.DefaultPageSizeOptions">
-		<Value>Amount of displayed products per page</Value>
+		<Value>Number of displayed products per page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.DefaultPageSizeOptions.Hint">
 		<Value>Determines the amount of displayed products per page.</Value>
@@ -4821,6 +4851,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.HideCategoryDefaultPictures.Hint">
 		<Value>Specifies whether to hide the default image for categories. The default image is shown when no image is assigned to a category.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.HideManufacturerDefaultPictures">
+		<Value>Hide default picture for manufacturers</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.HideManufacturerDefaultPictures.Hint">
+		<Value>Specifies whether to hide the default image for manufacturers. The default image is shown when no image is assigned to a manufacturer.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.HideProductDefaultPictures">
 		<Value>Hide default picture for products</Value>
@@ -5128,6 +5164,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturerPictures.Hint">
 		<Value>Specifies whether manufacturers will be displayed as images or textual links on the homepage.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturerPicturesInProductDetail">
+		<Value>Show manufacturer pictures</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturerPicturesInProductDetail.Hint">
+		<Value>Specifies whether to show manufacturer pictures on product detail page.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage">
 		<Value>Show manufacturers on homepage</Value>
 	</LocaleResource>
@@ -5398,6 +5440,18 @@
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled.Hint">
 		<Value>Specifies whether customer numbers can be saved.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNumberMethod">
+		<Value>Customer numbers</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNumberMethod.Hint">
+		<Value>Specifies whether to assign customer numbers and whether they should be created automatically.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNumberVisibility">
+		<Value>Customer number presentation</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNumberVisibility.Hint">
+		<Value>Specifies the presentation and handling of the customer number to the customer.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerSettings">
 		<Value>Customer settings</Value>
 	</LocaleResource>
@@ -5433,6 +5487,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.DisplayCustomerNumber.Hint">
 		<Value>Specifies whether customer numbers will be displayed to customers in their account area.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs">
+		<Value>Get privacy consent for contact requests</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs.Hint">
+		<Value>Specifies whether a checkbox will be displayed on the contact page which requests the user to agree on storage of his data.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationAutoRegisterEnabled">
 		<Value>Auto register enabled</Value>
@@ -6550,6 +6610,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Order.OrderIdent.Hint">
 		<Value>Set the order ID counter. This is useful if you want your orders to start at a certain number. This only affects orders created going forward. The value must be greater than the current maximum order ID.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.OrderListPageSize">
+		<Value>Number of displayed orders per page</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Order.OrderListPageSize.Hint">
+		<Value>Specifies the number of displayed orders per page.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.OrderSettings">
 		<Value>Order settings</Value>
 	</LocaleResource>
@@ -6879,6 +6945,21 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowWeight.Hint">
 		<Value>Determines whether the product weight is shown in shopping cart</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOver">
+		<Value>Consent for email transfer to third parties</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOver.Hint">
+		<Value>Specifies whether customers can agree to a transferring of their email address to third parties when ordering, and whether the checkbox is enabled by default during checkout.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel">
+		<Value>Text for email transfer consent</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel.Default">
+		<Value>I agree to the transfer and storage of my email address by third parties.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel.Hint">
+		<Value>Specifies the text to be displayed to the customer. Please choose a specific reason, e.g. 'I agree to the transfer and storage of my email address for TrustedShops buyer protection.'</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.WishlistSettings">
 		<Value>Wishlist</Value>
@@ -8887,6 +8968,9 @@
 	<LocaleResource Name="Admin.Dashboard.StoreStatistics">
 		<Value>Store Statistics</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.AddNewProfile">
+		<Value>New profile</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.ColumnMapping.DefaultValue">
 		<Value>Default Value</Value>
 	</LocaleResource>
@@ -8901,9 +8985,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.ColumnMapping.Validate.MappingsReset">
 		<Value>The stored field assignments are invalid due to the change of the delimiter and were reset.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.DataExchange.ColumnMapping.Validate.MultipleMappedIgnored">
-		<Value>The following object properties were multiple assigned and thus ignored: {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Csv.Delimiter">
 		<Value>Delimiter</Value>
@@ -8966,10 +9047,10 @@
 		<Value>Cannot delete a system export profile.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Cleanup">
-		<Value>Clean up at the end</Value>
+		<Value>Clean up after successful deployment</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Cleanup.Hint">
-		<Value>Specifies whether to delete unneeded files after deployment.</Value>
+		<Value>Specifies whether to delete unneeded files after all deployments succeeded.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.CloneProfile">
 		<Value>Apply settings from</Value>
@@ -9001,17 +9082,17 @@
 	<LocaleResource Name="Admin.DataExchange.Export.CreateZipArchive.Hint">
 		<Value>Specifies whether to combine the export files in temporary a ZIP archive. The archive remains in the temporary folder of the export profile without further processing.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.DataExchange.Export.Deployment.CreateZip">
-		<Value>Create ZIP archive</Value>
+	<LocaleResource Name="Admin.DataExchange.Export.Deployment.CopyFileFailed">
+		<Value>At least one file could not be copied.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Deployment.CreateZip.Hint">
 		<Value>Specifies whether to combine the export files in a ZIP archive and only to deploy the archive.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Deployment.DeploymentType">
-		<Value>Type of deployment</Value>
+		<Value>Publishing type</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Deployment.DeploymentType.Hint">
-		<Value>Specifies the deployment type.</Value>
+		<Value>Specifies the type of publishing.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Deployment.EmailAccountId">
 		<Value>Email account</Value>
@@ -9043,20 +9124,20 @@
 	<LocaleResource Name="Admin.DataExchange.Export.Deployment.HttpTransmissionType.Hint">
 		<Value>Specifies how to transmit the export files via HTTP.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.DataExchange.Export.Deployment.IsPublic">
-		<Value>Copy to public folder</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Deployment.IsPublic.Hint">
 		<Value>Specifies whether to copy the exported data into a folder that is accessible through the internet.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Deployment.Name">
-		<Value>Name</Value>
+		<Value>Name of profile</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Deployment.Name.Hint">
-		<Value>Specifies the name of the deployment.</Value>
+		<Value>Specifies the name of the publishing profile.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Deployment.NoProfiles">
+		<Value>There are no publishing profiles.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Deployment.Note">
-		<Value>Click &lt;b&gt;Insert&lt;/b&gt; to add one or multiple publishing profiles to specify how to further proceed with the export files.</Value>
+		<Value>Click &lt;b&gt;New profile&lt;/b&gt; to add one or multiple publishing profiles to specify how to further proceed with the export files.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Deployment.PassiveMode">
 		<Value>Passive mode</Value>
@@ -9069,6 +9150,18 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Deployment.Password.Hint">
 		<Value>Specifies the password.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Deployment.ProfilesTitle">
+		<Value>Publishing profiles</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Deployment.PublishingTarget">
+		<Value>Publishing target</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Deployment.SubFolder">
+		<Value>Name of subfolder</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Deployment.SubFolder.Hint">
+		<Value>Specifies the name of a subfolder where to publish the data.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Deployment.Url">
 		<Value>URL\Host</Value>
@@ -9087,6 +9180,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Deployment.UseSsl.Hint">
 		<Value>Specifies whether to use a SSL (Secure Sockets Layer) connection.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Deployment.ZipUsageNote">
+		<Value>If there are a large number of export files, it is recommended to use the option &lt;b&gt;Create ZIP archive&lt;/b&gt;. This saves time and avoids problems, such as a full email mailbox.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.EmailAccountId">
 		<Value>Email notification</Value>
@@ -9118,6 +9214,9 @@
 	<LocaleResource Name="Admin.DataExchange.Export.FileNamePattern.Hint">
 		<Value>Specifies the pattern for creating file names.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.FileNamePattern.Validate">
+		<Value>Please enter a valid pattern for file names. Example for file names: %Store.Id%-%Profile.Id%-%File.Index%-%Profile.SeoName%</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.FileNamePatternDescriptions">
 		<Value>ID of export profil;Folder name of export profil;SEO name of export profil;Store ID;SEO name of store;One based file index;Random number;UTC timestamp</Value>
 	</LocaleResource>
@@ -9132,6 +9231,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Filter.AvailabilityMinimum.Hint">
 		<Value>Filter by availability quantity.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.BillingCountryIds">
+		<Value>Billing countries</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.BillingCountryIds.Hint">
+		<Value>Filter by billing countries.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Filter.CategoryIds">
 		<Value>Categories</Value>
@@ -9163,6 +9268,18 @@
 	<LocaleResource Name="Admin.DataExchange.Export.Filter.FeaturedProducts.Hint">
 		<Value>Filter by featured products. Is only applied when the filtering by categories and manufacturers.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.HasPlacedAtLeastOrders">
+		<Value>Has placed x orders</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.HasPlacedAtLeastOrders.Hint">
+		<Value>Filter by number of placed orders.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.HasSpentAtLeastAmount">
+		<Value>Has spent amount x</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.HasSpentAtLeastAmount.Hint">
+		<Value>Filter by spent amount.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Filter.IdMaximum">
 		<Value>Product Id to</Value>
 	</LocaleResource>
@@ -9175,11 +9292,41 @@
 	<LocaleResource Name="Admin.DataExchange.Export.Filter.IdMinimum.Hint">
 		<Value>Filter by product identifier.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.IsActiveCustomer">
+		<Value>Only active customers</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.IsActiveCustomer.Hint">
+		<Value>Filter by active or inactive customers.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.IsActiveSubscriber">
+		<Value>Only active subscribers</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.IsActiveSubscriber.Hint">
+		<Value>Filter by active or inactive newsletter subscribers.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Filter.IsPublished">
 		<Value>Published</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Filter.IsPublished.Hint">
 		<Value>Filter by publishing.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.IsTaxExempt">
+		<Value>Only tax exempt customers</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.IsTaxExempt.Hint">
+		<Value>Filter by tax exempt customers.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.LastActivityFrom">
+		<Value>Last activity from</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.LastActivityFrom.Hint">
+		<Value>Filter by date of last store activity.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.LastActivityTo">
+		<Value>Last active until</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.LastActivityTo.Hint">
+		<Value>Filter by date of last store activity.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Filter.ManufacturerId">
 		<Value>Manufacturer</Value>
@@ -9226,6 +9373,12 @@
 	<LocaleResource Name="Admin.DataExchange.Export.Filter.ProductType.Hint">
 		<Value>Filter by product type.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.ShippingCountryIds">
+		<Value>Shipping countries</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Filter.ShippingCountryIds.Hint">
+		<Value>Filter by shipping countries.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.Filter.ShippingStatusIds">
 		<Value>Shipping status</Value>
 	</LocaleResource>
@@ -9250,14 +9403,14 @@
 	<LocaleResource Name="Admin.DataExchange.Export.Filter.WithoutManufacturers.Hint">
 		<Value>Filter by missing manufacturer mapping.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.DataExchange.Export.FolderAndFileName.Validate">
-		<Value>Please enter a valid folder and file name. Example for file names: %File.Index%-%Profile.Id%-gmc-%Store.Name%</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.FolderName">
-		<Value>Folder name</Value>
+		<Value>Folder path</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.FolderName.Hint">
-		<Value>Specifies the name of the folder where to export the data.</Value>
+		<Value>Specifies the relative path of the folder where to export the data.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.FolderName.Validate">
+		<Value>Please enter a valid, relative folder path for the export data.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.IsSystemProfile">
 		<Value>System profile</Value>
@@ -9297,6 +9450,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.NotPreviewCompatible">
 		<Value>This option is not taken into account in the preview.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Partition.Note">
+		<Value>With the following settings you can partition the data to be exported. This includes&lt;ul&gt;&lt;li&gt;Skipping the first n records&lt;/li&gt;&lt;li&gt;The maximum number of records to be exported&lt;/li&gt;&lt;li&gt;The number of records per export file&lt;/li&gt;&lt;li&gt;Export data for each shop in a separate file&lt;/li&gt;&lt;/ul&gt;By default, all data of a store will be exported into one file.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.Partition.Validate">
+		<Value>Partitioning setting values must be greater than or equal to 0.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Export.PerStore">
 		<Value>Per store</Value>
@@ -9454,6 +9613,15 @@
 	<LocaleResource Name="Admin.DataExchange.Export.SystemName.Hint">
 		<Value>The system name of the export profile.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.SystemProfileNote">
+		<Value>The following list contains system profiles, which are provided by plugins such as the &lt;a href='http://community.smartstore.com/index.php?/files/file/85-smartstorenet-common-export-providers/' target='_blank'&gt;Data Export Plugin&lt;/a&gt;. You can customize system profiles as desired, but cannot create new ones. These profiles also add additional action buttons. You will find these above data lists, such as the product or order list.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.SystemProfilesTitle">
+		<Value>System profiles</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Export.UserProfilesTitle">
+		<Value>User profiles</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Import.AddAnotherFile">
 		<Value>Add import file...</Value>
 	</LocaleResource>
@@ -9499,11 +9667,14 @@
 	<LocaleResource Name="Admin.DataExchange.Import.NoProfiles">
 		<Value>There were no import profiles found.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.DataExchange.Import.ProfileCreationNote">
-		<Value>Please upload an import file, enter a meaningful name for the import profile and save.</Value>
+	<LocaleResource Name="Admin.DataExchange.Import.NumberOfPictures">
+		<Value>Number of pictures</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.DataExchange.Import.ProfileEntitySelectNote">
-		<Value>Please select an object that you want to import.</Value>
+	<LocaleResource Name="Admin.DataExchange.Import.NumberOfPictures.Hint">
+		<Value>Specifies the number of images per object to be imported.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.DataExchange.Import.ProfileCreationNote">
+		<Value>Please select the import object and upload an import file.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.DataExchange.Import.ProgressInfo">
 		<Value>{0} of {1} records processed</Value>
@@ -9773,7 +9944,7 @@
 		<Value>Order has been captured</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.OrderNotice.OrderCaptureError">
-		<Value>Error capturing order #{0}. Error: {1}</Value>
+		<Value>Unable to capture payment for order {0}.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.OrderNotice.OrderDeleted">
 		<Value>Order has been deleted</Value>
@@ -9885,6 +10056,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields">
 		<Value>Affiliate</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Fields.AcceptThirdPartyEmailHandOver">
+		<Value>Accepts transfer of email</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Fields.AcceptThirdPartyEmailHandOver.Hint">
+		<Value>Indicates whether the customer has agreed to a transfer of his email address to third parties.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.Affiliate">
 		<Value>Affiliate</Value>
@@ -11893,6 +12070,9 @@
 	<LocaleResource Name="Admin.System.ScheduleTasks.AbnormalAbort">
 		<Value>Abnormally aborted due to application shutdown</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.System.ScheduleTasks.Cancellation">
+		<Value>The scheduled task "{0}" has been canceled</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.CancellationRequested">
 		<Value>Cancellation request has been submitted.</Value>
 	</LocaleResource>
@@ -11949,6 +12129,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.NextRun.Hint">
 		<Value>Date of the next scheduled execution</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.ScheduleTasks.RunningError">
+		<Value>Error while running scheduled task "{0}"</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.RunNow">
 		<Value>Run now</Value>
@@ -12222,6 +12405,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.Warnings.Shipping.OnlyOneOffline">
 		<Value>Only one offline shipping rate computation method is recommended to use</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.Warnings.SitemapReachable.MethodNotAllowed">
+		<Value>The reachability of the sitemap could not be validated.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.Warnings.SitemapReachable.OK">
 		<Value>The sitemap for the store is reachable.</Value>
@@ -12543,6 +12729,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Validation.UsernamePassword">
 		<Value>Please enter username and password</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Validation.ValueGreaterZero">
+		<Value>The value must be greater than 0.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.WebApi.AuthResult.ApiUnavailable">
 		<Value>API not available.</Value>
@@ -12952,6 +13141,15 @@
 	<LocaleResource Name="Common.Continue">
 		<Value>Continue</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.CopyToClipboard">
+		<Value>Copy to clipboard</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.CopyToClipboard.Failded">
+		<Value>Failed to copy.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.CopyToClipboard.Succeeded">
+		<Value>Copied!</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.Count">
 		<Value>Count</Value>
 	</LocaleResource>
@@ -13144,6 +13342,9 @@
 	<LocaleResource Name="Common.LoadingNextStep">
 		<Value>Loading next step...</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.MethodNotSupportedForGuests">
+		<Value>This function is not available for guests.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.Misc">
 		<Value>Miscellaneous</Value>
 	</LocaleResource>
@@ -13152,6 +13353,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.MoreInfo">
 		<Value>More info</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.My">
+		<Value>My</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Navigation">
 		<Value>Navigation</Value>
@@ -13167,6 +13371,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.NoCancel">
 		<Value>No, cancel</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.NoFilesAvailable">
+		<Value>There are no files available.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.NoFileUploaded">
+		<Value>There was no file uploaded.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.NoProcessingSecurityIssue">
 		<Value>The operation was not carried out for security reasons.</Value>
@@ -13239,6 +13449,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Published">
 		<Value>Published</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.Publishing">
+		<Value>Publishing</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Question">
 		<Value>Question</Value>
@@ -13410,6 +13623,15 @@
 	</LocaleResource>
 	<LocaleResource Name="ContactUs.FullName.Required">
 		<Value>Enter your name</Value>
+	</LocaleResource>
+	<LocaleResource Name="ContactUs.PrivacyAgreement">
+		<Value>Privacy consent</Value>
+	</LocaleResource>
+	<LocaleResource Name="ContactUs.PrivacyAgreement.DetailText">
+		<Value>Yes I've read the &lt;a href="{0}"&gt;privacy terms&lt;/a&gt; and agree that my data given by me can be stored electronically. My data will thereby only be used to process my inquiry.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ContactUs.PrivacyAgreement.MustBeAccepted">
+		<Value>Please agree to the storage of your data.</Value>
 	</LocaleResource>
 	<LocaleResource Name="ContactUs.YourEnquiryHasBeenSent">
 		<Value>Your enquiry has been successfully sent to the store owner.</Value>
@@ -13624,6 +13846,27 @@
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Customers.CustomerNameFormat.ShowUsernames">
 		<Value>Show usernames</Value>
 	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Customers.CustomerNumberMethod.AutomaticallySet">
+		<Value>Automatically assigned</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Customers.CustomerNumberMethod.Disabled">
+		<Value>Disabled</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Customers.CustomerNumberMethod.Enabled">
+		<Value>Enabled</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Customers.CustomerNumberVisibility.Display">
+		<Value>Display</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Customers.CustomerNumberVisibility.Editable">
+		<Value>Always editable</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Customers.CustomerNumberVisibility.EditableIfEmpty">
+		<Value>Editable if empty</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Customers.CustomerNumberVisibility.None">
+		<Value>Do not display</Value>
+	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Customers.PasswordFormat.Clear">
 		<Value>Clear</Value>
 	</LocaleResource>
@@ -13649,7 +13892,10 @@
 		<Value>FTP</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.Http">
-		<Value>HTTP</Value>
+		<Value>HTTP POST</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.PublicFolder">
+		<Value>Public folder</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.Description">
 		<Value>Description</Value>
@@ -13667,7 +13913,7 @@
 		<Value>Product name + short description</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.None">
-		<Value>Not specified</Value>
+		<Value>None</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.ShortDescription">
 		<Value>Short description</Value>
@@ -13817,6 +14063,15 @@
 		<Value>Show deactivated</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Orders.CheckoutNewsLetterSubscription.None">
+		<Value>Do not show</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Orders.CheckoutThirdPartyEmailHandOver.Activated">
+		<Value>Show activated</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Orders.CheckoutThirdPartyEmailHandOver.Deactivated">
+		<Value>Show deactivated</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Orders.CheckoutThirdPartyEmailHandOver.None">
 		<Value>Do not show</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Orders.OrderStatus.Cancelled">
@@ -15156,6 +15411,9 @@
 	<LocaleResource Name="PrivacyNotice">
 		<Value>Privacy Notice</Value>
 	</LocaleResource>
+	<LocaleResource Name="PrivateMessages.Disabled">
+		<Value>Private messages are disabled.</Value>
+	</LocaleResource>
 	<LocaleResource Name="PrivateMessages.Inbox">
 		<Value>Inbox</Value>
 	</LocaleResource>
@@ -15286,7 +15544,10 @@
 		<Value>Out of stock</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.BasePriceInfo">
-		<Value>base price: {0} per {1}</Value>
+		<Value>Content: {0} {1} ({2} / {3} {1})</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.BasePriceInfo.LanguageInsensitive">
+		<Value>{0} {1} ({2} / {3} {1})</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.Breadcrumb.Top">
 		<Value>Top</Value>
@@ -15487,7 +15748,7 @@
 		<Value>This product is sold out.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.NoBundledItems">
-		<Value>This product is sold out.</Value>
+		<Value>No bundle items available</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.NotFound">
 		<Value>The product {0} was not found.</Value>

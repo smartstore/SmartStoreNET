@@ -1,5 +1,9 @@
 ﻿#Release Notes
 
+##Google Merchant Center (GMC) 2.5.0.1
+###Bugfixes
+* GMC feed does not generate the sale price if the sale price is set for a future date
+
 ##Google Merchant Center (GMC) 2.2.0.5
 ###New Features
 * Supports GMC fields: multipack, bundle, adult, energy efficiency class and custom label (0 to 4)

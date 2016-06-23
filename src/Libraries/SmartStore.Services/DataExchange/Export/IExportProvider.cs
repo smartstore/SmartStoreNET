@@ -24,12 +24,12 @@ namespace SmartStore.Services.DataExchange.Export
 		/// Export data to a file
 		/// </summary>
 		/// <param name="context">Export execution context</param>
-		void Execute(IExportExecuteContext context);
+		void Execute(ExportExecuteContext context);
 
 		/// <summary>
 		/// Called once per store when export execution ended
 		/// </summary>
 		/// <param name="context">Export execution context</param>
-		void OnExecuted(IExportExecuteContext context);
+		void OnExecuted(ExportExecuteContext context);
 	}
 }

@@ -72,23 +72,21 @@
 
                         @Html.Action("ReviewOverview", new { id = Model.Id })
 
-                        @if (Model.Manufacturers != null && Model.Manufacturers.Count > 0)
-                        {
-                            <div class="manufacturer-pics">
-
-                            @foreach (var manufacturer in Model.Manufacturers)
-                            {
-                                <div class="manufacturer-item">
-                                    <div class="picture">
-                                        <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" title="@manufacturer.PictureModel.Title">
-                                            <img alt="@manufacturer.PictureModel.AlternateText" src="@manufacturer.PictureModel.ImageUrl" title="@manufacturer.PictureModel.Title" />
-                                        </a>
-                                    </div>
-                                </div>
-                            }
-
-                            </div>
-                        }
+						@if (Model.Manufacturers != null && Model.Manufacturers.Any(x => x.PictureModel != null && x.PictureModel.ImageUrl.HasValue()))
+						{
+							<div class="manufacturer-pics">
+								@foreach (var manufacturer in Model.Manufacturers.Where(x => x.PictureModel != null && x.PictureModel.ImageUrl.HasValue()))
+								{
+									<div class="manufacturer-item">
+										<div class="picture">
+											<a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" title="@manufacturer.PictureModel.Title">
+												<img alt="@manufacturer.PictureModel.AlternateText" src="@manufacturer.PictureModel.ImageUrl" title="@manufacturer.PictureModel.Title" />
+											</a>
+										</div>
+									</div>
+								}
+							</div>
+						}
 
                         <div class="quick-links line">
                             @Html.Action("EmailAFriendButton", new { id = Model.Id })

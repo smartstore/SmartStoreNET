@@ -8,11 +8,18 @@ namespace SmartStore.Services.DataExchange.Import
 	public interface IImportProfileService
 	{
 		/// <summary>
+		/// Gets a new profile name
+		/// </summary>
+		/// <param name="entityType">Entity type</param>
+		/// <returns>Suggestion for a new profile name</returns>
+		string GetNewProfileName(ImportEntityType entityType);
+
+		/// <summary>
 		/// Inserts an import profile
 		/// </summary>
 		/// <param name="fileName">Name of the import file</param>
 		/// <param name="name">Profile name</param>
-		/// <param name="entityType"></param>
+		/// <param name="entityType">Entity type</param>
 		/// <returns>Inserted import profile</returns>
 		ImportProfile InsertImportProfile(string fileName, string name, ImportEntityType entityType);
 

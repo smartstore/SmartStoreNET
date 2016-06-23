@@ -2,7 +2,7 @@
 @using SmartStore.Core.Domain.DataExchange;
 @using SmartStore.Admin.Models.DataExchange;
 @{
-	var title = string.Concat(T("Admin.Common.Edit"), " ", T("Common.Profile"));	
+	var title = string.Concat(T("Common.Profile"), " - ", T("Admin.Common.Edit"));
 	ViewBag.Title = title;
 }
 
@@ -19,6 +19,13 @@
 			<div class="options">
 				@if (Model.HasActiveProvider)
 				{
+					if (Model.Id != 0)
+					{
+						<button type="button" id="ProfileExportButton" class="btn btn-default" data-url="@Url.Action("Execute", "Export", new { area = "Admin", id = Model.Id })">
+							<i class="fa fa-gears"></i>&nbsp;@T("Common.Export")
+						</button>
+					}
+
 					<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn">
 						<i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")
 					</a>
@@ -200,6 +207,11 @@
 
 @helper TabPartition()
 {
+	<div class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+		@Html.Raw(T("Admin.DataExchange.Export.Partition.Note"))
+	</div>
+
 	<table class="adminContent">
 		<tr>
 			<td class="adminTitle">
@@ -242,7 +254,10 @@
 
 @helper TabFilter()
 {
-	if (Model.Provider.EntityType == ExportEntityType.Product || Model.Provider.EntityType == ExportEntityType.Order)
+	if (Model.Provider.EntityType == ExportEntityType.Product ||
+		Model.Provider.EntityType == ExportEntityType.Customer ||
+		Model.Provider.EntityType == ExportEntityType.Order || 
+		Model.Provider.EntityType == ExportEntityType.NewsLetterSubscription)
 	{
 		<div class="alert alert-info">@Html.Raw(T("Admin.DataExchange.Export.Filter.Note"))</div>
 		@Html.Partial("_Tab.Filter", Model)
@@ -273,7 +288,7 @@
 			@if (Model.Provider.ConfigPartialViewName.HasValue())
 			{
 				<div class="alert alert-info">
-					<button type="button" class="close" data-dismiss="alert">×</button>
+					<button type="button" class="close" data-dismiss="alert">&#215;</button>
 					@Html.Raw(T("Admin.DataExchange.Export.Configuration.Note"))
 				</div>
 				
@@ -281,7 +296,18 @@
 				viewData.TemplateInfo.HtmlFieldPrefix = "CustomProperties[ProviderConfigData]";
 				viewData.ModelState.Merge(ViewData.ModelState);
 				@Html.Hidden("CustomProperties[ProviderConfigData].__Type__", Model.Provider.ConfigDataType.AssemblyQualifiedName)
-				@Html.Partial(Model.Provider.ConfigPartialViewName, Model.Provider.ConfigData, viewData)
+
+				try
+				{
+					@Html.Partial(Model.Provider.ConfigPartialViewName, Model.Provider.ConfigData, viewData)
+				}
+				catch (Exception exception)
+				{
+					<div class="alert alert-error">
+						@T("Admin.Configuration.Plugins.UnknownError")
+					</div>
+					<pre>@exception.ToString()</pre>
+				}
 			}
 			else
 			{
@@ -358,6 +384,15 @@
 					$('#FileNamePatternExample').find('div:first').text(resp);
 				}
 			});
+		});
+
+		// execute export
+		$('#ProfileExportButton').click(function (e) {
+			e.preventDefault();
+			$(this).doPostData({
+				ask: '@T("Admin.Common.AskToProceed")'
+			});
+			return false;
 		});
 	});
 </script>

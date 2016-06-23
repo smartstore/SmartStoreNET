@@ -169,14 +169,20 @@ namespace SmartStore.Core
 		{
 			Guard.NotNull(() => type);
 
-			if (xml.IsEmpty())
-				return Activator.CreateInstance(type);
-
-			using (var reader = new StringReader(xml))
+			try
 			{
-				var serializer = new XmlSerializer(type);
-				return serializer.Deserialize(reader);
+				if (xml.HasValue())
+				{
+					using (var reader = new StringReader(xml))
+					{
+						var serializer = new XmlSerializer(type);
+						return serializer.Deserialize(reader);
+					}
+				}
 			}
+			catch { }
+
+			return Activator.CreateInstance(type);
 		}
 
 		#endregion

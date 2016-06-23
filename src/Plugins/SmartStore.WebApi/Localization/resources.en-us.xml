@@ -41,6 +41,12 @@
   <LocaleResource Name="NoRequestTimestampValidation.Hint">
     <Value>Specifies whether to validate that the timestamp of the previous request is less or equal than the one of the current. Prevents the occurrence of HmacResult.TimestampOlderThanLastRequest.</Value>
   </LocaleResource>
+  <LocaleResource Name="AllowEmptyMd5Hash">
+    <Value>Allow authentification without MD5 hash</Value>
+  </LocaleResource>
+  <LocaleResource Name="AllowEmptyMd5Hash.Hint">
+    <Value>Specifies whether to allow authentifications without MD5 content hash.</Value>
+  </LocaleResource>
 	<LocaleResource Name="PublicKey">
 		<Value>Public key</Value>
 	</LocaleResource>

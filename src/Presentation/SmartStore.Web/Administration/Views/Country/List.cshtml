@@ -38,24 +38,18 @@
 							 .ClientTemplate(@Html.SymbolForBool("AllowsShipping"))
 							 .Centered();
 						columns.Bound(x => x.TwoLetterIsoCode)
-							.Centered();
+							.Hidden(true);
 						columns.Bound(x => x.ThreeLetterIsoCode)
-							.Centered();
+							.Hidden(true);
 						columns.Bound(x => x.NumericIsoCode)
-							.Centered();
+							.Hidden(true);
 						columns.Bound(x => x.SubjectToVat)
 							 .ClientTemplate(@Html.SymbolForBool("SubjectToVat"))
 							 .Centered();
-						columns.Bound(x => x.NumberOfStates)
-							.ReadOnly()
-							.Centered();
 						columns.Bound(x => x.DisplayOrder)
 							.Centered();
 						columns.Bound(x => x.LimitedToStores)
-							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
-							.Centered()
-							.ReadOnly()
-							.Hidden(Model.StoreCount <= 1);
+							.Hidden(true);
 						columns.Bound(x => x.Published)
 							 .ClientTemplate(@Html.SymbolForBool("Published"))
 							 .Centered();

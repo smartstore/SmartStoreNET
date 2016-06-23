@@ -116,41 +116,41 @@ namespace SmartStore.ShippingByWeight
         /// <summary>
         ///  Gets available shipping options
         /// </summary>
-        /// <param name="getShippingOptionRequest">A request for getting shipping options</param>
+        /// <param name="request">A request for getting shipping options</param>
         /// <returns>Represents a response of getting shipping rate options</returns>
-        public GetShippingOptionResponse GetShippingOptions(GetShippingOptionRequest getShippingOptionRequest)
+        public GetShippingOptionResponse GetShippingOptions(GetShippingOptionRequest request)
         {
-            if (getShippingOptionRequest == null)
+            if (request == null)
                 throw new ArgumentNullException("getShippingOptionRequest");
 
             var response = new GetShippingOptionResponse();
 
-            if (getShippingOptionRequest.Items == null || getShippingOptionRequest.Items.Count == 0)
+            if (request.Items == null || request.Items.Count == 0)
             {
                 response.AddError(T("Admin.System.Warnings.NoShipmentItems"));
                 return response;
             }
-
-			int storeId = _storeContext.CurrentStore.Id;
+			
+			int storeId = request.StoreId > 0 ? request.StoreId : _storeContext.CurrentStore.Id;
 			decimal subTotal = decimal.Zero;
             int countryId = 0;
             string zip = null;
 
-			if (getShippingOptionRequest.ShippingAddress != null)
+			if (request.ShippingAddress != null)
 			{
-				countryId = getShippingOptionRequest.ShippingAddress.CountryId ?? 0;
-                zip = getShippingOptionRequest.ShippingAddress.ZipPostalCode;
+				countryId = request.ShippingAddress.CountryId ?? 0;
+                zip = request.ShippingAddress.ZipPostalCode;
 			}
             
-            foreach (var shoppingCartItem in getShippingOptionRequest.Items)
+            foreach (var shoppingCartItem in request.Items)
             {
                 if (shoppingCartItem.Item.IsFreeShipping || !shoppingCartItem.Item.IsShipEnabled)
                     continue;
                 subTotal += _priceCalculationService.GetSubTotal(shoppingCartItem, true);
             }
-            decimal weight = _shippingService.GetShoppingCartTotalWeight(getShippingOptionRequest.Items);
+            decimal weight = _shippingService.GetShoppingCartTotalWeight(request.Items);
 
-            var shippingMethods = _shippingService.GetAllShippingMethods(getShippingOptionRequest);
+            var shippingMethods = _shippingService.GetAllShippingMethods(request);
             foreach (var shippingMethod in shippingMethods)
             {
                 var record = _shippingByWeightService.FindRecord(shippingMethod.Id, storeId, countryId, weight, zip);

@@ -324,6 +324,15 @@
         </tr>
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.HideManufacturerDefaultPictures)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.HideManufacturerDefaultPictures)
+				@Html.ValidationMessageFor(model => model.HideManufacturerDefaultPictures)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.HideCategoryDefaultPictures)
 			</td>
 			<td class="adminData">
@@ -806,6 +815,15 @@
                 @Html.ValidationMessageFor(model => model.DisplayAllImagesNumber)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowManufacturerPicturesInProductDetail)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowManufacturerPicturesInProductDetail)
+				@Html.ValidationMessageFor(model => model.ShowManufacturerPicturesInProductDetail)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowDeliveryTimesInProductDetail)

@@ -30,6 +30,8 @@ namespace SmartStore.Core.Logging
 			console.Filter = new EventTypeFilter(SourceLevels.All);
 			console.Name = "console";
 
+			_traceSource.Listeners.Add(console);
+
 			var textListener = new TextWriterTraceListener(fileName);
 			textListener.Filter = new EventTypeFilter(SourceLevels.All);
 			textListener.TraceOutputOptions = TraceOptions.DateTime;
@@ -41,17 +43,19 @@ namespace SmartStore.Core.Logging
 				_streamWriter = new StreamWriter(fileName, append, Encoding.UTF8);
 
 				textListener.Writer = _streamWriter;
-			}
-			catch (IOException) { }
 
-			_traceSource.Listeners.Add(console);
-			_traceSource.Listeners.Add(textListener);
-			
-			// Allow the trace source to send messages to  
-			// listeners for all event types. Currently only  
+				_traceSource.Listeners.Add(textListener);
+			}
+			catch (IOException)
+			{
+				// file is locked by another process
+			}
+
+			// Allow the trace source to send messages to
+			// listeners for all event types. Currently only
 			// error messages or higher go to the listeners. 
-			// Messages must get past the source switch to  
-			// get to the listeners, regardless of the settings  
+			// Messages must get past the source switch to
+			// get to the listeners, regardless of the settings
 			// for the listeners.
 			_traceSource.Switch.Level = SourceLevels.All;
 		}

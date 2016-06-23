@@ -210,6 +210,7 @@ namespace SmartStore.Admin.Controllers
             model.AffiliateId = order.AffiliateId;
             model.CustomerComment = order.CustomerOrderComment;
 			model.HasNewPaymentNotification = order.HasNewPaymentNotification;
+			model.AcceptThirdPartyEmailHandOver = order.AcceptThirdPartyEmailHandOver;
 
 			if (order.AffiliateId != 0)
 			{

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Collections;
@@ -25,14 +25,12 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
+using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
-using SmartStore.Core.Data;
-using System.Collections.Specialized;
-using SmartStore.Services.Topics;
 
 namespace SmartStore.Web.Controllers
 {
@@ -152,7 +150,8 @@ namespace SmartStore.Web.Controllers
 			bool isAssociatedProduct = false,
 			ProductBundleItemData productBundleItem = null, 
 			IList<ProductBundleItemData> productBundleItems = null, 
-			NameValueCollection selectedAttributes = null)
+			NameValueCollection selectedAttributes = null,
+			NameValueCollection queryData = null)
 		{
 			if (product == null)
 				throw new ArgumentNullException("product");
@@ -170,7 +169,7 @@ namespace SmartStore.Web.Controllers
 				ProductType = product.ProductType,
 				VisibleIndividually = product.VisibleIndividually,
 				//Manufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id),
-				Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id)),
+				Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), null, true),
 				ReviewCount = product.ApprovedTotalReviews,
 				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
 				//EnableHtmlTextCollapser = Convert.ToBoolean(_settingService.GetSettingByKey<string>("CatalogSettings.EnableHtmlTextCollapser")),
@@ -186,6 +185,30 @@ namespace SmartStore.Web.Controllers
 				HasSampleDownload = product.IsDownload && product.HasSampleDownload,
 				IsCurrentCustomerRegistered = _services.WorkContext.CurrentCustomer.IsRegistered()
 			};
+
+			// get gift card values from query string
+			if (queryData != null && queryData.Count > 0)
+			{
+				var giftCardItems = queryData.AllKeys
+					.Where(x => x.EmptyNull().StartsWith("giftcard_"))
+					.SelectMany(queryData.GetValues, (k, v) => new { key = k, value = v.TrimSafe() });
+
+				foreach (var item in giftCardItems)
+				{
+					var key = item.key.EmptyNull().ToLower();
+
+					if (key.EndsWith("recipientname"))
+						model.GiftCard.RecipientName = item.value;
+					else if (key.EndsWith("recipientemail"))
+						model.GiftCard.RecipientEmail = item.value;
+					else if (key.EndsWith("sendername"))
+						model.GiftCard.SenderName = item.value;
+					else if (key.EndsWith("senderemail"))
+						model.GiftCard.SenderEmail = item.value;
+					else if (key.EndsWith("message"))
+						model.GiftCard.Message = item.value;
+				}
+			}
 
 			// Back in stock subscriptions
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
@@ -236,11 +259,15 @@ namespace SmartStore.Web.Controllers
 				{
 					var item = itemData.Item;
 					var bundleItemAttributes = new NameValueCollection();
-					var keyPrefix = "product_attribute_{0}_{1}".FormatInvariant(item.ProductId, item.Id);
 
-					foreach (var key in selectedAttributes.AllKeys.Where(x => x.HasValue() && x.StartsWith(keyPrefix)))
+					if (selectedAttributes != null)
 					{
-						bundleItemAttributes.Add(key, selectedAttributes[key]);
+						var keyPrefix = "product_attribute_{0}_{1}".FormatInvariant(item.ProductId, item.Id);
+
+						foreach (var key in selectedAttributes.AllKeys.Where(x => x.HasValue() && x.StartsWith(keyPrefix)))
+						{
+							bundleItemAttributes.Add(key, selectedAttributes[key]);
+						}
 					}
 
 					var bundledProductModel = PrepareProductDetailsPageModel(item.Product, false, itemData, null, bundleItemAttributes);
@@ -501,9 +528,31 @@ namespace SmartStore.Web.Controllers
 							pvaModel.BeginYear = match.Groups[1].Value.ToInt();
 							pvaModel.EndYear = match.Groups[2].Value.ToInt();
 						}
+
+						if (hasSelectedAttributes)
+						{
+							var attributeKey = "product_attribute_{0}_{1}_{2}_{3}".FormatInvariant(product.Id, bundleItemId, attribute.ProductAttributeId, attribute.Id);
+							var day = selectedAttributes[attributeKey + "_day"].ToInt();
+							var month = selectedAttributes[attributeKey + "_month"].ToInt();
+							var year = selectedAttributes[attributeKey + "_year"].ToInt();
+							if (day > 0 && month > 0 && year > 0)
+							{
+								pvaModel.SelectedDay = day;
+								pvaModel.SelectedMonth = month;
+								pvaModel.SelectedYear = year;
+							}
+						}
+					}
+					else if (attribute.AttributeControlType == AttributeControlType.TextBox || attribute.AttributeControlType == AttributeControlType.MultilineTextbox)
+					{
+						if (hasSelectedAttributes)
+						{
+							var attributeKey = "product_attribute_{0}_{1}_{2}_{3}".FormatInvariant(product.Id, bundleItemId, attribute.ProductAttributeId, attribute.Id);
+							pvaModel.TextValue = selectedAttributes[attributeKey];
+						}
 					}
 
-					int preSelectedValueId = 0;
+					var preSelectedValueId = 0;
 					var pvaValues = (attribute.ShouldHaveValues() ? _productAttributeService.GetProductVariantAttributeValues(attribute.Id) : new List<ProductVariantAttributeValue>());
 
 					foreach (var pvaValue in pvaValues)
@@ -567,7 +616,7 @@ namespace SmartStore.Web.Controllers
 						{
 							var linkagePicture = _pictureService.GetPicturesByProductId(pvaValue.LinkedProductId, 1).FirstOrDefault();
 							if (linkagePicture != null)
-								pvaValueModel.ImageUrl = _pictureService.GetPictureUrl(linkagePicture, _mediaSettings.AutoCompleteSearchThumbPictureSize, false);
+								pvaValueModel.ImageUrl = _pictureService.GetPictureUrl(linkagePicture, _mediaSettings.VariantValueThumbPictureSize, false);
 						}
 
 						pvaModel.Values.Add(pvaValueModel);
@@ -1055,7 +1104,8 @@ namespace SmartStore.Web.Controllers
 			bool prepareColorAttributes = false,
 			bool prepareManufacturers = false,
             bool isCompact = false,
-			bool prepareFullDescription = false)
+			bool prepareFullDescription = false,
+			bool isCompareList = false)
 		{
 			if (products == null)
 				throw new ArgumentNullException("products");
@@ -1103,6 +1153,7 @@ namespace SmartStore.Web.Controllers
 			foreach (var product in products)
 			{
 				var contextProduct = product;
+				var finalPrice = decimal.Zero;
 
 				var model = new ProductOverviewModel
 				{
@@ -1183,7 +1234,7 @@ namespace SmartStore.Web.Controllers
 										decimal taxRate = decimal.Zero;
 										decimal oldPriceBase = _taxService.GetProductPrice(contextProduct, contextProduct.OldPrice, out taxRate);
 										decimal finalPriceBase = _taxService.GetProductPrice(contextProduct, displayPrice.Value, out taxRate);
-										decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
+										finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
 
 										priceModel.OldPrice = null;
 
@@ -1251,7 +1302,7 @@ namespace SmartStore.Web.Controllers
 								decimal finalPriceBase = _taxService.GetProductPrice(product, displayPrice, out taxRate);
 
 								decimal oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, workingCurrency);
-								decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
+								finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
 
 								priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
 
@@ -1388,19 +1439,22 @@ namespace SmartStore.Web.Controllers
 
 				if (prepareManufacturers)
 				{
-					model.Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), cachedManufacturerModels);
+					model.Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), cachedManufacturerModels, false);
 				}
 
-				if (_catalogSettings.ShowBasePriceInProductLists)
+				if (finalPrice != decimal.Zero && (_catalogSettings.ShowBasePriceInProductLists || isCompareList))
 				{
-                    model.BasePriceInfo = contextProduct.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService,  workingCurrency);
+					model.BasePriceInfo = contextProduct.GetBasePriceInfo(finalPrice, _localizationService,	_priceFormatter, workingCurrency);
 				}
 
-				var addShippingPrice = _currencyService.ConvertCurrency(contextProduct.AdditionalShippingCharge, currentStore.PrimaryStoreCurrency, workingCurrency);
-
-				if (addShippingPrice > 0 && displayPrices)
+				if (displayPrices)
 				{
-					model.TransportSurcharge = res["Common.AdditionalShippingSurcharge"].Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, true, false));
+					var addShippingPrice = _currencyService.ConvertCurrency(contextProduct.AdditionalShippingCharge, currentStore.PrimaryStoreCurrency, workingCurrency);
+
+					if (addShippingPrice > 0)
+					{
+						model.TransportSurcharge = res["Common.AdditionalShippingSurcharge"].Text.FormatCurrent(_priceFormatter.FormatPrice(addShippingPrice, true, false));
+					}
 				}
 
 				if (contextProduct.Weight > 0)
@@ -1411,7 +1465,7 @@ namespace SmartStore.Web.Controllers
 				// IsNew
 				if (_catalogSettings.LabelAsNewForMaxDays.HasValue)
 				{
-					model.IsNew = (DateTime.UtcNow - product.CreatedOnUtc).Days <= _catalogSettings.LabelAsNewForMaxDays.Value;
+					model.IsNew = ((DateTime.UtcNow - product.CreatedOnUtc).Days <= _catalogSettings.LabelAsNewForMaxDays.Value);
 				}
 
 				models.Add(model);
@@ -1719,7 +1773,8 @@ namespace SmartStore.Web.Controllers
 
 		public List<ManufacturerOverviewModel> PrepareManufacturersOverviewModel(
 			ICollection<ProductManufacturer> manufacturers, 
-			IDictionary<int, ManufacturerOverviewModel> cachedModels = null)
+			IDictionary<int, ManufacturerOverviewModel> cachedModels = null,
+			bool forProductDetailPage = false)
 		{
 			var model = new List<ManufacturerOverviewModel>();
 
@@ -1744,7 +1799,10 @@ namespace SmartStore.Web.Controllers
 
 					};
 
-                    item.PictureModel = PrepareManufacturerPictureModel(manufacturer, manufacturer.GetLocalized(x => x.Name));
+					if (_catalogSettings.ShowManufacturerPicturesInProductDetail)
+					{
+						item.PictureModel = PrepareManufacturerPictureModel(manufacturer, manufacturer.GetLocalized(x => x.Name));
+					}
 
 					cachedModels.Add(item.Id, item);
 				}
@@ -1759,11 +1817,11 @@ namespace SmartStore.Web.Controllers
         {
             var model = new PictureModel();
 
-            int pictureSize = _mediaSettings.ManufacturerThumbPictureSize;
+            var pictureSize = _mediaSettings.ManufacturerThumbPictureSize;
             var manufacturerPictureCacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_PICTURE_MODEL_KEY,
                 manufacturer.Id,
                 pictureSize,
-                true,
+				!_catalogSettings.HideManufacturerDefaultPictures,
                 _services.WorkContext.WorkingLanguage.Id,
                 _services.WebHelper.IsCurrentConnectionSecured(),
                 _services.StoreContext.CurrentStore.Id);
@@ -1774,7 +1832,7 @@ namespace SmartStore.Web.Controllers
                 {
                     PictureId = manufacturer.PictureId.GetValueOrDefault(),
                     //FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault()),
-                    ImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), pictureSize),
+                    ImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), pictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
                     Title = string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
                     AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName)
                 };

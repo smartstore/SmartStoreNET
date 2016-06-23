@@ -1065,6 +1065,11 @@ namespace SmartStore.Services.Orders
                             CustomerOrderComment = extraData.ContainsKey("CustomerComment") ? extraData["CustomerComment"] : ""
                         };
 
+						if (extraData.ContainsKey("AcceptThirdPartyEmailHandOver") && _shoppingCartSettings.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+						{
+							order.AcceptThirdPartyEmailHandOver = extraData["AcceptThirdPartyEmailHandOver"].ToBool();
+						}
+
                         _orderService.InsertOrder(order);
 
                         result.PlacedOrder = order;
@@ -1134,7 +1139,7 @@ namespace SmartStore.Services.Orders
 										var bundleItemSubTotal = _taxService.GetProductPrice(childItem.Item.Product, _priceCalculationService.GetSubTotal(childItem, true), out taxRate);
 
 										var attributesInfo = _productAttributeFormatter.FormatAttributes(childItem.Item.Product, childItem.Item.AttributesXml, order.Customer,
-											renderPrices: false, allowHyperlinks: false);
+											renderPrices: false, allowHyperlinks: true);
 
 										childItem.BundleItemData.ToOrderData(listBundleData, bundleItemSubTotal, childItem.Item.AttributesXml, attributesInfo);
 									}

@@ -5,7 +5,11 @@ FOR %%b in (
 
        "%VS120COMNTOOLS%..\..\VC\vcvarsall.bat"
        "%ProgramFiles(x86)%\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
-       "%ProgramFiles%\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" 
+       "%ProgramFiles%\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
+       
+       "%VS110COMNTOOLS%..\..\VC\vcvarsall.bat"
+       "%ProgramFiles(x86)%\Microsoft Visual Studio 11.0\VC\vcvarsall.bat"
+       "%ProgramFiles%\Microsoft Visual Studio 11.0\VC\vcvarsall.bat" 
     ) do (
     if exist %%b ( 
        call %%b x86

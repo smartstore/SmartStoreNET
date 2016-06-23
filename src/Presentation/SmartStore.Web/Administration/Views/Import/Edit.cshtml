@@ -1,7 +1,7 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
 @model ImportProfileModel
 @{
-	var title = string.Concat(T("Admin.Common.Edit"), " ", T("Common.Profile"));
+	var title = string.Concat(T("Common.Profile"), " - ", T("Admin.Common.Edit"));
 	ViewBag.Title = title;
 }
 
@@ -14,6 +14,12 @@
 				@title - @Model.Name @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List")
 			</div>
 			<div class="options">
+				@if (Model.Id != 0)
+				{
+					<button type="button" id="ProfileImportButton" data-url="@Url.Action("Execute", "Import", new { area = "Admin", id = Model.Id })" class="btn btn-default">
+						<i class="fa fa-gears"></i>&nbsp;@T("Common.Import")
+					</button>
+				}
 				@if (Model.LogFileExists)
 				{
 					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn" target="LogFile">
@@ -31,7 +37,7 @@
 				</button>
 			</div>
 		</div>
-		@Html.Partial("_CreateOrUpdate", Model)
+		@Html.Partial("_Update", Model)
 	</fieldset>
 }
 @Html.DeleteConfirmation("import-profile-delete")

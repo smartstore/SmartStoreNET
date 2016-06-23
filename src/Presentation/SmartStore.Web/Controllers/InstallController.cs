@@ -177,8 +177,8 @@ namespace SmartStore.Web.Controllers
             if (DataSettings.DatabaseIsInstalled())
                 return RedirectToRoute("HomePage");
 
-            //set page timeout to 5 minutes
-            this.Server.ScriptTimeout = 300;
+            // set page timeout to 10 minutes
+            this.Server.ScriptTimeout = 600;
 
             var model = new InstallModel
             {

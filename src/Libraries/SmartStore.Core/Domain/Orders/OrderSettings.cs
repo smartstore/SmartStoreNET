@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using SmartStore.Core.Configuration;
+﻿using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Orders
@@ -16,6 +15,7 @@ namespace SmartStore.Core.Domain.Orders
 			ReturnRequestReasons = "Received Wrong Product,Wrong Product Ordered,There Was A Problem With The Product";
 			NumberOfDaysReturnRequestAvailable = 365;
 			MinimumOrderPlacementInterval = 30;
+			OrderListPageSize = 10;
 		}
 		
 		/// <summary>
@@ -87,5 +87,10 @@ namespace SmartStore.Core.Domain.Orders
 		/// Gets or sets a value indicating whether to display all orders of all stores to a customer
 		/// </summary>
 		public bool DisplayOrdersOfAllStores { get; set; }
+
+		/// <summary>
+		/// Page size of the order list
+		/// </summary>
+		public int OrderListPageSize { get; set; }
 	}
 }

@@ -879,7 +879,7 @@ namespace SmartStore.Services.Orders
                 var ca1Collection = _checkoutAttributeParser.ParseCheckoutAttributes(checkoutAttributes);
 
                 //existing checkout attributes
-                var ca2Collection = _checkoutAttributeService.GetAllCheckoutAttributes();
+                var ca2Collection = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
                 if (!shoppingCart.RequiresShipping())
                 {
                     //remove attributes which require shippable products

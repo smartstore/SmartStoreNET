@@ -14,7 +14,7 @@ using SmartStore.Services.Tax;
 
 namespace SmartStore.Services.Catalog
 {
-    public static class ProductExtensions
+	public static class ProductExtensions
     {
 		public static ProductVariantAttributeCombination MergeWithCombination(this Product product, string selectedAttributes)
         {
@@ -299,7 +299,7 @@ namespace SmartStore.Services.Catalog
 		}
 
         /// <summary>
-        /// Gets the base price
+        /// Gets the base price info
         /// </summary>
         /// <param name="product">Product</param>
         /// <param name="localizationService">Localization service</param>
@@ -309,17 +309,23 @@ namespace SmartStore.Services.Catalog
 		/// <param name="priceCalculationService">Price calculation service</param>
 		/// <param name="currency">Target currency</param>
 		/// <param name="priceAdjustment">Price adjustment</param>
-		/// <param name="languageIndependent">Whether the result string should be language independent</param>
-        /// <returns>The base price</returns>
-        public static string GetBasePriceInfo(this Product product, ILocalizationService localizationService, IPriceFormatter priceFormatter,
-            ICurrencyService currencyService, ITaxService taxService, IPriceCalculationService priceCalculationService,
-            Currency currency, decimal priceAdjustment = decimal.Zero, bool languageIndependent = false)
+		/// <param name="languageInsensitive">Whether the result string should be language insensitive</param>
+        /// <returns>The base price info</returns>
+        public static string GetBasePriceInfo(this Product product,
+			ILocalizationService localizationService,
+			IPriceFormatter priceFormatter,
+            ICurrencyService currencyService,
+			ITaxService taxService,
+			IPriceCalculationService priceCalculationService,
+            Currency currency,
+			decimal priceAdjustment = decimal.Zero,
+			bool languageInsensitive = false)
         {
-            if (product == null)
-                throw new ArgumentNullException("product");
-
-			if (localizationService == null && !languageIndependent)
-                throw new ArgumentNullException("localizationService");
+			Guard.ArgumentNotNull(() => product);
+			Guard.ArgumentNotNull(() => currencyService);
+			Guard.ArgumentNotNull(() => taxService);
+			Guard.ArgumentNotNull(() => priceCalculationService);
+			Guard.ArgumentNotNull(() => currency);
 
             if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
             {
@@ -327,24 +333,58 @@ namespace SmartStore.Services.Catalog
 
                 var taxrate = decimal.Zero;
                 var currentPrice = priceCalculationService.GetFinalPrice(product, workContext.CurrentCustomer, true);
-                decimal price = taxService.GetProductPrice(product, decimal.Add(currentPrice, priceAdjustment), out taxrate);
+                var price = taxService.GetProductPrice(product, decimal.Add(currentPrice, priceAdjustment), out taxrate);
                 
                 price = currencyService.ConvertFromPrimaryStoreCurrency(price, currency);
 
-				decimal basePriceValue = Convert.ToDecimal((price / product.BasePriceAmount) * product.BasePriceBaseAmount);
+				return product.GetBasePriceInfo(price, localizationService, priceFormatter, currency, languageInsensitive);
+			}
 
-                string basePrice = priceFormatter.FormatPrice(basePriceValue, true, currency);
-				string unit = "{0} {1}".FormatWith(product.BasePriceBaseAmount, product.BasePriceMeasureUnit);
-
-				if (languageIndependent)
-				{
-					return "{0} / {1}".FormatWith(basePrice, unit);
-				}
-
-				return localizationService.GetResource("Products.BasePriceInfo").FormatWith(basePrice, unit);
-            }
 			return "";
         }
+
+		/// <summary>
+		/// Gets the base price info
+		/// </summary>
+		/// <param name="product">Product</param>
+		/// <param name="productPrice">The calculated product price</param>
+		/// <param name="localizationService">Localization service</param>
+		/// <param name="priceFormatter">Price formatter</param>
+		/// <param name="currency">Target currency</param>
+		/// <param name="languageInsensitive">Whether the result string should be language insensitive</param>
+		/// <returns>The base price info</returns>
+		public static string GetBasePriceInfo(this Product product,
+			decimal productPrice,
+			ILocalizationService localizationService,
+			IPriceFormatter priceFormatter,
+			Currency currency,
+			bool languageInsensitive = false)
+		{
+			Guard.ArgumentNotNull(() => product);
+			Guard.ArgumentNotNull(() => localizationService);
+			Guard.ArgumentNotNull(() => priceFormatter);
+			Guard.ArgumentNotNull(() => currency);
+
+			if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
+			{
+				var value = Convert.ToDecimal((productPrice / product.BasePriceAmount) * product.BasePriceBaseAmount);
+				var valueFormatted = priceFormatter.FormatPrice(value, true, currency);
+				var amountFormatted = Math.Round(product.BasePriceAmount.Value, 2).ToString("G29");
+
+				var infoTemplate = localizationService.GetResource(languageInsensitive ? "Products.BasePriceInfo.LanguageInsensitive" : "Products.BasePriceInfo");
+
+				var result = infoTemplate.FormatInvariant(
+					amountFormatted,
+					product.BasePriceMeasureUnit,
+					valueFormatted,
+					product.BasePriceBaseAmount
+				);
+
+				return result;
+			}
+
+			return "";
+		}
 
 		public static string GetProductTypeLabel(this Product product, ILocalizationService localizationService)
 		{

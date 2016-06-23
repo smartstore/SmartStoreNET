@@ -39,52 +39,49 @@ namespace SmartStore.Services.DataExchange.Export
 				string description = "";
 
 				// description merging
-				if (ctx.Projection.DescriptionMerging != ExportDescriptionMerging.None)
+				if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.None)
 				{
-					if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescriptionOrNameIfEmpty)
-					{
-						description = dynObject.FullDescription;
-
-						if (description.IsEmpty())
-							description = dynObject.ShortDescription;
-						if (description.IsEmpty())
-							description = dynObject.Name;
-					}
-					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescription)
-					{
-						description = dynObject.ShortDescription;
-					}
-					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.Description)
-					{
-						description = dynObject.FullDescription;
-					}
-					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.NameAndShortDescription)
-					{
-						description = ((string)dynObject.Name).Grow((string)dynObject.ShortDescription, " ");
-					}
-					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.NameAndDescription)
-					{
-						description = ((string)dynObject.Name).Grow((string)dynObject.FullDescription, " ");
-					}
-					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription ||
-						ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndDescription)
-					{
-						var productManus = ctx.ProductExportContext.ProductManufacturers.Load(product.Id);
-
-						if (productManus != null && productManus.Any())
-							description = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
-
-						description = description.Grow((string)dynObject.Name, " ");
-
-						if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription)
-							description = description.Grow((string)dynObject.ShortDescription, " ");
-						else
-							description = description.Grow((string)dynObject.FullDescription, " ");
-					}
+					// export empty description
 				}
-				else
+				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescriptionOrNameIfEmpty)
 				{
 					description = dynObject.FullDescription;
+
+					if (description.IsEmpty())
+						description = dynObject.ShortDescription;
+					if (description.IsEmpty())
+						description = dynObject.Name;
+				}
+				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescription)
+				{
+					description = dynObject.ShortDescription;
+				}
+				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.Description)
+				{
+					description = dynObject.FullDescription;
+				}
+				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.NameAndShortDescription)
+				{
+					description = ((string)dynObject.Name).Grow((string)dynObject.ShortDescription, " ");
+				}
+				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.NameAndDescription)
+				{
+					description = ((string)dynObject.Name).Grow((string)dynObject.FullDescription, " ");
+				}
+				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription ||
+					ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndDescription)
+				{
+					var productManus = ctx.ProductExportContext.ProductManufacturers.Load(product.Id);
+
+					if (productManus != null && productManus.Any())
+						description = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
+
+					description = description.Grow((string)dynObject.Name, " ");
+
+					if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription)
+						description = description.Grow((string)dynObject.ShortDescription, " ");
+					else
+						description = description.Grow((string)dynObject.FullDescription, " ");
 				}
 
 				// append text
@@ -107,7 +104,7 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 
 				// convert to plain text
-				if (ctx.Projection.DescriptionToPlainText)
+				if (description.HasValue() && ctx.Projection.DescriptionToPlainText)
 				{
 					//Regex reg = new Regex("<[^>]+>", RegexOptions.IgnoreCase);
 					//description = HttpUtility.HtmlDecode(reg.Replace(description, ""));
@@ -490,6 +487,11 @@ namespace SmartStore.Services.DataExchange.Export
 
 			result.Picture = null;
 
+			if (ctx.CategoryTemplates.ContainsKey(category.CategoryTemplateId))
+				result._CategoryTemplateViewPath = ctx.CategoryTemplates[category.CategoryTemplateId];
+			else
+				result._CategoryTemplateViewPath = "";
+
 			result._Localized = GetLocalized(ctx, category,
 				x => x.Name,
 				x => x.FullName,
@@ -550,7 +552,6 @@ namespace SmartStore.Services.DataExchange.Export
 			product.MergeWithCombination(combination);
 
 			var languageId = (ctx.Projection.LanguageId ?? 0);
-			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
 			var pictureSize = _mediaSettings.Value.ProductDetailsPictureSize;
 			var numberOfPictures = (ctx.Projection.NumberOfPictures ?? int.MaxValue);
 			int[] pictureIds = (combination == null ? new int[0] : combination.GetAssignedPictureIds());
@@ -577,25 +578,52 @@ namespace SmartStore.Services.DataExchange.Export
 
 			#region gerneral data
 
+			dynObject._CategoryName = null;
+			dynObject._CategoryPath = null;
+			dynObject._AttributeCombination = null;
+			dynObject._AttributeCombinationValues = null;
+			dynObject._AttributeCombinationId = (combination == null ? 0 : combination.Id);
+			dynObject._DetailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)dynObject.SeName;
+
 			dynObject.Price = CalculatePrice(ctx, product, combination != null);
-
-			if (combination != null && ctx.Projection.AttributeCombinationValueMerging == ExportAttributeValueMerging.AppendAllValuesToName)
-			{
-				var values = _productAttributeParser.Value.ParseProductVariantAttributeValues(combination.AttributesXml, productAttributes, ctx.Projection.LanguageId ?? 0);
-
-				dynObject.Name = ((string)dynObject.Name).Grow(string.Join(", ", values), " ");
-			}
 
 			dynObject._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
 				_priceCalculationService.Value, ctx.ContextCurrency, decimal.Zero, true);
 
-			dynObject._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
+			if (ctx.ProductTemplates.ContainsKey(product.ProductTemplateId))
+				dynObject._ProductTemplateViewPath = ctx.ProductTemplates[product.ProductTemplateId];
+			else
+				dynObject._ProductTemplateViewPath = "";
 
-			dynObject._DetailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)dynObject.SeName;
+			if (combination != null)
+			{
+				if (ctx.Supports(ExportFeatures.UsesAttributeCombination) ||
+					ctx.Projection.AttributeCombinationValueMerging == ExportAttributeValueMerging.AppendAllValuesToName)
+				{
+					var variantAttributes = _productAttributeParser.Value.DeserializeProductVariantAttributes(combination.AttributesXml);
+					var variantAttributeValues = _productAttributeParser.Value.ParseProductVariantAttributeValues(variantAttributes, productAttributes, languageId);
 
-			dynObject._CategoryName = null;
+					if (ctx.Supports(ExportFeatures.UsesAttributeCombination))
+					{
+						dynObject._AttributeCombination = variantAttributes;
+						dynObject._AttributeCombinationValues = variantAttributeValues;
+					}
 
-			if (ctx.Categories.Count > 0 && ctx.CategoryPathes.Count > 0)
+					if (ctx.Projection.AttributeCombinationValueMerging == ExportAttributeValueMerging.AppendAllValuesToName)
+					{
+						dynObject.Name = ((string)dynObject.Name).Grow(string.Join(", ", variantAttributeValues), " ");
+					}
+				}
+
+				var attributeQueryString = _productAttributeParser.Value.SerializeQueryData(combination.AttributesXml, product.Id);
+				if (attributeQueryString.HasValue())
+				{
+					var url = (string)dynObject._DetailUrl;
+					dynObject._DetailUrl = string.Concat(url, url.Contains("?") ? "&" : "?", "attributes=", attributeQueryString);
+				}
+			}
+
+			if (ctx.Categories.Count > 0)
 			{
 				dynObject._CategoryPath = _categoryService.Value.GetCategoryPath(
 					product,
@@ -606,13 +634,8 @@ namespace SmartStore.Services.DataExchange.Export
 					productCategories.OrderBy(x => x.DisplayOrder).FirstOrDefault()
 				);
 			}
-			else
-			{
-				dynObject._CategoryPath = null;
-			}
 
 			ToDeliveryTime(ctx, dynObject, product.DeliveryTimeId);
-
 			ToQuantityUnit(ctx, dynObject, product.QuantityUnitId);
 
 			dynObject.ProductPictures = productPictures
@@ -833,16 +856,26 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (ctx.Supports(ExportFeatures.UsesSpecialPrice))
 			{
-				dynObject._SpecialPrice = null;
-				dynObject._RegularPrice = null;   // price if a special price would not exist
+				dynObject._SpecialPrice = null;			// special price which is valid now
+				dynObject._FutureSpecialPrice = null;   // special price which is valid now and in future
+				dynObject._RegularPrice = null;			// price as if a special price would not exist
 
 				if (!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
 				{
+					if (product.SpecialPrice.HasValue && product.SpecialPriceEndDateTimeUtc.HasValue)
+					{
+						var endDate = DateTime.SpecifyKind(product.SpecialPriceEndDateTimeUtc.Value, DateTimeKind.Utc);
+						if (endDate > DateTime.UtcNow)
+						{
+							dynObject._FutureSpecialPrice = ConvertPrice(ctx, product, product.SpecialPrice.Value);
+						}
+					}
+
 					var specialPrice = _priceCalculationService.Value.GetSpecialPrice(product);
 
 					dynObject._SpecialPrice = ConvertPrice(ctx, product, specialPrice);
 
-					if (specialPrice.HasValue)
+					if (specialPrice.HasValue || dynObject._FutureSpecialPrice != null)
 					{
 						decimal tmpSpecialPrice = product.SpecialPrice.Value;
 						product.SpecialPrice = null;
@@ -980,7 +1013,7 @@ namespace SmartStore.Services.DataExchange.Export
 				//var productValues = new Dictionary<string, object>();
 				var dbContext = _dbContext as DbContext;
 
-				_dbContext.Attach(product);
+				product = _dbContext.Attach(product);
 
 				var entry = dbContext.Entry(product);
 
@@ -1063,9 +1096,11 @@ namespace SmartStore.Services.DataExchange.Export
 				.Select(e =>
 				{
 					dynamic dyn = ToDynamic(ctx, e);
-					var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == e.Product.ProductTemplateId);
 
-					dyn.Product._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
+					if (ctx.ProductTemplates.ContainsKey(e.Product.ProductTemplateId))
+						dyn.Product._ProductTemplateViewPath = ctx.ProductTemplates[e.Product.ProductTemplateId];
+					else
+						dyn.Product._ProductTemplateViewPath = "";
 
 					dyn.Product._BasePriceInfo = e.Product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
 						_priceCalculationService.Value, ctx.ContextCurrency, decimal.Zero, true);

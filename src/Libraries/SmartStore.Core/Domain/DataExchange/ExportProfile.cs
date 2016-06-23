@@ -23,7 +23,7 @@ namespace SmartStore.Core.Domain
 		public string Name { get; set; }
 
 		/// <summary>
-		/// The name of the folder (file system)
+		/// The root path of the export folder
 		/// </summary>
 		public string FolderName { get; set; }
 

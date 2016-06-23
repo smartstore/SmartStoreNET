@@ -128,17 +128,6 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private void NotifyModelStateErrors()
-		{
-			foreach (var modelState in ModelState.Values)
-			{
-				foreach (var error in modelState.Errors)
-				{
-					NotifyError(error.ErrorMessage);
-				}
-			}
-		}
-
 		#endregion
 
 		#region Methods
@@ -150,14 +139,14 @@ namespace SmartStore.Admin.Controllers
 			if (allStores.Count < 2)
 				return Content("");
 
-			var model = new StoreScopeConfigurationModel()
+			var model = new StoreScopeConfigurationModel
 			{
 				StoreId = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext)
 			};
 
 			foreach (var store in allStores)
 			{
-				model.AllStores.Add(new SelectListItem()
+				model.AllStores.Add(new SelectListItem
 				{
 					Text = store.Name,
 					Selected = (store.Id == model.StoreId),
@@ -165,7 +154,7 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-			model.AllStores.Insert(0, new SelectListItem()
+			model.AllStores.Insert(0, new SelectListItem
 			{
 				Text = _services.Localization.GetResource("Admin.Common.StoresAll"),
 				Selected = (0 == model.StoreId),
@@ -183,16 +172,8 @@ namespace SmartStore.Admin.Controllers
 				_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
 					SystemCustomerAttributeNames.AdminAreaStoreScopeConfiguration, storeid);
 			}
-			
-			//url referrer
-			if (String.IsNullOrEmpty(returnUrl))
-				returnUrl = _services.WebHelper.GetUrlReferrer();
-			
-			//home page
-			if (String.IsNullOrEmpty(returnUrl))
-				returnUrl = Url.Action("Index", "Home", new { area = "Admin" });
 
-			return Redirect(returnUrl);
+			return RedirectToReferrer(returnUrl, () => RedirectToAction("Index", "Home", new { area = "Admin" }));
 		}
 
         public ActionResult Blog()
@@ -658,32 +639,30 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			if (ModelState.IsValid)
-			{
-				//load settings for a chosen store scope
-				var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-				var rewardPointsSettings = _services.Settings.LoadSetting<RewardPointsSettings>(storeScope);
-				rewardPointsSettings = model.ToEntity(rewardPointsSettings);
+			if (!ModelState.IsValid)
+				return RewardPoints();
 
-				StoreDependingSettings.UpdateSettings(rewardPointsSettings, form, storeScope, _services.Settings);
+			ModelState.Clear();
 
-				bool pointsForPurchases = StoreDependingSettings.IsOverrideChecked(rewardPointsSettings, "PointsForPurchases", form);
+			//load settings for a chosen store scope
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var rewardPointsSettings = _services.Settings.LoadSetting<RewardPointsSettings>(storeScope);
+			rewardPointsSettings = model.ToEntity(rewardPointsSettings);
 
-				_services.Settings.UpdateSetting(rewardPointsSettings, x => x.PointsForPurchases_Amount, pointsForPurchases, storeScope);
-				_services.Settings.UpdateSetting(rewardPointsSettings, x => x.PointsForPurchases_Points, pointsForPurchases, storeScope);
+			StoreDependingSettings.UpdateSettings(rewardPointsSettings, form, storeScope, _services.Settings);
 
-				//now clear settings cache
-				_services.Settings.ClearCache();
+			bool pointsForPurchases = StoreDependingSettings.IsOverrideChecked(rewardPointsSettings, "PointsForPurchases", form);
 
-				//activity log
-				_customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
+			_services.Settings.UpdateSetting(rewardPointsSettings, x => x.PointsForPurchases_Amount, pointsForPurchases, storeScope);
+			_services.Settings.UpdateSetting(rewardPointsSettings, x => x.PointsForPurchases_Points, pointsForPurchases, storeScope);
 
-				NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
-			}
-			else
-			{
-				NotifyModelStateErrors();
-			}
+			//now clear settings cache
+			_services.Settings.ClearCache();
+
+			//activity log
+			_customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
+
+			NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
 
 			return RedirectToAction("RewardPoints");
         }
@@ -731,59 +710,57 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            if (ModelState.IsValid)
-            {
-				//load settings for a chosen store scope
-				var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-				var orderSettings = _services.Settings.LoadSetting<OrderSettings>(storeScope);
-				orderSettings = model.ToEntity(orderSettings);
+			if (!ModelState.IsValid)
+				return Order();
 
-				StoreDependingSettings.UpdateSettings(orderSettings, form, storeScope, _services.Settings);
+			ModelState.Clear();
 
-				_services.Settings.SaveSetting(orderSettings, x => x.ReturnRequestActions, 0, false);				
-				_services.Settings.SaveSetting(orderSettings, x => x.ReturnRequestReasons, 0, false);
+			//load settings for a chosen store scope
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var orderSettings = _services.Settings.LoadSetting<OrderSettings>(storeScope);
+			orderSettings = model.ToEntity(orderSettings);
 
-				foreach (var localized in model.Locales)
-				{
-					_localizedEntityService.SaveLocalizedValue(orderSettings, x => x.ReturnRequestActions, localized.ReturnRequestActions, localized.LanguageId);
-					_localizedEntityService.SaveLocalizedValue(orderSettings, x => x.ReturnRequestReasons, localized.ReturnRequestReasons, localized.LanguageId);
-				}
+			StoreDependingSettings.UpdateSettings(orderSettings, form, storeScope, _services.Settings);
 
-				if (model.GiftCards_Activated_OrderStatusId.HasValue)
-					_services.Settings.SaveSetting(orderSettings, x => x.GiftCards_Activated_OrderStatusId, 0, false);
-				else
-					_services.Settings.DeleteSetting(orderSettings, x => x.GiftCards_Activated_OrderStatusId);
+			_services.Settings.SaveSetting(orderSettings, x => x.ReturnRequestActions, 0, false);				
+			_services.Settings.SaveSetting(orderSettings, x => x.ReturnRequestReasons, 0, false);
 
-				if (model.GiftCards_Deactivated_OrderStatusId.HasValue)
-					_services.Settings.SaveSetting(orderSettings, x => x.GiftCards_Deactivated_OrderStatusId, 0, false);
-				else
-					_services.Settings.DeleteSetting(orderSettings, x => x.GiftCards_Deactivated_OrderStatusId);
-
-				//now clear settings cache
-				_services.Settings.ClearCache();
-
-                //order ident
-                if (model.OrderIdent.HasValue)
-                {
-                    try
-                    {
-                        _maintenanceService.SetTableIdent<Order>(model.OrderIdent.Value);
-                    }
-                    catch (Exception exc)
-                    {
-						NotifyError(exc.Message);
-                    }
-                }
-
-                //activity log
-                _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
-
-                NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
-            }
-            else
-            {
-				NotifyModelStateErrors();
+			foreach (var localized in model.Locales)
+			{
+				_localizedEntityService.SaveLocalizedValue(orderSettings, x => x.ReturnRequestActions, localized.ReturnRequestActions, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(orderSettings, x => x.ReturnRequestReasons, localized.ReturnRequestReasons, localized.LanguageId);
 			}
+
+			if (model.GiftCards_Activated_OrderStatusId.HasValue)
+				_services.Settings.SaveSetting(orderSettings, x => x.GiftCards_Activated_OrderStatusId, 0, false);
+			else
+				_services.Settings.DeleteSetting(orderSettings, x => x.GiftCards_Activated_OrderStatusId);
+
+			if (model.GiftCards_Deactivated_OrderStatusId.HasValue)
+				_services.Settings.SaveSetting(orderSettings, x => x.GiftCards_Deactivated_OrderStatusId, 0, false);
+			else
+				_services.Settings.DeleteSetting(orderSettings, x => x.GiftCards_Deactivated_OrderStatusId);
+
+			//now clear settings cache
+			_services.Settings.ClearCache();
+
+            //order ident
+            if (model.OrderIdent.HasValue)
+            {
+                try
+                {
+                    _maintenanceService.SetTableIdent<Order>(model.OrderIdent.Value);
+                }
+                catch (Exception exc)
+                {
+					NotifyError(exc.Message);
+                }
+            }
+
+            //activity log
+            _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
+
+            NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
 
             return RedirectToAction("Order");
         }
@@ -796,14 +773,21 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
+			var allLanguages = _languageService.GetAllLanguages(true);
 			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
 			var shoppingCartSettings = _services.Settings.LoadSetting<ShoppingCartSettings>(storeScope);
 
 			var model = shoppingCartSettings.ToModel();
 
 			model.AvailableNewsLetterSubscriptions = shoppingCartSettings.NewsLetterSubscription.ToSelectList();
+			model.AvailableThirdPartyEmailHandOver = shoppingCartSettings.ThirdPartyEmailHandOver.ToSelectList();
 
 			StoreDependingSettings.GetOverrideKeys(shoppingCartSettings, model, storeScope, _services.Settings);
+
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			{
+				locale.ThirdPartyEmailHandOverLabel = shoppingCartSettings.GetLocalized(x => x.ThirdPartyEmailHandOverLabel, languageId, false, false);
+			});
 
 			return View(model);
         }
@@ -813,20 +797,29 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			//load settings for a chosen store scope
+			if (!ModelState.IsValid)
+				return ShoppingCart();
+
+			ModelState.Clear();
+
 			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
 			var shoppingCartSettings = _services.Settings.LoadSetting<ShoppingCartSettings>(storeScope);
 			shoppingCartSettings = model.ToEntity(shoppingCartSettings);
 
 			StoreDependingSettings.UpdateSettings(shoppingCartSettings, form, storeScope, _services.Settings);
 
-			//now clear settings cache
+			_services.Settings.SaveSetting(shoppingCartSettings, x => x.ThirdPartyEmailHandOverLabel, 0, false);
+
+			foreach (var localized in model.Locales)
+			{
+				_localizedEntityService.SaveLocalizedValue(shoppingCartSettings, x => x.ThirdPartyEmailHandOverLabel, localized.ThirdPartyEmailHandOverLabel, localized.LanguageId);
+			}
+
 			_services.Settings.ClearCache();
             
-            //activity log
-            _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
+            _customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 
-            NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(T("Admin.Configuration.Updated"));
             return RedirectToAction("ShoppingCart");
         }
 
@@ -952,8 +945,8 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.GetOverrideKeys(externalAuthenticationSettings, model.ExternalAuthenticationSettings, storeScope, _services.Settings, false);
 
-            model.CustomerSettings.AvailableCustomerNumberMethods = customerSettings.CustomerNumberMethod.ToSelectList();
-            model.CustomerSettings.AvailableCustomerNumberVisibilities = customerSettings.CustomerNumberVisibility.ToSelectList();
+            model.CustomerSettings.AvailableCustomerNumberMethods = customerSettings.CustomerNumberMethod.ToSelectList(false);
+            model.CustomerSettings.AvailableCustomerNumberVisibilities = customerSettings.CustomerNumberVisibility.ToSelectList(false);
 
 			model.CustomerSettings.AvailableRegisterCustomerRoles = allCustomerRoles
 				.Where(x => x.SystemName != SystemCustomerRoleNames.Registered && x.SystemName != SystemCustomerRoleNames.Guests)
@@ -1570,27 +1563,25 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
 				return AccessDeniedView();
 
-			if (ModelState.IsValid)
-			{
-				var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-				var settings = _services.Settings.LoadSetting<DataExchangeSettings>(storeScope);
+			if (!ModelState.IsValid)
+				return DataExchange();
 
-				settings.MaxFileNameLength = model.MaxFileNameLength;
-				settings.ImageImportFolder = model.ImageImportFolder;
-				settings.ImageDownloadTimeout = model.ImageDownloadTimeout;
+			ModelState.Clear();
 
-				StoreDependingSettings.UpdateSettings(settings, form, storeScope, _services.Settings);
+			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var settings = _services.Settings.LoadSetting<DataExchangeSettings>(storeScope);
 
-				_services.Settings.ClearCache();
+			settings.MaxFileNameLength = model.MaxFileNameLength;
+			settings.ImageImportFolder = model.ImageImportFolder;
+			settings.ImageDownloadTimeout = model.ImageDownloadTimeout;
 
-				_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
+			StoreDependingSettings.UpdateSettings(settings, form, storeScope, _services.Settings);
 
-				NotifySuccess(T("Admin.Configuration.Updated"));
-			}
-			else
-			{
-				NotifyModelStateErrors();
-			}
+			_services.Settings.ClearCache();
+
+			_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
+
+			NotifySuccess(T("Admin.Configuration.Updated"));
 
 			return RedirectToAction("DataExchange");
 		}

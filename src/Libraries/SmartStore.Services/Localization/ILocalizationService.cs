@@ -117,9 +117,10 @@ namespace SmartStore.Services.Localization
 		/// <param name="language">Language</param>
 		/// <param name="xmlDocument">XML document</param>
 		/// <param name="rootKey">Prefix for resource key name</param>
-        /// <param name="mode">Specifies whether resource should be inserted or updated (or both)</param>
-        /// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>
-        void ImportResourcesFromXml(Language language,
+		/// <param name="mode">Specifies whether resource should be inserted or updated (or both)</param>
+		/// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>
+		/// <returns>The number of processed (added or updated) resource entries</returns>
+		int ImportResourcesFromXml(Language language,
             XmlDocument xmlDocument,
             string rootKey = null,
             bool sourceIsPlugin = false,
@@ -131,11 +132,14 @@ namespace SmartStore.Services.Localization
 		/// </summary>
 		/// <remarks>codehint: sm-add</remarks>
 		/// <param name="pluginDescriptor">Descriptor of the plugin</param>
-		/// <param name="forceToList">Load them into list rather than into database</param>
+		/// <param name="targetList">Load them into the passed list rather than into database</param>
 		/// <param name="updateTouchedResources">Specifies whether user touched resources should also be updated</param>	
 		/// <param name="filterLanguages">Import only files for particular languages</param>
-		void ImportPluginResourcesFromXml(PluginDescriptor pluginDescriptor,
-			List<LocaleStringResource> forceToList = null, bool updateTouchedResources = true, IList<Language> filterLanguages = null);
+		void ImportPluginResourcesFromXml(
+			PluginDescriptor pluginDescriptor,
+			IList<LocaleStringResource> targetList = null, 
+			bool updateTouchedResources = true, 
+			IList<Language> filterLanguages = null);
 
         /// <summary>
         /// Flattens all nested <c>LocaleResource</c> child nodes into a new document

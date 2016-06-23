@@ -1,5 +1,5 @@
 ﻿@using Telerik.Web.Mvc.UI
-
+@model CheckoutAttributeListModel
 @{
     ViewBag.Title = T("Admin.Catalog.Attributes.CheckoutAttributes").Text;
 }
@@ -8,7 +8,9 @@
         @T("Admin.Catalog.Attributes.CheckoutAttributes")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")
+		</a>
     </div>
 </div>
 <script>
@@ -26,31 +28,24 @@
 				.Columns(columns =>
 				{
 					columns.Bound(x => x.Name)
-						.Width(300)
-						.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+						.Width(500)
 						.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
-					columns.Bound(x => x.AttributeControlTypeName)
-						.Width(150);
+					columns.Bound(x => x.TextPrompt);
+					columns.Bound(x => x.AttributeControlTypeName);
 					columns.Bound(x => x.IsActive)
-						.Width(100)
-						.Template(item => @Html.SymbolForBool(item.IsActive))
 						.ClientTemplate(@Html.SymbolForBool("IsActive"))
 						.Centered();
 					columns.Bound(x => x.IsRequired)
-						.Width(100)
-						.Template(item => @Html.SymbolForBool(item.IsRequired))
 						.ClientTemplate(@Html.SymbolForBool("IsRequired"))
 						.Centered();
 					columns.Bound(x => x.DisplayOrder)
-						.Width(100)
 						.Centered();
-					columns.Bound(x => x.Id)
-						.Width(50)
-						.Centered()
-						.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-						.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-						.Title(T("Admin.Common.Edit").Text);
+					columns.Bound(x => x.LimitedToStores)
+						.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+						.Hidden(Model.AvailableStores.Count <= 1)
+						.Centered();
 				})
+				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 				.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "CheckoutAttribute"))
 				.ClientEvents(events => events.OnRowDataBound("checkoutAttributesGrid_onRowDataBound"))
 				.EnableCustomBinding(true))

@@ -141,12 +141,12 @@ namespace SmartStore.Services.Stores
 			{
 				if (selectedStoreIds != null && selectedStoreIds.Contains(store.Id))
 				{
-					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
+					if (!existingStoreMappings.Any(x => x.StoreId == store.Id))
 						InsertStoreMapping(entity, store.Id);
 				}
 				else
 				{
-					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
+					var storeMappingToDelete = existingStoreMappings.FirstOrDefault(x => x.StoreId == store.Id);
 					if (storeMappingToDelete != null)
 						DeleteStoreMapping(storeMappingToDelete);
 				}
@@ -185,7 +185,7 @@ namespace SmartStore.Services.Stores
 			int entityId = entity.Id;
 			string entityName = typeof(T).Name;
 
-			var storeMapping = new StoreMapping()
+			var storeMapping = new StoreMapping
 			{
 				EntityId = entityId,
 				EntityName = entityName,

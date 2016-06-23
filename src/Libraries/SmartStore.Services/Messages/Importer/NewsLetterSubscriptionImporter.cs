@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.DataExchange;
@@ -37,25 +36,23 @@ namespace SmartStore.Services.Messages.Importer
 			}
 		}
 
-		public void Execute(IImportExecuteContext context)
+		public void Execute(ImportExecuteContext context)
 		{
 			var utcNow = DateTime.UtcNow;
 			var currentStoreId = _services.StoreContext.CurrentStore.Id;
 
-			var toAdd = new List<NewsLetterSubscription>();
-			var toUpdate = new List<NewsLetterSubscription>();
-
 			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
-				var segmenter = context.GetSegmenter<NewsLetterSubscription>();
+				var segmenter = context.DataSegmenter;
 
 				context.Result.TotalRecords = segmenter.TotalRows;
 
 				while (context.Abort == DataExchangeAbortion.None && segmenter.ReadNextBatch())
 				{
-					var batch = segmenter.CurrentBatch;
+					var batch = segmenter.GetCurrentBatch<NewsLetterSubscription>();
 
-					_subscriptionRepository.Context.DetachAll(false);
+					// Perf: detach all entities
+					_subscriptionRepository.Context.DetachEntities<NewsLetterSubscription>(false);
 
 					context.SetProgress(segmenter.CurrentSegmentFirstRowIndex - 1, segmenter.TotalRows);
 
@@ -63,12 +60,22 @@ namespace SmartStore.Services.Messages.Importer
 					{
 						try
 						{
+							var active = true;
 							var email = row.GetDataValue<string>("Email");
-							var active = row.GetDataValue<bool>("Active");
 							var storeId = row.GetDataValue<int>("StoreId");
 
 							if (storeId == 0)
+							{
 								storeId = currentStoreId;
+							}
+
+							if (row.HasDataValue("Active") && row.TryGetDataValue("Active", out active))
+							{
+							}
+							else
+							{
+								active = true;	// default
+							}
 
 							if (email.IsEmpty())
 							{
@@ -122,32 +129,25 @@ namespace SmartStore.Services.Messages.Importer
 									StoreId = storeId
 								};
 
-								toAdd.Add(subscription);
-								++context.Result.NewRecords;
+								_subscriptionRepository.Insert(subscription);
+								context.Result.NewRecords++;
 							}
 							else
 							{
 								subscription.Active = active;
 
-								toUpdate.Add(subscription);
-								++context.Result.ModifiedRecords;
+								_subscriptionRepository.Update(subscription);
+								context.Result.ModifiedRecords++;
 							}
-
-							// insert new subscribers
-							_subscriptionRepository.AutoCommitEnabled = true;
-							_subscriptionRepository.InsertRange(toAdd, 500);
-							toAdd.Clear();
-
-							// update modified subscribers
-							_subscriptionRepository.UpdateRange(toUpdate);
-							toUpdate.Clear();
 						}
 						catch (Exception exception)
 						{
 							context.Result.AddError(exception.ToAllMessages(), row.GetRowInfo());
 						}
-					}
-				}
+					} // for
+
+					_subscriptionRepository.Context.SaveChanges();
+				} // while
 			}
 		}
 	}

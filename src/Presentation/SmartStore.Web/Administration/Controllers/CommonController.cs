@@ -519,36 +519,47 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			// sitemap reachability
-			var sitemapReachable = false;
+			string sitemapUrl = null;
 			try
 			{
-				var sitemapUrl = Url.RouteUrl("SitemapSEO", (object)null, _securitySettings.Value.ForceSslForAllPages ? "https" : "http");
-				var request = (HttpWebRequest)WebRequest.Create(sitemapUrl);
+				sitemapUrl = WebHelper.GetAbsoluteUrl(Url.RouteUrl("SitemapSEO"), this.Request);
+				var request = WebHelper.CreateHttpRequestForSafeLocalCall(new Uri(sitemapUrl));
 				request.Method = "HEAD";
 				request.Timeout = 15000;
 
 				using (var response = (HttpWebResponse)request.GetResponse())
 				{
-					sitemapReachable = (response.StatusCode == HttpStatusCode.OK);
+					var status = response.StatusCode;
+					var warningModel = new SystemWarningModel();
+					warningModel.Level = (status == HttpStatusCode.OK ? SystemWarningLevel.Pass : SystemWarningLevel.Warning);
+
+					switch (status)
+					{
+						case HttpStatusCode.OK:
+							warningModel.Text = T("Admin.System.Warnings.SitemapReachable.OK");
+							break;
+						default:
+							if (status == HttpStatusCode.MethodNotAllowed)
+								warningModel.Text = T("Admin.System.Warnings.SitemapReachable.MethodNotAllowed");
+							else
+								warningModel.Text = T("Admin.System.Warnings.SitemapReachable.Wrong");
+
+							warningModel.Text = string.Concat(warningModel.Text, " ", T("Admin.Common.HttpStatus", (int)status, status.ToString()));
+							break;
+					}
+
+					model.Add(warningModel);
 				}
 			}
-			catch (WebException) { }
-
-			if (sitemapReachable)
-			{
-				model.Add(new SystemWarningModel
-				{
-					Level = SystemWarningLevel.Pass,
-					Text = _localizationService.GetResource("Admin.System.Warnings.SitemapReachable.OK")
-				});
-			}
-			else
+			catch (WebException exception)
 			{
 				model.Add(new SystemWarningModel
 				{
 					Level = SystemWarningLevel.Warning,
-					Text = _localizationService.GetResource("Admin.System.Warnings.SitemapReachable.Wrong")
+					Text = T("Admin.System.Warnings.SitemapReachable.Wrong")
 				});
+
+				Logger.Warning(sitemapUrl.IsEmpty() ? "SitemapSEO" : sitemapUrl, exception);
 			}
 
             //primary exchange rate currency

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
@@ -13,6 +14,8 @@ namespace SmartStore.Admin.Models.DataExchange
 	public class ExportDeploymentModel : EntityModelBase
 	{
 		public int ProfileId { get; set; }
+		public bool CreateZip { get; set; }
+		public string PublicFolderUrl { get; set; }
 
 		[SmartResourceDisplayName("Common.Image")]
 		public string ThumbnailUrl { get; set; }
@@ -29,32 +32,6 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.DeploymentType")]
 		public string DeploymentTypeName { get; set; }
-
-		public string DeploymentTypeIconClass
-		{
-			get
-			{
-				switch (DeploymentType)
-				{
-					case ExportDeploymentType.FileSystem:
-						return "fa-folder-open-o";
-					case ExportDeploymentType.Email:
-						return "fa-envelope-o";
-					case ExportDeploymentType.Http:
-						return "fa-globe";
-					case ExportDeploymentType.Ftp:
-						return "fa-files-o";
-					default:
-						return "fa-question";
-				}
-			}
-		}
-
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.CreateZip")]
-		public bool CreateZip { get; set; }
-
-		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.IsPublic")]
-		public bool IsPublic { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.Username")]
 		public string Username { get; set; }
@@ -73,6 +50,9 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.FileSystemPath")]
 		public string FileSystemPath { get; set; }
 
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.SubFolder")]
+		public string SubFolder { get; set; }
+
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.EmailAddresses")]
 		public string EmailAddresses { get; set; }
 		public string SerializedEmailAddresses { get; set; }
@@ -90,6 +70,20 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.UseSsl")]
 		public bool UseSsl { get; set; }
 
-		public ExportProfileDetailsModel ProfileDetails { get; set; }
+		public LastResultInfo LastResult { get; set; }
+
+		public int FileCount { get; set; }
+
+		public class LastResultInfo
+		{
+			public DateTime Execution { get; set; }
+			public string ExecutionPretty { get; set; }
+			public string Error { get; set; }
+
+			public bool Succeeded
+			{
+				get { return Error.IsEmpty(); }
+			}
+		}
 	}
 }

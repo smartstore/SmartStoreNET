@@ -29,6 +29,7 @@
 
             <input type="hidden" id="customercommenthidden" name="customercommenthidden" />
 			<input type="hidden" id="SubscribeToNewsLetterHidden" name="SubscribeToNewsLetterHidden" />
+			<input type="hidden" id="AcceptThirdPartyEmailHandOverHidden" name="AcceptThirdPartyEmailHandOverHidden" />
 
 			if (Model.TermsOfServiceEnabled)
 			{
@@ -118,6 +119,7 @@
 
                             	$("#customercommenthidden").val($("#CustomerComment").val());
                             	$('#SubscribeToNewsLetterHidden').val($('input[name=SubscribeToNewsLetter]').is(':checked'));
+                            	$('#AcceptThirdPartyEmailHandOverHidden').val($('input[name=AcceptThirdPartyEmailHandOver]').is(':checked'));
 
 								// terms of services
                                 @if (Model.TermsOfServiceEnabled)

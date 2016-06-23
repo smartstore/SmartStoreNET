@@ -1,29 +1,29 @@
 ﻿using System;
-using System.Web;
-using System.Threading;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
+using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 using System.Web.Mvc.Html;
+using System.Web.Routing;
 using System.Web.WebPages;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
-using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.UI;
-using SmartStore.Web.Framework.Settings;
 using SmartStore.Utilities;
-using SmartStore.Core.Domain.Catalog;
+using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.Settings;
+using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Framework
 {
 
-    public enum InputEditorType
+	public enum InputEditorType
     {   TextBox,
         Password,
         Hidden,
@@ -447,8 +447,12 @@ namespace SmartStore.Web.Framework
             {
                 return html.HiddenFor(expression);
             }
-            
-            var sb = new StringBuilder("<div class='control-group'>");
+
+			string inputHtml = "";
+			var htmlAttributes = new RouteValueDictionary();
+			var dataTypeName = ModelMetadata.FromLambdaExpression(expression, html.ViewData).DataTypeName.EmptyNull();
+
+			var sb = new StringBuilder("<div class='control-group'>");
 
             if (editorType != InputEditorType.Checkbox)
             {
@@ -458,14 +462,23 @@ namespace SmartStore.Web.Framework
             }
 
             sb.AppendLine("<div class='controls'>");
-            string inputHtml = "";
-            object attrs = null;
+
             if (!required && (editorType == InputEditorType.TextBox || editorType == InputEditorType.Password))
             {
-                attrs = new { placeholder = "Optional" /* TODO: Loc */  };
+				htmlAttributes.Add("placeholder", EngineContext.Current.Resolve<ILocalizationService>().GetResource("Common.Optional"));
             }
-            //var x = ModelMetadata.FromLambdaExpression(expression, html.ViewData).DisplayName;
-            switch (editorType)
+
+			switch (dataTypeName)
+			{
+				case "EmailAddress":
+					htmlAttributes.Add("type", "email");
+					break;
+				case "PhoneNumber":
+					htmlAttributes.Add("type", "tel");
+					break;
+			}
+
+			switch (editorType)
             {
                 case InputEditorType.Checkbox:
                     inputHtml = string.Format("<label class='checkbox'>{0} {1}</label>",
@@ -473,12 +486,13 @@ namespace SmartStore.Web.Framework
                         ModelMetadata.FromLambdaExpression(expression, html.ViewData).DisplayName); // TBD: ist das OK so?
                     break;
                 case InputEditorType.Password:
-                    inputHtml = html.PasswordFor(expression, attrs).ToString();
+                    inputHtml = html.PasswordFor(expression, htmlAttributes).ToString();
                     break;
                 default:
-                    inputHtml = html.TextBoxFor(expression, attrs).ToString();
+                    inputHtml = html.TextBoxFor(expression, htmlAttributes).ToString();
                     break;
             }
+
             sb.AppendLine(inputHtml);
             sb.AppendLine(html.ValidationMessageFor(expression).ToString());
             if (helpHint.HasValue())

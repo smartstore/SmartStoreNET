@@ -22,6 +22,38 @@
 	    /* [...] */
 	};
 
+	$.fn.doPostData = function (options) {
+		function createAndSubmitForm() {
+			var id = 'DynamicForm_' + Math.random().toString().substring(2),
+				form = '<form id="' + id + '" action="' + options.url + '" method="' + options.type + '">';
+
+			if (!_.isUndefined(options.data)) {
+				$.each(options.data, function (key, val) {
+					form += '<input type="hidden" name="' + key + '" value="' + $('<div/>').text(val).html() + '" />';
+				});
+			}
+
+			form += '</form>';
+
+			$('body').append(form);
+			$('#' + id).submit();
+		}
+
+		normalizeOptions(this, options);
+
+		if (_.isEmpty(options.url)) {
+			console.log('doPostData can\'t find the url!');
+		}
+		else if (_.isEmpty(options.ask)) {
+			createAndSubmitForm();
+		}
+		else if (confirm(options.ask)) {
+			createAndSubmitForm();
+		}
+
+		return this.each(function () { });
+	}
+
 
 	function normalizeOptions(element, opt) {
 		opt.ask = (_.isUndefined(opt.ask) ? $(element).attr('data-ask') : opt.ask);

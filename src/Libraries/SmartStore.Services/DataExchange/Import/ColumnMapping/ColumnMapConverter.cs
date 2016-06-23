@@ -27,12 +27,12 @@ namespace SmartStore.Services.DataExchange.Import
 		{
 			if (value is string)
 			{
-				var dict = JsonConvert.DeserializeObject<Dictionary<string, ColumnMappingValue>>((string)value);
+				var dict = JsonConvert.DeserializeObject<Dictionary<string, ColumnMappingItem>>((string)value);
 				var map = new ColumnMap();
 
 				foreach (var kvp in dict)
 				{
-					map.AddMapping(kvp.Key, null, kvp.Value.Property, kvp.Value.Default);
+					map.AddMapping(kvp.Key, null, kvp.Value.MappedName, kvp.Value.Default);
 				}
 
 				return map;

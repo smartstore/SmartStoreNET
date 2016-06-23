@@ -73,6 +73,8 @@ namespace SmartStore.Core.Email
 
 			smtpClient.UseDefaultCredentials = this.UseDefaultCredentials;
 			smtpClient.EnableSsl = this.EnableSsl;
+			smtpClient.Timeout = 10000;
+
 			if (this.UseDefaultCredentials)
 			{
 				smtpClient.Credentials = CredentialCache.DefaultNetworkCredentials;

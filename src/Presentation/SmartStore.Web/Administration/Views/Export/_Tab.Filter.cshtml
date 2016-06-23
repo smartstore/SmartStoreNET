@@ -103,8 +103,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.CategoryIds,
-						new MultiSelectList(Model.Filter.AvailableCategories, "Value", "Text"),
-						new { multiple = "multiple" })
+					 new MultiSelectList(Model.Filter.AvailableCategories, "Value", "Text"),
+					 new { multiple = "multiple" })
 				@Html.ValidationMessageFor(x => x.Filter.CategoryIds)
 			</td>
 		</tr>
@@ -142,6 +142,96 @@
 			<td class="adminData">
 				@Html.EditorFor(x => x.Filter.FeaturedProducts)
 				@Html.ValidationMessageFor(x => x.Filter.FeaturedProducts)
+			</td>
+		</tr>
+	}
+	else if (Model.Provider.EntityType == ExportEntityType.Customer)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.IsActiveCustomer)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Filter.IsActiveCustomer)
+				@Html.ValidationMessageFor(x => x.Filter.IsActiveCustomer)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.IsTaxExempt)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Filter.IsTaxExempt)
+				@Html.ValidationMessageFor(x => x.Filter.IsTaxExempt)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.CustomerRoleIds)
+			</td>
+			<td class="adminData">
+				@Html.ListBoxFor(x => x.Filter.CustomerRoleIds,
+					 new MultiSelectList(Model.Filter.AvailableCustomerRoles, "Value", "Text"),
+					 new { multiple = "multiple", @class = "control-xlarge" })
+				@Html.ValidationMessageFor(x => x.Filter.CustomerRoleIds)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.BillingCountryIds)
+			</td>
+			<td class="adminData">
+				@Html.ListBoxFor(x => x.Filter.BillingCountryIds,
+					 new MultiSelectList(Model.Filter.AvailableCountries, "Value", "Text"),
+					 new { multiple = "multiple", @class = "control-xlarge" })
+				@Html.ValidationMessageFor(x => x.Filter.BillingCountryIds)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.ShippingCountryIds)
+			</td>
+			<td class="adminData">
+				@Html.ListBoxFor(x => x.Filter.ShippingCountryIds,
+					 new MultiSelectList(Model.Filter.AvailableCountries, "Value", "Text"),
+					 new { multiple = "multiple", @class = "control-xlarge" })
+				@Html.ValidationMessageFor(x => x.Filter.ShippingCountryIds)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.LastActivityFrom)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Filter.LastActivityFrom)
+				@Html.ValidationMessageFor(x => x.Filter.LastActivityFrom)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.LastActivityTo)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Filter.LastActivityTo)
+				@Html.ValidationMessageFor(x => x.Filter.LastActivityTo)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.HasSpentAtLeastAmount)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Filter.HasSpentAtLeastAmount)
+				@Html.ValidationMessageFor(x => x.Filter.HasSpentAtLeastAmount)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.HasPlacedAtLeastOrders)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Filter.HasPlacedAtLeastOrders)
+				@Html.ValidationMessageFor(x => x.Filter.HasPlacedAtLeastOrders)
 			</td>
 		</tr>
 	}
@@ -183,8 +273,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.OrderStatusIds,
-						new MultiSelectList(Model.Filter.AvailableOrderStates, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-xlarge" })
+					 new MultiSelectList(Model.Filter.AvailableOrderStates, "Value", "Text"),
+					 new { multiple = "multiple", @class = "control-xlarge" })
 				@Html.ValidationMessageFor(x => x.Filter.OrderStatusIds)
 			</td>
 		</tr>
@@ -194,8 +284,8 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.PaymentStatusIds,
-						new MultiSelectList(Model.Filter.AvailablePaymentStates, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-xlarge" })
+					 new MultiSelectList(Model.Filter.AvailablePaymentStates, "Value", "Text"),
+					 new { multiple = "multiple", @class = "control-xlarge" })
 				@Html.ValidationMessageFor(x => x.Filter.PaymentStatusIds)
 			</td>
 		</tr>
@@ -205,20 +295,39 @@
 			</td>
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.Filter.ShippingStatusIds,
-						new MultiSelectList(Model.Filter.AvailableShippingStates, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-xlarge" })
+					 new MultiSelectList(Model.Filter.AvailableShippingStates, "Value", "Text"),
+					 new { multiple = "multiple", @class = "control-xlarge" })
 				@Html.ValidationMessageFor(x => x.Filter.ShippingStatusIds)
+			</td>
+		</tr>
+	}
+	else if (Model.Provider.EntityType == ExportEntityType.NewsLetterSubscription)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.IsActiveSubscriber)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Filter.IsActiveSubscriber)
+				@Html.ValidationMessageFor(x => x.Filter.IsActiveSubscriber)
 			</td>
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Filter.CustomerRoleIds)
+				@Html.SmartLabelFor(x => x.Filter.CreatedFrom)
 			</td>
 			<td class="adminData">
-				@Html.ListBoxFor(x => x.Filter.CustomerRoleIds,
-						new MultiSelectList(Model.Filter.AvailableCustomerRoles, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-xlarge" })
-				@Html.ValidationMessageFor(x => x.Filter.CustomerRoleIds)
+				@Html.EditorFor(x => x.Filter.CreatedFrom)
+				@Html.ValidationMessageFor(x => x.Filter.CreatedFrom)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.CreatedTo)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Filter.CreatedTo)
+				@Html.ValidationMessageFor(x => x.Filter.CreatedTo)
 			</td>
 		</tr>
 	}

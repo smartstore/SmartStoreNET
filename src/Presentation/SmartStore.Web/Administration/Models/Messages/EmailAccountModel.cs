@@ -48,5 +48,7 @@ namespace SmartStore.Admin.Models.Messages
         [AllowHtml]
         public string SendTestEmailTo { get; set; }
 
-    }
+		public string TestEmailShortErrorMessage { get; set; }
+		public string TestEmailFullErrorMessage { get; set; }
+	}
 }

@@ -680,21 +680,29 @@ namespace SmartStore.Web.Controllers
 			if (IsUnauthorizedOrder(order))
 				return new HttpUnauthorizedResult();
 
-			if (_paymentService.CanRePostProcessPayment(order))
+			try
 			{
-				var postProcessPaymentRequest = new PostProcessPaymentRequest
+				if (_paymentService.CanRePostProcessPayment(order))
 				{
-					Order = order,
-					IsRePostProcessPayment = true
-				};
+					var postProcessPaymentRequest = new PostProcessPaymentRequest
+					{
+						Order = order,
+						IsRePostProcessPayment = true
+					};
 
-				_paymentService.PostProcessPayment(postProcessPaymentRequest);
+					_paymentService.PostProcessPayment(postProcessPaymentRequest);
 
-				if (postProcessPaymentRequest.RedirectUrl.HasValue())
-				{
-					return Redirect(postProcessPaymentRequest.RedirectUrl);
+					if (postProcessPaymentRequest.RedirectUrl.HasValue())
+					{
+						return Redirect(postProcessPaymentRequest.RedirectUrl);
+					}
 				}
 			}
+			catch (Exception exception)
+			{
+				NotifyError(exception);
+			}
+
 			return RedirectToAction("Details", "Order", new { id = order.Id });
         }
 

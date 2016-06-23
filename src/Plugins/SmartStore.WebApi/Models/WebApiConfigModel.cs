@@ -18,7 +18,10 @@ namespace SmartStore.WebApi.Models
 		[SmartResourceDisplayName("Plugins.Api.WebApi.NoRequestTimestampValidation")]
 		public bool NoRequestTimestampValidation { get; set; }
 
-        [SmartResourceDisplayName("Plugins.Api.WebApi.LogUnauthorized")]
+		[SmartResourceDisplayName("Plugins.Api.WebApi.AllowEmptyMd5Hash")]
+		public bool AllowEmptyMd5Hash { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Api.WebApi.LogUnauthorized")]
 		public bool LogUnauthorized { get; set; }
 
 		public int GridPageSize { get; set; }
@@ -29,12 +32,14 @@ namespace SmartStore.WebApi.Models
 			{
 				ValidMinutePeriod = settings.ValidMinutePeriod;
 				NoRequestTimestampValidation = settings.NoRequestTimestampValidation;
+				AllowEmptyMd5Hash = settings.AllowEmptyMd5Hash;
 				LogUnauthorized = settings.LogUnauthorized;
 			}
 			else
 			{
 				settings.ValidMinutePeriod = ValidMinutePeriod;
 				settings.NoRequestTimestampValidation = NoRequestTimestampValidation;
+				settings.AllowEmptyMd5Hash = AllowEmptyMd5Hash;
 				settings.LogUnauthorized = LogUnauthorized;
 			}
 		}

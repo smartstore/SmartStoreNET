@@ -234,16 +234,11 @@ namespace SmartStore.Admin.Controllers
                     model.LanguageName = lang.Name;
                 }
 
-                model.PictureUrl = _pictureService.GetPictureUrl(model.PictureId);            
+                model.PictureUrl = _pictureService.GetPictureUrl(model.PictureId);
 
-                //delete an old picture (if deleted or updated)
-                int prevPictureId = _contentSliderSettings.Slides[index].PictureId;
-                if (prevPictureId > 0 && prevPictureId != model.PictureId)
-                {
-                    var prevPicture = _pictureService.GetPictureById(prevPictureId);
-                    if (prevPicture != null)
-                        _pictureService.DeletePicture(prevPicture);
-                }
+				// delete an old picture (if deleted or updated)
+				int prevPictureId = _contentSliderSettings.Slides[index].PictureId;
+				MediaHelper.UpdatePictureTransientState(prevPictureId, model.PictureId, true);
 
                 _contentSliderSettings.Slides[index] = model.ToEntity();
                 _settingService.SaveSetting(_contentSliderSettings);

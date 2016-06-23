@@ -255,8 +255,8 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
                 return AccessDeniedView();
 
-            //restart application
-			_services.WebHelper.RestartAppDomain();
+            // restart application
+			_services.WebHelper.RestartAppDomain(aggressive: true);
 
             return RedirectToAction("List");
         }
@@ -574,12 +574,7 @@ namespace SmartStore.Admin.Controllers
 				NotifySuccess(T("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
 			}
 
-			if (returnUrl.IsEmpty())
-			{
-				return RedirectToAction("List");
-			}
-
-			return Redirect(returnUrl);
+			return RedirectToReferrer(returnUrl, () => RedirectToAction("List"));
 		}
 
 		public ActionResult UpdateAllStringResources()

@@ -322,9 +322,9 @@ namespace SmartStore.Web.Framework.Theming
             return defaultValue;
         }
 
-		public static string GenerateHelpUrl(string path)
+		public string GenerateHelpUrl(string path)
 		{
-			return SmartStoreVersion.GenerateHelpUrl(path);
+			return SmartStoreVersion.GenerateHelpUrl(WorkContext.WorkingLanguage.UniqueSeoCode, path);
 		}
 
         private void EnsureThemeContextInitialized()

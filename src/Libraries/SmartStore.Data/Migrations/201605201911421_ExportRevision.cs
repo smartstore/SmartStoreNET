@@ -174,6 +174,23 @@ namespace SmartStore.Data.Migrations
 				"This function is not available for guests.",
 				"Diese Funktion steht für Gäste nicht zur Verfügung.");
 
+            builder.AddOrUpdate("ContactUs.PrivacyAgreement",
+                "Privacy consent",
+                "Einwilligungserklärung Datenschutz");
+
+            builder.AddOrUpdate("ContactUs.PrivacyAgreement.MustBeAccepted",
+                "Please agree to the storage of your data.",
+                "Bitte stimmen Sie der Speicherung Ihrer Daten zu.");
+
+            builder.AddOrUpdate("ContactUs.PrivacyAgreement.DetailText",
+                "Yes I've read the <a href=\"{0}\">privacy terms</a> and agree that my data given by me can be stored electronically. My data will thereby only be used to process my inquiry.",
+                "Ja, ich habe die <a href=\"{0}\">Datenschutzerklärung</a> zur Kenntnis genommen und bin damit einverstanden, dass die von mir angegebenen Daten elektronisch erhoben und gespeichert werden. Meine Daten werden dabei nur zur Bearbeitung meiner Anfrage genutzt.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs",
+                "Get privacy consent for contact requests",
+                "Einwilligungserklärung im Kontaktformular fordern",
+                "Specifies whether a checkbox will be displayed on the contact page which requests the user to agree on storage of his data.",
+                "Bestimmt ob im Kontaktformular eine Checkbox angezeigt wird, die den Benutzer auffordert der Speicherung seiner Daten zuzustimmen.");
 
 
 			builder.Delete(

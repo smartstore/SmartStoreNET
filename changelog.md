@@ -19,6 +19,7 @@
 * #477 Implement option to specify the number of exported and imported pictures
 * #859 Make checkout attributes suitable for multi-stores
 * Product details: Select attribute and gift card values by query string parameters
+* #950 make contact form comply with current German law
 
 ### Improvements
 * Major improvements in Importer: better field mapping, higher performance, bug fixes etc.

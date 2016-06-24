@@ -39,6 +39,7 @@ namespace SmartStore.Web.Framework.Plugins
 				SetUserData(provider.Metadata);
 				return new Provider<TProvider>(provider);
 			}
+
 			return null;
 		}
 

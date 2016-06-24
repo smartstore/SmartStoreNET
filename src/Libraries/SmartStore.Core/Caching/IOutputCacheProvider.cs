@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Core.Caching
 {
-	public interface IOutputCacheProvider
+	public interface IOutputCacheProvider : IProvider
 	{
 		OutputCacheItem Get(string key);
 		void Set(string key, OutputCacheItem item);

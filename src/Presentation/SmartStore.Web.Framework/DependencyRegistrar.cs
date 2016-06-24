@@ -540,7 +540,6 @@ namespace SmartStore.Web.Framework
 		{
 			// Output cache
 			builder.RegisterType<DisplayedEntities>().As<IDisplayedEntities>().InstancePerRequest();
-			builder.RegisterType<NullOutputCacheProvider>().As<IOutputCacheProvider>().InstancePerRequest().PreserveExistingDefaults();
 
 			// Model/Business cache
 			builder.RegisterType<StaticCache>()
@@ -895,6 +894,7 @@ namespace SmartStore.Web.Framework
 				RegisterAsSpecificProvider<IExternalAuthenticationMethod>(type, systemName, registration);
 				RegisterAsSpecificProvider<IPaymentMethod>(type, systemName, registration);
 				RegisterAsSpecificProvider<IExportProvider>(type, systemName, registration);
+				RegisterAsSpecificProvider<IOutputCacheProvider>(type, systemName, registration);
 			}
 
 		}
@@ -1046,6 +1046,10 @@ namespace SmartStore.Web.Framework
 			else if (typeof(IExportProvider).IsAssignableFrom(implType))
 			{
 				return "Exporting";
+			}
+			else if (typeof(IOutputCacheProvider).IsAssignableFrom(implType))
+			{
+				return "OutputCache";
 			}
 
 			return null;

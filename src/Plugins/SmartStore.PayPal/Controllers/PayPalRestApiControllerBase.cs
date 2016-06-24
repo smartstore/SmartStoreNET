@@ -70,8 +70,7 @@ namespace SmartStore.PayPal.Controllers
 				if (result.Success)
 				{
 					settings.ExperienceProfileId = null;
-					Services.Settings.SaveSetting(settings, x => x.ExperienceProfileId, storeScope, false);
-					Services.Settings.ClearCache();					
+					Services.Settings.SaveSetting(settings, x => x.ExperienceProfileId, storeScope, true);				
 				}
 			}
 

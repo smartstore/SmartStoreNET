@@ -79,12 +79,14 @@ namespace SmartStore.PayPal.Controllers
 
             model.Copy(settings, false);
 
-			storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
+			using (_services.Settings.BeginBatch())
+			{
+				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
 
-			// multistore context not possible, see IPN handling
-			Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+				// multistore context not possible, see IPN handling
+				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+			}
 
-			Services.Settings.ClearCache();
             NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
             return Configure();

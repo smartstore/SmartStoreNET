@@ -116,21 +116,24 @@ namespace SmartStore.Web.Framework.Settings
             var settingName = settings.GetType().Name;
             var properties = FastProperty.GetProperties(localized == null ? settings.GetType() : localized.GetType()).Values;
 
-            foreach (var prop in properties)
-            {
-                var name = prop.Name;
-                var key = settingName + "." + name;
+			using (settingService.BeginBatch())
+			{
+				foreach (var prop in properties)
+				{
+					var name = prop.Name;
+					var key = settingName + "." + name;
 
-                if (storeId == 0 || IsOverrideChecked(key, form))
-                {
-                    dynamic value = prop.GetValue(localized == null ? settings : localized);
-                    settingService.SetSetting(key, value == null ? "" : value, storeId, false);
-                }
-                else if (storeId > 0)
-                {
-                    settingService.DeleteSetting(key, storeId);
-                }
-            }
+					if (storeId == 0 || IsOverrideChecked(key, form))
+					{
+						dynamic value = prop.GetValue(localized == null ? settings : localized);
+						settingService.SetSetting(key, value == null ? "" : value, storeId, false);
+					}
+					else if (storeId > 0)
+					{
+						settingService.DeleteSetting(key, storeId);
+					}
+				}
+			}
         }
 	}
 }

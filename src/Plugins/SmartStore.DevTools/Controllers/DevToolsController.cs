@@ -43,7 +43,6 @@ namespace SmartStore.DevTools.Controllers
 			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
 
 			storeDependingSettingHelper.UpdateSettings(model /*settings*/, form, storeScope, _services.Settings);
-			_services.Settings.ClearCache();
 
 			return Configure();
 		}

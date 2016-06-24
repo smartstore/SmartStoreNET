@@ -127,16 +127,17 @@ namespace SmartStore.Web.Framework.Plugins
 
 			var settingKey = metadata.SettingKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
 
-			if (value != null)
+			using (_services.Settings.BeginBatch())
 			{
-				_services.Settings.SetSetting<T>(settingKey, value, 0, false);
+				if (value != null)
+				{
+					_services.Settings.SetSetting<T>(settingKey, value, 0, false);
+				}
+				else
+				{
+					_services.Settings.DeleteSetting(settingKey);
+				}
 			}
-			else
-			{
-				_services.Settings.DeleteSetting(settingKey);
-			}
-			
-			_services.Settings.ClearCache();
 		}
 
 		public ProviderModel ToProviderModel(Provider<IProvider> provider, bool forEdit = false, Action<Provider<IProvider>, ProviderModel> enhancer = null)

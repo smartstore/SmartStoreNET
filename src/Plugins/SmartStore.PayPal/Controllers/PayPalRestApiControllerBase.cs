@@ -44,8 +44,7 @@ namespace SmartStore.PayPal.Controllers
 				if (result.Success && result.Id.HasValue())
 				{
 					settings.ExperienceProfileId = result.Id;
-					Services.Settings.SaveSetting(settings, x => x.ExperienceProfileId, storeScope, false);
-					Services.Settings.ClearCache();
+					Services.Settings.SaveSetting(settings, x => x.ExperienceProfileId, storeScope, true);
 				}
 			}
 
@@ -90,32 +89,32 @@ namespace SmartStore.PayPal.Controllers
 			var settings = Services.Settings.LoadSetting<TSetting>();
 			var session = new PayPalSessionData();
 
-			if (settings.WebhookId.HasValue())
+			using (Services.Settings.BeginBatch())
 			{
-				var unused = PayPalService.DeleteWebhook(settings, session);
-
-				Services.Settings.SaveSetting(settings, x => x.WebhookId, 0, false);
-			}
-
-			var url = Url.Action("Webhook", GetControllerName(), new { area = Plugin.SystemName }, "https");
-
-			var result = PayPalService.EnsureAccessToken(session, settings);
-			if (result.Success)
-			{
-				result = PayPalService.CreateWebhook(settings, session, url);
-				if (result.Success)
+				if (settings.WebhookId.HasValue())
 				{
-					settings.WebhookId = result.Id;
+					var unused = PayPalService.DeleteWebhook(settings, session);
 					Services.Settings.SaveSetting(settings, x => x.WebhookId, 0, false);
 				}
+
+				var url = Url.Action("Webhook", GetControllerName(), new { area = Plugin.SystemName }, "https");
+
+				var result = PayPalService.EnsureAccessToken(session, settings);
+				if (result.Success)
+				{
+					result = PayPalService.CreateWebhook(settings, session, url);
+					if (result.Success)
+					{
+						settings.WebhookId = result.Id;
+						Services.Settings.SaveSetting(settings, x => x.WebhookId, 0, false);
+					}
+				}
+
+				if (result.Success)
+					NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+				else
+					NotifyError(result.ErrorMessage);
 			}
-
-			Services.Settings.ClearCache();
-
-			if (result.Success)
-				NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
-			else
-				NotifyError(result.ErrorMessage);
 
 			return RedirectToAction("ConfigureProvider", "Plugin", new { area = "admin", systemName = SystemName });
 		}
@@ -135,8 +134,7 @@ namespace SmartStore.PayPal.Controllers
 					if (result.Success)
 					{
 						settings.WebhookId = null;
-						Services.Settings.SaveSetting(settings, x => x.WebhookId, 0, false);
-						Services.Settings.ClearCache();
+						Services.Settings.SaveSetting(settings, x => x.WebhookId, 0, true);
 					}
 				}
 

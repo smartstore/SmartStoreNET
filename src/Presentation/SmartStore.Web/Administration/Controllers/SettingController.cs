@@ -1228,7 +1228,7 @@ namespace SmartStore.Admin.Controllers
 				SeoHelper.ResetUserSeoCharacterTable();
 			}
 
-			//security settings
+			// security settings
 			var securitySettings = _services.Settings.LoadSetting<SecuritySettings>(storeScope);
 			if (securitySettings.AdminAreaAllowedIpAddresses == null)
 				securitySettings.AdminAreaAllowedIpAddresses = new List<string>();

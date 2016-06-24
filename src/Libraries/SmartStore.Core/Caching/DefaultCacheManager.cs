@@ -38,20 +38,23 @@ namespace SmartStore.Core.Caching
         public T Get<T>(string key, Func<T> acquirer, int? cacheTime = null)
         {
 			Guard.ArgumentNotEmpty(() => key);
-			
-			if (_cache.Contains(key))
-			{
-				return GetExisting<T>(key);
-			}
 
 			using (EnterReadLock())
 			{
-				if (!_cache.Contains(key))
+				if (_cache.Contains(key))
 				{
-					var value = acquirer();
-					this.Set(key, value, cacheTime);
+					return GetExisting<T>(key);
+				}
 
-					return value;
+				using (EnterWriteLock())
+				{
+					if (!_cache.Contains(key))
+					{
+						var value = acquirer();
+						this.Set(key, value, cacheTime);
+
+						return value;
+					}
 				}
 			}
 

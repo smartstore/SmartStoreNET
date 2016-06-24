@@ -14,7 +14,7 @@ namespace SmartStore.Core.Caching
     {
 		private ObjectCache _cache;
 
-        protected ObjectCache Cache
+		protected ObjectCache Cache
         {
             get
             {

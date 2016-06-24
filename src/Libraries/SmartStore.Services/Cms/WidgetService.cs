@@ -73,7 +73,7 @@ namespace SmartStore.Services.Cms
         {
 			var activeWidgets = _cacheManager.Get(WIDGETS_ACTIVE_KEY.FormatInvariant(storeId), () => {
 				var allWigets = LoadAllWidgets(storeId);
-				return allWigets.Where(p => _widgetSettings.ActiveWidgetSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase));			
+				return allWigets.Where(p => _widgetSettings.ActiveWidgetSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase)).ToList();			
 			});
 
 			return activeWidgets;

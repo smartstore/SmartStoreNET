@@ -418,7 +418,7 @@ namespace SmartStore.Web.Framework
 			{
 				model = model ?? helper.ViewData.Model;
 				var widgetSelector = EngineContext.Current.Resolve<IWidgetSelector>();
-				var widgets = widgetSelector.GetWidgets(widgetZone, model).ToArray();
+				var widgets = widgetSelector.GetWidgets(widgetZone, model).ToList();
 				if (widgets.Any())
 				{
 					var zoneModel = new WidgetZoneModel { Widgets = widgets, WidgetZone = widgetZone, Model = model };

@@ -113,8 +113,11 @@ namespace SmartStore.Web.Controllers
         #region Categories
 
         [RequireHttpsByConfigAttribute(SslRequirement.No)]
-        public ActionResult Category(int categoryId, CatalogPagingFilteringModel command, string filter)
+        public ActionResult Category(int categoryId, string filter)
         {
+			var command = new CatalogPagingFilteringModel();
+			TryUpdateModel<CatalogPagingFilteringModel>(command);
+
 			var category = _categoryService.GetCategoryById(categoryId);
             if (category == null || category.Deleted)
 				return HttpNotFound();
@@ -830,8 +833,11 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult RecentlyAddedProducts(CatalogPagingFilteringModel command)
+		public ActionResult RecentlyAddedProducts()
 		{
+			//var command = new CatalogPagingFilteringModel();
+			//TryUpdateModel<CatalogPagingFilteringModel>(command);
+
 			var model = new RecentlyAddedProductsModel();
 
 			if (_catalogSettings.RecentlyAddedProductsEnabled)

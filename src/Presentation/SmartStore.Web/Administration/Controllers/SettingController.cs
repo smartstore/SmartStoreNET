@@ -69,6 +69,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICommonServices _services;
 
 		private StoreDependingSettingHelper _storeDependingSettings;
+		private IDisposable _settingsWriteBatch;
 
 		#endregion
 
@@ -131,6 +132,27 @@ namespace SmartStore.Admin.Controllers
 		#endregion
 
 		#region Methods
+
+		protected override void OnActionExecuting(ActionExecutingContext filterContext)
+		{
+			if (filterContext.HttpContext.Request.HttpMethod.IsCaseInsensitiveEqual("POST"))
+			{
+				_settingsWriteBatch = _services.Settings.BeginBatch(true);
+			}
+
+			base.OnActionExecuting(filterContext);
+		}
+
+		protected override void OnActionExecuted(ActionExecutedContext filterContext)
+		{
+			if (_settingsWriteBatch != null)
+			{
+				_settingsWriteBatch.Dispose();
+				_settingsWriteBatch = null;
+			}
+
+			base.OnActionExecuted(filterContext);
+		}
 
 		[ChildActionOnly]
 		public ActionResult StoreScopeConfiguration()
@@ -203,9 +225,6 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.UpdateSettings(blogSettings, form, storeScope, _services.Settings);
 
-			//now clear settings cache
-			_services.Settings.ClearCache();
-
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
 
@@ -245,9 +264,6 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.UpdateSettings(forumSettings, form, storeScope, _services.Settings);
 
-			//now clear settings cache
-			_services.Settings.ClearCache();
-
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
 
@@ -284,9 +300,6 @@ namespace SmartStore.Admin.Controllers
 			newsSettings = model.ToEntity(newsSettings);
 
 			StoreDependingSettings.UpdateSettings(newsSettings, form, storeScope, _services.Settings);
-
-			//now clear settings cache
-			_services.Settings.ClearCache();
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
@@ -392,9 +405,6 @@ namespace SmartStore.Admin.Controllers
 				
 				_services.Settings.DeleteSetting(shippingSettings, x => x.ShippingOriginAddressId, storeScope);
 			}
-
-			//now clear settings cache
-			_services.Settings.ClearCache();
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
@@ -532,9 +542,6 @@ namespace SmartStore.Admin.Controllers
 				_services.Settings.DeleteSetting(taxSettings, x => x.DefaultTaxAddressId, storeScope);
 			}
 
-			//now clear settings cache
-			_services.Settings.ClearCache();
-
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
 
@@ -567,7 +574,7 @@ namespace SmartStore.Admin.Controllers
 				new SelectListItem { Value = "list", Text = _services.Localization.GetResource("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
 			);
 
-            //default sort order modes
+            // default sort order modes
             model.AvailableSortOrderModes = catalogSettings.DefaultSortOrder.ToSelectList();
 
 			var deliveryTimes = _deliveryTimesService.GetAllDeliveryTimes();
@@ -595,9 +602,6 @@ namespace SmartStore.Admin.Controllers
 			catalogSettings = model.ToEntity(catalogSettings);
 
 			StoreDependingSettings.UpdateSettings(catalogSettings, form, storeScope, _services.Settings);
-
-			//now clear settings cache
-			_services.Settings.ClearCache();
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
@@ -655,9 +659,6 @@ namespace SmartStore.Admin.Controllers
 
 			_services.Settings.UpdateSetting(rewardPointsSettings, x => x.PointsForPurchases_Amount, pointsForPurchases, storeScope);
 			_services.Settings.UpdateSetting(rewardPointsSettings, x => x.PointsForPurchases_Points, pointsForPurchases, storeScope);
-
-			//now clear settings cache
-			_services.Settings.ClearCache();
 
 			//activity log
 			_customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
@@ -741,9 +742,6 @@ namespace SmartStore.Admin.Controllers
 			else
 				_services.Settings.DeleteSetting(orderSettings, x => x.GiftCards_Deactivated_OrderStatusId);
 
-			//now clear settings cache
-			_services.Settings.ClearCache();
-
             //order ident
             if (model.OrderIdent.HasValue)
             {
@@ -814,8 +812,6 @@ namespace SmartStore.Admin.Controllers
 			{
 				_localizedEntityService.SaveLocalizedValue(shoppingCartSettings, x => x.ThirdPartyEmailHandOverLabel, localized.ThirdPartyEmailHandOverLabel, localized.LanguageId);
 			}
-
-			_services.Settings.ClearCache();
             
             _customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 
@@ -873,9 +869,6 @@ namespace SmartStore.Admin.Controllers
 			mediaSettings = model.ToEntity(mediaSettings);
 
 			StoreDependingSettings.UpdateSettings(mediaSettings, form, storeScope, _services.Settings);
-
-			//now clear settings cache
-			_services.Settings.ClearCache();
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
@@ -986,9 +979,6 @@ namespace SmartStore.Admin.Controllers
             externalAuthenticationSettings.AutoRegisterEnabled = model.ExternalAuthenticationSettings.AutoRegisterEnabled;
 
 			StoreDependingSettings.UpdateSettings(externalAuthenticationSettings, form, storeScope, _services.Settings);
-
-			//now clear settings cache
-			_services.Settings.ClearCache();
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
@@ -1364,9 +1354,6 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.UpdateSettings(socialSettings, form, storeScope, _services.Settings);
 
-			//now clear settings cache
-			_services.Settings.ClearCache();
-
 			//activity log
 			_customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
 
@@ -1576,8 +1563,6 @@ namespace SmartStore.Admin.Controllers
 			settings.ImageDownloadTimeout = model.ImageDownloadTimeout;
 
 			StoreDependingSettings.UpdateSettings(settings, form, storeScope, _services.Settings);
-
-			_services.Settings.ClearCache();
 
 			_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 

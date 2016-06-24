@@ -61,7 +61,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         {
             //"~/p/some-se-name/".ShouldMapTo<CatalogController>(c => c.Product("some-se-name"));
             "~/recentlyviewedproducts/".ShouldMapTo<CatalogController>(c => c.RecentlyViewedProducts());
-            "~/newproducts/".ShouldMapTo<CatalogController>(c => c.RecentlyAddedProducts(null));
+            "~/newproducts/".ShouldMapTo<CatalogController>(c => c.RecentlyAddedProducts());
             "~/newproducts/rss/".ShouldMapTo<CatalogController>(c => c.RecentlyAddedProductsRss());
             "~/catalog/addproducttocompare/2".ShouldMapTo<CatalogController>(c => c.AddProductToCompareList(2));
             "~/compareproducts/".ShouldMapTo<CatalogController>(c => c.CompareProducts());

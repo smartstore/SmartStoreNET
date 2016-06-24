@@ -12,7 +12,22 @@ namespace SmartStore.Services.Configuration
     /// </summary>
     public partial interface ISettingService
     {
-        /// <summary>
+		/// <summary>
+		/// Creates a unit of work in which cache eviction is suppressed
+		/// </summary>
+		/// <param name="clearCache">Specifies whether the cache should be evicted completely on batch disposal</param>
+		/// <returns>A disposable unit of work</returns>
+		IDisposable BeginBatch(bool clearCache = true);
+
+		/// <summary>
+		/// Gets a value indicating whether settings have changed during a request, making cache eviction necessary.
+		/// </summary>
+		/// <remarks>
+		/// Cache eviction sets this member to <c>false</c>
+		/// </remarks>
+		bool HasChanges { get; }
+		
+		/// <summary>
         /// Gets a setting by identifier
         /// </summary>
         /// <param name="settingId">Setting identifier</param>

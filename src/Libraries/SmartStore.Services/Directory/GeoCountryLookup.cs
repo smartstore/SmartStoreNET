@@ -16,18 +16,20 @@ namespace SmartStore.Services.Directory
     {
         private readonly IWebHelper _webHelper;
 		private readonly ICountryService _countryService;
-		private readonly ICacheManager _cacheManager;
+		private readonly IRequestCache _requestCache;
+		private readonly ICacheManager _cache;
 
-		public GeoCountryLookup(IWebHelper webHelper, ICacheManager cacheManager, ICountryService countryService)
+		public GeoCountryLookup(IWebHelper webHelper, IRequestCache cacheManager, ICacheManager cache, ICountryService countryService)
         {
             this._webHelper = webHelper;
-			this._cacheManager = cacheManager;
+			this._requestCache = cacheManager;
+			this._cache = cache;
 			this._countryService = countryService;
         }
 
 		private MaxMind.GeoIP.LookupService GetLookupService() 
 		{
-			return _cacheManager.Get("GeoCountryLookup", () => 
+			return _cache.Get("GeoCountryLookup", () => 
 			{
 				var lookupService = new MaxMind.GeoIP.LookupService(_webHelper.MapPath("~/App_Data/GeoIP.dat"));
 				return lookupService;
@@ -107,7 +109,7 @@ namespace SmartStore.Services.Directory
 			if (ipAddress.IsEmpty())
 				return false;
 
-			euCountry = _cacheManager.Get("GeoCountryLookup.EuCountry.{0}".FormatInvariant(ipAddress), () => 
+			euCountry = _requestCache.Get("GeoCountryLookup.EuCountry.{0}".FormatInvariant(ipAddress), () => 
 			{
 				var countryCode = LookupCountryCode(ipAddress);
 				if (countryCode.IsEmpty())

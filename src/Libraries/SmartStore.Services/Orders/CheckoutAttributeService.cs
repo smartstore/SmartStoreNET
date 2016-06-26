@@ -31,7 +31,7 @@ namespace SmartStore.Services.Orders
         private readonly IRepository<CheckoutAttributeValue> _checkoutAttributeValueRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
         
         #endregion
 
@@ -44,7 +44,7 @@ namespace SmartStore.Services.Orders
         /// <param name="checkoutAttributeRepository">Checkout attribute repository</param>
         /// <param name="checkoutAttributeValueRepository">Checkout attribute value repository</param>
         /// <param name="eventPublisher">Event published</param>
-        public CheckoutAttributeService(ICacheManager cacheManager,
+        public CheckoutAttributeService(IRequestCache cacheManager,
             IRepository<CheckoutAttribute> checkoutAttributeRepository,
             IRepository<CheckoutAttributeValue> checkoutAttributeValueRepository,
 			IRepository<StoreMapping> storeMappingRepository,

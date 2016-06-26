@@ -29,7 +29,7 @@ namespace SmartStore.Services.Messages
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
 
         #endregion
 
@@ -46,7 +46,7 @@ namespace SmartStore.Services.Messages
         /// <param name="messageTemplateRepository">Message template repository</param>
         /// <param name="eventPublisher">Event published</param>
         public MessageTemplateService(
-			ICacheManager cacheManager,
+			IRequestCache cacheManager,
 			IRepository<StoreMapping> storeMappingRepository,
 			ILanguageService languageService,
 			ILocalizedEntityService localizedEntityService,

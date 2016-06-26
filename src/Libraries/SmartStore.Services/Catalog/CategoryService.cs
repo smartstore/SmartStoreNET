@@ -42,7 +42,7 @@ namespace SmartStore.Services.Catalog
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IAclService _aclService;
         private readonly Lazy<IEnumerable<ICategoryNavigationFilter>> _navigationFilters;
@@ -66,7 +66,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="workContext">Work context</param>
 		/// <param name="storeContext">Store context</param>
         /// <param name="eventPublisher">Event publisher</param>
-        public CategoryService(ICacheManager cacheManager,
+        public CategoryService(IRequestCache cacheManager,
             IRepository<Category> categoryRepository,
             IRepository<ProductCategory> productCategoryRepository,
             IRepository<Product> productRepository,

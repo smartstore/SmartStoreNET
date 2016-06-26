@@ -41,7 +41,7 @@ namespace SmartStore.Services.Customers
         private readonly IRepository<GenericAttribute> _gaRepository;
 		private readonly IRepository<RewardPointsHistory> _rewardPointsHistoryRepository;
         private readonly IGenericAttributeService _genericAttributeService;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
         private readonly IEventPublisher _eventPublisher;
 		private readonly RewardPointsSettings _rewardPointsSettings;
 
@@ -49,7 +49,7 @@ namespace SmartStore.Services.Customers
 
         #region Ctor
 
-        public CustomerService(ICacheManager cacheManager,
+        public CustomerService(IRequestCache cacheManager,
             IRepository<Customer> customerRepository,
             IRepository<CustomerRole> customerRoleRepository,
             IRepository<GenericAttribute> gaRepository,

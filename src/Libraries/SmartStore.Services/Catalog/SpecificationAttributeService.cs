@@ -24,7 +24,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<SpecificationAttribute> _specificationAttributeRepository;
         private readonly IRepository<SpecificationAttributeOption> _specificationAttributeOptionRepository;
         private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
         private readonly IEventPublisher _eventPublisher;
 
         #endregion
@@ -39,7 +39,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="specificationAttributeOptionRepository">Specification attribute option repository</param>
         /// <param name="productSpecificationAttributeRepository">Product specification attribute repository</param>
         /// <param name="eventPublisher">Event published</param>
-        public SpecificationAttributeService(ICacheManager cacheManager,
+        public SpecificationAttributeService(IRequestCache cacheManager,
             IRepository<SpecificationAttribute> specificationAttributeRepository,
             IRepository<SpecificationAttributeOption> specificationAttributeOptionRepository,
             IRepository<ProductSpecificationAttribute> productSpecificationAttributeRepository,

@@ -27,7 +27,7 @@ namespace SmartStore.Web.Infrastructure
         private readonly IWidgetService _widgetService;
         private readonly ITopicService _topicService;
         private readonly IStoreContext _storeContext;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
         private readonly IWorkContext _workContext;
         private readonly IDbContext _dbContext;
 		private readonly IWidgetProvider _widgetProvider;
@@ -38,8 +38,8 @@ namespace SmartStore.Web.Infrastructure
         public DefaultWidgetSelector(
             IWidgetService widgetService, 
             ITopicService topicService, 
-            IStoreContext storeContext, 
-            ICacheManager cacheManager, 
+            IStoreContext storeContext,
+			IRequestCache cacheManager, 
             IWorkContext workContext, 
             IDbContext dbContext,
 			IWidgetProvider widgetProvider,

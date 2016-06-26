@@ -21,7 +21,7 @@ namespace SmartStore.Tax.Services
         #region Fields
 
         private readonly IRepository<TaxRate> _taxRateRepository;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
 
         #endregion
 
@@ -32,8 +32,7 @@ namespace SmartStore.Tax.Services
         /// </summary>
         /// <param name="cacheManager">Cache manager</param>
         /// <param name="taxRateRepository">Tax rate repository</param>
-        public TaxRateService(ICacheManager cacheManager,
-            IRepository<TaxRate> taxRateRepository)
+        public TaxRateService(IRequestCache cacheManager, IRepository<TaxRate> taxRateRepository)
         {
             this._cacheManager = cacheManager;
             this._taxRateRepository = taxRateRepository;

@@ -17,7 +17,7 @@ namespace SmartStore.Services.Messages
 		private readonly IRepository<EmailAccount> _emailAccountRepository;
         private readonly EmailAccountSettings _emailAccountSettings;
         private readonly IEventPublisher _eventPublisher;
-		private readonly ICacheManager _cacheManager;
+		private readonly IRequestCache _cacheManager;
 
 		private EmailAccount _defaultEmailAccount;
 
@@ -25,7 +25,7 @@ namespace SmartStore.Services.Messages
 			IRepository<EmailAccount> emailAccountRepository, 
 			EmailAccountSettings emailAccountSettings, 
 			IEventPublisher eventPublisher,
-			ICacheManager cacheManager /* request */)
+			IRequestCache cacheManager /* request */)
         {
             this._emailAccountRepository = emailAccountRepository;
             this._emailAccountSettings = emailAccountSettings;

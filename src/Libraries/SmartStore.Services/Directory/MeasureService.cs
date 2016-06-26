@@ -27,7 +27,7 @@ namespace SmartStore.Services.Directory
 
         private readonly IRepository<MeasureDimension> _measureDimensionRepository;
         private readonly IRepository<MeasureWeight> _measureWeightRepository;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
         private readonly MeasureSettings _measureSettings;
         private readonly IEventPublisher _eventPublisher;
 
@@ -43,7 +43,7 @@ namespace SmartStore.Services.Directory
         /// <param name="measureWeightRepository">Weight repository</param>
         /// <param name="measureSettings">Measure settings</param>
         /// <param name="eventPublisher">Event published</param>
-        public MeasureService(ICacheManager cacheManager,
+        public MeasureService(IRequestCache cacheManager,
             IRepository<MeasureDimension> measureDimensionRepository,
             IRepository<MeasureWeight> measureWeightRepository,
             MeasureSettings measureSettings,

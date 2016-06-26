@@ -147,6 +147,7 @@
     <Compile Include="Caching\DefaultCacheManager.cs" />
     <Compile Include="Caching\AspNetCache.cs" />
     <Compile Include="Caching\DisplayedEntities.cs" />
+    <Compile Include="Caching\IRequestCache.cs" />
     <Compile Include="Caching\IDisplayedEntities.cs" />
     <Compile Include="Caching\IOutputCacheProvider.cs" />
     <Compile Include="Caching\NullOutputCacheProvider.cs" />

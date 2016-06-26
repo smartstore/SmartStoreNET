@@ -23,7 +23,7 @@ namespace SmartStore.Services.Tax
 
         private readonly IRepository<TaxCategory> _taxCategoryRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
 
         #endregion
 
@@ -35,7 +35,7 @@ namespace SmartStore.Services.Tax
         /// <param name="cacheManager">Cache manager</param>
         /// <param name="taxCategoryRepository">Tax category repository</param>
         /// <param name="eventPublisher">Event published</param>
-        public TaxCategoryService(ICacheManager cacheManager,
+        public TaxCategoryService(IRequestCache cacheManager,
             IRepository<TaxCategory> taxCategoryRepository,
             IEventPublisher eventPublisher)
         {

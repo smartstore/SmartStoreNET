@@ -25,7 +25,7 @@ namespace SmartStore.Services.Stores
 
 		private readonly IRepository<Store> _storeRepository;
 		private readonly IEventPublisher _eventPublisher;
-		private readonly ICacheManager _cacheManager;
+		private readonly IRequestCache _cacheManager;
 		private bool? _isSingleStoreMode = null;
 
 		#endregion
@@ -38,7 +38,7 @@ namespace SmartStore.Services.Stores
 		/// <param name="cacheManager">Cache manager</param>
 		/// <param name="storeRepository">Store repository</param>
 		/// <param name="eventPublisher">Event published</param>
-		public StoreService(ICacheManager cacheManager,
+		public StoreService(IRequestCache cacheManager,
 			IRepository<Store> storeRepository,
 			IEventPublisher eventPublisher)
 		{

@@ -138,7 +138,7 @@ namespace SmartStore.Services.Tests.Orders
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
-            _checkoutAttributeService = new CheckoutAttributeService(cacheManager,
+            _checkoutAttributeService = new CheckoutAttributeService(NullRequestCache.Instance,
                 _checkoutAttributeRepo,
                 _checkoutAttributeValueRepo,
 				_storeMappingRepo,

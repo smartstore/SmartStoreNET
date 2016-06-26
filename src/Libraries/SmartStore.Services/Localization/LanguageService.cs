@@ -33,8 +33,9 @@ namespace SmartStore.Services.Localization
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IStoreService _storeService;
 		private readonly IStoreContext _storeContext;
-        private readonly ICacheManager _cacheManager;
-        private readonly ISettingService _settingService;
+        private readonly IRequestCache _requestCache;
+		private readonly ICacheManager _cache;
+		private readonly ISettingService _settingService;
         private readonly LocalizationSettings _localizationSettings;
         private readonly IEventPublisher _eventPublisher;
 
@@ -42,8 +43,10 @@ namespace SmartStore.Services.Localization
 
         #region Ctor
 
-        public LanguageService(ICacheManager cacheManager,
-            IRepository<Language> languageRepository,
+        public LanguageService(
+			IRequestCache requestCache,
+			ICacheManager cache,
+			IRepository<Language> languageRepository,
             ISettingService settingService,
             LocalizationSettings localizationSettings,
             IEventPublisher eventPublisher,
@@ -51,7 +54,8 @@ namespace SmartStore.Services.Localization
 			IStoreService storeService,
 			IStoreContext storeContext)
         {
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
+			this._cache = cache;
             this._languageRepository = languageRepository;
             this._settingService = settingService;
             this._localizationSettings = localizationSettings;
@@ -90,11 +94,12 @@ namespace SmartStore.Services.Localization
             
             _languageRepository.Delete(language);
 
-            //cache
-            _cacheManager.RemoveByPattern(LANGUAGES_PATTERN_KEY);
+            // cache
+            _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);
+			_cache.RemoveByPattern(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY);	
 
-            //event notification
-            _eventPublisher.EntityDeleted(language);
+			//event notification
+			_eventPublisher.EntityDeleted(language);
         }
 
         /// <summary>
@@ -106,7 +111,7 @@ namespace SmartStore.Services.Localization
 		public virtual IList<Language> GetAllLanguages(bool showHidden = false, int storeId = 0)
         {
 			string key = string.Format(LANGUAGES_ALL_KEY, showHidden);
-			var languages = _cacheManager.Get(key, () =>
+			var languages = _requestCache.Get(key, () =>
 			{
 				var query = _languageRepository.Table;
 				if (!showHidden)
@@ -134,7 +139,7 @@ namespace SmartStore.Services.Localization
         public virtual int GetLanguagesCount(bool showHidden = false)
         {
             string key = string.Format(LANGUAGES_COUNT, showHidden);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = _languageRepository.Table;
                 if (!showHidden)
@@ -154,7 +159,7 @@ namespace SmartStore.Services.Localization
                 return null;
 
             string key = string.Format(LANGUAGES_BY_ID_KEY, languageId);
-            return _cacheManager.Get(key, () => 
+            return _requestCache.Get(key, () => 
             { 
                 return _languageRepository.GetById(languageId); 
             });
@@ -171,7 +176,7 @@ namespace SmartStore.Services.Localization
                 return null;
 
             string key = string.Format(LANGUAGES_BY_CULTURE_KEY, culture);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 return _languageRepository.Table.Where(x => culture.Equals(x.LanguageCulture, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             });
@@ -183,7 +188,7 @@ namespace SmartStore.Services.Localization
                 return null;
 
             string key = string.Format(LANGUAGES_BY_SEOCODE_KEY, seoCode);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 return _languageRepository.Table.Where(x => seoCode.Equals(x.UniqueSeoCode, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
             });
@@ -201,10 +206,11 @@ namespace SmartStore.Services.Localization
             _languageRepository.Insert(language);
 
             //cache
-            _cacheManager.RemoveByPattern(LANGUAGES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);
+			_cache.RemoveByPattern(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY);
 
-            //event notification
-            _eventPublisher.EntityInserted(language);
+			//event notification
+			_eventPublisher.EntityInserted(language);
         }
 
         /// <summary>
@@ -220,10 +226,11 @@ namespace SmartStore.Services.Localization
             _languageRepository.Update(language);
 
             //cache
-            _cacheManager.RemoveByPattern(LANGUAGES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(LANGUAGES_PATTERN_KEY);
+			_cache.RemoveByPattern(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY);
 
-            //event notification
-            _eventPublisher.EntityUpdated(language);
+			//event notification
+			_eventPublisher.EntityUpdated(language);
         }
 
 		public virtual bool IsPublishedLanguage(string seoCode, int storeId = 0)
@@ -291,7 +298,7 @@ namespace SmartStore.Services.Localization
 		/// <returns>A map of store languages where key is the store id and values are tuples of language ids and seo codes</returns>
 		protected virtual Multimap<int, Tuple<int, string>> GetStoreLanguageMap()
 		{
-			var result = _cacheManager.Get(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY, () =>
+			var result = _cache.Get(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY, () =>
 			{
 				var map = new Multimap<int, Tuple<int, string>>();
 

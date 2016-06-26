@@ -27,7 +27,7 @@ namespace SmartStore.Services.Common
         #region Fields
 
         private readonly IRepository<GenericAttribute> _genericAttributeRepository;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
         private readonly IEventPublisher _eventPublisher;
 		private readonly IRepository<Order> _orderRepository;
 
@@ -42,7 +42,7 @@ namespace SmartStore.Services.Common
         /// <param name="genericAttributeRepository">Generic attribute repository</param>
         /// <param name="eventPublisher">Event published</param>
 		/// <param name="orderRepository">Order repository</param>
-        public GenericAttributeService(ICacheManager cacheManager,
+        public GenericAttributeService(IRequestCache cacheManager,
             IRepository<GenericAttribute> genericAttributeRepository,
             IEventPublisher eventPublisher,
 			IRepository<Order> orderRepository)

@@ -22,7 +22,7 @@ namespace SmartStore.Services.Directory
 
         private readonly IRepository<StateProvince> _stateProvinceRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
 
         #endregion
 
@@ -34,7 +34,7 @@ namespace SmartStore.Services.Directory
         /// <param name="cacheManager">Cache manager</param>
         /// <param name="stateProvinceRepository">State/province repository</param>
         /// <param name="eventPublisher">Event published</param>
-        public StateProvinceService(ICacheManager cacheManager,
+        public StateProvinceService(IRequestCache cacheManager,
             IRepository<StateProvince> stateProvinceRepository,
             IEventPublisher eventPublisher)
         {

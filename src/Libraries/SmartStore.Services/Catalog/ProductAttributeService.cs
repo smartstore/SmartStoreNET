@@ -34,7 +34,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepository;
 		private readonly IRepository<ProductBundleItemAttributeFilter> _productBundleItemAttributeFilterRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
 		private readonly IPictureService _pictureService;
 
 
@@ -47,7 +47,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="pvacRepository">Product variant attribute combination repository</param>
         /// <param name="productVariantAttributeValueRepository">Product variant attribute value repository</param>
         /// <param name="eventPublisher">Event published</param>
-        public ProductAttributeService(ICacheManager cacheManager,
+        public ProductAttributeService(IRequestCache cacheManager,
             IRepository<ProductAttribute> productAttributeRepository,
             IRepository<ProductVariantAttribute> productVariantAttributeRepository,
             IRepository<ProductVariantAttributeCombination> pvacRepository,

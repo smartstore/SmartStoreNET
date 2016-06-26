@@ -54,7 +54,7 @@ namespace SmartStore.Services.Catalog
         private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IDataProvider _dataProvider;
         private readonly IDbContext _dbContext;
-		private readonly ICacheManager _cacheManager;
+		private readonly IRequestCache _cacheManager;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CommonSettings _commonSettings;
 		private readonly ICommonServices _services;
@@ -105,7 +105,7 @@ namespace SmartStore.Services.Catalog
             IWorkflowMessageService workflowMessageService,
             IDataProvider dataProvider,
 			IDbContext dbContext,
-			ICacheManager cacheManager,
+			IRequestCache cacheManager,
             LocalizationSettings localizationSettings,
 			CommonSettings commonSettings,
 			ICommonServices services)

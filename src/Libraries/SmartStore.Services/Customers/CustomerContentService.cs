@@ -17,7 +17,7 @@ namespace SmartStore.Services.Customers
 
         private readonly IRepository<CustomerContent> _contentRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
 
         #endregion
 
@@ -29,7 +29,7 @@ namespace SmartStore.Services.Customers
         /// <param name="cacheManager">Cache manager</param>
         /// <param name="contentRepository">Customer content repository</param>
         /// <param name="eventPublisher">Event published</param>
-        public CustomerContentService(ICacheManager cacheManager,
+        public CustomerContentService(IRequestCache cacheManager,
             IRepository<CustomerContent> contentRepository,
             IEventPublisher eventPublisher)
         {

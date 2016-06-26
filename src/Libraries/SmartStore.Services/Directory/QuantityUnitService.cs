@@ -25,7 +25,7 @@ namespace SmartStore.Services.Directory
 
         private readonly IRepository<QuantityUnit> _quantityUnitRepository;
         private readonly IRepository<Product> _productRepository;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
         private readonly IEventPublisher _eventPublisher;
 		private readonly CatalogSettings _catalogSettings;
 
@@ -42,7 +42,7 @@ namespace SmartStore.Services.Directory
         /// <param name="currencySettings">Currency settings</param>
         /// <param name="pluginFinder">Plugin finder</param>
         /// <param name="eventPublisher">Event published</param>
-        public QuantityUnitService(ICacheManager cacheManager,
+        public QuantityUnitService(IRequestCache cacheManager,
             IRepository<QuantityUnit> quantityUnitRepository,
             IRepository<Product> productRepository,
             IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,

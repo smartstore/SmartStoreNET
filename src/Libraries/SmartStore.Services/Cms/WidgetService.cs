@@ -24,7 +24,7 @@ namespace SmartStore.Services.Cms
         private readonly WidgetSettings _widgetSettings;
 		private readonly ISettingService _settingService;
 		private readonly IProviderManager _providerManager;
-		private readonly ICacheManager _cacheManager;
+		private readonly IRequestCache _cacheManager;
 
         #endregion
         
@@ -41,7 +41,7 @@ namespace SmartStore.Services.Cms
 			WidgetSettings widgetSettings, 
 			ISettingService settingService, 
 			IProviderManager providerManager,
-			ICacheManager cacheManager)
+			IRequestCache cacheManager)
         {
             this._pluginFinder = pluginFinder;
             this._widgetSettings = widgetSettings;

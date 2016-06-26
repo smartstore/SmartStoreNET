@@ -445,7 +445,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					var rsOrder = new EfRepository<Order>(_ctx);
 					rs.AutoCommitEnabled = false;
 
-					_gaService = new GenericAttributeService(NullCache.Instance, rs, NullEventPublisher.Instance, rsOrder);
+					_gaService = new GenericAttributeService(NullRequestCache.Instance, rs, NullEventPublisher.Instance, rsOrder);
 				}
 
 				return _gaService;
@@ -497,13 +497,14 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsResources.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
-					var storeService = new StoreService(NullCache.Instance, new EfRepository<Store>(_ctx), NullEventPublisher.Instance);
+					var storeService = new StoreService(NullRequestCache.Instance, new EfRepository<Store>(_ctx), NullEventPublisher.Instance);
 					var storeContext = new WebStoreContext(storeService, new WebHelper(null), null);
 
 					var locSettings = new LocalizationSettings();
 
 					var languageService = new LanguageService(
-						NullCache.Instance, 
+						NullRequestCache.Instance, 
+						NullCache.Instance,
 						rsLanguage,
 						this.SettingService,
 						locSettings,

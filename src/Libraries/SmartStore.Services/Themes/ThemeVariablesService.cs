@@ -20,13 +20,13 @@ namespace SmartStore.Services.Themes
         
         private readonly IRepository<ThemeVariable> _rsVariables;
         private readonly IThemeRegistry _themeRegistry;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
         private readonly IEventPublisher _eventPublisher;
 
         public ThemeVariablesService(
             IRepository<ThemeVariable> rsVariables, 
 			IThemeRegistry themeRegistry,
-            ICacheManager cacheManager, 
+			IRequestCache cacheManager, 
 			IEventPublisher eventPublisher)
         {
             this._rsVariables = rsVariables;

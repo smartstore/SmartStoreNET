@@ -18,7 +18,7 @@ namespace SmartStore.Services.Catalog
 
         private readonly IRepository<ManufacturerTemplate> _manufacturerTemplateRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
 
         #endregion
         
@@ -30,7 +30,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="cacheManager">Cache manager</param>
         /// <param name="manufacturerTemplateRepository">Manufacturer template repository</param>
         /// <param name="eventPublisher">Event published</param>
-        public ManufacturerTemplateService(ICacheManager cacheManager,
+        public ManufacturerTemplateService(IRequestCache cacheManager,
             IRepository<ManufacturerTemplate> manufacturerTemplateRepository,
             IEventPublisher eventPublisher)
         {

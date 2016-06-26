@@ -17,9 +17,9 @@ namespace SmartStore.Web.Framework.UI
 	public class MenuPublisher : IMenuPublisher
 	{
 		private readonly ITypeFinder _typeFinder;
-		private readonly ICacheManager _cacheManager; // Request cache
+		private readonly IRequestCache _cacheManager;
 
-		public MenuPublisher(ITypeFinder typeFinder, ICacheManager cacheManager)
+		public MenuPublisher(ITypeFinder typeFinder, IRequestCache cacheManager)
 		{
 			this._typeFinder = typeFinder;
 			this._cacheManager = cacheManager;

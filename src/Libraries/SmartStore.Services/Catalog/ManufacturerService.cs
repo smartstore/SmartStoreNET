@@ -34,7 +34,7 @@ namespace SmartStore.Services.Catalog
 		private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
         #endregion
 
         #region Ctor
@@ -50,7 +50,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="workContext">Work context</param>
 		/// <param name="storeContext">Store context</param>
         /// <param name="eventPublisher">Event published</param>
-        public ManufacturerService(ICacheManager cacheManager,
+        public ManufacturerService(IRequestCache cacheManager,
             IRepository<Manufacturer> manufacturerRepository,
             IRepository<ProductManufacturer> productManufacturerRepository,
             IRepository<Product> productRepository,

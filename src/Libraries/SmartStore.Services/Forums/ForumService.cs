@@ -38,7 +38,7 @@ namespace SmartStore.Services.Forums
         private readonly IRepository<ForumSubscription> _forumSubscriptionRepository;
         private readonly ForumSettings _forumSettings;
         private readonly IRepository<Customer> _customerRepository;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICustomerService _customerService;
         private readonly IWorkflowMessageService _workflowMessageService;
@@ -49,7 +49,7 @@ namespace SmartStore.Services.Forums
 
         #region Ctor
 
-        public ForumService(ICacheManager cacheManager,
+        public ForumService(IRequestCache cacheManager,
             IRepository<ForumGroup> forumGroupRepository,
             IRepository<Forum> forumRepository,
             IRepository<ForumTopic> forumTopicRepository,

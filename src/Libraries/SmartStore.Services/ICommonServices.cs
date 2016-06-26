@@ -26,6 +26,11 @@ namespace SmartStore.Services
 			get;
 		}
 
+		IRequestCache RequestCache
+		{
+			get;
+		}
+
 		IDisplayedEntities DisplayedEntities
 		{
 			get;

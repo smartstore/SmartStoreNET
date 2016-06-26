@@ -143,19 +143,12 @@ namespace SmartStore.Web.Framework
 
 			// services
 			builder.RegisterType<CategoryService>().As<ICategoryService>().InstancePerRequest();
-			builder.RegisterType<CategoryService>().Named<ICategoryService>("nocache")
-				.WithNullCache()
-				.InstancePerRequest();
 
 			builder.RegisterType<ManufacturerService>().As<IManufacturerService>()
 				.WithNullCache()
 				.InstancePerRequest();
-			builder.RegisterType<ManufacturerService>().Named<IManufacturerService>("nocache")
-				.WithNullCache()
-				.InstancePerRequest();
 
 			builder.RegisterType<ProductService>().As<IProductService>().InstancePerRequest();
-			builder.RegisterType<ProductService>().Named<IProductService>("nocache").InstancePerRequest();
 
 			builder.RegisterType<BackInStockSubscriptionService>().As<IBackInStockSubscriptionService>().InstancePerRequest();
 			builder.RegisterType<CompareProductsService>().As<ICompareProductsService>().InstancePerRequest();
@@ -541,6 +534,9 @@ namespace SmartStore.Web.Framework
 			// Output cache
 			builder.RegisterType<DisplayedEntities>().As<IDisplayedEntities>().InstancePerRequest();
 
+			// Request cache
+			builder.RegisterType<RequestCache>().As<IRequestCache>().InstancePerRequest();
+
 			// Model/Business cache
 			builder.RegisterType<StaticCache>()
 				.Keyed<ICache>(typeof(StaticCache))
@@ -550,13 +546,7 @@ namespace SmartStore.Web.Framework
 				.Keyed<ICache>(typeof(AspNetCache))
 				.Named<ICache>("aspnet")
 				.SingleInstance();
-			builder.RegisterType<RequestCache>()
-				.Keyed<ICache>(typeof(RequestCache))
-				.InstancePerRequest();
 
-			builder.RegisterType<CacheManager<RequestCache>>()
-				.As<ICacheManager>()
-				.InstancePerRequest();
 			builder.RegisterType<CacheManager<StaticCache>>()
 				.Named<ICacheManager>("static")
 				.SingleInstance();

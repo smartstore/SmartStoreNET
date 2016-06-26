@@ -27,7 +27,7 @@ namespace SmartStore.Services.Directory
 
         private readonly IRepository<Currency> _currencyRepository;
 		private readonly IStoreMappingService _storeMappingService;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
         private readonly CurrencySettings _currencySettings;
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
@@ -47,7 +47,7 @@ namespace SmartStore.Services.Directory
         /// <param name="currencySettings">Currency settings</param>
         /// <param name="pluginFinder">Plugin finder</param>
         /// <param name="eventPublisher">Event published</param>
-        public CurrencyService(ICacheManager cacheManager,
+        public CurrencyService(IRequestCache cacheManager,
             IRepository<Currency> currencyRepository,
 			IStoreMappingService storeMappingService,
             CurrencySettings currencySettings,

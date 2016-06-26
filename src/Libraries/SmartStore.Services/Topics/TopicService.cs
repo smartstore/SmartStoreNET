@@ -22,7 +22,7 @@ namespace SmartStore.Services.Topics
 		private readonly IRepository<Topic> _topicRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IEventPublisher _eventPublisher;
-		private readonly ICacheManager _cacheManager;
+		private readonly IRequestCache _cacheManager;
 
 		#endregion
 
@@ -31,7 +31,7 @@ namespace SmartStore.Services.Topics
 		public TopicService(IRepository<Topic> topicRepository,
 			IRepository<StoreMapping> storeMappingRepository,
 			IEventPublisher eventPublisher,
-			ICacheManager cacheManager)
+			IRequestCache cacheManager)
         {
             _topicRepository = topicRepository;
 			_storeMappingRepository = storeMappingRepository;

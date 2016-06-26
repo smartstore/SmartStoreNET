@@ -27,12 +27,12 @@ namespace SmartStore.Services.Catalog
 
 		private readonly IProductAttributeService _productAttributeService;
 		private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
-		private readonly ICacheManager _cacheManager;
+		private readonly IRequestCache _cacheManager;
 
 		public ProductAttributeParser(
 			IProductAttributeService productAttributeService,
 			IRepository<ProductVariantAttributeCombination> pvacRepository,
-			ICacheManager cacheManager)
+			IRequestCache cacheManager)
         {
             _productAttributeService = productAttributeService;
 			_pvacRepository = pvacRepository;

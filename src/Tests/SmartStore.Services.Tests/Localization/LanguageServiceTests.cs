@@ -64,7 +64,8 @@ namespace SmartStore.Services.Tests.Localization
 
             _localizationSettings = new LocalizationSettings();
 			_languageService = new LanguageService(
-				cacheManager, 
+				NullRequestCache.Instance,
+				NullCache.Instance, 
 				_languageRepo,
 				_settingService, 
 				_localizationSettings, 

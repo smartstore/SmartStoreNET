@@ -21,7 +21,7 @@ namespace SmartStore.Services.Polls
         private readonly IRepository<PollAnswer> _pollAnswerRepository;
         private readonly IRepository<PollVotingRecord> _pollVotingRecords;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
         private readonly IEventPublisher _eventPublisher;
 		private readonly IStoreContext _storeContext;
 
@@ -33,7 +33,7 @@ namespace SmartStore.Services.Polls
             IRepository<PollAnswer> pollAnswerRepository,
             IRepository<PollVotingRecord> pollVotingRecords,
 			IRepository<StoreMapping> storeMappingRepository,
-            ICacheManager cacheManager, IEventPublisher eventPublisher,
+			IRequestCache cacheManager, IEventPublisher eventPublisher,
 			IStoreContext storeContext)
         {
             this._pollRepository = pollRepository;

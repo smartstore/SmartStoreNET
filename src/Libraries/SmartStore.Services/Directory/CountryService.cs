@@ -26,7 +26,7 @@ namespace SmartStore.Services.Directory
         
         private readonly IRepository<Country> _countryRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _cacheManager;
 		private readonly IStoreContext _storeContext;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 
@@ -34,7 +34,7 @@ namespace SmartStore.Services.Directory
 
         #region Ctor
 
-        public CountryService(ICacheManager cacheManager,
+        public CountryService(IRequestCache cacheManager,
             IRepository<Country> countryRepository,
             IEventPublisher eventPublisher,
 			IStoreContext storeContext,

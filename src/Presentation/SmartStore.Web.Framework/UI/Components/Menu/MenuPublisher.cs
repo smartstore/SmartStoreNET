@@ -17,12 +17,12 @@ namespace SmartStore.Web.Framework.UI
 	public class MenuPublisher : IMenuPublisher
 	{
 		private readonly ITypeFinder _typeFinder;
-		private readonly IRequestCache _cacheManager;
+		private readonly IRequestCache _requestCache;
 
-		public MenuPublisher(ITypeFinder typeFinder, IRequestCache cacheManager)
+		public MenuPublisher(ITypeFinder typeFinder, IRequestCache requestCache)
 		{
 			this._typeFinder = typeFinder;
-			this._cacheManager = cacheManager;
+			this._requestCache = requestCache;
 		}
 
 		public void RegisterMenus(TreeNode<MenuItem> rootNode, string menuName)
@@ -30,9 +30,9 @@ namespace SmartStore.Web.Framework.UI
 			Guard.ArgumentNotNull(() => rootNode);
 			Guard.ArgumentNotEmpty(() => menuName);
 
-			var providers = _cacheManager.Get("sm.menu.providers.{0}".FormatInvariant(menuName), () => 
+			var providers = _requestCache.Get("sm.menu.providers.{0}".FormatInvariant(menuName), () => 
 			{
-				var allInstances = _cacheManager.Get("sm.menu.allproviders", () =>
+				var allInstances = _requestCache.Get("sm.menu.allproviders", () =>
 				{
 					var instances = new List<IMenuProvider>();
 					var providerTypes = _typeFinder.FindClassesOfType<IMenuProvider>(ignoreInactivePlugins: true);

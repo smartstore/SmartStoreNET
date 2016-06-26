@@ -25,7 +25,7 @@ namespace SmartStore.Services.Directory
 
         private readonly IRepository<QuantityUnit> _quantityUnitRepository;
         private readonly IRepository<Product> _productRepository;
-        private readonly IRequestCache _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly IEventPublisher _eventPublisher;
 		private readonly CatalogSettings _catalogSettings;
 
@@ -36,13 +36,13 @@ namespace SmartStore.Services.Directory
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
+        /// <param name="requestCache">Cache manager</param>
         /// <param name="currencyRepository">QuantityUnit repository</param>
         /// <param name="customerService">Customer service</param>
         /// <param name="currencySettings">Currency settings</param>
         /// <param name="pluginFinder">Plugin finder</param>
         /// <param name="eventPublisher">Event published</param>
-        public QuantityUnitService(IRequestCache cacheManager,
+        public QuantityUnitService(IRequestCache requestCache,
             IRepository<QuantityUnit> quantityUnitRepository,
             IRepository<Product> productRepository,
             IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,
@@ -50,7 +50,7 @@ namespace SmartStore.Services.Directory
             IEventPublisher eventPublisher,
 			CatalogSettings catalogSettings)
         {
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._quantityUnitRepository = quantityUnitRepository;
             this._eventPublisher = eventPublisher;
             this._productRepository = productRepository;
@@ -75,7 +75,7 @@ namespace SmartStore.Services.Directory
 
             _quantityUnitRepository.Delete(quantityUnit);
 
-            _cacheManager.RemoveByPattern(MEASUREUNITS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MEASUREUNITS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(quantityUnit);
@@ -137,7 +137,7 @@ namespace SmartStore.Services.Directory
         public virtual IList<QuantityUnit> GetAllQuantityUnits()
         {
             string key = string.Format(MEASUREUNITS_ALL_KEY);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = _quantityUnitRepository.Table;
                 query = query.OrderBy(c => c.DisplayOrder);
@@ -157,7 +157,7 @@ namespace SmartStore.Services.Directory
 
             _quantityUnitRepository.Insert(quantityUnit);
 
-            _cacheManager.RemoveByPattern(MEASUREUNITS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MEASUREUNITS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(quantityUnit);
@@ -190,7 +190,7 @@ namespace SmartStore.Services.Directory
 
             _quantityUnitRepository.Update(quantityUnit);
 
-            _cacheManager.RemoveByPattern(MEASUREUNITS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MEASUREUNITS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(quantityUnit);

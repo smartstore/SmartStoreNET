@@ -38,7 +38,7 @@ namespace SmartStore.Services.Forums
         private readonly IRepository<ForumSubscription> _forumSubscriptionRepository;
         private readonly ForumSettings _forumSettings;
         private readonly IRepository<Customer> _customerRepository;
-        private readonly IRequestCache _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICustomerService _customerService;
         private readonly IWorkflowMessageService _workflowMessageService;
@@ -49,7 +49,7 @@ namespace SmartStore.Services.Forums
 
         #region Ctor
 
-        public ForumService(IRequestCache cacheManager,
+        public ForumService(IRequestCache requestCache,
             IRepository<ForumGroup> forumGroupRepository,
             IRepository<Forum> forumRepository,
             IRepository<ForumTopic> forumTopicRepository,
@@ -64,7 +64,7 @@ namespace SmartStore.Services.Forums
 			IRepository<StoreMapping> storeMappingRepository,
 			ICommonServices services)
         {
-            _cacheManager = cacheManager;
+            _requestCache = requestCache;
             _forumGroupRepository = forumGroupRepository;
             _forumRepository = forumRepository;
             _forumTopicRepository = forumTopicRepository;
@@ -253,8 +253,8 @@ namespace SmartStore.Services.Forums
 
             _forumGroupRepository.Delete(forumGroup);
 
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityDeleted(forumGroup);
@@ -280,7 +280,7 @@ namespace SmartStore.Services.Forums
 		public virtual IList<ForumGroup> GetAllForumGroups(bool showHidden = false)
         {
 			string key = string.Format(FORUMGROUP_ALL_KEY, showHidden);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
 				var query = _forumGroupRepository.Table;
 
@@ -322,8 +322,8 @@ namespace SmartStore.Services.Forums
             _forumGroupRepository.Insert(forumGroup);
 
             //cache
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityInserted(forumGroup);
@@ -343,8 +343,8 @@ namespace SmartStore.Services.Forums
             _forumGroupRepository.Update(forumGroup);
 
             //cache
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityUpdated(forumGroup);
@@ -389,8 +389,8 @@ namespace SmartStore.Services.Forums
             //delete forum
             _forumRepository.Delete(forum);
 
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityDeleted(forum);
@@ -417,7 +417,7 @@ namespace SmartStore.Services.Forums
         public virtual IList<Forum> GetAllForumsByGroupId(int forumGroupId)
         {
             string key = string.Format(FORUM_ALLBYFORUMGROUPID_KEY, forumGroupId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from f in _forumRepository.Table
                             orderby f.DisplayOrder
@@ -441,8 +441,8 @@ namespace SmartStore.Services.Forums
 
             _forumRepository.Insert(forum);
 
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityInserted(forum);
@@ -461,8 +461,8 @@ namespace SmartStore.Services.Forums
 
             _forumRepository.Update(forum);
             
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityUpdated(forum);
@@ -501,8 +501,8 @@ namespace SmartStore.Services.Forums
             UpdateForumStats(forumId);
             UpdateCustomerStats(customerId);
 
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityDeleted(forumTopic);
@@ -649,8 +649,8 @@ namespace SmartStore.Services.Forums
             UpdateForumStats(forumTopic.ForumId);
 
             //cache            
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityInserted(forumTopic);
@@ -690,8 +690,8 @@ namespace SmartStore.Services.Forums
 
             _forumTopicRepository.Update(forumTopic);
 
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityUpdated(forumTopic);
@@ -773,8 +773,8 @@ namespace SmartStore.Services.Forums
             UpdateCustomerStats(customerId);
 
             //clear cache            
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityDeleted(forumPost);
@@ -877,8 +877,8 @@ namespace SmartStore.Services.Forums
             UpdateCustomerStats(customerId);
 
             //clear cache            
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityInserted(forumPost);
@@ -922,8 +922,8 @@ namespace SmartStore.Services.Forums
 
             _forumPostRepository.Update(forumPost);
 
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityUpdated(forumPost);

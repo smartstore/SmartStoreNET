@@ -27,7 +27,7 @@ namespace SmartStore.Services.Directory
 
         private readonly IRepository<Currency> _currencyRepository;
 		private readonly IStoreMappingService _storeMappingService;
-        private readonly IRequestCache _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly CurrencySettings _currencySettings;
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
@@ -41,13 +41,13 @@ namespace SmartStore.Services.Directory
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
+        /// <param name="requestCache">Cache manager</param>
         /// <param name="currencyRepository">Currency repository</param>
 		/// <param name="storeMappingRepository">Store mapping repository</param>
         /// <param name="currencySettings">Currency settings</param>
         /// <param name="pluginFinder">Plugin finder</param>
         /// <param name="eventPublisher">Event published</param>
-        public CurrencyService(IRequestCache cacheManager,
+        public CurrencyService(IRequestCache requestCache,
             IRepository<Currency> currencyRepository,
 			IStoreMappingService storeMappingService,
             CurrencySettings currencySettings,
@@ -56,7 +56,7 @@ namespace SmartStore.Services.Directory
 			IProviderManager providerManager,
 			IStoreContext storeContext)
         {
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._currencyRepository = currencyRepository;
 			this._storeMappingService = storeMappingService;
             this._currencySettings = currencySettings;
@@ -96,7 +96,7 @@ namespace SmartStore.Services.Directory
             
             _currencyRepository.Delete(currency);
 
-            _cacheManager.RemoveByPattern(CURRENCIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CURRENCIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(currency);
@@ -113,7 +113,7 @@ namespace SmartStore.Services.Directory
                 return null;
 
             string key = string.Format(CURRENCIES_BY_ID_KEY, currencyId);
-            return _cacheManager.Get(key, () => _currencyRepository.GetById(currencyId));
+            return _requestCache.Get(key, () => _currencyRepository.GetById(currencyId));
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace SmartStore.Services.Directory
 		public virtual IList<Currency> GetAllCurrencies(bool showHidden = false, int storeId = 0)
         {
 			string key = string.Format(CURRENCIES_ALL_KEY, showHidden);
-			var currencies = _cacheManager.Get(key, () =>
+			var currencies = _requestCache.Get(key, () =>
 			{
 				var query = _currencyRepository.Table;
 				if (!showHidden)
@@ -167,7 +167,7 @@ namespace SmartStore.Services.Directory
 
             _currencyRepository.Insert(currency);
 
-            _cacheManager.RemoveByPattern(CURRENCIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CURRENCIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(currency);
@@ -184,7 +184,7 @@ namespace SmartStore.Services.Directory
 
             _currencyRepository.Update(currency);
 
-            _cacheManager.RemoveByPattern(CURRENCIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CURRENCIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(currency);

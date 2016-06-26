@@ -24,7 +24,7 @@ namespace SmartStore.Services.Cms
         private readonly WidgetSettings _widgetSettings;
 		private readonly ISettingService _settingService;
 		private readonly IProviderManager _providerManager;
-		private readonly IRequestCache _cacheManager;
+		private readonly IRequestCache _requestCache;
 
         #endregion
         
@@ -41,13 +41,13 @@ namespace SmartStore.Services.Cms
 			WidgetSettings widgetSettings, 
 			ISettingService settingService, 
 			IProviderManager providerManager,
-			IRequestCache cacheManager)
+			IRequestCache requestCache)
         {
             this._pluginFinder = pluginFinder;
             this._widgetSettings = widgetSettings;
 			this._settingService = settingService;
 			this._providerManager = providerManager;
-			this._cacheManager = cacheManager;
+			this._requestCache = requestCache;
         }
 
         #endregion
@@ -71,7 +71,7 @@ namespace SmartStore.Services.Cms
         /// <returns>Widgets</returns>
 		public virtual IEnumerable<Provider<IWidget>> LoadActiveWidgets(int storeId = 0)
         {
-			var activeWidgets = _cacheManager.Get(WIDGETS_ACTIVE_KEY.FormatInvariant(storeId), () => {
+			var activeWidgets = _requestCache.Get(WIDGETS_ACTIVE_KEY.FormatInvariant(storeId), () => {
 				var allWigets = LoadAllWidgets(storeId);
 				return allWigets.Where(p => _widgetSettings.ActiveWidgetSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase)).ToList();			
 			});
@@ -90,7 +90,7 @@ namespace SmartStore.Services.Cms
             if (widgetZone.IsEmpty())
 				return Enumerable.Empty<Provider<IWidget>>();
 
-			var mappedWidgets = _cacheManager.Get(WIDGETS_ZONEMAPPED_KEY.FormatInvariant(storeId), () => {
+			var mappedWidgets = _requestCache.Get(WIDGETS_ZONEMAPPED_KEY.FormatInvariant(storeId), () => {
 				var activeWidgets = LoadActiveWidgets(storeId);
 				var map = new Multimap<string, Provider<IWidget>>();
 

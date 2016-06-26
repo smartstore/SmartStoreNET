@@ -24,7 +24,7 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<SpecificationAttribute> _specificationAttributeRepository;
         private readonly IRepository<SpecificationAttributeOption> _specificationAttributeOptionRepository;
         private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
-        private readonly IRequestCache _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly IEventPublisher _eventPublisher;
 
         #endregion
@@ -34,18 +34,18 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
+        /// <param name="requestCache">Cache manager</param>
         /// <param name="specificationAttributeRepository">Specification attribute repository</param>
         /// <param name="specificationAttributeOptionRepository">Specification attribute option repository</param>
         /// <param name="productSpecificationAttributeRepository">Product specification attribute repository</param>
         /// <param name="eventPublisher">Event published</param>
-        public SpecificationAttributeService(IRequestCache cacheManager,
+        public SpecificationAttributeService(IRequestCache requestCache,
             IRepository<SpecificationAttribute> specificationAttributeRepository,
             IRepository<SpecificationAttributeOption> specificationAttributeOptionRepository,
             IRepository<ProductSpecificationAttribute> productSpecificationAttributeRepository,
             IEventPublisher eventPublisher)
         {
-            _cacheManager = cacheManager;
+            _requestCache = requestCache;
             _specificationAttributeRepository = specificationAttributeRepository;
             _specificationAttributeOptionRepository = specificationAttributeOptionRepository;
             _productSpecificationAttributeRepository = productSpecificationAttributeRepository;
@@ -121,7 +121,7 @@ namespace SmartStore.Services.Catalog
 
             _specificationAttributeRepository.Delete(specificationAttribute);
 
-            _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(specificationAttribute);
@@ -138,7 +138,7 @@ namespace SmartStore.Services.Catalog
 
             _specificationAttributeRepository.Insert(specificationAttribute);
 
-            _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(specificationAttribute);
@@ -155,7 +155,7 @@ namespace SmartStore.Services.Catalog
 
             _specificationAttributeRepository.Update(specificationAttribute);
 
-            _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(specificationAttribute);
@@ -204,7 +204,7 @@ namespace SmartStore.Services.Catalog
 
             _specificationAttributeOptionRepository.Delete(specificationAttributeOption);
 
-            _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(specificationAttributeOption);
@@ -221,7 +221,7 @@ namespace SmartStore.Services.Catalog
 
             _specificationAttributeOptionRepository.Insert(specificationAttributeOption);
 
-            _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(specificationAttributeOption);
@@ -238,7 +238,7 @@ namespace SmartStore.Services.Catalog
 
             _specificationAttributeOptionRepository.Update(specificationAttributeOption);
 
-            _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(specificationAttributeOption);
@@ -259,7 +259,7 @@ namespace SmartStore.Services.Catalog
 
             _productSpecificationAttributeRepository.Delete(productSpecificationAttribute);
 
-            _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(productSpecificationAttribute);
@@ -293,7 +293,7 @@ namespace SmartStore.Services.Catalog
                 showOnProductPageCacheStr = showOnProductPage.ToString();
             string key = string.Format(PRODUCTSPECIFICATIONATTRIBUTE_ALLBYPRODUCTID_KEY, productId, allowFilteringCacheStr, showOnProductPageCacheStr);
             
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = _productSpecificationAttributeRepository.Table;
                 query = query.Where(psa => psa.ProductId == productId);
@@ -333,7 +333,7 @@ namespace SmartStore.Services.Catalog
 
             _productSpecificationAttributeRepository.Insert(productSpecificationAttribute);
 
-            _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(productSpecificationAttribute);
@@ -350,7 +350,7 @@ namespace SmartStore.Services.Catalog
 
             _productSpecificationAttributeRepository.Update(productSpecificationAttribute);
 
-            _cacheManager.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTSPECIFICATIONATTRIBUTE_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(productSpecificationAttribute);

@@ -18,22 +18,22 @@ namespace SmartStore.Services.Catalog
 
         private readonly IRepository<CategoryTemplate> _categoryTemplateRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IRequestCache _cacheManager;
+        private readonly IRequestCache _requestCache;
 
-        #endregion
-        
-        #region Ctor
+		#endregion
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="categoryTemplateRepository">Category template repository</param>
-        /// <param name="eventPublisher">Event published</param>
-        public CategoryTemplateService(IRequestCache cacheManager,
+		#region Ctor
+
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="requestCache">Cache manager</param>
+		/// <param name="categoryTemplateRepository">Category template repository</param>
+		/// <param name="eventPublisher">Event published</param>
+		public CategoryTemplateService(IRequestCache requestCache,
             IRepository<CategoryTemplate> categoryTemplateRepository, IEventPublisher eventPublisher)
         {
-            _cacheManager = cacheManager;
+            _requestCache = requestCache;
             _categoryTemplateRepository = categoryTemplateRepository;
             _eventPublisher = eventPublisher;
         }

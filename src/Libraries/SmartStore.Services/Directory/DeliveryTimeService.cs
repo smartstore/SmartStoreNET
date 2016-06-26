@@ -26,7 +26,7 @@ namespace SmartStore.Services.Directory
         private readonly IRepository<DeliveryTime> _deliveryTimeRepository;
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _attributeCombinationRepository;
-        private readonly IRequestCache _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly ICustomerService _customerService;
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
@@ -39,13 +39,13 @@ namespace SmartStore.Services.Directory
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
+        /// <param name="requestCache">Cache manager</param>
         /// <param name="currencyRepository">DeliveryTime repository</param>
         /// <param name="customerService">Customer service</param>
         /// <param name="currencySettings">Currency settings</param>
         /// <param name="pluginFinder">Plugin finder</param>
         /// <param name="eventPublisher">Event published</param>
-        public DeliveryTimeService(IRequestCache cacheManager,
+        public DeliveryTimeService(IRequestCache requestCache,
             IRepository<DeliveryTime> deliveryTimeRepository,
             IRepository<Product> productRepository,
             IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,
@@ -54,7 +54,7 @@ namespace SmartStore.Services.Directory
             IEventPublisher eventPublisher,
 			CatalogSettings catalogSettings)
         {
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._deliveryTimeRepository = deliveryTimeRepository;
             this._customerService = customerService;
             this._pluginFinder = pluginFinder;
@@ -82,7 +82,7 @@ namespace SmartStore.Services.Directory
 
             _deliveryTimeRepository.Delete(deliveryTime);
 
-            _cacheManager.RemoveByPattern(DELIVERYTIMES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DELIVERYTIMES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(deliveryTime);
@@ -141,7 +141,7 @@ namespace SmartStore.Services.Directory
         public virtual IList<DeliveryTime> GetAllDeliveryTimes()
         {
             string key = string.Format(DELIVERYTIMES_ALL_KEY);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = _deliveryTimeRepository.Table;
                 query = query.OrderBy(c => c.DisplayOrder);
@@ -161,7 +161,7 @@ namespace SmartStore.Services.Directory
 
             _deliveryTimeRepository.Insert(deliveryTime);
 
-            _cacheManager.RemoveByPattern(DELIVERYTIMES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DELIVERYTIMES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(deliveryTime);
@@ -178,7 +178,7 @@ namespace SmartStore.Services.Directory
 
             _deliveryTimeRepository.Update(deliveryTime);
 
-            _cacheManager.RemoveByPattern(DELIVERYTIMES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DELIVERYTIMES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(deliveryTime);

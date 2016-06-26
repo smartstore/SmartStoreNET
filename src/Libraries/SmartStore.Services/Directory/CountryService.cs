@@ -26,7 +26,7 @@ namespace SmartStore.Services.Directory
         
         private readonly IRepository<Country> _countryRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IRequestCache _cacheManager;
+        private readonly IRequestCache _requestCache;
 		private readonly IStoreContext _storeContext;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 
@@ -34,13 +34,13 @@ namespace SmartStore.Services.Directory
 
         #region Ctor
 
-        public CountryService(IRequestCache cacheManager,
+        public CountryService(IRequestCache requestCache,
             IRepository<Country> countryRepository,
             IEventPublisher eventPublisher,
 			IStoreContext storeContext,
 			IRepository<StoreMapping> storeMappingRepository)
         {
-            _cacheManager = cacheManager;
+            _requestCache = requestCache;
             _countryRepository = countryRepository;
             _eventPublisher = eventPublisher;
 			_storeContext = storeContext;
@@ -64,7 +64,7 @@ namespace SmartStore.Services.Directory
 
             _countryRepository.Delete(country);
 
-            _cacheManager.RemoveByPattern(COUNTRIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(COUNTRIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(country);
@@ -78,7 +78,7 @@ namespace SmartStore.Services.Directory
         public virtual IList<Country> GetAllCountries(bool showHidden = false)
         {
             string key = string.Format(COUNTRIES_ALL_KEY, showHidden);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
 				var query = _countryRepository.Table;
 
@@ -118,7 +118,7 @@ namespace SmartStore.Services.Directory
         public virtual IList<Country> GetAllCountriesForBilling(bool showHidden = false)
         {
             string key = string.Format(COUNTRIES_BILLING_KEY, showHidden);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
 				var allCountries = GetAllCountries(showHidden);
 
@@ -135,7 +135,7 @@ namespace SmartStore.Services.Directory
         public virtual IList<Country> GetAllCountriesForShipping(bool showHidden = false)
         {
             string key = string.Format(COUNTRIES_SHIPPING_KEY, showHidden);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {			
 				var allCountries = GetAllCountries(showHidden);
 
@@ -221,7 +221,7 @@ namespace SmartStore.Services.Directory
 
             _countryRepository.Insert(country);
 
-            _cacheManager.RemoveByPattern(COUNTRIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(COUNTRIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(country);
@@ -238,7 +238,7 @@ namespace SmartStore.Services.Directory
 
             _countryRepository.Update(country);
 
-            _cacheManager.RemoveByPattern(COUNTRIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(COUNTRIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(country);

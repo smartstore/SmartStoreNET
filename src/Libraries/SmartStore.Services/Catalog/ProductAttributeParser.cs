@@ -27,16 +27,16 @@ namespace SmartStore.Services.Catalog
 
 		private readonly IProductAttributeService _productAttributeService;
 		private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
-		private readonly IRequestCache _cacheManager;
+		private readonly IRequestCache _requestCache;
 
 		public ProductAttributeParser(
 			IProductAttributeService productAttributeService,
 			IRepository<ProductVariantAttributeCombination> pvacRepository,
-			IRequestCache cacheManager)
+			IRequestCache requestCache)
         {
             _productAttributeService = productAttributeService;
 			_pvacRepository = pvacRepository;
-			_cacheManager = cacheManager;
+			_requestCache = requestCache;
         }
 
 		#region Product attributes
@@ -344,7 +344,7 @@ namespace SmartStore.Services.Catalog
 			var attributesHash = attributesXml.Hash(Encoding.UTF8);
             var cacheKey = ATTRIBUTECOMBINATION_BY_ID_HASH.FormatInvariant(productId, attributesHash);
 
-			var result = _cacheManager.Get(cacheKey, () => 
+			var result = _requestCache.Get(cacheKey, () => 
 			{
 				var query = from x in _pvacRepository.TableUntracked
 							where x.ProductId == productId

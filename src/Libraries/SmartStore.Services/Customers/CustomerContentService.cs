@@ -17,7 +17,7 @@ namespace SmartStore.Services.Customers
 
         private readonly IRepository<CustomerContent> _contentRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IRequestCache _cacheManager;
+        private readonly IRequestCache _requestCache;
 
         #endregion
 
@@ -26,14 +26,14 @@ namespace SmartStore.Services.Customers
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
+        /// <param name="requestCache">Cache manager</param>
         /// <param name="contentRepository">Customer content repository</param>
         /// <param name="eventPublisher">Event published</param>
-        public CustomerContentService(IRequestCache cacheManager,
+        public CustomerContentService(IRequestCache requestCache,
             IRepository<CustomerContent> contentRepository,
             IEventPublisher eventPublisher)
         {
-            _cacheManager = cacheManager;
+            _requestCache = requestCache;
             _contentRepository = contentRepository;
             _eventPublisher = eventPublisher;
         }

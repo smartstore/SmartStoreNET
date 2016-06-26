@@ -20,18 +20,18 @@ namespace SmartStore.Services.Themes
         
         private readonly IRepository<ThemeVariable> _rsVariables;
         private readonly IThemeRegistry _themeRegistry;
-        private readonly IRequestCache _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly IEventPublisher _eventPublisher;
 
         public ThemeVariablesService(
             IRepository<ThemeVariable> rsVariables, 
 			IThemeRegistry themeRegistry,
-			IRequestCache cacheManager, 
+			IRequestCache requestCache, 
 			IEventPublisher eventPublisher)
         {
             this._rsVariables = rsVariables;
             this._themeRegistry = themeRegistry;
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._eventPublisher = eventPublisher;
         }
 
@@ -44,7 +44,7 @@ namespace SmartStore.Services.Themes
                 return null;
 
             string key = string.Format(THEMEVARS_BY_THEME_KEY, themeName, storeId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var result = new ExpandoObject();
                 var dict = result as IDictionary<string, object>;
@@ -88,7 +88,7 @@ namespace SmartStore.Services.Themes
 						_eventPublisher.EntityDeleted(v);
 					});
 
-					_cacheManager.Remove(THEMEVARS_BY_THEME_KEY.FormatInvariant(themeName, storeId));
+					_requestCache.Remove(THEMEVARS_BY_THEME_KEY.FormatInvariant(themeName, storeId));
 
 					_rsVariables.Context.SaveChanges();
 				}

@@ -19,10 +19,10 @@ namespace SmartStore.Services.Directory
 		private readonly IRequestCache _requestCache;
 		private readonly ICacheManager _cache;
 
-		public GeoCountryLookup(IWebHelper webHelper, IRequestCache cacheManager, ICacheManager cache, ICountryService countryService)
+		public GeoCountryLookup(IWebHelper webHelper, IRequestCache requestCache, ICacheManager cache, ICountryService countryService)
         {
             this._webHelper = webHelper;
-			this._requestCache = cacheManager;
+			this._requestCache = requestCache;
 			this._cache = cache;
 			this._countryService = countryService;
         }

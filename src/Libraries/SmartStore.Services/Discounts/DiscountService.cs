@@ -31,7 +31,7 @@ namespace SmartStore.Services.Discounts
         private readonly IRepository<Discount> _discountRepository;
         private readonly IRepository<DiscountRequirement> _discountRequirementRepository;
         private readonly IRepository<DiscountUsageHistory> _discountUsageHistoryRepository;
-        private readonly IRequestCache _cacheManager;
+        private readonly IRequestCache _requestCache;
 		private readonly IStoreContext _storeContext;
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IPluginFinder _pluginFinder;
@@ -43,7 +43,7 @@ namespace SmartStore.Services.Discounts
 
         #region Ctor
 
-        public DiscountService(IRequestCache cacheManager,
+        public DiscountService(IRequestCache requestCache,
             IRepository<Discount> discountRepository,
             IRepository<DiscountRequirement> discountRequirementRepository,
             IRepository<DiscountUsageHistory> discountUsageHistoryRepository,
@@ -54,7 +54,7 @@ namespace SmartStore.Services.Discounts
 			ISettingService settingService,
 			IProviderManager providerManager)
         {
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._discountRepository = discountRepository;
             this._discountRequirementRepository = discountRequirementRepository;
             this._discountUsageHistoryRepository = discountUsageHistoryRepository;
@@ -127,7 +127,7 @@ namespace SmartStore.Services.Discounts
 
             _discountRepository.Delete(discount);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(discount);
@@ -162,7 +162,7 @@ namespace SmartStore.Services.Discounts
             //we do it because we know that this method is invoked several times per HTTP request with distinct "discountType" parameter
             //that's why let's access the database only once
             string key = string.Format(DISCOUNTS_ALL_KEY, showHidden, couponCode);
-            var result = _cacheManager.Get(key, () =>
+            var result = _requestCache.Get(key, () =>
             {
                 var query = _discountRepository.Table;
                 if (!showHidden)
@@ -204,7 +204,7 @@ namespace SmartStore.Services.Discounts
 
             _discountRepository.Insert(discount);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(discount);
@@ -221,7 +221,7 @@ namespace SmartStore.Services.Discounts
 
             _discountRepository.Update(discount);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(discount);
@@ -238,7 +238,7 @@ namespace SmartStore.Services.Discounts
 
             _discountRequirementRepository.Delete(discountRequirement);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(discountRequirement);
@@ -416,7 +416,7 @@ namespace SmartStore.Services.Discounts
 
             _discountUsageHistoryRepository.Insert(discountUsageHistory);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(discountUsageHistory);
@@ -434,7 +434,7 @@ namespace SmartStore.Services.Discounts
 
             _discountUsageHistoryRepository.Update(discountUsageHistory);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(discountUsageHistory);
@@ -451,7 +451,7 @@ namespace SmartStore.Services.Discounts
 
             _discountUsageHistoryRepository.Delete(discountUsageHistory);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(discountUsageHistory);

@@ -23,23 +23,18 @@ namespace SmartStore.Services.Tax
 
         private readonly IRepository<TaxCategory> _taxCategoryRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IRequestCache _cacheManager;
+        private readonly IRequestCache _requestCache;
 
         #endregion
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="taxCategoryRepository">Tax category repository</param>
-        /// <param name="eventPublisher">Event published</param>
-        public TaxCategoryService(IRequestCache cacheManager,
+        public TaxCategoryService(
+			IRequestCache requestCache,
             IRepository<TaxCategory> taxCategoryRepository,
             IEventPublisher eventPublisher)
         {
-            _cacheManager = cacheManager;
+            _requestCache = requestCache;
             _taxCategoryRepository = taxCategoryRepository;
             _eventPublisher = eventPublisher;
         }
@@ -59,7 +54,7 @@ namespace SmartStore.Services.Tax
 
             _taxCategoryRepository.Delete(taxCategory);
 
-            _cacheManager.RemoveByPattern(TAXCATEGORIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(TAXCATEGORIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(taxCategory);
@@ -72,7 +67,7 @@ namespace SmartStore.Services.Tax
         public virtual IList<TaxCategory> GetAllTaxCategories()
         {
             string key = string.Format(TAXCATEGORIES_ALL_KEY);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from tc in _taxCategoryRepository.Table
                             orderby tc.DisplayOrder
@@ -93,7 +88,7 @@ namespace SmartStore.Services.Tax
                 return null;
 
             string key = string.Format(TAXCATEGORIES_BY_ID_KEY, taxCategoryId);
-            return _cacheManager.Get(key, () => 
+            return _requestCache.Get(key, () => 
             { 
                 return _taxCategoryRepository.GetById(taxCategoryId); 
             });
@@ -110,7 +105,7 @@ namespace SmartStore.Services.Tax
 
             _taxCategoryRepository.Insert(taxCategory);
 
-            _cacheManager.RemoveByPattern(TAXCATEGORIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(TAXCATEGORIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(taxCategory);
@@ -127,7 +122,7 @@ namespace SmartStore.Services.Tax
 
             _taxCategoryRepository.Update(taxCategory);
 
-            _cacheManager.RemoveByPattern(TAXCATEGORIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(TAXCATEGORIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(taxCategory);

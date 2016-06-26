@@ -54,7 +54,7 @@ namespace SmartStore.Services.Catalog
         private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IDataProvider _dataProvider;
         private readonly IDbContext _dbContext;
-		private readonly IRequestCache _cacheManager;
+		private readonly IRequestCache _requestCache;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CommonSettings _commonSettings;
 		private readonly ICommonServices _services;
@@ -66,7 +66,7 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
+        /// <param name="requestCache">Cache manager</param>
         /// <param name="productRepository">Product repository</param>
         /// <param name="relatedProductRepository">Related product repository</param>
         /// <param name="crossSellProductRepository">Cross-sell product repository</param>
@@ -105,7 +105,7 @@ namespace SmartStore.Services.Catalog
             IWorkflowMessageService workflowMessageService,
             IDataProvider dataProvider,
 			IDbContext dbContext,
-			IRequestCache cacheManager,
+			IRequestCache requestCache,
             LocalizationSettings localizationSettings,
 			CommonSettings commonSettings,
 			ICommonServices services)
@@ -127,7 +127,7 @@ namespace SmartStore.Services.Catalog
             this._workflowMessageService = workflowMessageService;
             this._dataProvider = dataProvider;
             this._dbContext = dbContext;
-			this._cacheManager = cacheManager;
+			this._requestCache = requestCache;
             this._localizationSettings = localizationSettings;
             this._commonSettings = commonSettings;
 			this._services = services;
@@ -276,7 +276,7 @@ namespace SmartStore.Services.Catalog
                 return null;
 
             string key = string.Format(PRODUCTS_BY_ID_KEY, productId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             { 
                 return _productRepository.GetById(productId); 
             });
@@ -318,7 +318,7 @@ namespace SmartStore.Services.Catalog
             _productRepository.Insert(product);
 
 			//clear cache
-			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
             
             //event notification
             _services.EventPublisher.EntityInserted(product);
@@ -343,7 +343,7 @@ namespace SmartStore.Services.Catalog
             _productRepository.Update(product);
 
 			// cache
-			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             // event notification
 			if (publishEvent && modified)
@@ -1710,7 +1710,7 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Delete(tierPrice);
 
-			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityDeleted(tierPrice);
@@ -1766,7 +1766,7 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Insert(tierPrice);
 
-			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityInserted(tierPrice);
@@ -1783,7 +1783,7 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Update(tierPrice);
 
-			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_requestCache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityUpdated(tierPrice);

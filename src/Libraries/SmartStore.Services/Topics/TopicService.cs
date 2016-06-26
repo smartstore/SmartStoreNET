@@ -22,21 +22,22 @@ namespace SmartStore.Services.Topics
 		private readonly IRepository<Topic> _topicRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IEventPublisher _eventPublisher;
-		private readonly IRequestCache _cacheManager;
+		private readonly IRequestCache _requestCache;
 
 		#endregion
 
 		#region Ctor
 
-		public TopicService(IRepository<Topic> topicRepository,
+		public TopicService(
+			IRepository<Topic> topicRepository,
 			IRepository<StoreMapping> storeMappingRepository,
 			IEventPublisher eventPublisher,
-			IRequestCache cacheManager)
+			IRequestCache requestCache)
         {
             _topicRepository = topicRepository;
 			_storeMappingRepository = storeMappingRepository;
             _eventPublisher = eventPublisher;
-			_cacheManager = cacheManager;
+			_requestCache = requestCache;
 
 			this.QuerySettings = DbQuerySettings.Default;
 		}
@@ -58,7 +59,7 @@ namespace SmartStore.Services.Topics
 
             _topicRepository.Delete(topic);
 
-			_cacheManager.RemoveByPattern(TOPICS_PATTERN_KEY);
+			_requestCache.RemoveByPattern(TOPICS_PATTERN_KEY);
 
 			//event notification
 			_eventPublisher.EntityDeleted(topic);
@@ -104,7 +105,7 @@ namespace SmartStore.Services.Topics
         /// <returns>Topics</returns>
 		public virtual IList<Topic> GetAllTopics(int storeId)
         {
-			var result = _cacheManager.Get(TOPICS_ALL_KEY.FormatInvariant(storeId), () =>
+			var result = _requestCache.Get(TOPICS_ALL_KEY.FormatInvariant(storeId), () =>
 			{
 				var query = _topicRepository.Table;
 
@@ -144,7 +145,7 @@ namespace SmartStore.Services.Topics
 
             _topicRepository.Insert(topic);
 
-			_cacheManager.RemoveByPattern(TOPICS_PATTERN_KEY);
+			_requestCache.RemoveByPattern(TOPICS_PATTERN_KEY);
 
 			//event notification
 			_eventPublisher.EntityInserted(topic);
@@ -161,7 +162,7 @@ namespace SmartStore.Services.Topics
 
             _topicRepository.Update(topic);
 
-			_cacheManager.RemoveByPattern(TOPICS_PATTERN_KEY);
+			_requestCache.RemoveByPattern(TOPICS_PATTERN_KEY);
 
 			//event notification
 			_eventPublisher.EntityUpdated(topic);

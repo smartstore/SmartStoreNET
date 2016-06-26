@@ -27,7 +27,7 @@ namespace SmartStore.Services.Common
         #region Fields
 
         private readonly IRepository<GenericAttribute> _genericAttributeRepository;
-        private readonly IRequestCache _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly IEventPublisher _eventPublisher;
 		private readonly IRepository<Order> _orderRepository;
 
@@ -38,16 +38,16 @@ namespace SmartStore.Services.Common
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
+        /// <param name="requestCache">Cache manager</param>
         /// <param name="genericAttributeRepository">Generic attribute repository</param>
         /// <param name="eventPublisher">Event published</param>
 		/// <param name="orderRepository">Order repository</param>
-        public GenericAttributeService(IRequestCache cacheManager,
+        public GenericAttributeService(IRequestCache requestCache,
             IRepository<GenericAttribute> genericAttributeRepository,
             IEventPublisher eventPublisher,
 			IRepository<Order> orderRepository)
         {
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._genericAttributeRepository = genericAttributeRepository;
             this._eventPublisher = eventPublisher;
 			this._orderRepository = orderRepository;
@@ -72,7 +72,7 @@ namespace SmartStore.Services.Common
             _genericAttributeRepository.Delete(attribute);
 
             //cache
-            _cacheManager.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
 
             //event notifications
             _eventPublisher.EntityDeleted(attribute);
@@ -110,7 +110,7 @@ namespace SmartStore.Services.Common
             _genericAttributeRepository.Insert(attribute);
             
             //cache
-            _cacheManager.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
 
             //event notifications
             _eventPublisher.EntityInserted(attribute);
@@ -134,7 +134,7 @@ namespace SmartStore.Services.Common
             _genericAttributeRepository.Update(attribute);
 
             //cache
-            _cacheManager.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
 
             //event notifications
             _eventPublisher.EntityUpdated(attribute);
@@ -155,7 +155,7 @@ namespace SmartStore.Services.Common
 		public virtual IList<GenericAttribute> GetAttributesForEntity(int entityId, string keyGroup)
         {
             string key = string.Format(GENERICATTRIBUTE_KEY, entityId, keyGroup);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from ga in _genericAttributeRepository.Table
                             where ga.EntityId == entityId &&

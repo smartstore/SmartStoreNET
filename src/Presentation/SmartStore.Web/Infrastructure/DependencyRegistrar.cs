@@ -16,15 +16,15 @@ namespace SmartStore.Web.Infrastructure
     {
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
         {
-			//we cache presentation models between requests
-			builder.RegisterType<BlogController>().WithStaticCache();
-			builder.RegisterType<CatalogController>().WithStaticCache();
-			builder.RegisterType<CountryController>().WithStaticCache();
-			builder.RegisterType<CommonController>().WithStaticCache();
-			builder.RegisterType<NewsController>().WithStaticCache();
-			builder.RegisterType<PollController>().WithStaticCache();
-			builder.RegisterType<ShoppingCartController>().WithStaticCache();
-			builder.RegisterType<TopicController>().WithStaticCache();
+			//// we cache presentation models between requests
+			//builder.RegisterType<BlogController>();
+			//builder.RegisterType<CatalogController>();
+			//builder.RegisterType<CountryController>();
+			//builder.RegisterType<CommonController>();
+			//builder.RegisterType<NewsController>();
+			//builder.RegisterType<PollController>();
+			//builder.RegisterType<ShoppingCartController>();
+			//builder.RegisterType<TopicController>();
 
 			builder.RegisterType<CatalogHelper>().InstancePerRequest();
 

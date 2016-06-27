@@ -22,9 +22,9 @@ namespace SmartStore.Services
 
 		private readonly ICacheManager _cacheManager;
 
-        public ServiceCacheConsumer(Func<string, ICacheManager> cache)
+        public ServiceCacheConsumer(ICacheManager cacheManager)
         {
-			this._cacheManager = cache("static");
+			_cacheManager = cacheManager;
         }
 
 		public void HandleEvent(EntityInserted<Store> eventMessage)

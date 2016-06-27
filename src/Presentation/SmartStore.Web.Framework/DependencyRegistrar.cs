@@ -136,7 +136,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<WebHelper>().As<IWebHelper>().InstancePerRequest();
 
 			// work context
-			builder.RegisterType<WebWorkContext>().As<IWorkContext>().WithStaticCache().InstancePerRequest();
+			builder.RegisterType<WebWorkContext>().As<IWorkContext>().InstancePerRequest();
 
 			// store context
 			builder.RegisterType<WebStoreContext>().As<IStoreContext>().InstancePerRequest();
@@ -163,7 +163,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<ProductTemplateService>().As<IProductTemplateService>().InstancePerRequest();
 			builder.RegisterType<CategoryTemplateService>().As<ICategoryTemplateService>().InstancePerRequest();
 			builder.RegisterType<ManufacturerTemplateService>().As<IManufacturerTemplateService>().InstancePerRequest();
-			builder.RegisterType<ProductTagService>().As<IProductTagService>().WithStaticCache().InstancePerRequest();
+			builder.RegisterType<ProductTagService>().As<IProductTagService>().InstancePerRequest();
 
 			builder.RegisterType<AffiliateService>().As<IAffiliateService>().InstancePerRequest();
 			builder.RegisterType<AddressService>().As<IAddressService>().InstancePerRequest();
@@ -176,9 +176,9 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<CustomerRegistrationService>().As<ICustomerRegistrationService>().InstancePerRequest();
 			builder.RegisterType<CustomerReportService>().As<ICustomerReportService>().InstancePerRequest();
 
-			builder.RegisterType<PermissionService>().As<IPermissionService>().WithStaticCache().InstancePerRequest();
+			builder.RegisterType<PermissionService>().As<IPermissionService>().InstancePerRequest();
 
-			builder.RegisterType<AclService>().As<IAclService>().WithStaticCache().InstancePerRequest();
+			builder.RegisterType<AclService>().As<IAclService>().InstancePerRequest();
 
 			builder.RegisterType<GeoCountryLookup>().As<IGeoCountryLookup>().InstancePerRequest();
 			builder.RegisterType<CountryService>().As<ICountryService>().InstancePerRequest();
@@ -190,11 +190,11 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<StateProvinceService>().As<IStateProvinceService>().InstancePerRequest();
 
 			builder.RegisterType<StoreService>().As<IStoreService>().InstancePerRequest();
-			builder.RegisterType<StoreMappingService>().As<IStoreMappingService>().WithStaticCache().InstancePerRequest();
+			builder.RegisterType<StoreMappingService>().As<IStoreMappingService>().InstancePerRequest();
 
 			builder.RegisterType<DiscountService>().As<IDiscountService>().InstancePerRequest();
 
-			builder.RegisterType<SettingService>().As<ISettingService>().WithStaticCache().InstancePerRequest();
+			builder.RegisterType<SettingService>().As<ISettingService>().InstancePerRequest();
 
 			builder.RegisterType<DownloadService>().As<IDownloadService>().InstancePerRequest();
 			builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();
@@ -216,7 +216,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<EncryptionService>().As<IEncryptionService>().InstancePerRequest();
 			builder.RegisterType<FormsAuthenticationService>().As<IAuthenticationService>().InstancePerRequest();
 
-			builder.RegisterType<UrlRecordService>().As<IUrlRecordService>().WithStaticCache().InstancePerRequest();
+			builder.RegisterType<UrlRecordService>().As<IUrlRecordService>().InstancePerRequest();
 
 			builder.RegisterType<ShipmentService>().As<IShipmentService>().InstancePerRequest();
 			builder.RegisterType<ShippingService>().As<IShippingService>().InstancePerRequest();
@@ -247,7 +247,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<OpenAuthenticationService>().As<IOpenAuthenticationService>().InstancePerRequest();
 
 			builder.RegisterType<FilterService>().As<IFilterService>().InstancePerRequest();
-			builder.RegisterType<CommonServices>().As<ICommonServices>().WithStaticCache().InstancePerRequest();
+			builder.RegisterType<CommonServices>().As<ICommonServices>().InstancePerRequest();
 		}
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
@@ -491,15 +491,11 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<LanguageService>().As<ILanguageService>().InstancePerRequest();
 			
 			builder.RegisterType<TelerikLocalizationServiceFactory>().As<Telerik.Web.Mvc.Infrastructure.ILocalizationServiceFactory>().InstancePerRequest();
-			builder.RegisterType<LocalizationService>().As<ILocalizationService>()
-				.WithStaticCache() // pass StaticCache as ICache (cache settings between requests)
-				.InstancePerRequest();
+			builder.RegisterType<LocalizationService>().As<ILocalizationService>().InstancePerRequest();
 
 			builder.RegisterType<Text>().As<IText>().InstancePerRequest();
 
-			builder.RegisterType<LocalizedEntityService>().As<ILocalizedEntityService>()
-				.WithStaticCache() // pass StaticCache as ICache (cache settings between requests)
-				.InstancePerRequest();
+			builder.RegisterType<LocalizedEntityService>().As<ILocalizedEntityService>().InstancePerRequest();
 		}
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
@@ -537,44 +533,9 @@ namespace SmartStore.Web.Framework
 			// Request cache
 			builder.RegisterType<RequestCache>().As<IRequestCache>().InstancePerRequest();
 
-			// Model/Business cache
-			builder.RegisterType<StaticCache>()
-				.Keyed<ICache>(typeof(StaticCache))
-				.Named<ICache>("static")
-				.SingleInstance();
-			builder.RegisterType<AspNetCache>()
-				.Keyed<ICache>(typeof(AspNetCache))
-				.Named<ICache>("aspnet")
-				.SingleInstance();
-
-			builder.RegisterType<CacheManager<StaticCache>>()
-				.Named<ICacheManager>("static")
-				.SingleInstance();
-			builder.RegisterType<CacheManager<AspNetCache>>()
-				.Named<ICacheManager>("aspnet")
-				.SingleInstance();
-			builder.RegisterType<NullCache>()
-				.Named<ICacheManager>("null")
-				.SingleInstance();
-
-			// Register resolving delegate
-			builder.Register<Func<Type, ICache>>(c =>
-			{
-				var cc = c.Resolve<IComponentContext>();
-				return keyed => cc.ResolveKeyed<ICache>(keyed);
-			});
-
-			builder.Register<Func<string, ICacheManager>>(c =>
-			{
-				var cc = c.Resolve<IComponentContext>();
-				return named => cc.ResolveNamed<ICacheManager>(named);
-			});
-
-			builder.Register<Func<string, Lazy<ICacheManager>>>(c =>
-			{
-				var cc = c.Resolve<IComponentContext>();
-				return named => cc.ResolveNamed<Lazy<ICacheManager>>(named);
-			});
+			// Model/Business cache (application scoped)
+			builder.RegisterType<MemoryCacheManager>().As<ICacheManager>().SingleInstance();
+			builder.RegisterType<NullCache>().Named<ICacheManager>("null").SingleInstance();
 		}
 	}
 

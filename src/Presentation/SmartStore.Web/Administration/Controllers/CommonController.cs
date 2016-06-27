@@ -69,7 +69,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly Lazy<IImportProfileService> _importProfileService;
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly ICommonServices _services;
-		private readonly Func<string, ICacheManager> _cache;
 
 		private readonly static object s_lock = new object();
 
@@ -95,8 +94,7 @@ namespace SmartStore.Admin.Controllers
             Lazy<IPluginFinder> pluginFinder,
 			Lazy<IImportProfileService> importProfileService,
 			IGenericAttributeService genericAttributeService,
-			ICommonServices services,
-			Func<string, ICacheManager> cache)
+			ICommonServices services)
         {
             this._paymentService = paymentService;
             this._shippingService = shippingService;
@@ -116,7 +114,6 @@ namespace SmartStore.Admin.Controllers
 			this._importProfileService = importProfileService;
             this._genericAttributeService = genericAttributeService;
 			this._services = services;
-			this._cache = cache;
         }
 
         #endregion
@@ -845,7 +842,7 @@ namespace SmartStore.Admin.Controllers
 			_imageCache.Value.DeleteCachedImages();
 
 			// get rid of cached image metadata
-			_cache("static").Clear();
+			_services.Cache.Clear();
 
             return RedirectToAction("Maintenance");
         }
@@ -1002,11 +999,9 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult ClearCache(string previousUrl)
         {
-			var cacheManager = _services.Cache;
-            cacheManager.Clear();
+			_services.Cache.Clear();
 
-			cacheManager = _cache("aspnet");
-			cacheManager.Clear();
+			HttpContext.Cache.RemoveByPattern("*");
 
 			this.NotifySuccess(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));
 

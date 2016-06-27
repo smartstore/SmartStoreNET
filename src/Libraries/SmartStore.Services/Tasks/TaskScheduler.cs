@@ -98,7 +98,7 @@ namespace SmartStore.Services.Tasks
 		{
 			string authToken = Guid.NewGuid().ToString();
 
-			var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
+			var cacheManager = EngineContext.Current.Resolve<ICacheManager>();
 			cacheManager.Set(GenerateAuthTokenCacheKey(authToken), true, 1);
 
 			return authToken;
@@ -114,7 +114,7 @@ namespace SmartStore.Services.Tasks
             if (authToken.IsEmpty())
                 return false;
 
-			var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
+			var cacheManager = EngineContext.Current.Resolve<ICacheManager>();
 			var cacheKey = GenerateAuthTokenCacheKey(authToken);
 			if (cacheManager.Contains(cacheKey))
 			{

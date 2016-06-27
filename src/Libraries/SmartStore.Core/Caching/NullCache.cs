@@ -45,9 +45,9 @@ namespace SmartStore.Core.Caching
         {
         }
 
-		public IEnumerable<string> Keys(string pattern)
+		public string[] Keys(string pattern)
 		{
-			return Enumerable.Empty<string>();
+			return new string[0];
 		}
 
 		public void RemoveByPattern(string pattern)
@@ -57,10 +57,5 @@ namespace SmartStore.Core.Caching
         public void Clear()
         {
         }
-
-		public IDisposable EnterWriteLock()
-		{
-			return ActionDisposable.Empty;
-		}
 	}
 }

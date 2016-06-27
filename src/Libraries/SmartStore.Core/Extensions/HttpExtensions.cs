@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Linq;
 using System.Text;
 using System.Web;
+using System.Web.Caching;
 using System.Web.Security;
 
 namespace SmartStore
@@ -53,6 +56,53 @@ namespace SmartStore
 
 			webRequest.CookieContainer.Add(sendCookie);
 		}
-    }
+
+		public static string BuildScopedKey(this Cache cache, string key)
+		{
+			return key.HasValue() ? "SmartStoreNET:" + key : null;
+		}
+
+		public static T GetOrAdd<T>(this Cache cache, string key, Func<T> acquirer, TimeSpan? duration = null)
+		{
+			Guard.ArgumentNotEmpty(() => key);
+			Guard.ArgumentNotNull(() => acquirer);
+
+			object obj = cache.Get(key);
+
+			if (obj != null)
+			{
+				return (T)obj;
+			}
+
+			var value = acquirer();
+
+			var absoluteExpiration = Cache.NoAbsoluteExpiration;
+			if (duration.HasValue)
+			{
+				absoluteExpiration = DateTime.UtcNow + duration.Value;
+			}
+
+			cache.Insert(key, value, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration);
+
+			return value;
+		}
+
+		public static void RemoveByPattern(this Cache cache, string pattern)
+		{
+			var regionName = "SmartStoreNET:";
+
+			pattern = pattern == "*" ? "" : pattern;
+
+			var keys = from entry in HttpRuntime.Cache.AsParallel().Cast<DictionaryEntry>()
+					   let key = entry.Key.ToString()
+					   where key.StartsWith(regionName + pattern, StringComparison.OrdinalIgnoreCase)
+					   select key;
+
+			foreach (var key in keys.ToArray())
+			{
+				cache.Remove(key);
+			}
+		}
+	}
 
 }

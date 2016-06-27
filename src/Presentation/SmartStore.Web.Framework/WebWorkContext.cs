@@ -47,7 +47,8 @@ namespace SmartStore.Web.Framework
         private Customer _originalCustomerIfImpersonated;
 		private bool? _isAdmin;
 
-        public WebWorkContext(Func<string, ICacheManager> cacheManager,
+        public WebWorkContext(
+			ICacheManager cacheManager,
             HttpContextBase httpContext,
             ICustomerService customerService,
 			IStoreContext storeContext,
@@ -61,7 +62,7 @@ namespace SmartStore.Web.Framework
             IStoreService storeService,
 			IUserAgent userAgent)
         {
-			this._cacheManager = cacheManager("static");
+			this._cacheManager = cacheManager;
             this._httpContext = httpContext;
             this._customerService = customerService;
 			this._storeContext = storeContext;

@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Themes;
+using System.Web;
+using System.Web.Caching;
 
 namespace SmartStore.Web.Framework.Theming
 { 
@@ -51,20 +53,13 @@ namespace SmartStore.Web.Framework.Theming
         internal virtual ExpandoObject GetRawVariables(string themeName, int storeId)
         {
 			// we need the Asp.Net here cache in order to define cacheKey dependencies
-			var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("aspnet");
 
 			string cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(themeName, storeId);
-			return cacheManager.Get(cacheKey, () =>
+
+			return HttpRuntime.Cache.GetOrAdd(cacheKey, () => 
 			{
 				var themeVarService = EngineContext.Current.Resolve<IThemeVariablesService>();
-				var result = themeVarService.GetThemeVariables(themeName, storeId);
-
-				if (result == null)
-				{
-					return new ExpandoObject();
-				}
-
-				return result;
+				return themeVarService.GetThemeVariables(themeName, storeId) ?? new ExpandoObject();
 			});
         }
 

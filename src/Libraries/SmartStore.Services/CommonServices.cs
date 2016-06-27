@@ -18,7 +18,7 @@ namespace SmartStore.Services
 	public class CommonServices : ICommonServices
 	{
 		private readonly IComponentContext _container;
-		private readonly Lazy<ICacheManager> _cache;
+		private readonly Lazy<ICacheManager> _cacheManager;
 		private readonly Lazy<IRequestCache> _requestCache;
 		private readonly Lazy<IDbContext> _dbContext;
 		private readonly Lazy<IStoreContext> _storeContext;
@@ -36,7 +36,7 @@ namespace SmartStore.Services
 
 		public CommonServices(
 			IComponentContext container,
-            Func<string, Lazy<ICacheManager>> cache,
+            Lazy<ICacheManager> cacheManager,
 			Lazy<IRequestCache> requestCache,
 			Lazy<IDbContext> dbContext,
 			Lazy<IStoreContext> storeContext,
@@ -53,7 +53,7 @@ namespace SmartStore.Services
 			Lazy<IDisplayedEntities> displayedEntities)
 		{
 			this._container = container;
-			this._cache = cache("static");
+			this._cacheManager = cacheManager;
 			this._requestCache = requestCache;
 			this._dbContext = dbContext;
 			this._storeContext = storeContext;
@@ -82,7 +82,7 @@ namespace SmartStore.Services
 		{
 			get
 			{
-				return _cache.Value;
+				return _cacheManager.Value;
 			}
 		}
 

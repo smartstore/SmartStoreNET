@@ -455,15 +455,15 @@ namespace SmartStore.Web.Infrastructure.Cache
 
         private readonly ICacheManager _cacheManager;
         
-        public ModelCacheEventConsumer(Func<string, ICacheManager> cache)
+        public ModelCacheEventConsumer(ICacheManager cacheManager)
         {
-			this._cacheManager = cache("static");
+			_cacheManager = cacheManager;
         }
 
         //languages
         public void HandleEvent(EntityInserted<Language> eventMessage)
         {
-            //clear all localizable models
+            // clear all localizable models
             _cacheManager.RemoveByPattern(MANUFACTURER_NAVIGATION_PATTERN_KEY);
             _cacheManager.RemoveByPattern(PRODUCT_SPECS_PATTERN_KEY);
             _cacheManager.RemoveByPattern(TOPIC_PATTERN_KEY);

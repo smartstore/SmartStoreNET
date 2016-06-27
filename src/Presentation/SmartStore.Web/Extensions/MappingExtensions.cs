@@ -81,6 +81,8 @@ namespace SmartStore.Web
             if (!excludeProperties && address != null)
             {
                 model.Id = address.Id;
+                model.Salutation = address.Salutation;
+                model.Title = address.Title;
                 model.FirstName = address.FirstName;
                 model.LastName = address.LastName;
                 model.Email = address.Email;
@@ -150,9 +152,21 @@ namespace SmartStore.Web
                     }
                 }
             }
+            
+            if (localizationService != null)
+            {
+                var salutations = addressSettings.GetLocalized(x => x.Salutations);
+
+                foreach (var sal in salutations.SplitSafe(","))
+                {
+                    model.AvailableSalutations.Add(new SelectListItem { Value = sal, Text = sal });
+                }
+            }
 
             //form fields
             model.ValidateEmailAddress = addressSettings.ValidateEmailAddress;
+            model.SalutationEnabled = addressSettings.SalutationEnabled;
+            model.TitleEnabled = addressSettings.TitleEnabled;
             model.CompanyEnabled = addressSettings.CompanyEnabled;
             model.CompanyRequired = addressSettings.CompanyRequired;
             model.StreetAddressEnabled = addressSettings.StreetAddressEnabled;
@@ -170,6 +184,7 @@ namespace SmartStore.Web
             model.FaxEnabled = addressSettings.FaxEnabled;
             model.FaxRequired = addressSettings.FaxRequired;
         }
+
         public static Address ToEntity(this AddressModel model)
         {
             if (model == null)
@@ -178,12 +193,15 @@ namespace SmartStore.Web
             var entity = new Address();
             return ToEntity(model, entity);
         }
+
         public static Address ToEntity(this AddressModel model, Address destination)
         {
             if (model == null)
                 return destination;
 
             destination.Id = model.Id;
+            destination.Salutation = model.Salutation;
+            destination.Title = model.Title;
             destination.FirstName = model.FirstName;
             destination.LastName = model.LastName;
             destination.Email = model.Email;
@@ -199,6 +217,5 @@ namespace SmartStore.Web
 
             return destination;
         }
-
     }
 }

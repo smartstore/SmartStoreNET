@@ -2,10 +2,12 @@
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {
-    public partial class CustomerUserSettingsModel
+    public partial class CustomerUserSettingsModel : ModelBase, ILocalizedModel<AddressSettingsLocalizedModel>
     {
         public CustomerUserSettingsModel()
         {
@@ -13,11 +15,14 @@ namespace SmartStore.Admin.Models.Settings
             AddressSettings = new AddressSettingsModel();
             DateTimeSettings = new DateTimeSettingsModel();
             ExternalAuthenticationSettings = new ExternalAuthenticationSettingsModel();
+            Locales = new List<AddressSettingsLocalizedModel>();
         }
+
         public CustomerSettingsModel CustomerSettings { get; set; }
         public AddressSettingsModel AddressSettings { get; set; }
         public DateTimeSettingsModel DateTimeSettings { get; set; }
         public ExternalAuthenticationSettingsModel ExternalAuthenticationSettings { get; set; }
+        public IList<AddressSettingsLocalizedModel> Locales { get; set; }
 
         #region Nested classes
 
@@ -141,7 +146,16 @@ namespace SmartStore.Admin.Models.Settings
 		}
 
         public partial class AddressSettingsModel
-        {
+        {            
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.SalutationEnabled")]
+            public bool SalutationEnabled { get; set; }
+                                       
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Salutations")]
+            public string Salutations { get; set; }
+            
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.TitleEnabled")]
+            public bool TitleEnabled { get; set; }
+            
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyEnabled")]
             public bool CompanyEnabled { get; set; }
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyRequired")]
@@ -209,6 +223,16 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationAutoRegisterEnabled")]
             public bool AutoRegisterEnabled { get; set; }
         }
+
         #endregion
     }
+
+    public class AddressSettingsLocalizedModel : ILocalizedModelLocal
+    {
+        public int LanguageId { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.Salutations")]
+        public string Salutations { get; set; }
+    }
+
 }

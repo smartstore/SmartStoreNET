@@ -946,6 +946,11 @@ namespace SmartStore.Admin.Controllers
 				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
 				.ToList();
 
+            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+            {
+                locale.Salutations = addressSettings.GetLocalized(x => x.Salutations, languageId, false, false);
+            });
+
 			return View(model);
         }
 
@@ -978,6 +983,11 @@ namespace SmartStore.Admin.Controllers
 			var externalAuthenticationSettings = _services.Settings.LoadSetting<ExternalAuthenticationSettings>(storeScope);
             externalAuthenticationSettings.AutoRegisterEnabled = model.ExternalAuthenticationSettings.AutoRegisterEnabled;
 
+            foreach (var localized in model.Locales)
+            {
+                _localizedEntityService.SaveLocalizedValue(addressSettings, x => x.Salutations, localized.Salutations, localized.LanguageId);
+            }
+
 			StoreDependingSettings.UpdateSettings(externalAuthenticationSettings, form, storeScope, _services.Settings);
 
             //activity log
@@ -986,11 +996,6 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("CustomerUser");
         }
-
-
-
-
-
 
         public ActionResult GeneralCommon()
         {

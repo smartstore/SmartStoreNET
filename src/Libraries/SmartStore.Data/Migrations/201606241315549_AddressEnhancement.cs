@@ -29,7 +29,8 @@ namespace SmartStore.Data.Migrations
         {
             builder.AddOrUpdate("Address.Fields.Salutation", "Salutation", "Anrede");
             builder.AddOrUpdate("Address.Fields.Title", "Title", "Titel");
-
+            builder.AddOrUpdate("Account.Fields.Title", "Title", "Titel");
+            
             builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Salutations",
                 "Salutations",
                 "Anreden",
@@ -48,6 +49,12 @@ namespace SmartStore.Data.Migrations
                 "Set if 'Title' is enabled.",
                 "Legt fest, ob das Feld 'Titel' aktiv ist.");
 
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.TitleEnabled",
+                "'Title' enabled",
+                "'Titel' aktiv",
+                "Set if 'Title' is enabled.",
+                "Legt fest, ob das Feld 'Titel' aktiv ist.");
+            
             builder.AddOrUpdate("Admin.Configuration.Settings.Shipping.SuppressShippingOptsCheckoutStepIfOnlyOneActiveOpt",
                 "Display shipping options during checkout process only if more then one option is available",
                 "Versandartauswahl nur anzeigen, wenn mehr als eine Versandart zur Verfügung steht",

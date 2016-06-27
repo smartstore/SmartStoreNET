@@ -100,6 +100,9 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.GenderEnabled")]
             public bool GenderEnabled { get; set; }
 
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.TitleEnabled")]
+            public bool TitleEnabled { get; set; }
+
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.DateOfBirthEnabled")]
             public bool DateOfBirthEnabled { get; set; }
 

@@ -74,6 +74,11 @@
                     </div>
                 }
 
+                @if (Model.TitleEnabled)
+                {
+                    @Html.ControlGroupFor(model => model.Title, required: false)
+                }
+
                 @Html.ControlGroupFor(model => model.FirstName, required: true)
                 @Html.ControlGroupFor(model => model.LastName, required: true)
 

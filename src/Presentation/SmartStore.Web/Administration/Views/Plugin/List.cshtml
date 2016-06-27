@@ -67,7 +67,7 @@
 						{
 							<span class="attr">
 								<i class="fa fa-external-link"></i>
-								<a href="@plugin.Url" target="PluginWebsiteWnd">Website</a>
+								<a href="@plugin.Url" target="PluginWebsiteWnd">@T("Common.Website")</a>
 							</span>
 						}
 						@if (plugin.Author.HasValue())
@@ -289,6 +289,10 @@
             btnExecuteTasks = $('#btn-execute-tasks');
 
 		// Execute filtering
+		setTimeout(function() {
+			$('#filter-query').focus();
+		}, 800);
+
 		var mainContainer = $('#local-plugins');
 		$('#filter-query').on('keyup', function (e) {
 			var el = $(this);

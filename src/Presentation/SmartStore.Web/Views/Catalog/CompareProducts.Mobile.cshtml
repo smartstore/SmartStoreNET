@@ -1,20 +1,18 @@
-﻿@model CompareProductsModel
+﻿@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Web.Models.Catalog;
+@model CompareProductsModel
 @{
     Layout = "~/Views/Shared/_Root.cshtml";
 
-    //title
     Html.AddTitleParts(T("PageTitle.CompareProducts").Text);
 }
-@using SmartStore.Core;
-@using SmartStore.Core.Infrastructure;
-@using SmartStore.Web.Models.Catalog;
 @{
     string columnWidth = "";
     if (Model.Products.Count > 0)
     {
         columnWidth = Math.Round((decimal)(90M / Model.Products.Count), 0).ToString() + "%";
     }
-
 
     var specificationAttributes = new List<ProductSpecificationModel>();
     foreach (var product in Model.Products)
@@ -51,7 +49,15 @@
                                 <a class="link" href="@Url.RouteUrl("Product", new { SeName = product.SeName })">@product.Name</a>
                             </div>
                             <div class="product-price">
-                                @T("Products.Compare.Price"): @product.ProductPrice.Price
+								<div>
+									@T("Products.Compare.Price"): @product.ProductPrice.Price
+								</div>
+								@if (product.BasePriceInfo.HasValue())
+								{
+									<div class="base-price muted">
+										@product.BasePriceInfo
+									</div>
+								}
                             </div>
                             <div class="attributes">
                                 @foreach (var specificationAttribute in specificationAttributes)

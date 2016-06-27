@@ -37,9 +37,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		[WebApiQueryable]
 		public IQueryable<Category> GetAppliedToCategories(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<Category>>(key, x => x.AppliedToCategories);
-
-			return entity.AppliedToCategories.AsQueryable();
+			return GetRelatedCollection(key, x => x.AppliedToCategories);
 		}
 	}
 }

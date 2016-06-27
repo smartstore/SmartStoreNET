@@ -1,0 +1,68 @@
+﻿@using SmartStore.Admin.Models.DataExchange;
+@model CsvConfigurationModel
+<table class="adminContent">
+	@if (ViewData["ShowGroupCaption"] != null && (bool)ViewData["ShowGroupCaption"])
+	{
+		<tr class="adminSeparator">
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Admin.Common.CsvConfiguration")</div>
+				</div>
+			</td>
+		</tr>
+	}
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.QuoteAllFields)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.QuoteAllFields)
+			@Html.ValidationMessageFor(x => x.QuoteAllFields)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.TrimValues)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.TrimValues)
+			@Html.ValidationMessageFor(x => x.TrimValues)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.SupportsMultiline)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.SupportsMultiline)
+			@Html.ValidationMessageFor(x => x.SupportsMultiline)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Delimiter)
+		</td>
+		<td class="adminData">
+			@Html.TextBoxFor(x => x.Delimiter, new { style = "width: 30px;", maxlength = "2" })
+			@Html.ValidationMessageFor(x => x.Delimiter)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Quote)
+		</td>
+		<td class="adminData">
+			@Html.TextBoxFor(x => x.Quote, new { style = "width: 30px;", maxlength = "2" })
+			@Html.ValidationMessageFor(x => x.Quote)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Escape)
+		</td>
+		<td class="adminData">
+			@Html.TextBoxFor(x => x.Escape, new { style = "width: 30px;", maxlength = "2" })
+			@Html.ValidationMessageFor(x => x.Escape)
+		</td>
+	</tr>
+</table>

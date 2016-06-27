@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Stores;
@@ -18,8 +17,9 @@ namespace SmartStore.Services.News
 
         private readonly IRepository<NewsItem> _newsItemRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
-        private readonly ICacheManager _cacheManager;
-        private readonly IEventPublisher _eventPublisher;
+		private readonly ICommonServices _services;
+
+		private readonly NewsSettings _newsSettings;
 
         #endregion
 
@@ -27,13 +27,13 @@ namespace SmartStore.Services.News
 
         public NewsService(IRepository<NewsItem> newsItemRepository,
 			IRepository<StoreMapping> storeMappingRepository, 
-			ICacheManager cacheManager,
-			IEventPublisher eventPublisher)
+			ICommonServices services,
+			NewsSettings newsSettings)
         {
             _newsItemRepository = newsItemRepository;
 			_storeMappingRepository = storeMappingRepository;
-            _cacheManager = cacheManager;
-            _eventPublisher = eventPublisher;
+			_services = services;
+			_newsSettings = newsSettings;
 
 			this.QuerySettings = DbQuerySettings.Default;
 		}
@@ -56,7 +56,7 @@ namespace SmartStore.Services.News
             _newsItemRepository.Delete(newsItem);
 
             //event notification
-            _eventPublisher.EntityDeleted(newsItem);
+            _services.EventPublisher.EntityDeleted(newsItem);
         }
 
         /// <summary>
@@ -72,6 +72,24 @@ namespace SmartStore.Services.News
             return _newsItemRepository.GetById(newsId);
         }
 
+		/// <summary>
+		/// Get news by identifiers
+		/// </summary>
+		/// <param name="newsIds">News identifiers</param>
+		/// <returns>News query</returns>
+		public virtual IQueryable<NewsItem> GetNewsByIds(int[] newsIds)
+		{
+			if (newsIds == null || newsIds.Length == 0)
+				return null;
+
+			var query =
+				from x in _newsItemRepository.Table
+				where newsIds.Contains(x.Id)
+				select x;
+
+			return query;
+		}
+
         /// <summary>
         /// Gets all news
         /// </summary>
@@ -80,12 +98,22 @@ namespace SmartStore.Services.News
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="maxAge">The maximum age of returned news</param>
         /// <returns>News items</returns>
-		public virtual IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false)
+		public virtual IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null)
         {
             var query = _newsItemRepository.Table;
-            if (languageId > 0)
-                query = query.Where(n => languageId == n.LanguageId);
+
+			if (languageId > 0)
+			{
+				query = query.Where(n => languageId == n.LanguageId);
+			}
+
+			if (maxAge.HasValue)
+			{
+				query = query.Where(n => n.CreatedOnUtc >= maxAge.Value);
+			}
+
             if (!showHidden)
             {
                 var utcNow = DateTime.UtcNow;
@@ -93,6 +121,7 @@ namespace SmartStore.Services.News
                 query = query.Where(n => !n.StartDateUtc.HasValue || n.StartDateUtc <= utcNow);
                 query = query.Where(n => !n.EndDateUtc.HasValue || n.EndDateUtc >= utcNow);
             }
+
 			query = query.OrderByDescending(n => n.CreatedOnUtc);
 
 			//Store mapping
@@ -110,6 +139,7 @@ namespace SmartStore.Services.News
 						group n by n.Id	into nGroup
 						orderby nGroup.Key
 						select nGroup.FirstOrDefault();
+
 				query = query.OrderByDescending(n => n.CreatedOnUtc);
 			}
 
@@ -129,7 +159,7 @@ namespace SmartStore.Services.News
             _newsItemRepository.Insert(news);
 
             //event notification
-            _eventPublisher.EntityInserted(news);
+            _services.EventPublisher.EntityInserted(news);
         }
 
         /// <summary>
@@ -144,7 +174,7 @@ namespace SmartStore.Services.News
             _newsItemRepository.Update(news);
 
             //event notification
-            _eventPublisher.EntityUpdated(news);
+            _services.EventPublisher.EntityUpdated(news);
         }
         
         /// <summary>

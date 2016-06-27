@@ -32,9 +32,10 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		// navigation properties
 
-		public DeliveryTime GetDeliveryTime(int key)
+		[WebApiQueryable]
+		public SingleResult<DeliveryTime> GetDeliveryTime(int key)
 		{
-			return GetExpandedProperty<DeliveryTime>(key, x => x.DeliveryTime);
+			return GetRelatedEntity(key, x => x.DeliveryTime);
 		}
 	}
 }

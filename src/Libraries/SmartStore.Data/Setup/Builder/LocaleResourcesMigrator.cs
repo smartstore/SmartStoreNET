@@ -35,7 +35,7 @@ namespace SmartStore.Data.Setup
 
 			using (var scope = new DbContextScope(_ctx, autoDetectChanges: false))
 			{
-				var langMap = _languages.ToDictionary(x => x.UniqueSeoCode.EmptyNull().ToLower());
+				var langMap = _languages.ToDictionarySafe(x => x.UniqueSeoCode.EmptyNull().ToLower());
 
 				var toDelete = new List<LocaleStringResource>();
 				var toUpdate = new List<LocaleStringResource>();
@@ -102,7 +102,7 @@ namespace SmartStore.Data.Setup
 				toUpdate.Each(x => _ctx.Entry(x).State = System.Data.Entity.EntityState.Modified);
 
 				// save now
-				_ctx.SaveChanges();
+				int affectedRows = _ctx.SaveChanges();
 			}
 		}
 

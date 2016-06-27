@@ -1,5 +1,6 @@
 
 
+using System.Collections.Generic;
 using SmartStore.Core.Domain.Common;
 
 namespace SmartStore.Services.Common
@@ -15,7 +16,6 @@ namespace SmartStore.Services.Common
         /// <param name="address">Address</param>
         void DeleteAddress(Address address);
 
-		/// <remarks>codehint: sm-add</remarks>
 		void DeleteAddress(int id);
 
         /// <summary>
@@ -38,6 +38,13 @@ namespace SmartStore.Services.Common
         /// <param name="addressId">Address identifier</param>
         /// <returns>Address</returns>
         Address GetAddressById(int addressId);
+
+		/// <summary>
+		/// Gets addresses by address identifiers
+		/// </summary>
+		/// <param name="addressIds">Address identifiers</param>
+		/// <returns>Addresses</returns>
+		IList<Address> GetAddressByIds(int[] addressIds);
 
         /// <summary>
         /// Inserts an address

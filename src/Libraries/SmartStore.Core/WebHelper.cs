@@ -1,6 +1,8 @@
 using System;
 using System.Configuration;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
@@ -10,17 +12,23 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
+using System.Net;
+using System.Text;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Net.Sockets;
 
 namespace SmartStore.Core
 {
-
     public partial class WebHelper : IWebHelper
     {
-		private static bool? s_optimizedCompilationsEnabled = null;
-		private static AspNetHostingPermissionLevel? s_trustLevel = null;
+		private static object s_lock = new object();
+		private static bool? s_optimizedCompilationsEnabled;
+		private static AspNetHostingPermissionLevel? s_trustLevel;
 		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static readonly Regex s_htmlPathPattern = new Regex(@"(?<=(?:href|src)=(?:""|'))(?!https?://)(?<url>[^(?:""|')]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 		private static readonly Regex s_cssPathPattern = new Regex(@"url\('(?<url>.+)'\)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
+		private static ConcurrentDictionary<int, string> s_safeLocalHostNames = new ConcurrentDictionary<int, string>();
 
 		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
@@ -78,7 +86,7 @@ namespace SmartStore.Core
                 bool appPathPossiblyAppended;
                 string storeHost = GetStoreHost(useSsl, out appPathPossiblyAppended).TrimEnd('/');
 
-                string rawUrl = string.Empty;
+                string rawUrl;
                 if (appPathPossiblyAppended)
                 {
                     string temp = _httpContext.Request.AppRelativeCurrentExecutionFilePath.TrimStart('~');
@@ -99,7 +107,7 @@ namespace SmartStore.Core
 				}
             }
 
-            return url.ToLowerInvariant();
+            return url;
         }
 
         public virtual bool IsCurrentConnectionSecured()
@@ -137,7 +145,8 @@ namespace SmartStore.Core
             return result;
         }
 
-        private string GetHostPart(string url)
+	    [SuppressMessage("ReSharper", "UnusedMember.Local")]
+	    private string GetHostPart(string url)
         {
             var uri = new Uri(url);
             var host = uri.GetComponents(UriComponents.Scheme | UriComponents.Host, UriFormat.Unescaped);
@@ -189,12 +198,12 @@ namespace SmartStore.Core
 
 				if (_currentStore != null)
 				{
-					var securityMode = _currentStore.GetSecurityMode(useSsl);
+					var securityMode = _currentStore.GetSecurityMode();
 
 					if (httpHost.IsEmpty())
 					{
-						//HTTP_HOST variable is not available.
-						//It's possible only when HttpContext is not available (for example, running in a schedule task)
+						// HTTP_HOST variable is not available.
+						// It's possible only when HttpContext is not available (for example, running in a schedule task)
 						result = _currentStore.Url.EnsureEndsWith("/");
 
 						appPathPossiblyAppended = true;
@@ -239,7 +248,7 @@ namespace SmartStore.Core
             }
 
 			// cache results for request
-			result = result.EnsureEndsWith("/").ToLowerInvariant();
+			result = result.EnsureEndsWith("/");
 			if (useSsl)
 			{
 				_storeHostSsl = result;
@@ -288,7 +297,7 @@ namespace SmartStore.Core
                 result += "/";
             }
 
-            return result.ToLowerInvariant();
+            return result;
         }
         
         public virtual bool IsStaticResource(HttpRequest request)
@@ -316,9 +325,8 @@ namespace SmartStore.Core
         
         public virtual string ModifyQueryString(string url, string queryStringModification, string anchor)
         {
-			// TODO: routine should not return a query string in lowercase (unless the caller is telling him to do so).
-			url = url.EmptyNull().ToLower();
-			queryStringModification = queryStringModification.EmptyNull().ToLower();
+			url = url.EmptyNull();
+			queryStringModification = queryStringModification.EmptyNull();
 
 			string curAnchor = null;
 
@@ -338,13 +346,19 @@ namespace SmartStore.Core
 				current.Add(nv, modify[nv], true);
 			}
 
-			var result = "{0}{1}{2}".FormatCurrent(parts[0], current.ToString(), anchor.NullEmpty() == null ? (curAnchor == null ? "" : "#" + curAnchor.ToLower()) : "#" + anchor.ToLower());
+			var result = string.Concat(
+				parts[0],
+				current.ToString(),
+				anchor.NullEmpty() == null ? (curAnchor == null ? "" : "#" + curAnchor) : "#" + anchor
+			);
+
 			return result;
         }
 
         public virtual string RemoveQueryString(string url, string queryString)
         {
-			var parts = url.EmptyNull().ToLower().Split(new[] { '?' });
+			var parts = url.SplitSafe("?");
+
 			var current = new QueryString(parts.Length == 2 ? parts[1] : "");
 
 			if (current.Count > 0 && queryString.HasValue())
@@ -352,13 +366,14 @@ namespace SmartStore.Core
 				current.Remove(queryString);
 			}
 
-			var result = "{0}{1}".FormatCurrent(parts[0], current.ToString());
+			var result = string.Concat(parts[0], current.ToString());
 			return result;
         }
         
         public virtual T QueryString<T>(string name)
         {
             string queryParam = null;
+
             if (_httpContext != null && _httpContext.Request.QueryString[name] != null)
                 queryParam = _httpContext.Request.QueryString[name];
 
@@ -389,7 +404,7 @@ namespace SmartStore.Core
             {
 				if (_httpContext.Request.RequestType == "GET")
 				{
-					if (String.IsNullOrEmpty(redirectUrl))
+					if (string.IsNullOrEmpty(redirectUrl))
 					{
 						redirectUrl = GetThisPageUrl(true);
 					}
@@ -405,7 +420,8 @@ namespace SmartStore.Core
             }
         }
 
-        private bool TryWriteWebConfig()
+	    [SuppressMessage("ReSharper", "UnusedMember.Local")]
+	    private bool TryWriteWebConfig()
         {
             try
             {
@@ -420,7 +436,8 @@ namespace SmartStore.Core
             }
         }
 
-        private bool TryWriteGlobalAsax()
+	    [SuppressMessage("ReSharper", "UnusedMember.Local")]
+	    private bool TryWriteGlobalAsax()
         {
             try
             {
@@ -474,29 +491,6 @@ namespace SmartStore.Core
 			}
 		}
 
-        public virtual bool IsRequestBeingRedirected
-        {
-            get
-            {
-                var response = _httpContext.Response;
-                return response.IsRequestBeingRedirected;   
-            }
-        }
-
-        public virtual bool IsPostBeingDone
-        {
-            get
-            {
-                if (_httpContext.Items["sm.IsPOSTBeingDone"] == null)
-                    return false;
-                return Convert.ToBoolean(_httpContext.Items["sm.IsPOSTBeingDone"]);
-            }
-            set
-            {
-                _httpContext.Items["sm.IsPOSTBeingDone"] = value;
-            }
-        }
-
 		/// <summary>
 		/// Finds the trust level of the running application (http://blogs.msdn.com/dmitryr/archive/2007/01/23/finding-out-the-current-trust-level-in-asp-net.aspx)
 		/// </summary>
@@ -510,7 +504,7 @@ namespace SmartStore.Core
 
 				//determine maximum
 				foreach (AspNetHostingPermissionLevel trustLevel in
-						new AspNetHostingPermissionLevel[] {
+						new [] {
                                 AspNetHostingPermissionLevel.Unrestricted,
                                 AspNetHostingPermissionLevel.High,
                                 AspNetHostingPermissionLevel.Medium,
@@ -587,6 +581,7 @@ namespace SmartStore.Core
 		/// <summary>
 		/// Prepends protocol and host to the given (relative) url
 		/// </summary>
+		[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
 		public static string GetAbsoluteUrl(string url, HttpRequestBase request)
 		{
 			Guard.ArgumentNotEmpty(() => url);
@@ -607,15 +602,180 @@ namespace SmartStore.Core
 				url = VirtualPathUtility.ToAbsolute(url);
 			}
 
-			url = String.Format("{0}://{1}{2}", request.Url.Scheme, request.Url.Authority, url);
+			url = string.Format("{0}://{1}{2}", request.Url.Scheme, request.Url.Authority, url);
 			return url;
 		}
 
-        private class StoreHost
-        {
-            public string Host { get; set; }
-            public bool ExpectingDirtySecurityChannelMove { get; set; }
-        }
+		public static string GetPublicIPAddress()
+		{
+			string result = string.Empty;
 
-    }
+			try
+			{
+				using (var client = new WebClient())
+				{
+					client.Headers["User-Agent"] = "Mozilla/4.0 (Compatible; Windows NT 5.1; MSIE 6.0) (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
+					try
+					{
+						byte[] arr = client.DownloadData("http://checkip.amazonaws.com/");
+						string response = Encoding.UTF8.GetString(arr);
+						result = response.Trim();
+					}
+					catch { }
+				}
+			}
+			catch { }
+
+			var checkers = new string[] 
+			{
+				"https://ipinfo.io/ip",
+				"https://api.ipify.org",
+				"https://icanhazip.com",
+				"https://wtfismyip.com/text",
+				"http://bot.whatismyipaddress.com/"
+			};
+
+			if (string.IsNullOrEmpty(result))
+			{
+				using (var client = new WebClient())
+				{
+					foreach (var checker in checkers)
+					{
+						try
+						{
+							result = client.DownloadString(checker).Replace("\n", "");
+							if (!string.IsNullOrEmpty(result))
+							{
+								break;
+							}
+						}
+						catch { }
+					}
+				}
+			}
+
+			if (string.IsNullOrEmpty(result))
+			{
+				try
+				{
+					var url = "http://checkip.dyndns.org";
+					var req = WebRequest.Create(url);
+					using (var resp = req.GetResponse())
+					{
+						using (var sr = new StreamReader(resp.GetResponseStream()))
+						{
+							var response = sr.ReadToEnd().Trim();
+							var a = response.Split(':');
+							var a2 = a[1].Substring(1);
+							var a3 = a2.Split('<');
+							result = a3[0];
+						}
+					}
+				}
+				catch { }
+			}
+
+			return result;
+		}
+
+		public static HttpWebRequest CreateHttpRequestForSafeLocalCall(Uri requestUri)
+		{
+			Guard.ArgumentNotNull(() => requestUri);
+
+			var safeHostName = GetSafeLocalHostName(requestUri);
+
+			var uri = requestUri;
+
+			if (!requestUri.Host.Equals(safeHostName, StringComparison.OrdinalIgnoreCase))
+			{
+				var url = String.Format("{0}://{1}{2}",
+					requestUri.Scheme,
+					requestUri.IsDefaultPort ? safeHostName : safeHostName + ":" + requestUri.Port,
+					requestUri.PathAndQuery);
+				uri = new Uri(url);
+			}
+
+			var request = WebRequest.CreateHttp(uri);
+			request.ServerCertificateValidationCallback += (sender, cert, chain, errors) => true;
+			request.ServicePoint.Expect100Continue = false;
+			request.UserAgent = "SmartStore.NET {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
+
+			return request;
+		}
+
+		private static string GetSafeLocalHostName(Uri requestUri)
+		{
+			return s_safeLocalHostNames.GetOrAdd(requestUri.Port, (port) => 
+			{
+				// first try original host
+				if (TestHost(requestUri, requestUri.Host, 5000))
+				{
+					return requestUri.Host;
+				}
+
+				// try loopback
+				var hostName = Dns.GetHostName();
+				var hosts = new List<string> { "localhost", hostName, "127.0.0.1" };
+				foreach (var host in hosts)
+				{
+					if (TestHost(requestUri, host, 500))
+					{
+						return host;
+					}
+				}
+
+				// try local IP addresses
+				hosts.Clear();
+				var ipAddresses = Dns.GetHostAddresses(hostName).Where(x => x.AddressFamily == AddressFamily.InterNetwork).Select(x => x.ToString());
+				hosts.AddRange(ipAddresses);
+
+				foreach (var host in hosts)
+				{
+					if (TestHost(requestUri, host, 500))
+					{
+						return host;
+					}
+				}
+
+				// None of the hosts are callable. WTF?
+				return requestUri.Host;
+			});
+		}
+
+		private static bool TestHost(Uri originalUri, string host, int timeout)
+		{
+			var url = String.Format("{0}://{1}/taskscheduler/noop",
+				originalUri.Scheme,
+				originalUri.IsDefaultPort ? host : host + ":" + originalUri.Port);
+			var uri = new Uri(url);
+
+			var request = WebRequest.CreateHttp(uri);
+			request.ServerCertificateValidationCallback += (sender, cert, chain, errors) => true;
+			request.ServicePoint.Expect100Continue = false;
+			request.UserAgent = "SmartStore.NET";
+			request.Timeout = timeout;
+
+			HttpWebResponse response = null;
+
+			try
+			{
+				response = (HttpWebResponse)request.GetResponse();
+				if (response.StatusCode == HttpStatusCode.OK)
+				{
+					return true;
+				}
+			}
+			catch
+			{
+				// try the next host
+			}
+			finally
+			{
+				if (response != null)
+					response.Dispose();
+			}
+
+			return false;
+		}
+	}
 }

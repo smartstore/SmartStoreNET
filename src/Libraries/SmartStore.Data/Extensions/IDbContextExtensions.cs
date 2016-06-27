@@ -5,7 +5,7 @@ using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 
-namespace SmartStore.Data 
+namespace SmartStore 
 {
 
     public static class IDbContextExtensions 
@@ -25,16 +25,16 @@ namespace SmartStore.Data
 
         private static T InnerGetCopy<T>(IDbContext context, T currentCopy, Func<DbEntityEntry<T>, DbPropertyValues> func) where T : BaseEntity 
 		{
-            //Get the database context
+            // Get the database context
             DbContext dbContext = CastOrThrow(context);
 
-            //Get the entity tracking object
+            // Get the entity tracking object
             DbEntityEntry<T> entry = GetEntityOrReturnNull(currentCopy, dbContext);
 
-            //The output 
+            // The output 
             T output = null;
 
-            //Try and get the values
+            // Try and get the values
             if (entry != null) {
                 DbPropertyValues dbPropertyValues = func(entry);
                 if(dbPropertyValues != null) {
@@ -80,5 +80,25 @@ namespace SmartStore.Data
 		{
             return InnerGetCopy(context, currentCopy, e => e.OriginalValues);
         }
+
+		/// <summary>
+		/// Executes the <c>DBCC SHRINKDATABASE(0)</c> command against the SQL Server (Express) database
+		/// </summary>
+		/// <param name="context">The context</param>
+		/// <returns><c>true</c>, when the operation completed successfully.</returns>
+		public static bool ShrinkDatabase(this IDbContext context)
+		{
+			if (DataSettings.Current.IsSqlServer)
+			{
+				try
+				{
+					context.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
+					return true;
+				}
+				catch { }
+			}
+
+			return false;
+		}
     }
 }

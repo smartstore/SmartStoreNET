@@ -103,12 +103,19 @@
 				<div class="title">@T("Admin.System.Maintenance.DeleteExportedFiles")</div>
 			</td>
 		</tr>
-		@if (Model.DeleteExportedFiles.NumberOfDeletedFiles.HasValue)
+		@if (Model.DeleteExportedFiles.NumberOfDeletedFiles.HasValue || Model.DeleteExportedFiles.NumberOfDeletedFolders.HasValue)
 		{
 			<tr>
 				<td colspan="2">
 					<div class="alert alert-info">
-						@string.Format(T("Admin.System.Maintenance.DeleteExportedFiles.TotalDeleted").Text, Model.DeleteExportedFiles.NumberOfDeletedFiles.Value)
+						@if (Model.DeleteExportedFiles.NumberOfDeletedFiles.HasValue)
+						{
+							<div>@T("Admin.Common.FilesDeleted", Model.DeleteExportedFiles.NumberOfDeletedFiles.Value).</div>
+						}
+						@if (Model.DeleteExportedFiles.NumberOfDeletedFolders.HasValue)
+						{
+							<div>@T("Admin.Common.FoldersDeleted", Model.DeleteExportedFiles.NumberOfDeletedFolders.Value).</div>
+						}
 					</div>
 				</td>
 			</tr>
@@ -132,7 +139,7 @@
 		<tr>
 			<td>&nbsp;</td>
 			<td class="adminData">
-				<button type="submit" name="delete-exported-files" value="delete-exported-files" class="btn btn-danger">
+				<button type="submit" name="delete-exported-files" value="delete-exported-files" class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
 					<i class="fa fa-trash-o"></i>
 					@T("Admin.Common.Delete")
 				</button>

@@ -20,6 +20,7 @@ CKEDITOR.editorConfig = function( config ) {
 	config.toolbarStartupExpanded = true;
 	//config.skin = "moono";
 	config.skin = "smartstore";
+	config.fillEmptyBlocks = false;
 
 	// The toolbar groups arrangement, optimized for two toolbar rows.
     config.toolbarGroups = [

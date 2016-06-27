@@ -156,7 +156,7 @@ img { max-width: 100% }
 .checkout-data .use-reward-points{margin:0;padding:10px;background:#F7F5E8;border:dotted 1px #d3d3d3;}
 .checkout-data .payment-methods{text-align:left;height:auto;}
 .checkout-data .payment-methods .payment-method-item{text-align:left;vertical-align:text-top;}
-.checkout-data .payment-methods .payment-method-item .payment-method-desc{margin:0 0 14px 46px;}
+.checkout-data .payment-methods .payment-method-item .payment-method-description{margin:0 0 15px 15px;}
 .checkout-data .payment-methods .select-button{text-align:left;}
 .checkout-data .payment-methods .message-error{text-align:left;}
 .checkout-data .payment-info{text-align:left;height:auto;}
@@ -688,4 +688,11 @@ pre{white-space:pre-wrap;/* css-3 */white-space:0;/* Mozilla, since 1999 */white
 }
 .legal-hints .footer-legal {
     color: green;
+}
+.change-device button{
+    display: inline; 
+    margin: 0;
+    border: 0;
+    background: none;
+    padding: 7px;
 }

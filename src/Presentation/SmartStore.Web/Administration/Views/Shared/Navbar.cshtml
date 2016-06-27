@@ -1,6 +1,7 @@
 ﻿@using SmartStore.Core.Domain.Stores;
 @using SmartStore.Services.Customers;
 @using SmartStore.Services.Stores;
+@using SmartStore.Core;
 
 @{
     var currentCustomer = this.WorkContext.CurrentCustomer;
@@ -10,7 +11,8 @@
 	string currentLanguageCode = currentLanguage.UniqueSeoCode.EmptyNull().ToLower();
 	string communityUrl = (currentLanguageCode == "de" ? 
 		"http://community.smartstore.com" :
-		"http://community.smartstore.com/index.php?/&k=880ea6a14ea49e853634fbdc5015a024&setlanguage=1&cal_id=&langid=1");
+        "http://community.smartstore.com/index.php?/&k=880ea6a14ea49e853634fbdc5015a024&setlanguage=1&cal_id=&langid=1");
+    string docsUrl = GenerateHelpUrl("");
 	var checkUpdateResult = ViewBag.CheckUpdateResult as CheckUpdateResult;
 }
 
@@ -32,7 +34,7 @@
 			<div class="btn-group pull-right">
 				<a id="current-user" class="btn navbar-tool dropdown-toggle" data-toggle="dropdown" title="@userName" href='@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })'>
 					<em class="fa-stack fa-lg">
-						<i class="fa fa-circle fa-stack-2x" style="x-color: #afbfff"></i>
+						<i class="fa fa-circle fa-stack-2x"></i>
 						<i class="fa fa-user fa-stack-1x fa-inverse" style="color: #3b50ce"></i>
 					</em>
 				</a>
@@ -73,15 +75,22 @@
 					</li>
 				}
 				<li>
+					<a href="@docsUrl" data-lang="@currentLanguageCode" target="help">
+						<i class="fa fa-fw fa-book"></i>
+						@T("Admin.Help.Documentation")
+					</a>
+				</li>
+				<li>
 					<a href="@communityUrl" data-lang="@currentLanguageCode" target="help">
 						<i class="fa fa-fw fa-comment"></i>
 						@T("Admin.Help.Forums")
 					</a>
 				</li>
+				<li class="divider"></li>
 				<li>
 					<a href="@Url.Action("About", "Home", new { area = "Admin" })">
 						<i class="fa fa-fw fa-info-circle"></i>
-						@T("Admin.Common.About") SmartStore.NET
+						@T("Admin.Common.About")
 					</a>
 				</li>
 			</ul>
@@ -90,7 +99,7 @@
 		@Html.Action("LanguageSelector", "Common", new { area = "Admin" })
 
 		<div class="btn-group toppad pull-right">
-			<button class="btn dropdown-toggle navbar-tool" title='Aktionen' data-toggle="dropdown">
+			<button class="btn dropdown-toggle navbar-tool" title='@T("Admin.Common.Actions")' data-toggle="dropdown">
 				<i class="fa fa-fw fa-gear"></i>
 			</button>
 			<ul class="dropdown-menu">
@@ -106,7 +115,7 @@
 				<li>
 					<a href='@Url.Action("Preview", "Theme")'>
 						<i class="fa fa-fw fa-eye"></i>
-						Vorschaumodus
+						@T("Admin.Configuration.Themes.PreviewMode")
 					</a>
 				</li>
 				<li class="divider"></li>

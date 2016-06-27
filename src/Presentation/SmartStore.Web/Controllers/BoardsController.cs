@@ -16,8 +16,11 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Boards;
 
@@ -263,48 +266,46 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
+		[Compress]
         public ActionResult ActiveDiscussionsRss(int forumId = 0)
         {
             if (!_forumSettings.ForumsEnabled)
-            {
 				return HttpNotFound();
-            }
 
-            if (!_forumSettings.ActiveDiscussionsFeedEnabled)
-            {
-				return HttpNotFound();
-            }
+			var language = _workContext.WorkingLanguage;
+			var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
+			var selfLink = Url.Action("ActiveDiscussionsRSS", "Boards", null, protocol);
+			var discussionLink = Url.Action("ActiveDiscussions", "Boards", null, protocol);
 
-            int topicLimit = _forumSettings.ActiveDiscussionsFeedCount;
-            var topics = _forumService.GetActiveTopics(forumId, topicLimit);
-            string url = Url.Action("ActiveDiscussionsRSS", null, (object)null, "http");
+			var title = "{0} - {1}".FormatInvariant(_storeContext.CurrentStore.Name, T("Forum.ActiveDiscussionsFeedTitle"));
 
-            var feedTitle = _localizationService.GetResource("Forum.ActiveDiscussionsFeedTitle");
-            var feedDescription = _localizationService.GetResource("Forum.ActiveDiscussionsFeedDescription");
+			var feed = new SmartSyndicationFeed(new Uri(discussionLink), title, T("Forum.ActiveDiscussionsFeedDescription"));
 
-            var feed = new SyndicationFeed(
-				string.Format(feedTitle, _storeContext.CurrentStore.Name),
-				feedDescription,
-				new Uri(url),
-				"ActiveDiscussionsRSS",
-				DateTime.UtcNow);
+			feed.AddNamespaces(false);
+			feed.Init(selfLink, language);
 
-            var items = new List<SyndicationItem>();
+			if (!_forumSettings.ActiveDiscussionsFeedEnabled)
+				return new RssActionResult { Feed = feed };
 
-            var viewsText = _localizationService.GetResource("Forum.Views");
-            var repliesText = _localizationService.GetResource("Forum.Replies");
+			var items = new List<SyndicationItem>();
+			var topics = _forumService.GetActiveTopics(forumId, _forumSettings.ActiveDiscussionsFeedCount);
 
-            foreach (var topic in topics)
-            {
-                string topicUrl = Url.RouteUrl("TopicSlug", new { id = topic.Id, slug = topic.GetSeName() }, "http");
-                string content = String.Format("{2}: {0}, {3}: {1}", topic.NumReplies.ToString(), topic.Views.ToString(), repliesText, viewsText);
+			var viewsText = T("Forum.Views");
+			var repliesText = T("Forum.Replies");
 
-                items.Add(new SyndicationItem(topic.Subject, content, new Uri(topicUrl),
-                    String.Format("Topic:{0}", topic.Id), (topic.LastPostTime ?? topic.UpdatedOnUtc)));
-            }
-            feed.Items = items;
+			foreach (var topic in topics)
+			{
+				string topicUrl = Url.RouteUrl("TopicSlug", new { id = topic.Id, slug = topic.GetSeName() }, "http");
+				var synopsis = "{0}: {1}, {2}: {3}".FormatInvariant(repliesText, topic.NumReplies, viewsText, topic.Views);
 
-            return new RssActionResult() { Feed = feed };
+				var item = feed.CreateItem(topic.Subject, synopsis, topicUrl, topic.LastPostTime ?? topic.UpdatedOnUtc);
+
+				items.Add(item);
+			}
+
+			feed.Items = items;
+
+            return new RssActionResult { Feed = feed };
         }
 
         public ActionResult ForumGroup(int id)
@@ -354,7 +355,7 @@ namespace SmartStore.Web.Controllers
                     if (forumSubscription != null)
                     {
                         model.WatchForumText = _localizationService.GetResource("Forum.UnwatchForum");
-                        model.WatchForumSubscribed = true; // codehint: sm-add
+                        model.WatchForumSubscribed = true;
                     }
                 }
 
@@ -379,58 +380,51 @@ namespace SmartStore.Web.Controllers
             return RedirectToRoute("Boards");
         }
 
+		[Compress]
         public ActionResult ForumRss(int id)
         {
             if (!_forumSettings.ForumsEnabled)
-            {
 				return HttpNotFound();
-            }
 
-            if (!_forumSettings.ForumFeedsEnabled)
-            {
-				return HttpNotFound();
-            }
+			var language = _workContext.WorkingLanguage;
+			var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
+			var selfLink = Url.Action("ForumRSS", "Boards", null, protocol);
+			var forumLink = Url.Action("Forum", "Boards", new { id = id }, protocol);
 
-            int topicLimit = _forumSettings.ForumFeedCount;
-            var forum = _forumService.GetForumById(id);
+			var feed = new SmartSyndicationFeed(new Uri(forumLink), _storeContext.CurrentStore.Name, T("Forum.ForumFeedDescription"));
 
-            if (forum != null)
-            {
-                //Order by newest topic posts & limit the number of topics to return
-                var topics = _forumService.GetAllTopics(forum.Id, 0, string.Empty, ForumSearchType.All, 0, 0, topicLimit);
+			feed.AddNamespaces(false);
+			feed.Init(selfLink, language);
 
-                string url = Url.Action("ForumRSS", null, new { id = forum.Id }, "http");
+			if (!_forumSettings.ForumFeedsEnabled)
+				return new RssActionResult { Feed = feed };
 
-                var feedTitle = _localizationService.GetResource("Forum.ForumFeedTitle");
-                var feedDescription = _localizationService.GetResource("Forum.ForumFeedDescription");
+			var forum = _forumService.GetForumById(id);
 
-                var feed = new SyndicationFeed(
-					string.Format(feedTitle, _storeContext.CurrentStore.Name, forum.GetLocalized(x => x.Name)),
-					feedDescription,
-					new Uri(url),
-					string.Format("ForumRSS:{0}", forum.Id),
-					DateTime.UtcNow);
+			if (forum == null)
+				return new RssActionResult { Feed = feed };
 
-                var items = new List<SyndicationItem>();
+			feed.Title = new TextSyndicationContent("{0} - {1}".FormatInvariant(_storeContext.CurrentStore.Name, forum.GetLocalized(x => x.Name, language.Id)));
 
-                var viewsText = _localizationService.GetResource("Forum.Views");
-                var repliesText = _localizationService.GetResource("Forum.Replies");
+			var items = new List<SyndicationItem>();
+			var topics = _forumService.GetAllTopics(id, 0, string.Empty, ForumSearchType.All, 0, 0, _forumSettings.ForumFeedCount);
 
-                foreach (var topic in topics)
-                {
-                    string topicUrl = Url.RouteUrl("TopicSlug", new { id = topic.Id, slug = topic.GetSeName() }, "http");
-                    string content = string.Format("{2}: {0}, {3}: {1}", topic.NumReplies.ToString(), topic.Views.ToString(), repliesText, viewsText);
+			var viewsText = T("Forum.Views");
+			var repliesText = T("Forum.Replies");
 
-                    items.Add(new SyndicationItem(topic.Subject, content, new Uri(topicUrl), String.Format("Topic:{0}", topic.Id),
-                        (topic.LastPostTime ?? topic.UpdatedOnUtc)));
-                }
+			foreach (var topic in topics)
+			{
+				string topicUrl = Url.RouteUrl("TopicSlug", new { id = topic.Id, slug = topic.GetSeName() }, "http");
+				var synopsis = "{0}: {1}, {2}: {3}".FormatInvariant(repliesText, topic.NumReplies, viewsText, topic.Views);
 
-                feed.Items = items;
+				var item = feed.CreateItem(topic.Subject, synopsis, topicUrl, topic.LastPostTime ?? topic.UpdatedOnUtc);
 
-                return new RssActionResult() { Feed = feed };
-            }
+				items.Add(item);
+			}
 
-            return new RssActionResult() { Feed = new SyndicationFeed() };
+			feed.Items = items;
+
+			return new RssActionResult { Feed = feed };
         }
 
         [HttpPost]

@@ -3,7 +3,6 @@ namespace SmartStore.Core.Domain.Customers
 {
     public static partial class SystemCustomerRoleNames
     {
-		/// <remarks>codehint: sm-add</remarks>
 		public static string SuperAdministrators { get { return "SuperAdmins"; } }
 
         public static string Administrators { get { return "Administrators"; } }

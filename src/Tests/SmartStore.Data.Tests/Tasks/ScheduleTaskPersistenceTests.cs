@@ -14,7 +14,7 @@ namespace SmartStore.Data.Tests.Tasks
             var scheduleTask = new ScheduleTask
                                {
                                    Name = "Task 1",
-                                   Seconds = 1,
+                                   CronExpression = "* * * * *",
                                    Type = "some type 1",
                                    Enabled = true,
                                    StopOnError = true,
@@ -26,7 +26,7 @@ namespace SmartStore.Data.Tests.Tasks
             var fromDb = SaveAndLoadEntity(scheduleTask);
             fromDb.ShouldNotBeNull();
             fromDb.Name.ShouldEqual("Task 1");
-            fromDb.Seconds.ShouldEqual(1);
+			fromDb.CronExpression.ShouldEqual("* * * * *");
             fromDb.Type.ShouldEqual("some type 1");
             fromDb.Enabled.ShouldEqual(true);
             fromDb.StopOnError.ShouldEqual(true);

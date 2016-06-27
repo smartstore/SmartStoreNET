@@ -31,11 +31,9 @@
             <div data-equalized-part="data">
                 @foreach (var item in Model.Answers)
                 {
-                    @*codehint: sm-edit (begin) *@
                     <label class="radio">
                       <input type="radio" id="pollanswers-@(item.Id)" name="pollanswers-@(Model.Id)" value="@item.Id" />@item.Name
                     </label>
-                    @*codehint: sm-edit (end) *@
                 }
             </div>
             <button id="vote-poll-@(Model.Id)" 

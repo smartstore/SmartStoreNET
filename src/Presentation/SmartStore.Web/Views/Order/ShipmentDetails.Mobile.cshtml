@@ -4,7 +4,7 @@
 @using SmartStore.Services.Localization;
 @{
     Layout = "~/Views/Shared/_Root.cshtml";
-    //title
+
     Html.AddTitleParts(T("PageTitle.ShipmentDetails").Text);
 }
 <div class="page shipment-details">
@@ -108,7 +108,7 @@
                         <li>
                             <div class="products-box">
                                 <div class="product">
-                                    <strong><a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a></strong>
+                                    <strong><a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a></strong>
                                     @if (!String.IsNullOrEmpty(item.AttributeInfo))
                                     {
                                         <div class="attributes">

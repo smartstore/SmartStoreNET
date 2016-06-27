@@ -10,12 +10,16 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
+using Autofac;
+using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services
 {
 	public class CommonServices : ICommonServices
 	{
-		private readonly Lazy<ICacheManager> _cache;
+		private readonly IComponentContext _container;
+		private readonly Lazy<ICacheManager> _cacheManager;
+		private readonly Lazy<IRequestCache> _requestCache;
 		private readonly Lazy<IDbContext> _dbContext;
 		private readonly Lazy<IStoreContext> _storeContext;
 		private readonly Lazy<IWebHelper> _webHelper;
@@ -27,9 +31,13 @@ namespace SmartStore.Services
 		private readonly Lazy<IPermissionService> _permissions;
 		private readonly Lazy<ISettingService> _settings;
 		private readonly Lazy<IStoreService> _storeService;
-		
+		private readonly Lazy<IDateTimeHelper> _dateTimeHelper;
+		private readonly Lazy<IDisplayedEntities> _displayedEntities;
+
 		public CommonServices(
-			Func<string, Lazy<ICacheManager>> cache,
+			IComponentContext container,
+            Lazy<ICacheManager> cacheManager,
+			Lazy<IRequestCache> requestCache,
 			Lazy<IDbContext> dbContext,
 			Lazy<IStoreContext> storeContext,
 			Lazy<IWebHelper> webHelper,
@@ -40,9 +48,13 @@ namespace SmartStore.Services
 			Lazy<INotifier> notifier,
 			Lazy<IPermissionService> permissions,
 			Lazy<ISettingService> settings,
-			Lazy<IStoreService> storeService)
+			Lazy<IStoreService> storeService,
+			Lazy<IDateTimeHelper> dateTimeHelper,
+			Lazy<IDisplayedEntities> displayedEntities)
 		{
-			this._cache = cache("static");
+			this._container = container;
+			this._cacheManager = cacheManager;
+			this._requestCache = requestCache;
 			this._dbContext = dbContext;
 			this._storeContext = storeContext;
 			this._webHelper = webHelper;
@@ -54,13 +66,31 @@ namespace SmartStore.Services
 			this._permissions = permissions;
 			this._settings = settings;
 			this._storeService = storeService;
+			this._dateTimeHelper = dateTimeHelper;
+			this._displayedEntities = displayedEntities;
 		}
-		
+
+		public IComponentContext Container
+		{
+			get
+			{
+				return _container;
+			}
+		}
+
 		public ICacheManager Cache
 		{
 			get
 			{
-				return _cache.Value;
+				return _cacheManager.Value;
+			}
+		}
+
+		public IRequestCache RequestCache
+		{
+			get
+			{
+				return _requestCache.Value;
 			}
 		}
 
@@ -150,6 +180,22 @@ namespace SmartStore.Services
 			get
 			{
 				return _storeService.Value;
+			}
+		}
+
+		public IDateTimeHelper DateTimeHelper
+		{
+			get
+			{
+				return _dateTimeHelper.Value;
+			}
+		}
+
+		public IDisplayedEntities DisplayedEntities
+		{
+			get
+			{
+				return _displayedEntities.Value;
 			}
 		}
 	}

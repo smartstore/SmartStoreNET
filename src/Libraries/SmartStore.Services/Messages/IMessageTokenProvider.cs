@@ -3,6 +3,7 @@ using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
@@ -11,13 +12,13 @@ using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Messages
 {
-    public partial interface IMessageTokenProvider
+	public partial interface IMessageTokenProvider
     {
 		void AddStoreTokens(IList<Token> tokens, Store store);
 
-        void AddOrderTokens(IList<Token> tokens, Order order, int languageId);
+		void AddOrderTokens(IList<Token> tokens, Order order, Language language);
 
-        void AddShipmentTokens(IList<Token> tokens, Shipment shipment, int languageId);
+        void AddShipmentTokens(IList<Token> tokens, Shipment shipment, Language language);
 
         void AddOrderNoteTokens(IList<Token> tokens, OrderNote orderNote);
 
@@ -37,9 +38,9 @@ namespace SmartStore.Services.Messages
 
         void AddNewsCommentTokens(IList<Token> tokens, NewsComment newsComment);
 
-		void AddProductTokens(IList<Token> tokens, Product product, int languageId);
+		void AddProductTokens(IList<Token> tokens, Product product, Language language);
 
-		void AddForumTokens(IList<Token> tokens, Forum forum, int languageId);
+		void AddForumTokens(IList<Token> tokens, Forum forum, Language language);
 
         void AddForumTopicTokens(IList<Token> tokens, ForumTopic forumTopic,
             int? friendlyForumTopicPageIndex = null, int? appendedPostIdentifierAnchor = null);
@@ -54,13 +55,10 @@ namespace SmartStore.Services.Messages
 
         string[] GetListOfAllowedTokens();
 
-        //codehint: sm-add begin
         void AddBankConnectionTokens(IList<Token> tokens);
         
         void AddCompanyTokens(IList<Token> tokens);
 
         void AddContactDataTokens(IList<Token> tokens);
-        //codehint: sm-add end
-
     }
 }

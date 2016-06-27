@@ -16,7 +16,7 @@ namespace SmartStore.Data.Setup
 	public static class IDbMigrationExtensions
 	{
 
-		public static void SqlFile(this IDbMigration migration, string fileName, Assembly assembly = null, string location = null)
+		public static void SqlFileOrResource(this IDbMigration migration, string fileName, Assembly assembly = null, string location = null)
 		{
 			Guard.ArgumentNotEmpty(() => fileName);
 

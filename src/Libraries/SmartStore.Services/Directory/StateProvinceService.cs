@@ -8,10 +8,10 @@ using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Directory
 {
-    /// <summary>
-    /// State province service
-    /// </summary>
-    public partial class StateProvinceService : IStateProvinceService
+	/// <summary>
+	/// State province service
+	/// </summary>
+	public partial class StateProvinceService : IStateProvinceService
     {
         #region Constants
         private const string STATEPROVINCES_ALL_KEY = "SmartStore.stateprovince.all-{0}";
@@ -22,7 +22,7 @@ namespace SmartStore.Services.Directory
 
         private readonly IRepository<StateProvince> _stateProvinceRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
 
         #endregion
 
@@ -31,14 +31,14 @@ namespace SmartStore.Services.Directory
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
+        /// <param name="requestCache">Cache manager</param>
         /// <param name="stateProvinceRepository">State/province repository</param>
         /// <param name="eventPublisher">Event published</param>
-        public StateProvinceService(ICacheManager cacheManager,
+        public StateProvinceService(IRequestCache requestCache,
             IRepository<StateProvince> stateProvinceRepository,
             IEventPublisher eventPublisher)
         {
-            _cacheManager = cacheManager;
+            _requestCache = requestCache;
             _stateProvinceRepository = stateProvinceRepository;
             _eventPublisher = eventPublisher;
         }
@@ -46,6 +46,7 @@ namespace SmartStore.Services.Directory
         #endregion
 
         #region Methods
+
         /// <summary>
         /// Deletes a state/province
         /// </summary>
@@ -57,18 +58,28 @@ namespace SmartStore.Services.Directory
             
             _stateProvinceRepository.Delete(stateProvince);
 
-            _cacheManager.RemoveByPattern(STATEPROVINCES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(STATEPROVINCES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(stateProvince);
         }
 
-        /// <summary>
-        /// Gets a state/province
-        /// </summary>
-        /// <param name="stateProvinceId">The state/province identifier</param>
-        /// <returns>State/province</returns>
-        public virtual StateProvince GetStateProvinceById(int stateProvinceId)
+		public virtual IQueryable<StateProvince> GetAllStateProvinces(bool showHidden = false)
+		{
+			var query = _stateProvinceRepository.Table;
+
+			if (!showHidden)
+				query = query.Where(x => x.Published);
+
+			return query;
+		}
+
+		/// <summary>
+		/// Gets a state/province
+		/// </summary>
+		/// <param name="stateProvinceId">The state/province identifier</param>
+		/// <returns>State/province</returns>
+		public virtual StateProvince GetStateProvinceById(int stateProvinceId)
         {
             if (stateProvinceId == 0)
                 return null;
@@ -99,7 +110,7 @@ namespace SmartStore.Services.Directory
         public virtual IList<StateProvince> GetStateProvincesByCountryId(int countryId, bool showHidden = false)
         {
             string key = string.Format(STATEPROVINCES_ALL_KEY, countryId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from sp in _stateProvinceRepository.Table
                             orderby sp.DisplayOrder
@@ -122,7 +133,7 @@ namespace SmartStore.Services.Directory
 
             _stateProvinceRepository.Insert(stateProvince);
 
-            _cacheManager.RemoveByPattern(STATEPROVINCES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(STATEPROVINCES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(stateProvince);
@@ -139,7 +150,7 @@ namespace SmartStore.Services.Directory
 
             _stateProvinceRepository.Update(stateProvince);
 
-            _cacheManager.RemoveByPattern(STATEPROVINCES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(STATEPROVINCES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(stateProvince);

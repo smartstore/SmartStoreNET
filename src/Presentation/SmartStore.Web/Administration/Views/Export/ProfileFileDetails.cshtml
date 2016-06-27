@@ -1,0 +1,75 @@
+﻿@using SmartStore.Admin.Models.DataExchange;
+@using SmartStore.Web.Framework;
+@model ExportFileDetailsModel
+@{
+	ViewBag.DownloadString = T("Common.Download").Text;
+	ViewBag.AllStoresString = T("Admin.Common.StoresAll").Text;
+}
+@if (Model.ExportFiles.Any() || Model.PublicFiles.Any())
+{
+	<div>
+		@foreach (var grp in Model.ExportFiles.OrderBy(x => x.DisplayOrder).GroupBy(x => x.DisplayOrder))
+		{
+			foreach (var file in grp)
+			{
+				<div>
+					@Html.IconForFileExtension(file.FileExtension, false)
+					<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = file.FileName, isDeployment = Model.IsForDeployment })"
+					   title="@ViewBag.DownloadString" download>@file.FileRootPath</a>
+				</div>
+			}
+			<p>&nbsp;</p>
+		}
+
+		@foreach (var grp in Model.PublicFiles.OrderBy(x => x.StoreId).GroupBy(x => x.StoreId))
+		{
+			var storeName = grp.First().StoreName;
+			<div style="margin-bottom: 10px;">
+				<div>
+					<span style="font-size: 1.15em;">@T("Admin.Common.PublicFiles")</span>
+					<span class="smaller">(@(storeName.HasValue() ? storeName : ViewBag.AllStoresString))</span>
+				</div>
+
+				@foreach (var file in grp)
+				{
+					<div class="clearfix">
+						<button type="button" class="btn btn-small pull-right copy-to-clipboard">
+							<i class="fa fa-clipboard"></i>
+						</button>
+						<a href="@file.FileUrl" title="@ViewBag.DownloadString" style="vertical-align: middle;" download>@file.FileUrl</a>
+					</div>
+				}
+			</div>
+		}
+	</div>
+}
+else
+{
+	<div class="alert alert-info">@T("Common.NoFilesAvailable")</div>
+}
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		// copy url to clipboard button
+		$('button.copy-to-clipboard').tooltip({
+			placement: 'bottom',
+			trigger: 'hover',
+			title: '@T("Common.CopyToClipboard")'
+		}).click(function () {
+			var self = $(this),
+				url = self.parent().find('a').attr('href');
+
+			var succeeded = window.copyTextToClipboard(url);
+
+			self.attr('data-original-title', succeeded ? '@T("Common.CopyToClipboard.Succeeded")' : '@T("Common.CopyToClipboard.Failded")')
+				.tooltip('show');
+
+			setTimeout(function () {
+				self.attr('data-original-title', '@T("Common.CopyToClipboard")')
+					.tooltip('hide');
+			}, 2000);
+		});
+
+	});
+</script>

@@ -3,7 +3,7 @@ namespace SmartStore.Core.Domain.Shipping
     /// <summary>
     /// Represents the shipping status enumeration
     /// </summary>
-    public enum ShippingStatus : int
+    public enum ShippingStatus
     {
         /// <summary>
         /// Shipping not required

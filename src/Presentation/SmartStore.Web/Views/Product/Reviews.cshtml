@@ -6,13 +6,18 @@
     //title
     Html.AddTitleParts(Model.ProductName);
     Html.AddTitleParts(T("PageTitle.ProductReviews").Text);
+    
+    if (Model.Items.Count == 0)
+    {
+        Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex, follow\">");
+    }
 }
 <div class="page product-reviews-page">
     <h4 class="muted">@T("Reviews.ProductReviewsFor")</h4>
     <div class="page-title">
-        <h2>
+        <h1>
 			<a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" style="text-decoration: none;">@Model.ProductName</a>
-		</h2>
+		</h1>
     </div>
 
     <div class="page-body">
@@ -34,14 +39,10 @@
                 @using (Html.BeginForm())
                 {
                     <div>
-                        <div class="message-error">@Html.ValidationSummary(true)</div>
-                        @{
-                    string result = TempData["sm.blog.addcomment.result"] as string;
-                        }
-                        @if (!String.IsNullOrEmpty(result))
-                        {
-                            <div class="result">@result</div>
-                        }
+						@if (ViewContext.ViewData.ModelState.ContainsKey(""))
+						{
+							<div class="message-error">@Html.ValidationSummary(true)</div>
+						}
                         <div class="forms-box">
                             <div class="inputs">
                                 @Html.LabelFor(model => model.AddProductReview.Rating)

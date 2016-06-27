@@ -9,6 +9,7 @@ namespace SmartStore.ShippingByWeight.Data
         {
             this.ToTable("ShippingByWeight");
             this.HasKey(x => x.Id);
+            this.Property(x => x.Zip).IsOptional();
         }
     }
 }

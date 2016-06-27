@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -29,7 +30,7 @@ namespace SmartStore.Core.Themes
         {
             var root = _manifest.ConfigurationNode;
 
-			_manifest.ThemeTitle = root.GetAttribute("title") ?? _manifest.ThemeName;
+			_manifest.ThemeTitle = root.GetAttribute("title").NullEmpty() ?? _manifest.ThemeName;
             _manifest.SupportRtl = root.GetAttribute("supportRTL").ToBool();
             _manifest.MobileTheme = root.GetAttribute("mobileTheme").ToBool();
             _manifest.PreviewImageUrl = root.GetAttribute("previewImageUrl").NullEmpty() ?? "~/Themes/{0}/preview.png".FormatCurrent(_manifest.ThemeName);
@@ -44,7 +45,9 @@ namespace SmartStore.Core.Themes
             return _manifest;
         }
 
-        private Multimap<string, string> MaterializeSelects()
+	    [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
+	    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+	    private Multimap<string, string> MaterializeSelects()
         {
             var selects = new Multimap<string, string>();
             var root = _manifest.ConfigurationNode;

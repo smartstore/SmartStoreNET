@@ -1,0 +1,247 @@
+﻿@model UrlRecordListModel
+@using SmartStore.Admin.Models.UrlRecord;
+@using Telerik.Web.Mvc.UI
+@{
+    ViewBag.Title = T("Admin.System.SeNames").Text;
+}
+
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="fa fa-search"></i>
+            @T("Admin.System.SeNames")
+        </div>
+        <div class="options">
+			<button type="submit" id="delete-selected" class="btn btn-danger">
+				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.DeleteSelected")
+			</button>
+        </div>
+    </div>
+
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SeName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.SeName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.EntityName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.EntityName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.EntityId)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.EntityId)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.IsActive)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.IsActive)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.LanguageId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.LanguageId, Model.AvailableLanguages, T("Common.Unspecified"))
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
+				<button type="button" id="btnSearch" class="btn">
+					<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+				</button>
+			</td>
+		</tr>
+	</table>
+
+	<p></p>
+	
+    <table class="adminContent">
+        <tr>
+            <td>
+                @(Html.Telerik().Grid<UrlRecordModel>()
+					.Name("urlrecord-grid")
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.Id)
+							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+							.Title("<input id='mastercheckbox' type='checkbox'/>")
+							.Width(50)
+							.HtmlAttributes(new { style = "text-align:center" })
+							.HeaderHtmlAttributes(new { style = "text-align:center" });
+						columns.Bound(x => x.Id)
+							.Width(100)
+							.Centered();
+						columns.Bound(x => x.Slug)
+							.ClientTemplate("<a href='Edit/<#= Id #>'><#= Slug #></a>");
+						columns.Bound(x => x.SlugsPerEntity)
+							.Centered()
+							.Width(180)
+							.ClientTemplate("<a href='javascript:void(0)' onclick='filterPerEntity(\"<#= EntityName #>\", <#= EntityId #>)'><#= SlugsPerEntity #></a>");
+						columns.Bound(x => x.EntityName)
+							.Width(200);
+						columns.Bound(x => x.EntityId)
+							.Width(140)
+							.Centered()
+							.ClientTemplate("<a href='<#= EntityUrl #>'><#= EntityId #></a>");
+						columns.Bound(x => x.IsActive)
+							.Template(item => @Html.SymbolForBool(item.IsActive))
+							.ClientTemplate(@Html.SymbolForBool("IsActive"))
+							.Width(100)
+							.Centered();
+						columns.Bound(x => x.Language)
+							.Width(200);
+					})
+					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "UrlRecord"))
+					.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
+					.EnableCustomBinding(true))
+            </td>
+        </tr>
+    </table>
+}
+
+<script type="text/javascript">
+	var selectedIds = [];
+
+	$(document).ready(function () {
+
+		//search button
+		$('#btnSearch').click(function () {
+			//search
+			var grid = $('#urlrecord-grid').data('tGrid');
+			grid.currentPage = 1; //new search. Set page size to 1
+			grid.ajaxRequest();
+			//clear selected checkboxes
+			$('.checkboxGroups').attr('checked', false).change();
+			selectedIds = [];
+			return false;
+		});
+
+		$("#@Html.FieldIdFor(model => model.SeName)").keydown(function (event) {
+			if (event.keyCode == 13) {
+				$("#btnSearch").click();
+				return false;
+			}
+		});
+
+		//"delete selected" button
+		$('#delete-selected').click(function (e) {
+			e.preventDefault();
+
+			if (confirm('@T("Admin.Common.AreYouSure")')) {
+				var postData = {
+					selectedIds: selectedIds
+				};
+
+				$.ajax({
+					cache: false,
+					type: "POST",
+					url: "@(Url.Action("DeleteSelected", "UrlRecord"))",
+					data: postData,
+					complete: function (data) {
+						//reload grid
+						var grid = $('#urlrecord-grid').data('tGrid');
+						grid.currentPage = 1; //new search. Set page size to 1
+						grid.ajaxRequest();
+						//clear selected checkboxes
+						$('.checkboxGroups').attr('checked', false).change();
+						selectedIds = [];
+					},
+					error: function (xhr, ajaxOptions, thrownError) {
+						alert(thrownError);
+					},
+					traditional: true
+				});
+			}
+			return false;
+		});
+
+		$('#mastercheckbox').click(function () {
+			$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+		});
+
+		//wire up checkboxes.
+		$('#urlrecord-grid').on('change', 'input[type=checkbox][id!=mastercheckbox]', function (e) {
+			var $check = $(this);
+			if ($check.is(":checked") == true) {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked == -1) {
+					//add id to selectedIds.
+					selectedIds.push($check.val());
+				}
+			}
+			else {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked > -1) {
+					//remove id from selectedIds.
+					selectedIds = $.grep(selectedIds, function (item, index) {
+						return item != $check.val();
+					});
+				}
+			}
+			updateMasterCheckbox();
+		});
+	});
+
+	function onRowDataBound(e) {
+		if (!e.dataItem.IsActive) {
+			$(e.row).find('td').wrapInner('<span class="muted" />');
+		}
+	}
+
+	function onDataBinding(e) {
+		var searchModel = {
+			SeName: $('#@Html.FieldIdFor(model => model.SeName)').val(),
+			EntityName: $('#@Html.FieldIdFor(model => model.EntityName)').val(),
+			EntityId: $('#@Html.FieldIdFor(model => model.EntityId)').val(),
+			IsActive: $('#@Html.FieldIdFor(model => model.IsActive)').val(),
+			LanguageId: $('#@Html.FieldIdFor(model => model.LanguageId)').val()
+		};
+		e.data = searchModel;
+	}
+
+	function onDataBound(e) {
+		$('#urlrecord-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+			var currentId = $(this).val();
+			var checked = jQuery.inArray(currentId, selectedIds);
+			//set checked based on if current checkbox's value is in selectedIds.
+			$(this).attr('checked', checked > -1);
+		});
+
+		updateMasterCheckbox();
+	}
+
+	function updateMasterCheckbox() {
+		var numChkBoxes = $('#urlrecord-grid input[type=checkbox][id!=mastercheckbox]').length;
+		var numChkBoxesChecked = $('#urlrecord-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+		$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+	}
+
+	function filterPerEntity(entityName, entityId) {
+		$('#@Html.FieldIdFor(model => model.EntityName)').val(entityName);
+		$('#@Html.FieldIdFor(model => model.EntityId)').val(entityId).blur();
+
+		var grid = $('#urlrecord-grid').data('tGrid');
+		grid.currentPage = 1;
+		grid.ajaxRequest();
+	}
+</script>

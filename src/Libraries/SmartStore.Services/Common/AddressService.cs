@@ -4,6 +4,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Directory;
 using SmartStore.Core.Events;
+using System.Collections.Generic;
 
 namespace SmartStore.Services.Common
 {
@@ -62,7 +63,6 @@ namespace SmartStore.Services.Common
             _eventPublisher.EntityDeleted(address);
         }
 
-		/// <remarks>codehint: sm-add</remarks>
 		public virtual void DeleteAddress(int id)
 		{
 			var address = GetAddressById(id);
@@ -115,6 +115,18 @@ namespace SmartStore.Services.Common
             var address = _addressRepository.GetById(addressId);
             return address;
         }
+
+		public virtual IList<Address> GetAddressByIds(int[] addressIds)
+		{
+			Guard.ArgumentNotNull(() => addressIds);
+
+			var query =
+				from x in _addressRepository.TableUntracked.Expand(x => x.Country).Expand(x => x.StateProvince)
+				where addressIds.Contains(x.Id)
+				select x;
+
+			return query.ToList();
+		}
 
         /// <summary>
         /// Inserts an address

@@ -1,0 +1,10 @@
+﻿/*
+// Customize the (child) theme here with css overrides
+// or new selectors (for users)
+// --------------------------------------------------
+*/
+
+.legal-hints {
+    background: none !important;
+    border-bottom: 1px solid #aaa !important;
+}

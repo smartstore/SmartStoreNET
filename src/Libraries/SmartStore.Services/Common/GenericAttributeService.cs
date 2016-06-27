@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -26,7 +27,7 @@ namespace SmartStore.Services.Common
         #region Fields
 
         private readonly IRepository<GenericAttribute> _genericAttributeRepository;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly IEventPublisher _eventPublisher;
 		private readonly IRepository<Order> _orderRepository;
 
@@ -37,16 +38,16 @@ namespace SmartStore.Services.Common
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
+        /// <param name="requestCache">Cache manager</param>
         /// <param name="genericAttributeRepository">Generic attribute repository</param>
         /// <param name="eventPublisher">Event published</param>
 		/// <param name="orderRepository">Order repository</param>
-        public GenericAttributeService(ICacheManager cacheManager,
+        public GenericAttributeService(IRequestCache requestCache,
             IRepository<GenericAttribute> genericAttributeRepository,
             IEventPublisher eventPublisher,
 			IRepository<Order> orderRepository)
         {
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._genericAttributeRepository = genericAttributeRepository;
             this._eventPublisher = eventPublisher;
 			this._orderRepository = orderRepository;
@@ -71,7 +72,7 @@ namespace SmartStore.Services.Common
             _genericAttributeRepository.Delete(attribute);
 
             //cache
-            _cacheManager.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
 
             //event notifications
             _eventPublisher.EntityDeleted(attribute);
@@ -109,7 +110,7 @@ namespace SmartStore.Services.Common
             _genericAttributeRepository.Insert(attribute);
             
             //cache
-            _cacheManager.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
 
             //event notifications
             _eventPublisher.EntityInserted(attribute);
@@ -133,7 +134,7 @@ namespace SmartStore.Services.Common
             _genericAttributeRepository.Update(attribute);
 
             //cache
-            _cacheManager.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
 
             //event notifications
             _eventPublisher.EntityUpdated(attribute);
@@ -154,7 +155,7 @@ namespace SmartStore.Services.Common
 		public virtual IList<GenericAttribute> GetAttributesForEntity(int entityId, string keyGroup)
         {
             string key = string.Format(GENERICATTRIBUTE_KEY, entityId, keyGroup);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from ga in _genericAttributeRepository.Table
                             where ga.EntityId == entityId &&
@@ -164,6 +165,20 @@ namespace SmartStore.Services.Common
                 return attributes;
             });
         }
+
+		public virtual Multimap<int, GenericAttribute> GetAttributesForEntity(int[] entityIds, string keyGroup)
+		{
+			Guard.ArgumentNotNull(() => entityIds);
+
+			var query = _genericAttributeRepository.TableUntracked
+				.Where(x => entityIds.Contains(x.EntityId) && x.KeyGroup == keyGroup);
+
+			var map = query
+				.ToList()
+				.ToMultimap(x => x.EntityId, x => x);
+
+			return map;
+		}
 
 		/// <summary>
 		/// Get queryable attributes
@@ -194,49 +209,54 @@ namespace SmartStore.Services.Common
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
-            string keyGroup = entity.GetUnproxiedEntityType().Name;
+			SaveAttribute(entity.Id, key, entity.GetUnproxiedEntityType().Name, value, storeId);
+        }
 
-			var props = GetAttributesForEntity(entity.Id, keyGroup)
+		public virtual void SaveAttribute<TPropType>(int entityId, string key, string keyGroup, TPropType value, int storeId = 0)
+		{
+			Guard.ArgumentNotZero(entityId, "entityId");
+
+			var props = GetAttributesForEntity(entityId, keyGroup)
 				 .Where(x => x.StoreId == storeId)
 				 .ToList();
 
-            var prop = props.FirstOrDefault(ga =>
-                ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); // should be culture invariant
+			var prop = props.FirstOrDefault(ga =>
+				ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); // should be culture invariant
 
-            string valueStr = value.Convert<string>();
+			string valueStr = value.Convert<string>();
 
-            if (prop != null)
-            {
-                if (string.IsNullOrWhiteSpace(valueStr))
-                {
-                    //delete
-                    DeleteAttribute(prop);
-                }
-                else
-                {
-                    //update
-                    prop.Value = valueStr;
-                    UpdateAttribute(prop);
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrWhiteSpace(valueStr))
-                {
-                    //insert
-                    prop = new GenericAttribute()
-                    {
-                        EntityId = entity.Id,
-                        Key = key,
-                        KeyGroup = keyGroup,
-                        Value = valueStr,
+			if (prop != null)
+			{
+				if (string.IsNullOrWhiteSpace(valueStr))
+				{
+					// delete
+					DeleteAttribute(prop);
+				}
+				else
+				{
+					// update
+					prop.Value = valueStr;
+					UpdateAttribute(prop);
+				}
+			}
+			else
+			{
+				if (!string.IsNullOrWhiteSpace(valueStr))
+				{
+					// insert
+					prop = new GenericAttribute
+					{
+						EntityId = entityId,
+						Key = key,
+						KeyGroup = keyGroup,
+						Value = valueStr,
 						StoreId = storeId
-                    };
-                    InsertAttribute(prop);
-                }
-            }
-        }
+					};
+					InsertAttribute(prop);
+				}
+			}
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

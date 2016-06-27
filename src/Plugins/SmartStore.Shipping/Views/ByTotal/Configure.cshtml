@@ -146,7 +146,7 @@
                     data: $(this.form).serialize(),
                     dataType: 'json',
                     success: function (data) {
-                        alert('Saved');
+                    	EventBroker.publish('message', { title: '@T("Admin.Common.DataEditSuccess")', type: 'success' });
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         alert('Failed to add record.');

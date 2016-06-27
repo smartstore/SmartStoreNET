@@ -8,7 +8,6 @@ using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Customers;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Directory
@@ -28,11 +27,12 @@ namespace SmartStore.Services.Directory
 
         private readonly IRepository<Currency> _currencyRepository;
 		private readonly IStoreMappingService _storeMappingService;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly CurrencySettings _currencySettings;
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
 		private readonly IProviderManager _providerManager;
+		private readonly IStoreContext _storeContext;
 
         #endregion
 
@@ -41,27 +41,29 @@ namespace SmartStore.Services.Directory
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
+        /// <param name="requestCache">Cache manager</param>
         /// <param name="currencyRepository">Currency repository</param>
 		/// <param name="storeMappingRepository">Store mapping repository</param>
         /// <param name="currencySettings">Currency settings</param>
         /// <param name="pluginFinder">Plugin finder</param>
         /// <param name="eventPublisher">Event published</param>
-        public CurrencyService(ICacheManager cacheManager,
+        public CurrencyService(IRequestCache requestCache,
             IRepository<Currency> currencyRepository,
 			IStoreMappingService storeMappingService,
             CurrencySettings currencySettings,
             IPluginFinder pluginFinder,
             IEventPublisher eventPublisher,
-			IProviderManager providerManager)
+			IProviderManager providerManager,
+			IStoreContext storeContext)
         {
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._currencyRepository = currencyRepository;
 			this._storeMappingService = storeMappingService;
             this._currencySettings = currencySettings;
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
 			this._providerManager = providerManager;
+			this._storeContext = storeContext;
         }
 
         #endregion
@@ -94,7 +96,7 @@ namespace SmartStore.Services.Directory
             
             _currencyRepository.Delete(currency);
 
-            _cacheManager.RemoveByPattern(CURRENCIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CURRENCIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(currency);
@@ -111,7 +113,7 @@ namespace SmartStore.Services.Directory
                 return null;
 
             string key = string.Format(CURRENCIES_BY_ID_KEY, currencyId);
-            return _cacheManager.Get(key, () => _currencyRepository.GetById(currencyId));
+            return _requestCache.Get(key, () => _currencyRepository.GetById(currencyId));
         }
 
         /// <summary>
@@ -135,7 +137,7 @@ namespace SmartStore.Services.Directory
 		public virtual IList<Currency> GetAllCurrencies(bool showHidden = false, int storeId = 0)
         {
 			string key = string.Format(CURRENCIES_ALL_KEY, showHidden);
-			var currencies = _cacheManager.Get(key, () =>
+			var currencies = _requestCache.Get(key, () =>
 			{
 				var query = _currencyRepository.Table;
 				if (!showHidden)
@@ -165,7 +167,7 @@ namespace SmartStore.Services.Directory
 
             _currencyRepository.Insert(currency);
 
-            _cacheManager.RemoveByPattern(CURRENCIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CURRENCIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(currency);
@@ -182,12 +184,11 @@ namespace SmartStore.Services.Directory
 
             _currencyRepository.Update(currency);
 
-            _cacheManager.RemoveByPattern(CURRENCIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CURRENCIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(currency);
         }
-
 
 
         /// <summary>
@@ -209,16 +210,17 @@ namespace SmartStore.Services.Directory
         /// <param name="amount">Amount</param>
         /// <param name="sourceCurrencyCode">Source currency code</param>
         /// <param name="targetCurrencyCode">Target currency code</param>
+		/// <param name="store">Store to get the primary currencies from</param>
         /// <returns>Converted value</returns>
-        public virtual decimal ConvertCurrency(decimal amount, Currency sourceCurrencyCode, Currency targetCurrencyCode)
+		public virtual decimal ConvertCurrency(decimal amount, Currency sourceCurrencyCode, Currency targetCurrencyCode, Store store = null)
         {
             decimal result = amount;
             if (sourceCurrencyCode.Id == targetCurrencyCode.Id)
                 return result;
             if (result != decimal.Zero && sourceCurrencyCode.Id != targetCurrencyCode.Id)
             {
-                result = ConvertToPrimaryExchangeRateCurrency(result, sourceCurrencyCode);
-                result = ConvertFromPrimaryExchangeRateCurrency(result, targetCurrencyCode);
+                result = ConvertToPrimaryExchangeRateCurrency(result, sourceCurrencyCode, store);
+                result = ConvertFromPrimaryExchangeRateCurrency(result, targetCurrencyCode, store);
             }
             return result;
         }
@@ -228,11 +230,13 @@ namespace SmartStore.Services.Directory
         /// </summary>
         /// <param name="amount">Amount</param>
         /// <param name="sourceCurrencyCode">Source currency code</param>
+		/// <param name="store">Store to get the primary exchange rate currency from</param>
         /// <returns>Converted value</returns>
-        public virtual decimal ConvertToPrimaryExchangeRateCurrency(decimal amount, Currency sourceCurrencyCode)
+		public virtual decimal ConvertToPrimaryExchangeRateCurrency(decimal amount, Currency sourceCurrencyCode, Store store = null)
         {
             decimal result = amount;
-            var primaryExchangeRateCurrency = GetCurrencyById(_currencySettings.PrimaryExchangeRateCurrencyId);
+			var primaryExchangeRateCurrency = (store == null ? _storeContext.CurrentStore.PrimaryExchangeRateCurrency : store.PrimaryExchangeRateCurrency);
+
             if (result != decimal.Zero && sourceCurrencyCode.Id != primaryExchangeRateCurrency.Id)
             {
                 decimal exchangeRate = sourceCurrencyCode.Rate;
@@ -248,11 +252,13 @@ namespace SmartStore.Services.Directory
         /// </summary>
         /// <param name="amount">Amount</param>
         /// <param name="targetCurrencyCode">Target currency code</param>
+		/// <param name="store">Store to get the primary exchange rate currency from</param>
         /// <returns>Converted value</returns>
-        public virtual decimal ConvertFromPrimaryExchangeRateCurrency(decimal amount, Currency targetCurrencyCode)
+		public virtual decimal ConvertFromPrimaryExchangeRateCurrency(decimal amount, Currency targetCurrencyCode, Store store = null)
         {
             decimal result = amount;
-            var primaryExchangeRateCurrency = GetCurrencyById(_currencySettings.PrimaryExchangeRateCurrencyId);
+            var primaryExchangeRateCurrency = (store == null ? _storeContext.CurrentStore.PrimaryExchangeRateCurrency : store.PrimaryExchangeRateCurrency);
+
             if (result != decimal.Zero && targetCurrencyCode.Id != primaryExchangeRateCurrency.Id)
             {
                 decimal exchangeRate = targetCurrencyCode.Rate;
@@ -268,11 +274,13 @@ namespace SmartStore.Services.Directory
         /// </summary>
         /// <param name="amount">Amount</param>
         /// <param name="sourceCurrencyCode">Source currency code</param>
+		/// <param name="store">Store to get the primary store currency from</param>
         /// <returns>Converted value</returns>
-        public virtual decimal ConvertToPrimaryStoreCurrency(decimal amount, Currency sourceCurrencyCode)
+        public virtual decimal ConvertToPrimaryStoreCurrency(decimal amount, Currency sourceCurrencyCode, Store store = null)
         {
             decimal result = amount;
-            var primaryStoreCurrency = GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+			var primaryStoreCurrency = (store == null ? _storeContext.CurrentStore.PrimaryStoreCurrency : store.PrimaryStoreCurrency);
+
             if (result != decimal.Zero && sourceCurrencyCode.Id != primaryStoreCurrency.Id)
             {
                 decimal exchangeRate = sourceCurrencyCode.Rate;
@@ -289,11 +297,11 @@ namespace SmartStore.Services.Directory
         /// <param name="amount">Amount</param>
         /// <param name="targetCurrencyCode">Target currency code</param>
         /// <returns>Converted value</returns>
-        public virtual decimal ConvertFromPrimaryStoreCurrency(decimal amount, Currency targetCurrencyCode)
+		public virtual decimal ConvertFromPrimaryStoreCurrency(decimal amount, Currency targetCurrencyCode, Store store = null)
         {
             decimal result = amount;
-            var primaryStoreCurrency = GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
-            result = ConvertCurrency(amount, primaryStoreCurrency, targetCurrencyCode);
+			var primaryStoreCurrency = (store == null ? _storeContext.CurrentStore.PrimaryStoreCurrency : store.PrimaryStoreCurrency);
+            result = ConvertCurrency(amount, primaryStoreCurrency, targetCurrencyCode, store);
             return result;
         }
        

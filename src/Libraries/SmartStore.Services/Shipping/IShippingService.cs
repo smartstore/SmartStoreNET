@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Plugins;
@@ -52,9 +53,9 @@ namespace SmartStore.Services.Shipping
         /// <summary>
         /// Gets all shipping methods
         /// </summary>
-        /// <param name="filterByCountryId">The country indentifier to filter by</param>
+		/// <param name="request">Shipping option request to filter out shipping methods. <c>null</c> to load all shipping methods.</param>
         /// <returns>Shipping method collection</returns>
-        IList<ShippingMethod> GetAllShippingMethods(int? filterByCountryId = null);
+		IList<ShippingMethod> GetAllShippingMethods(GetShippingOptionRequest request = null);
 
         /// <summary>
         /// Inserts a shipping method
@@ -96,8 +97,9 @@ namespace SmartStore.Services.Shipping
         /// </summary>
         /// <param name="cart">Shopping cart</param>
         /// <param name="shippingAddress">Shipping address</param>
+		/// <param name="storeId">Store identifier</param>
         /// <returns>Shipment package</returns>
-		GetShippingOptionRequest CreateShippingOptionRequest(IList<OrganizedShoppingCartItem> cart, Address shippingAddress);
+		GetShippingOptionRequest CreateShippingOptionRequest(IList<OrganizedShoppingCartItem> cart, Address shippingAddress, int storeId);
 
         /// <summary>
         ///  Gets available shipping options
@@ -109,5 +111,11 @@ namespace SmartStore.Services.Shipping
         /// <returns>Shipping options</returns>
 		GetShippingOptionResponse GetShippingOptions(IList<OrganizedShoppingCartItem> cart, Address shippingAddress,
 			string allowedShippingRateComputationMethodSystemName = "", int storeId = 0);
+
+		/// <summary>
+		/// Gets all shipping method filters
+		/// </summary>
+		/// <returns>List of shipping method filters</returns>
+		IList<IShippingMethodFilter> GetAllShippingMethodFilters();
     }
 }

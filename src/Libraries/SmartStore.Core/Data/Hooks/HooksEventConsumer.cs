@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using Autofac.Features.Metadata;
@@ -50,9 +51,9 @@ namespace SmartStore.Core.Data.Hooks
 
 		public void HandleEvent(PreActionHookEvent eventMessage)
 		{
-			var entries = eventMessage.ModifiedEntries;
+			var entries = eventMessage.ModifiedEntries.ToArray();
 
-			if (!entries.Any() || !_preHooks.Any())
+			if (entries.Length == 0 || !_preHooks.Any())
 				return;
 
 			foreach (var entry in entries)
@@ -64,7 +65,11 @@ namespace SmartStore.Core.Data.Hooks
 					if (hook.HookStates == e.PreSaveState && hook.RequiresValidation == eventMessage.RequiresValidation)
 					{
 						var metadata = new HookEntityMetadata(e.PreSaveState);
-						hook.HookObject(e.Entity, metadata);
+						using (var scope = new DbContextScope(hooksEnabled: false))
+						{
+							// dead end: don't let hooks call hooks again
+							hook.HookObject(e.Entity, metadata);
+						}
 
 						if (metadata.HasStateChanged)
 						{
@@ -75,6 +80,7 @@ namespace SmartStore.Core.Data.Hooks
 			}
 		}
 
+		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 		private IEnumerable<IPreActionHook> GetPreHookInstancesFor(Type hookedType)
 		{
 			if (_preHooksCache.ContainsKey(hookedType)) 
@@ -89,9 +95,9 @@ namespace SmartStore.Core.Data.Hooks
 
 		public void HandleEvent(PostActionHookEvent eventMessage)
 		{
-			var entries = eventMessage.ModifiedEntries;
+			var entries = eventMessage.ModifiedEntries.ToArray();
 
-			if (!entries.Any() || !_postHooks.Any())
+			if (entries.Length == 0 || !_postHooks.Any())
 				return;
 
 			foreach (var entry in entries)
@@ -103,7 +109,11 @@ namespace SmartStore.Core.Data.Hooks
 					if (hook.HookStates == e.PreSaveState)
 					{
 						var metadata = new HookEntityMetadata(e.PreSaveState);
-						hook.HookObject(e.Entity, metadata);
+						using (var scope = new DbContextScope(hooksEnabled: false))
+						{
+							// dead end: don't let hooks call hooks again
+							hook.HookObject(e.Entity, metadata);
+						}
 					}
 				}
 			}

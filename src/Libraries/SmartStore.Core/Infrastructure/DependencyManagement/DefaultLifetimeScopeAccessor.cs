@@ -71,17 +71,17 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 			return scope;
 		}
 
-		private void OnScopeBeginning(object sender, LifetimeScopeBeginningEventArgs args)
-		{
-			bool isWeb = System.Web.HttpContext.Current != null;
-			Debug.WriteLine("Scope Begin, Web: " + isWeb);
-		}
+		//private void OnScopeBeginning(object sender, LifetimeScopeBeginningEventArgs args)
+		//{
+		//	bool isWeb = System.Web.HttpContext.Current != null;
+		//	Debug.WriteLine("Scope Begin, Web: " + isWeb);
+		//}
 
-		private void OnScopeEnding(object sender, LifetimeScopeEndingEventArgs args)
-		{
-			bool isWeb = System.Web.HttpContext.Current != null;
-			Debug.WriteLine("Scope END, Web: " + isWeb);
-		}
+		//private void OnScopeEnding(object sender, LifetimeScopeEndingEventArgs args)
+		//{
+		//	bool isWeb = System.Web.HttpContext.Current != null;
+		//	Debug.WriteLine("Scope END, Web: " + isWeb);
+		//}
 
 		private ILifetimeScope BeginLifetimeScope(Action<ContainerBuilder> configurationAction)
 		{

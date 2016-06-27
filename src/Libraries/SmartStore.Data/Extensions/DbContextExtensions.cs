@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using SmartStore.Core;
+using System.Diagnostics;
 
 namespace SmartStore
 {
@@ -79,6 +81,16 @@ namespace SmartStore
 		public static int Execute(this DbContext context, string sql, params object[] parameters) 
 		{
 			return context.Database.ExecuteSqlCommand(sql, parameters);
+		}
+
+		[Conditional("DEBUG")]
+		[DebuggerStepThrough]
+		public static void DumpAttachedEntities(this DbContext context)
+		{
+			context.ChangeTracker.Entries()
+				.Where(x => x.State != System.Data.Entity.EntityState.Detached)
+				.ToList()
+				.ForEach(x => "{0} {1} {2}".FormatInvariant((x.Entity as BaseEntity).Id, x.State.ToString(), x.Entity.GetType().Name).Dump());
 		}
 
 		internal static SqlServerInfo GetSqlServerInfo(this DbContext context)

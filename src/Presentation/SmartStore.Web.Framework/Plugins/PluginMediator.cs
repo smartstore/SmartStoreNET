@@ -13,7 +13,6 @@ using SmartStore.Services;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
-using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Web.Framework.Plugins
 {
@@ -128,16 +127,17 @@ namespace SmartStore.Web.Framework.Plugins
 
 			var settingKey = metadata.SettingKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
 
-			if (value != null)
+			using (_services.Settings.BeginBatch())
 			{
-				_services.Settings.SetSetting<T>(settingKey, value, 0, false);
+				if (value != null)
+				{
+					_services.Settings.SetSetting<T>(settingKey, value, 0, false);
+				}
+				else
+				{
+					_services.Settings.DeleteSetting(settingKey);
+				}
 			}
-			else
-			{
-				_services.Settings.DeleteSetting(settingKey);
-			}
-			
-			_services.Settings.ClearCache();
 		}
 
 		public ProviderModel ToProviderModel(Provider<IProvider> provider, bool forEdit = false, Action<Provider<IProvider>, ProviderModel> enhancer = null)
@@ -153,6 +153,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 			var metadata = provider.Metadata;
 			var model = new TModel();
+			model.ProviderType = typeof(TProvider);
 			model.SystemName = metadata.SystemName;
 			model.FriendlyName = forEdit ? metadata.FriendlyName : GetLocalizedFriendlyName(metadata);
 			model.Description = forEdit ? metadata.Description : GetLocalizedDescription(metadata);

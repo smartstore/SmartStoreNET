@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.Routing;
-using System.Web.Mvc;
+﻿using SmartStore.Collections;
 using SmartStore.Web.Framework.UI;
-using SmartStore.Collections;
 
 namespace SmartStore.Clickatell
 {
@@ -15,7 +9,7 @@ namespace SmartStore.Clickatell
 		{
 			var menuItem = new MenuItem().ToBuilder()
 				.Text("Clickatell SMS Provider")
-				.ResKey("Plugins.FriendlyName.Mobile.SMS.Clickatell")
+				.ResKey("Plugins.FriendlyName.SmartStore.Clickatell")
 				.Icon("send-o")
 				.Action("ConfigurePlugin", "Plugin", new { systemName = "SmartStore.Clickatell", area = "Admin" })
 				.ToItem();

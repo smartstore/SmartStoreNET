@@ -29,23 +29,14 @@ namespace SmartStore.Services.Messages
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
 
         #endregion
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-		/// <param name="storeMappingRepository">Store mapping repository</param>
-		/// <param name="languageService">Language service</param>
-		/// <param name="localizedEntityService">Localized entity service</param>
-		/// <param name="storeMappingService">Store mapping service</param>
-        /// <param name="messageTemplateRepository">Message template repository</param>
-        /// <param name="eventPublisher">Event published</param>
-        public MessageTemplateService(ICacheManager cacheManager,
+        public MessageTemplateService(
+			IRequestCache requestCache,
 			IRepository<StoreMapping> storeMappingRepository,
 			ILanguageService languageService,
 			ILocalizedEntityService localizedEntityService,
@@ -53,7 +44,7 @@ namespace SmartStore.Services.Messages
             IRepository<MessageTemplate> messageTemplateRepository,
             IEventPublisher eventPublisher)
         {
-			this._cacheManager = cacheManager;
+			this._requestCache = requestCache;
 			this._storeMappingRepository = storeMappingRepository;
 			this._languageService = languageService;
 			this._localizedEntityService = localizedEntityService;
@@ -81,7 +72,7 @@ namespace SmartStore.Services.Messages
 
 			_messageTemplateRepository.Delete(messageTemplate);
 
-			_cacheManager.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
 
 			//event notification
 			_eventPublisher.EntityDeleted(messageTemplate);
@@ -98,7 +89,7 @@ namespace SmartStore.Services.Messages
 
             _messageTemplateRepository.Insert(messageTemplate);
 
-            _cacheManager.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(messageTemplate);
@@ -115,7 +106,7 @@ namespace SmartStore.Services.Messages
 
             _messageTemplateRepository.Update(messageTemplate);
 
-            _cacheManager.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(messageTemplate);
@@ -146,7 +137,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentException("messageTemplateName");
 
             string key = string.Format(MESSAGETEMPLATES_BY_NAME_KEY, messageTemplateName, storeId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
 				var query = _messageTemplateRepository.Table;
 				query = query.Where(t => t.Name == messageTemplateName);
@@ -172,7 +163,7 @@ namespace SmartStore.Services.Messages
 		public virtual IList<MessageTemplate> GetAllMessageTemplates(int storeId)
         {
 			string key = string.Format(MESSAGETEMPLATES_ALL_KEY, storeId);
-			return _cacheManager.Get(key, () =>
+			return _requestCache.Get(key, () =>
             {
 				var query = _messageTemplateRepository.Table;
 				query = query.OrderBy(t => t.Name);
@@ -209,7 +200,7 @@ namespace SmartStore.Services.Messages
 			if (messageTemplate == null)
 				throw new ArgumentNullException("messageTemplate");
 
-			var mtCopy = new MessageTemplate()
+			var mtCopy = new MessageTemplate
 			{
 				Name = messageTemplate.Name,
 				BccEmailAddresses = messageTemplate.BccEmailAddresses,
@@ -218,25 +209,26 @@ namespace SmartStore.Services.Messages
 				IsActive = messageTemplate.IsActive,
 				EmailAccountId = messageTemplate.EmailAccountId,
 				LimitedToStores = messageTemplate.LimitedToStores
+				// INFO: we do not copy attachments
 			};
 
 			InsertMessageTemplate(mtCopy);
 
 			var languages = _languageService.GetAllLanguages(true);
 
-			//localization
+			// localization
 			foreach (var lang in languages)
 			{
 				var bccEmailAddresses = messageTemplate.GetLocalized(x => x.BccEmailAddresses, lang.Id, false, false);
-				if (!String.IsNullOrEmpty(bccEmailAddresses))
+				if (bccEmailAddresses.HasValue())
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.BccEmailAddresses, bccEmailAddresses, lang.Id);
 
 				var subject = messageTemplate.GetLocalized(x => x.Subject, lang.Id, false, false);
-				if (!String.IsNullOrEmpty(subject))
+				if (subject.HasValue())
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.Subject, subject, lang.Id);
 
 				var body = messageTemplate.GetLocalized(x => x.Body, lang.Id, false, false);
-				if (!String.IsNullOrEmpty(body))
+				if (body.HasValue())
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.Body, subject, lang.Id);
 
 				var emailAccountId = messageTemplate.GetLocalized(x => x.EmailAccountId, lang.Id, false, false);
@@ -244,7 +236,7 @@ namespace SmartStore.Services.Messages
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.EmailAccountId, emailAccountId, lang.Id);
 			}
 
-			//store mapping
+			// store mapping
 			var selectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(messageTemplate);
 			foreach (var id in selectedStoreIds)
 			{

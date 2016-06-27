@@ -10,9 +10,12 @@ namespace SmartStore.Data.Mapping.Customers
         {
             this.ToTable("Customer");
             this.HasKey(c => c.Id);
-            this.Property(u => u.Username).HasMaxLength(1000);
-            this.Property(u => u.Email).HasMaxLength(1000);
+            this.Property(u => u.Username).HasMaxLength(500);
+            this.Property(u => u.Email).HasMaxLength(500);
 			this.Property(u => u.SystemName).HasMaxLength(500);
+			this.Property(u => u.Password).HasMaxLength(500);
+			this.Property(u => u.PasswordSalt).HasMaxLength(500);
+			this.Property(u => u.LastIpAddress).HasMaxLength(100);
 
             this.Ignore(u => u.PasswordFormat);
 

@@ -44,7 +44,7 @@ namespace SmartStore.Data.Migrations
 				"{0} von {1} Zeilen verarbeitet.");
 
 			builder.AddOrUpdate("Admin.Common.ImportFromExcel.QuickStats",
-				"{0} new, {1} updated - with {2} warning(s) und {3} error(s).",
+				"{0} new, {1} updated - with {2} warning(s) and {3} error(s).",
 				"{0} neu, {1} aktualisiert - bei {2} Warnung(en) und {3} Fehler(n).");
 
 			builder.AddOrUpdate("Admin.Common.ImportFromExcel.ActiveSince",

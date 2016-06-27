@@ -28,7 +28,7 @@ namespace SmartStore.Services.Tests.Catalog
 		IProductAttributeService _productAttributeService;
         IPriceCalculationService _priceCalcService;
 		IDownloadService _downloadService;
-		ICommonServices _commonServices;
+		ICommonServices _services;
 		HttpRequestBase _httpRequestBase;
 		ITaxService _taxService;
         ShoppingCartSettings _shoppingCartSettings;
@@ -52,8 +52,8 @@ namespace SmartStore.Services.Tests.Catalog
 			_productAttributeService = MockRepository.GenerateMock<IProductAttributeService>();
 
 			_downloadService = MockRepository.GenerateMock<IDownloadService>();
-			_commonServices = MockRepository.GenerateMock<ICommonServices>();
-			_commonServices.Expect(x => x.StoreContext).Return(_storeContext);
+			_services = MockRepository.GenerateMock<ICommonServices>();
+			_services.Expect(x => x.StoreContext).Return(_storeContext);
 			_httpRequestBase = MockRepository.GenerateMock<HttpRequestBase>();
 			_taxService = MockRepository.GenerateMock<ITaxService>();
 
@@ -61,7 +61,7 @@ namespace SmartStore.Services.Tests.Catalog
             _catalogSettings = new CatalogSettings();
 
 			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings,
-				_productAttributeService, _downloadService, _commonServices, _httpRequestBase, _taxService);
+				_productAttributeService, _downloadService, _services, _httpRequestBase, _taxService);
         }
 
         [Test]

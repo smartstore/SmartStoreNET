@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Topics;
@@ -13,23 +14,30 @@ namespace SmartStore.Services.Topics
     /// </summary>
     public partial class TopicService : ITopicService
     {
-        #region Fields
+		private const string TOPICS_ALL_KEY = "SmartStore.topics.all-{0}";
+		private const string TOPICS_PATTERN_KEY = "SmartStore.topics.";
 
-        private readonly IRepository<Topic> _topicRepository;
+		#region Fields
+
+		private readonly IRepository<Topic> _topicRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IEventPublisher _eventPublisher;
+		private readonly IRequestCache _requestCache;
 
-        #endregion
+		#endregion
 
-        #region Ctor
+		#region Ctor
 
-        public TopicService(IRepository<Topic> topicRepository,
+		public TopicService(
+			IRepository<Topic> topicRepository,
 			IRepository<StoreMapping> storeMappingRepository,
-			IEventPublisher eventPublisher)
+			IEventPublisher eventPublisher,
+			IRequestCache requestCache)
         {
             _topicRepository = topicRepository;
 			_storeMappingRepository = storeMappingRepository;
             _eventPublisher = eventPublisher;
+			_requestCache = requestCache;
 
 			this.QuerySettings = DbQuerySettings.Default;
 		}
@@ -51,8 +59,10 @@ namespace SmartStore.Services.Topics
 
             _topicRepository.Delete(topic);
 
-            //event notification
-            _eventPublisher.EntityDeleted(topic);
+			_requestCache.RemoveByPattern(TOPICS_PATTERN_KEY);
+
+			//event notification
+			_eventPublisher.EntityDeleted(topic);
         }
 
         /// <summary>
@@ -79,29 +89,13 @@ namespace SmartStore.Services.Topics
             if (String.IsNullOrEmpty(systemName))
                 return null;
 
-			var query = _topicRepository.Table;
-			query = query.Where(t => t.SystemName == systemName);
-			query = query.OrderBy(t => t.Id);
+			var allTopics = GetAllTopics(storeId);
 
-			//Store mapping
-			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
-			{
-				query = from t in query
-						join sm in _storeMappingRepository.Table
-						on new { c1 = t.Id, c2 = "Topic" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into t_sm
-						from sm in t_sm.DefaultIfEmpty()
-						where !t.LimitedToStores || storeId == sm.StoreId
-						select t;
+			var topic = allTopics
+				.OrderBy(x => x.Id)
+				.FirstOrDefault(x => x.SystemName.IsCaseInsensitiveEqual(systemName));
 
-				//only distinct items (group by ID)
-				query = from t in query
-						group t by t.Id into tGroup
-						orderby tGroup.Key
-						select tGroup.FirstOrDefault();
-				query = query.OrderBy(t => t.Id);
-			}
-
-			return query.FirstOrDefault();
+			return topic;
         }
 
         /// <summary>
@@ -111,28 +105,33 @@ namespace SmartStore.Services.Topics
         /// <returns>Topics</returns>
 		public virtual IList<Topic> GetAllTopics(int storeId)
         {
-			var query = _topicRepository.Table;
-			query = query.OrderBy(t => t.Priority).ThenBy(t => t.SystemName);
-
-			//Store mapping
-			if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
+			var result = _requestCache.Get(TOPICS_ALL_KEY.FormatInvariant(storeId), () =>
 			{
-				query = from t in query
-						join sm in _storeMappingRepository.Table
-						on new { c1 = t.Id, c2 = "Topic" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into t_sm
-						from sm in t_sm.DefaultIfEmpty()
-						where !t.LimitedToStores || storeId == sm.StoreId
-						select t;
+				var query = _topicRepository.Table;
 
-				//only distinct items (group by ID)
-				query = from t in query
-						group t by t.Id	into tGroup
-						orderby tGroup.Key
-						select tGroup.FirstOrDefault();
-				query = query.OrderBy(t => t.SystemName);
-			}
+				//Store mapping
+				if (storeId > 0 && !QuerySettings.IgnoreMultiStore)
+				{
+					query = from t in query
+							join sm in _storeMappingRepository.Table
+							on new { c1 = t.Id, c2 = "Topic" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into t_sm
+							from sm in t_sm.DefaultIfEmpty()
+							where !t.LimitedToStores || storeId == sm.StoreId
+							select t;
 
-			return query.ToList();
+					//only distinct items (group by ID)
+					query = from t in query
+							group t by t.Id into tGroup
+							orderby tGroup.Key
+							select tGroup.FirstOrDefault();
+				}
+
+				query = query.OrderBy(t => t.Priority).ThenBy(t => t.SystemName);
+
+				return query.ToList();
+			});
+
+			return result;
         }
 
         /// <summary>
@@ -146,8 +145,10 @@ namespace SmartStore.Services.Topics
 
             _topicRepository.Insert(topic);
 
-            //event notification
-            _eventPublisher.EntityInserted(topic);
+			_requestCache.RemoveByPattern(TOPICS_PATTERN_KEY);
+
+			//event notification
+			_eventPublisher.EntityInserted(topic);
         }
 
         /// <summary>
@@ -161,8 +162,10 @@ namespace SmartStore.Services.Topics
 
             _topicRepository.Update(topic);
 
-            //event notification
-            _eventPublisher.EntityUpdated(topic);
+			_requestCache.RemoveByPattern(TOPICS_PATTERN_KEY);
+
+			//event notification
+			_eventPublisher.EntityUpdated(topic);
         }
 
         #endregion

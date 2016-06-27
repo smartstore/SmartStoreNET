@@ -25,15 +25,25 @@
 
 			// update product data and gallery
 		    $(el).find(':input').change(function () {
+		    	var inputType = $(this).attr('type');
+		    	if (inputType && (inputType === 'file' || inputType === 'submit'))
+		    		return this;
+
 		    	var context = $(this).closest('.update-container');
 
-		    	if (context[0]) {		// associated or bundled item
+		    	if (context[0]) {
 		    	}
 		    	else {
 		    		context = el;
 		    	}
 
-		    	context.doAjax({
+		    	var url = context.attr('data-url');
+		    	if (!url) {
+		    		return this;
+		    	}
+
+		    	$({}).doAjax({
+		    		url: url,
 		    		data: context.find(':input').serialize(),
 		    		callbackSuccess: function (response) {
 		    			self.updateDetailData(response, context);
@@ -62,7 +72,7 @@
 		    if (data.GalleryHtml) {
 		        var cnt = $('#pd-gallery-container');
 		        cnt.stop(true, true).transition({ opacity: 0 }, 300, "ease-out", function () {
-		            gallery.reset();
+		        	gallery.reset();
 		            cnt.html(data.GalleryHtml);
 		            self.createGallery(data.GalleryStartIndex);
 
@@ -130,7 +140,15 @@
 		    updateAttrLine(".attr-length", data.Measure.Length.Text);
 		    updateAttrLine(".attr-width", data.Measure.Width.Text);
 		    updateAttrLine(".attr-height", data.Measure.Height.Text);
-		    updateAttrLine(".attr-stock", data.Stock.Availability.Text);
+
+		    if (data.Stock.Quantity.Show)
+		    {
+		        updateAttrLine(".attr-stock", data.Stock.Availability.Text);
+		    }
+		    else
+		    {
+		        updateAttrLine(".attr-stock", "");
+		    }
 
 		    context.find('.add-to-cart .form-inline').toggle(data.Stock.Availability.Available);
 
@@ -161,7 +179,8 @@
                     zoomType: opts.zoomType
 				},
 				box: {
-					enabled: true	
+					enabled: true,
+					hidePageScrollbars: false
 				}
 			});
 		}

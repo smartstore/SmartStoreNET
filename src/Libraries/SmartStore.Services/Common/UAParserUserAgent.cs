@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Web;
+using SmartStore.Utilities;
 using uap = UAParser;
 
 namespace SmartStore.Services.Common
@@ -14,7 +15,7 @@ namespace SmartStore.Services.Common
 
 		# region Mobile UAs, OS & Devices
 
-		private static readonly HashSet<string> s_MobileOS = new HashSet<string>
+		private static readonly HashSet<string> s_MobileOS = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
 		{
 			"Android", 
 			"iOS", 
@@ -32,8 +33,10 @@ namespace SmartStore.Services.Common
 			"Maemo"
 		};
 
-		private static readonly HashSet<string> s_MobileBrowsers = new HashSet<string>
+		private static readonly HashSet<string> s_MobileBrowsers = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
 		{
+			"Googlebot-Mobile",
+			"Baiduspider-mobile",
 			"Android", 
 			"Firefox Mobile", 
 			"Opera Mobile", 
@@ -80,7 +83,7 @@ namespace SmartStore.Services.Common
 			"Skyfire"
 		};
 
-		private static readonly HashSet<string> s_MobileDevices = new HashSet<string>
+		private static readonly HashSet<string> s_MobileDevices = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
 		{
 			"BlackBerry", 
 			"MI PAD", 
@@ -116,7 +119,8 @@ namespace SmartStore.Services.Common
 
 		static UAParserUserAgent()
 		{
-			s_uap = uap.Parser.GetDefault();
+			//s_uap = uap.Parser.GetDefault();
+			s_uap = uap.Parser.FromYamlFile(CommonHelper.MapPath("~/App_Data/ua-parser.regexes.yaml"));
 		}
 
 		public UAParserUserAgent(HttpContextBase httpContext)
@@ -176,7 +180,7 @@ namespace SmartStore.Services.Common
 				if (_device == null)
 				{
 					var tmp = s_uap.ParseDevice(this.RawValue);
-					_device = new DeviceInfo(tmp.Family, tmp.IsSpider);
+					_device = new DeviceInfo(tmp.Family, tmp.IsSpider());
 				}
 				return _device;
 			}
@@ -201,7 +205,7 @@ namespace SmartStore.Services.Common
 			{
 				if (!_isBot.HasValue)
 				{
-					_isBot = _httpContext.Request.Browser.Crawler || this.Device.IsBot;
+					_isBot = _httpContext.Request.Browser.Crawler || this.Device.IsBot || this.UserAgent.IsBot;
 				}
 				return _isBot.Value;
 			}
@@ -247,7 +251,14 @@ namespace SmartStore.Services.Common
 				return _isPdfConverter.Value;
 			}
 		}
+	}
 
+	internal static class DeviceExtensions
+	{
+		internal static bool IsSpider(this UAParser.Device device)
+		{
+			return device.Family.Equals("Spider", StringComparison.InvariantCultureIgnoreCase);
+		}
 	}
 
 }

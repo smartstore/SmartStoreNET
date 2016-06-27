@@ -1,13 +1,12 @@
-﻿using SmartStore.Web.Framework.Mvc;
+﻿using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Media
 {
     public partial class PictureModel : ModelBase
     {
-        // codehint: sm-add
         public int PictureId { get; set; }
 
-        public string ThumbImageUrl { get; set; } // codehint: sm-add
+        public string ThumbImageUrl { get; set; }
 
         public string ImageUrl { get; set; }
 

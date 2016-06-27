@@ -1,0 +1,124 @@
+/* -------------------------------------------------------------- 
+ 	SmartStore Component: smartstore.entitypicker.css
+-------------------------------------------------------------- */
+
+.entity-picker-list {
+    position: relative;
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.entity-picker-list .item-wrap {
+    position: relative;
+    box-sizing: border-box;
+	display: block;
+    float: left;
+	width: 33.3332%;
+	padding: 0 5px;
+}
+
+.entity-picker-list .item {
+    position: relative;
+    box-sizing: border-box;
+	display: block;
+	height: 70px;
+	padding: 8px;
+	margin: 5px 0;
+	border-radius: 3px;
+}
+.entity-picker-list .item:not(.disable):hover {
+	cursor: pointer;
+}
+.entity-picker-list .item:not(.selected):hover {
+	background-color: #f5f5f5;
+}
+
+.entity-picker-list .disable {
+	opacity: 0.4;
+}
+
+.entity-picker-list .title {
+    font-weight: 400;
+    max-height: 36px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.entity-picker-list .highlight {
+    font-weight: 700;
+}
+
+.entity-picker-list .summary {
+    color: #aaa;
+	font-size: 12px;
+	height: 18px;
+	line-height: 18px;
+	vertical-align: middle;
+	overflow: hidden;
+}
+.entity-picker-list .published {
+    margin-left: 1px;
+    margin-right: 6px;
+    font-size: 15px;
+    line-height: 18px;
+    vertical-align: sub;
+}
+.entity-picker-list .published.fa-globe {
+    color: inherit;
+}
+.entity-picker-list .published.fa-eye-slash {
+    color: #aaa;
+}
+.entity-picker-list .item.selected .published {
+    color: #fff;
+}
+
+.entity-picker-list .list-footer {
+	clear: both;
+	padding: 12px;
+    text-align: center;
+}
+
+.entity-picker-list .thumb,
+.entity-picker-list .data {
+    position: relative;
+    box-sizing: border-box;
+    display: block;
+}
+.entity-picker-list .thumb {
+    display: table-cell;
+    width: 54px;
+    height: 54px;
+    max-width: 54px;
+    max-height: 54px;
+    padding: 2px;
+    text-align: center;
+    vertical-align: middle;
+}
+.entity-picker-list .item:hover .thumb,
+.entity-picker-list .item.selected .thumb {
+    background: #fff;
+    box-shadow: 1px 1px 2px rgba(0,0,0, 0.1);
+}
+.entity-picker-list .thumb img {
+	max-width: 100%;
+	max-height: 100%;
+}
+.entity-picker-list .thumb + .data {
+    position: absolute;
+    left: 72px;
+    right: 8px;
+    top: 8px;
+    bottom: 8px;
+}
+
+.entity-picker-list .item.selected {
+    background-color: #4060c0;
+}
+.entity-picker-list .item.selected .title {
+    color: #fff;
+}
+.entity-picker-list .item.selected .summary {
+    color: rgba(255,255,255, 0.6);
+}
+

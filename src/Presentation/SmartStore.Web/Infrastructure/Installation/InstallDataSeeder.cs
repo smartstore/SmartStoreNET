@@ -445,7 +445,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					var rsOrder = new EfRepository<Order>(_ctx);
 					rs.AutoCommitEnabled = false;
 
-					_gaService = new GenericAttributeService(NullCache.Instance, rs, NullEventPublisher.Instance, rsOrder);
+					_gaService = new GenericAttributeService(NullRequestCache.Instance, rs, NullEventPublisher.Instance, rsOrder);
 				}
 
 				return _gaService;
@@ -497,13 +497,14 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsResources.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
-					var storeService = new StoreService(NullCache.Instance, new EfRepository<Store>(_ctx), NullEventPublisher.Instance);
+					var storeService = new StoreService(NullRequestCache.Instance, new EfRepository<Store>(_ctx), NullEventPublisher.Instance);
 					var storeContext = new WebStoreContext(storeService, new WebHelper(null), null);
 
 					var locSettings = new LocalizationSettings();
 
 					var languageService = new LanguageService(
-						NullCache.Instance, 
+						NullRequestCache.Instance, 
+						NullCache.Instance,
 						rsLanguage,
 						this.SettingService,
 						locSettings,
@@ -539,6 +540,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			
 			_ctx.Configuration.AutoDetectChangesEnabled = false;
 			_ctx.Configuration.ValidateOnSaveEnabled = false;
+			_ctx.HooksEnabled = false;
 
 			_config.ProgressMessageCallback("Progress.CreatingRequiredData");
 
@@ -549,12 +551,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 			});
 
 			Populate("PopulatePictures", _data.Pictures());
+			Populate("PopulateCurrencies", PopulateCurrencies);
 			Populate("PopulateStores", PopulateStores);
 			Populate("InstallLanguages", () => PopulateLanguage(_config.Language));
 			Populate("PopulateMeasureDimensions", _data.MeasureDimensions());
 			Populate("PopulateMeasureWeights", _data.MeasureWeights());
 			Populate("PopulateTaxCategories", PopulateTaxCategories);
-			Populate("PopulateCurrencies", PopulateCurrencies);
 			Populate("PopulateCountriesAndStates", PopulateCountriesAndStates);
 			Populate("PopulateShippingMethods", PopulateShippingMethods);
 			Populate("PopulateDeliveryTimes", _data.DeliveryTimes());
@@ -614,9 +616,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 		private string ValidateSeName<TEntity>(TEntity entity, string name)
 			where TEntity : BaseEntity, ISlugSupported
 		{
+			var seoSettings = new SeoSettings { LoadAllUrlAliasesOnStartup = false };
+			
 			if (_urlRecordService == null)
 			{
-				_urlRecordService = new UrlRecordService(NullCache.Instance, new EfRepository<UrlRecord>(_ctx) { AutoCommitEnabled = false });
+				_urlRecordService = new UrlRecordService(NullCache.Instance, new EfRepository<UrlRecord>(_ctx) { AutoCommitEnabled = false }, seoSettings);
 			}
 
 			return entity.ValidateSeName<TEntity>("", name, true, _urlRecordService, new SeoSettings());

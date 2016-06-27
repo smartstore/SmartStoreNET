@@ -1,0 +1,56 @@
+﻿@model DataExchangeSettingsModel
+@{
+    ViewBag.Title = T("Admin.Common.DataExchange").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="fa fa-exchange"></i>
+            @T("Admin.Common.DataExchange")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+        </div>
+    </div>
+    
+	@Html.Action("StoreScopeConfiguration", "Setting")
+	@Html.ValidationSummary(false)
+
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.MaxFileNameLength)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.MaxFileNameLength)
+				@Html.ValidationMessageFor(model => model.MaxFileNameLength)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Common.Import")</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ImageImportFolder)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ImageImportFolder)
+				@Html.ValidationMessageFor(model => model.ImageImportFolder)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ImageDownloadTimeout)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ImageDownloadTimeout)
+				@Html.ValidationMessageFor(model => model.ImageDownloadTimeout)
+			</td>
+		</tr>
+	</table>
+}

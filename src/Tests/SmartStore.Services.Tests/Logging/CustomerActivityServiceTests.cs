@@ -1,29 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using Rhino.Mocks;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Logging;
-using SmartStore.Tests;
-using NUnit.Framework;
-using Rhino.Mocks;
 using SmartStore.Services.Logging;
+using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Logging
 {
-    [TestFixture]
+	[TestFixture]
     public class CustomerActivityServiceTests : ServiceTest
     {
-        ICacheManager _cacheManager;
         IRepository<ActivityLog> _activityLogRepository;
         IRepository<ActivityLogType> _activityLogTypeRepository;
-        IWorkContext _workContext;
+		IRepository<Customer> _customerRepository;
+		IWorkContext _workContext;
         ICustomerActivityService _customerActivityService;
         ActivityLogType _activityType1, _activityType2;
         ActivityLog _activity1, _activity2;
         Customer _customer1, _customer2;
+
         [SetUp]
         public new void SetUp()
         {
@@ -69,13 +69,15 @@ namespace SmartStore.Services.Tests.Logging
                 CustomerId = _customer2.Id,
                 Customer = _customer2
             };
-            _cacheManager = new NullCache();
+
             _workContext = MockRepository.GenerateMock<IWorkContext>();
             _activityLogRepository = MockRepository.GenerateMock<IRepository<ActivityLog>>();
             _activityLogTypeRepository = MockRepository.GenerateMock<IRepository<ActivityLogType>>();
+			_customerRepository = MockRepository.GenerateMock<IRepository<Customer>>();
             _activityLogTypeRepository.Expect(x => x.Table).Return(new List<ActivityLogType>() { _activityType1, _activityType2 }.AsQueryable());
             _activityLogRepository.Expect(x => x.Table).Return(new List<ActivityLog>() { _activity1, _activity2 }.AsQueryable());
-            _customerActivityService = new CustomerActivityService(_cacheManager, _activityLogRepository, _activityLogTypeRepository, _workContext, null, null, null);
+
+            _customerActivityService = new CustomerActivityService(_activityLogRepository, _activityLogTypeRepository, _customerRepository, _workContext, null);
         }
 
         [Test]

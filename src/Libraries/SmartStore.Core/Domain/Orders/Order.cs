@@ -320,7 +320,6 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public string CardExpirationYear { get; set; }
 
-        /// codehint:sm-add begin
         /// <summary>
         /// Gets or sets a value indicating whether storing of credit card number is allowed
         /// </summary>
@@ -452,19 +451,25 @@ namespace SmartStore.Core.Domain.Orders
 		public int? RewardPointsRemaining { get; set; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether a new payment notification (IPN) arrived
+		/// Gets or sets a value indicating whether a new payment notification arrived (IPN, webhook, callback etc.)
 		/// </summary>
 		[DataMember]
 		public bool HasNewPaymentNotification { get; set; }
 
-        #endregion
+		/// <summary>
+		/// Gets or sets a value indicating whether the customer accepted to hand over email address to third party
+		/// </summary>
+		[DataMember]
+		public bool AcceptThirdPartyEmailHandOver { get; set; }
 
-        #region Navigation properties
+		#endregion
 
-        /// <summary>
-        /// Gets or sets the customer
-        /// </summary>
-        [DataMember]
+		#region Navigation properties
+
+		/// <summary>
+		/// Gets or sets the customer
+		/// </summary>
+		[DataMember]
         public virtual Customer Customer { get; set; }
 
         /// <summary>

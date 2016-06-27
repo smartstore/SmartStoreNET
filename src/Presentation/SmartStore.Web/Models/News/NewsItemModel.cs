@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentValidation.Attributes;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Validators.News;
 
 namespace SmartStore.Web.Models.News
@@ -34,7 +34,6 @@ namespace SmartStore.Web.Models.News
         public IList<NewsCommentModel> Comments { get; set; }
         public AddNewsCommentModel AddNewComment { get; set; }
 
-        // codehint: sm-add
         public int AvatarPictureSize { get; set; }
 		public bool AllowCustomersToUploadAvatars { get; set; }
     }

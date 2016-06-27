@@ -90,11 +90,11 @@ namespace SmartStore.Web.Framework.Seo
                 }
                 if (!urlRecord.IsActive)
                 {
-                    //URL record is not active. let's find the latest one
+                    // URL record is not active. let's find the latest one
                     var activeSlug = urlRecordService.GetActiveSlug(urlRecord.EntityId, urlRecord.EntityName, urlRecord.LanguageId);
                     if (!string.IsNullOrWhiteSpace(activeSlug))
                     {
-                        //the active one is found
+                        // the active one is found
                         var webHelper = EngineContext.Current.Resolve<IWebHelper>();
                         var response = httpContext.Response;
                         response.Status = "301 Moved Permanently";
@@ -104,14 +104,14 @@ namespace SmartStore.Web.Framework.Seo
                     }
                     else
                     {
-                        //no active slug found
+                        // no active slug found
 						data.Values["controller"] = "Error";
 						data.Values["action"] = "NotFound";
                         return data;
                     }
                 }
 
-                //process URL
+                // process URL
 				data.Values["SeName"] = urlRecord.Slug;
                 switch (urlRecord.EntityName.ToLowerInvariant())
                 {
@@ -152,7 +152,7 @@ namespace SmartStore.Web.Framework.Seo
                         break;
                     default:
                         {
-                            throw new SmartException(string.Format("Not supported EntityName for UrlRecord: {0}", urlRecord.EntityName));
+                            throw new SmartException(string.Format("Unsupported EntityName for UrlRecord: {0}", urlRecord.EntityName));
                         }
                 }
             }

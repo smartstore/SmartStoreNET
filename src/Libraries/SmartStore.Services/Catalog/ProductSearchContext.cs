@@ -31,6 +31,16 @@ namespace SmartStore.Services.Catalog
 		/// <remarks>Only implemented in LINQ mode at the moment</remarks>
 		public IList<int> ProductIds { get; set; }
 
+		/// <summary>
+		/// Minimum product identifier
+		/// </summary>
+		public int IdMin { get; set; }
+
+		/// <summary>
+		/// Maximum product identifier
+		/// </summary>
+		public int IdMax { get; set; }
+
         /// <summary>
         /// A value indicating whether ALL given <see cref="CategoryIds"/> must be assigned to the resulting products (default is ANY)
         /// </summary>
@@ -40,7 +50,7 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// A value indicating whether to load products without any catgory mapping
 		/// </summary>
-		public bool WithoutCategories { get; set; }
+		public bool? WithoutCategories { get; set; }
 
         /// <summary>
         /// Manufacturer identifier; 0 to load all records
@@ -50,7 +60,7 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// A value indicating whether to load products without any manufacturer mapping
 		/// </summary>
-		public bool WithoutManufacturers { get; set; }
+		public bool? WithoutManufacturers { get; set; }
 
         /// <summary>
         /// A value indicating whether loaded products are marked as featured (relates only to categories and manufacturers). 0 to load featured products only, 1 to load not featured products only, null to load all products
@@ -158,5 +168,35 @@ namespace SmartStore.Services.Catalog
         /// Can be useful in customization scenarios.
         /// </summary>
         public string Origin { get; set; }
+
+		/// <summary>
+		/// A value indicating whether to load only published or non published products
+		/// </summary>
+		public bool? IsPublished { get; set; }
+
+		/// <summary>
+		/// A value indicating whether to load only products displayed on the homepage
+		/// </summary>
+		public bool? HomePageProducts { get; set; }
+
+		/// <summary>
+		/// Search by minimum availability
+		/// </summary>
+		public int? AvailabilityMinimum { get; set; }
+
+		/// <summary>
+		/// Search by maximum availability
+		/// </summary>
+		public int? AvailabilityMaximum { get; set; }
+
+		/// <summary>
+		/// Search by created from date
+		/// </summary>
+		public DateTime? CreatedFromUtc { get; set; }
+
+		/// <summary>
+		/// Search by created to date
+		/// </summary>
+		public DateTime? CreatedToUtc { get; set; }
     }
 }

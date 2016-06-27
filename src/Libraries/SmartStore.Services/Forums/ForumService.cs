@@ -38,20 +38,18 @@ namespace SmartStore.Services.Forums
         private readonly IRepository<ForumSubscription> _forumSubscriptionRepository;
         private readonly ForumSettings _forumSettings;
         private readonly IRepository<Customer> _customerRepository;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICustomerService _customerService;
-        private readonly IWorkContext _workContext;
         private readonly IWorkflowMessageService _workflowMessageService;
-        private readonly IEventPublisher _eventPublisher;
-		private readonly IStoreContext _storeContext;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
+		private readonly ICommonServices _services;
 
         #endregion
 
         #region Ctor
 
-        public ForumService(ICacheManager cacheManager,
+        public ForumService(IRequestCache requestCache,
             IRepository<ForumGroup> forumGroupRepository,
             IRepository<Forum> forumRepository,
             IRepository<ForumTopic> forumTopicRepository,
@@ -62,13 +60,11 @@ namespace SmartStore.Services.Forums
             IRepository<Customer> customerRepository,
             IGenericAttributeService genericAttributeService,
             ICustomerService customerService,
-            IWorkContext workContext,
             IWorkflowMessageService workflowMessageService,
-            IEventPublisher eventPublisher,
-			IStoreContext storeContext,
-			IRepository<StoreMapping> storeMappingRepository)
+			IRepository<StoreMapping> storeMappingRepository,
+			ICommonServices services)
         {
-            _cacheManager = cacheManager;
+            _requestCache = requestCache;
             _forumGroupRepository = forumGroupRepository;
             _forumRepository = forumRepository;
             _forumTopicRepository = forumTopicRepository;
@@ -79,11 +75,9 @@ namespace SmartStore.Services.Forums
             _customerRepository = customerRepository;
             _genericAttributeService = genericAttributeService;
             _customerService = customerService;
-            _workContext = workContext;
             _workflowMessageService = workflowMessageService;
-            _eventPublisher = eventPublisher;
-			_storeContext = storeContext;
 			_storeMappingRepository = storeMappingRepository;
+			_services = services;
         }
 
 		public DbQuerySettings QuerySettings { get; set; }
@@ -259,11 +253,11 @@ namespace SmartStore.Services.Forums
 
             _forumGroupRepository.Delete(forumGroup);
 
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityDeleted(forumGroup);
+            _services.EventPublisher.EntityDeleted(forumGroup);
         }
 
         /// <summary>
@@ -286,13 +280,13 @@ namespace SmartStore.Services.Forums
 		public virtual IList<ForumGroup> GetAllForumGroups(bool showHidden = false)
         {
 			string key = string.Format(FORUMGROUP_ALL_KEY, showHidden);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
 				var query = _forumGroupRepository.Table;
 
 				if (!showHidden && !QuerySettings.IgnoreMultiStore)
 				{
-					var currentStoreId = _storeContext.CurrentStore.Id;
+					var currentStoreId = _services.StoreContext.CurrentStore.Id;
 
 					query = 
 						from fg in query
@@ -328,11 +322,11 @@ namespace SmartStore.Services.Forums
             _forumGroupRepository.Insert(forumGroup);
 
             //cache
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityInserted(forumGroup);
+            _services.EventPublisher.EntityInserted(forumGroup);
         }
 
         /// <summary>
@@ -349,11 +343,11 @@ namespace SmartStore.Services.Forums
             _forumGroupRepository.Update(forumGroup);
 
             //cache
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityUpdated(forumGroup);
+            _services.EventPublisher.EntityUpdated(forumGroup);
         }
 
         /// <summary>
@@ -378,7 +372,7 @@ namespace SmartStore.Services.Forums
             {
                 _forumSubscriptionRepository.Delete(fs);
                 //event notification
-                _eventPublisher.EntityDeleted(fs);
+                _services.EventPublisher.EntityDeleted(fs);
             }
 
             //delete forum subscriptions (forum)
@@ -389,17 +383,17 @@ namespace SmartStore.Services.Forums
             {
                 _forumSubscriptionRepository.Delete(fs2);
                 //event notification
-                _eventPublisher.EntityDeleted(fs2);
+                _services.EventPublisher.EntityDeleted(fs2);
             }
 
             //delete forum
             _forumRepository.Delete(forum);
 
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityDeleted(forum);
+            _services.EventPublisher.EntityDeleted(forum);
         }
 
         /// <summary>
@@ -423,7 +417,7 @@ namespace SmartStore.Services.Forums
         public virtual IList<Forum> GetAllForumsByGroupId(int forumGroupId)
         {
             string key = string.Format(FORUM_ALLBYFORUMGROUPID_KEY, forumGroupId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from f in _forumRepository.Table
                             orderby f.DisplayOrder
@@ -447,11 +441,11 @@ namespace SmartStore.Services.Forums
 
             _forumRepository.Insert(forum);
 
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityInserted(forum);
+            _services.EventPublisher.EntityInserted(forum);
         }
 
         /// <summary>
@@ -467,11 +461,11 @@ namespace SmartStore.Services.Forums
 
             _forumRepository.Update(forum);
             
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityUpdated(forum);
+            _services.EventPublisher.EntityUpdated(forum);
         }
 
         /// <summary>
@@ -500,18 +494,18 @@ namespace SmartStore.Services.Forums
             {
                 _forumSubscriptionRepository.Delete(fs);
                 //event notification
-                _eventPublisher.EntityDeleted(fs);
+                _services.EventPublisher.EntityDeleted(fs);
             }
 
             //update stats
             UpdateForumStats(forumId);
             UpdateCustomerStats(customerId);
 
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityDeleted(forumTopic);
+            _services.EventPublisher.EntityDeleted(forumTopic);
         }
 
         /// <summary>
@@ -613,7 +607,7 @@ namespace SmartStore.Services.Forums
 
 			if (!QuerySettings.IgnoreMultiStore)
 			{
-				var currentStoreId = _storeContext.CurrentStore.Id;
+				var currentStoreId = _services.StoreContext.CurrentStore.Id;
 
 				query =
 					from ft in query
@@ -655,18 +649,18 @@ namespace SmartStore.Services.Forums
             UpdateForumStats(forumTopic.ForumId);
 
             //cache            
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityInserted(forumTopic);
+            _services.EventPublisher.EntityInserted(forumTopic);
 
             //send notifications
             if (sendNotifications)
             {
                 var forum = forumTopic.Forum;
                 var subscriptions = GetAllSubscriptions(0, forum.Id, 0, 0, int.MaxValue);
-                var languageId = _workContext.WorkingLanguage.Id;
+                var languageId = _services.WorkContext.WorkingLanguage.Id;
 
                 foreach (var subscription in subscriptions)
                 {
@@ -696,11 +690,11 @@ namespace SmartStore.Services.Forums
 
             _forumTopicRepository.Update(forumTopic);
 
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityUpdated(forumTopic);
+            _services.EventPublisher.EntityUpdated(forumTopic);
         }
 
         /// <summary>
@@ -715,7 +709,7 @@ namespace SmartStore.Services.Forums
             if (forumTopic == null)
                 return forumTopic;
 
-            if (this.IsCustomerAllowedToMoveTopic(_workContext.CurrentCustomer, forumTopic))
+            if (this.IsCustomerAllowedToMoveTopic(_services.WorkContext.CurrentCustomer, forumTopic))
             {
                 int previousForumId = forumTopic.ForumId;
                 var newForum = GetForumById(newForumId);
@@ -779,11 +773,11 @@ namespace SmartStore.Services.Forums
             UpdateCustomerStats(customerId);
 
             //clear cache            
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityDeleted(forumPost);
+            _services.EventPublisher.EntityDeleted(forumPost);
 
         }
 
@@ -883,11 +877,11 @@ namespace SmartStore.Services.Forums
             UpdateCustomerStats(customerId);
 
             //clear cache            
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityInserted(forumPost);
+            _services.EventPublisher.EntityInserted(forumPost);
 
             //notifications
             if (sendNotifications)
@@ -895,7 +889,7 @@ namespace SmartStore.Services.Forums
                 var forum = forumTopic.Forum;
                 var subscriptions = GetAllSubscriptions(0, 0, forumTopic.Id, 0, int.MaxValue);
 
-                var languageId = _workContext.WorkingLanguage.Id;
+                var languageId = _services.WorkContext.WorkingLanguage.Id;
 
                 int friendlyTopicPageIndex = CalculateTopicPageIndex(forumPost.TopicId, _forumSettings.PostsPageSize > 0 ? _forumSettings.PostsPageSize : 10, forumPost.Id) + 1;
 
@@ -928,11 +922,11 @@ namespace SmartStore.Services.Forums
 
             _forumPostRepository.Update(forumPost);
 
-            _cacheManager.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(FORUM_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUMGROUP_PATTERN_KEY);
+            _requestCache.RemoveByPattern(FORUM_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityUpdated(forumPost);
+            _services.EventPublisher.EntityUpdated(forumPost);
         }
 
         /// <summary>
@@ -949,7 +943,7 @@ namespace SmartStore.Services.Forums
             _forumPrivateMessageRepository.Delete(privateMessage);
 
             //event notification
-            _eventPublisher.EntityDeleted(privateMessage);
+            _services.EventPublisher.EntityDeleted(privateMessage);
         }
 
         /// <summary>
@@ -1028,7 +1022,7 @@ namespace SmartStore.Services.Forums
             _forumPrivateMessageRepository.Insert(privateMessage);
 
             //event notification
-            _eventPublisher.EntityInserted(privateMessage);
+            _services.EventPublisher.EntityInserted(privateMessage);
 
             var customerTo = _customerService.GetCustomerById(privateMessage.ToCustomerId);
             if (customerTo == null)
@@ -1042,7 +1036,7 @@ namespace SmartStore.Services.Forums
             //Email notification
             if (_forumSettings.NotifyAboutPrivateMessages)
             {
-                _workflowMessageService.SendPrivateMessageNotification(customerTo, privateMessage, _workContext.WorkingLanguage.Id);                
+                _workflowMessageService.SendPrivateMessageNotification(customerTo, privateMessage, _services.WorkContext.WorkingLanguage.Id);                
             }
         }
 
@@ -1059,13 +1053,13 @@ namespace SmartStore.Services.Forums
             {
                 _forumPrivateMessageRepository.Delete(privateMessage);
                 //event notification
-                _eventPublisher.EntityDeleted(privateMessage);
+                _services.EventPublisher.EntityDeleted(privateMessage);
             }
             else
             {
                 _forumPrivateMessageRepository.Update(privateMessage);
                 //event notification
-                _eventPublisher.EntityUpdated(privateMessage);
+                _services.EventPublisher.EntityUpdated(privateMessage);
             }
         }
 
@@ -1083,7 +1077,7 @@ namespace SmartStore.Services.Forums
             _forumSubscriptionRepository.Delete(forumSubscription);
 
             //event notification
-            _eventPublisher.EntityDeleted(forumSubscription);
+            _services.EventPublisher.EntityDeleted(forumSubscription);
         }
 
         /// <summary>
@@ -1151,7 +1145,7 @@ namespace SmartStore.Services.Forums
             _forumSubscriptionRepository.Insert(forumSubscription);
 
             //event notification
-            _eventPublisher.EntityInserted(forumSubscription);
+            _services.EventPublisher.EntityInserted(forumSubscription);
         }
 
         /// <summary>
@@ -1168,7 +1162,7 @@ namespace SmartStore.Services.Forums
             _forumSubscriptionRepository.Update(forumSubscription);
 
             //event notification
-            _eventPublisher.EntityUpdated(forumSubscription);
+            _services.EventPublisher.EntityUpdated(forumSubscription);
         }
 
         /// <summary>
@@ -1477,7 +1471,7 @@ namespace SmartStore.Services.Forums
 
             return pageIndex;
         }
-        
+
 		#endregion
     }
 }

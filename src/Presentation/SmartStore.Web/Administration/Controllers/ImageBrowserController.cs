@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc.UI;
 
 //Original code can be found here http://demos.telerik.com/aspnet-mvc/razor/editor/imagetool

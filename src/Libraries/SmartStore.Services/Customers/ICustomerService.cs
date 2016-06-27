@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
@@ -87,12 +88,18 @@ namespace SmartStore.Services.Customers
         /// <returns>Customers</returns>
         IList<Customer> GetCustomersByIds(int[] customerIds);
 
-        /// <summary>
-        /// Gets a customer by GUID
-        /// </summary>
-        /// <param name="customerGuid">Customer GUID</param>
-        /// <returns>A customer</returns>
-        Customer GetCustomerByGuid(Guid customerGuid);
+		/// <summary>
+		/// Get system account customers
+		/// </summary>
+		/// <returns>System account customers</returns>
+		IList<Customer> GetSystemAccountCustomers();
+
+		/// <summary>
+		/// Gets a customer by GUID
+		/// </summary>
+		/// <param name="customerGuid">Customer GUID</param>
+		/// <returns>A customer</returns>
+		Customer GetCustomerByGuid(Guid customerGuid);
 
         /// <summary>
         /// Get customer by email
@@ -211,6 +218,13 @@ namespace SmartStore.Services.Customers
 		/// <param name="product">The product</param>
 		/// <param name="add">Whether to add or remove points</param>
 		void RewardPointsForProductReview(Customer customer, Product product, bool add);
+
+		/// <summary>
+		/// Gets reward points histories
+		/// </summary>
+		/// <param name="customerIds">Customer identifiers</param>
+		/// <returns>Reward points histories</returns>
+		Multimap<int, RewardPointsHistory> GetRewardPointsHistoriesByCustomerIds(int[] customerIds);
 
 		#endregion Reward points
 	}

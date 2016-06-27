@@ -1,5 +1,5 @@
 ﻿using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.ShippingByWeight.Models
 {
@@ -25,6 +25,9 @@ namespace SmartStore.ShippingByWeight.Models
 
         [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.To")]
         public decimal To { get; set; }
+
+        [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Zip")]
+        public string Zip { get; set; }
 
         [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.UsePercentage")]
         public bool UsePercentage { get; set; }

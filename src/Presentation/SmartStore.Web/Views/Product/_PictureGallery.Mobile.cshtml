@@ -1,5 +1,4 @@
-﻿@*codehint: sm-edit (new model)*@
-@model ProductDetailsPictureModel
+﻿@model ProductDetailsPictureModel
 @using SmartStore.Web.Models.Catalog;
 @if (Model.PictureModels.Count > 0)
 {
@@ -28,7 +27,6 @@
         {
             <text> imageUrls.push('@(picture.FullSizeImageUrl)');</text>
         }
-
 
         $(document).bind('pageinit', function (e) {
             $("#default-image").on("swipeleft", swipeLeftHandler);

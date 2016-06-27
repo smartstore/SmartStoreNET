@@ -1,5 +1,5 @@
 ﻿using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.FacebookAuth.Models
 {
@@ -7,6 +7,7 @@ namespace SmartStore.FacebookAuth.Models
     {
         [SmartResourceDisplayName("Plugins.ExternalAuth.Facebook.ClientKeyIdentifier")]
         public string ClientKeyIdentifier { get; set; }
+
         [SmartResourceDisplayName("Plugins.ExternalAuth.Facebook.ClientSecret")]
         public string ClientSecret { get; set; }
     }

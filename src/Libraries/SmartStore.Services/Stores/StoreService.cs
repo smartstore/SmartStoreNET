@@ -25,24 +25,19 @@ namespace SmartStore.Services.Stores
 
 		private readonly IRepository<Store> _storeRepository;
 		private readonly IEventPublisher _eventPublisher;
-		private readonly ICacheManager _cacheManager;
+		private readonly IRequestCache _requestCache;
 		private bool? _isSingleStoreMode = null;
 
 		#endregion
 
 		#region Ctor
 
-		/// <summary>
-		/// Ctor
-		/// </summary>
-		/// <param name="cacheManager">Cache manager</param>
-		/// <param name="storeRepository">Store repository</param>
-		/// <param name="eventPublisher">Event published</param>
-		public StoreService(ICacheManager cacheManager,
+		public StoreService(
+			IRequestCache requestCache,
 			IRepository<Store> storeRepository,
 			IEventPublisher eventPublisher)
 		{
-			this._cacheManager = cacheManager;
+			this._requestCache = requestCache;
 			this._storeRepository = storeRepository;
 			this._eventPublisher = eventPublisher;
 		}
@@ -66,7 +61,7 @@ namespace SmartStore.Services.Stores
 
 			_storeRepository.Delete(store);
 
-			_cacheManager.RemoveByPattern(STORES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(STORES_PATTERN_KEY);
 
 			//event notification
 			_eventPublisher.EntityDeleted(store);
@@ -79,11 +74,14 @@ namespace SmartStore.Services.Stores
 		public virtual IList<Store> GetAllStores()
 		{
 			string key = STORES_ALL_KEY;
-			return _cacheManager.Get(key, () =>
+			return _requestCache.Get(key, () =>
 			{
-				var query = from s in _storeRepository.Table
-							orderby s.DisplayOrder, s.Name
-							select s;
+				var query = _storeRepository.Table
+					.Expand(x => x.PrimaryStoreCurrency)
+					.Expand(x => x.PrimaryExchangeRateCurrency)
+					.OrderBy(x => x.DisplayOrder)
+					.ThenBy(x => x.Name);
+
 				var stores = query.ToList();
 				return stores;
 			});
@@ -100,7 +98,7 @@ namespace SmartStore.Services.Stores
 				return null;
 
             string key = string.Format(STORES_BY_ID_KEY, storeId);
-            return _cacheManager.Get(key, () => 
+            return _requestCache.Get(key, () => 
             { 
                 return _storeRepository.GetById(storeId); 
             });
@@ -117,7 +115,7 @@ namespace SmartStore.Services.Stores
 
 			_storeRepository.Insert(store);
 
-			_cacheManager.RemoveByPattern(STORES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(STORES_PATTERN_KEY);
 
 			//event notification
 			_eventPublisher.EntityInserted(store);
@@ -134,7 +132,7 @@ namespace SmartStore.Services.Stores
 
 			_storeRepository.Update(store);
 
-			_cacheManager.RemoveByPattern(STORES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(STORES_PATTERN_KEY);
 
 			//event notification
 			_eventPublisher.EntityUpdated(store);
@@ -147,9 +145,7 @@ namespace SmartStore.Services.Stores
 		{
 			if (!_isSingleStoreMode.HasValue)
 			{
-				var query = from s in _storeRepository.Table
-							select s;
-				_isSingleStoreMode = query.Count() <= 1;
+				_isSingleStoreMode = (_storeRepository.TableUntracked.Count() <= 1);
 			}
 
 			return _isSingleStoreMode.Value;
@@ -176,6 +172,8 @@ namespace SmartStore.Services.Stores
 				{
 					case "www.yourstore.com":
 					case "yourstore.com":
+					case "www.mystore.com":
+					case "mystore.com":
 					case "www.mein-shop.de":
 					case "mein-shop.de":
 						return false;

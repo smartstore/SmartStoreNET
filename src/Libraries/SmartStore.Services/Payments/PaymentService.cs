@@ -2,27 +2,38 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
+using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Payments
 {
-    /// <summary>
-    /// Payment service
-    /// </summary>
-    public partial class PaymentService : IPaymentService
+	/// <summary>
+	/// Payment service
+	/// </summary>
+	public partial class PaymentService : IPaymentService
     {
-        #region Fields
+		#region Constants
+		
+		private const string PAYMENTMETHOD_ALL_KEY = "SmartStore.paymentmethod.all";
 
+		#endregion
+
+		#region Fields
+
+		private readonly static object _lock = new object();
+		private static IList<Type> _paymentMethodFilterTypes = null;
+
+		private readonly IRepository<PaymentMethod> _paymentMethodRepository;
         private readonly PaymentSettings _paymentSettings;
-        private readonly IPluginFinder _pluginFinder;
         private readonly ShoppingCartSettings _shoppingCartSettings;
-		private readonly ISettingService _settingService;
-		private readonly ILocalizationService _localizationService;
 		private readonly IProviderManager _providerManager;
+		private readonly ICommonServices _services;
+		private readonly ITypeFinder _typeFinder;
 
         #endregion
 
@@ -36,55 +47,97 @@ namespace SmartStore.Services.Payments
         /// <param name="shoppingCartSettings">Shopping cart settings</param>
 		/// <param name="pluginService">Plugin service</param>
         public PaymentService(
+			IRepository<PaymentMethod> paymentMethodRepository,
 			PaymentSettings paymentSettings, 
-			IPluginFinder pluginFinder,
             ShoppingCartSettings shoppingCartSettings,
-			ISettingService settingService,
-			ILocalizationService localizationService,
-			IProviderManager providerManager)
+			IProviderManager providerManager,
+			ICommonServices services,
+			ITypeFinder typeFinder)
         {
-            this._paymentSettings = paymentSettings;
-            this._pluginFinder = pluginFinder;
-            this._shoppingCartSettings = shoppingCartSettings;
-			this._settingService = settingService;
-			this._localizationService = localizationService;
-			this._providerManager = providerManager;
-        }
+			_paymentMethodRepository = paymentMethodRepository;
+            _paymentSettings = paymentSettings;
+            _shoppingCartSettings = shoppingCartSettings;
+			_providerManager = providerManager;
+			_services = services;
+			_typeFinder = typeFinder;
 
-        #endregion
+			T = NullLocalizer.Instance;
+		}
 
-        #region Methods
+		public Localizer T { get; set; }
 
-        /// <summary>
-        /// Load active payment methods
-        /// </summary>
-        /// <param name="filterByCustomerId">Filter payment methods by customer; null to load all records</param>
-		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
-        /// <returns>Payment methods</returns>
-		public virtual IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(int? filterByCustomerId = null, int storeId = 0)
+		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// Load active payment methods
+		/// </summary>
+		/// <param name="customer">Filter payment methods by customer and apply payment method restrictions; null to load all records</param>
+		/// <param name="cart">Filter payment methods by cart amount; null to load all records</param>
+		/// <param name="storeId">Filter payment methods by store identifier; pass 0 to load all records</param>
+		/// <param name="types">Filter payment methods by payment method types</param>
+		/// <param name="provideFallbackMethod">Provide a fallback payment method if none is active</param>
+		/// <returns>Payment methods</returns>
+		public virtual IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(
+			Customer customer = null,
+			IList<OrganizedShoppingCartItem> cart = null,
+			int storeId = 0,
+			PaymentMethodType[] types = null,
+			bool provideFallbackMethod = true)
         {
-			var allMethods = LoadAllPaymentMethods(storeId);
-			var activeMethods = allMethods
-				.Where(p =>	p.Value.IsActive && _paymentSettings.ActivePaymentMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase));
+			IList<IPaymentMethodFilter> allFilters = null;
+			IEnumerable<Provider<IPaymentMethod>> allProviders = null;
 
-			if (!activeMethods.Any())
+			var filterRequest = new PaymentFilterRequest
 			{
-				var fallbackMethod = allMethods.FirstOrDefault();
+				Cart = cart,
+				StoreId = storeId,
+				Customer = customer
+			};
+
+			if (types != null && types.Any())
+				allProviders = LoadAllPaymentMethods(storeId).Where(x => types.Contains(x.Value.PaymentMethodType));
+			else
+				allProviders = LoadAllPaymentMethods(storeId);
+
+			var activeProviders = allProviders
+				.Where(p =>
+				{
+					if (!p.Value.IsActive || !_paymentSettings.ActivePaymentMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase))
+						return false;
+
+					// payment method filtering
+					if (allFilters == null)
+						allFilters = GetAllPaymentMethodFilters();
+
+					filterRequest.PaymentMethod = p;
+
+					if (allFilters.Any(x => x.IsExcluded(filterRequest)))
+						return false;
+
+					return true;
+				});
+
+			if (!activeProviders.Any() && provideFallbackMethod)
+			{
+				var fallbackMethod = allProviders.FirstOrDefault(x => x.IsPaymentMethodActive(_paymentSettings));
+
+				if (fallbackMethod == null)
+					fallbackMethod = allProviders.FirstOrDefault();
+
 				if (fallbackMethod != null)
 				{
-					_paymentSettings.ActivePaymentMethodSystemNames.Clear();
-					_paymentSettings.ActivePaymentMethodSystemNames.Add(fallbackMethod.Metadata.SystemName);
-					_settingService.SaveSetting(_paymentSettings);
 					return new Provider<IPaymentMethod>[] { fallbackMethod };
 				}
 				else
 				{
 					if (DataSettings.DatabaseIsInstalled())
-						throw Error.Application("At least one payment method provider is required to be active.");
+						throw new SmartException(T("Payment.OneActiveMethodProviderRequired"));
 				}
 			}
 
-			return activeMethods;
+			return activeProviders;
         }
 
 		/// <summary>
@@ -123,6 +176,73 @@ namespace SmartStore.Services.Payments
 
 
 		/// <summary>
+		/// Gets all payment method extra data
+		/// </summary>
+		/// <returns>List of payment method objects</returns>
+		public virtual IList<PaymentMethod> GetAllPaymentMethods()
+		{
+			var methods = _paymentMethodRepository.TableUntracked.ToList();
+			return methods;
+		}
+
+		/// <summary>
+		/// Gets payment method extra data by system name
+		/// </summary>
+		/// <param name="systemName">Provider system name</param>
+		/// <returns>Payment method entity</returns>
+		public virtual PaymentMethod GetPaymentMethodBySystemName(string systemName)
+		{
+			if (systemName.HasValue())
+			{
+				return _paymentMethodRepository.Table.FirstOrDefault(x => x.PaymentMethodSystemName == systemName);
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Insert payment method extra data
+		/// </summary>
+		/// <param name="paymentMethod">Payment method</param>
+		public virtual void InsertPaymentMethod(PaymentMethod paymentMethod)
+		{
+			if (paymentMethod == null)
+				throw new ArgumentNullException("paymentMethod");
+
+			_paymentMethodRepository.Insert(paymentMethod);
+
+			_services.EventPublisher.EntityInserted(paymentMethod);
+		}
+
+		/// <summary>
+		/// Updates payment method extra data
+		/// </summary>
+		/// <param name="paymentMethod">Payment method</param>
+		public virtual void UpdatePaymentMethod(PaymentMethod paymentMethod)
+		{
+			if (paymentMethod == null)
+				throw new ArgumentNullException("paymentMethod");
+
+			_paymentMethodRepository.Update(paymentMethod);
+
+			_services.EventPublisher.EntityUpdated(paymentMethod);
+		}
+
+		/// <summary>
+		/// Delete payment method extra data
+		/// </summary>
+		/// <param name="paymentMethod">Payment method</param>
+		public virtual void DeletePaymentMethod(PaymentMethod paymentMethod)
+		{
+			if (paymentMethod == null)
+				throw new ArgumentNullException("paymentMethod");
+
+			_paymentMethodRepository.Delete(paymentMethod);
+
+			_services.EventPublisher.EntityDeleted(paymentMethod);
+		}
+
+
+		/// <summary>
 		/// Pre process a payment
 		/// </summary>
 		/// <param name="processPaymentRequest">Payment info required for an order processing</param>
@@ -138,7 +258,7 @@ namespace SmartStore.Services.Payments
 			{
 				var paymentMethod = LoadPaymentMethodBySystemName(processPaymentRequest.PaymentMethodSystemName);
 				if (paymentMethod == null)
-					throw new SmartException("Payment method couldn't be loaded");
+					throw new SmartException(T("Payment.CouldNotLoadMethod"));
 
 				return paymentMethod.Value.PreProcessPayment(processPaymentRequest);
 			}
@@ -167,9 +287,12 @@ namespace SmartStore.Services.Payments
                     processPaymentRequest.CreditCardNumber = processPaymentRequest.CreditCardNumber.Replace(" ", "");
                     processPaymentRequest.CreditCardNumber = processPaymentRequest.CreditCardNumber.Replace("-", "");
                 }
-                var paymentMethod = LoadPaymentMethodBySystemName(processPaymentRequest.PaymentMethodSystemName);
-                if (paymentMethod == null)
-                    throw new SmartException("Payment method couldn't be loaded");
+
+				var paymentMethod = LoadPaymentMethodBySystemName(processPaymentRequest.PaymentMethodSystemName);
+
+				if (paymentMethod == null)
+                    throw new SmartException(T("Payment.CouldNotLoadMethod"));
+
                 return paymentMethod.Value.ProcessPayment(processPaymentRequest);
             }
         }
@@ -181,10 +304,14 @@ namespace SmartStore.Services.Payments
         /// <param name="postProcessPaymentRequest">Payment info required for an order processing</param>
         public virtual void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
         {
-            var paymentMethod = LoadPaymentMethodBySystemName(postProcessPaymentRequest.Order.PaymentMethodSystemName);
-            if (paymentMethod == null)
-                throw new SmartException("Payment method couldn't be loaded");
-            paymentMethod.Value.PostProcessPayment(postProcessPaymentRequest);
+			if (postProcessPaymentRequest.Order.PaymentMethodSystemName.HasValue())
+			{
+				var paymentMethod = LoadPaymentMethodBySystemName(postProcessPaymentRequest.Order.PaymentMethodSystemName);
+				if (paymentMethod == null)
+					throw new SmartException(T("Payment.CouldNotLoadMethod"));
+
+				paymentMethod.Value.PostProcessPayment(postProcessPaymentRequest);
+			}
         }
 
         /// <summary>
@@ -230,15 +357,14 @@ namespace SmartStore.Services.Payments
 		public virtual decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart, string paymentMethodSystemName)
         {
             var paymentMethod = LoadPaymentMethodBySystemName(paymentMethodSystemName);
-            if (paymentMethod == null)
-                return decimal.Zero;
+			var paymentMethodAdditionalFee = (paymentMethod != null ? paymentMethod.Value.GetAdditionalHandlingFee(cart) : decimal.Zero);
 
-			decimal result = paymentMethod.Value.GetAdditionalHandlingFee(cart);
+			if (_shoppingCartSettings.RoundPricesDuringCalculation)
+			{
+				paymentMethodAdditionalFee = Math.Round(paymentMethodAdditionalFee, 2);
+			}
 
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                result = Math.Round(result, 2);
-
-            return result;
+			return paymentMethodAdditionalFee;
         }
 
 
@@ -265,7 +391,7 @@ namespace SmartStore.Services.Payments
         {
             var paymentMethod = LoadPaymentMethodBySystemName(capturePaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
-                throw new SmartException("Payment method couldn't be loaded");
+                throw new SmartException(T("Payment.CouldNotLoadMethod"));
 
 			try
 			{
@@ -274,7 +400,7 @@ namespace SmartStore.Services.Payments
 			catch (NotSupportedException)
 			{
 				var result = new CapturePaymentResult();
-				result.AddError(_localizationService.GetResource("Common.Payment.NoCaptureSupport"));
+				result.AddError(T("Common.Payment.NoCaptureSupport"));
 				return result;
 			}
 			catch
@@ -320,7 +446,7 @@ namespace SmartStore.Services.Payments
         {
             var paymentMethod = LoadPaymentMethodBySystemName(refundPaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
-                throw new SmartException("Payment method couldn't be loaded");
+                throw new SmartException(T("Payment.CouldNotLoadMethod"));
 
 			try
 			{
@@ -329,7 +455,7 @@ namespace SmartStore.Services.Payments
 			catch (NotSupportedException)
 			{
 				var result = new RefundPaymentResult();
-				result.AddError(_localizationService.GetResource("Common.Payment.NoRefundSupport"));
+				result.AddError(T("Common.Payment.NoRefundSupport"));
 				return result;
 			}
 			catch
@@ -362,7 +488,7 @@ namespace SmartStore.Services.Payments
         {
             var paymentMethod = LoadPaymentMethodBySystemName(voidPaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
-                throw new SmartException("Payment method couldn't be loaded");
+                throw new SmartException(T("Payment.CouldNotLoadMethod"));
 
 			try
 			{
@@ -371,7 +497,7 @@ namespace SmartStore.Services.Payments
 			catch (NotSupportedException)
 			{
 				var result = new VoidPaymentResult();
-				result.AddError(_localizationService.GetResource("Common.Payment.NoVoidSupport"));
+				result.AddError(T("Common.Payment.NoVoidSupport"));
 				return result;
 			}
 			catch
@@ -392,6 +518,7 @@ namespace SmartStore.Services.Payments
             var paymentMethod = LoadPaymentMethodBySystemName(paymentMethodSystemName);
             if (paymentMethod == null)
                 return RecurringPaymentType.NotSupported;
+
 			return paymentMethod.Value.RecurringPaymentType;
         }
 
@@ -414,7 +541,7 @@ namespace SmartStore.Services.Payments
             {
                 var paymentMethod = LoadPaymentMethodBySystemName(processPaymentRequest.PaymentMethodSystemName);
                 if (paymentMethod == null)
-                    throw new SmartException("Payment method couldn't be loaded");
+                    throw new SmartException(T("Payment.CouldNotLoadMethod"));
 
 				try
 				{
@@ -423,7 +550,7 @@ namespace SmartStore.Services.Payments
 				catch (NotSupportedException)
 				{
 					var result = new ProcessPaymentResult();
-					result.AddError(_localizationService.GetResource("Common.Payment.NoRecurringPaymentSupport"));
+					result.AddError(T("Common.Payment.NoRecurringPaymentSupport"));
 					return result;
 				}
 				catch
@@ -445,7 +572,7 @@ namespace SmartStore.Services.Payments
 
             var paymentMethod = LoadPaymentMethodBySystemName(cancelPaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
-                throw new SmartException("Payment method couldn't be loaded");
+                throw new SmartException(T("Payment.CouldNotLoadMethod"));
 
 			try
 			{
@@ -454,7 +581,7 @@ namespace SmartStore.Services.Payments
 			catch (NotSupportedException)
 			{
 				var result = new CancelRecurringPaymentResult();
-				result.AddError(_localizationService.GetResource("Common.Payment.NoRecurringPaymentSupport"));
+				result.AddError(T("Common.Payment.NoRecurringPaymentSupport"));
 				return result;
 			}
 			catch
@@ -475,6 +602,7 @@ namespace SmartStore.Services.Payments
             var paymentMethod = LoadPaymentMethodBySystemName(paymentMethodSystemName);
             if (paymentMethod == null)
                 return PaymentMethodType.Unknown;
+
 			return paymentMethod.Value.PaymentMethodType;
         }
 
@@ -500,6 +628,27 @@ namespace SmartStore.Services.Payments
             return maskedChars + last4;
         }
 
-        #endregion
-    }
+		public virtual IList<IPaymentMethodFilter> GetAllPaymentMethodFilters()
+		{
+			if (_paymentMethodFilterTypes == null)
+			{
+				lock (_lock)
+				{
+					if (_paymentMethodFilterTypes == null)
+					{
+						_paymentMethodFilterTypes = _typeFinder.FindClassesOfType<IPaymentMethodFilter>(ignoreInactivePlugins: true)
+							.ToList();
+					}
+				}
+			}
+
+			var paymentMethodFilters = _paymentMethodFilterTypes
+				.Select(x => EngineContext.Current.ContainerManager.ResolveUnregistered(x) as IPaymentMethodFilter)
+				.ToList();
+
+			return paymentMethodFilters;
+		}
+
+		#endregion
+	}
 }

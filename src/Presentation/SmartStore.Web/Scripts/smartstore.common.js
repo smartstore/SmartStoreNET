@@ -52,6 +52,54 @@
 		}
 	}
 
+	window.createCircularSpinner = function (size, active, strokeWidth, boxed, white) {
+	    var spinner = $('<div class="spinner"></div>');
+	    if (active) spinner.addClass('active');
+	    if (boxed) spinner.addClass('spinner-boxed').css('font-size', size + 'px');
+	    if (white) spinner.addClass('white');
+	    
+	    if (!_.isNumber(strokeWidth)) {
+	        strokeWidth = 6;
+	    }
+
+	    var svg = '<svg style="width:{0}px; height:{0}px" viewBox="0 0 64 64"><circle cx="32" cy="32" r="{1}" fill="none" stroke-width="{2}" stroke-miterlimit="10"></circle></svg>'.format(size, 32 - strokeWidth, strokeWidth);
+	    spinner.append($(svg));
+
+	    return spinner;
+	}
+
+	window.copyTextToClipboard = function (text) {
+		var result = false;
+
+		if (window.clipboardData && window.clipboardData.setData) {
+			result = clipboardData.setData('Text', text);
+		}
+		else if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
+			var textarea = document.createElement('textarea'),
+				focusElement = document.activeElement;
+
+			textarea.textContent = text;
+			textarea.style.position = 'fixed';
+			document.body.appendChild(textarea);
+			textarea.focus();
+			textarea.setSelectionRange(0, textarea.value.length);
+
+			try {
+				result = document.execCommand('copy');
+			}
+			catch (e) {
+			}
+			finally {
+				document.body.removeChild(textarea);
+				if (focusElement) {
+					focusElement.focus();
+				}
+			}
+		}
+		return result;
+	}
+
+
     // on document ready
 	$(function () {
 
@@ -219,6 +267,10 @@
 		if ($({}).moreLess) {
 			$('.more-less').moreLess();
 		}
+		
+		// fixes bootstrap 2 bug: non functional links on mobile devices
+	    // https://github.com/twbs/bootstrap/issues/4550
+		$('body').on('touchstart.dropdown', '.dropdown-menu a', function (e) { e.stopPropagation(); });
     });
 
 })( jQuery, this, document );

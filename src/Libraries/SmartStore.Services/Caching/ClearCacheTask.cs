@@ -12,9 +12,9 @@ namespace SmartStore.Services.Caching
     {
 		private readonly ICacheManager _cacheManager;
 		
-		public ClearCacheTask(Func<string, ICacheManager> cache)
+		public ClearCacheTask(ICacheManager cacheManager)
 		{
-			_cacheManager = cache("static");
+			_cacheManager = cacheManager;
 		}
 		
 		/// <summary>

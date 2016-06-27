@@ -12,6 +12,7 @@ using SmartStore.Services;
 using SmartStore.Services.Common;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -129,7 +130,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					return new List<FeedItemModel> {new FeedItemModel { IsError = true, Summary = ex.Message } };
 				}
-			}, 720 /* 12 h */);
+			}, TimeSpan.FromHours(12));
 
 			if (result.Any() && result.First().IsError)
 			{

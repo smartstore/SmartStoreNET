@@ -2,7 +2,6 @@
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Core.Domain.Orders;
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Settings.RewardPoints").Text;
 }
 @using (Html.BeginForm())
@@ -16,8 +15,9 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
-	@Html.ValidationSummary(false)
+
 	@Html.Action("StoreScopeConfiguration", "Setting")
+	@Html.ValidationSummary(false)
 
 	<div class="alert alert-info">
 		<button class="close" data-dismiss="alert">×</button>
@@ -46,69 +46,81 @@
                 @Html.ValidationMessageFor(model => model.ExchangeRate)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.RoundDownRewardPoints)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.RoundDownRewardPoints)
+				@Html.ValidationMessageFor(model => model.RoundDownRewardPoints)
+			</td>
+		</tr>
 	</table>
 
-	<fieldset>
-		<legend>@T("Admin.Configuration.Settings.RewardPoints.Earning")</legend>
-
-		<table class="adminContent">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.PointsForRegistration)
-				</td>
-				<td class="adminData">
-					@Html.SettingOverrideCheckbox(model => Model.PointsForRegistration)
-					@Html.EditorFor(model => model.PointsForRegistration, new { Small = true })
-					@Html.ValidationMessageFor(model => model.PointsForRegistration)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.PointsForProductReview)
-				</td>
-				<td class="adminData">
-					@Html.SettingOverrideCheckbox(model => Model.PointsForProductReview)
-					@Html.EditorFor(model => model.PointsForProductReview, new { Small = true })
-					@Html.ValidationMessageFor(model => model.PointsForProductReview)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.PointsForPurchases_Amount)
-				</td>
-				<td class="adminData" id="pnlPointsForPurchases">
-					@Html.SettingOverrideCheckbox(model => Model.PointsForPurchases_OverrideForStore, "#pnlPointsForPurchases")
-					@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint1")
-					@Html.EditorFor(model => model.PointsForPurchases_Amount, new { Small = true })
-					@Model.PrimaryStoreCurrencyCode
-					&nbsp;
-					@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint2")
-					@Html.EditorFor(model => model.PointsForPurchases_Points, new { Small = true })
-					@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint3")
-					@Html.ValidationMessageFor(model => model.PointsForPurchases_Amount)
-					@Html.ValidationMessageFor(model => model.PointsForPurchases_Points)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.PointsForPurchases_Awarded)
-				</td>
-				<td class="adminData">
-					@Html.SettingOverrideCheckbox(model => Model.PointsForPurchases_Awarded)
-					@Html.DropDownListFor(model => model.PointsForPurchases_Awarded, ((OrderStatus)Model.PointsForPurchases_Awarded).ToSelectList())
-					@Html.ValidationMessageFor(model => model.PointsForPurchases_Awarded)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.PointsForPurchases_Canceled)
-				</td>
-				<td class="adminData">
-					@Html.SettingOverrideCheckbox(model => Model.PointsForPurchases_Canceled)
-					@Html.DropDownListFor(model => model.PointsForPurchases_Canceled, ((OrderStatus)Model.PointsForPurchases_Canceled).ToSelectList())
-					@Html.ValidationMessageFor(model => model.PointsForPurchases_Canceled)
-				</td>
-			</tr>
-		</table>
-	</fieldset>
+	<table class="adminContent">
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Admin.Configuration.Settings.RewardPoints.Earning")</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PointsForRegistration)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.PointsForRegistration)
+				@Html.EditorFor(model => model.PointsForRegistration, new { Small = true })
+				@Html.ValidationMessageFor(model => model.PointsForRegistration)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PointsForProductReview)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.PointsForProductReview)
+				@Html.EditorFor(model => model.PointsForProductReview, new { Small = true })
+				@Html.ValidationMessageFor(model => model.PointsForProductReview)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PointsForPurchases_Amount)
+			</td>
+			<td class="adminData" id="pnlPointsForPurchases">
+				@Html.SettingOverrideCheckbox(model => Model.PointsForPurchases_OverrideForStore, "#pnlPointsForPurchases")
+				@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint1")
+				@Html.EditorFor(model => model.PointsForPurchases_Amount, new { Small = true })
+				@Model.PrimaryStoreCurrencyCode
+				&nbsp;
+				@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint2")
+				@Html.EditorFor(model => model.PointsForPurchases_Points, new { Small = true })
+				@T("Admin.Configuration.Settings.RewardPoints.Earning.Hint3")
+				@Html.ValidationMessageFor(model => model.PointsForPurchases_Amount)
+				@Html.ValidationMessageFor(model => model.PointsForPurchases_Points)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PointsForPurchases_Awarded)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.PointsForPurchases_Awarded)
+				@Html.DropDownListFor(model => model.PointsForPurchases_Awarded, ((OrderStatus)Model.PointsForPurchases_Awarded).ToSelectList())
+				@Html.ValidationMessageFor(model => model.PointsForPurchases_Awarded)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PointsForPurchases_Canceled)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.PointsForPurchases_Canceled)
+				@Html.DropDownListFor(model => model.PointsForPurchases_Canceled, ((OrderStatus)Model.PointsForPurchases_Canceled).ToSelectList())
+				@Html.ValidationMessageFor(model => model.PointsForPurchases_Canceled)
+			</td>
+		</tr>
+	</table>
 }

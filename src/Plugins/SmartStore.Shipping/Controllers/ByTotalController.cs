@@ -1,14 +1,13 @@
 ﻿using System.Web.Mvc;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Directory;
+using SmartStore.Services;
+using SmartStore.Services.Directory;
+using SmartStore.Services.Shipping;
 using SmartStore.Shipping.Domain;
 using SmartStore.Shipping.Models;
 using SmartStore.Shipping.Services;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Directory;
-using SmartStore.Services.Shipping;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Shipping.Controllers
@@ -17,34 +16,26 @@ namespace SmartStore.Shipping.Controllers
     public class ByTotalController : PluginControllerBase
     {
         private readonly IShippingService _shippingService;
-		private readonly IStoreService _storeService;
-        private readonly ISettingService _settingService;
         private readonly IShippingByTotalService _shippingByTotalService;
         private readonly ShippingByTotalSettings _shippingByTotalSettings;
         private readonly ICountryService _countryService;
-        private readonly ICurrencyService _currencyService;
-        private readonly CurrencySettings _currencySettings;
 		private readonly AdminAreaSettings _adminAreaSettings;
+		private readonly ICommonServices _services;
 
-        public ByTotalController(IShippingService shippingService,
-			IStoreService storeService, 
-            ISettingService settingService, 
+        public ByTotalController(
+			IShippingService shippingService,
             IShippingByTotalService shippingByTotalService,
             ShippingByTotalSettings shippingByTotalSettings, 
             ICountryService countryService,
-            ICurrencyService currencyService, 
-            CurrencySettings currencySettings,
-			AdminAreaSettings adminAreaSettings)
+			AdminAreaSettings adminAreaSettings,
+			ICommonServices services)
         {
             this._shippingService = shippingService;
-			this._storeService = storeService;
-            this._settingService = settingService;
             this._shippingByTotalService = shippingByTotalService;
             this._shippingByTotalSettings = shippingByTotalSettings;
             this._countryService = countryService;
-            this._currencyService = currencyService;
-            this._currencySettings = currencySettings;
 			this._adminAreaSettings = adminAreaSettings;
+			this._services = services;
         }
 
         public ActionResult Configure()
@@ -52,33 +43,35 @@ namespace SmartStore.Shipping.Controllers
             var shippingMethods = _shippingService.GetAllShippingMethods();
             if (shippingMethods.Count == 0)
             {
-                return Content("No shipping methods can be loaded");
+                return Content(T("Admin.Configuration.Shipping.Methods.NoMethodsLoaded"));
             }
 
             var model = new ByTotalListModel();
+			var allStores = _services.StoreService.GetAllStores();
+
             foreach (var sm in shippingMethods)
             {
-                model.AvailableShippingMethods.Add(new SelectListItem() { Text = sm.Name, Value = sm.Id.ToString() });
+                model.AvailableShippingMethods.Add(new SelectListItem { Text = sm.Name, Value = sm.Id.ToString() });
             }
 
 			//stores
-			model.AvailableStores.Add(new SelectListItem() { Text = "*", Value = "0" });
-			foreach (var store in _storeService.GetAllStores())
+			model.AvailableStores.Add(new SelectListItem { Text = "*", Value = "0" });
+			foreach (var store in allStores)
 			{
-				model.AvailableStores.Add(new SelectListItem() { Text = store.Name, Value = store.Id.ToString() });
+				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
 			}
 
-            //model.AvailableCountries.Add(new SelectListItem() { Text = "*", Value = "0" });
+            //model.AvailableCountries.Add(new SelectListItem { Text = "*", Value = "0" });
             var countries = _countryService.GetAllCountries(true);
             foreach (var c in countries)
             {
-                model.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString() });
+                model.AvailableCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString() });
             }
 
             model.LimitMethodsToCreated = _shippingByTotalSettings.LimitMethodsToCreated;
             model.SmallQuantityThreshold = _shippingByTotalSettings.SmallQuantityThreshold;
             model.SmallQuantitySurcharge = _shippingByTotalSettings.SmallQuantitySurcharge;
-            model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+            model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
             return View(model);
@@ -107,10 +100,11 @@ namespace SmartStore.Shipping.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return new JsonResult { Data = "error" };
+                return new JsonResult { Data = T("Admin.Common.UnknownError").Text };
             }
 
             var shippingByTotalRecord = _shippingByTotalService.GetShippingByTotalRecordById(model.Id);
+
             shippingByTotalRecord.Zip = model.Zip == "*" ? null : model.Zip;
             shippingByTotalRecord.From = model.From;
             shippingByTotalRecord.To = model.To;
@@ -119,6 +113,7 @@ namespace SmartStore.Shipping.Controllers
             shippingByTotalRecord.ShippingChargePercentage = model.ShippingChargePercentage;
             shippingByTotalRecord.BaseCharge = model.BaseCharge;
             shippingByTotalRecord.MaxCharge = model.MaxCharge;
+
             _shippingByTotalService.UpdateShippingByTotalRecord(shippingByTotalRecord);
 
             return RatesList(command);
@@ -166,7 +161,7 @@ namespace SmartStore.Shipping.Controllers
             _shippingByTotalSettings.SmallQuantityThreshold = model.SmallQuantityThreshold;
             _shippingByTotalSettings.SmallQuantitySurcharge = model.SmallQuantitySurcharge;
 
-            _settingService.SaveSetting(_shippingByTotalSettings);
+            _services.Settings.SaveSetting(_shippingByTotalSettings);
 
             return Json(new { Result = true });
         }

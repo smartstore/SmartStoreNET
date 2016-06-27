@@ -1,0 +1,69 @@
+﻿@using SmartStore.Web.Models.Checkout;
+@using SmartStore.PayPal.Models;
+@model PayPalPlusCheckoutModel
+@{
+	Layout = "~/Views/Shared/_Checkout.cshtml";
+	Html.AddTitleParts(T("PageTitle.Checkout").Text);
+}
+@section orderProgress
+{
+	@Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment })
+}
+
+@Html.Partial("PaymentWallScripting")
+
+<div id="PayPalPlusPage" class="page payment-method-page">
+	<div class="page-title">
+		<h1>@T("Checkout.SelectPaymentMethod")</h1>
+	</div>
+	<div class="page-body checkout-data" style="padding-bottom: 20px;">
+		@Html.Widget("checkout_payment_method_top")
+
+		@if (Model.ErrorMessage.HasValue())
+		{
+			<div class="alert alert-error">
+				@Html.Raw(T("Plugins.Payments.PayPalPlus.MethodUnavailable"))
+				<br />
+				@if (!Model.ApprovalUrl.HasValue())
+				{
+					@T("Plugins.SmartStore.PayPal.NoApprovalUrlReturned")
+				}
+				@Model.ErrorMessage
+			</div>
+		}
+		else if (Model.PayPalPlusPseudoMessageFlag.HasValue() && Model.PayPalPlusPseudoMessageFlag == "1")
+		{
+			<div class="alert alert-error">
+				@Html.Raw(T("Plugins.Payments.PayPalPlus.SorryFailure"))
+			</div>
+		}
+
+		@if (Model.FullDescription.HasValue())
+		{
+			<div class="payment-method-description">
+				@Html.Raw(Model.FullDescription)
+			</div>
+		}
+
+		@if (Model.HasAnyFees)
+		{
+			<div id="PayPalPlusPaymentFeeContainer" class="alert alert-info payment-fee" style="visibility:hidden; margin-bottom:0;">
+				@T("Plugins.Payments.PayPalPlus.PaymentFeeMessage")
+			</div>
+		}
+
+		<div id="PayPalPlusPaymentWall"></div>
+
+		<div class="select-button clearfix">
+			<a class="btn pull-left" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })">
+				<i class="fa fa-caret-left"></i>&nbsp;@T("Common.Back")
+			</a>
+
+			<button id="PayPalPlusNextCheckoutStep" class="btn btn-warning pull-right payment-method-next-step-button hide">
+				@T("Checkout.NextButton")&nbsp;<i class="fa fa-caret-right"></i>
+			</button>
+		</div>
+
+		@Html.Widget("checkout_payment_method_bottom")
+	</div>
+</div>

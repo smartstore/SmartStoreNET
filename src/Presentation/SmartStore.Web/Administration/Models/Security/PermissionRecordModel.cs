@@ -1,4 +1,4 @@
-﻿using SmartStore.Web.Framework.Mvc;
+﻿using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Security
 {
@@ -6,5 +6,25 @@ namespace SmartStore.Admin.Models.Security
     {
         public string Name { get; set; }
         public string SystemName { get; set; }
-    }
+		public string Category { get; set; }
+
+		public string CategoryLabel
+		{
+			get
+			{
+				switch (Category)
+				{
+					case "PublicStore":
+					case "Standard":
+						return "label-success";
+
+					case "Plugin":
+						return "";
+
+					default:
+						return "label-info";
+				}
+			}
+		}
+	}
 }

@@ -25,18 +25,21 @@
         <h1>@T("DownloadableProducts.UserAgreement")</h1>
     </div>
     <div class="page-body">
-        <p class="well">
+        <div class="well">
             @Html.Raw(Model.UserAgreementText)
-        </p>
+        </div>
         <div>
             <label for="agreement-agree" class="checkbox">
                 <input id="agreement-agree" type="checkbox" value="@T("DownloadableProducts.IAgree")" />
                 @T("DownloadableProducts.IAgree")
             </label>
-        </div>
-        <div>
-            <input type="submit" id="continue-downloading" class="btn" value="@T("Common.Continue")"
-                   onclick="setLocation('@Url.Action("GetDownload", "Download", new { id = Model.OrderItemGuid, agree = true })')" />
+
+			<p></p>
+
+			<button type="submit" id="continue-downloading" class="btn" value="@T("Common.Continue")"
+					onclick="setLocation('@Url.Action("GetDownload", "Download", new { id = Model.OrderItemGuid, agree = true })')">
+				<i class="fa fa-check"></i>&nbsp;@T("Common.Continue")
+			</button>
         </div>
     </div>
 </div>

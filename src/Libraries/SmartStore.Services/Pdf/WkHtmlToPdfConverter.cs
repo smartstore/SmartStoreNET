@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using System.Web;
 using NReco.PdfGenerator;
 using SmartStore.Core.Logging;
 using SmartStore.Utilities;
@@ -12,11 +9,8 @@ namespace SmartStore.Services.Pdf
 {
 	public class WkHtmlToPdfConverter : IPdfConverter
 	{
-		private readonly HttpContextBase _httpContext;
-
-		public WkHtmlToPdfConverter(HttpContextBase httpContext)
+		public WkHtmlToPdfConverter()
 		{
-			this._httpContext = httpContext;
 			Logger = NullLogger.Instance;
 		}
 

@@ -1,18 +1,18 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
-  <LocaleResource Name="Plugins.FriendlyName.Widgets.GoogleAnalytics" AppendRootKey="false">
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.GoogleAnalytics" AppendRootKey="false">
     <Value>Google Analytics</Value>
   </LocaleResource>
   <LocaleResource Name="AdminInstruction">
     <Value>
       <![CDATA[
-        <p>Google Analytics is a free website stats tool from Google. It keeps track of statistics
-        about the visitors and ecommerce conversion on your website.</p>
+        <p>Google Analytics is a free website statistics tool from Google. It keeps track of statistics about the visitors and ecommerce conversion on your website.</p>
         <p>Follow the next steps to enable Google Analytics integration:</p>
         <ul>
-            <li><a href="http://www.google.com/analytics/" target="_blank">Create a Google Analytics account</a> and follow the wizard to add your website</li>
-            <li>Copy the Google Analytics ID into the 'ID' box below</li>
-            <li>Copy the tracking code from Google Analytics into the 'Tracking Code' box below</li>
-            <li>Click the 'Save' button below and Google Analytics will be integrated into your store</li>
+            <li><a href="http://www.google.com/analytics/" target="_blank">Create a Google Analytics account</a> and follow the wizard to add your website.</li>
+            <li>Copy the Google Analytics ID into the ID field below.</li>
+            <li>Copy the tracking code from Google Analytics into the Tracking Code field below.</li>
+            <li>Click the Save button below.</li>
+            <li>Activate the Google Analytics widget under <b>CMS > Widgets</b> to integrate Google Analytics into your store.</li>
         </ul>
       ]]>
     </Value>

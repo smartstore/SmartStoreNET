@@ -62,12 +62,12 @@ namespace SmartStore.Core.Domain.Orders
                 DateTime? result = null;
 
                 if (!this.IsActive)
-                    return result;
+                    return null;
 
                 var historyCollection = this.RecurringPaymentHistory;
                 if (historyCollection.Count >= this.TotalCycles)
                 {
-                    return result;
+                    return null;
                 }
 
                 //set another value to change calculation method

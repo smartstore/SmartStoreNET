@@ -18,11 +18,13 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class ReturnRequestController : AdminControllerBase
     {
         #region Fields
@@ -76,15 +78,11 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareReturnRequestListModel(ReturnRequestListModel model)
 		{
-			string allString = _localizationService.GetResource("Admin.Common.All");
-
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
-			model.AvailableStores.Add(new SelectListItem() { Text = allString, Value = "0" });
-			model.AvailableStores.AddRange(_storeService.GetAllStores().ToSelectListItems());
+			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems();
 
 			model.AvailableReturnRequestStatus = ReturnRequestStatus.Pending.ToSelectList(false).ToList();
-			model.AvailableReturnRequestStatus.Insert(0, new SelectListItem() { Text = allString });
 		}
 
         private bool PrepareReturnRequestModel(ReturnRequestModel model, ReturnRequest returnRequest, bool excludeProperties)
@@ -169,7 +167,6 @@ namespace SmartStore.Admin.Controllers
 
         #region Methods
 
-        //list
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -189,26 +186,31 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command, ReturnRequestListModel model)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
-                return AccessDeniedView();
+			var gridModel = new GridModel<ReturnRequestModel>();
 
-			var data = new List<ReturnRequestModel>();
-
-			var returnRequests = _orderService.SearchReturnRequests(model.SearchStoreId, 0, 0, model.SearchReturnRequestStatus,
-				command.Page - 1, command.PageSize, model.SearchId ?? 0);
-
-			foreach (var rr in returnRequests)
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
 			{
-				var m = new ReturnRequestModel();
-				if (PrepareReturnRequestModel(m, rr, false))
-					data.Add(m);
+				var data = new List<ReturnRequestModel>();
+
+				var returnRequests = _orderService.SearchReturnRequests(model.SearchStoreId, 0, 0, model.SearchReturnRequestStatus,
+					command.Page - 1, command.PageSize, model.SearchId ?? 0);
+
+				foreach (var rr in returnRequests)
+				{
+					var m = new ReturnRequestModel();
+					if (PrepareReturnRequestModel(m, rr, false))
+						data.Add(m);
+				}
+
+				gridModel.Data = data;
+				gridModel.Total = returnRequests.TotalCount;
 			}
-
-			var gridModel = new GridModel<ReturnRequestModel>
+			else
 			{
-				Data = data,
-				Total = returnRequests.TotalCount,
-			};
+				gridModel.Data = Enumerable.Empty<ReturnRequestModel>();
+
+				NotifyAccessDenied();
+			}
 
 			return new JsonResult
 			{
@@ -216,7 +218,6 @@ namespace SmartStore.Admin.Controllers
 			};
         }
 
-        //edit
         public ActionResult Edit(int id)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageReturnRequests))
@@ -231,7 +232,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
         public ActionResult Edit(ReturnRequestModel model, bool continueEditing)
         {
@@ -298,7 +299,6 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("Edit", returnRequest.Id);
         }
 
-        //delete
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {

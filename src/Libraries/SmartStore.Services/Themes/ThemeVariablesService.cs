@@ -20,18 +20,18 @@ namespace SmartStore.Services.Themes
         
         private readonly IRepository<ThemeVariable> _rsVariables;
         private readonly IThemeRegistry _themeRegistry;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly IEventPublisher _eventPublisher;
 
         public ThemeVariablesService(
             IRepository<ThemeVariable> rsVariables, 
 			IThemeRegistry themeRegistry,
-            ICacheManager cacheManager, 
+			IRequestCache requestCache, 
 			IEventPublisher eventPublisher)
         {
             this._rsVariables = rsVariables;
             this._themeRegistry = themeRegistry;
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._eventPublisher = eventPublisher;
         }
 
@@ -44,7 +44,7 @@ namespace SmartStore.Services.Themes
                 return null;
 
             string key = string.Format(THEMEVARS_BY_THEME_KEY, themeName, storeId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var result = new ExpandoObject();
                 var dict = result as IDictionary<string, object>;
@@ -80,20 +80,18 @@ namespace SmartStore.Services.Themes
 
             if (query.Any())
             {
-                bool autoCommit = _rsVariables.AutoCommitEnabled;
-                _rsVariables.AutoCommitEnabled = false;
+				using (var scope = new DbContextScope(ctx:  _rsVariables.Context, autoCommit: false))
+				{
+					query.Each(v =>
+					{
+						_rsVariables.Delete(v);
+						_eventPublisher.EntityDeleted(v);
+					});
 
-                query.Each(v =>
-                {
-                    _rsVariables.Delete(v);
-                    _eventPublisher.EntityDeleted(v);
-                });
+					_requestCache.Remove(THEMEVARS_BY_THEME_KEY.FormatInvariant(themeName, storeId));
 
-                _cacheManager.Remove(THEMEVARS_BY_THEME_KEY.FormatInvariant(themeName, storeId));
-
-                _rsVariables.Context.SaveChanges();
-
-                _rsVariables.AutoCommitEnabled = autoCommit;
+					_rsVariables.Context.SaveChanges();
+				}
             }
         }
 
@@ -109,75 +107,73 @@ namespace SmartStore.Services.Themes
             var count = 0;
             var infos = _themeRegistry.GetThemeManifest(themeName).Variables;
 
-            bool autoCommit = _rsVariables.AutoCommitEnabled;
-            _rsVariables.AutoCommitEnabled = false;
+			using (var scope = new DbContextScope(ctx: _rsVariables.Context, autoCommit: false))
+			{
+				var unsavedVars = new List<string>();
+				var savedThemeVars = _rsVariables.Table.Where(v => v.StoreId == storeId && v.Theme.Equals(themeName, StringComparison.OrdinalIgnoreCase)).ToList();
+				bool touched = false;
 
-            var unsavedVars = new List<string>();
-			var savedThemeVars = _rsVariables.Table.Where(v => v.StoreId == storeId && v.Theme.Equals(themeName, StringComparison.OrdinalIgnoreCase)).ToList();
-            bool touched = false;
+				foreach (var v in variables)
+				{
+					ThemeVariableInfo info;
+					if (!infos.TryGetValue(v.Key, out info))
+					{
+						// var not specified in metadata so don't save
+						// TODO: (MC) delete from db also if it exists
+						continue;
+					}
 
-            foreach (var v in variables)
-            {
-                ThemeVariableInfo info;
-                if (!infos.TryGetValue(v.Key, out info))
-                {
-                    // var not specified in metadata so don't save
-                    // TODO: (MC) delete from db also if it exists
-                    continue;
-                }
+					var value = v.Value == null ? string.Empty : v.Value.ToString();
 
-                var value = v.Value == null ? string.Empty : v.Value.ToString();
+					var savedThemeVar = savedThemeVars.FirstOrDefault(x => x.Name == v.Key);
+					if (savedThemeVar != null)
+					{
+						if (value.IsEmpty() || String.Equals(info.DefaultValue, value, StringComparison.CurrentCultureIgnoreCase))
+						{
+							// it's either null or the default value, so delete
+							_rsVariables.Delete(savedThemeVar);
+							_eventPublisher.EntityDeleted(savedThemeVar);
+							touched = true;
+							count++;
+						}
+						else
+						{
+							// update entity
+							if (!savedThemeVar.Value.Equals(value, StringComparison.OrdinalIgnoreCase))
+							{
+								savedThemeVar.Value = value;
+								_eventPublisher.EntityUpdated(savedThemeVar);
+								touched = true;
+								count++;
+							}
+						}
+					}
+					else
+					{
+						if (value.HasValue() && !String.Equals(info.DefaultValue, value, StringComparison.CurrentCultureIgnoreCase))
+						{
+							// insert entity (only when not default value)
+							unsavedVars.Add(v.Key);
+							savedThemeVar = new ThemeVariable
+							{
+								Theme = themeName,
+								Name = v.Key,
+								Value = value,
+								StoreId = storeId
+							};
+							_rsVariables.Insert(savedThemeVar);
+							_eventPublisher.EntityInserted(savedThemeVar);
+							touched = true;
+							count++;
+						}
+					}
+				}
 
-                var savedThemeVar = savedThemeVars.FirstOrDefault(x => x.Name == v.Key);
-                if (savedThemeVar != null)
-                {
-                    if (value.IsEmpty() || String.Equals(info.DefaultValue, value, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        // it's either null or the default value, so delete
-                        _rsVariables.Delete(savedThemeVar);
-                        _eventPublisher.EntityDeleted(savedThemeVar);
-                        touched = true;
-                        count++;
-                    }
-                    else
-                    {
-                        // update entity
-                        if (!savedThemeVar.Value.Equals(value, StringComparison.OrdinalIgnoreCase))
-                        {
-                            savedThemeVar.Value = value;
-                            _eventPublisher.EntityUpdated(savedThemeVar);
-                            touched = true;
-                            count++;
-                        }
-                    }
-                }
-                else
-                {
-                    if (value.HasValue() && !String.Equals(info.DefaultValue, value, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        // insert entity (only when not default value)
-                        unsavedVars.Add(v.Key);
-                        savedThemeVar = new ThemeVariable
-                        {
-                            Theme = themeName,
-                            Name = v.Key,
-                            Value = value,
-							StoreId = storeId
-                        };
-                        _rsVariables.Insert(savedThemeVar);
-                        _eventPublisher.EntityInserted(savedThemeVar);
-                        touched = true;
-                        count++;
-                    }
-                }
-            }
-
-            if (touched)
-            {
-                _rsVariables.Context.SaveChanges();
-            }
-
-            _rsVariables.AutoCommitEnabled = autoCommit;
+				if (touched)
+				{
+					_rsVariables.Context.SaveChanges();
+				}
+			}
 
             return count;
         }

@@ -118,16 +118,5 @@ namespace SmartStore.Core
         /// <param name="redirectUrl">Redirect URL; empty string if you want to redirect to the current page URL</param>
 		/// <param name="aggressive">Usually <c>true</c> after a new plugin was installed (nukes the MVC cache)</param>
 		void RestartAppDomain(bool makeRedirect = false, string redirectUrl = "", bool aggressive = false);
-
-        /// <summary>
-        /// Gets a value that indicates whether the client is being redirected to a new location
-        /// </summary>
-        bool IsRequestBeingRedirected { get; }
-
-        /// <summary>
-        /// Gets or sets a value that indicates whether the client is being redirected to a new location using POST
-        /// </summary>
-        bool IsPostBeingDone { get; set; }
-
     }
 }

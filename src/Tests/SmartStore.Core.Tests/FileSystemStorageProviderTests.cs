@@ -89,9 +89,9 @@ namespace SmartStore.Core.Tests
 
         [Test]
         public void ListFoldersReturnsItemsWithShortPathAndEnvironmentSlashes() {
-            var folders = _storageProvider.ListFolders(@"Subfolder1");
+            var folders = _storageProvider.ListFolders(@"Subfolder1").ToArray();
             Assert.That(folders, Is.Not.Null);
-            Assert.That(folders.Count(), Is.EqualTo(1));
+            Assert.That(folders.Length, Is.EqualTo(1));
             Assert.That(folders.Single().GetName(), Is.EqualTo("SubSubfolder1"));
             Assert.That(folders.Single().GetPath(), Is.EqualTo(Path.Combine("Subfolder1", "SubSubfolder1")));
         }

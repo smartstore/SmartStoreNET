@@ -25,9 +25,12 @@
 
     <div class="news-body">
         @Html.Widget("newsitem_page_before_body")
-        <div class="news-content">
+        <div class="news-content clearfix">
             @Html.Raw(Model.Full)
         </div>
+
+		<div class="clear"></div>
+
         @Html.Widget("newsitem_page_before_comments")
 
         @if (Model.AllowComments)
@@ -37,19 +40,9 @@
                 @using (Html.BeginForm())
                 {
                     <div>
-                        @if (!ViewData.ModelState.IsValid) 
-                        {
+                        @if (ViewContext.ViewData.ModelState.ContainsKey(""))
+						{
                             @Html.ValidationSummary(true)
-                        }
-                        @{
-                            string result = TempData["sm.news.addcomment.result"] as string;
-                        }
-                        @if (!String.IsNullOrEmpty(result))
-                        {
-                            <div class="alert alert-info">
-                                <button type="button" class="close" data-dismiss="alert">×</button>
-                                @result
-                            </div>
                         }
                         <div class="forms-box">
                             <div class="inputs">

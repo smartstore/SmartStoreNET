@@ -1,7 +1,7 @@
 ﻿#paypal-checkout .selection-text {
     text-align: right;
     font-weight: bold;
-    padding: 12px 15px 5px 0;
+    padding: 12px 15px 0 0;
 }
 
 #paypal-checkout .form-horizontal {
@@ -11,18 +11,8 @@
 #paypal-checkout #paypal-express-button {
     cursor: pointer;
 }
-.configure-paypal-direct .logo,
-.configure-paypal-express .logo,
-.configure-paypal-standard .logo 
-.paypal-standard-public .logo{
-    width: 200px; 
-    height: 53px;
-}
 .paypal-standard-public {
     margin-bottom: 10px;
-}
-.button-save {
-    padding-top: 10px;
 }
 .form-horizontal.paypal-direct #s2id_CreditCardType{
     min-width: 180px;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Routing;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
@@ -10,27 +11,29 @@ using SmartStore.Services.Shipping.Tracking;
 
 namespace SmartStore.Shipping
 {
-    /// <summary>
-    /// Fixed rate shipping computation provider
-    /// </summary>
-    [SystemName("Shipping.FixedRate")]
+	/// <summary>
+	/// Fixed rate shipping computation provider
+	/// </summary>
+	[SystemName("Shipping.FixedRate")]
     [FriendlyName("Fixed Rate Shipping")]
     [DisplayOrder(0)]
 	public class FixedRateProvider : IShippingRateComputationMethod, IConfigurable
     {
         private readonly ISettingService _settingService;
         private readonly IShippingService _shippingService;
-        private readonly ILocalizationService _localizationService;
 
         public FixedRateProvider(ISettingService settingService,
-            IShippingService shippingService, ILocalizationService localizationService)
+            IShippingService shippingService)
         {
             this._settingService = settingService;
             this._shippingService = shippingService;
-            _localizationService = localizationService;
-        }
-        
-        private decimal GetRate(int shippingMethodId)
+
+			T = NullLocalizer.Instance;
+		}
+
+		public Localizer T { get; set; }
+
+		private decimal GetRate(int shippingMethodId)
         {
             string key = string.Format("ShippingRateComputationMethod.FixedRate.Rate.ShippingMethodId{0}", shippingMethodId);
             decimal rate = this._settingService.GetSettingByKey<decimal>(key);
@@ -51,15 +54,15 @@ namespace SmartStore.Shipping
 
             if (getShippingOptionRequest.Items == null || getShippingOptionRequest.Items.Count == 0)
             {
-                response.AddError("No shipment items");
+                response.AddError(T("Admin.System.Warnings.NoShipmentItems"));
                 return response;
             }
 
-            int? restrictByCountryId = (getShippingOptionRequest.ShippingAddress != null && getShippingOptionRequest.ShippingAddress.Country != null) ? (int?)getShippingOptionRequest.ShippingAddress.Country.Id : null;
-            var shippingMethods = this._shippingService.GetAllShippingMethods(restrictByCountryId);
+            var shippingMethods = this._shippingService.GetAllShippingMethods(getShippingOptionRequest);
             foreach (var shippingMethod in shippingMethods)
             {
                 var shippingOption = new ShippingOption();
+				shippingOption.ShippingMethodId = shippingMethod.Id;
                 shippingOption.Name = shippingMethod.GetLocalized(x => x.Name);
                 shippingOption.Description = shippingMethod.GetLocalized(x => x.Description);
                 shippingOption.Rate = GetRate(shippingMethod.Id);
@@ -79,8 +82,7 @@ namespace SmartStore.Shipping
             if (getShippingOptionRequest == null)
                 throw new ArgumentNullException("getShippingOptionRequest");
 
-            int? restrictByCountryId = (getShippingOptionRequest.ShippingAddress != null && getShippingOptionRequest.ShippingAddress.Country != null) ? (int?)getShippingOptionRequest.ShippingAddress.Country.Id : null;
-            var shippingMethods = this._shippingService.GetAllShippingMethods(restrictByCountryId);
+            var shippingMethods = this._shippingService.GetAllShippingMethods(getShippingOptionRequest);
             
             var rates = new List<decimal>();
             foreach (var shippingMethod in shippingMethods)

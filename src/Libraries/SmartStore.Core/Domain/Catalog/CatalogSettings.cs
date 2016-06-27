@@ -16,6 +16,7 @@ namespace SmartStore.Core.Domain.Catalog
         {
             FileUploadAllowedExtensions = new List<string>();
 			AllowProductSorting = true;
+            DefaultSortOrder = ProductSortingEnum.Position;
 			AllowProductViewModeChanging = true;
 			DefaultViewMode = "grid";
 			CategoryBreadcrumbEnabled = true;
@@ -32,12 +33,16 @@ namespace SmartStore.Core.Domain.Catalog
 			CompareProductsEnabled = true;
             FilterEnabled = true;
             MaxFilterItemsToDisplay = 4;
+			SortFilterResultsByMatches = true;
 			SubCategoryDisplayType = SubCategoryDisplayType.AboveProductList;
 			ProductSearchAutoCompleteEnabled = true;
 			ShowProductImagesInSearchAutoComplete = true;
 			ProductSearchAutoCompleteNumberOfProducts = 10;
 			ProductSearchTermMinimumLength = 3;
 			NumberOfBestsellersOnHomepage = 6;
+            ShowManufacturersOnHomepage = true;
+            ShowManufacturerPictures = false;
+			ShowManufacturerPicturesInProductDetail = true;
 			SearchPageProductsPerPage = 6;
 			ProductsAlsoPurchasedEnabled = true;
 			ProductsAlsoPurchasedNumber = 6;
@@ -124,12 +129,17 @@ namespace SmartStore.Core.Domain.Catalog
         public bool AllowProductSorting { get; set; }
 
         /// <summary>
+        /// Gets or sets the default sort order in product lists
+        /// </summary>
+        public ProductSortingEnum DefaultSortOrder { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether customers are allowed to change product view mode
         /// </summary>
         public bool AllowProductViewModeChanging { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether customers are allowed to change product view mode
+        /// Gets or sets the default view mode for product lists
         /// </summary>
         public string DefaultViewMode { get; set; }
 
@@ -167,7 +177,12 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether all filter criterias should be expanded
         /// </summary>
         public bool ExpandAllFilterCriteria { get; set; }
-        
+
+		/// <summary>
+		/// Gets or sets a value indicating whether filter results should be sorted by matches
+		/// </summary>
+		public bool SortFilterResultsByMatches { get; set; }
+
 		/// <summary>
 		/// Gets or sets a value indicating whether and where to display a list of subcategories
 		/// </summary>
@@ -284,9 +299,39 @@ namespace SmartStore.Core.Domain.Catalog
         public int NumberOfBestsellersOnHomepage { get; set; }
 
         /// <summary>
-        /// Gets or sets a number of products per page on search products page
+        /// Gets or sets a value indicating whether to show manufacturers on home page
         /// </summary>
-        public int SearchPageProductsPerPage { get; set; }
+        public bool ShowManufacturersOnHomepage { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show manufacturer pictures or names on home page
+        /// </summary>
+        public bool ShowManufacturerPictures { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to hide manufacturer pictures in product detail
+		/// </summary>
+		public bool ShowManufacturerPicturesInProductDetail { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to hide maufacturer default pictures
+		/// </summary>
+		public bool HideManufacturerDefaultPictures { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to hide category default pictures
+		/// </summary>
+		public bool HideCategoryDefaultPictures { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to hide product default pictures
+		/// </summary>
+		public bool HideProductDefaultPictures { get; set; }
+
+		/// <summary>
+		/// Gets or sets a number of products per page on search products page
+		/// </summary>
+		public int SearchPageProductsPerPage { get; set; }
 
         /// <summary>
         /// Gets or sets "List of products purchased by other customers who purchased the above" option is enable
@@ -348,10 +393,20 @@ namespace SmartStore.Core.Domain.Catalog
 
 		public bool SuppressSkuSearch { get; set; }
 
-        /// <summary>
-        /// Gets or sets the available customer selectable default page size options
-        /// </summary>
-        public string DefaultPageSizeOptions { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether to search long description
+		/// </summary>
+		public bool SearchDescriptions { get; set; }
+
+		/// <summary>
+		/// Gets or sets the available customer selectable default page size options
+		/// </summary>
+		public string DefaultPageSizeOptions { get; set; }
+
+		/// <summary>
+		/// Gets or sets the price display type for prices in product lists
+		/// </summary>
+		public PriceDisplayType PriceDisplayType { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to include "Short description" in compare products

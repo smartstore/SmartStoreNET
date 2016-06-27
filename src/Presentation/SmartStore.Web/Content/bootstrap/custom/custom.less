@@ -211,6 +211,9 @@ span.field-validation-error {
 .btn-below {
 	margin-top: 5px !important;
 }
+.btn-right {
+	margin-left: 10px !important;
+}
 
 
 // FORMS (GENERAL)
@@ -386,7 +389,8 @@ th label {
 	vertical-align: text-top;
 }
 
-.label-smnet {
+.label-smnet,
+.label-inline {
 	margin-right: 5px;
 }
 .label-smnet-hide {
@@ -417,51 +421,6 @@ th label {
 
 }
 
-/*.ui-menu {
-	padding: 5px 0;
-	margin: 2px 0 0; // override default ul
-	background-color: @dropdownBackground;
-	border: 1px solid #ccc; // Fallback for IE7-8
-	border: 1px solid @dropdownBorder;
-	*border-right-width: 2px;
-	*border-bottom-width: 2px;
-	border-top: none;
-	.border-radius(6px);
-	.box-shadow(0 5px 10px rgba(0,0,0,.2));
-	-webkit-background-clip: padding-box;
-		-moz-background-clip: padding;
-			background-clip: padding-box;
-}
-
-.ui-autocomplete {
-	border-color: @inputBorder; // goes nice with textboxes
-	.box-shadow(0 5px 10px rgba(0,0,0,.12));
-	border-top: none !important;
-}
-.ui-autocomplete.ui-corner-all {
-	.border-radius(0 0 @inputBorderRadius @inputBorderRadius);	
-}
-
-.ui-autocomplete-loading {
-	background-image: url('images/throbber-progress-black-16.gif');
-	background-repeat: no-repeat;
-	background-position: 98% center;
-}
-
-.ui-autocomplete .ui-menu-item a {
-	.border-radius(0);
-	padding: 3px 16px;
-	font-family: @baseFontFamily;
-    font-weight: normal;
-    color: @dropdownLinkColor;
-	.small();
-
-	&:hover,
-	&.ui-state-hover {
-		color: @dropdownLinkColorHover !important;
-		background: @dropdownLinkBackgroundHover !important;
-	}
-}*/
 
 // MVC UI adaptation
 // -------------------------
@@ -513,4 +472,99 @@ th label {
 
 .note-editable {
     background-color: #fff;
+}
+
+
+// NICER MODAL FADE
+// ------------------------------
+
+.modal.fade {
+	top: 50%;
+	.transition(~'opacity 0.12s linear, transform 0.12s ease-out');
+	.transform(~'translate(0, -40px) scale(0.9, 0.9)');
+}
+
+.modal.fade.in {
+	.transform(none);
+}
+
+.modal-backdrop, 
+.modal-backdrop.fade.in {
+	opacity: 0.6;
+}
+
+.modal-header .close {
+	font-size: 30px;
+	text-shadow: none;
+}
+
+.modal-large {
+	width: 800px !important;
+	margin: -250px 0 0 -400px !important;
+}
+
+
+// XLARGE MODAL
+// ------------------------------
+
+.modal-xlarge {
+	width: 960px !important;
+	margin: -250px 0 0 -480px !important;
+}
+
+
+// FLEX MODAL
+// ------------------------------
+
+.modal-flex {
+    top: 3% !important;
+    bottom: 3% !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+            flex-direction: column;
+
+    &.fade.in {
+        display: -webkit-box !important;
+        display: -webkit-flex !important;
+        display: -ms-flexbox !important;
+        display: flex !important;
+    }
+
+    .modal-body {
+        max-height: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+        .display-flex();
+        -webkit-flex-direction: row;
+            -ms-flex-direction: row;
+                flex-direction: row;
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+            -ms-flex: 1;
+                flex: 1;
+        -webkit-box-pack: start;
+        -webkit-justify-content: flex-start;
+            -ms-flex-pack: start;
+                justify-content: flex-start;
+        -webkit-box-align: stretch;
+        -webkit-align-items: stretch;
+            -ms-flex-align: stretch;
+                align-items: stretch;
+        -webkit-align-content: stretch;
+            -ms-flex-line-pack: stretch;
+                align-content: stretch;
+    }
+
+    .modal-flex-fill-area {
+        //overflow: hidden;
+        min-height: 100%;
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+            -ms-flex: 1;
+                flex: 1;
+    }
 }

@@ -41,7 +41,7 @@
                 @if (Model.IsCustomerAllowedToSetTopicPriority)
                 {
                     <div>
-                        @Html.DropDownList("TopicTypeId", new SelectList(@Model.TopicPriorities, "Value", "Text", @Model.TopicTypeId))
+                        @Html.DropDownList("TopicTypeId", new SelectList(@Model.TopicPriorities, "Value", "Text", @Model.TopicTypeId), new { data_native_menu = "false" })
                     </div>
                 }
                 @if (Model.IsCustomerAllowedToSubscribe)

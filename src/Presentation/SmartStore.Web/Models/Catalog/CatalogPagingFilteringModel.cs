@@ -2,19 +2,16 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
-// codehint: sm-delete
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Catalog
 {
-    // codehint: sm-edit (formerly inherited BasePageableModel)
-    public partial class CatalogPagingFilteringModel : PagingFilteringModel //BasePageableModel
+
+    public partial class CatalogPagingFilteringModel : PagingFilteringModel
     {
         #region Constructors
 
@@ -74,7 +71,7 @@ namespace SmartStore.Web.Models.Catalog
                 {
                     string[] fromTo = str1.Trim().Split(new char[] { '-' });
 
-					if (fromTo.Length > 1) {	// codehint: sm-edit
+					if (fromTo.Length > 1) {
 						decimal? from = null;
 						if (!String.IsNullOrEmpty(fromTo[0]) && !String.IsNullOrEmpty(fromTo[0].Trim()))
 							from = decimal.Parse(fromTo[0].Trim(), new CultureInfo("en-US"));

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Mail;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Core;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Email;
 using SmartStore.Services.Configuration;
@@ -13,6 +10,8 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -76,24 +75,32 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageEmailAccounts))
-                return AccessDeniedView();
+			var model = new GridModel<EmailAccountModel>();
 
-            var emailAccountModels = _emailAccountService.GetAllEmailAccounts()
-                                    .Select(x => x.ToModel())
-                                    .ToList();
-            foreach (var eam in emailAccountModels)
-                eam.IsDefaultEmailAccount = eam.Id == _emailAccountSettings.DefaultEmailAccountId;
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageEmailAccounts))
+			{
+				var emailAccountModels = _emailAccountService.GetAllEmailAccounts()
+					.Select(x => x.ToModel())
+					.ToList();
 
-            var gridModel = new GridModel<EmailAccountModel>
-            {
-                Data = emailAccountModels,
-                Total = emailAccountModels.Count()
-            };
+				foreach (var eam in emailAccountModels)
+				{
+					eam.IsDefaultEmailAccount = eam.Id == _emailAccountSettings.DefaultEmailAccountId;
+				}
+
+				model.Data = emailAccountModels;
+				model.Total = emailAccountModels.Count();
+			}
+			else
+			{
+				model.Data = Enumerable.Empty<EmailAccountModel>();
+
+				NotifyAccessDenied();
+			}
 
 			return new JsonResult
 			{
-				Data = gridModel
+				Data = model
 			};
 		}
 
@@ -108,7 +115,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
         
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		public ActionResult Create(EmailAccountModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageEmailAccounts))
@@ -140,7 +147,7 @@ namespace SmartStore.Admin.Controllers
 			return View(emailAccount.ToModel());
 		}
         
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
         public ActionResult Edit(EmailAccountModel model, bool continueEditing)
         {
@@ -174,27 +181,32 @@ namespace SmartStore.Admin.Controllers
 
             var emailAccount = _emailAccountService.GetEmailAccountById(model.Id);
             if (emailAccount == null)
-                //No email account found with the specified id
                 return RedirectToAction("List");
 
             try
             {
-                if (String.IsNullOrWhiteSpace(model.SendTestEmailTo))
-                    throw new SmartException("Enter test email address");
+				if (model.SendTestEmailTo.IsEmpty())
+				{
+					NotifyError(T("Admin.Common.EnterEmailAdress"));
+				}
+				else
+				{
+					var to = new EmailAddress(model.SendTestEmailTo);
+					var from = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
+					var subject = string.Concat(_storeContext.CurrentStore.Name, ". ", T("Admin.Configuration.EmailAccounts.TestingEmail"));
+					var body = T("Admin.Common.EmailSuccessfullySent");
 
+					var msg = new EmailMessage(to, subject, body, from);
 
-				var to = new EmailAddress(model.SendTestEmailTo);
-				var from = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
-				string subject = _storeContext.CurrentStore.Name + ". Testing email functionality.";
-                string body = "Email works fine.";
+					_emailSender.SendEmail(new SmtpContext(emailAccount), msg);
 
-				_emailSender.SendEmail(new SmtpContext(emailAccount), new EmailMessage(to, subject, body, from));
-
-                NotifySuccess(_localizationService.GetResource("Admin.Configuration.EmailAccounts.SendTestEmail.Success"), false);
+					NotifySuccess(T("Admin.Configuration.EmailAccounts.SendTestEmail.Success"), false);
+				}
             }
-            catch (Exception exc)
+            catch (Exception exception)
             {
-				NotifyError(exc.Message, false);
+				model.TestEmailShortErrorMessage = exception.ToAllMessages();
+				model.TestEmailFullErrorMessage = exception.ToString();
             }
 
             //If we got this far, something failed, redisplay form

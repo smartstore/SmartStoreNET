@@ -1,9 +1,18 @@
-﻿using SmartStore.Web.Framework;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Admin.Models.Settings
 {
-	public class ShoppingCartSettingsModel
-    {
+	public class ShoppingCartSettingsModel : ILocalizedModel<ShoppingCartSettingsLocalizedModel>
+	{
+		public ShoppingCartSettingsModel()
+		{
+			Locales = new List<ShoppingCartSettingsLocalizedModel>();
+		}
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.DisplayCartAfterAddingProduct")]
         public bool DisplayCartAfterAddingProduct { get; set; }
 
@@ -40,7 +49,10 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.CrossSellsNumber")]
         public int CrossSellsNumber { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.EmailWishlistEnabled")]
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation")]
+		public bool RoundPricesDuringCalculation { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.EmailWishlistEnabled")]
         public bool EmailWishlistEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.AllowAnonymousUsersToEmailWishlist")]
@@ -76,8 +88,29 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowCommentBox")]
         public bool ShowCommentBox { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation")]
-        public bool RoundPricesDuringCalculation { get; set; }
-        
-    }
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowEsdRevocationWaiverBox")]
+		public bool ShowEsdRevocationWaiverBox { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.NewsLetterSubscription")]
+		public CheckoutNewsLetterSubscription NewsLetterSubscription { get; set; }
+		public SelectList AvailableNewsLetterSubscriptions { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOver")]
+		public CheckoutThirdPartyEmailHandOver ThirdPartyEmailHandOver { get; set; }
+		public SelectList AvailableThirdPartyEmailHandOver { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel")]
+		public string ThirdPartyEmailHandOverLabel { get; set; }
+
+		public IList<ShoppingCartSettingsLocalizedModel> Locales { get; set; }
+	}
+
+
+	public class ShoppingCartSettingsLocalizedModel : ILocalizedModelLocal
+	{
+		public int LanguageId { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel")]
+		public string ThirdPartyEmailHandOverLabel { get; set; }
+	}
 }

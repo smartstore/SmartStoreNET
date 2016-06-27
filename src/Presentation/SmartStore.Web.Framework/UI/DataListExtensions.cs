@@ -9,8 +9,6 @@ namespace SmartStore.Web.Framework.UI
 {
     public static class DataListExtensions
     {
-
-        // codehint: sm-edit
         public static IHtmlString DataList<T>(this HtmlHelper helper, IEnumerable<T> items, int columns,
             Func<T, HelperResult> template, int gridColumns = 24)
             where T : class

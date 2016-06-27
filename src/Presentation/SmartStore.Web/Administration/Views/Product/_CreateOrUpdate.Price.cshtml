@@ -16,7 +16,6 @@
 		fieldBasePriceBaseAmount = $("#@Html.FieldIdFor(model => model.BasePriceBaseAmount)");
 
 		fieldBasePriceMeasureUnit.on("change", getCurrentBasePrice);
-
 		fieldBasePriceAmount.on("blur", getCurrentBasePrice);
 		fieldBasePriceBaseAmount.on("blur", getCurrentBasePrice);
 
@@ -25,7 +24,9 @@
 		toggleBasePrice();
 
 		function getCurrentBasePrice() {
-			if (parseFloat(fieldBasePriceAmount.val()) > 0 && parseInt(fieldBasePriceBaseAmount.val()) > 0) {
+			var basePriceAmount = Globalize.parseFloat(fieldBasePriceAmount.val());
+			var basePriceBaseAmount = Globalize.parseInt(fieldBasePriceBaseAmount.val());
+			if (basePriceAmount > 0 && basePriceBaseAmount > 0) {
 				$.ajax({
 					cache:false,
 					type: "POST",
@@ -40,7 +41,7 @@
 						$("#BasePriceAmountInfo").html(data.BasePrice);
 					},
 					error: function (xhr, ajaxOptions, thrownError){
-						alert(thrownError);
+						//alert(thrownError);
 					}
 				});
 			}
@@ -51,10 +52,12 @@
 			if ($('#@Html.FieldIdFor(model => model.BasePriceEnabled)').is(':checked')) {
 				$('#pnlBasePriceBaseAmount').show();
 				$('#pnlBasePriceAmount').show();
+				$('#pnlBasePriceAmountHint').show();
 			}
 			else {
 				$('#pnlBasePriceBaseAmount').hide();
 				$('#pnlBasePriceAmount').hide();
+				$('#pnlBasePriceAmountHint').hide();
 			}
 		}
 
@@ -224,6 +227,17 @@
                 <span id="BasePriceAmountInfo" class="muted">@*@T("Admin.Catalog.Products.Fields.BasePriceInfo")*@</span>
             </td>
         </tr>
+        <tr id="pnlBasePriceAmountHint">
+            <td class="adminTitle">
+                &nbsp;
+            </td>
+            <td class="adminData">
+                <div class="alert alert-info">
+                    @T("Admin.Products.BasePrice.Hint")
+                </div>
+            </td>
+        </tr>
+        
     </table>
 
     <div id="TierPriceContainer" style="margin-top:30px;">

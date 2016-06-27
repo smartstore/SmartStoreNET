@@ -11,7 +11,7 @@
 }
 @if (Model.AllowCustomerReviews)
 {
-    <div class="product-reviews-overview line clearfix" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+    <div class="product-reviews-overview line clearfix"@Html.Raw(Model.TotalReviews > 0 ? " itemprop='aggregateRating' itemscope itemtype='http://schema.org/AggregateRating'" : "")>
         @* STARS *@
         <div class="product-review-box pull-left">
             <div class="rating">

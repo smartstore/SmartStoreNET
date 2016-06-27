@@ -1,20 +1,37 @@
+using System.Collections.Generic;
+using System.Net;
 using SmartStore.Core.Configuration;
-using SmartStore.PayPal;
+using SmartStore.PayPal.Services;
 
 namespace SmartStore.PayPal.Settings
 {
     public abstract class PayPalSettingsBase
     {
-        public bool UseSandbox { get; set; }
-        /// <summary>
-        /// Gets or sets a value indicating whether to "additional fee" is specified as percentage. true - percentage, false - fixed value.
-        /// </summary>
-        public bool AdditionalFeePercentage { get; set; }
-        /// <summary>
-        /// Additional fee
-        /// </summary>
+		public PayPalSettingsBase()
+		{
+			SecurityProtocol = SecurityProtocolType.Tls12;
+			IpnChangesPaymentStatus = true;
+			AddOrderNotes = true;
+		}
+
+		public SecurityProtocolType? SecurityProtocol { get; set; }
+
+		public bool UseSandbox { get; set; }
+
+		public bool AddOrderNotes { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to "additional fee" is specified as percentage. true - percentage, false - fixed value.
+		/// </summary>
+		public bool AdditionalFeePercentage { get; set; }
+        
         public decimal AdditionalFee { get; set; }
-    }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether an IPN should change the payment status
+		/// </summary>
+		public bool IpnChangesPaymentStatus { get; set; }
+	}
 
     public abstract class PayPalApiSettingsBase : PayPalSettingsBase
 	{
@@ -22,14 +39,35 @@ namespace SmartStore.PayPal.Settings
 		public string ApiAccountName { get; set; }
 		public string ApiAccountPassword { get; set; }
 		public string Signature { get; set; }
+
+		/// <summary>
+		/// PayPal client id
+		/// </summary>
+		public string ClientId { get; set; }
+
+		/// <summary>
+		/// PayPal secret
+		/// </summary>
+		public string Secret { get; set; }
+
+		/// <summary>
+		/// PayPal experience profile id
+		/// </summary>
+		public string ExperienceProfileId { get; set; }
+
+		/// <summary>
+		/// PayPal webhook id
+		/// </summary>
+		public string WebhookId { get; set; }
 	}
+
 
     public class PayPalDirectPaymentSettings : PayPalApiSettingsBase, ISettings
     {
 		public PayPalDirectPaymentSettings()
 		{
+			UseSandbox = true;
 			TransactMode = TransactMode.Authorize;
-            UseSandbox = true;
 		}
     }
 
@@ -44,12 +82,17 @@ namespace SmartStore.PayPal.Settings
         /// <summary>
         /// Determines whether the checkout button is displayed beneath the cart
         /// </summary>
-        public bool DisplayCheckoutButton { get; set; }
+        //public bool DisplayCheckoutButton { get; set; }
 
-        /// <summary>
-        /// Determines whether the shipment address has  to be confirmed by PayPal 
-        /// </summary>
-        public bool ConfirmedShipment { get; set; }
+		/// <summary>
+		/// Specifies whether to display the checkout button in mini shopping cart
+		/// </summary>
+		public bool ShowButtonInMiniShoppingCart { get; set; }
+
+		/// <summary>
+		/// Determines whether the shipment address has  to be confirmed by PayPal 
+		/// </summary>
+		public bool ConfirmedShipment { get; set; }
 
         /// <summary>
         /// Determines whether the shipment address is transmitted to PayPal
@@ -67,12 +110,34 @@ namespace SmartStore.PayPal.Settings
         public decimal DefaultShippingPrice { get; set; }
     }
 
-    public class PayPalStandardPaymentSettings : PayPalSettingsBase, ISettings
+	public class PayPalPlusPaymentSettings : PayPalApiSettingsBase, ISettings
+	{
+		public PayPalPlusPaymentSettings()
+		{
+			UseSandbox = true;
+		}
+
+		/// <summary>
+		/// Specifies other payment methods to be offered in payment wall
+		/// </summary>
+		public List<string> ThirdPartyPaymentMethods { get; set; }
+
+		/// <summary>
+		/// Specifies whether to display the logo of a third party payment method
+		/// </summary>
+		public bool DisplayPaymentMethodLogo { get; set; }
+
+		/// <summary>
+		/// Specifies whether to display the description of a third party payment method
+		/// </summary>
+		public bool DisplayPaymentMethodDescription { get; set; }
+	}
+
+	public class PayPalStandardPaymentSettings : PayPalSettingsBase, ISettings
     {
 		public PayPalStandardPaymentSettings()
 		{
 			UseSandbox = true;
-            PdtValidateOrderTotal = true;
             EnableIpn = true;
 		}
 
@@ -80,22 +145,18 @@ namespace SmartStore.PayPal.Settings
         public string PdtToken { get; set; }
         public bool PassProductNamesAndTotals { get; set; }
         public bool PdtValidateOrderTotal { get; set; }
+		public bool PdtValidateOnlyWarn { get; set; }
         public bool EnableIpn { get; set; }
         public string IpnUrl { get; set; }
     }
 
-    /// <summary>
-    /// Represents payment processor transaction mode
-    /// </summary>
-    public enum TransactMode : int
+
+	/// <summary>
+	/// Represents payment processor transaction mode
+	/// </summary>
+	public enum TransactMode
     {
-        /// <summary>
-        /// Authorize
-        /// </summary>
         Authorize = 1,
-        /// <summary>
-        /// Authorize and capture
-        /// </summary>
         AuthorizeAndCapture = 2
     }
 }

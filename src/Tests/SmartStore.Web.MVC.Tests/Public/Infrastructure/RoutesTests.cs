@@ -61,7 +61,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         {
             //"~/p/some-se-name/".ShouldMapTo<CatalogController>(c => c.Product("some-se-name"));
             "~/recentlyviewedproducts/".ShouldMapTo<CatalogController>(c => c.RecentlyViewedProducts());
-            "~/newproducts/".ShouldMapTo<CatalogController>(c => c.RecentlyAddedProducts(null));
+            "~/newproducts/".ShouldMapTo<CatalogController>(c => c.RecentlyAddedProducts());
             "~/newproducts/rss/".ShouldMapTo<CatalogController>(c => c.RecentlyAddedProductsRss());
             "~/catalog/addproducttocompare/2".ShouldMapTo<CatalogController>(c => c.AddProductToCompareList(2));
             "~/compareproducts/".ShouldMapTo<CatalogController>(c => c.CompareProducts());
@@ -96,7 +96,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
 			"~/customer/myaccount/".ShouldMapTo<CustomerController>(c => c.MyAccount());
 			"~/customer/info/".ShouldMapTo<CustomerController>(c => c.Info());
 			"~/customer/addresses/".ShouldMapTo<CustomerController>(c => c.Addresses());
-			"~/customer/orders/".ShouldMapTo<CustomerController>(c => c.Orders());
+			"~/customer/orders/".ShouldMapTo<CustomerController>(c => c.Orders(null));
 			"~/customer/returnrequests/".ShouldMapTo<CustomerController>(c => c.ReturnRequests());
 			"~/customer/downloadableproducts/".ShouldMapTo<CustomerController>(c => c.DownloadableProducts());
 			"~/customer/backinstocksubscriptions/".ShouldMapTo<CustomerController>(c => c.BackInStockSubscriptions(null));

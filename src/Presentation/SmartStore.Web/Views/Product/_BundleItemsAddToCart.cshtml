@@ -10,16 +10,6 @@
         <div class="form-inline clearfix" style="@(Model.IsAvailable ? "" : "display:none;")">
             @if (!Model.AddToCart.DisableBuyButton)
             {
-                @*@Html.LabelFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-label" })<text>:</text>
-                if (Model.AddToCart.AllowedQuantities.Count > 0)
-                {
-                    @Html.DropDownListFor(model => Model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown" })
-                }
-                else
-                {
-                    @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style = "width:25px" })
-                }*@
-
                 <a class="btn btn-warning add-to-cart-button ajax-cart-link"
                    href="#"
 				   rel="nofollow"
@@ -28,7 +18,7 @@
                    data-type="cart"
                    data-action="add">
                     @(Model.AddToCart.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
-					<i class="fa fa-plus-circle"></i>
+					<i class="fa fa-cart-plus"></i>
                 </a>
             }
         </div>
@@ -50,39 +40,40 @@
 </div>
 
 <div class="bundle-item-overview">
-
     @{
-        int i = 0;
-        int bundleItemAmount = Model.BundledItems.Count;
+		var i = 0;
+		var bundleItemCount = Model.BundledItems.Where(x => x.BundleItem.Visible).Count();
     }
 
     @foreach (var item in Model.BundledItems.Where(x => x.BundleItem.Visible))
-    {
-
-        if (item.VisibleIndividually)
-        {
-            <a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">
-                <img alt="@item.Name" src="@item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl" title="@item.Name" /></a>
-			@* img and a in same line cause of hover underlines *@
-        }
-        else
-        {
+	{
+		if (item.VisibleIndividually)
+		{
+			if (item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl.HasValue())
+			{
+				<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">
+					<img alt="@item.Name" src="@item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl" title="@item.Name" /></a>@* img and a in same line cause of hover underlines *@
+			}
+			else
+			{
+				<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">@item.Name</a>
+			}
+		}
+		else
+		{
             @item.Name
         }
 
         if (item.BundleItem.Quantity > 1)
         {
-            <strong>
-                &#215;&nbsp;@item.BundleItem.Quantity
-            </strong>
-        }
+            <strong>&#215;&nbsp;@item.BundleItem.Quantity</strong>
+		}
 
-        if (bundleItemAmount != (i + 1))
-        {
+		if (bundleItemCount != (i + 1))
+		{
             <i class="fa fa-plus"></i>
         }
 
         i++;
     }
-
 </div>

@@ -3,7 +3,7 @@ using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Messages;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Messages
 {
@@ -48,5 +48,7 @@ namespace SmartStore.Admin.Models.Messages
         [AllowHtml]
         public string SendTestEmailTo { get; set; }
 
-    }
+		public string TestEmailShortErrorMessage { get; set; }
+		public string TestEmailFullErrorMessage { get; set; }
+	}
 }

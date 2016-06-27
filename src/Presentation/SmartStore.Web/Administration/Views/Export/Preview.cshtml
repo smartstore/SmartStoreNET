@@ -1,0 +1,315 @@
+﻿@using SmartStore.Admin.Models.DataExchange
+@using SmartStore.Core.Domain.DataExchange
+@model ExportPreviewModel
+@{
+	var title = string.Concat(T("Common.Export"), " - ", T("Admin.Common.Preview"));
+	ViewBag.Title = title;
+}
+
+<div class="section-header">
+	<div class="title">
+		<img src="@Url.Content(Model.ThumbnailUrl)" />
+		@title - @Model.Name @Html.ActionLink("(" + T("Common.Back") + ")", "Edit", new { id = Model.Id })
+	</div>
+	<div class="options">
+		<form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin" })">
+			<input type="hidden" name="Id" value="@Model.Id" />
+			<input type="hidden" name="SelectedIds" value="" />
+
+			@if (Model.LogFileExists)
+			{
+				<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn" target="LogFile">
+					<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+				</a>
+			}
+			<button type="button" id="ExportSelected" class="btn btn-default">
+				<i class="fa fa-gears"></i>&nbsp;@T("Admin.Common.ExportSelected")
+			</button>
+			<button type="button" id="ExportAll" class="btn btn-default">
+				<i class="fa fa-gears"></i>&nbsp;@T("Admin.Common.ExportAll")
+			</button>
+		</form>
+	</div>
+</div>
+
+<script type="text/javascript">
+	var selectedIds = [];
+
+	jQuery(document).ready(function () {
+
+		// execute export
+		$('#ExportAll, #ExportSelected').click(function (e) {
+			e.preventDefault();
+			var form = $('#ProfileExportForm'),
+				exportAll = ($(this).attr('id') === 'ExportAll');
+
+			if (!exportAll && selectedIds.length === 0) {
+				displayNotification('@T("Admin.Common.NoEntriesSelected")', 'warning');
+				return false;
+			}
+
+			form.find('[name=SelectedIds]').val(exportAll ? '' : selectedIds.join(','));
+			form.submit();
+			return false;
+		});
+
+
+		// master checkbox clicked
+		$('input[type=checkbox].master-checkbox').click(function () {
+			$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+		});
+
+		// wire up checkboxes
+		$(document).on('change', 'div.preview-grid-container input[type=checkbox][class!=master-checkbox]', function (e) {
+			var $check = $(this);
+			if ($check.is(':checked') == true) {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked == -1) {
+					selectedIds.push($check.val());
+				}
+			}
+			else {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked > -1) {
+					selectedIds = $.grep(selectedIds, function (item, index) {
+						return item != $check.val();
+					});
+				}
+			}
+
+			var id = $(this).closest('[id^="export-grid-"]').attr('id').toString();
+			UpdateMasterCheckbox(id);
+		});
+	});
+
+	function OnDataBound(e) {
+		HandleOnDataBound(e.currentTarget.id.toString());
+		UpdateMasterCheckbox(e.currentTarget.id.toString());
+	}
+
+	function HandleOnDataBound(id) {
+		$('#' + id + ' input[type=checkbox][id!="' + id + '-mastercheckbox"]').each(function () {
+			var checked = jQuery.inArray($(this).val(), selectedIds);
+			$(this).attr('checked', checked > -1);
+		});
+	}
+
+	function UpdateMasterCheckbox(id) {
+		var numChkBoxes = $('#' + id + ' input[type=checkbox][id!="' + id + '-mastercheckbox"]').length;
+		var numChkBoxesChecked = $('#' + id + ' input[type=checkbox][checked][id!="' + id + '-mastercheckbox"]').length;
+		$('#' + id + '-mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+	}
+</script>
+
+<div class="preview-grid-container">
+	@if (Model.EntityType == ExportEntityType.Product)
+	{
+		@(Html.Telerik().Grid<ExportPreviewProductModel>()
+				.Name("export-grid-product")
+				.DataKeys(keys => keys.Add(x => x.Id)
+				.RouteKey("Id"))
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.Id)
+						.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups' />")
+						.Title("<input id='export-grid-product-mastercheckbox' type='checkbox' class='master-checkbox' />")
+						.Width(50)
+						.HtmlAttributes(new { style = "text-align:center" })
+						.HeaderHtmlAttributes(new { style = "text-align:center" });
+					columns.Bound(x => x.Id)
+						.Width(80)
+						.Centered();
+					columns.Bound(x => x.Name)
+						.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
+					columns.Bound(x => x.Sku);
+					columns.Bound(x => x.Price)
+						.Format("{0:0.00}")
+						.RightAlign();
+					columns.Bound(x => x.StockQuantity)
+						.Centered();
+					columns.Bound(x => x.Published)
+						.Width(160)
+						.ClientTemplate(@Html.SymbolForBool("Published"))
+						.Centered();
+					columns.Bound(x => x.AdminComment);
+				})
+				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.ClientEvents(events => events.OnDataBound("OnDataBound"))
+				.EnableCustomBinding(true))
+	}
+	else if (Model.EntityType == ExportEntityType.Order)
+	{
+		@(Html.Telerik().Grid<ExportPreviewOrderModel>()
+				.Name("export-grid-order")
+				.DataKeys(keys => keys.Add(x => x.Id)
+				.RouteKey("Id"))
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.Id)
+						.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups' />")
+						.Title("<input id='export-grid-order-mastercheckbox' type='checkbox' />")
+						.Width(50)
+						.HtmlAttributes(new { style = "text-align:center" })
+						.HeaderHtmlAttributes(new { style = "text-align:center" });
+					columns.Bound(x => x.Id)
+						.Width(80)
+						.Centered();
+					columns.Bound(x => x.OrderNumber)
+						.ClientTemplate(@Html.LabeledOrderNumber());
+					columns.Bound(x => x.OrderStatus);
+					columns.Bound(x => x.PaymentStatus);
+					columns.Bound(x => x.ShippingStatus);
+					columns.Bound(x => x.CustomerEmail);
+					columns.Bound(x => x.StoreName);
+					columns.Bound(x => x.CreatedOn);
+					columns.Bound(x => x.OrderTotal)
+						.Format("{0:0.00}")
+						.RightAlign();
+				})
+				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.ClientEvents(events => events.OnDataBound("OnDataBound"))
+				.EnableCustomBinding(true))
+	}
+	else if (Model.EntityType == ExportEntityType.Category)
+	{
+		@(Html.Telerik().Grid<ExportPreviewCategoryModel>()
+				.Name("export-grid-order")
+				.DataKeys(keys => keys.Add(x => x.Id)
+				.RouteKey("Id"))
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.Id)
+						.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups' />")
+						.Title("<input id='export-grid-order-mastercheckbox' type='checkbox' />")
+						.Width(50)
+						.HtmlAttributes(new { style = "text-align:center" })
+						.HeaderHtmlAttributes(new { style = "text-align:center" });
+					columns.Bound(x => x.Id)
+						.Width(80)
+						.Centered();
+					columns.Bound(x => x.Breadcrumb);
+					columns.Bound(x => x.FullName);
+					columns.Bound(x => x.Alias);
+					columns.Bound(x => x.Published)
+						.Width(160)
+						.ClientTemplate(@Html.SymbolForBool("Published"))
+						.Centered();
+					columns.Bound(x => x.DisplayOrder)
+						.Width(160)
+						.Centered();
+					columns.Bound(x => x.LimitedToStores)
+						.Width(160)
+						.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+						.Centered();
+				})
+				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.ClientEvents(events => events.OnDataBound("OnDataBound"))
+				.EnableCustomBinding(true))
+	}
+	else if (Model.EntityType == ExportEntityType.Manufacturer)
+	{
+		@(Html.Telerik().Grid<ExportPreviewManufacturerModel>()
+				.Name("export-grid-order")
+				.DataKeys(keys => keys.Add(x => x.Id)
+				.RouteKey("Id"))
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.Id)
+						.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups' />")
+						.Title("<input id='export-grid-order-mastercheckbox' type='checkbox' />")
+						.Width(50)
+						.HtmlAttributes(new { style = "text-align:center" })
+						.HeaderHtmlAttributes(new { style = "text-align:center" });
+					columns.Bound(x => x.Id)
+						.Width(80)
+						.Centered();
+					columns.Bound(x => x.Name);
+					columns.Bound(x => x.Published)
+						.Width(160)
+						.ClientTemplate(@Html.SymbolForBool("Published"))
+						.Centered();
+					columns.Bound(x => x.DisplayOrder)
+						.Width(160)
+						.Centered();
+					columns.Bound(x => x.LimitedToStores)
+						.Width(160)
+						.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+						.Centered();
+				})
+				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.ClientEvents(events => events.OnDataBound("OnDataBound"))
+				.EnableCustomBinding(true))
+	}
+	else if (Model.EntityType == ExportEntityType.Customer)
+	{
+		@(Html.Telerik().Grid<ExportPreviewCustomerModel>()
+				.Name("export-grid-order")
+				.DataKeys(keys => keys.Add(x => x.Id)
+				.RouteKey("Id"))
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.Id)
+						.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups' />")
+						.Title("<input id='export-grid-order-mastercheckbox' type='checkbox' />")
+						.Width(50)
+						.HtmlAttributes(new { style = "text-align:center" })
+						.HeaderHtmlAttributes(new { style = "text-align:center" });
+					columns.Bound(x => x.Id)
+						.Width(80)
+						.Centered();
+					columns.Bound(x => x.Email);
+					columns.Bound(x => x.Username)
+						.Visible(Model.UsernamesEnabled);
+					columns.Bound(x => x.FullName);
+					columns.Bound(x => x.CustomerRoleNames);
+					columns.Bound(x => x.Active)
+						 .ClientTemplate(@Html.SymbolForBool("Active"))
+						 .Width(160)
+						 .Centered();
+					columns.Bound(x => x.CreatedOn);
+					columns.Bound(x => x.LastActivityDate);
+				})
+				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.ClientEvents(events => events.OnDataBound("OnDataBound"))
+				.EnableCustomBinding(true))
+	}
+	else if (Model.EntityType == ExportEntityType.NewsLetterSubscription)
+	{
+		@(Html.Telerik().Grid<ExportPreviewNewsLetterSubscriptionModel>()
+				.Name("export-grid-order")
+				.DataKeys(keys => keys.Add(x => x.Id)
+				.RouteKey("Id"))
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.Id)
+						.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups' />")
+						.Title("<input id='export-grid-order-mastercheckbox' type='checkbox' />")
+						.Width(50)
+						.HtmlAttributes(new { style = "text-align:center" })
+						.HeaderHtmlAttributes(new { style = "text-align:center" });
+					columns.Bound(x => x.Id)
+						.Width(80)
+						.Centered();
+					columns.Bound(x => x.Email);
+					columns.Bound(x => x.Active)
+						.ClientTemplate(@Html.SymbolForBool("Active"))
+						.Centered()
+						.Width(160);
+					columns.Bound(x => x.StoreName);
+					columns.Bound(x => x.CreatedOn);
+				})
+				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))
+				.ClientEvents(events => events.OnDataBound("OnDataBound"))
+				.EnableCustomBinding(true))
+	}
+	else
+	{
+		<div class="alert alert-warning">@T("Admin.DataExchange.Export.NoPreview")</div>
+	}
+</div>

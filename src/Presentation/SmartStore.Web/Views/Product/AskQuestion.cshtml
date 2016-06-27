@@ -6,6 +6,7 @@
     //title
     Html.AddTitleParts(Model.ProductName);
     Html.AddTitleParts(T("Products.AskQuestion.Title").Text);
+    Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex\">");
 }
 <div class="page ask-question-page">
     <div class="page-title">

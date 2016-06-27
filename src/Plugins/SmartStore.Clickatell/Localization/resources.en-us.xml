@@ -1,5 +1,5 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
-  <LocaleResource Name="Plugins.FriendlyName.Mobile.SMS.Clickatell" AppendRootKey="false">
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.Clickatell" AppendRootKey="false">
     <Value>Clickatell SMS Provider</Value>
   </LocaleResource>
   <LocaleResource Name="AdminInstruction">
@@ -27,7 +27,7 @@
     <Value>Enabled</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.Enabled.Hint">
-    <Value>Check to enable SMS provider</Value>
+    <Value>Check the box to enable SMS provider</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.ApiId">
     <Value>API ID</Value>

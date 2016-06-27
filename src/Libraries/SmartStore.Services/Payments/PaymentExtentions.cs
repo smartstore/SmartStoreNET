@@ -1,15 +1,15 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Web.Routing;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Orders;
-using System.Web.Routing;
 
 namespace SmartStore.Services.Payments
 {
-    public static class PaymentExtentions
+	public static class PaymentExtentions
     {
         /// <summary>
         /// Is payment method active?

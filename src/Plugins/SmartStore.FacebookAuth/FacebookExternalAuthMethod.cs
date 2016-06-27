@@ -1,5 +1,6 @@
 using System.Web.Routing;
 using SmartStore.Core.Plugins;
+using SmartStore.FacebookAuth.Core;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Localization;
 
@@ -11,8 +12,10 @@ namespace SmartStore.FacebookAuth
     public class FacebookExternalAuthMethod : BasePlugin, IExternalAuthenticationMethod, IConfigurable
     {
         #region Fields
+
         private readonly FacebookExternalAuthSettings _facebookExternalAuthSettings;
         private readonly ILocalizationService _localizationService;
+
         #endregion
 
         #region Ctor
@@ -37,7 +40,7 @@ namespace SmartStore.FacebookAuth
         {
 			actionName = "Configure";
 			controllerName = "ExternalAuthFacebook";
-			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = "SmartStore.FacebookAuth" });
+			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = Provider.SystemName });
         }
 
         /// <summary>
@@ -50,7 +53,7 @@ namespace SmartStore.FacebookAuth
         {
             actionName = "PublicInfo";
             controllerName = "ExternalAuthFacebook";
-			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = "SmartStore.FacebookAuth" });
+			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = Provider.SystemName });
         }
 
         /// <summary>
@@ -68,7 +71,6 @@ namespace SmartStore.FacebookAuth
         {
             //locales
             _localizationService.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
-            _localizationService.DeleteLocaleStringResources("Plugins.FriendlyName.ExternalAuth.Facebook", false);
 
             base.Uninstall();
         }

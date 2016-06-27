@@ -32,16 +32,18 @@
                     @if (Model.ShowProductImages)
                     {
                         <figure class="picture pull-left">
-                            <a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@item.Picture.Title">
-                                <img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
-                            </a>
+							@if(item.Picture.ImageUrl.HasValue())
+							{
+								<a href="@item.ProductUrl" title="@item.Picture.Title">
+									<img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" /></a>
+							}
                         </figure>
                     }
                     <div class="quantity pull-left">
                         @(item.Quantity)<span class="times">x</span>
                     </div>
                     <div class="data pull-left">
-                        <a class="name" href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@item.ProductName">@item.ProductName</a>
+                        <a class="name" href="@item.ProductUrl" title="@item.ProductName">@item.ProductName</a>
                         @if (item.AttributeInfo.HasValue())
                         {
                             <br />
@@ -68,22 +70,22 @@
                     {
                         <div class="mb-bundle-pictures">
                             @for (int j = 0, bundlelength = item.BundleItems.Count; j < bundlelength; j++)
-                            {
-                                var bundleItem = item.BundleItems[j];
+							{
+								var bundleItem = item.BundleItems[j];
 
-                                <a href="@Url.RouteUrl("Product", new { SeName = bundleItem.ProductSeName })" title="@bundleItem.ProductName">
-                                    <img alt="@bundleItem.ProductName" src="@bundleItem.PictureUrl" title="@bundleItem.ProductName" />
-                                </a>
-                                
-                                if (bundlelength != (j + 1)) 
-                                { 
+								if (bundleItem.PictureUrl.HasValue())
+								{
+									<a href="@bundleItem.ProductUrl" title="@bundleItem.ProductName">
+										<img alt="@bundleItem.ProductName" src="@bundleItem.PictureUrl" title="@bundleItem.ProductName" /></a>
+								}
+
+								if (bundlelength != (j + 1))
+								{
                                     <i class="fa fa-plus"></i>
                                 }
-                                
                             }        
                         </div>
                     }
-                    
                 </li>
             }
             @if (Model.IgnoredProductsCount > 0)

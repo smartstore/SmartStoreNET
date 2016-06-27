@@ -12,7 +12,7 @@
 
                 var throbber = estimateBox.data("throbber");
                 if (!throbber) {
-                    throbber = estimateBox.throbber({ white: true, small: true, show: false }).data("throbber");
+                    throbber = estimateBox.throbber({ white: true, small: true, message: '', show: false }).data("throbber");
                 }
                 throbber.show();
 
@@ -80,7 +80,7 @@
                 </div>
             </div>
 
-            <div class="shipping-options" style="border: 0;">
+            <div class="shipping-options">
                 @if (Model.ShippingOptions.Any())
                 {
                     <div>
@@ -88,7 +88,8 @@
                         {
                             <div class="shipping-option-item" style="margin-bottom: 8px">
                                 <div class="option-name">
-                                    @shippingOption.Name (@shippingOption.Price)
+                                    @Html.Raw(HttpUtility.HtmlDecode(shippingOption.Name))
+                                    (@shippingOption.Price)
                                 </div>
                                 <div class="option-description muted">
                                     @Html.Raw(shippingOption.Description)
@@ -107,10 +108,13 @@
                     </div>
                 }
             </div>
-        </div>
 
-        <div class="well well-small hide"> <!-- TODO: (mc) temporarily hidden, wrong resource key! -->
-            @Html.Raw(String.Format(T("ShoppingCart.ShippingInfoLink"), Url.RouteUrl("Topic", new { SystemName = "shippinginfo" })))
+			@if (Model.ShippingInfoUrl.HasValue())
+			{
+				<div>
+					@Html.Raw(T("ShoppingCart.ShippingInfoLink", Model.ShippingInfoUrl))
+				</div>
+			}
         </div>
     </div>
 }

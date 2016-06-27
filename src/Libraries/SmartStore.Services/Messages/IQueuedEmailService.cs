@@ -25,6 +25,12 @@ namespace SmartStore.Services.Messages
         /// <param name="queuedEmail">Queued email</param>
         void DeleteQueuedEmail(QueuedEmail queuedEmail);
 
+		/// <summary>
+		/// Deletes all queued emails
+		/// </summary>
+		/// <returns>The count of deleted entries</returns>
+		int DeleteAllQueuedEmails();
+
         /// <summary>
         /// Gets a queued email by identifier
         /// </summary>
@@ -42,22 +48,9 @@ namespace SmartStore.Services.Messages
         /// <summary>
         /// Search queued emails
         /// </summary>
-        /// <param name="fromEmail">From Email</param>
-        /// <param name="toEmail">To Email</param>
-        /// <param name="startTime">The start time</param>
-        /// <param name="endTime">The end time</param>
-        /// <param name="loadNotSentItemsOnly">A value indicating whether to load only not sent emails</param>
-        /// <param name="maxSendTries">Maximum send tries</param>
-        /// <param name="loadNewest">A value indicating whether we should sort queued email descending; otherwise, ascending.</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-		/// <param name="sendManually">A value indicating whether to load manually send emails</param>
+		/// <param name="query">An object containing the query criteria</param>
         /// <returns>Email item collection</returns>
-        IPagedList<QueuedEmail> SearchEmails(string fromEmail,
-            string toEmail, DateTime? startTime, DateTime? endTime,
-            bool loadNotSentItemsOnly, int maxSendTries,
-            bool loadNewest, int pageIndex, int pageSize,
-			bool? sendManually = null);
+		IPagedList<QueuedEmail> SearchEmails(SearchEmailsQuery query);
 
 		/// <summary>
 		/// Sends a queued email
@@ -65,5 +58,18 @@ namespace SmartStore.Services.Messages
 		/// <param name="queuedEmail">Queued email</param>
 		/// <returns>Whether the operation succeeded</returns>
 		bool SendEmail(QueuedEmail queuedEmail);
+
+		/// <summary>
+		/// Gets a queued email attachment by identifier
+		/// </summary>
+		/// <param name="id">Queued email attachment identifier</param>
+		/// <returns>Queued email attachment</returns>
+		QueuedEmailAttachment GetQueuedEmailAttachmentById(int id);
+
+		/// <summary>
+		/// Deleted a queued email attachment
+		/// </summary>
+		/// <param name="qea">Queued email attachment</param>
+		void DeleteQueuedEmailAttachment(QueuedEmailAttachment qea);
     }
 }

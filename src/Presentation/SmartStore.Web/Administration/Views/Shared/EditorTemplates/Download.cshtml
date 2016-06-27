@@ -1,186 +1,149 @@
-﻿@model int
+﻿@model int?
 @using SmartStore.Core;
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Utilities;
-@{
-    
-    //other variables
-    var randomNumber = CommonHelper.GenerateRandomInteger();
-    var clientId = "download" + randomNumber;
-    var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
-	var download = downloadService.GetDownloadById(Model);
 
-	Html.AddScriptParts("~/bundles/fileupload");
-	Html.AddCssFileParts("~/css/fileupload");
+@functions {
+	bool? _minimalMode = null;
+	string _fieldName = null;
+	
+	private bool MinimalMode
+	{
+		get
+		{
+			if (!_minimalMode.HasValue)
+			{
+				_minimalMode = ViewData.ContainsKey("minimalMode") ? ViewData["minimalMode"].Convert<bool>() : false;			
+			}
+			return _minimalMode.Value;	
+		}
+	}
+
+	private string FieldName
+	{
+		get
+		{
+			if (_fieldName == null)
+			{
+				_fieldName = ViewData.ContainsKey("fieldName") ? ViewData["fieldName"].Convert<string>() : ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+			}
+			return _fieldName;
+		}
+	}
 }
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#cbUseDownloadURL@(randomNumber)').click(toggleDownloadRecordType@(randomNumber));
+@{
+	var clientId = "download-editor-" + CommonHelper.GenerateRandomInteger();
+    var downloadService = EngineContext.Current.Resolve<SmartStore.Services.Media.IDownloadService>();
+	var download = downloadService.GetDownloadById(Model.GetValueOrDefault());
+	var initiallyShowUrlPanel = false;
+	var hasFile = false;
+	var downloadUrl = "";
+	if (download != null) {
+		downloadUrl = Url.Action("DownloadFile", "Download", new { downloadId = download.Id });
+		initiallyShowUrlPanel = !MinimalMode && download.UseDownloadUrl;
+		hasFile = !download.UseDownloadUrl;
+	}
+	
+	Html.AddScriptParts("~/bundles/fileupload");
+	Html.AddCssFileParts("~/css/fileupload");
+	Html.AddScriptParts(true, "~/Administration/Scripts/smartstore.download.js");
+}
 
-        $('#saveDownloadUrl@(randomNumber)').click(function () {
-                var downloadUrl = $("#downloadurl@(randomNumber)").val();
-                $('#saveDownloadUrl@(randomNumber)').attr('disabled', true);
-                $.ajax({
-                    cache:false,
-                    type: "POST",
-                    url: '@(Url.Action("SaveDownloadUrl", "Download"))',
-                    data: { "downloadUrl": downloadUrl },
-                    success: function (data) {
-                         $('#pnlDownloadURLResult@(randomNumber)').fadeIn("slow").delay(1000).fadeOut("slow");
-                         //$("#@(clientId + "value") input").val(data.downloadId);
-                         $('#@(clientId).fileupload input.hidden').val(data.downloadId);
-                         $('#saveDownloadUrl@(randomNumber)').attr('disabled', false);
+<div id="@clientId" class="download-editor@(MinimalMode ? " minimal" : "")"
+	 data-download-id="@Model.GetValueOrDefault()"
+	 data-use-url="@(initiallyShowUrlPanel ? "true" : "false")"
+	 data-upload-url="@Url.Action("AsyncUpload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName })"
+	 data-delete-url="@Url.Action("DeleteDownload", "Download", new { minimalMode = MinimalMode, fieldName = FieldName })">
 
-                    },
-                    error:function (xhr, ajaxOptions, thrownError){
-                        alert('Failed to save download object.')
-                        $('#saveDownloadUrl@(randomNumber)').attr('disabled', false);
-                    }  
-                });
-            });
+	<input type="hidden" id="@FieldName.SanitizeHtmlId()" name="@FieldName" value="@Model" class="hidden" />
 
-        toggleDownloadRecordType@(randomNumber)();
-    });
+	<!-- Type Chooser Dropdown -->
+	@if (!MinimalMode)
+	{
+		<div class="btn-group panel-switcher pull-left" title='@T("Common.FileUploader.Upload")'>
+			<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+				<i class="fa fa-@(initiallyShowUrlPanel ? "globe": "upload") panel-switcher-icon"></i>
+				<span class="caret"></span>
+			</a>
+			<ul class="dropdown-menu">
+				<li @Html.Attr("class", "disabled", !initiallyShowUrlPanel)><a href="#" class="toggle-file">@T("Common.FileUploader.Upload")</a></li>
+				<li @Html.Attr("class", "disabled", initiallyShowUrlPanel)><a href="#" class="toggle-url">@T("Common.FileUploader.EnterUrl")</a></li>
+				@if (download != null)
+				{
+					<li class="divider"></li>
+					<li><a href="#" class="remove"><i class="fa fa-trash-o"></i>&nbsp;@T("Common.Remove")</a></li>
+				}
+			</ul>
+		</div>
+	}
+	else if (hasFile)
+	{
+		<a href="#" class="btn btn-danger remove pull-left" title='@T("Common.Remove")' style="display: inline-block">
+			<i class="fa fa-trash-o"></i>
+		</a>
+	}
 
-    function toggleDownloadRecordType@(randomNumber)() {
-        if ($('#cbUseDownloadURL@(randomNumber)').is(':checked')) {
-                $('#pnlDownloadURL@(randomNumber)').show();
-                $('#pnlDownloadFile@(randomNumber)').hide();
-            }
-            else {
-                $('#pnlDownloadURL@(randomNumber)').hide();
-                $('#pnlDownloadFile@(randomNumber)').show();
-            }
-        }
+	<!-- Main Panel -->
+	<div style="position: relative; margin-left: @(!MinimalMode || hasFile ? "60px" : "0")">
 
-</script>
-<div style="font-weight: bold; margin-bottom: 3px">@(download != null ? download.Filename : "")</div>
+		<!-- FileUpload Panel  -->
+		<div class="panel-upload fileupload" style="display: @(initiallyShowUrlPanel ? "none": "block")">
 
-<div class="well well-small">
-<table class="adminContent">
-        <colgroup>
-            <col width="100px">
-            <col width="*">
-        </colgroup>
-        <tr>
-            <td class="adminTitle">
-				<label for="cbUseDownloadURL@(randomNumber)">@T("Admin.Download.UseDownloadURL"):</label>
-            </td>
-            <td class="adminData">
-                <input type="checkbox" name="cbUseDownloadURL@(randomNumber)" id="cbUseDownloadURL@(randomNumber)" 
-                @if (download != null && download.UseDownloadUrl)
-                {
-                    <text>checked="checked"</text>
-                }
-                />
-            </td>
-        </tr>
-        <tr id="pnlDownloadURL@(randomNumber)">
-            <td class="adminTitle">
-                @T("Admin.Download.DownloadURL"):
-            </td>
-            <td class="adminData">
-                <input type="text" name="downloadurl@(randomNumber)" id="downloadurl@(randomNumber)"
-                @if (download != null && !String.IsNullOrEmpty(download.DownloadUrl))
-                {
-                    <text>value="@(download.DownloadUrl)"</text>
-                }
-                />
-                <button type="button" name="saveDownloadUrl@(randomNumber)" id="saveDownloadUrl@(randomNumber)" class="btn"><i class="fa fa-check"></i>&nbsp;@T("Admin.Download.SaveDownloadURL")</button>
-                <div id="pnlDownloadURLResult@(randomNumber)" style="display:none;">@T("Admin.Download.DownloadURLSaved")</div>
-            </td>
-        </tr>
-        <tr id="pnlDownloadFile@(randomNumber)">
-            <td class="adminTitle">
-                @T("Admin.Download.UploadFile"):
-            </td>
-            <td class="adminData">
-                <div>
+			@if (hasFile)
+			{
+				<a href="@downloadUrl" class="filename" title="@download.Filename">
+					@download.Filename@download.Extension
+				</a>
+			}
 
-                    <div id="@clientId" class="fileupload">
-    
-                        @Html.HiddenFor(x => x, new { @class = "hidden"} )
+			<span class="btn fileinput-button btn-@(hasFile ? "default" : "primary")" @Html.Attr("title", T("Common.Replace"), hasFile)>
+				@if (hasFile)
+				{
+					<i class="fa fa-upload"></i>
+				}
+				else
+				{
+					<span>@T("Common.Fileuploader.Upload")</span>
+				}
+				<input type="file" name="file" />
+			</span>
 
-                        <button class="btn remove" @Html.Attr("style", "display:none", download == null)>
-                            <i class="fa fa-trash-o"></i>
-                            @T("Admin.Download.RemoveDownload")
-                        </button>
+			<button class="btn btn-warning cancel">
+				<i class="fa fa-times"></i>
+				<span>@T("Common.Fileuploader.Cancel")</span>
+			</button>
 
-                        <span class="btn btn-primary fileinput-button">
-                            <i class="fa fa-upload"></i>
-                            <span>@T("Common.Fileuploader.Upload")</span>
-                            <input id="fileupload-@randomNumber" type="file" name="file" />
-                        </span>
+			<!-- The global progress information -->
+			<div class="span5 fileupload-progress fade" style="vertical-align: top !important; margin-left: 10px">
+				<!-- The global progress bar -->
+				<div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="height: 12px; margin-bottom: 2px;">
+					<div class="bar" style="width:0%;"></div>
+				</div>
+				<!-- The extended global progress information -->
+				<div class="progress-extended">&nbsp;</div>
+			</div>
+		</div>
 
-                        <button class="btn btn-warning cancel">
-                            <i class="fa fa-times"></i>
-                            <span>@T("Common.Fileuploader.Cancel")</span>
-                        </button>
+		<!-- URL Panel -->
+		@if (!MinimalMode)
+		{
+			<div class="panel-url" style="display: @(initiallyShowUrlPanel ? "block": "none")">
+				<div class="input-append" style="display: inline-block; vertical-align: top">
+					@{ var value = download != null ? download.DownloadUrl : ""; }
+					<input type="text" class="download-url-value" value='@value' data-value='@value' style="width: 396px" />
+					<a href="@Url.Action("SaveDownloadUrl", "Download", new { minimalMode = MinimalMode, fieldName = FieldName })" title='@T("Common.Save")' class="btn btn-primary save-download-url" disabled="disabled">
+						<i class="fa fa-fw fa-check"></i>
+					</a>
+				</div>
+			</div>
+		}
 
-                        <!-- The global progress information -->
-                        <div class="span5 fileupload-progress fade">
-                            <!-- The global progress bar -->
-                            <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                                <div class="bar" style="width:0%;"></div>
-                            </div>
-                            <!-- The extended global progress information -->
-                            <div class="progress-extended">&nbsp;</div>
-                        </div>
-
-                    </div>
-
-                    <script type="text/javascript">
-                    $(function () {
-                        $(function () {
-
-                            var el = $('#@clientId'),
-                                elHidden = el.find('.hidden'),
-                                elRemove = el.find('.remove');
-
-                            $('#@clientId').fileupload({
-                                url: '@(Url.Content("~/Admin/Download/AsyncUpload"))',
-                                dataType: 'json',
-
-                                done: function (e, data) {
-                                    var result = data.result;
-                                    if (result.success) {
-                                        $('#@(clientId + "downloadurl")').html('<a href="' + result.downloadUrl + '">@T("Admin.Download.DownloadUploadedFile"): <strong>' + result.fileName + '</strong></a>');
-                                        elHidden.val(result.downloadId);
-                                        elRemove.show();
-                                    }
-                                },
-
-                                error: function (jqXHR, textStatus, errorThrown) {
-                                    if (errorThrown === 'abort') {
-                                        //alert('File Upload has been canceled');
-                                    }
-                                }
-                            });
-
-                            elRemove.click(function (e) {
-                                $('#@(clientId + "downloadurl")').html("&nbsp;");
-                                elHidden.val(0);
-                                $(this).hide();
-                                e.preventDefault();
-                            });
-                                            
-
-                        });
-                    });
-                </script>
-                </div>
-                <div id="@(clientId + "downloadurl")">
-                    @if (download != null)
-                    {
-                        <a href="@(Url.Action("DownloadFile", "Download", new { downloadId = Model }))">@T("Admin.Download.DownloadUploadedFile"): <strong>@download.Filename@download.Extension</strong></a>
-                    }
-                </div>
-                <div>
-
-                </div>
-            </td>
-        </tr>
-</table>
+	</div>
 </div>
 
+<script>
+	$(function () {
+		$('#@clientId').downloadEditor();
+	});
+</script>

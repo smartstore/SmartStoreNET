@@ -29,5 +29,16 @@ namespace SmartStore.GoogleMerchantCenter.Domain
 		public DateTime UpdatedOnUtc { get; set; }
 
 		public bool Export { get; set; }
-    }
+
+		public int Multipack { get; set; }
+		public bool? IsBundle { get; set; }
+		public bool? IsAdult { get; set; }
+		public string EnergyEfficiencyClass { get; set; }
+
+		public string CustomLabel0 { get; set; }
+		public string CustomLabel1 { get; set; }
+		public string CustomLabel2 { get; set; }
+		public string CustomLabel3 { get; set; }
+		public string CustomLabel4 { get; set; }
+	}
 }

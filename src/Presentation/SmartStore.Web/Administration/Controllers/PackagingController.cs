@@ -11,7 +11,9 @@ using System.IO;
 using SmartStore.Services;
 using SmartStore.Services.Security;
 using System.Dynamic;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -30,8 +32,6 @@ namespace SmartStore.Admin.Controllers
 			this._themeRegistry = themeRegistry;
 		}
 
-		public Localizer T { get; set; }
-
 		[ChildActionOnly]
 		public ActionResult UploadPackage(bool isTheme)
 		{
@@ -45,17 +45,12 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult UploadPackage(FormCollection form, string returnUrl = "")
 		{
-			if (returnUrl.IsEmpty())
-			{
-				returnUrl = _services.WebHelper.GetUrlReferrer();
-			}
-
 			bool isTheme = false;
 
 			try
 			{
-				var file = Request.Files["packagefile"];
-				if (file != null && file.ContentLength > 0)
+				var file = Request.Files["packagefile"].ToPostedFileResult();
+				if (file != null)
 				{
 					var requiredPermission = (isTheme = PackagingUtils.IsTheme(file.FileName))
 						? StandardPermissionProvider.ManageThemes
@@ -66,10 +61,10 @@ namespace SmartStore.Admin.Controllers
 						return AccessDeniedView();
 					}
 
-					if (!Path.GetExtension(file.FileName).IsCaseInsensitiveEqual(".nupkg"))
+					if (!file.FileExtension.IsCaseInsensitiveEqual(".nupkg"))
 					{
 						NotifyError(T("Admin.Packaging.NotAPackage"));
-						return Redirect(returnUrl);
+						return RedirectToReferrer(returnUrl);
 					}
 
 					var location = CommonHelper.MapPath("~/App_Data");
@@ -81,7 +76,7 @@ namespace SmartStore.Admin.Controllers
 						_themeRegistry.Value.StopMonitoring();
 					}
 
-					var packageInfo = _packageManager.Install(file.InputStream, location, appPath);
+					var packageInfo = _packageManager.Install(file.Stream, location, appPath);
 
 					if (isTheme)
 					{
@@ -102,7 +97,7 @@ namespace SmartStore.Admin.Controllers
 				else
 				{
 					NotifyError(T("Admin.Common.UploadFile"));
-					return Redirect(returnUrl);
+					return RedirectToReferrer(returnUrl);
 				}
 
 				if (!isTheme)
@@ -110,12 +105,13 @@ namespace SmartStore.Admin.Controllers
 					_services.WebHelper.RestartAppDomain();
 				}
 				NotifySuccess(T("Admin.Packaging.InstallSuccess"));
-				return Redirect(returnUrl);
+				return RedirectToReferrer(returnUrl);
 			}
 			catch (Exception exc)
 			{
 				NotifyError(exc);
-				return Redirect(returnUrl);
+				Logger.Error(exc);
+				return RedirectToReferrer(returnUrl);
 			}
 		}
 

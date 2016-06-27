@@ -1,5 +1,5 @@
 ﻿using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {
@@ -19,6 +19,9 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Blog.NumberOfTags")]
         public int NumberOfTags { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Blog.MaxAgeInDays")]
+		public int MaxAgeInDays { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Blog.ShowHeaderRSSUrl")]
         public bool ShowHeaderRssUrl { get; set; }

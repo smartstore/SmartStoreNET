@@ -1,33 +1,28 @@
-﻿using Autofac;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.SessionState;
-using System.Web.Caching;
 using System.Web.Hosting;
 using System.Web.Mvc;
-using System.ComponentModel.Composition;
+using System.Web.SessionState;
+using Autofac;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
+using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
+using SmartStore.Data;
+using SmartStore.Data.Setup;
 using SmartStore.Services.Security;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Infrastructure.Installation;
 using SmartStore.Web.Models.Install;
-using SmartStore.Core.Async;
-using System.Data.Entity;
-using SmartStore.Data;
-using SmartStore.Data.Setup;
-using System.Configuration;
-using SmartStore.Utilities;
 
 namespace SmartStore.Web.Controllers
 {
@@ -146,7 +141,7 @@ namespace SmartStore.Web.Controllers
         protected string CreateConnectionString(
             bool trustedConnection,
             string serverName, string databaseName, 
-            string userName, string password, int timeout = 15 /* codehint: sm-edit (was 0) */)
+            string userName, string password, int timeout = 15)
         {
             var builder = new SqlConnectionStringBuilder();
             builder.IntegratedSecurity = trustedConnection;
@@ -160,7 +155,6 @@ namespace SmartStore.Web.Controllers
             builder.PersistSecurityInfo = false;
             //builder.MultipleActiveResultSets = true;
 
-            // codehint: sm-add
             builder.UserInstance = false;
             builder.Pooling = true;
             builder.MinPoolSize = 1;
@@ -183,8 +177,8 @@ namespace SmartStore.Web.Controllers
             if (DataSettings.DatabaseIsInstalled())
                 return RedirectToRoute("HomePage");
 
-            //set page timeout to 5 minutes
-            this.Server.ScriptTimeout = 300;
+            // set page timeout to 10 minutes
+            this.Server.ScriptTimeout = 600;
 
             var model = new InstallModel
             {
@@ -481,7 +475,7 @@ namespace SmartStore.Web.Controllers
 					{
 						return UpdateResult(x =>
 						{
-							x.Errors.Add(string.Format("The install language '{0}' is not registered", model.PrimaryLanguage));
+							x.Errors.Add(_locService.GetResource("Install.LanguageNotRegistered").FormatInvariant(model.PrimaryLanguage));
 							x.Completed = true;
 							x.Success = false;
 							x.RedirectUrl = null;
@@ -546,7 +540,7 @@ namespace SmartStore.Web.Controllers
 					var pluginsCount = plugins.Count;
 					var idx = 0;
 
-					using (var dbScope = new DbContextScope(autoDetectChanges: false)) {
+					using (var dbScope = new DbContextScope(autoDetectChanges: false, hooksEnabled: false)) {
 						foreach (var plugin in plugins)
 						{
 							try

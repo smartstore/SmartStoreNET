@@ -177,7 +177,7 @@ namespace SmartStore.Services.Tests.Catalog
 
             var cacheManager = new NullCache();
 
-            _productAttributeService = new ProductAttributeService(cacheManager,
+            _productAttributeService = new ProductAttributeService(NullRequestCache.Instance,
                 _productAttributeRepo,
                 _productVariantAttributeRepo,
                 _productVariantAttributeCombinationRepo,
@@ -185,8 +185,8 @@ namespace SmartStore.Services.Tests.Catalog
 				_productBundleItemAttributeFilter,
                 _eventPublisher,
                 _pictureService);
-
-            _productAttributeParser = new ProductAttributeParser(_productAttributeService);
+			
+            _productAttributeParser = new ProductAttributeParser(_productAttributeService, new MemoryRepository<ProductVariantAttributeCombination>(), NullRequestCache.Instance);
 
 
 

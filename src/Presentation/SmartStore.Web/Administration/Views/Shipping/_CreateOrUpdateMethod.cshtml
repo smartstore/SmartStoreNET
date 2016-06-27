@@ -1,72 +1,130 @@
 ﻿@model ShippingMethodModel
 @using Telerik.Web.Mvc.UI;
+
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
-@(Html.LocalizedEditor<ShippingMethodModel, ShippingMethodLocalizedModel>("shipping-method-localized",
-                @<table class="adminContent">
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Locales[item].Name)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => Model.Locales[item].Name)
-                            @Html.ValidationMessageFor(model => model.Locales[item].Name)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Locales[item].Description)
-                        </td>
-                        <td class="adminData">
-                            @Html.TextAreaFor(model => model.Locales[item].Description)
-                            @Html.ValidationMessageFor(model => model.Locales[item].Description)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            @Html.HiddenFor(model => model.Locales[item].LanguageId)
-                        </td>
-                    </tr>
-                </table>
-                ,
-                @<table class="adminContent">
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Name)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => model.Name)
-                            @Html.ValidationMessageFor(model => model.Name)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Description)
-                        </td>
-                        <td class="adminData">
-                            @Html.TextAreaFor(model => model.Description)
-                            @Html.ValidationMessageFor(model => model.Description)
-                        </td>
-                    </tr>
-                </table>
-            ))
-<table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DisplayOrder)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.DisplayOrder)
-            @Html.ValidationMessageFor(model => model.DisplayOrder)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.IgnoreCharges)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.IgnoreCharges)
-            @Html.ValidationMessageFor(model => model.IgnoreCharges)
-        </td>
-    </tr>
-</table>
+
+@Html.SmartStore().TabStrip().Name("shipping-method-edit").Items(x =>
+{
+	x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
+	x.Add().Text(T("Admin.Common.Restrictions").Text).Content(TabRestrictions());
+
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "shipping-method-edit", this.Html, this.Model));
+})
+
+@helper TabGeneral()
+{
+	@(Html.LocalizedEditor<ShippingMethodModel, ShippingMethodLocalizedModel>("shipping-method-localized",
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].Name)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.Locales[item].Name)
+				@Html.ValidationMessageFor(model => model.Locales[item].Name)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].Description)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Locales[item].Description, Html.RichEditorFlavor())
+				@Html.ValidationMessageFor(model => model.Locales[item].Description)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+			</td>
+		</tr>
+	</table>
+	,
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Name)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Name)
+				@Html.ValidationMessageFor(model => model.Name)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Description)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Description, Html.RichEditorFlavor())
+				@Html.ValidationMessageFor(model => model.Description)
+			</td>
+		</tr>
+	</table>
+	))
+
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DisplayOrder)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.DisplayOrder)
+				@Html.ValidationMessageFor(model => model.DisplayOrder)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.IgnoreCharges)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.IgnoreCharges)
+				@Html.ValidationMessageFor(model => model.IgnoreCharges)
+			</td>
+		</tr>
+	</table>
+}
+
+@helper TabRestrictions()
+{
+	if (Model.Id == 0)
+	{
+		<div class="alert alert-warning">
+			@T("Admin.Configuration.Restriction.SaveBeforeEdit")
+		</div>
+	}
+	else if (Model.FilterConfigurationUrls.Count == 0)
+	{
+		<div class="alert alert-info">
+			@T("Admin.Configuration.Shipping.Methods.RestrictionNote")
+		</div>
+	}
+
+	<div>
+		<div id="FilterOutShippingMethodContainer"></div>
+	</div>
+}
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		var configUrls = [@Html.Raw(string.Join(", ", Model.FilterConfigurationUrls))],
+			i = 0;
+
+		if (configUrls.length > 0) {
+			getFilterConfiguration(configUrls[0], $('#FilterOutShippingMethodContainer'));
+		}
+
+		function getFilterConfiguration(url, container) {
+			$.ajax({
+				url: url,
+				cache: false,
+				dataType: 'html',
+				success: function (html) {
+					container.append(html);
+					if (++i < configUrls.length)
+						getFilterConfiguration(configUrls[i], container);
+				}
+			});
+		}
+    });
+</script>

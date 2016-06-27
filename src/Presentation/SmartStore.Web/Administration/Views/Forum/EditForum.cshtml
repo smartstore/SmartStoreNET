@@ -1,6 +1,5 @@
 ﻿@model ForumModel
 @{
-    //page title
     ViewBag.Title = T("Admin.ContentManagement.Forums.Forum.EditForum").Text;
 }
 @using (Html.BeginForm())
@@ -11,9 +10,13 @@
             @T("Admin.ContentManagement.Forums.Forum.EditForum") - @Model.Name  @Html.ActionLink(String.Format("({0})", T("Admin.ContentManagement.Forums.Forum.BackToList")), "List")
         </div>
         <div class="options">
+			@Html.Widget("admin_button_toolbar_before")
+
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
             <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
             <button type="submit" name="forum-delete" value="forum-delete" id="forum-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
+
+			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
     @Html.Partial("_CreateOrUpdateForum", Model)

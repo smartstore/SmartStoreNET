@@ -6,7 +6,6 @@
 @{
     Layout = "~/Views/Shared/_ColumnsOne.cshtml";
 
-    //title
     Html.AddTitleParts(T("PageTitle.OrderDetails").Text);
 }
 
@@ -20,7 +19,7 @@
 			</td>
 		}
 		<td>
-			<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
+			<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 			@if (!String.IsNullOrEmpty(item.AttributeInfo))
 			{
 				<div class="attributes">
@@ -58,7 +57,7 @@
 							<div class="bundle-item-name">
 								@if (item.VisibleIndividually)
 								{
-									<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="@T("Products.Details")">@item.ProductName</a>
+									<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 								}
 								else
 								{
@@ -533,8 +532,9 @@
                             {
                             <tr>
                                 <td class="cart-total-left">
-                                    <strong>
-                                        @string.Format(T("Order.GiftCardInfo").Text, gc.CouponCode):</strong>
+                                    <strong>@string.Format(T("Order.GiftCardInfo").Text, gc.CouponCode):</strong>
+									<br />
+									<span class="nobr">@string.Format(T("ShoppingCart.Totals.GiftCardInfo.Remaining").Text, gc.Remaining)</span>
                                 </td>
                                 <td class="cart-total-right">
                                     <span class="nobr">
@@ -542,8 +542,8 @@
                                     </span>
                                 </td>
                             </tr>
-                            }
-                        }
+							}
+						}
                         @if (Model.RedeemedRewardPoints > 0)
                         {
                             <tr>

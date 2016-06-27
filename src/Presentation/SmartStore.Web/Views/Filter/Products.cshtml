@@ -65,14 +65,14 @@
 }
 else
 {
-	@FilterGroup(Model.Context.Criteria.Where(c => c.Entity == FilterService.ShortcutPrice), T("Products.Price"), true)
+	@FilterGroup(Model.Context.Criteria.Where(c => c.Entity.IsCaseInsensitiveEqual(FilterService.ShortcutPrice)), T("Products.Price"), true)
 
-	@FilterGroup(Model.Context.Criteria.Where(c => c.Entity == "Manufacturer"), T("Products.Manufacturer"), true)
+	@FilterGroup(Model.Context.Criteria.Where(c => c.Entity.IsCaseInsensitiveEqual("Manufacturer")), T("Products.Manufacturer"), true)
 
-	foreach (var grp in Model.Context.Criteria.Where(c => c.Entity == FilterService.ShortcutSpecAttribute).GroupBy(c => c.Name).OrderBy(g => g.Key))
+	foreach (var grp in Model.Context.Criteria.Where(c => c.Entity.IsCaseInsensitiveEqual(FilterService.ShortcutSpecAttribute)).GroupBy(c => c.Name))
 	{
 		var first = grp.FirstOrDefault();
-		bool isActive = (Model.Context.Criteria.FirstOrDefault(c => c.Entity == FilterService.ShortcutSpecAttribute && c.Name == grp.Key && !c.IsInactive) != null);
+		bool isActive = (Model.Context.Criteria.FirstOrDefault(c => c.Entity.IsCaseInsensitiveEqual(FilterService.ShortcutSpecAttribute) && c.Name.IsCaseInsensitiveEqual(grp.Key) && !c.IsInactive) != null);
 		var criterias = grp.Where(c => c.IsInactive != isActive);
 		var caption = (first != null && first.NameLocalized.HasValue() ? first.NameLocalized : grp.Key);
 

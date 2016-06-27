@@ -60,8 +60,7 @@ namespace SmartStore.Services.Security
 			{
 				if (!_hasActiveAcl.HasValue)
 				{
-					var query = _aclRecordRepository.Where(x => !x.IsIdle);
-					_hasActiveAcl = query.Any();
+					_hasActiveAcl = _aclRecordRepository.TableUntracked.Any(x => !x.IsIdle);
 				}
 				return _hasActiveAcl.Value;
 			}
@@ -159,7 +158,7 @@ namespace SmartStore.Services.Security
             int entityId = entity.Id;
             string entityName = typeof(T).Name;
 
-            var aclRecord = new AclRecord()
+            var aclRecord = new AclRecord
             {
                 EntityId = entityId,
                 EntityName = entityName,
@@ -180,7 +179,6 @@ namespace SmartStore.Services.Security
 
             _aclRecordRepository.Update(aclRecord);
 
-            //cache
             _cacheManager.RemoveByPattern(ACLRECORD_PATTERN_KEY);
         }
 

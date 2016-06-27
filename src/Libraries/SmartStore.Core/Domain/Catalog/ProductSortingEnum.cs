@@ -6,9 +6,13 @@
     public enum ProductSortingEnum
     {
         /// <summary>
+        /// Initial state
+        /// </summary>
+        Initial = 0,
+        /// <summary>
         /// Position (display order)
         /// </summary>
-        Position = 0,
+        Position = 1,
         /// <summary>
         /// Name: A to Z
         /// </summary>
@@ -32,6 +36,6 @@
         /// <summary>
         /// Product creation date
         /// </summary>
-        CreatedOnAsc = 16 // codehint: sm-add
+        CreatedOnAsc = 16
     }
 }

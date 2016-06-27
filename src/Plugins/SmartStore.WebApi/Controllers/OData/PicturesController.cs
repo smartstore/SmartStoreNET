@@ -37,9 +37,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		[WebApiQueryable]
 		public IQueryable<ProductPicture> GetProductPictures(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductPicture>>(key, x => x.ProductPictures);
-
-			return entity.ProductPictures.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductPictures);
 		}
 	}
 }

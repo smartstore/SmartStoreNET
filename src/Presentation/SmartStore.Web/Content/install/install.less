@@ -11,17 +11,6 @@
 /* Fonts (Chrome DirectWrite & FF fix)
 -------------------------------------------------------------- */
 
-@font-face {
-    font-family: "Segoe UI Light";
-    font-weight: 100;
-    src: local("Segoe UI Light"), url("../fonts/segoeui-semilight.eot") format('embedded-opentype'), url("../fonts/segoeui-semilight.woff") format('woff'), url("../fonts/segoeui-semilight.ttf") format('truetype');
-}
-@font-face {
-    font-family: "Segoe UI Semibold";
-    font-weight: 100;
-    src: local("Segoe UI Semibold"), url("../fonts/segoeui-semibold.eot") format('embedded-opentype'), url("../fonts/segoeui-semibold.woff") format('woff'), url("../fonts/segoeui-semibold.ttf") format('truetype');
-}
-
 // CSS Reset
 @import "~/Content/bootstrap/reset.less";
 
@@ -66,6 +55,7 @@
 @import "~/Content/bootstrap/progress-bars.less";
 
 // (MC) extra 3rd party or own components
+@import "~/Content/bootstrap/custom/spinner.less";
 @import "~/Content/bootstrap/custom/throbber.less";
 
 // (MC) extra tweaks and corrections
@@ -77,63 +67,132 @@
 
 /* INSTALL STYLES
 --------------------------------------------------------*/
-@installBaseColor: #29b6d9;
 
 body {
-    background: @installBaseColor url('images/bg.png') 50% 0% no-repeat;
-    background-attachment: fixed;
+    background: #f5f5f5;
+}
+
+input:not([type=checkbox]):not([type=radio]), 
+select {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 34px;
+    box-shadow: none;
+    border-color: #d2d2d2;
+}
+
+textarea {
+    height: initial;
+    min-height: 34px;
+    box-shadow: none;
+    border-color: #d2d2d2;
+}
+
+.bg-top {
+    position: fixed; 
+    z-index: 0;
+    background: #3F51B5; 
+    width: 100%; 
+    height: 140px; 
+}
+
+.dropdown-menu li > a {
+    padding: 8px 20px 8px 12px;
+    > .fa { margin-right: 4px; }
+}
+
+.help-block {
+    color: #a1a1a1;
+    margin-top: 8px;
+    font-size: 12px;
 }
 
 .install-head {
-	padding: 8px 0;
-	line-height: 40px;
+    position: relative;
+    z-index: 1;
+    margin: 20px 0;
 	vertical-align: middle;
 }
 
 .install-panel {
-	margin-top: 4px;
+    position: relative;
+    z-index: 1;
+	margin-top: 20px;
 	margin-bottom: 20px;
 	padding: 30px;
+    padding-bottom: 0;
     background-color: #fff;
-    background-color: rgba(255,255,255, .5);
-    .box-shadow(~'0 0 15px rgba(0,0,0, .15), 0 10px 6px -10px rgba(0,0,0, .4)');
-    .border-radius(4px);
+    .box-shadow(~'0 1px 1px 0 rgba(0,0,0,.06),0 2px 5px 0 rgba(0,0,0,.2)');
+    .border-radius(3px);
+}
+
+.buttonbar {
+    text-align: left;
+    background: #fafafa;
+    padding: 20px 30px;
+    margin-left: -30px;
+    margin-right: -30px;
+    border-radius: 0 0 3px 3px;
+}
+
+.btn-install {
+    font-size: 22px;
+    line-height: 32px;
+	font-weight: 600;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
 }
 
 .install-title {
 	margin: 0;
-	color: #fff;
-	color: lighten(@installBaseColor, 40%);
-	text-shadow: 0 1px 0 darken(@installBaseColor, 12%);
 	font-family: @pageTitleFontFamily;
 	font-weight: @pageTitleFontWeight;
+    font-size: 22px;
+    color: #fff;
+    padding-left: 8px;
+    vertical-align: bottom;
 }
 
-.install-content {
-	//padding: 0 30px;
+.install-intro {
+    font-size: 16px;
+    line-height: 22px;
+    color: #818181;
+    margin-bottom: 30px;
+}
+
+.install-content fieldset {
+    margin-bottom: 30px;
 }
 
 .install-content legend {
-	font-family: @headingsFontFamily;
-	font-weight: @headingsFontWeight;
+    font-weight: 600;
 	font-size: 22px;
-	border-bottom-color: lighten(@installBaseColor, 12%);
 	border-bottom-color: rgba(0,0,0, 0.1);
 	color: @headingsColor;
 	margin-bottom: 0;
 	padding-bottom: 8px;
+
+    > .fa {
+        color: #717171;
+        margin-right: 4px;
+    }
 }
 
 .install-icon {
-	font-size: 32px;
-	line-height: 32px;
-	vertical-align: bottom;
-	margin-right: 4px;
-	display: none;
+    margin-right: 10px;
+}
+
+.install-icon .fa-circle {
+    color: #f90;
+}
+.install-icon .fa-inverse {
+    font-size: 0.7em;
 }
 
 .form-horizontal .control-label {
 	width: 240px;
+    text-align: left;
 }
 
 .form-horizontal .controls {
@@ -145,12 +204,65 @@ label.control-label {
 }
 
 .field-validation-error {
-	color: red;
+    display: inline-block;
+	color: @red;
 	text-shadow: none !important;
+    padding-top: 4px;
 }
 
 label.control-label {
 	font-weight: normal;
+}
+
+
+#navbar-tools {
+	
+	.active-tool() {
+		.box-shadow(~'inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05)');	
+	}
+	
+	position: absolute;
+    z-index: 100;
+	right: 0;
+	top: 15px;
+	margin: 0;
+	
+	.btn,
+	.btn-group {
+		margin-top: 0;
+	}
+
+	.open .navbar-tool {
+		.active-tool();
+	}
+
+	.navbar-tool {
+		color: rgba(255,255,255, .87);
+		border: none;
+		background: transparent;
+		.box-shadow(none);
+		padding: 8px 6px;
+		.transition(color 0.1s linear);
+		
+		&:hover {
+			color: #fff;
+		}
+		
+		&:active {
+			.active-tool();
+		}
+
+		> .fa {
+			font-size: 20px;
+		}
+
+		span {
+			display: inline-block;
+			margin-left: 3px;
+			vertical-align: top;
+		}
+	
+	}
 }
 
 

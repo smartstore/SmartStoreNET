@@ -4,10 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web.Mvc;
-using System.Web.Routing;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
-using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
@@ -112,7 +110,7 @@ namespace SmartStore.PayPal.Controllers
 
             model.TransactModeValues = TransactModeValues(settings.TransactMode);
 
-			model.AvailableSecurityProtocols = GetSecurityProtocols()
+			model.AvailableSecurityProtocols = PayPalService.GetSecurityProtocols()
 				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
 				.ToList();
 

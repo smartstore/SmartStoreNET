@@ -11,13 +11,6 @@
 #paypal-checkout #paypal-express-button {
     cursor: pointer;
 }
-.configure-paypal-direct .logo,
-.configure-paypal-express .logo,
-.configure-paypal-standard .logo 
-.paypal-standard-public .logo{
-    width: 200px; 
-    height: 53px;
-}
 .paypal-standard-public {
     margin-bottom: 10px;
 }

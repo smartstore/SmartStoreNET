@@ -19,6 +19,7 @@ namespace SmartStore.Web.Framework.Settings
 		}
 
 		public static string ViewDataKey { get { return "StoreDependingSettingData"; } }
+
 		public StoreDependingSettingData Data
 		{
 			get
@@ -38,16 +39,19 @@ namespace SmartStore.Web.Framework.Settings
 			}
 			return false;
 		}
+
 		public bool IsOverrideChecked(object settings, string name, FormCollection form)
 		{
 			var key = settings.GetType().Name + "." + name;
 			return IsOverrideChecked(key, form);
 		}
+
 		public void AddOverrideKey(object settings, string name)
 		{
 			var key = settings.GetType().Name + "." + name;
 			Data.OverrideSettingKeys.Add(key);
 		}
+
 		public void CreateViewDataObject(int activeStoreScopeConfiguration, string rootSettingClass = null)
 		{
 			_viewData[ViewDataKey] = new StoreDependingSettingData()
@@ -57,112 +61,60 @@ namespace SmartStore.Web.Framework.Settings
 			};
 		}
 
-		public void GetOverrideKeys(object settings, object model, int storeId, ISettingService settingService, bool isRootModel = true)
-		{
-			if (storeId <= 0)
-				return;		// single store mode -> there are no overrides
+        public void GetOverrideKeys(object settings, object model, int storeId, ISettingService settingService, bool isRootModel = true, ILocalizedModelLocal localized = null, int? index = null)
+        {
+            if (storeId <= 0)
+                return;		// single store mode -> there are no overrides
 
-			var data = Data;
-			if (data == null)
-				data = new StoreDependingSettingData();
+            var data = Data;
+            if (data == null)
+                data = new StoreDependingSettingData();
 
-			var settingName = settings.GetType().Name;
-			var properties = settings.GetType().GetProperties();
+            var settingName = settings.GetType().Name;
+            var properties = settings.GetType().GetProperties();
+            var localizedEntityService = EngineContext.Current.Resolve<ILocalizedEntityService>();
 
             var modelType = model.GetType();
 
-			foreach (var prop in properties)
-			{
-				var name = prop.Name;
+            foreach (var prop in properties)
+            {
+                var name = prop.Name;
                 var modelProperty = modelType.GetProperty(name);
 
-				if (modelProperty == null)
-					continue;	// setting is not configurable or missing or whatever... however we don't need the override info
+                if (modelProperty == null)
+                    continue;	// setting is not configurable or missing or whatever... however we don't need the override info
 
-				var key = settingName + "." + name;
-				var setting = settingService.GetSettingByKey<string>(key, storeId: storeId);
+                var key = String.Empty;
+                var setting = String.Empty;
 
-				if (setting != null)
-					data.OverrideSettingKeys.Add(key);
-			}
+                if (localized == null)
+                {
+                    key = settingName + "." + name;
+                    setting = settingService.GetSettingByKey<string>(key, storeId: storeId);
+                }
+                else
+                {
+                    key = "Locales[" + index.ToString() + "]." + name;
+                    setting = localizedEntityService.GetLocalizedValue(localized.LanguageId, 0, settingName, name);
+                }
 
-			if (isRootModel)
-			{
-				data.ActiveStoreScopeConfiguration = storeId;
-				data.RootSettingClass = settingName;
+                if (!String.IsNullOrEmpty(setting))
+                    data.OverrideSettingKeys.Add(key);
+            }
 
-				_viewData[ViewDataKey] = data;
-			}
-		}
+            if (isRootModel)
+            {
+                data.ActiveStoreScopeConfiguration = storeId;
+                data.RootSettingClass = settingName;
 
-		// DRY?
-        public void GetOverrideKeysLocalized(object settings, object model, int storeId, ISettingService settingService, bool isRootModel = true, ILocalizedModelLocal localized = null, int? index = null)
-		{
-			if (storeId <= 0)
-				return;		// single store mode -> there are no overrides
+                _viewData[ViewDataKey] = data;
+            }
+        }
 
-			var data = Data;
-			if (data == null)
-				data = new StoreDependingSettingData();
-
-			var settingName = settings.GetType().Name;
-            var properties = localized.GetType().GetProperties();
-			var localizedEntityService = EngineContext.Current.Resolve<ILocalizedEntityService>();
-
-			var modelType = model.GetType();
-
-			foreach (var prop in properties)
-			{
-				var name = prop.Name;
-                var modelProperty = modelType.GetProperty(name);
-
-				if (modelProperty == null)
-					continue;	// setting is not configurable or missing or whatever... however we don't need the override info
-
-                var key = "Locales[" + index.ToString() + "]." + name;
-
-                var resultStr = localizedEntityService.GetLocalizedValue(localized.LanguageId, 0, settingName, name);
-
-                if (!String.IsNullOrEmpty(resultStr))
-					data.OverrideSettingKeys.Add(key);
-			}
-
-			if (isRootModel)
-			{
-				data.ActiveStoreScopeConfiguration = storeId;
-				data.RootSettingClass = settingName;
-
-				_viewData[ViewDataKey] = data;
-			}
-		}
-
-		public void UpdateSettings(object settings, FormCollection form, int storeId, ISettingService settingService)
-		{
-			var settingName = settings.GetType().Name;
-			var properties = FastProperty.GetProperties(settings.GetType()).Values;
-            
-			foreach (var prop in properties)
-			{
-				var name = prop.Name;
-				var key = settingName + "." + name;
-
-				if (storeId == 0 || IsOverrideChecked(key, form))
-				{
-					dynamic value = prop.GetValue(settings);
-					settingService.SetSetting(key, value == null ? "" : value, storeId, false);
-				}
-				else if (storeId > 0)
-				{
-					settingService.DeleteSetting(key, storeId);
-				}
-			}
-		}
-
-		// DRY?
-		public void UpdateLocalizedSettings(object settings, FormCollection form, int storeId, ISettingService settingService, ILocalizedModelLocal localized)
+        public void UpdateSettings(object settings, FormCollection form, int storeId, ISettingService settingService, ILocalizedModelLocal localized = null)
         {
             var settingName = settings.GetType().Name;
-            var properties = FastProperty.GetProperties(localized.GetType()).Values;
+            var properties = FastProperty.GetProperties(localized == null ? settings.GetType() : localized.GetType()).Values;
 
             foreach (var prop in properties)
             {
@@ -171,7 +123,7 @@ namespace SmartStore.Web.Framework.Settings
 
                 if (storeId == 0 || IsOverrideChecked(key, form))
                 {
-                    dynamic value = prop.GetValue(settings);
+                    dynamic value = prop.GetValue(localized == null ? settings : localized);
                     settingService.SetSetting(key, value == null ? "" : value, storeId, false);
                 }
                 else if (storeId > 0)

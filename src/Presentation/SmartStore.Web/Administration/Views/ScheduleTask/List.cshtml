@@ -12,13 +12,13 @@
     </div>
 </div>
 
-<table class="table" id="schedule-tasks-grid">
+<table class="table admin-table" id="schedule-tasks-grid">
 	<thead>
 		<tr>
 			<th>@T("Admin.System.ScheduleTasks.Name")</th>
 			<th>@T("Admin.System.ScheduleTasks.Enabled")</th>
 			<th>@T("Admin.System.ScheduleTasks.CronExpression")</th>
-			<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
+			<th style="min-width: 150px">@T("Admin.System.ScheduleTasks.LastStart")</th>
 			<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
 			<th>@T("Admin.Common.Actions")</th>
 		</tr>
@@ -39,13 +39,13 @@
 					}
 				</td>
 				<!-- LastStart -->
-				<td>
+				<td style="min-width: 300px">
 					<div class="last-run-info">
 						@Html.Partial("_LastRun", task)
 					</div>
 				</td>
 				<!-- NextRun -->
-				<td style="min-width: 300px">
+				<td style="min-width: 150px">
 					<div class="next-run-info">
 						@Html.Partial("_NextRun", task)
 					</div>

@@ -13,6 +13,11 @@ namespace SmartStore.Admin.Models.DataExchange
 	[Validator(typeof(ImportProfileValidator))]
 	public partial class ImportProfileModel : EntityModelBase
 	{
+		public ImportProfileModel()
+		{
+			ExtraData = new ExtraDataModel();
+		}
+
 		[SmartResourceDisplayName("Admin.DataExchange.Import.Name")]
 		public string Name { get; set; }
 
@@ -29,10 +34,10 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool Enabled { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.RecordsSkip")]
-		public int Skip { get; set; }
+		public int? Skip { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.RecordsTake")]
-		public int Take { get; set; }
+		public int? Take { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Import.UpdateOnly")]
 		public bool UpdateOnly { get; set; }
@@ -54,16 +59,22 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public bool LogFileExists { get; set; }
 		public string TempFileName { get; set; }
-		public string UnspecifiedString { get; set; }
-		public string AddNewString { get; set; }
-		public string DeleteString { get; set; }
-		public string IgnoreString { get; set; }
 
 		public CsvConfigurationModel CsvConfiguration { get; set; }
 
+		public ExtraDataModel ExtraData { get; set; }
+
 		public List<ColumnMappingItemModel> ColumnMappings { get; set; }
 		public List<ColumnMappingItemModel> AvailableSourceColumns { get; set; }
-		public List<SelectListItem> AvailableEntityProperties { get; set; }
+		public List<ColumnMappingItemModel> AvailableEntityProperties { get; set; }
+
+		public int MaxMappingLabelTextLength { get { return 42; } }
+
+		public class ExtraDataModel
+		{
+			[SmartResourceDisplayName("Admin.DataExchange.Import.NumberOfPictures")]
+			public int? NumberOfPictures { get; set; }
+		}
 	}
 
 
@@ -74,9 +85,11 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string Column { get; set; }
 		public string ColumnWithoutIndex { get; set; }
 		public string ColumnIndex { get; set; }
-		public string ColumnLocalized { get; set; }
 
 		public string Property { get; set; }
+		public string PropertyDescription { get; set; }
+
 		public string Default { get; set; }
+		public bool IsDefaultDisabled { get; set; }
 	}
 }

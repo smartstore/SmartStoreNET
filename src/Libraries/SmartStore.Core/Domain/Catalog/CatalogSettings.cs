@@ -42,6 +42,7 @@ namespace SmartStore.Core.Domain.Catalog
 			NumberOfBestsellersOnHomepage = 6;
             ShowManufacturersOnHomepage = true;
             ShowManufacturerPictures = false;
+			ShowManufacturerPicturesInProductDetail = true;
 			SearchPageProductsPerPage = 6;
 			ProductsAlsoPurchasedEnabled = true;
 			ProductsAlsoPurchasedNumber = 6;
@@ -306,6 +307,16 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether to show manufacturer pictures or names on home page
         /// </summary>
         public bool ShowManufacturerPictures { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to hide manufacturer pictures in product detail
+		/// </summary>
+		public bool ShowManufacturerPicturesInProductDetail { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to hide maufacturer default pictures
+		/// </summary>
+		public bool HideManufacturerDefaultPictures { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to hide category default pictures

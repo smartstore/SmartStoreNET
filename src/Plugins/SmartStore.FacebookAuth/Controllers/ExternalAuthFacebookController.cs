@@ -138,10 +138,10 @@ namespace SmartStore.FacebookAuth.Controllers
             if (result.Result != null)
 				return result.Result;
 
-            return HttpContext.Request.IsAuthenticated ?
-				new RedirectResult(!string.IsNullOrEmpty(returnUrl) ? returnUrl : "~/") :
+			return HttpContext.Request.IsAuthenticated ?
+				RedirectToReferrer(returnUrl, "~/") :
 				new RedirectResult(Url.LogOn(returnUrl));
-        }
+		}
 
 		public ActionResult Login(string returnUrl)
 		{

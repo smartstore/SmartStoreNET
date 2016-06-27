@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -8,15 +10,13 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.OData;
 using System.Web.Http.OData.Routing;
-using System.Data.Entity;
-using SmartStore.Core;
-using SmartStore.Core.Data;
-using SmartStore.Services.Directory;
-using SmartStore.Services.Localization;
-using System.Collections.Generic;
-using SmartStore.Services;
 using Autofac;
 using SmartStore.ComponentModel;
+using SmartStore.Core;
+using SmartStore.Core.Data;
+using SmartStore.Services;
+using SmartStore.Services.Directory;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.WebApi
 {
@@ -338,7 +338,20 @@ namespace SmartStore.Web.Framework.WebApi
 
 		public override HttpResponseMessage Post(TEntity entity)
 		{
-			return Request.CreateResponse(HttpStatusCode.OK, CreateEntity(entity));
+			var response = Request.CreateResponse(HttpStatusCode.OK, CreateEntity(entity));
+
+			try
+			{
+				var entityUrl = Url.ODataLink(
+					new EntitySetPathSegment(entity.GetType().Name.EnsureEndsWith("s")),
+					new KeyValuePathSegment(entity.Id.ToString())
+				);
+
+				response.Headers.Location = new Uri(entityUrl);
+			}
+			catch { }
+
+			return response;
 		}
 
 		protected override TEntity CreateEntity(TEntity entity)

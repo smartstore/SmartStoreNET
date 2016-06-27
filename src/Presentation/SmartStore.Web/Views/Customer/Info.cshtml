@@ -52,11 +52,6 @@
         {
             @Html.AntiForgeryToken()
 
-            if (!ViewData.ModelState.IsValid)
-            {
-                @Html.ValidationSummary(true)
-            }
-          
             <fieldset class="form-fields">
                 <legend>@T("Account.YourPersonalDetails")</legend>
 

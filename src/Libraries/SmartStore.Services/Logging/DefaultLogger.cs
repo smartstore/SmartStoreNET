@@ -119,9 +119,9 @@ namespace SmartStore.Services.Logging
             var query = _logRepository.Table;
             
             if (fromUtc.HasValue)
-                query = query.Where(l => fromUtc.Value <= l.CreatedOnUtc);
+                query = query.Where(l => fromUtc.Value <= l.CreatedOnUtc || fromUtc.Value <= l.UpdatedOnUtc);
             if (toUtc.HasValue)
-                query = query.Where(l => toUtc.Value >= l.CreatedOnUtc);
+                query = query.Where(l => toUtc.Value >= l.CreatedOnUtc || toUtc.Value >= l.UpdatedOnUtc);
             if (logLevel.HasValue)
             {
                 int logLevelId = (int)logLevel.Value;
@@ -129,7 +129,8 @@ namespace SmartStore.Services.Logging
             }
             if (!String.IsNullOrEmpty(message))
                 query = query.Where(l => l.ShortMessage.Contains(message) || l.FullMessage.Contains(message));
-            query = query.OrderByDescending(l => l.CreatedOnUtc);
+
+            query = query.OrderByDescending(l => l.UpdatedOnUtc).ThenByDescending(l => l.CreatedOnUtc);
 
 			if (minFrequency > 0)
 				query = query.Where(l => l.Frequency >= minFrequency);

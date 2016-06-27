@@ -1,17 +1,17 @@
-﻿@model CheckoutAttributeModel
-
-@using SmartStore.Core.Domain.Catalog;
+﻿@using SmartStore.Core.Domain.Catalog;
 @using Telerik.Web.Mvc.UI;
+@model CheckoutAttributeModel
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("checkoutattribute-edit").Items(x =>
 {
-    x.Add().Text(T("Admin.Catalog.Attributes.CheckoutAttributes.Info").Text).Content(TabInfo()).Selected(true);
-    x.Add().Text(T("Admin.Catalog.Attributes.CheckoutAttributes.Values").Text).Content(TabValues());
-    
-    //generate an event
-    EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "checkoutattribute-edit", this.Html, this.Model));
+	x.Add().Text(T("Admin.Catalog.Attributes.CheckoutAttributes.Info").Text).Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Catalog.Attributes.CheckoutAttributes.Values").Text).Content(TabValues());
+	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
+
+	//generate an event
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "checkoutattribute-edit", this.Html, this.Model));
 })
 
 @helper TabInfo()
@@ -151,85 +151,131 @@
 
 @helper TabValues()
 { 
-        if (Model.Id > 0)
-        {
-            /*TODO display the following warning if values are not supported by selected attribute control type
-             'Values are not required for this attribute control type'
-             */
-            <table class="adminContent">
-                <tr>
-                    <td>
-                        @(Html.Telerik().Grid<CheckoutAttributeValueModel>()
-                        .Name("checkoutattributevalues-grid")
-                            .DataKeys(x =>
-                            {
-                                x.Add(y => y.Id).RouteKey("valueId");
-                                x.Add(y => y.CheckoutAttributeId).RouteKey("checkoutAttributeId");
-                            })
-                            .Columns(columns =>
-                            {
-								columns.Bound(x => x.Name);
-                                columns.Bound(x => x.PriceAdjustment)
-									.Format("{0:0.00}")
-									.RightAlign()
-									.Width(200);
-                                columns.Bound(x => x.WeightAdjustment)
-									.Format("{0:0.00}")
-									.Centered()
-									.Width(200);
-                                columns.Bound(x => x.IsPreSelected)
-                                    .Width(140)
-                                    .Template(item => @Html.SymbolForBool(item.IsPreSelected))
-                                    .ClientTemplate(@Html.SymbolForBool("IsPreSelected"))
-                                    .Centered();
-                                columns.Bound(x => x.DisplayOrder)
-                                    .Width(140)
-                                    .Centered();
-                                columns.Bound(x => x.Id)
-                                    .Width(120)
-                                    .Centered()
-                                    .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/CheckoutAttribute/ValueEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=checkoutattribute-form', 800, 300, true); return false;\" class='t-button' />")
-                                    .Title(T("Admin.Common.Edit").Text);
-                                columns.Command(commands =>
-                                {
-                                    commands.Delete().Localize(T);
-                                })
+    if (Model.Id > 0)
+    {
+        /*TODO display the following warning if values are not supported by selected attribute control type
+            'Values are not required for this attribute control type'
+            */
+        <table class="adminContent">
+            <tr>
+                <td>
+                    @(Html.Telerik().Grid<CheckoutAttributeValueModel>()
+                    .Name("checkoutattributevalues-grid")
+                        .DataKeys(x =>
+                        {
+                            x.Add(y => y.Id).RouteKey("valueId");
+                            x.Add(y => y.CheckoutAttributeId).RouteKey("checkoutAttributeId");
+                        })
+                        .Columns(columns =>
+                        {
+							columns.Bound(x => x.Name);
+                            columns.Bound(x => x.PriceAdjustment)
+								.Format("{0:0.00}")
+								.RightAlign()
+								.Width(200);
+                            columns.Bound(x => x.WeightAdjustment)
+								.Format("{0:0.00}")
+								.Centered()
+								.Width(200);
+                            columns.Bound(x => x.IsPreSelected)
+                                .Width(140)
+                                .Template(item => @Html.SymbolForBool(item.IsPreSelected))
+                                .ClientTemplate(@Html.SymbolForBool("IsPreSelected"))
+                                .Centered();
+                            columns.Bound(x => x.DisplayOrder)
+                                .Width(140)
+                                .Centered();
+                            columns.Bound(x => x.Id)
                                 .Width(120)
-                                .Title(T("Admin.Common.Delete").Text);
+                                .Centered()
+                                .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/CheckoutAttribute/ValueEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=checkoutattribute-form', 800, 300, true); return false;\" class='t-button' />")
+                                .Title(T("Admin.Common.Edit").Text);
+                            columns.Command(commands =>
+                            {
+                                commands.Delete().Localize(T);
                             })
-                            .DataBinding(dataBinding =>
-                                dataBinding.Ajax().Select("ValueList", "CheckoutAttribute", new { checkoutAttributeId = Model.Id })
-                                .Delete("ValueDelete", "CheckoutAttribute"))
-                            .EnableCustomBinding(true))
-                    </td>
-                </tr>
-                <tr>
-                    <td width="100%">
-                        <button type="submit" id="btnAddNewValue" name="btnAddNewValue" class="btn btn-below"
-							onclick="javascript:OpenWindow('@(Url.Action("ValueCreatePopup", "CheckoutAttribute", new { checkoutAttributeId = Model.Id, btnId = "btnRefresh", formId = "checkoutattribute-form" }))', 800, 300, true); return false;">
-							<i class="fa fa-plus"></i>&nbsp;@T("Admin.Catalog.Attributes.CheckoutAttributes.Values.AddNew")
-						</button>
+                            .Width(120)
+                            .Title(T("Admin.Common.Delete").Text);
+                        })
+                        .DataBinding(dataBinding =>
+                            dataBinding.Ajax().Select("ValueList", "CheckoutAttribute", new { checkoutAttributeId = Model.Id })
+                            .Delete("ValueDelete", "CheckoutAttribute"))
+                        .EnableCustomBinding(true))
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <button type="submit" id="btnAddNewValue" name="btnAddNewValue" class="btn btn-below"
+						onclick="javascript:OpenWindow('@(Url.Action("ValueCreatePopup", "CheckoutAttribute", new { checkoutAttributeId = Model.Id, btnId = "btnRefresh", formId = "checkoutattribute-form" }))', 800, 300, true); return false;">
+						<i class="fa fa-plus"></i>&nbsp;@T("Admin.Catalog.Attributes.CheckoutAttributes.Values.AddNew")
+					</button>
 
-                        <input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />
+                    <input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />
 
-                        <script type="text/javascript">
-                            $(document).ready(function () {
-                                $('#btnRefresh').click(function () {
-                                    //refresh grid
-                                    var valuesGrid = $("#checkoutattributevalues-grid");
-                                    valuesGrid.data('tGrid').ajaxRequest();
+                    <script type="text/javascript">
+                        $(document).ready(function () {
+                            $('#btnRefresh').click(function () {
+                                //refresh grid
+                                var valuesGrid = $("#checkoutattributevalues-grid");
+                                valuesGrid.data('tGrid').ajaxRequest();
 
-                                    //return false to don't reload a page
-                                    return false;
-                                });                                
-                            });
-                        </script>
-                    </td>
-                </tr>
-            </table>
-        }
-        else
-        {
-            @T("Admin.Catalog.Attributes.CheckoutAttributes.Values.SaveBeforeEdit")
-        }
+                                //return false to don't reload a page
+                                return false;
+                            });                                
+                        });
+                    </script>
+                </td>
+            </tr>
+        </table>
     }
+    else
+    {
+        @T("Admin.Catalog.Attributes.CheckoutAttributes.Values.SaveBeforeEdit")
+    }
+}
+
+@helper TabStores()
+{
+	<script type="text/javascript">
+    	$(document).ready(function () {
+
+    		$('#@Html.FieldIdFor(model => model.LimitedToStores)').change(function () {
+    			$('#pnl-available-stores').toggle($(this).is(':checked'));
+    		}).trigger('change');
+
+        });
+	</script>
+
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.LimitedToStores)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.LimitedToStores)
+				@Html.ValidationMessageFor(model => model.LimitedToStores)
+			</td>
+		</tr>
+		<tr id="pnl-available-stores">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AvailableStores)
+			</td>
+			<td class="adminData">
+				@if (Model.AvailableStores != null && Model.AvailableStores.Count > 0)
+				{
+					foreach (var store in Model.AvailableStores)
+					{
+						<label class="checkbox">
+							<input type="checkbox" name="SelectedStoreIds" value="@store.Id" checked="@(Model.SelectedStoreIds != null && Model.SelectedStoreIds.Contains(store.Id))" />
+							<span>@store.Name</span>
+						</label>
+					}
+				}
+				else
+				{
+					<div>@T("Admin.Configuration.Stores.NoStoresDefined")</div>
+				}
+			</td>
+		</tr>
+	</table>
+}

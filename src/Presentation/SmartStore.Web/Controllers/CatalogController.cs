@@ -561,7 +561,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult ManufacturerAll()
         {
             var model = new List<ManufacturerModel>();
-            var manufacturers = _manufacturerService.GetAllManufacturers();
+            var manufacturers = _manufacturerService.GetAllManufacturers(null, _services.StoreContext.CurrentStore.Id);
             foreach (var manufacturer in manufacturers)
             {
                 var modelMan = manufacturer.ToModel();
@@ -580,13 +580,19 @@ namespace SmartStore.Web.Controllers
 			if (_catalogSettings.ManufacturersBlockItemsToDisplay == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
 				return Content("");
 
-			string cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY, currentManufacturerId, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY,
+				currentManufacturerId,
+				!_catalogSettings.HideManufacturerDefaultPictures,
+				_services.WorkContext.WorkingLanguage.Id,
+				_services.StoreContext.CurrentStore.Id);
+
             var cacheModel = _services.Cache.Get(cacheKey, () =>
             {
                 var currentManufacturer = _manufacturerService.GetManufacturerById(currentManufacturerId);
 
-                var manufacturers = _manufacturerService.GetAllManufacturers();
-                var model = new ManufacturerNavigationModel()
+                var manufacturers = _manufacturerService.GetAllManufacturers(null, _services.StoreContext.CurrentStore.Id);
+
+                var model = new ManufacturerNavigationModel
                 {
                     TotalManufacturers = manufacturers.Count,
                     DisplayManufacturers = _catalogSettings.ShowManufacturersOnHomepage,
@@ -600,7 +606,8 @@ namespace SmartStore.Web.Controllers
                         Id = manufacturer.Id,
                         Name = manufacturer.GetLocalized(x => x.Name),
                         SeName = manufacturer.GetSeName(),
-                        PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize),
+                        PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize,
+							!_catalogSettings.HideManufacturerDefaultPictures),
                         IsActive = currentManufacturer != null && currentManufacturer.Id == manufacturer.Id,
                     };
                     model.Manufacturers.Add(modelMan);
@@ -1010,7 +1017,7 @@ namespace SmartStore.Web.Controllers
 
 			var products = _compareProductsService.GetComparedProducts();
 
-			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, prepareFullDescription: true)
+			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, prepareFullDescription: true, isCompareList: true)
 				.ToList()
 				.ForEach(model.Products.Add);
 
@@ -1060,7 +1067,7 @@ namespace SmartStore.Web.Controllers
 
 			var products = _compareProductsService.GetComparedProducts();
 
-			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true)
+			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, isCompareList: true)
 				.ToList()
 				.ForEach(model.Products.Add);
 

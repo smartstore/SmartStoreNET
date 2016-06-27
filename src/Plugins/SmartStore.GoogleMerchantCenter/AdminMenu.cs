@@ -7,17 +7,13 @@ namespace SmartStore.GoogleMerchantCenter
     {
 		protected override void BuildMenuCore(TreeNode<MenuItem> pluginsNode)
         {
-			var root = pluginsNode.SelectNode(x => x.Value.Id == "promotion-feeds");
-			if (root == null)
-				return;
-			
 			var menuItem = new MenuItem().ToBuilder()
                 .Text("Google Merchant Center")
 				.ResKey("Plugins.FriendlyName.SmartStore.GoogleMerchantCenter")
 				.Action("ConfigurePlugin", "Plugin", new { systemName = GoogleMerchantCenterFeedPlugin.SystemName, area = "Admin" })
                 .ToItem();
 
-            root.Append(menuItem);
+            pluginsNode.Prepend(menuItem);
         }
 
     }

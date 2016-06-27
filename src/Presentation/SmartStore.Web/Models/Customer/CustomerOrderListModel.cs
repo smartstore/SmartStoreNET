@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using SmartStore.Core;
 using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Models.Customer
 {
-    public partial class CustomerOrderListModel : ModelBase
+	public partial class CustomerOrderListModel : ModelBase
     {
         public CustomerOrderListModel()
         {
-            Orders = new List<OrderDetailsModel>();
-            RecurringOrders = new List<RecurringOrderModel>();
-            CancelRecurringPaymentErrors = new List<string>();
+			RecurringOrders = new List<RecurringOrderModel>();
+			CancelRecurringPaymentErrors = new List<string>();
         }
 
-        public IList<OrderDetailsModel> Orders { get; set; }
+        public PagedList<OrderDetailsModel> Orders { get; set; }
         public IList<RecurringOrderModel> RecurringOrders { get; set; }
         public IList<string> CancelRecurringPaymentErrors { get; set; }
 
@@ -21,6 +21,7 @@ namespace SmartStore.Web.Models.Customer
 
 
         #region Nested classes
+
         public partial class OrderDetailsModel : EntityModelBase
         {
             public string OrderNumber { get; set; }
@@ -29,6 +30,7 @@ namespace SmartStore.Web.Models.Customer
             public string OrderStatus { get; set; }
             public DateTime CreatedOn { get; set; }
         }
+
         public partial class RecurringOrderModel : EntityModelBase
         {
             public string StartDate { get; set; }
@@ -39,6 +41,7 @@ namespace SmartStore.Web.Models.Customer
             public int InitialOrderId { get; set; }
             public bool CanCancel { get; set; }
         }
+
         #endregion
     }
 }

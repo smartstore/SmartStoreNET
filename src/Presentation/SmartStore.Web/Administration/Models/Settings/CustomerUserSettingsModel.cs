@@ -26,12 +26,12 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.UsernamesEnabled")]
             public bool UsernamesEnabled { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultSortOrderMode")]
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerNumberMethod")]
             public CustomerNumberMethod CustomerNumberMethod { get; set; }
             public SelectList AvailableCustomerNumberMethods { get; set; }
 			public IList<SelectListItem> AvailableRegisterCustomerRoles { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultSortOrderMode")]
+			[SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerNumberVisibility")]
             public CustomerNumberVisibility CustomerNumberVisibility { get; set; }
             public SelectList AvailableCustomerNumberVisibilities { get; set; }
 
@@ -88,6 +88,9 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StoreLastVisitedPage")]
             public bool StoreLastVisitedPage { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.DisplayPrivacyAgreementOnContactUs")]
+            public bool DisplayPrivacyAgreementOnContactUs { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.GenderEnabled")]
             public bool GenderEnabled { get; set; }

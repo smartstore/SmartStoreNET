@@ -108,20 +108,12 @@ namespace SmartStore.Web.Framework.Plugins
 			var displayOrder = _pluginMediator.GetUserDisplayOrder(metadata);
 			var name = _pluginMediator.GetSetting<string>(metadata, "FriendlyName");
 			var description = _pluginMediator.GetSetting<string>(metadata, "Description");
+			metadata.FriendlyName = name;
+			metadata.Description = description;
 
 			if (displayOrder.HasValue)
 			{
 				metadata.DisplayOrder = displayOrder.Value;
-			}
-
-			if (name != null)
-			{
-				metadata.FriendlyName = name;
-			}
-
-			if (description != null)
-			{
-				metadata.Description = description;
 			}
 		}
 

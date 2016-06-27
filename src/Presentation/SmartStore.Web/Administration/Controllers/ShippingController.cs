@@ -73,10 +73,17 @@ namespace SmartStore.Admin.Controllers
 		{
 			var allFilters = _shippingService.GetAllShippingMethodFilters();
 
-			model.FilterConfigurationUrls = allFilters
-				.Select(x => "'" + x.GetConfigurationUrl(shippingMethod.Id) + "'")
-				.OrderBy(x => x)
-				.ToList();
+			if (shippingMethod != null)
+			{
+				model.FilterConfigurationUrls = allFilters
+					.Select(x => "'" + x.GetConfigurationUrl(shippingMethod.Id) + "'")
+					.OrderBy(x => x)
+					.ToList();
+			}
+			else
+			{
+				model.FilterConfigurationUrls = new List<string>();
+			}
 		}
 
         #endregion

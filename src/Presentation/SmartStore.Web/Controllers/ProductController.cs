@@ -8,7 +8,6 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Localization;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -31,7 +30,7 @@ using SmartStore.Web.Models.Catalog;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class ProductController : PublicControllerBase
+	public partial class ProductController : PublicControllerBase
 	{
 		#region Fields
 
@@ -168,14 +167,16 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			//prepare the model
 			var selectedAttributes = new NameValueCollection();
 
-			selectedAttributes.ConvertAttributeQueryData(
+			// get selected attributes from query string
+			selectedAttributes.GetSelectedAttributes(
+				Request.QueryString,
 				_productAttributeParser.DeserializeQueryData(attributes),
 				product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing ? 0 : product.Id);
 
-			var model = _helper.PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes);
+			// prepare the view model
+			var model = _helper.PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes, queryData: Request.QueryString);
 
 			//save as recently viewed
 			_recentlyViewedProductsService.AddProductToRecentlyViewedList(product.Id);
@@ -320,7 +321,12 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult ProductManufacturers(int productId, bool preparePictureModel = false)
 		{
-			string cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_MANUFACTURERS_MODEL_KEY, productId, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
+			var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_MANUFACTURERS_MODEL_KEY,
+				productId,
+				!_catalogSettings.HideManufacturerDefaultPictures,
+				_services.WorkContext.WorkingLanguage.Id,
+				_services.StoreContext.CurrentStore.Id);
+
 			var cacheModel = _services.Cache.Get(cacheKey, () =>
 			{
 				var model = _manufacturerService.GetProductManufacturersByProductId(productId)
@@ -329,7 +335,8 @@ namespace SmartStore.Web.Controllers
 						var m = x.Manufacturer.ToModel();
 						if (preparePictureModel)
 						{
-							m.PictureModel.ImageUrl = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault());
+							m.PictureModel.ImageUrl = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault(), 0, !_catalogSettings.HideManufacturerDefaultPictures);
+
 							var picture = _pictureService.GetPictureUrl(x.Manufacturer.PictureId.GetValueOrDefault());
 							if (picture != null)
 							{

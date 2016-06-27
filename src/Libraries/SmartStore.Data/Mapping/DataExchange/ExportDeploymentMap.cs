@@ -11,10 +11,12 @@ namespace SmartStore.Data.Mapping.DataExchange
 			this.HasKey(x => x.Id);
 
 			this.Property(x => x.Name).IsRequired().HasMaxLength(100);
+			this.Property(x => x.ResultInfo).IsMaxLength();
 			this.Property(x => x.Username).HasMaxLength(400);
 			this.Property(x => x.Password).HasMaxLength(400);
 			this.Property(x => x.Url).HasMaxLength(4000);
 			this.Property(x => x.FileSystemPath).HasMaxLength(400);
+			this.Property(x => x.SubFolder).HasMaxLength(400);
 			this.Property(x => x.EmailAddresses).HasMaxLength(4000);
 			this.Property(x => x.EmailSubject).HasMaxLength(400);
 

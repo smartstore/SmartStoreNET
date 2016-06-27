@@ -19,7 +19,10 @@
     <div class="page-body checkout-data">
         @*set "data-ajax" attribute to "false"*@
         @using (Html.BeginForm(null, null, FormMethod.Post, new RouteValueDictionary { { "data-ajax", "false" }, { "id", "confirm-order-form" } }))
-        {
+		{
+			<input type="hidden" id="SubscribeToNewsLetterHidden" name="SubscribeToNewsLetterHidden" />
+			<input type="hidden" id="AcceptThirdPartyEmailHandOverHidden" name="AcceptThirdPartyEmailHandOverHidden" />
+
             @Html.Widget("mobile_checkout_confirm_top")
 
             if (Model.Warnings.Count > 0)
@@ -79,6 +82,9 @@
 									userAgreementsOk = true,
 									esdRevocationWaiverOk = true,
 									alertMessage;
+
+                            	$('#SubscribeToNewsLetterHidden').val($('input[name=SubscribeToNewsLetter]').is(':checked'));
+                            	$('#AcceptThirdPartyEmailHandOverHidden').val($('input[name=AcceptThirdPartyEmailHandOver]').is(':checked'));
 
                             	// terms of services
                                 @if (Model.TermsOfServiceEnabled)

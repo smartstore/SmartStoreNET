@@ -1,21 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using Autofac;
+using SmartStore.Core;
 using SmartStore.Core.Async;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Tasks;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Customers;
-using SmartStore.Core;
-using SmartStore.Core.Domain.Customers;
-using System.Diagnostics;
-using System.Collections.Generic;
 
 namespace SmartStore.Services.Tasks
 {
 
-    public class TaskExecutor : ITaskExecutor
+	public class TaskExecutor : ITaskExecutor
     {
         private readonly IScheduleTaskService _scheduledTaskService;
 		private readonly IDbContext _dbContext;
@@ -42,11 +43,13 @@ namespace SmartStore.Services.Tasks
             this._taskResolver = taskResolver;
 
             Logger = NullLogger.Instance;
-        }
+			T = NullLocalizer.Instance;
+		}
 
         public ILogger Logger { get; set; }
+		public Localizer T { get; set; }
 
-        public void Execute(
+		public void Execute(
 			ScheduleTask task,
 			IDictionary<string, string> taskParameters = null,
             bool throwOnError = false)
@@ -126,12 +129,17 @@ namespace SmartStore.Services.Tasks
 
                 instance.Execute(ctx);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
                 faulted = true;
-				canceled = ex is OperationCanceledException;
-                Logger.Error(string.Format("Error while running scheduled task '{0}'. {1}", task.Name, ex.Message), ex);
-                lastError = ex.Message.Truncate(995, "...");
+				canceled = exception is OperationCanceledException;
+				lastError = exception.Message.Truncate(995, "...");
+
+				if (canceled)
+					Logger.Warning(T("Admin.System.ScheduleTasks.Cancellation", task.Name), exception);
+				else
+					Logger.Error(string.Concat(T("Admin.System.ScheduleTasks.RunningError", task.Name), ": ", exception.Message), exception);
+
                 if (throwOnError)
                 {
                     throw;

@@ -45,11 +45,6 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult UploadPackage(FormCollection form, string returnUrl = "")
 		{
-			if (returnUrl.IsEmpty())
-			{
-				returnUrl = _services.WebHelper.GetUrlReferrer();
-			}
-
 			bool isTheme = false;
 
 			try
@@ -69,7 +64,7 @@ namespace SmartStore.Admin.Controllers
 					if (!file.FileExtension.IsCaseInsensitiveEqual(".nupkg"))
 					{
 						NotifyError(T("Admin.Packaging.NotAPackage"));
-						return Redirect(returnUrl);
+						return RedirectToReferrer(returnUrl);
 					}
 
 					var location = CommonHelper.MapPath("~/App_Data");
@@ -102,7 +97,7 @@ namespace SmartStore.Admin.Controllers
 				else
 				{
 					NotifyError(T("Admin.Common.UploadFile"));
-					return Redirect(returnUrl);
+					return RedirectToReferrer(returnUrl);
 				}
 
 				if (!isTheme)
@@ -110,13 +105,13 @@ namespace SmartStore.Admin.Controllers
 					_services.WebHelper.RestartAppDomain();
 				}
 				NotifySuccess(T("Admin.Packaging.InstallSuccess"));
-				return Redirect(returnUrl);
+				return RedirectToReferrer(returnUrl);
 			}
 			catch (Exception exc)
 			{
 				NotifyError(exc);
 				Logger.Error(exc);
-				return Redirect(returnUrl);
+				return RedirectToReferrer(returnUrl);
 			}
 		}
 

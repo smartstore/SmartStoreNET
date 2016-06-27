@@ -68,6 +68,38 @@
 	    return spinner;
 	}
 
+	window.copyTextToClipboard = function (text) {
+		var result = false;
+
+		if (window.clipboardData && window.clipboardData.setData) {
+			result = clipboardData.setData('Text', text);
+		}
+		else if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
+			var textarea = document.createElement('textarea'),
+				focusElement = document.activeElement;
+
+			textarea.textContent = text;
+			textarea.style.position = 'fixed';
+			document.body.appendChild(textarea);
+			textarea.focus();
+			textarea.setSelectionRange(0, textarea.value.length);
+
+			try {
+				result = document.execCommand('copy');
+			}
+			catch (e) {
+			}
+			finally {
+				document.body.removeChild(textarea);
+				if (focusElement) {
+					focusElement.focus();
+				}
+			}
+		}
+		return result;
+	}
+
+
     // on document ready
 	$(function () {
 

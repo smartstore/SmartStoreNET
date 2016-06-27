@@ -1156,7 +1156,7 @@ namespace SmartStore.Services.Catalog
 
 			manufacturerPartNumber = manufacturerPartNumber.Trim();
 
-			var product = _productRepository
+			var product = _productRepository.Table
 				.Where(x => !x.Deleted && x.ManufacturerPartNumber == manufacturerPartNumber)
 				.OrderBy(x => x.Id)
 				.FirstOrDefault();
@@ -1171,7 +1171,7 @@ namespace SmartStore.Services.Catalog
 
 			name = name.Trim();
 
-			var product = _productRepository
+			var product = _productRepository.Table
 				.Where(x => !x.Deleted && x.Name == name)
 				.OrderBy(x => x.Id)
 				.FirstOrDefault();

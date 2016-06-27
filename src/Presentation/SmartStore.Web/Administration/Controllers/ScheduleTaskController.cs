@@ -172,7 +172,7 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			return Redirect(returnUrl.NullEmpty() ?? Request.UrlReferrer.ToString());
+			return RedirectToReferrer(returnUrl);
 		}
 
 		public ActionResult CancelJob(int id /* scheduleTaskId */, string returnUrl = "")
@@ -187,8 +187,7 @@ namespace SmartStore.Admin.Controllers
 				NotifyWarning(T("Admin.System.ScheduleTasks.CancellationRequested"));
 			}
 
-			returnUrl = returnUrl.NullEmpty() ?? Request.UrlReferrer.ToString();
-			return Redirect(returnUrl);
+			return RedirectToReferrer(returnUrl);
 		}
 
 		public ActionResult Edit(int id /* taskId */, string returnUrl = null)
@@ -223,7 +222,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			var reloadResult = RedirectToAction("Edit", new { id = model.Id, returnUrl = returnUrl });
-			var returnResult = Redirect(returnUrl.NullEmpty() ?? Url.Action("List"));
+			var returnResult = RedirectToReferrer(returnUrl, () => RedirectToAction("List"));
 
 			var scheduleTask = _scheduleTaskService.GetTaskById(model.Id);
 			if (scheduleTask == null)

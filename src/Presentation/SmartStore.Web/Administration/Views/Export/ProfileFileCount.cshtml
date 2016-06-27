@@ -1,10 +1,9 @@
-﻿@using SmartStore.Admin.Models.DataExchange
-@model ExportProfileDetailsModel
-@if (Model.ExportFileCount > 0)
+﻿@model int
+@if (Model > 0)
 {
-	<a href="javascript:void(0)" class="export-file-count">@Model.ExportFileCount</a>
+	<a href="javascript:void(0)" class="export-file-count"><strong>@Model</strong></a>
 }
 else
 {
-	<span title="@T("Admin.Common.NoTempFilesFound")">@Model.ExportFileCount</span>
+	<span title="@T("Common.NoFilesAvailable")">0</span>
 }

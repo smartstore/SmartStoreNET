@@ -110,18 +110,19 @@ namespace SmartStore.Services.Localization
 			{
 				var query = _languageRepository.Table;
 				if (!showHidden)
-					query = query.Where(l => l.Published);
-				query = query.OrderBy(l => l.DisplayOrder);
+					query = query.Where(x => x.Published);
+				query = query.OrderBy(x => x.DisplayOrder);
 				return query.ToList();
 			});
 
-			//store mapping
+			// store mapping
 			if (storeId > 0)
 			{
 				languages = languages
 					.Where(l => _storeMappingService.Authorize(l, storeId))
 					.ToList();
 			}
+
 			return languages;
         }
 

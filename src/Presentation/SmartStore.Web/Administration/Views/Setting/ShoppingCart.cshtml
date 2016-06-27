@@ -21,6 +21,12 @@
 
             toggleMiniShoppingCartEnabled();
             toggleEmailWishlistEnabled();
+
+        	// toggle third party email hand over label text
+        	$('#@Html.FieldIdFor(model => model.ThirdPartyEmailHandOver)').change(function () {
+        		$('#ThirdPartyEmailHandOverTextLocalized').toggle($(this).val() !== '0');
+        	}).trigger('change');
+
         });
 
         function toggleMiniShoppingCartEnabled() {
@@ -336,5 +342,50 @@
 				@Html.ValidationMessageFor(model => model.ShowEsdRevocationWaiverBox)
 			</td>
 		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ThirdPartyEmailHandOver)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.ThirdPartyEmailHandOver)
+				@Html.DropDownListFor(model => model.ThirdPartyEmailHandOver, Model.AvailableThirdPartyEmailHandOver)
+				@Html.ValidationMessageFor(model => model.ThirdPartyEmailHandOver)
+			</td>
+		</tr>
     </table>
+
+	<div id="ThirdPartyEmailHandOverTextLocalized">
+		<p></p>
+
+		@(Html.LocalizedEditor<ShoppingCartSettingsModel, ShoppingCartSettingsLocalizedModel>("setting-shopping-cart-localized",
+		@<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
+				</td>
+				<td class="adminData">
+					@Html.TextAreaFor(model => Model.Locales[item].ThirdPartyEmailHandOverLabel, new { @class = "input-large" })
+					@Html.ValidationMessageFor(model => model.Locales[item].ThirdPartyEmailHandOverLabel)
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+				</td>
+			</tr>
+		</table>
+			,
+		@<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ThirdPartyEmailHandOverLabel)
+				</td>
+				<td class="adminData">
+					@Html.TextAreaFor(model => model.ThirdPartyEmailHandOverLabel, new { @class = "input-large" })
+					@Html.ValidationMessageFor(model => model.ThirdPartyEmailHandOverLabel)
+				</td>
+			</tr>
+		</table>
+		))
+	</div>
 }

@@ -39,7 +39,7 @@ namespace SmartStore.PayPal.Controllers
 
             model.Copy(settings, true);
 
-			model.AvailableSecurityProtocols = GetSecurityProtocols()
+			model.AvailableSecurityProtocols = PayPalService.GetSecurityProtocols()
 				.Select(x => new SelectListItem { Value = ((int)x.Key).ToString(), Text = x.Value })
 				.ToList();
 

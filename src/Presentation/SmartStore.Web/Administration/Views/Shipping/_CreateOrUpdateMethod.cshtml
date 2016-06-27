@@ -87,7 +87,13 @@
 
 @helper TabRestrictions()
 {
-	if (Model.FilterConfigurationUrls.Count == 0)
+	if (Model.Id == 0)
+	{
+		<div class="alert alert-warning">
+			@T("Admin.Configuration.Restriction.SaveBeforeEdit")
+		</div>
+	}
+	else if (Model.FilterConfigurationUrls.Count == 0)
 	{
 		<div class="alert alert-info">
 			@T("Admin.Configuration.Shipping.Methods.RestrictionNote")
@@ -109,10 +115,15 @@
 		}
 
 		function getFilterConfiguration(url, container) {
-			$.get(url, function (html) {
-				container.append(html);
-				if (++i < configUrls.length)
-					getFilterConfiguration(configUrls[i], container);
+			$.ajax({
+				url: url,
+				cache: false,
+				dataType: 'html',
+				success: function (html) {
+					container.append(html);
+					if (++i < configUrls.length)
+						getFilterConfiguration(configUrls[i], container);
+				}
 			});
 		}
     });

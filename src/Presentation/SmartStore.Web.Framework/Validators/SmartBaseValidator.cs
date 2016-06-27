@@ -16,10 +16,13 @@ namespace SmartStore.Web.Framework.Validators
 
 			if (!result.IsValid)
 			{
-				int i = 0;
 				foreach (var error in result.Errors)
 				{
-					modelState.AddModelError(error.PropertyName + (++i).ToString(), error.ErrorMessage);
+					try
+					{
+						modelState.AddModelError(error.PropertyName, error.ErrorMessage);
+					}
+					catch { }
 				}
 			}
 		}

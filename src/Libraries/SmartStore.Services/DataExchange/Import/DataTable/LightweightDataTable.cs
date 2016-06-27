@@ -31,6 +31,8 @@ namespace SmartStore.Services.DataExchange.Import
 
 			_columns = new ReadOnlyCollection<IDataColumn>(columns);
 
+			TrimData(data);
+
 			var rows = data.Select(x => new LightweightDataRow(this, x)).Cast<IDataRow>().ToList();
 			_rows = new ReadOnlyCollection<IDataRow>(rows);
 
@@ -46,6 +48,27 @@ namespace SmartStore.Services.DataExchange.Import
 
 				if (!alternativeName.IsCaseInsensitiveEqual(name))
 					_alternativeColumnIndexes[alternativeName] = i;
+			}
+		}
+
+		private static void TrimData(IList<object[]> data)
+		{
+			// When a user deletes content instead of whole rows from an excel sheet,
+			// our data table contains completely empty rows at the end.
+			// Here we get rid of them as they are absolutely useless.
+			for (int i = data.Count - 1; i >= 0; i--)
+			{
+				var allColumnsEmpty = data[i].All(x => x == null || x == DBNull.Value);
+				if (allColumnsEmpty)
+				{
+					data.RemoveAt(i);
+					//i--;
+				}
+				else
+				{
+					// get out here on the first occurence of a NON-empty row
+					break;
+				}
 			}
 		}
 
@@ -137,7 +160,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 			if (contentLength == 0)
 			{
-				throw Error.Argument("fileName", "The posted file '{0}' does not contain any data.".FormatInvariant(fileName)); // TODO Loc
+				throw Error.Argument("fileName", "The posted file '{0}' does not contain any data.".FormatInvariant(fileName));
 			}
 
 			IDataReader dataReader = null;
@@ -160,14 +183,14 @@ namespace SmartStore.Services.DataExchange.Import
 
 				if (table.Columns.Count == 0 || table.Rows.Count == 0)
 				{
-					throw Error.InvalidOperation("file", "The posted file '{0}' does not contain any columns or data rows.".FormatInvariant(fileName)); // TODO Loc
+					throw Error.InvalidOperation("The posted file '{0}' does not contain any columns or data rows.".FormatInvariant(fileName));
 				}
 
 				return table;
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw;
+				throw ex;
 			}
 			finally
 			{
@@ -207,6 +230,8 @@ namespace SmartStore.Services.DataExchange.Import
 			}
 
 			var fieldCount = reader.FieldCount;
+
+			take = Math.Min(take, int.MaxValue - skip);
 
 			int i = -1;
 			while (reader.Read())

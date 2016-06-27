@@ -1,5 +1,9 @@
 ﻿#Release Notes
 
+##Web Api 2.5.0.1
+###New Features
+* Option to allow authentification without MD5 content hash
+
 ##Web Api 2.2.0.5
 ###New Features
 * Bridge to import framework: uploading import files to import profile directory

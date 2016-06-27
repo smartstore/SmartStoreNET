@@ -1,11 +1,20 @@
-﻿@model ExportDeploymentModel
-@using SmartStore.Core.Domain.DataExchange;
-@using SmartStore.Admin.Models.DataExchange;
+﻿@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Services.DataExchange.Export
+@using SmartStore.Admin.Models.DataExchange
+@model ExportDeploymentModel
 
 @Html.ValidationSummary(false)
 
 @Html.HiddenFor(model => model.Id)
 @Html.HiddenFor(model => model.ProfileId)
+
+@if (!Model.CreateZip)
+{
+	<div id="ZipUsageNote" class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">&#215;</button>
+		@Html.Raw(T("Admin.DataExchange.Export.Deployment.ZipUsageNote"))
+	</div>
+}
 
 <table id="DeploymentTable" class="adminContent">
 	<tr class="deployment-all">
@@ -13,9 +22,14 @@
 			@Html.SmartLabelFor(x => x.DeploymentType)
 		</td>
 		<td class="adminData">
-			@Html.DropDownListFor(x => x.DeploymentType, Model.AvailableDeploymentTypes)
+			<select name="@Html.FieldNameFor(x => x.DeploymentType)" id="@Html.FieldIdFor(x => x.DeploymentType)">
+				@foreach (var item in Model.AvailableDeploymentTypes)
+				{
+					var type = (ExportDeploymentType)item.Value.ToInt();
+					<option value="@item.Value" data-icon="@(type.GetIconClass())" @Html.Attr("selected", "selected", Model.DeploymentType == type)>@item.Text</option>
+				}
+			</select>
 			@Html.ValidationMessageFor(x => x.DeploymentType)
-			
 		</td>
 	</tr>
 	<tr class="deployment-all">
@@ -36,31 +50,22 @@
 			@Html.ValidationMessageFor(x => x.Enabled)
 		</td>
 	</tr>
-	<tr class="deployment-all">
-		<td class="adminTitle">
-			@Html.SmartLabelFor(x => x.CreateZip)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(x => x.CreateZip)
-			@Html.ValidationMessageFor(x => x.CreateZip)
-		</td>
-	</tr>
 	<tr class="deployment-@((int)ExportDeploymentType.FileSystem)">
-		<td class="adminTitle">
-			@Html.SmartLabelFor(x => x.IsPublic)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(x => x.IsPublic)
-			@Html.ValidationMessageFor(x => x.IsPublic)
-		</td>
-	</tr>
-	<tr id="FileSystemPathContainer" class="deployment-@((int)ExportDeploymentType.FileSystem)">
 		<td class="adminTitle">
 			@Html.SmartLabelFor(x => x.FileSystemPath)
 		</td>
 		<td class="adminData">
 			@Html.EditorFor(x => x.FileSystemPath)
 			@Html.ValidationMessageFor(x => x.FileSystemPath)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.PublicFolder)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.SubFolder)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.SubFolder)
+			@Html.ValidationMessageFor(x => x.SubFolder)
 		</td>
 	</tr>
 
@@ -153,20 +158,46 @@
 <script type="text/javascript">
 	jQuery(document).ready(function () {
 
-		$('#@(Html.FieldIdFor(x => x.EmailAddresses))').select2({ tags: [@(Html.Raw(Model.SerializedEmailAddresses))] });
+		$('#@(Html.FieldIdFor(x => x.EmailAddresses))').select2({
+			tags: [@(Html.Raw(Model.SerializedEmailAddresses))]
+		});
 
-		// deployment type changed
-		$('#@(Html.FieldIdFor(x => x.DeploymentType))').change(function () {
-			var table = $('#DeploymentTable');
+		$('#@(Html.FieldIdFor(x => x.DeploymentType))').select2({
+			minimumResultsForSearch: 16,
+			formatResult: selectDeploymentType,
+			formatSelection: selectDeploymentType
+		}).change(function () {
+			var table = $('#DeploymentTable'),
+				val = $(this).val();
 
 			table.find('tr:not(.deployment-all)').hide();
-			table.find('.deployment-' + $(this).val()).show();
+			table.find('.deployment-' + val).show();
+
+			$('#ZipUsageNote').toggle(val === '@((int)ExportDeploymentType.Email)' || val === '@((int)ExportDeploymentType.Http)' || val === '@((int)ExportDeploymentType.Ftp)');
 		}).trigger('change');
 
-		// show\hide file system path
-		$('#@(Html.FieldIdFor(x => x.IsPublic))').change(function () {
-			var val = !$(this).is(':checked') && $('#@(Html.FieldIdFor(x => x.DeploymentType))').val() == @((int)ExportDeploymentType.FileSystem);
-			$('#FileSystemPathContainer').toggle(val);
-		}).trigger('change');
+
+		function selectDeploymentType(item) {
+			try {
+				if (item.id.length > 0) {
+					var option = $(item.element),
+						html = '<div>';
+
+					if (option.length === 0) {
+						option = $('select[name="@(Html.FieldNameFor(x => x.DeploymentType))"]').find('option[value="' + item.id + '"]');
+					}
+
+					html += '<i class="fa ' + option.attr('data-icon') + '"></i> ';
+					html += item.text;
+
+					html += '</div>';
+					return html;
+				}
+			}
+			catch (e) { }
+
+			return item.text;
+		}
+
 	});
 </script>

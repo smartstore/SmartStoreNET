@@ -95,7 +95,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 				}
 			}
 
-            throw new SmartException("No contructor was found that had all the dependencies satisfied.");
+            throw new SmartException("No constructor for {0} was found that had all the dependencies satisfied.".FormatInvariant(type.Name.NaIfEmpty()));
         }
 
 		private bool TryResolveAll(Type[] types, out object[] instances, ILifetimeScope scope = null)

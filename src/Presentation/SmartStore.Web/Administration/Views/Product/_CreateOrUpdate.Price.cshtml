@@ -16,7 +16,6 @@
 		fieldBasePriceBaseAmount = $("#@Html.FieldIdFor(model => model.BasePriceBaseAmount)");
 
 		fieldBasePriceMeasureUnit.on("change", getCurrentBasePrice);
-
 		fieldBasePriceAmount.on("blur", getCurrentBasePrice);
 		fieldBasePriceBaseAmount.on("blur", getCurrentBasePrice);
 
@@ -25,7 +24,9 @@
 		toggleBasePrice();
 
 		function getCurrentBasePrice() {
-			if (parseFloat(fieldBasePriceAmount.val()) > 0 && parseInt(fieldBasePriceBaseAmount.val()) > 0) {
+			var basePriceAmount = Globalize.parseFloat(fieldBasePriceAmount.val());
+			var basePriceBaseAmount = Globalize.parseInt(fieldBasePriceBaseAmount.val());
+			if (basePriceAmount > 0 && basePriceBaseAmount > 0) {
 				$.ajax({
 					cache:false,
 					type: "POST",
@@ -40,7 +41,7 @@
 						$("#BasePriceAmountInfo").html(data.BasePrice);
 					},
 					error: function (xhr, ajaxOptions, thrownError){
-						alert(thrownError);
+						//alert(thrownError);
 					}
 				});
 			}

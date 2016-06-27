@@ -191,6 +191,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the manufacturer part number
 		/// </summary>
 		[DataMember]
+		[Index]
 		public string ManufacturerPartNumber
 		{
 			[DebuggerStepThrough]
@@ -208,6 +209,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the Global Trade Item Number (GTIN). These identifiers include UPC (in North America), EAN (in Europe), JAN (in Japan), and ISBN (for books).
 		/// </summary>
 		[DataMember]
+		[Index]
 		public string Gtin
 		{
 			[DebuggerStepThrough]

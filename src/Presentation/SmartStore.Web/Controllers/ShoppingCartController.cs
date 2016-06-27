@@ -93,6 +93,8 @@ namespace SmartStore.Web.Controllers
 		private readonly PluginMediator _pluginMediator;
         private readonly IQuantityUnitService _quantityUnitService;
 		private readonly Lazy<ITopicService> _topicService;
+        private readonly IMeasureService _measureService;
+        private readonly MeasureSettings _measureSettings;
 
 		#endregion
 
@@ -124,7 +126,8 @@ namespace SmartStore.Web.Controllers
             CaptchaSettings captchaSettings, AddressSettings addressSettings,
 			HttpContextBase httpContext, PluginMediator pluginMediator,
             IQuantityUnitService quantityUnitService,
-			Lazy<ITopicService> topicService)
+			Lazy<ITopicService> topicService,
+            IMeasureService measureService, MeasureSettings measureSettings)
         {
             this._productService = productService;
             this._workContext = workContext;
@@ -171,6 +174,8 @@ namespace SmartStore.Web.Controllers
 			this._pluginMediator = pluginMediator;
             this._quantityUnitService = quantityUnitService;
 			this._topicService = topicService;
+            this._measureService = measureService;
+            this._measureSettings = measureSettings;
         }
 
         #endregion
@@ -254,7 +259,7 @@ namespace SmartStore.Web.Controllers
 				model.BundlePerItemShoppingCart = item.BundleItem.BundleProduct.BundlePerItemShoppingCart;
 
 				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, item.AttributesXml, _workContext.CurrentCustomer,
-					renderPrices: false, renderGiftCardAttributes: true, allowHyperlinks: false);
+					renderPrices: false, renderGiftCardAttributes: true, allowHyperlinks: true);
 
 				string bundleItemName = item.BundleItem.GetLocalized(x => x.Name);
 				if (bundleItemName.HasValue())
@@ -639,6 +644,13 @@ namespace SmartStore.Web.Controllers
 			model.ShowProductBundleImages = _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;
 			model.ShowSku = _catalogSettings.ShowProductSku;
 
+            var measure = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
+            if(measure != null) 
+            {
+                model.MeasureUnitName = measure.Name;
+            }
+            
+
 			var checkoutAttributesXml = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.CheckoutAttributes, _genericAttributeService);
 			model.CheckoutAttributeInfo = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(
 				_checkoutAttributeFormatter.FormatAttributes(checkoutAttributesXml, _workContext.CurrentCustomer)
@@ -666,7 +678,16 @@ namespace SmartStore.Web.Controllers
 			model.GiftCardBox.Display = _shoppingCartSettings.ShowGiftCardBox;
 			model.DisplayCommentBox = _shoppingCartSettings.ShowCommentBox;
 			model.NewsLetterSubscription = _shoppingCartSettings.NewsLetterSubscription;
+			model.ThirdPartyEmailHandOver = _shoppingCartSettings.ThirdPartyEmailHandOver;
 			model.DisplayEsdRevocationWaiverBox = _shoppingCartSettings.ShowEsdRevocationWaiverBox;
+
+			if (_shoppingCartSettings.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None)
+			{
+				model.ThirdPartyEmailHandOverLabel = _shoppingCartSettings.GetLocalized(x => x.ThirdPartyEmailHandOverLabel, _workContext.WorkingLanguage.Id, true, false);
+
+				if (model.ThirdPartyEmailHandOverLabel.IsEmpty())
+					model.ThirdPartyEmailHandOverLabel = T("Admin.Configuration.Settings.ShoppingCart.ThirdPartyEmailHandOverLabel.Default");
+			}
 
 			//cart warnings
 			var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, validateCheckoutAttributes);
@@ -679,7 +700,7 @@ namespace SmartStore.Web.Controllers
 
 			#region Checkout attributes
 
-			var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes();
+			var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
 			if (!cart.RequiresShipping())
 			{
 				//remove attributes which require shippable products
@@ -964,7 +985,7 @@ namespace SmartStore.Web.Controllers
                 //1. "terms of services" are enabled (OBSOLETE now)
                 //2. we have at least one checkout attribute
                 //3. min order sub-total is OK
-                var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes();
+                var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
                 if (!cart.RequiresShipping())
                 {
                     //remove attributes which require shippable products
@@ -975,7 +996,6 @@ namespace SmartStore.Web.Controllers
 
                 //products. sort descending (recently added products)
                 foreach (var sci in cart
-                    .OrderByDescending(x => x.Item.Id)
                     .Take(_shoppingCartSettings.MiniShoppingCartProductNumber)
                     .ToList())
                 {
@@ -1055,15 +1075,18 @@ namespace SmartStore.Web.Controllers
         protected void ParseAndSaveCheckoutAttributes(List<OrganizedShoppingCartItem> cart, FormCollection form)
         {
             string selectedAttributes = "";
-            var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes();
+            var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
+
             if (!cart.RequiresShipping())
             {
                 //remove attributes which require shippable products
                 checkoutAttributes = checkoutAttributes.RemoveShippableAttributes();
             }
+
             foreach (var attribute in checkoutAttributes)
             {
                 string controlId = string.Format("checkout_attribute_{0}", attribute.Id);
+
                 switch (attribute.AttributeControlType)
                 {
                     case AttributeControlType.DropdownList:
@@ -1073,13 +1096,13 @@ namespace SmartStore.Web.Controllers
                             var rblAttributes = form[controlId];
                             if (!String.IsNullOrEmpty(rblAttributes))
                             {
-                                int selectedAttributeId = int.Parse(rblAttributes);
+                                var selectedAttributeId = rblAttributes.SplitSafe(",").SafeGet(0).ToInt();
                                 if (selectedAttributeId > 0)
-                                    selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes,
-                                        attribute, selectedAttributeId.ToString());
+                                    selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
                             }
                         }
                         break;
+
                     case AttributeControlType.Checkboxes:
                         {
                             var cblAttributes = form[controlId];
@@ -1087,14 +1110,14 @@ namespace SmartStore.Web.Controllers
                             {
                                 foreach (var item in cblAttributes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                                 {
-                                    int selectedAttributeId = int.Parse(item);
-                                    if (selectedAttributeId > 0)
-                                        selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes,
-                                            attribute, selectedAttributeId.ToString());
+                                    var selectedAttributeId = item.SplitSafe(",").SafeGet(0).ToInt();
+									if (selectedAttributeId > 0)
+                                        selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedAttributeId.ToString());
                                 }
                             }
                         }
                         break;
+
                     case AttributeControlType.TextBox:    
                     case AttributeControlType.MultilineTextbox:
                         {
@@ -1102,29 +1125,31 @@ namespace SmartStore.Web.Controllers
                             if (!String.IsNullOrEmpty(txtAttribute))
                             {
                                 string enteredText = txtAttribute.Trim();
-                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes,
-                                    attribute, enteredText);
+                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, enteredText);
                             }
                         }
                         break;
+
                     case AttributeControlType.Datepicker:
                         {
                             var date = form[controlId + "_day"];
                             var month = form[controlId + "_month"];
                             var year = form[controlId + "_year"];
                             DateTime? selectedDate = null;
+
                             try
                             {
                                 selectedDate = new DateTime(Int32.Parse(year), Int32.Parse(month), Int32.Parse(date));
                             }
                             catch { }
+
                             if (selectedDate.HasValue)
                             {
-                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes,
-                                    attribute, selectedDate.Value.ToString("D"));
+                                selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, selectedDate.Value.ToString("D"));
                             }
                         }
                         break;
+
                     case AttributeControlType.FileUpload:
                         {
                             var postedFile = this.Request.Files[controlId].ToPostedFileResult();
@@ -1157,6 +1182,7 @@ namespace SmartStore.Web.Controllers
                             }
                         }
                         break;
+
                     default:
                         break;
                 }
@@ -1453,7 +1479,7 @@ namespace SmartStore.Web.Controllers
 			var postedFile = Request.ToPostedFileResult();
 			if (postedFile == null)
 			{
-				throw new ArgumentException("No file uploaded");
+				throw new ArgumentException(T("Common.NoFileUploaded"));
 			}
 
             int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
@@ -1722,14 +1748,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult ContinueShopping()
         {
 			string returnUrl = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.LastContinueShoppingPage, _storeContext.CurrentStore.Id);
-            if (!String.IsNullOrEmpty(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToRoute("HomePage");
-            }
+			return RedirectToReferrer(returnUrl);
         }
 
         [ValidateInput(false)]
@@ -2613,7 +2632,7 @@ namespace SmartStore.Web.Controllers
         {
             Customer customer = _workContext.CurrentCustomer;
 
-            var cart = customer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id, true);
+            var cart = customer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
 			var model = new WishlistModel();
 
             PrepareWishlistModel(model, cart, true);

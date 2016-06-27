@@ -19,7 +19,7 @@ namespace SmartStore.Core.Caching
 		public int StoreId { get; set; }
 		public int LanguageId { get; set; }
 		public int CurrencyId { get; set; }
-		public string[] CustomerRoles { get; set; }
+		public string CustomerRoles { get; set; }
 
 		public string ContentType { get; set; }
 		public string Content { get; set; }

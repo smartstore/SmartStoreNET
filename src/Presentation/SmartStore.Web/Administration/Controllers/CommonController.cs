@@ -354,7 +354,7 @@ namespace SmartStore.Admin.Controllers
 					Logger.Error("An error occurred while checking for update", ex);
 					return noUpdateResult;
 				}
-			}, 1440 /* 24h * 60min. */);
+			}, TimeSpan.FromDays(1));
 
 			return result;
 		}

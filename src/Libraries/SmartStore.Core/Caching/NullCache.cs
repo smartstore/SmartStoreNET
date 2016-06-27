@@ -22,7 +22,7 @@ namespace SmartStore.Core.Caching
 			return default(T);
 		}
 
-		public T Get<T>(string key, Func<T> acquirer, int? cacheTime = null)
+		public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null)
 		{
 			if (acquirer == null)
 			{
@@ -32,7 +32,7 @@ namespace SmartStore.Core.Caching
 		}
 
 
-		public void Set(string key, object value, int? cacheTime = null)
+		public void Set(string key, object value, TimeSpan? duration = null)
 		{
 		}
 

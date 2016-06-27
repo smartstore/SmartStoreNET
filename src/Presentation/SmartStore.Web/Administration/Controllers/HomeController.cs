@@ -130,7 +130,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					return new List<FeedItemModel> {new FeedItemModel { IsError = true, Summary = ex.Message } };
 				}
-			}, 720 /* 12 h */);
+			}, TimeSpan.FromHours(12));
 
 			if (result.Any() && result.First().IsError)
 			{

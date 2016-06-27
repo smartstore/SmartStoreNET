@@ -10,18 +10,17 @@ using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Data.Caching
 {
-	
 	internal class EfCacheImpl : EFCache.ICache
 	{
 		private const string KEYPREFIX = "EfCache__";
 		private readonly Multimap<string, string> _entitySetToKey = new Multimap<string, string>(() => new HashSet<string>());
 		
 		private readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
-		private readonly ICache _cache;
+		private readonly ICacheManager _cache;
 		
-		public EfCacheImpl(ICache innerCache)
+		public EfCacheImpl(ICacheManager innerCache)
 		{
-			this._cache = innerCache;
+			_cache = innerCache;
 		}
 		
 		public bool GetItem(string key, out object value)
@@ -31,7 +30,7 @@ namespace SmartStore.Data.Caching
 
 			if (_cache.Contains(key))
 			{
-				value = _cache.Get(key);
+				value = _cache.Get<object>(key);
 				return true;
 			}
 
@@ -46,7 +45,7 @@ namespace SmartStore.Data.Caching
 			{
 				var now = DateTimeOffset.Now;
 				var expiresInMinutes = Math.Max(1, Math.Min(int.MaxValue, (absoluteExpiration - now).TotalMinutes));
-				_cache.Set(key, value, (int)expiresInMinutes);
+				_cache.Set(key, value, TimeSpan.FromMinutes(expiresInMinutes));
 
 				foreach (var s in dependentEntitySets)
 				{

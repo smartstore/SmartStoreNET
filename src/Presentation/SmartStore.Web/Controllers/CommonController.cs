@@ -1021,7 +1021,7 @@ namespace SmartStore.Web.Controllers
 				model.MerchantContactData = contactSettings;
 
 				return model;			
-			}, 1 /* 1 min. (just for the duration of pdf processing) */);
+			}, TimeSpan.FromMinutes(1) /* 1 min. (just for the duration of pdf processing) */);
 		}
 
 		#endregion

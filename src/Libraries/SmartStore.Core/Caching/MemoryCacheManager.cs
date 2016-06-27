@@ -47,7 +47,7 @@ namespace SmartStore.Core.Caching
 			return value;
 		}
 
-        public T Get<T>(string key, Func<T> acquirer, int? cacheTime = null)
+        public T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null)
         {
 			T value;
 
@@ -62,7 +62,7 @@ namespace SmartStore.Core.Caching
 				if (!TryGet(key, out value))
 				{
 					value = acquirer();
-					Set(key, value, cacheTime);
+					Set(key, value, duration);
 					return value;
 				}
 			}
@@ -70,9 +70,9 @@ namespace SmartStore.Core.Caching
 			return value;
 		}
 
-		public void Set(string key, object value, int? cacheTime = null)
+		public void Set(string key, object value, TimeSpan? duration = null)
 		{
-			_cache.Set(key, value ?? FakeNull, GetCacheItemPolicy(cacheTime));
+			_cache.Set(key, value ?? FakeNull, GetCacheItemPolicy(duration));
 		}
 
         public bool Contains(string key)
@@ -125,13 +125,13 @@ namespace SmartStore.Core.Caching
 			return new Regex(pattern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		}
 
-		private CacheItemPolicy GetCacheItemPolicy(int? cacheTime)
+		private CacheItemPolicy GetCacheItemPolicy(TimeSpan? duration)
 		{
 			var absoluteExpiration = ObjectCache.InfiniteAbsoluteExpiration;
 
-			if (cacheTime.HasValue)
+			if (duration.HasValue)
 			{
-				absoluteExpiration = DateTime.UtcNow + TimeSpan.FromMinutes(cacheTime.Value);
+				absoluteExpiration = DateTime.UtcNow + duration.Value;
 			}
 
 			var cacheItemPolicy = new CacheItemPolicy

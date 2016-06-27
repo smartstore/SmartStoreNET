@@ -327,7 +327,7 @@ namespace SmartStore.Services.Localization
 				}
 
 				return map;
-			}, 1440 /* 24 hrs */);
+			}, TimeSpan.FromDays(1));
 
 			return result;
 		}

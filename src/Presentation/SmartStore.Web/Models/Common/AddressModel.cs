@@ -15,7 +15,16 @@ namespace SmartStore.Web.Models.Common
         {
             AvailableCountries = new List<SelectListItem>();
             AvailableStates = new List<SelectListItem>();
+            AvailableSalutations = new List<SelectListItem>();
         }
+
+        [SmartResourceDisplayName("Address.Fields.Salutation")]
+        public string Salutation { get; set; }
+        public bool SalutationEnabled { get; set; }
+
+        [SmartResourceDisplayName("Address.Fields.Title")]
+        public string Title { get; set; }
+        public bool TitleEnabled { get; set; }
 
         [SmartResourceDisplayName("Address.Fields.FirstName")]
         [AllowHtml]
@@ -97,5 +106,6 @@ namespace SmartStore.Web.Models.Common
 
         public IList<SelectListItem> AvailableCountries { get; set; }
         public IList<SelectListItem> AvailableStates { get; set; }
+        public IList<SelectListItem> AvailableSalutations { get; set; }
     }
 }

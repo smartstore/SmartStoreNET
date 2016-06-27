@@ -1,13 +1,15 @@
-﻿
-using SmartStore.Core.Configuration;
+﻿using SmartStore.Core.Configuration;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Common
 {
-    public class AddressSettings : ISettings
+    public class AddressSettings : BaseEntity, ISettings, ILocalizedEntity
     {
 		public AddressSettings()
 		{
             ValidateEmailAddress = false;
+            SalutationEnabled = false;
+            TitleEnabled = false;
 			CompanyEnabled = true;
 			StreetAddressEnabled = true;
 			StreetAddressRequired = true;
@@ -27,6 +29,21 @@ namespace SmartStore.Core.Domain.Common
         /// Gets or sets a value indicating whether email address should be validated
         /// </summary>
         public bool ValidateEmailAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether 'Salutation' is enabled
+        /// </summary>
+        public bool SalutationEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets values with available salutations
+        /// </summary>
+        public string Salutations { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether 'Title' is enabled
+        /// </summary>
+        public bool TitleEnabled { get; set; }
 
 		/// <summary>
         /// Gets or sets a value indicating whether 'Company' is enabled

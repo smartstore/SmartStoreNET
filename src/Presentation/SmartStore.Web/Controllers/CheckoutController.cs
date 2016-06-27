@@ -61,6 +61,7 @@ namespace SmartStore.Web.Controllers
         private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly PaymentSettings _paymentSettings;
         private readonly AddressSettings _addressSettings;
+        private readonly ShippingSettings _shippingSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly PluginMediator _pluginMediator;
 
@@ -81,7 +82,7 @@ namespace SmartStore.Web.Controllers
             HttpContextBase httpContext, IMobileDeviceHelper mobileDeviceHelper,
             OrderSettings orderSettings, RewardPointsSettings rewardPointsSettings,
             PaymentSettings paymentSettings, AddressSettings addressSettings,
-            ShoppingCartSettings shoppingCartSettings,
+            ShoppingCartSettings shoppingCartSettings, ShippingSettings shippingSettings,
 			ISettingService settingService,
 			PluginMediator pluginMediator)
         {
@@ -110,6 +111,7 @@ namespace SmartStore.Web.Controllers
             this._rewardPointsSettings = rewardPointsSettings;
             this._paymentSettings = paymentSettings;
             this._addressSettings = addressSettings;
+            this._shippingSettings = shippingSettings;
             this._shoppingCartSettings = shoppingCartSettings;
 			this._pluginMediator = pluginMediator;
         }
@@ -599,13 +601,28 @@ namespace SmartStore.Web.Controllers
             if (!cart.RequiresShipping())
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, null, _storeContext.CurrentStore.Id);
+
                 return RedirectToAction("PaymentMethod");
-            }            
-            
+            }
+                        
+            var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
+
+            if (shippingOptions.Count <= 1 && _shippingSettings.SuppressShippingOptsCheckoutStepIfOnlyOneActiveOpt)
+            {
+                _genericAttributeService.SaveAttribute<ShippingOption>(
+                    _workContext.CurrentCustomer, 
+                    SystemCustomerAttributeNames.SelectedShippingOption, 
+                    shippingOptions.FirstOrDefault(), 
+                    _storeContext.CurrentStore.Id);
+
+                return RedirectToAction("PaymentMethod");
+            }
+
             //model
             var model = PrepareShippingMethodModel(cart);
             return View(model);
         }
+
         [HttpPost, ActionName("ShippingMethod")]
         [FormValueRequired("nextstep")]
         [ValidateInput(false)]
@@ -921,6 +938,15 @@ namespace SmartStore.Web.Controllers
         public ActionResult CheckoutProgress(CheckoutProgressStep step)
         {
             var model = new CheckoutProgressModel() {CheckoutProgressStep = step};
+
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
+
+            if (shippingOptions.Count <= 1 && _shippingSettings.SuppressShippingOptsCheckoutStepIfOnlyOneActiveOpt)
+            {
+                model.DisplayShippingOptions = false;
+            }
+
             return PartialView(model);
         }
         #endregion

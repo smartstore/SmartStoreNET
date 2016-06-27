@@ -1926,7 +1926,7 @@ namespace SmartStore.Web.Controllers
 
                             decimal rateBase = _taxService.GetShippingPrice(shippingTotal, _workContext.CurrentCustomer);
                             decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
-                            soModel.Price = _priceFormatter.FormatShippingPrice(rate, false /*true*/);
+                            soModel.Price = _priceFormatter.FormatShippingPrice(rate, true);
 
                             model.EstimateShipping.ShippingOptions.Add(soModel);
                         }

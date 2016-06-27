@@ -803,6 +803,8 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Order.CustomerFullName", string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName)));
             tokens.Add(new Token("Order.CustomerEmail", order.BillingAddress.Email));
 
+            tokens.Add(new Token("Order.BillingSalutation", order.BillingAddress.Salutation));
+            tokens.Add(new Token("Order.BillingTitle", order.BillingAddress.Title));
 			tokens.Add(new Token("Order.BillingFirstName", order.BillingAddress.FirstName));
 			tokens.Add(new Token("Order.BillingLastName", order.BillingAddress.LastName));
 			tokens.Add(new Token("Order.BillingPhoneNumber", order.BillingAddress.PhoneNumber));
@@ -817,6 +819,8 @@ namespace SmartStore.Services.Messages
 			tokens.Add(new Token("Order.BillingCountry", order.BillingAddress.Country != null ? order.BillingAddress.Country.GetLocalized(x => x.Name) : ""));
 
             tokens.Add(new Token("Order.ShippingMethod", order.ShippingMethod));
+            tokens.Add(new Token("Order.ShippingSalutation", order.ShippingAddress != null ? order.ShippingAddress.Salutation : ""));
+            tokens.Add(new Token("Order.ShippingTitle", order.ShippingAddress != null ? order.ShippingAddress.Title : ""));
             tokens.Add(new Token("Order.ShippingFirstName", order.ShippingAddress != null ? order.ShippingAddress.FirstName : ""));
             tokens.Add(new Token("Order.ShippingLastName", order.ShippingAddress != null ? order.ShippingAddress.LastName : ""));
             tokens.Add(new Token("Order.ShippingPhoneNumber", order.ShippingAddress != null ? order.ShippingAddress.PhoneNumber : ""));

@@ -52,5 +52,10 @@ namespace SmartStore.Core.Domain.Shipping
         /// Gets or sets a value indicating whether we should return valid options if there are any (no matter of the errors returned by other shipping rate compuation methods).
         /// </summary>
         public bool ReturnValidOptionsIfThereAreAny { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to display shipping options during checkout process only if more then one option is available
+        /// </summary>
+        public bool SuppressShippingOptsCheckoutStepIfOnlyOneActiveOpt { get; set; }
     }
 }

@@ -147,6 +147,7 @@
                                 <strong>@T("Order.BillingAddress"):</strong>
                             </div>
                             <div class="name">
+                                @Model.BillingAddress.Salutation @(!String.IsNullOrEmpty(Model.BillingAddress.Title) ? @Model.BillingAddress.Title + " " : "")
                                 @Model.BillingAddress.FirstName @Model.BillingAddress.LastName
                             </div>
                             <div class="email">
@@ -158,7 +159,7 @@
                                     @T("Order.Phone"): @Model.BillingAddress.PhoneNumber
                                 </div>
                             }
-                            @if (Model.BillingAddress.FaxEnabled)
+                            @if (Model.BillingAddress.FaxEnabled && !String.IsNullOrEmpty(Model.BillingAddress.FaxNumber))
                             {
                                 <div class="fax">
                                     @T("Order.Fax"): @Model.BillingAddress.FaxNumber
@@ -265,6 +266,7 @@
                                         @T("Order.ShippingAddress"):</strong>
                                 </div>
                                 <div class="name">
+                                    @Model.ShippingAddress.Salutation @(!String.IsNullOrEmpty(Model.ShippingAddress.Title) ? @Model.ShippingAddress.Title + " " : "")
                                     @Model.ShippingAddress.FirstName @Model.ShippingAddress.LastName
                                 </div>
                                 <div class="email">
@@ -276,7 +278,7 @@
                                         @T("Order.Phone"): @Model.ShippingAddress.PhoneNumber
                                     </div>
                                 }
-                                @if (Model.ShippingAddress.FaxEnabled)
+                                @if (Model.ShippingAddress.FaxEnabled && !String.IsNullOrEmpty(Model.ShippingAddress.FaxNumber))
                                 {
                                     <div class="fax">
                                         @T("Order.Fax"): @Model.ShippingAddress.FaxNumber

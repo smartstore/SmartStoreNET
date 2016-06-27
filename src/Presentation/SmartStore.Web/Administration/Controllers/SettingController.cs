@@ -308,9 +308,6 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("News");
         }
 
-
-
-
         public ActionResult Shipping()
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
@@ -366,6 +363,7 @@ namespace SmartStore.Admin.Controllers
 
             return View(model);
         }
+
         [HttpPost]
 		public ActionResult Shipping(ShippingSettingsModel model, FormCollection form)
         {
@@ -412,9 +410,6 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("Shipping");
         }
-
-
-
 
         public ActionResult Tax()
         {
@@ -499,6 +494,7 @@ namespace SmartStore.Admin.Controllers
 
             return View(model);
         }
+
         [HttpPost]
         public ActionResult Tax(TaxSettingsModel model, FormCollection form)
         {
@@ -549,9 +545,6 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("Tax");
         }
 
-
-
-
         public ActionResult Catalog()
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
@@ -590,6 +583,7 @@ namespace SmartStore.Admin.Controllers
 
             return View(model);
         }
+
         [HttpPost]
         public ActionResult Catalog(CatalogSettingsModel model, FormCollection form)
         {
@@ -609,8 +603,6 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("Catalog");
         }
-
-
 
         public ActionResult RewardPoints()
         {
@@ -668,9 +660,6 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("RewardPoints");
         }
 
-
-
-
         public ActionResult Order()
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
@@ -705,6 +694,7 @@ namespace SmartStore.Admin.Controllers
 
             return View(model);
         }
+
         [HttpPost]
         public ActionResult Order(OrderSettingsModel model, FormCollection form)
         {
@@ -763,9 +753,6 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("Order");
         }
 
-
-
-
         public ActionResult ShoppingCart()
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
@@ -789,6 +776,7 @@ namespace SmartStore.Admin.Controllers
 
 			return View(model);
         }
+
         [HttpPost]
         public ActionResult ShoppingCart(ShoppingCartSettingsModel model, FormCollection form)
         {
@@ -818,9 +806,6 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(T("Admin.Configuration.Updated"));
             return RedirectToAction("ShoppingCart");
         }
-
-
-
 
         public ActionResult Media()
         {
@@ -856,6 +841,7 @@ namespace SmartStore.Admin.Controllers
 
             return View(model);
         }
+
         [HttpPost]
         [FormValueRequired("save")]
         public ActionResult Media(MediaSettingsModel model, FormCollection form)
@@ -876,6 +862,7 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("Media");
         }
+
         [HttpPost, ActionName("Media")]
         [FormValueRequired("change-picture-storage")]
         public ActionResult ChangePictureStorage()
@@ -891,8 +878,6 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("Media");
         }
-
-
 
         public ActionResult CustomerUser()
         {

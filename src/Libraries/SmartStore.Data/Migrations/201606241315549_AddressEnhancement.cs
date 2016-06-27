@@ -47,6 +47,12 @@ namespace SmartStore.Data.Migrations
                 "'Titel' aktiv",
                 "Set if 'Title' is enabled.",
                 "Legt fest, ob das Feld 'Titel' aktiv ist.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Shipping.SuppressShippingOptsCheckoutStepIfOnlyOneActiveOpt",
+                "Display shipping options during checkout process only if more then one option is available",
+                "Versandartauswahl nur anzeigen, wenn mehr als eine Versandart zur Verfügung steht",
+                "Display shipping options during the checkout process only if more then one shipping option is available.",
+                "Legt fest, ob die Versandartauswahl nur im Checkout-Prozess angezeigt wird, wenn mehr als eine Versandart zur Verfügung steht");
         }
     }
 }

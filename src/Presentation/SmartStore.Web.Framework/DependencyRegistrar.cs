@@ -528,7 +528,7 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			// Output cache
-			builder.RegisterType<DisplayedEntities>().As<IDisplayedEntities>().InstancePerRequest();
+			builder.RegisterType<DisplayControl>().As<IDisplayControl>().InstancePerRequest();
 
 			// Request cache
 			builder.RegisterType<RequestCache>().As<IRequestCache>().InstancePerRequest();

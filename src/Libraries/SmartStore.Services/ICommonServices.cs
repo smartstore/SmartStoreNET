@@ -31,7 +31,7 @@ namespace SmartStore.Services
 			get;
 		}
 
-		IDisplayedEntities DisplayedEntities
+		IDisplayControl DisplayControl
 		{
 			get;
 		}

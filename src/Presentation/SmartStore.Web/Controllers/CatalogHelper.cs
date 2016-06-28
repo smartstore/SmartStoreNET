@@ -1032,7 +1032,7 @@ namespace SmartStore.Web.Controllers
 
 			#endregion
 
-			_services.DisplayedEntities.Add(product);
+			_services.DisplayControl.Announce(product);
 
 			return model;
 		}
@@ -1204,7 +1204,7 @@ namespace SmartStore.Web.Controllers
 						{
 							contextProduct = associatedProducts.OrderBy(x => x.DisplayOrder).First();
 
-							_services.DisplayedEntities.Add(contextProduct);
+							_services.DisplayControl.Announce(contextProduct);
 
 							if (displayPrices && _catalogSettings.PriceDisplayType != PriceDisplayType.Hide)
 							{
@@ -1476,7 +1476,7 @@ namespace SmartStore.Web.Controllers
 				models.Add(model);
 			}
 
-			_services.DisplayedEntities.AddRange(products);
+			_services.DisplayControl.AnnounceRange(products);
 
 			return models;
 		}

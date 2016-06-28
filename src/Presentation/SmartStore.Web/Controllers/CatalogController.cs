@@ -156,7 +156,7 @@ namespace SmartStore.Web.Controllers
             
             var model = category.ToModel();
 
-			_services.DisplayedEntities.Add(category);
+			_services.DisplayControl.Announce(category);
 
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
             {
@@ -205,7 +205,7 @@ namespace SmartStore.Web.Controllers
                         SeName = x.GetSeName(),
                     };
 
-					_services.DisplayedEntities.Add(x);
+					_services.DisplayControl.Announce(x);
 					
                     // prepare picture model
                     int pictureSize = _mediaSettings.CategoryThumbPictureSize;
@@ -222,7 +222,7 @@ namespace SmartStore.Web.Controllers
                             AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), subCatName)
                         };
 
-						_services.DisplayedEntities.Add(picture);
+						_services.DisplayControl.Announce(picture);
 
                         return pictureModel;
                     });

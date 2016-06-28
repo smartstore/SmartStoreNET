@@ -72,6 +72,7 @@ namespace SmartStore.Services.Tasks
 				// do not throw an exception if the underlying provider failed on Open.
 				exc.Dump();
 			}
+
 			return null;
         }
 
@@ -204,6 +205,29 @@ namespace SmartStore.Services.Tasks
 			} while (saveFailed);
         }
 
+		public ScheduleTask GetOrAddTask<T>(Action<ScheduleTask> newAction) where T : ITask
+		{
+			Guard.ArgumentNotNull(() => newAction);
+
+			var type = typeof(T);
+
+			if (type.IsAbstract || type.IsInterface || type.IsNotPublic)
+			{
+				throw new InvalidOperationException("Only concrete public task types can be registered.");
+			}
+
+			var scheduleTask = this.GetTaskByType<T>();
+
+			if (scheduleTask == null)
+			{
+				scheduleTask = new ScheduleTask { Type = type.AssemblyQualifiedNameWithoutVersion() };
+				newAction(scheduleTask);
+				InsertTask(scheduleTask);
+			}
+
+			return scheduleTask;
+		}
+
 		public void CalculateFutureSchedules(IEnumerable<ScheduleTask> tasks, bool isAppStart = false)
 		{
 			Guard.ArgumentNotNull(() => tasks);
@@ -247,7 +271,7 @@ namespace SmartStore.Services.Tasks
 			return null;
 		}
 
-        #endregion
+		#endregion
 
 	}
 }

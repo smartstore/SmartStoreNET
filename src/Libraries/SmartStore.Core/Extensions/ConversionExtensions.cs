@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
@@ -321,11 +322,47 @@ namespace SmartStore
             }
         }
 
-        #endregion
+		/// <summary>
+		/// Compresses the input buffer with <see cref="GZipStream"/>
+		/// </summary>
+		/// <param name="buffer">Decompressed input</param>
+		/// <returns>The compressed result</returns>
+		public static byte[] Zip(this byte[] buffer)
+		{
+			Guard.ArgumentNotNull(() => buffer);
 
-        #region Enumerable: Collections/List/Dictionary...
+			using (var compressedStream = new MemoryStream())
+			using (var zipStream = new GZipStream(compressedStream, CompressionMode.Compress))
+			{
+				zipStream.Write(buffer, 0, buffer.Length);
+				zipStream.Close();
+				return compressedStream.ToArray();
+			}
+		}
 
-        public static T ToObject<T>(this IDictionary<string, object> values) where T : class
+		/// <summary>
+		/// Decompresses the input buffer with <see cref="GZipStream"/> decompression
+		/// </summary>
+		/// <param name="buffer">Compressed input</param>
+		/// <returns>The decompressed result</returns>
+		public static byte[] UnZip(this byte[] buffer)
+		{
+			Guard.ArgumentNotNull(() => buffer);
+
+			using (var compressedStream = new MemoryStream(buffer))
+			using (var zipStream = new GZipStream(compressedStream, CompressionMode.Decompress))
+			using (var resultStream = new MemoryStream())
+			{
+				zipStream.CopyTo(resultStream);
+				return resultStream.ToArray();
+			}
+		}
+
+		#endregion
+
+		#region Enumerable: Collections/List/Dictionary...
+
+		public static T ToObject<T>(this IDictionary<string, object> values) where T : class
         {
             return (T)values.ToObject(typeof(T));
         }

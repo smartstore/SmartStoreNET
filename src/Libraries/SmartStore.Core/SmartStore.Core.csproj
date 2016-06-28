@@ -145,9 +145,9 @@
     </Compile>
     <Compile Include="Async\AsyncState.cs" />
     <Compile Include="Caching\MemoryCacheManager.cs" />
-    <Compile Include="Caching\DisplayedEntities.cs" />
+    <Compile Include="Caching\DisplayControl.cs" />
     <Compile Include="Caching\IRequestCache.cs" />
-    <Compile Include="Caching\IDisplayedEntities.cs" />
+    <Compile Include="Caching\IDisplayControl.cs" />
     <Compile Include="Caching\IOutputCacheProvider.cs" />
     <Compile Include="Caching\NullOutputCacheProvider.cs" />
     <Compile Include="Caching\OutputCacheItem.cs" />

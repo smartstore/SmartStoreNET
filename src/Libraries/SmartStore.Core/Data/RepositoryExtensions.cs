@@ -6,8 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 
 namespace SmartStore.Core.Data
-{
-    
+{   
     public static class RepositoryExtensions
     {
         public static T GetFirst<T>(this IRepository<T> rs, Func<T, bool> predicate) where T : BaseEntity

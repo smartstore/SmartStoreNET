@@ -11,9 +11,9 @@ namespace SmartStore.Core.Caching
 	[FriendlyName("Idle")]
 	public class NullOutputCacheProvider : IOutputCacheProvider
 	{
-		public IEnumerable<OutputCacheItem> All(int skip, int count)
+		public IPagedList<OutputCacheItem> All(int pageIndex, int pageSize)
 		{
-			return Enumerable.Empty<OutputCacheItem>();
+			return new PagedList<OutputCacheItem>(new List<OutputCacheItem>(), pageIndex, pageSize);
 		}
 
 		public int Count()

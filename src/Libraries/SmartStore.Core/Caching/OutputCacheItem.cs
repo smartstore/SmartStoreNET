@@ -24,14 +24,14 @@ namespace SmartStore.Core.Caching
 		public string ContentType { get; set; }
 		public string Content { get; set; }
 
-		public DateTime ValidUntilUtc
+		public DateTime ExpiresOnUtc
 		{
 			get { return CachedOnUtc.AddSeconds(Duration); }
 		}
 
 		public bool IsValid(DateTime utcNow)
 		{
-			return utcNow < ValidUntilUtc;
+			return utcNow < ExpiresOnUtc;
 		}
 
 		public string JoinTags()

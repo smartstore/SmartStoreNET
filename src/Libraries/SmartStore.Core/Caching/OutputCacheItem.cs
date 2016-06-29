@@ -7,6 +7,9 @@ namespace SmartStore.Core.Caching
 	[DebuggerDisplay("{CacheKey}, Url: {Url}, Query: {QueryString}, Duration: {Duration}, Tags: {Tags}")]
 	public class OutputCacheItem
 	{
+		// used for serialization compatibility
+		public static readonly string Version = "1";
+
 		public string CacheKey { get; set; }
 		public string RouteKey { get; set; }
 		public DateTime CachedOnUtc { get; set; }

@@ -536,6 +536,10 @@ namespace SmartStore.Web.Framework
 			// Model/Business cache (application scoped)
 			builder.RegisterType<MemoryCacheManager>().As<ICacheManager>().SingleInstance();
 			builder.RegisterType<NullCache>().Named<ICacheManager>("null").SingleInstance();
+
+			// Register MemoryCacheManager twice, this time explicitly named.
+			// We may need this later in decorator classes as a kind of fallback.
+			builder.RegisterType<MemoryCacheManager>().Named<ICacheManager>("memory").SingleInstance();
 		}
 	}
 
@@ -631,7 +635,7 @@ namespace SmartStore.Web.Framework
 			// global exception handling
 			if (DataSettings.DatabaseIsInstalled())
 			{
-				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<Controller>();
+				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<Controller>(-100);
 			}
 		}
 

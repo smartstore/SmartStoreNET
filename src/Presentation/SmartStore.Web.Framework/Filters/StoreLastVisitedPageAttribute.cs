@@ -7,7 +7,7 @@ using SmartStore.Services.Common;
 
 namespace SmartStore.Web.Framework.Filters
 {
-    public class StoreLastVisitedPageAttribute : ActionFilterAttribute
+    public class StoreLastVisitedPageAttribute : FilterAttribute, IActionFilter
     {
 
 		public Lazy<IWebHelper> WebHelper { get; set; }
@@ -16,7 +16,7 @@ namespace SmartStore.Web.Framework.Filters
 		public Lazy<IGenericAttributeService> GenericAttributeService { get; set; }
 		public Lazy<IUserAgent> UserAgent { get; set; }
 
-		public override void OnActionExecuting(ActionExecutingContext filterContext)
+		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
 			if (!DataSettings.DatabaseIsInstalled())
                 return;
@@ -63,5 +63,9 @@ namespace SmartStore.Web.Framework.Filters
 				}
 			}
 		}
-    }
+
+		public virtual void OnActionExecuted(ActionExecutedContext filterContext)
+		{
+		}
+	}
 }

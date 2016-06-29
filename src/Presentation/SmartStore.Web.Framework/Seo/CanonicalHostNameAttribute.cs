@@ -7,13 +7,8 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Seo
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public class CanonicalHostNameAttribute : FilterAttribute, IAuthorizationFilter
     {
-		public CanonicalHostNameAttribute()
-        {
-        }
-
 		public Lazy<SeoSettings> SeoSettings { get; set; }
 		public Lazy<IWebHelper> WebHelper { get; set; }
 		public Lazy<IStoreContext> StoreContext { get; set; }

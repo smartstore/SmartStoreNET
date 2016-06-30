@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Web.Mvc;
-using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
@@ -164,6 +163,7 @@ namespace SmartStore.PayPal.Models
 			{
 				SecurityProtocol = settings.SecurityProtocol;
 				UseSandbox = settings.UseSandbox;
+				TransactMode = (int)Settings.TransactMode.AuthorizeAndCapture;
 				AdditionalFee = settings.AdditionalFee;
 				AdditionalFeePercentage = settings.AdditionalFeePercentage;
 
@@ -179,6 +179,7 @@ namespace SmartStore.PayPal.Models
 			{
 				settings.SecurityProtocol = SecurityProtocol;
 				settings.UseSandbox = UseSandbox;
+				settings.TransactMode = Settings.TransactMode.AuthorizeAndCapture;
 				settings.AdditionalFee = AdditionalFee;
 				settings.AdditionalFeePercentage = AdditionalFeePercentage;
 

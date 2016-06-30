@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
@@ -1061,7 +1062,7 @@ namespace SmartStore.Web.Controllers
 
 		public IList<MenuItem> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId)
 		{
-			var requestCache = SmartStore.Core.Infrastructure.EngineContext.Current.Resolve<ICacheManager>();
+			var requestCache = EngineContext.Current.Resolve<ICacheManager>();
 			string cacheKey = "sm.temp.category.path.{0}-{1}".FormatInvariant(currentCategoryId, currentProductId);
 
 			var breadcrumb = requestCache.Get(cacheKey, () =>

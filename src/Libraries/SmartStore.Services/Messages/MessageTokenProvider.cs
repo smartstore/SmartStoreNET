@@ -40,7 +40,7 @@ using SmartStore.Services.Topics;
 
 namespace SmartStore.Services.Messages
 {
-    public partial class MessageTokenProvider : IMessageTokenProvider
+	public partial class MessageTokenProvider : IMessageTokenProvider
     {
         #region Fields
 
@@ -740,9 +740,14 @@ namespace SmartStore.Services.Messages
             return result;
         }
 
-        #endregion
+		protected virtual string GetBoolResource(bool value, int languageId)
+		{
+			return _localizationService.GetResource(value ? "Common.Yes" : "Common.No", languageId);
+		}
 
-        #region Methods
+		#endregion
+
+		#region Methods
 
 		public virtual void AddStoreTokens(IList<Token> tokens, Store store)
         {
@@ -865,9 +870,10 @@ namespace SmartStore.Services.Messages
 
             tokens.Add(new Token("Order.Disclaimer", TopicToHtml("Disclaimer", language.Id), true));
             tokens.Add(new Token("Order.ConditionsOfUse", TopicToHtml("ConditionsOfUse", language.Id), true));
+			tokens.Add(new Token("Order.AcceptThirdPartyEmailHandOver", GetBoolResource(order.AcceptThirdPartyEmailHandOver, language.Id)));
 
-            //event notification
-            _eventPublisher.EntityTokensAdded(order, tokens);
+			//event notification
+			_eventPublisher.EntityTokensAdded(order, tokens);
         }
 
 		private string GetLocalizedValue(ProviderMetadata metadata, string propertyName, Expression<Func<ProviderMetadata, string>> fallback)
@@ -1236,7 +1242,8 @@ namespace SmartStore.Services.Messages
                 "%BackInStockSubscription.ProductName%",
                 "%Order.Disclaimer%",
                 "%Order.ConditionsOfUse%",
-                "%Company.CompanyName%",
+				"%Order.AcceptThirdPartyEmailHandOver%",
+				"%Company.CompanyName%",
                 "%Company.Salutation%",
                 "%Company.Title%",
                 "%Company.Firstname%",

@@ -1,5 +1,11 @@
 ﻿# Release Notes
 
+## SmartStore.NET 3.0
+
+### Improvements
+* Added order message token for accepting third party email handover
+
+
 ## SmartStore.NET 2.6
 
 ### Highlights

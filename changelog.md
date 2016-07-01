@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.0
 
@@ -11,6 +11,8 @@
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation
+* SKU, EAN, MPN of last attribute combination was exported for all combinations
+
 
 ## SmartStore.NET 2.6
 

@@ -280,6 +280,14 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
+            // was shipping skipped 
+            var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
+
+            if (!cart.RequiresShipping() || (shippingOptions.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption))
+            {
+                model.SkippedSelectShipping = true;
+            }
+
 			var paymentTypes = new PaymentMethodType[] { PaymentMethodType.Standard, PaymentMethodType.Redirection, PaymentMethodType.StandardAndRedirection };
 
             var boundPaymentMethods = _paymentService
@@ -533,6 +541,7 @@ namespace SmartStore.Web.Controllers
             var model = PrepareShippingAddressModel();
             return View(model);
         }
+
         public ActionResult SelectShippingAddress(int addressId)
         {
             var address = _workContext.CurrentCustomer.Addresses.Where(a => a.Id == addressId).FirstOrDefault();
@@ -544,6 +553,7 @@ namespace SmartStore.Web.Controllers
 
 			return RedirectToAction("ShippingMethod");
         }
+
         [HttpPost, ActionName("ShippingAddress")]
         [FormValueRequired("nextstep")]
         public ActionResult NewShippingAddress(CheckoutShippingAddressModel model)
@@ -607,7 +617,7 @@ namespace SmartStore.Web.Controllers
                         
             var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
 
-            if (shippingOptions.Count <= 1 && _shippingSettings.SuppressShippingOptsCheckoutStepIfOnlyOneActiveOpt)
+            if (shippingOptions.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption)
             {
                 _genericAttributeService.SaveAttribute<ShippingOption>(
                     _workContext.CurrentCustomer, 
@@ -942,7 +952,7 @@ namespace SmartStore.Web.Controllers
             var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
             var shippingOptions = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id).ShippingOptions;
 
-            if (shippingOptions.Count <= 1 && _shippingSettings.SuppressShippingOptsCheckoutStepIfOnlyOneActiveOpt)
+            if (shippingOptions.Count <= 1 && _shippingSettings.SkipShippingIfSingleOption)
             {
                 model.DisplayShippingOptions = false;
             }

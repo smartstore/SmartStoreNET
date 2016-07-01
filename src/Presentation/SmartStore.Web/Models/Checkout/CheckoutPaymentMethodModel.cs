@@ -16,6 +16,7 @@ namespace SmartStore.Web.Models.Checkout
         public int RewardPointsBalance { get; set; }
         public string RewardPointsAmount { get; set; }
         public bool UseRewardPoints { get; set; }
+        public bool SkippedSelectShipping { get; set; }
 
         #region Nested classes
 

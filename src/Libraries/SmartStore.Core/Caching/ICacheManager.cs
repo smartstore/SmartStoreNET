@@ -65,5 +65,10 @@ namespace SmartStore.Core.Caching
         /// Clear all cache data
         /// </summary>
         void Clear();
+
+		/// <summary>
+		/// Gets a value indicating whether the cache is distributed (e.g. Redis)
+		/// </summary>
+		bool IsDistributedCache { get; }
     }
 }

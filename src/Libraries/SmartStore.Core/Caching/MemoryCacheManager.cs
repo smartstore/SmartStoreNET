@@ -10,9 +10,14 @@ namespace SmartStore.Core.Caching
 		// Wwe put a special string into cache if value is null,
 		// otherwise our 'Contains()' would always return false,
 		// which is bad if we intentionally wanted to save NULL values.
-		private const string FakeNull = "__[NULL]__";
+		public const string FakeNull = "__[NULL]__";
 
 		private readonly MemoryCache _cache;
+
+		public bool IsDistributedCache
+		{
+			get { return false; }
+		}
 
 		public MemoryCacheManager()
 		{
@@ -56,7 +61,7 @@ namespace SmartStore.Core.Caching
 				return value;
 			}
 
-			lock (_cache)
+			lock (String.Intern(key))
 			{
 				// atomic operation must be outer locked
 				if (!TryGet(key, out value))
@@ -96,9 +101,7 @@ namespace SmartStore.Core.Caching
 				return keys.ToArray();
 			}
 
-			var matcher = CreateMatcher(pattern);
-
-			return keys.Where(x => matcher.IsMatch(x)).ToArray();
+			return keys.Where(x => x.StartsWith(pattern, StringComparison.OrdinalIgnoreCase)).ToArray();
 		}
 
 		public void RemoveByPattern(string pattern)
@@ -119,11 +122,6 @@ namespace SmartStore.Core.Caching
         {
 			RemoveByPattern("*");
         }
-
-		private static Regex CreateMatcher(string pattern)
-		{
-			return new Regex(pattern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
-		}
 
 		private CacheItemPolicy GetCacheItemPolicy(TimeSpan? duration)
 		{

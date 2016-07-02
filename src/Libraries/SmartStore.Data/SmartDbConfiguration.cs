@@ -35,6 +35,11 @@ namespace SmartStore.Data
 				try
 				{
 					var innerCache = EngineContext.Current.Resolve<ICacheManager>();
+					if (innerCache.IsDistributedCache)
+					{
+						// fuckin' EfCache puts internal, unserializable objects to the cache!!!
+						innerCache = EngineContext.Current.Resolve<ICacheManager>("memory");
+					}
 					cache = new EfCacheImpl(innerCache);
 				}
 				catch

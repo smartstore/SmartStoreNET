@@ -16,8 +16,8 @@ namespace SmartStore.Services.Security
     {
         #region Constants
 
-        private const string ACLRECORD_BY_ENTITYID_NAME_KEY = "SmartStore.aclrecord.entityid-name-{0}-{1}";
-        private const string ACLRECORD_PATTERN_KEY = "SmartStore.aclrecord.";
+        private const string ACLRECORD_BY_ENTITYID_NAME_KEY = "aclrecord:entityid-name-{0}-{1}";
+        private const string ACLRECORD_PATTERN_KEY = "aclrecord:";
 
         #endregion
 

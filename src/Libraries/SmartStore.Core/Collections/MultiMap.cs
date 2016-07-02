@@ -4,10 +4,6 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
-
-using SmartStore.Utilities.Threading;
-using System.Collections.ObjectModel;
 
 namespace SmartStore.Collections
 {
@@ -46,7 +42,6 @@ namespace SmartStore.Collections
         {
         }
 
-
 		internal Multimap(IDictionary<TKey, ICollection<TValue>> dictionary, Func<ICollection<TValue>> listCreator)
         {
             _items = dictionary;
@@ -70,10 +65,10 @@ namespace SmartStore.Collections
             _isReadonly = isReadonly;
         }
 
-        /// <summary>
-        /// Gets the count of groups/keys.
-        /// </summary>
-        public int Count
+		/// <summary>
+		/// Gets the count of groups/keys.
+		/// </summary>
+		public int Count
         {
             get
             {
@@ -272,6 +267,6 @@ namespace SmartStore.Collections
             return map;
         }
 
-        #endregion
-    }
+		#endregion
+	}
 }

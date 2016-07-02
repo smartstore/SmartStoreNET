@@ -16,7 +16,7 @@ namespace SmartStore.Services.Localization
     /// </summary>
     public partial class LocalizedEntityService : ILocalizedEntityService
     {
-		private const string LOCALIZEDPROPERTY_ALL_KEY = "SmartStore.localizedproperty.all";
+		private const string LOCALIZEDPROPERTY_ALL_KEY = "localizedproperty:all";
 
         private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
         private readonly ICacheManager _cacheManager;

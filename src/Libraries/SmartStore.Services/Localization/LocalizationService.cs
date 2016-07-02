@@ -27,8 +27,8 @@ namespace SmartStore.Services.Localization
 	public partial class LocalizationService : ILocalizationService
     {
         #region Constants
-        private const string LOCALESTRINGRESOURCES_ALL_KEY = "SmartStore.lsr.all-{0}";
-        private const string LOCALESTRINGRESOURCES_PATTERN_KEY = "SmartStore.lsr.";
+        private const string LOCALESTRINGRESOURCES_ALL_KEY = "localization:all-{0}";
+        private const string LOCALESTRINGRESOURCES_PATTERN_KEY = "localization:";
         #endregion
 
         #region Fields

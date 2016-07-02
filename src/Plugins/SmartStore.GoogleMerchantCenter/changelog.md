@@ -1,5 +1,9 @@
 ﻿#Release Notes
 
+##Google Merchant Center (GMC) 2.6.0.1
+###Bugfixes
+* Id should be unique when exporting attribute combinations as products
+
 ##Google Merchant Center (GMC) 2.5.0.1
 ###Bugfixes
 * GMC feed does not generate the sale price if the sale price is set for a future date

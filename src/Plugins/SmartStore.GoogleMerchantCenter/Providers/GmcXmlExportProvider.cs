@@ -204,6 +204,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							string mainImageUrl = product._MainPictureUrl;
 							var futureSpecialPrice = product._FutureSpecialPrice as decimal?;
 							var price = (decimal)product.Price;
+							var uniqueId = (string)product._UniqueId;
 							string brand = product._Brand;
 							string gtin = product.Gtin;
 							string mpn = product.ManufacturerPartNumber;
@@ -244,7 +245,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 								}
 							}
 
-							writer.WriteElementString("g", "id", _googleNamespace, entity.Id.ToString());
+							writer.WriteElementString("g", "id", _googleNamespace, uniqueId);
 
 							writer.WriteStartElement("title");
 							writer.WriteCData(((string)product.Name).Truncate(70).RemoveInvalidXmlChars());

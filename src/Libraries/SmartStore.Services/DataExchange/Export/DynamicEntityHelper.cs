@@ -585,6 +585,11 @@ namespace SmartStore.Services.DataExchange.Export
 			dynObject._AttributeCombinationId = (combination == null ? 0 : combination.Id);
 			dynObject._DetailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)dynObject.SeName;
 
+			if (combination == null)
+				dynObject._UniqueId = product.Id.ToString();
+			else
+				dynObject._UniqueId = string.Concat(product.Id, "-", combination.Id);
+
 			dynObject.Price = CalculatePrice(ctx, product, combination != null);
 
 			dynObject._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,

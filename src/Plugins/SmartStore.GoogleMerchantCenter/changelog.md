@@ -3,6 +3,7 @@
 ##Google Merchant Center (GMC) 2.6.0.1
 ###Bugfixes
 * Id should be unique when exporting attribute combinations as products
+* No special price exported when the special price period was not specified
 
 ##Google Merchant Center (GMC) 2.5.0.1
 ###Bugfixes

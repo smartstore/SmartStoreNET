@@ -20,12 +20,6 @@ namespace SmartStore.Web.Framework.Theming
 			if (filterContext == null || filterContext.Result == null)
 				return;
 
-			var viewResult = filterContext.Result as ViewResultBase;
-
-			// no need for view resolving if result is not ViewResultBase
-			if (viewResult == null)
-				return;
-
 			// add extra view location formats to all view results (even the partial ones)
 			filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = new string[]
 			{

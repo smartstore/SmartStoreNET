@@ -43,45 +43,45 @@
     <tr>
         <td>
             @(Html.Telerik().Grid<LanguageResourceModel>()
-                    .Name("resources-grid")
-                    .DataKeys(x =>
-                    {
-                        x.Add(y => y.Id).RouteKey("Id");
-                        x.Add(y => y.LanguageId).RouteKey("languageId");
-                    })
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.LanguageName)
-                            .Width("10%")
-                            .ReadOnly()
-                            .Filterable(false);
-                        columns.Bound(x => x.Name).Width("30%");
-                        columns.Bound(x => x.Value).EditorTemplateName("MultilineText").Width("60%");
-                        columns.Command(commands =>
-                        {
-                            commands.Edit().Localize(T);
-                            commands.Delete().Localize(T);
-                        });
+					.Name("resources-grid")
+					.DataKeys(x =>
+					{
+						x.Add(y => y.Id).RouteKey("Id");
+						x.Add(y => y.LanguageId).RouteKey("languageId");
+					})
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.LanguageName)
+							.Width("10%")
+							.ReadOnly()
+							.Filterable(false);
+						columns.Bound(x => x.ResourceName).Width("30%");
+						columns.Bound(x => x.ResourceValue).EditorTemplateName("MultilineText").Width("60%");
+						columns.Command(commands =>
+						{
+							commands.Edit().Localize(T);
+							commands.Delete().Localize(T);
+						});
 
-                    })
-                    .ToolBar(x => x.Insert())
-                    .Editable(x =>
-                    {
-                        x.Mode(GridEditMode.InLine);
-                    })
-                    .Filterable()
-                    .Pageable(settings => settings.PageSize(gridPageSize).Total(Model.Total).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax().Select("Resources", "Language")
-                            .Update("ResourceUpdate", "Language")
-                            .Delete("ResourceDelete", "Language")
-                            .Insert("ResourceAdd", "Language", new { id = ViewBag.LanguageId });
-                    })
-                    .EnableCustomBinding(true)
+					})
+					.ToolBar(x => x.Insert())
+					.Editable(x =>
+					{
+						x.Mode(GridEditMode.InLine);
+					})
+					.Filterable()
+					.Pageable(settings => settings.PageSize(gridPageSize).Total(Model.Total).Position(GridPagerPosition.Both))
+					.DataBinding(dataBinding =>
+					{
+						dataBinding.Ajax().Select("Resources", "Language")
+							.Update("ResourceUpdate", "Language")
+							.Delete("ResourceDelete", "Language")
+							.Insert("ResourceAdd", "Language", new { id = ViewBag.LanguageId });
+					})
+					.EnableCustomBinding(true)
 					.PreserveGridState()
-                    .ClientEvents(x => x.OnEdit("onResourceEdit"))
-                    .ClientEvents(x => x.OnError("Grid_onError")))
+					.ClientEvents(x => x.OnEdit("onResourceEdit"))
+					.ClientEvents(x => x.OnError("Grid_onError")))
         </td>
     </tr>
 </table>

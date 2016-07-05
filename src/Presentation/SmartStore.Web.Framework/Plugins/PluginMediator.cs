@@ -82,7 +82,6 @@ namespace SmartStore.Web.Framework.Plugins
 					resource.ResourceValue = value;
 					_services.Localization.UpdateLocaleStringResource(resource);
 				}
-				_services.Localization.ClearCache();
 			}
 			else
 			{
@@ -96,7 +95,6 @@ namespace SmartStore.Web.Framework.Plugins
 						ResourceValue = value,
 					};
 					_services.Localization.InsertLocaleStringResource(resource);
-					_services.Localization.ClearCache();
 				}
 			}
 		}

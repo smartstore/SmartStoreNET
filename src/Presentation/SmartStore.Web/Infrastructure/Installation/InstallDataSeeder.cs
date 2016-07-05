@@ -534,7 +534,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 						null /* IWorkContext: not needed during install */,
 						rsResources,
 						languageService,
-						locSettings,
 						NullEventPublisher.Instance);
 				}
 

@@ -22,11 +22,6 @@ namespace SmartStore.Core.Domain.Localization
         /// </summary>
         public bool UseImagesForLanguageSelection { get; set; }
 
-        /// <summary>
-        /// A value indicating whether to load all records on application startup
-        /// </summary>
-        public bool LoadAllLocaleRecordsOnStartup { get; set; }
-
 		/// <summary>
 		/// A value indicating whether to load all localized entity properties on application startup
 		/// </summary>

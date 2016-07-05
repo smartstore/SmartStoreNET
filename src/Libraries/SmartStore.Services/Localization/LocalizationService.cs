@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -23,8 +22,11 @@ namespace SmartStore.Services.Localization
 {
 	public partial class LocalizationService : ILocalizationService
     {
-        private const string LOCALESTRINGRESOURCES_ALL_KEY = "localization:all-{0}";
-        private const string LOCALESTRINGRESOURCES_PATTERN_KEY = "localization:";
+		/// <summary>
+		/// 0 = scope prefix, 1 = language id
+		/// </summary>
+		const string LOCALESTRINGRESOURCES_SEGMENT_KEY = "localization:{0}-lang-{1}";
+		const string LOCALESTRINGRESOURCES_SEGMENT_PATTERN = "localization:{0}";
 
         private readonly IRepository<LocaleStringResource> _lsrRepository;
         private readonly IWorkContext _workContext;
@@ -32,64 +34,60 @@ namespace SmartStore.Services.Localization
         private readonly ILanguageService _languageService;
         private readonly ICacheManager _cacheManager;
         private readonly IDbContext _dbContext;
-        private readonly LocalizationSettings _localizationSettings;
         private readonly IEventPublisher _eventPublisher;
 
 		private int _notFoundLogCount = 0;
 		private int? _defaultLanguageId;
 
-        public LocalizationService(ICacheManager cacheManager,
-            ILogger logger, IWorkContext workContext,
+        public LocalizationService(
+			ICacheManager cacheManager,
+            ILogger logger, 
+			IWorkContext workContext,
             IRepository<LocaleStringResource> lsrRepository, 
             ILanguageService languageService,
-            LocalizationSettings localizationSettings, IEventPublisher eventPublisher)
+			IEventPublisher eventPublisher)
         {
-            this._cacheManager = cacheManager;
-            this._logger = logger;
-            this._workContext = workContext;
-            this._lsrRepository = lsrRepository;
-            this._languageService = languageService;
-			this._dbContext = lsrRepository.Context;
-            this._localizationSettings = localizationSettings;
-            this._eventPublisher = eventPublisher;
+            _cacheManager = cacheManager;
+            _logger = logger;
+            _workContext = workContext;
+            _lsrRepository = lsrRepository;
+            _languageService = languageService;
+			_dbContext = lsrRepository.Context;
+            _eventPublisher = eventPublisher;
         }
 
-		public virtual void ClearCache()
-		{
-			_cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
-		}
-
-        public virtual void DeleteLocaleStringResource(LocaleStringResource localeStringResource)
+        public virtual void DeleteLocaleStringResource(LocaleStringResource resource)
         {
-            if (localeStringResource == null)
-                throw new ArgumentNullException("localeStringResource");
+			Guard.NotNull(resource, nameof(resource));
 
             // cache
-            this.GetResourceValues(localeStringResource.LanguageId).Remove(localeStringResource.ResourceName);
-
+			ClearCachedResourceSegment(resource.ResourceName, resource.LanguageId);
+			
             // db
-            _lsrRepository.Delete(localeStringResource);
+            _lsrRepository.Delete(resource);
 
-            //event notification
-            _eventPublisher.EntityDeleted(localeStringResource);
+            // event notification
+            _eventPublisher.EntityDeleted(resource);
         }
 
 		public virtual int DeleteLocaleStringResources(string key, bool keyIsRootKey = true) {
 			int result = 0;
+
 			if (key.HasValue()) 
             {
 				try 
                 {
-					string sqlDelete = "Delete From LocaleStringResource Where ResourceName Like '{0}%'".FormatWith(key.EndsWith(".") || !keyIsRootKey ? key : key + ".");
+					var sqlDelete = "Delete From LocaleStringResource Where ResourceName Like '{0}%'".FormatWith(key.EndsWith(".") || !keyIsRootKey ? key : key + ".");
 					result = _dbContext.ExecuteSqlCommand(sqlDelete);
 
-                    _cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
+					ClearCachedResourceSegment(key);
 				}
 				catch (Exception exc) 
                 {
 					exc.Dump();
 				}
 			}
+
 			return result;
 		}
 
@@ -124,145 +122,130 @@ namespace SmartStore.Services.Localization
             return localeStringResource;
         }
 
-        public virtual IList<LocaleStringResource> GetAllResources(int languageId)
+        public virtual IQueryable<LocaleStringResource> All(int languageId)
         {
-            var query = from l in _lsrRepository.Table
-                        orderby l.ResourceName
-                        where l.LanguageId == languageId
-                        select l;
-            var locales = query.ToList();
-            return locales;
+            var query = from lsr in _lsrRepository.Table
+                        orderby lsr.ResourceName
+                        where lsr.LanguageId == languageId
+                        select lsr;
+
+			return query;
         }
 
-        public virtual void InsertLocaleStringResource(LocaleStringResource localeStringResource)
+		public virtual IList<LocaleStringResource> GetResourcesByPattern(string pattern, int languageId)
+		{
+			Guard.NotEmpty(pattern, nameof(pattern));
+
+			var query = from l in _lsrRepository.Table
+						where l.ResourceName.StartsWith(pattern) && l.LanguageId == languageId
+						select l;
+
+			var resources = query.ToList();
+			return resources;
+		}
+
+		public virtual void InsertLocaleStringResource(LocaleStringResource resource)
         {
-            if (localeStringResource == null)
-                throw new ArgumentNullException("localeStringResource");
-            
-            _lsrRepository.Insert(localeStringResource);
+			Guard.NotNull(resource, nameof(resource));
 
-            //// cache
-            var holder = this.GetResourceValues(localeStringResource.LanguageId) as ConcurrentDictionary<string, Tuple<int, string>>;
-            holder.TryAdd(
-                localeStringResource.ResourceName,
-                new Tuple<int, string>(localeStringResource.Id, localeStringResource.ResourceValue));
+            _lsrRepository.Insert(resource);
 
-            //event notification
-            _eventPublisher.EntityInserted(localeStringResource);
+			// cache
+			ClearCachedResourceSegment(resource.ResourceName, resource.LanguageId);
+
+            // event notification
+            _eventPublisher.EntityInserted(resource);
         }
 
-        public virtual void UpdateLocaleStringResource(LocaleStringResource localeStringResource)
+        public virtual void UpdateLocaleStringResource(LocaleStringResource resource)
         {
-            if (localeStringResource == null)
-                throw new ArgumentNullException("localeStringResource");
+			Guard.NotNull(resource, nameof(resource));
 
-            var modProps = _lsrRepository.GetModifiedProperties(localeStringResource);
+			var modProps = _lsrRepository.GetModifiedProperties(resource);
 
-            _lsrRepository.Update(localeStringResource);
+            _lsrRepository.Update(resource);
 
-            // cache (TODO)
-            var holder = this.GetResourceValues(localeStringResource.LanguageId);
+            // cache
             object origKey = null;
             if (modProps.TryGetValue("ResourceName", out origKey))
             {
-                holder.Remove((string)origKey);
-            }
-            else
-            {
-                holder.Remove(localeStringResource.ResourceName);
-            }
-            
-            var holder2 = holder as ConcurrentDictionary<string, Tuple<int, string>>;
-            holder2.TryAdd(
-                localeStringResource.ResourceName,
-                new Tuple<int, string>(localeStringResource.Id, localeStringResource.ResourceValue));
+				ClearCachedResourceSegment((string)origKey, resource.LanguageId);
+			}
+			ClearCachedResourceSegment(resource.ResourceName, resource.LanguageId);
+
 
             // event notification
-            _eventPublisher.EntityUpdated(localeStringResource);
+            _eventPublisher.EntityUpdated(resource);
         }
 
-        public virtual IDictionary<string, Tuple<int, string>> GetResourceValues(int languageId, bool forceAll = false)
-        {
-            Action<ConcurrentDictionary<string, Tuple<int, string>>> loadAllAction = (d) =>
-            {
-				var query = from l in _lsrRepository.TableUntracked
-							orderby l.ResourceName
-							where l.LanguageId == languageId
-							select l;
-				var resources = query.ToList();
+		protected virtual IDictionary<string, string> GetCachedResourceSegment(string forKey, int languageId)
+		{
+			Guard.NotEmpty(forKey, nameof(forKey));
 
-                foreach (var res in resources)
-                {
-                    var resourceName = res.ResourceName.ToLowerInvariant();
-                    d.AddOrUpdate(
-                        resourceName, 
-                        (k) => new Tuple<int, string>(res.Id, res.ResourceValue), 
-                        (k, v) => { d[k] = v; return v; });
-                }
+			var segmentKey = GetSegmentKey(forKey);
+			var cacheKey = BuildCacheSegmentKey(segmentKey, languageId);
 
-                // perf: add a dummy item indicating that data is fully loaded
-                d.TryAdd("!!___EOF___!!", new Tuple<int, string>(0, string.Empty));
-            };
+			return _cacheManager.Get(cacheKey, () => 
+			{
+				var resources = _lsrRepository.TableUntracked
+					.Where(x => x.ResourceName.StartsWith(segmentKey) && x.LanguageId == languageId)
+					//.OrderBy(x => x.ResourceName)
+					.ToList();
 
-            string cacheKey = string.Format(LOCALESTRINGRESOURCES_ALL_KEY, languageId);
-            var dict = _cacheManager.Get(cacheKey, () => {
-				// TODO: make result cacheable in distributed cache (IDictionary<string, CustomTuple>)
-                var result = new ConcurrentDictionary<string, Tuple<int, string>>(8, 2000, StringComparer.CurrentCultureIgnoreCase);
-                if (forceAll || _localizationSettings.LoadAllLocaleRecordsOnStartup)
-                {
-                    loadAllAction(result);
-                }
-                return result;
-            });
+				var dict = new Dictionary<string, string>(resources.Count);
 
-            if (forceAll && !_localizationSettings.LoadAllLocaleRecordsOnStartup && !dict.ContainsKey("!!___EOF___!!"))
-            {
-                // In this case the resources MIGHT not be loaded completely
-                // from the DB, but cached already. So load all and enforce merge.
-                loadAllAction(dict);
-            }
+				foreach (var res in resources)
+				{
+					dict[res.ResourceName.ToLowerInvariant()] = res.ResourceValue;
+				}
 
-            return dict;
-        }
+				return dict;
+			});
+		}
 
+		/// <summary>
+		/// Clears the cached resource segment from the cache
+		/// </summary>
+		/// <param name="forKey">The resource key for which a segment key should be created</param>
+		/// <param name="languageId">Language Id. If <c>null</c>, segments for all cached languages will be invalidated</param>
+		protected virtual void ClearCachedResourceSegment(string forKey, int? languageId = null)
+		{
+			var segmentKey = GetSegmentKey(forKey);
 
-        public virtual string GetResource(string resourceKey, int languageId = 0, bool logIfNotFound = true, string defaultValue = "", bool returnEmptyIfNotFound = false)
+			if (languageId.HasValue && languageId.Value > 0)
+			{
+				_cacheManager.Remove(BuildCacheSegmentKey(segmentKey, languageId.Value));
+			}
+			else
+			{
+				_cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_SEGMENT_PATTERN.FormatInvariant(segmentKey));
+			}
+		}
+
+        public virtual string GetResource(
+			string resourceKey, 
+			int languageId = 0, 
+			bool logIfNotFound = true, 
+			string defaultValue = "", 
+			bool returnEmptyIfNotFound = false)
         {
             if (languageId <= 0)
             {
                 if (_workContext.WorkingLanguage == null)
-                    return defaultValue;
-
+				{
+					return defaultValue;
+				}
+                    
                 languageId = _workContext.WorkingLanguage.Id;
             }
             
-            string result = string.Empty;
-            if (resourceKey == null)
-                resourceKey = string.Empty;
-            resourceKey = resourceKey.Trim().ToLowerInvariant();
+            string result = string.Empty;    
 
-            var holder = this.GetResourceValues(languageId) as ConcurrentDictionary<string, Tuple<int, string>>;
+            resourceKey = resourceKey.EmptyNull().Trim().ToLowerInvariant();
 
-            Tuple<int, string> lsr = null;
-            try
-            {
-                lsr = holder.GetOrAdd(resourceKey, (x) =>
-                {
-                    var query = from l in _lsrRepository.Table
-                                where l.ResourceName == resourceKey && l.LanguageId == languageId
-                                select l;
-                    var res = query.FirstOrDefault();
-					if (res != null)
-						return new Tuple<int, string>(res.Id, res.ResourceValue);
-					return null;
-                });
-            }
-            catch { }
+			var cachedSegment = GetCachedResourceSegment(resourceKey, languageId);
 
-            if (lsr != null)
-                result = lsr.Item2;
-
-            if (String.IsNullOrEmpty(result))
+            if (!cachedSegment.TryGetValue(resourceKey, out result))
             {
 				if (logIfNotFound)
 				{
@@ -311,8 +294,8 @@ namespace SmartStore.Services.Localization
 
         public virtual string ExportResourcesToXml(Language language)
         {
-            if (language == null)
-                throw new ArgumentNullException("language");
+			Guard.NotNull(language, nameof(language));
+
             var sb = new StringBuilder();
             var stringWriter = new StringWriter(sb);
             var xmlWriter = new XmlTextWriter(stringWriter);
@@ -320,18 +303,21 @@ namespace SmartStore.Services.Localization
             xmlWriter.WriteStartElement("Language");
             xmlWriter.WriteAttributeString("Name", language.Name);
 
-            var resources = GetAllResources(language.Id);
-            foreach (var resource in resources)
-            {
-                if (resource.IsFromPlugin.GetValueOrDefault() == false)
-                {
-                    xmlWriter.WriteStartElement("LocaleResource");
-                    xmlWriter.WriteAttributeString("Name", resource.ResourceName);
-                    xmlWriter.WriteElementString("Value", null, resource.ResourceValue);
-                    xmlWriter.WriteEndElement();
-                }
-            }
- 
+			using (var scope = new DbContextScope(forceNoTracking: true))
+			{
+				var resources = All(language.Id).ToList();
+				foreach (var resource in resources)
+				{
+					if (resource.IsFromPlugin.GetValueOrDefault() == false)
+					{
+						xmlWriter.WriteStartElement("LocaleResource");
+						xmlWriter.WriteAttributeString("Name", resource.ResourceName);
+						xmlWriter.WriteElementString("Value", null, resource.ResourceValue);
+						xmlWriter.WriteEndElement();
+					}
+				}
+			}
+
             xmlWriter.WriteEndElement();
             xmlWriter.WriteEndDocument();
             xmlWriter.Close();
@@ -450,7 +436,7 @@ namespace SmartStore.Services.Localization
 					foreach (XmlNode node in nodes)
 					{
 						var valueNode = node.SelectSingleNode("Value");
-						var res = new LocaleStringResource()
+						var res = new LocaleStringResource
 						{
 							ResourceName = node.Attributes["Name"].InnerText.Trim(),
 							ResourceValue = (valueNode == null ? "" : valueNode.InnerText),
@@ -584,6 +570,11 @@ namespace SmartStore.Services.Localization
 
 				if (toAdd.Any() || toUpdate.Any())
 				{
+					var segmentKeys = new HashSet<string>();
+
+					toAdd.Each(x => segmentKeys.Add(GetSegmentKey(x.ResourceName)));
+					toUpdate.Each(x => segmentKeys.Add(GetSegmentKey(x.ResourceName)));
+
 					_lsrRepository.InsertRange(toAdd);
 					toAdd.Clear();
 
@@ -593,7 +584,10 @@ namespace SmartStore.Services.Localization
 					int num = _lsrRepository.Context.SaveChanges();
 
 					// clear cache
-					_cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
+					foreach (var segmentKey in segmentKeys)
+					{
+						ClearCachedResourceSegment(segmentKey, language.Id);
+					}
 
 					return num;
 				}
@@ -700,8 +694,17 @@ namespace SmartStore.Services.Localization
             {
                 RecursivelySortChildrenResource(child);
             }
-
         }
+
+		private string BuildCacheSegmentKey(string segment, int languageId)
+		{
+			return String.Format(LOCALESTRINGRESOURCES_SEGMENT_KEY, segment, languageId);
+		}
+
+		private string GetSegmentKey(string forKey)
+		{
+			return forKey.Substring(0, Math.Min(forKey.Length, 3)).ToLowerInvariant();
+		}
 
 
         private class LocaleStringResourceParent : LocaleStringResource

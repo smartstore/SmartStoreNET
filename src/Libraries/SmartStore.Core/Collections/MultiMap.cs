@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Linq.Expressions;
+using Newtonsoft.Json;
 
 namespace SmartStore.Collections
 {
-    /// <summary>
-    /// A data structure that contains multiple values for each key.
-    /// </summary>
-    /// <typeparam name="TKey">The type of key.</typeparam>
-    /// <typeparam name="TValue">The type of value.</typeparam>
-    public class Multimap<TKey, TValue> : IEnumerable<KeyValuePair<TKey, ICollection<TValue>>>
+	/// <summary>
+	/// A data structure that contains multiple values for each key.
+	/// </summary>
+	/// <typeparam name="TKey">The type of key.</typeparam>
+	/// <typeparam name="TValue">The type of value.</typeparam>
+	[JsonConverter(typeof(MultiMapConverter))]
+	public class Multimap<TKey, TValue> : IEnumerable<KeyValuePair<TKey, ICollection<TValue>>>
     {
 		private readonly IDictionary<TKey, ICollection<TValue>> _items;
 		private readonly Func<ICollection<TValue>> _listCreator;
@@ -50,7 +52,7 @@ namespace SmartStore.Collections
 
 		protected Multimap(IDictionary<TKey, ICollection<TValue>> dictionary, bool isReadonly)
         {
-            Guard.ArgumentNotNull(() => dictionary);
+			Guard.ArgumentNotNull(() => dictionary);
 
             _items = dictionary;
 
@@ -64,6 +66,20 @@ namespace SmartStore.Collections
 
             _isReadonly = isReadonly;
         }
+
+		public Multimap(IEnumerable<KeyValuePair<TKey, ICollection<TValue>>> items)
+		{
+			// for serialization
+			Guard.ArgumentNotNull(() => items);
+
+			_items = new Dictionary<TKey, ICollection<TValue>>();
+			_listCreator = () => new List<TValue>();
+
+			foreach (var kvp in items)
+			{
+				_items[kvp.Key] = kvp.Value;
+			}
+		}
 
 		/// <summary>
 		/// Gets the count of groups/keys.
@@ -268,5 +284,58 @@ namespace SmartStore.Collections
         }
 
 		#endregion
+	}
+
+	public class MultiMapConverter : JsonConverter
+	{
+		public override bool CanRead
+		{
+			get { return true; }
+		}
+
+		public override bool CanWrite
+		{
+			get { return true; }
+		}
+
+		public override bool CanConvert(Type objectType)
+		{
+			var canConvert = objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(Multimap<,>);
+			return canConvert;
+		}
+
+		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+		{
+			// typeof TKey
+			var keyType = objectType.GetGenericArguments()[0];
+
+			// typeof TValue
+			var valueType = objectType.GetGenericArguments()[1];
+
+			// typeof IEnumerable<KeyValuePair<TKey, ICollection<TValue>>
+			var sequenceType = typeof(IEnumerable<>).MakeGenericType(typeof(KeyValuePair<,>).MakeGenericType(keyType, typeof(ICollection<>).MakeGenericType(valueType)));
+
+			// serialize JArray to sequenceType
+			var list = serializer.Deserialize(reader, sequenceType);
+
+			// call constructor Multimap(IEnumerable<KeyValuePair<TKey, ICollection<TValue>>> items)
+			var multimap = Activator.CreateInstance(objectType, new object[] { list });
+
+			return multimap;
+		}
+
+		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+		{
+			writer.WriteStartArray();
+			{
+				var enumerable = value as IEnumerable;
+				foreach (var item in enumerable)
+				{
+					// Json.Net uses a converter for KeyValuePair here
+					serializer.Serialize(writer, item);
+				}
+			}
+			writer.WriteEndArray();
+		}
 	}
 }

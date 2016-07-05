@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.Routing;
+using Newtonsoft.Json;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -51,7 +52,7 @@ namespace SmartStore.Web.Framework.UI
             set; 
         }
 
-        RouteValueDictionary RouteValues 
+        IDictionary<string, object> RouteValues 
         { 
             get; 
         }

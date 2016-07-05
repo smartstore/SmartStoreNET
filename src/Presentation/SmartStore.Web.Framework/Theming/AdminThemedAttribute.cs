@@ -20,6 +20,9 @@ namespace SmartStore.Web.Framework.Theming
 			if (filterContext == null || filterContext.Result == null)
 				return;
 
+			if (filterContext.IsChildAction)
+				return;
+
 			// add extra view location formats to all view results (even the partial ones)
 			filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = new string[]
 			{

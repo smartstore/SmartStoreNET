@@ -64,7 +64,7 @@ namespace SmartStore.Web.Framework.UI
             this.MaxPagesToDisplay = 8;
             this.Alignment = PagerAlignment.Centered;
             this.Size = PagerSize.Medium;
-            this.RouteValues = new RouteValueDictionary();
+            this.RouteValues = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             this.ModifiedParam = new ModifiedParameter("page");
         }
 
@@ -208,7 +208,7 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
-        public RouteValueDictionary RouteValues
+        public IDictionary<string, object> RouteValues
         {
             get;
             private set;

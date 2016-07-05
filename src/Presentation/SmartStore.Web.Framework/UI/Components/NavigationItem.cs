@@ -7,8 +7,8 @@ using System.Web.WebPages;
 
 namespace SmartStore.Web.Framework.UI
 {
-
-    public abstract class NavigationItem : IHtmlAttributesContainer, INavigatable, IHideObjectMembers
+	[Serializable]
+	public abstract class NavigationItem : IHtmlAttributesContainer, INavigatable, IHideObjectMembers
     {
         private bool _selected;
         private bool _enabled;
@@ -22,15 +22,15 @@ namespace SmartStore.Web.Framework.UI
             this.Visible = true;
             this.Encoded = true;
             this.Enabled = true;
-            this.HtmlAttributes = new RouteValueDictionary();
-            this.LinkHtmlAttributes = new RouteValueDictionary();
-            this.RouteValues = new RouteValueDictionary();
+            this.HtmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            this.LinkHtmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            this.RouteValues = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             this.ModifiedParam = new ModifiedParameter();
         }
 
-        public IDictionary<string, object> HtmlAttributes { get; private set; }
+        public IDictionary<string, object> HtmlAttributes { get; set; }
 
-        public IDictionary<string, object> LinkHtmlAttributes { get; private set; }
+        public IDictionary<string, object> LinkHtmlAttributes { get; set; }
 
         public string ImageUrl { get; set; }
 
@@ -118,7 +118,7 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
-        public RouteValueDictionary RouteValues { get; set; }
+        public IDictionary<string, object> RouteValues { get; set; }
 
         public string Url
         {
@@ -166,7 +166,7 @@ namespace SmartStore.Web.Framework.UI
 
 		public bool Ajax { get; set; }
 
-        public IDictionary<string, object> ContentHtmlAttributes { get; private set; }
+        public IDictionary<string, object> ContentHtmlAttributes { get; set; }
 
         public HelperResult Content { get; set; }
     }

@@ -92,12 +92,10 @@ namespace SmartStore.Web.Framework.UI
 
 			if (routeValues != null)
 			{
-				if (routeValues.Any())
-				{
-					navigatable.RouteValues.Merge((IDictionary<string, object>)routeValues);
-				}
+				navigatable.RouteValues.Merge((IDictionary<string, object>)routeValues);
 			}
-			routeValues = navigatable.RouteValues;
+
+			routeValues = new RouteValueDictionary(navigatable.RouteValues);
 
 			var hasParam = false;
 			var param = navigatable.ModifiedParam;

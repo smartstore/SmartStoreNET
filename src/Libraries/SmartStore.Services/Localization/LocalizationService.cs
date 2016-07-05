@@ -23,7 +23,7 @@ namespace SmartStore.Services.Localization
 	public partial class LocalizationService : ILocalizationService
     {
 		/// <summary>
-		/// 0 = scope prefix, 1 = language id
+		/// 0 = segment (first 3 chars of key), 1 = language id
 		/// </summary>
 		const string LOCALESTRINGRESOURCES_SEGMENT_KEY = "localization:{0}-lang-{1}";
 		const string LOCALESTRINGRESOURCES_SEGMENT_PATTERN = "localization:{0}";

@@ -1127,7 +1127,7 @@ namespace SmartStore.Web.Controllers
 
 			var navModel = _helper.PrepareCategoryNavigationModel(0, 0);
 
-			navModel.Root.TraverseTree((node) =>
+			navModel.Root.Traverse((node) =>
 			{
 				if (node.IsRoot)
 					return;

@@ -155,6 +155,7 @@
     <Compile Include="Collections\LazyMultimap.cs" />
     <Compile Include="Collections\Querystring.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
+    <Compile Include="Collections\TreeNodeBase.cs" />
     <Compile Include="ComponentModel\TypeConversion\BooleanConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\EnumerableConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\NullableConverter.cs" />

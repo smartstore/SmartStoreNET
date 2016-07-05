@@ -72,7 +72,7 @@ namespace SmartStore.Admin.Controllers
                 // iterate parts
                 foreach (var part in parts)
                 {
-                    var found = node.Find(part);
+                    var found = node.SelectNode(x => x.Value == part);
                     if (found == null)
                     {
                         node = node.Append(part);

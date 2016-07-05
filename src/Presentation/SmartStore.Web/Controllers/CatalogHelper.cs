@@ -1513,8 +1513,7 @@ namespace SmartStore.Web.Controllers
 			if (_catalogSettings.ShowCategoryProductNumber)
 			{
 				var curItem = breadcrumb.LastOrDefault();
-				var curNode = curItem == null ? root.Root : root.Find(curItem);
-
+				var curNode = curItem == null ? root.Root : root.SelectNode(x => x.Value == curItem);
 				this.ResolveCategoryProductsCount(curNode);
 			}
 
@@ -1547,7 +1546,7 @@ namespace SmartStore.Web.Controllers
 									if (_catalogSettings.ShowCategoryProductNumberIncludingSubcategories)
 									{
 										// include subcategories
-										node.TraverseTree(x => categoryIds.Add(x.Value.EntityId));
+										node.Traverse(x => categoryIds.Add(x.Value.EntityId));
 									}
 									else
 									{

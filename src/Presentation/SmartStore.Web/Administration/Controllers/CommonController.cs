@@ -165,7 +165,7 @@ namespace SmartStore.Admin.Controllers
 			_menuPublisher.Value.RegisterMenus(rootNode, "admin");
 
 			// hide based on permissions
-            rootNode.TraverseTree(x => {
+            rootNode.Traverse(x => {
                 if (!x.IsRoot)
                 {
 					if (!MenuItemAccessPermitted(x.Value))
@@ -176,7 +176,7 @@ namespace SmartStore.Admin.Controllers
             });
 
             // hide dropdown nodes when no child is visible
-			rootNode.TraverseTree(x =>
+			rootNode.Traverse(x =>
 			{
 				if (!x.IsRoot)
 				{

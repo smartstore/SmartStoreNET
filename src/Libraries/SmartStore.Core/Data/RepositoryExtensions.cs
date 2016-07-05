@@ -28,7 +28,7 @@ namespace SmartStore.Core.Data
 
         public static void Delete<T>(this IRepository<T> rs, int id) where T : BaseEntity
         {
-			Guard.ArgumentNotZero(id, "id");
+			Guard.NotZero(id, nameof(id));
 			
 			// Perf: work with stub entity
 			var entity = rs.Create();

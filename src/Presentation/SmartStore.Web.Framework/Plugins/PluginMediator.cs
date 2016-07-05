@@ -63,7 +63,7 @@ namespace SmartStore.Web.Framework.Plugins
 		public void SaveLocalizedValue(ProviderMetadata metadata, int languageId, string propertyName, string value)
 		{
 			Guard.ArgumentNotNull(() => metadata);
-			Guard.ArgumentIsPositive(languageId, "languageId");
+			Guard.IsPositive(languageId, nameof(languageId));
 			Guard.ArgumentNotEmpty(() => propertyName);
 
 			var resourceName = metadata.ResourceKeyPattern.FormatInvariant(metadata.SystemName, propertyName);

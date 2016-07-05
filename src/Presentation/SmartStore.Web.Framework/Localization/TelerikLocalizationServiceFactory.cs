@@ -13,6 +13,7 @@ namespace SmartStore.Web.Framework.Localization
             _workContext = workContext;
             _localizationService = localizationService;
         }
+
         public ILocalizationService Create(string resourceName, System.Globalization.CultureInfo culture)
         {
             return new TelerikLocalizationService(resourceName, _workContext.WorkingLanguage.Id, _localizationService);

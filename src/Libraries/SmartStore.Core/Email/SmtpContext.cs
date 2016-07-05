@@ -13,7 +13,7 @@ namespace SmartStore.Core.Email
         public SmtpContext(string host, int port = 25)
         {
 			Guard.ArgumentNotEmpty(() => host);
-			Guard.ArgumentIsPositive(port, "port");
+			Guard.IsPositive(port, nameof(port));
 			
 			this.Host = host;
             this.Port = port;

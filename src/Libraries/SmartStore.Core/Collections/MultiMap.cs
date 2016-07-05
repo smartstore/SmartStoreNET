@@ -52,9 +52,9 @@ namespace SmartStore.Collections
 
 		protected Multimap(IDictionary<TKey, ICollection<TValue>> dictionary, bool isReadonly)
         {
-			Guard.ArgumentNotNull(() => dictionary);
+			Guard.NotNull(dictionary, nameof(dictionary));
 
-            _items = dictionary;
+			_items = dictionary;
 
             if (isReadonly && dictionary != null)
             {
@@ -141,10 +141,10 @@ namespace SmartStore.Collections
 
         public IEnumerable<TValue> Find(TKey key, Expression<Func<TValue, bool>> predicate)
         {
-            Guard.ArgumentNotNull(() => key);
-            Guard.ArgumentNotNull(() => predicate);
+			Guard.NotNull(key, nameof(key));
+			Guard.NotNull(predicate, nameof(predicate));
 
-            if (_items.ContainsKey(key))
+			if (_items.ContainsKey(key))
             {
                 return _items[key].Where(predicate.Compile());
             }
@@ -271,9 +271,9 @@ namespace SmartStore.Collections
 
         public static Multimap<TKey, TValue> CreateFromLookup(ILookup<TKey, TValue> source)
         {
-            Guard.ArgumentNotNull(() => source);
+			Guard.NotNull(source, nameof(source));
 
-            var map = new Multimap<TKey, TValue>();
+			var map = new Multimap<TKey, TValue>();
 
             foreach (IGrouping<TKey, TValue> group in source)
             {

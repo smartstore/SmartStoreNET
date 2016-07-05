@@ -15,7 +15,7 @@ namespace SmartStore.Collections
 	{
 		public TreeNode(TValue value)
 		{
-			Guard.ArgumentNotNull(value, nameof(value));
+			Guard.NotNull(value, nameof(value));
 
 			Value = value;
 		}

@@ -21,17 +21,10 @@ using System.Globalization;
 
 namespace SmartStore.Services.Localization
 {
-	/// <summary>
-	/// Provides information about localization
-	/// </summary>
 	public partial class LocalizationService : ILocalizationService
     {
-        #region Constants
         private const string LOCALESTRINGRESOURCES_ALL_KEY = "localization:all-{0}";
         private const string LOCALESTRINGRESOURCES_PATTERN_KEY = "localization:";
-        #endregion
-
-        #region Fields
 
         private readonly IRepository<LocaleStringResource> _lsrRepository;
         private readonly IWorkContext _workContext;
@@ -45,23 +38,6 @@ namespace SmartStore.Services.Localization
 		private int _notFoundLogCount = 0;
 		private int? _defaultLanguageId;
 
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="logger">Logger</param>
-        /// <param name="workContext">Work context</param>
-        /// <param name="lsrRepository">Locale string resource repository</param>
-        /// <param name="languageService">Language service</param>
-        /// <param name="dataProvider">Data provider</param>
-        /// <param name="dbContext">Database Context</param>
-        /// <param name="commonSettings">Common settings</param>
-        /// <param name="localizationSettings">Localization settings</param>
-        /// <param name="eventPublisher">Event published</param>
         public LocalizationService(ICacheManager cacheManager,
             ILogger logger, IWorkContext workContext,
             IRepository<LocaleStringResource> lsrRepository, 
@@ -78,19 +54,11 @@ namespace SmartStore.Services.Localization
             this._eventPublisher = eventPublisher;
         }
 
-        #endregion
-
-        #region Methods
-
 		public virtual void ClearCache()
 		{
 			_cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
 		}
 
-        /// <summary>
-        /// Deletes a locale string resource
-        /// </summary>
-        /// <param name="localeStringResource">Locale string resource</param>
         public virtual void DeleteLocaleStringResource(LocaleStringResource localeStringResource)
         {
             if (localeStringResource == null)
@@ -106,11 +74,6 @@ namespace SmartStore.Services.Localization
             _eventPublisher.EntityDeleted(localeStringResource);
         }
 
-		/// <summary>
-		/// Deletes all string resources with its key beginning with rootKey.
-		/// </summary>
-		/// <param name="key">e.g. Plugins.Import.Biz</param>
-		/// <returns>Number of deleted string resources</returns>
 		public virtual int DeleteLocaleStringResources(string key, bool keyIsRootKey = true) {
 			int result = 0;
 			if (key.HasValue()) 
@@ -130,11 +93,6 @@ namespace SmartStore.Services.Localization
 			return result;
 		}
 
-        /// <summary>
-        /// Gets a locale string resource
-        /// </summary>
-        /// <param name="localeStringResourceId">Locale string resource identifier</param>
-        /// <returns>Locale string resource</returns>
         public virtual LocaleStringResource GetLocaleStringResourceById(int localeStringResourceId)
         {
             if (localeStringResourceId == 0)
@@ -144,11 +102,6 @@ namespace SmartStore.Services.Localization
             return localeStringResource;
         }
 
-        /// <summary>
-        /// Gets a locale string resource
-        /// </summary>
-        /// <param name="resourceName">A string representing a resource name</param>
-        /// <returns>Locale string resource</returns>
         public virtual LocaleStringResource GetLocaleStringResourceByName(string resourceName)
         {
             if (_workContext.WorkingLanguage != null)
@@ -157,13 +110,6 @@ namespace SmartStore.Services.Localization
             return null;
         }
 
-        /// <summary>
-        /// Gets a locale string resource
-        /// </summary>
-        /// <param name="resourceName">A string representing a resource name</param>
-        /// <param name="languageId">Language identifier</param>
-        /// <param name="logIfNotFound">A value indicating whether to log error if locale string resource is not found</param>
-        /// <returns>Locale string resource</returns>
         public virtual LocaleStringResource GetLocaleStringResourceByName(string resourceName, int languageId, bool logIfNotFound = true)
         {
             var query = from lsr in _lsrRepository.Table
@@ -178,11 +124,6 @@ namespace SmartStore.Services.Localization
             return localeStringResource;
         }
 
-        /// <summary>
-        /// Gets all locale string resources by language identifier
-        /// </summary>
-        /// <param name="languageId">Language identifier</param>
-        /// <returns>Locale string resources</returns>
         public virtual IList<LocaleStringResource> GetAllResources(int languageId)
         {
             var query = from l in _lsrRepository.Table
@@ -193,10 +134,6 @@ namespace SmartStore.Services.Localization
             return locales;
         }
 
-        /// <summary>
-        /// Inserts a locale string resource
-        /// </summary>
-        /// <param name="localeStringResource">Locale string resource</param>
         public virtual void InsertLocaleStringResource(LocaleStringResource localeStringResource)
         {
             if (localeStringResource == null)
@@ -214,10 +151,6 @@ namespace SmartStore.Services.Localization
             _eventPublisher.EntityInserted(localeStringResource);
         }
 
-        /// <summary>
-        /// Updates the locale string resource
-        /// </summary>
-        /// <param name="localeStringResource">Locale string resource</param>
         public virtual void UpdateLocaleStringResource(LocaleStringResource localeStringResource)
         {
             if (localeStringResource == null)
@@ -293,15 +226,6 @@ namespace SmartStore.Services.Localization
         }
 
 
-        /// <summary>
-        /// Gets a resource string based on the specified ResourceKey property.
-        /// </summary>
-        /// <param name="resourceKey">A string representing a ResourceKey.</param>
-        /// <param name="languageId">Language identifier</param>
-        /// <param name="logIfNotFound">A value indicating whether to log error if locale string resource is not found</param>
-        /// <param name="defaultValue">Default value</param>
-        /// <param name="returnEmptyIfNotFound">A value indicating whether an empty string will be returned if a resource is not found and default value is set to empty string</param>
-        /// <returns>A string representing the requested resource string.</returns>
         public virtual string GetResource(string resourceKey, int languageId = 0, bool logIfNotFound = true, string defaultValue = "", bool returnEmptyIfNotFound = false)
         {
             if (languageId <= 0)
@@ -385,11 +309,6 @@ namespace SmartStore.Services.Localization
             return result;
         }
 
-        /// <summary>
-        /// Export language resources to xml
-        /// </summary>
-        /// <param name="language">Language</param>
-        /// <returns>Result in XML format</returns>
         public virtual string ExportResourcesToXml(Language language)
         {
             if (language == null)
@@ -484,11 +403,6 @@ namespace SmartStore.Services.Localization
 			}
 		}
 
-		/// <summary>
-		/// Resolves a resource file for the specified language and processes the import
-		/// </summary>
-		/// <param name="language">Language</param>
-		/// <returns>The culture code of the processed resource file</returns>
 		private string ImportPluginResourcesForLanguage(
 			Language language,
 			string fileCode,
@@ -789,9 +703,6 @@ namespace SmartStore.Services.Localization
 
         }
 
-        #endregion
-
-        #region Classes
 
         private class LocaleStringResourceParent : LocaleStringResource
         {
@@ -875,7 +786,5 @@ namespace SmartStore.Services.Localization
                 return _comparison((T)o1, (T)o2);
             }
         }
-
-        #endregion
     }
 }

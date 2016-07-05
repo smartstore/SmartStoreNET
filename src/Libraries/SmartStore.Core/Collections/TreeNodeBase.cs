@@ -43,7 +43,7 @@ namespace SmartStore.Collections
 
 		private void AttachTo(T newParent, int? index)
 		{
-			Guard.ArgumentNotNull(() => newParent);
+			Guard.NotNull(newParent, nameof(newParent));
 
 			if (_parent != null)
 			{
@@ -304,7 +304,7 @@ namespace SmartStore.Collections
 		/// <returns>The closest node</returns>
 		public T Closest(Expression<Func<T, bool>> predicate)
 		{
-			Guard.ArgumentNotNull(() => predicate);
+			Guard.NotNull(predicate, nameof(predicate));
 
 			var test = predicate.Compile();
 
@@ -386,7 +386,7 @@ namespace SmartStore.Collections
 
 		private void Insert(T refNode, bool after)
 		{
-			Guard.ArgumentNotNull(() => refNode);
+			Guard.NotNull(refNode, nameof(refNode));
 
 			var refParent = refNode._parent;
 			if (refParent == null)
@@ -399,7 +399,7 @@ namespace SmartStore.Collections
 
 		public T SelectNode(Expression<Func<T, bool>> predicate, bool includeSelf = false)
 		{
-			Guard.ArgumentNotNull(() => predicate);
+			Guard.NotNull(predicate, nameof(predicate));
 
 			return this.FlattenNodes(predicate, includeSelf).FirstOrDefault();
 		}
@@ -411,7 +411,7 @@ namespace SmartStore.Collections
 		/// <returns>A readonly collection of node matches</returns>
 		public IEnumerable<T> SelectNodes(Expression<Func<T, bool>> predicate, bool includeSelf = false)
 		{
-			Guard.ArgumentNotNull(() => predicate);
+			Guard.NotNull(predicate, nameof(predicate));
 
 			return this.FlattenNodes(predicate, includeSelf);
 		}
@@ -429,7 +429,7 @@ namespace SmartStore.Collections
 
 		public void Remove(T node)
 		{
-			Guard.ArgumentNotNull(() => node);
+			Guard.NotNull(node, nameof(node));
 
 			if (!node.IsRoot)
 			{
@@ -456,7 +456,7 @@ namespace SmartStore.Collections
 
 		public void Traverse(Action<T> action, bool includeSelf = false)
 		{
-			Guard.ArgumentNotNull(() => action);
+			Guard.NotNull(action, nameof(action));
 
 			if (includeSelf)
 				action((T)this);
@@ -470,7 +470,7 @@ namespace SmartStore.Collections
 
 		public void TraverseParents(Action<T> action, bool includeSelf = false)
 		{
-			Guard.ArgumentNotNull(() => action);
+			Guard.NotNull(action, nameof(action));
 
 			if (includeSelf)
 				action((T)this);

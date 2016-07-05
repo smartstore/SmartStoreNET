@@ -11,7 +11,7 @@ namespace SmartStore.ComponentModel
 
 		protected TypeConverterBase(Type type)
 		{
-			Guard.ArgumentNotNull(() => type);
+			Guard.NotNull(type, nameof(type));
 
 			_type = type;
 			_systemConverter = new Lazy<TypeConverter>(() => TypeDescriptor.GetConverter(type), true);

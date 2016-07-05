@@ -44,7 +44,7 @@ namespace SmartStore.Core.Caching
 
 		public string GetCacheControlTagFor(BaseEntity entity)
 		{
-			Guard.ArgumentNotNull(() => entity);
+			Guard.NotNull(entity, nameof(entity));
 
 			var typeName = entity.GetUnproxiedType().Name.ToLowerInvariant();
 			string prefix = null;

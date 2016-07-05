@@ -19,7 +19,7 @@ namespace SmartStore.Web.Framework.Theming
         public string GetVariablesAsLess(string themeName, int storeId)
         {
             Guard.ArgumentNotEmpty(() => themeName);
-            Guard.ArgumentIsPositive(storeId, "storeId");
+            Guard.IsPositive(storeId, nameof(storeId));
 
             var variables = GetLessCssVariables(themeName, storeId);
             var lessCss = TransformToLess(variables);

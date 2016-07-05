@@ -193,7 +193,7 @@ namespace SmartStore.Services.Localization
             int languageId) where T : BaseEntity, ILocalizedEntity
         {
 			Guard.ArgumentNotNull(() => entity);
-			Guard.ArgumentNotZero(languageId, "languageId");
+			Guard.NotZero(languageId, nameof(languageId));
 
             var member = keySelector.Body as MemberExpression;
             if (member == null)

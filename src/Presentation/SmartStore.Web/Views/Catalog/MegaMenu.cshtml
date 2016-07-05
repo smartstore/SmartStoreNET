@@ -15,14 +15,14 @@
     {
         var liClasses = new List<string>();
 
-        if (node.Depth == 1)
+        if (node.Depth == 2)
         {
             liClasses.Add("drop-list-item");
 		}
 
-		if (node.Depth <= 1 && node.HasChildren)
+		if (node.Depth <= 2 && node.HasChildren)
 		{
-			liClasses.Add(node.Depth > 0 ? "dropdown-submenu" : "dropdown");
+			liClasses.Add(node.Depth > 1 ? "dropdown-submenu" : "dropdown");
         }
         
         if ((state & NodePathState.Expanded) == NodePathState.Expanded)

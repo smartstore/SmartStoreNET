@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web.Routing;
 using System.Web.WebPages;
+using Newtonsoft.Json;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -24,7 +25,7 @@ namespace SmartStore.Web.Framework.UI
             this.Enabled = true;
             this.HtmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             this.LinkHtmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-            this.RouteValues = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            this.RouteValues = new RouteValueDictionary();
             this.ModifiedParam = new ModifiedParameter();
         }
 
@@ -79,7 +80,8 @@ namespace SmartStore.Web.Framework.UI
         }
 
 
-        public string ActionName
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+		public string ActionName
         {
             get
             {
@@ -92,7 +94,8 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
-        public string ControllerName
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+		public string ControllerName
         {
             get
             {
@@ -105,7 +108,8 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
-        public string RouteName
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+		public string RouteName
         {
             get
             {
@@ -118,8 +122,9 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
-        public IDictionary<string, object> RouteValues { get; set; }
+        public RouteValueDictionary RouteValues { get; set; }
 
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Url
         {
             get
@@ -135,6 +140,7 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
+		[JsonIgnore]
         public ModifiedParameter ModifiedParam
         {
             get;

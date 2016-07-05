@@ -180,8 +180,23 @@ namespace SmartStore.Web.Infrastructure.Installation
             Save(adminUser);
 
 			// Set default customer name
-			this.GenericAttributeService.SaveAttribute(adminUser, SystemCustomerAttributeNames.FirstName, adminUser.Addresses.FirstOrDefault().FirstName);
-			this.GenericAttributeService.SaveAttribute(adminUser, SystemCustomerAttributeNames.LastName, adminUser.Addresses.FirstOrDefault().LastName);
+			var firstAddress = adminUser.Addresses.FirstOrDefault();
+			GenericAttributeService.InsertAttribute(new GenericAttribute
+			{
+				EntityId = adminUser.Id,
+				Key = "FirstName",
+				KeyGroup = "Customer",
+				Value = firstAddress.FirstName,
+				StoreId = 0
+			});
+			GenericAttributeService.InsertAttribute(new GenericAttribute
+			{
+				EntityId = adminUser.Id,
+				Key = "LastName",
+				KeyGroup = "Customer",
+				Value = firstAddress.LastName,
+				StoreId = 0
+			});
 			_ctx.SaveChanges();
 
 			// Built-in user for search engines (crawlers)

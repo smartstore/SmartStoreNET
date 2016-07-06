@@ -153,13 +153,7 @@ namespace SmartStore.Admin.Controllers
                 .ThenBy(p => p.DisplayOrder)
                 .Select(x => PreparePluginModel(x));
 
-			var uri = HttpContext.Request.Url;
-
-			var model = new LocalPluginsModel
-			{
-				IsSandbox = LicenseChecker.IsSandbox,
-				IsLocalhost = HttpContext.Request.IsLocal || uri.IsLoopback || uri.DnsSafeHost.IsCaseInsensitiveEqual("localhost")
-			};
+			var model = new LocalPluginsModel();
 
 			model.AvailableStores = _services.StoreService
 				.GetAllStores()

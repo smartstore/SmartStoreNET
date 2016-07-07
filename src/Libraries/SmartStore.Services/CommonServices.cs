@@ -32,7 +32,7 @@ namespace SmartStore.Services
 		private readonly Lazy<ISettingService> _settings;
 		private readonly Lazy<IStoreService> _storeService;
 		private readonly Lazy<IDateTimeHelper> _dateTimeHelper;
-		private readonly Lazy<IDisplayedEntities> _displayedEntities;
+		private readonly Lazy<IDisplayControl> _displayControl;
 
 		public CommonServices(
 			IComponentContext container,
@@ -50,7 +50,7 @@ namespace SmartStore.Services
 			Lazy<ISettingService> settings,
 			Lazy<IStoreService> storeService,
 			Lazy<IDateTimeHelper> dateTimeHelper,
-			Lazy<IDisplayedEntities> displayedEntities)
+			Lazy<IDisplayControl> displayControl)
 		{
 			this._container = container;
 			this._cacheManager = cacheManager;
@@ -67,7 +67,7 @@ namespace SmartStore.Services
 			this._settings = settings;
 			this._storeService = storeService;
 			this._dateTimeHelper = dateTimeHelper;
-			this._displayedEntities = displayedEntities;
+			this._displayControl = displayControl;
 		}
 
 		public IComponentContext Container
@@ -191,11 +191,11 @@ namespace SmartStore.Services
 			}
 		}
 
-		public IDisplayedEntities DisplayedEntities
+		public IDisplayControl DisplayControl
 		{
 			get
 			{
-				return _displayedEntities.Value;
+				return _displayControl.Value;
 			}
 		}
 	}

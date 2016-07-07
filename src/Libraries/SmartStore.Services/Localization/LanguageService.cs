@@ -241,7 +241,7 @@ namespace SmartStore.Services.Localization
 			var map = this.GetStoreLanguageMap();
 			if (map.ContainsKey(storeId))
 			{
-				return map[storeId].Any(x => x.Item2 == seoCode);
+				return map[storeId].Any(x => x.UniqueSeoCode == seoCode);
 			}
 
 			return false;
@@ -258,7 +258,7 @@ namespace SmartStore.Services.Localization
 			var map = this.GetStoreLanguageMap();
 			if (map.ContainsKey(storeId))
 			{
-				return map[storeId].Any(x => x.Item1 == languageId);
+				return map[storeId].Any(x => x.Id == languageId);
 			}
 
 			return false;
@@ -272,7 +272,7 @@ namespace SmartStore.Services.Localization
 			var map = this.GetStoreLanguageMap();
 			if (map.ContainsKey(storeId))
 			{
-				return map[storeId].FirstOrDefault().Item2;
+				return map[storeId].FirstOrDefault().UniqueSeoCode;
 			}
 
 			return null;
@@ -286,7 +286,7 @@ namespace SmartStore.Services.Localization
 			var map = this.GetStoreLanguageMap();
 			if (map.ContainsKey(storeId))
 			{
-				return map[storeId].FirstOrDefault().Item1;
+				return map[storeId].FirstOrDefault().Id;
 			}
 
 			return 0;
@@ -296,11 +296,11 @@ namespace SmartStore.Services.Localization
 		/// Gets a map of active/published store languages
 		/// </summary>
 		/// <returns>A map of store languages where key is the store id and values are tuples of language ids and seo codes</returns>
-		protected virtual Multimap<int, Tuple<int, string>> GetStoreLanguageMap()
+		protected virtual Multimap<int, MinifiedLanguage> GetStoreLanguageMap()
 		{
 			var result = _cache.Get(ServiceCacheConsumer.STORE_LANGUAGE_MAP_KEY, () =>
 			{
-				var map = new Multimap<int, Tuple<int, string>>();
+				var map = new Multimap<int, MinifiedLanguage>();
 
 				var allStores = _storeService.GetAllStores();
 				foreach (var store in allStores)
@@ -315,13 +315,13 @@ namespace SmartStore.Services.Localization
 							// absolute fallback
 							firstStoreLang = GetAllLanguages(true).FirstOrDefault();
 						}
-						map.Add(store.Id, new Tuple<int, string>(firstStoreLang.Id, firstStoreLang.UniqueSeoCode));
+						map.Add(store.Id, new MinifiedLanguage { Id = firstStoreLang.Id, UniqueSeoCode = firstStoreLang.UniqueSeoCode });
 					}
 					else
 					{
 						foreach (var lang in languages)
 						{
-							map.Add(store.Id, new Tuple<int, string>(lang.Id, lang.UniqueSeoCode));
+							map.Add(store.Id, new MinifiedLanguage { Id = lang.Id, UniqueSeoCode = lang.UniqueSeoCode });
 						}
 					}
 				}
@@ -330,6 +330,12 @@ namespace SmartStore.Services.Localization
 			}, TimeSpan.FromDays(1));
 
 			return result;
+		}
+
+		public class MinifiedLanguage
+		{
+			public int Id { get; set; }
+			public string UniqueSeoCode { get; set; }
 		}
 
         #endregion

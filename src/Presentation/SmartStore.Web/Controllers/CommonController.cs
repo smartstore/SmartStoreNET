@@ -47,7 +47,7 @@ using SmartStore.Services.Seo;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class CommonController : PublicControllerBase
+    public partial class CommonController : PublicControllerBase
     {
 		private readonly static string[] s_hints = new string[] { "Shopsystem", "Onlineshop Software", "Shopsoftware", "E-Commerce Solution" };
 
@@ -67,6 +67,7 @@ namespace SmartStore.Web.Controllers
 		private readonly CustomerSettings _customerSettings;
         private readonly TaxSettings _taxSettings;
         private readonly CatalogSettings _catalogSettings;
+        private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly ThemeSettings _themeSettings;
         private readonly CommonSettings _commonSettings;
 		private readonly NewsSettings _newsSettings;
@@ -101,6 +102,7 @@ namespace SmartStore.Web.Controllers
             CustomerSettings customerSettings, 
             TaxSettings taxSettings, 
 			CatalogSettings catalogSettings,
+            ShoppingCartSettings shoppingCartSettings,
             EmailAccountSettings emailAccountSettings,
             CommonSettings commonSettings, 
 			NewsSettings newsSettings,
@@ -135,6 +137,7 @@ namespace SmartStore.Web.Controllers
 			this._customerSettings = customerSettings;
             this._taxSettings = taxSettings;
             this._catalogSettings = catalogSettings;
+            this._shoppingCartSettings = shoppingCartSettings;
             this._commonSettings = commonSettings;
 			this._newsSettings = newsSettings;
             this._blogSettings = blogSettings;
@@ -538,13 +541,14 @@ namespace SmartStore.Web.Controllers
                 subtotalBase = subTotalWithoutDiscountBase;
 				subtotal = _currencyService.Value.ConvertFromPrimaryStoreCurrency(subtotalBase, _services.WorkContext.WorkingCurrency);
             }
+
             var model = new ShopBarModel
             {
                 IsAuthenticated = isRegistered,
                 CustomerEmailUsername = isRegistered ? (_customerSettings.UsernamesEnabled ? customer.Username : customer.Email) : "",
 				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
 				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
-				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart),
+				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled,
                 ShoppingCartAmount = _priceFormatter.FormatPrice(subtotal, true, false),
 				WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,

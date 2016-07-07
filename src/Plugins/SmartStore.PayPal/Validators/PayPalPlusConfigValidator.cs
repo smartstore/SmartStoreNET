@@ -25,7 +25,7 @@ namespace SmartStore.PayPal.Validators
 			if (addRule("ThirdPartyPaymentMethods"))
 			{
 				RuleFor(x => x.ThirdPartyPaymentMethods)
-					.Must(x => x.Count <= 5)
+					.Must(x => x == null || x.Count <= 5)
 					.WithMessage(localize.GetResource("Plugins.Payments.PayPalPlus.ValidateThirdPartyPaymentMethods"));
 			}
 		}

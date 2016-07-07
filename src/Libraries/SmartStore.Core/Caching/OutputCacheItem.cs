@@ -7,6 +7,9 @@ namespace SmartStore.Core.Caching
 	[DebuggerDisplay("{CacheKey}, Url: {Url}, Query: {QueryString}, Duration: {Duration}, Tags: {Tags}")]
 	public class OutputCacheItem
 	{
+		// used for serialization compatibility
+		public static readonly string Version = "1";
+
 		public string CacheKey { get; set; }
 		public string RouteKey { get; set; }
 		public DateTime CachedOnUtc { get; set; }
@@ -19,19 +22,19 @@ namespace SmartStore.Core.Caching
 		public int StoreId { get; set; }
 		public int LanguageId { get; set; }
 		public int CurrencyId { get; set; }
-		public string[] CustomerRoles { get; set; }
+		public string CustomerRoles { get; set; }
 
 		public string ContentType { get; set; }
 		public string Content { get; set; }
 
-		public DateTime ValidUntilUtc
+		public DateTime ExpiresOnUtc
 		{
 			get { return CachedOnUtc.AddSeconds(Duration); }
 		}
 
 		public bool IsValid(DateTime utcNow)
 		{
-			return utcNow < ValidUntilUtc;
+			return utcNow < ExpiresOnUtc;
 		}
 
 		public string JoinTags()

@@ -48,7 +48,8 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual void VerifyState()
         {
-            Guard.NotNull(() => this.Component);
+            Guard.NotNull(this.Component, nameof(this.Component));
+
             if (this.Component.NameIsRequired && !this.Component.Id.HasValue())
             {
                 throw Error.InvalidOperation("A component must have a unique 'Name'. Please provide a name.");

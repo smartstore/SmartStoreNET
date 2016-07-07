@@ -104,8 +104,8 @@
     <Reference Include="NCrontab">
       <HintPath>..\..\packages\ncrontab.2.0.0\lib\net20\NCrontab.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NReco.PdfGenerator, Version=1.1.5.0, Culture=neutral, processorArchitecture=MSIL">
@@ -232,6 +232,9 @@
     <Compile Include="DataExchange\Export\IExportProfileService.cs" />
     <Compile Include="DataExchange\Import\ImportDataSegmenter.cs" />
     <Compile Include="DataExchange\Import\ImportRow.cs" />
+    <Compile Include="Events\DefaultMessageBus.cs" />
+    <Compile Include="Events\IMessageBroker.cs" />
+    <Compile Include="Events\IMessageBus.cs" />
     <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
     <Compile Include="Media\MediaExtensions.cs" />

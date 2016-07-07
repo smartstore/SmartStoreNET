@@ -7,7 +7,7 @@ using SmartStore.Web.Framework.Modelling;
 namespace SmartStore.Admin.Models.Plugins
 {
 
-    public class LocalPluginsModel : ModelBase
+	public class LocalPluginsModel : ModelBase
     {
 
         public LocalPluginsModel()
@@ -18,9 +18,6 @@ namespace SmartStore.Admin.Models.Plugins
 		public List<StoreModel> AvailableStores { get; set; }
 
         public Multimap<string, PluginModel> Groups { get; set; }
-
-		public bool IsSandbox { get; set; }
-		public bool IsLocalhost { get; set; }
 
         public ICollection<PluginModel> AllPlugins
         {

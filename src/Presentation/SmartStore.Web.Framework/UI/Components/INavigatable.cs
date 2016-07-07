@@ -53,7 +53,7 @@ namespace SmartStore.Web.Framework.UI
 
         RouteValueDictionary RouteValues 
         { 
-            get; 
+            get;
         }
 
         ModifiedParameter ModifiedParam

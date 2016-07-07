@@ -318,7 +318,7 @@ namespace SmartStore
         public static string Truncate(this string value, int maxLength, string suffix = "")
         {
             Guard.ArgumentNotNull(suffix, "suffix");
-            Guard.ArgumentIsPositive(maxLength, "maxLength");
+            Guard.IsPositive(maxLength, nameof(maxLength));
 
             int subStringLength = maxLength - suffix.Length;
 

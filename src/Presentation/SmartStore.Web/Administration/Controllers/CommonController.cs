@@ -131,7 +131,7 @@ namespace SmartStore.Admin.Controllers
 			ViewBag.Stores = _services.StoreService.GetAllStores();
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
 			{
-				ViewBag.CheckUpdateResult = AsyncRunner.RunSync(() => CheckUpdateAsync(false));
+				ViewBag.CheckUpdateResult = CheckUpdateInternal(false);
 			}
 
 			return PartialView();
@@ -143,7 +143,7 @@ namespace SmartStore.Admin.Controllers
 			var cacheManager = _services.Cache;
 
 			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
-			string cacheKey = string.Format("smartstore.pres.adminmenu.navigation-{0}-{1}", _services.WorkContext.WorkingLanguage.Id, string.Join(",", customerRolesIds));
+			string cacheKey = string.Format("pres:adminmenu:navigation-{0}-{1}", _services.WorkContext.WorkingLanguage.Id, string.Join(",", customerRolesIds));
 
             var rootNode = cacheManager.Get(cacheKey, () =>
             {
@@ -165,7 +165,7 @@ namespace SmartStore.Admin.Controllers
 			_menuPublisher.Value.RegisterMenus(rootNode, "admin");
 
 			// hide based on permissions
-            rootNode.TraverseTree(x => {
+            rootNode.Traverse(x => {
                 if (!x.IsRoot)
                 {
 					if (!MenuItemAccessPermitted(x.Value))
@@ -176,7 +176,7 @@ namespace SmartStore.Admin.Controllers
             });
 
             // hide dropdown nodes when no child is visible
-			rootNode.TraverseTree(x =>
+			rootNode.Traverse(x =>
 			{
 				if (!x.IsRoot)
 				{
@@ -266,9 +266,9 @@ namespace SmartStore.Admin.Controllers
 
 		#region CheckUpdate
 
-		public async Task<ActionResult> CheckUpdate(bool enforce = false)
+		public ActionResult CheckUpdate(bool enforce = false)
 		{
-			var model = await CheckUpdateAsync(enforce);
+			var model = CheckUpdateInternal(enforce);
 			return View(model);
 		}
 
@@ -286,19 +286,19 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[NonAction]
-		private async Task<CheckUpdateResult> CheckUpdateAsync(bool enforce = false, bool forSuppress = false)
+		private CheckUpdateResult CheckUpdateInternal(bool enforce = false, bool forSuppress = false)
 		{
 			var curVersion = SmartStoreVersion.CurrentFullVersion;
 			var lang = _services.WorkContext.WorkingLanguage.UniqueSeoCode;
-			var cacheKeyPattern = "Common.CheckUpdateResult";
-			var cacheKey = "{0}.{1}".FormatInvariant(cacheKeyPattern, lang);
+			var cacheKeyPattern = "admin:common:checkupdateresult";
+			var cacheKey = "{0}-{1}".FormatInvariant(cacheKeyPattern, lang);
 
 			if (enforce)
 			{
 				_services.Cache.RemoveByPattern(cacheKeyPattern);
 			}
 
-			var result = await _services.Cache.Get(cacheKey, async () =>
+			var execute = new Func<CheckUpdateResult>(() => 
 			{
 				var noUpdateResult = new CheckUpdateResult { UpdateAvailable = false, LanguageCode = lang, CurrentVersion = curVersion };
 
@@ -313,17 +313,17 @@ namespace SmartStore.Admin.Controllers
 						client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 						client.DefaultRequestHeaders.UserAgent.ParseAdd("SmartStore.NET {0}".FormatInvariant(curVersion));
 						client.DefaultRequestHeaders.Add("Authorization-Key", _services.StoreContext.CurrentStore.Url.TrimEnd('/'));
-						
-						HttpResponseMessage response = await client.GetAsync(url);
-						
+
+						HttpResponseMessage response = client.GetAsync(url).Result;
+
 						if (response.StatusCode != HttpStatusCode.OK)
 						{
 							return noUpdateResult;
 						}
-						
-						var jsonStr = await response.Content.ReadAsStringAsync();
+
+						var jsonStr = response.Content.ReadAsStringAsync().Result;
 						var model = JsonConvert.DeserializeObject<CheckUpdateResult>(jsonStr);
-						
+
 						model.UpdateAvailable = true;
 						model.CurrentVersion = curVersion;
 						model.LanguageCode = lang;
@@ -354,7 +354,14 @@ namespace SmartStore.Admin.Controllers
 					Logger.Error("An error occurred while checking for update", ex);
 					return noUpdateResult;
 				}
-			}, TimeSpan.FromDays(1));
+			});
+
+			var result = _services.Cache.Get<CheckUpdateResult>(cacheKey);
+
+			if (result == null)
+			{
+				result = execute();
+			}
 
 			return result;
 		}

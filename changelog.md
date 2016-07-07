@@ -1,5 +1,20 @@
 ﻿# Release Notes
 
+## SmartStore.NET 3.0
+
+### Improvements
+* Added order message token for accepting third party email handover
+
+### New Features
+* Added option to skip shipping method selction in checkout process when only on shipping method is active
+* Added options to capture salutation and title in addresses and customer info
+
+### Bugfixes
+* Currency wasn't displayed at shipping estimation
+* SKU, EAN, MPN of last attribute combination was exported for all combinations
+* GMC: Id should be unique when exporting attribute combinations as products
+
+
 ## SmartStore.NET 2.6
 
 ### Highlights

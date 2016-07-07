@@ -7,7 +7,6 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Security
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public class RequireHttpsByConfigAttribute : FilterAttribute, IAuthorizationFilter
     {
 		public RequireHttpsByConfigAttribute(SslRequirement sslRequirement)
@@ -21,9 +20,6 @@ namespace SmartStore.Web.Framework.Security
 
         public virtual void OnAuthorization(AuthorizationContext filterContext)
         {
-            if (filterContext == null)
-                throw new ArgumentNullException("filterContext");
-
             // don't apply filter to child methods
             if (filterContext.IsChildAction)
                 return;

@@ -594,7 +594,8 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Empty;
 		}
 
-		public static MvcHtmlString SettingEditorFor<TModel, TValue>(this HtmlHelper<TModel> helper, 
+		public static MvcHtmlString SettingEditorFor<TModel, TValue>(
+			this HtmlHelper<TModel> helper, 
 			Expression<Func<TModel, TValue>> expression, 
 			string parentSelector = null,
 			object additionalViewData = null)

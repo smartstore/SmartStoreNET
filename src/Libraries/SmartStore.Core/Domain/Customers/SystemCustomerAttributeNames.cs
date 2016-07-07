@@ -4,6 +4,7 @@ namespace SmartStore.Core.Domain.Customers
     public static partial class SystemCustomerAttributeNames
     {
         //Form fields
+        public static string Title { get { return "Title"; } }
         public static string FirstName { get { return "FirstName"; } }
         public static string LastName { get { return "LastName"; } }
         public static string Gender { get { return "Gender"; } }

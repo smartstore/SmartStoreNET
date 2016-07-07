@@ -97,7 +97,9 @@ namespace SmartStore.Core.Caching
 			if (items.Count == 0)
 				yield break;
 
-			var matcher = pattern == "*" ? null : CreateMatcher(pattern);
+			var prefixLen = RegionName.Length;
+
+			pattern = pattern.NullEmpty() ?? "*";
 
 			var enumerator = items.GetEnumerator();
 			while (enumerator.MoveNext())
@@ -107,8 +109,8 @@ namespace SmartStore.Core.Caching
 					continue;
 				if (key.StartsWith(RegionName))
 				{
-					key = key.Substring(RegionName.Length);
-					if (matcher == null || matcher.IsMatch(key))
+					key = key.Substring(prefixLen);
+					if (pattern == "*" || key.StartsWith(pattern, StringComparison.OrdinalIgnoreCase))
 					{
 						yield return key;
 					}
@@ -119,11 +121,6 @@ namespace SmartStore.Core.Caching
 		private string BuildKey(string key)
 		{
 			return RegionName + key.EmptyNull();
-		}
-
-		private static Regex CreateMatcher(string pattern)
-		{
-			return new Regex(pattern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		}
 	}
 }

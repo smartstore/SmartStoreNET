@@ -214,7 +214,7 @@ namespace SmartStore.Services.Common
 
 		public virtual void SaveAttribute<TPropType>(int entityId, string key, string keyGroup, TPropType value, int storeId = 0)
 		{
-			Guard.ArgumentNotZero(entityId, "entityId");
+			Guard.NotZero(entityId, nameof(entityId));
 
 			var props = GetAttributesForEntity(entityId, keyGroup)
 				 .Where(x => x.StoreId == storeId)

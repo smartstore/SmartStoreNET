@@ -1281,23 +1281,16 @@ namespace SmartStore.AmazonPay.Services
 
 		public void DataPollingTaskInit()
 		{
-			var task = _scheduleTaskService.GetTaskByType(AmazonPayCore.DataPollingTaskType);
-			if (task == null)
+			_scheduleTaskService.GetOrAddTask<DataPollingTask>(x => 
 			{
-				_scheduleTaskService.InsertTask(new ScheduleTask
-				{
-					Name = "{0} data polling".FormatWith(AmazonPayCore.SystemName),
-					CronExpression = "*/30 * * * *", // Every 30 minutes
-					Type = AmazonPayCore.DataPollingTaskType,
-					Enabled = false,
-					StopOnError = false,
-				});
-			}
+				x.Name = "{0} data polling".FormatWith(AmazonPayCore.SystemName);
+				x.CronExpression = "*/30 * * * *"; // Every 30 minutes
+			});
 		}
 
 		public void DataPollingTaskUpdate(bool enabled, int seconds)
 		{
-			var task = _scheduleTaskService.GetTaskByType(AmazonPayCore.DataPollingTaskType);
+			var task = _scheduleTaskService.GetTaskByType<DataPollingTask>();
 			if (task != null)
 			{
 				task.Enabled = enabled;
@@ -1309,9 +1302,7 @@ namespace SmartStore.AmazonPay.Services
 
 		public void DataPollingTaskDelete()
 		{
-			var task = _scheduleTaskService.GetTaskByType(AmazonPayCore.DataPollingTaskType);
-			if (task != null)
-				_scheduleTaskService.DeleteTask(task);
+			_scheduleTaskService.TryDeleteTask<DataPollingTask>();
 		}
 	}
 }

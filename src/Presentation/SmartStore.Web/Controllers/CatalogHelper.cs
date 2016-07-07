@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
@@ -1032,7 +1033,7 @@ namespace SmartStore.Web.Controllers
 
 			#endregion
 
-			_services.DisplayedEntities.Add(product);
+			_services.DisplayControl.Announce(product);
 
 			return model;
 		}
@@ -1061,7 +1062,7 @@ namespace SmartStore.Web.Controllers
 
 		public IList<MenuItem> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId)
 		{
-			var requestCache = SmartStore.Core.Infrastructure.EngineContext.Current.Resolve<ICacheManager>();
+			var requestCache = EngineContext.Current.Resolve<IRequestCache>();
 			string cacheKey = "sm.temp.category.path.{0}-{1}".FormatInvariant(currentCategoryId, currentProductId);
 
 			var breadcrumb = requestCache.Get(cacheKey, () =>
@@ -1204,7 +1205,7 @@ namespace SmartStore.Web.Controllers
 						{
 							contextProduct = associatedProducts.OrderBy(x => x.DisplayOrder).First();
 
-							_services.DisplayedEntities.Add(contextProduct);
+							_services.DisplayControl.Announce(contextProduct);
 
 							if (displayPrices && _catalogSettings.PriceDisplayType != PriceDisplayType.Hide)
 							{
@@ -1476,7 +1477,7 @@ namespace SmartStore.Web.Controllers
 				models.Add(model);
 			}
 
-			_services.DisplayedEntities.AddRange(products);
+			_services.DisplayControl.AnnounceRange(products);
 
 			return models;
 		}
@@ -1512,8 +1513,7 @@ namespace SmartStore.Web.Controllers
 			if (_catalogSettings.ShowCategoryProductNumber)
 			{
 				var curItem = breadcrumb.LastOrDefault();
-				var curNode = curItem == null ? root.Root : root.Find(curItem);
-
+				var curNode = curItem == null ? root.Root : root.SelectNode(x => x.Value == curItem);
 				this.ResolveCategoryProductsCount(curNode);
 			}
 
@@ -1546,7 +1546,7 @@ namespace SmartStore.Web.Controllers
 									if (_catalogSettings.ShowCategoryProductNumberIncludingSubcategories)
 									{
 										// include subcategories
-										node.TraverseTree(x => categoryIds.Add(x.Value.EntityId));
+										node.Traverse(x => categoryIds.Add(x.Value.EntityId));
 									}
 									else
 									{

@@ -42,6 +42,10 @@ namespace SmartStore.Web.Models.Customer
         [SmartResourceDisplayName("Account.Fields.Gender")]
         public string Gender { get; set; }
 
+        public bool TitleEnabled { get; set; }
+        [SmartResourceDisplayName("Account.Fields.Title")]
+        public string Title { get; set; }
+        
         [SmartResourceDisplayName("Account.Fields.FirstName")]
         [AllowHtml]
         public string FirstName { get; set; }

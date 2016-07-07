@@ -53,7 +53,7 @@ namespace SmartStore.Services.DataExchange
 
 		public SyncMapping GetSyncMappingByEntity(int entityId, string entityName, string contextName)
 		{
-			Guard.ArgumentIsPositive(entityId, "entityId");
+			Guard.IsPositive(entityId, nameof(entityId));
 			Guard.ArgumentNotEmpty(() => entityName);
 			Guard.ArgumentNotEmpty(() => contextName);
 

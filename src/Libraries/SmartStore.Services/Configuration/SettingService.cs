@@ -17,7 +17,7 @@ namespace SmartStore.Services.Configuration
 {
     public partial class SettingService : ISettingService
     {
-        private const string SETTINGS_ALL_KEY = "SmartStore.setting.all";
+        private const string SETTINGS_ALL_KEY = "setting:all";
 
         private readonly IRepository<Setting> _settingRepository;
         private readonly IEventPublisher _eventPublisher;
@@ -33,7 +33,7 @@ namespace SmartStore.Services.Configuration
             this._settingRepository = settingRepository;
         }
 
-		protected virtual IDictionary<SettingKey, CachedSetting> GetAllCachedSettings()
+		protected virtual IDictionary<string, CachedSetting> GetAllCachedSettings()
 		{
 			string key = string.Format(SETTINGS_ALL_KEY);
 			return _cacheManager.Get(key, () =>
@@ -42,7 +42,7 @@ namespace SmartStore.Services.Configuration
 							orderby s.Name, s.StoreId
 							select s;
 				var settings = query.ToList();
-				var dictionary = new Dictionary<SettingKey, CachedSetting>();
+				var dictionary = new Dictionary<string, CachedSetting>(StringComparer.OrdinalIgnoreCase);
 				foreach (var s in settings)
 				{
 					var settingKey = CreateCacheKey(s.Name, s.StoreId);
@@ -244,6 +244,11 @@ namespace SmartStore.Services.Configuration
 
 			var prefix = typeof(T).Name;
 
+			if (storeId == 0)
+			{
+				
+			}
+
 			foreach (var fastProp in FastProperty.GetProperties(typeof(T)).Values)
 			{
 				var prop = fastProp.Property;
@@ -336,7 +341,7 @@ namespace SmartStore.Services.Configuration
 				// Insert
 				var setting = new Setting
 				{
-					Name = cacheKey.Name,
+					Name = key.ToLowerInvariant(),
 					Value = str,
 					StoreId = storeId
 				};
@@ -533,21 +538,26 @@ namespace SmartStore.Services.Configuration
 			}
 		}
 
-		protected SettingKey CreateCacheKey(string name, int storeId)
+		protected string CreateCacheKey(string name, int storeId)
 		{
-			return new SettingKey { Name = name.Trim().ToLowerInvariant(), StoreId = storeId };
+			return name.Trim().ToLowerInvariant() + "/" + storeId.ToString();
 		} 
     }
 
-	[Serializable]
-	public class SettingKey : ComparableObject
-	{
-		[ObjectSignature]
-		public string Name { get; set; }
+	//[Serializable]
+	//public class SettingKey : ComparableObject
+	//{
+	//	[ObjectSignature]
+	//	public string Name { get; set; }
 
-		[ObjectSignature]
-		public int StoreId { get; set; }
-	}
+	//	[ObjectSignature]
+	//	public int StoreId { get; set; }
+
+	//	public override string ToString()
+	//	{
+	//		return Name + "@__!__@" + StoreId;
+	//	}
+	//}
 
 	[Serializable]
 	public class CachedSetting

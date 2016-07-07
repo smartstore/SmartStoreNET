@@ -11,9 +11,9 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework.Controllers
 {
-	[SetWorkingCulture]
-	[Notify]
-	[JsonNet]
+	[SetWorkingCulture(Order = -1)]
+	[JsonNet(Order = -1)]
+	[Notify(Order = 100)]
 	public abstract partial class SmartController : Controller
 	{
 		protected SmartController()

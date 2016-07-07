@@ -585,6 +585,11 @@ namespace SmartStore.Services.DataExchange.Export
 			dynObject._AttributeCombinationId = (combination == null ? 0 : combination.Id);
 			dynObject._DetailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)dynObject.SeName;
 
+			if (combination == null)
+				dynObject._UniqueId = product.Id.ToString();
+			else
+				dynObject._UniqueId = string.Concat(product.Id, "-", combination.Id);
+
 			dynObject.Price = CalculatePrice(ctx, product, combination != null);
 
 			dynObject._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
@@ -1013,19 +1018,17 @@ namespace SmartStore.Services.DataExchange.Export
 				//var productValues = new Dictionary<string, object>();
 				var dbContext = _dbContext as DbContext;
 
-				product = _dbContext.Attach(product);
-
-				var entry = dbContext.Entry(product);
-
-				// the returned object is not the entity and is not being tracked by the context.
-				// it also does not have any relationships set to other objects.
-				// CurrentValues only includes database (thus primitive) values.
-				var productClone = entry.CurrentValues.ToObject() as Product;
-
-				_dbContext.DetachEntity(product);
-
 				foreach (var combination in combinations.Where(x => x.IsActive))
 				{
+					product = _dbContext.Attach(product);
+					var entry = dbContext.Entry(product);
+
+					// the returned object is not the entity and is not being tracked by the context.
+					// it also does not have any relationships set to other objects.
+					// CurrentValues only includes database (thus primitive) values.
+					var productClone = entry.CurrentValues.ToObject() as Product;
+					_dbContext.DetachEntity(product);
+
 					var dynObject = ToDynamic(ctx, productClone, combinations, combination);
 					result.Add(dynObject);
 				}

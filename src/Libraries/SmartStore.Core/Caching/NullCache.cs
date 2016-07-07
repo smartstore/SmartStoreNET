@@ -17,6 +17,11 @@ namespace SmartStore.Core.Caching
 			get { return s_instance; }
 		}
 
+		public bool IsDistributedCache
+		{
+			get { return false; }
+		}
+
 		public T Get<T>(string key)
 		{
 			return default(T);

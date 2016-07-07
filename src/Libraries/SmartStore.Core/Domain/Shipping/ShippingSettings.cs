@@ -56,6 +56,6 @@ namespace SmartStore.Core.Domain.Shipping
         /// <summary>
         /// Gets or sets a value indicating whether to display shipping options during checkout process only if more then one option is available
         /// </summary>
-        public bool SuppressShippingOptsCheckoutStepIfOnlyOneActiveOpt { get; set; }
+        public bool SkipShippingIfSingleOption { get; set; }
     }
 }

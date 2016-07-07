@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Core.Caching
 {
+	[SystemName("NullOutputCacheProvider")]
+	[FriendlyName("Idle")]
 	public class NullOutputCacheProvider : IOutputCacheProvider
 	{
-		public IEnumerable<OutputCacheItem> All(int skip, int count)
+		public IPagedList<OutputCacheItem> All(int pageIndex, int pageSize)
 		{
-			return Enumerable.Empty<OutputCacheItem>();
+			return new PagedList<OutputCacheItem>(new List<OutputCacheItem>(), pageIndex, pageSize);
 		}
 
 		public int Count()

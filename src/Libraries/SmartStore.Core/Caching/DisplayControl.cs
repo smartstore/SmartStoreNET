@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Core.Caching
 {
-	public partial class DisplayedEntities : IDisplayedEntities
+	public partial class DisplayControl : IDisplayControl
 	{
 		private readonly HashSet<BaseEntity> _entities = new HashSet<BaseEntity>();
 
-		public void Add(BaseEntity entity)
+		private bool? _isUncacheableRequest;
+
+		public void Announce(BaseEntity entity)
 		{
 			if (entity != null)
 			{
@@ -18,9 +20,31 @@ namespace SmartStore.Core.Caching
 			}
 		}
 
+		public bool IsDisplayed(BaseEntity entity)
+		{
+			if (entity == null)
+				return false;
+
+			return _entities.Contains(entity);
+		}
+
+		public void MarkRequestAsUncacheable()
+		{
+			// First wins: subsequent calls should not be able to cancel this
+			_isUncacheableRequest = true;
+		}
+
+		public bool IsUncacheableRequest
+		{
+			get
+			{
+				return _isUncacheableRequest.GetValueOrDefault() == true;
+			}
+		}
+
 		public string GetCacheControlTagFor(BaseEntity entity)
 		{
-			Guard.ArgumentNotNull(() => entity);
+			Guard.NotNull(entity, nameof(entity));
 
 			var typeName = entity.GetUnproxiedType().Name.ToLowerInvariant();
 			string prefix = null;

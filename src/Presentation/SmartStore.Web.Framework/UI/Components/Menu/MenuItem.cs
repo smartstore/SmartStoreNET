@@ -9,11 +9,10 @@ namespace SmartStore.Web.Framework.UI
 
     public class MenuItem : NavigationItem, ICloneable<MenuItem>
     {
-
         public MenuItem()
         {
-            this.Attributes = new RouteValueDictionary();
-        }
+            this.Attributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+		}
 
 		/// <summary>
 		/// If this menu item refers to an entity, the id of the backed entity (like category, products e.g.)
@@ -33,9 +32,9 @@ namespace SmartStore.Web.Framework.UI
 
         public bool IsGroupHeader { get; set; }
 
-        public IDictionary<string, object> Attributes { get; private set; }
+        public IDictionary<string, object> Attributes { get; set; }
 
-        public MenuItemBuilder ToBuilder()
+		public MenuItemBuilder ToBuilder()
         {
             return new MenuItemBuilder(this);
         }

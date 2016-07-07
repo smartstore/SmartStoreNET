@@ -74,6 +74,17 @@ namespace SmartStore.Services.Tasks
         void UpdateTask(ScheduleTask task);
 
 		/// <summary>
+		/// Inserts a new task definition to the database or returns an existing one
+		/// </summary>
+		/// <typeparam name="T">The concrete implementation of the task</typeparam>
+		/// <param name="action">Wraps the newly created <see cref="ScheduleTask"/> instance</param>
+		/// <returns>A newly created or existing task instance</returns>
+		/// <remarks>
+		/// This method does NOT update an already exising task
+		/// </remarks>
+		ScheduleTask GetOrAddTask<T>(Action<ScheduleTask> newAction) where T : ITask;
+
+		/// <summary>
 		/// Calculates - according to their cron expressions - all task future schedules
 		/// and saves them to the database.
 		/// </summary>
@@ -87,4 +98,34 @@ namespace SmartStore.Services.Tasks
 		/// <returns>The next schedule or <c>null</c> if the task is disabled</returns>
 		DateTime? GetNextSchedule(ScheduleTask task);
     }
+
+	public static class IScheduleTaskServiceExtensions
+	{
+		public static ScheduleTask GetTaskByType<T>(this IScheduleTaskService service) where T : ITask
+		{
+			return service.GetTaskByType(typeof(T));
+		}
+
+		public static ScheduleTask GetTaskByType(this IScheduleTaskService service, Type taskType)
+		{
+			Guard.ArgumentNotNull(() => taskType);
+
+			var name = taskType.AssemblyQualifiedNameWithoutVersion();
+
+			return service.GetTaskByType(name);
+		}
+
+		public static bool TryDeleteTask<T>(this IScheduleTaskService service) where T : ITask
+		{
+			var task = service.GetTaskByType(typeof(T));
+
+			if (task != null)
+			{
+				service.DeleteTask(task);
+				return true;
+			}
+
+			return false;
+		}
+	}
 }

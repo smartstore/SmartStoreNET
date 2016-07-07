@@ -28,8 +28,8 @@ namespace SmartStore.Web.Framework
         /// {0} : theme name
         /// {1} : store identifier
         /// </remarks>
-        public const string THEMEVARS_LESSCSS_KEY = "sm.pres.themevars-lesscss-{0}-{1}";
-		public const string THEMEVARS_LESSCSS_THEME_KEY = "sm.pres.themevars-lesscss-{0}";
+        public const string THEMEVARS_LESSCSS_KEY = "pres:themevars-lesscss-{0}-{1}";
+		public const string THEMEVARS_LESSCSS_THEME_KEY = "pres:themevars-lesscss-{0}";
 		
         
         /// <summary>
@@ -39,8 +39,8 @@ namespace SmartStore.Web.Framework
         /// {0} : customer role ids
         /// {1} : store identifier
         /// </remarks>
-        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY = "sm.fw.customerroles.taxdisplaytypes-{0}-{1}";
-        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY = "sm.fw.customerroles.taxdisplaytypes";
+        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY = "fw:customerroles:taxdisplaytypes-{0}-{1}";
+        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY = "fw:customerroles:taxdisplaytypes";
 
         private readonly ICacheManager _cacheManager;
 

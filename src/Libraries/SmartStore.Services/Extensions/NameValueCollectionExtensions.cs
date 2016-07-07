@@ -42,7 +42,7 @@ namespace SmartStore
 		/// <param name="productId">Product identifier to filter</param>
 		public static void GetSelectedAttributes(this NameValueCollection collection, NameValueCollection queryString, List<List<int>> attributes, int productId = 0)
 		{
-			Guard.NotNull(() => collection);
+			Guard.NotNull(collection, nameof(collection));
 
 			// ambiguous parameters: let other query string parameters win over the json formatted attributes parameter
 			if (queryString != null && queryString.Count > 0)

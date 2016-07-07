@@ -94,7 +94,7 @@
 			if (Model.PaymentMethods.Count > 0)
 			{
 				<div class="select-button clearfix">
-					<a class="btn pull-left" href="@Url.Action("ShippingMethod")">
+					<a class="btn pull-left" href="@(Model.SkippedSelectShipping ? Url.Action("BillingAddress") : Url.Action("ShippingMethod"))">
 						<i class="fa fa-caret-left"></i>&nbsp;
 						@T("Common.Back")
 					</a>    

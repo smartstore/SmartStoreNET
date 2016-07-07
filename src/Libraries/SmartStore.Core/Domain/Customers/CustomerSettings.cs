@@ -165,6 +165,11 @@ namespace SmartStore.Core.Domain.Customers
         public bool GenderEnabled { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether 'Title' is enabled
+        /// </summary>
+        public bool TitleEnabled { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether 'Date of Birth' is enabled
         /// </summary>
         public bool DateOfBirthEnabled { get; set; }

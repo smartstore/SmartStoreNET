@@ -6,8 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 
 namespace SmartStore.Core.Data
-{
-    
+{   
     public static class RepositoryExtensions
     {
         public static T GetFirst<T>(this IRepository<T> rs, Func<T, bool> predicate) where T : BaseEntity
@@ -29,7 +28,7 @@ namespace SmartStore.Core.Data
 
         public static void Delete<T>(this IRepository<T> rs, int id) where T : BaseEntity
         {
-			Guard.ArgumentNotZero(id, "id");
+			Guard.NotZero(id, nameof(id));
 			
 			// Perf: work with stub entity
 			var entity = rs.Create();

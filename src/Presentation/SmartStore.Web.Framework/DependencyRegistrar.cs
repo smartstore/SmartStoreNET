@@ -129,8 +129,11 @@ namespace SmartStore.Web.Framework
 
 		protected override void Load(ContainerBuilder builder)
 		{
+			builder.RegisterType<HostNameProvider>().As<IHostNameProvider>().SingleInstance();
+			
 			// sources
 			builder.RegisterSource(new SettingsSource());
+			builder.RegisterSource(new WorkSource());
 
 			// web helper
 			builder.RegisterType<WebHelper>().As<IWebHelper>().InstancePerRequest();
@@ -528,7 +531,7 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			// Output cache
-			builder.RegisterType<DisplayedEntities>().As<IDisplayedEntities>().InstancePerRequest();
+			builder.RegisterType<DisplayControl>().As<IDisplayControl>().InstancePerRequest();
 
 			// Request cache
 			builder.RegisterType<RequestCache>().As<IRequestCache>().InstancePerRequest();
@@ -536,6 +539,10 @@ namespace SmartStore.Web.Framework
 			// Model/Business cache (application scoped)
 			builder.RegisterType<MemoryCacheManager>().As<ICacheManager>().SingleInstance();
 			builder.RegisterType<NullCache>().Named<ICacheManager>("null").SingleInstance();
+
+			// Register MemoryCacheManager twice, this time explicitly named.
+			// We may need this later in decorator classes as a kind of fallback.
+			builder.RegisterType<MemoryCacheManager>().Named<ICacheManager>("memory").SingleInstance();
 		}
 	}
 
@@ -552,6 +559,8 @@ namespace SmartStore.Web.Framework
 
 		protected override void Load(ContainerBuilder builder)
 		{
+			builder.RegisterType<DefaultMessageBus>().As<IMessageBus>().SingleInstance();
+
 			builder.RegisterType<EventPublisher>().As<IEventPublisher>().SingleInstance();
 			builder.RegisterGeneric(typeof(DefaultConsumerFactory<>)).As(typeof(IConsumerFactory<>)).InstancePerDependency();
 
@@ -631,7 +640,7 @@ namespace SmartStore.Web.Framework
 			// global exception handling
 			if (DataSettings.DatabaseIsInstalled())
 			{
-				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<Controller>();
+				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<Controller>(-100);
 			}
 		}
 
@@ -1091,7 +1100,7 @@ namespace SmartStore.Web.Framework
 
 	#region Sources
 
-	public class SettingsSource : IRegistrationSource
+	class SettingsSource : IRegistrationSource
     {
         static readonly MethodInfo BuildMethod = typeof(SettingsSource).GetMethod(
             "BuildRegistration",
@@ -1118,9 +1127,7 @@ namespace SmartStore.Web.Framework
 					IStoreContext storeContext;
 					if (c.TryResolve<IStoreContext>(out storeContext))
 					{
-						var store = storeContext.CurrentStore;
-
-						currentStoreId = store.Id;
+						currentStoreId = storeContext.CurrentStoreIdIfMultiStoreMode;
 						//uncomment the code below if you want load settings per store only when you have two stores installed.
 						//var currentStoreId = c.Resolve<IStoreService>().GetAllStores().Count > 1
 						//    c.Resolve<IStoreContext>().CurrentStore.Id : 0;
@@ -1140,6 +1147,56 @@ namespace SmartStore.Web.Framework
 
         public bool IsAdapterForIndividualComponents { get { return false; } }
     }
+
+	class WorkSource : IRegistrationSource
+	{
+		static readonly MethodInfo CreateMetaRegistrationMethod = typeof(WorkSource).GetMethod(
+			"CreateMetaRegistration", BindingFlags.Static | BindingFlags.NonPublic);
+
+		private static bool IsClosingTypeOf(Type type, Type openGenericType)
+		{
+			return type.IsGenericType && type.GetGenericTypeDefinition() == openGenericType;
+		}
+
+		public IEnumerable<IComponentRegistration> RegistrationsFor(Service service, Func<Service, IEnumerable<IComponentRegistration>> registrationAccessor)
+		{
+			var swt = service as IServiceWithType;
+			if (swt == null || !IsClosingTypeOf(swt.ServiceType, typeof(Work<>)))
+				return Enumerable.Empty<IComponentRegistration>();
+
+			var valueType = swt.ServiceType.GetGenericArguments()[0];
+
+			var valueService = swt.ChangeType(valueType);
+
+			var registrationCreator = CreateMetaRegistrationMethod.MakeGenericMethod(valueType);
+
+			return registrationAccessor(valueService)
+				.Select(v => registrationCreator.Invoke(null, new object[] { service, v }))
+				.Cast<IComponentRegistration>();
+		}
+
+		public bool IsAdapterForIndividualComponents
+		{
+			get { return true; }
+		}
+
+		static IComponentRegistration CreateMetaRegistration<T>(Service providedService, IComponentRegistration valueRegistration) where T : class
+		{
+			var rb = RegistrationBuilder.ForDelegate(
+				(c, p) => {
+					var accessor = c.Resolve<ILifetimeScopeAccessor>();
+					return new Work<T>(w => 
+					{
+						T value = accessor.GetLifetimeScope(null).Resolve<T>();
+						return value;
+					});
+				})
+				.As(providedService)
+				.Targeting(valueRegistration);
+
+			return rb.CreateRegistration();
+		}
+	}
 
 	#endregion
 

@@ -13,14 +13,13 @@ using SmartStore.Collections;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Product attribute parser
-    /// </summary>
-    public partial class ProductAttributeParser : IProductAttributeParser
+	/// <summary>
+	/// Product attribute parser
+	/// </summary>
+	public partial class ProductAttributeParser : IProductAttributeParser
     {
 		// 0 = ProductId, 1 = AttributeXml Hash
 		private const string ATTRIBUTECOMBINATION_BY_ID_HASH = "SmartStore.parsedattributecombination.id-{0}-{1}";
@@ -194,12 +193,12 @@ namespace SmartStore.Services.Catalog
             return values;
         }
 
-		public virtual IList<string> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes, int languageId = 0)
+		public virtual IList<ProductVariantAttributeValue> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes)
 		{
-			var values = new List<string>();
+			var result = new List<ProductVariantAttributeValue>();
 
 			if (attributeCombination == null || !attributeCombination.Any())
-				return values;
+				return result;
 
 			var allValueIds = new List<int>();
 
@@ -219,28 +218,24 @@ namespace SmartStore.Services.Catalog
 				foreach (var attribute in attributes)
 				{
 					var attributeValue = attribute.ProductVariantAttributeValues.FirstOrDefault(x => x.Id == id);
-					if (attributeValue != null)
+					if (attributeValue != null && !result.Any(x => x.Id == attributeValue.Id))
 					{
-						var value = attributeValue.GetLocalized(x => x.Name, languageId, true, false);
-
-						if (!values.Any(x => x.IsCaseInsensitiveEqual(value)))
-							values.Add(value);
+						result.Add(attributeValue);
 						break;
 					}
 				}
 			}
 
-			return values;
+			return result;
 		}
 
-
-        /// <summary>
-        /// Gets selected product variant attribute value
-        /// </summary>
-        /// <param name="attributesXml">Attributes</param>
-        /// <param name="productVariantAttributeId">Product variant attribute identifier</param>
-        /// <returns>Product variant attribute value</returns>
-        public virtual IList<string> ParseValues(string attributesXml, int productVariantAttributeId)
+		/// <summary>
+		/// Gets selected product variant attribute value
+		/// </summary>
+		/// <param name="attributesXml">Attributes</param>
+		/// <param name="productVariantAttributeId">Product variant attribute identifier</param>
+		/// <returns>Product variant attribute value</returns>
+		public virtual IList<string> ParseValues(string attributesXml, int productVariantAttributeId)
         {
             var selectedProductVariantAttributeValues = new List<string>();
             try

@@ -250,7 +250,6 @@
     <Compile Include="Pdf\Content\PdfUrlContent.cs" />
     <Compile Include="Pdf\IPdfConverter.cs" />
     <Compile Include="Directory\EcbExchangeRateProvider.cs" />
-    <Compile Include="Directory\McExchangeRateProvider.cs" />
     <Compile Include="Catalog\AdjustInventoryResult.cs" />
     <Compile Include="Hooks\SoftDeletablePreUpdateHook.cs" />
     <Compile Include="Affiliates\AffiliateService.cs" />

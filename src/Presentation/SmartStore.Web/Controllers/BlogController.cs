@@ -50,7 +50,7 @@ namespace SmartStore.Web.Controllers
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ILanguageService _languageService;
 
-        private readonly MediaSettings _mediaSettings;
+		private readonly MediaSettings _mediaSettings;
         private readonly BlogSettings _blogSettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CustomerSettings _customerSettings;
@@ -150,9 +150,10 @@ namespace SmartStore.Web.Controllers
                         commentModel.CustomerAvatarUrl = avatarUrl;
                     }
                     model.Comments.Add(commentModel);
-                    
                 }
             }
+
+			Services.DisplayControl.Announce(blogPost);
         }
 
         [NonAction]
@@ -264,6 +265,8 @@ namespace SmartStore.Web.Controllers
 				var item = feed.CreateItem(blogPost.Title, blogPost.Body, blogPostUrl, blogPost.CreatedOnUtc);
 
 				items.Add(item);
+
+				Services.DisplayControl.Announce(blogPost);
 			}
 
 			feed.Items = items;
@@ -363,7 +366,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
-        //[OutputCache(Duration = 120, VaryByCustom = "WorkingLanguage")]
         public ActionResult BlogTags()
         {
             if (!_blogSettings.Enabled)
@@ -395,7 +397,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
-        //[OutputCache(Duration = 120, VaryByCustom = "WorkingLanguage")]
         public ActionResult BlogMonths()
         {
             if (!_blogSettings.Enabled)

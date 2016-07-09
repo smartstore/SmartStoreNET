@@ -18,13 +18,5 @@ namespace SmartStore.Core.Data.Hooks
         ///   <c>true</c> if requires validation; otherwise, <c>false</c>.
         /// </value>
         bool RequiresValidation { get; }
-
-        /// <summary>
-        /// Gets the entity state to listen for.
-        /// </summary>
-        /// <value>
-        /// The hook states.
-        /// </value>
-        EntityState HookStates { get; }
     }
 }

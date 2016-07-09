@@ -222,8 +222,6 @@ namespace SmartStore.Web.Controllers
                             AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), subCatName)
                         };
 
-						_services.DisplayControl.Announce(picture);
-
                         return pictureModel;
                     });
 
@@ -427,6 +425,8 @@ namespace SmartStore.Web.Controllers
 			if (listModel.Count == 0)
 				return Content("");
 
+			_services.DisplayControl.AnnounceRange(categories);
+
             return PartialView(listModel);
         }
 
@@ -564,6 +564,8 @@ namespace SmartStore.Web.Controllers
             //activity log
 			_services.CustomerActivity.InsertActivity("PublicStore.ViewManufacturer", T("ActivityLog.PublicStore.ViewManufacturer"), manufacturer.Name);
 
+			_services.DisplayControl.Announce(manufacturer);
+
             return View(templateViewPath, model);
         }
 
@@ -580,6 +582,8 @@ namespace SmartStore.Web.Controllers
                 modelMan.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, modelMan.Name);
                 model.Add(modelMan);
             }
+
+			_services.DisplayControl.AnnounceRange(manufacturers);
 
             return View(model);
         }
@@ -924,6 +928,8 @@ namespace SmartStore.Web.Controllers
 			}
 
 			feed.Items = items;
+
+			_services.DisplayControl.AnnounceRange(products);
 
 			return new RssActionResult { Feed = feed };
 		}

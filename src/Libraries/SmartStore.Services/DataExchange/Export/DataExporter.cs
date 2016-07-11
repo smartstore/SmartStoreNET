@@ -686,7 +686,7 @@ namespace SmartStore.Services.DataExchange.Export
 							OrderBy = ProductSortingEnum.Position,
 							PageSize = int.MaxValue,
 							StoreId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
-							VisibleIndividuallyOnly = false,
+							VisibleIndividuallyOnly = true,
 							ParentGroupedProductId = product.Id
 						};
 

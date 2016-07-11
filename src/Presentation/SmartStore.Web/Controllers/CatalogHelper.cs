@@ -236,8 +236,9 @@ namespace SmartStore.Web.Controllers
 			IList<ProductBundleItemData> bundleItems = null;
 			ProductVariantAttributeCombination combination = null;
 
-			if (product.ProductType == ProductType.GroupedProduct && !isAssociatedProduct)	// associated products
+			if (product.ProductType == ProductType.GroupedProduct && !isAssociatedProduct)
 			{
+				// associated products
 				var searchContext = new ProductSearchContext
 				{
 					OrderBy = ProductSortingEnum.Position,
@@ -250,10 +251,14 @@ namespace SmartStore.Web.Controllers
 				var associatedProducts = _productService.SearchProducts(searchContext);
 
 				foreach (var associatedProduct in associatedProducts)
-					model.AssociatedProducts.Add(PrepareProductDetailsPageModel(associatedProduct, true));
+				{
+					var assciatedProductModel = PrepareProductDetailsPageModel(associatedProduct, true, null, null, selectedAttributes);
+					model.AssociatedProducts.Add(assciatedProductModel);
+				}
 			}
-			else if (product.ProductType == ProductType.BundledProduct && productBundleItem == null)		// bundled items
+			else if (product.ProductType == ProductType.BundledProduct && productBundleItem == null)
 			{
+				// bundled items
 				bundleItems = _productService.GetBundleItems(product.Id);
 
 				foreach (var itemData in bundleItems.Where(x => x.Item.Product.CanBeBundleItem()))

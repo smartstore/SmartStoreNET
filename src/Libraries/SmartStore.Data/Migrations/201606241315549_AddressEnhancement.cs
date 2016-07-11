@@ -60,6 +60,9 @@ namespace SmartStore.Data.Migrations
                 "Versandartauswahl nur anzeigen, wenn mehr als eine Versandart zur Verfügung steht",
                 "Display shipping options during the checkout process only if more then one shipping option is available.",
                 "Legt fest, ob die Versandartauswahl nur im Checkout-Prozess angezeigt wird, wenn mehr als eine Versandart zur Verfügung steht");
-        }
+
+
+			builder.Delete("Providers.ExchangeRate.EcbExchange.SetCurrencyToEURO");
+		}
     }
 }

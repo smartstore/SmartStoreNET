@@ -4,15 +4,17 @@
 
 ### Improvements
 * Added order message token for accepting third party email handover
+* ECB currency exchange rate provider now cross calculates rates based on euro rates
 
 ### New Features
-* Added option to skip shipping method selction in checkout process when only on shipping method is active
+* Added option to skip shipping method selection in checkout process when only one shipping method is active
 * Added options to capture salutation and title in addresses and customer info
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation
 * SKU, EAN, MPN of last attribute combination was exported for all combinations
 * GMC: Id should be unique when exporting attribute combinations as products
+* GMC: Attribute price adjustments were ignored when exporting attribute combinations as products
 
 
 ## SmartStore.NET 2.6

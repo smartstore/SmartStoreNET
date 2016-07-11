@@ -62,6 +62,13 @@ namespace SmartStore.Data.Migrations
                 "Legt fest, ob die Versandartauswahl nur im Checkout-Prozess angezeigt wird, wenn mehr als eine Versandart zur Verfügung steht");
 
 
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.OnlyIndividuallyVisibleAssociated",
+				"Only individually visible products",
+				"Nur individuell sichtbare Produkte",
+				"Specifies whether to only export individually visible associated products.",
+				"Legt fest, ob nur individuell sichtbare, verknüpfte Produkte exportiert werden sollen.");
+
+
 			builder.Delete("Providers.ExchangeRate.EcbExchange.SetCurrencyToEURO");
 		}
     }

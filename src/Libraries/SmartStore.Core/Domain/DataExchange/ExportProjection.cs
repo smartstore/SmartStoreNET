@@ -13,6 +13,11 @@ namespace SmartStore.Core.Domain.DataExchange
 	[Serializable]
 	public class ExportProjection
 	{
+		public ExportProjection()
+		{
+			OnlyIndividuallyVisibleAssociated = true;
+		}
+
 		#region All entity types
 
 		/// <summary>
@@ -150,6 +155,11 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// Whether to export grouped products
 		/// </summary>
 		public bool NoGroupedProducts { get; set; }
+
+		/// <summary>
+		/// Whether to export associated products that marked as "visible individually". <c>false</c> to load all records, <c>true</c> to load "visible individually" only
+		/// </summary>
+		public bool OnlyIndividuallyVisibleAssociated { get; set; }
 
 		#endregion
 

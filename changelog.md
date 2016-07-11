@@ -9,6 +9,7 @@
 ### New Features
 * Added option to skip shipping method selection in checkout process when only one shipping method is active
 * Added options to capture salutation and title in addresses and customer info
+* Added projection to control the export of individually visible associated products
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation

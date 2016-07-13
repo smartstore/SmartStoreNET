@@ -969,12 +969,9 @@ namespace SmartStore.Services.DataExchange.Export
 				ctx.ContextCurrency = _services.WorkContext.WorkingCurrency;
 
 			if (ctx.Projection.CustomerId.HasValue)
-			{
-				ctx.OldCurrentCustomer = _services.WorkContext.CurrentCustomer;
-				_services.WorkContext.CurrentCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId.Value);
-			}
-
-			ctx.ContextCustomer = _services.WorkContext.CurrentCustomer;
+				ctx.ContextCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId.Value);
+			else
+				ctx.ContextCustomer = _services.WorkContext.CurrentCustomer;
 
 			if (ctx.Projection.LanguageId.HasValue)
 				ctx.ContextLanguage = _languageService.Value.GetLanguageById(ctx.Projection.LanguageId.Value);
@@ -1288,11 +1285,6 @@ namespace SmartStore.Services.DataExchange.Export
 							ctx.Request.Profile.ResultInfo = XmlHelper.Serialize(ctx.Result);
 
 							_exportProfileService.Value.UpdateExportProfile(ctx.Request.Profile);
-						}
-
-						if (ctx.OldCurrentCustomer != null)
-						{
-							_services.WorkContext.CurrentCustomer = ctx.OldCurrentCustomer;
 						}
 					}
 					catch (Exception exception)

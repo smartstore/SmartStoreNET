@@ -89,7 +89,6 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		public ExportFilter Filter { get; private set; }
 		public ExportProjection Projection { get; private set; }
 		public Currency ContextCurrency { get; set; }
-		public Customer OldCurrentCustomer { get; set; }
 		public Customer ContextCustomer { get; set; }
 		public Language ContextLanguage { get; set; }
 

@@ -5,6 +5,7 @@
 ### Improvements
 * Added order message token for accepting third party email handover
 * ECB currency exchange rate provider now cross calculates rates based on euro rates
+* BeezUP: Exports the product weight
 
 ### New Features
 * Added option to skip shipping method selection in checkout process when only one shipping method is active
@@ -17,7 +18,6 @@
 * GMC: Id should be unique when exporting attribute combinations as products
 * GMC: Attribute price adjustments were ignored when exporting attribute combinations as products
 * GMC: Associated products that are not individually visible are not exported anymore. GMC rejects them because the frontend redirects to the grouped product.
-* Export: Projected customer id was ignored in price calculation
 
 
 ## SmartStore.NET 2.6

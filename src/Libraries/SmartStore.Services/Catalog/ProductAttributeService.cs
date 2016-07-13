@@ -34,20 +34,20 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepository;
 		private readonly IRepository<ProductBundleItemAttributeFilter> _productBundleItemAttributeFilterRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
 		private readonly IPictureService _pictureService;
 
 
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
+        /// <param name="requestCache">Cache manager</param>
         /// <param name="productAttributeRepository">Product attribute repository</param>
         /// <param name="productVariantAttributeRepository">Product variant attribute mapping repository</param>
         /// <param name="pvacRepository">Product variant attribute combination repository</param>
         /// <param name="productVariantAttributeValueRepository">Product variant attribute value repository</param>
         /// <param name="eventPublisher">Event published</param>
-        public ProductAttributeService(ICacheManager cacheManager,
+        public ProductAttributeService(IRequestCache requestCache,
             IRepository<ProductAttribute> productAttributeRepository,
             IRepository<ProductVariantAttribute> productVariantAttributeRepository,
             IRepository<ProductVariantAttributeCombination> pvacRepository,
@@ -56,7 +56,7 @@ namespace SmartStore.Services.Catalog
             IEventPublisher eventPublisher,
 			IPictureService pictureService)
         {
-            _cacheManager = cacheManager;
+            _requestCache = requestCache;
             _productAttributeRepository = productAttributeRepository;
             _productVariantAttributeRepository = productVariantAttributeRepository;
             _pvacRepository = pvacRepository;
@@ -103,9 +103,9 @@ namespace SmartStore.Services.Catalog
             _productAttributeRepository.Delete(productAttribute);
 
             //cache
-            _cacheManager.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(productAttribute);
@@ -114,7 +114,7 @@ namespace SmartStore.Services.Catalog
         public virtual IList<ProductAttribute> GetAllProductAttributes()
         {
             string key = PRODUCTATTRIBUTES_ALL_KEY;
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from pa in _productAttributeRepository.Table
                             orderby pa.Name
@@ -130,7 +130,7 @@ namespace SmartStore.Services.Catalog
                 return null;
 
             string key = string.Format(PRODUCTATTRIBUTES_BY_ID_KEY, productAttributeId);
-            return _cacheManager.Get(key, () => { 
+            return _requestCache.Get(key, () => { 
                 return _productAttributeRepository.GetById(productAttributeId); 
             });
         }
@@ -142,9 +142,9 @@ namespace SmartStore.Services.Catalog
 
             _productAttributeRepository.Insert(productAttribute);
             
-            _cacheManager.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(productAttribute);
@@ -157,9 +157,9 @@ namespace SmartStore.Services.Catalog
 
             _productAttributeRepository.Update(productAttribute);
 
-            _cacheManager.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(productAttribute);
@@ -176,9 +176,9 @@ namespace SmartStore.Services.Catalog
 
             _productVariantAttributeRepository.Delete(productVariantAttribute);
 
-            _cacheManager.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(productVariantAttribute);
@@ -188,7 +188,7 @@ namespace SmartStore.Services.Catalog
         {
 			string key = string.Format(PRODUCTVARIANTATTRIBUTES_ALL_KEY, productId);
 
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from pva in _productVariantAttributeRepository.Table
                             orderby pva.DisplayOrder
@@ -229,7 +229,7 @@ namespace SmartStore.Services.Catalog
 
             string key = string.Format(PRODUCTVARIANTATTRIBUTES_BY_ID_KEY, productVariantAttributeId);
 
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
 			{ 
                 return _productVariantAttributeRepository.GetById(productVariantAttributeId); 
             });
@@ -283,9 +283,9 @@ namespace SmartStore.Services.Catalog
 
             _productVariantAttributeRepository.Insert(productVariantAttribute);
             
-            _cacheManager.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(productVariantAttribute);
@@ -298,9 +298,9 @@ namespace SmartStore.Services.Catalog
 
             _productVariantAttributeRepository.Update(productVariantAttribute);
 
-            _cacheManager.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(productVariantAttribute);
@@ -317,9 +317,9 @@ namespace SmartStore.Services.Catalog
 
             _productVariantAttributeValueRepository.Delete(productVariantAttributeValue);
 
-            _cacheManager.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(productVariantAttributeValue);
@@ -328,7 +328,7 @@ namespace SmartStore.Services.Catalog
         public virtual IList<ProductVariantAttributeValue> GetProductVariantAttributeValues(int productVariantAttributeId)
         {
             string key = string.Format(PRODUCTVARIANTATTRIBUTEVALUES_ALL_KEY, productVariantAttributeId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from pvav in _productVariantAttributeValueRepository.Table
                             orderby pvav.DisplayOrder
@@ -345,7 +345,7 @@ namespace SmartStore.Services.Catalog
                 return null;
 
            string key = string.Format(PRODUCTVARIANTATTRIBUTEVALUES_BY_ID_KEY, productVariantAttributeValueId);
-           return _cacheManager.Get(key, () =>
+           return _requestCache.Get(key, () =>
            {
                return _productVariantAttributeValueRepository.GetById(productVariantAttributeValueId);
            });
@@ -358,9 +358,9 @@ namespace SmartStore.Services.Catalog
 
             _productVariantAttributeValueRepository.Insert(productVariantAttributeValue);
 
-            _cacheManager.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(productVariantAttributeValue);
@@ -373,9 +373,9 @@ namespace SmartStore.Services.Catalog
 
             _productVariantAttributeValueRepository.Update(productVariantAttributeValue);
 
-            _cacheManager.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(productVariantAttributeValue);
@@ -424,7 +424,7 @@ namespace SmartStore.Services.Catalog
 			}
 
 			string key = string.Format(PRODUCTVARIANTATTRIBUTES_COMBINATIONS_BY_ID_KEY, productId, 0, int.MaxValue);
-			return _cacheManager.Get(key, () =>
+			return _requestCache.Get(key, () =>
 			{
 				var query = from pvac in (untracked ? _pvacRepository.TableUntracked : _pvacRepository.Table)
 							orderby pvac.Id

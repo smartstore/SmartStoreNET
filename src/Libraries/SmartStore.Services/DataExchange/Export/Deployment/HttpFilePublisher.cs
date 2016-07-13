@@ -12,7 +12,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 	{
 		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)
 		{
-			var succeeded = 0;
+			var succeededFiles = 0;
 			var url = deployment.Url;
 
 			if (!url.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) && !url.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
@@ -20,7 +20,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 
 			if (deployment.HttpTransmissionType == ExportHttpTransmissionType.MultipartFormDataPost)
 			{
-				var count = 0;
+				var countFiles = 0;
 				ICredentials credentials = null;
 
 				if (deployment.Username.HasValue())
@@ -30,24 +30,26 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 				using (var client = new HttpClient(handler))
 				using (var formData = new MultipartFormDataContent())
 				{
-					foreach (var path in context.DeploymentFiles)
+					foreach (var path in context.GetDeploymentFiles())
 					{
 						byte[] fileData = File.ReadAllBytes(path);
-						formData.Add(new ByteArrayContent(fileData), "file {0}".FormatInvariant(++count), Path.GetFileName(path));
+						formData.Add(new ByteArrayContent(fileData), "file {0}".FormatInvariant(++countFiles), Path.GetFileName(path));
 					}
 
 					var response = client.PostAsync(url, formData).Result;
 
 					if (response.IsSuccessStatusCode)
 					{
-						succeeded = count;
+						succeededFiles = countFiles;
 					}
 					else if (response.Content != null)
 					{
+						context.Result.LastError = context.T("Admin.Common.HttpStatus", (int)response.StatusCode, response.StatusCode.ToString());
+
 						var content = response.Content.ReadAsStringAsync().Result;
 
-						var msg = "Multipart form data upload failed. {0} ({1}). Response: {2}".FormatInvariant(
-							response.StatusCode.ToString(), (int)response.StatusCode, content.NaIfEmpty().Truncate(2000, "..."));
+						var msg = "Multipart form data upload failed. HTTP status {0} ({1}). Response: {2}".FormatInvariant(
+							(int)response.StatusCode, response.StatusCode.ToString(), content.NaIfEmpty().Truncate(2000, "..."));
 
 						context.Log.Error(msg);
 					}
@@ -60,16 +62,16 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 					if (deployment.Username.HasValue())
 						webClient.Credentials = new NetworkCredential(deployment.Username, deployment.Password);
 
-					foreach (var path in context.DeploymentFiles)
+					foreach (var path in context.GetDeploymentFiles())
 					{
 						webClient.UploadFile(url, path);
 
-						++succeeded;
+						++succeededFiles;
 					}
 				}
 			}
 
-			context.Log.Information("{0} file(s) successfully uploaded via HTTP ({1}).".FormatInvariant(succeeded, deployment.HttpTransmissionType.ToString()));
+			context.Log.Information("{0} file(s) successfully uploaded via HTTP ({1}).".FormatInvariant(succeededFiles, deployment.HttpTransmissionType.ToString()));
 		}
 	}
 }

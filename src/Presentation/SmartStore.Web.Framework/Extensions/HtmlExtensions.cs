@@ -418,7 +418,7 @@ namespace SmartStore.Web.Framework
 			{
 				model = model ?? helper.ViewData.Model;
 				var widgetSelector = EngineContext.Current.Resolve<IWidgetSelector>();
-				var widgets = widgetSelector.GetWidgets(widgetZone, model).ToArray();
+				var widgets = widgetSelector.GetWidgets(widgetZone, model).ToList();
 				if (widgets.Any())
 				{
 					var zoneModel = new WidgetZoneModel { Widgets = widgets, WidgetZone = widgetZone, Model = model };
@@ -594,7 +594,8 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Empty;
 		}
 
-		public static MvcHtmlString SettingEditorFor<TModel, TValue>(this HtmlHelper<TModel> helper, 
+		public static MvcHtmlString SettingEditorFor<TModel, TValue>(
+			this HtmlHelper<TModel> helper, 
 			Expression<Func<TModel, TValue>> expression, 
 			string parentSelector = null,
 			object additionalViewData = null)

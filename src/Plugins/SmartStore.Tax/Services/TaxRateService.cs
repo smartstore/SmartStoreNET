@@ -21,21 +21,15 @@ namespace SmartStore.Tax.Services
         #region Fields
 
         private readonly IRepository<TaxRate> _taxRateRepository;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
 
         #endregion
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="taxRateRepository">Tax rate repository</param>
-        public TaxRateService(ICacheManager cacheManager,
-            IRepository<TaxRate> taxRateRepository)
+        public TaxRateService(IRequestCache requestCache, IRepository<TaxRate> taxRateRepository)
         {
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._taxRateRepository = taxRateRepository;
         }
 
@@ -54,7 +48,7 @@ namespace SmartStore.Tax.Services
 
             _taxRateRepository.Delete(taxRate);
 
-            _cacheManager.RemoveByPattern(TAXRATE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(TAXRATE_PATTERN_KEY);
         }
 
         /// <summary>
@@ -64,7 +58,7 @@ namespace SmartStore.Tax.Services
         public virtual IList<TaxRate> GetAllTaxRates()
         {
             string key = TAXRATE_ALL_KEY;
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from tr in _taxRateRepository.Table
                             orderby tr.CountryId, tr.StateProvinceId, tr.Zip, tr.TaxCategoryId
@@ -130,7 +124,7 @@ namespace SmartStore.Tax.Services
                 return null;
 
             string key = string.Format(TAXRATE_BY_ID_KEY, taxRateId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var taxRate = _taxRateRepository.GetById(taxRateId);
                 return taxRate;
@@ -148,7 +142,7 @@ namespace SmartStore.Tax.Services
 
             _taxRateRepository.Insert(taxRate);
 
-            _cacheManager.RemoveByPattern(TAXRATE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(TAXRATE_PATTERN_KEY);
         }
 
         /// <summary>
@@ -162,7 +156,7 @@ namespace SmartStore.Tax.Services
 
             _taxRateRepository.Update(taxRate);
 
-            _cacheManager.RemoveByPattern(TAXRATE_PATTERN_KEY);
+            _requestCache.RemoveByPattern(TAXRATE_PATTERN_KEY);
         }
         #endregion
     }

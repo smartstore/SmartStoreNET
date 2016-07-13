@@ -117,7 +117,7 @@ namespace SmartStore.Services.Tests.Customers
             
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 
-            _customerService = new CustomerService(new NullCache(), _customerRepo, _customerRoleRepo,
+            _customerService = new CustomerService(NullRequestCache.Instance, _customerRepo, _customerRoleRepo,
                 _genericAttributeRepo, _rewardPointsHistoryRepo, _genericAttributeService, _eventPublisher, _rewardPointsSettings);
 
             _customerRegistrationService = new CustomerRegistrationService(_customerService,

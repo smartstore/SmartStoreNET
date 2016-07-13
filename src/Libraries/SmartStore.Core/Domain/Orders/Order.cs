@@ -451,7 +451,7 @@ namespace SmartStore.Core.Domain.Orders
 		public int? RewardPointsRemaining { get; set; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether a new payment notification (IPN) arrived
+		/// Gets or sets a value indicating whether a new payment notification arrived (IPN, webhook, callback etc.)
 		/// </summary>
 		[DataMember]
 		public bool HasNewPaymentNotification { get; set; }

@@ -63,7 +63,7 @@ namespace SmartStore.Web.Framework.Plugins
 		public void SaveLocalizedValue(ProviderMetadata metadata, int languageId, string propertyName, string value)
 		{
 			Guard.ArgumentNotNull(() => metadata);
-			Guard.ArgumentIsPositive(languageId, "languageId");
+			Guard.IsPositive(languageId, nameof(languageId));
 			Guard.ArgumentNotEmpty(() => propertyName);
 
 			var resourceName = metadata.ResourceKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
@@ -82,7 +82,6 @@ namespace SmartStore.Web.Framework.Plugins
 					resource.ResourceValue = value;
 					_services.Localization.UpdateLocaleStringResource(resource);
 				}
-				_services.Localization.ClearCache();
 			}
 			else
 			{
@@ -96,7 +95,6 @@ namespace SmartStore.Web.Framework.Plugins
 						ResourceValue = value,
 					};
 					_services.Localization.InsertLocaleStringResource(resource);
-					_services.Localization.ClearCache();
 				}
 			}
 		}
@@ -127,16 +125,17 @@ namespace SmartStore.Web.Framework.Plugins
 
 			var settingKey = metadata.SettingKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
 
-			if (value != null)
+			using (_services.Settings.BeginBatch())
 			{
-				_services.Settings.SetSetting<T>(settingKey, value, 0, false);
+				if (value != null)
+				{
+					_services.Settings.SetSetting<T>(settingKey, value, 0, false);
+				}
+				else
+				{
+					_services.Settings.DeleteSetting(settingKey);
+				}
 			}
-			else
-			{
-				_services.Settings.DeleteSetting(settingKey);
-			}
-			
-			_services.Settings.ClearCache();
 		}
 
 		public ProviderModel ToProviderModel(Provider<IProvider> provider, bool forEdit = false, Action<Provider<IProvider>, ProviderModel> enhancer = null)

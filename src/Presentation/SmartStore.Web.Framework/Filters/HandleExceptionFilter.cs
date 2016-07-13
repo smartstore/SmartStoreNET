@@ -29,11 +29,11 @@ namespace SmartStore.Web.Framework.Filters
 			this._workContext = workContext;
 		}
 
-        public void OnActionExecuting(ActionExecutingContext filterContext)
+        public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
         }
         
-        public void OnActionExecuted(ActionExecutedContext filterContext)
+        public virtual void OnActionExecuted(ActionExecutedContext filterContext)
         {
 			var descriptor = filterContext.ActionDescriptor;
 			

@@ -59,14 +59,16 @@ namespace SmartStore.Services.Tasks
 				Use24HourTimeFormat = Thread.CurrentThread.CurrentUICulture.DateTimeFormat.AMDesignator.IsEmpty()
 			};
 
-			try
+			if (expression.HasValue())
 			{
-				return ExpressionDescriptor.GetDescription(expression, options);
+				try
+				{
+					return ExpressionDescriptor.GetDescription(expression, options);
+				}
+				catch { }
 			}
-			catch
-			{
-				return null;
-			}
+
+			return "?";
 		}
 
 	}

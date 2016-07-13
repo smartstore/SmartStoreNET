@@ -40,7 +40,7 @@ using SmartStore.Services.Topics;
 
 namespace SmartStore.Services.Messages
 {
-    public partial class MessageTokenProvider : IMessageTokenProvider
+	public partial class MessageTokenProvider : IMessageTokenProvider
     {
         #region Fields
 
@@ -740,9 +740,14 @@ namespace SmartStore.Services.Messages
             return result;
         }
 
-        #endregion
+		protected virtual string GetBoolResource(bool value, int languageId)
+		{
+			return _localizationService.GetResource(value ? "Common.Yes" : "Common.No", languageId);
+		}
 
-        #region Methods
+		#endregion
+
+		#region Methods
 
 		public virtual void AddStoreTokens(IList<Token> tokens, Store store)
         {
@@ -803,6 +808,12 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Order.CustomerFullName", string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName)));
             tokens.Add(new Token("Order.CustomerEmail", order.BillingAddress.Email));
 
+            tokens.Add(new Token("Order.BillingFullSalutation", string.Format("{0}{1}", 
+                order.BillingAddress.Salutation,
+                !String.IsNullOrEmpty(order.BillingAddress.Title) ? " " + order.BillingAddress.Title : "")));
+
+            tokens.Add(new Token("Order.BillingSalutation", order.BillingAddress.Salutation));
+            tokens.Add(new Token("Order.BillingTitle", order.BillingAddress.Title));
 			tokens.Add(new Token("Order.BillingFirstName", order.BillingAddress.FirstName));
 			tokens.Add(new Token("Order.BillingLastName", order.BillingAddress.LastName));
 			tokens.Add(new Token("Order.BillingPhoneNumber", order.BillingAddress.PhoneNumber));
@@ -817,6 +828,12 @@ namespace SmartStore.Services.Messages
 			tokens.Add(new Token("Order.BillingCountry", order.BillingAddress.Country != null ? order.BillingAddress.Country.GetLocalized(x => x.Name) : ""));
 
             tokens.Add(new Token("Order.ShippingMethod", order.ShippingMethod));
+            tokens.Add(new Token("Order.ShippingFullSalutation", string.Format("{0}{1}",
+                order.ShippingAddress.Salutation,
+                !String.IsNullOrEmpty(order.ShippingAddress.Title) ? " " + order.ShippingAddress.Title : "")));
+
+            tokens.Add(new Token("Order.ShippingSalutation", order.ShippingAddress != null ? order.ShippingAddress.Salutation : ""));
+            tokens.Add(new Token("Order.ShippingTitle", order.ShippingAddress != null ? order.ShippingAddress.Title : ""));
             tokens.Add(new Token("Order.ShippingFirstName", order.ShippingAddress != null ? order.ShippingAddress.FirstName : ""));
             tokens.Add(new Token("Order.ShippingLastName", order.ShippingAddress != null ? order.ShippingAddress.LastName : ""));
             tokens.Add(new Token("Order.ShippingPhoneNumber", order.ShippingAddress != null ? order.ShippingAddress.PhoneNumber : ""));
@@ -861,9 +878,10 @@ namespace SmartStore.Services.Messages
 
             tokens.Add(new Token("Order.Disclaimer", TopicToHtml("Disclaimer", language.Id), true));
             tokens.Add(new Token("Order.ConditionsOfUse", TopicToHtml("ConditionsOfUse", language.Id), true));
+			tokens.Add(new Token("Order.AcceptThirdPartyEmailHandOver", GetBoolResource(order.AcceptThirdPartyEmailHandOver, language.Id)));
 
-            //event notification
-            _eventPublisher.EntityTokensAdded(order, tokens);
+			//event notification
+			_eventPublisher.EntityTokensAdded(order, tokens);
         }
 
 		private string GetLocalizedValue(ProviderMetadata metadata, string propertyName, Expression<Func<ProviderMetadata, string>> fallback)
@@ -1146,6 +1164,7 @@ namespace SmartStore.Services.Messages
                 "%Order.OrderNumber%",
                 "%Order.CustomerFullName%",
                 "%Order.CustomerEmail%",
+                "%Order.BillingFullSalutation%",
                 "%Order.BillingFirstName%",
                 "%Order.BillingLastName%",
                 "%Order.BillingPhoneNumber%",
@@ -1159,6 +1178,7 @@ namespace SmartStore.Services.Messages
                 "%Order.BillingZipPostalCode%",
                 "%Order.BillingCountry%",
                 "%Order.ShippingMethod%",
+                "%Order.ShippingFullSalutation%",
                 "%Order.ShippingFirstName%",
                 "%Order.ShippingLastName%",
                 "%Order.ShippingPhoneNumber%",
@@ -1232,7 +1252,8 @@ namespace SmartStore.Services.Messages
                 "%BackInStockSubscription.ProductName%",
                 "%Order.Disclaimer%",
                 "%Order.ConditionsOfUse%",
-                "%Company.CompanyName%",
+				"%Order.AcceptThirdPartyEmailHandOver%",
+				"%Company.CompanyName%",
                 "%Company.Salutation%",
                 "%Company.Title%",
                 "%Company.Firstname%",

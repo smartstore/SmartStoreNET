@@ -13,7 +13,7 @@ namespace SmartStore.ComponentModel
 
 		public FastActivator(ConstructorInfo constructorInfo)
 		{
-			Guard.ArgumentNotNull(() => constructorInfo);
+			Guard.NotNull(constructorInfo, nameof(constructorInfo));
 
 			Constructor = constructorInfo;
 			Invoker = MakeFastInvoker(constructorInfo);
@@ -129,7 +129,7 @@ namespace SmartStore.ComponentModel
 		/// <returns>A reference to the newly created object.</returns>
 		public static object CreateInstance(Type type, params object[] args)
 		{
-			Guard.ArgumentNotNull(type, "type");
+			Guard.NotNull(type, nameof(type));
 
 			if (args == null || args.Length == 0)
 			{

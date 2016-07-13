@@ -27,7 +27,7 @@ namespace SmartStore.Web.Infrastructure
         private readonly IWidgetService _widgetService;
         private readonly ITopicService _topicService;
         private readonly IStoreContext _storeContext;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly IWorkContext _workContext;
         private readonly IDbContext _dbContext;
 		private readonly IWidgetProvider _widgetProvider;
@@ -38,8 +38,8 @@ namespace SmartStore.Web.Infrastructure
         public DefaultWidgetSelector(
             IWidgetService widgetService, 
             ITopicService topicService, 
-            IStoreContext storeContext, 
-            ICacheManager cacheManager, 
+            IStoreContext storeContext,
+			IRequestCache requestCache, 
             IWorkContext workContext, 
             IDbContext dbContext,
 			IWidgetProvider widgetProvider,
@@ -48,7 +48,7 @@ namespace SmartStore.Web.Infrastructure
             this._widgetService = widgetService;
             this._topicService = topicService;
             this._storeContext = storeContext;
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._workContext = workContext;
             this._dbContext = dbContext;
 			this._widgetProvider = widgetProvider;
@@ -114,7 +114,7 @@ namespace SmartStore.Web.Infrastructure
 
             var byZoneTopicsCacheKey = "SmartStore.TopicWidgets.ZoneMapped";
             // save widgets to zones map in request cache
-			var topicsByZone = _cacheManager.Get(byZoneTopicsCacheKey, () =>
+			var topicsByZone = _requestCache.Get(byZoneTopicsCacheKey, () =>
             {
 				var map = new Multimap<string, WidgetRouteInfo>();
 

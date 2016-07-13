@@ -164,6 +164,7 @@ namespace SmartStore.PayPal.Models
 			{
 				SecurityProtocol = settings.SecurityProtocol;
 				UseSandbox = settings.UseSandbox;
+				TransactMode = (int)Settings.TransactMode.AuthorizeAndCapture;
 				AdditionalFee = settings.AdditionalFee;
 				AdditionalFeePercentage = settings.AdditionalFeePercentage;
 
@@ -179,6 +180,7 @@ namespace SmartStore.PayPal.Models
 			{
 				settings.SecurityProtocol = SecurityProtocol;
 				settings.UseSandbox = UseSandbox;
+				settings.TransactMode = Settings.TransactMode.AuthorizeAndCapture;
 				settings.AdditionalFee = AdditionalFee;
 				settings.AdditionalFeePercentage = AdditionalFeePercentage;
 

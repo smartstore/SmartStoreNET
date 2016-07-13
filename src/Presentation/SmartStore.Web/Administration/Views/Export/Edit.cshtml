@@ -2,11 +2,9 @@
 @using SmartStore.Core.Domain.DataExchange;
 @using SmartStore.Admin.Models.DataExchange;
 @{
-	var title = string.Concat(T("Admin.Common.Edit"), " ", T("Common.Profile"));	
+	var title = string.Concat(T("Common.Profile"), " - ", T("Admin.Common.Edit"));
 	ViewBag.Title = title;
 }
-
-<form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin", id = Model.Id })"></form>
 
 @using (Html.BeginForm())
 {
@@ -23,9 +21,9 @@
 				{
 					if (Model.Id != 0)
 					{
-						<a id="ProfileExportButton" href="javascript:void(0)" class="btn btn-default">
+						<button type="button" id="ProfileExportButton" class="btn btn-default" data-url="@Url.Action("Execute", "Export", new { area = "Admin", id = Model.Id })">
 							<i class="fa fa-gears"></i>&nbsp;@T("Common.Export")
-						</a>
+						</button>
 					}
 
 					<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn">
@@ -298,7 +296,18 @@
 				viewData.TemplateInfo.HtmlFieldPrefix = "CustomProperties[ProviderConfigData]";
 				viewData.ModelState.Merge(ViewData.ModelState);
 				@Html.Hidden("CustomProperties[ProviderConfigData].__Type__", Model.Provider.ConfigDataType.AssemblyQualifiedName)
-				@Html.Partial(Model.Provider.ConfigPartialViewName, Model.Provider.ConfigData, viewData)
+
+				try
+				{
+					@Html.Partial(Model.Provider.ConfigPartialViewName, Model.Provider.ConfigData, viewData)
+				}
+				catch (Exception exception)
+				{
+					<div class="alert alert-error">
+						@T("Admin.Configuration.Plugins.UnknownError")
+					</div>
+					<pre>@exception.ToString()</pre>
+				}
 			}
 			else
 			{
@@ -334,7 +343,7 @@
 
 		// show/hide no grouped products note
 		$('#@(Html.FieldIdFor(x => x.Projection.NoGroupedProducts))').change(function () {
-			$('#NoGroupedProductsNote').toggle($(this).is(':checked'));
+			$('#NoGroupedProductsNote, #OnlyIndividuallyVisibleAssociatedContainer').toggle($(this).is(':checked'));
 		}).trigger('change');
 
 		$('#@(Html.FieldIdFor(x => x.Projection.AppendDescriptionText))').select2({ tags: [@(Html.Raw(Model.Projection.SerializedAppendDescriptionText))] });
@@ -380,9 +389,9 @@
 		// execute export
 		$('#ProfileExportButton').click(function (e) {
 			e.preventDefault();
-			if (confirm('@T("Admin.Common.AskToProceed")')) {
-				$('#ProfileExportForm').submit();
-			}
+			$(this).doPostData({
+				ask: '@T("Admin.Common.AskToProceed")'
+			});
 			return false;
 		});
 	});

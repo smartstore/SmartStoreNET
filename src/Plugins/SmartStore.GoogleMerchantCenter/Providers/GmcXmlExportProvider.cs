@@ -202,13 +202,17 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							string category = (gmc == null ? null : gmc.Taxonomy);
 							string productType = product._CategoryPath;
 							string mainImageUrl = product._MainPictureUrl;
-							var futureSpecialPrice = product._FutureSpecialPrice as decimal?;
 							var price = (decimal)product.Price;
+							var uniqueId = (string)product._UniqueId;
 							string brand = product._Brand;
 							string gtin = product.Gtin;
 							string mpn = product.ManufacturerPartNumber;
 							string condition = "new";
 							string availability = "in stock";
+
+							var specialPrice = product._FutureSpecialPrice as decimal?;
+							if (!specialPrice.HasValue)
+								specialPrice = product._SpecialPrice;
 
 							if (category.IsEmpty())
 								category = config.DefaultGoogleCategory;
@@ -244,7 +248,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 								}
 							}
 
-							writer.WriteElementString("g", "id", _googleNamespace, entity.Id.ToString());
+							writer.WriteElementString("g", "id", _googleNamespace, uniqueId);
 
 							writer.WriteStartElement("title");
 							writer.WriteCData(((string)product.Name).Truncate(70).RemoveInvalidXmlChars());
@@ -295,13 +299,17 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 								writer.WriteElementString("g", "availability_date", _googleNamespace, availabilityDate);
 							}
 
-							if (config.SpecialPrice && futureSpecialPrice.HasValue && entity.SpecialPriceStartDateTimeUtc.HasValue && entity.SpecialPriceEndDateTimeUtc.HasValue)
+							if (config.SpecialPrice && specialPrice.HasValue)
 							{
-								var specialPriceDate = "{0}/{1}".FormatInvariant(
-									entity.SpecialPriceStartDateTimeUtc.Value.ToString(dateFormat), entity.SpecialPriceEndDateTimeUtc.Value.ToString(dateFormat));
+								writer.WriteElementString("g", "sale_price", _googleNamespace, specialPrice.Value.FormatInvariant() + " " + (string)currency.CurrencyCode);
 
-								writer.WriteElementString("g", "sale_price", _googleNamespace, futureSpecialPrice.Value.FormatInvariant() + " " + (string)currency.CurrencyCode);
-								writer.WriteElementString("g", "sale_price_effective_date", _googleNamespace, specialPriceDate);
+								if (entity.SpecialPriceStartDateTimeUtc.HasValue && entity.SpecialPriceEndDateTimeUtc.HasValue)
+								{
+									var specialPriceDate = "{0}/{1}".FormatInvariant(
+										entity.SpecialPriceStartDateTimeUtc.Value.ToString(dateFormat), entity.SpecialPriceEndDateTimeUtc.Value.ToString(dateFormat));
+
+									writer.WriteElementString("g", "sale_price_effective_date", _googleNamespace, specialPriceDate);
+								}
 
 								price = (product._RegularPrice as decimal?) ?? price;
 							}

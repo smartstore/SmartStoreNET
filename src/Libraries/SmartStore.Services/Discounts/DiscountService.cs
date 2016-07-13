@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Discounts
 {
@@ -30,7 +31,7 @@ namespace SmartStore.Services.Discounts
         private readonly IRepository<Discount> _discountRepository;
         private readonly IRepository<DiscountRequirement> _discountRequirementRepository;
         private readonly IRepository<DiscountUsageHistory> _discountUsageHistoryRepository;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
 		private readonly IStoreContext _storeContext;
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IPluginFinder _pluginFinder;
@@ -42,7 +43,7 @@ namespace SmartStore.Services.Discounts
 
         #region Ctor
 
-        public DiscountService(ICacheManager cacheManager,
+        public DiscountService(IRequestCache requestCache,
             IRepository<Discount> discountRepository,
             IRepository<DiscountRequirement> discountRequirementRepository,
             IRepository<DiscountUsageHistory> discountUsageHistoryRepository,
@@ -53,7 +54,7 @@ namespace SmartStore.Services.Discounts
 			ISettingService settingService,
 			IProviderManager providerManager)
         {
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._discountRepository = discountRepository;
             this._discountRequirementRepository = discountRequirementRepository;
             this._discountUsageHistoryRepository = discountUsageHistoryRepository;
@@ -126,7 +127,7 @@ namespace SmartStore.Services.Discounts
 
             _discountRepository.Delete(discount);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(discount);
@@ -161,7 +162,7 @@ namespace SmartStore.Services.Discounts
             //we do it because we know that this method is invoked several times per HTTP request with distinct "discountType" parameter
             //that's why let's access the database only once
             string key = string.Format(DISCOUNTS_ALL_KEY, showHidden, couponCode);
-            var result = _cacheManager.Get(key, () =>
+            var result = _requestCache.Get(key, () =>
             {
                 var query = _discountRepository.Table;
                 if (!showHidden)
@@ -203,7 +204,7 @@ namespace SmartStore.Services.Discounts
 
             _discountRepository.Insert(discount);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(discount);
@@ -220,7 +221,7 @@ namespace SmartStore.Services.Discounts
 
             _discountRepository.Update(discount);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(discount);
@@ -237,7 +238,7 @@ namespace SmartStore.Services.Discounts
 
             _discountRequirementRepository.Delete(discountRequirement);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(discountRequirement);
@@ -317,18 +318,18 @@ namespace SmartStore.Services.Discounts
             }
 
             //check date range
-            DateTime now = DateTime.UtcNow;
-			int storeId = _storeContext.CurrentStore.Id;
+            var now = DateTime.UtcNow;
+			var store = _storeContext.CurrentStore;
 
             if (discount.StartDateUtc.HasValue)
             {
-                DateTime startDate = DateTime.SpecifyKind(discount.StartDateUtc.Value, DateTimeKind.Utc);
+                var startDate = DateTime.SpecifyKind(discount.StartDateUtc.Value, DateTimeKind.Utc);
                 if (startDate.CompareTo(now) > 0)
                     return false;
             }
             if (discount.EndDateUtc.HasValue)
             {
-                DateTime endDate = DateTime.SpecifyKind(discount.EndDateUtc.Value, DateTimeKind.Utc);
+                var endDate = DateTime.SpecifyKind(discount.EndDateUtc.Value, DateTimeKind.Utc);
                 if (endDate.CompareTo(now) < 0)
                     return false;
             }
@@ -336,32 +337,36 @@ namespace SmartStore.Services.Discounts
             if (!CheckDiscountLimitations(discount, customer))
                 return false;
 
-            // discount requirements
-            var requirements = discount.DiscountRequirements;
-            foreach (var req in requirements)
-            {
-				var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName, storeId);
-                if (requirementRule == null)
-                    continue;
-
-                var request = new CheckDiscountRequirementRequest()
-                {
-                    DiscountRequirement = req,
-                    Customer = customer,
-					Store = _storeContext.CurrentStore
-                };
-                if (!requirementRule.Value.CheckRequirement(request))
-                    return false;
-            }
-
 			// better not to apply discounts if there are gift cards in the cart cause the customer could "earn" money through that.
 			if (discount.DiscountType == DiscountType.AssignedToOrderTotal || discount.DiscountType == DiscountType.AssignedToOrderSubTotal)
 			{
-				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
+				var cart = customer.ShoppingCartItems
+					.Filter(ShoppingCartType.ShoppingCart, store.Id)
+					.ToList();
 
-				if (cart.Any(x => x.Item.Product.IsGiftCard))
+				if (cart.Any(x => x.Product.IsGiftCard))
 					return false;
 			}
+
+			// discount requirements
+			var requirements = discount.DiscountRequirements;
+            foreach (var req in requirements)
+            {
+				var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName, store.Id);
+                if (requirementRule == null)
+                    continue;
+
+                var request = new CheckDiscountRequirementRequest
+                {
+                    DiscountRequirement = req,
+                    Customer = customer,
+					Store = store
+                };
+
+				// TODO: cache result... CheckRequirement is very often called
+				if (!requirementRule.Value.CheckRequirement(request))
+                    return false;
+            }
 
             return true;
         }
@@ -411,7 +416,7 @@ namespace SmartStore.Services.Discounts
 
             _discountUsageHistoryRepository.Insert(discountUsageHistory);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(discountUsageHistory);
@@ -429,7 +434,7 @@ namespace SmartStore.Services.Discounts
 
             _discountUsageHistoryRepository.Update(discountUsageHistory);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(discountUsageHistory);
@@ -446,7 +451,7 @@ namespace SmartStore.Services.Discounts
 
             _discountUsageHistoryRepository.Delete(discountUsageHistory);
 
-            _cacheManager.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(DISCOUNTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(discountUsageHistory);

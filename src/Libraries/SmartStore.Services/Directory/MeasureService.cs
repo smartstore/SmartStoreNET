@@ -27,7 +27,7 @@ namespace SmartStore.Services.Directory
 
         private readonly IRepository<MeasureDimension> _measureDimensionRepository;
         private readonly IRepository<MeasureWeight> _measureWeightRepository;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly MeasureSettings _measureSettings;
         private readonly IEventPublisher _eventPublisher;
 
@@ -38,18 +38,18 @@ namespace SmartStore.Services.Directory
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
+        /// <param name="requestCache">Cache manager</param>
         /// <param name="measureDimensionRepository">Dimension repository</param>
         /// <param name="measureWeightRepository">Weight repository</param>
         /// <param name="measureSettings">Measure settings</param>
         /// <param name="eventPublisher">Event published</param>
-        public MeasureService(ICacheManager cacheManager,
+        public MeasureService(IRequestCache requestCache,
             IRepository<MeasureDimension> measureDimensionRepository,
             IRepository<MeasureWeight> measureWeightRepository,
             MeasureSettings measureSettings,
             IEventPublisher eventPublisher)
         {
-            _cacheManager = cacheManager;
+            _requestCache = requestCache;
             _measureDimensionRepository = measureDimensionRepository;
             _measureWeightRepository = measureWeightRepository;
             _measureSettings = measureSettings;
@@ -73,7 +73,7 @@ namespace SmartStore.Services.Directory
 
             _measureDimensionRepository.Delete(measureDimension);
 
-            _cacheManager.RemoveByPattern(MEASUREDIMENSIONS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MEASUREDIMENSIONS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(measureDimension);
@@ -91,7 +91,7 @@ namespace SmartStore.Services.Directory
                 return null;
 
             string key = string.Format(MEASUREDIMENSIONS_BY_ID_KEY, measureDimensionId);
-            return _cacheManager.Get(key, () => 
+            return _requestCache.Get(key, () => 
             { 
                 return _measureDimensionRepository.GetById(measureDimensionId); 
             });
@@ -121,7 +121,7 @@ namespace SmartStore.Services.Directory
         public virtual IList<MeasureDimension> GetAllMeasureDimensions()
         {
             string key = MEASUREDIMENSIONS_ALL_KEY;
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from md in _measureDimensionRepository.Table
                             orderby md.DisplayOrder
@@ -143,7 +143,7 @@ namespace SmartStore.Services.Directory
 
             _measureDimensionRepository.Insert(measure);
 
-            _cacheManager.RemoveByPattern(MEASUREDIMENSIONS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MEASUREDIMENSIONS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(measure);
@@ -160,7 +160,7 @@ namespace SmartStore.Services.Directory
 
             _measureDimensionRepository.Update(measure);
 
-            _cacheManager.RemoveByPattern(MEASUREDIMENSIONS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MEASUREDIMENSIONS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(measure);
@@ -245,7 +245,7 @@ namespace SmartStore.Services.Directory
 
             _measureWeightRepository.Delete(measureWeight);
 
-            _cacheManager.RemoveByPattern(MEASUREWEIGHTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MEASUREWEIGHTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(measureWeight);
@@ -262,7 +262,7 @@ namespace SmartStore.Services.Directory
                 return null;
 
             string key = string.Format(MEASUREWEIGHTS_BY_ID_KEY, measureWeightId);
-            return _cacheManager.Get(key, () => 
+            return _requestCache.Get(key, () => 
             { 
                 return _measureWeightRepository.GetById(measureWeightId); 
             });
@@ -292,7 +292,7 @@ namespace SmartStore.Services.Directory
         public virtual IList<MeasureWeight> GetAllMeasureWeights()
         {
             string key = MEASUREWEIGHTS_ALL_KEY;
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from mw in _measureWeightRepository.Table
                             orderby mw.DisplayOrder
@@ -313,7 +313,7 @@ namespace SmartStore.Services.Directory
 
             _measureWeightRepository.Insert(measure);
 
-            _cacheManager.RemoveByPattern(MEASUREWEIGHTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MEASUREWEIGHTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(measure);
@@ -330,7 +330,7 @@ namespace SmartStore.Services.Directory
 
             _measureWeightRepository.Update(measure);
             
-            _cacheManager.RemoveByPattern(MEASUREWEIGHTS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MEASUREWEIGHTS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(measure);

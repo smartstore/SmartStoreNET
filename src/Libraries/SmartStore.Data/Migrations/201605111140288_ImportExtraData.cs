@@ -59,6 +59,14 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.System.ScheduleTasks.Cancellation",
 				"The scheduled task \"{0}\" has been canceled",
 				"Die geplante Aufgabe \"{0}\" wurde abgebrochen");
+
+			builder.AddOrUpdate("Admin.Common.HttpStatus",
+				"HTTP status {0} ({1}).",
+				"HTTP-Status {0} ({1}).");
+
+			builder.AddOrUpdate("Admin.System.Warnings.SitemapReachable.MethodNotAllowed",
+				"The reachability of the sitemap could not be validated.",
+				"Die Erreichbarkeit der Sitemap konnte nicht überprüft werden.");
 		}
 	}
 }

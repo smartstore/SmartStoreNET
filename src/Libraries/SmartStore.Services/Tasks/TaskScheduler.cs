@@ -13,6 +13,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Collections;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Caching;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Tasks
 {
@@ -48,7 +49,7 @@ namespace SmartStore.Services.Tasks
             {
                 CheckUrl(value);
                 _baseUrl = value.TrimEnd('/', '\\');
-            }
+			}
         }
 
         public void Start()
@@ -97,8 +98,8 @@ namespace SmartStore.Services.Tasks
 		{
 			string authToken = Guid.NewGuid().ToString();
 
-			var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
-			cacheManager.Set(GenerateAuthTokenCacheKey(authToken), true, 1);
+			var cacheManager = EngineContext.Current.Resolve<ICacheManager>();
+			cacheManager.Set(GenerateAuthTokenCacheKey(authToken), true, TimeSpan.FromMinutes(1));
 
 			return authToken;
 		}
@@ -113,7 +114,7 @@ namespace SmartStore.Services.Tasks
             if (authToken.IsEmpty())
                 return false;
 
-			var cacheManager = EngineContext.Current.Resolve<ICacheManager>("static");
+			var cacheManager = EngineContext.Current.Resolve<ICacheManager>();
 			var cacheKey = GenerateAuthTokenCacheKey(authToken);
 			if (cacheManager.Contains(cacheKey))
 			{
@@ -135,7 +136,7 @@ namespace SmartStore.Services.Tasks
 				query = qs.ToString();
 			}
 
-			CallEndpoint("{0}/Execute/{1}{2}".FormatInvariant(_baseUrl, scheduleTaskId, query));
+			CallEndpoint(new Uri("{0}/Execute/{1}{2}".FormatInvariant(_baseUrl, scheduleTaskId, query)));
         }
 
 		private void Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -153,7 +154,7 @@ namespace SmartStore.Services.Tasks
 						_intervalFixed = true;
 					}
 
-					CallEndpoint(_baseUrl + "/Sweep");
+					CallEndpoint(new Uri(_baseUrl + "/Sweep"));
                 }
             }
             finally
@@ -162,26 +163,25 @@ namespace SmartStore.Services.Tasks
             }
         }
 
-        protected internal virtual void CallEndpoint(string url)
+        protected internal virtual void CallEndpoint(Uri uri)
         {
             if (_shuttingDown)
                 return;
-            
-            var req = (HttpWebRequest)WebRequest.Create(url);
-			req.ServerCertificateValidationCallback += (sender, cert, chain, errors) => true;
-			req.UserAgent = "SmartStore.NET";
-            req.Method = "POST";
+
+			var req = WebHelper.CreateHttpRequestForSafeLocalCall(uri);
+			req.Method = "POST";
             req.ContentType = "text/plain";
 			req.ContentLength = 0;
+			req.Timeout = 10000; // 10 sec.
 
             string authToken = CreateAuthToken();
             req.Headers.Add("X-AUTH-TOKEN", authToken);
 
-            req.GetResponseAsync().ContinueWith(t =>
-            {
+			req.GetResponseAsync().ContinueWith(t =>
+			{
 				if (t.IsFaulted)
 				{
-					HandleException(t.Exception, url);
+					HandleException(t.Exception, uri);
 					_errCount++;
 					if (_errCount >= 10)
 					{
@@ -205,19 +205,23 @@ namespace SmartStore.Services.Tasks
 
 					response.Dispose();
 				}
-            });
-        }
+			});
+		}
 
-		private void HandleException(AggregateException exception, string url)
+		private void HandleException(AggregateException exception, Uri uri)
 		{
 			using (var logger = new TraceLogger())
 			{
-				string msg = "Error while calling TaskScheduler endpoint '{0}'.".FormatInvariant(url);
+				string msg = "Error while calling TaskScheduler endpoint '{0}'.".FormatInvariant(uri.OriginalString);
 				var wex = exception.InnerExceptions.OfType<WebException>().FirstOrDefault();
 
 				if (wex == null)
 				{
-					logger.Error(msg, exception);
+					logger.Error(msg, exception.InnerException);
+				}
+				else if (wex.Response == null)
+				{
+					logger.Error(msg, wex);
 				}
 				else
 				{
@@ -233,7 +237,7 @@ namespace SmartStore.Services.Tasks
 			}
 		}
 
-        private void CheckUrl(string url)
+		private void CheckUrl(string url)
         {
             if (!url.IsWebUrl())
             {

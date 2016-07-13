@@ -13,7 +13,7 @@ namespace SmartStore.Core.Email
         public SmtpContext(string host, int port = 25)
         {
 			Guard.ArgumentNotEmpty(() => host);
-			Guard.ArgumentIsPositive(port, "port");
+			Guard.IsPositive(port, nameof(port));
 			
 			this.Host = host;
             this.Port = port;
@@ -73,6 +73,8 @@ namespace SmartStore.Core.Email
 
 			smtpClient.UseDefaultCredentials = this.UseDefaultCredentials;
 			smtpClient.EnableSsl = this.EnableSsl;
+			smtpClient.Timeout = 10000;
+
 			if (this.UseDefaultCredentials)
 			{
 				smtpClient.Credentials = CredentialCache.DefaultNetworkCredentials;

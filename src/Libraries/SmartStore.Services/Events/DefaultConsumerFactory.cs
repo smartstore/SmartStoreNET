@@ -7,7 +7,6 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Events
 {
-
 	public class DefaultConsumerFactory<T> : IConsumerFactory<T>
 	{
 		private readonly IEnumerable<Lazy<IConsumer<T>, EventConsumerMetadata>> _consumers;

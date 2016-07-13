@@ -24,12 +24,12 @@ namespace SmartStore.Services.Catalog
 		/// <remarks>
 		/// {0} : store ID
 		/// </remarks>
-		private const string PRODUCTTAG_COUNT_KEY = "sm.producttag.count-{0}";
+		private const string PRODUCTTAG_COUNT_KEY = "producttag:count-{0}";
 
 		/// <summary>
 		/// Key pattern to clear cache
 		/// </summary>
-		private const string PRODUCTTAG_PATTERN_KEY = "sm.producttag.";
+		private const string PRODUCTTAG_PATTERN_KEY = "producttag:";
 
 		#endregion
 

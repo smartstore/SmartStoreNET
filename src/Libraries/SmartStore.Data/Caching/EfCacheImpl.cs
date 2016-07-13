@@ -10,18 +10,16 @@ using SmartStore.Utilities.Threading;
 
 namespace SmartStore.Data.Caching
 {
-	
 	internal class EfCacheImpl : EFCache.ICache
 	{
-		private const string KEYPREFIX = "EfCache__";
+		private const string KEYPREFIX = "efcache:";
 		private readonly Multimap<string, string> _entitySetToKey = new Multimap<string, string>(() => new HashSet<string>());
 		
-		private readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
-		private readonly ICache _cache;
+		private readonly ICacheManager _cache;
 		
-		public EfCacheImpl(ICache innerCache)
+		public EfCacheImpl(ICacheManager innerCache)
 		{
-			this._cache = innerCache;
+			_cache = innerCache;
 		}
 		
 		public bool GetItem(string key, out object value)
@@ -31,7 +29,7 @@ namespace SmartStore.Data.Caching
 
 			if (_cache.Contains(key))
 			{
-				value = _cache.Get(key);
+				value = _cache.Get<object>(key);
 				return true;
 			}
 
@@ -42,11 +40,11 @@ namespace SmartStore.Data.Caching
 		{
 			key = HashKey(key);
 
-			using (EnterWriteLock())
+			lock (String.Intern(key))
 			{
 				var now = DateTimeOffset.Now;
 				var expiresInMinutes = Math.Max(1, Math.Min(int.MaxValue, (absoluteExpiration - now).TotalMinutes));
-				_cache.Set(key, value, (int)expiresInMinutes);
+				_cache.Set(key, value, TimeSpan.FromMinutes(expiresInMinutes));
 
 				foreach (var s in dependentEntitySets)
 				{
@@ -59,7 +57,7 @@ namespace SmartStore.Data.Caching
 		{
 			key = HashKey(key);
 
-			using (EnterWriteLock())
+			lock (String.Intern(key))
 			{
 				_cache.Remove(key);
 
@@ -72,7 +70,7 @@ namespace SmartStore.Data.Caching
 		{
 			var keysToRemove = new HashSet<string>();
 
-			using (EnterWriteLock())
+			lock (_entitySetToKey)
 			{
 				foreach (var entitySet in entitySets)
 				{
@@ -103,16 +101,5 @@ namespace SmartStore.Data.Caching
 				return KEYPREFIX + key;
 			}
 		}
-
-		private IDisposable EnterReadLock()
-		{
-			return _rwLock.GetUpgradeableReadLock();
-		}
-
-		public IDisposable EnterWriteLock()
-		{
-			return _rwLock.GetWriteLock();
-		}
-
 	}
 }

@@ -105,6 +105,8 @@ namespace SmartStore.Web.Controllers
             if (model == null)
                 throw new ArgumentNullException("model");
 
+			Services.DisplayControl.Announce(newsItem);
+
             model.Id = newsItem.Id;
             model.MetaTitle = newsItem.MetaTitle;
             model.MetaDescription = newsItem.MetaDescription;
@@ -160,7 +162,10 @@ namespace SmartStore.Web.Controllers
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
 				var newsItems = _newsService.GetAllNews(_workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id, 0, _newsSettings.MainPageNewsCount);
-                return new HomePageNewsItemsModel()
+
+				Services.DisplayControl.AnnounceRange(newsItems);
+
+				return new HomePageNewsItemsModel()
                 {
                     WorkingLanguageId = _workContext.WorkingLanguage.Id,
                     NewsItems = newsItems
@@ -209,6 +214,8 @@ namespace SmartStore.Web.Controllers
                 })
                 .ToList();
 
+			Services.DisplayControl.AnnounceRange(newsItems);
+
             return View(model);
         }
 
@@ -247,6 +254,8 @@ namespace SmartStore.Web.Controllers
 			}
 
 			feed.Items = items;
+
+			Services.DisplayControl.AnnounceRange(newsItems);
 
             return new RssActionResult { Feed = feed };
         }

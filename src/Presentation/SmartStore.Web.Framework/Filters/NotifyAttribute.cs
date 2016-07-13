@@ -7,15 +7,13 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Framework.Filters
 {
-
-	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-	public class NotifyAttribute : ActionFilterAttribute
+	public class NotifyAttribute : FilterAttribute, IResultFilter
 	{
-		internal const string NotificationsKey = "sm.notifications.all";
+		public const string NotificationsKey = "sm.notifications.all";
 
 		public INotifier Notifier { get; set; }
 
-		public override void OnActionExecuted(ActionExecutedContext filterContext)
+		public virtual void OnResultExecuting(ResultExecutingContext filterContext)
 		{
 			if (Notifier == null || !Notifier.Entries.Any())
 				return;
@@ -28,6 +26,10 @@ namespace SmartStore.Web.Framework.Filters
 
 			Persist(filterContext.Controller.ViewData, Notifier.Entries.Where(x => x.Durable == false));
 			Persist(filterContext.Controller.TempData, Notifier.Entries.Where(x => x.Durable == true));
+		}
+
+		public virtual void OnResultExecuted(ResultExecutedContext filterContext)
+		{
 		}
 
 		private void Persist(IDictionary<string, object> bag, IEnumerable<NotifyEntry> source)
@@ -53,7 +55,6 @@ namespace SmartStore.Web.Framework.Filters
 			response.AddHeader("X-Message-Type", entry.Type.ToString().ToLower());
 			response.AddHeader("X-Message", entry.Message.Text);
 		}
-
 	}
 
 }

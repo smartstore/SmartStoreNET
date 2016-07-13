@@ -61,7 +61,8 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<IProductAttributeParser> _productAttributeParser;
 		private readonly Lazy<IProductAttributeService> _productAttributeService;
 		private readonly Lazy<IProductTemplateService> _productTemplateService;
-        private readonly Lazy<IProductService> _productService;
+		private readonly Lazy<ICategoryTemplateService> _categoryTemplateService;
+		private readonly Lazy<IProductService> _productService;
 		private readonly Lazy<IOrderService> _orderService;
 		private readonly Lazy<IManufacturerService> _manufacturerService;
 		private readonly ICustomerService _customerService;
@@ -101,6 +102,7 @@ namespace SmartStore.Services.DataExchange.Export
 			Lazy<IProductAttributeParser> productAttributeParser,
 			Lazy<IProductAttributeService> productAttributeService,
 			Lazy<IProductTemplateService> productTemplateService,
+			Lazy<ICategoryTemplateService> categoryTemplateService,
 			Lazy<IProductService> productService,
 			Lazy<IOrderService> orderService,
 			Lazy<IManufacturerService> manufacturerService,
@@ -138,6 +140,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_productAttributeParser = productAttributeParser;
 			_productAttributeService = productAttributeService;
 			_productTemplateService = productTemplateService;
+			_categoryTemplateService = categoryTemplateService;
 			_productService = productService;
 			_orderService = orderService;
 			_manufacturerService = manufacturerService;
@@ -290,7 +293,7 @@ namespace SmartStore.Services.DataExchange.Export
 								x => _productAttributeService.Value.GetProductVariantAttributesByProductIds(x, null),
 								x => _productAttributeService.Value.GetProductVariantAttributeCombinations(x),
 								x => _productService.Value.GetTierPricesByProductIds(x, (ctx.Projection.CurrencyId ?? 0) != 0 ? ctx.ContextCustomer : null, ctx.Store.Id),
-								x => _categoryService.Value.GetProductCategoriesByProductIds(x),
+								x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, true),
 								x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),
 								x => _productService.Value.GetProductPicturesByProductIds(x),
 								x => _productService.Value.GetProductTagsByProductIds(x),
@@ -449,56 +452,80 @@ namespace SmartStore.Services.DataExchange.Export
 			return (ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard);
 		}
 
-		private void Deploy(DataExporterContext ctx, string zipPath)
+		private bool Deploy(DataExporterContext ctx, string zipPath)
 		{
-			var allFiles = System.IO.Directory.GetFiles(ctx.FolderContent, "*.*", SearchOption.AllDirectories);
+			var allSucceeded = true;
+			var deployments = ctx.Request.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled);
+
+			if (deployments.Count() == 0)
+				return false;
 
 			var context = new ExportDeploymentContext
 			{
+				T = T,
 				Log = ctx.Log,
 				FolderContent = ctx.FolderContent,
-				ZipPath = zipPath
-			};
+				ZipPath = zipPath,
+				CreateZipArchive = ctx.Request.Profile.CreateZipArchive
+			};			
 
-			foreach (var deployment in ctx.Request.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
+			foreach (var deployment in deployments)
 			{
-				if (deployment.CreateZip)
-					context.DeploymentFiles = new string[] { zipPath };
-				else
-					context.DeploymentFiles = allFiles;
+				IFilePublisher publisher = null;
+
+				context.Result = new DataDeploymentResult
+				{
+					LastExecutionUtc = DateTime.UtcNow
+				};
 
 				try
 				{
-					IFilePublisher publisher = null;
-
-					if (deployment.DeploymentType == ExportDeploymentType.Email)
+					switch (deployment.DeploymentType)
 					{
-						publisher = new EmailFilePublisher(_emailAccountService.Value, _queuedEmailService.Value);
-					}
-					else if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
-					{
-						publisher = new FileSystemFilePublisher();
-					}
-					else if (deployment.DeploymentType == ExportDeploymentType.Ftp)
-					{
-						publisher = new FtpFilePublisher();
-					}
-					else if (deployment.DeploymentType == ExportDeploymentType.Http)
-					{
-						publisher = new HttpFilePublisher();
+						case ExportDeploymentType.Email:
+							publisher = new EmailFilePublisher(_emailAccountService.Value, _queuedEmailService.Value);
+							break;
+						case ExportDeploymentType.FileSystem:
+							publisher = new FileSystemFilePublisher();
+							break;
+						case ExportDeploymentType.Ftp:
+							publisher = new FtpFilePublisher();
+							break;
+						case ExportDeploymentType.Http:
+							publisher = new HttpFilePublisher();
+							break;
+						case ExportDeploymentType.PublicFolder:
+							publisher = new PublicFolderPublisher();
+							break;
 					}
 
 					if (publisher != null)
 					{
 						publisher.Publish(context, deployment);
+
+						if (!context.Result.Succeeded)
+							allSucceeded = false;
 					}
 				}
 				catch (Exception exception)
 				{
+					allSucceeded = false;
+
+					if (context.Result != null)
+					{
+						context.Result.LastError = exception.ToAllMessages();
+					}
+
 					ctx.Log.Error("Deployment \"{0}\" of type {1} failed: {2}".FormatInvariant(
 						deployment.Name, deployment.DeploymentType.ToString(), exception.Message), exception);
 				}
+
+				deployment.ResultInfo = XmlHelper.Serialize(context.Result);
+
+				_exportProfileService.Value.UpdateExportDeployment(deployment);
 			}
+
+			return allSucceeded;
 		}
 
 		private void SendCompletionEmail(DataExporterContext ctx, string zipPath)
@@ -508,7 +535,7 @@ namespace SmartStore.Services.DataExchange.Export
 			if (emailAccount == null)
 				emailAccount = _emailAccountService.Value.GetDefaultEmailAccount();
 
-			var downloadUrl = "{0}Admin/Export/DownloadExportFile/{1}?name=".FormatInvariant(_services.WebHelper.GetStoreLocation(false), ctx.Request.Profile.Id);
+			var downloadUrl = "{0}Admin/Export/DownloadExportFile/{1}?name=".FormatInvariant(_services.WebHelper.GetStoreLocation(ctx.Store.SslEnabled), ctx.Request.Profile.Id);
 
 			var languageId = ctx.Projection.LanguageId ?? 0;
 			var smtpContext = new SmtpContext(emailAccount);
@@ -526,15 +553,15 @@ namespace SmartStore.Services.DataExchange.Export
 			if (ctx.IsFileBasedExport && File.Exists(zipPath))
 			{
 				var fileName = Path.GetFileName(zipPath);
-				body.AppendFormat("<p><a href='{0}' download>{1}</a></p>", downloadUrl + HttpUtility.UrlDecode(fileName), fileName);
+				body.AppendFormat("<p><a href='{0}{1}' download>{2}</a></p>", downloadUrl, HttpUtility.UrlEncode(fileName), fileName);
 			}
 
-			if (ctx.IsFileBasedExport && ctx.Result.Files.Count > 0)
+			if (ctx.IsFileBasedExport && ctx.Result.Files.Any())
 			{
 				body.Append("<p>");
 				foreach (var file in ctx.Result.Files)
 				{
-					body.AppendFormat("<div><a href='{0}' download>{1}</a></div>", downloadUrl + HttpUtility.UrlDecode(file.FileName), file.FileName);
+					body.AppendFormat("<div><a href='{0}{1}' download>{2}</a></div>", downloadUrl, HttpUtility.UrlEncode(file.FileName), file.FileName);
 				}
 				body.Append("</p>");
 			}
@@ -543,9 +570,6 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (ctx.Request.Profile.CompletedEmailAddresses.HasValue())
 				message.To.AddRange(ctx.Request.Profile.CompletedEmailAddresses.SplitSafe(",").Where(x => x.IsEmail()).Select(x => new EmailAddress(x)));
-
-			if (message.To.Count == 0 && _contactDataSettings.Value.WebmasterEmailAddress.HasValue())
-				message.To.Add(new EmailAddress(_contactDataSettings.Value.WebmasterEmailAddress));
 
 			if (message.To.Count == 0 && _contactDataSettings.Value.CompanyEmailAddress.HasValue())
 				message.To.Add(new EmailAddress(_contactDataSettings.Value.CompanyEmailAddress));
@@ -662,7 +686,7 @@ namespace SmartStore.Services.DataExchange.Export
 							OrderBy = ProductSortingEnum.Position,
 							PageSize = int.MaxValue,
 							StoreId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
-							VisibleIndividuallyOnly = false,
+							VisibleIndividuallyOnly = ctx.Projection.OnlyIndividuallyVisibleAssociated,
 							ParentGroupedProductId = product.Id
 						};
 
@@ -740,7 +764,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			var query = _manufacturerService.Value.GetManufacturers(showHidden, storeId);
 
-			if (ctx.Request.EntitiesToExport.Count > 0)
+			if (ctx.Request.EntitiesToExport.Any())
 				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
 
 			query = query.OrderBy(x => x.DisplayOrder);
@@ -1030,7 +1054,10 @@ namespace SmartStore.Services.DataExchange.Export
 				logHead.Append("Export profile:\t\t" + ctx.Request.Profile.Name);
 				logHead.AppendLine(ctx.Request.Profile.Id == 0 ? " (volatile)" : " (Id {0})".FormatInvariant(ctx.Request.Profile.Id));
 
-				logHead.AppendLine("Export provider:\t{0} ({1})".FormatInvariant(ctx.Request.Provider.Metadata.FriendlyName, ctx.Request.Profile.ProviderSystemName));
+				if (ctx.Request.Provider.Metadata.FriendlyName.HasValue())
+					logHead.AppendLine("Export provider:\t{0} ({1})".FormatInvariant(ctx.Request.Provider.Metadata.FriendlyName, ctx.Request.Profile.ProviderSystemName));
+				else
+					logHead.AppendLine("Export provider:\t{0}".FormatInvariant(ctx.Request.Profile.ProviderSystemName));
 
 				var plugin = ctx.Request.Provider.Metadata.PluginDescriptor;
 				logHead.Append("Plugin:\t\t\t");
@@ -1038,8 +1065,12 @@ namespace SmartStore.Services.DataExchange.Export
 
 				logHead.AppendLine("Entity:\t\t\t" + ctx.Request.Provider.Value.EntityType.ToString());
 
-				var storeInfo = (ctx.Request.Profile.PerStore ? "{0} (Id {1})".FormatInvariant(ctx.Store.Name, ctx.Store.Id) : "All stores");
-				logHead.AppendLine("Store:\t\t\t" + storeInfo);
+				try
+				{
+					var uri = new Uri(store.Url);
+					logHead.AppendLine("Store:\t\t\t{0} (Id {1})".FormatInvariant(uri.DnsSafeHost.NaIfEmpty(), ctx.Store.Id));
+				}
+				catch {	}
 
 				var customer = _services.WorkContext.CurrentCustomer;
 				logHead.Append("Executed by:\t\t" + (customer.Email.HasValue() ? customer.Email : customer.SystemName));
@@ -1049,8 +1080,10 @@ namespace SmartStore.Services.DataExchange.Export
 
 			ctx.ExecuteContext.Store = ToDynamic(ctx, ctx.Store);
 			ctx.ExecuteContext.MaxFileNameLength = dataExchangeSettings.MaxFileNameLength;
-			ctx.ExecuteContext.HasPublicDeployment = ctx.Request.Profile.Deployments.Any(x => x.IsPublic && x.DeploymentType == ExportDeploymentType.FileSystem);
-			ctx.ExecuteContext.PublicFolderPath = (ctx.ExecuteContext.HasPublicDeployment ? Path.Combine(HttpRuntime.AppDomainAppPath, PublicFolder) : null);
+
+			var publicDeployment = ctx.Request.Profile.Deployments.FirstOrDefault(x => x.DeploymentType == ExportDeploymentType.PublicFolder);
+			ctx.ExecuteContext.HasPublicDeployment = (publicDeployment != null);
+			ctx.ExecuteContext.PublicFolderPath = publicDeployment.GetDeploymentFolder(true);
 
 			var fileExtension = (ctx.Request.Provider.Value.FileExtension.HasValue() ? ctx.Request.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".") : "");
 
@@ -1080,17 +1113,13 @@ namespace SmartStore.Services.DataExchange.Export
 
 						ctx.ExecuteContext.FileName = resolvedPattern + fileExtension;
 						path = Path.Combine(ctx.ExecuteContext.Folder, ctx.ExecuteContext.FileName);
-
-						if (ctx.ExecuteContext.HasPublicDeployment)
-							ctx.ExecuteContext.PublicFileUrl = ctx.Store.Url.EnsureEndsWith("/") + PublicFolder.EnsureEndsWith("/") + ctx.ExecuteContext.FileName;
 					}
 
 					if (CallProvider(ctx, null, "Execute", path))
 					{
 						ctx.Log.Information("Provider reports {0} successfully exported record(s).".FormatInvariant(ctx.ExecuteContext.RecordsSucceeded));
 
-						// create info for deployment list in profile edit
-						if (ctx.IsFileBasedExport)
+						if (ctx.IsFileBasedExport && File.Exists(path))
 						{
 							ctx.Result.Files.Add(new DataExportResult.ExportFileInfo
 							{
@@ -1174,7 +1203,8 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						ctx.DeliveryTimes = _deliveryTimeService.Value.GetAllDeliveryTimes().ToDictionary(x => x.Id);
 						ctx.QuantityUnits = _quantityUnitService.Value.GetAllQuantityUnits().ToDictionary(x => x.Id);
-						ctx.ProductTemplates = _productTemplateService.Value.GetAllProductTemplates().ToDictionary(x => x.Id);
+						ctx.ProductTemplates = _productTemplateService.Value.GetAllProductTemplates().ToDictionary(x => x.Id, x => x.ViewPath);
+						ctx.CategoryTemplates = _categoryTemplateService.Value.GetAllCategoryTemplates().ToDictionary(x => x.Id, x => x.ViewPath);
 
 						if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Product)
 						{
@@ -1211,15 +1241,23 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						if (ctx.IsFileBasedExport)
 						{
-							if (ctx.Request.Profile.CreateZipArchive || ctx.Request.Profile.Deployments.Any(x => x.Enabled && x.CreateZip))
+							if (ctx.Request.Profile.CreateZipArchive)
 							{
-								ZipFile.CreateFromDirectory(ctx.FolderContent, zipPath, CompressionLevel.Fastest, true);
+								ZipFile.CreateFromDirectory(ctx.FolderContent, zipPath, CompressionLevel.Fastest, false);
 							}
 
 							if (ctx.Request.Profile.Deployments.Any(x => x.Enabled))
 							{
-								SetProgress(ctx, T("Common.Deployment"));
-								Deploy(ctx, zipPath);
+								SetProgress(ctx, T("Common.Publishing"));
+
+								var allDeploymentsSucceeded = Deploy(ctx, zipPath);
+
+								if (allDeploymentsSucceeded && ctx.Request.Profile.Cleanup)
+								{
+									logger.Information("Cleaning up export folder");
+
+									FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
+								}
 							}
 						}
 
@@ -1244,21 +1282,9 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						if (!ctx.IsPreview && ctx.Request.Profile.Id != 0)
 						{
-							ctx.Request.Profile.ResultInfo = XmlHelper.Serialize<DataExportResult>(ctx.Result);
+							ctx.Request.Profile.ResultInfo = XmlHelper.Serialize(ctx.Result);
 
 							_exportProfileService.Value.UpdateExportProfile(ctx.Request.Profile);
-						}
-					}
-					catch (Exception exception)
-					{
-						logger.ErrorsAll(exception);
-					}
-
-					try
-					{
-						if (ctx.IsFileBasedExport && ctx.ExecuteContext.Abort != DataExchangeAbortion.Hard && ctx.Request.Profile.Cleanup)
-						{
-							FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
 						}
 					}
 					catch (Exception exception)
@@ -1272,6 +1298,7 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						ctx.NewsletterSubscriptions.Clear();
 						ctx.ProductTemplates.Clear();
+						ctx.CategoryTemplates.Clear();
 						ctx.Countries.Clear();
 						ctx.Languages.Clear();
 						ctx.QuantityUnits.Clear();
@@ -1297,7 +1324,7 @@ namespace SmartStore.Services.DataExchange.Export
 				return;
 
 			// post process order entities
-			if (ctx.EntityIdsLoaded.Count > 0 && ctx.Request.Provider.Value.EntityType == ExportEntityType.Order && ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
+			if (ctx.EntityIdsLoaded.Any() && ctx.Request.Provider.Value.EntityType == ExportEntityType.Order && ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
 			{
 				using (var logger = new TraceLogger(logPath))
 				{
@@ -1351,38 +1378,6 @@ namespace SmartStore.Services.DataExchange.Export
 			var ctx = new DataExporterContext(request, cancellationToken);
 
 			ExportCoreOuter(ctx);
-
-			if (ctx.Result != null && ctx.Result.Succeeded && ctx.Result.Files.Count > 0)
-			{
-				string prefix = null;
-				string suffix = null;
-				var extension = Path.GetExtension(ctx.Result.Files.First().FileName);
-				var provider = request.Provider.Value;
-
-				if (provider.EntityType == ExportEntityType.Product)
-					prefix = T("Admin.Catalog.Products");
-				else if (provider.EntityType == ExportEntityType.Order)
-					prefix = T("Admin.Orders");
-				else if (provider.EntityType == ExportEntityType.Category)
-					prefix = T("Admin.Catalog.Categories");
-				else if (provider.EntityType == ExportEntityType.Manufacturer)
-					prefix = T("Admin.Catalog.Manufacturers");
-				else if (provider.EntityType == ExportEntityType.Customer)
-					prefix = T("Admin.Customers");
-				else if (provider.EntityType == ExportEntityType.NewsLetterSubscription)
-					prefix = T("Admin.Promotions.NewsLetterSubscriptions");
-				else
-					prefix = provider.EntityType.ToString();
-
-				var selectedEntityCount = (request.EntitiesToExport == null ? 0 : request.EntitiesToExport.Count);
-
-				if (selectedEntityCount == 0)
-					suffix = T("Common.All");
-				else
-					suffix = (selectedEntityCount == 1 ? request.EntitiesToExport.First().ToString() : T("Admin.Common.Selected").Text);
-
-				ctx.Result.DownloadFileName = string.Concat(prefix, "-", suffix).ToLower().ToValidFileName() + extension;
-			}
 
 			cancellationToken.ThrowIfCancellationRequested();
 

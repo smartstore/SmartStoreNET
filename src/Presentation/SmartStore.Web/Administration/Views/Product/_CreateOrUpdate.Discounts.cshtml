@@ -6,13 +6,15 @@
     {
         <label class="checkbox">
         <input type="checkbox" name="SelectedDiscountIds" value="@discount.Id"
-                @if (Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id)) { <text> checked="checked" </text>   } />@discount.Name
+                @if (Model.SelectedDiscountIds != null && Model.SelectedDiscountIds.Contains(discount.Id)) { <text> checked="checked" </text> } />@discount.Name
         </label>
     }
 }
 else
 {
-    @T("Admin.Catalog.Products.Discounts.NoDiscounts")
+	<div class="alert alert-info">
+		@T("Admin.Catalog.Products.Discounts.NoDiscounts")
+	</div>
 }
 
 

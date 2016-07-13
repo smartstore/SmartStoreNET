@@ -41,7 +41,7 @@ namespace SmartStore.Services.Customers
         private readonly IRepository<GenericAttribute> _gaRepository;
 		private readonly IRepository<RewardPointsHistory> _rewardPointsHistoryRepository;
         private readonly IGenericAttributeService _genericAttributeService;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
         private readonly IEventPublisher _eventPublisher;
 		private readonly RewardPointsSettings _rewardPointsSettings;
 
@@ -49,7 +49,7 @@ namespace SmartStore.Services.Customers
 
         #region Ctor
 
-        public CustomerService(ICacheManager cacheManager,
+        public CustomerService(IRequestCache requestCache,
             IRepository<Customer> customerRepository,
             IRepository<CustomerRole> customerRoleRepository,
             IRepository<GenericAttribute> gaRepository,
@@ -58,7 +58,7 @@ namespace SmartStore.Services.Customers
             IEventPublisher eventPublisher,
 			RewardPointsSettings rewardPointsSettings)
         {
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._customerRepository = customerRepository;
             this._customerRoleRepository = customerRoleRepository;
             this._gaRepository = gaRepository;
@@ -569,7 +569,7 @@ namespace SmartStore.Services.Customers
 
             _customerRoleRepository.Delete(customerRole);
 
-            _cacheManager.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(customerRole);
@@ -589,7 +589,7 @@ namespace SmartStore.Services.Customers
                 return null;
 
             string key = string.Format(CUSTOMERROLES_BY_SYSTEMNAME_KEY, systemName);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from cr in _customerRoleRepository.Table
                             orderby cr.Id
@@ -603,7 +603,7 @@ namespace SmartStore.Services.Customers
         public virtual IList<CustomerRole> GetAllCustomerRoles(bool showHidden = false)
         {
             string key = string.Format(CUSTOMERROLES_ALL_KEY, showHidden);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from cr in _customerRoleRepository.Table
                             orderby cr.Name
@@ -621,7 +621,7 @@ namespace SmartStore.Services.Customers
 
             _customerRoleRepository.Insert(customerRole);
 
-            _cacheManager.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(customerRole);
@@ -634,7 +634,7 @@ namespace SmartStore.Services.Customers
 
             _customerRoleRepository.Update(customerRole);
 
-            _cacheManager.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(customerRole);

@@ -42,31 +42,31 @@ namespace SmartStore.Services.Catalog
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly IAclService _aclService;
         private readonly Lazy<IEnumerable<ICategoryNavigationFilter>> _navigationFilters;
         private readonly ICustomerService _customerService;
         private readonly IProductService _productService;
         private readonly IStoreService _storeService;
-        
-        #endregion
-        
-        #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="categoryRepository">Category repository</param>
-        /// <param name="productCategoryRepository">ProductCategory repository</param>
-        /// <param name="productRepository">Product repository</param>
-        /// <param name="aclRepository">ACL record repository</param>
+		#endregion
+
+		#region Ctor
+
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="requestCache">Cache manager</param>
+		/// <param name="categoryRepository">Category repository</param>
+		/// <param name="productCategoryRepository">ProductCategory repository</param>
+		/// <param name="productRepository">Product repository</param>
+		/// <param name="aclRepository">ACL record repository</param>
 		/// <param name="storeMappingRepository">Store mapping repository</param>
-        /// <param name="workContext">Work context</param>
+		/// <param name="workContext">Work context</param>
 		/// <param name="storeContext">Store context</param>
-        /// <param name="eventPublisher">Event publisher</param>
-        public CategoryService(ICacheManager cacheManager,
+		/// <param name="eventPublisher">Event publisher</param>
+		public CategoryService(IRequestCache requestCache,
             IRepository<Category> categoryRepository,
             IRepository<ProductCategory> productCategoryRepository,
             IRepository<Product> productRepository,
@@ -82,7 +82,7 @@ namespace SmartStore.Services.Catalog
             IProductService productService,
             IStoreService storeService)
         {
-            this._cacheManager = cacheManager;
+            this._requestCache = requestCache;
             this._categoryRepository = categoryRepository;
             this._productCategoryRepository = productCategoryRepository;
             this._productRepository = productRepository;
@@ -401,7 +401,7 @@ namespace SmartStore.Services.Catalog
         {
 			int storeId = _storeContext.CurrentStore.Id;
 			string key = string.Format(CATEGORIES_BY_PARENT_CATEGORY_ID_KEY, parentCategoryId, showHidden, _workContext.CurrentCustomer.Id, storeId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = _categoryRepository.Table;
                 if (!showHidden)
@@ -496,7 +496,7 @@ namespace SmartStore.Services.Catalog
                 return null;
 
             string key = string.Format(CATEGORIES_BY_ID_KEY, categoryId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 return  _categoryRepository.GetById(categoryId);
             });
@@ -514,8 +514,8 @@ namespace SmartStore.Services.Catalog
             _categoryRepository.Insert(category);
 
             //cache
-            _cacheManager.RemoveByPattern(CATEGORIES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(category);
@@ -545,8 +545,8 @@ namespace SmartStore.Services.Catalog
             _categoryRepository.Update(category);
 
             //cache
-            _cacheManager.RemoveByPattern(CATEGORIES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(category);
@@ -577,8 +577,8 @@ namespace SmartStore.Services.Catalog
             _productCategoryRepository.Delete(productCategory);
 
             //cache
-            _cacheManager.RemoveByPattern(CATEGORIES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(productCategory);
@@ -600,7 +600,7 @@ namespace SmartStore.Services.Catalog
 			int storeId = _storeContext.CurrentStore.Id;
 			string key = string.Format(PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY, showHidden, categoryId, pageIndex, pageSize, _workContext.CurrentCustomer.Id, storeId);
 
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from pc in _productCategoryRepository.Table
                             join p in _productRepository.Table on pc.ProductId equals p.Id
@@ -634,7 +634,7 @@ namespace SmartStore.Services.Catalog
                 return new List<ProductCategory>();
 
 			string key = string.Format(PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
 				var query = from pc in _productCategoryRepository.Table.Expand(x => x.Category)
                             join c in _categoryRepository.Table on pc.CategoryId equals c.Id
@@ -777,8 +777,8 @@ namespace SmartStore.Services.Catalog
             _productCategoryRepository.Insert(productCategory);
 
             //cache
-            _cacheManager.RemoveByPattern(CATEGORIES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(productCategory);
@@ -796,8 +796,8 @@ namespace SmartStore.Services.Catalog
             _productCategoryRepository.Update(productCategory);
 
             //cache
-            _cacheManager.RemoveByPattern(CATEGORIES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CATEGORIES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTCATEGORIES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(productCategory);

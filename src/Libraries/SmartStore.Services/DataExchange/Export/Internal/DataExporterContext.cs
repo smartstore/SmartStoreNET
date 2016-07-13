@@ -34,7 +34,8 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 			Stores = new Dictionary<int, Store>();
 			Languages = new Dictionary<int, Language>();
 			Countries = new Dictionary<int, Country>();
-			ProductTemplates = new Dictionary<int, ProductTemplate>();
+			ProductTemplates = new Dictionary<int, string>();
+			CategoryTemplates = new Dictionary<int, string>();
 			NewsletterSubscriptions = new HashSet<string>();
 
 			RecordsPerStore = new Dictionary<int, int>();
@@ -109,7 +110,8 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		public Dictionary<int, Store> Stores { get; set; }
 		public Dictionary<int, Language> Languages { get; set; }
 		public Dictionary<int, Country> Countries { get; set; }
-		public Dictionary<int, ProductTemplate> ProductTemplates { get; set; }
+		public Dictionary<int, string> ProductTemplates { get; set; }
+		public Dictionary<int, string> CategoryTemplates { get; set; }
 		public HashSet<string> NewsletterSubscriptions { get; set; }
 
 		// data loaded once per page

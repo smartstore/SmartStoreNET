@@ -18,7 +18,8 @@ namespace SmartStore.Services
 	public class CommonServices : ICommonServices
 	{
 		private readonly IComponentContext _container;
-		private readonly Lazy<ICacheManager> _cache;
+		private readonly Lazy<ICacheManager> _cacheManager;
+		private readonly Lazy<IRequestCache> _requestCache;
 		private readonly Lazy<IDbContext> _dbContext;
 		private readonly Lazy<IStoreContext> _storeContext;
 		private readonly Lazy<IWebHelper> _webHelper;
@@ -31,10 +32,12 @@ namespace SmartStore.Services
 		private readonly Lazy<ISettingService> _settings;
 		private readonly Lazy<IStoreService> _storeService;
 		private readonly Lazy<IDateTimeHelper> _dateTimeHelper;
+		private readonly Lazy<IDisplayControl> _displayControl;
 
 		public CommonServices(
 			IComponentContext container,
-            Func<string, Lazy<ICacheManager>> cache,
+            Lazy<ICacheManager> cacheManager,
+			Lazy<IRequestCache> requestCache,
 			Lazy<IDbContext> dbContext,
 			Lazy<IStoreContext> storeContext,
 			Lazy<IWebHelper> webHelper,
@@ -46,10 +49,12 @@ namespace SmartStore.Services
 			Lazy<IPermissionService> permissions,
 			Lazy<ISettingService> settings,
 			Lazy<IStoreService> storeService,
-			Lazy<IDateTimeHelper> dateTimeHelper)
+			Lazy<IDateTimeHelper> dateTimeHelper,
+			Lazy<IDisplayControl> displayControl)
 		{
 			this._container = container;
-			this._cache = cache("static");
+			this._cacheManager = cacheManager;
+			this._requestCache = requestCache;
 			this._dbContext = dbContext;
 			this._storeContext = storeContext;
 			this._webHelper = webHelper;
@@ -62,6 +67,7 @@ namespace SmartStore.Services
 			this._settings = settings;
 			this._storeService = storeService;
 			this._dateTimeHelper = dateTimeHelper;
+			this._displayControl = displayControl;
 		}
 
 		public IComponentContext Container
@@ -76,7 +82,15 @@ namespace SmartStore.Services
 		{
 			get
 			{
-				return _cache.Value;
+				return _cacheManager.Value;
+			}
+		}
+
+		public IRequestCache RequestCache
+		{
+			get
+			{
+				return _requestCache.Value;
 			}
 		}
 
@@ -174,6 +188,14 @@ namespace SmartStore.Services
 			get
 			{
 				return _dateTimeHelper.Value;
+			}
+		}
+
+		public IDisplayControl DisplayControl
+		{
+			get
+			{
+				return _displayControl.Value;
 			}
 		}
 	}

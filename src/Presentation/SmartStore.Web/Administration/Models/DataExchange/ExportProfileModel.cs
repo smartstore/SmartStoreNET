@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Web;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Tasks;
@@ -89,7 +91,7 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public ScheduleTaskModel TaskModel { get; set; }
 
-		public ExportProfileDetailsModel Details { get; set; }
+		public int FileCount { get; set; }
 
 		public class ProviderModel
 		{
@@ -147,30 +149,54 @@ namespace SmartStore.Admin.Models.DataExchange
 	}
 
 
-	public partial class ExportProfileDetailsModel : EntityModelBase
+	public partial class ExportFileDetailsModel : EntityModelBase
 	{
-		[SmartResourceDisplayName("Admin.DataExchange.Export.ExportFiles")]
-		public List<string> ExportFiles { get; set; }
-
-		public string ZipPath { get; set; }
-
-		[SmartResourceDisplayName("Admin.DataExchange.Export.ExportFiles")]
-		public int ExportFileCount
+		public int FileCount
 		{
 			get
 			{
-				return (ExportFiles.Count + (ZipPath.HasValue() ? 1 : 0));
+				var result = ExportFiles.Count;
+
+				if (result == 0)
+					result = PublicFiles.Count;
+
+				return result;
 			}
 		}
 
-		public List<PublicFile> PublicFiles { get; set;	}
+		public List<FileInfo> ExportFiles { get; set; }
+		public List<FileInfo> PublicFiles { get; set; }
 
-		public class PublicFile
+		public bool IsForDeployment { get; set; }
+
+		public class FileInfo
 		{
 			public int StoreId { get; set; }
 			public string StoreName { get; set; }
-			public string FileName { get; set; }
+
+			public int DisplayOrder { get; set; }
+
+			public string FilePath { get; set; }
 			public string FileUrl { get; set; }
+
+			public string FileName { get; set; }
+			public string FileExtension { get; set; }
+
+			public string FileRootPath
+			{
+				get
+				{
+					var rootPath = "";
+					var appPath = HttpRuntime.AppDomainAppPath;
+
+					if (FilePath.StartsWith(appPath))
+						rootPath = FilePath.Replace(appPath, "~/");
+
+					rootPath = rootPath.Replace('\\', '/');
+
+					return rootPath;
+				}
+			}
 		}
 	}
 }

@@ -23,7 +23,8 @@ namespace SmartStore.Core.Domain.DataExchange
 		FileSystem = 0,
 		Email,
 		Http,
-		Ftp
+		Ftp,
+		PublicFolder
 	}
 
 	/// <summary>
@@ -125,7 +126,12 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// <summary>
 		/// Whether to not automatically send a completion email
 		/// </summary>
-		CanOmitCompletionMail = 1 << 12
+		CanOmitCompletionMail = 1 << 12,
+
+		/// <summary>
+		/// Whether to provide additional data of attribute combinations
+		/// </summary>
+		UsesAttributeCombination = 1 << 13
 	}
 
 	/// <summary>

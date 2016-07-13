@@ -20,7 +20,7 @@
 
 	@if (Model.Any())
 	{
-		<table class="table admin-table export-profile-list" style="margin-bottom: 0; border-bottom: 1px solid #ddd">
+		<table class="table admin-table export-profile-list profile-list">
 			<thead>
 				<tr>
 					<th class="ac"></th>
@@ -51,7 +51,7 @@
 							@Html.IconForFileExtension(profile.Provider.FileExtension, true)
 						</td>
 						<td id="ExportFileCount@(profile.Id)" class="ac">
-							@Html.Partial("ProfileFileCount", profile.Details)
+							@Html.Partial("ProfileFileCount", profile.FileCount)
 						</td>
 						<td>
 							<div class="last-run-info">
@@ -64,9 +64,9 @@
 							</div>
 							<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
 						</td>
-						<td style="width: 200px">
+						<td style="width: 200px;">
 							<button type="button" class="btn btn-block btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"
-									data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId">
+									data-url="@Url.Action("Execute", "Export", new { area = "Admin", id = profile.Id })" data-task-id="@profile.ScheduleTaskId">
 								<i class="fa fa-play"></i>&nbsp;&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
 							</button>
 
@@ -85,14 +85,17 @@
 			</tbody>
 		</table>
 	}
-	else {
-		<div class="muted">@T("Admin.DataExchange.Export.NoProfiles")</div>
+	else
+	{
+		<div class="alert alert-info">
+			<button type="button" class="close" data-dismiss="alert">&#215;</button>
+			@T("Admin.DataExchange.Export.NoProfiles")
+		</div>
 	}
-
 
 	@if (!isSystemProfiles)
 	{
-		<a href="javascript:void(0)" data-url="@Url.Action("Create")" class="btn btn-warning export-profile-button" style="margin-top: 10px">
+		<a href="javascript:void(0)" data-url="@Url.Action("Create")" class="btn btn-warning export-profile-button">
 			<i class="fa fa-plus"></i>&nbsp;&nbsp;@T("Admin.DataExchange.AddNewProfile")
 		</a>
 	}

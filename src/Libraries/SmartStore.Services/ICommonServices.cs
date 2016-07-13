@@ -26,6 +26,16 @@ namespace SmartStore.Services
 			get;
 		}
 
+		IRequestCache RequestCache
+		{
+			get;
+		}
+
+		IDisplayControl DisplayControl
+		{
+			get;
+		}
+
 		IDbContext DbContext
 		{
 			get;

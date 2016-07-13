@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Collections;
@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
@@ -25,14 +26,12 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
+using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
-using SmartStore.Core.Data;
-using System.Collections.Specialized;
-using SmartStore.Services.Topics;
 
 namespace SmartStore.Web.Controllers
 {
@@ -152,7 +151,8 @@ namespace SmartStore.Web.Controllers
 			bool isAssociatedProduct = false,
 			ProductBundleItemData productBundleItem = null, 
 			IList<ProductBundleItemData> productBundleItems = null, 
-			NameValueCollection selectedAttributes = null)
+			NameValueCollection selectedAttributes = null,
+			NameValueCollection queryData = null)
 		{
 			if (product == null)
 				throw new ArgumentNullException("product");
@@ -187,6 +187,30 @@ namespace SmartStore.Web.Controllers
 				IsCurrentCustomerRegistered = _services.WorkContext.CurrentCustomer.IsRegistered()
 			};
 
+			// get gift card values from query string
+			if (queryData != null && queryData.Count > 0)
+			{
+				var giftCardItems = queryData.AllKeys
+					.Where(x => x.EmptyNull().StartsWith("giftcard_"))
+					.SelectMany(queryData.GetValues, (k, v) => new { key = k, value = v.TrimSafe() });
+
+				foreach (var item in giftCardItems)
+				{
+					var key = item.key.EmptyNull().ToLower();
+
+					if (key.EndsWith("recipientname"))
+						model.GiftCard.RecipientName = item.value;
+					else if (key.EndsWith("recipientemail"))
+						model.GiftCard.RecipientEmail = item.value;
+					else if (key.EndsWith("sendername"))
+						model.GiftCard.SenderName = item.value;
+					else if (key.EndsWith("senderemail"))
+						model.GiftCard.SenderEmail = item.value;
+					else if (key.EndsWith("message"))
+						model.GiftCard.Message = item.value;
+				}
+			}
+
 			// Back in stock subscriptions
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
 				 product.BackorderMode == BackorderMode.NoBackorders &&
@@ -212,8 +236,9 @@ namespace SmartStore.Web.Controllers
 			IList<ProductBundleItemData> bundleItems = null;
 			ProductVariantAttributeCombination combination = null;
 
-			if (product.ProductType == ProductType.GroupedProduct && !isAssociatedProduct)	// associated products
+			if (product.ProductType == ProductType.GroupedProduct && !isAssociatedProduct)
 			{
+				// associated products
 				var searchContext = new ProductSearchContext
 				{
 					OrderBy = ProductSortingEnum.Position,
@@ -226,10 +251,14 @@ namespace SmartStore.Web.Controllers
 				var associatedProducts = _productService.SearchProducts(searchContext);
 
 				foreach (var associatedProduct in associatedProducts)
-					model.AssociatedProducts.Add(PrepareProductDetailsPageModel(associatedProduct, true));
+				{
+					var assciatedProductModel = PrepareProductDetailsPageModel(associatedProduct, true, null, null, selectedAttributes);
+					model.AssociatedProducts.Add(assciatedProductModel);
+				}
 			}
-			else if (product.ProductType == ProductType.BundledProduct && productBundleItem == null)		// bundled items
+			else if (product.ProductType == ProductType.BundledProduct && productBundleItem == null)
 			{
+				// bundled items
 				bundleItems = _productService.GetBundleItems(product.Id);
 
 				foreach (var itemData in bundleItems.Where(x => x.Item.Product.CanBeBundleItem()))
@@ -505,9 +534,31 @@ namespace SmartStore.Web.Controllers
 							pvaModel.BeginYear = match.Groups[1].Value.ToInt();
 							pvaModel.EndYear = match.Groups[2].Value.ToInt();
 						}
+
+						if (hasSelectedAttributes)
+						{
+							var attributeKey = "product_attribute_{0}_{1}_{2}_{3}".FormatInvariant(product.Id, bundleItemId, attribute.ProductAttributeId, attribute.Id);
+							var day = selectedAttributes[attributeKey + "_day"].ToInt();
+							var month = selectedAttributes[attributeKey + "_month"].ToInt();
+							var year = selectedAttributes[attributeKey + "_year"].ToInt();
+							if (day > 0 && month > 0 && year > 0)
+							{
+								pvaModel.SelectedDay = day;
+								pvaModel.SelectedMonth = month;
+								pvaModel.SelectedYear = year;
+							}
+						}
+					}
+					else if (attribute.AttributeControlType == AttributeControlType.TextBox || attribute.AttributeControlType == AttributeControlType.MultilineTextbox)
+					{
+						if (hasSelectedAttributes)
+						{
+							var attributeKey = "product_attribute_{0}_{1}_{2}_{3}".FormatInvariant(product.Id, bundleItemId, attribute.ProductAttributeId, attribute.Id);
+							pvaModel.TextValue = selectedAttributes[attributeKey];
+						}
 					}
 
-					int preSelectedValueId = 0;
+					var preSelectedValueId = 0;
 					var pvaValues = (attribute.ShouldHaveValues() ? _productAttributeService.GetProductVariantAttributeValues(attribute.Id) : new List<ProductVariantAttributeValue>());
 
 					foreach (var pvaValue in pvaValues)
@@ -987,6 +1038,8 @@ namespace SmartStore.Web.Controllers
 
 			#endregion
 
+			_services.DisplayControl.Announce(product);
+
 			return model;
 		}
 
@@ -1014,7 +1067,7 @@ namespace SmartStore.Web.Controllers
 
 		public IList<MenuItem> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId)
 		{
-			var requestCache = SmartStore.Core.Infrastructure.EngineContext.Current.Resolve<ICacheManager>();
+			var requestCache = EngineContext.Current.Resolve<IRequestCache>();
 			string cacheKey = "sm.temp.category.path.{0}-{1}".FormatInvariant(currentCategoryId, currentProductId);
 
 			var breadcrumb = requestCache.Get(cacheKey, () =>
@@ -1108,6 +1161,7 @@ namespace SmartStore.Web.Controllers
 			foreach (var product in products)
 			{
 				var contextProduct = product;
+				var finalPrice = decimal.Zero;
 
 				var model = new ProductOverviewModel
 				{
@@ -1156,6 +1210,8 @@ namespace SmartStore.Web.Controllers
 						{
 							contextProduct = associatedProducts.OrderBy(x => x.DisplayOrder).First();
 
+							_services.DisplayControl.Announce(contextProduct);
+
 							if (displayPrices && _catalogSettings.PriceDisplayType != PriceDisplayType.Hide)
 							{
 								decimal? displayPrice = null;
@@ -1188,7 +1244,7 @@ namespace SmartStore.Web.Controllers
 										decimal taxRate = decimal.Zero;
 										decimal oldPriceBase = _taxService.GetProductPrice(contextProduct, contextProduct.OldPrice, out taxRate);
 										decimal finalPriceBase = _taxService.GetProductPrice(contextProduct, displayPrice.Value, out taxRate);
-										decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
+										finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
 
 										priceModel.OldPrice = null;
 
@@ -1256,7 +1312,7 @@ namespace SmartStore.Web.Controllers
 								decimal finalPriceBase = _taxService.GetProductPrice(product, displayPrice, out taxRate);
 
 								decimal oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, workingCurrency);
-								decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
+								finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
 
 								priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
 
@@ -1341,6 +1397,7 @@ namespace SmartStore.Web.Controllers
 							Title = string.Format(res["Media.Product.ImageLinkTitleFormat"], model.Name),
 							AlternateText = string.Format(res["Media.Product.ImageAlternateTextFormat"], model.Name)
 						};
+
 						return pictureModel;
 					});
 
@@ -1396,16 +1453,19 @@ namespace SmartStore.Web.Controllers
 					model.Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), cachedManufacturerModels, false);
 				}
 
-				if (_catalogSettings.ShowBasePriceInProductLists || isCompareList)
+				if (finalPrice != decimal.Zero && (_catalogSettings.ShowBasePriceInProductLists || isCompareList))
 				{
-                    model.BasePriceInfo = contextProduct.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService,  workingCurrency);
+					model.BasePriceInfo = contextProduct.GetBasePriceInfo(finalPrice, _localizationService,	_priceFormatter, workingCurrency);
 				}
 
-				var addShippingPrice = _currencyService.ConvertCurrency(contextProduct.AdditionalShippingCharge, currentStore.PrimaryStoreCurrency, workingCurrency);
-
-				if (addShippingPrice > 0 && displayPrices)
+				if (displayPrices)
 				{
-					model.TransportSurcharge = res["Common.AdditionalShippingSurcharge"].Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, true, false));
+					var addShippingPrice = _currencyService.ConvertCurrency(contextProduct.AdditionalShippingCharge, currentStore.PrimaryStoreCurrency, workingCurrency);
+
+					if (addShippingPrice > 0)
+					{
+						model.TransportSurcharge = res["Common.AdditionalShippingSurcharge"].Text.FormatCurrent(_priceFormatter.FormatPrice(addShippingPrice, true, false));
+					}
 				}
 
 				if (contextProduct.Weight > 0)
@@ -1416,11 +1476,13 @@ namespace SmartStore.Web.Controllers
 				// IsNew
 				if (_catalogSettings.LabelAsNewForMaxDays.HasValue)
 				{
-					model.IsNew = (DateTime.UtcNow - product.CreatedOnUtc).Days <= _catalogSettings.LabelAsNewForMaxDays.Value;
+					model.IsNew = ((DateTime.UtcNow - product.CreatedOnUtc).Days <= _catalogSettings.LabelAsNewForMaxDays.Value);
 				}
 
 				models.Add(model);
 			}
+
+			_services.DisplayControl.AnnounceRange(products);
 
 			return models;
 		}
@@ -1456,8 +1518,7 @@ namespace SmartStore.Web.Controllers
 			if (_catalogSettings.ShowCategoryProductNumber)
 			{
 				var curItem = breadcrumb.LastOrDefault();
-				var curNode = curItem == null ? root.Root : root.Find(curItem);
-
+				var curNode = curItem == null ? root.Root : root.SelectNode(x => x.Value == curItem);
 				this.ResolveCategoryProductsCount(curNode);
 			}
 
@@ -1490,7 +1551,7 @@ namespace SmartStore.Web.Controllers
 									if (_catalogSettings.ShowCategoryProductNumberIncludingSubcategories)
 									{
 										// include subcategories
-										node.TraverseTree(x => categoryIds.Add(x.Value.EntityId));
+										node.Traverse(x => categoryIds.Add(x.Value.EntityId));
 									}
 									else
 									{

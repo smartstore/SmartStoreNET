@@ -287,14 +287,15 @@ namespace SmartStore.Services.Customers
 
 			return count;
 		}
-		public static List<OrganizedShoppingCartItem> GetCartItems(this Customer customer, ShoppingCartType cartType, int? storeId = null, bool orderById = false)
+
+		public static List<OrganizedShoppingCartItem> GetCartItems(this Customer customer, ShoppingCartType cartType, int? storeId = null)
 		{
 			var rawItems = customer.ShoppingCartItems.Filter(cartType, storeId);
 
-			if (orderById)
-				rawItems = rawItems.OrderByDescending(x => x.Id);
-
-			var organizedItems = rawItems.ToList().Organize();
+			var organizedItems = rawItems
+				.OrderByDescending(x => x.Id)
+				.ToList()
+				.Organize();
 
 			return organizedItems.ToList();
 		}

@@ -81,6 +81,16 @@
                 @Html.ValidationMessageFor(model => model.DisplayShipmentEventsToCustomers)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SkipShippingIfSingleOption)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.SkipShippingIfSingleOption)
+                @Html.ValidationMessageFor(model => model.SkipShippingIfSingleOption)
+            </td>
+        </tr>
+
 		<tr class="adminGroup">
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.ShippingOriginAddress)

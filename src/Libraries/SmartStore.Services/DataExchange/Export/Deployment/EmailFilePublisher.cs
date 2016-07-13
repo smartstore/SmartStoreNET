@@ -42,7 +42,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 					EmailAccountId = deployment.EmailAccountId
 				};
 
-				foreach (var path in context.DeploymentFiles)
+				foreach (var path in context.GetDeploymentFiles())
 				{
 					var name = Path.GetFileName(path);
 

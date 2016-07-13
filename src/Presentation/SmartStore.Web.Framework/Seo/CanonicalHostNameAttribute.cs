@@ -7,13 +7,8 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Seo
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public class CanonicalHostNameAttribute : FilterAttribute, IAuthorizationFilter
     {
-		public CanonicalHostNameAttribute()
-        {
-        }
-
 		public Lazy<SeoSettings> SeoSettings { get; set; }
 		public Lazy<IWebHelper> WebHelper { get; set; }
 		public Lazy<IStoreContext> StoreContext { get; set; }
@@ -57,7 +52,7 @@ namespace SmartStore.Web.Framework.Seo
 				if (securityMode == HttpSecurityMode.SharedSsl)
 				{
 					// Don't attempt to redirect when shared SSL is being used and current request is secured.
-					// Redirecting from https://ssl.bla.com to https://www.ssl.bla.com will most probably fail.
+					// Redirecting from http://ssl.bla.com to https://www.ssl.bla.com will most probably fail.
 					return;
 				}
 			}

@@ -13,6 +13,7 @@ namespace SmartStore
 {
 	public static class NameValueCollectionExtensions
 	{
+		// TODO: find place to make it public static
 		private static string AttributeFormatedName(int productAttributeId, int attributeId, int productId = 0, int bundleItemId = 0)
 		{
 			if (productId == 0)
@@ -25,34 +26,57 @@ namespace SmartStore
 		{
 			if (productAttributeId != 0 && attributeId != 0 && valueId != 0)
 			{
-				string name = AttributeFormatedName(productAttributeId, attributeId, productId, bundleItemId);
+				var name = AttributeFormatedName(productAttributeId, attributeId, productId, bundleItemId);
 
 				collection.Add(name, valueId.ToString());
 			}
 		}
 
 		/// <summary>
-		/// Converts attribute query data
+		/// Get selected attributes from query string
 		/// </summary>
-		/// <param name="collection">Name value collection</param>
+		/// <param name="collection">Name value collection with selected attributes</param>
+		/// <param name="queryString">Query string parameters</param>
 		/// <param name="queryData">Attribute query data items with following structure: 
 		/// <c>Product.Id, ProductAttribute.Id, Product_ProductAttribute_Mapping.Id, ProductVariantAttributeValue.Id, [BundleItem.Id]</c></param>
 		/// <param name="productId">Product identifier to filter</param>
-		public static void ConvertAttributeQueryData(this NameValueCollection collection, List<List<int>> queryData, int productId = 0)
+		public static void GetSelectedAttributes(this NameValueCollection collection, NameValueCollection queryString, List<List<int>> attributes, int productId = 0)
 		{
-			if (collection == null || queryData == null || queryData.Count <= 0)
-				return;
+			Guard.NotNull(collection, nameof(collection));
 
-			var items = queryData.Where(i => i.Count > 3);
-
-			if (productId != 0)
-				items = items.Where(i => i[0] == productId);
-
-			foreach (var item in items)
+			// ambiguous parameters: let other query string parameters win over the json formatted attributes parameter
+			if (queryString != null && queryString.Count > 0)
 			{
-				var name = AttributeFormatedName(item[1], item[2], item[0], item.Count > 4 ? item[4] : 0);
+				var items = queryString.AllKeys
+					.Where(x => x.EmptyNull().StartsWith("product_attribute_"))
+					.SelectMany(queryString.GetValues, (k, v) => new { key = k.EmptyNull(), value = v.TrimSafe() });
 
-				collection.Add(name, item[3].ToString());
+				foreach (var item in items)
+				{
+					var ids = item.key.Replace("product_attribute_", "").SplitSafe("_");
+					if (ids.Count() > 3)
+					{
+						if (productId == 0 || (productId != 0 && productId == ids[0].ToInt()))
+						{
+							collection.Add(item.key, item.value);
+						}
+					}
+				}
+			}
+
+			if (attributes != null && attributes.Count > 0)
+			{
+				var items = attributes.Where(i => i.Count > 3);
+
+				if (productId != 0)
+					items = items.Where(i => i[0] == productId);
+
+				foreach (var item in items)
+				{
+					var name = AttributeFormatedName(item[1], item[2], item[0], item.Count > 4 ? item[4] : 0);
+
+					collection.Add(name, item[3].ToString());
+				}
 			}
 		}
 

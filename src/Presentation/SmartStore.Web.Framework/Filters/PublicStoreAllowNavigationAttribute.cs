@@ -7,7 +7,7 @@ using SmartStore.Services.Security;
 
 namespace SmartStore.Web.Framework.Filters
 {
-    public class PublicStoreAllowNavigationAttribute : ActionFilterAttribute
+    public class PublicStoreAllowNavigationAttribute : FilterAttribute, IActionFilter
     {
 		private static readonly List<Tuple<string, string>> s_permittedRoutes = new List<Tuple<string, string>> 
 		{
@@ -22,7 +22,7 @@ namespace SmartStore.Web.Framework.Filters
 
 		public Lazy<IPermissionService> PermissionService { get; set; }
 		
-		public override void OnActionExecuting(ActionExecutingContext filterContext)
+		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (filterContext == null || filterContext.HttpContext == null)
                 return;
@@ -54,6 +54,10 @@ namespace SmartStore.Web.Framework.Filters
             }
         }
 
+		public virtual void OnActionExecuted(ActionExecutedContext filterContext)
+		{
+		}
+
 		private static bool IsPermittedRoute(string controllerName, string actionName)
 		{
 			foreach (var route in s_permittedRoutes)
@@ -66,5 +70,5 @@ namespace SmartStore.Web.Framework.Filters
 
 			return false;
 		}
-    }
+	}
 }

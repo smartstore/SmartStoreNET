@@ -259,7 +259,7 @@ namespace SmartStore.Web.Controllers
 				model.BundlePerItemShoppingCart = item.BundleItem.BundleProduct.BundlePerItemShoppingCart;
 
 				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, item.AttributesXml, _workContext.CurrentCustomer,
-					renderPrices: false, renderGiftCardAttributes: true, allowHyperlinks: false);
+					renderPrices: false, renderGiftCardAttributes: true, allowHyperlinks: true);
 
 				string bundleItemName = item.BundleItem.GetLocalized(x => x.Name);
 				if (bundleItemName.HasValue())
@@ -700,7 +700,7 @@ namespace SmartStore.Web.Controllers
 
 			#region Checkout attributes
 
-			var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes();
+			var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
 			if (!cart.RequiresShipping())
 			{
 				//remove attributes which require shippable products
@@ -985,7 +985,7 @@ namespace SmartStore.Web.Controllers
                 //1. "terms of services" are enabled (OBSOLETE now)
                 //2. we have at least one checkout attribute
                 //3. min order sub-total is OK
-                var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes();
+                var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
                 if (!cart.RequiresShipping())
                 {
                     //remove attributes which require shippable products
@@ -996,7 +996,6 @@ namespace SmartStore.Web.Controllers
 
                 //products. sort descending (recently added products)
                 foreach (var sci in cart
-                    .OrderByDescending(x => x.Item.Id)
                     .Take(_shoppingCartSettings.MiniShoppingCartProductNumber)
                     .ToList())
                 {
@@ -1076,7 +1075,7 @@ namespace SmartStore.Web.Controllers
         protected void ParseAndSaveCheckoutAttributes(List<OrganizedShoppingCartItem> cart, FormCollection form)
         {
             string selectedAttributes = "";
-            var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes();
+            var checkoutAttributes = _checkoutAttributeService.GetAllCheckoutAttributes(_storeContext.CurrentStore.Id);
 
             if (!cart.RequiresShipping())
             {
@@ -1480,7 +1479,7 @@ namespace SmartStore.Web.Controllers
 			var postedFile = Request.ToPostedFileResult();
 			if (postedFile == null)
 			{
-				throw new ArgumentException("No file uploaded");
+				throw new ArgumentException(T("Common.NoFileUploaded"));
 			}
 
             int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
@@ -1927,7 +1926,7 @@ namespace SmartStore.Web.Controllers
 
                             decimal rateBase = _taxService.GetShippingPrice(shippingTotal, _workContext.CurrentCustomer);
                             decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
-                            soModel.Price = _priceFormatter.FormatShippingPrice(rate, false /*true*/);
+                            soModel.Price = _priceFormatter.FormatShippingPrice(rate, true);
 
                             model.EstimateShipping.ShippingOptions.Add(soModel);
                         }
@@ -2633,7 +2632,7 @@ namespace SmartStore.Web.Controllers
         {
             Customer customer = _workContext.CurrentCustomer;
 
-            var cart = customer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id, true);
+            var cart = customer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
 			var model = new WishlistModel();
 
             PrepareWishlistModel(model, cart, true);

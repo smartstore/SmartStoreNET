@@ -121,11 +121,6 @@ namespace SmartStore.Services.DataExchange.Export
 		public string PublicFolderPath { get; internal set; }
 
 		/// <summary>
-		/// The public URL of the export file (accessible through the internet). <c>null</c> if the profile has no public deployment.
-		/// </summary>
-		public string PublicFileUrl { get; internal set; }
-
-		/// <summary>
 		/// Provider specific configuration data
 		/// </summary>
 		public object ConfigurationData { get; internal set; }

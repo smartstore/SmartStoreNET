@@ -102,7 +102,7 @@ namespace SmartStore.Web.Framework.Theming
                     int storeId = ThemeHelper.ResolveCurrentStoreId();
                     var theme = ThemeHelper.ResolveCurrentTheme();
                     // invalidate the cache when variables change
-                    string cacheKey = AspNetCache.BuildKey(FrameworkCacheConsumer.BuildThemeVarsCacheKey(theme.ThemeName, storeId));
+                    string cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(theme.ThemeName, storeId);
 					var cacheDependency = new CacheDependency(MapDependencyPaths(fileDependencies), new string[] { cacheKey }, utcStart);
                     return cacheDependency;
                 }

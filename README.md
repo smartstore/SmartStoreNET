@@ -14,7 +14,7 @@ A comprehensive set of tools for CRM & CMS, sales, marketing, payment & shipping
 
 The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 5`, `Entity Framework 6` and Domain Driven Design approach - makes it easy to extend, extremely flexible and essentially fun to work with ;-)
 
-* **Website:** [http://www.smartstore.com/net](http://www.smartstore.com/net)
+* **Website:** [http://www.smartstore.com/en/net](http://www.smartstore.com/en/net)
 * **Forum:** [http://community.smartstore.com](http://community.smartstore.com)
 * **Marketplace:** [http://community.smartstore.com/marketplace](http://community.smartstore.com/marketplace)
 * **Documentation:** [SmartStore.NET Documentation in English](http://docs.smartstore.com/display/SMNET/SmartStore.NET+Documentation+Home)
@@ -54,17 +54,15 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 * and many more...
 
 ## Project Status
-SmartStore.NET V2.5.0 has been released on March 03, 2016. The highlights are:
+SmartStore.NET V2.6.0 has been released on June 23, 2016. The highlights are:
 
- * New import/export framework (profiles, filters, mapping, projections, scheduling, deployment... just everything!)
- * TaskScheduler: Rewritten from scratch to be suitable for Web Farms (including support for cron expressions)
- * Payment and shipping methods by customer roles
- * Restrict payment methods to countries
- * Restrict payment methods to shipping methods
- * Email attachment support for message templates
- * Attach order invoice PDF automatically to order notification emails
- * Overall performance increase
- * Lots of bug fixes
+* Major improvements in Importer & Exporter: better field mapping, higher performance, bug fixes etc.
+* 'PayPal PLUS' payment plugin
+* 'paydirekt' payment plugin
+* 'Viveum' payment plugin
+* 'BeezUP' export provider
+* (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.
+* Lots of bug fixes
 
 
 

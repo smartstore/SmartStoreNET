@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
@@ -43,7 +44,7 @@ namespace SmartStore
 
 		public static object Convert(this object value, Type to, CultureInfo culture)
 		{
-			Guard.ArgumentNotNull(to, "to");
+			Guard.NotNull(to, nameof(to));
 
 			if (value == null || value == DBNull.Value || to.IsInstanceOfType(value))
 			{
@@ -99,7 +100,7 @@ namespace SmartStore
 
         public static T ToEnum<T>(this string value, T defaultValue) where T : IComparable, IFormattable
         {
-			Guard.ArgumentIsEnumType(typeof(T), "T");
+			Guard.IsEnumType(typeof(T), nameof(T));
 
 			T result;
 			if (CommonHelper.TryConvert(value, out result))
@@ -222,7 +223,7 @@ namespace SmartStore
 
         public static byte[] ToByteArray(this Stream stream)
         {
-            Guard.ArgumentNotNull(stream, "stream");
+			Guard.NotNull(stream, nameof(stream));
 
 			if (stream is MemoryStream)
 			{
@@ -245,10 +246,10 @@ namespace SmartStore
 
         public static string AsString(this Stream stream, Encoding encoding)
         {
-			Guard.ArgumentNotNull(() => encoding);
-			
+			Guard.NotNull(encoding, nameof(encoding));
+
 			// convert stream to string
-            string result;
+			string result;
 
 			if (stream.CanSeek)
 			{
@@ -296,9 +297,9 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static string Hash(this byte[] value, bool toBase64 = false)
         {
-            Guard.ArgumentNotNull(value, "value");
+			Guard.NotNull(value, nameof(value));
 
-            using (MD5 md5 = MD5.Create())
+			using (MD5 md5 = MD5.Create())
             {
 
                 if (toBase64)
@@ -321,19 +322,55 @@ namespace SmartStore
             }
         }
 
-        #endregion
+		/// <summary>
+		/// Compresses the input buffer with <see cref="GZipStream"/>
+		/// </summary>
+		/// <param name="buffer">Decompressed input</param>
+		/// <returns>The compressed result</returns>
+		public static byte[] Zip(this byte[] buffer)
+		{
+			Guard.NotNull(buffer, nameof(buffer));
 
-        #region Enumerable: Collections/List/Dictionary...
+			using (var compressedStream = new MemoryStream())
+			using (var zipStream = new GZipStream(compressedStream, CompressionMode.Compress))
+			{
+				zipStream.Write(buffer, 0, buffer.Length);
+				zipStream.Close();
+				return compressedStream.ToArray();
+			}
+		}
 
-        public static T ToObject<T>(this IDictionary<string, object> values) where T : class
+		/// <summary>
+		/// Decompresses the input buffer with <see cref="GZipStream"/> decompression
+		/// </summary>
+		/// <param name="buffer">Compressed input</param>
+		/// <returns>The decompressed result</returns>
+		public static byte[] UnZip(this byte[] buffer)
+		{
+			Guard.NotNull(buffer, nameof(buffer));
+
+			using (var compressedStream = new MemoryStream(buffer))
+			using (var zipStream = new GZipStream(compressedStream, CompressionMode.Decompress))
+			using (var resultStream = new MemoryStream())
+			{
+				zipStream.CopyTo(resultStream);
+				return resultStream.ToArray();
+			}
+		}
+
+		#endregion
+
+		#region Enumerable: Collections/List/Dictionary...
+
+		public static T ToObject<T>(this IDictionary<string, object> values) where T : class
         {
             return (T)values.ToObject(typeof(T));
         }
 
         public static object ToObject(this IDictionary<string, object> values, Type objectType)
         {
-            Guard.ArgumentNotEmpty(values, "values");
-            Guard.ArgumentNotNull(objectType, "objectType");
+            Guard.NotEmpty(values, nameof(values));
+            Guard.NotNull(objectType, nameof(objectType));
 
             if (!DictionaryConverter.CanCreateType(objectType))
             {

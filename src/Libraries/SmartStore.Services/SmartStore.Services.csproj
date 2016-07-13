@@ -104,8 +104,8 @@
     <Reference Include="NCrontab">
       <HintPath>..\..\packages\ncrontab.2.0.0\lib\net20\NCrontab.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NReco.PdfGenerator, Version=1.1.5.0, Culture=neutral, processorArchitecture=MSIL">
@@ -174,19 +174,21 @@
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
     <Compile Include="Customers\Importer\CustomerImporter.cs" />
+    <Compile Include="DataExchange\Export\Deployment\DataDeploymentResult.cs" />
+    <Compile Include="DataExchange\Export\Deployment\PublicFolderPublisher.cs" />
     <Compile Include="DataExchange\Import\ColumnMapping\ColumnMap.cs" />
     <Compile Include="DataExchange\Import\ColumnMapping\ColumnMapConverter.cs" />
     <Compile Include="DataExchange\Csv\CsvConfigurationConverter.cs" />
     <Compile Include="DataExchange\Csv\CsvConfiguration.cs" />
     <Compile Include="DataExchange\Csv\CsvDataReader.cs" />
     <Compile Include="DataExchange\Csv\CsvWriter.cs" />
-    <Compile Include="DataExchange\Deployment\EmailFilePublisher.cs" />
-    <Compile Include="DataExchange\Deployment\FileSystemFilePublisher.cs" />
-    <Compile Include="DataExchange\Deployment\FtpFilePublisher.cs" />
-    <Compile Include="DataExchange\Deployment\HttpFilePublisher.cs" />
-    <Compile Include="DataExchange\Deployment\IFilePublisher.cs" />
+    <Compile Include="DataExchange\Export\Deployment\EmailFilePublisher.cs" />
+    <Compile Include="DataExchange\Export\Deployment\FileSystemFilePublisher.cs" />
+    <Compile Include="DataExchange\Export\Deployment\FtpFilePublisher.cs" />
+    <Compile Include="DataExchange\Export\Deployment\HttpFilePublisher.cs" />
+    <Compile Include="DataExchange\Export\Deployment\IFilePublisher.cs" />
     <Compile Include="DataExchange\Excel\ExcelDataReader.cs" />
-    <Compile Include="DataExchange\Events\RowExportingEvent.cs" />
+    <Compile Include="DataExchange\Export\Events\RowExportingEvent.cs" />
     <Compile Include="DataExchange\Export\ExportConfigurationInfo.cs" />
     <Compile Include="DataExchange\Import\DataImporter.cs" />
     <Compile Include="DataExchange\Import\EntityImporterBase.cs" />
@@ -205,19 +207,19 @@
     <Compile Include="DataExchange\Import\ImportResult.cs" />
     <Compile Include="DataExchange\Export\ExportProviderBase.cs" />
     <Compile Include="DataExchange\Export\DataExporter.cs" />
-    <Compile Include="DataExchange\Internal\DataExporterContext.cs" />
+    <Compile Include="DataExchange\Export\Internal\DataExporterContext.cs" />
     <Compile Include="DataExchange\Export\DynamicEntityHelper.cs" />
-    <Compile Include="DataExchange\Internal\CategoryExportContext.cs" />
-    <Compile Include="DataExchange\Internal\CustomerExportContext.cs" />
-    <Compile Include="DataExchange\Internal\ManufacturerExportContext.cs" />
+    <Compile Include="DataExchange\Export\Internal\CategoryExportContext.cs" />
+    <Compile Include="DataExchange\Export\Internal\CustomerExportContext.cs" />
+    <Compile Include="DataExchange\Export\Internal\ManufacturerExportContext.cs" />
     <Compile Include="DataExchange\Export\DataExportResult.cs" />
     <Compile Include="DataExchange\Export\ExportXmlHelper.cs" />
     <Compile Include="DataExchange\Export\IDataExporter.cs" />
-    <Compile Include="DataExchange\Internal\DynamicEntity.cs" />
+    <Compile Include="DataExchange\Export\Internal\DynamicEntity.cs" />
     <Compile Include="DataExchange\ISyncMappingService.cs" />
     <Compile Include="DataExchange\SyncMappingService.cs" />
-    <Compile Include="DataExchange\Internal\OrderExportContext.cs" />
-    <Compile Include="DataExchange\Internal\ProductExportContext.cs" />
+    <Compile Include="DataExchange\Export\Internal\OrderExportContext.cs" />
+    <Compile Include="DataExchange\Export\Internal\ProductExportContext.cs" />
     <Compile Include="DataExchange\Export\ExportExecuteContext.cs" />
     <Compile Include="DataExchange\Export\ExportExtensions.cs" />
     <Compile Include="DataExchange\Export\ExportFeaturesAttribute.cs" />
@@ -230,6 +232,9 @@
     <Compile Include="DataExchange\Export\IExportProfileService.cs" />
     <Compile Include="DataExchange\Import\ImportDataSegmenter.cs" />
     <Compile Include="DataExchange\Import\ImportRow.cs" />
+    <Compile Include="Events\DefaultMessageBus.cs" />
+    <Compile Include="Events\IMessageBroker.cs" />
+    <Compile Include="Events\IMessageBus.cs" />
     <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
     <Compile Include="Media\MediaExtensions.cs" />
@@ -245,7 +250,6 @@
     <Compile Include="Pdf\Content\PdfUrlContent.cs" />
     <Compile Include="Pdf\IPdfConverter.cs" />
     <Compile Include="Directory\EcbExchangeRateProvider.cs" />
-    <Compile Include="Directory\McExchangeRateProvider.cs" />
     <Compile Include="Catalog\AdjustInventoryResult.cs" />
     <Compile Include="Hooks\SoftDeletablePreUpdateHook.cs" />
     <Compile Include="Affiliates\AffiliateService.cs" />

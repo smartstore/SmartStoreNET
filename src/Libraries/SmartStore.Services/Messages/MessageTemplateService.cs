@@ -29,24 +29,14 @@ namespace SmartStore.Services.Messages
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
 
         #endregion
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-		/// <param name="storeMappingRepository">Store mapping repository</param>
-		/// <param name="languageService">Language service</param>
-		/// <param name="localizedEntityService">Localized entity service</param>
-		/// <param name="storeMappingService">Store mapping service</param>
-        /// <param name="messageTemplateRepository">Message template repository</param>
-        /// <param name="eventPublisher">Event published</param>
         public MessageTemplateService(
-			ICacheManager cacheManager,
+			IRequestCache requestCache,
 			IRepository<StoreMapping> storeMappingRepository,
 			ILanguageService languageService,
 			ILocalizedEntityService localizedEntityService,
@@ -54,7 +44,7 @@ namespace SmartStore.Services.Messages
             IRepository<MessageTemplate> messageTemplateRepository,
             IEventPublisher eventPublisher)
         {
-			this._cacheManager = cacheManager;
+			this._requestCache = requestCache;
 			this._storeMappingRepository = storeMappingRepository;
 			this._languageService = languageService;
 			this._localizedEntityService = localizedEntityService;
@@ -82,7 +72,7 @@ namespace SmartStore.Services.Messages
 
 			_messageTemplateRepository.Delete(messageTemplate);
 
-			_cacheManager.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
+			_requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
 
 			//event notification
 			_eventPublisher.EntityDeleted(messageTemplate);
@@ -99,7 +89,7 @@ namespace SmartStore.Services.Messages
 
             _messageTemplateRepository.Insert(messageTemplate);
 
-            _cacheManager.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(messageTemplate);
@@ -116,7 +106,7 @@ namespace SmartStore.Services.Messages
 
             _messageTemplateRepository.Update(messageTemplate);
 
-            _cacheManager.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MESSAGETEMPLATES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(messageTemplate);
@@ -147,7 +137,7 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentException("messageTemplateName");
 
             string key = string.Format(MESSAGETEMPLATES_BY_NAME_KEY, messageTemplateName, storeId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
 				var query = _messageTemplateRepository.Table;
 				query = query.Where(t => t.Name == messageTemplateName);
@@ -173,7 +163,7 @@ namespace SmartStore.Services.Messages
 		public virtual IList<MessageTemplate> GetAllMessageTemplates(int storeId)
         {
 			string key = string.Format(MESSAGETEMPLATES_ALL_KEY, storeId);
-			return _cacheManager.Get(key, () =>
+			return _requestCache.Get(key, () =>
             {
 				var query = _messageTemplateRepository.Table;
 				query = query.OrderBy(t => t.Name);

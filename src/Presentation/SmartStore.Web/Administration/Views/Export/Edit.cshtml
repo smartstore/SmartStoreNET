@@ -343,7 +343,7 @@
 
 		// show/hide no grouped products note
 		$('#@(Html.FieldIdFor(x => x.Projection.NoGroupedProducts))').change(function () {
-			$('#NoGroupedProductsNote').toggle($(this).is(':checked'));
+			$('#NoGroupedProductsNote, #OnlyIndividuallyVisibleAssociatedContainer').toggle($(this).is(':checked'));
 		}).trigger('change');
 
 		$('#@(Html.FieldIdFor(x => x.Projection.AppendDescriptionText))').select2({ tags: [@(Html.Raw(Model.Projection.SerializedAppendDescriptionText))] });

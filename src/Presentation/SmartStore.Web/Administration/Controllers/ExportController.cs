@@ -405,6 +405,7 @@ namespace SmartStore.Admin.Controllers
 				AttributeCombinationAsProduct = projection.AttributeCombinationAsProduct,
 				AttributeCombinationValueMergingId = projection.AttributeCombinationValueMergingId,
 				NoGroupedProducts = projection.NoGroupedProducts,
+				OnlyIndividuallyVisibleAssociated = projection.OnlyIndividuallyVisibleAssociated,
 				OrderStatusChangeId = projection.OrderStatusChangeId
 			};
 
@@ -812,10 +813,11 @@ namespace SmartStore.Admin.Controllers
 					AttributeCombinationAsProduct = model.Projection.AttributeCombinationAsProduct,
 					AttributeCombinationValueMergingId = model.Projection.AttributeCombinationValueMergingId,
 					NoGroupedProducts = model.Projection.NoGroupedProducts,
+					OnlyIndividuallyVisibleAssociated = model.Projection.OnlyIndividuallyVisibleAssociated,
 					OrderStatusChangeId = model.Projection.OrderStatusChangeId
 				};
 
-				profile.Projection = XmlHelper.Serialize<ExportProjection>(projection);
+				profile.Projection = XmlHelper.Serialize(projection);
 			}
 
 			// filtering
@@ -855,7 +857,7 @@ namespace SmartStore.Admin.Controllers
 					IsActiveSubscriber = model.Filter.IsActiveSubscriber
 				};
 
-				profile.Filtering = XmlHelper.Serialize<ExportFilter>(filter);
+				profile.Filtering = XmlHelper.Serialize(filter);
 			}
 
 			// provider configuration

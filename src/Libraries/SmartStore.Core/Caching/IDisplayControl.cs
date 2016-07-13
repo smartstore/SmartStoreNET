@@ -16,9 +16,9 @@ namespace SmartStore.Core.Caching
 
 		bool IsUncacheableRequest { get; }
 
-		string GetCacheControlTagFor(BaseEntity entity);
+		IEnumerable<string> GetCacheControlTagsFor(BaseEntity entity);
 
-		IEnumerable<string> GetCacheControlTags();
+		IEnumerable<string> GetAllCacheControlTags();
 	}
 
 	public static class IDisplayControlExtensions

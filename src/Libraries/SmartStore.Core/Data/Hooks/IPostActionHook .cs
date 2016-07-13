@@ -11,9 +11,5 @@ namespace SmartStore.Core.Data.Hooks
     /// </summary>
     public interface IPostActionHook : IHook
     {
-        /// <summary>
-        /// Gets the entity state to listen for.
-        /// </summary>
-        EntityState HookStates { get; }
     }
 }

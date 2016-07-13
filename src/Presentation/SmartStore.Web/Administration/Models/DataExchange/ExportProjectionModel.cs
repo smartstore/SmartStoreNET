@@ -88,6 +88,9 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.NoGroupedProducts")]
 		public bool NoGroupedProducts { get; set; }
 
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.OnlyIndividuallyVisibleAssociated")]
+		public bool OnlyIndividuallyVisibleAssociated { get; set; }
+
 		#endregion
 
 		#region Order

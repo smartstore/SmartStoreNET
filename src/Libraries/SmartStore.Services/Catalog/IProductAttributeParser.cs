@@ -33,21 +33,20 @@ namespace SmartStore.Services.Catalog
         IEnumerable<ProductVariantAttributeValue> ParseProductVariantAttributeValues(string attributesXml);
 
 		/// <summary>
-		/// Get list of localized product variant attribute values
+		/// Get list of product variant attribute values
 		/// </summary>
 		/// <param name="attributeCombination">Map of combined attributes</param>
 		/// <param name="attributes">Product variant attributes</param>
-		/// <param name="languageId">Language identifier</param>
-		/// <returns>List of localized product variant attribute values</returns>
-		IList<string> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes, int languageId = 0);
+		/// <returns>List of product variant attribute values</returns>
+		IList<ProductVariantAttributeValue> ParseProductVariantAttributeValues(Multimap<int, string> attributeCombination, IEnumerable<ProductVariantAttribute> attributes);
 
-        /// <summary>
-        /// Gets selected product variant attribute value
-        /// </summary>
+		/// <summary>
+		/// Gets selected product variant attribute value
+		/// </summary>
 		/// <param name="attributesXml">XML formatted attributes</param>
-        /// <param name="productVariantAttributeId">Product variant attribute identifier</param>
-        /// <returns>Product variant attribute value</returns>
-        IList<string> ParseValues(string attributesXml, int productVariantAttributeId);
+		/// <param name="productVariantAttributeId">Product variant attribute identifier</param>
+		/// <returns>Product variant attribute value</returns>
+		IList<string> ParseValues(string attributesXml, int productVariantAttributeId);
 
         /// <summary>
         /// Adds an attribute

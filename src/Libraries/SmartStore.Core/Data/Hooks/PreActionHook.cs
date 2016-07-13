@@ -25,13 +25,23 @@ namespace SmartStore.Core.Data.Hooks
         /// </summary>
         public abstract EntityState HookStates { get; }
 
-        /// <summary>
-        /// The logic to perform per entity before the registered action gets performed.
-        /// This gets run once per entity that has been changed.
-        /// </summary>
-        /// <param name="entity">The entity that is processed by Entity Framework.</param>
-        /// <param name="metadata">Metadata about the entity in the context of this hook - such as state.</param>
-        public abstract void Hook(TEntity entity, HookEntityMetadata metadata);
+		/// <summary>
+		/// Indicates whether the hook instance can be processed for the given <see cref="EntityState"/>
+		/// </summary>
+		/// <param name="state">The state of the entity</param>
+		/// <returns><c>true</c> when the hook should be processed, <c>false</c> otherwise</returns>
+		public virtual bool CanProcess(EntityState state)
+		{
+			return state == HookStates;
+		}
+
+		/// <summary>
+		/// The logic to perform per entity before the registered action gets performed.
+		/// This gets run once per entity that has been changed.
+		/// </summary>
+		/// <param name="entity">The entity that is processed by Entity Framework.</param>
+		/// <param name="metadata">Metadata about the entity in the context of this hook - such as state.</param>
+		public abstract void Hook(TEntity entity, HookEntityMetadata metadata);
 
         /// <summary>
         /// Implements the interface.  This causes the hook to only run for objects that are assignable to TEntity.

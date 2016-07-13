@@ -68,6 +68,12 @@ namespace SmartStore.Web.Controllers
                 TitleTag = titleTag,
 				RenderAsWidget = topic.RenderAsWidget
 			};
+
+			if (!topic.RenderAsWidget)
+			{
+				Services.DisplayControl.Announce(topic);
+			}
+
             return model;
         }
 
@@ -99,7 +105,6 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
-        //[OutputCache(Duration = 120, VaryByCustom = "WorkingLanguage")]
         public ActionResult TopicBlock(string systemName, bool bodyOnly = false)
         {
 			var cacheKey = string.Format(ModelCacheEventConsumer.TOPIC_MODEL_KEY, systemName, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);

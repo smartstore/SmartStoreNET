@@ -244,11 +244,6 @@ namespace SmartStore.Services.Configuration
 
 			var prefix = typeof(T).Name;
 
-			if (storeId == 0)
-			{
-				
-			}
-
 			foreach (var fastProp in FastProperty.GetProperties(typeof(T)).Values)
 			{
 				var prop = fastProp.Property;

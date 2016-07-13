@@ -775,7 +775,7 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<FileSystemStorageProvider>().As<IStorageProvider>().InstancePerRequest();
+			builder.RegisterType<LocalFileSystem>().As<IFileSystem>().InstancePerRequest();
 			builder.RegisterType<DefaultVirtualPathProvider>().As<IVirtualPathProvider>().InstancePerRequest();
 			builder.RegisterType<WebSiteFolder>().As<IWebSiteFolder>().InstancePerRequest();
 		}

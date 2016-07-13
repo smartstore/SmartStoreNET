@@ -272,10 +272,10 @@
     <Compile Include="Extensions\XmlWriterExtensions.cs" />
     <Compile Include="IMergedData.cs" />
     <Compile Include="Async\AsyncRunner.cs" />
-    <Compile Include="IO\Media\FileSystemStorageProvider.cs" />
-    <Compile Include="IO\Media\IStorageFile.cs" />
-    <Compile Include="IO\Media\IStorageFolder.cs" />
-    <Compile Include="IO\Media\IStorageProvider.cs" />
+    <Compile Include="IO\Media\LocalFileSystem.cs" />
+    <Compile Include="IO\Media\IFile.cs" />
+    <Compile Include="IO\Media\IFolder.cs" />
+    <Compile Include="IO\Media\IFileSystem.cs" />
     <Compile Include="IO\MimeTypes.cs" />
     <Compile Include="IO\VirtualPath\DefaultVirtualPathProvider.cs" />
     <Compile Include="IO\VirtualPath\IVirtualPathProvider.cs" />

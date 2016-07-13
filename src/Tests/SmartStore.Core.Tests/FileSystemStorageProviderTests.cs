@@ -32,7 +32,7 @@ namespace SmartStore.Core.Tests
             var context = new FakeHttpContext("~/");
             var webHelper = new WebHelper(context);
 
-            _storageProvider = new FileSystemStorageProvider(new FileSystemSettings { DirectoryName = "Default" });
+            _storageProvider = new LocalFileSystem();
         }
 
         [TearDown]
@@ -43,7 +43,7 @@ namespace SmartStore.Core.Tests
 
         private string _filePath;
         private string _folderPath;
-        private IStorageProvider _storageProvider;
+        private IFileSystem _storageProvider;
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
@@ -53,7 +53,7 @@ namespace SmartStore.Core.Tests
 
         [Test]
         public void ListFilesShouldReturnFilesFromFilesystem() {
-            IEnumerable<IStorageFile> files = _storageProvider.ListFiles(_folderPath);
+            IEnumerable<IFile> files = _storageProvider.ListFiles(_folderPath);
             Assert.That(files.Count(), Is.EqualTo(1));
         }
 
@@ -61,8 +61,8 @@ namespace SmartStore.Core.Tests
         public void ExistingFileIsReturnedWithShortPath() {
             var file = _storageProvider.GetFile("testfile.txt");
             Assert.That(file, Is.Not.Null);
-            Assert.That(file.GetPath(), Is.EqualTo("testfile.txt"));
-            Assert.That(file.GetName(), Is.EqualTo("testfile.txt"));
+            Assert.That(file.Path, Is.EqualTo("testfile.txt"));
+            Assert.That(file.Name, Is.EqualTo("testfile.txt"));
         }
 
 
@@ -71,11 +71,11 @@ namespace SmartStore.Core.Tests
             var files = _storageProvider.ListFiles("Subfolder1");
             Assert.That(files, Is.Not.Null);
             Assert.That(files.Count(), Is.EqualTo(2));
-            var one = files.Single(x => x.GetName() == "one.txt");
-            var two = files.Single(x => x.GetName() == "two.txt");
+            var one = files.Single(x => x.Name == "one.txt");
+            var two = files.Single(x => x.Name == "two.txt");
 
-            Assert.That(one.GetPath(), Is.EqualTo("Subfolder1" + Path.DirectorySeparatorChar + "one.txt"));
-            Assert.That(two.GetPath(), Is.EqualTo("Subfolder1" + Path.DirectorySeparatorChar + "two.txt"));
+            Assert.That(one.Path, Is.EqualTo("Subfolder1" + Path.DirectorySeparatorChar + "one.txt"));
+            Assert.That(two.Path, Is.EqualTo("Subfolder1" + Path.DirectorySeparatorChar + "two.txt"));
         }
 
 
@@ -83,8 +83,8 @@ namespace SmartStore.Core.Tests
         public void AnySlashInGetFileBecomesEnvironmentAppropriate() {
             var file1 = _storageProvider.GetFile(@"Subfolder1/one.txt");
             var file2 = _storageProvider.GetFile(@"Subfolder1\one.txt");
-            Assert.That(file1.GetPath(), Is.EqualTo("Subfolder1" + Path.DirectorySeparatorChar + "one.txt"));
-            Assert.That(file2.GetPath(), Is.EqualTo("Subfolder1" + Path.DirectorySeparatorChar + "one.txt"));
+            Assert.That(file1.Path, Is.EqualTo("Subfolder1" + Path.DirectorySeparatorChar + "one.txt"));
+            Assert.That(file2.Path, Is.EqualTo("Subfolder1" + Path.DirectorySeparatorChar + "one.txt"));
         }
 
         [Test]
@@ -92,18 +92,18 @@ namespace SmartStore.Core.Tests
             var folders = _storageProvider.ListFolders(@"Subfolder1").ToArray();
             Assert.That(folders, Is.Not.Null);
             Assert.That(folders.Length, Is.EqualTo(1));
-            Assert.That(folders.Single().GetName(), Is.EqualTo("SubSubfolder1"));
-            Assert.That(folders.Single().GetPath(), Is.EqualTo(Path.Combine("Subfolder1", "SubSubfolder1")));
+            Assert.That(folders.Single().Name, Is.EqualTo("SubSubfolder1"));
+            Assert.That(folders.Single().Path, Is.EqualTo(Path.Combine("Subfolder1", "SubSubfolder1")));
         }
 
         [Test]
         public void ParentFolderPathIsStillShort() {
             var subsubfolder = _storageProvider.ListFolders(@"Subfolder1").Single();
-            var subfolder = subsubfolder.GetParent();
-            Assert.That(subsubfolder.GetName(), Is.EqualTo("SubSubfolder1"));
-            Assert.That(subsubfolder.GetPath(), Is.EqualTo(Path.Combine("Subfolder1", "SubSubfolder1")));
-            Assert.That(subfolder.GetName(), Is.EqualTo("Subfolder1"));
-            Assert.That(subfolder.GetPath(), Is.EqualTo("Subfolder1"));
+            var subfolder = subsubfolder.Parent;
+            Assert.That(subsubfolder.Name, Is.EqualTo("SubSubfolder1"));
+            Assert.That(subsubfolder.Path, Is.EqualTo(Path.Combine("Subfolder1", "SubSubfolder1")));
+            Assert.That(subfolder.Name, Is.EqualTo("Subfolder1"));
+            Assert.That(subfolder.Path, Is.EqualTo("Subfolder1"));
         }
 
         [Test]
@@ -117,11 +117,11 @@ namespace SmartStore.Core.Tests
             Assert.That(_storageProvider.ListFolders(@"Subfolder1").Count(), Is.EqualTo(1));
         }
 
-        private IStorageFolder GetFolder(string path) {
+        private IFolder GetFolder(string path) {
             return _storageProvider.ListFolders(Path.GetDirectoryName(path))
-                .SingleOrDefault(x => string.Equals(x.GetName(), Path.GetFileName(path), StringComparison.OrdinalIgnoreCase));
+                .SingleOrDefault(x => string.Equals(x.Name, Path.GetFileName(path), StringComparison.OrdinalIgnoreCase));
         }
-        private IStorageFile GetFile(string path) {
+        private IFile GetFile(string path) {
             try {
                 return _storageProvider.GetFile(path);
             }
@@ -151,8 +151,8 @@ namespace SmartStore.Core.Tests
             var alpha = _storageProvider.CreateFile(@"SubFolder1/alpha.txt");
             var beta = _storageProvider.CreateFile(@"SubFolder1\beta.txt");
             Assert.That(_storageProvider.ListFiles(@"Subfolder1").Count(), Is.EqualTo(4));
-            Assert.That(alpha.GetPath(), Is.EqualTo(Path.Combine("SubFolder1", "alpha.txt")));
-            Assert.That(beta.GetPath(), Is.EqualTo(Path.Combine("SubFolder1", "beta.txt")));
+            Assert.That(alpha.Path, Is.EqualTo(Path.Combine("SubFolder1", "alpha.txt")));
+            Assert.That(beta.Path, Is.EqualTo(Path.Combine("SubFolder1", "beta.txt")));
             _storageProvider.DeleteFile(@"SubFolder1\alpha.txt");
             _storageProvider.DeleteFile(@"SubFolder1/beta.txt");
             Assert.That(_storageProvider.ListFiles(@"Subfolder1").Count(), Is.EqualTo(2));

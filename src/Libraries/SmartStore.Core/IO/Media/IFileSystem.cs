@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SmartStore.Core.IO.Media
 {
-    public interface IStorageProvider
+    public interface IFileSystem
     {
         /// <summary>
         /// Retrieves the public URL for a given file within the storage provider.
@@ -18,21 +18,28 @@ namespace SmartStore.Core.IO.Media
         /// <param name="path">The relative path to the file within the storage provider.</param>
         /// <returns>The file.</returns>
         /// <exception cref="ArgumentException">If the file is not found.</exception>
-        IStorageFile GetFile(string path);
+        IFile GetFile(string path);
 
-        /// <summary>
-        /// Lists the files within a storage provider's path.
-        /// </summary>
-        /// <param name="path">The relative path to the folder which files to list.</param>
-        /// <returns>The list of files in the folder.</returns>
-        IEnumerable<IStorageFile> ListFiles(string path);
+		/// <summary>
+		/// Searches for files within a path.
+		/// </summary>
+		/// <param name="path">The relative path to the folder in which to process file search.</param>
+		/// <returns>Matching file names</returns>
+		IEnumerable<string> SearchFiles(string path, string pattern);
+
+		/// <summary>
+		/// Lists the files within a storage provider's path.
+		/// </summary>
+		/// <param name="path">The relative path to the folder which files to list.</param>
+		/// <returns>The list of files in the folder.</returns>
+		IEnumerable<IFile> ListFiles(string path);
 
         /// <summary>
         /// Lists the folders within a storage provider's path.
         /// </summary>
         /// <param name="path">The relative path to the folder which folders to list.</param>
         /// <returns>The list of folders in the folder.</returns>
-        IEnumerable<IStorageFolder> ListFolders(string path);
+        IEnumerable<IFolder> ListFolders(string path);
 
         /// <summary>
         /// Creates a folder in the storage provider.
@@ -75,6 +82,6 @@ namespace SmartStore.Core.IO.Media
         /// <param name="path">The relative path to the file to be created.</param>
         /// <exception cref="ArgumentException">If the file already exists.</exception>
         /// <returns>The created file.</returns>
-        IStorageFile CreateFile(string path);
+        IFile CreateFile(string path);
     }
 }

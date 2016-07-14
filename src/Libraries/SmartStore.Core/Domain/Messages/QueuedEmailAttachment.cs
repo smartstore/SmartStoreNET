@@ -7,7 +7,6 @@ namespace SmartStore.Core.Domain.Messages
 	/// </summary>
 	public partial class QueuedEmailAttachment : BaseEntity
 	{
-
 		/// <summary>
 		/// Gets or sets the queued email identifier
 		/// </summary>

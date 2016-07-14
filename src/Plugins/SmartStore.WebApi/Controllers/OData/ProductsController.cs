@@ -226,6 +226,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		{
 			string requiredProperties = "TierPrices, AppliedDiscounts, ProductBundleItems";
 			var entity = GetExpandedEntity(key, requiredProperties);
+			var customer = _workContext.Value.CurrentCustomer;
 			decimal? result = null;
 
 			this.ProcessEntity(() =>
@@ -246,17 +247,17 @@ namespace SmartStore.WebApi.Controllers.OData
 						Product lowestPriceProduct;
 						var associatedProducts = Service.PrepareProductSearchQuery(searchContext);
 
-						result = _priceCalculationService.Value.GetLowestPrice(entity, null, associatedProducts, out lowestPriceProduct);
+						result = _priceCalculationService.Value.GetLowestPrice(entity, customer, null, associatedProducts, out lowestPriceProduct);
 					}
 					else
 					{
 						bool displayFromMessage;
-						result = _priceCalculationService.Value.GetLowestPrice(entity, null, out displayFromMessage);
+						result = _priceCalculationService.Value.GetLowestPrice(entity, customer, null, out displayFromMessage);
 					}
 				}
 				else
 				{
-					result = _priceCalculationService.Value.GetPreselectedPrice(entity, null);
+					result = _priceCalculationService.Value.GetPreselectedPrice(entity, customer, null);
 				}
 				return null;
 			});

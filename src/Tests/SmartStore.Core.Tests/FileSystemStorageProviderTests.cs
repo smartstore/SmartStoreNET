@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using SmartStore.Core.Fakes;
 using SmartStore.Core.IO;
-using SmartStore.Core.IO.Media;
 using NUnit.Framework;
 using System.Threading.Tasks;
 
@@ -32,34 +31,35 @@ namespace SmartStore.Core.Tests
             var context = new FakeHttpContext("~/");
             var webHelper = new WebHelper(context);
 
-            _storageProvider = new LocalFileSystem();
+            _fileSystem = new LocalFileSystem("/Media/Default/");
         }
 
         [TearDown]
-        public void Term() {
+        public void Term()
+		{
             Directory.Delete(_folderPath, true);
         }
 
 
         private string _filePath;
         private string _folderPath;
-        private IFileSystem _storageProvider;
+        private IFileSystem _fileSystem;
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void GetFileThatDoesNotExistShouldThrow() {
-            _storageProvider.GetFile("notexisting");
+            _fileSystem.GetFile("notexisting");
         }
 
         [Test]
         public void ListFilesShouldReturnFilesFromFilesystem() {
-            IEnumerable<IFile> files = _storageProvider.ListFiles(_folderPath);
+            IEnumerable<IFile> files = _fileSystem.ListFiles(_folderPath);
             Assert.That(files.Count(), Is.EqualTo(1));
         }
 
         [Test]
         public void ExistingFileIsReturnedWithShortPath() {
-            var file = _storageProvider.GetFile("testfile.txt");
+            var file = _fileSystem.GetFile("testfile.txt");
             Assert.That(file, Is.Not.Null);
             Assert.That(file.Path, Is.EqualTo("testfile.txt"));
             Assert.That(file.Name, Is.EqualTo("testfile.txt"));
@@ -68,7 +68,7 @@ namespace SmartStore.Core.Tests
 
         [Test]
         public void ListFilesReturnsItemsWithShortPathAndEnvironmentSlashes() {
-            var files = _storageProvider.ListFiles("Subfolder1");
+            var files = _fileSystem.ListFiles("Subfolder1");
             Assert.That(files, Is.Not.Null);
             Assert.That(files.Count(), Is.EqualTo(2));
             var one = files.Single(x => x.Name == "one.txt");
@@ -81,15 +81,15 @@ namespace SmartStore.Core.Tests
 
         [Test]
         public void AnySlashInGetFileBecomesEnvironmentAppropriate() {
-            var file1 = _storageProvider.GetFile(@"Subfolder1/one.txt");
-            var file2 = _storageProvider.GetFile(@"Subfolder1\one.txt");
+            var file1 = _fileSystem.GetFile(@"Subfolder1/one.txt");
+            var file2 = _fileSystem.GetFile(@"Subfolder1\one.txt");
             Assert.That(file1.Path, Is.EqualTo("Subfolder1" + Path.DirectorySeparatorChar + "one.txt"));
             Assert.That(file2.Path, Is.EqualTo("Subfolder1" + Path.DirectorySeparatorChar + "one.txt"));
         }
 
         [Test]
         public void ListFoldersReturnsItemsWithShortPathAndEnvironmentSlashes() {
-            var folders = _storageProvider.ListFolders(@"Subfolder1").ToArray();
+            var folders = _fileSystem.ListFolders(@"Subfolder1").ToArray();
             Assert.That(folders, Is.Not.Null);
             Assert.That(folders.Length, Is.EqualTo(1));
             Assert.That(folders.Single().Name, Is.EqualTo("SubSubfolder1"));
@@ -98,7 +98,7 @@ namespace SmartStore.Core.Tests
 
         [Test]
         public void ParentFolderPathIsStillShort() {
-            var subsubfolder = _storageProvider.ListFolders(@"Subfolder1").Single();
+            var subsubfolder = _fileSystem.ListFolders(@"Subfolder1").Single();
             var subfolder = subsubfolder.Parent;
             Assert.That(subsubfolder.Name, Is.EqualTo("SubSubfolder1"));
             Assert.That(subsubfolder.Path, Is.EqualTo(Path.Combine("Subfolder1", "SubSubfolder1")));
@@ -108,22 +108,22 @@ namespace SmartStore.Core.Tests
 
         [Test]
         public void CreateFolderAndDeleteFolderTakesAnySlash() {
-            Assert.That(_storageProvider.ListFolders(@"Subfolder1").Count(), Is.EqualTo(1));
-            _storageProvider.CreateFolder(@"SubFolder1/SubSubFolder2");
-            _storageProvider.CreateFolder(@"SubFolder1\SubSubFolder3");
-            Assert.That(_storageProvider.ListFolders(@"Subfolder1").Count(), Is.EqualTo(3));
-            _storageProvider.DeleteFolder(@"SubFolder1/SubSubFolder2");
-            _storageProvider.DeleteFolder(@"SubFolder1\SubSubFolder3");
-            Assert.That(_storageProvider.ListFolders(@"Subfolder1").Count(), Is.EqualTo(1));
+            Assert.That(_fileSystem.ListFolders(@"Subfolder1").Count(), Is.EqualTo(1));
+            _fileSystem.CreateFolder(@"SubFolder1/SubSubFolder2");
+            _fileSystem.CreateFolder(@"SubFolder1\SubSubFolder3");
+            Assert.That(_fileSystem.ListFolders(@"Subfolder1").Count(), Is.EqualTo(3));
+            _fileSystem.DeleteFolder(@"SubFolder1/SubSubFolder2");
+            _fileSystem.DeleteFolder(@"SubFolder1\SubSubFolder3");
+            Assert.That(_fileSystem.ListFolders(@"Subfolder1").Count(), Is.EqualTo(1));
         }
 
         private IFolder GetFolder(string path) {
-            return _storageProvider.ListFolders(Path.GetDirectoryName(path))
+            return _fileSystem.ListFolders(Path.GetDirectoryName(path))
                 .SingleOrDefault(x => string.Equals(x.Name, Path.GetFileName(path), StringComparison.OrdinalIgnoreCase));
         }
         private IFile GetFile(string path) {
             try {
-                return _storageProvider.GetFile(path);
+                return _fileSystem.GetFile(path);
             }
             catch (ArgumentException) {
                 return null;
@@ -133,10 +133,10 @@ namespace SmartStore.Core.Tests
         [Test]
         public void RenameFolderTakesShortPathWithAnyKindOfSlash() {
             Assert.That(GetFolder(@"SubFolder1/SubSubFolder1"), Is.Not.Null);
-            _storageProvider.RenameFolder(@"SubFolder1\SubSubFolder1", @"SubFolder1/SubSubFolder2");
-            _storageProvider.RenameFolder(@"SubFolder1\SubSubFolder2", @"SubFolder1\SubSubFolder3");
-            _storageProvider.RenameFolder(@"SubFolder1/SubSubFolder3", @"SubFolder1\SubSubFolder4");
-            _storageProvider.RenameFolder(@"SubFolder1/SubSubFolder4", @"SubFolder1/SubSubFolder5");
+            _fileSystem.RenameFolder(@"SubFolder1\SubSubFolder1", @"SubFolder1/SubSubFolder2");
+            _fileSystem.RenameFolder(@"SubFolder1\SubSubFolder2", @"SubFolder1\SubSubFolder3");
+            _fileSystem.RenameFolder(@"SubFolder1/SubSubFolder3", @"SubFolder1\SubSubFolder4");
+            _fileSystem.RenameFolder(@"SubFolder1/SubSubFolder4", @"SubFolder1/SubSubFolder5");
             Assert.That(GetFolder(Path.Combine("SubFolder1", "SubSubFolder1")), Is.Null);
             Assert.That(GetFolder(Path.Combine("SubFolder1", "SubSubFolder2")), Is.Null);
             Assert.That(GetFolder(Path.Combine("SubFolder1", "SubSubFolder3")), Is.Null);
@@ -147,24 +147,24 @@ namespace SmartStore.Core.Tests
 
         [Test]
         public void CreateFileAndDeleteFileTakesAnySlash() {
-            Assert.That(_storageProvider.ListFiles(@"Subfolder1").Count(), Is.EqualTo(2));
-            var alpha = _storageProvider.CreateFile(@"SubFolder1/alpha.txt");
-            var beta = _storageProvider.CreateFile(@"SubFolder1\beta.txt");
-            Assert.That(_storageProvider.ListFiles(@"Subfolder1").Count(), Is.EqualTo(4));
+            Assert.That(_fileSystem.ListFiles(@"Subfolder1").Count(), Is.EqualTo(2));
+            var alpha = _fileSystem.CreateFile(@"SubFolder1/alpha.txt");
+            var beta = _fileSystem.CreateFile(@"SubFolder1\beta.txt");
+            Assert.That(_fileSystem.ListFiles(@"Subfolder1").Count(), Is.EqualTo(4));
             Assert.That(alpha.Path, Is.EqualTo(Path.Combine("SubFolder1", "alpha.txt")));
             Assert.That(beta.Path, Is.EqualTo(Path.Combine("SubFolder1", "beta.txt")));
-            _storageProvider.DeleteFile(@"SubFolder1\alpha.txt");
-            _storageProvider.DeleteFile(@"SubFolder1/beta.txt");
-            Assert.That(_storageProvider.ListFiles(@"Subfolder1").Count(), Is.EqualTo(2));
+            _fileSystem.DeleteFile(@"SubFolder1\alpha.txt");
+            _fileSystem.DeleteFile(@"SubFolder1/beta.txt");
+            Assert.That(_fileSystem.ListFiles(@"Subfolder1").Count(), Is.EqualTo(2));
         }
 
         [Test]
         public void RenameFileTakesShortPathWithAnyKindOfSlash() {
             Assert.That(GetFile(@"Subfolder1/one.txt"), Is.Not.Null);
-            _storageProvider.RenameFile(@"SubFolder1\one.txt", @"SubFolder1/testfile2.txt");
-            _storageProvider.RenameFile(@"SubFolder1\testfile2.txt", @"SubFolder1\testfile3.txt");
-            _storageProvider.RenameFile(@"SubFolder1/testfile3.txt", @"SubFolder1\testfile4.txt");
-            _storageProvider.RenameFile(@"SubFolder1/testfile4.txt", @"SubFolder1/testfile5.txt");
+            _fileSystem.RenameFile(@"SubFolder1\one.txt", @"SubFolder1/testfile2.txt");
+            _fileSystem.RenameFile(@"SubFolder1\testfile2.txt", @"SubFolder1\testfile3.txt");
+            _fileSystem.RenameFile(@"SubFolder1/testfile3.txt", @"SubFolder1\testfile4.txt");
+            _fileSystem.RenameFile(@"SubFolder1/testfile4.txt", @"SubFolder1/testfile5.txt");
             Assert.That(GetFile(Path.Combine("SubFolder1", "one.txt")), Is.Null);
             Assert.That(GetFile(Path.Combine("SubFolder1", "testfile2.txt")), Is.Null);
             Assert.That(GetFile(Path.Combine("SubFolder1", "testfile3.txt")), Is.Null);

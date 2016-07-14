@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-namespace SmartStore.Core.IO.Media
+namespace SmartStore.Core.IO
 {
     public interface IFolder 
     {

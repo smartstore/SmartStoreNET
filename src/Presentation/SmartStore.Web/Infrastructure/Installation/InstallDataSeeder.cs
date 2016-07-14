@@ -32,6 +32,7 @@ using SmartStore.Data.Migrations;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Web.Framework;
+using SmartStore.Core.IO;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
@@ -481,6 +482,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					
 					var mediaSettings = new MediaSettings();
 					var webHelper = new WebHelper(null);
+					var fileSystem = new LocalFileSystem();
 
 					_pictureService = new PictureService(
 						rs, 
@@ -491,8 +493,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 						NullEventPublisher.Instance,
 						mediaSettings,
 						new ImageResizerService(),
-						new ImageCache(mediaSettings, webHelper, null, null),
-						new Notifier());
+						new ImageCache(mediaSettings, null, null, fileSystem),
+						new Notifier(),
+						fileSystem);
 				}
 
 				return _pictureService;

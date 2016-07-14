@@ -188,6 +188,7 @@
     <Compile Include="Domain\Orders\CheckoutEnums.cs" />
     <Compile Include="Domain\Payments\PaymentMethod.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />
     <Compile Include="Data\IQueryableExtensions.cs" />
@@ -201,6 +202,7 @@
     <Compile Include="Infrastructure\DependencyManagement\Work.cs" />
     <Compile Include="Infrastructure\HostNameProvider.cs" />
     <Compile Include="Infrastructure\IHostNameProvider.cs" />
+    <Compile Include="IO\IFileSystemExtensions.cs" />
     <Compile Include="ITransient.cs" />
     <Compile Include="Collections\MostRecentlyUsedList.cs" />
     <Compile Include="Localization\LocalizationHelper.cs" />
@@ -272,10 +274,10 @@
     <Compile Include="Extensions\XmlWriterExtensions.cs" />
     <Compile Include="IMergedData.cs" />
     <Compile Include="Async\AsyncRunner.cs" />
-    <Compile Include="IO\Media\LocalFileSystem.cs" />
-    <Compile Include="IO\Media\IFile.cs" />
-    <Compile Include="IO\Media\IFolder.cs" />
-    <Compile Include="IO\Media\IFileSystem.cs" />
+    <Compile Include="IO\LocalFileSystem.cs" />
+    <Compile Include="IO\IFile.cs" />
+    <Compile Include="IO\IFolder.cs" />
+    <Compile Include="IO\IFileSystem.cs" />
     <Compile Include="IO\MimeTypes.cs" />
     <Compile Include="IO\VirtualPath\DefaultVirtualPathProvider.cs" />
     <Compile Include="IO\VirtualPath\IVirtualPathProvider.cs" />
@@ -560,7 +562,6 @@
     <Compile Include="Domain\Catalog\SpecificationAttribute.cs" />
     <Compile Include="Domain\Catalog\SpecificationAttributeOption.cs" />
     <Compile Include="Domain\Catalog\TierPrice.cs" />
-    <Compile Include="IO\FileSystemSettings.cs" />
     <Compile Include="Domain\Customers\PasswordFormat.cs" />
     <Compile Include="HttpSecurityMode.cs" />
     <Compile Include="RouteInfo.cs" />

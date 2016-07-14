@@ -405,7 +405,7 @@ namespace SmartStore.Services.DataExchange.Export
 			result._ImageUrl = _pictureService.Value.GetPictureUrl(picture, detailsPictureSize, false, ctx.Store.Url);
 			result._FullSizeImageUrl = _pictureService.Value.GetPictureUrl(picture, 0, false, ctx.Store.Url);
 
-			result._ThumbLocalPath = _pictureService.Value.GetThumbLocalPath(picture);
+			//result._ThumbLocalPath = _pictureService.Value.GetThumbLocalPath(picture);
 
 			return result;
 		}

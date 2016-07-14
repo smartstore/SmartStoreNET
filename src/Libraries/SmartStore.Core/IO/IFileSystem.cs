@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
-namespace SmartStore.Core.IO.Media
+namespace SmartStore.Core.IO
 {
     public interface IFileSystem
     {
@@ -12,16 +13,37 @@ namespace SmartStore.Core.IO.Media
         /// <returns>The public URL.</returns>
         string GetPublicUrl(string path);
 
-        /// <summary>
-        /// Retrieves a file within the storage provider.
-        /// </summary>
-        /// <param name="path">The relative path to the file within the storage provider.</param>
-        /// <returns>The file.</returns>
-        /// <exception cref="ArgumentException">If the file is not found.</exception>
-        IFile GetFile(string path);
+		/// <summary>
+		/// Retrieves the path within the storage provider for a given public url.
+		/// </summary>
+		/// <param name="url">The virtual or public url of a file.</param>
+		/// <returns>The storage path or <value>null</value> if the media is not in a correct format.</returns>
+		string GetStoragePath(string url);
 
 		/// <summary>
-		/// Searches for files within a path.
+		/// Checks if the given file exists within the storage provider.
+		/// </summary>
+		/// <param name="path">The relative path within the storage provider.</param>
+		/// <returns>True if the file exists; False otherwise.</returns>
+		bool FileExists(string path);
+
+		/// <summary>
+		/// Checks if the given folder exists within the storage provider.
+		/// </summary>
+		/// <param name="path">The relative path within the storage provider.</param>
+		/// <returns>True if the folder exists; False otherwise.</returns>
+		bool FolderExists(string path);
+
+		/// <summary>
+		/// Retrieves a file within the storage provider.
+		/// </summary>
+		/// <param name="path">The relative path to the file within the storage provider.</param>
+		/// <returns>The file.</returns>
+		/// <exception cref="ArgumentException">If the file is not found.</exception>
+		IFile GetFile(string path);
+
+		/// <summary>
+		/// Performs a deep search for files within a path.
 		/// </summary>
 		/// <param name="path">The relative path to the folder in which to process file search.</param>
 		/// <returns>Matching file names</returns>
@@ -83,5 +105,28 @@ namespace SmartStore.Core.IO.Media
         /// <exception cref="ArgumentException">If the file already exists.</exception>
         /// <returns>The created file.</returns>
         IFile CreateFile(string path);
-    }
+
+		/// <summary>
+		/// Copies a file in the storage provider.
+		/// </summary>
+		/// <param name="path">The relative path to the file to be copied.</param>
+		/// <param name="newPath">The relative path to the new file.</param>
+		void CopyFile(string path, string newPath);
+
+		/// <summary>
+		/// Saves a stream in the storage provider.
+		/// </summary>
+		/// <param name="path">The relative path to the file to be created.</param>
+		/// <param name="inputStream">The stream to be saved.</param>
+		/// <exception cref="ArgumentException">If the stream can't be saved due to access permissions.</exception>
+		void SaveStream(string path, Stream inputStream);
+
+		/// <summary>
+		/// Combines to paths.
+		/// </summary>
+		/// <param name="path1">The parent path.</param>
+		/// <param name="path2">The child path.</param>
+		/// <returns>The combined path.</returns>
+		string Combine(string path1, string path2);
+	}
 }

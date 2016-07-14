@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SmartStore.Core.IO.Media
+namespace SmartStore.Core.IO
 {
     public interface IFile
     {
@@ -20,5 +20,10 @@ namespace SmartStore.Core.IO.Media
         /// Creates a stream for writing to the file.
         /// </summary>
         Stream OpenWrite();
-    }
+
+		/// <summary>
+		/// Creates a stream for writing to the file, and truncates the existing content.
+		/// </summary>
+		Stream CreateFile();
+	}
 }

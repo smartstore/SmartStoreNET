@@ -21,7 +21,7 @@ using SmartStore.Core.Events;
 using SmartStore.Core.Fakes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
-using SmartStore.Core.IO.Media;
+using SmartStore.Core.IO;
 using SmartStore.Core.IO.VirtualPath;
 using SmartStore.Core.IO.WebSite;
 using SmartStore.Core.Localization;

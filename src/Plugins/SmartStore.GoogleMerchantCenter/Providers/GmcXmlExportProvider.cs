@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using SmartStore.Core.Domain.Catalog;
@@ -9,6 +10,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.GoogleMerchantCenter.Models;
 using SmartStore.GoogleMerchantCenter.Services;
+using SmartStore.Services.Catalog;
 using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Directory;
 
@@ -25,7 +27,8 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 		ExportFeatures.UsesSkuAsMpnFallback |
 		ExportFeatures.OffersBrandFallback |
 		ExportFeatures.CanIncludeMainPicture |
-		ExportFeatures.UsesSpecialPrice)]
+		ExportFeatures.UsesSpecialPrice |
+		ExportFeatures.UsesAttributeCombination)]
 	public class GmcXmlExportProvider : ExportProviderBase
 	{
 		private const string _googleNamespace = "http://base.google.com/ns/1.0";
@@ -120,6 +123,40 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 			return false;
 		}
 
+		private void WriteString(XmlWriter writer, string fieldName, string value)
+		{
+			if (value != null)
+			{
+				writer.WriteElementString("g", fieldName, _googleNamespace, value);
+			}
+		}
+
+		private void WriteString(
+			XmlWriter writer,
+			Dictionary<string, string> mappedValues,
+			string fieldName,
+			string value)
+		{
+			// TODO
+			if (mappedValues == null)
+			{
+				// regular product
+				WriteString(writer, fieldName, value);
+			}
+			else
+			{
+				// export attribute combination
+				if (mappedValues.ContainsKey(fieldName))
+				{
+					WriteString(writer, fieldName, mappedValues[fieldName].EmptyNull());
+				}
+				else
+				{
+					WriteString(writer, fieldName, value);
+				}
+			}
+		}
+
 		public static string SystemName
 		{
 			get { return "Feeds.GoogleMerchantCenterProductXml"; }
@@ -156,7 +193,8 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 		protected override void Export(ExportExecuteContext context)
 		{
 			dynamic currency = context.Currency;
-			string measureWeightSystemKey = "";
+			var languageId = (int)context.Language.Id;
+			var measureWeightSystemKey = "";
 			var dateFormat = "yyyy-MM-ddTHH:mmZ";
 
 			var measureWeight = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
@@ -210,6 +248,9 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							string condition = "new";
 							string availability = "in stock";
 
+							var combinationValues = product._AttributeCombinationValues as IList<ProductVariantAttributeValue>;
+							var mappedValues = (combinationValues != null ? combinationValues.GetMappedValuesFromAlias("gmc", languageId) : null);								
+
 							var specialPrice = product._FutureSpecialPrice as decimal?;
 							if (!specialPrice.HasValue)
 								specialPrice = product._SpecialPrice;
@@ -248,7 +289,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 								}
 							}
 
-							writer.WriteElementString("g", "id", _googleNamespace, uniqueId);
+							WriteString(writer, "id", uniqueId);
 
 							writer.WriteStartElement("title");
 							writer.WriteCData(((string)product.Name).Truncate(70).RemoveInvalidXmlChars());
@@ -273,7 +314,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 							if (mainImageUrl.HasValue())
 							{
-								writer.WriteElementString("g", "image_link", _googleNamespace, mainImageUrl);
+								WriteString(writer, "image_link", mainImageUrl);
 							}
 
 							if (config.AdditionalImages)
@@ -284,63 +325,63 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 									string pictureUrl = productPicture.Picture._ImageUrl;
 									if (pictureUrl.HasValue() && (mainImageUrl.IsEmpty() || !mainImageUrl.IsCaseInsensitiveEqual(pictureUrl)) && ++imageCount <= 10)
 									{
-										writer.WriteElementString("g", "additional_image_link", _googleNamespace, pictureUrl);
+										WriteString(writer, "additional_image_link", pictureUrl);
 									}
 								}
 							}
 
-							writer.WriteElementString("g", "condition", _googleNamespace, condition);
-							writer.WriteElementString("g", "availability", _googleNamespace, availability);
+							WriteString(writer, "condition", condition);
+							WriteString(writer, "availability", availability);
 
 							if (availability == "preorder" && entity.AvailableStartDateTimeUtc.HasValue && entity.AvailableStartDateTimeUtc.Value > DateTime.UtcNow)
 							{
 								var availabilityDate = entity.AvailableStartDateTimeUtc.Value.ToString(dateFormat);
 
-								writer.WriteElementString("g", "availability_date", _googleNamespace, availabilityDate);
+								WriteString(writer, "availability_date", availabilityDate);
 							}
 
 							if (config.SpecialPrice && specialPrice.HasValue)
 							{
-								writer.WriteElementString("g", "sale_price", _googleNamespace, specialPrice.Value.FormatInvariant() + " " + (string)currency.CurrencyCode);
+								WriteString(writer, "sale_price", specialPrice.Value.FormatInvariant() + " " + (string)currency.CurrencyCode);
 
 								if (entity.SpecialPriceStartDateTimeUtc.HasValue && entity.SpecialPriceEndDateTimeUtc.HasValue)
 								{
 									var specialPriceDate = "{0}/{1}".FormatInvariant(
 										entity.SpecialPriceStartDateTimeUtc.Value.ToString(dateFormat), entity.SpecialPriceEndDateTimeUtc.Value.ToString(dateFormat));
 
-									writer.WriteElementString("g", "sale_price_effective_date", _googleNamespace, specialPriceDate);
+									WriteString(writer, "sale_price_effective_date", specialPriceDate);
 								}
 
 								price = (product._RegularPrice as decimal?) ?? price;
 							}
 
-							writer.WriteElementString("g", "price", _googleNamespace, price.FormatInvariant() + " " + (string)currency.CurrencyCode);
+							WriteString(writer, "price", price.FormatInvariant() + " " + (string)currency.CurrencyCode);
 
-							writer.WriteCData("gtin", gtin, "g", _googleNamespace);
-							writer.WriteCData("brand", brand, "g", _googleNamespace);
-							writer.WriteCData("mpn", mpn, "g", _googleNamespace);
+							WriteString(writer, "gtin", gtin);
+							WriteString(writer, "brand", brand);
+							WriteString(writer, "mpn", mpn);
 
 							if (config.Gender.IsCaseInsensitiveEqual(Unspecified))
-								writer.WriteCData("gender", "", "g", _googleNamespace);
+								WriteString(writer, "gender", "");
 							else
-								writer.WriteCData("gender", gmc != null && gmc.Gender.HasValue() ? gmc.Gender : config.Gender, "g", _googleNamespace);
+								WriteString(writer, "gender", gmc != null && gmc.Gender.HasValue() ? gmc.Gender : config.Gender);
 
 							if (config.AgeGroup.IsCaseInsensitiveEqual(Unspecified))
-								writer.WriteCData("age_group", "", "g", _googleNamespace);
+								WriteString(writer, "age_group", "");
 							else
-								writer.WriteCData("age_group", gmc != null && gmc.AgeGroup.HasValue() ? gmc.AgeGroup : config.AgeGroup, "g", _googleNamespace);
+								WriteString(writer, "age_group", gmc != null && gmc.AgeGroup.HasValue() ? gmc.AgeGroup : config.AgeGroup);
 
-							writer.WriteCData("color", gmc != null && gmc.Color.HasValue() ? gmc.Color : config.Color, "g", _googleNamespace);
-							writer.WriteCData("size", gmc != null && gmc.Size.HasValue() ? gmc.Size : config.Size, "g", _googleNamespace);
-							writer.WriteCData("material", gmc != null && gmc.Material.HasValue() ? gmc.Material : config.Material, "g", _googleNamespace);
-							writer.WriteCData("pattern", gmc != null && gmc.Pattern.HasValue() ? gmc.Pattern : config.Pattern, "g", _googleNamespace);
-							writer.WriteCData("item_group_id", gmc != null && gmc.ItemGroupId.HasValue() ? gmc.ItemGroupId : "", "g", _googleNamespace);
+							WriteString(writer, "color", gmc != null && gmc.Color.HasValue() ? gmc.Color : config.Color);
+							WriteString(writer, "size", gmc != null && gmc.Size.HasValue() ? gmc.Size : config.Size);
+							WriteString(writer, "material", gmc != null && gmc.Material.HasValue() ? gmc.Material : config.Material);
+							WriteString(writer, "pattern", gmc != null && gmc.Pattern.HasValue() ? gmc.Pattern : config.Pattern);
+							WriteString(writer, "item_group_id", gmc != null && gmc.ItemGroupId.HasValue() ? gmc.ItemGroupId : "");
 
-							writer.WriteElementString("g", "identifier_exists", _googleNamespace, gtin.HasValue() || brand.HasValue() || mpn.HasValue() ? "TRUE" : "FALSE");
+							WriteString(writer, "identifier_exists", gtin.HasValue() || brand.HasValue() || mpn.HasValue() ? "TRUE" : "FALSE");
 
 							if (config.ExpirationDays > 0)
 							{
-								writer.WriteElementString("g", "expiration_date", _googleNamespace, DateTime.UtcNow.AddDays(config.ExpirationDays).ToString("yyyy-MM-dd"));
+								WriteString(writer, "expiration_date", DateTime.UtcNow.AddDays(config.ExpirationDays).ToString("yyyy-MM-dd"));
 							}
 
 							if (config.ExportShipping)
@@ -357,7 +398,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 								else
 									weightInfo = weight + " kg";
 
-								writer.WriteElementString("g", "shipping_weight", _googleNamespace, weightInfo);
+								WriteString(writer, "shipping_weight", weightInfo);
 							}
 
 							if (config.ExportBasePrice && entity.BasePriceHasValue)
@@ -369,54 +410,23 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 									var basePriceMeasure = "{0} {1}".FormatInvariant((entity.BasePriceAmount ?? decimal.Zero).FormatInvariant(), measureUnit);
 									var basePriceBaseMeasure = "{0} {1}".FormatInvariant(entity.BasePriceBaseAmount ?? 1, measureUnit);
 
-									writer.WriteElementString("g", "unit_pricing_measure", _googleNamespace, basePriceMeasure);
-									writer.WriteElementString("g", "unit_pricing_base_measure", _googleNamespace, basePriceBaseMeasure);
+									WriteString(writer, "unit_pricing_measure", basePriceMeasure);
+									WriteString(writer, "unit_pricing_base_measure", basePriceBaseMeasure);
 								}
 							}
 
-							if (gmc != null && gmc.Multipack > 1)
+							if (gmc != null)
 							{
-								writer.WriteElementString("g", "multipack", _googleNamespace, gmc.Multipack.ToString());
-							}
+								WriteString(writer, "multipack", gmc.Multipack > 1 ? gmc.Multipack.ToString() : null);
+								WriteString(writer, "is_bundle", gmc.IsBundle.HasValue ? (gmc.IsBundle.Value ? "TRUE" : "FALSE") : null);
+								WriteString(writer, "adult", gmc.IsAdult.HasValue ? (gmc.IsAdult.Value ? "TRUE" : "FALSE") : null);
+								WriteString(writer, "energy_efficiency_class", gmc.EnergyEfficiencyClass.HasValue() ? gmc.EnergyEfficiencyClass : null);
 
-							if (gmc != null && gmc.IsBundle.HasValue)
-							{
-								writer.WriteElementString("g", "is_bundle", _googleNamespace, gmc.IsBundle.Value ? "TRUE" : "FALSE");
-							}
-
-							if (gmc != null && gmc.IsAdult.HasValue)
-							{
-								writer.WriteElementString("g", "adult", _googleNamespace, gmc.IsAdult.Value ? "TRUE" : "FALSE");
-							}
-
-							if (gmc != null && gmc.EnergyEfficiencyClass.HasValue())
-							{
-								writer.WriteElementString("g", "energy_efficiency_class", _googleNamespace, gmc.EnergyEfficiencyClass);
-							}
-
-							if (gmc != null && gmc.CustomLabel0.HasValue())
-							{
-								writer.WriteElementString("g", "custom_label_0", _googleNamespace, gmc.CustomLabel0);
-							}
-
-							if (gmc != null && gmc.CustomLabel1.HasValue())
-							{
-								writer.WriteElementString("g", "custom_label_1", _googleNamespace, gmc.CustomLabel1);
-							}
-
-							if (gmc != null && gmc.CustomLabel2.HasValue())
-							{
-								writer.WriteElementString("g", "custom_label_2", _googleNamespace, gmc.CustomLabel2);
-							}
-
-							if (gmc != null && gmc.CustomLabel3.HasValue())
-							{
-								writer.WriteElementString("g", "custom_label_3", _googleNamespace, gmc.CustomLabel3);
-							}
-
-							if (gmc != null && gmc.CustomLabel4.HasValue())
-							{
-								writer.WriteElementString("g", "custom_label_4", _googleNamespace, gmc.CustomLabel4);
+								WriteString(writer, "custom_label_0", gmc.CustomLabel0.HasValue() ? gmc.CustomLabel0 : null);
+								WriteString(writer, "custom_label_1", gmc.CustomLabel1.HasValue() ? gmc.CustomLabel1 : null);
+								WriteString(writer, "custom_label_2", gmc.CustomLabel2.HasValue() ? gmc.CustomLabel2 : null);
+								WriteString(writer, "custom_label_3", gmc.CustomLabel3.HasValue() ? gmc.CustomLabel3 : null);
+								WriteString(writer, "custom_label_4", gmc.CustomLabel4.HasValue() ? gmc.CustomLabel4 : null);
 							}
 
 							++context.RecordsSucceeded;

@@ -6,6 +6,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Events;
+using SmartStore.Data.Caching2;
 
 namespace SmartStore.Services.Topics
 {
@@ -128,7 +129,7 @@ namespace SmartStore.Services.Topics
 
 				query = query.OrderBy(t => t.Priority).ThenBy(t => t.SystemName);
 
-				return query.ToList();
+				return query.FromCache().ToList();
 			});
 
 			return result;

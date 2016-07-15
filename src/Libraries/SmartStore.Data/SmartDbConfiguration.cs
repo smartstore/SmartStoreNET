@@ -5,11 +5,12 @@ using System.Data.Entity.Core.Common;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.DependencyResolution;
 using System.Linq;
-using EFCache;
+//using EFCache;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Data.Setup;
-using SmartStore.Data.Caching;
+//using SmartStore.Data.Caching;
+using SmartStore.Data.Caching2;
 using SmartStore.Core.Caching;
 
 namespace SmartStore.Data
@@ -31,29 +32,23 @@ namespace SmartStore.Data
 				base.SetDefaultConnectionFactory(provider.GetConnectionFactory());
 
 				// prepare EntityFramework 2nd level cache
-				ICache cache = null;
+				IDbCache cache = null;
 				try
 				{
 					var innerCache = EngineContext.Current.Resolve<ICacheManager>();
-					if (innerCache.IsDistributedCache)
-					{
-						// fuckin' EfCache puts internal, unserializable objects to the cache!!!
-						innerCache = EngineContext.Current.Resolve<ICacheManager>("memory");
-					}
-					cache = new EfCacheImpl(innerCache);
+					cache = new DbCache(innerCache);
 				}
 				catch
 				{
-					cache = new InMemoryCache();
+					cache = new NullDbCache();
 				}
 
-				var transactionHandler = new CacheTransactionHandler(cache);
-				AddInterceptor(transactionHandler);
+				var cacheInterceptor = new CacheTransactionInterceptor(cache);
+				AddInterceptor(cacheInterceptor);
 
 				Loaded +=
 				  (sender, args) => args.ReplaceService<DbProviderServices>(
-					(s, _) => new CachingProviderServices(s, transactionHandler,
-					  new EfCachingPolicy()));
+					(s, _) => new CachingProviderServices(s, cacheInterceptor));
 			}
 		}
 	}

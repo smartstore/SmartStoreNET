@@ -6,6 +6,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Data.Caching2;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Stores
@@ -80,7 +81,8 @@ namespace SmartStore.Services.Stores
 					.Expand(x => x.PrimaryStoreCurrency)
 					.Expand(x => x.PrimaryExchangeRateCurrency)
 					.OrderBy(x => x.DisplayOrder)
-					.ThenBy(x => x.Name);
+					.ThenBy(x => x.Name)
+					.FromCache();
 
 				var stores = query.ToList();
 				return stores;

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media;
@@ -9,7 +7,7 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class DownloadController : AdminControllerBase
     {
 		const string TEMPLATE = "EditorTemplates/Download";
@@ -34,14 +32,13 @@ namespace SmartStore.Admin.Controllers
             else
             {
                 //use stored data
-                if (download.DownloadBinary == null)
+                if (download.BinaryData == null)
                     return Content(string.Format("Download data is not available any more. Download ID={0}", downloadId));
 
                 string fileName = !String.IsNullOrWhiteSpace(download.Filename) ? download.Filename : downloadId.ToString();
                 string contentType = !String.IsNullOrWhiteSpace(download.ContentType) ? download.ContentType : "application/octet-stream";
-                return new FileContentResult(download.DownloadBinary, contentType) { FileDownloadName = fileName + download.Extension };
+                return new FileContentResult(download.BinaryData.Data, contentType) { FileDownloadName = fileName + download.Extension };
             }
-
         }
 
         [HttpPost]
@@ -76,13 +73,13 @@ namespace SmartStore.Admin.Controllers
 				throw new ArgumentException(T("Common.NoFileUploaded"));
 			}
 
-            var download = new Download
+			var download = new Download
             {
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
                 DownloadUrl = "",
-                DownloadBinary = postedFile.Buffer,
-                ContentType = postedFile.ContentType,
+				BinaryData = new BinaryData { Data = postedFile.Buffer },
+				ContentType = postedFile.ContentType,
                 // we store filename without extension for downloads
                 Filename = postedFile.FileTitle,
                 Extension = postedFile.FileExtension,

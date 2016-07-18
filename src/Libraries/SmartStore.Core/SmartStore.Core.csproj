@@ -183,6 +183,7 @@
     <Compile Include="Domain\DataExchange\ExportEnums.cs" />
     <Compile Include="Domain\DataExchange\ExportFilter.cs" />
     <Compile Include="Domain\DataExchange\ExportProfile.cs" />
+    <Compile Include="Domain\Media\BinaryData.cs" />
     <Compile Include="Domain\Messages\EmailAttachmentStorageLocation.cs" />
     <Compile Include="Domain\Messages\QueuedEmailAttachment.cs" />
     <Compile Include="Domain\Orders\CheckoutEnums.cs" />

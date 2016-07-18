@@ -6,7 +6,12 @@ namespace SmartStore.Services.Media.Storage
 	{
 		public byte[] Load(Picture picture)
 		{
-			return picture.PictureBinary;
+			if ((picture.BinaryDataId ?? 0) != 0)
+			{
+				return picture.BinaryData.Data;
+			}
+
+			return new byte[0];
 		}
 
 		public void Save(Picture picture, byte[] data)

@@ -203,6 +203,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();
 			builder.RegisterType<ImageResizerService>().As<IImageResizerService>().SingleInstance();
 			builder.RegisterType<PictureService>().As<IPictureService>().InstancePerRequest();
+			builder.RegisterType<BinaryDataService>().As<IBinaryDataService>().InstancePerRequest();
 
 			builder.RegisterType<CheckoutAttributeFormatter>().As<ICheckoutAttributeFormatter>().InstancePerRequest();
 			builder.RegisterType<CheckoutAttributeParser>().As<ICheckoutAttributeParser>().InstancePerRequest();

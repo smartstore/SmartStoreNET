@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
@@ -12,29 +10,24 @@ using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Media
 {
-    /// <summary>
-    /// Download service
-    /// </summary>
-    public partial class DownloadService : IDownloadService
+	/// <summary>
+	/// Download service
+	/// </summary>
+	public partial class DownloadService : IDownloadService
     {
-        #region Fields
-
         private readonly IRepository<Download> _downloadRepository;
         private readonly IEventPublisher _eventPubisher;
+		private readonly IBinaryDataService _binaryDataService;
 
-        #endregion
-
-        #region Ctor
-
-        public DownloadService(IRepository<Download> downloadRepository, IEventPublisher eventPubisher)
+        public DownloadService(
+			IRepository<Download> downloadRepository,
+			IEventPublisher eventPubisher,
+			IBinaryDataService binaryDataService)
         {
             _downloadRepository = downloadRepository;
             _eventPubisher = eventPubisher;
+			_binaryDataService = binaryDataService;
         }
-
-        #endregion
-
-        #region Methods
 
         public virtual Download GetDownloadById(int downloadId)
         {
@@ -80,6 +73,11 @@ namespace SmartStore.Services.Media
         {
             if (download == null)
                 throw new ArgumentNullException("download");
+
+			if ((download.BinaryDataId ?? 0) != 0)
+			{
+				_binaryDataService.DeleteBinaryData(download.BinaryData);
+			}
 
             _downloadRepository.Delete(download);
 
@@ -182,7 +180,5 @@ namespace SmartStore.Services.Media
                 orderItem.LicenseDownloadId.HasValue &&
                 orderItem.LicenseDownloadId > 0;
         }
-
-        #endregion
     }
 }

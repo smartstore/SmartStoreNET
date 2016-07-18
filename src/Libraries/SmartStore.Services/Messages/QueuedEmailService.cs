@@ -245,9 +245,9 @@ namespace SmartStore.Services.Messages
 					else if (qea.StorageLocation == EmailAttachmentStorageLocation.FileReference)
 					{
 						var file = qea.File;
-						if (file != null && file.UseDownloadUrl == false && file.DownloadBinary != null && file.DownloadBinary.Length > 0)
+						if (file != null && file.UseDownloadUrl == false && file.BinaryData != null && file.BinaryData.Data.Length > 0)
 						{
-							attachment = new Attachment(file.DownloadBinary.ToStream(), file.Filename + file.Extension, file.ContentType);
+							attachment = new Attachment(file.BinaryData.Data.ToStream(), file.Filename + file.Extension, file.ContentType);
 						}
 					}
 

@@ -38,7 +38,7 @@ namespace SmartStore.Web.Controllers
 
 		private ActionResult GetFileContentResultFor(Download download, Product product)
 		{
-			if (download.DownloadBinary == null)
+			if (download.BinaryData == null)
 			{
 				return Content(T("Common.Download.NoDataAvailable"));
 			}
@@ -47,7 +47,7 @@ namespace SmartStore.Web.Controllers
 			var fileName = !String.IsNullOrWhiteSpace(download.Filename) ? download.Filename : id.ToString();
 			var contentType = !String.IsNullOrWhiteSpace(download.ContentType) ? download.ContentType : "application/octet-stream";
 
-			return new FileContentResult(download.DownloadBinary, contentType)
+			return new FileContentResult(download.BinaryData.Data, contentType)
 			{
 				FileDownloadName = fileName + download.Extension
 			};
@@ -114,7 +114,7 @@ namespace SmartStore.Web.Controllers
             }
             else
             {
-                if (download.DownloadBinary == null)
+                if (download.BinaryData == null)
                     return Content(T("Common.Download.NoDataAvailable"));
 
                 orderItem.DownloadCount++;

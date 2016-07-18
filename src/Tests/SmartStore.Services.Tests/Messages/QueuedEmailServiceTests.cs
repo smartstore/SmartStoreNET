@@ -94,7 +94,10 @@ namespace SmartStore.Services.Tests.Messages
 				File = new Download
 				{
 					ContentType = "application/pdf",
-					DownloadBinary = pdfBinary,
+					BinaryData = new BinaryData
+					{
+						Data = pdfBinary
+					},
 					Extension = ".pdf",
 					Filename = "file"
 				}

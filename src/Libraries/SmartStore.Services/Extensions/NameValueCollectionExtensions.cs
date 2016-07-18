@@ -197,12 +197,20 @@ namespace SmartStore
 										DownloadGuid = Guid.NewGuid(),
 										UseDownloadUrl = false,
 										DownloadUrl = "",
-										DownloadBinary = postedFile.InputStream.ToByteArray(),
 										ContentType = postedFile.ContentType,
 										Filename = System.IO.Path.GetFileNameWithoutExtension(postedFile.FileName),
 										Extension = System.IO.Path.GetExtension(postedFile.FileName),
 										IsNew = true
 									};
+
+									if (postedFile.InputStream != null)
+									{
+										download.BinaryData = new BinaryData
+										{
+											Data = postedFile.InputStream.ToByteArray()
+										};
+									}
+
 									downloadService.InsertDownload(download);
 									//save attribute
 									selectedAttributes = productAttributeParser.AddProductAttribute(selectedAttributes, attribute, download.DownloadGuid.ToString());

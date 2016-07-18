@@ -7942,7 +7942,10 @@ namespace SmartStore.Data.Setup
 				{
 					DownloadGuid = Guid.NewGuid(),
 					ContentType = "audio/mp3",
-					DownloadBinary = File.ReadAllBytes(sampleDownloadsPath + "vivaldi-four-seasons-spring.mp3"),
+					BinaryData = new BinaryData
+					{
+						Data = File.ReadAllBytes(sampleDownloadsPath + "vivaldi-four-seasons-spring.mp3")
+					},
 					Extension = ".mp3",
 					Filename = "vivaldi-four-seasons-spring",
 					IsNew = true,
@@ -8016,7 +8019,10 @@ namespace SmartStore.Data.Setup
 				{
 					DownloadGuid = Guid.NewGuid(),
 					ContentType = "audio/mp3",
-					DownloadBinary = File.ReadAllBytes(sampleDownloadsPath + "beethoven-fur-elise.mp3"),
+					BinaryData = new BinaryData
+					{
+						Data = File.ReadAllBytes(sampleDownloadsPath + "beethoven-fur-elise.mp3")
+					},
 					Extension = ".mp3",
 					Filename = "beethoven-fur-elise.mp3",
 					IsNew = true
@@ -9378,7 +9384,10 @@ namespace SmartStore.Data.Setup
 			seoFilename = seoFilename.Truncate(100);
 
 			var picture = _ctx.Set<Picture>().Create();
-			picture.PictureBinary = pictureBinary;
+			picture.BinaryData = new BinaryData
+			{
+				Data = pictureBinary
+			};
 			picture.MimeType = mimeType;
 			picture.SeoFilename = seoFilename;
 

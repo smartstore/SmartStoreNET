@@ -97,12 +97,19 @@ namespace SmartStore.Services.Catalog
 						DownloadGuid = Guid.NewGuid(),
 						UseDownloadUrl = download.UseDownloadUrl,
 						DownloadUrl = download.DownloadUrl,
-						DownloadBinary = download.DownloadBinary,
 						ContentType = download.ContentType,
 						Filename = download.Filename,
 						Extension = download.Extension,
 						IsNew = download.IsNew,
 					};
+
+					if ((download.BinaryDataId ?? 0) != 0)
+					{
+						downloadCopy.BinaryData = new BinaryData
+						{
+							Data = download.BinaryData.Data
+						};
+					}
 
 					_downloadService.InsertDownload(downloadCopy);
 					downloadId = downloadCopy.Id;
@@ -118,12 +125,19 @@ namespace SmartStore.Services.Catalog
 							DownloadGuid = Guid.NewGuid(),
 							UseDownloadUrl = sampleDownload.UseDownloadUrl,
 							DownloadUrl = sampleDownload.DownloadUrl,
-							DownloadBinary = sampleDownload.DownloadBinary,
 							ContentType = sampleDownload.ContentType,
 							Filename = sampleDownload.Filename,
 							Extension = sampleDownload.Extension,
 							IsNew = sampleDownload.IsNew
 						};
+
+						if ((sampleDownload.BinaryDataId ?? 0) != 0)
+						{
+							sampleDownloadCopy.BinaryData = new BinaryData
+							{
+								Data = sampleDownload.BinaryData.Data
+							};
+						}
 
 						_downloadService.InsertDownload(sampleDownloadCopy);
 						sampleDownloadId = sampleDownloadCopy.Id;

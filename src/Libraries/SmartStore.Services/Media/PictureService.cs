@@ -34,7 +34,7 @@ namespace SmartStore.Services.Media
         private readonly IRepository<Picture> _pictureRepository;
         private readonly IRepository<ProductPicture> _productPictureRepository;
         private readonly ISettingService _settingService;
-        private readonly IWebHelper _webHelper;
+		private readonly IWebHelper _webHelper;
         private readonly ILogger _logger;
         private readonly IEventPublisher _eventPublisher;
         private readonly MediaSettings _mediaSettings;
@@ -42,6 +42,7 @@ namespace SmartStore.Services.Media
         private readonly IImageCache _imageCache;
 		private readonly INotifier _notifier;
 		private readonly IFileSystem _fileSystem;
+		private readonly IBinaryDataService _binaryDataService;
 
 		private string _mediaPath;
 		private string _imagesPath;
@@ -62,7 +63,8 @@ namespace SmartStore.Services.Media
             IImageResizerService imageResizerService,
             IImageCache imageCache,
 			INotifier notifier,
-			IFileSystem fileSystem)
+			IFileSystem fileSystem,
+			IBinaryDataService binaryDataService)
         {
             this._pictureRepository = pictureRepository;
             this._productPictureRepository = productPictureRepository;
@@ -75,6 +77,7 @@ namespace SmartStore.Services.Media
             this._imageCache = imageCache;
 			this._notifier = notifier;
 			this._fileSystem = fileSystem;
+			this._binaryDataService = binaryDataService;
         }
 
         #endregion
@@ -349,7 +352,7 @@ namespace SmartStore.Services.Media
             byte[] result = null;
             if (fromDb)
             {
-                result = picture.PictureBinary;
+				result = picture.BinaryData.Data;
             }
             else
             {
@@ -514,8 +517,14 @@ namespace SmartStore.Services.Media
                 DeletePictureOnFileSystem(picture);
             }
 
-            // delete from database
-            _pictureRepository.Delete(picture);
+			// delete binary data
+			if ((picture.BinaryDataId ?? 0) != 0)
+			{
+				_binaryDataService.DeleteBinaryData(picture.BinaryData);
+			}
+
+			// delete from database
+			_pictureRepository.Delete(picture);
 
             // event notification
             _eventPublisher.EntityDeleted(picture);
@@ -571,12 +580,19 @@ namespace SmartStore.Services.Media
             }
 
             var picture = _pictureRepository.Create();
-            picture.PictureBinary = this.StoreInDb ? pictureBinary : new byte[0];
             picture.MimeType = mimeType;
             picture.SeoFilename = seoFilename;
             picture.IsNew = isNew;
 			picture.IsTransient = isTransient;
 			picture.UpdatedOnUtc = DateTime.UtcNow;
+
+			if (StoreInDb)
+			{
+				picture.BinaryData = new BinaryData
+				{
+					Data = pictureBinary
+				};
+			}
 
             _pictureRepository.Insert(picture);
 
@@ -611,15 +627,48 @@ namespace SmartStore.Services.Media
                 _imageCache.DeleteCachedImages(picture);
             }
 
-            picture.PictureBinary = (this.StoreInDb ? pictureBinary : new byte[0]);
             picture.MimeType = mimeType;
             picture.SeoFilename = seoFilename;
             picture.IsNew = isNew;
 			picture.UpdatedOnUtc = DateTime.UtcNow;
 
+			if (StoreInDb)
+			{
+				if (pictureBinary == null)
+				{
+					// remove picture binary if any
+					if ((picture.BinaryDataId ?? 0) != 0)
+					{
+						_binaryDataService.DeleteBinaryData(picture.BinaryData);
+					}
+				}
+				else
+				{
+					if (picture.BinaryData == null)
+					{
+						// insert new binary data
+						picture.BinaryData = new BinaryData	{ Data = pictureBinary };
+					}
+					else
+					{
+						if (picture.BinaryData.Data.SequenceEqual(pictureBinary))
+						{
+							// ignore equal binary data
+						}
+						else
+						{
+							// update binary data
+							picture.BinaryData.Data = pictureBinary;
+
+							_binaryDataService.UpdateBinaryData(picture.BinaryData);
+						}
+					}
+				}
+			}
+
             _pictureRepository.Update(picture);
 
-            if (!this.StoreInDb)
+            if (!StoreInDb)
             {
                 SavePictureInFile(picture.Id, pictureBinary, mimeType);
             }
@@ -676,6 +725,7 @@ namespace SmartStore.Services.Media
 			var affectedFiles = new List<string>(1000);
 
 			var ctx = _pictureRepository.Context;
+			var utcNow = DateTime.UtcNow;
 			var failed = false;
 			int i = 0;
 
@@ -711,13 +761,20 @@ namespace SmartStore.Services.Media
 
 								if (!toDb)
 								{
-									if (picture.PictureBinary != null && picture.PictureBinary.Length > 0)
+									if ((picture.BinaryDataId ?? 0) != 0)
 									{
 										// save picture as file
-										SavePictureInFile(picture.Id, picture.PictureBinary, picture.MimeType, out filePath);
+										SavePictureInFile(picture.Id, picture.BinaryData.Data, picture.MimeType, out filePath);
+
+										// remove picture binary from DB
+										try
+										{
+											_binaryDataService.DeleteBinaryData(picture.BinaryData);
+										}
+										catch { }
+
+										picture.BinaryDataId = null;
 									}
-									// remove picture binary from DB
-									picture.PictureBinary = new byte[0];
 								}
 								else
 								{
@@ -725,7 +782,10 @@ namespace SmartStore.Services.Media
 									var picBinary = LoadPictureFromFile(picture.Id, picture.MimeType, out filePath);
 									if (picBinary.Length > 0)
 									{
-										picture.PictureBinary = picBinary;
+										picture.BinaryData = new BinaryData
+										{
+											Data = picBinary
+										};
 									}
 								}
 
@@ -737,7 +797,7 @@ namespace SmartStore.Services.Media
 								}		
 
 								// explicitly attach modified entity to context, because we disabled AutoCommit
-								picture.UpdatedOnUtc = DateTime.UtcNow;
+								picture.UpdatedOnUtc = utcNow;
 								_pictureRepository.Update(picture);
 
 								i++;
@@ -745,8 +805,8 @@ namespace SmartStore.Services.Media
 
 							// save the current batch to DB
 							ctx.SaveChanges();
-
-						} while (pictures.HasNextPage);
+						}
+						while (pictures.HasNextPage);
 
 						// FIRE!
 						tx.Commit();

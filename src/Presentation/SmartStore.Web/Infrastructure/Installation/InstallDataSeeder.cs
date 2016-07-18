@@ -4,39 +4,37 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using SmartStore.Core;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
-using SmartStore.Core.Domain.Tax;
-using SmartStore.Services.Configuration;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Data;
-using SmartStore.Core.Caching;
+using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
-using SmartStore.Utilities;
-using SmartStore.Core.Domain.Configuration;
-using SmartStore.Data.Setup;
 using SmartStore.Core.Events;
-using SmartStore.Services.Common;
-using SmartStore.Services.Media;
+using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
+using SmartStore.Data;
+using SmartStore.Data.Setup;
+using SmartStore.Services.Common;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
-using System.Data.Entity.Migrations;
-using SmartStore.Data.Migrations;
 using SmartStore.Services.Stores;
-using SmartStore.Core.Domain.Orders;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
-using SmartStore.Core.IO;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
-    public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
+	public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
     {
         #region Fields & Constants
 
@@ -403,10 +401,13 @@ namespace SmartStore.Web.Infrastructure.Installation
 			{
 				// All pictures have initially been stored in the DB.
 				// Move the binaries to disk
-				var pics = _ctx.Set<Picture>().ToList();
+				var pics = _ctx.Set<Picture>().Where(x => x.BinaryDataId != null).ToList();
 				foreach (var pic in pics)
 				{
-					this.PictureService.UpdatePicture(pic.Id, pic.PictureBinary, pic.MimeType, pic.SeoFilename, pic.IsNew, false);
+					if (pic.BinaryData != null)
+					{
+						this.PictureService.UpdatePicture(pic.Id, pic.BinaryData.Data, pic.MimeType, pic.SeoFilename, pic.IsNew, false);
+					}
 				}
 				_ctx.SaveChanges();
 			}
@@ -483,6 +484,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					var mediaSettings = new MediaSettings();
 					var webHelper = new WebHelper(null);
 					var fileSystem = new LocalFileSystem();
+					var binaryDataService = new BinaryDataService(new EfRepository<BinaryData>(_ctx), NullEventPublisher.Instance);
 
 					_pictureService = new PictureService(
 						rs, 
@@ -495,7 +497,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 						new ImageResizerService(),
 						new ImageCache(mediaSettings, null, null, fileSystem),
 						new Notifier(),
-						fileSystem);
+						fileSystem,
+						binaryDataService);
 				}
 
 				return _pictureService;

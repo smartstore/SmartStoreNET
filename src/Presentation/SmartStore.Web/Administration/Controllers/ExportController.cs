@@ -606,11 +606,6 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			var service = EngineContext.Current.Resolve<IFileSystem>();
-			var file = service.GetFile(@"Media\\0000706.png");
-			
-			NotifyInfo(file.Path);
-
 			return View(model);
 		}
 

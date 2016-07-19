@@ -1,5 +1,6 @@
 {
     "FILES_ROOT": "~/Media/Uploaded",
+    "RETURN_URL_PREFIX": "",
     "SESSION_PATH_KEY": "",
     "THUMBS_VIEW_WIDTH": "140",
     "THUMBS_VIEW_HEIGHT": "120",
@@ -29,5 +30,6 @@
     "FILEPERMISSIONS": "0644",
     "DIRPERMISSIONS": "0755",
     "LANG": "auto",
-    "DATEFORMAT": "dd.MM.yyyy HH:mm"
+    "DATEFORMAT": "dd.MM.yyyy HH:mm",
+    "OPEN_LAST_DIR": "yes"
 }

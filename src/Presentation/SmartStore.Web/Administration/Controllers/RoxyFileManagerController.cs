@@ -5,10 +5,13 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using SmartStore.Core.IO;
 using SmartStore.Core.Localization;
+using SmartStore.Core.Logging;
 using SmartStore.Services;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
@@ -23,6 +26,7 @@ namespace SmartStore.Admin.Controllers
 
 		private Dictionary<string, string> _lang = null;
 		private Dictionary<string, string> _settings = null;
+		private string _fileRoot = null;
 
 		private readonly ICommonServices _services;
 		private readonly IFileSystem _fileSystem;
@@ -38,17 +42,13 @@ namespace SmartStore.Admin.Controllers
 			_fileSystem = fileSystem;
 			_context = context;
 			_response = _context.Response;
-
-			T = NullLocalizer.Instance;
 		}
 
-		public Localizer T { get; set; }
-
-		#region Utilities
+		#region Old Utilities
 
 		private string MapPath(string path)
 		{
-			return MapPath(path);
+			return _context.Server.MapPath(path);
 		}
 
 		private string FixPath(string path)
@@ -84,28 +84,6 @@ namespace SmartStore.Admin.Controllers
 				filename = "../lang/en.json";
 
 			return filename;
-		}
-
-		protected string LangRes(string name)
-		{
-			string ret = name;
-			if (_lang == null)
-				_lang = ParseJSON(GetLangFile());
-			if (_lang.ContainsKey(name))
-				ret = _lang[name];
-
-			return ret;
-		}
-
-		protected string GetFileType(string ext)
-		{
-			string ret = "file";
-			ext = ext.ToLower();
-			if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif")
-				ret = "image";
-			else if (ext == ".swf" || ext == ".flv")
-				ret = "flash";
-			return ret;
 		}
 
 		protected bool CanHandleFile(string filename)
@@ -180,22 +158,6 @@ namespace SmartStore.Admin.Controllers
 			return ret;
 		}
 
-		protected void LoadConf()
-		{
-			if (_settings == null)
-				_settings = ParseJSON(CONFIG_FILE);
-		}
-
-		protected string GetSetting(string name)
-		{
-			string ret = "";
-			LoadConf();
-			if (_settings.ContainsKey(name))
-				ret = _settings[name];
-
-			return ret;
-		}
-
 		protected void CheckPath(string path)
 		{
 			if (FixPath(path).IndexOf(GetFilesRoot()) != 0)
@@ -204,18 +166,18 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		protected void VerifyAction(string action)
-		{
-			string setting = GetSetting(action);
-			if (setting.IndexOf("?") > -1)
-				setting = setting.Substring(0, setting.IndexOf("?"));
-			if (!setting.StartsWith("/"))
-				setting = "/" + setting;
-			setting = ".." + setting;
+		//protected void VerifyAction(string action)
+		//{
+		//	string setting = GetSetting(action);
+		//	if (setting.IndexOf("?") > -1)
+		//		setting = setting.Substring(0, setting.IndexOf("?"));
+		//	if (!setting.StartsWith("/"))
+		//		setting = "/" + setting;
+		//	setting = ".." + setting;
 
-			if (MapPath(setting) != MapPath(_context.Request.Url.LocalPath))
-				throw new Exception(LangRes("E_ActionDisabled"));
-		}
+		//	if (MapPath(setting) != MapPath(_context.Request.Url.LocalPath))
+		//		throw new Exception(LangRes("E_ActionDisabled"));
+		//}
 
 		protected string GetResultStr(string type, string msg)
 		{
@@ -428,15 +390,6 @@ namespace SmartStore.Admin.Controllers
 			_response.Write("]");
 		}
 
-		protected double LinuxTimestamp(DateTime d)
-		{
-			DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0).ToLocalTime();
-			TimeSpan timeSpan = (d.ToLocalTime() - epoch);
-
-			return timeSpan.TotalSeconds;
-
-		}
-
 		protected void ListFiles(string path, string type)
 		{
 			CheckPath(path);
@@ -466,7 +419,6 @@ namespace SmartStore.Admin.Controllers
 				}
 				_response.Write("{");
 				_response.Write("\"p\":\"" + path + "/" + f.Name + "\"");
-				_response.Write(",\"t\":\"" + Math.Ceiling(LinuxTimestamp(f.LastWriteTime)).ToString() + "\"");
 				_response.Write(",\"s\":\"" + f.Length.ToString() + "\"");
 				_response.Write(",\"w\":\"" + w.ToString() + "\"");
 				_response.Write(",\"h\":\"" + h.ToString() + "\"");
@@ -748,38 +700,235 @@ namespace SmartStore.Admin.Controllers
 			_response.Write("</script>");
 		}
 
-		public bool IsReusable
+		#endregion
+
+		#region Utilities
+
+		private string LangRes(string name)
 		{
-			get
+			var result = name;
+
+			if (_lang == null)
+				_lang = ParseJSON(GetLangFile());
+
+			if (_lang.ContainsKey(name))
+				result = _lang[name];
+
+			return result;
+		}
+
+		private string GetSetting(string name)
+		{
+			var result = "";
+
+			if (_settings == null)
+				_settings = ParseJSON(CONFIG_FILE);
+
+			if (_settings.ContainsKey(name))
+				result = _settings[name];
+
+			return result;
+		}
+
+		private string GetFileType(string extension)
+		{
+			extension = extension.EmptyNull().ToLower();
+
+			if (extension == ".jpg" || extension == ".jpeg" || extension == ".png" || extension == ".gif")
+				return "image";
+
+			if (extension == ".swf" || extension == ".flv")
+				return "flash";
+
+			return "file";
+		}
+
+		private void GetImageSize(IFile file, out int width, out int height)
+		{
+			width = height = 0;
+
+			try
 			{
-				return false;
+				if (GetFileType(file.FileType).IsCaseInsensitiveEqual("image"))
+				{
+					using (var stream = file.OpenRead())
+					using (var image = Image.FromStream(stream))
+					{
+						width = image.Width;
+						height = image.Height;
+					}
+				}
 			}
+			catch { }
+		}
+
+		internal class RoxyFolder
+		{
+			public IFolder Folder { get; set; }
+			public int SubFolders { get; set; }
 		}
 
 		#endregion
+
+		#region File system
+
+		private string FileRoot
+		{
+			get
+			{
+				if (_fileRoot == null)
+				{
+					_fileRoot = GetSetting("FILES_ROOT");
+
+					if (GetSetting("SESSION_PATH_KEY") != "" && _context.Session[GetSetting("SESSION_PATH_KEY")] != null)
+						_fileRoot = (string)_context.Session[GetSetting("SESSION_PATH_KEY")];
+
+					if (_fileRoot.IsEmpty())
+						_fileRoot = "Media/Uploaded";
+
+					//TODO: remove, just for testing coexistence of old versus new code
+					if (_fileRoot.StartsWith("~/"))
+						_fileRoot = _fileRoot.Substring(2);
+				}
+
+				return _fileRoot;
+			}
+		}
+
+		private string FixPath2(string path)
+		{
+			if (path.HasValue())
+			{
+				if (path.StartsWith("~/"))
+					path = path.Substring(2);
+				else if (path.StartsWith("/"))
+					path = path.Substring(1);
+			}
+
+			return path;
+		}
+
+		private List<IFile> GetFiles2(string path, string type)
+		{
+			var files = _fileSystem.ListFiles(path);
+
+			if (type.IsEmpty() || type == "#")
+				return files.ToList();
+
+			return _fileSystem.ListFiles(path)
+				.Where(x => GetFileType(x.FileType).IsCaseInsensitiveEqual(type))
+				.ToList();
+		}
+
+		private List<RoxyFolder> ListDirs2(string path)
+		{
+			var result = new List<RoxyFolder>();
+
+			_fileSystem.ListFolders(path).Each(x =>
+			{
+				var subFolders = ListDirs2(x.Path);
+
+				result.Add(new RoxyFolder
+				{
+					Folder = x,
+					SubFolders = subFolders.Count
+				});
+
+				result.AddRange(subFolders);
+			});
+
+			return result;
+		}
+
+		private void ListDirTree2(string type)
+		{
+			var isFirstItem = true;
+			var folders = ListDirs2(FileRoot);
+
+			folders.Insert(0, new RoxyFolder
+			{
+				Folder = _fileSystem.GetFolder(FileRoot),
+				SubFolders = folders.Count
+			});
+
+			_response.Write("[");
+
+			foreach (var folder in folders)
+			{
+				if (isFirstItem)
+					isFirstItem = false;
+				else
+					_response.Write(",");
+
+				var fileCount = GetFiles2(folder.Folder.Path, type).Count;
+
+				_response.Write(
+					"{\"p\":\"/" + folder.Folder.Path.Replace(FileRoot, "").Replace("\\", "/")
+					+ "\",\"f\":\"" + fileCount.ToString()
+					+ "\",\"d\":\"" + folder.SubFolders.ToString()
+					+ "\"}"
+				);
+			}
+
+			_response.Write("]");
+		}
+
+		private void ListFiles2(string path, string type)
+		{
+			var isFirstItem = true;
+			var width = 0;
+			var height = 0;
+			var files = GetFiles2(FixPath2(path), type);
+
+			_response.Write("[");
+
+			foreach (var file in files)
+			{
+				if (isFirstItem)
+					isFirstItem = false;
+				else
+					_response.Write(",");
+
+				GetImageSize(file, out width, out height);
+
+				_response.Write("{");
+				_response.Write("\"p\":\"" + file.Path + "\"");
+				_response.Write(",\"s\":\"" + file.Size.ToString() + "\"");
+				_response.Write(",\"w\":\"" + width.ToString() + "\"");
+				_response.Write(",\"h\":\"" + height.ToString() + "\"");
+				_response.Write("}");
+			}
+
+			_response.Write("]");
+		}
+
+		#endregion
+
 
 		public void ProcessRequest()
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.UploadPictures))
 			{
-				_response.Write(GetErrorRes("You do not have the required permission"));
+				_response.Write(T("Admin.AccessDenied.Description"));
 				return;
 			}
 
-			string action = "DIRLIST";
+			var action = "DIRLIST";
+
 			try
 			{
 				if (_context.Request["a"] != null)
-					action = (string)_context.Request["a"];
+				{
+					action = _context.Request["a"];
+				}
 
-				//VerifyAction(action);
 				switch (action.ToUpper())
 				{
 					case "DIRLIST":
-						ListDirTree(_context.Request["type"]);
+						ListDirTree2(_context.Request["type"]);
 						break;
 					case "FILESLIST":
-						ListFiles(_context.Request["d"], _context.Request["type"]);
+						ListFiles2(_context.Request["d"], _context.Request["type"]);
 						break;
 					case "COPYDIR":
 						CopyDir(_context.Request["d"], _context.Request["n"]);
@@ -828,7 +977,7 @@ namespace SmartStore.Admin.Controllers
 						break;
 				}
 			}
-			catch (Exception ex)
+			catch (Exception exception)
 			{
 				if (action == "UPLOAD")
 				{
@@ -838,7 +987,7 @@ namespace SmartStore.Admin.Controllers
 				}
 				else
 				{
-					_response.Write(GetErrorRes(ex.Message));
+					_response.Write(GetErrorRes(exception.Message));
 				}
 			}
 		}

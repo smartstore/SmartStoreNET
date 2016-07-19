@@ -109,6 +109,18 @@ namespace SmartStore.Core.IO
             return new FileSystemStorageFile(Fix(path), fileInfo);
         }
 
+		public IFolder GetFolder(string path)
+		{
+			var directoryInfo = new DirectoryInfo(MapStorage(path));
+
+			if (!directoryInfo.Exists)
+			{
+				throw new ArgumentException("Folder " + path + " does not exist");
+			}
+
+			return new FileSystemStorageFolder(Fix(path), directoryInfo);
+		}
+
 		public IEnumerable<string> SearchFiles(string path, string pattern)
 		{
 			return Directory.EnumerateFiles(MapStorage(path), pattern, SearchOption.AllDirectories);

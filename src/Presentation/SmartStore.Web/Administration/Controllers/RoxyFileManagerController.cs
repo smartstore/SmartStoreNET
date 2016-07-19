@@ -7,6 +7,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using System.Web;
+using SmartStore.Core.IO;
+using SmartStore.Core.Localization;
+using SmartStore.Services;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
@@ -21,20 +24,32 @@ namespace SmartStore.Admin.Controllers
 		private Dictionary<string, string> _lang = null;
 		private Dictionary<string, string> _settings = null;
 
-		private readonly IPermissionService _permissionService;
+		private readonly ICommonServices _services;
+		private readonly IFileSystem _fileSystem;
 		private readonly HttpContextBase _context;
 		private readonly HttpResponseBase _response;
 
 		public RoxyFileManagerController(
-			IPermissionService permissionService,
+			ICommonServices services,
+			IFileSystem fileSystem,
 			HttpContextBase context)
 		{
-			_permissionService = permissionService;
+			_services = services;
+			_fileSystem = fileSystem;
 			_context = context;
 			_response = _context.Response;
+
+			T = NullLocalizer.Instance;
 		}
 
+		public Localizer T { get; set; }
+
 		#region Utilities
+
+		private string MapPath(string path)
+		{
+			return MapPath(path);
+		}
 
 		private string FixPath(string path)
 		{
@@ -56,7 +71,7 @@ namespace SmartStore.Admin.Controllers
 			//	path = filesRoot;
 			//}
 
-			return _context.Server.MapPath(path);
+			return MapPath(path);
 		}
 
 		private string GetLangFile()
@@ -65,7 +80,7 @@ namespace SmartStore.Admin.Controllers
 
 			var filename = "../lang/" + GetSetting("LANG") + ".json";
 
-			if (!System.IO.File.Exists(_context.Server.MapPath(filename)))
+			if (!System.IO.File.Exists(MapPath(filename)))
 				filename = "../lang/en.json";
 
 			return filename;
@@ -124,7 +139,7 @@ namespace SmartStore.Admin.Controllers
 			string json = "";
 			try
 			{
-				json = System.IO.File.ReadAllText(_context.Server.MapPath(file), System.Text.Encoding.UTF8);
+				json = System.IO.File.ReadAllText(MapPath(file), System.Text.Encoding.UTF8);
 			}
 			catch { }
 
@@ -159,7 +174,7 @@ namespace SmartStore.Admin.Controllers
 				ret = (string)_context.Session[GetSetting("SESSION_PATH_KEY")];
 
 			if (ret == "")
-				ret = _context.Server.MapPath("../Uploads");
+				ret = MapPath("~/Media/Uploaded");  // ../Uploads
 			else
 				ret = FixPath(ret);
 			return ret;
@@ -198,7 +213,7 @@ namespace SmartStore.Admin.Controllers
 				setting = "/" + setting;
 			setting = ".." + setting;
 
-			if (_context.Server.MapPath(setting) != _context.Server.MapPath(_context.Request.Url.LocalPath))
+			if (MapPath(setting) != MapPath(_context.Request.Url.LocalPath))
 				throw new Exception(LangRes("E_ActionDisabled"));
 		}
 
@@ -265,14 +280,17 @@ namespace SmartStore.Admin.Controllers
 
 		protected string MakeUniqueFilename(string dir, string filename)
 		{
-			string ret = filename;
-			int i = 0;
-			while (System.IO.File.Exists(Path.Combine(dir, ret)))
+			var result = filename;
+			var i = 0;
+			var copyOf = T("Admin.Common.CopyOf");
+
+			while (System.IO.File.Exists(Path.Combine(dir, result)))
 			{
 				i++;
-				ret = Path.GetFileNameWithoutExtension(filename) + " - Copy " + i.ToString() + Path.GetExtension(filename);
+				result = "{0} - {1} {2}{3}".FormatInvariant(Path.GetFileNameWithoutExtension(filename), copyOf, i, Path.GetExtension(filename));
 			}
-			return ret;
+
+			return result;
 		}
 
 		protected void CopyFile(string path, string newPath)
@@ -398,7 +416,7 @@ namespace SmartStore.Admin.Controllers
 			ArrayList dirs = ListDirs(d.FullName);
 			dirs.Insert(0, d.FullName);
 
-			string localPath = _context.Server.MapPath("~/");
+			string localPath = MapPath("~/");
 			_response.Write("[");
 			for (int i = 0; i < dirs.Count; i++)
 			{
@@ -465,7 +483,7 @@ namespace SmartStore.Admin.Controllers
 			if (!Directory.Exists(path))
 				throw new Exception(LangRes("E_CreateArchive"));
 			string dirName = new FileInfo(path).Name;
-			string tmpZip = _context.Server.MapPath("../tmp/" + dirName + ".zip");
+			string tmpZip = MapPath("../tmp/" + dirName + ".zip");
 			if (System.IO.File.Exists(tmpZip))
 				System.IO.File.Delete(tmpZip);
 			ZipFile.CreateFromDirectory(path, tmpZip, CompressionLevel.Fastest, true);
@@ -742,7 +760,7 @@ namespace SmartStore.Admin.Controllers
 
 		public void ProcessRequest()
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.UploadPictures))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.UploadPictures))
 			{
 				_response.Write(GetErrorRes("You do not have the required permission"));
 				return;

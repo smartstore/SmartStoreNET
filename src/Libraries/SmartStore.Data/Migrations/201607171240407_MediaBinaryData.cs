@@ -4,6 +4,7 @@ namespace SmartStore.Data.Migrations
 	using System.Data.Entity.Migrations;
 	using System.Linq;
 	using Core;
+	using Core.Domain.Configuration;
 	using Core.Domain.Media;
 	using Setup;
 
@@ -130,8 +131,19 @@ namespace SmartStore.Data.Migrations
 
 			var binaryDatas = context.Set<BinaryData>();
 
-			MovePictureBinaryToBinaryDataTable(context, binaryDatas);
-			MoveDownloadBinaryToBinaryDataTable(context, binaryDatas);
+			// be careful, this setting does not exist in all databases
+			var storeInDb = true;
+			var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "Media.Images.StoreInDB");
+			if (setting != null)
+			{
+				storeInDb = setting.Value.ToBool(true);
+			}
+
+			if (storeInDb)
+			{
+				MovePictureBinaryToBinaryDataTable(context, binaryDatas);
+				MoveDownloadBinaryToBinaryDataTable(context, binaryDatas);
+			}
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

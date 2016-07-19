@@ -6,14 +6,12 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using SmartStore.Core.IO;
-using SmartStore.Core.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services;
 using SmartStore.Services.Security;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 
@@ -22,6 +20,7 @@ namespace SmartStore.Admin.Controllers
 	[AdminAuthorize]
 	public class RoxyFileManagerController : AdminControllerBase
 	{
+		private const int BUFFER_SIZE = 32768;
 		private const string CONFIG_FILE = "~/Administration/Content/filemanager/conf.json";
 
 		private Dictionary<string, string> _lang = null;
@@ -343,125 +342,125 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private List<string> GetFiles(string path, string type)
-		{
-			List<string> ret = new List<string>();
-			if (type == "#")
-				type = "";
-			string[] files = Directory.GetFiles(path);
-			foreach (string f in files)
-			{
-				if ((GetFileType(new FileInfo(f).Extension) == type) || (type == ""))
-					ret.Add(f);
-			}
-			return ret;
-		}
+		//private List<string> GetFiles(string path, string type)
+		//{
+		//	List<string> ret = new List<string>();
+		//	if (type == "#")
+		//		type = "";
+		//	string[] files = Directory.GetFiles(path);
+		//	foreach (string f in files)
+		//	{
+		//		if ((GetFileType(new FileInfo(f).Extension) == type) || (type == ""))
+		//			ret.Add(f);
+		//	}
+		//	return ret;
+		//}
 
-		private ArrayList ListDirs(string path)
-		{
-			string[] dirs = Directory.GetDirectories(path);
-			ArrayList ret = new ArrayList();
-			foreach (string dir in dirs)
-			{
-				ret.Add(dir);
-				ret.AddRange(ListDirs(dir));
-			}
-			return ret;
-		}
+		//private ArrayList ListDirs(string path)
+		//{
+		//	string[] dirs = Directory.GetDirectories(path);
+		//	ArrayList ret = new ArrayList();
+		//	foreach (string dir in dirs)
+		//	{
+		//		ret.Add(dir);
+		//		ret.AddRange(ListDirs(dir));
+		//	}
+		//	return ret;
+		//}
 
-		protected void ListDirTree(string type)
-		{
-			DirectoryInfo d = new DirectoryInfo(GetFilesRoot());
-			if (!d.Exists)
-				throw new Exception("Invalid files root directory. Check your configuration.");
+		//protected void ListDirTree(string type)
+		//{
+		//	DirectoryInfo d = new DirectoryInfo(GetFilesRoot());
+		//	if (!d.Exists)
+		//		throw new Exception("Invalid files root directory. Check your configuration.");
 
-			ArrayList dirs = ListDirs(d.FullName);
-			dirs.Insert(0, d.FullName);
+		//	ArrayList dirs = ListDirs(d.FullName);
+		//	dirs.Insert(0, d.FullName);
 
-			string localPath = MapPath("~/");
-			_response.Write("[");
-			for (int i = 0; i < dirs.Count; i++)
-			{
-				string dir = (string)dirs[i];
-				_response.Write("{\"p\":\"/" + dir.Replace(localPath, "").Replace("\\", "/") + "\",\"f\":\"" + GetFiles(dir, type).Count.ToString() + "\",\"d\":\"" + Directory.GetDirectories(dir).Length.ToString() + "\"}");
-				if (i < dirs.Count - 1)
-					_response.Write(",");
-			}
-			_response.Write("]");
-		}
+		//	string localPath = MapPath("~/");
+		//	_response.Write("[");
+		//	for (int i = 0; i < dirs.Count; i++)
+		//	{
+		//		string dir = (string)dirs[i];
+		//		_response.Write("{\"p\":\"/" + dir.Replace(localPath, "").Replace("\\", "/") + "\",\"f\":\"" + GetFiles(dir, type).Count.ToString() + "\",\"d\":\"" + Directory.GetDirectories(dir).Length.ToString() + "\"}");
+		//		if (i < dirs.Count - 1)
+		//			_response.Write(",");
+		//	}
+		//	_response.Write("]");
+		//}
 
-		protected void ListFiles(string path, string type)
-		{
-			CheckPath(path);
-			string fullPath = FixPath(path);
-			List<string> files = GetFiles(fullPath, type);
-			_response.Write("[");
-			for (int i = 0; i < files.Count; i++)
-			{
-				FileInfo f = new FileInfo(files[i]);
-				int w = 0, h = 0;
-				if (GetFileType(f.Extension) == "image")
-				{
-					try
-					{
-						FileStream fs = new FileStream(f.FullName, FileMode.Open);
-						Image img = Image.FromStream(fs);
-						w = img.Width;
-						h = img.Height;
-						fs.Close();
-						fs.Dispose();
-						img.Dispose();
-					}
-					catch (Exception ex)
-					{
-						throw ex;
-					}
-				}
-				_response.Write("{");
-				_response.Write("\"p\":\"" + path + "/" + f.Name + "\"");
-				_response.Write(",\"s\":\"" + f.Length.ToString() + "\"");
-				_response.Write(",\"w\":\"" + w.ToString() + "\"");
-				_response.Write(",\"h\":\"" + h.ToString() + "\"");
-				_response.Write("}");
-				if (i < files.Count - 1)
-					_response.Write(",");
-			}
-			_response.Write("]");
-		}
+		//protected void ListFiles(string path, string type)
+		//{
+		//	CheckPath(path);
+		//	string fullPath = FixPath(path);
+		//	List<string> files = GetFiles(fullPath, type);
+		//	_response.Write("[");
+		//	for (int i = 0; i < files.Count; i++)
+		//	{
+		//		FileInfo f = new FileInfo(files[i]);
+		//		int w = 0, h = 0;
+		//		if (GetFileType(f.Extension) == "image")
+		//		{
+		//			try
+		//			{
+		//				FileStream fs = new FileStream(f.FullName, FileMode.Open);
+		//				Image img = Image.FromStream(fs);
+		//				w = img.Width;
+		//				h = img.Height;
+		//				fs.Close();
+		//				fs.Dispose();
+		//				img.Dispose();
+		//			}
+		//			catch (Exception ex)
+		//			{
+		//				throw ex;
+		//			}
+		//		}
+		//		_response.Write("{");
+		//		_response.Write("\"p\":\"" + path + "/" + f.Name + "\"");
+		//		_response.Write(",\"s\":\"" + f.Length.ToString() + "\"");
+		//		_response.Write(",\"w\":\"" + w.ToString() + "\"");
+		//		_response.Write(",\"h\":\"" + h.ToString() + "\"");
+		//		_response.Write("}");
+		//		if (i < files.Count - 1)
+		//			_response.Write(",");
+		//	}
+		//	_response.Write("]");
+		//}
 
-		public void DownloadDir(string path)
-		{
-			path = FixPath(path);
-			if (!Directory.Exists(path))
-				throw new Exception(LangRes("E_CreateArchive"));
-			string dirName = new FileInfo(path).Name;
-			string tmpZip = MapPath("../tmp/" + dirName + ".zip");
-			if (System.IO.File.Exists(tmpZip))
-				System.IO.File.Delete(tmpZip);
-			ZipFile.CreateFromDirectory(path, tmpZip, CompressionLevel.Fastest, true);
-			_response.Clear();
-			_response.Headers.Add("Content-Disposition", "attachment; filename=\"" + dirName + ".zip\"");
-			_response.ContentType = "application/force-download";
-			_response.TransmitFile(tmpZip);
-			_response.Flush();
-			System.IO.File.Delete(tmpZip);
-			_response.End();
-		}
+		//public void DownloadDir(string path)
+		//{
+		//	path = FixPath(path);
+		//	if (!Directory.Exists(path))
+		//		throw new Exception(LangRes("E_CreateArchive"));
+		//	string dirName = new FileInfo(path).Name;
+		//	string tmpZip = MapPath("../tmp/" + dirName + ".zip");
+		//	if (System.IO.File.Exists(tmpZip))
+		//		System.IO.File.Delete(tmpZip);
+		//	ZipFile.CreateFromDirectory(path, tmpZip, CompressionLevel.Fastest, true);
+		//	_response.Clear();
+		//	_response.Headers.Add("Content-Disposition", "attachment; filename=\"" + dirName + ".zip\"");
+		//	_response.ContentType = "application/force-download";
+		//	_response.TransmitFile(tmpZip);
+		//	_response.Flush();
+		//	System.IO.File.Delete(tmpZip);
+		//	_response.End();
+		//}
 
-		protected void DownloadFile(string path)
-		{
-			CheckPath(path);
-			FileInfo file = new FileInfo(FixPath(path));
-			if (file.Exists)
-			{
-				_response.Clear();
-				_response.Headers.Add("Content-Disposition", "attachment; filename=\"" + file.Name + "\"");
-				_response.ContentType = "application/force-download";
-				_response.TransmitFile(file.FullName);
-				_response.Flush();
-				_response.End();
-			}
-		}
+		//protected void DownloadFile(string path)
+		//{
+		//	CheckPath(path);
+		//	FileInfo file = new FileInfo(FixPath(path));
+		//	if (file.Exists)
+		//	{
+		//		_response.Clear();
+		//		_response.Headers.Add("Content-Disposition", "attachment; filename=\"" + file.Name + "\"");
+		//		_response.ContentType = "application/force-download";
+		//		_response.TransmitFile(file.FullName);
+		//		_response.Flush();
+		//		_response.End();
+		//	}
+		//}
 
 		protected void MoveDir(string path, string newPath)
 		{
@@ -561,63 +560,63 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		public bool ThumbnailCallback()
-		{
-			return false;
-		}
+		//public bool ThumbnailCallback()
+		//{
+		//	return false;
+		//}
 
-		protected void ShowThumbnail(string path, int width, int height)
-		{
-			CheckPath(path);
-			FileStream fs = new FileStream(FixPath(path), FileMode.Open);
-			Bitmap img = new Bitmap(Bitmap.FromStream(fs));
-			fs.Close();
-			fs.Dispose();
-			int cropWidth = img.Width, cropHeight = img.Height;
-			int cropX = 0, cropY = 0;
+		//protected void ShowThumbnail(string path, int width, int height)
+		//{
+		//	CheckPath(path);
+		//	FileStream fs = new FileStream(FixPath(path), FileMode.Open);
+		//	Bitmap img = new Bitmap(Bitmap.FromStream(fs));
+		//	fs.Close();
+		//	fs.Dispose();
+		//	int cropWidth = img.Width, cropHeight = img.Height;
+		//	int cropX = 0, cropY = 0;
 
-			double imgRatio = (double)img.Width / (double)img.Height;
+		//	double imgRatio = (double)img.Width / (double)img.Height;
 
-			if (height == 0)
-				height = Convert.ToInt32(Math.Floor((double)width / imgRatio));
+		//	if (height == 0)
+		//		height = Convert.ToInt32(Math.Floor((double)width / imgRatio));
 
-			if (width > img.Width)
-				width = img.Width;
-			if (height > img.Height)
-				height = img.Height;
+		//	if (width > img.Width)
+		//		width = img.Width;
+		//	if (height > img.Height)
+		//		height = img.Height;
 
-			double cropRatio = (double)width / (double)height;
-			cropWidth = Convert.ToInt32(Math.Floor((double)img.Height * cropRatio));
-			cropHeight = Convert.ToInt32(Math.Floor((double)cropWidth / cropRatio));
-			if (cropWidth > img.Width)
-			{
-				cropWidth = img.Width;
-				cropHeight = Convert.ToInt32(Math.Floor((double)cropWidth / cropRatio));
-			}
-			if (cropHeight > img.Height)
-			{
-				cropHeight = img.Height;
-				cropWidth = Convert.ToInt32(Math.Floor((double)cropHeight * cropRatio));
-			}
-			if (cropWidth < img.Width)
-			{
-				cropX = Convert.ToInt32(Math.Floor((double)(img.Width - cropWidth) / 2));
-			}
-			if (cropHeight < img.Height)
-			{
-				cropY = Convert.ToInt32(Math.Floor((double)(img.Height - cropHeight) / 2));
-			}
+		//	double cropRatio = (double)width / (double)height;
+		//	cropWidth = Convert.ToInt32(Math.Floor((double)img.Height * cropRatio));
+		//	cropHeight = Convert.ToInt32(Math.Floor((double)cropWidth / cropRatio));
+		//	if (cropWidth > img.Width)
+		//	{
+		//		cropWidth = img.Width;
+		//		cropHeight = Convert.ToInt32(Math.Floor((double)cropWidth / cropRatio));
+		//	}
+		//	if (cropHeight > img.Height)
+		//	{
+		//		cropHeight = img.Height;
+		//		cropWidth = Convert.ToInt32(Math.Floor((double)cropHeight * cropRatio));
+		//	}
+		//	if (cropWidth < img.Width)
+		//	{
+		//		cropX = Convert.ToInt32(Math.Floor((double)(img.Width - cropWidth) / 2));
+		//	}
+		//	if (cropHeight < img.Height)
+		//	{
+		//		cropY = Convert.ToInt32(Math.Floor((double)(img.Height - cropHeight) / 2));
+		//	}
 
-			Rectangle area = new Rectangle(cropX, cropY, cropWidth, cropHeight);
-			Bitmap cropImg = img.Clone(area, System.Drawing.Imaging.PixelFormat.DontCare);
-			img.Dispose();
-			Image.GetThumbnailImageAbort imgCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
+		//	Rectangle area = new Rectangle(cropX, cropY, cropWidth, cropHeight);
+		//	Bitmap cropImg = img.Clone(area, System.Drawing.Imaging.PixelFormat.DontCare);
+		//	img.Dispose();
+		//	Image.GetThumbnailImageAbort imgCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
 
-			_response.AddHeader("Content-Type", "image/png");
-			cropImg.GetThumbnailImage(width, height, imgCallback, IntPtr.Zero).Save(_response.OutputStream, ImageFormat.Png);
-			_response.OutputStream.Close();
-			cropImg.Dispose();
-		}
+		//	_response.AddHeader("Content-Type", "image/png");
+		//	cropImg.GetThumbnailImage(width, height, imgCallback, IntPtr.Zero).Save(_response.OutputStream, ImageFormat.Png);
+		//	_response.OutputStream.Close();
+		//	cropImg.Dispose();
+		//}
 
 		private ImageFormat GetImageFormat(string filename)
 		{
@@ -786,7 +785,7 @@ namespace SmartStore.Admin.Controllers
 					if (_fileRoot.IsEmpty())
 						_fileRoot = "Media/Uploaded";
 
-					//TODO: remove, just for testing coexistence of old versus new code
+					//TODO: remove here and change in conf.json "Media/Uploaded"
 					if (_fileRoot.StartsWith("~/"))
 						_fileRoot = _fileRoot.Substring(2);
 				}
@@ -795,14 +794,22 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private string FixPath2(string path)
+		private string GetRelativePath(string path)
 		{
-			if (path.HasValue())
+			if (path.IsEmpty())
+				return path;
+
+			if (path.StartsWith("~/"))
+				return path.Substring(2);
+
+			if (path.StartsWith("/"))
+				return path.Substring(1);
+
+			if (path.IsWebUrl())
 			{
-				if (path.StartsWith("~/"))
-					path = path.Substring(2);
-				else if (path.StartsWith("/"))
-					path = path.Substring(1);
+				var uri = new Uri(path);
+
+				return _fileSystem.GetStoragePath(uri.PathAndQuery);
 			}
 
 			return path;
@@ -878,7 +885,7 @@ namespace SmartStore.Admin.Controllers
 			var isFirstItem = true;
 			var width = 0;
 			var height = 0;
-			var files = GetFiles2(FixPath2(path), type);
+			var files = GetFiles2(GetRelativePath(path), type);
 
 			_response.Write("[");
 
@@ -892,7 +899,8 @@ namespace SmartStore.Admin.Controllers
 				GetImageSize(file, out width, out height);
 
 				_response.Write("{");
-				_response.Write("\"p\":\"" + file.Path + "\"");
+				_response.Write("\"p\":\"" + _context.GetContentUrl(file.Path) + "\"");
+				_response.Write(",\"t\":\"" + file.LastUpdated.ToUnixTime().ToString() + "\"");
 				_response.Write(",\"s\":\"" + file.Size.ToString() + "\"");
 				_response.Write(",\"w\":\"" + width.ToString() + "\"");
 				_response.Write(",\"h\":\"" + height.ToString() + "\"");
@@ -900,6 +908,145 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			_response.Write("]");
+		}
+
+		private void DownloadFile2(string path)
+		{
+			path = GetRelativePath(path);
+			if (!_fileSystem.FileExists(path))
+				return;
+
+			var len = 0;
+			var buffer = new byte[BUFFER_SIZE];
+			var file = _fileSystem.GetFile(path);
+
+			try
+			{
+				using (var stream = file.OpenRead())
+				{
+					_response.Clear();
+					_response.Headers.Add("Content-Disposition", "attachment; filename=\"" + file.Name + "\"");
+					_response.ContentType = MimeTypes.MapNameToMimeType(file.Name);
+
+					while (_response.IsClientConnected && (len = stream.Read(buffer, 0, BUFFER_SIZE)) > 0)
+					{
+						_response.OutputStream.Write(buffer, 0, len);
+						_response.Flush();
+
+						Array.Clear(buffer, 0, BUFFER_SIZE);
+					}
+
+					_response.End();
+				}
+			}
+			catch (IOException)
+			{
+				throw new Exception(T("Admin.Common.FileInUse"));
+			}
+		}
+
+		private void DownloadDir2(string path)
+		{
+			path = GetRelativePath(path);
+			if (!_fileSystem.FolderExists(path))
+			{
+				throw new Exception(LangRes("E_CreateArchive"));
+			}
+
+			var folder = _fileSystem.GetFolder(path);
+
+			// copy files to temp folder
+			var tempDir = FileSystemHelper.TempDir("roxy " + folder.Name);	
+			FileSystemHelper.ClearDirectory(tempDir, false);
+			var files = GetFiles2(path, null);
+
+			foreach (var file in files)
+			{
+				var bytes = _fileSystem.ReadAllBytes(file.Path);
+				if (bytes != null && bytes.Length > 0)
+				{
+					System.IO.File.WriteAllBytes(Path.Combine(tempDir, file.Name), bytes);
+				}
+			}
+
+			// create zip from temp folder
+			var tempZip = Path.Combine(FileSystemHelper.TempDir(), folder.Name + ".zip");
+			FileSystemHelper.Delete(tempZip);
+
+			ZipFile.CreateFromDirectory(tempDir, tempZip, CompressionLevel.Fastest, false);
+
+			_response.Clear();
+			_response.Headers.Add("Content-Disposition", "attachment; filename=\"" + folder.Name + ".zip\"");
+			_response.ContentType = "application/zip";
+			_response.TransmitFile(tempZip);
+			_response.Flush();
+
+			FileSystemHelper.Delete(tempZip);
+			FileSystemHelper.ClearDirectory(tempDir, true);
+
+			_response.End();
+		}
+
+		private void ShowThumbnail2(string path, int width, int height)
+		{
+			path = GetRelativePath(path);
+			if (!_fileSystem.FileExists(path))
+				return;
+
+			var file = _fileSystem.GetFile(path);
+			var stream = file.OpenRead();
+			var img = new Bitmap(Image.FromStream(stream));
+
+			stream.Close();
+			stream.Dispose();
+
+			int cropWidth = img.Width, cropHeight = img.Height;
+			int cropX = 0, cropY = 0;
+			double imgRatio = (double)img.Width / (double)img.Height;
+
+			if (height == 0)
+				height = Convert.ToInt32(Math.Floor((double)width / imgRatio));
+
+			if (width > img.Width)
+				width = img.Width;
+			if (height > img.Height)
+				height = img.Height;
+
+			double cropRatio = (double)width / (double)height;
+
+			cropWidth = Convert.ToInt32(Math.Floor((double)img.Height * cropRatio));
+			cropHeight = Convert.ToInt32(Math.Floor((double)cropWidth / cropRatio));
+			if (cropWidth > img.Width)
+			{
+				cropWidth = img.Width;
+				cropHeight = Convert.ToInt32(Math.Floor((double)cropWidth / cropRatio));
+			}
+			if (cropHeight > img.Height)
+			{
+				cropHeight = img.Height;
+				cropWidth = Convert.ToInt32(Math.Floor((double)cropHeight * cropRatio));
+			}
+			if (cropWidth < img.Width)
+			{
+				cropX = Convert.ToInt32(Math.Floor((double)(img.Width - cropWidth) / 2));
+			}
+			if (cropHeight < img.Height)
+			{
+				cropY = Convert.ToInt32(Math.Floor((double)(img.Height - cropHeight) / 2));
+			}
+
+			var area = new Rectangle(cropX, cropY, cropWidth, cropHeight);
+			var cropImg = img.Clone(area, PixelFormat.DontCare);
+			img.Dispose();
+			var imgCallback = new Image.GetThumbnailImageAbort(() => false);
+
+			_response.AddHeader("Content-Type", "image/png");
+			cropImg
+				.GetThumbnailImage(width, height, imgCallback, IntPtr.Zero)
+				.Save(_response.OutputStream, ImageFormat.Png);
+
+			_response.OutputStream.Close();
+			cropImg.Dispose();
 		}
 
 		#endregion
@@ -946,10 +1093,10 @@ namespace SmartStore.Admin.Controllers
 						DeleteFile(_context.Request["f"]);
 						break;
 					case "DOWNLOAD":
-						DownloadFile(_context.Request["f"]);
+						DownloadFile2(_context.Request["f"]);
 						break;
 					case "DOWNLOADDIR":
-						DownloadDir(_context.Request["d"]);
+						DownloadDir2(_context.Request["d"]);
 						break;
 					case "MOVEDIR":
 						MoveDir(_context.Request["d"], _context.Request["n"]);
@@ -967,7 +1114,7 @@ namespace SmartStore.Admin.Controllers
 						int w = 140, h = 0;
 						int.TryParse(_context.Request["width"].Replace("px", ""), out w);
 						int.TryParse(_context.Request["height"].Replace("px", ""), out h);
-						ShowThumbnail(_context.Request["f"], w, h);
+						ShowThumbnail2(_context.Request["f"], w, h);
 						break;
 					case "UPLOAD":
 						Upload(_context.Request["d"]);

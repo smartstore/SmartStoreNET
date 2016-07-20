@@ -148,6 +148,7 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
+			builder.AddOrUpdate("Admin.Common.Copy", "Copy", "Kopie");
 		}
 	}
 }

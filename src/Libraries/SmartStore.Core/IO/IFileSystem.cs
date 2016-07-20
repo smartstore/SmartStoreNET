@@ -51,6 +51,14 @@ namespace SmartStore.Core.IO
 		IFolder GetFolder(string path);
 
 		/// <summary>
+		/// Retrieves a folder for file path within the storage provider.
+		/// </summary>
+		/// <param name="path">The relative path to the file within the storage provider.</param>
+		/// <returns>The folder for the file.</returns>
+		/// <exception cref="ArgumentException">If the file or the folder is not found.</exception>
+		IFolder GetFolderForFile(string path);
+
+		/// <summary>
 		/// Performs a deep search for files within a path.
 		/// </summary>
 		/// <param name="path">The relative path to the folder in which to process file search.</param>

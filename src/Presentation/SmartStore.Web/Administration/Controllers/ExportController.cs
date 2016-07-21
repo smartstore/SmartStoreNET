@@ -17,7 +17,6 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
@@ -605,10 +604,6 @@ namespace SmartStore.Admin.Controllers
 					model.Add(profileModel);
 				}
 			}
-
-			var service = EngineContext.Current.Resolve<IFileSystem>();
-			var file = service.GetFile(@"Media\0000706.png");
-			NotifyInfo(service.GetPublicUrl(file.Path));
 
 			return View(model);
 		}

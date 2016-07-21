@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using SmartStore.Core.IO;
-using SmartStore.Services;
 using SmartStore.Services.Security;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
@@ -24,9 +23,9 @@ namespace SmartStore.Admin.Controllers
 		private const string CONFIG_FILE = "~/Administration/Content/filemanager/conf.json";
 		private const string LANGUAGE_FILE = "~/Administration/Content/filemanager/lang/{0}.json";
 
+		private string _fileRoot = null;
 		private Dictionary<string, string> _lang = null;
 		private Dictionary<string, string> _settings = null;
-		private string _fileRoot = null;
 
 		private readonly IFileSystem _fileSystem;
 		private readonly HttpContextBase _context;
@@ -40,225 +39,6 @@ namespace SmartStore.Admin.Controllers
 			_context = context;
 			_response = _context.Response;
 		}
-
-		#region Old Utilities
-
-		private string FixPath(string path)
-		{
-			if (path == null)
-			{
-				path = "";
-			}
-
-			if (!path.StartsWith("~"))
-			{
-				if (!path.StartsWith("/"))
-					path = "/" + path;
-				path = "~" + path;
-			}
-
-			//var filesRoot = GetSetting("FILES_ROOT");
-			//if (!path.ToLowerInvariant().Contains(filesRoot.ToLowerInvariant()))
-			//{
-			//	path = filesRoot;
-			//}
-
-			return _context.Server.MapPath(path);
-		}
-
-		protected bool CanHandleFile(string filename)
-		{
-			bool ret = false;
-			FileInfo file = new FileInfo(filename);
-			string ext = file.Extension.Replace(".", "").ToLower();
-			string setting = GetSetting("FORBIDDEN_UPLOADS").Trim().ToLower();
-			if (setting != "")
-			{
-				ArrayList tmp = new ArrayList();
-				tmp.AddRange(Regex.Split(setting, "\\s+"));
-				if (!tmp.Contains(ext))
-					ret = true;
-			}
-			setting = GetSetting("ALLOWED_UPLOADS").Trim().ToLower();
-			if (setting != "")
-			{
-				ArrayList tmp = new ArrayList();
-				tmp.AddRange(Regex.Split(setting, "\\s+"));
-				if (!tmp.Contains(ext))
-					ret = false;
-			}
-
-			return ret;
-		}
-
-		protected string GetFilesRoot()
-		{
-			string ret = GetSetting("FILES_ROOT");
-			if (GetSetting("SESSION_PATH_KEY") != "" && _context.Session[GetSetting("SESSION_PATH_KEY")] != null)
-				ret = (string)_context.Session[GetSetting("SESSION_PATH_KEY")];
-
-			if (ret == "")
-				ret = _context.Server.MapPath("~/Media/Uploaded");  // ../Uploads
-			else
-				ret = FixPath(ret);
-			return ret;
-		}
-
-		protected void CheckPath(string path)
-		{
-			if (FixPath(path).IndexOf(GetFilesRoot()) != 0)
-			{
-				throw new Exception("Access to " + path + " is denied");
-			}
-		}
-
-		private void _copyDir(string path, string dest)
-		{
-			if (!Directory.Exists(dest))
-				Directory.CreateDirectory(dest);
-			foreach (string f in Directory.GetFiles(path))
-			{
-				FileInfo file = new FileInfo(f);
-				if (!System.IO.File.Exists(Path.Combine(dest, file.Name)))
-				{
-					System.IO.File.Copy(f, Path.Combine(dest, file.Name));
-				}
-			}
-			foreach (string d in Directory.GetDirectories(path))
-			{
-				DirectoryInfo dir = new DirectoryInfo(d);
-				_copyDir(d, Path.Combine(dest, dir.Name));
-			}
-		}
-
-		protected void CopyDir(string path, string newPath)
-		{
-			CheckPath(path);
-			CheckPath(newPath);
-			DirectoryInfo dir = new DirectoryInfo(FixPath(path));
-			DirectoryInfo newDir = new DirectoryInfo(FixPath(newPath + "/" + dir.Name));
-
-			if (!dir.Exists)
-			{
-				throw new Exception(LangRes("E_CopyDirInvalidPath"));
-			}
-			else if (newDir.Exists)
-			{
-				throw new Exception(LangRes("E_DirAlreadyExists"));
-			}
-			else
-			{
-				_copyDir(dir.FullName, newDir.FullName);
-			}
-			_response.Write(GetResultString());
-		}
-
-		protected void CreateDir(string path, string name)
-		{
-			CheckPath(path);
-			path = FixPath(path);
-			if (!Directory.Exists(path))
-				throw new Exception(LangRes("E_CreateDirInvalidPath"));
-			else
-			{
-				try
-				{
-					path = Path.Combine(path, name);
-					if (!Directory.Exists(path))
-						Directory.CreateDirectory(path);
-					_response.Write(GetResultString());
-				}
-				catch
-				{
-					throw new Exception(LangRes("E_CreateDirFailed"));
-				}
-			}
-		}
-
-		private ImageFormat GetImageFormat(string filename)
-		{
-			ImageFormat ret = ImageFormat.Jpeg;
-			switch (new FileInfo(filename).Extension.ToLower())
-			{
-				case ".png":
-					ret = ImageFormat.Png;
-					break;
-				case ".gif":
-					ret = ImageFormat.Gif;
-					break;
-			}
-			return ret;
-		}
-
-		protected void ImageResize(string path, string dest, int width, int height)
-		{
-			FileStream fs = new FileStream(path, FileMode.Open);
-			Image img = Image.FromStream(fs);
-			fs.Close();
-			fs.Dispose();
-			float ratio = (float)img.Width / (float)img.Height;
-			if ((img.Width <= width && img.Height <= height) || (width == 0 && height == 0))
-				return;
-
-			int newWidth = width;
-			int newHeight = Convert.ToInt16(Math.Floor((float)newWidth / ratio));
-			if ((height > 0 && newHeight > height) || (width == 0))
-			{
-				newHeight = height;
-				newWidth = Convert.ToInt16(Math.Floor((float)newHeight * ratio));
-			}
-			Bitmap newImg = new Bitmap(newWidth, newHeight);
-			Graphics g = Graphics.FromImage((Image)newImg);
-			g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-			g.DrawImage(img, 0, 0, newWidth, newHeight);
-			img.Dispose();
-			g.Dispose();
-			if (dest != "")
-			{
-				newImg.Save(dest, GetImageFormat(dest));
-			}
-			newImg.Dispose();
-		}
-
-		protected void Upload(string path)
-		{
-			CheckPath(path);
-			path = FixPath(path);
-			string res = GetResultString();
-			try
-			{
-				for (int i = 0; i < Request.Files.Count; i++)
-				{
-					if (CanHandleFile(Request.Files[i].FileName))
-					{
-						string filename = GetUniqueFileName(path, Request.Files[i].FileName);
-						string dest = Path.Combine(path, filename);
-						Request.Files[i].SaveAs(dest);
-						if (GetFileType(new FileInfo(filename).Extension) == "image")
-						{
-							int w = 0;
-							int h = 0;
-							int.TryParse(GetSetting("MAX_IMAGE_WIDTH"), out w);
-							int.TryParse(GetSetting("MAX_IMAGE_HEIGHT"), out h);
-							ImageResize(dest, dest, w, h);
-						}
-					}
-					else
-					{
-						res = GetResultString(LangRes("E_UploadNotAll"));
-					}
-				}
-			}
-			catch (Exception exception)
-			{
-				res = GetResultString(exception.Message, "error");
-			}
-			_response.Write("<script>");
-			_response.Write("parent.fileUploaded(" + res + ");");
-			_response.Write("</script>");
-		}
-
-		#endregion
 
 		#region Utilities
 
@@ -318,11 +98,11 @@ namespace SmartStore.Admin.Controllers
 					lang = Services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower();
 				}
 
-				var filename = _context.Server.MapPath(LANGUAGE_FILE.FormatInvariant(lang));
+				var filename = CommonHelper.MapPath(LANGUAGE_FILE.FormatInvariant(lang));
 
 				if (!System.IO.File.Exists(filename))
 				{
-					filename = _context.Server.MapPath(LANGUAGE_FILE.FormatInvariant("en"));
+					filename = CommonHelper.MapPath(LANGUAGE_FILE.FormatInvariant("en"));
 				}
 
 				_lang = ParseJson(filename);
@@ -341,7 +121,7 @@ namespace SmartStore.Admin.Controllers
 			var result = "";
 
 			if (_settings == null)
-				_settings = ParseJson(_context.Server.MapPath(CONFIG_FILE));
+				_settings = ParseJson(CommonHelper.MapPath(CONFIG_FILE));
 
 			if (_settings.ContainsKey(name))
 				result = _settings[name];
@@ -349,17 +129,43 @@ namespace SmartStore.Admin.Controllers
 			return result;
 		}
 
-		private string GetFileType(string extension)
+		private string GetFileContentType(string extension)
 		{
 			extension = extension.EmptyNull().ToLower();
-
-			if (extension == ".jpg" || extension == ".jpeg" || extension == ".png" || extension == ".gif")
-				return "image";
 
 			if (extension == ".swf" || extension == ".flv")
 				return "flash";
 
+			if (MimeTypes.MapNameToMimeType(extension).EmptyNull().StartsWith("image"))
+				return "image";
+
 			return "file";
+		}
+
+		private bool IsAllowedFileType(string extension)
+		{
+			var result = true;
+			extension = extension.EmptyNull().ToLower().Replace(".", "");
+
+			var setting = GetSetting("FORBIDDEN_UPLOADS").EmptyNull().Trim().ToLower();
+			if (setting.HasValue())
+			{
+				var tmp = new ArrayList();
+				tmp.AddRange(Regex.Split(setting, "\\s+"));
+				if (!tmp.Contains(extension))
+					result = true;
+			}
+
+			setting = GetSetting("ALLOWED_UPLOADS").EmptyNull().Trim().ToLower();
+			if (setting.HasValue())
+			{
+				var tmp = new ArrayList();
+				tmp.AddRange(Regex.Split(setting, "\\s+"));
+				if (!tmp.Contains(extension))
+					result = false;
+			}
+
+			return result;
 		}
 
 		private void GetImageSize(IFile file, out int width, out int height)
@@ -368,7 +174,7 @@ namespace SmartStore.Admin.Controllers
 
 			try
 			{
-				if (GetFileType(file.FileType).IsCaseInsensitiveEqual("image"))
+				if (GetFileContentType(file.FileType).IsCaseInsensitiveEqual("image"))
 				{
 					using (var stream = file.OpenRead())
 					using (var image = Image.FromStream(stream))
@@ -379,6 +185,52 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 			catch { }
+		}
+
+		private void ImageResize(string path, string dest, int width, int height)
+		{
+			if (dest.IsEmpty())
+				return;
+
+			var stream = new FileStream(path, FileMode.Open);
+			var image = Image.FromStream(stream);
+			var imageFormat = ImageFormat.Jpeg;
+
+			switch (Path.GetExtension(path).EmptyNull().ToLower())
+			{
+				case ".png":
+					imageFormat = ImageFormat.Png;
+					break;
+				case ".gif":
+					imageFormat = ImageFormat.Gif;
+					break;
+			}
+
+			stream.Close();
+			stream.Dispose();
+
+			float ratio = (float)image.Width / (float)image.Height;
+			if ((image.Width <= width && image.Height <= height) || (width == 0 && height == 0))
+				return;
+
+			int newWidth = width;
+			int newHeight = Convert.ToInt16(Math.Floor((float)newWidth / ratio));
+			if ((height > 0 && newHeight > height) || (width == 0))
+			{
+				newHeight = height;
+				newWidth = Convert.ToInt16(Math.Floor((float)newHeight * ratio));
+			}
+
+			using (var newImage = new Bitmap(newWidth, newHeight))
+			using (var graph = Graphics.FromImage(newImage))
+			{
+				graph.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+				graph.DrawImage(image, 0, 0, newWidth, newHeight);
+
+				image.Dispose();
+
+				newImage.Save(dest, imageFormat);
+			}
 		}
 
 		private string GetResultString(string message = null, string type = "ok")
@@ -437,16 +289,16 @@ namespace SmartStore.Admin.Controllers
 			return path;
 		}
 
-		private string GetUniqueFileName(string dir, string filename)
+		private string GetUniqueFileName(string folder, string fileName)
 		{
-			var result = filename;
+			var result = fileName;
 			var copy = T("Admin.Common.Copy");
 			string name = null;
 			string extension = null;
 
 			for (var i = 1; i < 999999; ++i)
 			{
-				var path = _fileSystem.Combine(dir, result);
+				var path = _fileSystem.Combine(folder, result);
 
 				if (!_fileSystem.FileExists(path))
 				{
@@ -456,8 +308,8 @@ namespace SmartStore.Admin.Controllers
 				if (name == null || extension == null)
 				{
 					var file = _fileSystem.GetFile(path);
-
 					extension = file.FileType;
+					// this assumes that a storage file name always ends with its file type
 					name = file.Name.EmptyNull().Substring(0, file.Name.EmptyNull().Length - extension.Length);
 				}				
 
@@ -467,7 +319,7 @@ namespace SmartStore.Admin.Controllers
 			return result;
 		}
 
-		private List<IFile> GetFiles2(string path, string type)
+		private List<IFile> GetFiles(string path, string type)
 		{
 			var files = _fileSystem.ListFiles(path);
 
@@ -475,17 +327,17 @@ namespace SmartStore.Admin.Controllers
 				return files.ToList();
 
 			return _fileSystem.ListFiles(path)
-				.Where(x => GetFileType(x.FileType).IsCaseInsensitiveEqual(type))
+				.Where(x => GetFileContentType(x.FileType).IsCaseInsensitiveEqual(type))
 				.ToList();
 		}
 
-		private List<RoxyFolder> ListDirs2(string path)
+		private List<RoxyFolder> ListDirs(string path)
 		{
 			var result = new List<RoxyFolder>();
 
 			_fileSystem.ListFolders(path).Each(x =>
 			{
-				var subFolders = ListDirs2(x.Path);
+				var subFolders = ListDirs(x.Path);
 
 				result.Add(new RoxyFolder
 				{
@@ -499,10 +351,10 @@ namespace SmartStore.Admin.Controllers
 			return result;
 		}
 
-		private void ListDirTree2(string type)
+		private void ListDirTree(string type)
 		{
 			var isFirstItem = true;
-			var folders = ListDirs2(FileRoot);
+			var folders = ListDirs(FileRoot);
 
 			folders.Insert(0, new RoxyFolder
 			{
@@ -519,7 +371,7 @@ namespace SmartStore.Admin.Controllers
 				else
 					_response.Write(",");
 
-				var fileCount = GetFiles2(folder.Folder.Path, type).Count;
+				var fileCount = GetFiles(folder.Folder.Path, type).Count;
 
 				_response.Write(
 					"{\"p\":\"/" + folder.Folder.Path.Replace(FileRoot, "").Replace("\\", "/")
@@ -532,12 +384,12 @@ namespace SmartStore.Admin.Controllers
 			_response.Write("]");
 		}
 
-		private void ListFiles2(string path, string type)
+		private void ListFiles(string path, string type)
 		{
 			var isFirstItem = true;
 			var width = 0;
 			var height = 0;
-			var files = GetFiles2(GetRelativePath(path), type);
+			var files = GetFiles(GetRelativePath(path), type);
 
 			_response.Write("[");
 
@@ -562,7 +414,7 @@ namespace SmartStore.Admin.Controllers
 			_response.Write("]");
 		}
 
-		private void DownloadFile2(string path)
+		private void DownloadFile(string path)
 		{
 			path = GetRelativePath(path);
 			if (!_fileSystem.FileExists(path))
@@ -597,7 +449,7 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private void DownloadDir2(string path)
+		private void DownloadDir(string path)
 		{
 			path = GetRelativePath(path);
 			if (!_fileSystem.FolderExists(path))
@@ -607,10 +459,10 @@ namespace SmartStore.Admin.Controllers
 
 			var folder = _fileSystem.GetFolder(path);
 
-			// copy files to temp folder
+			// copy files from file storage to temp folder
 			var tempDir = FileSystemHelper.TempDir("roxy " + folder.Name);	
 			FileSystemHelper.ClearDirectory(tempDir, false);
-			var files = GetFiles2(path, null);
+			var files = GetFiles(path, null);
 
 			foreach (var file in files)
 			{
@@ -639,7 +491,7 @@ namespace SmartStore.Admin.Controllers
 			_response.End();
 		}
 
-		private void ShowThumbnail2(string path, int width, int height)
+		private void ShowThumbnail(string path, int width, int height)
 		{
 			path = GetRelativePath(path);
 			if (!_fileSystem.FileExists(path))
@@ -647,95 +499,75 @@ namespace SmartStore.Admin.Controllers
 
 			var file = _fileSystem.GetFile(path);
 			var stream = file.OpenRead();
-			var img = new Bitmap(Image.FromStream(stream));
+			var image = new Bitmap(Image.FromStream(stream));
 
 			stream.Close();
 			stream.Dispose();
 
-			int cropWidth = img.Width, cropHeight = img.Height;
+			int cropWidth = image.Width, cropHeight = image.Height;
 			int cropX = 0, cropY = 0;
-			double imgRatio = (double)img.Width / (double)img.Height;
+			double imgRatio = (double)image.Width / (double)image.Height;
 
 			if (height == 0)
 				height = Convert.ToInt32(Math.Floor((double)width / imgRatio));
 
-			if (width > img.Width)
-				width = img.Width;
-			if (height > img.Height)
-				height = img.Height;
+			if (width > image.Width)
+				width = image.Width;
+			if (height > image.Height)
+				height = image.Height;
 
 			double cropRatio = (double)width / (double)height;
 
-			cropWidth = Convert.ToInt32(Math.Floor((double)img.Height * cropRatio));
+			cropWidth = Convert.ToInt32(Math.Floor((double)image.Height * cropRatio));
 			cropHeight = Convert.ToInt32(Math.Floor((double)cropWidth / cropRatio));
-			if (cropWidth > img.Width)
+			if (cropWidth > image.Width)
 			{
-				cropWidth = img.Width;
+				cropWidth = image.Width;
 				cropHeight = Convert.ToInt32(Math.Floor((double)cropWidth / cropRatio));
 			}
-			if (cropHeight > img.Height)
+			if (cropHeight > image.Height)
 			{
-				cropHeight = img.Height;
+				cropHeight = image.Height;
 				cropWidth = Convert.ToInt32(Math.Floor((double)cropHeight * cropRatio));
 			}
-			if (cropWidth < img.Width)
+			if (cropWidth < image.Width)
 			{
-				cropX = Convert.ToInt32(Math.Floor((double)(img.Width - cropWidth) / 2));
+				cropX = Convert.ToInt32(Math.Floor((double)(image.Width - cropWidth) / 2));
 			}
-			if (cropHeight < img.Height)
+			if (cropHeight < image.Height)
 			{
-				cropY = Convert.ToInt32(Math.Floor((double)(img.Height - cropHeight) / 2));
+				cropY = Convert.ToInt32(Math.Floor((double)(image.Height - cropHeight) / 2));
 			}
 
 			var area = new Rectangle(cropX, cropY, cropWidth, cropHeight);
-			var cropImg = img.Clone(area, PixelFormat.DontCare);
-			img.Dispose();
-			var imgCallback = new Image.GetThumbnailImageAbort(() => false);
 
-			_response.AddHeader("Content-Type", "image/png");
-			cropImg
-				.GetThumbnailImage(width, height, imgCallback, IntPtr.Zero)
-				.Save(_response.OutputStream, ImageFormat.Png);
+			using (var cropImg = image.Clone(area, PixelFormat.DontCare))
+			{
+				image.Dispose();
+				var imgCallback = new Image.GetThumbnailImageAbort(() => false);
 
-			_response.OutputStream.Close();
-			cropImg.Dispose();
+				_response.AddHeader("Content-Type", "image/png");
+
+				cropImg
+					.GetThumbnailImage(width, height, imgCallback, IntPtr.Zero)
+					.Save(_response.OutputStream, ImageFormat.Png);
+
+				_response.OutputStream.Close();
+			}
 		}
 
-		private bool CanHandleFileType(string str)
-		{
-			var result = true;
-			var extension = Path.GetExtension(str.EmptyNull()).Replace(".", "").ToLower();
-
-			var setting = GetSetting("FORBIDDEN_UPLOADS").EmptyNull().Trim().ToLower();
-			if (setting.HasValue())
-			{
-				var tmp = new ArrayList();
-				tmp.AddRange(Regex.Split(setting, "\\s+"));
-				if (!tmp.Contains(extension))
-					result = true;
-			}
-
-			setting = GetSetting("ALLOWED_UPLOADS").EmptyNull().Trim().ToLower();
-			if (setting.HasValue())
-			{
-				var tmp = new ArrayList();
-				tmp.AddRange(Regex.Split(setting, "\\s+"));
-				if (!tmp.Contains(extension))
-					result = false;
-			}
-
-			return result;
-		}
-
-		private void RenameFile2(string path, string name)
+		private void RenameFile(string path, string name)
 		{
 			path = GetRelativePath(path);
+
 			if (!_fileSystem.FileExists(path))
 			{
 				throw new Exception(LangRes("E_RenameFileInvalidPath"));
 			}
 
-			if (!CanHandleFileType(name))
+			var fileType = _fileSystem.GetFile(path).FileType;
+
+			if (!IsAllowedFileType(fileType))
 			{
 				throw new Exception(LangRes("E_FileExtensionForbidden"));
 			}
@@ -754,7 +586,7 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private void RenameDir2(string path, string name)
+		private void RenameDir(string path, string name)
 		{
 			path = GetRelativePath(path);
 
@@ -783,7 +615,7 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private void MoveFile2(string path, string newPath)
+		private void MoveFile(string path, string newPath)
 		{
 			path = GetRelativePath(path);
 			newPath = GetRelativePath(newPath);
@@ -810,7 +642,7 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private void MoveDir2(string path, string newPath)
+		private void MoveDir(string path, string newPath)
 		{
 			path = GetRelativePath(path);
 			
@@ -844,7 +676,7 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private void CopyFile2(string path, string newPath)
+		private void CopyFile(string path, string newPath)
 		{
 			path = GetRelativePath(path);
 			newPath = GetRelativePath(newPath);
@@ -869,7 +701,7 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private void DeleteFile2(string path)
+		private void DeleteFile(string path)
 		{
 			path = GetRelativePath(path);
 
@@ -890,7 +722,7 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private void DeleteDir2(string path)
+		private void DeleteDir(string path)
 		{
 			path = GetRelativePath(path);
 
@@ -918,6 +750,140 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
+		private void CreateDir(string path, string name)
+		{
+			path = GetRelativePath(path);
+
+			if (!_fileSystem.FolderExists(path))
+			{
+				throw new Exception(LangRes("E_CreateDirInvalidPath"));
+			}
+
+			try
+			{
+				path = _fileSystem.Combine(path, name);
+
+				if (!_fileSystem.FolderExists(path))
+					_fileSystem.CreateFolder(path);
+
+				_response.Write(GetResultString());
+			}
+			catch
+			{
+				throw new Exception(LangRes("E_CreateDirFailed"));
+			}
+		}
+
+		private void CopyDirCore(string path, string dest)
+		{
+			if (!_fileSystem.FolderExists(dest))
+			{
+				_fileSystem.CreateFolder(dest);
+			}
+
+			foreach (var file in _fileSystem.ListFiles(path))
+			{
+				var newPath = _fileSystem.Combine(dest, file.Name);
+
+				if (!_fileSystem.FileExists(newPath))
+				{
+					_fileSystem.CopyFile(file.Path, newPath);
+				}
+			}
+
+			foreach (var folder in _fileSystem.ListFolders(path))
+			{
+				var newPath = _fileSystem.Combine(dest, folder.Name);
+
+				CopyDirCore(folder.Path, newPath);
+			}
+		}
+
+		private void CopyDir(string path, string newPath)
+		{
+			path = GetRelativePath(path);
+			newPath = GetRelativePath(newPath);
+
+			if (!_fileSystem.FolderExists(path))
+			{
+				throw new Exception(LangRes("E_CopyDirInvalidPath"));
+			}
+
+			var folder = _fileSystem.GetFolder(path);
+
+			newPath = _fileSystem.Combine(newPath, folder.Name);
+
+			if (_fileSystem.FolderExists(newPath))
+			{
+				throw new Exception(LangRes("E_DirAlreadyExists"));
+			}
+
+			CopyDirCore(path, newPath);
+
+			_response.Write(GetResultString());
+		}
+
+		private void Upload(string path)
+		{
+			path = GetRelativePath(path);
+
+			string result = null;
+			var width = 0;
+			var height = 0;
+
+			int.TryParse(GetSetting("MAX_IMAGE_WIDTH"), out width);
+			int.TryParse(GetSetting("MAX_IMAGE_HEIGHT"), out height);
+
+			var tempDir = FileSystemHelper.TempDir("roxy " + CommonHelper.GenerateRandomInteger().ToString());
+
+			try
+			{
+				// copy uploaded files to temp folder and resize them
+				for (var i = 0; i < Request.Files.Count; ++i)
+				{
+					var file = Request.Files[i];
+					file.FileName.Dump();
+					var extension = Path.GetExtension(file.FileName);
+
+					if (GetFileContentType(extension).IsCaseInsensitiveEqual("image") && IsAllowedFileType(extension))
+					{
+						var dest = Path.Combine(tempDir, file.FileName);
+						file.SaveAs(dest);
+
+						ImageResize(dest, dest, width, height);
+					}
+					else
+					{
+						result = GetResultString(LangRes("E_UploadNotAll"));
+					}
+				}
+
+				// copy files to file storage
+				foreach (var tempPath in Directory.EnumerateFiles(tempDir, "*", SearchOption.TopDirectoryOnly))
+				{
+					using (var stream = new FileStream(tempPath, FileMode.Open, FileAccess.Read))
+					{
+						var name = GetUniqueFileName(path, Path.GetFileName(tempPath));
+						var newPath = _fileSystem.Combine(path, name);
+
+						_fileSystem.SaveStream(newPath, stream);
+					}
+				}
+			}
+			catch (Exception exception)
+			{
+				result = GetResultString(exception.Message, "error");
+			}
+			finally
+			{
+				FileSystemHelper.ClearDirectory(tempDir, true);
+			}
+
+			_response.Write("<script>");
+			_response.Write("parent.fileUploaded(" + (result ?? GetResultString()) + ");");
+			_response.Write("</script>");
+		}
+
 		#endregion
 
 		public void ProcessRequest()
@@ -940,49 +906,49 @@ namespace SmartStore.Admin.Controllers
 				switch (action.ToUpper())
 				{
 					case "DIRLIST":
-						ListDirTree2(_context.Request["type"]);
+						ListDirTree(_context.Request["type"]);
 						break;
 					case "FILESLIST":
-						ListFiles2(_context.Request["d"], _context.Request["type"]);
+						ListFiles(_context.Request["d"], _context.Request["type"]);
 						break;
 					case "COPYDIR":
 						CopyDir(_context.Request["d"], _context.Request["n"]);
 						break;
 					case "COPYFILE":
-						CopyFile2(_context.Request["f"], _context.Request["n"]);
+						CopyFile(_context.Request["f"], _context.Request["n"]);
 						break;
 					case "CREATEDIR":
 						CreateDir(_context.Request["d"], _context.Request["n"]);
 						break;
 					case "DELETEDIR":
-						DeleteDir2(_context.Request["d"]);
+						DeleteDir(_context.Request["d"]);
 						break;
 					case "DELETEFILE":
-						DeleteFile2(_context.Request["f"]);
+						DeleteFile(_context.Request["f"]);
 						break;
 					case "DOWNLOAD":
-						DownloadFile2(_context.Request["f"]);
+						DownloadFile(_context.Request["f"]);
 						break;
 					case "DOWNLOADDIR":
-						DownloadDir2(_context.Request["d"]);
+						DownloadDir(_context.Request["d"]);
 						break;
 					case "MOVEDIR":
-						MoveDir2(_context.Request["d"], _context.Request["n"]);
+						MoveDir(_context.Request["d"], _context.Request["n"]);
 						break;
 					case "MOVEFILE":
-						MoveFile2(_context.Request["f"], _context.Request["n"]);
+						MoveFile(_context.Request["f"], _context.Request["n"]);
 						break;
 					case "RENAMEDIR":
-						RenameDir2(_context.Request["d"], _context.Request["n"]);
+						RenameDir(_context.Request["d"], _context.Request["n"]);
 						break;
 					case "RENAMEFILE":
-						RenameFile2(_context.Request["f"], _context.Request["n"]);
+						RenameFile(_context.Request["f"], _context.Request["n"]);
 						break;
 					case "GENERATETHUMB":
 						int w = 140, h = 0;
 						int.TryParse(_context.Request["width"].Replace("px", ""), out w);
 						int.TryParse(_context.Request["height"].Replace("px", ""), out h);
-						ShowThumbnail2(_context.Request["f"], w, h);
+						ShowThumbnail(_context.Request["f"], w, h);
 						break;
 					case "UPLOAD":
 						Upload(_context.Request["d"]);

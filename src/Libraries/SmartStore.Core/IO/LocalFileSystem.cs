@@ -75,14 +75,17 @@ namespace SmartStore.Core.IO
 
 		public string GetStoragePath(string url)
 		{
-			if (url.StartsWith(_virtualPath))
+			if (url.HasValue())
 			{
-				return url.Substring(_virtualPath.Length).Replace('/', Path.DirectorySeparatorChar).Replace("%20", " ");
-			}
+				if (url.StartsWith(_virtualPath))
+				{
+					return url.Substring(_virtualPath.Length).Replace('/', Path.DirectorySeparatorChar).Replace("%20", " ");
+				}
 
-			if (url.StartsWith(_publicPath))
-			{
-				return url.Substring(_publicPath.Length).Replace('/', Path.DirectorySeparatorChar).Replace("%20", " ");
+				if (url.StartsWith(_publicPath))
+				{
+					return url.Substring(_publicPath.Length).Replace('/', Path.DirectorySeparatorChar).Replace("%20", " ");
+				}
 			}
 
 			return null;
@@ -134,7 +137,7 @@ namespace SmartStore.Core.IO
 				throw new ArgumentException("Folder " + path + " does not exist");
 			}
 
-			// get the relative path of the folder
+			// get relative path of the folder
 			var folderPath = Path.GetDirectoryName(path);
 
 			return new FileSystemStorageFolder(Fix(folderPath), fileInfo.Directory);
@@ -142,7 +145,11 @@ namespace SmartStore.Core.IO
 
 		public IEnumerable<string> SearchFiles(string path, string pattern)
 		{
-			return Directory.EnumerateFiles(MapStorage(path), pattern, SearchOption.AllDirectories);
+			// get relative from absolute path
+			var index = _storagePath.EmptyNull().Length;
+
+			return Directory.EnumerateFiles(MapStorage(path), pattern, SearchOption.AllDirectories)
+				.Select(x => x.Substring(index));
 		}
 
 		public IEnumerable<IFile> ListFiles(string path)
@@ -259,12 +266,10 @@ namespace SmartStore.Core.IO
 		{
 			var fileInfo = new FileInfo(MapStorage(path));
 
-			if (!fileInfo.Exists)
+			if (fileInfo.Exists)
 			{
-				throw new ArgumentException("File " + path + " does not exist");
+				fileInfo.Delete();
 			}
-
-			fileInfo.Delete();
 		}
 
 		public void RenameFile(string path, string newPath)

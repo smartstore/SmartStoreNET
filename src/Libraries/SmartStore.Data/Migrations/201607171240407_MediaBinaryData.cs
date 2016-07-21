@@ -130,13 +130,24 @@ namespace SmartStore.Data.Migrations
 			context.MigrateLocaleResources(MigrateLocaleResources);
 
 			var binaryDatas = context.Set<BinaryData>();
-
-			// be careful, this setting does not exist in all databases
 			var storeInDb = true;
-			var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "Media.Images.StoreInDB");
-			if (setting != null)
+
 			{
-				storeInDb = setting.Value.ToBool(true);
+				var settings = context.Set<Setting>();
+
+				// be careful, this setting does not necessarily exist
+				var setting = settings.FirstOrDefault(x => x.Name == "Media.Images.StoreInDB");
+				if (setting != null)
+				{
+					storeInDb = setting.Value.ToBool(true);
+				}
+
+				// upsert media storage provider system name
+				settings.AddOrUpdate(x => x.Name, new Setting
+				{
+					Name = "Media.Storage.Provider",
+					Value = (storeInDb ? "MediaStorage.SmartStoreDatabase" : "MediaStorage.SmartStoreFileSystem")
+				});
 			}
 
 			if (storeInDb)

@@ -80,6 +80,7 @@ using Module = Autofac.Module;
 using SmartStore.Services.Catalog.Importer;
 using SmartStore.Services.Customers.Importer;
 using SmartStore.Services.Messages.Importer;
+using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Web.Framework
 {
@@ -856,6 +857,7 @@ namespace SmartStore.Web.Framework
 				RegisterAsSpecificProvider<IPaymentMethod>(type, systemName, registration);
 				RegisterAsSpecificProvider<IExportProvider>(type, systemName, registration);
 				RegisterAsSpecificProvider<IOutputCacheProvider>(type, systemName, registration);
+				RegisterAsSpecificProvider<IMediaStorageProvider>(type, systemName, registration);
 			}
 
 		}

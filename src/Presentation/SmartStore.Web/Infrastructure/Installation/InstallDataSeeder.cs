@@ -26,6 +26,7 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
@@ -498,7 +499,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 						new ImageCache(mediaSettings, null, null, fileSystem),
 						new Notifier(),
 						fileSystem,
-						binaryDataService);
+						binaryDataService,
+						null);		// TODO!
 				}
 
 				return _pictureService;
@@ -568,6 +570,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			_ctx.MigrateSettings(x =>
 			{
 				x.Add("Media.Images.StoreInDB", _config.StoreMediaInDB);
+				x.Add("Media.Storage.Provider", _config.StoreMediaInDB ? DatabaseMediaStorageProvider.SystemName : FileSystemMediaStorageProvider.SystemName);
 			});
 
 			Populate("PopulatePictures", _data.Pictures());

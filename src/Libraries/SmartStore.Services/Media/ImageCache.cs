@@ -120,12 +120,12 @@ namespace SmartStore.Services.Media
 
         public virtual void DeleteCachedImages(Picture picture)
         {
-            string filter = string.Format("{0}*.*", picture.Id.ToString("0000000"));
+            var filter = string.Format("{0}*.*", picture.Id.ToString("0000000"));
 
 			var files = _fileSystem.SearchFiles(_thumbsRootDir, filter);
 			foreach (var file in files)
 			{
-				_fileSystem.DeleteFile(BuildPath(file));
+				_fileSystem.DeleteFile(file);
 			}
 		}
 

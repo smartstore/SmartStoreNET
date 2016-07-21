@@ -1,18 +1,27 @@
 ﻿using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
-using SmartStore.Utilities;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Media.Storage
 {
+	[SystemName("MediaStorage.SmartStoreFileSystem")]
+	[FriendlyName("File system media storage")]
 	public class FileSystemMediaStorageProvider : IMediaStorageProvider
 	{
 		private readonly IFileSystem _fileSystem;
-		private string _mediaPath;
+		private readonly string _mediaRoot;
 
 		public FileSystemMediaStorageProvider(
 			IFileSystem fileSystem)
 		{
 			_fileSystem = fileSystem;
+
+			_mediaRoot = "Media";
+		}
+
+		public static string SystemName
+		{
+			get { return "MediaStorage.SmartStoreFileSystem"; }
 		}
 
 		protected virtual string GetPictureName(int pictureId, string mimeType)
@@ -20,23 +29,17 @@ namespace SmartStore.Services.Media.Storage
 			return string.Format("{0}-0.{1}", pictureId.ToString("0000000"), MimeTypes.MapMimeTypeToExtension(mimeType));
 		}
 
-		protected virtual string GetPictureLocalPath(string fileName)
-		{
-			var path = _mediaPath ?? (_mediaPath = CommonHelper.MapPath("~/Media/", false));
-			return _fileSystem.Combine(path, fileName);
-		}
-
-		protected virtual string GetPictureLocalPath(Picture picture)
+		protected virtual string GetPicturePath(Picture picture)
 		{
 			var fileName = GetPictureName(picture.Id, picture.MimeType);
-			return GetPictureLocalPath(fileName);
+			return _fileSystem.Combine(_mediaRoot, fileName);
 		}
 
 		public byte[] Load(Picture picture)
 		{
 			Guard.ArgumentNotNull(() => picture);
 
-			var filePath = GetPictureLocalPath(picture);
+			var filePath = GetPicturePath(picture);
 
 			return (_fileSystem.ReadAllBytes(filePath) ?? new byte[0]);
 		}
@@ -45,9 +48,16 @@ namespace SmartStore.Services.Media.Storage
 		{
 			Guard.ArgumentNotNull(() => picture);
 
-			var filePath = GetPictureLocalPath(picture);
+			var filePath = GetPicturePath(picture);
 
-			_fileSystem.WriteAllBytes(filePath, data);
+			if (data != null)
+			{
+				_fileSystem.WriteAllBytes(filePath, data);
+			}
+			else if (_fileSystem.FileExists(filePath))
+			{
+				_fileSystem.DeleteFile(filePath);
+			}
 		}
 
 		public void Remove(params Picture[] pictures)
@@ -56,7 +66,7 @@ namespace SmartStore.Services.Media.Storage
 			{
 				foreach (var picture in pictures)
 				{
-					var filePath = GetPictureLocalPath(picture);
+					var filePath = GetPicturePath(picture);
 
 					if (_fileSystem.FileExists(filePath))
 					{

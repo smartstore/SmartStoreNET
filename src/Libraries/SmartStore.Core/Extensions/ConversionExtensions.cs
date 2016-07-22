@@ -231,11 +231,28 @@ namespace SmartStore
 			}
 			else
 			{
-				using (var ms = new MemoryStream())
+				byte[] buffer;
+
+				int offset = 0;
+				long length = stream.Length;
+				if (length > 0x7fffffffL)
 				{
-					stream.CopyTo(ms);
-					return ms.ToArray();
+					throw new IOException("File too long.");
 				}
+				int count = (int)length;
+				buffer = new byte[count];
+				while (count > 0)
+				{
+					int num3 = stream.Read(buffer, offset, count);
+					if (num3 == 0)
+					{
+						throw new EndOfStreamException();
+					}
+					offset += num3;
+					count -= num3;
+				}
+
+				return buffer;
 			}
         }
 

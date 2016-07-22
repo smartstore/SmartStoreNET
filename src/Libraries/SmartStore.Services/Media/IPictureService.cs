@@ -98,14 +98,14 @@ namespace SmartStore.Services.Media
             string storeLocation = null,
             PictureType defaultPictureType = PictureType.Entity);
 
-        /// <summary>
-        /// Get a picture local path
-        /// </summary>
-        /// <param name="picture">Picture instance</param>
-        /// <param name="targetSize">The target picture size (longest side)</param>
-        /// <param name="showDefaultPicture">A value indicating whether the default picture should be shown</param>
-        /// <returns></returns>
-        string GetThumbLocalPath(Picture picture, int targetSize = 0, bool showDefaultPicture = true);
+        ///// <summary>
+        ///// Get a picture local path
+        ///// </summary>
+        ///// <param name="picture">Picture instance</param>
+        ///// <param name="targetSize">The target picture size (longest side)</param>
+        ///// <param name="showDefaultPicture">A value indicating whether the default picture should be shown</param>
+        ///// <returns></returns>
+        //string GetThumbLocalPath(Picture picture, int targetSize = 0, bool showDefaultPicture = true);
 
         /// <summary>
         /// Gets a picture

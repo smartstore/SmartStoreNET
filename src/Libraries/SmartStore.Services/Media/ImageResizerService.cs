@@ -35,7 +35,7 @@ namespace SmartStore.Services.Media
         {
             Guard.ArgumentNotNull(() => source);
 
-            ResizeSettings resizeSettings = ImageResizerUtils.CreateResizeSettings(settings);
+            ResizeSettings resizeSettings = ImageResizerUtil.CreateResizeSettings(settings);
 
             if (quality.HasValue)
                 resizeSettings.Quality = quality.Value;

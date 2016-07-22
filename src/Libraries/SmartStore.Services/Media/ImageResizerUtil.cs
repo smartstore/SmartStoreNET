@@ -4,7 +4,7 @@ using ImageResizer.Configuration;
 
 namespace SmartStore.Services.Media
 {
-    internal static class ImageResizerUtils
+    internal static class ImageResizerUtil
     {
         public static ResizeSettings CreateResizeSettings(object settings)
         {

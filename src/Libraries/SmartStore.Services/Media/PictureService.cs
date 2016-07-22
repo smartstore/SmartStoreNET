@@ -31,8 +31,6 @@ namespace SmartStore.Services.Media
         
         #region Fields
 
-        private static readonly object s_lock = new object();
-
         private readonly IRepository<Picture> _pictureRepository;
         private readonly IRepository<ProductPicture> _productPictureRepository;
         private readonly ISettingService _settingService;
@@ -43,6 +41,7 @@ namespace SmartStore.Services.Media
         private readonly IImageResizerService _imageResizerService;
         private readonly IImageCache _imageCache;
 		private readonly INotifier _notifier;
+		private readonly IFileSystem _fileSystem;
 
 		private string _mediaPath;
 		private string _imagesPath;
@@ -62,7 +61,8 @@ namespace SmartStore.Services.Media
             MediaSettings mediaSettings,
             IImageResizerService imageResizerService,
             IImageCache imageCache,
-			INotifier notifier)
+			INotifier notifier,
+			IFileSystem fileSystem)
         {
             this._pictureRepository = pictureRepository;
             this._productPictureRepository = productPictureRepository;
@@ -74,6 +74,7 @@ namespace SmartStore.Services.Media
             this._imageResizerService = imageResizerService;
             this._imageCache = imageCache;
 			this._notifier = notifier;
+			this._fileSystem = fileSystem;
         }
 
         #endregion
@@ -196,39 +197,38 @@ namespace SmartStore.Services.Media
             return SeoHelper.GetSeName(name, true, false);
         }
 
-        public virtual string GetThumbLocalPath(Picture picture, int targetSize = 0, bool showDefaultPicture = true)
-        {
-            // 'GetPictureUrl' takes care of creating the thumb when not created already
-            string url = this.GetPictureUrl(picture, targetSize, showDefaultPicture);
+        //public virtual string GetThumbLocalPath(Picture picture, int targetSize = 0, bool showDefaultPicture = true)
+        //{
+        //    // 'GetPictureUrl' takes care of creating the thumb when not created already
+        //    string url = this.GetPictureUrl(picture, targetSize, showDefaultPicture);
 
-            if (url.HasValue())
-            {
-                var settings = this.CreateResizeSettings(targetSize);
+        //    if (url.HasValue())
+        //    {
+        //        var settings = this.CreateResizeSettings(targetSize);
 
-                var cachedImage = _imageCache.GetCachedImage(picture, settings);
-                if (cachedImage.Exists)
-                {
-                    return cachedImage.LocalPath;
-                }
+        //        var cachedImage = _imageCache.GetCachedImage(picture, settings);
+        //        if (cachedImage.Exists)
+        //        {
+        //            return cachedImage.LocalPath;
+        //        }
 
-                if (showDefaultPicture)
-                {
-                    var fileName = this.GetDefaultImageFileName();
-                    cachedImage = _imageCache.GetCachedImage(
-                        0,
-                        Path.GetFileNameWithoutExtension(fileName),
-                        Path.GetExtension(fileName).TrimStart('.'),
-                        settings);
-                    if (cachedImage.Exists)
-                    {
-                        return cachedImage.LocalPath;
-                    }
-                }  
-            }
+        //        if (showDefaultPicture)
+        //        {
+        //            var fileName = this.GetDefaultImageFileName();
+        //            cachedImage = _imageCache.GetCachedImage(
+        //                0,
+        //                Path.GetFileNameWithoutExtension(fileName),
+        //                Path.GetExtension(fileName).TrimStart('.'),
+        //                settings);
+        //            if (cachedImage.Exists)
+        //            {
+        //                return cachedImage.LocalPath;
+        //            }
+        //        }  
+        //    }
 
-            return string.Empty;
-
-        }
+        //    return string.Empty;
+        //}
 
         public virtual string GetDefaultPictureUrl(int targetSize = 0, PictureType defaultPictureType = PictureType.Entity, string storeLocation = null)
         {
@@ -261,49 +261,46 @@ namespace SmartStore.Services.Media
 
             if (!cachedImage.Exists)
             {
-                lock (s_lock)
+                lock (String.Intern(cachedImage.Path))
                 {
-                    if (!File.Exists(cachedImage.LocalPath)) // check again
+                    var buffer = source as byte[];
+                    if (buffer == null)
                     {
-                        var buffer = source as byte[];
-                        if (buffer == null)
+                        if (!(source is string))
                         {
-                            if (!(source is string))
-                            {
-                                return string.Empty;
-                            }
-
-                            try
-                            {
-                                buffer = File.ReadAllBytes((string)source);
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.Error("Error reading media file '{0}'.".FormatInvariant(source), ex);
-                                return string.Empty;
-                            }
+                            return string.Empty;
                         }
 
                         try
                         {
-                            if (targetSize == 0)
-                            {
-                                _imageCache.AddImageToCache(cachedImage, buffer);
-                            }
-                            else
-                            {
-                                var sourceStream = new MemoryStream(buffer);
-                                using (var resultStream = _imageResizerService.ResizeImage(sourceStream, targetSize, targetSize, _mediaSettings.DefaultImageQuality))
-                                {
-                                    _imageCache.AddImageToCache(cachedImage, resultStream.GetBuffer());
-                                }
-                            }
+                            buffer = File.ReadAllBytes((string)source);
                         }
                         catch (Exception ex)
                         {
-                            _logger.Error("Error processing/writing media file '{0}'.".FormatInvariant(cachedImage.LocalPath), ex);
+                            _logger.Error("Error reading media file '{0}'.".FormatInvariant(source), ex);
                             return string.Empty;
                         }
+                    }
+
+                    try
+                    {
+                        if (targetSize == 0)
+                        {
+                            _imageCache.AddImageToCache(cachedImage, buffer);
+                        }
+                        else
+                        {
+                            var sourceStream = new MemoryStream(buffer);
+                            using (var resultStream = _imageResizerService.ResizeImage(sourceStream, targetSize, targetSize, _mediaSettings.DefaultImageQuality))
+                            {
+                                _imageCache.AddImageToCache(cachedImage, resultStream.GetBuffer());
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error("Error processing/writing media file '{0}'.".FormatInvariant(cachedImage.Path), ex);
+                        return string.Empty;
                     }
                 }
             }

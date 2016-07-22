@@ -1,40 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Web.Hosting;
 using ImageResizer;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.IO;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Media
 {
-
     public class ImageCache : IImageCache
     {
         private const int MULTIPLE_THUMB_DIRECTORIES_LENGTH = 4;
 
         private readonly MediaSettings _mediaSettings;
-        private readonly IWebHelper _webHelper;
-        private readonly DirectoryInfo _cacheRootDir;
+		private readonly string _thumbsRootDir;
 		private readonly IStoreContext _storeContext;
 		private readonly HttpContextBase _httpContext;
+		private readonly IFileSystem _fileSystem;
 
-        public ImageCache(MediaSettings mediaSettings, IWebHelper webHelper, IStoreContext storeContext, HttpContextBase httpContext)
+		public ImageCache(
+			MediaSettings mediaSettings, 
+			IStoreContext storeContext, 
+			HttpContextBase httpContext,
+			IFileSystem fileSystem)
         {
-            this._mediaSettings = mediaSettings;
-            this._webHelper = webHelper;
-			this._storeContext = storeContext;
-			this._httpContext = httpContext;
+            _mediaSettings = mediaSettings;
+			_storeContext = storeContext;
+			_httpContext = httpContext;
+			_fileSystem = fileSystem;
 
-            _cacheRootDir = new DirectoryInfo(_webHelper.MapPath("~/Media/Thumbs"));
-        }
+			_thumbsRootDir = "Media/Thumbs/";
+
+			_fileSystem.TryCreateFolder("Media");
+			_fileSystem.TryCreateFolder("Media/Thumbs");
+		}
 
         public void AddImageToCache(CachedImageResult cachedImage, byte[] buffer)
         {
-            Guard.ArgumentNotNull(() => cachedImage);
+            Guard.NotNull(cachedImage, nameof(cachedImage));
 
             if (buffer == null || buffer.Length == 0)
             {
@@ -43,32 +50,31 @@ namespace SmartStore.Services.Media
 
             if (cachedImage.Exists)
             {
-                File.Delete(cachedImage.LocalPath);
+				_fileSystem.DeleteFile(cachedImage.Path);
             }
 
-            // create directory if necessary
-            string imageDir = Path.GetDirectoryName(cachedImage.LocalPath);
-            if (imageDir.HasValue() && !System.IO.Directory.Exists(imageDir))
-            {
-                System.IO.Directory.CreateDirectory(imageDir);
-            }
-
+			// create folder if needed
+			string imageDir = System.IO.Path.GetDirectoryName(cachedImage.Path);
+			if (imageDir.HasValue())
+			{
+				_fileSystem.TryCreateFolder(BuildPath(imageDir));
+			}
+			
             // save file
-            File.WriteAllBytes(cachedImage.LocalPath, buffer);
+			_fileSystem.WriteAllBytes(BuildPath(cachedImage.Path), buffer);
         }
 
         public virtual CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, object settings = null)
         {
-            var imagePath = this.GetCachedImagePath(pictureId, seoFileName, extension, ImageResizerUtils.CreateResizeSettings(settings));
-            var localPath = this.GetImageLocalPath(imagePath);
+            var imagePath = this.GetCachedImagePath(pictureId, seoFileName, extension, ImageResizerUtil.CreateResizeSettings(settings));
+            //var localPath = this.GetImageLocalPath(imagePath);
 
             var result = new CachedImageResult
             {
                 Path = imagePath, //"Media/Thumbs/" + imagePath,
-                LocalPath = localPath,
-                FileName = Path.GetFileName(imagePath),
+                FileName = System.IO.Path.GetFileName(imagePath),
                 Extension = GetCleanFileExtension(imagePath),
-                Exists = File.Exists(localPath)
+				Exists = _fileSystem.FileExists(BuildPath(imagePath))
             };
 
             return result;
@@ -90,24 +96,38 @@ namespace SmartStore.Services.Media
 				}
 			}
 
-			root = root.NullEmpty() ?? _httpContext.Request.ApplicationPath;
-			root = root.TrimEnd('/', '\\');
-			var url = root + "/Media/Thumbs/";
+			var publicUrl = _fileSystem.GetPublicUrl(BuildPath(imagePath));
 
-            url = url + imagePath;
-            return url;
+			if (root.IsEmpty() || publicUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || publicUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+			{
+				return publicUrl;
+			}
+			else
+			{
+				if (HostingEnvironment.IsHosted)
+				{
+					// strip out app path from public url if needed
+					var appPath = HostingEnvironment.ApplicationVirtualPath.EmptyNull();
+					if (appPath.Length > 0)
+					{
+						publicUrl = publicUrl.Substring(appPath.Length + 1);
+					}
+				}
+
+				return root.TrimEnd('/', '\\') + publicUrl;
+			}
         }
 
         public virtual void DeleteCachedImages(Picture picture)
         {
             string filter = string.Format("{0}*.*", picture.Id.ToString("0000000"));
-            
-            var files = _cacheRootDir.EnumerateFiles(filter, SearchOption.AllDirectories);
-            foreach (var file in files)
-            {
-                file.Delete();
-            }
-        }
+
+			var files = _fileSystem.SearchFiles(_thumbsRootDir, filter);
+			foreach (var file in files)
+			{
+				_fileSystem.DeleteFile(BuildPath(file));
+			}
+		}
 
         public virtual void DeleteCachedImages()
         {
@@ -115,17 +135,17 @@ namespace SmartStore.Services.Media
             {
                 try
                 {
-                    foreach (var file in _cacheRootDir.GetFiles())
+                    foreach (var file in _fileSystem.ListFiles(_thumbsRootDir))
                     {
 						if (!file.Name.IsCaseInsensitiveEqual("placeholder") && !file.Name.IsCaseInsensitiveEqual("placeholder.txt"))
 						{
-							file.Delete();
+							_fileSystem.DeleteFile(file.Path);
 						}
                     }
-                    foreach (var dir in _cacheRootDir.GetDirectories())
+                    foreach (var dir in _fileSystem.ListFolders(_thumbsRootDir))
                     {
-                        dir.Delete(true);
-                    }
+						_fileSystem.DeleteFolder(dir.Path);
+					}
                     return;
                 }
                 catch
@@ -136,15 +156,16 @@ namespace SmartStore.Services.Media
 
         public void CacheStatistics(out long fileCount, out long totalSize)
         {
-            var allFiles = _cacheRootDir.GetFiles("*.*", SearchOption.AllDirectories);
-			var allImageFiles = allFiles.Where(x => !x.Name.IsCaseInsensitiveEqual("placeholder") && !x.Name.IsCaseInsensitiveEqual("placeholder.txt"));
+			fileCount = 0;
+			totalSize = 0;
 
-			fileCount = allImageFiles.Count();
+			if (!_fileSystem.FolderExists(_thumbsRootDir))
+			{
+				return;
+			}
 
-            if (fileCount == 0)
-                totalSize = 0;
-            else
-				totalSize = allImageFiles.Sum(x => x.Length);
+			fileCount = _fileSystem.SearchFiles(_thumbsRootDir, "*.*").Count();
+			totalSize = _fileSystem.ListFolders(_thumbsRootDir).Sum(x => x.Size);
         }
 
         #region Utils
@@ -157,7 +178,7 @@ namespace SmartStore.Services.Media
         /// <returns></returns>
         internal string GetCachedImagePath(int? pictureId, string seoFileName, string extension, ResizeSettings settings = null)
         {
-            Guard.ArgumentNotEmpty(extension, "extension");
+            Guard.NotEmpty(extension, nameof(extension));
 
             string imageFileName = null;
 
@@ -188,8 +209,8 @@ namespace SmartStore.Services.Media
 
             if (_mediaSettings.MultipleThumbDirectories)
             {
-                //get the first four letters of the file name
-                var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(imageFileName);
+                // get the first four letters of the file name
+                var fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(imageFileName);
                 if (fileNameWithoutExtension != null && fileNameWithoutExtension.Length > MULTIPLE_THUMB_DIRECTORIES_LENGTH)
                 {
                     var subDirectoryName = fileNameWithoutExtension.Substring(0, MULTIPLE_THUMB_DIRECTORIES_LENGTH);
@@ -214,21 +235,22 @@ namespace SmartStore.Services.Media
             return settings != null && settings.Count > 0;
         }
 
-        private string GetImageLocalPath(string imagePath)
-        {
-            if (imagePath.IsEmpty())
-                return null;
-            var imageFilePath = Path.Combine(_cacheRootDir.FullName, imagePath.Replace('/', '\\'));
-            return imageFilePath;
-        }
+		private string BuildPath(string imagePath)
+		{
+			if (imagePath.IsEmpty())
+				return null;
 
-        private static string GetCleanFileExtension(string url)
+			return _thumbsRootDir + imagePath;
+		}
+
+		private static string GetCleanFileExtension(string url)
         {
-            var extension = Path.GetExtension(url);
+            var extension = System.IO.Path.GetExtension(url);
             if (extension != null)
             {
                 return extension.Replace(".", "").ToLower();
             }
+
             return string.Empty;
         }
 

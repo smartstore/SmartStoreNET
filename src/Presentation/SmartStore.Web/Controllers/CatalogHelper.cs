@@ -1119,13 +1119,13 @@ namespace SmartStore.Web.Controllers
 				throw new ArgumentNullException("products");
 
 			// PERF!!
-			var currentStore = _services.StoreContext.CurrentStore;
-			var currentCustomer = _services.WorkContext.CurrentCustomer;
-			var workingCurrency = _services.WorkContext.WorkingCurrency;
+			var store = _services.StoreContext.CurrentStore;
+			var customer = _services.WorkContext.CurrentCustomer;
+			var currency = _services.WorkContext.WorkingCurrency;
 			var displayPrices = _services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices);
 			var enableShoppingCart = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
 			var enableWishlist = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
-			var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(currentCustomer, currentStore.Id);
+			var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id);
 			var cachedManufacturerModels = new Dictionary<int, ManufacturerOverviewModel>();
 
 			string taxInfo = T(taxDisplayType == TaxDisplayType.IncludingTax ? "Tax.InclVAT" : "Tax.ExclVAT");
@@ -1143,7 +1143,7 @@ namespace SmartStore.Web.Controllers
 
 			if (_taxSettings.ShowLegalHintsInProductList)
 			{
-				if (_topicService.Value.GetTopicBySystemName("ShippingInfo", currentStore.Id) == null)
+				if (_topicService.Value.GetTopicBySystemName("ShippingInfo", store.Id) == null)
 				{
 					legalInfo = T("Tax.LegalInfoFooter2").Text.FormatInvariant(taxInfo);
 				}
@@ -1198,7 +1198,7 @@ namespace SmartStore.Web.Controllers
 						var searchContext = new ProductSearchContext
 						{
 							OrderBy = ProductSortingEnum.Position,
-							StoreId = currentStore.Id,
+							StoreId = store.Id,
 							ParentGroupedProductId = product.Id,
 							PageSize = int.MaxValue,
 							VisibleIndividuallyOnly = false
@@ -1219,16 +1219,16 @@ namespace SmartStore.Web.Controllers
 
 								if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 								{
-									displayPrice = _priceCalculationService.GetPreselectedPrice(contextProduct, cargoData);
+									displayPrice = _priceCalculationService.GetPreselectedPrice(contextProduct, customer, cargoData);
 								}
 								else if (_catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 								{
-									displayPrice = _priceCalculationService.GetFinalPrice(contextProduct, null, currentCustomer, decimal.Zero, false, 1, null, cargoData);
+									displayPrice = _priceCalculationService.GetFinalPrice(contextProduct, null, customer, decimal.Zero, false, 1, null, cargoData);
 								}
 								else
 								{
 									displayFromMessage = true;
-									displayPrice = _priceCalculationService.GetLowestPrice(product, cargoData, associatedProducts, out contextProduct);
+									displayPrice = _priceCalculationService.GetLowestPrice(product, customer, cargoData, associatedProducts, out contextProduct);
 								}	
 
 								if (contextProduct != null && !contextProduct.CustomerEntersPrice)
@@ -1244,7 +1244,7 @@ namespace SmartStore.Web.Controllers
 										decimal taxRate = decimal.Zero;
 										decimal oldPriceBase = _taxService.GetProductPrice(contextProduct, contextProduct.OldPrice, out taxRate);
 										decimal finalPriceBase = _taxService.GetProductPrice(contextProduct, displayPrice.Value, out taxRate);
-										finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
+										finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, currency);
 
 										priceModel.OldPrice = null;
 
@@ -1296,23 +1296,23 @@ namespace SmartStore.Web.Controllers
 
 								if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 								{
-									displayPrice = _priceCalculationService.GetPreselectedPrice(product, cargoData);
+									displayPrice = _priceCalculationService.GetPreselectedPrice(product, customer, cargoData);
 								}
 								else if (_catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 								{
-									displayPrice = _priceCalculationService.GetFinalPrice(product, null, currentCustomer, decimal.Zero, false, 1, null, cargoData);
+									displayPrice = _priceCalculationService.GetFinalPrice(product, null, customer, decimal.Zero, false, 1, null, cargoData);
 								}
 								else
 								{
-									displayPrice = _priceCalculationService.GetLowestPrice(product, cargoData, out displayFromMessage);
+									displayPrice = _priceCalculationService.GetLowestPrice(product, customer, cargoData, out displayFromMessage);
 								}
 
 								decimal taxRate = decimal.Zero;
 								decimal oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);
 								decimal finalPriceBase = _taxService.GetProductPrice(product, displayPrice, out taxRate);
 
-								decimal oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, workingCurrency);
-								finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
+								decimal oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, currency);
+								finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, currency);
 
 								priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
 
@@ -1385,7 +1385,7 @@ namespace SmartStore.Web.Controllers
 
 					//prepare picture model
 					var defaultProductPictureCacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_DEFAULTPICTURE_MODEL_KEY, product.Id, pictureSize, true,
-						_services.WorkContext.WorkingLanguage.Id, _services.WebHelper.IsCurrentConnectionSecured(), currentStore.Id);
+						_services.WorkContext.WorkingLanguage.Id, _services.WebHelper.IsCurrentConnectionSecured(), store.Id);
 
 					model.DefaultPictureModel = _services.Cache.Get(defaultProductPictureCacheKey, () =>
 					{
@@ -1455,12 +1455,12 @@ namespace SmartStore.Web.Controllers
 
 				if (finalPrice != decimal.Zero && (_catalogSettings.ShowBasePriceInProductLists || isCompareList))
 				{
-					model.BasePriceInfo = contextProduct.GetBasePriceInfo(finalPrice, _localizationService,	_priceFormatter, workingCurrency);
+					model.BasePriceInfo = contextProduct.GetBasePriceInfo(finalPrice, _localizationService,	_priceFormatter, currency);
 				}
 
 				if (displayPrices)
 				{
-					var addShippingPrice = _currencyService.ConvertCurrency(contextProduct.AdditionalShippingCharge, currentStore.PrimaryStoreCurrency, workingCurrency);
+					var addShippingPrice = _currencyService.ConvertCurrency(contextProduct.AdditionalShippingCharge, store.PrimaryStoreCurrency, currency);
 
 					if (addShippingPrice > 0)
 					{

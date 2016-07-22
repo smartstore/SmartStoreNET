@@ -18,6 +18,7 @@
 * GMC: Id should be unique when exporting attribute combinations as products
 * GMC: Attribute price adjustments were ignored when exporting attribute combinations as products
 * GMC: Associated products that are not individually visible are not exported anymore. GMC rejects them because the frontend redirects to the grouped product.
+* #999 Export: Projected customer id ignored during price calculation
 
 
 ## SmartStore.NET 2.6

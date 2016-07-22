@@ -120,7 +120,7 @@ namespace SmartStore.Web.Framework.WebApi
 				return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.NoRelatedKeyFromPath);
 
 			var methodName = string.Concat("Navigation", navigationProperty);
-			var methodInfo = this.GetType().GetMethods().FirstOrDefault(x => x.Name == methodName);
+			var methodInfo = GetType().GetMethod(methodName);
 
 			if (methodInfo != null)
 			{

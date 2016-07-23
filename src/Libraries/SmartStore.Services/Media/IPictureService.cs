@@ -35,20 +35,20 @@ namespace SmartStore.Services.Media
 		/// <param name="equalPictureId">Id of equal picture if any</param>
 		/// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
 		byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> pictures, out int equalPictureId);
-        
-        /// <summary>
-        /// Gets the loaded picture binary depending on picture storage settings
-        /// </summary>
-        /// <param name="picture">Picture</param>
-        /// <returns>Picture binary</returns>
-        byte[] LoadPictureBinary(Picture picture);
 
-        /// <summary>
-        /// Get picture SEO friendly name
-        /// </summary>
-        /// <param name="name">Name</param>
-        /// <returns>Result</returns>
-        string GetPictureSeName(string name);
+		/// <summary>
+		/// Get picture SEO friendly name
+		/// </summary>
+		/// <param name="name">Name</param>
+		/// <returns>Picture SEO name</returns>
+		string GetPictureSeName(string name);
+
+		/// <summary>
+		/// Gets the loaded picture binary depending on picture storage settings
+		/// </summary>
+		/// <param name="picture">Picture</param>
+		/// <returns>Picture binary</returns>
+		byte[] LoadPictureBinary(Picture picture);
 
         /// <summary>
         /// Gets the size of a picture
@@ -56,17 +56,6 @@ namespace SmartStore.Services.Media
         /// <param name="picture"></param>
         /// <returns></returns>
         Size GetPictureSize(Picture picture);
-
-        /// <summary>
-        /// Gets the default picture URL
-        /// </summary>
-        /// <param name="targetSize">The target picture size (longest side)</param>
-        /// <param name="defaultPictureType">Default picture type</param>
-        /// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
-        /// <returns>Picture URL</returns>
-        string GetDefaultPictureUrl(int targetSize = 0,
-            PictureType defaultPictureType = PictureType.Entity,
-            string storeLocation = null);
 
         /// <summary>
         /// Get a picture URL
@@ -98,21 +87,23 @@ namespace SmartStore.Services.Media
             string storeLocation = null,
             PictureType defaultPictureType = PictureType.Entity);
 
-        ///// <summary>
-        ///// Get a picture local path
-        ///// </summary>
-        ///// <param name="picture">Picture instance</param>
-        ///// <param name="targetSize">The target picture size (longest side)</param>
-        ///// <param name="showDefaultPicture">A value indicating whether the default picture should be shown</param>
-        ///// <returns></returns>
-        //string GetThumbLocalPath(Picture picture, int targetSize = 0, bool showDefaultPicture = true);
+		/// <summary>
+		/// Gets the default picture URL
+		/// </summary>
+		/// <param name="targetSize">The target picture size (longest side)</param>
+		/// <param name="defaultPictureType">Default picture type</param>
+		/// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
+		/// <returns>Picture URL</returns>
+		string GetDefaultPictureUrl(int targetSize = 0,
+			PictureType defaultPictureType = PictureType.Entity,
+			string storeLocation = null);
 
-        /// <summary>
-        /// Gets a picture
-        /// </summary>
-        /// <param name="pictureId">Picture identifier</param>
-        /// <returns>Picture</returns>
-        Picture GetPictureById(int pictureId);
+		/// <summary>
+		/// Gets a picture
+		/// </summary>
+		/// <param name="pictureId">Picture identifier</param>
+		/// <returns>Picture</returns>
+		Picture GetPictureById(int pictureId);
 
         /// <summary>
         /// Deletes a picture

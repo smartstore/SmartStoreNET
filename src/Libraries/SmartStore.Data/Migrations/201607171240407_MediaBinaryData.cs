@@ -10,7 +10,7 @@ namespace SmartStore.Data.Migrations
 
 	public partial class MediaBinaryData : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
 	{
-		private const int PAGESIZE = 50;
+		private const int PAGE_SIZE = 100;
 
 		private void MovePictureBinaryToBinaryDataTable(SmartObjectContext context, DbSet<BinaryData> binaryDatas)
 		{
@@ -29,7 +29,7 @@ namespace SmartStore.Data.Migrations
 					pictures = null;
 				}
 
-				pictures = new PagedList<Picture>(pictureQuery, pageIndex++, PAGESIZE);
+				pictures = new PagedList<Picture>(pictureQuery, pageIndex++, PAGE_SIZE);
 
 #pragma warning disable 612, 618
 				foreach (var picture in pictures)
@@ -68,7 +68,7 @@ namespace SmartStore.Data.Migrations
 					downloads = null;
 				}
 
-				downloads = new PagedList<Download>(downloadQuery, pageIndex++, PAGESIZE);
+				downloads = new PagedList<Download>(downloadQuery, pageIndex++, PAGE_SIZE);
 
 #pragma warning disable 612, 618
 				foreach (var download in downloads)
@@ -160,6 +160,14 @@ namespace SmartStore.Data.Migrations
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
 			builder.AddOrUpdate("Admin.Common.Copy", "Copy", "Kopie");
+
+			builder.AddOrUpdate("Admin.Media.StorageMovingNotSupported",
+				"The provider \"{0}\" does not support moving media from one provider to another.",
+				"Der Provider \"{0}\" unterstützt kein Verschieben von Medien zu anderen Providern.");
+
+			builder.AddOrUpdate("Admin.Media.CannotMoveToSameProvider",
+				"Media cannot be moved to the same storage device.",
+				"Medien können nicht zum selben Speichermedium verschoben werden.");
 		}
 	}
 }

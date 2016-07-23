@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
@@ -26,6 +27,8 @@ using SmartStore.Services.DataExchange.Export.Deployment;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
+using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Services.Tasks;
@@ -604,6 +607,22 @@ namespace SmartStore.Admin.Controllers
 					model.Add(profileModel);
 				}
 			}
+
+			var service = EngineContext.Current.Resolve<IProviderManager>();
+			var fs = service.GetProvider<IMediaStorageProvider>(FileSystemMediaStorageProvider.SystemName);
+			var db = service.GetProvider<IMediaStorageProvider>(DatabaseMediaStorageProvider.SystemName);
+			var fs2 = service.GetProvider<IMediaStorageProvider>(FileSystemMediaStorageProvider.SystemName);
+
+			var fsm = fs.Value as IMovableMediaSupported;
+			var dbm = db.Value as IMovableMediaSupported;
+
+			//NotifyInfo("fs: {0}, db: {1}".FormatInvariant(fsm != null, dbm != null));
+			//NotifyInfo("fs: {0}, db: {1}".FormatInvariant(fs.Metadata.FriendlyName, db.Metadata.FriendlyName));
+
+			NotifyInfo("{0} {0}".FormatInvariant(Equals(fs.Value, fs2.Value), Equals(fs.Value, db.Value)));
+
+			//NotifyInfo("fs: {0}, db: {1}".FormatInvariant(fs.Value.GetType().IsAssignableFrom(typeof(IMovableMediaStorage)), db.Value.GetType().IsAssignableFrom(typeof(IMovableMediaStorage))));
+
 
 			return View(model);
 		}

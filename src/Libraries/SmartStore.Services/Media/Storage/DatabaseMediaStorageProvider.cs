@@ -7,7 +7,7 @@ namespace SmartStore.Services.Media.Storage
 {
 	[SystemName("MediaStorage.SmartStoreDatabase")]
 	[FriendlyName("Database media storage")]
-	public class DatabaseMediaStorageProvider : IMediaStorageProvider
+	public class DatabaseMediaStorageProvider : IMediaStorageProvider, IMovableMediaSupported
 	{
 		private readonly IRepository<Picture> _pictureRepository;
 		private readonly IBinaryDataService _binaryDataService;
@@ -41,7 +41,7 @@ namespace SmartStore.Services.Media.Storage
 		{
 			Guard.ArgumentNotNull(() => picture);
 
-			if (data == null)
+			if (data == null || data.LongLength == 0)
 			{
 				// remove picture binary if any
 				if ((picture.BinaryDataId ?? 0) != 0)
@@ -90,6 +90,48 @@ namespace SmartStore.Services.Media.Storage
 					}
 				}
 			}
+		}
+
+
+		public void MoveTo(IMovableMediaSupported target, MediaStorageMoverContext context, Picture picture)
+		{
+			Guard.ArgumentNotNull(() => target);
+			Guard.ArgumentNotNull(() => context);
+			Guard.ArgumentNotNull(() => picture);
+
+			if ((picture.BinaryDataId ?? 0) != 0)
+			{
+				// let target store data (into a file for example)
+				target.StoreMovingData(context, picture, picture.BinaryData.Data);
+
+				// remove picture binary from DB
+				try
+				{
+					_binaryDataService.DeleteBinaryData(picture.BinaryData);
+				}
+				catch { }
+
+				picture.BinaryDataId = null;
+
+				context.ShrinkDatabase = true;
+			}
+		}
+
+		public void StoreMovingData(MediaStorageMoverContext context, Picture picture, byte[] data)
+		{
+			Guard.ArgumentNotNull(() => context);
+			Guard.ArgumentNotNull(() => picture);
+
+			// store data for later bulk commit
+			if (data != null && data.LongLength > 0)
+			{
+				picture.BinaryData = new BinaryData { Data = data };
+			}
+		}
+
+		public void OnMoved(MediaStorageMoverContext context, bool succeeded)
+		{
+			// nothing to do
 		}
 	}
 }

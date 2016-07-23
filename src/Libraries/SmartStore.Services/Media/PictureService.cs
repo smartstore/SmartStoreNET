@@ -35,7 +35,6 @@ namespace SmartStore.Services.Media
         private readonly IImageResizerService _imageResizerService;
         private readonly IImageCache _imageCache;
 		private readonly INotifier _notifier;
-		private readonly IFileSystem _fileSystem;
 		private readonly IBinaryDataService _binaryDataService;
 
 		private readonly Provider<IMediaStorageProvider> _storageProvider;
@@ -55,7 +54,6 @@ namespace SmartStore.Services.Media
             IImageResizerService imageResizerService,
             IImageCache imageCache,
 			INotifier notifier,
-			IFileSystem fileSystem,
 			IBinaryDataService binaryDataService,
 			IProviderManager providerManager)
         {
@@ -69,7 +67,6 @@ namespace SmartStore.Services.Media
             _imageResizerService = imageResizerService;
             _imageCache = imageCache;
 			_notifier = notifier;
-			_fileSystem = fileSystem;
 			_binaryDataService = binaryDataService;
 
 			_storageProviderSystemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
@@ -467,8 +464,8 @@ namespace SmartStore.Services.Media
             return picture;
         }
 
-        public virtual Picture UpdatePicture
-			(int pictureId,
+        public virtual Picture UpdatePicture(
+			int pictureId,
 			byte[] pictureBinary,
 			string mimeType,
 			string seoFilename,
@@ -512,14 +509,12 @@ namespace SmartStore.Services.Media
         public virtual Picture SetSeoFilename(int pictureId, string seoFilename)
         {
             var picture = GetPictureById(pictureId);
-            if (picture == null)
-                throw new ArgumentException("No picture found with the specified id");
 
-            // update if it has been changed
-            if (seoFilename != picture.SeoFilename)
-            {
-                picture = UpdatePicture(picture.Id, LoadPictureBinary(picture), picture.MimeType, seoFilename, true, false);
-            }
+			// update if it has been changed
+			if (picture != null && seoFilename != picture.SeoFilename)
+			{
+				picture = UpdatePicture(picture.Id, LoadPictureBinary(picture), picture.MimeType, seoFilename, true, false);				
+			}
 
             return picture;
         }

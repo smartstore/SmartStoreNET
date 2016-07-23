@@ -490,7 +490,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 					_pictureService = new PictureService(
 						rs, 
 						rsMap,
-						this.SettingService,
+						SettingService,
 						webHelper,
 						NullLogger.Instance,
 						NullEventPublisher.Instance,
@@ -498,7 +498,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 						new ImageResizerService(),
 						new ImageCache(mediaSettings, null, null, fileSystem),
 						new Notifier(),
-						fileSystem,
 						binaryDataService,
 						null);		// TODO!
 				}

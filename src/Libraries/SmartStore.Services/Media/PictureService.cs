@@ -4,7 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using ImageResizer;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -19,8 +18,8 @@ using SmartStore.Services.Media.Storage;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Media
-{   
-    public partial class PictureService : IPictureService
+{
+	public partial class PictureService : IPictureService
     {
         private const int MULTIPLE_THUMB_DIRECTORIES_LENGTH = 4;
 		private const string STATIC_IMAGE_PATH = "~/Content/Images";
@@ -28,46 +27,36 @@ namespace SmartStore.Services.Media
 		private readonly IRepository<Picture> _pictureRepository;
         private readonly IRepository<ProductPicture> _productPictureRepository;
         private readonly ISettingService _settingService;
-		private readonly IWebHelper _webHelper;
         private readonly ILogger _logger;
         private readonly IEventPublisher _eventPublisher;
         private readonly MediaSettings _mediaSettings;
         private readonly IImageResizerService _imageResizerService;
         private readonly IImageCache _imageCache;
-		private readonly INotifier _notifier;
-		private readonly IBinaryDataService _binaryDataService;
 
 		private readonly Provider<IMediaStorageProvider> _storageProvider;
 		private readonly string _storageProviderSystemName;
 
-		private string _mediaPath;
 		private string _staticImagePath;
 
         public PictureService(
             IRepository<Picture> pictureRepository,
             IRepository<ProductPicture> productPictureRepository,
             ISettingService settingService, 
-            IWebHelper webHelper,
             ILogger logger, 
             IEventPublisher eventPublisher,
             MediaSettings mediaSettings,
             IImageResizerService imageResizerService,
             IImageCache imageCache,
-			INotifier notifier,
-			IBinaryDataService binaryDataService,
 			IProviderManager providerManager)
         {
             _pictureRepository = pictureRepository;
             _productPictureRepository = productPictureRepository;
             _settingService = settingService;
-            _webHelper = webHelper;
             _logger = logger;
             _eventPublisher = eventPublisher;
             _mediaSettings = mediaSettings;
             _imageResizerService = imageResizerService;
             _imageCache = imageCache;
-			_notifier = notifier;
-			_binaryDataService = binaryDataService;
 
 			_storageProviderSystemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
 
@@ -521,9 +510,6 @@ namespace SmartStore.Services.Media
 
         #endregion
 
-        #region Picture moving
-		// TODO: move to new interface based class
-
         public virtual bool StoreInDb
         {
             get
@@ -537,182 +523,8 @@ namespace SmartStore.Services.Media
                 {
                     // save the new setting value
                     _settingService.SetSetting<bool>("Media.Images.StoreInDB", value);
-
-					// move them all
-					MovePictures(value);
                 }
             }
         }
-
-		protected virtual string GetPictureLocalPath(string fileName)
-		{
-			var path = _mediaPath ?? (_mediaPath = _webHelper.MapPath("~/Media/"));
-			var filePath = Path.Combine(path, fileName);
-			return filePath;
-		}
-
-		private byte[] LoadPictureFromFile(int pictureId, string mimeType)
-		{
-			string filePath;
-			return LoadPictureFromFile(pictureId, mimeType, out filePath);
-		}
-
-		private byte[] LoadPictureFromFile(int pictureId, string mimeType, out string filePath)
-		{
-			filePath = null;
-
-			string lastPart = MimeTypes.MapMimeTypeToExtension(mimeType);
-			string fileName = string.Format("{0}-0.{1}", pictureId.ToString("0000000"), lastPart);
-			filePath = GetPictureLocalPath(fileName);
-			if (!File.Exists(filePath))
-			{
-				filePath = null;
-				return new byte[0];
-			}
-			return File.ReadAllBytes(filePath);
-		}
-
-		private void SavePictureInFile(int pictureId, byte[] pictureBinary, string mimeType, out string filePath)
-		{
-			filePath = null;
-			string lastPart = MimeTypes.MapMimeTypeToExtension(mimeType);
-			string fileName = string.Format("{0}-0.{1}", pictureId.ToString("0000000"), lastPart);
-			filePath = GetPictureLocalPath(fileName);
-			File.WriteAllBytes(filePath, pictureBinary);
-		}
-
-		protected int MovePictures(bool toDb)
-		{
-			// long running operation, therefore some code chunks are redundant here in order to boost performance
-
-			// a list of ALL file paths that were either deleted or created
-			var affectedFiles = new List<string>(1000);
-
-			var ctx = _pictureRepository.Context;
-			var utcNow = DateTime.UtcNow;
-			var failed = false;
-			int i = 0;
-
-			using (var scope = new DbContextScope(ctx: ctx, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
-			{
-				using (var tx = ctx.BeginTransaction())
-				{
-					// we are about to process data in chunks but want to commit ALL at once when ALL chunks have been processed successfully.
-					try
-					{
-						int pageIndex = 0;
-						IPagedList<Picture> pictures = null;
-
-						do
-						{
-							if (pictures != null)
-							{
-								// detach all entities from previous page to save memory
-								ctx.DetachEntities(pictures);
-
-								// breathe
-								pictures.Clear();
-								pictures = null;
-							}
-
-							// load max 500 picture entities at once
-							pictures = this.GetPictures(pageIndex, 500);
-							pageIndex++;
-
-							foreach (var picture in pictures)
-							{
-								string filePath = null;
-
-								if (!toDb)
-								{
-									if ((picture.BinaryDataId ?? 0) != 0)
-									{
-										// save picture as file
-										SavePictureInFile(picture.Id, picture.BinaryData.Data, picture.MimeType, out filePath);
-
-										// remove picture binary from DB
-										try
-										{
-											_binaryDataService.DeleteBinaryData(picture.BinaryData);
-										}
-										catch { }
-
-										picture.BinaryDataId = null;
-									}
-								}
-								else
-								{
-									// load picture binary from file and set in DB
-									var picBinary = LoadPictureFromFile(picture.Id, picture.MimeType, out filePath);
-									if (picBinary.Length > 0)
-									{
-										picture.BinaryData = new BinaryData
-										{
-											Data = picBinary
-										};
-									}
-								}
-
-								// remember file path: we must be able to rollback IO operations on transaction failure
-								if (filePath.HasValue())
-								{
-									affectedFiles.Add(filePath);
-									//picture.IsNew = true;
-								}		
-
-								// explicitly attach modified entity to context, because we disabled AutoCommit
-								picture.UpdatedOnUtc = utcNow;
-								_pictureRepository.Update(picture);
-
-								i++;
-							}
-
-							// save the current batch to DB
-							ctx.SaveChanges();
-						}
-						while (pictures.HasNextPage);
-
-						// FIRE!
-						tx.Commit();
-					}
-					catch (Exception ex)
-					{
-						failed = true;
-						tx.Rollback();
-						_settingService.SetSetting<bool>("Media.Images.StoreInDB", !toDb);
-						_notifier.Error(ex.Message);
-						_logger.Error(ex);
-					}
-				}		
-			}
-
-			if (affectedFiles.Count > 0)
-			{
-				if ((toDb && !failed) || (!toDb && failed))
-				{
-					// FS > DB sucessful OR DB > FS failed: delete all physical files
-					// run a background task for the deletion of files (fire & forget)
-					Task.Factory.StartNew(state =>
-					{
-						var files = state as string[];
-						foreach (var path in files)
-						{
-							if (File.Exists(path))
-								File.Delete(path);
-						}
-					}, affectedFiles.ToArray()).ConfigureAwait(false);
-				}
-
-				// shrink database (only when DB > FS and success)
-				if (!toDb && !failed)
-				{
-					ctx.ShrinkDatabase();
-				}
-			}
-
-			return i;
-		}
-
-        #endregion
     }
 }

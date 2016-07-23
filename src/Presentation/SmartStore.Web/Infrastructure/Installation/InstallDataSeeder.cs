@@ -483,22 +483,17 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rs.AutoCommitEnabled = false;
 					
 					var mediaSettings = new MediaSettings();
-					var webHelper = new WebHelper(null);
 					var fileSystem = new LocalFileSystem();
-					var binaryDataService = new BinaryDataService(new EfRepository<BinaryData>(_ctx), NullEventPublisher.Instance);
 
 					_pictureService = new PictureService(
 						rs, 
 						rsMap,
 						SettingService,
-						webHelper,
 						NullLogger.Instance,
 						NullEventPublisher.Instance,
 						mediaSettings,
 						new ImageResizerService(),
 						new ImageCache(mediaSettings, null, null, fileSystem),
-						new Notifier(),
-						binaryDataService,
 						null);		// TODO!
 				}
 

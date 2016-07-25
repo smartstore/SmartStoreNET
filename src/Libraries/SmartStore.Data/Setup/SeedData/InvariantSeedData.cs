@@ -9378,18 +9378,18 @@ namespace SmartStore.Data.Setup
 
 		protected Picture CreatePicture(byte[] pictureBinary, string mimeType, string seoFilename)
 		{
-			mimeType = mimeType.EmptyNull();
-			mimeType = mimeType.Truncate(20);
-
+			mimeType = mimeType.EmptyNull().Truncate(20);
 			seoFilename = seoFilename.Truncate(100);
 
 			var picture = _ctx.Set<Picture>().Create();
+			picture.MimeType = mimeType;
+			picture.SeoFilename = seoFilename;
+			picture.UpdatedOnUtc = DateTime.UtcNow;
+			
 			picture.BinaryData = new BinaryData
 			{
 				Data = pictureBinary
 			};
-			picture.MimeType = mimeType;
-			picture.SeoFilename = seoFilename;
 
 			return picture;
 		}

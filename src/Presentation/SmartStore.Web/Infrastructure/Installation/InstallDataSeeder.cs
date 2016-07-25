@@ -25,7 +25,6 @@ using SmartStore.Data.Setup;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
@@ -44,7 +43,6 @@ namespace SmartStore.Web.Infrastructure.Installation
         private InvariantSeedData _data;
 		private ISettingService _settingService;
 		private IGenericAttributeService _gaService;
-		private IPictureService _pictureService;
 		private ILocalizationService _locService;
 		private IUrlRecordService _urlRecordService;
 		private int _defaultStoreId;
@@ -402,14 +400,31 @@ namespace SmartStore.Web.Infrastructure.Installation
 			{
 				// All pictures have initially been stored in the DB.
 				// Move the binaries to disk
-				var pics = _ctx.Set<Picture>().Where(x => x.BinaryDataId != null).ToList();
+				var fileSystemStorageProvider = new FileSystemMediaStorageProvider(new LocalFileSystem());
+
+				var pics = _ctx.Set<Picture>()
+					.Expand(x => x.BinaryData)
+					.Where(x => x.BinaryDataId != null)
+					.ToList();
+
+				var binaryDatas = _ctx.Set<BinaryData>();
+
 				foreach (var pic in pics)
 				{
-					if (pic.BinaryData != null)
+					if (pic.BinaryData != null && pic.BinaryData.Data.LongLength > 0)
 					{
-						this.PictureService.UpdatePicture(pic.Id, pic.BinaryData.Data, pic.MimeType, pic.SeoFilename, pic.IsNew, false);
+						fileSystemStorageProvider.Save(pic, pic.BinaryData.Data);
+
+						try
+						{
+							binaryDatas.Remove(pic.BinaryData);
+						}
+						catch { }
+
+						pic.BinaryDataId = null;
 					}
 				}
+
 				_ctx.SaveChanges();
 			}
 		}
@@ -467,37 +482,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 				}
 
 				return _gaService;
-			}
-		}
-
-		protected IPictureService PictureService
-		{
-			get
-			{
-				if (_pictureService == null)
-				{
-					var rs = new EfRepository<Picture>(_ctx);
-					rs.AutoCommitEnabled = false;
-
-					var rsMap = new EfRepository<ProductPicture>(_ctx);
-					rs.AutoCommitEnabled = false;
-					
-					var mediaSettings = new MediaSettings();
-					var fileSystem = new LocalFileSystem();
-
-					_pictureService = new PictureService(
-						rs, 
-						rsMap,
-						SettingService,
-						NullLogger.Instance,
-						NullEventPublisher.Instance,
-						mediaSettings,
-						new ImageResizerService(),
-						new ImageCache(mediaSettings, null, null, fileSystem),
-						null);		// TODO!
-				}
-
-				return _pictureService;
 			}
 		}
 

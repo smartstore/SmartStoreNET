@@ -1,23 +1,15 @@
-using System.Collections.Generic;
-using SmartStore.Core.Domain.Catalog;
-using System.Runtime.Serialization;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Core.Domain.Media
 {
-    /// <summary>
-    /// Represents a picture
-    /// </summary>
 	[DataContract]
 	public partial class Picture : BaseEntity, ITransient
     {
 		private ICollection<ProductPicture> _productPictures;
-
-		public Picture()
-		{
-			this.UpdatedOnUtc = DateTime.UtcNow;
-		}
 
 		/// <summary>
 		/// Gets or sets the picture binary

@@ -6,7 +6,8 @@ using SmartStore.Core.Plugins;
 namespace SmartStore.Services.Media.Storage
 {
 	[SystemName("MediaStorage.SmartStoreDatabase")]
-	[FriendlyName("Database media storage")]
+	[FriendlyName("Database")]
+	[DisplayOrder(0)]
 	public class DatabaseMediaStorageProvider : IMediaStorageProvider, IMovableMediaSupported
 	{
 		private readonly IRepository<Picture> _pictureRepository;
@@ -99,7 +100,7 @@ namespace SmartStore.Services.Media.Storage
 			Guard.ArgumentNotNull(() => context);
 			Guard.ArgumentNotNull(() => picture);
 
-			if ((picture.BinaryDataId ?? 0) != 0)
+			if (picture.BinaryData != null)
 			{
 				// let target store data (into a file for example)
 				target.StoreMovingData(context, picture, picture.BinaryData.Data);
@@ -107,7 +108,7 @@ namespace SmartStore.Services.Media.Storage
 				// remove picture binary from DB
 				try
 				{
-					_binaryDataService.DeleteBinaryData(picture.BinaryData);
+					_binaryDataService.DeleteBinaryData(picture.BinaryData, false);
 				}
 				catch { }
 
@@ -125,6 +126,7 @@ namespace SmartStore.Services.Media.Storage
 			// store data for later bulk commit
 			if (data != null && data.LongLength > 0)
 			{
+				// requires autoDetectChanges set to true or remove explicit entity detaching
 				picture.BinaryData = new BinaryData { Data = data };
 			}
 		}

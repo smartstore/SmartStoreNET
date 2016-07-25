@@ -21,6 +21,7 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
 using SmartStore.Services.Common;
@@ -29,6 +30,7 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Tax;
@@ -37,6 +39,7 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Web.Framework.UI.Captcha;
@@ -67,6 +70,9 @@ namespace SmartStore.Admin.Controllers
 		private readonly ILanguageService _languageService;
 		private readonly IDeliveryTimeService _deliveryTimesService;
 		private readonly ICommonServices _services;
+		private readonly IProviderManager _providerManager;
+		private readonly PluginMediator _pluginMediator;
+		private readonly IMediaStorageMover _mediaStorageMover;
 
 		private StoreDependingSettingHelper _storeDependingSettings;
 		private IDisposable _settingsWriteBatch;
@@ -93,7 +99,10 @@ namespace SmartStore.Admin.Controllers
 			ILocalizedEntityService localizedEntityService,
 			ILanguageService languageService,
 			IDeliveryTimeService deliveryTimesService,
-			ICommonServices services)
+			ICommonServices services,
+			IProviderManager providerManager,
+			PluginMediator pluginMediator,
+			IMediaStorageMover mediaStorageMover)
         {
             this._countryService = countryService;
             this._stateProvinceService = stateProvinceService;
@@ -113,6 +122,9 @@ namespace SmartStore.Admin.Controllers
 			this._languageService = languageService;
 			this._deliveryTimesService = deliveryTimesService;
 			this._services = services;
+			this._providerManager = providerManager;
+			this._pluginMediator = pluginMediator;
+			this._mediaStorageMover = mediaStorageMover;
         }
 
 		#endregion
@@ -809,74 +821,89 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Media()
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-			//load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-			var mediaSettings = _services.Settings.LoadSetting<MediaSettings>(storeScope);
+			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var mediaSettings = Services.Settings.LoadSetting<MediaSettings>(storeScope);
 			var model = mediaSettings.ToModel();
 
-			StoreDependingSettings.GetOverrideKeys(mediaSettings, model, storeScope, _services.Settings);
-
-			model.PicturesStoredIntoDatabase = _pictureService.StoreInDb;
-
-            var resKey = "Admin.Configuration.Settings.Media.PictureZoomType.";
-            
-            model.AvailablePictureZoomTypes.Add(new SelectListItem { 
-                Text = _services.Localization.GetResource(resKey + "Window"), 
+			StoreDependingSettings.GetOverrideKeys(mediaSettings, model, storeScope, Services.Settings);
+           
+            model.AvailablePictureZoomTypes.Add(new SelectListItem
+			{ 
+                Text = T("Admin.Configuration.Settings.Media.PictureZoomType.Window"), 
                 Value = "window", 
                 Selected = model.PictureZoomType.Equals("window") 
             });
-            model.AvailablePictureZoomTypes.Add(new SelectListItem {
-                Text = _services.Localization.GetResource(resKey + "Inner"),
+            model.AvailablePictureZoomTypes.Add(new SelectListItem
+			{
+                Text = T("Admin.Configuration.Settings.Media.PictureZoomType.Inner"),
                 Value = "inner", 
                 Selected = model.PictureZoomType.Equals("inner") 
             });
-            model.AvailablePictureZoomTypes.Add(new SelectListItem {
-                Text = _services.Localization.GetResource(resKey + "Lens"),
+            model.AvailablePictureZoomTypes.Add(new SelectListItem
+			{
+                Text = T("Admin.Configuration.Settings.Media.PictureZoomType.Lens"),
                 Value = "lens", 
                 Selected = model.PictureZoomType.Equals("lens") 
             });
 
-            return View(model);
+			// media storage provider
+			var currentStorageProvider = Services.Settings.GetSettingByKey<string>("Media.Storage.Provider");
+			var provider = _providerManager.GetProvider<IMediaStorageProvider>(currentStorageProvider);
+
+			model.StorageProvider = (provider != null ? _pluginMediator.GetLocalizedFriendlyName(provider.Metadata) : null);
+
+			model.AvailableStorageProvider = _providerManager.GetAllProviders<IMediaStorageProvider>()
+				.Where(x => !x.Metadata.SystemName.IsCaseInsensitiveEqual(currentStorageProvider))
+				.Select(x => new SelectListItem { Text = _pluginMediator.GetLocalizedFriendlyName(x.Metadata), Value = x.Metadata.SystemName })
+				.ToList();
+
+			return View(model);
         }
 
         [HttpPost]
         [FormValueRequired("save")]
         public ActionResult Media(MediaSettingsModel model, FormCollection form)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
 			//load settings for a chosen store scope
-			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-			var mediaSettings = _services.Settings.LoadSetting<MediaSettings>(storeScope);
+			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var mediaSettings = Services.Settings.LoadSetting<MediaSettings>(storeScope);
 			mediaSettings = model.ToEntity(mediaSettings);
 
-			StoreDependingSettings.UpdateSettings(mediaSettings, form, storeScope, _services.Settings);
+			StoreDependingSettings.UpdateSettings(mediaSettings, form, storeScope, Services.Settings);
 
-            //activity log
-            _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
+            _customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 
-            NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
+            NotifySuccess(T("Admin.Configuration.Updated"));
+
             return RedirectToAction("Media");
         }
 
-        [HttpPost, ActionName("Media")]
-        [FormValueRequired("change-picture-storage")]
-        public ActionResult ChangePictureStorage()
+        [HttpPost]
+        public ActionResult ChangeMediaStorage(string targetProvider)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+            if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
-            _pictureService.StoreInDb = !_pictureService.StoreInDb;
+			var currentStorageProvider = Services.Settings.GetSettingByKey<string>("Media.Storage.Provider");
+			var source = _providerManager.GetProvider<IMediaStorageProvider>(currentStorageProvider);
+			var target = _providerManager.GetProvider<IMediaStorageProvider>(targetProvider);
 
-            //activity log
-            _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
+			var success = _mediaStorageMover.Move(source, target);
 
-            NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
-            return RedirectToAction("Media");
+			if (success)
+			{
+				_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
+
+				NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+			}
+
+			return RedirectToAction("Media");
         }
 
         public ActionResult CustomerUser()

@@ -664,10 +664,10 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore())
 				.ForMember(dest => dest.ShowItemsFromWishlistToCartButton, mo => mo.Ignore());
 			Mapper.CreateMap<MediaSettings, MediaSettingsModel>()
-				.ForMember(dest => dest.PicturesStoredIntoDatabase, mo => mo.Ignore())
+				.ForMember(dest => dest.StorageProvider, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableStorageProvider, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailablePictureZoomTypes, mo => mo.Ignore());
             Mapper.CreateMap<MediaSettingsModel, MediaSettings>()
-                //.ForMember(dest => dest.DefaultPictureZoomEnabled, mo => mo.Ignore())
                 .ForMember(dest => dest.DefaultImageQuality, mo => mo.Ignore())
                 .ForMember(dest => dest.MultipleThumbDirectories, mo => mo.Ignore())
                 .ForMember(dest => dest.VariantValueThumbPictureSize, mo => mo.Ignore());

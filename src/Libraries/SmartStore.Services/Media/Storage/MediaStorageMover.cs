@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
@@ -37,7 +36,7 @@ namespace SmartStore.Services.Media.Storage
 			Guard.ArgumentNotNull(() => sourceProvider);
 			Guard.ArgumentNotNull(() => targetProvider);
 
-			var success = true;
+			var success = false;
 			var pageIndex = 0;
 			var utcNow = DateTime.UtcNow;
 			IPagedList<Picture> pictures = null;
@@ -65,11 +64,16 @@ namespace SmartStore.Services.Media.Storage
 			}
 
 			// we are about to process data in chunks but want to commit ALL at once when ALL chunks have been processed successfully.
-			using (var scope = new DbContextScope(ctx: dbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
+			// set autoDetectChanges to true for newly inserted binary data.
+			using (var scope = new DbContextScope(ctx: dbContext, autoDetectChanges: true, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			using (var transaction = dbContext.BeginTransaction())
 			{
 				try
 				{
+					var query = _pictureRepository.Table
+						.Expand(x => x.BinaryData)
+						.OrderBy(x => x.Id);
+
 					do
 					{
 						if (pictures != null)
@@ -81,16 +85,14 @@ namespace SmartStore.Services.Media.Storage
 						}
 
 						// load max 100 picture entities at once
-						pictures = new PagedList<Picture>(_pictureRepository.Table.OrderByDescending(x => x.Id), pageIndex++, PAGE_SIZE);
+						pictures = new PagedList<Picture>(query, pageIndex++, PAGE_SIZE);
 
 						foreach (var picture in pictures)
 						{
 							// move item from source to target
 							source.MoveTo(target, context, picture);
 
-							// explicitly attach modified entity to context because we disabled AutoCommit
 							picture.UpdatedOnUtc = utcNow;
-							_pictureRepository.Update(picture);
 
 							++context.MovedItems;
 						}
@@ -101,18 +103,21 @@ namespace SmartStore.Services.Media.Storage
 					while (pictures.HasNextPage);
 
 					transaction.Commit();
+					success = true;
 				}
 				catch (Exception exception)
 				{
 					success = false;
 					transaction.Rollback();
 
-					// TODO: not here
-					//_services.Settings.SetSetting("Media.Storage.Provider", sourceProvider.Metadata.SystemName);
-
 					_services.Notifier.Error(exception.Message);
 					_logger.Error(exception);
 				}
+			}
+
+			if (success)
+			{
+				_services.Settings.SetSetting("Media.Storage.Provider", targetProvider.Metadata.SystemName);
 			}
 
 			// inform both provider about ending

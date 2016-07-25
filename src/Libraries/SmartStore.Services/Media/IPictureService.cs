@@ -5,9 +5,6 @@ using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
 {
-	/// <summary>
-	/// Picture service interface
-	/// </summary>
 	public partial interface IPictureService
     {
         /// <summary>
@@ -17,15 +14,6 @@ namespace SmartStore.Services.Media
         /// <param name="mimeType">MIME type</param>
         /// <returns>Picture binary or throws an exception</returns>
         byte[] ValidatePicture(byte[] pictureBinary);
-
-		/// <summary>
-		/// Finds an equal picture by comparing the binary buffer
-		/// </summary>
-		/// <param name="path">The picture to find a duplicate for</param>
-		/// <param name="pictures">The sequence of pictures to seek within for duplicates</param>
-		/// <param name="equalPictureId">Id of equal picture if any</param>
-		/// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
-		byte[] FindEqualPicture(string path, IEnumerable<Picture> pictures, out int equalPictureId);
 
 		/// <summary>
 		/// Finds an equal picture by comparing the binary buffer
@@ -165,10 +153,5 @@ namespace SmartStore.Services.Media
         /// <param name="seoFilename">The SEO filename</param>
         /// <returns>Picture</returns>
         Picture SetSeoFilename(int pictureId, string seoFilename);
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the images should be stored in data base.
-        /// </summary>
-        bool StoreInDb { get; set; }
     }
 }

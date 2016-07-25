@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Web.Hosting;
@@ -10,9 +9,9 @@ namespace SmartStore.Core.IO
 {
 	public class LocalFileSystem : IFileSystem
 	{
-		private readonly string _virtualPath; // ~/base
-		private readonly string _publicPath; // /Shop/base
-		private readonly string _storagePath; // C:\SMNET\base
+		private readonly string _virtualPath;	// ~/base
+		private readonly string _publicPath;	// /Shop/base
+		private readonly string _storagePath;	// C:\SMNET\base
 
 		public LocalFileSystem()
 			: this(string.Empty)

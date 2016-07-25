@@ -32,9 +32,7 @@ namespace SmartStore.Services.Media
         private readonly MediaSettings _mediaSettings;
         private readonly IImageResizerService _imageResizerService;
         private readonly IImageCache _imageCache;
-
 		private readonly Provider<IMediaStorageProvider> _storageProvider;
-		private readonly string _storageProviderSystemName;
 
 		private string _staticImagePath;
 
@@ -58,17 +56,12 @@ namespace SmartStore.Services.Media
             _imageResizerService = imageResizerService;
             _imageCache = imageCache;
 
-			_storageProviderSystemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
+			var systemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
 
-			_storageProvider = providerManager.GetProvider<IMediaStorageProvider>(_storageProviderSystemName);
+			_storageProvider = providerManager.GetProvider<IMediaStorageProvider>(systemName);
         }
 
 		#region Utilities
-
-		private bool StoreInDatabase
-		{
-			get { return (_storageProviderSystemName == DatabaseMediaStorageProvider.SystemName); }
-		}
 
 		protected virtual string StaticImagePath
 		{
@@ -163,6 +156,7 @@ namespace SmartStore.Services.Media
 
 						try
 						{
+							// static default image
 							buffer = File.ReadAllBytes((string)source);
 						}
 						catch (Exception exception)
@@ -217,11 +211,6 @@ namespace SmartStore.Services.Media
 			{
 				return resultStream.GetBuffer();
 			}
-		}
-
-		public virtual byte[] FindEqualPicture(string path, IEnumerable<Picture> pictures, out int equalPictureId)
-		{
-			return FindEqualPicture(File.ReadAllBytes(path), pictures, out equalPictureId);
 		}
 
 		public virtual byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> pictures, out int equalPictureId)
@@ -509,22 +498,5 @@ namespace SmartStore.Services.Media
         }
 
         #endregion
-
-        public virtual bool StoreInDb
-        {
-            get
-            {
-				return _settingService.GetSettingByKey<bool>("Media.Images.StoreInDB", true);
-            }
-            set
-            {
-                // check whether the value was changed
-                if (this.StoreInDb != value)
-                {
-                    // save the new setting value
-                    _settingService.SetSetting<bool>("Media.Images.StoreInDB", value);
-                }
-            }
-        }
     }
 }

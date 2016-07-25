@@ -8,19 +8,22 @@ namespace SmartStore.Services.Media
 		/// Delete binary data entity
 		/// </summary>
 		/// <param name="binaryData">Binary data entity</param>
-		void DeleteBinaryData(BinaryData binaryData);
+		/// <param name="publishEvent">Whether to publish event</param>
+		void DeleteBinaryData(BinaryData binaryData, bool publishEvent = true);
 
 		/// <summary>
 		/// Update binary data entity
 		/// </summary>
 		/// <param name="binaryData">Binary data entity</param>
-		void UpdateBinaryData(BinaryData binaryData);
+		/// <param name="publishEvent">Whether to publish event</param>
+		void UpdateBinaryData(BinaryData binaryData, bool publishEvent = true);
 
 		/// <summary>
 		/// Insert binary data entity
 		/// </summary>
 		/// <param name="binaryData">Binary data entity</param>
-		void InsertBinaryData(BinaryData binaryData);
+		/// <param name="publishEvent">Whether to publish event</param>
+		void InsertBinaryData(BinaryData binaryData, bool publishEvent = true);
 
 		/// <summary>
 		/// Get binary data by identifier

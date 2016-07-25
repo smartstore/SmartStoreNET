@@ -130,31 +130,35 @@ namespace SmartStore.Data.Migrations
 			context.MigrateLocaleResources(MigrateLocaleResources);
 
 			var binaryDatas = context.Set<BinaryData>();
-			var storeInDb = true;
+			var storePicturesInDb = true;
 
 			{
 				var settings = context.Set<Setting>();
 
 				// be careful, this setting does not necessarily exist
-				var setting = settings.FirstOrDefault(x => x.Name == "Media.Images.StoreInDB");
-				if (setting != null)
+				var storeInDbSetting = settings.FirstOrDefault(x => x.Name == "Media.Images.StoreInDB");
+				if (storeInDbSetting != null)
 				{
-					storeInDb = setting.Value.ToBool(true);
+					storePicturesInDb = storeInDbSetting.Value.ToBool(true);
+
+					// remove old bool StoreInDB because it's not used anymore
+					settings.Remove(storeInDbSetting);
 				}
 
 				// upsert media storage provider system name
 				settings.AddOrUpdate(x => x.Name, new Setting
 				{
 					Name = "Media.Storage.Provider",
-					Value = (storeInDb ? "MediaStorage.SmartStoreDatabase" : "MediaStorage.SmartStoreFileSystem")
+					Value = (storePicturesInDb ? "MediaStorage.SmartStoreDatabase" : "MediaStorage.SmartStoreFileSystem")
 				});
 			}
 
-			if (storeInDb)
+			if (storePicturesInDb)
 			{
 				MovePictureBinaryToBinaryDataTable(context, binaryDatas);
-				MoveDownloadBinaryToBinaryDataTable(context, binaryDatas);
 			}
+
+			MoveDownloadBinaryToBinaryDataTable(context, binaryDatas);
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
@@ -168,6 +172,33 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Media.CannotMoveToSameProvider",
 				"Media cannot be moved to the same storage device.",
 				"Medien können nicht zum selben Speichermedium verschoben werden.");
+
+			builder.AddOrUpdate("Providers.FriendlyName.MediaStorage.SmartStoreDatabase",
+				"Database",
+				"Datenbank");
+
+			builder.AddOrUpdate("Providers.FriendlyName.MediaStorage.SmartStoreFileSystem",
+				"File system",
+				"Dateisystem");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Media.CurrentStorageLocation",
+				"The current storage location is",
+				"Der aktuelle Speicherort ist");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Media.StorageProvider",
+				"New storage location",
+				"Neuer Speicherort",
+				"Specifies the new storage location for media file like images.",
+				"Legt den neuen Speicherort für Mediendateien wie z.B. Bilder fest.");
+
+			builder.AddOrUpdate("Admin.Common.MoveNow",	"Move now", "Jetzt verschieben");
+
+
+			builder.Delete(
+				"Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.Database",
+				"Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.FileSystem",
+				"Admin.Configuration.Settings.Media.MoveToFs",
+				"Admin.Configuration.Settings.Media.MoveToDb");
 		}
 	}
 }

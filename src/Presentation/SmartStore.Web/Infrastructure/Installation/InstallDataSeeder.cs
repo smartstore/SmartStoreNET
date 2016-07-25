@@ -563,7 +563,6 @@ namespace SmartStore.Web.Infrastructure.Installation
             // special mandatory (non-visible) settings
 			_ctx.MigrateSettings(x =>
 			{
-				x.Add("Media.Images.StoreInDB", _config.StoreMediaInDB);
 				x.Add("Media.Storage.Provider", _config.StoreMediaInDB ? DatabaseMediaStorageProvider.SystemName : FileSystemMediaStorageProvider.SystemName);
 			});
 

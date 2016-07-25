@@ -7,7 +7,8 @@ using SmartStore.Core.Plugins;
 namespace SmartStore.Services.Media.Storage
 {
 	[SystemName("MediaStorage.SmartStoreFileSystem")]
-	[FriendlyName("File system media storage")]
+	[FriendlyName("File system")]
+	[DisplayOrder(1)]
 	public class FileSystemMediaStorageProvider : IMediaStorageProvider, IMovableMediaSupported
 	{
 		private readonly IFileSystem _fileSystem;

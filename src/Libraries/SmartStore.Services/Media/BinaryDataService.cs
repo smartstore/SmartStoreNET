@@ -17,32 +17,41 @@ namespace SmartStore.Services.Media
 			_eventPublisher = eventPublisher;
 		}
 
-		public virtual void DeleteBinaryData(BinaryData binaryData)
+		public virtual void DeleteBinaryData(BinaryData binaryData, bool publishEvent = true)
 		{
 			if (binaryData != null)
 			{
 				_binaryDataRepository.Delete(binaryData);
 
-				_eventPublisher.EntityDeleted(binaryData);
+				if (publishEvent)
+				{
+					_eventPublisher.EntityDeleted(binaryData);
+				}
 			}
 		}
 
-		public virtual void UpdateBinaryData(BinaryData binaryData)
+		public virtual void UpdateBinaryData(BinaryData binaryData, bool publishEvent = true)
 		{
 			Guard.ArgumentNotNull(() => binaryData);
 
 			_binaryDataRepository.Update(binaryData);
 
-			_eventPublisher.EntityUpdated(binaryData);
+			if (publishEvent)
+			{
+				_eventPublisher.EntityUpdated(binaryData);
+			}
 		}
 
-		public virtual void InsertBinaryData(BinaryData binaryData)
+		public virtual void InsertBinaryData(BinaryData binaryData, bool publishEvent = true)
 		{
 			Guard.ArgumentNotNull(() => binaryData);
 
 			_binaryDataRepository.Insert(binaryData);
 
-			_eventPublisher.EntityInserted(binaryData);
+			if (publishEvent)
+			{
+				_eventPublisher.EntityInserted(binaryData);
+			}
 		}
 
 		public virtual BinaryData GetBinaryDataById(int id)

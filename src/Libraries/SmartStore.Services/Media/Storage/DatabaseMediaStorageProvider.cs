@@ -10,14 +10,14 @@ namespace SmartStore.Services.Media.Storage
 	[DisplayOrder(0)]
 	public class DatabaseMediaStorageProvider : IMediaStorageProvider, IMovableMediaSupported
 	{
-		private readonly IRepository<Picture> _pictureRepository;
+		private readonly IDbContext _dbContext;
 		private readonly IBinaryDataService _binaryDataService;
 
 		public DatabaseMediaStorageProvider(
-			IRepository<Picture> pictureRepository,
+			IDbContext dbContext,
 			IBinaryDataService binaryDataService)
 		{
-			_pictureRepository = pictureRepository;
+			_dbContext = dbContext;
 			_binaryDataService = binaryDataService;
 		}
 
@@ -26,108 +26,124 @@ namespace SmartStore.Services.Media.Storage
 			get { return "MediaStorage.SmartStoreDatabase"; }
 		}
 
-		public byte[] Load(Picture picture)
+		public byte[] Load(MediaStorageItem media)
 		{
-			Guard.ArgumentNotNull(() => picture);
+			Guard.ArgumentNotNull(() => media);
 
-			if ((picture.BinaryDataId ?? 0) != 0)
+			var existingBinary = media.Entity as IMediaStorageSupported;
+
+			if ((existingBinary.BinaryDataId ?? 0) != 0 && existingBinary.BinaryData != null)
 			{
-				return picture.BinaryData.Data;
+				return existingBinary.BinaryData.Data;
 			}
 
 			return new byte[0];
 		}
 
-		public void Save(Picture picture, byte[] data)
+		public void Save(MediaStorageItem media)
 		{
-			Guard.ArgumentNotNull(() => picture);
+			Guard.ArgumentNotNull(() => media);
 
-			if (data == null || data.LongLength == 0)
+			var existingBinary = media.Entity as IMediaStorageSupported;
+
+			if (media.NewData == null || media.NewData.LongLength == 0)
 			{
 				// remove picture binary if any
-				if ((picture.BinaryDataId ?? 0) != 0)
+				if ((existingBinary.BinaryDataId ?? 0) != 0)
 				{
-					_binaryDataService.DeleteBinaryData(picture.BinaryData);
+					_binaryDataService.DeleteBinaryData(existingBinary.BinaryData);
 				}
 			}
 			else
 			{
-				if (picture.BinaryData == null)
+				if (existingBinary.BinaryData == null)
 				{
-					// insert new binary data
-					picture.BinaryData = new BinaryData { Data = data };
+					var newBinary = new BinaryData { Data = media.NewData };
 
-					if (picture.IsTransientRecord())
-						_pictureRepository.Insert(picture);
-					else
-						_pictureRepository.Update(picture);
+					_binaryDataService.InsertBinaryData(newBinary);
+
+					if (newBinary.Id == 0)
+					{
+						// actually we should never get here
+						_dbContext.SaveChanges();
+					}
+
+					existingBinary.BinaryDataId = newBinary.Id;
+
+					_dbContext.SaveChanges();
 				}
 				else
 				{
-					if (picture.BinaryData.Data.SequenceEqual(data))
+					if (existingBinary.BinaryData.Data.SequenceEqual(media.NewData))
 					{
 						// ignore equal binary data
 					}
 					else
 					{
 						// update binary data
-						picture.BinaryData.Data = data;
+						existingBinary.BinaryData.Data = media.NewData;
 
-						_binaryDataService.UpdateBinaryData(picture.BinaryData);
+						_binaryDataService.UpdateBinaryData(existingBinary.BinaryData);
 					}
 				}
 			}
 		}
 
-		public void Remove(params Picture[] pictures)
+		public void Remove(params MediaStorageItem[] medias)
 		{
-			if (pictures != null)
+			if (medias != null)
 			{
-				foreach (var picture in pictures)
+				foreach (var media in medias)
 				{
-					if ((picture.BinaryDataId ?? 0) != 0)
+					var existingBinary = media.Entity as IMediaStorageSupported;
+
+					if ((existingBinary.BinaryDataId ?? 0) != 0)
 					{
-						_binaryDataService.DeleteBinaryData(picture.BinaryData);
+						_binaryDataService.DeleteBinaryData(existingBinary.BinaryData);
 					}
 				}
 			}
 		}
 
 
-		public void MoveTo(IMovableMediaSupported target, MediaStorageMoverContext context, Picture picture)
+		public void MoveTo(IMovableMediaSupported target, MediaStorageMoverContext context, MediaStorageItem media)
 		{
 			Guard.ArgumentNotNull(() => target);
 			Guard.ArgumentNotNull(() => context);
-			Guard.ArgumentNotNull(() => picture);
+			Guard.ArgumentNotNull(() => media);
 
-			if (picture.BinaryData != null)
+			var existingBinary = media.Entity as IMediaStorageSupported;
+
+			if (existingBinary.BinaryData != null)
 			{
 				// let target store data (into a file for example)
-				target.StoreMovingData(context, picture, picture.BinaryData.Data);
+				target.StoreMovingData(context, media);
 
 				// remove picture binary from DB
 				try
 				{
-					_binaryDataService.DeleteBinaryData(picture.BinaryData, false);
+					_binaryDataService.DeleteBinaryData(existingBinary.BinaryData, false);
 				}
 				catch { }
 
-				picture.BinaryDataId = null;
+				existingBinary.BinaryDataId = null;
 
 				context.ShrinkDatabase = true;
 			}
 		}
 
-		public void StoreMovingData(MediaStorageMoverContext context, Picture picture, byte[] data)
+		public void StoreMovingData(MediaStorageMoverContext context, MediaStorageItem media)
 		{
 			Guard.ArgumentNotNull(() => context);
-			Guard.ArgumentNotNull(() => picture);
+			Guard.ArgumentNotNull(() => media);
 
 			// store data for later bulk commit
-			if (data != null && data.LongLength > 0)
+			if (media.NewData != null && media.NewData.LongLength > 0)
 			{
+				var existingBinary = media.Entity as IMediaStorageSupported;
+
 				// requires autoDetectChanges set to true or remove explicit entity detaching
-				picture.BinaryData = new BinaryData { Data = data };
+				existingBinary.BinaryData = new BinaryData { Data = media.NewData };
 			}
 		}
 

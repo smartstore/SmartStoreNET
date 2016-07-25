@@ -1,5 +1,4 @@
-﻿using SmartStore.Core.Domain.Media;
-using SmartStore.Core.Plugins;
+﻿using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Media.Storage
 {
@@ -8,23 +7,19 @@ namespace SmartStore.Services.Media.Storage
 		/// <summary>
 		/// Load media item data
 		/// </summary>
-		/// <param name="picture">Picture entity</param>
-		/// <returns>Binary data of the media item</returns>
-		byte[] Load(Picture picture);
+		/// <param name="media">Media storage item</param>
+		byte[] Load(MediaStorageItem media);
 
 		/// <summary>
 		/// Save media item data
 		/// </summary>
-		/// <param name="picture">Picture entity</param>
-		/// <param name="data">Binary data of the media item</param>
-		void Save(Picture picture, byte[] data);
+		/// <param name="media">Media storage item</param>
+		void Save(MediaStorageItem media);
 
 		/// <summary>
-		/// Remove picture entities
+		/// Remove media storage item(s)
 		/// </summary>
-		/// <param name="pictures">Picture entities</param>
-		void Remove(params Picture[] pictures);
-
-		//string GetPublicUrl(Picture picture);
+		/// <param name="medias">Media storage items</param>
+		void Remove(params MediaStorageItem[] medias);
 	}
 }

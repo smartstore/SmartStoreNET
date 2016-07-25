@@ -90,7 +90,11 @@ namespace SmartStore.Services.Media.Storage
 						foreach (var picture in pictures)
 						{
 							// move item from source to target
-							source.MoveTo(target, context, picture);
+							source.MoveTo(target, context, new MediaStorageItem
+							{
+								Entity = picture,
+								MimeType = picture.MimeType
+							});
 
 							picture.UpdatedOnUtc = utcNow;
 

@@ -244,6 +244,8 @@
     <Compile Include="Media\Storage\IMediaStorageProvider.cs" />
     <Compile Include="Media\MediaExtensions.cs" />
     <Compile Include="Media\Storage\IMediaStorageMover.cs" />
+    <Compile Include="Media\Storage\MediaStorageExtensions.cs" />
+    <Compile Include="Media\Storage\MediaStorageItem.cs" />
     <Compile Include="Media\Storage\MediaStorageMover.cs" />
     <Compile Include="Media\TransientMediaClearTask.cs" />
     <Compile Include="Messages\Importer\NewsLetterSubscriptionImporter.cs" />

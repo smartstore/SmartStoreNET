@@ -23,16 +23,15 @@ namespace SmartStore.Services.Media.Storage
 		/// </summary>
 		/// <param name="target">Target provider</param>
 		/// <param name="context">Media storage mover context</param>
-		/// <param name="picture">Picture entity</param>
-		void MoveTo(IMovableMediaSupported target, MediaStorageMoverContext context, Picture picture);
+		/// <param name="media">Media storage item</param>
+		void MoveTo(IMovableMediaSupported target, MediaStorageMoverContext context, MediaStorageItem media);
 
 		/// <summary>
 		/// Data received by the source provider to be stored by the target provider
 		/// </summary>
 		/// <param name="context">Media storage mover context</param>
-		/// <param name="picture">Picture entity</param>
-		/// <param name="data">Binary data of the media item</param>
-		void StoreMovingData(MediaStorageMoverContext context, Picture picture, byte[] data);
+		/// <param name="media">Media storage item</param>
+		void StoreMovingData(MediaStorageMoverContext context, MediaStorageItem media);
 
 		/// <summary>
 		/// Called when media moving ended

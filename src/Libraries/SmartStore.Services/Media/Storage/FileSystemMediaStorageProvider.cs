@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
 using SmartStore.Core.Plugins;
 
@@ -12,14 +11,14 @@ namespace SmartStore.Services.Media.Storage
 	public class FileSystemMediaStorageProvider : IMediaStorageProvider, IMovableMediaSupported
 	{
 		private readonly IFileSystem _fileSystem;
-		private readonly string _mediaRoot;
+		private readonly string _defaultRootPath;
 
 		public FileSystemMediaStorageProvider(
 			IFileSystem fileSystem)
 		{
 			_fileSystem = fileSystem;
 
-			_mediaRoot = "Media";
+			_defaultRootPath = "Media";
 		}
 
 		public static string SystemName
@@ -27,35 +26,32 @@ namespace SmartStore.Services.Media.Storage
 			get { return "MediaStorage.SmartStoreFileSystem"; }
 		}
 
-		protected virtual string GetPictureName(int pictureId, string mimeType)
+		protected string GetPicturePath(MediaStorageItem media)
 		{
-			return string.Format("{0}-0.{1}", pictureId.ToString("0000000"), MimeTypes.MapMimeTypeToExtension(mimeType));
+			if (media.RootPath.HasValue())
+				return _fileSystem.Combine(media.RootPath, media.GetFileName());
+
+			return _fileSystem.Combine(_defaultRootPath, media.GetFileName());
 		}
 
-		protected virtual string GetPicturePath(Picture picture)
+		public byte[] Load(MediaStorageItem media)
 		{
-			var fileName = GetPictureName(picture.Id, picture.MimeType);
-			return _fileSystem.Combine(_mediaRoot, fileName);
-		}
+			Guard.ArgumentNotNull(() => media);
 
-		public byte[] Load(Picture picture)
-		{
-			Guard.ArgumentNotNull(() => picture);
-
-			var filePath = GetPicturePath(picture);
+			var filePath = GetPicturePath(media);
 
 			return (_fileSystem.ReadAllBytes(filePath) ?? new byte[0]);
 		}
 
-		public void Save(Picture picture, byte[] data)
+		public void Save(MediaStorageItem media)
 		{
-			Guard.ArgumentNotNull(() => picture);
+			Guard.ArgumentNotNull(() => media);
 
-			var filePath = GetPicturePath(picture);
+			var filePath = GetPicturePath(media);
 
-			if (data != null && data.LongLength != 0)
+			if (media.NewData != null && media.NewData.LongLength != 0)
 			{
-				_fileSystem.WriteAllBytes(filePath, data);
+				_fileSystem.WriteAllBytes(filePath, media.NewData);
 			}
 			else if (_fileSystem.FileExists(filePath))
 			{
@@ -63,13 +59,13 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
-		public void Remove(params Picture[] pictures)
+		public void Remove(params MediaStorageItem[] medias)
 		{
-			if (pictures != null)
+			if (medias != null)
 			{
-				foreach (var picture in pictures)
+				foreach (var media in medias)
 				{
-					var filePath = GetPicturePath(picture);
+					var filePath = GetPicturePath(media);
 
 					_fileSystem.DeleteFile(filePath);
 				}
@@ -77,35 +73,35 @@ namespace SmartStore.Services.Media.Storage
 		}
 
 
-		public void MoveTo(IMovableMediaSupported target, MediaStorageMoverContext context, Picture picture)
+		public void MoveTo(IMovableMediaSupported target, MediaStorageMoverContext context, MediaStorageItem media)
 		{
 			Guard.ArgumentNotNull(() => target);
 			Guard.ArgumentNotNull(() => context);
-			Guard.ArgumentNotNull(() => picture);
+			Guard.ArgumentNotNull(() => media);
 
-			var filePath = GetPicturePath(picture);
+			var filePath = GetPicturePath(media);
 
 			// read data from file
-			var data = _fileSystem.ReadAllBytes(filePath);
+			media.NewData = _fileSystem.ReadAllBytes(filePath);
 
 			// let target store data (into database for example)
-			target.StoreMovingData(context, picture, data);
+			target.StoreMovingData(context, media);
 
 			// remember file path: we must be able to rollback IO operations on transaction failure
 			context.AffectedFiles.Add(filePath);
 		}
 
-		public void StoreMovingData(MediaStorageMoverContext context, Picture picture, byte[] data)
+		public void StoreMovingData(MediaStorageMoverContext context, MediaStorageItem media)
 		{
 			Guard.ArgumentNotNull(() => context);
-			Guard.ArgumentNotNull(() => picture);
+			Guard.ArgumentNotNull(() => media);
 
 			// store data into file
-			if (data != null && data.LongLength != 0)
+			if (media.NewData != null && media.NewData.LongLength != 0)
 			{
-				var filePath = GetPicturePath(picture);
+				var filePath = GetPicturePath(media);
 
-				_fileSystem.WriteAllBytes(filePath, data);
+				_fileSystem.WriteAllBytes(filePath, media.NewData);
 
 				context.AffectedFiles.Add(filePath);
 			}

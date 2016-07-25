@@ -250,7 +250,11 @@ namespace SmartStore.Services.Media
         {
 			Guard.ArgumentNotNull(() => picture);
 
-			return _storageProvider.Value.Load(picture);
+			return _storageProvider.Value.Load(new MediaStorageItem
+			{
+				Entity = picture,
+				MimeType = picture.MimeType
+			});
         }
 
         public virtual Size GetPictureSize(Picture picture)
@@ -351,23 +355,6 @@ namespace SmartStore.Services.Media
             return picture;
         }
 
-        public virtual void DeletePicture(Picture picture)
-        {
-			Guard.ArgumentNotNull(() => picture);
-
-            // delete thumbs
-            _imageCache.DeleteCachedImages(picture);
-
-			// delete from storage
-			_storageProvider.Value.Remove(picture);
-
-			// delete entity
-			_pictureRepository.Delete(picture);
-
-            // event notification
-            _eventPublisher.EntityDeleted(picture);
-        }
-
         public virtual IPagedList<Picture> GetPictures(int pageIndex, int pageSize)
         {
             var query = from p in _pictureRepository.Table
@@ -406,7 +393,28 @@ namespace SmartStore.Services.Media
 			return query.ToList();
 		}
 
-        public virtual Picture InsertPicture(
+		public virtual void DeletePicture(Picture picture)
+		{
+			Guard.ArgumentNotNull(() => picture);
+
+			// delete thumbs
+			_imageCache.DeleteCachedImages(picture);
+
+			// delete from storage
+			_storageProvider.Value.Remove(new MediaStorageItem
+			{
+				Entity = picture,
+				MimeType = picture.MimeType
+			});
+
+			// delete entity
+			_pictureRepository.Delete(picture);
+
+			// event notification
+			_eventPublisher.EntityDeleted(picture);
+		}
+
+		public virtual Picture InsertPicture(
 			byte[] pictureBinary,
 			string mimeType,
 			string seoFilename,
@@ -434,10 +442,15 @@ namespace SmartStore.Services.Media
             _pictureRepository.Insert(picture);
 
 			// save to storage
-			_storageProvider.Value.Save(picture, pictureBinary);
+			_storageProvider.Value.Save(new MediaStorageItem
+			{
+				Entity = picture,
+				MimeType = picture.MimeType,
+				NewData = pictureBinary
+			});
 
-            // event notification
-            _eventPublisher.EntityInserted(picture);
+			// event notification
+			_eventPublisher.EntityInserted(picture);
 
             return picture;
         }
@@ -476,10 +489,15 @@ namespace SmartStore.Services.Media
             _pictureRepository.Update(picture);
 
 			// save to storage
-			_storageProvider.Value.Save(picture, pictureBinary);
+			_storageProvider.Value.Save(new MediaStorageItem
+			{
+				Entity = picture,
+				MimeType = picture.MimeType,
+				NewData = pictureBinary
+			});
 
-            // event notification
-            _eventPublisher.EntityUpdated(picture);
+			// event notification
+			_eventPublisher.EntityUpdated(picture);
 
             return picture;
         }

@@ -413,7 +413,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					if (pic.BinaryData != null && pic.BinaryData.Data.LongLength > 0)
 					{
-						fileSystemStorageProvider.Save(pic, pic.BinaryData.Data);
+						fileSystemStorageProvider.Save(new MediaStorageItem
+						{
+							Entity = pic,
+							MimeType = pic.MimeType,
+							NewData = pic.BinaryData.Data
+						});
 
 						try
 						{

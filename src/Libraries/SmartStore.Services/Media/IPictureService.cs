@@ -94,12 +94,6 @@ namespace SmartStore.Services.Media
 		Picture GetPictureById(int pictureId);
 
         /// <summary>
-        /// Deletes a picture
-        /// </summary>
-        /// <param name="picture">Picture</param>
-        void DeletePicture(Picture picture);
-
-        /// <summary>
         /// Gets a collection of pictures
         /// </summary>
         /// <param name="pageIndex">Current page</param>
@@ -123,6 +117,12 @@ namespace SmartStore.Services.Media
 		IList<Picture> GetPicturesByIds(int[] pictureIds);
 
 		/// <summary>
+		/// Deletes a picture
+		/// </summary>
+		/// <param name="picture">Picture</param>
+		void DeletePicture(Picture picture);
+
+		/// <summary>
 		/// Inserts a picture
 		/// </summary>
 		/// <param name="pictureBinary">The picture binary</param>
@@ -132,7 +132,7 @@ namespace SmartStore.Services.Media
 		/// <param name="isTransient">A value indicating whether the picture is initially in transient state</param>
 		/// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
 		/// <returns>Picture</returns>
-        Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool isTransient = true, bool validateBinary = true);
+		Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool isTransient = true, bool validateBinary = true);
 
         /// <summary>
         /// Updates the picture

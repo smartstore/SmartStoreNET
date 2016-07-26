@@ -223,8 +223,9 @@ namespace SmartStore.Web.Framework.UI
 			string temp = "";
 			string loadedTabName = null;
 
-			// <li [class="active [hide]"]><a href="#{id}" data-toggle="tab">{text}</a></li>
-			if (item.Selected)
+            // <li [class="active [hide]"]><a href="#{id}" data-toggle="tab">{text}</a></li>
+            item.HtmlAttributes.AppendCssClass("nav-item");
+            if (item.Selected)
 			{
 				item.HtmlAttributes.AppendCssClass("active");
 			}
@@ -246,13 +247,14 @@ namespace SmartStore.Web.Framework.UI
 			writer.RenderBeginTag("li");
 			{
 				var itemId = "#" + BuildItemId(item, index);
-
-				if (item.Content != null)
+                
+                if (item.Content != null)
 				{
 					writer.AddAttribute("href", itemId);
 					writer.AddAttribute("data-toggle", "tab");
 					writer.AddAttribute("data-loaded", "true");
-					loadedTabName = GetTabName(item) ?? itemId;
+                    writer.AddAttribute("class", "nav-link" + (item.Selected ? " active" : ""));
+                    loadedTabName = GetTabName(item) ?? itemId;
 				}
 				else
 				{
@@ -270,7 +272,8 @@ namespace SmartStore.Web.Framework.UI
 							writer.AddAttribute("href", itemId);
 							writer.AddAttribute("data-ajax-url", url);
 							writer.AddAttribute("data-toggle", "tab");
-						}
+                            writer.AddAttribute("class", "nav-link" + (item.Selected ? " active" : ""));
+                        }
 						else
 						{
 							writer.AddAttribute("href", url);

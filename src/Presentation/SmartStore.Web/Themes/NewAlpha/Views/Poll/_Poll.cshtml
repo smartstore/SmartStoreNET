@@ -5,13 +5,13 @@
     Html.AddScriptParts("~/Scripts/public.voting.js");
 }
 
-<div id="poll-block-@(Model.Id)" class="poll-item equalized-column" data-equalized-deep="true">
-    <div class="poll-display-text" data-equalized-part="name">
+<div id="poll-block-@(Model.Id)" class="card poll-item equalized-column" data-equalized-deep="true">
+    <div class="card-header" data-equalized-part="name">
         @Model.Name
     </div>
     @if (Model.AlreadyVoted)
     {
-        <div class="poll-results">
+        <div class="poll-results card-block">
             @foreach (var item in Model.Answers)
             {
                 <div class="answer">
@@ -27,13 +27,13 @@
     }
     else
     {
-        <div class="poll-take-poll">
+        <div class="poll-take-poll card-block">
             <div data-equalized-part="data">
                 @foreach (var item in Model.Answers)
                 {
-                    <label class="radio">
-                      <input type="radio" id="pollanswers-@(item.Id)" name="pollanswers-@(Model.Id)" value="@item.Id" />@item.Name
-                    </label>
+                    <div class="radio">
+                        <label><input type="radio" id="pollanswers-@(item.Id)" name="pollanswers-@(Model.Id)" value="@item.Id" />@item.Name</label>
+                    </div>
                 }
             </div>
             <button id="vote-poll-@(Model.Id)" 
@@ -45,6 +45,5 @@
             </button>
 
         </div>
-        
     }
 </div>

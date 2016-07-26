@@ -1,25 +1,8 @@
 ﻿@model ShopHeaderModel
+
 @using SmartStore.Web.Models.Common;
 
-<div class="menubar">
-	<nav class="menubar-group">
-		<a class="menubar-link" href="#">Suche</a>
-		<a class="menubar-link" href="#">Kontakt</a>
-		<a class="menubar-link" href="#">Hilfe &amp; Service &nbsp;<i class="fa fa-caret-down"></i></a>
-		<a class="menubar-link" href="#"><i class="fa fa-user"></i>&nbsp;&nbsp;Anmelden</a>
-	</nav>
-
-	<nav class="menubar-group menubar-group--special">
-		<a class="menubar-link" href="#">News</a>
-		<a class="menubar-link" href="#">Blog</a>
-		<a class="menubar-link" href="#">Forum</a>
-	</nav>
-
-	<nav class="menubar-group menubar-group--special">
-		<a class="menubar-link" href="#"><i class="fa fa-cog"></i>&nbsp;&nbsp;Admin</a>
-	</nav>
-</div>
-
+@Html.Action("Menu", "Common")
 
 @*<div id="logobar" class="container clearfix">
 

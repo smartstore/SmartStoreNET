@@ -66,7 +66,15 @@ $card-border-color:         rgba(0,0,0, 0.12);*/
 @import "shared/_star-rating.scss";
 @import "shared/_sortable-grip.scss";
 @import "shared/_utils.scss";
+@import "shared/select2/core.scss";
 
 // Main
 @import "_shopbar.scss";
-
+@import "_footer.scss";
+@import "_misc.scss";
+@import "_blog.scss";
+@import "_forum.scss";
+@import "_checkout.scss";
+@import "_pages.scss";
+@import "_login.scss";
+@import "_rating.scss";

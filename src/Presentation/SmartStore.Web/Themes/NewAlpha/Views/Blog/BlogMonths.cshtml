@@ -2,20 +2,23 @@
 @using SmartStore.Web.Models.Blogs;
 @if (Model.Count > 0)
 {
-    <div class="block block-bordered block-blog-archive">
-        <div class="block-title">
+    <div class="block block-bordered block-blog-archive card">
+        <div class="block-title card-header">
             @T("Blog.Archive")
         </div>
-        <div class="block-body listbox">
-            <ul id="blog-month-list">
+        <div class="block-body listbox card-block">
+            <ul id="blog-month-list" class="list-unstyled">
                 @foreach (var yearItem in Model)
                 {
                     <li class="year">@(yearItem.Year)
                         <ul id="blog-year-@(yearItem.Year)">
                             @foreach (var monthItem in yearItem.Months)
                             {
-                                <li><a href="@Url.RouteUrl("BlogByMonth", new { month = yearItem.Year + "-" + monthItem.Month })">@(new DateTime(yearItem.Year, monthItem.Month, 1).ToString("MMMM"))
-                                    (@(monthItem.BlogPostCount))</a> </li>
+                                <li>
+                                    <a href="@Url.RouteUrl("BlogByMonth", new { month = yearItem.Year + "-" + monthItem.Month })">@(new DateTime(yearItem.Year, monthItem.Month, 1).ToString("MMMM"))
+                                        (@(monthItem.BlogPostCount))
+                                    </a> 
+                                </li>
                             }
                         </ul>
                     </li>

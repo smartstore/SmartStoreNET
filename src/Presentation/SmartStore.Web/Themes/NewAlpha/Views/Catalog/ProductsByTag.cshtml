@@ -9,7 +9,7 @@
 @using SmartStore.Core.Domain.Seo;
 
 @{
-    Layout = "~/Views/Shared/_ColumnsThree.cshtml";
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 
     //title
     Html.AddTitleParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
@@ -37,8 +37,6 @@
     <div class="page-title">
         <h1>@String.Format(T("Products.Tags.ProductsTaggedWith").Text, Model.TagName)</h1>
     </div>
-    <div class="clear">
-    </div>
     <div class="page-body">
         @Html.Widget("productsbytag_top")
 
@@ -47,35 +45,34 @@
         }
 
         @Html.Widget("productsbytag_before_product_list")
-        @*product list*@
+
         @if (Model.Products.Count > 0)
         {
             if (Model.PagingFilteringContext.ViewMode == "list")
             {
-            @*list mode*@
-            <div class="product-list">
-                @foreach (var product in Model.Products)
-                {
-                    <article class="item-box details">
-                        @Html.Partial("_ProductBoxList", product)
-                    </article>
-                }
-            </div>     
+                @*list mode*@
+                <div class="product-list">
+                    @foreach (var product in Model.Products)
+                    {
+                        <article class="item-box details card p-a-1">
+                            @Html.Partial("_ProductBoxList", product)
+                        </article>
+                    }
+                </div>
             }
             else
             {
-            @*grid mode*@
-            <div class="product-grid">
-                @(Html.DataList<ProductOverviewModel>(Model.Products, 3,
-                    @<article class="item-box">
-                        @Html.Partial("_ProductBox", @item)
-                    </article>
-                ))
-            </div>
+                @*grid mode*@
+                <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 product-grid">
+                    @foreach (var product in Model.Products)
+                    {
+                        <article class="card card-block card-shadow text-xs-center">
+                            @Html.Partial("_ProductBox", product)
+                        </article>
+                    }
+                </div>
             }
         }
-        <div class="clear">
-        </div>
 
         @Html.SmartStore().Pager(Model.PagingFilteringContext).Name("pagination-bottom").QueryParam("pagenumber")
 

@@ -7,6 +7,7 @@
 @section teaser {
     @RenderSection("teaser", required: false)
 }
+
 <div id="content-left" class="col-md-3"> 
     @if (IsSectionDefined("left"))
     {
@@ -20,7 +21,14 @@
         @Html.Widget("left_side_column_after_category_navigation")
 
         @Html.Action("ManufacturerNavigation", "Catalog", new { currentManufacturerId = this.CurrentManufacturerId, area = "" })
-        @Html.Widget("left_side_column_after_manufacturer_navigation")        
+        @Html.Widget("left_side_column_after_manufacturer_navigation")
+
+
+        @Html.Action("RecentlyViewedProductsBlock", "Catalog", new { area = "" })
+        @Html.Widget("right_side_column_after_recentlyviewed")
+
+        @Html.Action("PollBlock", "Poll", new { systemKeyword = "RightColumnPoll", area = "" })
+        @Html.Widget("right_side_column_after_poll")
 
         @Html.Widget("left_side_column_after")
     }

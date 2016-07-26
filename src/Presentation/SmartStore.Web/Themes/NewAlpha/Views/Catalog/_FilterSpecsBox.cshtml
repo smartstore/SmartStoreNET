@@ -9,8 +9,7 @@
         <div class="title">
             @T("Filtering.SpecificationFilter")
         </div>
-        <div class="clear">
-        </div>
+
         @if (Model.NotFilteredItems.Count > 0)
         {
             <div class="available-items">
@@ -29,6 +28,7 @@
                 }
             </div>
         }
+
         @if (Model.AlreadyFilteredItems.Count > 0)
         {
             <div class="already-filtered-items">

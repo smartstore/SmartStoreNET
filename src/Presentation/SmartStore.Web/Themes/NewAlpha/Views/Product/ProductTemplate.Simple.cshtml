@@ -12,24 +12,25 @@
 @using SmartStore.Web.Framework.Events;
 @using SmartStore.Web;
 
+
 @{
-	Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
 
-	//title, meta
-	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
-	Html.AddMetaDescriptionParts(Model.MetaDescription);
-	Html.AddMetaKeywordParts(Model.MetaKeywords);
+    //title, meta
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-	Html.AddScriptParts("~/Scripts/public.product-detail.js");
+    Html.AddScriptParts("~/Scripts/public.product-detail.js");
 
-	int pictureSize = EngineContext.Current.Resolve<MediaSettings>().ProductDetailsPictureSize;
+    int pictureSize = EngineContext.Current.Resolve<MediaSettings>().ProductDetailsPictureSize;
 
-	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
-	if (canonicalUrlsEnabled)
-	{
-		var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-		Html.AddCanonicalUrlParts(productUrl);
-	}
+    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+    if (canonicalUrlsEnabled)
+    {
+        var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+        Html.AddCanonicalUrlParts(productUrl);
+    }
 }
 
 <div class="page product-details-page">
@@ -74,14 +75,14 @@
                         </div>
 
                         <!-- attributes -->
-                        <table id="ProductAttributes" class="attributes">
+                        <table id="ProductAttributes" class="table attributes">
 
                             @if (Model.ShowSku)
                             {
-                            <tr valign="top" class="attr-sku @(String.IsNullOrWhiteSpace(Model.Sku) ? "hide fade" : "")">
-                                <td class="caption bold">@T("Products.Sku")</td>
-                                <td class="value">@Model.Sku</td> 
-                            </tr>
+                                <tr valign="top" class="attr-sku @(String.IsNullOrWhiteSpace(Model.Sku) ? "hide fade" : "")">
+                                    <td class="caption bold">@T("Products.Sku")</td>
+                                    <td class="value">@Model.Sku</td> 
+                                </tr>
                             }
 
                             @if (Model.Manufacturers.Count > 0)
@@ -166,7 +167,7 @@
                 <div class="product-data col-md-6">
 
                     @if (Model.DisplayAdminLink) { 
-						<a class="btn btn-secondary btn-mini btn-edit-product" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
+						<a class="btn btn-secondary btn-sm btn-edit-product" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
 							<i class="fa fa-pencil-square-o"></i>
 							@T("Common.Catalog.EditProduct")
 						</a>
@@ -327,12 +328,8 @@
 
                 @Html.Action("RelatedProducts", new { productId = Model.Id })
 
-                <!-- product recommendations -->
-                <div class="product-recommendations">
-                    @Html.Action("ProductsAlsoPurchased", new { productId = Model.Id })
-                </div>
+                @Html.Action("ProductsAlsoPurchased", new { productId = Model.Id })
             
-                <!-- product tags -->
                 <div class="product-tags">
                     @Html.Action("ProductTags", new { productId = Model.Id })
                 </div>

@@ -12,37 +12,23 @@
     <div class="page move-forum-topic">
         @Html.Action("ForumBreadcrumb", new { forumTopicId = Model.Id })
         <div class="title">
-            <h2>
-                @T("Forum.MoveTopic")
-            </h2>
+            <h2>@T("Forum.MoveTopic")</h2>
         </div>
         <div class="page-body">
-            <table class="move-topic">
-                <tr>
-                    <td class="fieldname">
-                        @T("Forum.SelectTheForumToMoveTopic")
-                    </td>
-                    <td>
-                        @Html.DropDownList("ForumSelected", new SelectList(Model.ForumList, "Value", "Text"))
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td class="options">
-                        @*<input type="submit" value="@T("Forum.Submit")" class="button-1 submit-forum-topic-button" />
-                        <input type="button" class="button-2 cancel-forum-topic-button" value="@T("Forum.Cancel")" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = @Model.Id, slug = @Model.TopicSeName })')" />*@
 
-                        <button type="submit" class="btn btn-primary">
-                            @T("Forum.Submit")
-                        </button>
+            <h4 class="m-y-1">@T("Forum.SelectTheForumToMoveTopic")</h4>
 
-                        <button class="btn btn-danger" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = @Model.Id, slug = @Model.TopicSeName })')">
-                            @T("Forum.Cancel")
-                        </button>
+            <div>
+                @Html.DropDownList("ForumSelected", new SelectList(Model.ForumList, "Value", "Text"))
+            </div>
 
-                    </td>
-                </tr>
-            </table>
+            <div class="options">
+                <button type="submit" class="btn btn-primary">@T("Forum.Submit")</button>
+                <button class="btn btn-danger" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = @Model.Id, slug = @Model.TopicSeName })')">
+                    @T("Forum.Cancel")
+                </button>
+            </div>
+
         </div>
     </div>
 }

@@ -2,20 +2,17 @@
 @using SmartStore.Web.Models.Blogs
 @if (Model.Tags.Count > 0)
 {
-    <div class="block block-bordered block-popular-blogtags">
-        <div class="block-title">
+    <div class="block block-bordered block-popular-blogtags card clearfix">
+        <div class="block-title card-header">
             @T("Blog.TagCloud")
         </div>
-        <div class="block-body listbox">
-            <div class="tags">
-                <ul>
-                    @foreach (var item in Model.Tags)
-                    {
-                        <li><a href="@Url.RouteUrl("BlogByTag", new { tag = item.Name })" style="font-size:@(Model.GetFontSize(item))%;">@item.Name</a>
-                        </li>
-                    }
-                </ul>
-            </div>
+        <div class="block-body listbox card-block">
+            <ul class="list-unstyled">
+                @foreach (var item in Model.Tags)
+                {
+                    <li><a href="@Url.RouteUrl("BlogByTag", new { tag = item.Name })" style="font-size:@(Model.GetFontSize(item))%;">@item.Name</a></li>
+                }
+            </ul>
         </div>
     </div>
 }

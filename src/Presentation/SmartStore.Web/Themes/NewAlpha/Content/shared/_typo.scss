@@ -36,7 +36,6 @@ $font-weight-bold:        700;
 	border: 2px dotted $body-color !important;
 	background: transparent;
 	z-index: $zindex-modal+1;
-
 }
 
 
@@ -51,4 +50,8 @@ $font-weight-bold:        700;
 	font-size: inherit;
 	color: inherit;
 	text-decoration: inherit;
+}
+
+@mixin smaller() {
+    font-size: .5rem !important;
 }

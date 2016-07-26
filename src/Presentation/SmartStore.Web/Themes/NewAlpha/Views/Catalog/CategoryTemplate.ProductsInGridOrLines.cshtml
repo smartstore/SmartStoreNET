@@ -36,51 +36,55 @@
 
 @helper SubCategoryList()
 {
-	<div class="category-grid sub-category-grid">
-		@(Html.DataList<CategoryModel.SubCategoryModel>(Model.SubCategories, 3,
-			@<article class="item-box equalized-column" data-equalized-column-name="subcat">
-				<div class="category-item sub-category-item">
-					<h2 class="category-title">
-						<a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">@item.Name</a>
-					</h2>
-					<div class="picture">
-						@if (item.PictureModel.ImageUrl.HasValue())
-						{
-							<a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">
-								<img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title" />
-							</a>
-						}
-					</div>
-				</div>
-			</article>
-		))
-	</div>
+    <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 card-cols-xl-4 category-grid sub-category-grid">
+        @foreach (var item in Model.SubCategories)
+        {
+            <article class="card card-block card-shadow category-item sub-category-item">
+                <h2 class="category-title card-title h6">
+                    <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">@item.Name</a>
+                </h2>
+                <div class="picture">
+                    @if (item.PictureModel.ImageUrl.HasValue())
+                    {
+                        <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">
+                            <img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title" />
+                        </a>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+}
+
+@section teaser {
+    @if (Model.DisplayCategoryBreadcrumb)
+    {
+        <ul id="breadcrumb" class="breadcrumb">
+            <li>
+                <a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")"><i class="fa fa-home"></i></a>
+            </li>
+
+            @for (int i = 0; i < Model.CategoryBreadcrumb.Count; i++)
+            {
+                var menuItem = Model.CategoryBreadcrumb[i];
+                var isLastCategory = menuItem.EntityId == Model.Id;
+                <li>
+                    @if (isLastCategory)
+                    {
+                        @menuItem.Text
+                    }
+                    else
+                    {
+                        <a href="@menuItem.GenerateUrl(this.Url)" title="@menuItem.Text">@menuItem.Text</a>
+                    }
+                </li>
+            }
+        </ul>
+        @Html.Widget("categorydetails_after_breadcrumb")
+    }
 }
 
 <div class="page category-page">
-    @if (Model.DisplayCategoryBreadcrumb) {
-        <ul id="breadcrumb" class="breadcrumb">
-            <li>
-                <a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")"><i class="fa fa-home" style="text-decoration: none"></i></a> 
-                <span class="divider">/</span>
-            </li>
-
-            @for (int i = 0; i < Model.CategoryBreadcrumb.Count; i++) {
-				var menuItem = Model.CategoryBreadcrumb[i];
-				var isLastCategory = menuItem.EntityId == Model.Id;
-                <li>
-                    @if (isLastCategory) {
-                        @menuItem.Text
-					}
-					else {
-                        <a href="@menuItem.GenerateUrl(this.Url)" title="@menuItem.Text">@menuItem.Text</a>
-                        <span class="divider">/</span>
-					}
-                </li>
-			}
-        </ul>
-        @Html.Widget("categorydetails_after_breadcrumb")
-	}
 
     <div class="page-title">
         <h1>@(Model.FullName.HasValue() ? Model.FullName : Model.Name)</h1>
@@ -139,16 +143,17 @@
 	           if (Model.PagingFilteringContext.ViewMode == "list") {
 				    @*list mode*@
 				    <div class="product-list">
-					    @foreach (var product in Model.Products) {
-						    <article class="item-box details">
-							    @Html.Partial("_ProductBoxList", product)
-						    </article>   
-	                    }
+					    @foreach (var product in Model.Products)
+                        {
+                            <article class="item-box details card p-a-1">
+                                @Html.Partial("_ProductBoxList", product)
+                            </article>
+                        }
 				    </div>       
 	           }
 	           else {
 				    @*grid mode*@
-				    <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 x-card-cols-xl-4 product-grid">
+				    <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 product-grid">
 						@foreach (var product in Model.Products)
 						{
 							<article class="card card-block card-shadow text-xs-center">

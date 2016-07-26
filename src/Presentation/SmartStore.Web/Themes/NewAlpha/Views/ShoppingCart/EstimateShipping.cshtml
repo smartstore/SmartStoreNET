@@ -38,83 +38,77 @@
             });
         });
     </script>
-    
+
     <div class="shipping">
-        <div class="estimate-shipping cart-box well well-small">
-            <h4 class="title">@T("ShoppingCart.EstimateShipping")</h4>
+        <div class="estimate-shipping cart-box card">
+            <h4 class="title card-header">@T("ShoppingCart.EstimateShipping")</h4>
 
-            <div class="hint muted">@T("ShoppingCart.EstimateShipping.Tooltip")</div>
+            <div class="card-block">
 
-            <div class="shipping-options form-vertical" style="border: 0;">
-                <div class="control-group">
-                    <label class="control-label" for="@Html.IdFor(x => x.CountryId)">
-                        @Html.LabelFor(model => model.CountryId)
-                    </label>
-                    <div class="controls">
+                <div class="hint muted">@T("ShoppingCart.EstimateShipping.Tooltip")</div>
+
+                <div class="shipping-options m-t-2" style="border: 0;">
+                    <div class="form-group">
+                        <label for="@Html.IdFor(x => x.CountryId)">
+                            @Html.LabelFor(model => model.CountryId)
+                        </label>
                         @Html.DropDownListFor(model => model.CountryId, Model.AvailableCountries, T("Address.SelectCountry").Text, new { @class = "country-input", style = "width: 100%" })
                         @Html.ValidationMessageFor(model => model.CountryId)
                     </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="@Html.IdFor(x => x.StateProvinceId)">
-                        @Html.LabelFor(model => model.StateProvinceId)
-                    </label>
-                    <div class="controls">
+                    <div class="form-group">
+                        <label for="@Html.IdFor(x => x.StateProvinceId)">
+                            @Html.LabelFor(model => model.StateProvinceId)
+                        </label>
                         @Html.DropDownListFor(model => model.StateProvinceId, Model.AvailableStates, new { @class = "state-input", style = "width: 100%" })
                         @Html.ValidationMessageFor(model => model.StateProvinceId)
                     </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="@Html.IdFor(x => x.ZipPostalCode)">
-                        @Html.LabelFor(model => model.ZipPostalCode)
-                    </label>
-                    <div class="controls">
-                        @Html.TextBoxFor(model => model.ZipPostalCode, new { @class = "zip-input" })
+                    <div class="form-group">
+                        <label for="@Html.IdFor(x => x.ZipPostalCode)">
+                            @Html.LabelFor(model => model.ZipPostalCode)
+                        </label>
+                        @Html.TextBoxFor(model => model.ZipPostalCode, new { @class = "zip-input form-control" })
                         @Html.ValidationMessageFor(model => model.ZipPostalCode)
                     </div>
-                </div>
-                <div class="control-group">
-                    <div class="controls">
+                    <div class="form-group">
                         <input type="submit" name="estimateshipping" value="@T("ShoppingCart.EstimateShipping.Button")" class="btn btn-warning estimate-shipping-button" />
                     </div>
                 </div>
-            </div>
 
-            <div class="shipping-options">
-                @if (Model.ShippingOptions.Any())
+                <div class="shipping-options">
+                    @if (Model.ShippingOptions.Any())
+                    {
+                        <div>
+                            @foreach (var shippingOption in Model.ShippingOptions)
+                            {
+                                <div class="shipping-option-item" style="margin-bottom: 8px">
+                                    <div class="option-name">
+                                        @Html.Raw(HttpUtility.HtmlDecode(shippingOption.Name))
+                                        (@shippingOption.Price)
+                                    </div>
+                                    <div class="option-description muted">
+                                        @Html.Raw(shippingOption.Description)
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    @if (Model.Warnings.Count > 0)
+                    {
+                        <div class="alert alert-error" style="margin: 0 0 12px 0">
+                            @for (int i = 0; i < Model.Warnings.Count; i++)
+                            {
+                                <p>@Model.Warnings[i]</p>
+                            }
+                        </div>
+                    }
+                </div>
+
+                @if (Model.ShippingInfoUrl.HasValue())
                 {
                     <div>
-                        @foreach (var shippingOption in Model.ShippingOptions)
-                        {
-                            <div class="shipping-option-item" style="margin-bottom: 8px">
-                                <div class="option-name">
-                                    @Html.Raw(HttpUtility.HtmlDecode(shippingOption.Name))
-                                    (@shippingOption.Price)
-                                </div>
-                                <div class="option-description muted">
-                                    @Html.Raw(shippingOption.Description)
-                                </div>
-                            </div>
-                        }
-                    </div>
-                }
-                @if (Model.Warnings.Count > 0)
-                {
-                    <div class="alert alert-error" style="margin: 0 0 12px 0">
-                        @for (int i = 0; i < Model.Warnings.Count; i++)
-                        {
-                            <p>@Model.Warnings[i]</p>
-                        }
-                    </div>
-                }
+                        @Html.Raw(T("ShoppingCart.ShippingInfoLink", Model.ShippingInfoUrl))
+                    </div>}
             </div>
-
-			@if (Model.ShippingInfoUrl.HasValue())
-			{
-				<div>
-					@Html.Raw(T("ShoppingCart.ShippingInfoLink", Model.ShippingInfoUrl))
-				</div>
-			}
         </div>
     </div>
 }

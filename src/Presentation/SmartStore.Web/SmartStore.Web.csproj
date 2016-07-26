@@ -962,6 +962,7 @@
     <Content Include="Themes\NewAlpha\Content\bs4\js\bootstrap-colorpicker-globalinit.js" />
     <Content Include="Themes\NewAlpha\Content\bs4\js\bootstrap-colorpicker.js" />
     <Content Include="Themes\NewAlpha\Content\bs4\js\bootstrap-datetimepicker.js" />
+    <Content Include="Themes\NewAlpha\Content\bs4\js\bootstrap-typeahead.js" />
     <Content Include="Themes\NewAlpha\Content\css\font-awesome.css" />
     <Content Include="Themes\NewAlpha\Content\css\font-awesome.min.css" />
     <Content Include="Themes\NewAlpha\Content\css\fonts\fontawesome-webfont.svg" />
@@ -1787,6 +1788,18 @@
     <Content Include="Themes\NewAlpha\Content\shared\_star-rating.scss" />
     <Content Include="Themes\NewAlpha\Content\shared\_sortable-grip.scss" />
     <Content Include="Themes\NewAlpha\Content\_shopbar.scss" />
+    <Content Include="Themes\NewAlpha\Content\shared\select2\core.scss" />
+    <Content Include="Themes\NewAlpha\Content\shared\select2\_dropdown.scss" />
+    <Content Include="Themes\NewAlpha\Content\shared\select2\_multiple.scss" />
+    <Content Include="Themes\NewAlpha\Content\shared\select2\_single.scss" />
+    <Content Include="Themes\NewAlpha\Content\shared\select2\theme\classic\layout.scss" />
+    <Content Include="Themes\NewAlpha\Content\shared\select2\theme\classic\_defaults.scss" />
+    <Content Include="Themes\NewAlpha\Content\shared\select2\theme\classic\_multiple.scss" />
+    <Content Include="Themes\NewAlpha\Content\shared\select2\theme\classic\_single.scss" />
+    <Content Include="Themes\NewAlpha\Content\shared\select2\theme\default\layout.scss" />
+    <Content Include="Themes\NewAlpha\Content\shared\select2\theme\default\_multiple.scss" />
+    <Content Include="Themes\NewAlpha\Content\shared\select2\theme\default\_single.scss" />
+    <None Include="Themes\NewAlpha\Content\_login.scss" />
     <None Include="Themes\NewAlpha\Content\theme.scss">
       <Compile>True</Compile>
       <Minify>True</Minify>
@@ -1969,10 +1982,8 @@
     <Content Include="Themes\NewAlpha\Views\Product\_BackInStockSubscription.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Product\_BundleItems.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Product\_BundleItemsAddToCart.cshtml" />
-    <Content Include="Themes\NewAlpha\Views\Product\_DownloadSample.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Product\_GiftCardInfo.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Product\_PictureGallery.cshtml" />
-    <Content Include="Themes\NewAlpha\Views\Product\_Price.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Product\_ProductTemplate.Grouped.AssociatedProduct.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Product\_ReviewHelpfulness.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Product\_SKU_Man_Stock.cshtml" />
@@ -2009,8 +2020,17 @@
     <Content Include="Themes\NewAlpha\Views\Widget\WidgetsByZone.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Common\ShopBar - Kopieren.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Shared\_GoogleFonts.cshtml" />
+    <Content Include="Themes\NewAlpha\Content\_checkout.scss" />
+    <None Include="Themes\NewAlpha\Content\_footer.scss" />
+    <Content Include="Themes\NewAlpha\Content\_misc.scss" />
+    <None Include="Themes\NewAlpha\Content\_blog.scss" />
+    <Content Include="Themes\NewAlpha\Content\_forum.scss" />
+    <Content Include="Themes\NewAlpha\Views\Shared\_ProductList.cshtml" />
+    <None Include="Themes\NewAlpha\Content\_pages.scss" />
+    <Content Include="Themes\NewAlpha\Content\_rating.scss" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Themes\NewAlpha\Content\shared\select2\mixins\" />
     <Folder Include="Views\TaskScheduler\" />
   </ItemGroup>
   <ItemGroup>

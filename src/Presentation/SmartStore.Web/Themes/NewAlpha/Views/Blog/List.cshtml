@@ -36,16 +36,14 @@
             }
         </h1>
     </div>
-    <div class="clear">
-    </div>
     <div class="page-body">
         @Html.Widget("bloglist_page_before_posts")
-        <div class="blogposts">
+        <div class="blogposts container">
             @foreach (var item in Model.BlogPosts)
             {
-                <article class="blogpost row-fluid">
+                <article class="blogpost row">
 
-                    <div class="blogpost-info span6 pull-left">
+                    <div class="blogpost-info col-xs-3">
                         @if (item.AllowComments)
                         {
                             <a class="blogpost-comments@(item.NumberOfComments > 0 ? " vivid" : "")" 
@@ -75,7 +73,7 @@
                         }
                     </div>
 
-                    <div class="blogpost-content span18 pull-left">
+                    <div class="blogpost-content col-xs-9">
                         <h3 class="blogpost-title">
                             <a href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })">
                                 @item.Title

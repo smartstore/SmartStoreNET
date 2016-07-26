@@ -1,20 +1,24 @@
 ﻿@model ProductDetailsModel
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Core.Domain.Orders;
+@using SmartStore.Core.Infrastructure;
 @using System.Globalization;
 @using System.Text.RegularExpressions;
 
-    @if (Model.AddToCart.CustomerEntersPrice)
-    {
-        <div class="customer-entered-price line">
-            @Html.LabelFor(model => Model.AddToCart.CustomerEnteredPrice, new { @class = "enter-price-label" })
-            @*round price*@
-            @Html.TextBox("CustomerEnteredPrice", Convert.ToInt32(Math.Ceiling(Model.AddToCart.CustomerEnteredPrice)), new { @class = "enter-price-input" })
-            <div class="price-range">
-                @Model.AddToCart.CustomerEnteredPriceRange
-            </div>
+@using SmartStore.Services.Tax;
+@using SmartStore.Services.Catalog;
+
+@if (Model.AddToCart.CustomerEntersPrice)
+{
+    <div class="customer-entered-price line">
+        @Html.LabelFor(model => Model.AddToCart.CustomerEnteredPrice, new { @class = "enter-price-label" })
+        @*round price*@
+        @Html.TextBox("CustomerEnteredPrice", Convert.ToInt32(Math.Ceiling(Model.AddToCart.CustomerEnteredPrice)), new { @class = "enter-price-input" })
+        <div class="price-range">
+            @Model.AddToCart.CustomerEnteredPriceRange
         </div>
-    }
+    </div>
+}
 
     @if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
     {

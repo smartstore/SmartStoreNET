@@ -1,7 +1,80 @@
 ﻿@model MenuModel
 @using SmartStore.Web.Models.Common;
 
-<ul class="list-inline pull-left">
+@{
+    string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
+}
+
+@Html.Widget("header_menu_before")
+
+<div class="menubar">
+    <nav class="menubar-group">
+
+        <a class="menubar-link" href="@Url.RouteUrl("ProductSearch")">@T("Search")</a>
+
+        @if (Model.HasContactUsPage)
+        {
+            <a class="menubar-link" href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
+        }
+
+        @* TODO *@
+        <a class="menubar-link" href="#">Hilfe &amp; Service &nbsp;<i class="fa fa-caret-down"></i></a>
+        @*PrivateMessages
+        RecentlyAddedProducts*@
+
+
+        @if (!Model.DisplayAdminLink && Model.DisplayLoginLink)
+        {
+            <a class="menubar-link" href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })" rel="nofollow">
+                <i class="fa fa-user"></i>&nbsp;&nbsp;@T("Account.Login")
+            </a>
+        }
+
+        @if (Model.IsCustomerImpersonated)
+        {
+            <a class="menubar-link" href="@Url.RouteUrl("Logout")" title="@T("Account.ImpersonatedAs.Finish.Hint")" rel="nofollow">
+                <i class="fa fa-sign-out"></i>
+                @Model.CustomerEmailUsername
+            </a>
+        }
+    </nav>
+
+    <nav class="menubar-group menubar-group--special">
+        @if (Model.NewsEnabled)
+        {
+            <a class="menubar-link" href="@Url.RouteUrl("NewsArchive")">
+                News
+            </a>
+        }
+        @if (Model.BlogEnabled)
+        {
+            <a class="menubar-link" href="@Url.RouteUrl("Blog")">
+                Blog
+            </a>
+        }
+        @if (Model.ForumEnabled)
+        {
+            <a class="menubar-link" href="@Url.RouteUrl("Boards")">
+                Forum
+            </a>
+        }
+    </nav>
+
+    @if (Model.DisplayAdminLink)
+    {
+        <nav class="menubar-group menubar-group--special">
+            <a class="menubar-link" href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
+                <i class="fa fa-cog"></i>&nbsp;&nbsp;
+                @T("Account.Administration")
+            </a>
+        </nav>
+    }
+</div>
+
+@Html.Widget("header_menu_after")
+
+
+@*<ul class="list-inline pull-left">
     @Html.Widget("header_menu_before")
 
     @if (Model.IsCustomerImpersonated)
@@ -94,5 +167,5 @@
 			</li>
 		}
     </ul>
-}
+}*@
 

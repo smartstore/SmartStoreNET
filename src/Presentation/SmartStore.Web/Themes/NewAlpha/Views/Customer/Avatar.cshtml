@@ -24,12 +24,14 @@
 @using (Html.BeginForm("Avatar", "Customer", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="page account-page avatar-page">
-        <h4 class="muted">@T("Account.MyAccount")</h4>
+
+        @*<h4 class="muted">@T("Account.MyAccount")</h4>*@
+
         <div class="page-title">
             <h1>@T("Account.Avatar")</h1>
         </div>
 
-        <div id="@clientId" class="fileupload page-body" style="display: inline-block;">
+        <div id="@clientId" class="fileupload page-body">
             @if (!ViewData.ModelState.IsValid)
             {
                 @Html.ValidationSummary(true)

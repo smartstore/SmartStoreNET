@@ -50,7 +50,7 @@
                 <div class="product-data span12">
                     
                     @if (Model.DisplayAdminLink) {
-						<a class="btn btn-default btn-mini btn-edit-product" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
+						<a class="btn btn-default btn-sm btn-edit-product" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
 							<i class="fa fa-pencil-square-o"></i>
 							@T("Common.Catalog.EditProduct")
 						</a>

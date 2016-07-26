@@ -34,11 +34,9 @@
     <div class="page-title">
         <h1>@Model.Name</h1>
     </div>
-    <div class="clear">
-    </div>
     <div class="page-body">
         @Html.Widget("manufacturerdetails_top")
-        @*description*@
+        
         @if (!String.IsNullOrWhiteSpace(Model.Description))
         {
             <div class="manufacturer-description">
@@ -47,8 +45,10 @@
             <div class="clear">
             </div>
         }
+
         @Html.Widget("manufacturerdetails_before_featured_products")
-        @*featured products*@
+        
+
         @if (Model.FeaturedProducts.Count > 0)
         {
             <div class="product-grid featured-product-grid">
@@ -88,37 +88,38 @@
             </div>
         }
         @Html.Widget("manufacturerdetails_before_product_list")
-        @*product list*@
-        @if (Model.Products.Count > 0)
-        {
-            if (Model.PagingFilteringContext.ViewMode == "list")
+        
+        <div class="product-list-container">
+            @if (Model.Products.Count > 0)
             {
-            @*list mode*@
-            <div class="product-list">
-                @foreach (var product in Model.Products)
+                if (Model.PagingFilteringContext.ViewMode == "list")
                 {
-                    <article class="item-box details">
-                        @Html.Partial("_ProductBoxList", product)
-                    </article>
+                    @*list mode*@
+                    <div class="product-list">
+                        @foreach (var product in Model.Products)
+                        {
+                            <article class="item-box details card p-a-1">
+                                @Html.Partial("_ProductBoxList", product)
+                            </article>
+                        }
+                    </div>
                 }
-            </div>
+                else
+                {
+                    @*grid mode*@
+                    <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 product-grid">
+                        @foreach (var product in Model.Products)
+                        {
+                            <article class="card card-block card-shadow text-xs-center">
+                                @Html.Partial("_ProductBox", product)
+                            </article>
+                        }
+                    </div>
+                }
             }
-            else
-            {
-            @*grid mode*@
-            <div class="product-grid">
-                @(Html.DataList<ProductOverviewModel>(Model.Products, 3,
-                        @<article class="item-box">
-                            @Html.Partial("_ProductBox", @item)
-                        </article>
-                    ))
-            </div>
-            }
-        }
-        <div class="clear">
-        </div>
 
-        @Html.SmartStore().Pager(Model.PagingFilteringContext).Name("pagination-bottom").QueryParam("pagenumber")
+            @Html.SmartStore().Pager(Model.PagingFilteringContext).Name("pagination-bottom").QueryParam("pagenumber")
+        </div>
 
         @Html.Widget("manufacturerdetails_bottom")
     </div>

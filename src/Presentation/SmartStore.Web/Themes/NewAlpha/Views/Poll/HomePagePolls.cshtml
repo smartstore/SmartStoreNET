@@ -2,12 +2,10 @@
 @using SmartStore.Web.Models.Polls;
 @if (Model.Count > 0)
 {
-    <div class="todays-poll-box well well-small">
-        <div class="todays-poll-box-block clearfix">
-            @foreach (var poll in Model)
-            { 
-                @Html.Partial("_Poll", poll)
-            }
-        </div>
+    <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 todays-poll-box-block m-t-3">
+        @foreach (var poll in Model)
+        { 
+            @Html.Partial("_Poll", poll)
+        }
     </div>
 }

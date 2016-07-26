@@ -452,16 +452,16 @@ namespace SmartStore.Web.Framework
 			var htmlAttributes = new RouteValueDictionary();
 			var dataTypeName = ModelMetadata.FromLambdaExpression(expression, html.ViewData).DataTypeName.EmptyNull();
 
-			var sb = new StringBuilder("<div class='control-group'>");
+			var sb = new StringBuilder("<div class='form-group row'>");
 
             if (editorType != InputEditorType.Checkbox)
             {
-                var className = "control-label" + (required ? " required" : "");
+                var className = "col-sm-3" + (required ? " required" : "");
                 var fieldId = html.IdFor(expression).ToString();
                 sb.AppendLine(html.LabelFor(expression, new { @class = className, @for = fieldId }).ToString());
             }
 
-            sb.AppendLine("<div class='controls'>");
+            sb.AppendLine("<div class='col-sm-9'>");
 
             if (!required && (editorType == InputEditorType.TextBox || editorType == InputEditorType.Password))
             {
@@ -478,7 +478,10 @@ namespace SmartStore.Web.Framework
 					break;
 			}
 
-			switch (editorType)
+            // added
+            htmlAttributes.Add("class", "form-control");            
+
+            switch (editorType)
             {
                 case InputEditorType.Checkbox:
                     inputHtml = string.Format("<label class='checkbox'>{0} {1}</label>",

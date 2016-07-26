@@ -33,7 +33,23 @@ namespace SmartStore.Services.Media
 			_storageProvider = providerManager.GetProvider<IMediaStorageProvider>(systemName);
 		}
 
-        public virtual Download GetDownloadById(int downloadId)
+		private void UpdateDownloadCore(Download download, byte[] downloadBinary, bool updateDataStorage)
+		{
+			download.UpdatedOnUtc = DateTime.UtcNow;
+
+			_downloadRepository.Update(download);
+
+			if (updateDataStorage)
+			{
+				// save to storage
+				_storageProvider.Value.Save(download.ToMedia(), downloadBinary);
+			}
+
+			// event notification
+			_eventPubisher.EntityUpdated(download);
+		}
+
+		public virtual Download GetDownloadById(int downloadId)
         {
             if (downloadId == 0)
                 return null;
@@ -100,22 +116,21 @@ namespace SmartStore.Services.Media
 			_eventPubisher.EntityInserted(download);
         }
 
-        public virtual void UpdateDownload(Download download, byte[] downloadBinary)
+		public virtual void UpdateDownload(Download download)
+		{
+			Guard.ArgumentNotNull(() => download);
+
+			UpdateDownloadCore(download, null, false);
+		}
+
+		public virtual void UpdateDownload(Download download, byte[] downloadBinary)
         {
 			Guard.ArgumentNotNull(() => download);
 
-			download.UpdatedOnUtc = DateTime.UtcNow;
-
-            _downloadRepository.Update(download);
-
-			// save to storage
-			_storageProvider.Value.Save(download.ToMedia(), downloadBinary);
-
-			// event notification
-			_eventPubisher.EntityUpdated(download);
+			UpdateDownloadCore(download, downloadBinary, true);
         }
 
-        public virtual bool IsDownloadAllowed(OrderItem orderItem)
+		public virtual bool IsDownloadAllowed(OrderItem orderItem)
         {
             if (orderItem == null)
                 return false;
@@ -189,5 +204,12 @@ namespace SmartStore.Services.Media
                 orderItem.LicenseDownloadId.HasValue &&
                 orderItem.LicenseDownloadId > 0;
         }
-    }
+
+		public virtual byte[] LoadDownloadBinary(Download download)
+		{
+			Guard.ArgumentNotNull(() => download);
+
+			return _storageProvider.Value.Load(download.ToMedia());
+		}
+	}
 }

@@ -45,7 +45,7 @@ namespace SmartStore.Services.Media.Storage
 			if (data == null || data.LongLength == 0)
 			{
 				// remove binary data if any
-				if ((media.Entity.BinaryDataId ?? 0) != 0)
+				if ((media.Entity.BinaryDataId ?? 0) != 0 && media.Entity != null)
 				{
 					_binaryDataService.DeleteBinaryData(media.Entity.BinaryData);
 				}

@@ -104,9 +104,10 @@ namespace SmartStore.Services.Catalog
 						UpdatedOnUtc = utcNow
 					};
 
-					var data = ((download.BinaryDataId ?? 0) != 0 ? download.BinaryData.Data : null);
-
-					_downloadService.InsertDownload(downloadCopy, data);
+					if ((download.BinaryDataId ?? 0) != 0 && download.BinaryData != null)
+						_downloadService.InsertDownload(downloadCopy, download.BinaryData.Data);
+					else
+						_downloadService.InsertDownload(downloadCopy, null);
 
 					downloadId = downloadCopy.Id;
 				}
@@ -128,9 +129,10 @@ namespace SmartStore.Services.Catalog
 							UpdatedOnUtc = utcNow
 						};
 
-						var data = ((sampleDownload.BinaryDataId ?? 0) != 0 ? sampleDownload.BinaryData.Data : null);
-
-						_downloadService.InsertDownload(sampleDownloadCopy, data);
+						if ((sampleDownload.BinaryDataId ?? 0) != 0 && sampleDownload.BinaryData != null)
+							_downloadService.InsertDownload(sampleDownloadCopy, sampleDownload.BinaryData.Data);
+						else
+							_downloadService.InsertDownload(sampleDownloadCopy, null);
 
 						sampleDownloadId = sampleDownloadCopy.Id;
 					}

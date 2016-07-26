@@ -85,7 +85,6 @@ namespace SmartStore.Data.Migrations
 							binaryDatas.AddOrUpdate(binaryData);
 							context.SaveChanges();
 
-							download.DownloadBinary = null;
 							download.BinaryDataId = binaryData.Id;
 						}
 						else
@@ -102,6 +101,8 @@ namespace SmartStore.Data.Migrations
 
 							fileSystem.WriteAllBytes(path, download.DownloadBinary);
 						}
+
+						download.DownloadBinary = null;
 					}
 				}
 #pragma warning restore 612, 618

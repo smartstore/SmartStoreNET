@@ -175,11 +175,7 @@ namespace SmartStore
 							if (download != null)
 							{
 								download.IsTransient = false;
-
-								if ((download.BinaryDataId ?? 0) != 0 && download.BinaryData != null)
-									downloadService.UpdateDownload(download, download.BinaryData.Data);
-								else
-									downloadService.UpdateDownload(download, null);
+								downloadService.UpdateDownload(download);
 
 								selectedAttributes = productAttributeParser.AddProductAttribute(selectedAttributes, attribute, download.DownloadGuid.ToString());
 							}
@@ -209,9 +205,7 @@ namespace SmartStore
 										UpdatedOnUtc = DateTime.UtcNow
 									};
 
-									var data = (postedFile.InputStream != null ? postedFile.InputStream.ToByteArray() : null);
-
-									downloadService.InsertDownload(download, data);
+									downloadService.InsertDownload(download, postedFile.InputStream != null ? postedFile.InputStream.ToByteArray() : null);
 
 									//save attribute
 									selectedAttributes = productAttributeParser.AddProductAttribute(selectedAttributes, attribute, download.DownloadGuid.ToString());

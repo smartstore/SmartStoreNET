@@ -1,16 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Media
 {
-    /// <summary>
-    /// Download service interface
-    /// </summary>
-    public partial interface IDownloadService
+	public partial interface IDownloadService
     {
         /// <summary>
         /// Gets a download
@@ -47,10 +42,16 @@ namespace SmartStore.Services.Media
         void InsertDownload(Download download, byte[] downloadBinary);
 
 		/// <summary>
-		/// Updates the download
+		/// Updates the download but leaves the binary data untouched
 		/// </summary>
 		/// <param name="download">Download</param>
-		/// <param name="downloadBinary">Download binary, can be <c>null</c></param>
+		void UpdateDownload(Download download);
+
+		/// <summary>
+		/// Updates the download including the associated binary data
+		/// </summary>
+		/// <param name="download">Download</param>
+		/// <param name="downloadBinary">New download binary data associated with the download entity</param>
 		void UpdateDownload(Download download, byte[] downloadBinary);
 
         /// <summary>
@@ -67,5 +68,11 @@ namespace SmartStore.Services.Media
         /// <returns>True if license download is allowed; otherwise, false.</returns>
         bool IsLicenseDownloadAllowed(OrderItem orderItem);
 
-    }
+		/// <summary>
+		/// Load binary data of a download
+		/// </summary>
+		/// <param name="download">Download</param>
+		/// <returns>Binary data</returns>
+		byte[] LoadDownloadBinary(Download download);
+	}
 }

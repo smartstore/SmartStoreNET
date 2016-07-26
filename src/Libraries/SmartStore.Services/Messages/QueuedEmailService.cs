@@ -14,6 +14,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Utilities;
 using System.Web;
 using SmartStore.Core.Localization;
+using SmartStore.Services.Media;
 
 namespace SmartStore.Services.Messages
 {
@@ -23,17 +24,20 @@ namespace SmartStore.Services.Messages
 		private readonly IRepository<QueuedEmailAttachment> _queuedEmailAttachmentRepository;
 		private readonly IEmailSender _emailSender;
 		private readonly ICommonServices _services;
+		private readonly IDownloadService _downloadService;
 
         public QueuedEmailService(
 			IRepository<QueuedEmail> queuedEmailRepository,
  			IRepository<QueuedEmailAttachment> queuedEmailAttachmentRepository,
 			IEmailSender emailSender, 
-			ICommonServices services)
+			ICommonServices services,
+			IDownloadService downloadService)
         {
-            this._queuedEmailRepository = queuedEmailRepository;
-			this._queuedEmailAttachmentRepository = queuedEmailAttachmentRepository;
-			this._emailSender = emailSender;
-			this._services = services;
+            _queuedEmailRepository = queuedEmailRepository;
+			_queuedEmailAttachmentRepository = queuedEmailAttachmentRepository;
+			_emailSender = emailSender;
+			_services = services;
+			_downloadService = downloadService;
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
@@ -245,9 +249,11 @@ namespace SmartStore.Services.Messages
 					else if (qea.StorageLocation == EmailAttachmentStorageLocation.FileReference)
 					{
 						var file = qea.File;
-						if (file != null && file.UseDownloadUrl == false && (file.BinaryDataId ?? 0) != 0 && file.BinaryData != null && file.BinaryData.Data.Length > 0)
+						if (file != null && file.UseDownloadUrl == false)
 						{
-							attachment = new Attachment(file.BinaryData.Data.ToStream(), file.Filename + file.Extension, file.ContentType);
+							var data = _downloadService.LoadDownloadBinary(file);
+
+							attachment = new Attachment(data.ToStream(), file.Filename + file.Extension, file.ContentType);
 						}
 					}
 

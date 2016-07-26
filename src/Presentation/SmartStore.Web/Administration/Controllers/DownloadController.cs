@@ -23,7 +23,7 @@ namespace SmartStore.Admin.Controllers
         {
             var download = _downloadService.GetDownloadById(downloadId);
             if (download == null)
-                return Content("No download record found with the specified id");
+                return Content(T("Common.Download.NoDataAvailable"));
 
             if (download.UseDownloadUrl)
             {
@@ -31,13 +31,19 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                //use stored data
-                if (download.BinaryData == null)
-                    return Content(string.Format("Download data is not available any more. Download ID={0}", downloadId));
+				//use stored data
+				var data = _downloadService.LoadDownloadBinary(download);
 
-                string fileName = !String.IsNullOrWhiteSpace(download.Filename) ? download.Filename : downloadId.ToString();
-                string contentType = !String.IsNullOrWhiteSpace(download.ContentType) ? download.ContentType : "application/octet-stream";
-                return new FileContentResult(download.BinaryData.Data, contentType) { FileDownloadName = fileName + download.Extension };
+				if (data == null || data.LongLength == 0)
+					return Content(T("Common.Download.NoDataAvailable"));
+
+				var fileName = (download.Filename.HasValue() ? download.Filename : downloadId.ToString());
+				var contentType = (download.ContentType.HasValue() ? download.ContentType : "application/octet-stream");
+
+                return new FileContentResult(data, contentType)
+				{
+					FileDownloadName = fileName + download.Extension
+				};
             }
         }
 

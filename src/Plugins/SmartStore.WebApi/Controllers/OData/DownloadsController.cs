@@ -16,10 +16,7 @@ namespace SmartStore.WebApi.Controllers.OData
 		}
 		protected override void Update(Download entity)
 		{
-			if ((entity.BinaryDataId ?? 0) != 0 && entity.BinaryData != null)
-				Service.UpdateDownload(entity, entity.BinaryData.Data);
-			else
-				Service.UpdateDownload(entity, null);
+			Service.UpdateDownload(entity);
 		}
 		protected override void Delete(Download entity)
 		{

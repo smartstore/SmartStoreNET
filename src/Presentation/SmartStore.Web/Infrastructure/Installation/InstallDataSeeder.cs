@@ -411,7 +411,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 				foreach (var pic in pics)
 				{
-					if (pic.BinaryData != null && pic.BinaryData.Data.LongLength > 0)
+					if (pic.BinaryData != null && pic.BinaryData.Data != null && pic.BinaryData.Data.LongLength > 0)
 					{
 						fileSystemStorageProvider.Save(pic.ToMedia(), pic.BinaryData.Data);
 

@@ -84,17 +84,13 @@ namespace SmartStore.Services.Media.Storage
 							pictures = null;
 						}
 
-						// load max 100 picture entities at once
+						// load max 100 entities at once
 						pictures = new PagedList<Picture>(query, pageIndex++, PAGE_SIZE);
 
 						foreach (var picture in pictures)
 						{
 							// move item from source to target
-							source.MoveTo(target, context, new MediaStorageItem
-							{
-								Entity = picture,
-								MimeType = picture.MimeType
-							});
+							source.MoveTo(target, context, picture.ToMedia());
 
 							picture.UpdatedOnUtc = utcNow;
 

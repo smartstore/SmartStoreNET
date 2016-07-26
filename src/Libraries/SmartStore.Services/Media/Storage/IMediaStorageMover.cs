@@ -31,7 +31,8 @@ namespace SmartStore.Services.Media.Storage
 		/// </summary>
 		/// <param name="context">Media storage mover context</param>
 		/// <param name="media">Media storage item</param>
-		void StoreMovingData(MediaStorageMoverContext context, MediaStorageItem media);
+		/// <param name="data">Binary data</param>
+		void StoreMovingData(MediaStorageMoverContext context, MediaStorageItem media, byte[] data);
 
 		/// <summary>
 		/// Called when media moving ended

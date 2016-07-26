@@ -191,6 +191,14 @@ namespace SmartStore.Data.Migrations
 				"Specifies the new storage location for media file like images.",
 				"Legt den neuen Speicherort für Mediendateien wie z.B. Bilder fest.");
 
+			builder.AddOrUpdate("Admin.Configuration.Settings.Media.MediaIsStoredIn",
+				"Store media in",
+				"Medien speichern in");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Media.MoveMediaNote",
+				"Do not forget to backup your database before changing this option. Please bear in mind that this operation can take several minutes depending on the amount of media files.",
+				"Bitte sichern Sie Ihre Datenbank, ehe Sie Mediendateien verschieben. Dieser Vorgang kann je nach Dateimenge mehrere Minuten in Anspruch nehmen.");
+
 			builder.AddOrUpdate("Admin.Common.MoveNow",	"Move now", "Jetzt verschieben");
 
 
@@ -198,7 +206,9 @@ namespace SmartStore.Data.Migrations
 				"Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.Database",
 				"Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.FileSystem",
 				"Admin.Configuration.Settings.Media.MoveToFs",
-				"Admin.Configuration.Settings.Media.MoveToDb");
+				"Admin.Configuration.Settings.Media.MoveToDb",
+				"Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase",
+				"Admin.Configuration.Settings.Media.MovePicturesNote");
 		}
 	}
 }

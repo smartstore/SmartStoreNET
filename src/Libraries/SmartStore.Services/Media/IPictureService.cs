@@ -32,6 +32,14 @@ namespace SmartStore.Services.Media
 		string GetPictureSeName(string name);
 
 		/// <summary>
+		/// Updates a SEO filename of a picture
+		/// </summary>
+		/// <param name="pictureId">The picture identifier</param>
+		/// <param name="seoFilename">The SEO filename</param>
+		/// <returns>Picture</returns>
+		Picture SetSeoFilename(int pictureId, string seoFilename);
+
+		/// <summary>
 		/// Gets the loaded picture binary depending on picture storage settings
 		/// </summary>
 		/// <param name="picture">Picture</param>
@@ -145,13 +153,5 @@ namespace SmartStore.Services.Media
         /// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
         /// <returns>Picture</returns>
         Picture UpdatePicture(int pictureId, byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true);
-
-        /// <summary>
-        /// Updates a SEO filename of a picture
-        /// </summary>
-        /// <param name="pictureId">The picture identifier</param>
-        /// <param name="seoFilename">The SEO filename</param>
-        /// <returns>Picture</returns>
-        Picture SetSeoFilename(int pictureId, string seoFilename);
     }
 }

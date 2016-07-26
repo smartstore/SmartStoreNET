@@ -30,35 +30,32 @@ namespace SmartStore.Services.Media.Storage
 		{
 			Guard.ArgumentNotNull(() => media);
 
-			var existingBinary = media.Entity as IMediaStorageSupported;
-
-			if ((existingBinary.BinaryDataId ?? 0) != 0 && existingBinary.BinaryData != null)
+			if ((media.Entity.BinaryDataId ?? 0) != 0 && media.Entity.BinaryData != null)
 			{
-				return existingBinary.BinaryData.Data;
+				return media.Entity.BinaryData.Data;
 			}
 
 			return new byte[0];
 		}
 
-		public void Save(MediaStorageItem media)
+		public void Save(MediaStorageItem media, byte[] data)
 		{
 			Guard.ArgumentNotNull(() => media);
 
-			var existingBinary = media.Entity as IMediaStorageSupported;
-
-			if (media.NewData == null || media.NewData.LongLength == 0)
+			if (data == null || data.LongLength == 0)
 			{
-				// remove picture binary if any
-				if ((existingBinary.BinaryDataId ?? 0) != 0)
+				// remove binary data if any
+				if ((media.Entity.BinaryDataId ?? 0) != 0)
 				{
-					_binaryDataService.DeleteBinaryData(existingBinary.BinaryData);
+					_binaryDataService.DeleteBinaryData(media.Entity.BinaryData);
 				}
 			}
 			else
 			{
-				if (existingBinary.BinaryData == null)
+				if (media.Entity.BinaryData == null)
 				{
-					var newBinary = new BinaryData { Data = media.NewData };
+					// entity has no binary data -> insert
+					var newBinary = new BinaryData { Data = data };
 
 					_binaryDataService.InsertBinaryData(newBinary);
 
@@ -68,22 +65,22 @@ namespace SmartStore.Services.Media.Storage
 						_dbContext.SaveChanges();
 					}
 
-					existingBinary.BinaryDataId = newBinary.Id;
+					media.Entity.BinaryDataId = newBinary.Id;
 
 					_dbContext.SaveChanges();
 				}
 				else
 				{
-					if (existingBinary.BinaryData.Data.SequenceEqual(media.NewData))
+					if (media.Entity.BinaryData.Data.SequenceEqual(data))
 					{
 						// ignore equal binary data
 					}
 					else
 					{
-						// update binary data
-						existingBinary.BinaryData.Data = media.NewData;
+						// update existing binary data
+						media.Entity.BinaryData.Data = data;
 
-						_binaryDataService.UpdateBinaryData(existingBinary.BinaryData);
+						_binaryDataService.UpdateBinaryData(media.Entity.BinaryData);
 					}
 				}
 			}
@@ -95,11 +92,9 @@ namespace SmartStore.Services.Media.Storage
 			{
 				foreach (var media in medias)
 				{
-					var existingBinary = media.Entity as IMediaStorageSupported;
-
-					if ((existingBinary.BinaryDataId ?? 0) != 0)
+					if ((media.Entity.BinaryDataId ?? 0) != 0)
 					{
-						_binaryDataService.DeleteBinaryData(existingBinary.BinaryData);
+						_binaryDataService.DeleteBinaryData(media.Entity.BinaryData);
 					}
 				}
 			}
@@ -112,38 +107,34 @@ namespace SmartStore.Services.Media.Storage
 			Guard.ArgumentNotNull(() => context);
 			Guard.ArgumentNotNull(() => media);
 
-			var existingBinary = media.Entity as IMediaStorageSupported;
-
-			if (existingBinary.BinaryData != null)
+			if (media.Entity.BinaryData != null)
 			{
 				// let target store data (into a file for example)
-				target.StoreMovingData(context, media);
+				target.StoreMovingData(context, media, media.Entity.BinaryData.Data);
 
 				// remove picture binary from DB
 				try
 				{
-					_binaryDataService.DeleteBinaryData(existingBinary.BinaryData, false);
+					_binaryDataService.DeleteBinaryData(media.Entity.BinaryData, false);
 				}
 				catch { }
 
-				existingBinary.BinaryDataId = null;
+				media.Entity.BinaryDataId = null;
 
 				context.ShrinkDatabase = true;
 			}
 		}
 
-		public void StoreMovingData(MediaStorageMoverContext context, MediaStorageItem media)
+		public void StoreMovingData(MediaStorageMoverContext context, MediaStorageItem media, byte[] data)
 		{
 			Guard.ArgumentNotNull(() => context);
 			Guard.ArgumentNotNull(() => media);
 
 			// store data for later bulk commit
-			if (media.NewData != null && media.NewData.LongLength > 0)
+			if (data != null && data.LongLength > 0)
 			{
-				var existingBinary = media.Entity as IMediaStorageSupported;
-
 				// requires autoDetectChanges set to true or remove explicit entity detaching
-				existingBinary.BinaryData = new BinaryData { Data = media.NewData };
+				media.Entity.BinaryData = new BinaryData { Data = data };
 			}
 		}
 

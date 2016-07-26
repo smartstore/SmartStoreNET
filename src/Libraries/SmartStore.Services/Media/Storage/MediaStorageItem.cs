@@ -1,24 +1,27 @@
-﻿using SmartStore.Core;
+﻿using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media.Storage
 {
 	public partial class MediaStorageItem
 	{
-		public string RootPath { get; set; }
+		/// <summary>
+		/// Entity of the media storage item
+		/// </summary>
+		public IMediaStorageSupported Entity { get; set; }
 
 		/// <summary>
-		/// Entity of the media storage item. Must support <c>IBinaryDataSupported</c>.
+		/// Storage path
 		/// </summary>
-		public BaseEntity Entity { get; set; }
-
-		/// <summary>
-		/// New binary data
-		/// </summary>
-		public byte[] NewData { get; set; }
+		public string Path { get; set; }
 
 		/// <summary>
 		/// Mime type
 		/// </summary>
 		public string MimeType { get; set; }
+
+		/// <summary>
+		/// File extension
+		/// </summary>
+		public string FileExtension { get; set; }
 	}
 }

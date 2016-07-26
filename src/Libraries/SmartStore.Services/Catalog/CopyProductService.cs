@@ -101,17 +101,13 @@ namespace SmartStore.Services.Catalog
 						Filename = download.Filename,
 						Extension = download.Extension,
 						IsNew = download.IsNew,
+						UpdatedOnUtc = utcNow
 					};
 
-					if ((download.BinaryDataId ?? 0) != 0)
-					{
-						downloadCopy.BinaryData = new BinaryData
-						{
-							Data = download.BinaryData.Data
-						};
-					}
+					var data = ((download.BinaryDataId ?? 0) != 0 ? download.BinaryData.Data : null);
 
-					_downloadService.InsertDownload(downloadCopy);
+					_downloadService.InsertDownload(downloadCopy, data);
+
 					downloadId = downloadCopy.Id;
 				}
 
@@ -128,18 +124,14 @@ namespace SmartStore.Services.Catalog
 							ContentType = sampleDownload.ContentType,
 							Filename = sampleDownload.Filename,
 							Extension = sampleDownload.Extension,
-							IsNew = sampleDownload.IsNew
+							IsNew = sampleDownload.IsNew,
+							UpdatedOnUtc = utcNow
 						};
 
-						if ((sampleDownload.BinaryDataId ?? 0) != 0)
-						{
-							sampleDownloadCopy.BinaryData = new BinaryData
-							{
-								Data = sampleDownload.BinaryData.Data
-							};
-						}
+						var data = ((sampleDownload.BinaryDataId ?? 0) != 0 ? sampleDownload.BinaryData.Data : null);
 
-						_downloadService.InsertDownload(sampleDownloadCopy);
+						_downloadService.InsertDownload(sampleDownloadCopy, data);
+
 						sampleDownloadId = sampleDownloadCopy.Id;
 					}
 				}

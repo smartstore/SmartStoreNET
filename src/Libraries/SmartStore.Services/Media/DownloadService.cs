@@ -7,27 +7,31 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Events;
+using SmartStore.Core.Plugins;
+using SmartStore.Services.Configuration;
+using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
 {
-	/// <summary>
-	/// Download service
-	/// </summary>
 	public partial class DownloadService : IDownloadService
     {
         private readonly IRepository<Download> _downloadRepository;
         private readonly IEventPublisher _eventPubisher;
-		private readonly IBinaryDataService _binaryDataService;
+		private readonly Provider<IMediaStorageProvider> _storageProvider;
 
-        public DownloadService(
+		public DownloadService(
 			IRepository<Download> downloadRepository,
 			IEventPublisher eventPubisher,
-			IBinaryDataService binaryDataService)
+			ISettingService settingService,
+			IProviderManager providerManager)
         {
             _downloadRepository = downloadRepository;
             _eventPubisher = eventPubisher;
-			_binaryDataService = binaryDataService;
-        }
+
+			var systemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
+
+			_storageProvider = providerManager.GetProvider<IMediaStorageProvider>(systemName);
+		}
 
         public virtual Download GetDownloadById(int downloadId)
         {
@@ -71,39 +75,44 @@ namespace SmartStore.Services.Media
 
         public virtual void DeleteDownload(Download download)
         {
-            if (download == null)
-                throw new ArgumentNullException("download");
+			Guard.ArgumentNotNull(() => download);
 
-			if ((download.BinaryDataId ?? 0) != 0)
-			{
-				_binaryDataService.DeleteBinaryData(download.BinaryData);
-			}
+			// delete from storage
+			_storageProvider.Value.Remove(download.ToMedia());
 
-            _downloadRepository.Delete(download);
+			// delete entity
+			_downloadRepository.Delete(download);
 
-            _eventPubisher.EntityDeleted(download);
+			// event notification
+			_eventPubisher.EntityDeleted(download);
         }
 
-        public virtual void InsertDownload(Download download)
+        public virtual void InsertDownload(Download download, byte[] downloadBinary)
         {
-            if (download == null)
-                throw new ArgumentNullException("download");
+			Guard.ArgumentNotNull(() => download);
 
-			download.UpdatedOnUtc = DateTime.UtcNow;
             _downloadRepository.Insert(download);
 
-            _eventPubisher.EntityInserted(download);
+			// save to storage
+			_storageProvider.Value.Save(download.ToMedia(), downloadBinary);
+
+			// event notification
+			_eventPubisher.EntityInserted(download);
         }
 
-        public virtual void UpdateDownload(Download download)
+        public virtual void UpdateDownload(Download download, byte[] downloadBinary)
         {
-            if (download == null)
-                throw new ArgumentNullException("download");
+			Guard.ArgumentNotNull(() => download);
 
 			download.UpdatedOnUtc = DateTime.UtcNow;
+
             _downloadRepository.Update(download);
 
-            _eventPubisher.EntityUpdated(download);
+			// save to storage
+			_storageProvider.Value.Save(download.ToMedia(), downloadBinary);
+
+			// event notification
+			_eventPubisher.EntityUpdated(download);
         }
 
         public virtual bool IsDownloadAllowed(OrderItem orderItem)

@@ -1169,14 +1169,15 @@ namespace SmartStore.Web.Controllers
                                         DownloadGuid = Guid.NewGuid(),
                                         UseDownloadUrl = false,
                                         DownloadUrl = "",
-										BinaryData = new BinaryData { Data = postedFile.Buffer },
                                         ContentType = postedFile.ContentType,
                                         Filename = postedFile.FileTitle,
                                         Extension = postedFile.FileExtension,
-                                        IsNew = true
-                                    };
+                                        IsNew = true,
+										UpdatedOnUtc = DateTime.UtcNow
+									};
 
-                                    _downloadService.InsertDownload(download);
+                                    _downloadService.InsertDownload(download, postedFile.Buffer);
+
                                     //save attribute
                                     selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, download.DownloadGuid.ToString());
                                 }
@@ -1499,15 +1500,16 @@ namespace SmartStore.Web.Controllers
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
                 DownloadUrl = "",
-				BinaryData = new BinaryData { Data = postedFile.Buffer },
                 ContentType = postedFile.ContentType,
                 // we store filename without extension for downloads
                 Filename = postedFile.FileTitle,
                 Extension = postedFile.FileExtension,
                 IsNew = true,
-				IsTransient = true
-            };
-            _downloadService.InsertDownload(download);
+				IsTransient = true,
+				UpdatedOnUtc = DateTime.UtcNow
+			};
+
+            _downloadService.InsertDownload(download, postedFile.Buffer);
 
             return Json(new
             {

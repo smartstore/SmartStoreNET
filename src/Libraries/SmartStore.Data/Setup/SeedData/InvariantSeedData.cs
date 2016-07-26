@@ -7949,6 +7949,7 @@ namespace SmartStore.Data.Setup
 					Extension = ".mp3",
 					Filename = "vivaldi-four-seasons-spring",
 					IsNew = true,
+					UpdatedOnUtc = DateTime.UtcNow
 				}
 			};
 
@@ -8025,7 +8026,8 @@ namespace SmartStore.Data.Setup
 					},
 					Extension = ".mp3",
 					Filename = "beethoven-fur-elise.mp3",
-					IsNew = true
+					IsNew = true,
+					UpdatedOnUtc = DateTime.UtcNow
 				}
 			};
 

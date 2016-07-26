@@ -51,10 +51,11 @@ namespace SmartStore.Admin.Controllers
 				UseDownloadUrl = true,
 				DownloadUrl = downloadUrl,
 				IsNew = true,
-				IsTransient = true
+				IsTransient = true,
+				UpdatedOnUtc = DateTime.UtcNow
 			};
 
-            _downloadService.InsertDownload(download);
+            _downloadService.InsertDownload(download, null);
 
 			return Json(new
 			{
@@ -78,16 +79,16 @@ namespace SmartStore.Admin.Controllers
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
                 DownloadUrl = "",
-				BinaryData = new BinaryData { Data = postedFile.Buffer },
 				ContentType = postedFile.ContentType,
                 // we store filename without extension for downloads
                 Filename = postedFile.FileTitle,
                 Extension = postedFile.FileExtension,
                 IsNew = true,
-				IsTransient = true
-            };
+				IsTransient = true,
+				UpdatedOnUtc = DateTime.UtcNow
+			};
 
-            _downloadService.InsertDownload(download);
+            _downloadService.InsertDownload(download, postedFile.Buffer);
 
             return Json(new 
             { 

@@ -246,15 +246,24 @@ namespace SmartStore.Services.Media
             return SeoHelper.GetSeName(name, true, false);
         }
 
-        public virtual byte[] LoadPictureBinary(Picture picture)
+		public virtual Picture SetSeoFilename(int pictureId, string seoFilename)
+		{
+			var picture = GetPictureById(pictureId);
+
+			// update if it has been changed
+			if (picture != null && seoFilename != picture.SeoFilename)
+			{
+				picture = UpdatePicture(picture.Id, LoadPictureBinary(picture), picture.MimeType, seoFilename, true, false);
+			}
+
+			return picture;
+		}
+
+		public virtual byte[] LoadPictureBinary(Picture picture)
         {
 			Guard.ArgumentNotNull(() => picture);
 
-			return _storageProvider.Value.Load(new MediaStorageItem
-			{
-				Entity = picture,
-				MimeType = picture.MimeType
-			});
+			return _storageProvider.Value.Load(picture.ToMedia());
         }
 
         public virtual Size GetPictureSize(Picture picture)
@@ -401,11 +410,7 @@ namespace SmartStore.Services.Media
 			_imageCache.DeleteCachedImages(picture);
 
 			// delete from storage
-			_storageProvider.Value.Remove(new MediaStorageItem
-			{
-				Entity = picture,
-				MimeType = picture.MimeType
-			});
+			_storageProvider.Value.Remove(picture.ToMedia());
 
 			// delete entity
 			_pictureRepository.Delete(picture);
@@ -442,12 +447,7 @@ namespace SmartStore.Services.Media
             _pictureRepository.Insert(picture);
 
 			// save to storage
-			_storageProvider.Value.Save(new MediaStorageItem
-			{
-				Entity = picture,
-				MimeType = picture.MimeType,
-				NewData = pictureBinary
-			});
+			_storageProvider.Value.Save(picture.ToMedia(), pictureBinary);
 
 			// event notification
 			_eventPublisher.EntityInserted(picture);
@@ -489,28 +489,10 @@ namespace SmartStore.Services.Media
             _pictureRepository.Update(picture);
 
 			// save to storage
-			_storageProvider.Value.Save(new MediaStorageItem
-			{
-				Entity = picture,
-				MimeType = picture.MimeType,
-				NewData = pictureBinary
-			});
+			_storageProvider.Value.Save(picture.ToMedia(), pictureBinary);
 
 			// event notification
 			_eventPublisher.EntityUpdated(picture);
-
-            return picture;
-        }
-
-        public virtual Picture SetSeoFilename(int pictureId, string seoFilename)
-        {
-            var picture = GetPictureById(pictureId);
-
-			// update if it has been changed
-			if (picture != null && seoFilename != picture.SeoFilename)
-			{
-				picture = UpdatePicture(picture.Id, LoadPictureBinary(picture), picture.MimeType, seoFilename, true, false);				
-			}
 
             return picture;
         }

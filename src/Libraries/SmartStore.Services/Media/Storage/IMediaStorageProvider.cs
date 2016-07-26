@@ -14,7 +14,8 @@ namespace SmartStore.Services.Media.Storage
 		/// Save media item data
 		/// </summary>
 		/// <param name="media">Media storage item</param>
-		void Save(MediaStorageItem media);
+		/// <param name="data">New binary data</param>
+		void Save(MediaStorageItem media, byte[] data);
 
 		/// <summary>
 		/// Remove media storage item(s)

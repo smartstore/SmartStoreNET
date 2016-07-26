@@ -6,6 +6,7 @@ namespace SmartStore.Data.Migrations
 	using Core;
 	using Core.Domain.Configuration;
 	using Core.Domain.Media;
+	using Core.IO;
 	using Setup;
 
 	public partial class MediaBinaryData : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
@@ -51,10 +52,11 @@ namespace SmartStore.Data.Migrations
 			while (pictures.HasNextPage);
 		}
 
-		private void MoveDownloadBinaryToBinaryDataTable(SmartObjectContext context, DbSet<BinaryData> binaryDatas)
+		private void MoveDownloadBinaryToBinaryDataTable(SmartObjectContext context, DbSet<BinaryData> binaryDatas, bool storeMediaInDb)
 		{
 			var pageIndex = 0;
 			IPagedList<Download> downloads = null;
+			var fileSystem = new LocalFileSystem();
 
 			// no where clause here!
 			var downloadQuery = context.Set<Download>().OrderBy(x => x.Id);
@@ -75,12 +77,31 @@ namespace SmartStore.Data.Migrations
 				{
 					if (download.DownloadBinary != null && download.DownloadBinary.Length > 0)
 					{
-						var binaryData = new BinaryData { Data = download.DownloadBinary };
-						binaryDatas.AddOrUpdate(binaryData);
-						context.SaveChanges();
+						if (storeMediaInDb)
+						{
+							// move binary data
 
-						download.DownloadBinary = null;
-						download.BinaryDataId = binaryData.Id;
+							var binaryData = new BinaryData { Data = download.DownloadBinary };
+							binaryDatas.AddOrUpdate(binaryData);
+							context.SaveChanges();
+
+							download.DownloadBinary = null;
+							download.BinaryDataId = binaryData.Id;
+						}
+						else
+						{
+							// move to file system. it's necessary because from now on DownloadService depends on current storage provider
+							// and it would not find the binary data anymore if do not move it.
+
+							var extension = download.Extension;
+							if (extension.IsEmpty())
+								extension = MimeTypes.MapMimeTypeToExtension(download.ContentType);
+
+							var fileName = string.Format("{0}-0{1}", download.Id.ToString("0000000"), extension.EmptyNull().EnsureStartsWith("."));
+							var path = fileSystem.Combine(@"Media\Downloads", fileName);
+
+							fileSystem.WriteAllBytes(path, download.DownloadBinary);
+						}
 					}
 				}
 #pragma warning restore 612, 618
@@ -130,7 +151,7 @@ namespace SmartStore.Data.Migrations
 			context.MigrateLocaleResources(MigrateLocaleResources);
 
 			var binaryDatas = context.Set<BinaryData>();
-			var storePicturesInDb = true;
+			var storeMediaInDb = true;
 
 			{
 				var settings = context.Set<Setting>();
@@ -139,26 +160,26 @@ namespace SmartStore.Data.Migrations
 				var storeInDbSetting = settings.FirstOrDefault(x => x.Name == "Media.Images.StoreInDB");
 				if (storeInDbSetting != null)
 				{
-					storePicturesInDb = storeInDbSetting.Value.ToBool(true);
+					storeMediaInDb = storeInDbSetting.Value.ToBool(true);
 
 					// remove old bool StoreInDB because it's not used anymore
 					settings.Remove(storeInDbSetting);
 				}
 
-				// upsert media storage provider system name
+				// set current media storage provider system name
 				settings.AddOrUpdate(x => x.Name, new Setting
 				{
 					Name = "Media.Storage.Provider",
-					Value = (storePicturesInDb ? "MediaStorage.SmartStoreDatabase" : "MediaStorage.SmartStoreFileSystem")
+					Value = (storeMediaInDb ? "MediaStorage.SmartStoreDatabase" : "MediaStorage.SmartStoreFileSystem")
 				});
 			}
 
-			if (storePicturesInDb)
+			if (storeMediaInDb)
 			{
 				MovePictureBinaryToBinaryDataTable(context, binaryDatas);
 			}
 
-			MoveDownloadBinaryToBinaryDataTable(context, binaryDatas);
+			MoveDownloadBinaryToBinaryDataTable(context, binaryDatas, storeMediaInDb);
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

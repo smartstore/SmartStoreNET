@@ -1,11 +1,14 @@
 namespace SmartStore.Data.Migrations
 {
+	using System;
 	using System.Data.Entity;
 	using System.Data.Entity.Migrations;
+	using System.IO;
 	using System.Linq;
 	using Core;
 	using Core.Domain.Configuration;
 	using Core.Domain.Media;
+	using Core.Domain.Messages;
 	using Core.IO;
 	using Setup;
 
@@ -13,103 +16,43 @@ namespace SmartStore.Data.Migrations
 	{
 		private const int PAGE_SIZE = 100;
 
-		private void MovePictureBinaryToBinaryDataTable(SmartObjectContext context, DbSet<BinaryData> binaryDatas)
+		private void PageEntities<TEntity>(
+			SmartObjectContext context,
+			DbSet<BinaryData> binaryDatas,
+			IOrderedQueryable<TEntity> query,
+			Action<TEntity> moveEntity) where TEntity : BaseEntity, IMediaStorageSupported
 		{
 			var pageIndex = 0;
-			IPagedList<Picture> pictures = null;
-
-			// no where clause here!
-			var pictureQuery = context.Set<Picture>().OrderBy(x => x.Id);
+			IPagedList<TEntity> entities = null;
 
 			do
 			{
-				if (pictures != null)
+				if (entities != null)
 				{
-					context.DetachEntities(pictures);
-					pictures.Clear();
-					pictures = null;
+					// detach all entities from previous page to save memory
+					context.DetachEntities(entities);
+					entities.Clear();
+					entities = null;
 				}
 
-				pictures = new PagedList<Picture>(pictureQuery, pageIndex++, PAGE_SIZE);
+				// load max 100 entities at once
+				entities = new PagedList<TEntity>(query, pageIndex++, PAGE_SIZE);
 
-#pragma warning disable 612, 618
-				foreach (var picture in pictures)
-				{
-					if (picture.PictureBinary != null && picture.PictureBinary.Length > 0)
-					{
-						var binaryData = new BinaryData { Data = picture.PictureBinary };
-						binaryDatas.AddOrUpdate(binaryData);
-						context.SaveChanges();
+				entities.Each(x => moveEntity(x));
 
-						picture.PictureBinary = null;
-						picture.BinaryDataId = binaryData.Id;
-					}
-				}
-#pragma warning restore 612, 618
-
+				// save the current batch to database
 				context.SaveChanges();
 			}
-			while (pictures.HasNextPage);
+			while (entities.HasNextPage);
 		}
 
-		private void MoveDownloadBinaryToBinaryDataTable(SmartObjectContext context, DbSet<BinaryData> binaryDatas, bool storeMediaInDb)
+		private string GetFileName(int id, string extension, string mimeType)
 		{
-			var pageIndex = 0;
-			IPagedList<Download> downloads = null;
-			var fileSystem = new LocalFileSystem();
+			if (extension.IsEmpty())
+				extension = MimeTypes.MapMimeTypeToExtension(mimeType);
 
-			// no where clause here!
-			var downloadQuery = context.Set<Download>().OrderBy(x => x.Id);
-
-			do
-			{
-				if (downloads != null)
-				{
-					context.DetachEntities(downloads);
-					downloads.Clear();
-					downloads = null;
-				}
-
-				downloads = new PagedList<Download>(downloadQuery, pageIndex++, PAGE_SIZE);
-
-#pragma warning disable 612, 618
-				foreach (var download in downloads)
-				{
-					if (download.DownloadBinary != null && download.DownloadBinary.Length > 0)
-					{
-						if (storeMediaInDb)
-						{
-							// move binary data
-
-							var binaryData = new BinaryData { Data = download.DownloadBinary };
-							binaryDatas.AddOrUpdate(binaryData);
-							context.SaveChanges();
-
-							download.BinaryDataId = binaryData.Id;
-						}
-						else
-						{
-							// move to file system. it's necessary because from now on DownloadService depends on current storage provider
-							// and it would not find the binary data anymore if do not move it.
-
-							var extension = download.Extension;
-							if (extension.IsEmpty())
-								extension = MimeTypes.MapMimeTypeToExtension(download.ContentType);
-
-							var fileName = string.Format("{0}-0{1}", download.Id.ToString("0000000"), extension.EmptyNull().EnsureStartsWith("."));
-							var path = fileSystem.Combine(@"Media\Downloads", fileName);
-
-							fileSystem.WriteAllBytes(path, download.DownloadBinary);
-						}
-
-						download.DownloadBinary = null;
-					}
-				}
-#pragma warning restore 612, 618
-
-				context.SaveChanges();
-			}
-			while (downloads.HasNextPage);
+			var fileName = string.Format("{0}-0{1}", id.ToString("0000000"), extension.EmptyNull().EnsureStartsWith("."));
+			return fileName;
 		}
 
 		public override void Up()
@@ -125,18 +68,24 @@ namespace SmartStore.Data.Migrations
             
             AddColumn("dbo.Picture", "BinaryDataId", c => c.Int());
             AddColumn("dbo.Download", "BinaryDataId", c => c.Int());
+            AddColumn("dbo.QueuedEmailAttachment", "BinaryDataId", c => c.Int());
             CreateIndex("dbo.Picture", "BinaryDataId");
             CreateIndex("dbo.Download", "BinaryDataId");
+            CreateIndex("dbo.QueuedEmailAttachment", "BinaryDataId");
             AddForeignKey("dbo.Picture", "BinaryDataId", "dbo.BinaryData", "Id");
             AddForeignKey("dbo.Download", "BinaryDataId", "dbo.BinaryData", "Id");
+            AddForeignKey("dbo.QueuedEmailAttachment", "BinaryDataId", "dbo.BinaryData", "Id");
         }
         
         public override void Down()
         {
+            DropForeignKey("dbo.QueuedEmailAttachment", "BinaryDataId", "dbo.BinaryData");
             DropForeignKey("dbo.Download", "BinaryDataId", "dbo.BinaryData");
             DropForeignKey("dbo.Picture", "BinaryDataId", "dbo.BinaryData");
+            DropIndex("dbo.QueuedEmailAttachment", new[] { "BinaryDataId" });
             DropIndex("dbo.Download", new[] { "BinaryDataId" });
             DropIndex("dbo.Picture", new[] { "BinaryDataId" });
+            DropColumn("dbo.QueuedEmailAttachment", "BinaryDataId");
             DropColumn("dbo.Download", "BinaryDataId");
             DropColumn("dbo.Picture", "BinaryDataId");
             DropTable("dbo.BinaryData");
@@ -152,6 +101,7 @@ namespace SmartStore.Data.Migrations
 			context.MigrateLocaleResources(MigrateLocaleResources);
 
 			var binaryDatas = context.Set<BinaryData>();
+			var fileSystem = new LocalFileSystem();
 			var storeMediaInDb = true;
 
 			{
@@ -175,12 +125,97 @@ namespace SmartStore.Data.Migrations
 				});
 			}
 
+			#region Pictures
+
 			if (storeMediaInDb)
 			{
-				MovePictureBinaryToBinaryDataTable(context, binaryDatas);
+				PageEntities(context, binaryDatas, context.Set<Picture>().OrderBy(x => x.Id), picture =>
+				{
+#pragma warning disable 612, 618
+					if (picture.PictureBinary != null && picture.PictureBinary.LongLength > 0)
+					{
+						var binaryData = new BinaryData { Data = picture.PictureBinary };
+						binaryDatas.AddOrUpdate(binaryData);
+						context.SaveChanges();
+
+						picture.PictureBinary = null;
+						picture.BinaryDataId = binaryData.Id;
+					}
+#pragma warning restore 612, 618
+				});
 			}
 
-			MoveDownloadBinaryToBinaryDataTable(context, binaryDatas, storeMediaInDb);
+			#endregion
+
+			#region Downloads
+
+			PageEntities(context, binaryDatas, context.Set<Download>().OrderBy(x => x.Id), download =>
+			{
+#pragma warning disable 612, 618
+				if (download.DownloadBinary != null && download.DownloadBinary.LongLength > 0)
+				{
+					if (storeMediaInDb)
+					{
+						// move binary data
+						var binaryData = new BinaryData { Data = download.DownloadBinary };
+						binaryDatas.AddOrUpdate(binaryData);
+						context.SaveChanges();
+
+						download.BinaryDataId = binaryData.Id;
+					}
+					else
+					{
+						// move to file system. it's necessary because from now on DownloadService depends on current storage provider
+						// and it would not find the binary data anymore if do not move it.
+						var fileName = GetFileName(download.Id, download.Extension, download.ContentType);
+						var path = fileSystem.Combine(@"Media\Downloads", fileName);
+
+						fileSystem.WriteAllBytes(path, download.DownloadBinary);
+					}
+
+					download.DownloadBinary = null;
+				}
+#pragma warning restore 612, 618
+			});
+
+			#endregion
+
+			#region Queued email attachments
+
+			var attachmentQuery = context.Set<QueuedEmailAttachment>()
+				.Where(x => x.StorageLocation == EmailAttachmentStorageLocation.Blob)
+				.OrderBy(x => x.Id);
+
+			PageEntities(context, binaryDatas, attachmentQuery, attachment =>
+			{
+#pragma warning disable 612, 618
+				if (attachment.Data != null && attachment.Data.LongLength > 0)
+				{
+					if (storeMediaInDb)
+					{
+						// move binary data
+						var binaryData = new BinaryData { Data = attachment.Data };
+						binaryDatas.AddOrUpdate(binaryData);
+						context.SaveChanges();
+
+						attachment.BinaryDataId = binaryData.Id;
+					}
+					else
+					{
+						// move to file system. it's necessary because from now on QueuedEmailService depends on current storage provider
+						// and it would not find the binary data anymore if do not move it.
+						var fileName = GetFileName(attachment.Id, Path.GetExtension(attachment.Name.EmptyNull()), attachment.MimeType);
+						var path = fileSystem.Combine(@"Media\QueuedEmailAttachment", fileName);
+
+						fileSystem.WriteAllBytes(path, attachment.Data);
+					}
+
+					attachment.Data = null;
+				}
+#pragma warning restore 612, 618
+			});
+
+			#endregion
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
@@ -221,7 +256,7 @@ namespace SmartStore.Data.Migrations
 				"Do not forget to backup your database before changing this option. Please bear in mind that this operation can take several minutes depending on the amount of media files.",
 				"Bitte sichern Sie Ihre Datenbank, ehe Sie Mediendateien verschieben. Dieser Vorgang kann je nach Dateimenge mehrere Minuten in Anspruch nehmen.");
 
-			builder.AddOrUpdate("Admin.Common.MoveNow",	"Move now", "Jetzt verschieben");
+			builder.AddOrUpdate("Admin.Common.MoveNow", "Move now", "Jetzt verschieben");
 
 
 			builder.Delete(

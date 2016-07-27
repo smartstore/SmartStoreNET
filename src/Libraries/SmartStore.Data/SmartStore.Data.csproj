@@ -413,9 +413,9 @@
     <Compile Include="Migrations\201607111649138_FixExportDeploymentIsPublic.Designer.cs">
       <DependentUpon>201607111649138_FixExportDeploymentIsPublic.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201607171240407_MediaBinaryData.cs" />
-    <Compile Include="Migrations\201607171240407_MediaBinaryData.Designer.cs">
-      <DependentUpon>201607171240407_MediaBinaryData.cs</DependentUpon>
+    <Compile Include="Migrations\201607271034220_MediaBinaryData.cs" />
+    <Compile Include="Migrations\201607271034220_MediaBinaryData.Designer.cs">
+      <DependentUpon>201607271034220_MediaBinaryData.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -771,8 +771,8 @@
     <EmbeddedResource Include="Migrations\201607111649138_FixExportDeploymentIsPublic.resx">
       <DependentUpon>201607111649138_FixExportDeploymentIsPublic.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201607171240407_MediaBinaryData.resx">
-      <DependentUpon>201607171240407_MediaBinaryData.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201607271034220_MediaBinaryData.resx">
+      <DependentUpon>201607271034220_MediaBinaryData.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

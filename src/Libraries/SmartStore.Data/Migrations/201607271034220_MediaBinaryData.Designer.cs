@@ -13,7 +13,7 @@ namespace SmartStore.Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201607171240407_MediaBinaryData"; }
+            get { return "201607271034220_MediaBinaryData"; }
         }
         
         string IMigrationMetadata.Source

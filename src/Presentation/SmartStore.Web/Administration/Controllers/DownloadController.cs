@@ -10,7 +10,7 @@ namespace SmartStore.Admin.Controllers
 	[AdminAuthorize]
     public class DownloadController : AdminControllerBase
     {
-		const string TEMPLATE = "EditorTemplates/Download";
+		private const string DOWNLOAD_TEMPLATE = "~/Administration/Views/Shared/EditorTemplates/Download.cshtml";
 		
 		private readonly IDownloadService _downloadService;
 
@@ -67,7 +67,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				success = true,
 				downloadId = download.Id,
-				html = this.RenderPartialViewToString(TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
+				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
 			}, JsonRequestBehavior.AllowGet);
         }
 
@@ -100,7 +100,7 @@ namespace SmartStore.Admin.Controllers
             { 
                 success = true, 
 				downloadId = download.Id,
-				html = this.RenderPartialViewToString(TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
+				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
             });
         }
 
@@ -112,7 +112,7 @@ namespace SmartStore.Admin.Controllers
 			return Json(new
 			{
 				success = true,
-				html = this.RenderPartialViewToString(TEMPLATE, null, new { minimalMode = minimalMode, fieldName = fieldName }),
+				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, null, new { minimalMode = minimalMode, fieldName = fieldName }),
 			});
 		}
     }

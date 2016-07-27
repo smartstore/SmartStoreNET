@@ -43,6 +43,8 @@ namespace SmartStore.Services.Media.Storage
 		{
 			Guard.ArgumentNotNull(() => media);
 
+			// TODO(?): if the new file extension differs from the old one then the old file never gets deleted
+
 			var filePath = GetPicturePath(media);
 
 			if (data != null && data.LongLength != 0)

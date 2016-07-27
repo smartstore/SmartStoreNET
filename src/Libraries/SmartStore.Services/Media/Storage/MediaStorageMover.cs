@@ -14,15 +14,18 @@ namespace SmartStore.Services.Media.Storage
 		private const int PAGE_SIZE = 100;
 
 		private readonly IRepository<Picture> _pictureRepository;
+		private readonly IRepository<Download> _downloadRepository;
 		private readonly ICommonServices _services;
 		private readonly ILogger _logger;
 
 		public MediaStorageMover(
 			IRepository<Picture> pictureRepository,
+			IRepository<Download> downloadRepository,
 			ICommonServices services,
 			ILogger logger)
 		{
 			_pictureRepository = pictureRepository;
+			_downloadRepository = downloadRepository;
 			_services = services;
 			_logger = logger;
 
@@ -31,18 +34,41 @@ namespace SmartStore.Services.Media.Storage
 
 		public Localizer T { get; set; }
 
+		protected virtual void PageEntities<TEntity>(IOrderedQueryable<TEntity> query, Action<TEntity> moveEntity) where TEntity : BaseEntity, IMediaStorageSupported
+		{
+			var pageIndex = 0;
+			IPagedList<TEntity> entities = null;
+
+			do
+			{
+				if (entities != null)
+				{
+					// detach all entities from previous page to save memory
+					_services.DbContext.DetachEntities(entities);
+					entities.Clear();
+					entities = null;
+				}
+
+				// load max 100 entities at once
+				entities = new PagedList<TEntity>(query, pageIndex++, PAGE_SIZE);
+
+				entities.Each(x => moveEntity(x));
+
+				// save the current batch to database
+				_services.DbContext.SaveChanges();
+			}
+			while (entities.HasNextPage);
+		}
+
 		public virtual bool Move(Provider<IMediaStorageProvider> sourceProvider, Provider<IMediaStorageProvider> targetProvider)
 		{
 			Guard.ArgumentNotNull(() => sourceProvider);
 			Guard.ArgumentNotNull(() => targetProvider);
 
 			var success = false;
-			var pageIndex = 0;
 			var utcNow = DateTime.UtcNow;
-			IPagedList<Picture> pictures = null;
 			var context = new MediaStorageMoverContext(sourceProvider.Metadata.SystemName, targetProvider.Metadata.SystemName);
 
-			var dbContext = _pictureRepository.Context;
 			var source = sourceProvider.Value as IMovableMediaSupported;
 			var target = targetProvider.Value as IMovableMediaSupported;
 
@@ -64,43 +90,41 @@ namespace SmartStore.Services.Media.Storage
 			}
 
 			// we are about to process data in chunks but want to commit ALL at once when ALL chunks have been processed successfully.
-			// set autoDetectChanges to true for newly inserted binary data.
-			using (var scope = new DbContextScope(ctx: dbContext, autoDetectChanges: true, proxyCreation: false, validateOnSave: false, autoCommit: false))
-			using (var transaction = dbContext.BeginTransaction())
+			// autoDetectChanges true required for newly inserted binary data.
+			using (var scope = new DbContextScope(ctx: _services.DbContext, autoDetectChanges: true, proxyCreation: false, validateOnSave: false, autoCommit: false))
+			using (var transaction = _services.DbContext.BeginTransaction())
 			{
 				try
 				{
-					var query = _pictureRepository.Table
+					// pictures
+					var queryPictures = _pictureRepository.Table
 						.Expand(x => x.BinaryData)
 						.OrderBy(x => x.Id);
 
-					do
+					PageEntities(queryPictures, picture =>
 					{
-						if (pictures != null)
-						{
-							// detach all entities from previous page to save memory
-							dbContext.DetachEntities(pictures);
-							pictures.Clear();
-							pictures = null;
-						}
+						// move item from source to target
+						source.MoveTo(target, context, picture.ToMedia());
 
-						// load max 100 entities at once
-						pictures = new PagedList<Picture>(query, pageIndex++, PAGE_SIZE);
+						picture.UpdatedOnUtc = utcNow;
 
-						foreach (var picture in pictures)
-						{
-							// move item from source to target
-							source.MoveTo(target, context, picture.ToMedia());
+						++context.MovedItems;
+					});
 
-							picture.UpdatedOnUtc = utcNow;
+					// downloads
+					var queryDownloads = _downloadRepository.Table
+						.Expand(x => x.BinaryData)
+						.OrderBy(x => x.Id);
 
-							++context.MovedItems;
-						}
+					PageEntities(queryDownloads, download =>
+					{
+						// move item from source to target
+						source.MoveTo(target, context, download.ToMedia());
 
-						// save the current batch to database
-						dbContext.SaveChanges();
-					}
-					while (pictures.HasNextPage);
+						download.UpdatedOnUtc = utcNow;
+
+						++context.MovedItems;
+					});
 
 					transaction.Commit();
 					success = true;
@@ -126,7 +150,7 @@ namespace SmartStore.Services.Media.Storage
 
 			if (success && context.ShrinkDatabase)
 			{
-				dbContext.ShrinkDatabase();
+				_services.DbContext.ShrinkDatabase();
 			}
 
 			return success;

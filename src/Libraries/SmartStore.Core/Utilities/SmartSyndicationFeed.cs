@@ -67,6 +67,7 @@ namespace SmartStore.Utilities
 
 				if ((picture.BinaryDataId ?? 0) != 0)
 				{
+					// do not care about storage provider
 					pictureLength = picture.BinaryData.Data.LongLength;
 				}
 

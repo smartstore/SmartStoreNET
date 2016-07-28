@@ -1,5 +1,7 @@
-﻿using SmartStore.Core;
+﻿using System.IO;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.IO;
 
 namespace SmartStore.Services.Media.Storage
@@ -7,7 +9,7 @@ namespace SmartStore.Services.Media.Storage
 	public static class MediaStorageExtensions
 	{
 		/// <summary>
-		/// Convert a picture entity into a media storage item
+		/// Converts a picture entity into a media storage item
 		/// </summary>
 		/// <param name="picture">Picture entity</param>
 		/// <returns>Media storage item</returns>
@@ -26,7 +28,7 @@ namespace SmartStore.Services.Media.Storage
 		}
 
 		/// <summary>
-		/// Convert a download entity into a media storage item
+		/// Converts a download entity into a media storage item
 		/// </summary>
 		/// <param name="download">Download entity</param>
 		/// <returns>Media storage item</returns>
@@ -40,6 +42,26 @@ namespace SmartStore.Services.Media.Storage
 				MimeType = download.ContentType,
 				FileExtension = download.Extension,
 				Path = @"Media\Downloads"
+			};
+
+			return media;
+		}
+
+		/// <summary>
+		/// Converts a queued email attachment entity into a media storage item
+		/// </summary>
+		/// <param name="attachment">Queued email attachment</param>
+		/// <returns>Media storage item</returns>
+		public static MediaStorageItem ToMedia(this QueuedEmailAttachment attachment)
+		{
+			Guard.ArgumentNotNull(() => attachment);
+
+			var media = new MediaStorageItem
+			{
+				Entity = attachment,
+				MimeType = attachment.MimeType,
+				FileExtension = Path.GetExtension(attachment.Name),
+				Path = @"Media\QueuedEmailAttachment"
 			};
 
 			return media;

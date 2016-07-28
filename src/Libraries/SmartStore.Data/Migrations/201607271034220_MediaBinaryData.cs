@@ -258,6 +258,10 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Common.MoveNow", "Move now", "Jetzt verschieben");
 
+			builder.AddOrUpdate("Admin.Media.ProviderFailedToSave",
+				"The storing of data through storage provider \"{0}\" failed in \"{1}\"",
+				"Das Speichern von Daten durch den Storage-Provider \"{0}\" ist während \"{1}\" fehlgeschlagen");
+
 
 			builder.Delete(
 				"Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.Database",

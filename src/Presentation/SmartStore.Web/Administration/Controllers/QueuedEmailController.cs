@@ -270,7 +270,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (qea.StorageLocation == EmailAttachmentStorageLocation.Blob)
 			{
-				return File(qea.Data, qea.MimeType, qea.Name);
+				return File(_queuedEmailService.LoadQueuedEmailAttachmentBinary(qea), qea.MimeType, qea.Name);
 			}
 			else if (qea.StorageLocation == EmailAttachmentStorageLocation.Path)
 			{

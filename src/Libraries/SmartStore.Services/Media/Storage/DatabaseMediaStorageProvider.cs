@@ -94,6 +94,7 @@ namespace SmartStore.Services.Media.Storage
 				{
 					if ((media.Entity.BinaryDataId ?? 0) != 0)
 					{
+						// this also nulls media.Entity.BinaryDataId
 						_binaryDataService.DeleteBinaryData(media.Entity.BinaryData);
 					}
 				}

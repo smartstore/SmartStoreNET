@@ -1,81 +1,120 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Net.Mail;
 using System.IO;
+using System.Linq;
+using System.Net.Mail;
+using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Email;
 using SmartStore.Core.Events;
-using SmartStore.Core.Logging;
-using SmartStore.Services.Localization;
-using SmartStore.Utilities;
-using System.Web;
 using SmartStore.Core.Localization;
+using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
 using SmartStore.Services.Media;
+using SmartStore.Services.Media.Storage;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Messages
 {
-    public partial class QueuedEmailService : IQueuedEmailService
+	public partial class QueuedEmailService : IQueuedEmailService
     {
         private readonly IRepository<QueuedEmail> _queuedEmailRepository;
 		private readonly IRepository<QueuedEmailAttachment> _queuedEmailAttachmentRepository;
 		private readonly IEmailSender _emailSender;
 		private readonly ICommonServices _services;
 		private readonly IDownloadService _downloadService;
+		private readonly IProviderManager _providerManager;
+		private readonly Provider<IMediaStorageProvider> _storageProvider;
 
-        public QueuedEmailService(
+		public QueuedEmailService(
 			IRepository<QueuedEmail> queuedEmailRepository,
  			IRepository<QueuedEmailAttachment> queuedEmailAttachmentRepository,
 			IEmailSender emailSender, 
 			ICommonServices services,
-			IDownloadService downloadService)
+			IDownloadService downloadService,
+			IProviderManager providerManager)
         {
             _queuedEmailRepository = queuedEmailRepository;
 			_queuedEmailAttachmentRepository = queuedEmailAttachmentRepository;
 			_emailSender = emailSender;
 			_services = services;
 			_downloadService = downloadService;
+			_providerManager = providerManager;
 
 			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
-        }
+
+			var systemName = services.Settings.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
+
+			_storageProvider = providerManager.GetProvider<IMediaStorageProvider>(systemName);
+		}
 
 		public Localizer T { get; set; }
 		public ILogger Logger { get; set; }
      
         public virtual void InsertQueuedEmail(QueuedEmail queuedEmail)
         {
-            if (queuedEmail == null)
-                throw new ArgumentNullException("queuedEmail");
+			Guard.ArgumentNotNull(() => queuedEmail);
 
-            _queuedEmailRepository.Insert(queuedEmail);
+			_queuedEmailRepository.Insert(queuedEmail);
 
-            //event notification
-            _services.EventPublisher.EntityInserted(queuedEmail);
+			// blob data always stored in database at this point -> move it if current provider is not database provider
+			if (!_storageProvider.Metadata.SystemName.IsCaseInsensitiveEqual(DatabaseMediaStorageProvider.SystemName))
+			{
+				var blobs = queuedEmail.Attachments.Where(x => x.StorageLocation == EmailAttachmentStorageLocation.Blob && x.BinaryData != null);
+				if (blobs.Any())
+				{
+					var databaseProvider = _providerManager.GetProvider<IMediaStorageProvider>(DatabaseMediaStorageProvider.SystemName);
+
+					foreach (var blob in blobs)
+					{
+						var media = blob.ToMedia();
+
+						try
+						{
+							// move it to current storage provider
+							_storageProvider.Value.Save(media, blob.BinaryData.Data);
+						}
+						catch (Exception exception)
+						{
+							Logger.Error(T("Admin.Media.ProviderFailedToSave", _storageProvider.Metadata.SystemName, "QueuedEmailService.InsertQueuedEmail"), exception);
+						}
+						finally
+						{
+							try
+							{
+								// always remove data from database to avoid inconsistent records
+								databaseProvider.Value.Remove(media);
+							}
+							catch { }
+						}
+					}
+				}
+			}
+
+			// event notification
+			_services.EventPublisher.EntityInserted(queuedEmail);
         }
 
         public virtual void UpdateQueuedEmail(QueuedEmail queuedEmail)
         {
-            if (queuedEmail == null)
-                throw new ArgumentNullException("queuedEmail");
+			Guard.ArgumentNotNull(() => queuedEmail);
 
-            _queuedEmailRepository.Update(queuedEmail);
+			_queuedEmailRepository.Update(queuedEmail);
 
-            //event notification
+            // event notification
 			_services.EventPublisher.EntityUpdated(queuedEmail);
         }
 
         public virtual void DeleteQueuedEmail(QueuedEmail queuedEmail)
         {
-            if (queuedEmail == null)
-                throw new ArgumentNullException("queuedEmail");
+			Guard.ArgumentNotNull(() => queuedEmail);
 
             _queuedEmailRepository.Delete(queuedEmail);
 
-            //event notification
+            // event notification
 			_services.EventPublisher.EntityDeleted(queuedEmail);
         }
 
@@ -224,8 +263,9 @@ namespace SmartStore.Services.Messages
 
 					if (qea.StorageLocation == EmailAttachmentStorageLocation.Blob)
 					{
-						var data = qea.Data;
-						if (data != null && data.Length > 0)
+						var data = _storageProvider.Value.Load(qea.ToMedia());
+
+						if (data != null && data.LongLength > 0)
 						{
 							attachment = new Attachment(data.ToStream(), qea.Name, qea.MimeType);
 						}
@@ -278,14 +318,31 @@ namespace SmartStore.Services.Messages
 			return qea;
 		}
 
-		public virtual void DeleteQueuedEmailAttachment(QueuedEmailAttachment qea)
+		public virtual void DeleteQueuedEmailAttachment(QueuedEmailAttachment attachment)
 		{
-			if (qea == null)
-				throw new ArgumentNullException("qea");
+			Guard.ArgumentNotNull(() => attachment);
 
-			_queuedEmailAttachmentRepository.Delete(qea);
+			// delete from storage
+			if (attachment.StorageLocation == EmailAttachmentStorageLocation.Blob)
+			{
+				_storageProvider.Value.Remove(attachment.ToMedia());
+			}
 
-			_services.EventPublisher.EntityDeleted(qea);
+			_queuedEmailAttachmentRepository.Delete(attachment);
+
+			_services.EventPublisher.EntityDeleted(attachment);
+		}
+
+		public virtual byte[] LoadQueuedEmailAttachmentBinary(QueuedEmailAttachment attachment)
+		{
+			Guard.ArgumentNotNull(() => attachment);
+
+			if (attachment.StorageLocation == EmailAttachmentStorageLocation.Blob)
+			{
+				return _storageProvider.Value.Load(attachment.ToMedia());
+			}
+
+			return null;
 		}
 
 		#endregion

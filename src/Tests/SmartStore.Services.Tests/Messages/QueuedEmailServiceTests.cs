@@ -1,30 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Messages;
-using SmartStore.Core.Events;
-using SmartStore.Core.Email;
-using SmartStore.Services.Messages;
+using System.Linq;
 using NUnit.Framework;
 using Rhino.Mocks;
-using SmartStore.Services.Stores;
-using System.Web.Mail;
-using SmartStore.Utilities;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
-using System.Threading.Tasks;
+using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Email;
+using SmartStore.Core.Plugins;
+using SmartStore.Services.Media;
+using SmartStore.Services.Messages;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Tests.Messages
 {
-    [TestFixture]
+	[TestFixture]
 	public class QueuedEmailServiceTests : ServiceTest
     {
 		IRepository<QueuedEmail> _qeRepository;
 		IRepository<QueuedEmailAttachment> _qeaRepository;
 		IEmailSender _emailSender;
 		ICommonServices _commonServices;
+		IDownloadService _downloadService;
 		QueuedEmailService _queuedEmailService;
+		IProviderManager _providerManager;
 
 		[SetUp]
 		public new void SetUp()
@@ -33,8 +32,10 @@ namespace SmartStore.Services.Tests.Messages
 			_qeaRepository = MockRepository.GenerateStub<IRepository<QueuedEmailAttachment>>();
 			_emailSender = MockRepository.GenerateStub<IEmailSender>();
 			_commonServices = MockRepository.GenerateStub<ICommonServices>();
+			_downloadService = MockRepository.GenerateMock<IDownloadService>();
+			_providerManager = MockRepository.GenerateMock<IProviderManager>();
 
-			_queuedEmailService = new QueuedEmailService(_qeRepository, _qeaRepository, _emailSender, _commonServices);
+			 _queuedEmailService = new QueuedEmailService(_qeRepository, _qeaRepository, _emailSender, _commonServices, _downloadService, _providerManager);
 		}
 
         [Test]
@@ -68,7 +69,7 @@ namespace SmartStore.Services.Tests.Messages
 			var attachBlob = new QueuedEmailAttachment 
 			{ 
 				StorageLocation = EmailAttachmentStorageLocation.Blob, 
-				Data = pdfBinary, 
+				BinaryData = new BinaryData { Data = pdfBinary },
 				Name = "blob.pdf", 
 				MimeType = "application/pdf" 
 			};

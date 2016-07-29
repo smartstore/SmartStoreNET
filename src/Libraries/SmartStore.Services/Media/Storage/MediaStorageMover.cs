@@ -3,6 +3,7 @@ using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
@@ -15,17 +16,20 @@ namespace SmartStore.Services.Media.Storage
 
 		private readonly IRepository<Picture> _pictureRepository;
 		private readonly IRepository<Download> _downloadRepository;
+		private readonly IRepository<QueuedEmailAttachment> _queuedEmailAttachmentRepository;
 		private readonly ICommonServices _services;
 		private readonly ILogger _logger;
 
 		public MediaStorageMover(
 			IRepository<Picture> pictureRepository,
 			IRepository<Download> downloadRepository,
+			IRepository<QueuedEmailAttachment> queuedEmailAttachmentRepository,
 			ICommonServices services,
 			ILogger logger)
 		{
 			_pictureRepository = pictureRepository;
 			_downloadRepository = downloadRepository;
+			_queuedEmailAttachmentRepository = queuedEmailAttachmentRepository;
 			_services = services;
 			_logger = logger;
 
@@ -107,7 +111,6 @@ namespace SmartStore.Services.Media.Storage
 						source.MoveTo(target, context, picture.ToMedia());
 
 						picture.UpdatedOnUtc = utcNow;
-
 						++context.MovedItems;
 					});
 
@@ -118,10 +121,21 @@ namespace SmartStore.Services.Media.Storage
 
 					PageEntities(queryDownloads, download =>
 					{
-						// move item from source to target
 						source.MoveTo(target, context, download.ToMedia());
 
 						download.UpdatedOnUtc = utcNow;
+						++context.MovedItems;
+					});
+
+					// queued email attachments
+					var queryQueuedEmailAttachments = _queuedEmailAttachmentRepository.Table
+						.Expand(x => x.BinaryData)
+						.Where(x => x.StorageLocation == EmailAttachmentStorageLocation.Blob)
+						.OrderBy(x => x.Id);
+
+					PageEntities(queryQueuedEmailAttachments, attachment =>
+					{
+						source.MoveTo(target, context, attachment.ToMedia());
 
 						++context.MovedItems;
 					});

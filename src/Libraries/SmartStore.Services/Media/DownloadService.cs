@@ -120,6 +120,7 @@ namespace SmartStore.Services.Media
 		{
 			Guard.ArgumentNotNull(() => download);
 
+			// we use an overload because a byte array cannot be nullable
 			UpdateDownloadCore(download, null, false);
 		}
 

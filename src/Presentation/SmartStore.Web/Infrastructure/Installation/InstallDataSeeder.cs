@@ -394,20 +394,19 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Save(product);
         }
 
-		private void MovePictures()
+		private void MoveMedia()
 		{
 			if (!_config.StoreMediaInDB)
 			{
-				// All pictures have initially been stored in the DB.
-				// Move the binaries to disk
+				// All pictures have initially been stored in the DB. Move the binaries to disk.
 				var fileSystemStorageProvider = new FileSystemMediaStorageProvider(new LocalFileSystem());
+				var binaryDatas = _ctx.Set<BinaryData>();
 
+				// pictures
 				var pics = _ctx.Set<Picture>()
 					.Expand(x => x.BinaryData)
 					.Where(x => x.BinaryDataId != null)
 					.ToList();
-
-				var binaryDatas = _ctx.Set<BinaryData>();
 
 				foreach (var pic in pics)
 				{
@@ -422,6 +421,29 @@ namespace SmartStore.Web.Infrastructure.Installation
 						catch { }
 
 						pic.BinaryDataId = null;
+					}
+				}
+
+				_ctx.SaveChanges();
+
+				// downloads
+				var downloads = _ctx.Set<Download>()
+					.Expand(x => x.BinaryData)
+					.ToList();
+
+				foreach (var download in downloads)
+				{
+					if (download.BinaryData != null && download.BinaryData.Data != null && download.BinaryData.Data.LongLength > 0)
+					{
+						fileSystemStorageProvider.Save(download.ToMedia(), download.BinaryData.Data);
+
+						try
+						{
+							binaryDatas.Remove(download.BinaryData);
+						}
+						catch { }
+
+						download.BinaryDataId = null;
 					}
 				}
 
@@ -594,7 +616,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				Populate("PopulatePolls", _data.Polls());
             }
 
-			Populate("MovePictures", MovePictures);
+			Populate("MovePictures", MoveMedia);
         }
 
 		public bool RollbackOnFailure

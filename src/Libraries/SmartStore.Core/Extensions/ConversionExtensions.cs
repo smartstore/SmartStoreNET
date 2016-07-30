@@ -231,30 +231,13 @@ namespace SmartStore
 			}
 			else
 			{
-				byte[] buffer;
-
-				int offset = 0;
-				long length = stream.Length;
-				if (length > 0x7fffffffL)
+				using (var streamReader = new MemoryStream())
 				{
-					throw new IOException("File too long.");
+					stream.CopyTo(streamReader);
+					return streamReader.ToArray();
 				}
-				int count = (int)length;
-				buffer = new byte[count];
-				while (count > 0)
-				{
-					int num3 = stream.Read(buffer, offset, count);
-					if (num3 == 0)
-					{
-						throw new EndOfStreamException();
-					}
-					offset += num3;
-					count -= num3;
-				}
-
-				return buffer;
 			}
-        }
+		}
 
 		public static string AsString(this Stream stream)
 		{

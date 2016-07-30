@@ -12,7 +12,7 @@ namespace SmartStore.WebApi.Controllers.OData
 	{
 		protected override void Insert(Download entity)
 		{
-			Service.InsertDownload(entity);
+			Service.InsertDownload(entity, null);
 		}
 		protected override void Update(Download entity)
 		{

@@ -18,7 +18,7 @@
 
 @{
     var availableLangs = new string[] { "de", "en" };
-    var lang = WorkContext.WorkingLanguage.UniqueSeoCode;
+    var lang = WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower();
     if (!availableLangs.Contains(lang))
     {
         lang = "en";

@@ -24,7 +24,7 @@ namespace SmartStore.Utilities
 			if (purlContent)
 			{
 				this.AttributeExtensions.Add(new XmlQualifiedName("content", XNamespace.Xmlns.ToString()), UrlPurlContent);
-				}
+			}
 		}
 
 		public void Init(string selfLink, Language language = null)
@@ -62,10 +62,14 @@ namespace SmartStore.Utilities
 		{
 			if (picture != null && pictureUrl.HasValue())
 			{
-				long pictureLength = 10000;		// 0 omits the length attribute but that invalidates the feed
+				// 0 omits the length attribute but that invalidates the feed
+				long pictureLength = 10000;
 
-				if (picture.PictureBinary != null)
-					pictureLength = picture.PictureBinary.LongLength;
+				if ((picture.BinaryDataId ?? 0) != 0)
+				{
+					// do not care about storage provider
+					pictureLength = picture.BinaryData.Data.LongLength;
+				}
 
 				var enclosure = SyndicationLink.CreateMediaEnclosureLink(new Uri(pictureUrl), picture.MimeType.EmptyNull(), pictureLength);
 

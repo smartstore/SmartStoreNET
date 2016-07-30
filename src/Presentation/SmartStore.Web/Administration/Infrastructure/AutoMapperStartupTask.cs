@@ -109,7 +109,9 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<AddressModel, Address>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.Country, mo => mo.Ignore())
-                .ForMember(dest => dest.StateProvince, mo => mo.Ignore());
+				.ForMember(dest => dest.StateProvince, mo => mo.Ignore())
+				.ForMember(dest => dest.Salutation, mo => mo.Ignore())
+				.ForMember(dest => dest.Title, mo => mo.Ignore());
 
             //countries
             Mapper.CreateMap<CountryModel, Country>()
@@ -664,10 +666,10 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore())
 				.ForMember(dest => dest.ShowItemsFromWishlistToCartButton, mo => mo.Ignore());
 			Mapper.CreateMap<MediaSettings, MediaSettingsModel>()
-				.ForMember(dest => dest.PicturesStoredIntoDatabase, mo => mo.Ignore())
+				.ForMember(dest => dest.StorageProvider, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableStorageProvider, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailablePictureZoomTypes, mo => mo.Ignore());
             Mapper.CreateMap<MediaSettingsModel, MediaSettings>()
-                //.ForMember(dest => dest.DefaultPictureZoomEnabled, mo => mo.Ignore())
                 .ForMember(dest => dest.DefaultImageQuality, mo => mo.Ignore())
                 .ForMember(dest => dest.MultipleThumbDirectories, mo => mo.Ignore())
                 .ForMember(dest => dest.VariantValueThumbPictureSize, mo => mo.Ignore());
@@ -684,7 +686,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.PrefillLoginUsername, mo => mo.Ignore())
                 .ForMember(dest => dest.PrefillLoginPwd, mo => mo.Ignore());
             Mapper.CreateMap<AddressSettings,  CustomerUserSettingsModel.AddressSettingsModel>();
-            Mapper.CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>();
+			Mapper.CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>()
+				.ForMember(dest => dest.Id, mo => mo.Ignore());
 
 			Mapper.CreateMap<ThemeSettings, ThemeListModel>()
 				.ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())

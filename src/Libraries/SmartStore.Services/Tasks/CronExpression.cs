@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using NCrontab;
-using CronExpressionDescriptor;
 using System.Threading;
+using CronExpressionDescriptor;
+using NCrontab;
 
 namespace SmartStore.Services.Tasks
 {
-	
+
 	public static class CronExpression
 	{
 
@@ -49,8 +48,6 @@ namespace SmartStore.Services.Tasks
 
 		public static string GetFriendlyDescription(string expression)
 		{
-			Guard.ArgumentNotEmpty(() => expression);
-
 			var options = new Options 
 			{ 
 				DayOfWeekStartIndexZero = true, 

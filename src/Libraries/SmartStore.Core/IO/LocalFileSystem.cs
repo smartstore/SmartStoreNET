@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Web.Hosting;
@@ -8,21 +7,21 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Core.IO
 {
-    public class LocalFileSystem : IFileSystem 
+	public class LocalFileSystem : IFileSystem
 	{
-		private readonly string _virtualPath; // ~/base
-		private readonly string _publicPath; // /Shop/base
-		private readonly string _storagePath; // C:\SMNET\base
+		private readonly string _virtualPath;	// ~/base
+		private readonly string _publicPath;	// /Shop/base
+		private readonly string _storagePath;	// C:\SMNET\base
 
-	    public LocalFileSystem()
+		public LocalFileSystem()
 			: this(string.Empty)
-        {
+		{
 		}
 
 		protected internal LocalFileSystem(string basePath)
 		{
 			// for testing purposes
-			basePath = basePath.EmptyNull().EnsureStartsWith("/").EnsureEndsWith("/");
+			basePath = basePath.EmptyNull().EnsureStartsWith("/").TrimEnd('/');
 
 			_virtualPath = "~" + basePath;
 
@@ -45,9 +44,9 @@ namespace SmartStore.Core.IO
 		/// <returns>The relative path combined with the storage path.</returns>
 		private string MapStorage(string path)
 		{
-            var mappedPath = string.IsNullOrEmpty(path) ? _storagePath : Path.Combine(_storagePath, Fix(path));
+			var mappedPath = string.IsNullOrEmpty(path) ? _storagePath : Path.Combine(_storagePath, Fix(path));
 			return ValidatePath(_storagePath, mappedPath);
-        }
+		}
 
 		/// <summary>
 		/// Maps a relative path into the public path.
@@ -61,28 +60,31 @@ namespace SmartStore.Core.IO
 
 		static string Fix(string path)
 		{
-            return string.IsNullOrEmpty(path)
-                       ? ""
-                       : Path.DirectorySeparatorChar != '/'
-                             ? path.Replace('/', Path.DirectorySeparatorChar)
-                             : path;
-        }
+			return string.IsNullOrEmpty(path)
+					   ? ""
+					   : Path.DirectorySeparatorChar != '/'
+							 ? path.Replace('/', Path.DirectorySeparatorChar)
+							 : path;
+		}
 
-        public string GetPublicUrl(string path)
+		public string GetPublicUrl(string path)
 		{
 			return MapPublic(path);
 		}
 
 		public string GetStoragePath(string url)
 		{
-			if (url.StartsWith(_virtualPath))
+			if (url.HasValue())
 			{
-				return url.Substring(_virtualPath.Length).Replace('/', Path.DirectorySeparatorChar).Replace("%20", " ");
-			}
+				if (url.StartsWith(_virtualPath))
+				{
+					return url.Substring(_virtualPath.Length).Replace('/', Path.DirectorySeparatorChar).Replace("%20", " ");
+				}
 
-			if (url.StartsWith(_publicPath))
-			{
-				return url.Substring(_publicPath.Length).Replace('/', Path.DirectorySeparatorChar).Replace("%20", " ");
+				if (url.StartsWith(_publicPath))
+				{
+					return url.Substring(_publicPath.Length).Replace('/', Path.DirectorySeparatorChar).Replace("%20", " ");
+				}
 			}
 
 			return null;
@@ -103,15 +105,50 @@ namespace SmartStore.Core.IO
 			var fileInfo = new FileInfo(MapStorage(path));
 			if (!fileInfo.Exists)
 			{
-                throw new ArgumentException("File " + path + " does not exist");
-            }
+				throw new ArgumentException("File " + path + " does not exist");
+			}
 
-            return new FileSystemStorageFile(Fix(path), fileInfo);
-        }
+			return new FileSystemStorageFile(Fix(path), fileInfo);
+		}
+
+		public IFolder GetFolder(string path)
+		{
+			var directoryInfo = new DirectoryInfo(MapStorage(path));
+
+			if (!directoryInfo.Exists)
+			{
+				throw new ArgumentException("Folder " + path + " does not exist");
+			}
+
+			return new FileSystemStorageFolder(Fix(path), directoryInfo);
+		}
+
+		public IFolder GetFolderForFile(string path)
+		{
+			var fileInfo = new FileInfo(MapStorage(path));
+			if (!fileInfo.Exists)
+			{
+				throw new ArgumentException("File " + path + " does not exist");
+			}
+
+			if (!fileInfo.Directory.Exists)
+			{
+				throw new ArgumentException("Folder " + path + " does not exist");
+			}
+
+			// get relative path of the folder
+			var folderPath = Path.GetDirectoryName(path);
+
+			return new FileSystemStorageFolder(Fix(folderPath), fileInfo.Directory);
+		}
 
 		public IEnumerable<string> SearchFiles(string path, string pattern)
 		{
-			return Directory.EnumerateFiles(MapStorage(path), pattern, SearchOption.AllDirectories);
+			// get relative from absolute path
+			var index = _storagePath.EmptyNull().Length;
+
+			return Directory.EnumerateFiles(MapStorage(path), pattern, SearchOption.AllDirectories)
+				.Select(x => x.Substring(index));
 		}
 
 		public IEnumerable<IFile> ListFiles(string path)
@@ -120,97 +157,97 @@ namespace SmartStore.Core.IO
 
 			if (!directoryInfo.Exists)
 			{
-                throw new ArgumentException("Directory " + path + " does not exist");
-            }
+				throw new ArgumentException("Directory " + path + " does not exist");
+			}
 
-            return directoryInfo
+			return directoryInfo
 				.GetFiles()
-                .Where(fi => !IsHidden(fi))
-                .Select<FileInfo, IFile>(fi => new FileSystemStorageFile(Path.Combine(Fix(path), fi.Name), fi))
-                .ToList();
-        }
+				.Where(fi => !IsHidden(fi))
+				.Select<FileInfo, IFile>(fi => new FileSystemStorageFile(Path.Combine(Fix(path), fi.Name), fi))
+				.ToList();
+		}
 
-        public IEnumerable<IFolder> ListFolders(string path)
+		public IEnumerable<IFolder> ListFolders(string path)
 		{
 			var directoryInfo = new DirectoryInfo(MapStorage(path));
 
 			if (!directoryInfo.Exists)
 			{
-                try
+				try
 				{
 					directoryInfo.Create();
 				}
-                catch (Exception ex)
+				catch (Exception ex)
 				{
 					if (ex.IsFatal())
 					{
 						throw;
 					}
 					throw new ArgumentException(string.Format("The folder could not be created at path: {0}. {1}", path, ex));
-                }
-            }
+				}
+			}
 
-            return directoryInfo
+			return directoryInfo
 				.GetDirectories()
-                .Where(di => !IsHidden(di))
-                .Select<DirectoryInfo, IFolder>(di => new FileSystemStorageFolder(Path.Combine(Fix(path), di.Name), di))
-                .ToList();
-        }
+				.Where(di => !IsHidden(di))
+				.Select<DirectoryInfo, IFolder>(di => new FileSystemStorageFolder(Path.Combine(Fix(path), di.Name), di))
+				.ToList();
+		}
 
-        private static bool IsHidden(FileSystemInfo di)
+		private static bool IsHidden(FileSystemInfo di)
 		{
-            return (di.Attributes & FileAttributes.Hidden) != 0;
-        }
+			return (di.Attributes & FileAttributes.Hidden) != 0;
+		}
 
-        public void CreateFolder(string path)
+		public void CreateFolder(string path)
 		{
 			var directoryInfo = new DirectoryInfo(MapStorage(path));
 
 			if (directoryInfo.Exists)
 			{
-                throw new ArgumentException("Directory " + path + " already exists");
-            }
+				throw new ArgumentException("Directory " + path + " already exists");
+			}
 
-            Directory.CreateDirectory(directoryInfo.FullName);
-        }
+			Directory.CreateDirectory(directoryInfo.FullName);
+		}
 
-        public void DeleteFolder(string path)
+		public void DeleteFolder(string path)
 		{
 			var directoryInfo = new DirectoryInfo(MapStorage(path));
 
 			if (!directoryInfo.Exists)
 			{
-                throw new ArgumentException("Directory " + path + " does not exist");
-            }
+				throw new ArgumentException("Directory " + path + " does not exist");
+			}
 
 			directoryInfo.Delete(true);
-        }
+		}
 
-        public void RenameFolder(string path, string newPath)
+		public void RenameFolder(string path, string newPath)
 		{
 			var sourceDirectory = new DirectoryInfo(MapStorage(path));
 			if (!sourceDirectory.Exists)
 			{
-                throw new ArgumentException("Directory " + path + "does not exist");
-            }
+				throw new ArgumentException("Directory " + path + "does not exist");
+			}
 
 			var targetDirectory = new DirectoryInfo(MapStorage(newPath));
 			if (targetDirectory.Exists)
 			{
-                throw new ArgumentException("Directory " + newPath + " already exists");
-            }
+				throw new ArgumentException("Directory " + newPath + " already exists");
+			}
 
-            Directory.Move(sourceDirectory.FullName, targetDirectory.FullName);
-        }
+			Directory.Move(sourceDirectory.FullName, targetDirectory.FullName);
+		}
 
-        public IFile CreateFile(string path)
+		public IFile CreateFile(string path)
 		{
 			var fileInfo = new FileInfo(MapStorage(path));
 
 			if (fileInfo.Exists)
 			{
-                throw new ArgumentException("File " + path + " already exists");
-            }
+				throw new ArgumentException("File " + path + " already exists");
+			}
 
 			// ensure the directory exists
 			var dirName = Path.GetDirectoryName(fileInfo.FullName);
@@ -224,32 +261,30 @@ namespace SmartStore.Core.IO
 			return new FileSystemStorageFile(Fix(path), fileInfo);
 		}
 
-        public void DeleteFile(string path)
+		public void DeleteFile(string path)
 		{
 			var fileInfo = new FileInfo(MapStorage(path));
 
-			if (!fileInfo.Exists)
+			if (fileInfo.Exists)
 			{
-                throw new ArgumentException("File " + path + " does not exist");
-            }
+				fileInfo.Delete();
+			}
+		}
 
-			fileInfo.Delete();
-        }
-
-        public void RenameFile(string path, string newPath)
+		public void RenameFile(string path, string newPath)
 		{
 			var sourceFileInfo = new FileInfo(MapStorage(path));
 			if (!sourceFileInfo.Exists)
 			{
-                throw new ArgumentException("File " + path + " does not exist");
-            }
+				throw new ArgumentException("File " + path + " does not exist");
+			}
 
 			var targetFileInfo = new FileInfo(MapStorage(newPath));
 			if (targetFileInfo.Exists)
 			{
-                throw new ArgumentException("File " + newPath + " already exists");
-            }
-			
+				throw new ArgumentException("File " + newPath + " already exists");
+			}
+
 			File.Move(sourceFileInfo.FullName, targetFileInfo.FullName);
 		}
 
@@ -328,48 +363,49 @@ namespace SmartStore.Core.IO
 
 		private class FileSystemStorageFile : IFile
 		{
-            private readonly string _path;
-            private readonly FileInfo _fileInfo;
+			private readonly string _path;
+			private readonly FileInfo _fileInfo;
 
-            public FileSystemStorageFile(string path, FileInfo fileInfo) {
-                _path = path;
-                _fileInfo = fileInfo;
-            }
-
-            public string Path
+			public FileSystemStorageFile(string path, FileInfo fileInfo)
 			{
-                get { return _path; }
-            }
+				_path = path;
+				_fileInfo = fileInfo;
+			}
 
-            public string Name
+			public string Path
 			{
-                get { return _fileInfo.Name; }
-            }
+				get { return _path; }
+			}
 
-            public long Size
+			public string Name
 			{
-                get { return _fileInfo.Length; }
-            }
+				get { return _fileInfo.Name; }
+			}
 
-            public DateTime LastUpdated
+			public long Size
 			{
-                get { return _fileInfo.LastWriteTime; }
-            }
+				get { return _fileInfo.Length; }
+			}
 
-            public string FileType
+			public DateTime LastUpdated
 			{
-                get { return _fileInfo.Extension; }
-            }
+				get { return _fileInfo.LastWriteTime; }
+			}
 
-            public Stream OpenRead()
+			public string FileType
 			{
-                return new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read);
-            }
+				get { return _fileInfo.Extension; }
+			}
 
-            public Stream OpenWrite()
+			public Stream OpenRead()
 			{
-                return new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.ReadWrite);
-            }
+				return new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read);
+			}
+
+			public Stream OpenWrite()
+			{
+				return new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.ReadWrite);
+			}
 
 			public Stream CreateFile()
 			{
@@ -377,38 +413,40 @@ namespace SmartStore.Core.IO
 			}
 		}
 
-        private class FileSystemStorageFolder : IFolder {
-            private readonly string _path;
-            private readonly DirectoryInfo _directoryInfo;
+		private class FileSystemStorageFolder : IFolder
+		{
+			private readonly string _path;
+			private readonly DirectoryInfo _directoryInfo;
 
-            public FileSystemStorageFolder(string path, DirectoryInfo directoryInfo) {
-                _path = path;
-                _directoryInfo = directoryInfo;
-            }
-
-            public string Path
+			public FileSystemStorageFolder(string path, DirectoryInfo directoryInfo)
 			{
-                get { return _path; }
-            }
+				_path = path;
+				_directoryInfo = directoryInfo;
+			}
 
-            public string Name
+			public string Path
 			{
-                get { return _directoryInfo.Name; }
-            }
+				get { return _path; }
+			}
 
-            public DateTime LastUpdated
+			public string Name
 			{
-                get { return _directoryInfo.LastWriteTime; }
-            }
+				get { return _directoryInfo.Name; }
+			}
 
-            public long Size
+			public DateTime LastUpdated
 			{
-                get { return GetDirectorySize(_directoryInfo); }
-            }
+				get { return _directoryInfo.LastWriteTime; }
+			}
 
-            public IFolder Parent
+			public long Size
 			{
-                get
+				get { return GetDirectorySize(_directoryInfo); }
+			}
+
+			public IFolder Parent
+			{
+				get
 				{
 					if (_directoryInfo.Parent != null)
 					{
@@ -416,27 +454,32 @@ namespace SmartStore.Core.IO
 					}
 					throw new ArgumentException("Directory " + _directoryInfo.Name + " does not have a parent directory");
 				}
-            }
+			}
 
-            private static long GetDirectorySize(DirectoryInfo directoryInfo) {
-                long size = 0;
+			private static long GetDirectorySize(DirectoryInfo directoryInfo)
+			{
+				long size = 0;
 
-                FileInfo[] fileInfos = directoryInfo.GetFiles();
-                foreach (FileInfo fileInfo in fileInfos) {
-                    if (!IsHidden(fileInfo)) {
-                        size += fileInfo.Length;
-                    }
-                }
-                DirectoryInfo[] directoryInfos = directoryInfo.GetDirectories();
-                foreach (DirectoryInfo dInfo in directoryInfos) {
-                    if (!IsHidden(dInfo)) {
-                        size += GetDirectorySize(dInfo);
-                    }
-                }
+				FileInfo[] fileInfos = directoryInfo.GetFiles();
+				foreach (FileInfo fileInfo in fileInfos)
+				{
+					if (!IsHidden(fileInfo))
+					{
+						size += fileInfo.Length;
+					}
+				}
+				DirectoryInfo[] directoryInfos = directoryInfo.GetDirectories();
+				foreach (DirectoryInfo dInfo in directoryInfos)
+				{
+					if (!IsHidden(dInfo))
+					{
+						size += GetDirectorySize(dInfo);
+					}
+				}
 
-                return size;
-            }
-        }
+				return size;
+			}
+		}
 
-    }
+	}
 }

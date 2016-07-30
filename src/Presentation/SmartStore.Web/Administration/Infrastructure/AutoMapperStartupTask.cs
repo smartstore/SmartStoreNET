@@ -109,7 +109,9 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<AddressModel, Address>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.Country, mo => mo.Ignore())
-                .ForMember(dest => dest.StateProvince, mo => mo.Ignore());
+				.ForMember(dest => dest.StateProvince, mo => mo.Ignore())
+				.ForMember(dest => dest.Salutation, mo => mo.Ignore())
+				.ForMember(dest => dest.Title, mo => mo.Ignore());
 
             //countries
             Mapper.CreateMap<CountryModel, Country>()
@@ -684,7 +686,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.PrefillLoginUsername, mo => mo.Ignore())
                 .ForMember(dest => dest.PrefillLoginPwd, mo => mo.Ignore());
             Mapper.CreateMap<AddressSettings,  CustomerUserSettingsModel.AddressSettingsModel>();
-            Mapper.CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>();
+			Mapper.CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>()
+				.ForMember(dest => dest.Id, mo => mo.Ignore());
 
 			Mapper.CreateMap<ThemeSettings, ThemeListModel>()
 				.ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())

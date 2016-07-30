@@ -7,9 +7,11 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Email;
-using SmartStore.Core.Plugins;
+using SmartStore.Core.Events;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
+using SmartStore.Services.Tests.Configuration;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Tests.Messages
@@ -19,23 +21,30 @@ namespace SmartStore.Services.Tests.Messages
     {
 		IRepository<QueuedEmail> _qeRepository;
 		IRepository<QueuedEmailAttachment> _qeaRepository;
+		IRepository<Download> _downloadRepository;
 		IEmailSender _emailSender;
-		ICommonServices _commonServices;
+		ICommonServices _services;
 		IDownloadService _downloadService;
 		QueuedEmailService _queuedEmailService;
-		IProviderManager _providerManager;
+		ISettingService _settingService;
+		IEventPublisher _eventPublisher;
 
 		[SetUp]
 		public new void SetUp()
 		{
-			_qeRepository = MockRepository.GenerateStub<IRepository<QueuedEmail>>();
-			_qeaRepository = MockRepository.GenerateStub<IRepository<QueuedEmailAttachment>>();
-			_emailSender = MockRepository.GenerateStub<IEmailSender>();
-			_commonServices = MockRepository.GenerateStub<ICommonServices>();
-			_downloadService = MockRepository.GenerateMock<IDownloadService>();
-			_providerManager = MockRepository.GenerateMock<IProviderManager>();
+			_qeRepository = MockRepository.GenerateMock<IRepository<QueuedEmail>>();
+			_qeaRepository = MockRepository.GenerateMock<IRepository<QueuedEmailAttachment>>();
+			_downloadRepository = MockRepository.GenerateMock<IRepository<Download>>();
+			_emailSender = MockRepository.GenerateMock<IEmailSender>();
+			_services = MockRepository.GenerateMock<ICommonServices>();
+			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
 
-			 _queuedEmailService = new QueuedEmailService(_qeRepository, _qeaRepository, _emailSender, _commonServices, _downloadService, _providerManager);
+			_settingService = new ConfigFileSettingService(null, null, null);
+			_services.Expect(x => x.Settings).Return(_settingService);
+
+			_downloadService = new DownloadService(_downloadRepository, _eventPublisher, _settingService, ProviderManager);
+
+			_queuedEmailService = new QueuedEmailService(_qeRepository, _qeaRepository, _emailSender, _services, _downloadService, ProviderManager);
 		}
 
         [Test]
@@ -69,7 +78,8 @@ namespace SmartStore.Services.Tests.Messages
 			var attachBlob = new QueuedEmailAttachment 
 			{ 
 				StorageLocation = EmailAttachmentStorageLocation.Blob, 
-				BinaryData = new BinaryData { Data = pdfBinary },
+				BinaryData = new BinaryData { Id = 1, Data = pdfBinary },
+				BinaryDataId = 1,
 				Name = "blob.pdf", 
 				MimeType = "application/pdf" 
 			};
@@ -95,10 +105,8 @@ namespace SmartStore.Services.Tests.Messages
 				File = new Download
 				{
 					ContentType = "application/pdf",
-					BinaryData = new BinaryData
-					{
-						Data = pdfBinary
-					},
+					BinaryData = new BinaryData { Id = 2, Data = pdfBinary },
+					BinaryDataId = 2,
 					Extension = ".pdf",
 					Filename = "file"
 				}

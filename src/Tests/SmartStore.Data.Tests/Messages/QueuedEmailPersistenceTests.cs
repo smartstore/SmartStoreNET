@@ -78,6 +78,7 @@ namespace SmartStore.Data.Tests.Messages
 				{
 					Data = new byte[10]
 				},
+				UpdatedOnUtc = DateTime.UtcNow,
 				DownloadGuid = Guid.NewGuid(),
 				Extension = "txt",
 				Filename = "file"

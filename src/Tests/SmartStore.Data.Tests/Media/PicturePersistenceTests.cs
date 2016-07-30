@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Tests;
 
@@ -16,7 +17,8 @@ namespace SmartStore.Data.Tests.Media
 				{
 					Data = new byte[] { 1, 2, 3 }
 				},
-                MimeType = "image/pjpeg",
+				UpdatedOnUtc = DateTime.UtcNow,
+				MimeType = "image/pjpeg",
                 SeoFilename = "seo filename 1",
                 IsNew = true
             };

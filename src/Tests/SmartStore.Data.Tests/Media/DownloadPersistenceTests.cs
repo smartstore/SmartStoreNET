@@ -18,7 +18,8 @@ namespace SmartStore.Data.Tests.Media
                 UseDownloadUrl = true,
                 DownloadUrl = "http://www.someUrl.com/file.zip",
 				BinaryData = new BinaryData { Data = new byte[] { 1, 2, 3 } },
-                ContentType = "application/x-zip-co",
+				UpdatedOnUtc = DateTime.UtcNow,
+				ContentType = "application/x-zip-co",
                 Filename = "file",
                 Extension = ".zip",
                 IsNew = true

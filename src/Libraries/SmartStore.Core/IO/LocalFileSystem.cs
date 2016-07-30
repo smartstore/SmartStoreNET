@@ -21,7 +21,7 @@ namespace SmartStore.Core.IO
 		protected internal LocalFileSystem(string basePath)
 		{
 			// for testing purposes
-			basePath = basePath.EmptyNull().EnsureStartsWith("/").EnsureEndsWith("/");
+			basePath = basePath.EmptyNull().EnsureStartsWith("/").TrimEnd('/');
 
 			_virtualPath = "~" + basePath;
 

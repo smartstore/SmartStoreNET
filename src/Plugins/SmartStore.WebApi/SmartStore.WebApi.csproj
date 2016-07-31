@@ -194,6 +194,7 @@
     <Compile Include="Controllers\OData\CategoriesController.cs" />
     <Compile Include="Controllers\OData\CountriesController.cs" />
     <Compile Include="Controllers\OData\CurrenciesController.cs" />
+    <Compile Include="Controllers\OData\CustomerRolesController.cs" />
     <Compile Include="Controllers\OData\CustomersController.cs" />
     <Compile Include="Controllers\OData\DownloadsController.cs" />
     <Compile Include="Controllers\OData\DeliveryTimesController.cs" />

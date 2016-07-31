@@ -1,5 +1,9 @@
 ﻿#Release Notes
 
+##Web Api 2.6.0.1
+###New Features
+* #1002 Add support for addresses and customer roles navigation property of customer entity
+
 ##Web Api 2.5.0.1
 ###New Features
 * Option to allow authentification without MD5 content hash

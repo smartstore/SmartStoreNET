@@ -96,29 +96,34 @@ namespace SmartStore.Services.Media
 				}
 			}
 
-			var publicUrl = _fileSystem.GetPublicUrl(BuildPath(imagePath));
+			var publicUrl = _fileSystem.GetPublicUrl(BuildPath(imagePath)).EmptyNull();
 
-			if (root.IsEmpty() || publicUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || publicUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+			if (publicUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || publicUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
 			{
+				// absolute url
 				return publicUrl;
 			}
-			else
+
+			if (root.IsEmpty())
 			{
-				if (HostingEnvironment.IsHosted)
-				{
-					// strip out app path from public url if needed
-					var appPath = HostingEnvironment.ApplicationVirtualPath.EmptyNull();
-					if (appPath.Length > 0)
-					{
-						publicUrl = publicUrl.Substring(appPath.Length + 1);
-					}
-				}
-
-				return root.TrimEnd('/', '\\') + publicUrl;
+				// relative url must start with a slash
+				return publicUrl.EnsureStartsWith("/");
 			}
-        }
 
-        public virtual void DeleteCachedImages(Picture picture)
+			if (HostingEnvironment.IsHosted)
+			{
+				// strip out app path from public url if needed but do not strip away leading slash from publicUrl
+				var appPath = HostingEnvironment.ApplicationVirtualPath.EmptyNull();
+				if (appPath.Length > 0 && appPath != "/")
+				{
+					publicUrl = publicUrl.Substring(appPath.Length + 1);
+				}
+			}
+
+			return root.TrimEnd('/', '\\') + publicUrl;
+		}
+
+		public virtual void DeleteCachedImages(Picture picture)
         {
             var filter = string.Format("{0}*.*", picture.Id.ToString("0000000"));
 

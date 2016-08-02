@@ -190,6 +190,7 @@
     <Compile Include="Domain\Orders\CheckoutEnums.cs" />
     <Compile Include="Domain\Payments\PaymentMethod.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
+    <Compile Include="Domain\Tax\SubsidiaryServicesTaxType.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />

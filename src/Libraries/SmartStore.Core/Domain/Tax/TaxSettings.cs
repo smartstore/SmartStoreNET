@@ -1,5 +1,4 @@
-﻿
-using SmartStore.Core.Configuration;
+﻿using SmartStore.Core.Configuration;
 
 namespace SmartStore.Core.Domain.Tax
 {
@@ -113,10 +112,15 @@ namespace SmartStore.Core.Domain.Tax
         /// </summary>
         public int PaymentMethodAdditionalFeeTaxClassId { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether EU VAT (Eupore Union Value Added Tax) is enabled
-        /// </summary>
-        public bool EuVatEnabled { get; set; }
+		/// <summary>
+		/// Taxing type for subsidiary services like shipping and payment fees
+		/// </summary>
+		public SubsidiaryServicesTaxType SubsidiaryServicesTaxingType { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether EU VAT (Eupore Union Value Added Tax) is enabled
+		/// </summary>
+		public bool EuVatEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets a shop country identifier

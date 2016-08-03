@@ -12,6 +12,7 @@
 * Added options to capture salutation and title in addresses and customer info
 * Added projection to control the export of individually visible associated products
 * #1002 Web API: Add support for addresses and customer roles navigation property of customer entity
+* #966 Implement new tax calculation logic for shipping and payment fees
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation

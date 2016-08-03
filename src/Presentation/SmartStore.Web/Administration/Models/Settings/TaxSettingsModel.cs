@@ -78,9 +78,13 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.PaymentMethodAdditionalFeeTaxClass")]
         public int? PaymentMethodAdditionalFeeTaxClassId { get; set; }
 		public IList<SelectListItem> PaymentMethodAdditionalFeeTaxCategories { get; set; }
-		
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatEnabled")]
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.SubsidiaryServicesTaxingType")]
+		public SubsidiaryServicesTaxType SubsidiaryServicesTaxingType { get; set; }
+		public SelectList AvailableSubsidiaryServicesTaxTypes { get; set; }
+
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatEnabled")]
         public bool EuVatEnabled { get; set; }
         
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Tax.EuVatShopCountry")]

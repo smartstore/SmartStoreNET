@@ -177,14 +177,15 @@ namespace SmartStore.Services.Orders
 			taxRate = decimal.Zero;
 			var result = decimal.Zero;
 
-			if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.SpecifiedRate)
+			if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.SpecifiedTaxCategory)
 			{
 				result = _taxService.GetPaymentMethodAdditionalFee(paymentFee, includingTax, customer, out taxRate);
 			}
 			else if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.ProRata)
 			{
-				// sum pro rata payment fees. out parameter "taxRate" is undefined and zero in this case.
-				var tmp = decimal.Zero;
+				// sum pro rata payment fees
+				var tmpTaxRate = decimal.Zero;
+				var taxRates = new List<decimal>();
 
 				PrepareProRataWeightings(cart);
 
@@ -195,8 +196,16 @@ namespace SmartStore.Services.Orders
 					var proRataPaymentFee = paymentFee * cartTax.ProRataWeighting;
 					var taxCategoryId = x.Item.Product.TaxCategoryId;
 
-					result += _taxService.GetPaymentMethodAdditionalFee(proRataPaymentFee, includingTax, customer, taxCategoryId, out tmp);
+					result += _taxService.GetPaymentMethodAdditionalFee(proRataPaymentFee, includingTax, customer, taxCategoryId, out tmpTaxRate);
+
+					taxRates.Add(tmpTaxRate);
 				});
+
+				// tax rate is only defined if all rates are equal
+				if (taxRates.Any() && taxRates.Distinct().Count() == 1)
+				{
+					taxRate = taxRates.First();
+				}
 			}
 			else if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.HighestCartAmount)
 			{
@@ -754,16 +763,17 @@ namespace SmartStore.Services.Orders
                 if (_shoppingCartSettings.RoundPricesDuringCalculation)
                     shippingTotal = Math.Round(shippingTotal.Value, 2);
 
-				if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.SpecifiedRate)
+				if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.SpecifiedTaxCategory)
 				{
 					shippingTotalTaxed = _taxService.GetShippingPrice(shippingTotal.Value, includingTax, customer, out taxRate);
 				}
 				else if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.ProRata)
 				{
-					// sum pro rata shipping amounts. out parameter "taxRate" is undefined and zero in this case.
+					// sum pro rata shipping amounts
 					shippingTotalTaxed = decimal.Zero;
 
-					var tmp = decimal.Zero;
+					var tmpTaxRate = decimal.Zero;
+					var taxRates = new List<decimal>();
 
 					PrepareProRataWeightings(cart);
 
@@ -774,8 +784,16 @@ namespace SmartStore.Services.Orders
 						var proRataShipping = shippingTotal.Value * cartTax.ProRataWeighting;
 						var taxCategoryId = x.Item.Product.TaxCategoryId;
 
-						shippingTotalTaxed += _taxService.GetShippingPrice(proRataShipping, includingTax, customer, taxCategoryId, out tmp);
+						shippingTotalTaxed += _taxService.GetShippingPrice(proRataShipping, includingTax, customer, taxCategoryId, out tmpTaxRate);
+
+						taxRates.Add(tmpTaxRate);
 					});
+
+					// tax rate is only defined if all rates are equal
+					if (taxRates.Any() && taxRates.Distinct().Count() == 1)
+					{
+						taxRate = taxRates.First();
+					}
 				}
 				else if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.HighestCartAmount)
 				{

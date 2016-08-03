@@ -6,18 +6,18 @@
 	public enum SubsidiaryServicesTaxType
 	{
 		/// <summary>
-		/// Calculate tax of subsidiary services by the tax rate specified in settings
+		/// Calculate tax of subsidiary services by the tax category specified in settings
 		/// </summary>
-		SpecifiedRate = 0,
-
-		/// <summary>
-		/// Calculate tax by the proportion of cart subtotal and sum of all subtotals
-		/// </summary>
-		ProRata = 10,
+		SpecifiedTaxCategory = 0,
 
 		/// <summary>
 		/// Calculate tax by the tax rate of the product that has the highest cart subtotal
 		/// </summary>
-		HighestCartAmount = 20
+		HighestCartAmount = 10,
+
+		/// <summary>
+		/// Calculate tax pro rata in accordance with main service (proportion of line subtotal and sum of all line subtotals)
+		/// </summary>
+		ProRata = 20
 	}
 }

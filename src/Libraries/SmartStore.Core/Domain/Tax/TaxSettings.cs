@@ -15,6 +15,7 @@ namespace SmartStore.Core.Domain.Tax
 			ShowLegalHintsInFooter = true; 
 			ShowLegalHintsInProductDetails = true;
 			ShowLegalHintsInProductList = true;
+			SubsidiaryServicesTaxingType = SubsidiaryServicesTaxType.SpecifiedTaxCategory;
 		}
 		
 		/// <summary>

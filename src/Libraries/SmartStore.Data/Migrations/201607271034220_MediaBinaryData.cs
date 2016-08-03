@@ -262,6 +262,24 @@ namespace SmartStore.Data.Migrations
 				"The storing of data through storage provider \"{0}\" failed in \"{1}\"",
 				"Das Speichern von Daten durch den Storage-Provider \"{0}\" ist während \"{1}\" fehlgeschlagen");
 
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Tax.SubsidiaryServicesTaxType.SpecifiedTaxCategory",
+				"Specified tax category",
+				"Festgelegte Steuerklasse");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Tax.SubsidiaryServicesTaxType.HighestCartAmount",
+				"Highest amount in cart",
+				"Höchster Wert im Warenkorb");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Tax.SubsidiaryServicesTaxType.ProRata",
+				"Pro rata in accordance with main service",
+				"Anteilig gemäß der Hauptleistung");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Tax.SubsidiaryServicesTaxingType",
+				"Taxing of subsidiary services",
+				"Besteuerung von Nebenleistungen",
+				"Specifies how to calculate the tax amount for subsidiary services like shipping and payment fees.",
+				"Legt fest, wie die Mehrwertsteuer auf Nebenleistungen (wie z.B. Versandkosten und Zahlartgebühren) berechnet werden soll.");
+
 
 			builder.Delete(
 				"Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.Database",

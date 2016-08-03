@@ -437,35 +437,29 @@ namespace SmartStore.Admin.Controllers
 
             model.TaxBasedOnValues = taxSettings.TaxBasedOn.ToSelectList();
             model.TaxDisplayTypeValues = taxSettings.TaxDisplayType.ToSelectList();
+			model.AvailableSubsidiaryServicesTaxTypes = taxSettings.SubsidiaryServicesTaxingType.ToSelectList();
 
             //tax categories
             var taxCategories = _taxCategoryService.GetAllTaxCategories();
 			foreach (var tc in taxCategories)
 			{
-				model.ShippingTaxCategories.Add(
-					new SelectListItem() { Text = tc.Name, Value = tc.Id.ToString(), Selected = tc.Id == taxSettings.ShippingTaxClassId }
-				);
+				model.ShippingTaxCategories.Add(new SelectListItem { Text = tc.Name, Value = tc.Id.ToString(), Selected = tc.Id == taxSettings.ShippingTaxClassId });
 			}
 
 			foreach (var tc in taxCategories)
 			{
-				model.PaymentMethodAdditionalFeeTaxCategories.Add(
-					new SelectListItem() { Text = tc.Name, Value = tc.Id.ToString(), Selected = tc.Id == taxSettings.PaymentMethodAdditionalFeeTaxClassId }
-				);
+				model.PaymentMethodAdditionalFeeTaxCategories.Add(new SelectListItem { Text = tc.Name, Value = tc.Id.ToString(),
+					Selected = tc.Id == taxSettings.PaymentMethodAdditionalFeeTaxClassId });
 			}
 
             //EU VAT countries
 			foreach (var c in _countryService.GetAllCountries(true))
 			{
-				model.EuVatShopCountries.Add(
-					new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = c.Id == taxSettings.EuVatShopCountryId }
-				);
+				model.EuVatShopCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString(), Selected = c.Id == taxSettings.EuVatShopCountryId });
 			}
 
             //default tax address
-            var defaultAddress = taxSettings.DefaultTaxAddressId > 0
-                                     ? _addressService.GetAddressById(taxSettings.DefaultTaxAddressId)
-                                     : null;
+            var defaultAddress = (taxSettings.DefaultTaxAddressId > 0 ? _addressService.GetAddressById(taxSettings.DefaultTaxAddressId) : null);
 
 			if (defaultAddress != null)
 				model.DefaultTaxAddress = defaultAddress.ToModel();
@@ -477,28 +471,25 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var c in _countryService.GetAllCountries(true))
 			{
-				model.DefaultTaxAddress.AvailableCountries.Add(
-					new SelectListItem() { Text = c.Name, Value = c.Id.ToString(), Selected = (defaultAddress != null && c.Id == defaultAddress.CountryId) }
-				);
+				model.DefaultTaxAddress.AvailableCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString(),
+					Selected = (defaultAddress != null && c.Id == defaultAddress.CountryId) });
 			}
 
-            var states = defaultAddress != null && defaultAddress.Country != null ? 
-				_stateProvinceService.GetStateProvincesByCountryId(defaultAddress.Country.Id, true).ToList() : new List<StateProvince>();
+			var states = (defaultAddress != null && defaultAddress.Country != null ?
+				_stateProvinceService.GetStateProvincesByCountryId(defaultAddress.Country.Id, true).ToList() : new List<StateProvince>());
+
 			if (states.Count > 0)
 			{
 				foreach (var s in states)
 				{
-					model.DefaultTaxAddress.AvailableStates.Add(
-						new SelectListItem() { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == defaultAddress.StateProvinceId) }
-					);
+					model.DefaultTaxAddress.AvailableStates.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString(), Selected = (s.Id == defaultAddress.StateProvinceId) });
 				}
 			}
 			else
 			{
-				model.DefaultTaxAddress.AvailableStates.Add(
-					new SelectListItem() { Text = _services.Localization.GetResource("Admin.Address.OtherNonUS"), Value = "0" }
-				);
+				model.DefaultTaxAddress.AvailableStates.Add(new SelectListItem { Text = _services.Localization.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
 			}
+
             model.DefaultTaxAddress.CountryEnabled = true;
             model.DefaultTaxAddress.StateProvinceEnabled = true;
             model.DefaultTaxAddress.ZipPostalCodeEnabled = true;

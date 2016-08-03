@@ -593,7 +593,8 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<TaxSettings, TaxSettingsModel>()
                 .ForMember(dest => dest.DefaultTaxAddress, mo => mo.Ignore())
                 .ForMember(dest => dest.TaxDisplayTypeValues, mo => mo.Ignore())
-                .ForMember(dest => dest.TaxBasedOnValues, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableSubsidiaryServicesTaxTypes, mo => mo.Ignore())
+				.ForMember(dest => dest.TaxBasedOnValues, mo => mo.Ignore())
                 .ForMember(dest => dest.PaymentMethodAdditionalFeeTaxCategories, mo => mo.Ignore())
                 .ForMember(dest => dest.ShippingTaxCategories, mo => mo.Ignore())
                 .ForMember(dest => dest.EuVatShopCountries, mo => mo.Ignore());

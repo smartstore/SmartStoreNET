@@ -1152,7 +1152,7 @@ namespace SmartStore.Services.DataExchange.Export
 						var path = (x.FileName.HasValue() ? Path.Combine(ctx.ExecuteContext.Folder, x.FileName) : null);
 						if (CallProvider(ctx, x.Id, "OnExecuted", path))
 						{
-							if (ctx.IsFileBasedExport && File.Exists(path))
+							if (x.DisplayInFileDialog && ctx.IsFileBasedExport && File.Exists(path))
 							{
 								// save info about extra file
 								ctx.Result.Files.Add(new DataExportResult.ExportFileInfo

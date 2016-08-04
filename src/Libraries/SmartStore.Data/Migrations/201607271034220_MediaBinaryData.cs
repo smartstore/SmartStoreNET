@@ -221,6 +221,7 @@ namespace SmartStore.Data.Migrations
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
 			builder.AddOrUpdate("Admin.Common.Copy", "Copy", "Kopie");
+			builder.AddOrUpdate("Admin.Common.Data", "Data", "Daten");
 
 			builder.AddOrUpdate("Admin.Media.StorageMovingNotSupported",
 				"The provider \"{0}\" does not support moving media from one provider to another.",

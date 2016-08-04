@@ -144,28 +144,41 @@ namespace SmartStore.Admin.Controllers
 				RedirectToAction("Edit", new { id = profileId }));
 		}
 
-		private void AddFileInfo(List<ExportFileDetailsModel.FileInfo> list, string path, string publicFolderUrl = null, Store store = null)
+		private void AddFileInfo(
+			List<ExportFileDetailsModel.FileInfo> list,
+			string path,
+			DataExportResult.ExportFileInfo fileInfo = null,
+			string publicFolderUrl = null,
+			Store store = null)
 		{
 			if (System.IO.File.Exists(path) && !list.Any(x => x.FilePath == path))
 			{
-				var fileInfo = new ExportFileDetailsModel.FileInfo();
-				fileInfo.FilePath = path;
-				fileInfo.FileName = Path.GetFileName(path);
-				fileInfo.FileExtension = Path.GetExtension(path);
-				fileInfo.DisplayOrder = (fileInfo.FileExtension.IsCaseInsensitiveEqual(".zip") ? 0 : 1);
+				var fi = new ExportFileDetailsModel.FileInfo();
+				fi.FilePath = path;
+				fi.FileName = Path.GetFileName(path);
+				fi.FileExtension = Path.GetExtension(path);
+				fi.DisplayOrder = (fi.FileExtension.IsCaseInsensitiveEqual(".zip") ? 0 : 1);
+
+				if (fileInfo != null)
+				{
+					if (fileInfo.Label.HasValue())
+						fi.Label = fileInfo.Label;
+					else if (fileInfo.IsDataFile)
+						fi.Label = T("Admin.Common.Data");
+				}
 
 				if (store != null)
 				{
-					fileInfo.StoreId = store.Id;
-					fileInfo.StoreName = store.Name;
+					fi.StoreId = store.Id;
+					fi.StoreName = store.Name;
 				}
 
 				if (publicFolderUrl.HasValue())
 				{
-					fileInfo.FileUrl = publicFolderUrl + fileInfo.FileName;
+					fi.FileUrl = publicFolderUrl + fi.FileName;
 				}
 
-				list.Add(fileInfo);
+				list.Add(fi);
 			}
 		}
 
@@ -183,27 +196,26 @@ namespace SmartStore.Admin.Controllers
 			{
 				// add export files
 				var zipPath = profile.GetExportZipPath();
+				var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
 
 				if (deployment == null)
 				{
 					AddFileInfo(model.ExportFiles, zipPath);
 
-					foreach (var path in profile.GetExportFiles(provider))
+					if (resultInfo.Files != null)
 					{
-						AddFileInfo(model.ExportFiles, path);
+						var exportFolder = profile.GetExportFolder(true);
+
+						resultInfo.Files.Each(x => AddFileInfo(model.ExportFiles, Path.Combine(exportFolder, x.FileName), x));
 					}
 				}
 				else if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
 				{
-					var deploymentFolder = deployment.GetDeploymentFolder();
-					var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
-
 					if (resultInfo.Files != null)
 					{
-						foreach (var file in resultInfo.Files)
-						{
-							AddFileInfo(model.ExportFiles, Path.Combine(deploymentFolder, file.FileName));
-						}
+						var deploymentFolder = deployment.GetDeploymentFolder();
+
+						resultInfo.Files.Each(x => AddFileInfo(model.ExportFiles, Path.Combine(deploymentFolder, x.FileName), x));
 					}
 				}
 
@@ -227,25 +239,23 @@ namespace SmartStore.Admin.Controllers
 						AddFileInfo(
 							model.PublicFiles,
 							Path.Combine(deploymentFolder, Path.GetFileName(zipPath)),
+							null,
 							publicDeployment.GetPublicFolderUrl(Services, currentStore));
 					}
-					else
+					else if (resultInfo.Files != null)
 					{
-						var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
-						if (resultInfo.Files != null)
+						var allStores = Services.StoreService.GetAllStores();
+
+						foreach (var file in resultInfo.Files)
 						{
-							var allStores = Services.StoreService.GetAllStores();
+							var store = (file.StoreId == 0 ? null : allStores.FirstOrDefault(x => x.Id == file.StoreId));
 
-							foreach (var file in resultInfo.Files)
-							{
-								var store = (file.StoreId == 0 ? null : allStores.FirstOrDefault(x => x.Id == file.StoreId));
-
-								AddFileInfo(
-									model.PublicFiles,
-									Path.Combine(deploymentFolder, file.FileName),
-									publicDeployment.GetPublicFolderUrl(Services, store ?? currentStore),
-									store);
-							}
+							AddFileInfo(
+								model.PublicFiles,
+								Path.Combine(deploymentFolder, file.FileName),
+								file,
+								publicDeployment.GetPublicFolderUrl(Services, store ?? currentStore),
+								store);
 						}
 					}
 				}

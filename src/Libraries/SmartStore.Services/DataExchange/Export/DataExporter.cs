@@ -1124,7 +1124,8 @@ namespace SmartStore.Services.DataExchange.Export
 							ctx.Result.Files.Add(new DataExportResult.ExportFileInfo
 							{
 								StoreId = ctx.Store.Id,
-								FileName = ctx.ExecuteContext.FileName
+								FileName = ctx.ExecuteContext.FileName,
+								IsDataFile = true
 							});
 						}
 					}
@@ -1149,7 +1150,20 @@ namespace SmartStore.Services.DataExchange.Export
 					ctx.ExecuteContext.ExtraDataUnits.ForEach(x =>
 					{
 						var path = (x.FileName.HasValue() ? Path.Combine(ctx.ExecuteContext.Folder, x.FileName) : null);
-						CallProvider(ctx, x.Id, "OnExecuted", path);
+						if (CallProvider(ctx, x.Id, "OnExecuted", path))
+						{
+							if (ctx.IsFileBasedExport && File.Exists(path))
+							{
+								// save info about extra file
+								ctx.Result.Files.Add(new DataExportResult.ExportFileInfo
+								{
+									StoreId = ctx.Store.Id,
+									FileName = x.FileName,
+									Label = x.Label,
+									IsDataFile = false
+								});
+							}
+						}
 					});
 
 					ctx.ExecuteContext.ExtraDataUnits.Clear();

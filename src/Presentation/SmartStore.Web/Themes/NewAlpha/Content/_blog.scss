@@ -7,14 +7,6 @@
     color: $clr-green;
 }
 
-.block-popular-blogtags  {
-    padding-bottom: 1.25rem;
-    .card-block ul li {
-        float: left;
-        margin-right: .2rem;
-    }
-}
-
 .blog-page .blogpost {
 	padding: 20px 0;		
     border-top: 1px solid #ddd;
@@ -23,7 +15,6 @@
 .blog-page .blogpost:first-child {
     border-top: none;
 }
-
 
 .blog-page .blogpost .blogpost-info {
 	

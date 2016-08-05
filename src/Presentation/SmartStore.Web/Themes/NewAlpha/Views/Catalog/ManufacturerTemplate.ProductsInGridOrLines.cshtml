@@ -1,6 +1,6 @@
 ﻿@model ManufacturerModel
 @{
-    Layout = "~/Views/Shared/_ColumnsThree.cshtml";
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
     Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
@@ -13,11 +13,8 @@
     }
 }
 
-@using SmartStore.Core;
-@using SmartStore.Core.Domain.Common;
 @using SmartStore.Core.Domain.Seo;
 @using SmartStore.Core.Infrastructure;
-@using SmartStore.Web;
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web.Framework.UI;
 
@@ -63,8 +60,6 @@
                 ))
                 </div>
             </div>
-            <div class="clear">
-            </div>
         }
         @Html.Widget("manufacturerdetails_after_featured_products")
 
@@ -83,8 +78,6 @@
                 <div class="filter-item">
                     @Html.Partial("_FilterPriceBox", Model.PagingFilteringContext.PriceRangeFilter, new ViewDataDictionary())
                 </div>
-            </div>
-            <div class="clear">
             </div>
         }
         @Html.Widget("manufacturerdetails_before_product_list")

@@ -1,8 +1,7 @@
 ﻿@model CategoryModel
 
 @{
-	Layout = "~/Views/Shared/_ColumnsThree.cshtml";
-	//Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+	Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
 	Html.AddMetaDescriptionParts(Model.MetaDescription);
 	Html.AddMetaKeywordParts(Model.MetaKeywords);
@@ -92,7 +91,8 @@
     <div class="page-body">
         @Html.Widget("categorydetails_top")
         @*description*@
-        @if (!String.IsNullOrWhiteSpace(Model.Description)) {
+        @if (!String.IsNullOrWhiteSpace(Model.Description))
+        {
             <div class="category-description">
                 @Html.Raw(Html.CollapsedText(Model.Description))
             </div>
@@ -100,130 +100,137 @@
 
         @*subcategories*@
         @if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.AboveProductList)
-        {    
+        {
             @Html.Widget("categorydetails_before_subcategories")
             @SubCategoryList()
         }
-        
+
         @*featured products*@
         @Html.Widget("categorydetails_before_featured_products")
 
-        @if (Model.FeaturedProducts.Count > 0) {
+        @if (Model.FeaturedProducts.Count > 0)
+        {
             <div class="featured-product-grid product-list scroll">
                 <div class="section-title">
                     @T("Products.FeaturedProducts")
                 </div>
                 <div class="pl-row row">
-                    @foreach (var item in Model.FeaturedProducts) {
+                    @foreach (var item in Model.FeaturedProducts)
+                    {
                         <article class="item-box product-compact span4 equalized-column" data-equalized-deep="true">
                             @Html.Partial("_ProductBoxCompact", @item)
                         </article>
-					}
+                    }
                 </div>
                 <a class="sb invisible pl-scroll-prev sb-dir-left disabled" href="#" rel="nofollow"><</a>
-			    <a class="sb invisible pl-scroll-next sb-dir-right" href="#" rel="nofollow">></a>
+                <a class="sb invisible pl-scroll-next sb-dir-right" href="#" rel="nofollow">></a>
             </div>
             <script type="text/javascript">
                 $(function () {
                     $(".featured-product-grid").productListScroller();
                 });
-            </script>
-		}
+            </script>}
         @Html.Widget("categorydetails_after_featured_products")
 
-        @if (ShowListOptions()) {
+        @Html.Widget("categorydetails_before_filters")
+
+        @*filtering*@
+        @if (Model.Products.Count > 0 && Model.DisplayFilter)
+        {
+            <div id="product-filter" class="block product-filter-block clearfix">
+                <form class="filter-product-form" method="GET" action="@Url.Action("Products", "Filter")" data-multiselecturl="@Url.Action("ProductsMultiSelect", "Filter")">
+                    <input type="hidden" name="categoryID" value="@Model.Id" />
+                    <input type="hidden" name="path" value="@Request.Url.AbsolutePath" />
+                    <input type="hidden" name="pagesize" value="@Model.PagingFilteringContext.PageSize" />
+                    <input type="hidden" name="orderby" value="@Model.PagingFilteringContext.OrderBy" />
+                    <input type="hidden" name="viewmode" value="@Model.PagingFilteringContext.ViewMode" />
+                    <input type="hidden" name="filter" value="@Request.QueryString.Get("filter")" />
+                    <input type="hidden" name="filterMultiSelect" value="" />
+                </form>
+                <div class="block-title">
+                    @T("Filtering.FilterResults")
+                </div>
+                <div class="block-body listbox"></div>
+
+                <div id="product-filter-modal" class="modal fade">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><b>x</b></button>
+                                <h4 class="caption">Filter</h4>
+                            </div>
+                            <div class="modal-body"></div>
+                            <div class="modal-footer">
+                                <a href="javascript:void(0)" class="remove-checkmarks pull-left" rel="nofollow">@T("Products.Filter.RemoveCheckmarks")</a>
+                                <button class="btn btn-primary" data-dismiss="modal">@T("Common.OK")</button>
+                                <button class="btn btn-secondary" data-dismiss="modal">@T("Common.Cancel")</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+                $(function () {
+                    productFilter.init('#product-filter', '#product-filter-modal');
+                });
+            </script>
+        }
+
+        @if (ShowListOptions())
+        {
             @Html.Partial("_ProductListOptions", Model.PagingFilteringContext)
-		}
-		
+        }
+
         @*product list*@
         @Html.Widget("categorydetails_before_product_list")
 
-		<div class="product-list-container">
-			@if (Model.Products.Count > 0) {
-	           if (Model.PagingFilteringContext.ViewMode == "list") {
-				    @*list mode*@
-				    <div class="product-list">
-					    @foreach (var product in Model.Products)
+        <div class="product-list-container">
+            @if (Model.Products.Count > 0)
+            {
+                if (Model.PagingFilteringContext.ViewMode == "list")
+                {
+                    @*list mode*@
+                    <div class="product-list">
+                        @foreach (var product in Model.Products)
                         {
                             <article class="item-box details card p-a-1">
                                 @Html.Partial("_ProductBoxList", product)
                             </article>
                         }
-				    </div>       
-	           }
-	           else {
-				    @*grid mode*@
-				    <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 product-grid">
-						@foreach (var product in Model.Products)
-						{
-							<article class="card card-block card-shadow text-xs-center">
-								@Html.Partial("_ProductBox", product)
-							</article>
-						}
-				    </div>
-	           }
-           }
+                    </div>
+                }
+                else
+                {
+                    @*grid mode*@
+                    <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 product-grid">
+                        @foreach (var product in Model.Products)
+                        {
+                            <article class="card card-block card-shadow text-xs-center">
+                                @Html.Partial("_ProductBox", product)
+                            </article>
+                        }
+                    </div>
+                }
+            }
 
-			@Html.SmartStore().Pager(Model.PagingFilteringContext).Name("pagination-bottom").QueryParam("pagenumber")
-		</div>
+            @Html.SmartStore().Pager(Model.PagingFilteringContext).Name("pagination-bottom").QueryParam("pagenumber")
+        </div>
 
-		@if (Model.BottomDescription.HasValue())
-		{
-			<div class="category-description">
-				@Html.Raw(Html.CollapsedText(Model.BottomDescription))
-			</div>
-		}
+        @if (Model.BottomDescription.HasValue())
+        {
+            <div class="category-description">
+                @Html.Raw(Html.CollapsedText(Model.BottomDescription))
+            </div>
+        }
 
-		@*subcategories*@
-		@if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.Bottom)
-		{
-			@Html.Widget("categorydetails_before_subcategories")
-			@SubCategoryList()
-		}
+        @*subcategories*@
+        @if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.Bottom)
+        {
+            @Html.Widget("categorydetails_before_subcategories")
+            @SubCategoryList()
+        }
 
         @Html.Widget("categorydetails_bottom")
     </div>
+
 </div>
-
-@section right_top
-{
-    @Html.Widget("categorydetails_before_filters")
-
-    @*filtering*@
-	@if (Model.Products.Count > 0 && Model.DisplayFilter)
-    {
-		<div id="product-filter" class="block block-bordered product-filter-block">
-			<form class="filter-product-form" method="GET" action="@Url.Action("Products", "Filter")" data-multiselecturl="@Url.Action("ProductsMultiSelect", "Filter")">
-				<input type="hidden" name="categoryID" value="@Model.Id" />
-				<input type="hidden" name="path" value="@Request.Url.AbsolutePath" />
-				<input type="hidden" name="pagesize" value="@Model.PagingFilteringContext.PageSize" />
-				<input type="hidden" name="orderby" value="@Model.PagingFilteringContext.OrderBy" />
-				<input type="hidden" name="viewmode" value="@Model.PagingFilteringContext.ViewMode" />
-				<input type="hidden" name="filter" value="@Request.QueryString.Get("filter")" />
-				<input type="hidden" name="filterMultiSelect" value="" />
-			</form>
-			<div class="block-title">
-				@T("Filtering.FilterResults")
-			</div>
-			<div class="block-body listbox"></div>
-
-            <div id="product-filter-modal" class="modal hide fade" tabindex="-1">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><b>x</b></button>
-					<h4 class="caption">Filter</h4>
-				</div>
-                <div class="modal-body"></div>
-                <div class="modal-footer">
-					<a href="javascript:void(0)" class="remove-checkmarks" rel="nofollow">@T("Products.Filter.RemoveCheckmarks")</a>
-					<button class="btn btn-primary" data-dismiss="modal">@T("Common.OK")</button>
-					<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
-                </div>
-            </div>
-		</div>
-		<script type="text/javascript">
-			$(function () {
-				productFilter.init('#product-filter', '#product-filter-modal');
-			});
-		</script>
-	}
-}

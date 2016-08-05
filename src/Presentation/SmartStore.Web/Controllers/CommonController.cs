@@ -700,7 +700,8 @@ namespace SmartStore.Web.Controllers
 					return Url.RouteUrl("Topic", new { SystemName = x.Key });
 				});
 
-			return PartialView(model);
+            //return PartialView(model);
+            return PartialView("ServiceMenu", model);
         }
 
         [ChildActionOnly]

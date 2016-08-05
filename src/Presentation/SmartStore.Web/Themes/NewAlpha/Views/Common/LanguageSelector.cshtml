@@ -9,7 +9,7 @@
     var webHelper = EngineContext.Current.Resolve<IWebHelper>();
     
     <div id="language-selector" class="regional-selector">
-        <ul class="list-inline clearfix">
+        <ul class="list-unstyled clearfix">
             @foreach (var lang in Model.AvailableLanguages)
             {
                 <li class="list-inline-item@(Model.CurrentLanguageId == lang.Id ? " selected" : "")">

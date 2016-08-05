@@ -8,6 +8,10 @@
 @Html.Widget("header_menu_before")
 
 <div class="menubar">
+    <nav class="menu-group regional-selectors">
+        @Html.Action("LanguageSelector", "Common")
+        @Html.Action("CurrencySelector", "Common")
+    </nav>
     <nav class="menubar-group">
 
         <a class="menubar-link" href="@Url.RouteUrl("ProductSearch")">@T("Search")</a>
@@ -17,10 +21,19 @@
             <a class="menubar-link" href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
         }
 
-        @* TODO *@
-        <a class="menubar-link" href="#">Hilfe &amp; Service &nbsp;<i class="fa fa-caret-down"></i></a>
-        @*PrivateMessages
-        RecentlyAddedProducts*@
+        <div class="dropdown service-links">
+            <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Hilfe &amp; Service &nbsp;<i class="fa fa-caret-down"></i></a>
+
+            <div class="dropdown-menu" aria-labelledby="dLabel">
+                @Html.Action("InfoBlock", "Common", new { area = "" })
+            </div>
+        </div>
+
+        @*
+            TODO?
+            PrivateMessages
+            RecentlyAddedProducts
+        *@
 
 
         @if (!Model.DisplayAdminLink && Model.DisplayLoginLink)
@@ -43,19 +56,19 @@
         @if (Model.NewsEnabled)
         {
             <a class="menubar-link" href="@Url.RouteUrl("NewsArchive")">
-                News
+                @T("News")
             </a>
         }
         @if (Model.BlogEnabled)
         {
             <a class="menubar-link" href="@Url.RouteUrl("Blog")">
-                Blog
+                @T("Blog")
             </a>
         }
         @if (Model.ForumEnabled)
         {
             <a class="menubar-link" href="@Url.RouteUrl("Boards")">
-                Forum
+                @T("Forum.Forums")
             </a>
         }
     </nav>

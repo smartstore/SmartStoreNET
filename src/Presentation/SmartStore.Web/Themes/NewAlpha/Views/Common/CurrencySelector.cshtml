@@ -10,16 +10,16 @@
     var webHelper = EngineContext.Current.Resolve<IWebHelper>();
     
     <div  id="currency-selector" class="regional-selector">
-        <ul class="list-inline clearfix">
-        @foreach (var currency in Model.AvailableCurrencies)
-        {
-            var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeCurrency", new { customercurrency = currency.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null);
-            <li class="list-inline-item@(currency.Id == Model.CurrentCurrencyId ? " selected" : "")">
-                <a class="currency regional-label" href="@href" rel="tooltip nofollow" title="@currency.Name">
-                    @currency.Symbol
-                </a>
-            </li>
-        }
+        <ul class="list-unstyled clearfix">
+            @foreach (var currency in Model.AvailableCurrencies)
+            {
+                var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeCurrency", new { customercurrency = currency.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null);
+                <li class="list-inline-item@(currency.Id == Model.CurrentCurrencyId ? " selected" : "")">
+                    <a class="currency regional-label" href="@href" rel="tooltip nofollow" title="@currency.ISOCode">
+                        @currency.Symbol
+                    </a>
+                </li>
+            }
         </ul>
     </div>
 

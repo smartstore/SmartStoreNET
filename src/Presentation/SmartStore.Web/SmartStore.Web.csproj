@@ -1907,7 +1907,6 @@
     <Content Include="Themes\NewAlpha\Views\Common\PdfReceiptFooter.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Common\PdfReceiptHeader.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Common\Settings.cshtml" />
-    <Content Include="Themes\NewAlpha\Views\Common\ShippingInfo.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Common\ShopBar.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Common\StoreThemeSelector.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Common\TaxTypeSelector.cshtml" />
@@ -2018,7 +2017,6 @@
     <Content Include="Themes\NewAlpha\Views\Topic\TopicWidget.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Widget\TabWidgets.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Widget\WidgetsByZone.cshtml" />
-    <Content Include="Themes\NewAlpha\Views\Common\ShopBar - Kopieren.cshtml" />
     <Content Include="Themes\NewAlpha\Views\Shared\_GoogleFonts.cshtml" />
     <Content Include="Themes\NewAlpha\Content\_checkout.scss" />
     <None Include="Themes\NewAlpha\Content\_footer.scss" />
@@ -2028,6 +2026,7 @@
     <Content Include="Themes\NewAlpha\Views\Shared\_ProductList.cshtml" />
     <None Include="Themes\NewAlpha\Content\_pages.scss" />
     <Content Include="Themes\NewAlpha\Content\_rating.scss" />
+    <Content Include="Themes\NewAlpha\Views\Common\ServiceMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Themes\NewAlpha\Content\shared\select2\mixins\" />

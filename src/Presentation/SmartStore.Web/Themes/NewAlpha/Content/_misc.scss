@@ -66,6 +66,22 @@
 .block.product-tag-list .block-title {
     padding: 2rem 0 1rem 0;
 }
+.product-details-page #details-cnt > .line {
+	border-top: 1px solid #d5d5d5;
+}
+.product-details-page #details-cnt .line.alpha {
+	border: none;
+	padding-top: 0 !important;
+}
+.product-details-page #details-cnt > div {
+	padding: 10px 0;
+}
+.manufacturer-pics .manufacturer-item {
+	text-align: center;
+	padding: 10px;
+}
+
+
 
 
 
@@ -191,4 +207,156 @@ fieldset legend {
 }
 .star-rating {
     display: inline-block !important;
+}
+
+
+
+
+// temp: will probably not be needed in the final release
+
+.product-grid .btn-group .fa {
+    margin-right: 0 !important;
+}
+.product-box-button-bar {
+    position: absolute;
+    right: 0;
+    left: 0;
+    bottom: 10px;
+}
+.product-grid .product-box-big {
+    padding-bottom: 50px;
+}
+
+.price.text-success {
+    font-weight: bold;
+}
+
+
+
+//Tags
+.block-popular-tags li, 
+.block-popular-blogtags li {
+    display: inline;
+}
+
+// menu
+.dropdown.service-links {
+    display: inline;
+
+    a {
+        font-size: .8rem;
+    }
+}
+
+
+/* Regional Selectors
+================================================ */
+.menubar {
+    position: relative;
+}
+.regional-selectors {
+    position: absolute;
+    left: 0;
+}
+.regional-selector,
+.regional-selector li {
+	float: left;
+}
+
+#currency-selector {
+    margin: 10px 0 0 20px;
+
+    li {
+
+    }
+}
+
+.regional-selector .regional-label {
+    display: block;
+	border: 1px solid #808080;
+	background: #ccc;
+	color: #808080;
+	padding: 3px;
+	font-size: 12px;
+	line-height: 12px;
+	height: 18px;
+    min-width: 18px;
+	margin: 0 2px;
+	text-align: center;
+	vertical-align: middle;
+	text-decoration: none;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.regional-selector .selected .regional-label {
+	font-weight: bold;
+}
+
+.regional-selector .selected .regional-label,
+.regional-selector .regional-label:hover {
+    
+	background: $clr-blue-100;
+    
+}
+
+
+
+
+//filter
+.product-filter-block .filter-group {
+    clear: initial;
+    float: left;
+    min-width: 120px;
+}
+.product-filter-block .filter-group:hover {
+    background: transparent;
+}
+.product-filter-block .block-title {
+    font-size: 1.5rem;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 1rem;
+    
+}
+.filter-group {
+    margin-right: 5px;
+    .name span {
+        font-weight: bold;
+    }
+}
+.product-filter-block .filter-group:last-child {
+    xborder-bottom: 1px solid #ccc;
+}
+.product-filter-block .listbox {
+    background-color: transparent !important;
+}
+.applied-filter {
+    display: inline-block;
+}
+
+
+
+/* Sitemap
+================================================ */
+
+.sitemap-page .entity { 
+    margin: 5px 0 30px; 
+}
+.sitemap-page .topic-box,
+.sitemap-page .manufacturer-box,
+.sitemap-page .category-box,
+.sitemap-page .product-box {
+    text-align: center;
+    vertical-align:bottom;
+
+    .item {
+        text-align: left; 
+        margin: 3px 10px;
+        width: 180px;
+        border-bottom: 1px dotted #ADACAC;
+    }
+}
+
+
+.data-list-row {
+    margin-bottom: 2rem;
 }

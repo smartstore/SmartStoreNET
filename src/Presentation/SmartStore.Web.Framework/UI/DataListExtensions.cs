@@ -10,7 +10,7 @@ namespace SmartStore.Web.Framework.UI
     public static class DataListExtensions
     {
         public static IHtmlString DataList<T>(this HtmlHelper helper, IEnumerable<T> items, int columns,
-            Func<T, HelperResult> template, int gridColumns = 24)
+            Func<T, HelperResult> template, int gridColumns = 12)
             where T : class
         {
             if (items == null)
@@ -22,12 +22,12 @@ namespace SmartStore.Web.Framework.UI
             sb.Append("<div class='data-list data-list-grid'>");
 
             int cellIndex = 0;
-            string spanClass = String.Format("span{0}", gridColumns / columns);
+            string spanClass = String.Format("col-md-{0}", gridColumns / columns);
 
             foreach (T item in items)
             {
                 if (cellIndex == 0)
-                    sb.Append("<div class='data-list-row row-fluid'>");
+                    sb.Append("<div class='data-list-row row'>");
 
                 sb.Append("<div class='{0} data-list-item equalized-column' data-equalized-deep='true'>".FormatInvariant(spanClass));
                 sb.Append(template(item).ToHtmlString());

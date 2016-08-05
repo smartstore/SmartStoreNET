@@ -1,6 +1,4 @@
 ﻿@model ProductDetailsModel
-@using SmartStore.Core;
-@using SmartStore.Core.Domain.Common;
 @using SmartStore.Core.Domain.Orders;
 @using SmartStore.Core.Domain.Seo;
 @using SmartStore.Core.Domain.Catalog;
@@ -166,11 +164,14 @@
 
                 <div class="product-data col-md-6">
 
-                    @if (Model.DisplayAdminLink) { 
-						<a class="btn btn-secondary btn-sm btn-edit-product" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
-							<i class="fa fa-pencil-square-o"></i>
-							@T("Common.Catalog.EditProduct")
-						</a>
+                    @if (Model.DisplayAdminLink)
+                    {
+                        <div class="clearfix">
+                            <a class="btn btn-secondary btn-sm btn-edit-product pull-right" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
+                                <i class="fa fa-pencil-square-o"></i>
+                                @T("Common.Catalog.EditProduct")
+                            </a>
+                        </div>
                     }
                        
                     @Html.Widget("productdetails_overview_top")

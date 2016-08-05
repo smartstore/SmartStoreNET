@@ -5,7 +5,6 @@
 @{
     Layout = "~/Views/Shared/_ColumnsOne.cshtml";
 
-    //title
     Html.AddTitleParts(T("PageTitle.Sitemap").Text);
 }
 <div class="page sitemap-page">
@@ -22,48 +21,42 @@
                         <a href="@Url.RouteUrl("Topic", new { SystemName = @item.SystemName.ToLowerInvariant() })">@item.Title</a>
                     </div>
                 </div>
-            ))
-            </div>
-            <div class="clear">
+                ))
             </div>
         }
         @if (Model.Categories.Count > 0)
         {
             <div class="entity">
-                <h2>
-                    @T("Sitemap.Categories")</h2>
+                <h2>@T("Sitemap.Categories")</h2>
+
                 @(Html.DataList<CategoryModel>(Model.Categories, 4,
                 @<div class="category-box">
                     <div class="item">
                         <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })">@item.Name</a>
                     </div>
                 </div>
-            ))
-            </div>
-            <div class="clear">
+                ))
             </div>
         }
         @if (Model.Manufacturers.Count > 0)
         {
             <div class="entity">
-                <h2>
-                    @T("Sitemap.Manufacturers")</h2>
+                <h2>@T("Sitemap.Manufacturers")</h2>
+
                 @(Html.DataList<ManufacturerModel>(Model.Manufacturers, 4,
                 @<div class="manufacturer-box">
                     <div class="item">
                         <a href="@Url.RouteUrl("Manufacturer", new { SeName = item.SeName })">@item.Name</a>
                     </div>
                 </div>
-            ))
-            </div>
-            <div class="clear">
+                ))
             </div>
         }
         @if (Model.Products.Count > 0)
         {
             <div class="entity">
-                <h2>
-                    @T("Sitemap.Products")</h2>
+                <h2>@T("Sitemap.Products")</h2>
+
                 @(Html.DataList<ProductOverviewModel>(Model.Products, 4,
                 @<div class="product-box">
                     <div class="item">

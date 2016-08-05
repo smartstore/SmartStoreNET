@@ -232,8 +232,8 @@
         },
 
         moreLess: function () {
-        	var moreText = '<button class="btn btn-sm"><i class="fa fa-plus mini-button-icon"></i>' + Res['Products.Longdesc.More'] + '</button>';
-        	var lessText = '<button class="btn btn-sm"><i class="fa fa-minus mini-button-icon"></i>' + Res['Products.Longdesc.Less'] + '</button>';
+            var moreText = '<button class="btn btn-secondary-outline btn-sm"><i class="fa fa-plus mini-button-icon"></i>' + Res['Products.Longdesc.More'] + '</button>';
+            var lessText = '<button class="btn btn-secondary-outline btn-sm"><i class="fa fa-minus mini-button-icon"></i>' + Res['Products.Longdesc.Less'] + '</button>';
 
 			return this.each(function () {
             	var el = $(this),

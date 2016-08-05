@@ -1,25 +1,21 @@
 ﻿@model PollModel
 @using SmartStore.Web.Models.Polls;
-
 @{
     Html.AddScriptParts("~/Scripts/public.voting.js");
 }
-
-<div id="poll-block-@(Model.Id)" class="card poll-item equalized-column" data-equalized-deep="true">
-    <div class="card-header" data-equalized-part="name">
+<div id="poll-block-@(Model.Id)" class="@(Model.SystemKeyword.Equals("RightColumnPoll") ? "" : "card") poll-item equalized-column" data-equalized-deep="true">
+    <div class="@(Model.SystemKeyword.Equals("RightColumnPoll") ? "fs-h6 m-b-1" : "card-header")" data-equalized-part="name">
         @Model.Name
     </div>
     @if (Model.AlreadyVoted)
     {
-        <div class="poll-results card-block">
+        <div class="poll-results @(Model.SystemKeyword.Equals("RightColumnPoll") ? "" : "card-block")">
             @foreach (var item in Model.Answers)
             {
                 <div class="answer">
-                    <div class="vote-result-percent">@((item.PercentOfTotalVotes/100).ToString("#0.##%"))</div>
+                    <div class="vote-result-percent pull-right">@((item.PercentOfTotalVotes/100).ToString("#0.##%"))</div>
                     <div class="vote-result-line">@item.Name (@item.NumberOfVotes)</div>
-                    <div class="progress progress-info">
-                        <div class="bar fade in" style="width: @(Math.Round(item.PercentOfTotalVotes, 0))%"></div>
-                    </div>
+                    <progress class="progress progress-info" value="@(Math.Round(item.PercentOfTotalVotes, 0))" max="100"></progress>
                 </div>
             }
             <div class="poll-total-votes text-success">@string.Format(T("Polls.TotalVotes").Text, Model.TotalVotes)</div>
@@ -27,7 +23,7 @@
     }
     else
     {
-        <div class="poll-take-poll card-block">
+        <div class="poll-take-poll @(Model.SystemKeyword.Equals("RightColumnPoll") ? "" : "card-block")">
             <div data-equalized-part="data">
                 @foreach (var item in Model.Answers)
                 {

@@ -6,10 +6,11 @@
 @using System.Globalization;
 
 @if (Model.AvailableCurrencies.Count > 1)
-{    
+{
     var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-    
-    <div  id="currency-selector" class="regional-selector">
+    var activeCurr = Model.AvailableCurrencies.Where(x => x.Id == Model.CurrentCurrencyId).FirstOrDefault();
+
+    @*<div  id="currency-selector" class="regional-selector">
         <ul class="list-unstyled clearfix">
             @foreach (var currency in Model.AvailableCurrencies)
             {
@@ -21,6 +22,23 @@
                 </li>
             }
         </ul>
-    </div>
+    </div>*@
 
+    <div class="dropdown currency-selector">
+        <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+            @activeCurr.ISOCode (@activeCurr.Symbol)
+            <i class="fa fa-caret-down"></i>
+        </a>
+
+        <div class="dropdown-menu" aria-labelledby="dLabel">
+            @foreach (var curr in Model.AvailableCurrencies)
+            {
+                var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeCurrency", new { customercurrency = curr.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null);
+
+                <a href="@href" class="dropdown-item" title="@curr.Name" rel="tooltip nofollow">
+                    @curr.Name
+                </a>
+            }
+        </div>
+    </div>
 }

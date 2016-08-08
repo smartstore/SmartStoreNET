@@ -30,7 +30,7 @@
                             <div class="item-box card card-block">
                                 <div class="address-item">
                                     <div class="select-button">
-                                        <button class="btn btn-block select-shipping-address-button" onclick="setLocation('@Url.Action("SelectShippingAddress", new { addressId = item.Id })    ')">
+                                        <button class="btn btn-secondary btn-block select-shipping-address-button" onclick="setLocation('@Url.Action("SelectShippingAddress", new { addressId = item.Id })    ')">
                                             @T("Checkout.ShipToThisAddress")
                                         </button>
                                     </div>
@@ -146,11 +146,4 @@
         </div>
         @Html.Widget("checkout_shipping_address_bottom")
     </div>
-
-    @*<div class="order-summary-title">
-        @T("Checkout.OrderSummary")
-    </div>
-    <div class="order-summary-body">
-        @Html.Action("OrderSummary", "ShoppingCart")
-    </div>*@
 </div>

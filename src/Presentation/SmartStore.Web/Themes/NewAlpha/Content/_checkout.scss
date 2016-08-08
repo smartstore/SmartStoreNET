@@ -203,10 +203,19 @@
 /* Checkout Confirm
 ================================================ */
 
-.checkout-confirm-page .terms-of-service {
+.terms-of-service {
 	margin: 10px 0;
 }
-
+.reward-points.alert,
+.terms-of-service.alert {
+    padding-bottom: 4px !important;
+    a.read {
+        font-weight: bold;
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}
 .checkout-data .change-checkout-data {
 	font-weight: normal;
 	text-transform: none;
@@ -227,7 +236,6 @@
     background: #efefef;
     margin: 0 !important;
     padding-bottom: 20px;
-    //.border-radius(@var_ContainerRadius @var_ContainerRadius 0 0);
 }
 .checkout-confirm-page .checkout-data > .confirm-order {
     border: 1px solid #bbb;
@@ -235,7 +243,6 @@
     border-top: none;
     padding: 20px;
     margin-bottom: 30px;
-    //.border-radius(0 0 @var_ContainerRadius @var_ContainerRadius);
 }
 .checkout-confirm-page .confirm-order-legal-hint {
     border-left: 1px solid #bbb !important;
@@ -243,19 +250,6 @@
     margin: auto;
     text-align: center;
     //.border-radius(0);
-}
-
-
-/* Terms of service
-================================================ */
-.terms-of-service.alert {
-    padding-bottom: 4px !important;
-    a.read {
-        font-weight: bold;
-        &:hover {
-            cursor: pointer;
-        }
-    }
 }
 
 

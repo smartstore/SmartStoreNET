@@ -7,8 +7,9 @@
 @if (Model.AvailableLanguages.Count > 1)
 {
     var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-    
-    <div id="language-selector" class="regional-selector">
+    var activeLang = Model.AvailableLanguages.Where(x => x.Id == Model.CurrentLanguageId).FirstOrDefault();
+
+    @*<div id="language-selector" class="regional-selector">
         <ul class="list-unstyled clearfix">
             @foreach (var lang in Model.AvailableLanguages)
             {
@@ -28,6 +29,22 @@
                 </li>
             }
         </ul>
+    </div>*@
+
+    <div class="dropdown language-selector">
+        <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+            @activeLang.Name
+            <i class="fa fa-caret-down"></i>
+        </a>
+        
+        <div class="dropdown-menu" aria-labelledby="dLabel">
+            @foreach (var lang in Model.AvailableLanguages)
+            {
+                var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + Url.Encode(Model.ReturnUrls[lang.SeoCode]), null);
+                <a href="@href" title="@lang.NativeName" rel="tooltip nofollow" class="dropdown-item">
+                    @lang.Name
+                </a>
+            }
+        </div>
     </div>
-   
 }

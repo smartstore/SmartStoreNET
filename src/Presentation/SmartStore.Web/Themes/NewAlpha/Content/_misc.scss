@@ -33,9 +33,22 @@
     margin-bottom: 2rem;
 }
 
-// categories
-.category-grid {
-
+// delivery times
+.delivery-time {
+	text-align: center;
+	padding-bottom: 5px;
+	@include smaller();
+	.delivery-time-label {
+		padding-right: 4px;
+		font-weight: bold;
+	}
+	.delivery-time-color {
+		height: 8px;
+		width: 32px;
+		display: inline-block;
+        border: 1px solid rgba(0,0,0, .25);
+        background-image: url('images/deliv-bg-aero.png');
+	}
 }
 
 //
@@ -240,67 +253,12 @@ fieldset legend {
 }
 
 // menu
-.dropdown.service-links {
+.dropdown {
     display: inline;
-
     a {
         font-size: .8rem;
     }
 }
-
-
-/* Regional Selectors
-================================================ */
-.menubar {
-    position: relative;
-}
-.regional-selectors {
-    position: absolute;
-    left: 0;
-}
-.regional-selector,
-.regional-selector li {
-	float: left;
-}
-
-#currency-selector {
-    margin: 10px 0 0 20px;
-
-    li {
-
-    }
-}
-
-.regional-selector .regional-label {
-    display: block;
-	border: 1px solid #808080;
-	background: #ccc;
-	color: #808080;
-	padding: 3px;
-	font-size: 12px;
-	line-height: 12px;
-	height: 18px;
-    min-width: 18px;
-	margin: 0 2px;
-	text-align: center;
-	vertical-align: middle;
-	text-decoration: none;
-	font-family: Arial, Helvetica, sans-serif;
-}
-
-.regional-selector .selected .regional-label {
-	font-weight: bold;
-}
-
-.regional-selector .selected .regional-label,
-.regional-selector .regional-label:hover {
-    
-	background: $clr-blue-100;
-    
-}
-
-
-
 
 //filter
 .product-filter-block .filter-group {
@@ -322,9 +280,6 @@ fieldset legend {
     .name span {
         font-weight: bold;
     }
-}
-.product-filter-block .filter-group:last-child {
-    xborder-bottom: 1px solid #ccc;
 }
 .product-filter-block .listbox {
     background-color: transparent !important;
@@ -359,4 +314,8 @@ fieldset legend {
 
 .data-list-row {
     margin-bottom: 2rem;
+}
+
+.nav-category a {
+    font-size: .825rem;
 }

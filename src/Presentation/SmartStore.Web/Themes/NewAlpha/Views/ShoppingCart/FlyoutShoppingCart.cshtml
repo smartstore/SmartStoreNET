@@ -111,7 +111,7 @@
         <div class="buttons clearfix">
             @if (Model.DisplayShoppingCartButton)
             {
-                <a class="btn btn-primary pull-left" href="@Url.RouteUrl("ShoppingCart")">
+                <a class="btn btn-primary btn-sm pull-left" href="@Url.RouteUrl("ShoppingCart")">
                     @T("ShoppingCart.Mini.ViewCart")
                     <i class="fa fa-shopping-cart" style="display: none"></i>
                 </a>    
@@ -127,7 +127,7 @@
                 {
                     checkoutUrl = Url.RouteUrl("Checkout");
                 }
-                <a class="btn btn-warning pull-right" href="@checkoutUrl">
+                <a class="btn btn-warning btn-sm pull-right" href="@checkoutUrl">
                     @T("Checkout.Button")&nbsp;
                     <i class="fa fa-caret-right"></i>
                 </a>

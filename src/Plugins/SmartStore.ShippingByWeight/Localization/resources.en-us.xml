@@ -62,6 +62,12 @@
   <LocaleResource Name="Fields.CalculatePerWeightUnit.Hint">
     <Value>If you check this option, then rates are multiplied per weight unit (lb, kg, etc). This option is used for the fixed rates (without percents).</Value>
   </LocaleResource>
+  <LocaleResource Name="Fields.IncludeWeightOfFreeShippingProducts">
+    <Value>Include weight of free shipping products</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.IncludeWeightOfFreeShippingProducts.Hint">
+    <Value>Specifies whether to include the weight of free shipping products in the calculation.</Value>
+  </LocaleResource>
 	<LocaleResource Name="Fields.Store">
 		<Value>Store</Value>
 	</LocaleResource>

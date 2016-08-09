@@ -44,7 +44,10 @@ namespace SmartStore.ShippingByWeight.Models
         [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.CalculatePerWeightUnit")]
         public bool CalculatePerWeightUnit { get; set; }
 
-        public string PrimaryStoreCurrencyCode { get; set; }
+		[SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.IncludeWeightOfFreeShippingProducts")]
+		public bool IncludeWeightOfFreeShippingProducts { get; set; }
+
+		public string PrimaryStoreCurrencyCode { get; set; }
         public string BaseWeightIn { get; set; }
 
 		public int GridPageSize { get; set; }

@@ -15,6 +15,7 @@
 * Added projection to control the export of individually visible associated products
 * #1002 Web API: Add support for addresses and customer roles navigation property of customer entity
 * #966 Implement new tax calculation logic for shipping and payment fees
+* #922 New option whether to include the weight of free shipping products in shipping by weight calculation
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation

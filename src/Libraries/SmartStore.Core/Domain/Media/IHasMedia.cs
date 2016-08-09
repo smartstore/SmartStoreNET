@@ -1,6 +1,6 @@
 ﻿namespace SmartStore.Core.Domain.Media
 {
-	public interface IMediaStorageSupported
+	public interface IHasMedia
 	{
 		/// <summary>
 		/// Gets or sets the binary data identifier

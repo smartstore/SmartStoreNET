@@ -6,7 +6,7 @@ namespace SmartStore.Core.Domain.Messages
 	/// <summary>
 	/// Represents an e-mail attachment
 	/// </summary>
-	public partial class QueuedEmailAttachment : BaseEntity, IMediaStorageSupported
+	public partial class QueuedEmailAttachment : BaseEntity, IHasMedia
 	{
 		/// <summary>
 		/// Gets or sets the queued email identifier

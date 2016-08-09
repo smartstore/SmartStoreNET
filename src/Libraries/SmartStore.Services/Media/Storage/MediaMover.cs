@@ -10,7 +10,7 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Media.Storage
 {
-	public class MediaStorageMover : IMediaStorageMover
+	public class MediaMover : IMediaMover
 	{
 		private const int PAGE_SIZE = 100;
 
@@ -20,7 +20,7 @@ namespace SmartStore.Services.Media.Storage
 		private readonly ICommonServices _services;
 		private readonly ILogger _logger;
 
-		public MediaStorageMover(
+		public MediaMover(
 			IRepository<Picture> pictureRepository,
 			IRepository<Download> downloadRepository,
 			IRepository<QueuedEmailAttachment> queuedEmailAttachmentRepository,
@@ -38,7 +38,7 @@ namespace SmartStore.Services.Media.Storage
 
 		public Localizer T { get; set; }
 
-		protected virtual void PageEntities<TEntity>(IOrderedQueryable<TEntity> query, Action<TEntity> moveEntity) where TEntity : BaseEntity, IMediaStorageSupported
+		protected virtual void PageEntities<TEntity>(IOrderedQueryable<TEntity> query, Action<TEntity> moveEntity) where TEntity : BaseEntity, IHasMedia
 		{
 			var pageIndex = 0;
 			IPagedList<TEntity> entities = null;
@@ -71,10 +71,10 @@ namespace SmartStore.Services.Media.Storage
 
 			var success = false;
 			var utcNow = DateTime.UtcNow;
-			var context = new MediaStorageMoverContext(sourceProvider.Metadata.SystemName, targetProvider.Metadata.SystemName);
+			var context = new MediaMoverContext(sourceProvider.Metadata.SystemName, targetProvider.Metadata.SystemName);
 
-			var source = sourceProvider.Value as IMovableMediaSupported;
-			var target = targetProvider.Value as IMovableMediaSupported;
+			var source = sourceProvider.Value as ISupportsMediaMoving;
+			var target = targetProvider.Value as ISupportsMediaMoving;
 
 			// source and target must support media storage moving
 			if (source == null)
@@ -159,8 +159,8 @@ namespace SmartStore.Services.Media.Storage
 			}
 
 			// inform both provider about ending
-			source.OnMoved(context, success);
-			target.OnMoved(context, success);
+			source.OnCompleted(context, success);
+			target.OnCompleted(context, success);
 
 			if (success && context.ShrinkDatabase)
 			{

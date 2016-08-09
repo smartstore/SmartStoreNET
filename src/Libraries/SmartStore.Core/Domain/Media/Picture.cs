@@ -7,7 +7,7 @@ using SmartStore.Core.Domain.Catalog;
 namespace SmartStore.Core.Domain.Media
 {
 	[DataContract]
-	public partial class Picture : BaseEntity, ITransient, IMediaStorageSupported
+	public partial class Picture : BaseEntity, ITransient, IHasMedia
 	{
 		private ICollection<ProductPicture> _productPictures;
 

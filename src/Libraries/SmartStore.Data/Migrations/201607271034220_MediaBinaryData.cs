@@ -20,7 +20,7 @@ namespace SmartStore.Data.Migrations
 			SmartObjectContext context,
 			DbSet<BinaryData> binaryDatas,
 			IOrderedQueryable<TEntity> query,
-			Action<TEntity> moveEntity) where TEntity : BaseEntity, IMediaStorageSupported
+			Action<TEntity> moveEntity) where TEntity : BaseEntity, IHasMedia
 		{
 			var pageIndex = 0;
 			IPagedList<TEntity> entities = null;

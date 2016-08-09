@@ -72,7 +72,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICommonServices _services;
 		private readonly IProviderManager _providerManager;
 		private readonly PluginMediator _pluginMediator;
-		private readonly IMediaStorageMover _mediaStorageMover;
+		private readonly IMediaMover _mediaMover;
 
 		private StoreDependingSettingHelper _storeDependingSettings;
 		private IDisposable _settingsWriteBatch;
@@ -102,7 +102,7 @@ namespace SmartStore.Admin.Controllers
 			ICommonServices services,
 			IProviderManager providerManager,
 			PluginMediator pluginMediator,
-			IMediaStorageMover mediaStorageMover)
+			IMediaMover mediaMover)
         {
             this._countryService = countryService;
             this._stateProvinceService = stateProvinceService;
@@ -124,7 +124,7 @@ namespace SmartStore.Admin.Controllers
 			this._services = services;
 			this._providerManager = providerManager;
 			this._pluginMediator = pluginMediator;
-			this._mediaStorageMover = mediaStorageMover;
+			this._mediaMover = mediaMover;
         }
 
 		#endregion
@@ -885,7 +885,7 @@ namespace SmartStore.Admin.Controllers
 			var source = _providerManager.GetProvider<IMediaStorageProvider>(currentStorageProvider);
 			var target = _providerManager.GetProvider<IMediaStorageProvider>(targetProvider);
 
-			var success = _mediaStorageMover.Move(source, target);
+			var success = _mediaMover.Move(source, target);
 
 			if (success)
 			{

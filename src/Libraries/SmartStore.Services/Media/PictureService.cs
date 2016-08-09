@@ -71,6 +71,7 @@ namespace SmartStore.Services.Media
 		protected virtual string GetDefaultImageFileName(PictureType defaultPictureType = PictureType.Entity)
 		{
 			string defaultImageFileName;
+
 			switch (defaultPictureType)
 			{
 				case PictureType.Entity:

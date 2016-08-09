@@ -8,7 +8,7 @@ namespace SmartStore.Core.Domain.Media
     /// Represents a download
     /// </summary>
     [DataContract]
-	public partial class Download : BaseEntity, ITransient, IMediaStorageSupported
+	public partial class Download : BaseEntity, ITransient, IHasMedia
 	{		
 		/// <summary>
         /// Gets or sets a GUID

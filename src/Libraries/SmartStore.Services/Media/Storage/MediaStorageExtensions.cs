@@ -13,11 +13,11 @@ namespace SmartStore.Services.Media.Storage
 		/// </summary>
 		/// <param name="picture">Picture entity</param>
 		/// <returns>Media storage item</returns>
-		public static MediaStorageItem ToMedia(this Picture picture)
+		public static MediaItem ToMedia(this Picture picture)
 		{
 			Guard.ArgumentNotNull(() => picture);
 
-			var media = new MediaStorageItem
+			var media = new MediaItem
 			{
 				Entity = picture,
 				Path = "Media",
@@ -32,11 +32,11 @@ namespace SmartStore.Services.Media.Storage
 		/// </summary>
 		/// <param name="download">Download entity</param>
 		/// <returns>Media storage item</returns>
-		public static MediaStorageItem ToMedia(this Download download)
+		public static MediaItem ToMedia(this Download download)
 		{
 			Guard.ArgumentNotNull(() => download);
 
-			var media = new MediaStorageItem
+			var media = new MediaItem
 			{
 				Entity = download,
 				MimeType = download.ContentType,
@@ -52,11 +52,11 @@ namespace SmartStore.Services.Media.Storage
 		/// </summary>
 		/// <param name="attachment">Queued email attachment</param>
 		/// <returns>Media storage item</returns>
-		public static MediaStorageItem ToMedia(this QueuedEmailAttachment attachment)
+		public static MediaItem ToMedia(this QueuedEmailAttachment attachment)
 		{
 			Guard.ArgumentNotNull(() => attachment);
 
-			var media = new MediaStorageItem
+			var media = new MediaItem
 			{
 				Entity = attachment,
 				MimeType = attachment.MimeType,
@@ -72,7 +72,7 @@ namespace SmartStore.Services.Media.Storage
 		/// </summary>
 		/// <param name="media">Media storage item</param>
 		/// <returns>File name including extension</returns>
-		public static string GetFileName(this MediaStorageItem media)
+		public static string GetFileName(this MediaItem media)
 		{
 			if (media != null)
 			{

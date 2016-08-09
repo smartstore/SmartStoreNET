@@ -8,7 +8,7 @@ namespace SmartStore.Services.Media.Storage
 	[SystemName("MediaStorage.SmartStoreDatabase")]
 	[FriendlyName("Database")]
 	[DisplayOrder(0)]
-	public class DatabaseMediaStorageProvider : IMediaStorageProvider, IMovableMediaSupported
+	public class DatabaseMediaStorageProvider : IMediaStorageProvider, ISupportsMediaMoving
 	{
 		private readonly IDbContext _dbContext;
 		private readonly IBinaryDataService _binaryDataService;
@@ -26,7 +26,7 @@ namespace SmartStore.Services.Media.Storage
 			get { return "MediaStorage.SmartStoreDatabase"; }
 		}
 
-		public byte[] Load(MediaStorageItem media)
+		public byte[] Load(MediaItem media)
 		{
 			Guard.ArgumentNotNull(() => media);
 
@@ -38,7 +38,7 @@ namespace SmartStore.Services.Media.Storage
 			return new byte[0];
 		}
 
-		public void Save(MediaStorageItem media, byte[] data)
+		public void Save(MediaItem media, byte[] data)
 		{
 			Guard.ArgumentNotNull(() => media);
 
@@ -86,23 +86,20 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
-		public void Remove(params MediaStorageItem[] medias)
+		public void Remove(params MediaItem[] medias)
 		{
-			if (medias != null)
+			foreach (var media in medias)
 			{
-				foreach (var media in medias)
+				if ((media.Entity.BinaryDataId ?? 0) != 0)
 				{
-					if ((media.Entity.BinaryDataId ?? 0) != 0)
-					{
-						// this also nulls media.Entity.BinaryDataId
-						_binaryDataService.DeleteBinaryData(media.Entity.BinaryData);
-					}
+					// this also nulls media.Entity.BinaryDataId
+					_binaryDataService.DeleteBinaryData(media.Entity.BinaryData);
 				}
 			}
 		}
 
 
-		public void MoveTo(IMovableMediaSupported target, MediaStorageMoverContext context, MediaStorageItem media)
+		public void MoveTo(ISupportsMediaMoving target, MediaMoverContext context, MediaItem media)
 		{
 			Guard.ArgumentNotNull(() => target);
 			Guard.ArgumentNotNull(() => context);
@@ -111,7 +108,7 @@ namespace SmartStore.Services.Media.Storage
 			if (media.Entity.BinaryData != null)
 			{
 				// let target store data (into a file for example)
-				target.StoreMovingData(context, media, media.Entity.BinaryData.Data);
+				target.Receive(context, media, media.Entity.BinaryData.Data);
 
 				// remove picture binary from DB
 				try
@@ -126,7 +123,7 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
-		public void StoreMovingData(MediaStorageMoverContext context, MediaStorageItem media, byte[] data)
+		public void Receive(MediaMoverContext context, MediaItem media, byte[] data)
 		{
 			Guard.ArgumentNotNull(() => context);
 			Guard.ArgumentNotNull(() => media);
@@ -139,7 +136,7 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
-		public void OnMoved(MediaStorageMoverContext context, bool succeeded)
+		public void OnCompleted(MediaMoverContext context, bool succeeded)
 		{
 			// nothing to do
 		}

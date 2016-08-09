@@ -8,12 +8,11 @@ namespace SmartStore.Services.Media.Storage
 	[SystemName("MediaStorage.SmartStoreFileSystem")]
 	[FriendlyName("File system")]
 	[DisplayOrder(1)]
-	public class FileSystemMediaStorageProvider : IMediaStorageProvider, IMovableMediaSupported
+	public class FileSystemMediaStorageProvider : IMediaStorageProvider, ISupportsMediaMoving
 	{
 		private readonly IFileSystem _fileSystem;
 
-		public FileSystemMediaStorageProvider(
-			IFileSystem fileSystem)
+		public FileSystemMediaStorageProvider(IFileSystem fileSystem)
 		{
 			_fileSystem = fileSystem;
 		}
@@ -23,27 +22,27 @@ namespace SmartStore.Services.Media.Storage
 			get { return "MediaStorage.SmartStoreFileSystem"; }
 		}
 
-		protected string GetPicturePath(MediaStorageItem media)
+		protected string GetPicturePath(MediaItem media)
 		{
 			Guard.ArgumentNotEmpty(() => media.Path);
 
 			return _fileSystem.Combine(media.Path, media.GetFileName());
 		}
 
-		public byte[] Load(MediaStorageItem media)
+		public byte[] Load(MediaItem media)
 		{
-			Guard.ArgumentNotNull(() => media);
+			Guard.NotNull(media, nameof(media));
 
 			var filePath = GetPicturePath(media);
 
 			return (_fileSystem.ReadAllBytes(filePath) ?? new byte[0]);
 		}
 
-		public void Save(MediaStorageItem media, byte[] data)
+		public void Save(MediaItem media, byte[] data)
 		{
 			Guard.ArgumentNotNull(() => media);
 
-			// TODO(?): if the new file extension differs from the old one then the old file never gets deleted
+			// TODO: (?) if the new file extension differs from the old one then the old file never gets deleted
 
 			var filePath = GetPicturePath(media);
 
@@ -57,21 +56,18 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
-		public void Remove(params MediaStorageItem[] medias)
+		public void Remove(params MediaItem[] medias)
 		{
-			if (medias != null)
+			foreach (var media in medias)
 			{
-				foreach (var media in medias)
-				{
-					var filePath = GetPicturePath(media);
+				var filePath = GetPicturePath(media);
 
-					_fileSystem.DeleteFile(filePath);
-				}
+				_fileSystem.DeleteFile(filePath);
 			}
 		}
 
 
-		public void MoveTo(IMovableMediaSupported target, MediaStorageMoverContext context, MediaStorageItem media)
+		public void MoveTo(ISupportsMediaMoving target, MediaMoverContext context, MediaItem media)
 		{
 			Guard.ArgumentNotNull(() => target);
 			Guard.ArgumentNotNull(() => context);
@@ -83,13 +79,13 @@ namespace SmartStore.Services.Media.Storage
 			var data = _fileSystem.ReadAllBytes(filePath);
 
 			// let target store data (into database for example)
-			target.StoreMovingData(context, media, data);
+			target.Receive(context, media, data);
 
 			// remember file path: we must be able to rollback IO operations on transaction failure
 			context.AffectedFiles.Add(filePath);
 		}
 
-		public void StoreMovingData(MediaStorageMoverContext context, MediaStorageItem media, byte[] data)
+		public void Receive(MediaMoverContext context, MediaItem media, byte[] data)
 		{
 			Guard.ArgumentNotNull(() => context);
 			Guard.ArgumentNotNull(() => media);
@@ -105,7 +101,7 @@ namespace SmartStore.Services.Media.Storage
 			}
 		}
 
-		public void OnMoved(MediaStorageMoverContext context, bool succeeded)
+		public void OnCompleted(MediaMoverContext context, bool succeeded)
 		{
 			if (context.AffectedFiles.Any())
 			{

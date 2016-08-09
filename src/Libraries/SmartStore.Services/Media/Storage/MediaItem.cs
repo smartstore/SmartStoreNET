@@ -2,12 +2,12 @@
 
 namespace SmartStore.Services.Media.Storage
 {
-	public partial class MediaStorageItem
+	public partial class MediaItem
 	{
 		/// <summary>
 		/// Entity of the media storage item
 		/// </summary>
-		public IMediaStorageSupported Entity { get; set; }
+		public IHasMedia Entity { get; set; }
 
 		/// <summary>
 		/// Storage path

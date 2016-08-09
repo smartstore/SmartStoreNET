@@ -7,6 +7,7 @@
 * ECB currency exchange rate provider now cross calculates rates based on euro rates
 * BeezUP: Exports the product weight
 * Payone: Replace client API by Payone iFrame solution. Allows credit card payment compliant with PCI DSS, SAQ A.
+* Updated Elmar shop info XML from version 1.1 to 2.0
 
 ### New Features
 * Added option to skip shipping method selection in checkout process when only one shipping method is active

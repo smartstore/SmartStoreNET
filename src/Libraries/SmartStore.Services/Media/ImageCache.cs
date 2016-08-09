@@ -120,7 +120,7 @@ namespace SmartStore.Services.Media
 				}
 			}
 
-			return root.TrimEnd('/', '\\') + publicUrl;
+			return root.TrimEnd('/', '\\') + publicUrl.EnsureStartsWith("/");
 		}
 
 		public virtual void DeleteCachedImages(Picture picture)

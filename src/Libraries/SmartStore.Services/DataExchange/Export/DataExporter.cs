@@ -1084,6 +1084,7 @@ namespace SmartStore.Services.DataExchange.Export
 			var publicDeployment = ctx.Request.Profile.Deployments.FirstOrDefault(x => x.DeploymentType == ExportDeploymentType.PublicFolder);
 			ctx.ExecuteContext.HasPublicDeployment = (publicDeployment != null);
 			ctx.ExecuteContext.PublicFolderPath = publicDeployment.GetDeploymentFolder(true);
+			ctx.ExecuteContext.PublicFolderUrl = publicDeployment.GetPublicFolderUrl(_services, ctx.Store);
 
 			var fileExtension = (ctx.Request.Provider.Value.FileExtension.HasValue() ? ctx.Request.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".") : "");
 

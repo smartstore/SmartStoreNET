@@ -242,7 +242,7 @@ namespace SmartStore.Services.Orders
 			if (order.RewardPointsWereAdded)
 				return;
 
-			// Trucate same as Floor for positive amounts
+			// Truncate same as Floor for positive amounts
 			var points = (int)Math.Truncate((amount ?? order.OrderTotal) / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
             if (points == 0)
                 return;

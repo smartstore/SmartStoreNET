@@ -26,13 +26,13 @@
 		}
 		@if (Model.ShowSku)
 		{
-			<td class="nobr">
+			<td class="text-nowrap">
 				@item.Sku
 			</td>
 		}
 		@if (Model.ShowProductImages)
 		{
-			<td class="productpicture nobr">
+			<td class="productpicture text-nowrap">
 				@if (item.Picture.ImageUrl.HasValue())
 				{
 					<img class="img-polaroid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
@@ -51,7 +51,7 @@
 			
 			@if (!String.IsNullOrEmpty(item.AttributeInfo))
 			{
-				<div class="attributes muted">
+				<div class="attributes text-muted">
 					@Html.Raw(item.AttributeInfo)
 				</div>
 			}
@@ -71,10 +71,10 @@
 				</div>
 			}
 		</td>
-		<td class="unit-price nobr">
+		<td class="unit-price text-nowrap">
 			<span class="product-unit-price">@item.UnitPrice</span>
 		</td>
-		<td class="nobr">
+		<td class="text-nowrap">
 			@if (Model.IsEditable)
 			{
 				if (item.AllowedQuantities.Count > 0)
@@ -96,7 +96,7 @@
 				<span>@item.Quantity</span>
 			}
 		</td>
-		<td class="nobr text-success omega">
+		<td class="text-nowrap text-success omega">
 			<span class="product-subtotal">@item.SubTotal</span>
 			@if (!String.IsNullOrEmpty(item.Discount))
 			{
@@ -167,7 +167,7 @@
 							}
 							@if (!String.IsNullOrEmpty(item.AttributeInfo))
 							{
-								<div class="bundle-item-attribute-info muted">
+								<div class="bundle-item-attribute-info text-muted">
 									@Html.Raw(item.AttributeInfo)
 								</div>
 							}
@@ -183,10 +183,10 @@
 						</div>
 					</div>
 				</td>
-				<td class="unit-price nobr">
+				<td class="unit-price text-nowrap">
 					@if (!String.IsNullOrWhiteSpace(item.BundleItem.PriceWithDiscount))
 					{
-						<span class="muted">
+						<span class="text-muted">
 							@Html.Raw(item.BundleItem.PriceWithDiscount)
 						</span>
 					}
@@ -195,10 +195,10 @@
 						<text>&nbsp;</text>
 					}
 				</td>
-				<td class="nobr">
+				<td class="text-nowrap">
 					&nbsp;
 				</td>
-				<td class="nobr text-success omega">
+				<td class="text-nowrap text-success omega">
 					&nbsp;
 				</td>
 			</tr>
@@ -240,7 +240,7 @@
                                 @if (Model.DisplayAddToCart)
                                 {
                                     <th>
-                                        <span class="nobr">
+                                        <span class="text-nowrap">
                                             @T("ShoppingCart.AddToCart")
                                         </span>
                                     </th>

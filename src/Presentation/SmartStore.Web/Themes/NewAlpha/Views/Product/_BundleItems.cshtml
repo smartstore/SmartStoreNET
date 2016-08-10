@@ -69,7 +69,7 @@
 
                     @if(item.ProductPrice.BundleItemShowBasePrice == true)
                     { 
-					    <div class="base-price muted@(String.IsNullOrWhiteSpace(item.BasePriceInfo) ? " hide fade" : "")">
+					    <div class="base-price text-muted@(String.IsNullOrWhiteSpace(item.BasePriceInfo) ? " hide fade" : "")">
 						    @item.BasePriceInfo
 					    </div>
                     }
@@ -78,7 +78,7 @@
 			
 			@if (!String.IsNullOrEmpty(item.AttributeInfo))
 			{
-				<div class="bundle-item-attribute-info muted">
+				<div class="bundle-item-attribute-info text-muted">
 					@Html.Raw(item.AttributeInfo)
 				</div>
 			}

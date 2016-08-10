@@ -11,8 +11,6 @@
     @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
 }
 <div class="page account-page customer-info-page">
-    
-    @*<h4 class="muted">@T("Account.MyAccount")</h4>*@
 
     <div class="page-title">
         <h1>@T("Account.CustomerInfo")</h1>
@@ -170,7 +168,7 @@
                             @Html.LabelFor(model => model.VatNumber, new { @class = "col-sm-3 form-control-label", @for = "VatNumber" })
                             <div class="col-sm-9">
                                 @Html.TextBoxFor(model => model.VatNumber, new { @class = "form-control", placeholder = "Optional" })&nbsp;&nbsp;&nbsp;@Model.VatNumberStatusNote
-                                <span class="help-block muted vat-note">@T("Account.Fields.VatNumber.Note")</span>
+                                <span class="help-block text-muted vat-note">@T("Account.Fields.VatNumber.Note")</span>
                             </div>
                         </div>
                     }

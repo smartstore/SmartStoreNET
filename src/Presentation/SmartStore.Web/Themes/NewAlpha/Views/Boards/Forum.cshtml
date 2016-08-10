@@ -38,7 +38,7 @@
             @if (Model.ForumFeedsEnabled)
             {
                 <a href="@Url.Action("ForumRSS", new { id = @Model.Id })" class="link-rss" title="@T("Forum.ForumRSSLinkTitle")" rel="tooltip">
-                    <i class="fa fa-rss muted"></i>
+                    <i class="fa fa-rss text-muted"></i>
                     @T("Forum.RSS")
                 </a>
             }
@@ -148,7 +148,7 @@
                         @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
                         
                         <div>
-                            <div class="topic-starter muted pull-left">
+                            <div class="topic-starter text-muted pull-left">
                                 @if (@topic.CustomerId > 0)
                                 {
                                     if (topic.AllowViewingProfiles && !topic.IsCustomerGuest)

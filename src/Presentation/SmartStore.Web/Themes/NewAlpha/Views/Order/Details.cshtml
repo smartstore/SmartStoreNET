@@ -72,7 +72,7 @@
 							</div>
 							@if (!String.IsNullOrEmpty(item.AttributeInfo))
 							{
-								<div class="bundle-item-attribute-info muted">
+								<div class="bundle-item-attribute-info text-muted">
 									@Html.Raw(item.AttributeInfo)
 								</div>
 							}
@@ -82,7 +82,7 @@
 				<td class="text-sm-right">
 					@if (!String.IsNullOrWhiteSpace(item.PriceWithDiscount))
 					{
-						<span class="muted">
+						<span class="text-muted">
 							@Html.Raw(item.PriceWithDiscount)
 						</span>
 					}
@@ -244,7 +244,7 @@
                             @using (Html.BeginForm())
 					        {
                                 <input type="submit" name="repost-payment" value="@T("Order.CompletePayment")" class="btn btn-primary re-order-button btn-above" />
-                                <div class="hint muted">@T("Order.CompletePayment.Hint")</div>
+                                <div class="hint text-muted">@T("Order.CompletePayment.Hint")</div>
 					        }
                         </div>
 				    }
@@ -408,7 +408,7 @@
                     <div class="pull-right">
                         @if (Model.IsReturnRequestAllowed)
                         {
-                            <a class="btn return-items-button" href="@Url.Action("ReturnRequest", "ReturnRequest", new { id = Model.Id })" rel="nofollow">
+                            <a class="btn btn-secondary return-items-button" href="@Url.Action("ReturnRequest", "ReturnRequest", new { id = Model.Id })" rel="nofollow">
                                 <i class="fa fa-reply"></i>
                                 @T("Order.ReturnItems")
                             </a>
@@ -436,7 +436,7 @@
                                 <strong>@T("Order.SubTotal"):</strong>
                             </td>
                             <td class="cart-total-right text-sm-right">
-                                <span class="nobr">
+                                <span class="text-nowrap">
                                     @Model.OrderSubtotal
                                 </span>
                             </td>
@@ -450,7 +450,7 @@
                                     </strong>
                                 </td>
                                 <td class="cart-total-right text-sm-right">
-                                    <span class="nobr">
+                                    <span class="text-nowrap">
                                         @Model.OrderSubTotalDiscount
                                     </span>
                                 </td>
@@ -465,7 +465,7 @@
                                     </strong>
                                 </td>
                                 <td class="cart-total-right text-sm-right">
-                                    <span class="nobr">
+                                    <span class="text-nowrap">
                                         @Model.OrderShipping
                                     </span>
                                 </td>
@@ -480,7 +480,7 @@
                                     </strong>
                                 </td>
                                 <td class="cart-total-right text-sm-right">
-                                    <span class="nobr">
+                                    <span class="text-nowrap">
                                         @Model.PaymentMethodAdditionalFee
                                     </span>
                                 </td>
@@ -497,7 +497,7 @@
                                         </strong>
                                     </td>
                                     <td class="cart-total-right text-sm-right">
-                                        <span class="nobr">
+                                        <span class="text-nowrap">
                                             @taxRate.Value
                                         </span>
                                     </td>
@@ -513,7 +513,7 @@
                                     </strong>
                                 </td>
                                 <td class="cart-total-right text-sm-right">
-                                    <span class="nobr">
+                                    <span class="text-nowrap">
                                         @Model.Tax
                                     </span>
                                 </td>
@@ -528,7 +528,7 @@
                                     </strong>
                                 </td>
                                 <td class="cart-total-right text-sm-right">
-                                    <span class="nobr">
+                                    <span class="text-nowrap">
                                         @Model.OrderTotalDiscount
                                     </span>
                                 </td>
@@ -542,10 +542,10 @@
                                     <td class="cart-total-left">
                                         <strong>@string.Format(T("Order.GiftCardInfo").Text, gc.CouponCode):</strong>
                                         <br />
-                                        <span class="nobr">@string.Format(T("ShoppingCart.Totals.GiftCardInfo.Remaining").Text, gc.Remaining)</span>
+                                        <span class="text-nowrap">@string.Format(T("ShoppingCart.Totals.GiftCardInfo.Remaining").Text, gc.Remaining)</span>
                                     </td>
                                     <td class="cart-total-right text-sm-right">
-                                        <span class="nobr">
+                                        <span class="text-nowrap">
                                             @gc.Amount
                                         </span>
                                     </td>
@@ -559,7 +559,7 @@
                                     <strong>@string.Format(T("Order.RewardPoints").Text, Model.RedeemedRewardPoints):</strong>
                                 </td>
                                 <td class="cart-total-right text-sm-right">
-                                    <span class="nobr">
+                                    <span class="text-nowrap">
                                         @Model.RedeemedRewardPointsAmount
                                     </span>
                                 </td>
@@ -572,7 +572,7 @@
                                 </strong>
                             </td>
                             <td class="cart-total-right text-sm-right">
-                                <span class="nobr">
+                                <span class="text-nowrap">
                                     <strong>
                                         @Model.OrderTotal
                                     </strong>

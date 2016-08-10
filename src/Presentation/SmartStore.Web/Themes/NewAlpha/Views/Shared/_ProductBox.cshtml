@@ -128,14 +128,14 @@
 
             @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(Model.BasePriceInfo))
         {
-                <div class="base-price muted">
+                <div class="base-price text-muted">
                     @Model.BasePriceInfo
                 </div>
         }
 
             @if (Model.TransportSurcharge.HasValue())
         {
-                <div class="transport-charge muted">
+                <div class="transport-charge text-muted">
                     @Model.TransportSurcharge
                 </div>
         }

@@ -113,7 +113,7 @@
                 </div>
             </div>
             <div class="post-content">
-                <div class="posttime muted">
+                <div class="posttime text-muted">
                     @T("Forum.Posted"): <span class="stat-value">@Model.PostCreatedOnStr</span>
                 </div>
                 <div class="post-body">
@@ -125,7 +125,7 @@
 
                 @if (Model.SignaturesEnabled & !String.IsNullOrEmpty(Model.FormattedSignature))
                 {
-                    <div class="signature muted">
+                    <div class="signature text-muted">
                         @Html.Raw(@Model.FormattedSignature)
                     </div>
                 }

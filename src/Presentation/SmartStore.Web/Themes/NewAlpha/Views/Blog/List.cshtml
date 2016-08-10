@@ -15,7 +15,7 @@
 <div class="page blog-page">
     <div class="page-title">
         <a href="@Url.RouteUrl("BlogRSS", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("Blog.RSS.Hint")" rel="tooltip">
-            <i class="fa fa-rss muted"></i>
+            <i class="fa fa-rss text-muted"></i>
             @T("Blog.RSS")
         </a>
         <h1>
@@ -55,7 +55,7 @@
                             </a>
                         }
                         
-                        <div class="blogpost-date muted">
+                        <div class="blogpost-date text-muted">
                             @item.CreatedOn.ToString("dd MMMM, yyyy")
                         </div>
                         

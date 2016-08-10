@@ -38,7 +38,7 @@ $.ScrollButton = function(el, buttons, target, options) {
 	var isVert = opts.direction == "up" || opts.direction == "down";
 	
 	this._init = function() {
-	    el.addClass("scroll-button btn " + (opts.smallIcons ? "small" : "large"));
+	    el.addClass("scroll-button btn btn-secondary " + (opts.smallIcons ? "small" : "large"));
 		
 		// set size
 		if (isVert) {

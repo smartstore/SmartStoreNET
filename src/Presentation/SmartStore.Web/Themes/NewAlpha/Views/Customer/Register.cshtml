@@ -113,7 +113,7 @@
                                     @Html.EditorFor(model => model.VatNumber, new { @class = "form-control", placeholder = Model.VatRequired ? "" : "Optional" })
                                     &nbsp;&nbsp;&nbsp;
                                     @Model.VatNumberStatusNote
-                                    <span class="help-block muted vat-note">@T("Account.Fields.VatNumber.Note")</span>
+                                    <span class="help-block text-muted vat-note">@T("Account.Fields.VatNumber.Note")</span>
                                     @Html.ValidationMessageFor(model => model.VatNumber)
                                 </div>
                             </div>

@@ -2024,6 +2024,7 @@
     <None Include="Themes\NewAlpha\Content\_blog.scss" />
     <Content Include="Themes\NewAlpha\Content\_forum.scss" />
     <Content Include="Themes\NewAlpha\Views\Shared\_ProductList.cshtml" />
+    <Content Include="Themes\NewAlpha\Content\_product.scss" />
     <None Include="Themes\NewAlpha\Content\_pages.scss" />
     <Content Include="Themes\NewAlpha\Content\_rating.scss" />
     <Content Include="Themes\NewAlpha\Views\Common\ServiceMenu.cshtml" />

@@ -12,7 +12,7 @@
 {
     <div class="customer-entered-price line">
         @Html.LabelFor(model => Model.AddToCart.CustomerEnteredPrice, new { @class = "enter-price-label" })
-        @*round price*@
+
         @Html.TextBox("CustomerEnteredPrice", Convert.ToInt32(Math.Ceiling(Model.AddToCart.CustomerEnteredPrice)), new { @class = "enter-price-input" })
         <div class="price-range">
             @Model.AddToCart.CustomerEnteredPriceRange
@@ -37,21 +37,13 @@
 						
 						<span>@Html.Raw(Model.ProductPrice.NoteWithoutDiscount)</span>
 
-                        <span 
-                        @if (String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount))
-                        {
-                            <text>class="product-price current text-success"</text>
-                        }
-                        else
-                        {
-                            <text>class="line-through"</text>
-                        }
-                        >
+                        <span class="@(String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount) ? "product-price current" : "line-through")">
+
                             <span class="product-price-without-discount" itemprop="price">
-                            @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.Price))
-                            {
-                                @Html.Raw(Model.ProductPrice.Price)
-                            }
+                                @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.Price))
+                                {
+                                    @Html.Raw(Model.ProductPrice.Price)
+                                }
                             </span>
                         </span>
                     </div>
@@ -81,7 +73,7 @@
             }
 
             <!-- base price -->
-            <div class="base-price muted @(!Model.IsBasePriceEnabled ? "hide fade" : "")">
+            <div class="base-price text-muted @(!Model.IsBasePriceEnabled ? "hide fade" : "")">
                 @Model.BasePriceInfo
             </div>
 
@@ -106,7 +98,7 @@
 
             @if(Model.ShowLegalInfo)
             {
-                <div class="muted legal-info">
+                <div class="text-muted legal-info">
                     @Html.Raw(Model.LegalInfo)
                 </div>
             }
@@ -125,7 +117,7 @@
                         }
                         else
                         {
-                            @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style="width:25px" })
+                            @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input form-control col-xs-1" })
                         }
 
                         //if display measure unit

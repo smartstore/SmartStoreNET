@@ -407,7 +407,7 @@ namespace SmartStore.Web.Controllers
 						_services.WorkContext.WorkingLanguage.Id, _services.WebHelper.IsCurrentConnectionSecured(), _services.StoreContext.CurrentStore.Id);
                     catModel.PictureModel = _services.Cache.Get(categoryPictureCacheKey, () =>
                     {
-                        var pictureModel = new PictureModel()
+                        var pictureModel = new PictureModel
                         {
 							PictureId = x.PictureId.GetValueOrDefault(),
 							FullSizeImageUrl = _pictureService.GetPictureUrl(x.PictureId.GetValueOrDefault()),

@@ -142,16 +142,36 @@ namespace SmartStore.Services.Media
 		/// <returns>Picture</returns>
 		Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool isTransient = true, bool validateBinary = true);
 
-        /// <summary>
-        /// Updates the picture
-        /// </summary>
-        /// <param name="pictureId">The picture identifier</param>
-        /// <param name="pictureBinary">The picture binary</param>
-        /// <param name="mimeType">The picture MIME type</param>
-        /// <param name="seoFilename">The SEO filename</param>
-        /// <param name="isNew">A value indicating whether the picture is new</param>
-        /// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
-        /// <returns>Picture</returns>
-        Picture UpdatePicture(int pictureId, byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true);
-    }
+		/// <summary>
+		/// Updates the picture
+		/// </summary>
+		/// <param name="picture">The picture</param>
+		/// <param name="pictureBinary">The picture binary</param>
+		/// <param name="mimeType">The picture MIME type</param>
+		/// <param name="seoFilename">The SEO filename</param>
+		/// <param name="isNew">A value indicating whether the picture is new</param>
+		/// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
+		void UpdatePicture(Picture picture, byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true);
+	}
+
+	public static class IPictureServiceExtensions
+	{
+		public static Picture UpdatePicture(this IPictureService pictureService, 
+			int pictureId, 
+			byte[] pictureBinary, 
+			string mimeType, 
+			string seoFilename, 
+			bool isNew, 
+			bool validateBinary = true)
+		{
+			var picture = pictureService.GetPictureById(pictureId);
+
+			if (picture != null)
+			{
+				pictureService.UpdatePicture(picture, pictureBinary, mimeType, seoFilename, isNew, validateBinary);
+			}
+
+			return picture;
+		}
+	}
 }

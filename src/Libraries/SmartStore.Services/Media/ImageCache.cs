@@ -67,7 +67,6 @@ namespace SmartStore.Services.Media
         public virtual CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, object settings = null)
         {
             var imagePath = this.GetCachedImagePath(pictureId, seoFileName, extension, ImageResizerUtil.CreateResizeSettings(settings));
-            //var localPath = this.GetImageLocalPath(imagePath);
 
             var result = new CachedImageResult
             {

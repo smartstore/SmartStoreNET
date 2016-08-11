@@ -20,7 +20,8 @@ namespace SmartStore.Services.Catalog
     {
         private readonly IDiscountService _discountService;
         private readonly ICategoryService _categoryService;
-        private readonly IProductAttributeParser _productAttributeParser;
+		private readonly IManufacturerService _manufacturerService;
+		private readonly IProductAttributeParser _productAttributeParser;
 		private readonly IProductService _productService;
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly CatalogSettings _catalogSettings;
@@ -33,7 +34,8 @@ namespace SmartStore.Services.Catalog
         public PriceCalculationService(
             IDiscountService discountService,
 			ICategoryService categoryService,
-            IProductAttributeParser productAttributeParser,
+			IManufacturerService manufacturerService,
+			IProductAttributeParser productAttributeParser,
 			IProductService productService,
 			ShoppingCartSettings shoppingCartSettings, 
             CatalogSettings catalogSettings,
@@ -45,6 +47,7 @@ namespace SmartStore.Services.Catalog
         {
             this._discountService = discountService;
             this._categoryService = categoryService;
+			this._manufacturerService = manufacturerService;
             this._productAttributeParser = productAttributeParser;
 			this._productService = productService;
             this._shoppingCartSettings = shoppingCartSettings;
@@ -70,6 +73,7 @@ namespace SmartStore.Services.Catalog
             if (_catalogSettings.IgnoreDiscounts)
                 return result;
 
+			// check discounts assigned to the product
 			if (product.HasDiscountsApplied)
             {
                 //we use this property ("HasDiscountsApplied") for performance optimziation to avoid unnecessary database calls
@@ -92,7 +96,7 @@ namespace SmartStore.Services.Catalog
 				}
             }
 
-            //performance optimization. load all category discounts just to ensure that we have at least one
+            // check discounts assigned to categories
             if (_discountService.GetAllDiscounts(DiscountType.AssignedToCategories).Any())
             {
 				IEnumerable<ProductCategory> productCategories = null;
@@ -107,7 +111,6 @@ namespace SmartStore.Services.Catalog
                     foreach (var productCategory in productCategories)
                     {
                         var category = productCategory.Category;
-
                         if (category.HasDiscountsApplied)
                         {
                             //we use this property ("HasDiscountsApplied") for performance optimziation to avoid unnecessary database calls
@@ -124,6 +127,37 @@ namespace SmartStore.Services.Catalog
                     }
                 }
             }
+
+			// check discounts assigned to manufacturers
+			if (_discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers).Any())
+			{
+				IEnumerable<ProductManufacturer> productManufacturers = null;
+
+				if (context == null)
+					productManufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id);
+				else
+					productManufacturers = context.ProductManufacturers.Load(product.Id);
+
+				if (productManufacturers != null)
+				{
+					foreach (var productManufacturer in productManufacturers)
+					{
+						var manu = productManufacturer.Manufacturer;
+						if (manu.HasDiscountsApplied)
+						{
+							var manuDiscounts = manu.AppliedDiscounts;
+
+							foreach (var discount in manuDiscounts)
+							{
+								if (discount.DiscountType == DiscountType.AssignedToManufacturers && !result.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
+								{
+									result.Add(discount);
+								}
+							}
+						}
+					}
+				}
+			}
 
             return result;
         }
@@ -292,6 +326,7 @@ namespace SmartStore.Services.Catalog
 				x => _productAttributeService.GetProductVariantAttributeCombinations(x),
 				x => _productService.GetTierPricesByProductIds(x, _services.WorkContext.CurrentCustomer, _services.StoreContext.CurrentStore.Id),
 				x => _categoryService.GetProductCategoriesByProductIds(x, true),
+				x => _manufacturerService.GetProductManufacturersByProductIds(x),
 				x => _productService.GetAppliedDiscountsByProductIds(x)
 			);
 

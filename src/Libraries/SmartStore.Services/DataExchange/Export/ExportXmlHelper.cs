@@ -404,6 +404,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
 			_writer.Write("CreatedOnUtc", entity.CreatedOnUtc.ToString(_culture));
 			_writer.Write("UpdatedOnUtc", entity.UpdatedOnUtc.ToString(_culture));
+			_writer.Write("HasDiscountsApplied", entity.HasDiscountsApplied.ToString());
 
 			WritePicture(manufacturer.Picture, "Picture");
 

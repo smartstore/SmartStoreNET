@@ -16,6 +16,7 @@
 * #1002 Web API: Add support for addresses and customer roles navigation property of customer entity
 * #966 Implement new tax calculation logic for shipping and payment fees
 * #922 New option whether to include the weight of free shipping products in shipping by weight calculation
+* #724 Allow discounts to be applied to manufacturers
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation
@@ -24,6 +25,7 @@
 * GMC: Attribute price adjustments were ignored when exporting attribute combinations as products
 * GMC: Associated products that are not individually visible are not exported anymore. GMC rejects them because the frontend redirects to the grouped product.
 * #999 Export: Projected customer id ignored during price calculation
+* Awarded reward points for a placed order sometimes wrong calculated
 
 
 ## SmartStore.NET 2.6

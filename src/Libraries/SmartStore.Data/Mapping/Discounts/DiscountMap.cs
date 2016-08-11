@@ -3,7 +3,7 @@ using SmartStore.Core.Domain.Discounts;
 
 namespace SmartStore.Data.Mapping.Discounts
 {
-    public partial class DiscountMap : EntityTypeConfiguration<Discount>
+	public partial class DiscountMap : EntityTypeConfiguration<Discount>
     {
         public DiscountMap()
         {
@@ -24,8 +24,12 @@ namespace SmartStore.Data.Mapping.Discounts
             this.HasMany(dr => dr.AppliedToCategories)
                 .WithMany(c => c.AppliedDiscounts)
                 .Map(m => m.ToTable("Discount_AppliedToCategories"));
-            
-            this.HasMany(dr => dr.AppliedToProducts)
+
+			this.HasMany(dr => dr.AppliedToManufacturers)
+				.WithMany(x => x.AppliedDiscounts)
+				.Map(m => m.ToTable("Discount_AppliedToManufacturers"));
+
+			this.HasMany(dr => dr.AppliedToProducts)
                 .WithMany(p => p.AppliedDiscounts)
 				.Map(m => m.ToTable("Discount_AppliedToProducts"));
         }

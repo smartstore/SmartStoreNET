@@ -2,11 +2,12 @@
 using System.Linq;
 using System.Web.Http;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.WebApi;
-using SmartStore.Web.Framework.WebApi.Security;
 using SmartStore.Web.Framework.WebApi.OData;
+using SmartStore.Web.Framework.WebApi.Security;
 
 namespace SmartStore.WebApi.Controllers.OData
 {
@@ -58,6 +59,14 @@ namespace SmartStore.WebApi.Controllers.OData
 		public SingleResult<Manufacturer> GetManufacturer(int key)
 		{
 			return GetSingleResult(key);
+		}
+
+		// navigation properties
+
+		[WebApiQueryable]
+		public IQueryable<Discount> GetAppliedDiscounts(int key)
+		{
+			return GetRelatedCollection(key, x => x.AppliedDiscounts);
 		}
 	}
 }

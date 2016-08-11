@@ -222,12 +222,15 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
 				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
 				.ForMember(dest => dest.UpdatedOn, mo => mo.Ignore())
-				.ForMember(dest => dest.GridPageSize, mo => mo.Ignore());
-            Mapper.CreateMap<ManufacturerModel, Manufacturer>()
+				.ForMember(dest => dest.GridPageSize, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableDiscounts, mo => mo.Ignore())
+				.ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore());
+			Mapper.CreateMap<ManufacturerModel, Manufacturer>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.Deleted, mo => mo.Ignore())
-				.ForMember(dest => dest.Picture, mo => mo.Ignore());
+				.ForMember(dest => dest.Picture, mo => mo.Ignore())
+				.ForMember(dest => dest.HasDiscountsApplied, mo => mo.Ignore());
             //products
 			Mapper.CreateMap<Product, ProductModel>()
 				.ForMember(dest => dest.ProductTypeName, mo => mo.Ignore())
@@ -560,7 +563,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.AvailableDiscountRequirementRules, mo => mo.Ignore())
                 .ForMember(dest => dest.DiscountRequirementMetaInfos, mo => mo.Ignore())
                 .ForMember(dest => dest.AppliedToCategoryModels, mo => mo.Ignore())
-                .ForMember(dest => dest.AppliedToProductModels, mo => mo.Ignore());
+				.ForMember(dest => dest.AppliedToManufacturerModels, mo => mo.Ignore())
+				.ForMember(dest => dest.AppliedToProductModels, mo => mo.Ignore());
             Mapper.CreateMap<DiscountModel, Discount>()
                 .ForMember(dest => dest.DiscountType, mo => mo.Ignore())
                 .ForMember(dest => dest.DiscountLimitation, mo => mo.Ignore())

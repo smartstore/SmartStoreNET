@@ -6,10 +6,10 @@ using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Manufacturer service
-    /// </summary>
-    public partial interface IManufacturerService
+	/// <summary>
+	/// Manufacturer service
+	/// </summary>
+	public partial interface IManufacturerService
     {
         /// <summary>
         /// Deletes a manufacturer
@@ -72,11 +72,17 @@ namespace SmartStore.Services.Catalog
         /// <param name="manufacturer">Manufacturer</param>
         void UpdateManufacturer(Manufacturer manufacturer);
 
-        /// <summary>
-        /// Deletes a product manufacturer mapping
-        /// </summary>
-        /// <param name="productManufacturer">Product manufacturer mapping</param>
-        void DeleteProductManufacturer(ProductManufacturer productManufacturer);
+		/// <summary>
+		/// Update HasDiscountsApplied property (used for performance optimization)
+		/// </summary>
+		/// <param name="manufacturer">Manufacturer</param>
+		void UpdateHasDiscountsApplied(Manufacturer manufacturer);
+
+		/// <summary>
+		/// Deletes a product manufacturer mapping
+		/// </summary>
+		/// <param name="productManufacturer">Product manufacturer mapping</param>
+		void DeleteProductManufacturer(ProductManufacturer productManufacturer);
         
         /// <summary>
         /// Gets product manufacturer collection

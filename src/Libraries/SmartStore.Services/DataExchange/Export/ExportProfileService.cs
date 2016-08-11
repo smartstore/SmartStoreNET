@@ -54,7 +54,7 @@ namespace SmartStore.Services.DataExchange.Export
 			string profileSystemName = null,
 			int cloneFromProfileId = 0)
 		{
-			Guard.ArgumentNotEmpty(() => providerSystemName);
+			Guard.NotEmpty(providerSystemName, nameof(providerSystemName));
 
 			var profileCount = _exportProfileRepository.Table.Count(x => x.ProviderSystemName == providerSystemName);
 
@@ -204,7 +204,7 @@ namespace SmartStore.Services.DataExchange.Export
 			string profileSystemName = null,
 			int cloneFromProfileId = 0)
 		{
-			Guard.ArgumentNotNull(() => provider);
+			Guard.NotNull(provider, nameof(provider));
 
 			var profile = InsertExportProfile(
 				provider.Metadata.SystemName,

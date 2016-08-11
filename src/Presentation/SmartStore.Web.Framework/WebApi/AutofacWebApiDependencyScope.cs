@@ -21,7 +21,7 @@ namespace SmartStore.Web.Framework.WebApi
 		/// <param name="lifetimeScope">The lifetime scope to resolve services from.</param>
 		public AutofacWebApiDependencyScope(ILifetimeScope lifetimeScope)
 		{
-			Guard.ArgumentNotNull(() => lifetimeScope);
+			Guard.NotNull(lifetimeScope, nameof(lifetimeScope));
 			_lifetimeScope = lifetimeScope;
 		}
 

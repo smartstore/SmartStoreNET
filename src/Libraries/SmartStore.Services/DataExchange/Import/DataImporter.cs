@@ -347,8 +347,8 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public void Import(DataImportRequest request, CancellationToken cancellationToken)
 		{
-			Guard.ArgumentNotNull(() => request);
-			Guard.ArgumentNotNull(() => cancellationToken);
+			Guard.NotNull(request, nameof(request));
+			Guard.NotNull(cancellationToken, nameof(cancellationToken));
 
 			var ctx = new DataImporterContext(request, cancellationToken, T("Admin.DataExchange.Import.ProgressInfo"));
 

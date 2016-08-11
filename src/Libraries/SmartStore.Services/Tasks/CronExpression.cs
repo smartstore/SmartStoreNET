@@ -40,7 +40,7 @@ namespace SmartStore.Services.Tasks
 
 		public static IEnumerable<DateTime> GetFutureSchedules(string expression, DateTime baseTime, DateTime endTime, int max = 10)
 		{
-			Guard.ArgumentNotEmpty(() => expression);
+			Guard.NotEmpty(expression, nameof(expression));
 
 			var schedule = CrontabSchedule.Parse(expression);
 			return schedule.GetNextOccurrences(baseTime, endTime).Take(max);

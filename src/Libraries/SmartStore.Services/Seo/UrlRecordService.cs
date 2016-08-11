@@ -124,7 +124,7 @@ namespace SmartStore.Services.Seo
 
 		public virtual IList<UrlRecord> GetUrlRecordsFor(string entityName, int entityId, bool activeOnly = false)
 		{
-			Guard.ArgumentNotEmpty(() => entityName);
+			Guard.NotEmpty(entityName, nameof(entityName));
 
 			var query = from ur in _urlRecordRepository.Table
 						where ur.EntityId == entityId &&

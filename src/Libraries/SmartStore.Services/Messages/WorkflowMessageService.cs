@@ -1115,8 +1115,8 @@ namespace SmartStore.Services.Messages
 
         public virtual int SendGenericMessage(string messageTemplateName, Action<GenericMessageContext> cfg)
         {
-            Guard.ArgumentNotNull(() => cfg);
-            Guard.ArgumentNotEmpty(() => messageTemplateName);
+            Guard.NotNull(cfg, nameof(cfg));
+            Guard.NotEmpty(messageTemplateName, nameof(messageTemplateName));
 
             var ctx = new GenericMessageContext();
             ctx.MessagenTokenProvider = _messageTokenProvider;

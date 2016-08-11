@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using SmartStore.Core.IO;
 using SmartStore.Core.Plugins;
@@ -24,7 +26,7 @@ namespace SmartStore.Services.Media.Storage
 
 		protected string GetPicturePath(MediaItem media)
 		{
-			Guard.ArgumentNotEmpty(() => media.Path);
+			Guard.NotEmpty(media.Path, nameof(media.Path));
 
 			return _fileSystem.Combine(media.Path, media.GetFileName());
 		}
@@ -40,7 +42,7 @@ namespace SmartStore.Services.Media.Storage
 
 		public void Save(MediaItem media, byte[] data)
 		{
-			Guard.ArgumentNotNull(() => media);
+			Guard.NotNull(media, nameof(media));
 
 			// TODO: (?) if the new file extension differs from the old one then the old file never gets deleted
 
@@ -69,26 +71,33 @@ namespace SmartStore.Services.Media.Storage
 
 		public void MoveTo(ISupportsMediaMoving target, MediaMoverContext context, MediaItem media)
 		{
-			Guard.ArgumentNotNull(() => target);
-			Guard.ArgumentNotNull(() => context);
-			Guard.ArgumentNotNull(() => media);
+			Guard.NotNull(target, nameof(target));
+			Guard.NotNull(context, nameof(context));
+			Guard.NotNull(media, nameof(media));
 
 			var filePath = GetPicturePath(media);
 
-			// read data from file
-			var data = _fileSystem.ReadAllBytes(filePath);
+			try
+			{
+				// read data from file
+				var data = _fileSystem.ReadAllBytes(filePath);
 
-			// let target store data (into database for example)
-			target.Receive(context, media, data);
+				// let target store data (into database for example)
+				target.Receive(context, media, data);
 
-			// remember file path: we must be able to rollback IO operations on transaction failure
-			context.AffectedFiles.Add(filePath);
+				// remember file path: we must be able to rollback IO operations on transaction failure
+				context.AffectedFiles.Add(filePath);
+			}
+			catch (Exception exception)
+			{
+				Debug.WriteLine(exception.Message);
+			}
 		}
 
 		public void Receive(MediaMoverContext context, MediaItem media, byte[] data)
 		{
-			Guard.ArgumentNotNull(() => context);
-			Guard.ArgumentNotNull(() => media);
+			Guard.NotNull(context, nameof(context));
+			Guard.NotNull(media, nameof(media));
 
 			// store data into file
 			if (data != null && data.LongLength != 0)

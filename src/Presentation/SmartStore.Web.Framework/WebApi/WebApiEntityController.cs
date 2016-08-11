@@ -292,7 +292,7 @@ namespace SmartStore.Web.Framework.WebApi
 			int key, 
 			Expression<Func<TEntity, IEnumerable<TCollection>>> navigationProperty)
 		{
-			Guard.ArgumentNotNull(() => navigationProperty);
+			Guard.NotNull(navigationProperty, nameof(navigationProperty));
 
 			var query = GetEntitySet().Where(x => x.Id.Equals(key));
 			return query.SelectMany(navigationProperty);
@@ -302,7 +302,7 @@ namespace SmartStore.Web.Framework.WebApi
 			int key,
 			string navigationProperty)
 		{
-			Guard.ArgumentNotEmpty(() => navigationProperty);
+			Guard.NotEmpty(navigationProperty, nameof(navigationProperty));
 
 			var ctx = (DbContext)Repository.Context;
 			var product = GetEntityByKey(key);
@@ -316,7 +316,7 @@ namespace SmartStore.Web.Framework.WebApi
 			int key,
 			Expression<Func<TEntity, TElement>> navigationProperty)
 		{
-			Guard.ArgumentNotNull(() => navigationProperty);
+			Guard.NotNull(navigationProperty, nameof(navigationProperty));
 
 			var query = GetEntitySet().Where(x => x.Id.Equals(key)).Select(navigationProperty);
 			return SingleResult.Create(query);
@@ -326,7 +326,7 @@ namespace SmartStore.Web.Framework.WebApi
 			int key,
 			string navigationProperty)
 		{
-			Guard.ArgumentNotEmpty(() => navigationProperty);
+			Guard.NotEmpty(navigationProperty, nameof(navigationProperty));
 
 			var ctx = (DbContext)Repository.Context;
 			var product = GetEntityByKey(key);

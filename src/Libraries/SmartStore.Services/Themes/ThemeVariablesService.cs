@@ -72,7 +72,7 @@ namespace SmartStore.Services.Themes
 
         public virtual void DeleteThemeVariables(string themeName, int storeId)
         {
-            Guard.ArgumentNotEmpty(themeName, "themeName");
+            Guard.NotEmpty(themeName, nameof(themeName));
 
             var query = from v in _rsVariables.Table
 						where v.StoreId == storeId && v.Theme.Equals(themeName, StringComparison.OrdinalIgnoreCase)
@@ -97,9 +97,9 @@ namespace SmartStore.Services.Themes
 
 		public virtual int SaveThemeVariables(string themeName, int storeId, IDictionary<string, object> variables)
         {
-            Guard.ArgumentNotEmpty(themeName, "themeName");
+            Guard.NotEmpty(themeName, nameof(themeName));
             Guard.Against<ArgumentException>(!_themeRegistry.ThemeManifestExists(themeName), "The theme '{0}' does not exist in the registry.".FormatInvariant(themeName));
-            Guard.ArgumentNotNull(variables, "variables");
+            Guard.NotNull(variables, nameof(variables));
 
             if (!variables.Any())
                 return 0;
@@ -180,8 +180,8 @@ namespace SmartStore.Services.Themes
 
 		public int ImportVariables(string themeName, int storeId, string configurationXml)
         {
-            Guard.ArgumentNotEmpty(themeName, "themeName");
-            Guard.ArgumentNotEmpty(configurationXml, "configurationXml");
+            Guard.NotEmpty(themeName, nameof(themeName));
+            Guard.NotEmpty(configurationXml, nameof(configurationXml));
 
             var dict = new Dictionary<string, object>();
 
@@ -213,7 +213,7 @@ namespace SmartStore.Services.Themes
 
         public string ExportVariables(string themeName, int storeId)
         {
-            Guard.ArgumentNotEmpty(themeName, "themeName");
+            Guard.NotEmpty(themeName, nameof(themeName));
 
             var vars = this.GetThemeVariables(themeName, storeId) as IDictionary<string, object>;
 

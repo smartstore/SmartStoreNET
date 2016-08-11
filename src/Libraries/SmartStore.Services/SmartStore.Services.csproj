@@ -237,8 +237,6 @@
     <Compile Include="Events\IMessageBus.cs" />
     <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
-    <Compile Include="Media\BinaryDataService.cs" />
-    <Compile Include="Media\IBinaryDataService.cs" />
     <Compile Include="Media\Storage\DatabaseMediaStorageProvider.cs" />
     <Compile Include="Media\Storage\FileSystemMediaStorageProvider.cs" />
     <Compile Include="Media\Storage\IMediaStorageProvider.cs" />

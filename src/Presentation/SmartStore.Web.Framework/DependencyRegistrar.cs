@@ -36,10 +36,12 @@ using SmartStore.Services.Authentication;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Blogs;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Importer;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Customers.Importer;
 using SmartStore.Services.DataExchange;
 using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.DataExchange.Import;
@@ -52,7 +54,9 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
+using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Messages;
+using SmartStore.Services.Messages.Importer;
 using SmartStore.Services.News;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
@@ -77,10 +81,6 @@ using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using Module = Autofac.Module;
-using SmartStore.Services.Catalog.Importer;
-using SmartStore.Services.Customers.Importer;
-using SmartStore.Services.Messages.Importer;
-using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Web.Framework
 {
@@ -204,7 +204,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();
 			builder.RegisterType<ImageResizerService>().As<IImageResizerService>().SingleInstance();
 			builder.RegisterType<PictureService>().As<IPictureService>().InstancePerRequest();
-			builder.RegisterType<BinaryDataService>().As<IBinaryDataService>().InstancePerRequest();
 			builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest();
 
 			builder.RegisterType<CheckoutAttributeFormatter>().As<ICheckoutAttributeFormatter>().InstancePerRequest();

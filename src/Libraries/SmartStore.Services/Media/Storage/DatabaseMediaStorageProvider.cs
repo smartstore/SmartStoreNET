@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using SmartStore.Core.Data;
+﻿using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Plugins;
 
@@ -11,14 +10,14 @@ namespace SmartStore.Services.Media.Storage
 	public class DatabaseMediaStorageProvider : IMediaStorageProvider, ISupportsMediaMoving
 	{
 		private readonly IDbContext _dbContext;
-		private readonly IBinaryDataService _binaryDataService;
+		private readonly IRepository<BinaryData> _binaryDataRepository;
 
 		public DatabaseMediaStorageProvider(
 			IDbContext dbContext,
-			IBinaryDataService binaryDataService)
+			IRepository<BinaryData> binaryDataRepository)
 		{
 			_dbContext = dbContext;
-			_binaryDataService = binaryDataService;
+			_binaryDataRepository = binaryDataRepository;
 		}
 
 		public static string SystemName
@@ -28,7 +27,7 @@ namespace SmartStore.Services.Media.Storage
 
 		public byte[] Load(MediaItem media)
 		{
-			Guard.ArgumentNotNull(() => media);
+			Guard.NotNull(media, nameof(media));
 
 			if ((media.Entity.BinaryDataId ?? 0) != 0 && media.Entity.BinaryData != null)
 			{
@@ -40,14 +39,14 @@ namespace SmartStore.Services.Media.Storage
 
 		public void Save(MediaItem media, byte[] data)
 		{
-			Guard.ArgumentNotNull(() => media);
+			Guard.NotNull(media, nameof(media));
 
 			if (data == null || data.LongLength == 0)
 			{
 				// remove binary data if any
-				if ((media.Entity.BinaryDataId ?? 0) != 0 && media.Entity != null)
+				if ((media.Entity.BinaryDataId ?? 0) != 0 && media.Entity != null && media.Entity.BinaryData != null)
 				{
-					_binaryDataService.DeleteBinaryData(media.Entity.BinaryData);
+					_binaryDataRepository.Delete(media.Entity.BinaryData);
 				}
 			}
 			else
@@ -57,7 +56,7 @@ namespace SmartStore.Services.Media.Storage
 					// entity has no binary data -> insert
 					var newBinary = new BinaryData { Data = data };
 
-					_binaryDataService.InsertBinaryData(newBinary);
+					_binaryDataRepository.Insert(newBinary);
 
 					if (newBinary.Id == 0)
 					{
@@ -71,17 +70,10 @@ namespace SmartStore.Services.Media.Storage
 				}
 				else
 				{
-					if (media.Entity.BinaryData.Data.SequenceEqual(data))
-					{
-						// ignore equal binary data
-					}
-					else
-					{
-						// update existing binary data
-						media.Entity.BinaryData.Data = data;
+					// update existing binary data
+					media.Entity.BinaryData.Data = data;
 
-						_binaryDataService.UpdateBinaryData(media.Entity.BinaryData);
-					}
+					_binaryDataRepository.Update(media.Entity.BinaryData);
 				}
 			}
 		}
@@ -93,7 +85,7 @@ namespace SmartStore.Services.Media.Storage
 				if ((media.Entity.BinaryDataId ?? 0) != 0)
 				{
 					// this also nulls media.Entity.BinaryDataId
-					_binaryDataService.DeleteBinaryData(media.Entity.BinaryData);
+					_binaryDataRepository.Delete(media.Entity.BinaryData);
 				}
 			}
 		}
@@ -101,9 +93,9 @@ namespace SmartStore.Services.Media.Storage
 
 		public void MoveTo(ISupportsMediaMoving target, MediaMoverContext context, MediaItem media)
 		{
-			Guard.ArgumentNotNull(() => target);
-			Guard.ArgumentNotNull(() => context);
-			Guard.ArgumentNotNull(() => media);
+			Guard.NotNull(target, nameof(target));
+			Guard.NotNull(context, nameof(context));
+			Guard.NotNull(media, nameof(media));
 
 			if (media.Entity.BinaryData != null)
 			{
@@ -113,7 +105,7 @@ namespace SmartStore.Services.Media.Storage
 				// remove picture binary from DB
 				try
 				{
-					_binaryDataService.DeleteBinaryData(media.Entity.BinaryData, false);
+					_binaryDataRepository.Delete(media.Entity.BinaryData);
 				}
 				catch { }
 
@@ -125,8 +117,8 @@ namespace SmartStore.Services.Media.Storage
 
 		public void Receive(MediaMoverContext context, MediaItem media, byte[] data)
 		{
-			Guard.ArgumentNotNull(() => context);
-			Guard.ArgumentNotNull(() => media);
+			Guard.NotNull(context, nameof(context));
+			Guard.NotNull(media, nameof(media));
 
 			// store data for later bulk commit
 			if (data != null && data.LongLength > 0)

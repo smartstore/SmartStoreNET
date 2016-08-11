@@ -8,6 +8,7 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Helpers;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -17,7 +18,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class DiscountController : AdminControllerBase
     {
         #region Fields
@@ -26,7 +27,8 @@ namespace SmartStore.Admin.Controllers
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly ICategoryService _categoryService;
-        private readonly IProductService _productService;
+		private readonly IManufacturerService _manufacturerService;
+		private readonly IProductService _productService;
 		private readonly PluginMediator _pluginMediator;
 		private readonly ICommonServices _services;
 
@@ -37,6 +39,7 @@ namespace SmartStore.Admin.Controllers
         public DiscountController(
 			IDiscountService discountService, 
             ICategoryService categoryService,
+			IManufacturerService manufacturerService,
 			IProductService productService,
 			IDateTimeHelper dateTimeHelper,
             ICustomerActivityService customerActivityService,
@@ -45,6 +48,7 @@ namespace SmartStore.Admin.Controllers
         {
             this._discountService = discountService;
             this._categoryService = categoryService;
+			this._manufacturerService = manufacturerService;
             this._productService = productService;
             this._dateTimeHelper = dateTimeHelper;
             this._customerActivityService = customerActivityService;
@@ -75,13 +79,17 @@ namespace SmartStore.Admin.Controllers
             if (model == null)
                 throw new ArgumentNullException("model");
 
+			var language = _services.WorkContext.WorkingLanguage;
+
 			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
-            model.AvailableDiscountRequirementRules.Add(new SelectListItem() { Text = _services.Localization.GetResource("Admin.Promotions.Discounts.Requirements.DiscountRequirementType.Select"), Value = "" });
+            model.AvailableDiscountRequirementRules.Add(
+				new SelectListItem { Text = _services.Localization.GetResource("Admin.Promotions.Discounts.Requirements.DiscountRequirementType.Select"), Value = "" }
+			);
 
 			var discountRules = _discountService.LoadAllDiscountRequirementRules();
             foreach (var discountRule in discountRules)
             {
-				model.AvailableDiscountRequirementRules.Add(new SelectListItem()
+				model.AvailableDiscountRequirementRules.Add(new SelectListItem
                 {
 					Text = _pluginMediator.GetLocalizedFriendlyName(discountRule.Metadata),
                     Value = discountRule.Metadata.SystemName
@@ -90,40 +98,31 @@ namespace SmartStore.Admin.Controllers
             
             if (discount != null)
             {
-                //applied to categories
-                foreach (var category in discount.AppliedToCategories)
-                {
-                    if (category != null && !category.Deleted)
-                    {
-                        model.AppliedToCategoryModels.Add(new DiscountModel.AppliedToCategoryModel()
-                        {
-                            CategoryId = category.Id,
-                            Name = category.Name
-                        });
-                    }
-                }
+				// applied to categories
+				model.AppliedToCategoryModels = discount.AppliedToCategories
+					.Where(x => x != null && !x.Deleted)
+					.Select(x => new DiscountModel.AppliedToCategoryModel { CategoryId = x.Id, Name = x.GetLocalized(y => y.Name, language.Id) })
+					.ToList();
 
-                //applied to products
-                foreach (var product in discount.AppliedToProducts)
-                {
-                    if (product != null && !product.Deleted)
-                    {
-                        var appliedToProductModel = new DiscountModel.AppliedToProductModel()
-                        {
-                            ProductId = product.Id,
-							ProductName = product.Name
-                        };
-                        model.AppliedToProductModels.Add(appliedToProductModel);
-                    }
-                }
+				// applied to manufacturers
+				model.AppliedToManufacturerModels = discount.AppliedToManufacturers
+					.Where(x => x != null && !x.Deleted)
+					.Select(x => new DiscountModel.AppliedToManufacturerModel { ManufacturerId = x.Id, ManufacturerName = x.GetLocalized(y => y.Name, language.Id) })
+					.ToList();
 
-                //requirements
-                foreach (var dr in discount.DiscountRequirements.OrderBy(dr=>dr.Id))
+				// applied to products
+				model.AppliedToProductModels = discount.AppliedToProducts
+					.Where(x => x != null && !x.Deleted)
+					.Select(x => new DiscountModel.AppliedToProductModel { ProductId = x.Id, ProductName = x.GetLocalized(y => y.Name, language.Id) })
+					.ToList();
+
+                // requirements
+                foreach (var dr in discount.DiscountRequirements.OrderBy(dr => dr.Id))
                 {
                     var drr = _discountService.LoadDiscountRequirementRuleBySystemName(dr.DiscountRequirementRuleSystemName);
                     if (drr != null)
                     {
-                        model.DiscountRequirementMetaInfos.Add(new DiscountModel.DiscountRequirementMetaInfo()
+                        model.DiscountRequirementMetaInfos.Add(new DiscountModel.DiscountRequirementMetaInfo
                         {
                             DiscountRequirementId = dr.Id,
 							RuleName = _pluginMediator.GetLocalizedFriendlyName(drr.Metadata),
@@ -240,7 +239,6 @@ namespace SmartStore.Admin.Controllers
 
             var discount = _discountService.GetDiscountById(model.Id);
             if (discount == null)
-                //No discount found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -250,27 +248,33 @@ namespace SmartStore.Admin.Controllers
                 _discountService.UpdateDiscount(discount);
 
                 //clean up old references (if changed) and update "HasDiscountsApplied" properties
-                if (prevDiscountType == DiscountType.AssignedToCategories 
-                    && discount.DiscountType != DiscountType.AssignedToCategories)
+                if (prevDiscountType == DiscountType.AssignedToCategories && discount.DiscountType != DiscountType.AssignedToCategories)
                 {
                     //applied to categories
                     var categories = discount.AppliedToCategories.ToList();
                     discount.AppliedToCategories.Clear();
                     _discountService.UpdateDiscount(discount);
-                    //update "HasDiscountsApplied" property
-                    foreach (var category in categories)
-                        _categoryService.UpdateHasDiscountsApplied(category);
+
+					categories.Each(x => _categoryService.UpdateHasDiscountsApplied(x));
                 }
-                if (prevDiscountType == DiscountType.AssignedToSkus
-                    && discount.DiscountType != DiscountType.AssignedToSkus)
+
+				if (prevDiscountType == DiscountType.AssignedToManufacturers && discount.DiscountType != DiscountType.AssignedToManufacturers)
+				{
+					var manufacturers = discount.AppliedToManufacturers.ToList();
+					discount.AppliedToManufacturers.Clear();
+					_discountService.UpdateDiscount(discount);
+
+					manufacturers.Each(x => _manufacturerService.UpdateHasDiscountsApplied(x));
+				}
+
+				if (prevDiscountType == DiscountType.AssignedToSkus && discount.DiscountType != DiscountType.AssignedToSkus)
                 {
                     //applied to products
                     var products = discount.AppliedToProducts.ToList();
                     discount.AppliedToProducts.Clear();
                     _discountService.UpdateDiscount(discount);
-                    //update "HasDiscountsApplied" property
-                    foreach (var product in products)
-                        _productService.UpdateHasDiscountsApplied(product);
+
+					products.Each(x => _productService.UpdateHasDiscountsApplied(x));
                 }
 
                 //activity log
@@ -293,21 +297,18 @@ namespace SmartStore.Admin.Controllers
 
             var discount = _discountService.GetDiscountById(id);
             if (discount == null)
-                //No discount found with the specified id
                 return RedirectToAction("List");
 
-            //applied to categories
             var categories = discount.AppliedToCategories.ToList();
-            //applied to products
+			var manufacturers = discount.AppliedToManufacturers.ToList();
             var products = discount.AppliedToProducts.ToList();
 
             _discountService.DeleteDiscount(discount);
-            
-            //update "HasDiscountsApplied" properties
-            foreach (var category in categories)
-                _categoryService.UpdateHasDiscountsApplied(category);
-            foreach (var product in products)
-                _productService.UpdateHasDiscountsApplied(product);
+
+			//update "HasDiscountsApplied" properties
+			categories.Each(x => _categoryService.UpdateHasDiscountsApplied(x));
+			manufacturers.Each(x => _manufacturerService.UpdateHasDiscountsApplied(x));
+			products.Each(x => _productService.UpdateHasDiscountsApplied(x));
 
             //activity log
             _customerActivityService.InsertActivity("DeleteDiscount", _services.Localization.GetResource("ActivityLog.DeleteDiscount"), discount.Name);

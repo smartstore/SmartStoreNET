@@ -45,7 +45,8 @@ namespace SmartStore.Services.Tests.Orders
         TaxSettings _taxSettings;
         RewardPointsSettings _rewardPointsSettings;
         ICategoryService _categoryService;
-        IProductAttributeParser _productAttributeParser;
+		IManufacturerService _manufacturerService;
+		IProductAttributeParser _productAttributeParser;
 		IProductService _productService;
 		IProductAttributeService _productAttributeService;
         IPriceCalculationService _priceCalcService;
@@ -82,6 +83,7 @@ namespace SmartStore.Services.Tests.Orders
             //price calculation service
             _discountService = MockRepository.GenerateMock<IDiscountService>();
             _categoryService = MockRepository.GenerateMock<ICategoryService>();
+			_manufacturerService = MockRepository.GenerateMock<IManufacturerService>();
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
 			_productService = MockRepository.GenerateMock<IProductService>();
 			_productAttributeService = MockRepository.GenerateMock<IProductAttributeService>();
@@ -136,8 +138,8 @@ namespace SmartStore.Services.Tests.Orders
 
             _rewardPointsSettings = new RewardPointsSettings();
 
-			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings,
-				_productAttributeService, _downloadService, _services, _httpRequestBase, _taxService);
+			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _manufacturerService, _productAttributeParser, _productService,
+				_shoppingCartSettings, _catalogSettings, _productAttributeService, _downloadService, _services, _httpRequestBase, _taxService);
 
 			_orderTotalCalcService = new OrderTotalCalculationService(_workContext, _storeContext,
                 _priceCalcService, _taxService, _shippingService, _providerManager,

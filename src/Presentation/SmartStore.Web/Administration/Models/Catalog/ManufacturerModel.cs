@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Catalog;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -98,9 +99,12 @@ namespace SmartStore.Admin.Models.Catalog
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
-        #region Nested classes
+		public List<Discount> AvailableDiscounts { get; set; }
+		public int[] SelectedDiscountIds { get; set; }
 
-        public class ManufacturerProductModel : EntityModelBase
+		#region Nested classes
+
+		public class ManufacturerProductModel : EntityModelBase
         {
             public int ManufacturerId { get; set; }
 

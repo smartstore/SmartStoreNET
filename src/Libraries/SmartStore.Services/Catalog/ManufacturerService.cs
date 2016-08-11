@@ -11,10 +11,10 @@ using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Manufacturer service
-    /// </summary>
-    public partial class ManufacturerService : IManufacturerService
+	/// <summary>
+	/// Manufacturer service
+	/// </summary>
+	public partial class ManufacturerService : IManufacturerService
     {
         #region Constants
         private const string PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY = "SmartStore.productmanufacturer.allbymanufacturerid-{0}-{1}-{2}-{3}-{4}";
@@ -217,11 +217,19 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityUpdated(manufacturer);
         }
 
-        /// <summary>
-        /// Deletes a product manufacturer mapping
-        /// </summary>
-        /// <param name="productManufacturer">Product manufacturer mapping</param>
-        public virtual void DeleteProductManufacturer(ProductManufacturer productManufacturer)
+		public virtual void UpdateHasDiscountsApplied(Manufacturer manufacturer)
+		{
+			Guard.NotNull(manufacturer, nameof(manufacturer));
+
+			manufacturer.HasDiscountsApplied = manufacturer.AppliedDiscounts.Count > 0;
+			UpdateManufacturer(manufacturer);
+		}
+
+		/// <summary>
+		/// Deletes a product manufacturer mapping
+		/// </summary>
+		/// <param name="productManufacturer">Product manufacturer mapping</param>
+		public virtual void DeleteProductManufacturer(ProductManufacturer productManufacturer)
         {
             if (productManufacturer == null)
                 throw new ArgumentNullException("productManufacturer");

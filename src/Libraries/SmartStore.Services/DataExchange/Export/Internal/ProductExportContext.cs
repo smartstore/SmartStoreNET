@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
@@ -12,13 +12,11 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 	{
 		private List<int> _productIdsBundleItems;
 
-		private Func<int[], Multimap<int, ProductManufacturer>> _funcProductManufacturers;
 		private Func<int[], Multimap<int, ProductPicture>> _funcProductPictures;
 		private Func<int[], Multimap<int, ProductTag>> _funcProductTags;
 		private Func<int[], Multimap<int, ProductSpecificationAttribute>> _funcProductSpecificationAttributes;
 		private Func<int[], Multimap<int, ProductBundleItem>> _funcProductBundleItems;
 
-		private LazyMultimap<ProductManufacturer> _productManufacturers;
 		private LazyMultimap<ProductPicture> _productPictures;
 		private LazyMultimap<ProductTag> _productTags;
 		private LazyMultimap<ProductSpecificationAttribute> _productSpecificationAttributes;
@@ -41,6 +39,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 				attributeCombinations,
 				tierPrices,
 				productCategories,
+				productManufacturers,
 				productAppliedDiscounts)
 		{
 			if (products == null)
@@ -52,7 +51,6 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 				_productIdsBundleItems = new List<int>(products.Where(x => x.ProductType == ProductType.BundledProduct).Select(x => x.Id));
 			}
 
-			_funcProductManufacturers = productManufacturers;
 			_funcProductPictures = productPictures;
 			_funcProductTags = productTags;
 			_funcProductSpecificationAttributes = productSpecificationAttributes;
@@ -61,8 +59,6 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 
 		public new void Clear()
 		{
-			if (_productManufacturers != null)
-				_productManufacturers.Clear();
 			if (_productPictures != null)
 				_productPictures.Clear();
 			if (_productTags != null)
@@ -84,18 +80,6 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 
 		//	base.Collect(productIds);
 		//}
-
-		public LazyMultimap<ProductManufacturer> ProductManufacturers
-		{
-			get
-			{
-				if (_productManufacturers == null)
-				{
-					_productManufacturers = new LazyMultimap<ProductManufacturer>(keys => _funcProductManufacturers(keys), _productIds);
-				}
-				return _productManufacturers;
-			}
-		}
 
 		public LazyMultimap<ProductPicture> ProductPictures
 		{

@@ -108,7 +108,7 @@ namespace SmartStore.Core.IO
 				throw new ArgumentException("File " + path + " does not exist");
 			}
 
-			return new FileSystemStorageFile(Fix(path), fileInfo);
+			return new LocalFile(Fix(path), fileInfo);
 		}
 
 		public IFolder GetFolder(string path)
@@ -120,7 +120,7 @@ namespace SmartStore.Core.IO
 				throw new ArgumentException("Folder " + path + " does not exist");
 			}
 
-			return new FileSystemStorageFolder(Fix(path), directoryInfo);
+			return new LocalFolder(Fix(path), directoryInfo);
 		}
 
 		public IFolder GetFolderForFile(string path)
@@ -139,7 +139,7 @@ namespace SmartStore.Core.IO
 			// get relative path of the folder
 			var folderPath = Path.GetDirectoryName(path);
 
-			return new FileSystemStorageFolder(Fix(folderPath), fileInfo.Directory);
+			return new LocalFolder(Fix(folderPath), fileInfo.Directory);
 		}
 
 		public IEnumerable<string> SearchFiles(string path, string pattern)
@@ -163,7 +163,7 @@ namespace SmartStore.Core.IO
 			return directoryInfo
 				.GetFiles()
 				.Where(fi => !IsHidden(fi))
-				.Select<FileInfo, IFile>(fi => new FileSystemStorageFile(Path.Combine(Fix(path), fi.Name), fi))
+				.Select<FileInfo, IFile>(fi => new LocalFile(Path.Combine(Fix(path), fi.Name), fi))
 				.ToList();
 		}
 
@@ -190,7 +190,7 @@ namespace SmartStore.Core.IO
 			return directoryInfo
 				.GetDirectories()
 				.Where(di => !IsHidden(di))
-				.Select<DirectoryInfo, IFolder>(di => new FileSystemStorageFolder(Path.Combine(Fix(path), di.Name), di))
+				.Select<DirectoryInfo, IFolder>(di => new LocalFolder(Path.Combine(Fix(path), di.Name), di))
 				.ToList();
 		}
 
@@ -258,7 +258,7 @@ namespace SmartStore.Core.IO
 
 			File.WriteAllBytes(fileInfo.FullName, new byte[0]);
 
-			return new FileSystemStorageFile(Fix(path), fileInfo);
+			return new LocalFile(Fix(path), fileInfo);
 		}
 
 		public void DeleteFile(string path)
@@ -361,12 +361,12 @@ namespace SmartStore.Core.IO
 		}
 
 
-		private class FileSystemStorageFile : IFile
+		private class LocalFile : IFile
 		{
 			private readonly string _path;
 			private readonly FileInfo _fileInfo;
 
-			public FileSystemStorageFile(string path, FileInfo fileInfo)
+			public LocalFile(string path, FileInfo fileInfo)
 			{
 				_path = path;
 				_fileInfo = fileInfo;
@@ -413,12 +413,12 @@ namespace SmartStore.Core.IO
 			}
 		}
 
-		private class FileSystemStorageFolder : IFolder
+		private class LocalFolder : IFolder
 		{
 			private readonly string _path;
 			private readonly DirectoryInfo _directoryInfo;
 
-			public FileSystemStorageFolder(string path, DirectoryInfo directoryInfo)
+			public LocalFolder(string path, DirectoryInfo directoryInfo)
 			{
 				_path = path;
 				_directoryInfo = directoryInfo;
@@ -450,7 +450,7 @@ namespace SmartStore.Core.IO
 				{
 					if (_directoryInfo.Parent != null)
 					{
-						return new FileSystemStorageFolder(System.IO.Path.GetDirectoryName(_path), _directoryInfo.Parent);
+						return new LocalFolder(System.IO.Path.GetDirectoryName(_path), _directoryInfo.Parent);
 					}
 					throw new ArgumentException("Directory " + _directoryInfo.Name + " does not have a parent directory");
 				}

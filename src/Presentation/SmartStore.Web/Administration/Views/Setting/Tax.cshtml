@@ -21,13 +21,13 @@
 		togglePayment();
 		toggleEUVAT();
 
-		// taxing of subsidiary services
-		$('#@Html.FieldIdFor(model => model.SubsidiaryServicesTaxingType)').change(updateSubsidiaryServicesTaxCategories).trigger('change');
+		// taxing of auxiliary services
+		$('#@Html.FieldIdFor(model => model.AuxiliaryServicesTaxingType)').change(updateAuxiliaryServicesTaxCategories).trigger('change');
 
 	});
 
-	function updateSubsidiaryServicesTaxCategories() {
-		var showCategories = ($('#@Html.FieldIdFor(model => model.SubsidiaryServicesTaxingType)').val() === '@((int)SubsidiaryServicesTaxType.SpecifiedTaxCategory)'),
+	function updateAuxiliaryServicesTaxCategories() {
+		var showCategories = ($('#@Html.FieldIdFor(model => model.AuxiliaryServicesTaxingType)').val() === '@((int)AuxiliaryServicesTaxType.SpecifiedTaxCategory)'),
 			shippingIsTaxable = $('#@Html.FieldIdFor(model => model.ShippingIsTaxable)').is(':checked'),
 			paymentFeeIsTaxable = $('#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)').is(':checked');
 
@@ -47,13 +47,13 @@
 	function toggleShipping() {
 		$('#pnlShippingPriceIncludesTax').toggle($('#@Html.FieldIdFor(model => model.ShippingIsTaxable)').is(':checked'));
 
-		updateSubsidiaryServicesTaxCategories();
+		updateAuxiliaryServicesTaxCategories();
 	}
 
 	function togglePayment() {
 		$('#pnlPaymentMethodAdditionalFeeIncludesTax').toggle($('#@Html.FieldIdFor(model => model.PaymentMethodAdditionalFeeIsTaxable)').is(':checked'));
 
-		updateSubsidiaryServicesTaxCategories();
+		updateAuxiliaryServicesTaxCategories();
 	}
 
 	function toggleEUVAT() {
@@ -215,12 +215,12 @@
         </tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SubsidiaryServicesTaxingType)
+				@Html.SmartLabelFor(model => model.AuxiliaryServicesTaxingType)
 			</td>
 			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.SubsidiaryServicesTaxingType)
-				@Html.DropDownListFor(model => model.SubsidiaryServicesTaxingType, Model.AvailableSubsidiaryServicesTaxTypes)
-				@Html.ValidationMessageFor(model => model.SubsidiaryServicesTaxingType)
+				@Html.SettingOverrideCheckbox(model => Model.AuxiliaryServicesTaxingType)
+				@Html.DropDownListFor(model => model.AuxiliaryServicesTaxingType, Model.AvailableAuxiliaryServicesTaxTypes)
+				@Html.ValidationMessageFor(model => model.AuxiliaryServicesTaxingType)
 			</td>
 		</tr>
         <tr>

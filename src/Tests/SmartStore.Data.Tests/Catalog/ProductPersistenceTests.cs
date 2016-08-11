@@ -306,7 +306,7 @@ namespace SmartStore.Data.Tests.Catalog
 				DisplayOrder = 1,
 				Picture = new Picture
 				{
-					BinaryData = new BinaryData
+					MediaStorage = new MediaStorage
 					{
 						Data = new byte[] { 1, 2, 3 }
 					},

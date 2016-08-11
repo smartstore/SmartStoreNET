@@ -63,7 +63,7 @@ namespace SmartStore.Services.Messages
 			// blob data always stored in database at this point -> move it if current provider is not database provider
 			if (!_storageProvider.Metadata.SystemName.IsCaseInsensitiveEqual(DatabaseMediaStorageProvider.SystemName))
 			{
-				var blobs = queuedEmail.Attachments.Where(x => x.StorageLocation == EmailAttachmentStorageLocation.Blob && x.BinaryData != null);
+				var blobs = queuedEmail.Attachments.Where(x => x.StorageLocation == EmailAttachmentStorageLocation.Blob && x.MediaStorage != null);
 				if (blobs.Any())
 				{
 					var databaseProvider = _providerManager.GetProvider<IMediaStorageProvider>(DatabaseMediaStorageProvider.SystemName);
@@ -75,7 +75,7 @@ namespace SmartStore.Services.Messages
 						try
 						{
 							// move it to current storage provider
-							_storageProvider.Value.Save(media, blob.BinaryData.Data);
+							_storageProvider.Value.Save(media, blob.MediaStorage.Data);
 						}
 						catch (Exception exception)
 						{

@@ -25,7 +25,7 @@ namespace SmartStore.Services.Orders
 	/// </summary>
 	public partial class OrderTotalCalculationService : IOrderTotalCalculationService
     {
-		private const string SUBSIDIARY_SERVICES_TAXING_KEY = "SubsidiaryServicesTaxing";
+		private const string AUXILIARY_SERVICES_TAXING_KEY = "AuxiliaryServicesTaxing";
 
 		#region Fields
 
@@ -118,12 +118,12 @@ namespace SmartStore.Services.Orders
 
 			OrganizedShoppingCartItem item = null;
 
-			if (!cart.First().CustomProperties.ContainsKey(SUBSIDIARY_SERVICES_TAXING_KEY))
+			if (!cart.First().CustomProperties.ContainsKey(AUXILIARY_SERVICES_TAXING_KEY))
 			{
 				var maxSubTotal = decimal.Zero;
 				cart.Each(x =>
 				{
-					var cartTax = new SubsidiaryServicesTaxing();
+					var cartTax = new AuxiliaryServicesTaxing();
 					cartTax.SubTotalWithoutDiscount = _priceCalculationService.GetSubTotal(x, false);
 
 					if (cartTax.SubTotalWithoutDiscount > maxSubTotal)
@@ -132,14 +132,14 @@ namespace SmartStore.Services.Orders
 						item = x;
 					}
 
-					x.CustomProperties[SUBSIDIARY_SERVICES_TAXING_KEY] = cartTax;
+					x.CustomProperties[AUXILIARY_SERVICES_TAXING_KEY] = cartTax;
 				});
 
-				((SubsidiaryServicesTaxing)item.CustomProperties[SUBSIDIARY_SERVICES_TAXING_KEY]).HasMaxSubTotal = true;
+				((AuxiliaryServicesTaxing)item.CustomProperties[AUXILIARY_SERVICES_TAXING_KEY]).HasMaxSubTotal = true;
 			}
 			else
 			{
-				item = cart.FirstOrDefault(x => ((SubsidiaryServicesTaxing)x.CustomProperties[SUBSIDIARY_SERVICES_TAXING_KEY]).HasMaxSubTotal);
+				item = cart.FirstOrDefault(x => ((AuxiliaryServicesTaxing)x.CustomProperties[AUXILIARY_SERVICES_TAXING_KEY]).HasMaxSubTotal);
 			}
 
 			return item ?? cart.FirstOrDefault();
@@ -147,22 +147,22 @@ namespace SmartStore.Services.Orders
 
 		protected virtual void PrepareProRataWeightings(IList<OrganizedShoppingCartItem> cart)
 		{
-			if (cart.Count == 0 || cart.First().CustomProperties.ContainsKey(SUBSIDIARY_SERVICES_TAXING_KEY))
+			if (cart.Count == 0 || cart.First().CustomProperties.ContainsKey(AUXILIARY_SERVICES_TAXING_KEY))
 				return;
 
 			// calculate all subtotals
-			cart.Each(x => x.CustomProperties[SUBSIDIARY_SERVICES_TAXING_KEY] = new SubsidiaryServicesTaxing
+			cart.Each(x => x.CustomProperties[AUXILIARY_SERVICES_TAXING_KEY] = new AuxiliaryServicesTaxing
 			{
 				SubTotalWithoutDiscount = _priceCalculationService.GetSubTotal(x, false)
 			});
 
 			// sum over all subtotals
-			var subTotalSum = cart.Sum(x => ((SubsidiaryServicesTaxing)x.CustomProperties[SUBSIDIARY_SERVICES_TAXING_KEY]).SubTotalWithoutDiscount);
+			var subTotalSum = cart.Sum(x => ((AuxiliaryServicesTaxing)x.CustomProperties[AUXILIARY_SERVICES_TAXING_KEY]).SubTotalWithoutDiscount);
 
 			// calculate pro rata weightings
 			cart.Each(x =>
 			{
-				var cartTax = (SubsidiaryServicesTaxing)x.CustomProperties[SUBSIDIARY_SERVICES_TAXING_KEY];
+				var cartTax = (AuxiliaryServicesTaxing)x.CustomProperties[AUXILIARY_SERVICES_TAXING_KEY];
 				cartTax.ProRataWeighting = cartTax.SubTotalWithoutDiscount / subTotalSum;
 			});
 		}
@@ -177,11 +177,11 @@ namespace SmartStore.Services.Orders
 			taxRate = decimal.Zero;
 			var result = decimal.Zero;
 
-			if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.SpecifiedTaxCategory)
+			if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.SpecifiedTaxCategory)
 			{
 				result = _taxService.GetPaymentMethodAdditionalFee(paymentFee, includingTax, customer, out taxRate);
 			}
-			else if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.ProRata)
+			else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.ProRata)
 			{
 				// sum pro rata payment fees
 				var tmpTaxRate = decimal.Zero;
@@ -191,7 +191,7 @@ namespace SmartStore.Services.Orders
 
 				cart.Each(x =>
 				{
-					var cartTax = (SubsidiaryServicesTaxing)x.CustomProperties[SUBSIDIARY_SERVICES_TAXING_KEY];
+					var cartTax = (AuxiliaryServicesTaxing)x.CustomProperties[AUXILIARY_SERVICES_TAXING_KEY];
 
 					var proRataPaymentFee = paymentFee * cartTax.ProRataWeighting;
 					var taxCategoryId = x.Item.Product.TaxCategoryId;
@@ -207,7 +207,7 @@ namespace SmartStore.Services.Orders
 					taxRate = taxRates.First();
 				}
 			}
-			else if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.HighestCartAmount)
+			else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestCartAmount)
 			{
 				// get tax category of the product with the highest subtotal amount
 				var cartItem = GetHighestCartAmountItem(cart);
@@ -217,7 +217,7 @@ namespace SmartStore.Services.Orders
 			}
 			else
 			{
-				throw new SmartException(string.Concat(T("Common.Unknown"), ": SubsidiaryServicesTaxType.", _taxSettings.SubsidiaryServicesTaxingType.ToString()));
+				throw new SmartException(string.Concat(T("Common.Unknown"), ": AuxiliaryServicesTaxType.", _taxSettings.AuxiliaryServicesTaxingType.ToString()));
 			}
 
 			return result;
@@ -763,11 +763,11 @@ namespace SmartStore.Services.Orders
                 if (_shoppingCartSettings.RoundPricesDuringCalculation)
                     shippingTotal = Math.Round(shippingTotal.Value, 2);
 
-				if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.SpecifiedTaxCategory)
+				if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.SpecifiedTaxCategory)
 				{
 					shippingTotalTaxed = _taxService.GetShippingPrice(shippingTotal.Value, includingTax, customer, out taxRate);
 				}
-				else if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.ProRata)
+				else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.ProRata)
 				{
 					// sum pro rata shipping amounts
 					shippingTotalTaxed = decimal.Zero;
@@ -779,7 +779,7 @@ namespace SmartStore.Services.Orders
 
 					cart.Each(x =>
 					{
-						var cartTax = (SubsidiaryServicesTaxing)x.CustomProperties[SUBSIDIARY_SERVICES_TAXING_KEY];
+						var cartTax = (AuxiliaryServicesTaxing)x.CustomProperties[AUXILIARY_SERVICES_TAXING_KEY];
 
 						var proRataShipping = shippingTotal.Value * cartTax.ProRataWeighting;
 						var taxCategoryId = x.Item.Product.TaxCategoryId;
@@ -795,7 +795,7 @@ namespace SmartStore.Services.Orders
 						taxRate = taxRates.First();
 					}
 				}
-				else if (_taxSettings.SubsidiaryServicesTaxingType == SubsidiaryServicesTaxType.HighestCartAmount)
+				else if (_taxSettings.AuxiliaryServicesTaxingType == AuxiliaryServicesTaxType.HighestCartAmount)
 				{
 					// get tax category of the product with the highest subtotal amount
 					var cartItem = GetHighestCartAmountItem(cart);
@@ -805,7 +805,7 @@ namespace SmartStore.Services.Orders
 				}
 				else
 				{
-					throw new SmartException(string.Concat(T("Common.Unknown"), ": SubsidiaryServicesTaxType.", _taxSettings.SubsidiaryServicesTaxingType.ToString()));
+					throw new SmartException(string.Concat(T("Common.Unknown"), ": AuxiliaryServicesTaxType.", _taxSettings.AuxiliaryServicesTaxingType.ToString()));
 				}
 
                 if (_shoppingCartSettings.RoundPricesDuringCalculation)
@@ -1311,9 +1311,9 @@ namespace SmartStore.Services.Orders
     }
 
 
-	internal class SubsidiaryServicesTaxing
+	internal class AuxiliaryServicesTaxing
 	{
-		internal SubsidiaryServicesTaxing()
+		internal AuxiliaryServicesTaxing()
 		{
 			ProRataWeighting = decimal.Zero;
 		}

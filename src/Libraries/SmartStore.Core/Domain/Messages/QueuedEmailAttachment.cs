@@ -44,7 +44,7 @@ namespace SmartStore.Core.Domain.Messages
 		/// <summary>
 		/// The attachment's binary data (only applicable if location is <c>Blob</c>)
 		/// </summary>
-		[Obsolete("Use property BinaryData instead")]
+		[Obsolete("Use property MediaStorage instead")]
 		public byte[] Data { get; set; }
 
 		/// <summary>
@@ -58,13 +58,13 @@ namespace SmartStore.Core.Domain.Messages
 		public string MimeType { get; set; }
 
 		/// <summary>
-		/// Gets or sets the binary data identifier
+		/// Gets or sets the media storage identifier
 		/// </summary>
-		public int? BinaryDataId { get; set; }
+		public int? MediaStorageId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the binary data
+		/// Gets or sets the media storage
 		/// </summary>
-		public virtual BinaryData BinaryData { get; set; }
+		public virtual MediaStorage MediaStorage { get; set; }
 	}
 }

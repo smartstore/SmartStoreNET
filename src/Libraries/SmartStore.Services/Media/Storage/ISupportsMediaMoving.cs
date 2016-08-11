@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SmartStore.Services.Media.Storage
+﻿namespace SmartStore.Services.Media.Storage
 {
 	public interface ISupportsMediaMoving
 	{

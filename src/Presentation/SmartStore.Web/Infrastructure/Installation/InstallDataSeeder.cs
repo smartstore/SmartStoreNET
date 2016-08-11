@@ -400,27 +400,27 @@ namespace SmartStore.Web.Infrastructure.Installation
 			{
 				// All pictures have initially been stored in the DB. Move the binaries to disk.
 				var fileSystemStorageProvider = new FileSystemMediaStorageProvider(new LocalFileSystem());
-				var binaryDatas = _ctx.Set<BinaryData>();
+				var mediaStorages = _ctx.Set<MediaStorage>();
 
 				// pictures
 				var pics = _ctx.Set<Picture>()
-					.Expand(x => x.BinaryData)
-					.Where(x => x.BinaryDataId != null)
+					.Expand(x => x.MediaStorage)
+					.Where(x => x.MediaStorageId != null)
 					.ToList();
 
 				foreach (var pic in pics)
 				{
-					if (pic.BinaryData != null && pic.BinaryData.Data != null && pic.BinaryData.Data.LongLength > 0)
+					if (pic.MediaStorage != null && pic.MediaStorage.Data != null && pic.MediaStorage.Data.LongLength > 0)
 					{
-						fileSystemStorageProvider.Save(pic.ToMedia(), pic.BinaryData.Data);
+						fileSystemStorageProvider.Save(pic.ToMedia(), pic.MediaStorage.Data);
 
 						try
 						{
-							binaryDatas.Remove(pic.BinaryData);
+							mediaStorages.Remove(pic.MediaStorage);
 						}
 						catch { }
 
-						pic.BinaryDataId = null;
+						pic.MediaStorageId = null;
 					}
 				}
 
@@ -428,22 +428,22 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 				// downloads
 				var downloads = _ctx.Set<Download>()
-					.Expand(x => x.BinaryData)
+					.Expand(x => x.MediaStorage)
 					.ToList();
 
 				foreach (var download in downloads)
 				{
-					if (download.BinaryData != null && download.BinaryData.Data != null && download.BinaryData.Data.LongLength > 0)
+					if (download.MediaStorage != null && download.MediaStorage.Data != null && download.MediaStorage.Data.LongLength > 0)
 					{
-						fileSystemStorageProvider.Save(download.ToMedia(), download.BinaryData.Data);
+						fileSystemStorageProvider.Save(download.ToMedia(), download.MediaStorage.Data);
 
 						try
 						{
-							binaryDatas.Remove(download.BinaryData);
+							mediaStorages.Remove(download.MediaStorage);
 						}
 						catch { }
 
-						download.BinaryDataId = null;
+						download.MediaStorageId = null;
 					}
 				}
 

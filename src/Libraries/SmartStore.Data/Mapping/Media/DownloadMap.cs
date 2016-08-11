@@ -14,9 +14,9 @@ namespace SmartStore.Data.Mapping.Media
 			this.Property(p => p.DownloadBinary).IsMaxLength();
 #pragma warning restore 612, 618
 
-			HasOptional(x => x.BinaryData)
+			HasOptional(x => x.MediaStorage)
 				.WithMany()
-				.HasForeignKey(x => x.BinaryDataId)
+				.HasForeignKey(x => x.MediaStorageId)
 				.WillCascadeOnDelete(false);
 		}
     }

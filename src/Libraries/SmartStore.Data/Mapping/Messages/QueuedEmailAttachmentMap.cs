@@ -29,9 +29,9 @@ namespace SmartStore.Data.Mapping.Messages
 				.HasForeignKey(x => x.QueuedEmailId)
 				.WillCascadeOnDelete(true);
 
-			HasOptional(x => x.BinaryData)
+			HasOptional(x => x.MediaStorage)
 				.WithMany()
-				.HasForeignKey(x => x.BinaryDataId)
+				.HasForeignKey(x => x.MediaStorageId)
 				.WillCascadeOnDelete(false);
 		}
 	}

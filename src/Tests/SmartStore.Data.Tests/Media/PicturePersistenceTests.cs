@@ -13,7 +13,7 @@ namespace SmartStore.Data.Tests.Media
         {
             var picture = new Picture
             {
-				BinaryData = new BinaryData
+				MediaStorage = new MediaStorage
 				{
 					Data = new byte[] { 1, 2, 3 }
 				},
@@ -25,7 +25,7 @@ namespace SmartStore.Data.Tests.Media
 
             var fromDb = SaveAndLoadEntity(picture);
             fromDb.ShouldNotBeNull();
-            fromDb.BinaryData.Data.ShouldEqual(new byte[] { 1, 2, 3 });
+            fromDb.MediaStorage.Data.ShouldEqual(new byte[] { 1, 2, 3 });
             fromDb.MimeType.ShouldEqual("image/pjpeg");
             fromDb.SeoFilename.ShouldEqual("seo filename 1");
             fromDb.IsNew.ShouldEqual(true);

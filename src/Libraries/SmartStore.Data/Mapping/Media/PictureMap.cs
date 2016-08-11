@@ -17,9 +17,9 @@ namespace SmartStore.Data.Mapping.Media
 			this.Property(p => p.MimeType).IsRequired().HasMaxLength(40);
             this.Property(p => p.SeoFilename).HasMaxLength(300);
 
-			HasOptional(x => x.BinaryData)
+			HasOptional(x => x.MediaStorage)
 				.WithMany()
-				.HasForeignKey(x => x.BinaryDataId)
+				.HasForeignKey(x => x.MediaStorageId)
 				.WillCascadeOnDelete(false);
         }
     }

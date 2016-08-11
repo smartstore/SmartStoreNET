@@ -17,7 +17,7 @@ namespace SmartStore.Data.Tests.Media
                 DownloadGuid = guid,
                 UseDownloadUrl = true,
                 DownloadUrl = "http://www.someUrl.com/file.zip",
-				BinaryData = new BinaryData { Data = new byte[] { 1, 2, 3 } },
+				MediaStorage = new MediaStorage { Data = new byte[] { 1, 2, 3 } },
 				UpdatedOnUtc = DateTime.UtcNow,
 				ContentType = "application/x-zip-co",
                 Filename = "file",
@@ -30,7 +30,7 @@ namespace SmartStore.Data.Tests.Media
             fromDb.DownloadGuid.ShouldEqual(guid);
             fromDb.UseDownloadUrl.ShouldEqual(true);
             fromDb.DownloadUrl.ShouldEqual("http://www.someUrl.com/file.zip");
-			fromDb.BinaryData.Data.ShouldEqual(new byte[] { 1, 2, 3 });
+			fromDb.MediaStorage.Data.ShouldEqual(new byte[] { 1, 2, 3 });
 			fromDb.ContentType.ShouldEqual("application/x-zip-co");
             fromDb.Filename.ShouldEqual("file");
             fromDb.Extension.ShouldEqual(".zip");

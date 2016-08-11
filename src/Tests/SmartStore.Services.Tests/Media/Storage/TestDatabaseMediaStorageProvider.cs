@@ -6,7 +6,7 @@ namespace SmartStore.Services.Tests.Media.Storage
 	{
 		public byte[] Load(MediaItem media)
 		{
-			return media.Entity.BinaryData.Data;
+			return media.Entity.MediaStorage.Data;
 		}
 
 		public void Save(MediaItem media, byte[] data)

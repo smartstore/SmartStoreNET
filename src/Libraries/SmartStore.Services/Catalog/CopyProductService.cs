@@ -104,8 +104,8 @@ namespace SmartStore.Services.Catalog
 						UpdatedOnUtc = utcNow
 					};
 
-					if ((download.BinaryDataId ?? 0) != 0 && download.BinaryData != null)
-						_downloadService.InsertDownload(downloadCopy, download.BinaryData.Data);
+					if ((download.MediaStorageId ?? 0) != 0 && download.MediaStorage != null)
+						_downloadService.InsertDownload(downloadCopy, download.MediaStorage.Data);
 					else
 						_downloadService.InsertDownload(downloadCopy, null);
 
@@ -129,8 +129,8 @@ namespace SmartStore.Services.Catalog
 							UpdatedOnUtc = utcNow
 						};
 
-						if ((sampleDownload.BinaryDataId ?? 0) != 0 && sampleDownload.BinaryData != null)
-							_downloadService.InsertDownload(sampleDownloadCopy, sampleDownload.BinaryData.Data);
+						if ((sampleDownload.MediaStorageId ?? 0) != 0 && sampleDownload.MediaStorage != null)
+							_downloadService.InsertDownload(sampleDownloadCopy, sampleDownload.MediaStorage.Data);
 						else
 							_downloadService.InsertDownload(sampleDownloadCopy, null);
 

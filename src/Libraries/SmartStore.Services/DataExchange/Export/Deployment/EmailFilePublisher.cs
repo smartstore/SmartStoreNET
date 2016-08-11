@@ -50,7 +50,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 					queuedEmail.Attachments.Add(new QueuedEmailAttachment
 					{
 						StorageLocation = EmailAttachmentStorageLocation.Blob,
-						BinaryData = new BinaryData { Data = File.ReadAllBytes(path) },
+						MediaStorage = new MediaStorage { Data = File.ReadAllBytes(path) },
 						Name = name,
 						MimeType = MimeTypes.MapNameToMimeType(name)
 					});

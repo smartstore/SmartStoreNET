@@ -1,12 +1,12 @@
 ﻿namespace SmartStore.Core.Domain.Tax
 {
 	/// <summary>
-	/// Specifies how to calculate the tax of subsidiary services like shipping and payment fees
+	/// Specifies how to calculate the tax of auxiliary services like shipping and payment fees
 	/// </summary>
-	public enum SubsidiaryServicesTaxType
+	public enum AuxiliaryServicesTaxType
 	{
 		/// <summary>
-		/// Calculate tax of subsidiary services by the tax category specified in settings
+		/// Calculate tax of auxiliary services by the tax category specified in settings
 		/// </summary>
 		SpecifiedTaxCategory = 0,
 

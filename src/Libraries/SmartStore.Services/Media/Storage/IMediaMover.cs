@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using SmartStore.Core.Plugins;
+﻿using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Media.Storage
 {

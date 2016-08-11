@@ -74,7 +74,7 @@ namespace SmartStore.Data.Tests.Messages
 			var download = new Download
 			{
 				ContentType = "text/plain",
-				BinaryData = new BinaryData
+				MediaStorage = new MediaStorage
 				{
 					Data = new byte[10]
 				},

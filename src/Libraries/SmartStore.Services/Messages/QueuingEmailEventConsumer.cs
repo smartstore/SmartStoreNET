@@ -82,7 +82,7 @@ namespace SmartStore.Services.Messages
 			return new QueuedEmailAttachment
 			{
 				StorageLocation = EmailAttachmentStorageLocation.Blob,
-				BinaryData = new BinaryData { Data = fileResponse.Data },
+				MediaStorage = new MediaStorage { Data = fileResponse.Data },
 				MimeType = fileResponse.ContentType,
 				Name = fileResponse.FileName
 			};

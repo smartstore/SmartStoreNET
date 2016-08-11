@@ -25,7 +25,7 @@ namespace SmartStore.Data.Tests.Catalog
 				},
 				Picture = new Picture
 				{
-					BinaryData = new BinaryData
+					MediaStorage = new MediaStorage
 					{
 						Data = new byte[] { 1, 2, 3 }
 					},

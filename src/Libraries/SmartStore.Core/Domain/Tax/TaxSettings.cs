@@ -15,7 +15,7 @@ namespace SmartStore.Core.Domain.Tax
 			ShowLegalHintsInFooter = true; 
 			ShowLegalHintsInProductDetails = true;
 			ShowLegalHintsInProductList = true;
-			SubsidiaryServicesTaxingType = SubsidiaryServicesTaxType.SpecifiedTaxCategory;
+			AuxiliaryServicesTaxingType = AuxiliaryServicesTaxType.SpecifiedTaxCategory;
 		}
 		
 		/// <summary>
@@ -114,9 +114,9 @@ namespace SmartStore.Core.Domain.Tax
         public int PaymentMethodAdditionalFeeTaxClassId { get; set; }
 
 		/// <summary>
-		/// Taxing type for subsidiary services like shipping and payment fees
+		/// Taxing type for auxiliary services like shipping and payment fees
 		/// </summary>
-		public SubsidiaryServicesTaxType SubsidiaryServicesTaxingType { get; set; }
+		public AuxiliaryServicesTaxType AuxiliaryServicesTaxingType { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether EU VAT (Eupore Union Value Added Tax) is enabled

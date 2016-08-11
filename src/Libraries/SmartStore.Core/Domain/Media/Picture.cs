@@ -14,7 +14,7 @@ namespace SmartStore.Core.Domain.Media
 		/// <summary>
 		/// Gets or sets the picture binary
 		/// </summary>
-		[Obsolete("Use property BinaryData instead")]
+		[Obsolete("Use property MediaStorage instead")]
 		public byte[] PictureBinary { get; set; }
 
         /// <summary>
@@ -50,15 +50,15 @@ namespace SmartStore.Core.Domain.Media
 		public DateTime UpdatedOnUtc { get; set; }
 
 		/// <summary>
-		/// Gets or sets the binary data identifier
+		/// Gets or sets the media storage identifier
 		/// </summary>
 		[DataMember]
-		public int? BinaryDataId { get; set; }
+		public int? MediaStorageId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the binary data
+		/// Gets or sets the media storage
 		/// </summary>
-		public virtual BinaryData BinaryData { get; set; }
+		public virtual MediaStorage MediaStorage { get; set; }
 
 		/// <summary>
 		/// Gets or sets the product pictures

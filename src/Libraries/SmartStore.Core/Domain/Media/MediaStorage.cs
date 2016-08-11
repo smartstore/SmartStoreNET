@@ -1,6 +1,6 @@
 ﻿namespace SmartStore.Core.Domain.Media
 {
-	public partial class BinaryData : BaseEntity
+	public partial class MediaStorage : BaseEntity
 	{
 		/// <summary>
 		/// Binary data

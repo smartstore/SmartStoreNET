@@ -12,13 +12,13 @@ namespace SmartStore.Data.Migrations
 	using Core.IO;
 	using Setup;
 
-	public partial class MediaBinaryData : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
+	public partial class MediaStorageData : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
 	{
 		private const int PAGE_SIZE = 100;
 
 		private void PageEntities<TEntity>(
 			SmartObjectContext context,
-			DbSet<BinaryData> binaryDatas,
+			DbSet<MediaStorage> mediaStorages,
 			IOrderedQueryable<TEntity> query,
 			Action<TEntity> moveEntity) where TEntity : BaseEntity, IHasMedia
 		{
@@ -58,7 +58,7 @@ namespace SmartStore.Data.Migrations
 		public override void Up()
         {
             CreateTable(
-                "dbo.BinaryData",
+                "dbo.MediaStorage",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
@@ -66,29 +66,49 @@ namespace SmartStore.Data.Migrations
                     })
                 .PrimaryKey(t => t.Id);
             
-            AddColumn("dbo.Picture", "BinaryDataId", c => c.Int());
-            AddColumn("dbo.Download", "BinaryDataId", c => c.Int());
-            AddColumn("dbo.QueuedEmailAttachment", "BinaryDataId", c => c.Int());
-            CreateIndex("dbo.Picture", "BinaryDataId");
-            CreateIndex("dbo.Download", "BinaryDataId");
-            CreateIndex("dbo.QueuedEmailAttachment", "BinaryDataId");
-            AddForeignKey("dbo.Picture", "BinaryDataId", "dbo.BinaryData", "Id");
-            AddForeignKey("dbo.Download", "BinaryDataId", "dbo.BinaryData", "Id");
-            AddForeignKey("dbo.QueuedEmailAttachment", "BinaryDataId", "dbo.BinaryData", "Id");
+            CreateTable(
+                "dbo.Discount_AppliedToManufacturers",
+                c => new
+                    {
+                        Discount_Id = c.Int(nullable: false),
+                        Manufacturer_Id = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => new { t.Discount_Id, t.Manufacturer_Id })
+                .ForeignKey("dbo.Discount", t => t.Discount_Id, cascadeDelete: true)
+                .ForeignKey("dbo.Manufacturer", t => t.Manufacturer_Id, cascadeDelete: true)
+                .Index(t => t.Discount_Id)
+                .Index(t => t.Manufacturer_Id);
+            
+            AddColumn("dbo.Picture", "MediaStorageId", c => c.Int());
+            AddColumn("dbo.Manufacturer", "HasDiscountsApplied", c => c.Boolean(nullable: false));
+            AddColumn("dbo.Download", "MediaStorageId", c => c.Int());
+            AddColumn("dbo.QueuedEmailAttachment", "MediaStorageId", c => c.Int());
+            CreateIndex("dbo.Picture", "MediaStorageId");
+            CreateIndex("dbo.Download", "MediaStorageId");
+            CreateIndex("dbo.QueuedEmailAttachment", "MediaStorageId");
+            AddForeignKey("dbo.Picture", "MediaStorageId", "dbo.MediaStorage", "Id");
+            AddForeignKey("dbo.Download", "MediaStorageId", "dbo.MediaStorage", "Id");
+            AddForeignKey("dbo.QueuedEmailAttachment", "MediaStorageId", "dbo.MediaStorage", "Id");
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.QueuedEmailAttachment", "BinaryDataId", "dbo.BinaryData");
-            DropForeignKey("dbo.Download", "BinaryDataId", "dbo.BinaryData");
-            DropForeignKey("dbo.Picture", "BinaryDataId", "dbo.BinaryData");
-            DropIndex("dbo.QueuedEmailAttachment", new[] { "BinaryDataId" });
-            DropIndex("dbo.Download", new[] { "BinaryDataId" });
-            DropIndex("dbo.Picture", new[] { "BinaryDataId" });
-            DropColumn("dbo.QueuedEmailAttachment", "BinaryDataId");
-            DropColumn("dbo.Download", "BinaryDataId");
-            DropColumn("dbo.Picture", "BinaryDataId");
-            DropTable("dbo.BinaryData");
+            DropForeignKey("dbo.QueuedEmailAttachment", "MediaStorageId", "dbo.MediaStorage");
+            DropForeignKey("dbo.Download", "MediaStorageId", "dbo.MediaStorage");
+            DropForeignKey("dbo.Discount_AppliedToManufacturers", "Manufacturer_Id", "dbo.Manufacturer");
+            DropForeignKey("dbo.Discount_AppliedToManufacturers", "Discount_Id", "dbo.Discount");
+            DropForeignKey("dbo.Picture", "MediaStorageId", "dbo.MediaStorage");
+            DropIndex("dbo.Discount_AppliedToManufacturers", new[] { "Manufacturer_Id" });
+            DropIndex("dbo.Discount_AppliedToManufacturers", new[] { "Discount_Id" });
+            DropIndex("dbo.QueuedEmailAttachment", new[] { "MediaStorageId" });
+            DropIndex("dbo.Download", new[] { "MediaStorageId" });
+            DropIndex("dbo.Picture", new[] { "MediaStorageId" });
+            DropColumn("dbo.QueuedEmailAttachment", "MediaStorageId");
+            DropColumn("dbo.Download", "MediaStorageId");
+            DropColumn("dbo.Manufacturer", "HasDiscountsApplied");
+            DropColumn("dbo.Picture", "MediaStorageId");
+            DropTable("dbo.Discount_AppliedToManufacturers");
+            DropTable("dbo.MediaStorage");
         }
 
 		public bool RollbackOnFailure
@@ -100,7 +120,7 @@ namespace SmartStore.Data.Migrations
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
 
-			var binaryDatas = context.Set<BinaryData>();
+			var mediaStorages = context.Set<MediaStorage>();
 			var fileSystem = new LocalFileSystem();
 			var storeMediaInDb = true;
 
@@ -129,17 +149,17 @@ namespace SmartStore.Data.Migrations
 
 			if (storeMediaInDb)
 			{
-				PageEntities(context, binaryDatas, context.Set<Picture>().OrderBy(x => x.Id), picture =>
+				PageEntities(context, mediaStorages, context.Set<Picture>().OrderBy(x => x.Id), picture =>
 				{
 #pragma warning disable 612, 618
 					if (picture.PictureBinary != null && picture.PictureBinary.LongLength > 0)
 					{
-						var binaryData = new BinaryData { Data = picture.PictureBinary };
-						binaryDatas.AddOrUpdate(binaryData);
+						var mediaStorage = new MediaStorage { Data = picture.PictureBinary };
+						mediaStorages.AddOrUpdate(mediaStorage);
 						context.SaveChanges();
 
 						picture.PictureBinary = null;
-						picture.BinaryDataId = binaryData.Id;
+						picture.MediaStorageId = mediaStorage.Id;
 					}
 #pragma warning restore 612, 618
 				});
@@ -149,7 +169,7 @@ namespace SmartStore.Data.Migrations
 
 			#region Downloads
 
-			PageEntities(context, binaryDatas, context.Set<Download>().OrderBy(x => x.Id), download =>
+			PageEntities(context, mediaStorages, context.Set<Download>().OrderBy(x => x.Id), download =>
 			{
 #pragma warning disable 612, 618
 				if (download.DownloadBinary != null && download.DownloadBinary.LongLength > 0)
@@ -157,11 +177,11 @@ namespace SmartStore.Data.Migrations
 					if (storeMediaInDb)
 					{
 						// move binary data
-						var binaryData = new BinaryData { Data = download.DownloadBinary };
-						binaryDatas.AddOrUpdate(binaryData);
+						var mediaStorage = new MediaStorage { Data = download.DownloadBinary };
+						mediaStorages.AddOrUpdate(mediaStorage);
 						context.SaveChanges();
 
-						download.BinaryDataId = binaryData.Id;
+						download.MediaStorageId = mediaStorage.Id;
 					}
 					else
 					{
@@ -186,7 +206,7 @@ namespace SmartStore.Data.Migrations
 				.Where(x => x.StorageLocation == EmailAttachmentStorageLocation.Blob)
 				.OrderBy(x => x.Id);
 
-			PageEntities(context, binaryDatas, attachmentQuery, attachment =>
+			PageEntities(context, mediaStorages, attachmentQuery, attachment =>
 			{
 #pragma warning disable 612, 618
 				if (attachment.Data != null && attachment.Data.LongLength > 0)
@@ -194,11 +214,11 @@ namespace SmartStore.Data.Migrations
 					if (storeMediaInDb)
 					{
 						// move binary data
-						var binaryData = new BinaryData { Data = attachment.Data };
-						binaryDatas.AddOrUpdate(binaryData);
+						var mediaStorage = new MediaStorage { Data = attachment.Data };
+						mediaStorages.AddOrUpdate(mediaStorage);
 						context.SaveChanges();
 
-						attachment.BinaryDataId = binaryData.Id;
+						attachment.MediaStorageId = mediaStorage.Id;
 					}
 					else
 					{
@@ -263,23 +283,42 @@ namespace SmartStore.Data.Migrations
 				"The storing of data through storage provider \"{0}\" failed in \"{1}\"",
 				"Das Speichern von Daten durch den Storage-Provider \"{0}\" ist während \"{1}\" fehlgeschlagen");
 
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Tax.SubsidiaryServicesTaxType.SpecifiedTaxCategory",
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Tax.AuxiliaryServicesTaxType.SpecifiedTaxCategory",
 				"Specified tax category",
 				"Festgelegte Steuerklasse");
 
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Tax.SubsidiaryServicesTaxType.HighestCartAmount",
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Tax.AuxiliaryServicesTaxType.HighestCartAmount",
 				"Highest amount in cart",
 				"Höchster Wert im Warenkorb");
 
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Tax.SubsidiaryServicesTaxType.ProRata",
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Tax.AuxiliaryServicesTaxType.ProRata",
 				"Pro rata in accordance with main service",
 				"Anteilig gemäß der Hauptleistung");
 
-			builder.AddOrUpdate("Admin.Configuration.Settings.Tax.SubsidiaryServicesTaxingType",
-				"Taxing of subsidiary services",
+			builder.AddOrUpdate("Admin.Configuration.Settings.Tax.AuxiliaryServicesTaxingType",
+				"Taxing of auxiliary services",
 				"Besteuerung von Nebenleistungen",
-				"Specifies how to calculate the tax amount for subsidiary services like shipping and payment fees.",
+				"Specifies how to calculate the tax amount for auxiliary services like shipping and payment fees.",
 				"Legt fest, wie die Mehrwertsteuer auf Nebenleistungen (wie z.B. Versandkosten und Zahlartgebühren) berechnet werden soll.");
+
+
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Discounts.DiscountType.AssignedToManufacturers",
+				"Assigned to manufacturers",
+				"Bezogen auf die Hersteller");
+
+			builder.AddOrUpdate("Admin.Promotions.Discounts.NoObjectsAssigned",
+				"No objects assigned",
+				"Keinen Objekten zugeordnet");
+
+			builder.AddOrUpdate("Admin.Promotions.Discounts.Fields.AppliedToManufacturers",
+				"Assigned to manufacturers",
+				"Herstellern zugeordnet");
+
+			builder.AddOrUpdate("Admin.Promotions.Discounts.NoDiscountsAvailable",
+				"There are no discounts available. Please create at least one discount before making an assignment.",
+				"Es sind keine Rabatte verfügbar. Erstellen Sie bitte zunächst mindestens einen Rabatt, bevor Sie eine Zuordung vornehmen.");
+
 
 
 			builder.Delete(
@@ -288,7 +327,11 @@ namespace SmartStore.Data.Migrations
 				"Admin.Configuration.Settings.Media.MoveToFs",
 				"Admin.Configuration.Settings.Media.MoveToDb",
 				"Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase",
-				"Admin.Configuration.Settings.Media.MovePicturesNote");
+				"Admin.Configuration.Settings.Media.MovePicturesNote",
+				"Admin.Catalog.Categories.Discounts.NoDiscounts",
+				"Admin.Catalog.Products.Discounts.NoDiscounts",
+				"Admin.Promotions.Discounts.Fields.AppliedToProducts.NoRecords",
+				"Admin.Promotions.Discounts.Fields.AppliedToCategories.NoRecords");
 		}
 	}
 }

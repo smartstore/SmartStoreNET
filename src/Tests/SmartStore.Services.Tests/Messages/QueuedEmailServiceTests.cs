@@ -78,8 +78,8 @@ namespace SmartStore.Services.Tests.Messages
 			var attachBlob = new QueuedEmailAttachment 
 			{ 
 				StorageLocation = EmailAttachmentStorageLocation.Blob, 
-				BinaryData = new BinaryData { Id = 1, Data = pdfBinary },
-				BinaryDataId = 1,
+				MediaStorage = new MediaStorage { Id = 1, Data = pdfBinary },
+				MediaStorageId = 1,
 				Name = "blob.pdf", 
 				MimeType = "application/pdf" 
 			};
@@ -105,8 +105,8 @@ namespace SmartStore.Services.Tests.Messages
 				File = new Download
 				{
 					ContentType = "application/pdf",
-					BinaryData = new BinaryData { Id = 2, Data = pdfBinary },
-					BinaryDataId = 2,
+					MediaStorage = new MediaStorage { Id = 2, Data = pdfBinary },
+					MediaStorageId = 2,
 					Extension = ".pdf",
 					Filename = "file"
 				}

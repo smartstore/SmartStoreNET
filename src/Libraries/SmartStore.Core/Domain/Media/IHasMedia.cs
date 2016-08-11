@@ -3,13 +3,13 @@
 	public interface IHasMedia
 	{
 		/// <summary>
-		/// Gets or sets the binary data identifier
+		/// Gets or sets the media storage identifier
 		/// </summary>
-		int? BinaryDataId { get; set; }
+		int? MediaStorageId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the binary data
+		/// Gets or sets the media storage
 		/// </summary>
-		BinaryData BinaryData { get; set; }
+		MediaStorage MediaStorage { get; set; }
 	}
 }

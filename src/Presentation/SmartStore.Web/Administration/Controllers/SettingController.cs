@@ -437,7 +437,7 @@ namespace SmartStore.Admin.Controllers
 
             model.TaxBasedOnValues = taxSettings.TaxBasedOn.ToSelectList();
             model.TaxDisplayTypeValues = taxSettings.TaxDisplayType.ToSelectList();
-			model.AvailableSubsidiaryServicesTaxTypes = taxSettings.SubsidiaryServicesTaxingType.ToSelectList();
+			model.AvailableAuxiliaryServicesTaxTypes = taxSettings.AuxiliaryServicesTaxingType.ToSelectList();
 
             //tax categories
             var taxCategories = _taxCategoryService.GetAllTaxCategories();

@@ -102,7 +102,7 @@ namespace SmartStore.Services.Media.Storage
 				{
 					// pictures
 					var queryPictures = _pictureRepository.Table
-						.Expand(x => x.BinaryData)
+						.Expand(x => x.MediaStorage)
 						.OrderBy(x => x.Id);
 
 					PageEntities(queryPictures, picture =>
@@ -116,7 +116,7 @@ namespace SmartStore.Services.Media.Storage
 
 					// downloads
 					var queryDownloads = _downloadRepository.Table
-						.Expand(x => x.BinaryData)
+						.Expand(x => x.MediaStorage)
 						.OrderBy(x => x.Id);
 
 					PageEntities(queryDownloads, download =>
@@ -129,7 +129,7 @@ namespace SmartStore.Services.Media.Storage
 
 					// queued email attachments
 					var queryQueuedEmailAttachments = _queuedEmailAttachmentRepository.Table
-						.Expand(x => x.BinaryData)
+						.Expand(x => x.MediaStorage)
 						.Where(x => x.StorageLocation == EmailAttachmentStorageLocation.Blob)
 						.OrderBy(x => x.Id);
 

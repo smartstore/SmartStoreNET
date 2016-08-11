@@ -65,10 +65,10 @@ namespace SmartStore.Utilities
 				// 0 omits the length attribute but that invalidates the feed
 				long pictureLength = 10000;
 
-				if ((picture.BinaryDataId ?? 0) != 0)
+				if ((picture.MediaStorageId ?? 0) != 0)
 				{
 					// do not care about storage provider
-					pictureLength = picture.BinaryData.Data.LongLength;
+					pictureLength = picture.MediaStorage.Data.LongLength;
 				}
 
 				var enclosure = SyndicationLink.CreateMediaEnclosureLink(new Uri(pictureUrl), picture.MimeType.EmptyNull(), pictureLength);

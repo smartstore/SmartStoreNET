@@ -10,14 +10,14 @@ namespace SmartStore.Services.Media.Storage
 	public class DatabaseMediaStorageProvider : IMediaStorageProvider, ISupportsMediaMoving
 	{
 		private readonly IDbContext _dbContext;
-		private readonly IRepository<BinaryData> _binaryDataRepository;
+		private readonly IRepository<MediaStorage> _mediaStorageRepository;
 
 		public DatabaseMediaStorageProvider(
 			IDbContext dbContext,
-			IRepository<BinaryData> binaryDataRepository)
+			IRepository<MediaStorage> mediaStorageRepository)
 		{
 			_dbContext = dbContext;
-			_binaryDataRepository = binaryDataRepository;
+			_mediaStorageRepository = mediaStorageRepository;
 		}
 
 		public static string SystemName
@@ -29,9 +29,9 @@ namespace SmartStore.Services.Media.Storage
 		{
 			Guard.NotNull(media, nameof(media));
 
-			if ((media.Entity.BinaryDataId ?? 0) != 0 && media.Entity.BinaryData != null)
+			if ((media.Entity.MediaStorageId ?? 0) != 0 && media.Entity.MediaStorage != null)
 			{
-				return media.Entity.BinaryData.Data;
+				return media.Entity.MediaStorage.Data;
 			}
 
 			return new byte[0];
@@ -43,37 +43,37 @@ namespace SmartStore.Services.Media.Storage
 
 			if (data == null || data.LongLength == 0)
 			{
-				// remove binary data if any
-				if ((media.Entity.BinaryDataId ?? 0) != 0 && media.Entity != null && media.Entity.BinaryData != null)
+				// remove media storage if any
+				if ((media.Entity.MediaStorageId ?? 0) != 0 && media.Entity != null && media.Entity.MediaStorage != null)
 				{
-					_binaryDataRepository.Delete(media.Entity.BinaryData);
+					_mediaStorageRepository.Delete(media.Entity.MediaStorage);
 				}
 			}
 			else
 			{
-				if (media.Entity.BinaryData == null)
+				if (media.Entity.MediaStorage == null)
 				{
-					// entity has no binary data -> insert
-					var newBinary = new BinaryData { Data = data };
+					// entity has no media storage -> insert
+					var newStorage = new MediaStorage { Data = data };
 
-					_binaryDataRepository.Insert(newBinary);
+					_mediaStorageRepository.Insert(newStorage);
 
-					if (newBinary.Id == 0)
+					if (newStorage.Id == 0)
 					{
 						// actually we should never get here
 						_dbContext.SaveChanges();
 					}
 
-					media.Entity.BinaryDataId = newBinary.Id;
+					media.Entity.MediaStorageId = newStorage.Id;
 
 					_dbContext.SaveChanges();
 				}
 				else
 				{
-					// update existing binary data
-					media.Entity.BinaryData.Data = data;
+					// update existing media storage
+					media.Entity.MediaStorage.Data = data;
 
-					_binaryDataRepository.Update(media.Entity.BinaryData);
+					_mediaStorageRepository.Update(media.Entity.MediaStorage);
 				}
 			}
 		}
@@ -82,10 +82,10 @@ namespace SmartStore.Services.Media.Storage
 		{
 			foreach (var media in medias)
 			{
-				if ((media.Entity.BinaryDataId ?? 0) != 0)
+				if ((media.Entity.MediaStorageId ?? 0) != 0)
 				{
-					// this also nulls media.Entity.BinaryDataId
-					_binaryDataRepository.Delete(media.Entity.BinaryData);
+					// this also nulls media.Entity.MediaStorageId
+					_mediaStorageRepository.Delete(media.Entity.MediaStorage);
 				}
 			}
 		}
@@ -97,19 +97,19 @@ namespace SmartStore.Services.Media.Storage
 			Guard.NotNull(context, nameof(context));
 			Guard.NotNull(media, nameof(media));
 
-			if (media.Entity.BinaryData != null)
+			if (media.Entity.MediaStorage != null)
 			{
 				// let target store data (into a file for example)
-				target.Receive(context, media, media.Entity.BinaryData.Data);
+				target.Receive(context, media, media.Entity.MediaStorage.Data);
 
 				// remove picture binary from DB
 				try
 				{
-					_binaryDataRepository.Delete(media.Entity.BinaryData);
+					_mediaStorageRepository.Delete(media.Entity.MediaStorage);
 				}
 				catch { }
 
-				media.Entity.BinaryDataId = null;
+				media.Entity.MediaStorageId = null;
 
 				context.ShrinkDatabase = true;
 			}
@@ -124,7 +124,7 @@ namespace SmartStore.Services.Media.Storage
 			if (data != null && data.LongLength > 0)
 			{
 				// requires autoDetectChanges set to true or remove explicit entity detaching
-				media.Entity.BinaryData = new BinaryData { Data = data };
+				media.Entity.MediaStorage = new MediaStorage { Data = data };
 			}
 		}
 

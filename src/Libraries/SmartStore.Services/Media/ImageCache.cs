@@ -84,6 +84,13 @@ namespace SmartStore.Services.Media
 			if (imagePath.IsEmpty())
                 return null;
 
+			var publicUrl = _fileSystem.GetPublicUrl(BuildPath(imagePath)).EmptyNull();
+			if (publicUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || publicUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+			{
+				// absolute url
+				return publicUrl;
+			}
+
 			var root = storeLocation;
 
 			if (root.IsEmpty())
@@ -93,14 +100,6 @@ namespace SmartStore.Services.Media
 				{
 					root = cdnUrl;
 				}
-			}
-
-			var publicUrl = _fileSystem.GetPublicUrl(BuildPath(imagePath)).EmptyNull();
-
-			if (publicUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || publicUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-			{
-				// absolute url
-				return publicUrl;
 			}
 
 			if (root.IsEmpty())

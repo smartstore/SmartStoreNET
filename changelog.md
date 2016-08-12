@@ -2,6 +2,9 @@
 
 ## SmartStore.NET 3.0
 
+### Breaking change
+* Removed Web API plugin from open source
+
 ### Improvements
 * Added order message token for accepting third party email handover
 * ECB currency exchange rate provider now cross calculates rates based on euro rates

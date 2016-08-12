@@ -319,6 +319,7 @@ namespace SmartStore.Data.Migrations
 				"There are no discounts available. Please create at least one discount before making an assignment.",
 				"Es sind keine Rabatte verfügbar. Erstellen Sie bitte zunächst mindestens einen Rabatt, bevor Sie eine Zuordung vornehmen.");
 
+			builder.AddOrUpdate("Admin.Plugins.KnownGroup.Performance", "Performance", "Performance");
 
 
 			builder.Delete(

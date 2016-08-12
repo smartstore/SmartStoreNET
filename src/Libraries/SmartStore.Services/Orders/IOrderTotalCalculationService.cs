@@ -6,10 +6,7 @@ using SmartStore.Core.Domain.Shipping;
 
 namespace SmartStore.Services.Orders
 {
-    /// <summary>
-    /// Order service interface
-    /// </summary>
-    public partial interface IOrderTotalCalculationService
+	public partial interface IOrderTotalCalculationService
     {
         /// <summary>
         /// Gets shopping cart subtotal
@@ -112,29 +109,19 @@ namespace SmartStore.Services.Orders
         /// <param name="cart">Cart</param>
         /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
         /// <param name="taxRate">Applied tax rate</param>
-        /// <returns>Shipping total</returns>
-		decimal? GetShoppingCartShippingTotal(IList<OrganizedShoppingCartItem> cart, bool includingTax,
-            out decimal taxRate);
-
-        /// <summary>
-        /// Gets shopping cart shipping total
-        /// </summary>
-        /// <param name="cart">Cart</param>
-        /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
-        /// <param name="taxRate">Applied tax rate</param>
         /// <param name="appliedDiscount">Applied discount</param>
         /// <returns>Shipping total</returns>
 		decimal? GetShoppingCartShippingTotal(IList<OrganizedShoppingCartItem> cart, bool includingTax,
             out decimal taxRate, out Discount appliedDiscount);
 
-        /// <summary>
-        /// Gets a shipping discount
-        /// </summary>
-        /// <param name="customer">Customer</param>
-        /// <param name="shippingTotal">Shipping total</param>
-        /// <param name="appliedDiscount">Applied discount</param>
-        /// <returns>Shipping discount</returns>
-        decimal GetShippingDiscount(Customer customer, decimal shippingTotal, out Discount appliedDiscount);
+		/// <summary>
+		/// Gets a shipping discount
+		/// </summary>
+		/// <param name="customer">Customer</param>
+		/// <param name="shippingTotal">Shipping total</param>
+		/// <param name="appliedDiscount">Applied discount</param>
+		/// <returns>Shipping discount</returns>
+		decimal GetShippingDiscount(Customer customer, decimal shippingTotal, out Discount appliedDiscount);
 
 
 

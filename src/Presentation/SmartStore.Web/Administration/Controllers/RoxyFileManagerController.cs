@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using SmartStore.Core.IO;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
@@ -38,7 +39,11 @@ namespace SmartStore.Admin.Controllers
 			_fileSystem = fileSystem;
 			_context = context;
 			_response = _context.Response;
+
+			Logger = NullLogger.Instance;
 		}
+
+		public ILogger Logger { get; set; }
 
 		#region Utilities
 
@@ -970,6 +975,8 @@ namespace SmartStore.Admin.Controllers
 				{
 					_response.Write(GetResultString(exception.Message, "error"));
 				}
+
+				Logger.ErrorsAll(exception);
 			}
 		}
 	}

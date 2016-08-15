@@ -6,18 +6,24 @@
 	public enum AuxiliaryServicesTaxType
 	{
 		/// <summary>
-		/// Calculate tax of auxiliary services by the tax category specified in settings
+		/// Calculate tax of auxiliary services with the tax category specified in settings
 		/// </summary>
 		SpecifiedTaxCategory = 0,
 
 		/// <summary>
-		/// Calculate tax by the tax rate of the product that has the highest cart subtotal
+		/// Calculate tax with the tax rate that has the highest amount in the cart
 		/// </summary>
 		HighestCartAmount = 10,
 
 		/// <summary>
+		/// Calculate tax by the highest tax rate in the cart
+		/// </summary>
+		HighestTaxRate = 15,
+
+		/// <summary>
 		/// Calculate tax pro rata in accordance with main service (proportion of line subtotal and sum of all line subtotals)
 		/// </summary>
-		ProRata = 20
+		/// <remarks>commented out cause requires several plugins to be updated and migration of Order.OrderShippingTaxRate and Order.PaymentMethodAdditionalFeeTaxRate</remarks>
+		///ProRata = 20
 	}
 }

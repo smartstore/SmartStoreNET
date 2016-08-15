@@ -96,9 +96,9 @@
                             columns.Bound(x => x.ShortMessage)
                                 .ClientTemplate("<span class='label label-<#= LogLevelHint #>' style='margin-right: 4px'><#= LogLevel #></span><a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
 							columns.Bound(x => x.CreatedOn)
-								.Width(150);
+								.Width(160);
 							columns.Bound(x => x.UpdatedOn)
-								.Width(150);
+								.Width(160);
                         })
                         .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("LogList", "Log"))

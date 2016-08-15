@@ -291,6 +291,10 @@ namespace SmartStore.Data.Migrations
 				"Highest amount in cart",
 				"Höchster Wert im Warenkorb");
 
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Tax.AuxiliaryServicesTaxType.HighestTaxRate",
+				"Highest tax rate in cart",
+				"Höchste Steuerrate im Warenkorb");
+
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Tax.AuxiliaryServicesTaxType.ProRata",
 				"Pro rata in accordance with main service",
 				"Anteilig gemäß der Hauptleistung");

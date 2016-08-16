@@ -230,7 +230,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.Deleted, mo => mo.Ignore())
 				.ForMember(dest => dest.Picture, mo => mo.Ignore())
-				.ForMember(dest => dest.HasDiscountsApplied, mo => mo.Ignore());
+				.ForMember(dest => dest.HasDiscountsApplied, mo => mo.Ignore())
+				.ForMember(dest => dest.AppliedDiscounts, mo => mo.Ignore());
             //products
 			Mapper.CreateMap<Product, ProductModel>()
 				.ForMember(dest => dest.ProductTypeName, mo => mo.Ignore())
@@ -570,6 +571,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.DiscountLimitation, mo => mo.Ignore())
                 .ForMember(dest => dest.DiscountRequirements, mo => mo.Ignore())
                 .ForMember(dest => dest.AppliedToCategories, mo => mo.Ignore())
+				.ForMember(dest => dest.AppliedToManufacturers, mo => mo.Ignore())
 				.ForMember(dest => dest.AppliedToProducts, mo => mo.Ignore());
             //gift cards
             Mapper.CreateMap<GiftCard, GiftCardModel>()

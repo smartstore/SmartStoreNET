@@ -240,6 +240,7 @@ namespace SmartStore.Services.Tests.Catalog
 			product.HasDiscountsApplied = true;
 			_discountService.Expect(ds => ds.IsDiscountValid(discount1, customer)).Return(true);
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
+			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToManufacturers)).Return(new List<Discount>());
 
 			_priceCalcService.GetFinalPrice(product, customer, 0, true, 1).ShouldEqual(9.34M);
         }
@@ -260,6 +261,7 @@ namespace SmartStore.Services.Tests.Catalog
 			};
 
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
+			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToManufacturers)).Return(new List<Discount>());
 
 			//customer
 			Customer customer = null;
@@ -306,6 +308,7 @@ namespace SmartStore.Services.Tests.Catalog
 			product.HasDiscountsApplied = true;
 			_discountService.Expect(ds => ds.IsDiscountValid(discount1, customer)).Return(true);
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
+			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToManufacturers)).Return(new List<Discount>());
 
 			var discount2 = new Discount()
 			{

@@ -39,11 +39,7 @@ namespace SmartStore.Admin.Controllers
 			_fileSystem = fileSystem;
 			_context = context;
 			_response = _context.Response;
-
-			Logger = NullLogger.Instance;
 		}
-
-		public ILogger Logger { get; set; }
 
 		#region Utilities
 

@@ -153,7 +153,7 @@
                                         <img alt="@item.Id" src="@item.PictureThumbnailUrl" @Html.Attr("class", "zoomable-thumb", !item.NoThumb) />
                                     </text>
 								)
-								.ClientTemplate("<img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> />");
+								.ClientTemplate("<div class='zoomable-thumb-container'><img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> /></div>");
 						}
 						columns.Bound(x => x.Name)
 							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))

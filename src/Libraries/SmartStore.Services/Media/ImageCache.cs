@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -50,7 +51,7 @@ namespace SmartStore.Services.Media
 
             if (cachedImage.Exists)
             {
-				_fileSystem.DeleteFile(cachedImage.Path);
+				_fileSystem.DeleteFile(BuildPath(cachedImage.Path));
             }
 
 			// create folder if needed
@@ -78,6 +79,13 @@ namespace SmartStore.Services.Media
 
             return result;
         }
+
+		public virtual Stream OpenCachedImage(CachedImageResult cachedImage)
+		{
+			Guard.NotNull(cachedImage, nameof(cachedImage));
+
+			return _fileSystem.GetFile(BuildPath(cachedImage.Path)).OpenRead();
+		}
 
         public virtual string GetImageUrl(string imagePath, string storeLocation = null)
         {

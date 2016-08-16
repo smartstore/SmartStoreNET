@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,11 +39,18 @@ namespace SmartStore.Services.Media
         /// <remarks>If the requested image does not exist in the cache, the value of the <c>Exists</c> property will be <c>false</c>.</remarks>
         CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, object settings = null);
 
-        /// <summary>
-        /// Deletes all cached images for the given <see cref="Picture"/>
-        /// </summary>
-        /// <param name="picture">The <see cref="Picture"/> for which to delete cached images</param>
-        void DeleteCachedImages(Picture picture);
+		/// <summary>
+		/// Opens a readonly file stream to the cached image
+		/// </summary>
+		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
+		/// <returns>File stream</returns>
+		Stream OpenCachedImage(CachedImageResult cachedImage);
+
+		/// <summary>
+		/// Deletes all cached images for the given <see cref="Picture"/>
+		/// </summary>
+		/// <param name="picture">The <see cref="Picture"/> for which to delete cached images</param>
+		void DeleteCachedImages(Picture picture);
 
         /// <summary>
         /// Deletes all cached images (nukes all files in the cache folder)

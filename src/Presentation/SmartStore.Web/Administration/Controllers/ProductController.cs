@@ -16,6 +16,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Events;
@@ -89,6 +90,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICommonServices _services;
 		private readonly SeoSettings _seoSettings;
+		private readonly MediaSettings _mediaSettings;
 
 		#endregion
 
@@ -135,7 +137,8 @@ namespace SmartStore.Admin.Controllers
 			IEventPublisher eventPublisher,
 			IGenericAttributeService genericAttributeService,
             ICommonServices services,
-			SeoSettings seoSettings)
+			SeoSettings seoSettings,
+			MediaSettings mediaSettings)
 		{
             this._productService = productService;
             this._productTemplateService = productTemplateService;
@@ -176,8 +179,9 @@ namespace SmartStore.Admin.Controllers
 			this._dbContext = dbContext;
 			this._eventPublisher = eventPublisher;
 			this._genericAttributeService = genericAttributeService;
-            _services = services;
-			_seoSettings = seoSettings;
+            this._services = services;
+			this._seoSettings = seoSettings;
+			this._mediaSettings = mediaSettings;
 		}
 
         #endregion
@@ -822,8 +826,18 @@ namespace SmartStore.Admin.Controllers
             if (product != null && _adminAreaSettings.DisplayProductPictures)
             {
                 var defaultProductPicture = _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
-                model.PictureThumbnailUrl = _pictureService.GetPictureUrl(defaultProductPicture, 75, true);
-                model.NoThumb = defaultProductPicture == null;
+				//model.PictureThumbnailUrl = _pictureService.GetPictureUrl(defaultProductPicture, _mediaSettings.ProductThumbPictureSize, true);
+
+				if (defaultProductPicture != null)
+				{
+					model.PictureThumbnailUrl = Url.Action("Picture", "Media", new { id = defaultProductPicture.Id, size = _mediaSettings.ProductThumbPictureSize });
+				}
+				else
+				{
+					model.PictureThumbnailUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.ProductThumbPictureSize, PictureType.Entity);
+				}
+
+				model.NoThumb = defaultProductPicture == null;
             }
         }
 

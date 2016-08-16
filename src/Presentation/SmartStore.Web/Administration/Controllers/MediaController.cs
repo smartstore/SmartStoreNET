@@ -1,24 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using SmartStore.Core;
+using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Admin.Controllers
 {
-
 	public partial class MediaController : AdminControllerBase
     {
+		private readonly IPictureService _pictureService;
+		private readonly IImageCache _imageCache;
 		private readonly IPermissionService _permissionService;
         private readonly IWebHelper _webHelper;
 
-        public MediaController(IPermissionService permissionService, IWebHelper webHelper)
+        public MediaController(
+			IPictureService pictureService,
+			IImageCache imageCache,
+			IPermissionService permissionService, 
+			IWebHelper webHelper)
         {
-            this._permissionService = permissionService;
-            this._webHelper = webHelper;
+			_pictureService = pictureService;
+			_imageCache = imageCache;
+			_permissionService = permissionService;
+            _webHelper = webHelper;
         }
 
         [HttpPost]
@@ -46,6 +55,40 @@ namespace SmartStore.Admin.Controllers
 		{
 			var result = this.UploadImageInternal();
 			return Json(result);
+		}
+
+		public ActionResult Picture(int id /* pictureId*/, int? size)
+		{
+			//return new HttpStatusCodeResult(System.Net.HttpStatusCode.NotModified);
+
+			var picture = _pictureService.GetPictureById(id);
+
+			if (picture == null)
+				return HttpNotFound();
+
+			var targetSize = size ?? 100;
+
+			var settings = new NameValueCollection();
+			settings["maxwidth"] = targetSize.ToString();
+			settings["maxheight"] = targetSize.ToString();
+
+			//return Redirect(_pictureService.GetPictureUrl(picture, size ?? 100, false));
+			
+			var cachedImage = _imageCache.GetCachedImage(picture, settings);
+
+			if (!cachedImage.Exists)
+			{
+				// ensure thumbnail gets created
+				_pictureService.GetPictureUrl(picture, targetSize, false);
+			}
+
+			// open the stream
+			var stream = _imageCache.OpenCachedImage(cachedImage);
+
+			Response.Cache.SetCacheability(System.Web.HttpCacheability.Public);
+			Response.Cache.SetLastModified(DateTime.SpecifyKind(picture.UpdatedOnUtc, DateTimeKind.Utc));
+
+			return File(stream, picture.MimeType);
 		}
 
 		private UploadFileResult UploadImageInternal()

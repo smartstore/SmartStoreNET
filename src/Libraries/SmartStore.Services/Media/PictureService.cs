@@ -191,6 +191,8 @@ namespace SmartStore.Services.Media
 								_imageCache.AddImageToCache(cachedImage, resultStream.GetBuffer());
 							}
 						}
+
+						cachedImage.Exists = true;
 					}
 					catch (Exception exception)
 					{
@@ -272,12 +274,12 @@ namespace SmartStore.Services.Media
 
 		public virtual byte[] LoadPictureBinary(Picture picture)
         {
-			Guard.ArgumentNotNull(() => picture);
+			Guard.NotNull(picture, nameof(picture));
 
 			return _storageProvider.Value.Load(picture.ToMedia());
         }
 
-        public virtual Size GetPictureSize(Picture picture)
+		public virtual Size GetPictureSize(Picture picture)
         {
             var pictureBinary = LoadPictureBinary(picture);
             return GetPictureSize(pictureBinary);

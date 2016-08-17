@@ -37,7 +37,16 @@ namespace SmartStore.Services.Media.Storage
 
 			var filePath = GetPicturePath(media);
 
-			return (_fileSystem.ReadAllBytes(filePath) ?? new byte[0]);
+			return _fileSystem.ReadAllBytes(filePath) ?? new byte[0];
+		}
+
+		public async Task<byte[]> LoadAsync(MediaItem media)
+		{
+			Guard.NotNull(media, nameof(media));
+
+			var filePath = GetPicturePath(media);
+
+			return (await _fileSystem.ReadAllBytesAsync(filePath)) ?? new byte[0];
 		}
 
 		public void Save(MediaItem media, byte[] data)
@@ -51,6 +60,24 @@ namespace SmartStore.Services.Media.Storage
 			if (data != null && data.LongLength != 0)
 			{
 				_fileSystem.WriteAllBytes(filePath, data);
+			}
+			else if (_fileSystem.FileExists(filePath))
+			{
+				_fileSystem.DeleteFile(filePath);
+			}
+		}
+
+		public async Task SaveAsync(MediaItem media, byte[] data)
+		{
+			Guard.NotNull(media, nameof(media));
+
+			// TODO: (?) if the new file extension differs from the old one then the old file never gets deleted
+
+			var filePath = GetPicturePath(media);
+
+			if (data != null && data.LongLength != 0)
+			{
+				await _fileSystem.WriteAllBytesAsync(filePath, data);
 			}
 			else if (_fileSystem.FileExists(filePath))
 			{
@@ -105,6 +132,22 @@ namespace SmartStore.Services.Media.Storage
 				var filePath = GetPicturePath(media);
 
 				_fileSystem.WriteAllBytes(filePath, data);
+
+				context.AffectedFiles.Add(filePath);
+			}
+		}
+
+		public async Task ReceiveAsync(MediaMoverContext context, MediaItem media, byte[] data)
+		{
+			Guard.NotNull(context, nameof(context));
+			Guard.NotNull(media, nameof(media));
+
+			// store data into file
+			if (data != null && data.LongLength != 0)
+			{
+				var filePath = GetPicturePath(media);
+
+				await _fileSystem.WriteAllBytesAsync(filePath, data);
 
 				context.AffectedFiles.Add(filePath);
 			}

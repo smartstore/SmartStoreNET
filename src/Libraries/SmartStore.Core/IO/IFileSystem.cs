@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace SmartStore.Core.IO
 {
@@ -123,6 +124,14 @@ namespace SmartStore.Core.IO
         IFile CreateFile(string path);
 
 		/// <summary>
+		/// Asynchronously creates a file in the storage provider.
+		/// </summary>
+		/// <param name="path">The relative path to the file to be created.</param>
+		/// <exception cref="ArgumentException">If the file already exists.</exception>
+		/// <returns>The created file.</returns>
+		Task<IFile> CreateFileAsync(string path);
+
+		/// <summary>
 		/// Copies a file in the storage provider.
 		/// </summary>
 		/// <param name="path">The relative path to the file to be copied.</param>
@@ -136,6 +145,14 @@ namespace SmartStore.Core.IO
 		/// <param name="inputStream">The stream to be saved.</param>
 		/// <exception cref="ArgumentException">If the stream can't be saved due to access permissions.</exception>
 		void SaveStream(string path, Stream inputStream);
+
+		/// <summary>
+		/// Asynchronously saves a stream in the storage provider.
+		/// </summary>
+		/// <param name="path">The relative path to the file to be created.</param>
+		/// <param name="inputStream">The stream to be saved.</param>
+		/// <exception cref="ArgumentException">If the stream can't be saved due to access permissions.</exception>
+		Task SaveStreamAsync(string path, Stream inputStream);
 
 		/// <summary>
 		/// Combines to paths.

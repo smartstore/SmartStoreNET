@@ -1,21 +1,35 @@
-﻿using SmartStore.Core.Plugins;
+﻿using System.Threading.Tasks;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Media.Storage
 {
 	public interface IMediaStorageProvider : IProvider
 	{
 		/// <summary>
-		/// Load media item data
+		/// Loads media item data
 		/// </summary>
 		/// <param name="media">Media storage item</param>
 		byte[] Load(MediaItem media);
 
 		/// <summary>
-		/// Save media item data
+		/// Asynchronously loads media item data
+		/// </summary>
+		/// <param name="media">Media storage item</param>
+		Task<byte[]> LoadAsync(MediaItem media);
+
+		/// <summary>
+		/// Saves media item data
 		/// </summary>
 		/// <param name="media">Media storage item</param>
 		/// <param name="data">New binary data</param>
 		void Save(MediaItem media, byte[] data);
+
+		/// <summary>
+		/// Asynchronously saves media item data
+		/// </summary>
+		/// <param name="media">Media storage item</param>
+		/// <param name="data">New binary data</param>
+		Task SaveAsync(MediaItem media, byte[] data);
 
 		/// <summary>
 		/// Remove media storage item(s)

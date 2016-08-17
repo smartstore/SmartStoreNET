@@ -64,7 +64,7 @@ namespace SmartStore.Admin.Controllers
 			return Json(result);
 		}
 
-		public ActionResult Picture(int id /* pictureId*/, int? size)
+		public async Task<ActionResult> Picture(int id /* pictureId*/, int? size)
 		{
 			var picture = _pictureService.GetPictureById(id);
 
@@ -111,7 +111,7 @@ namespace SmartStore.Admin.Controllers
 			if (!cachedImage.Exists)
 			{
 				// create and return result
-				var buffer = _imageCache.ProcessAndAddImageToCache(cachedImage, _pictureService.LoadPictureBinary(picture), targetSize);
+				var buffer = await _imageCache.ProcessAndAddImageToCacheAsync(cachedImage, await _pictureService.LoadPictureBinaryAsync(picture), targetSize);
 				return File(buffer, mime);
 			}
 			else
@@ -136,7 +136,7 @@ namespace SmartStore.Admin.Controllers
 
 		private string GetFileETag(string name, string mimeType, string timestamp)
 		{
-			return String.Concat(name, mimeType, timestamp).Hash(Encoding.UTF8);
+			return "\"" + String.Concat(name, mimeType, timestamp).Hash(Encoding.UTF8) + "\"";
 		}
 
 		private CachedImageResult GetCachedImage(Picture picture, int size)

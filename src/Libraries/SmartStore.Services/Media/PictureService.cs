@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using ImageResizer;
 using SmartStore.Collections;
 using SmartStore.Core;
@@ -194,6 +195,74 @@ namespace SmartStore.Services.Media
 			return url;
 		}
 
+		protected internal virtual async Task<string> GetProcessedImageUrlAsync(
+			object source, // byte[], string or Picture
+			string seoFileName,
+			string extension,
+			int targetSize = 0,
+			string storeLocation = null)
+		{
+			var resizeSettings = new ResizeSettings();
+			if (targetSize > 0)
+			{
+				resizeSettings.MaxWidth = targetSize;
+				resizeSettings.MaxHeight = targetSize;
+			}
+
+			var picture = source as Picture;
+
+			var cachedImage = _imageCache.GetCachedImage(
+				picture?.Id,
+				seoFileName,
+				extension,
+				resizeSettings);
+
+			if (!cachedImage.Exists)
+			{
+				byte[] buffer = null;
+
+				try
+				{
+					if (source is string)
+					{
+						// static default image
+						buffer = File.ReadAllBytes((string)source);
+					}
+					else if (source is Picture)
+					{
+						buffer = await LoadPictureBinaryAsync((Picture)source);
+					}
+					else if (source is byte[])
+					{
+						buffer = (byte[])source;
+					}
+
+					if (buffer == null || buffer.Length == 0)
+					{
+						return string.Empty;
+					}
+				}
+				catch (Exception exception)
+				{
+					_logger.Error("Error reading media file '{0}'.".FormatInvariant(source), exception);
+					return string.Empty;
+				}
+
+				try
+				{
+					await _imageCache.ProcessAndAddImageToCacheAsync(cachedImage, buffer, targetSize);
+				}
+				catch (Exception exception)
+				{
+					_logger.Error("Error processing/writing media file '{0}'.".FormatInvariant(cachedImage.Path), exception);
+					return string.Empty;
+				}
+			}
+
+			var url = _imageCache.GetImageUrl(cachedImage.Path, storeLocation);
+			return url;
+		}
+
 		#endregion
 
 		#region Methods
@@ -267,6 +336,13 @@ namespace SmartStore.Services.Media
 			return _storageProvider.Value.Load(picture.ToMedia());
         }
 
+		public virtual Task<byte[]> LoadPictureBinaryAsync(Picture picture)
+		{
+			Guard.NotNull(picture, nameof(picture));
+
+			return _storageProvider.Value.LoadAsync(picture.ToMedia());
+		}
+
 		public virtual Size GetPictureSize(Picture picture)
         {
             var pictureBinary = LoadPictureBinary(picture);
@@ -283,48 +359,95 @@ namespace SmartStore.Services.Media
             return GetPictureUrl(GetPictureById(pictureId), targetSize, showDefaultPicture, storeLocation, defaultPictureType);
         }
 
-        public virtual string GetPictureUrl(
+		public virtual Task<string> GetPictureUrlAsync(
+			int pictureId,
+			int targetSize = 0,
+			bool showDefaultPicture = true,
+			string storeLocation = null,
+			PictureType defaultPictureType = PictureType.Entity)
+		{
+			return GetPictureUrlAsync(GetPictureById(pictureId), targetSize, showDefaultPicture, storeLocation, defaultPictureType);
+		}
+
+		public virtual string GetPictureUrl(
             Picture picture,
             int targetSize = 0,
             bool showDefaultPicture = true,
             string storeLocation = null,
             PictureType defaultPictureType = PictureType.Entity)
         {
-            if (picture == null)
-            {
-                if (showDefaultPicture)
-                {
-                    return GetDefaultPictureUrl(targetSize, defaultPictureType, storeLocation);
-                }
+			var url = PrepareGetPictureUrl(picture, targetSize, showDefaultPicture, storeLocation, defaultPictureType);
+
+			if (url.IsEmpty())
+			{
+				url = GetProcessedImageUrl(
+					picture,
+					picture.SeoFilename,
+					MimeTypes.MapMimeTypeToExtension(picture.MimeType),
+					targetSize,
+					storeLocation);
+			}
+
+			return url;
+        }
+
+		public virtual Task<string> GetPictureUrlAsync(
+			Picture picture,
+			int targetSize = 0,
+			bool showDefaultPicture = true,
+			string storeLocation = null,
+			PictureType defaultPictureType = PictureType.Entity)
+		{
+			var url = PrepareGetPictureUrl(picture, targetSize, showDefaultPicture, storeLocation, defaultPictureType);
+
+			if (url.IsEmpty())
+			{
+				return GetProcessedImageUrlAsync(
+					picture,
+					picture.SeoFilename,
+					MimeTypes.MapMimeTypeToExtension(picture.MimeType),
+					targetSize,
+					storeLocation);
+			}
+
+			return Task.FromResult(url);
+		}
+
+		private string PrepareGetPictureUrl(
+			Picture picture,
+			int targetSize = 0,
+			bool showDefaultPicture = true,
+			string storeLocation = null,
+			PictureType defaultPictureType = PictureType.Entity)
+		{
+			if (picture == null)
+			{
+				if (showDefaultPicture)
+				{
+					return GetDefaultPictureUrl(targetSize, defaultPictureType, storeLocation);
+				}
 				else
 				{
 					return string.Empty;
 				}
-            }
+			}
 
-            if (picture.IsNew)
-            {
-                _imageCache.DeleteCachedImages(picture);
+			if (picture.IsNew)
+			{
+				_imageCache.DeleteCachedImages(picture);
 
-                // we do not validate picture binary here to ensure that no exception ("Parameter is not valid") will be thrown
-                UpdatePicture(
+				// we do not validate picture binary here to ensure that no exception ("Parameter is not valid") will be thrown
+				UpdatePicture(
 					picture,
-                    LoadPictureBinary(picture),
-                    picture.MimeType,
-                    picture.SeoFilename,
-                    false,
-                    false);
-            }
+					LoadPictureBinary(picture),
+					picture.MimeType,
+					picture.SeoFilename,
+					false,
+					false);
+			}
 
-			var url = GetProcessedImageUrl(
-                picture,
-                picture.SeoFilename,
-                MimeTypes.MapMimeTypeToExtension(picture.MimeType),
-                targetSize,
-                storeLocation);
-
-			return url;
-        }
+			return string.Empty;
+		}
 
 		public virtual string GetDefaultPictureUrl(
 			int targetSize = 0,

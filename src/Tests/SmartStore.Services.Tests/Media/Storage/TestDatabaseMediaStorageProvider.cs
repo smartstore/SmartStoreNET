@@ -1,4 +1,6 @@
-﻿using SmartStore.Services.Media.Storage;
+﻿using System;
+using System.Threading.Tasks;
+using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Tests.Media.Storage
 {
@@ -9,8 +11,18 @@ namespace SmartStore.Services.Tests.Media.Storage
 			return media.Entity.MediaStorage.Data;
 		}
 
+		public Task<byte[]> LoadAsync(MediaItem media)
+		{
+			return Task.FromResult(Load(media));
+		}
+
 		public void Save(MediaItem media, byte[] data)
 		{
+		}
+
+		public Task SaveAsync(MediaItem media, byte[] data)
+		{
+			return Task.FromResult(0);
 		}
 
 		public void Remove(params MediaItem[] medias)

@@ -1,4 +1,5 @@
-﻿using SmartStore.Core.Data;
+﻿using System.Threading.Tasks;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Plugins;
 
@@ -35,6 +36,11 @@ namespace SmartStore.Services.Media.Storage
 			}
 
 			return new byte[0];
+		}
+
+		public Task<byte[]> LoadAsync(MediaItem media)
+		{
+			return Task.FromResult(Load(media));
 		}
 
 		public void Save(MediaItem media, byte[] data)
@@ -76,6 +82,12 @@ namespace SmartStore.Services.Media.Storage
 					_mediaStorageRepository.Update(media.Entity.MediaStorage);
 				}
 			}
+		}
+
+		public Task SaveAsync(MediaItem media, byte[] data)
+		{
+			Save(media, data);
+			return Task.FromResult(0);
 		}
 
 		public void Remove(params MediaItem[] medias)
@@ -126,6 +138,12 @@ namespace SmartStore.Services.Media.Storage
 				// requires autoDetectChanges set to true or remove explicit entity detaching
 				media.Entity.MediaStorage = new MediaStorage { Data = data };
 			}
+		}
+
+		public Task ReceiveAsync(MediaMoverContext context, MediaItem media, byte[] data)
+		{
+			Receive(context, media, data);
+			return Task.FromResult(0);
 		}
 
 		public void OnCompleted(MediaMoverContext context, bool succeeded)

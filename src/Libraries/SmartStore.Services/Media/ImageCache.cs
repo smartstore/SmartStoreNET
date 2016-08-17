@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
 using ImageResizer;
@@ -67,19 +68,59 @@ namespace SmartStore.Services.Media
 			return result;
 		}
 
-        public void AddImageToCache(CachedImageResult cachedImage, byte[] buffer)
+		public async Task<byte[]> ProcessAndAddImageToCacheAsync(CachedImageResult cachedImage, byte[] source, int targetSize)
+		{
+			byte[] result;
+
+			if (targetSize == 0)
+			{
+				await AddImageToCacheAsync(cachedImage, source);
+				result = source;
+			}
+			else
+			{
+				var sourceStream = new MemoryStream(source);
+				using (var resultStream = _imageResizerService.ResizeImage(sourceStream, targetSize, targetSize, _mediaSettings.DefaultImageQuality))
+				{
+					result = resultStream.GetBuffer();
+					await AddImageToCacheAsync(cachedImage, result);
+				}
+			}
+
+			cachedImage.Exists = true;
+
+			return result;
+		}
+
+		public void AddImageToCache(CachedImageResult cachedImage, byte[] buffer)
         {
-            Guard.NotNull(cachedImage, nameof(cachedImage));
+			PrepareAddImageToCache(cachedImage, buffer);
+			
+            // save file
+			_fileSystem.WriteAllBytes(BuildPath(cachedImage.Path), buffer);
+        }
 
-            if (buffer == null || buffer.Length == 0)
-            {
-                throw new ArgumentException("The image buffer cannot be empty.", "buffer");
-            }
+		public Task AddImageToCacheAsync(CachedImageResult cachedImage, byte[] buffer)
+		{
+			PrepareAddImageToCache(cachedImage, buffer);
 
-            if (cachedImage.Exists)
-            {
+			// save file
+			return _fileSystem.WriteAllBytesAsync(BuildPath(cachedImage.Path), buffer);
+		}
+
+		private void PrepareAddImageToCache(CachedImageResult cachedImage, byte[] buffer)
+		{
+			Guard.NotNull(cachedImage, nameof(cachedImage));
+
+			if (buffer == null || buffer.Length == 0)
+			{
+				throw new ArgumentException("The image buffer cannot be empty.", "buffer");
+			}
+
+			if (cachedImage.Exists)
+			{
 				_fileSystem.DeleteFile(BuildPath(cachedImage.Path));
-            }
+			}
 
 			// create folder if needed
 			string imageDir = System.IO.Path.GetDirectoryName(cachedImage.Path);
@@ -87,10 +128,7 @@ namespace SmartStore.Services.Media
 			{
 				_fileSystem.TryCreateFolder(BuildPath(imageDir));
 			}
-			
-            // save file
-			_fileSystem.WriteAllBytes(BuildPath(cachedImage.Path), buffer);
-        }
+		}
 
         public virtual CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, object settings = null)
         {

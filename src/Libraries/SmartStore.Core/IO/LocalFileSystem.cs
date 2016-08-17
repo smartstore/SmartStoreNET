@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Hosting;
 using SmartStore.Utilities;
 
@@ -261,6 +262,30 @@ namespace SmartStore.Core.IO
 			return new LocalFile(Fix(path), fileInfo);
 		}
 
+		public async Task<IFile> CreateFileAsync(string path)
+		{
+			var fileInfo = new FileInfo(MapStorage(path));
+
+			if (fileInfo.Exists)
+			{
+				throw new ArgumentException("File " + path + " already exists");
+			}
+
+			// ensure the directory exists
+			var dirName = Path.GetDirectoryName(fileInfo.FullName);
+			if (!Directory.Exists(dirName))
+			{
+				Directory.CreateDirectory(dirName);
+			}
+
+			using (FileStream stream = new FileStream(fileInfo.FullName, FileMode.Create, FileAccess.Write, FileShare.Read, bufferSize: 4096, useAsync: true))
+			{
+				await stream.WriteAsync(new byte[0], 0, 0);
+			}
+
+			return new LocalFile(Fix(path), fileInfo);
+		}
+
 		public void DeleteFile(string path)
 		{
 			var fileInfo = new FileInfo(MapStorage(path));
@@ -320,6 +345,25 @@ namespace SmartStore.Core.IO
 					if (length <= 0)
 						break;
 					outputStream.Write(buffer, 0, length);
+				}
+			}
+		}
+
+		public async Task SaveStreamAsync(string path, Stream inputStream)
+		{
+			// Create the file.
+			// The CreateFile method will map the still relative path
+			var file = await CreateFileAsync(path);
+
+			using (var outputStream = file.OpenWrite())
+			{
+				var buffer = new byte[8192];
+				for (;;)
+				{
+					var length = await inputStream.ReadAsync(buffer, 0, buffer.Length);
+					if (length <= 0)
+						break;
+					await outputStream.WriteAsync(buffer, 0, length);
 				}
 			}
 		}
@@ -399,17 +443,17 @@ namespace SmartStore.Core.IO
 
 			public Stream OpenRead()
 			{
-				return new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read);
+				return new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true);
 			}
 
 			public Stream OpenWrite()
 			{
-				return new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.ReadWrite);
+				return new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
 			}
 
 			public Stream CreateFile()
 			{
-				return new FileStream(_fileInfo.FullName, FileMode.Truncate, FileAccess.ReadWrite);
+				return new FileStream(_fileInfo.FullName, FileMode.Truncate, FileAccess.ReadWrite, FileShare.Read, bufferSize: 4096, useAsync: true);
 			}
 		}
 

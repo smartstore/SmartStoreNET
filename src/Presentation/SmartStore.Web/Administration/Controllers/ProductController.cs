@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Autofac;
@@ -822,7 +823,7 @@ namespace SmartStore.Admin.Controllers
         {
 			Guard.NotNull(model, nameof(model));
 
-            if (product != null && _adminAreaSettings.DisplayProductPictures)
+			if (product != null && _adminAreaSettings.DisplayProductPictures)
             {
 				if (defaultPicture != null)
 				{
@@ -3292,7 +3293,7 @@ namespace SmartStore.Admin.Controllers
 				model.ProductVariantAttributes.Add(pvaModel);
 			}
 		}
-		private void PrepareVariantCombinationPictures(ProductVariantAttributeCombinationModel model, Product product)
+		private async Task PrepareVariantCombinationPictures(ProductVariantAttributeCombinationModel model, Product product)
 		{
 			var pictures = _pictureService.GetPicturesByProductId(product.Id);
 			foreach (var picture in pictures)
@@ -3300,7 +3301,7 @@ namespace SmartStore.Admin.Controllers
 				var assignablePicture = new ProductVariantAttributeCombinationModel.PictureSelectItemModel();
 				assignablePicture.Id = picture.Id;
 				assignablePicture.IsAssigned = model.AssignedPictureIds.Contains(picture.Id);
-				assignablePicture.PictureUrl = _pictureService.GetPictureUrl(picture.Id, 125, false);
+				assignablePicture.PictureUrl = await _pictureService.GetPictureUrlAsync(picture.Id, 125, false);
 				model.AssignablePictures.Add(assignablePicture);
 			}
 		}
@@ -3416,7 +3417,7 @@ namespace SmartStore.Admin.Controllers
 			return ProductVariantAttributeCombinationList(command, productId);
 		}
 
-		public ActionResult AttributeCombinationCreatePopup(string btnId, string formId, int productId)
+		public async Task<ActionResult> AttributeCombinationCreatePopup(string btnId, string formId, int productId)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
@@ -3429,7 +3430,7 @@ namespace SmartStore.Admin.Controllers
 
 			PrepareProductAttributeCombinationModel(model, null, product);
 			PrepareVariantCombinationAttributes(model, product);
-			PrepareVariantCombinationPictures(model, product);
+			await PrepareVariantCombinationPictures(model, product);
 			PrepareDeliveryTimes(model);
 			PrepareViewBag(btnId, formId, false, false);
 
@@ -3438,7 +3439,7 @@ namespace SmartStore.Admin.Controllers
 
 		[HttpPost]
 		[ValidateInput(false)]
-		public ActionResult AttributeCombinationCreatePopup(string btnId, string formId, int productId, ProductVariantAttributeCombinationModel model, FormCollection form)
+		public async Task<ActionResult> AttributeCombinationCreatePopup(string btnId, string formId, int productId, ProductVariantAttributeCombinationModel model, FormCollection form)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
@@ -3481,7 +3482,7 @@ namespace SmartStore.Admin.Controllers
 
 			PrepareProductAttributeCombinationModel(model, null, product);
 			PrepareVariantCombinationAttributes(model, product);
-			PrepareVariantCombinationPictures(model, product);
+			await PrepareVariantCombinationPictures(model, product);
 			PrepareDeliveryTimes(model);
 			PrepareViewBag(btnId, formId, warnings.Count == 0, false);
 
@@ -3491,7 +3492,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		public ActionResult AttributeCombinationEditPopup(int id, string btnId, string formId)
+		public async Task<ActionResult> AttributeCombinationEditPopup(int id, string btnId, string formId)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
@@ -3510,7 +3511,7 @@ namespace SmartStore.Admin.Controllers
 
 			PrepareProductAttributeCombinationModel(model, combination, product, true);
 			PrepareVariantCombinationAttributes(model, product);
-			PrepareVariantCombinationPictures(model, product);
+			await PrepareVariantCombinationPictures(model, product);
 			PrepareDeliveryTimes(model, model.DeliveryTimeId);
 			PrepareViewBag(btnId, formId);
 

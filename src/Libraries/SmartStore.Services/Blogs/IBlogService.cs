@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Blogs;
+using System.Threading.Tasks;
 
 namespace SmartStore.Services.Blogs
 {
@@ -14,14 +15,14 @@ namespace SmartStore.Services.Blogs
         /// Deletes a blog post
         /// </summary>
         /// <param name="blogPost">Blog post</param>
-        void DeleteBlogPost(BlogPost blogPost);
+        Task DeleteBlogPost(BlogPost blogPost);
 
         /// <summary>
         /// Gets a blog post
         /// </summary>
         /// <param name="blogPostId">Blog post identifier</param>
         /// <returns>Blog post</returns>
-        BlogPost GetBlogPostById(int blogPostId);
+        Task<BlogPost> GetBlogPostById(int blogPostId);
 
         /// <summary>
         /// Gets all blog posts
@@ -35,7 +36,7 @@ namespace SmartStore.Services.Blogs
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <param name="maxAge">The maximum age of returned blog posts</param>
         /// <returns>Blog posts</returns>
-		IPagedList<BlogPost> GetAllBlogPosts(int storeId, int languageId,
+		Task<IPagedList<BlogPost>> GetAllBlogPosts(int storeId, int languageId,
 			DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null);
 
         /// <summary>
@@ -48,7 +49,7 @@ namespace SmartStore.Services.Blogs
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Blog posts</returns>
-		IPagedList<BlogPost> GetAllBlogPostsByTag(int storeId, int languageId, string tag,
+		Task<IPagedList<BlogPost>> GetAllBlogPostsByTag(int storeId, int languageId, string tag,
             int pageIndex, int pageSize, bool showHidden = false);
 
         /// <summary>
@@ -58,24 +59,24 @@ namespace SmartStore.Services.Blogs
         /// <param name="languageId">Language identifier. 0 if you want to get all news</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Blog post tags</returns>
-		IList<BlogPostTag> GetAllBlogPostTags(int storeId, int languageId, bool showHidden = false);
+		Task<IList<BlogPostTag>> GetAllBlogPostTags(int storeId, int languageId, bool showHidden = false);
 
         /// <summary>
         /// Inserts an blog post
         /// </summary>
         /// <param name="blogPost">Blog post</param>
-        void InsertBlogPost(BlogPost blogPost);
+        Task InsertBlogPost(BlogPost blogPost);
 
         /// <summary>
         /// Updates the blog post
         /// </summary>
         /// <param name="blogPost">Blog post</param>
-        void UpdateBlogPost(BlogPost blogPost);
+        Task UpdateBlogPost(BlogPost blogPost);
 
         /// <summary>
         /// Update blog post comment totals
         /// </summary>
         /// <param name="blogPost">Blog post</param>
-        void UpdateCommentTotals(BlogPost blogPost);
+        Task UpdateCommentTotals(BlogPost blogPost);
     }
 }

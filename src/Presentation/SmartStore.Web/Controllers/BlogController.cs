@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Syndication;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core;
@@ -157,7 +158,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [NonAction]
-        protected BlogPostListModel PrepareBlogPostListModel(BlogPagingFilteringModel command)
+        protected async Task<BlogPostListModel> PrepareBlogPostListModel(BlogPagingFilteringModel command)
         {
             if (command == null)
                 throw new ArgumentNullException("command");
@@ -178,13 +179,13 @@ namespace SmartStore.Web.Controllers
             IPagedList<BlogPost> blogPosts;
             if (String.IsNullOrEmpty(command.Tag))
             {
-				blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id,
+				blogPosts = await _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id,
 					_workContext.WorkingLanguage.Id,
                     dateFrom, dateTo, command.PageNumber - 1, command.PageSize);
             }
             else
             {
-				blogPosts = _blogService.GetAllBlogPostsByTag(_storeContext.CurrentStore.Id,
+				blogPosts = await _blogService.GetAllBlogPostsByTag(_storeContext.CurrentStore.Id,
 					_workContext.WorkingLanguage.Id,
                     command.Tag, command.PageNumber - 1, command.PageSize);
             }
@@ -256,7 +257,7 @@ namespace SmartStore.Web.Controllers
 				return new RssActionResult { Feed = feed };
 
 			var items = new List<SyndicationItem>();
-			var blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id, languageId, null, null, 0, int.MaxValue, false, maxAge);
+			var blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id, languageId, null, null, 0, int.MaxValue, false, maxAge).Result;
 
 			foreach (var blogPost in blogPosts)
 			{
@@ -274,12 +275,12 @@ namespace SmartStore.Web.Controllers
 			return new RssActionResult { Feed = feed };
         }
 
-        public ActionResult BlogPost(int blogPostId)
+        public async Task<ActionResult> BlogPost(int blogPostId)
         {
             if (!_blogSettings.Enabled)
 				return HttpNotFound();
 
-            var blogPost = _blogService.GetBlogPostById(blogPostId);
+            var blogPost = await _blogService.GetBlogPostById(blogPostId);
             if (blogPost == null ||
                 (blogPost.StartDateUtc.HasValue && blogPost.StartDateUtc.Value >= DateTime.UtcNow) ||
                 (blogPost.EndDateUtc.HasValue && blogPost.EndDateUtc.Value <= DateTime.UtcNow))
@@ -298,12 +299,12 @@ namespace SmartStore.Web.Controllers
         [HttpPost, ActionName("BlogPost")]
         [FormValueRequired("add-comment")]
         [CaptchaValidator]
-        public ActionResult BlogCommentAdd(int blogPostId, BlogPostModel model, bool captchaValid)
+        public async Task<ActionResult> BlogCommentAdd(int blogPostId, BlogPostModel model, bool captchaValid)
         {
             if (!_blogSettings.Enabled)
 				return HttpNotFound();
 
-            var blogPost = _blogService.GetBlogPostById(blogPostId);
+            var blogPost = await _blogService.GetBlogPostById(blogPostId);
             if (blogPost == null || !blogPost.AllowComments)
 				return HttpNotFound();
 
@@ -333,7 +334,7 @@ namespace SmartStore.Web.Controllers
                 _customerContentService.InsertCustomerContent(comment);
 
                 //update totals
-                _blogService.UpdateCommentTotals(blogPost);
+                await _blogService.UpdateCommentTotals(blogPost);
 
                 //notify a store owner
                 if (_blogSettings.NotifyAboutNewBlogComments)
@@ -372,15 +373,15 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
 			var cacheKey = string.Format(ModelCacheEventConsumer.BLOG_TAGS_MODEL_KEY, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
-            var cachedModel = _cacheManager.Get(cacheKey, () =>
+            var cachedModel = _cacheManager.Get(cacheKey, async () =>
             {
                 var model = new BlogPostTagListModel();
 
                 //get tags
-				var tags = _blogService.GetAllBlogPostTags(_storeContext.CurrentStore.Id, _workContext.WorkingLanguage.Id)
-                    .OrderByDescending(x => x.BlogPostCount)
-                    .Take(_blogSettings.NumberOfTags)
-                    .ToList();
+                var allTags = await _blogService.GetAllBlogPostTags(_storeContext.CurrentStore.Id, _workContext.WorkingLanguage.Id);
+                var tags = allTags.OrderByDescending(x => x.BlogPostCount)
+                                  .Take(_blogSettings.NumberOfTags)
+                                  .ToList();
                 //sorting
                 tags = tags.OrderBy(x => x.Name).ToList();
 
@@ -403,11 +404,11 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
 			var cacheKey = string.Format(ModelCacheEventConsumer.BLOG_MONTHS_MODEL_KEY, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
-            var cachedModel = _cacheManager.Get(cacheKey, () =>
+            var cachedModel = _cacheManager.Get(cacheKey, async () =>
             {
                 var model = new List<BlogPostYearModel>();
 
-				var blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id,
+				var blogPosts = await _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id,
 					_workContext.WorkingLanguage.Id, null, null, 0, int.MaxValue);
                 if (blogPosts.Count > 0)
                 {

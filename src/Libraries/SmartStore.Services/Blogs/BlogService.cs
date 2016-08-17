@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Blogs;
@@ -53,15 +54,15 @@ namespace SmartStore.Services.Blogs
         /// Deletes a blog post
         /// </summary>
         /// <param name="blogPost">Blog post</param>
-        public virtual void DeleteBlogPost(BlogPost blogPost)
+        public virtual async Task DeleteBlogPost(BlogPost blogPost)
         {
             if (blogPost == null)
                 throw new ArgumentNullException("blogPost");
 
-            _blogPostRepository.Delete(blogPost);
+            await Task.Factory.StartNew(() => _blogPostRepository.Delete(blogPost));
 
             //event notification
-            _services.EventPublisher.EntityDeleted(blogPost);
+            await Task.Factory.StartNew(() => _services.EventPublisher.EntityDeleted(blogPost));
         }
 
         /// <summary>
@@ -69,12 +70,12 @@ namespace SmartStore.Services.Blogs
         /// </summary>
         /// <param name="blogPostId">Blog post identifier</param>
         /// <returns>Blog post</returns>
-        public virtual BlogPost GetBlogPostById(int blogPostId)
+        public virtual async Task<BlogPost> GetBlogPostById(int blogPostId)
         {
             if (blogPostId == 0)
                 return null;
 
-                return _blogPostRepository.GetById(blogPostId);
+                return await Task.Factory.StartNew(() => _blogPostRepository.GetById(blogPostId));
         }
 
         /// <summary>
@@ -89,10 +90,10 @@ namespace SmartStore.Services.Blogs
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <param name="maxAge">The maximum age of returned blog posts</param>
         /// <returns>Blog posts</returns>
-		public virtual IPagedList<BlogPost> GetAllBlogPosts(int storeId, int languageId,
+		public virtual async Task<IPagedList<BlogPost>> GetAllBlogPosts(int storeId, int languageId,
 			DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null)
         {
-            var query = _blogPostRepository.Table;
+            var query = await Task.Factory.StartNew(() => _blogPostRepository.Table);
 
             if (dateFrom.HasValue)
                 query = query.Where(b => dateFrom.Value <= b.CreatedOnUtc);
@@ -146,7 +147,7 @@ namespace SmartStore.Services.Blogs
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Blog posts</returns>
-		public virtual IPagedList<BlogPost> GetAllBlogPostsByTag(
+		public virtual async Task<IPagedList<BlogPost>> GetAllBlogPostsByTag(
 			int storeId, 
 			int languageId, 
 			string tag,
@@ -157,7 +158,7 @@ namespace SmartStore.Services.Blogs
             tag = tag.Trim();
 
             //we laod all records and only then filter them by tag
-			var blogPostsAll = GetAllBlogPosts(storeId, languageId, null, null, 0, int.MaxValue, showHidden);
+			var blogPostsAll = await GetAllBlogPosts(storeId, languageId, null, null, 0, int.MaxValue, showHidden);
             var taggedBlogPosts = new List<BlogPost>();
             foreach (var blogPost in blogPostsAll)
             {
@@ -178,11 +179,11 @@ namespace SmartStore.Services.Blogs
         /// <param name="languageId">Language identifier. 0 if you want to get all news</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Blog post tags</returns>
-		public virtual IList<BlogPostTag> GetAllBlogPostTags(int storeId, int languageId, bool showHidden = false)
+		public virtual async Task<IList<BlogPostTag>> GetAllBlogPostTags(int storeId, int languageId, bool showHidden = false)
         {
             var blogPostTags = new List<BlogPostTag>();
 
-			var blogPosts = GetAllBlogPosts(storeId, languageId, null, null, 0, int.MaxValue, showHidden);
+			var blogPosts = await GetAllBlogPosts(storeId, languageId, null, null, 0, int.MaxValue, showHidden);
             foreach (var blogPost in blogPosts)
             {
                 var tags = blogPost.ParseTags();
@@ -210,37 +211,37 @@ namespace SmartStore.Services.Blogs
         /// Inserts an blog post
         /// </summary>
         /// <param name="blogPost">Blog post</param>
-        public virtual void InsertBlogPost(BlogPost blogPost)
+        public virtual async Task InsertBlogPost(BlogPost blogPost)
         {
             if (blogPost == null)
                 throw new ArgumentNullException("blogPost");
 
-            _blogPostRepository.Insert(blogPost);
+            await Task.Factory.StartNew(() => _blogPostRepository.Insert(blogPost));
 
             //event notification
-            _services.EventPublisher.EntityInserted(blogPost);
+            await Task.Factory.StartNew(() => _services.EventPublisher.EntityInserted(blogPost));
         }
 
         /// <summary>
         /// Updates the blog post
         /// </summary>
         /// <param name="blogPost">Blog post</param>
-        public virtual void UpdateBlogPost(BlogPost blogPost)
+        public virtual async Task UpdateBlogPost(BlogPost blogPost)
         {
             if (blogPost == null)
                 throw new ArgumentNullException("blogPost");
 
-            _blogPostRepository.Update(blogPost);
+            await Task.Factory.StartNew(() => _blogPostRepository.Update(blogPost));
 
             //event notification
-            _services.EventPublisher.EntityUpdated(blogPost);
+            await Task.Factory.StartNew(() => _services.EventPublisher.EntityUpdated(blogPost));
         }
         
         /// <summary>
         /// Update blog post comment totals
         /// </summary>
         /// <param name="blogPost">Blog post</param>
-        public virtual void UpdateCommentTotals(BlogPost blogPost)
+        public virtual async Task UpdateCommentTotals(BlogPost blogPost)
         {
             if (blogPost == null)
                 throw new ArgumentNullException("blogPost");
@@ -258,7 +259,7 @@ namespace SmartStore.Services.Blogs
 
             blogPost.ApprovedCommentCount = approvedCommentCount;
             blogPost.NotApprovedCommentCount = notApprovedCommentCount;
-            UpdateBlogPost(blogPost);
+            await UpdateBlogPost(blogPost);
         }
 
         #endregion

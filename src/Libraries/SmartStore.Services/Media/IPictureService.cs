@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Drawing;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
 
@@ -116,6 +117,8 @@ namespace SmartStore.Services.Media
         /// <param name="recordsToReturn">Number of records to return. 0 if you want to get all items</param>
         /// <returns>Pictures</returns>
         IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn = 0);
+
+		Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = 1);
 
 		/// <summary>
 		/// Gets pictures by picture identifier

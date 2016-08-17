@@ -818,26 +818,29 @@ namespace SmartStore.Admin.Controllers
 		}
 
         [NonAction]
-        private void PrepareProductPictureThumbnailModel(ProductModel model, Product product)
+        private void PrepareProductPictureThumbnailModel(ProductModel model, Product product, Picture defaultPicture)
         {
-            if (model == null)
-                throw new ArgumentNullException("model");
+			Guard.NotNull(model, nameof(model));
 
             if (product != null && _adminAreaSettings.DisplayProductPictures)
             {
-                var defaultProductPicture = _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
+                //var defaultProductPicture = picture ?? _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
 				//model.PictureThumbnailUrl = _pictureService.GetPictureUrl(defaultProductPicture, _mediaSettings.ProductThumbPictureSize, true);
 
-				if (defaultProductPicture != null)
+				if (defaultPicture != null)
 				{
-					model.PictureThumbnailUrl = Url.Action("Picture", "Media", new { id = defaultProductPicture.Id, size = _mediaSettings.ProductThumbPictureSize });
+					model.PictureThumbnailUrl = Url.Action("Picture", "Media", new
+					{
+						id = defaultPicture.Id,
+						size = _mediaSettings.ProductThumbPictureSize
+					});
 				}
 				else
 				{
 					model.PictureThumbnailUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.ProductThumbPictureSize, PictureType.Entity);
 				}
 
-				model.NoThumb = defaultProductPicture == null;
+				model.NoThumb = defaultPicture == null;
             }
         }
 
@@ -956,6 +959,8 @@ namespace SmartStore.Admin.Controllers
 
 				var products = _productService.SearchProducts(searchContext);
 
+				var pictureMap = _pictureService.GetPicturesByProductIds(products.Select(x => x.Id).ToArray(), 1);
+
 				gridModel.Data = products.Select(x =>
 				{
                     var productModel = new ProductModel
@@ -970,7 +975,7 @@ namespace SmartStore.Admin.Controllers
                         LimitedToStores = x.LimitedToStores
                     };
 
-					PrepareProductPictureThumbnailModel(productModel, x);
+					PrepareProductPictureThumbnailModel(productModel, x, pictureMap[x.Id]?.FirstOrDefault());
 
 					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 					productModel.UpdatedOn = _dateTimeHelper.ConvertToUserTime(x.UpdatedOnUtc, DateTimeKind.Utc);
@@ -1115,7 +1120,7 @@ namespace SmartStore.Admin.Controllers
 				locale.BundleTitleText = product.GetLocalized(x => x.BundleTitleText, languageId, false, false);
             });
 
-            PrepareProductPictureThumbnailModel(model, product);
+            PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPicturesByProductId(product.Id, 1)?.FirstOrDefault());
             PrepareAclModel(model, product, false);
 			PrepareStoresMappingModel(model, product, false);
 
@@ -1151,7 +1156,7 @@ namespace SmartStore.Admin.Controllers
 
             //If we got this far, something failed, redisplay form
 			PrepareProductModel(model, product, false, true);
-            PrepareProductPictureThumbnailModel(model, product);
+            PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPicturesByProductId(product.Id, 1)?.FirstOrDefault());
             PrepareAclModel(model, product, true);
 			PrepareStoresMappingModel(model, product, true);
 
@@ -1236,7 +1241,7 @@ namespace SmartStore.Admin.Controllers
 					locale.BundleTitleText = product.GetLocalized(x => x.BundleTitleText, languageId, false, false);
 				});
 
-				PrepareProductPictureThumbnailModel(model, product);
+				PrepareProductPictureThumbnailModel(model, product, _pictureService.GetPicturesByProductId(product.Id, 1)?.FirstOrDefault());
 				PrepareAclModel(model, product, false);
 				PrepareStoresMappingModel(model, product, false);
 

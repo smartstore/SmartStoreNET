@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using ImageResizer;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -393,9 +394,40 @@ namespace SmartStore.Services.Media
             return pics;
         }
 
+		public virtual Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = 1)
+		{
+			Guard.NotEmpty(productIds, nameof(productIds));
+			if (maxPicturesPerProduct.HasValue)
+			{
+				Guard.IsPositive(maxPicturesPerProduct.Value, nameof(maxPicturesPerProduct));
+			}
+
+			int take = maxPicturesPerProduct ?? int.MaxValue;
+
+			var query = from pp in _productPictureRepository.TableUntracked
+						where productIds.Contains(pp.ProductId)
+						group pp by pp.ProductId into g
+						select new
+						{
+							ProductId = g.Key,
+							Pictures = g.OrderBy(x => x.DisplayOrder).Take(take).Select(x => x.Picture)
+						};
+
+			var result = query.ToList();
+
+			var map = new Multimap<int, Picture>();
+			
+			foreach (var ppm in result)
+			{
+				map.AddRange(ppm.ProductId, ppm.Pictures);
+			}
+
+			return map;
+		}
+
 		public virtual IList<Picture> GetPicturesByIds(int[] pictureIds)
 		{
-			Guard.ArgumentNotNull(() => pictureIds);
+			Guard.NotNull(pictureIds, nameof(pictureIds));
 
 			var query = _pictureRepository.Table
 				.Where(x => pictureIds.Contains(x.Id));
@@ -405,7 +437,7 @@ namespace SmartStore.Services.Media
 
 		public virtual void DeletePicture(Picture picture)
 		{
-			Guard.ArgumentNotNull(() => picture);
+			Guard.NotNull(picture, nameof(picture));
 
 			// delete thumbs
 			_imageCache.DeleteCachedImages(picture);

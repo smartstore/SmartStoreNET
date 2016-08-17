@@ -43,7 +43,7 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static void NotEmpty<T>(ICollection<T> arg, string argName)
 		{
-			if (arg != null && !arg.Any())
+			if (arg == null || !arg.Any())
 				throw Error.Argument(argName, "Collection cannot be null and must have at least one item.");
 		}
 

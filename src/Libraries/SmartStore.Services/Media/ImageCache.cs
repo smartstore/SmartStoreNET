@@ -22,22 +22,49 @@ namespace SmartStore.Services.Media
 		private readonly IStoreContext _storeContext;
 		private readonly HttpContextBase _httpContext;
 		private readonly IFileSystem _fileSystem;
+		private readonly IImageResizerService _imageResizerService;
 
 		public ImageCache(
 			MediaSettings mediaSettings, 
 			IStoreContext storeContext, 
 			HttpContextBase httpContext,
-			IFileSystem fileSystem)
+			IFileSystem fileSystem,
+			IImageResizerService imageResizerService)
         {
             _mediaSettings = mediaSettings;
 			_storeContext = storeContext;
 			_httpContext = httpContext;
 			_fileSystem = fileSystem;
+			_imageResizerService = imageResizerService;
 
 			_thumbsRootDir = "Media/Thumbs/";
 
 			_fileSystem.TryCreateFolder("Media");
 			_fileSystem.TryCreateFolder("Media/Thumbs");
+		}
+
+		public byte[] ProcessAndAddImageToCache(CachedImageResult cachedImage, byte[] source, int targetSize)
+		{
+			byte[] result;
+
+			if (targetSize == 0)
+			{
+				AddImageToCache(cachedImage, source);
+				result = source;
+			}
+			else
+			{
+				var sourceStream = new MemoryStream(source);
+				using (var resultStream = _imageResizerService.ResizeImage(sourceStream, targetSize, targetSize, _mediaSettings.DefaultImageQuality))
+				{
+					result = resultStream.GetBuffer();
+					AddImageToCache(cachedImage, result);
+				}
+			}
+
+			cachedImage.Exists = true;
+
+			return result;
 		}
 
         public void AddImageToCache(CachedImageResult cachedImage, byte[] buffer)

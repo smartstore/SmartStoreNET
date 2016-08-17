@@ -180,20 +180,7 @@ namespace SmartStore.Services.Media
 
 					try
 					{
-						if (targetSize == 0)
-						{
-							_imageCache.AddImageToCache(cachedImage, buffer);
-						}
-						else
-						{
-							var sourceStream = new MemoryStream(buffer);
-							using (var resultStream = _imageResizerService.ResizeImage(sourceStream, targetSize, targetSize, _mediaSettings.DefaultImageQuality))
-							{
-								_imageCache.AddImageToCache(cachedImage, resultStream.GetBuffer());
-							}
-						}
-
-						cachedImage.Exists = true;
+						_imageCache.ProcessAndAddImageToCache(cachedImage, buffer, targetSize);
 					}
 					catch (Exception exception)
 					{

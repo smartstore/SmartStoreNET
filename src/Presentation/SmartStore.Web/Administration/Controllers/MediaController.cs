@@ -106,18 +106,20 @@ namespace SmartStore.Admin.Controllers
 			
 			cachedImage = cachedImage ?? GetCachedImage(picture, targetSize);
 
-			if (!cachedImage.Exists)
-			{
-				// ensure thumbnail gets created
-				_pictureService.GetPictureUrl(picture, targetSize, false);
-			}
-
-			// open the stream
-			var stream = _imageCache.OpenCachedImage(cachedImage);
-
 			HandleCaching(Response.Cache, etag);
 
-			return File(stream, mime);
+			if (!cachedImage.Exists)
+			{
+				// create and return result
+				var buffer = _imageCache.ProcessAndAddImageToCache(cachedImage, _pictureService.LoadPictureBinary(picture), targetSize);
+				return File(buffer, mime);
+			}
+			else
+			{
+				// open existing stream
+				var stream = _imageCache.OpenCachedImage(cachedImage);
+				return File(stream, mime);
+			}
 		}
 
 		private void HandleCaching(HttpCachePolicyBase cache, string etag)

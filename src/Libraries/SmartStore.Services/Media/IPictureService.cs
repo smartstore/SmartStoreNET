@@ -118,6 +118,12 @@ namespace SmartStore.Services.Media
         /// <returns>Pictures</returns>
         IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn = 0);
 
+		/// <summary>
+		/// Gets a pictures map by product identifiers
+		/// </summary>
+		/// <param name="productIds">The ids of products to retrieve pictures for</param>
+		/// <param name="maxPicturesPerProduct">Max number of pictures to retrieve per product</param>
+		/// <returns>A lookup map of product ids and pictures</returns>
 		Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = 1);
 
 		/// <summary>

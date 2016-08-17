@@ -824,16 +824,9 @@ namespace SmartStore.Admin.Controllers
 
             if (product != null && _adminAreaSettings.DisplayProductPictures)
             {
-                //var defaultProductPicture = picture ?? _pictureService.GetPicturesByProductId(product.Id, 1).FirstOrDefault();
-				//model.PictureThumbnailUrl = _pictureService.GetPictureUrl(defaultProductPicture, _mediaSettings.ProductThumbPictureSize, true);
-
 				if (defaultPicture != null)
 				{
-					model.PictureThumbnailUrl = Url.Action("Picture", "Media", new
-					{
-						id = defaultPicture.Id,
-						size = _mediaSettings.ProductThumbPictureSize
-					});
+					model.PictureThumbnailUrl = Url.Action("Picture", "Media", new { id = defaultPicture.Id, size = _mediaSettings.ProductThumbPictureSize });
 				}
 				else
 				{

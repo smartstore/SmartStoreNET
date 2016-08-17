@@ -451,6 +451,7 @@ namespace SmartStore.PayPal.Services
 				request.Headers["Authorization"] = "Bearer " + accessToken.EmptyNull();
 			}
 
+			request.Headers["PayPal-Partner-Attribution-Id"] = "SmartStoreAG_Cart_PayPalPlus";
 
 			if (data.HasValue() && (method.IsCaseInsensitiveEqual("POST") || method.IsCaseInsensitiveEqual("PUT") || method.IsCaseInsensitiveEqual("PATCH")))
 			{

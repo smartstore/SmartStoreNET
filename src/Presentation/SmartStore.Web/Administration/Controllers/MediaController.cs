@@ -64,7 +64,7 @@ namespace SmartStore.Admin.Controllers
 			return Json(result);
 		}
 
-		public async Task<ActionResult> Picture(int id /* pictureId*/, int? size)
+		public ActionResult Picture(int id /* pictureId*/, int? size)
 		{
 			var picture = _pictureService.GetPictureById(id);
 
@@ -116,8 +116,6 @@ namespace SmartStore.Admin.Controllers
 			var stream = _imageCache.OpenCachedImage(cachedImage);
 
 			HandleCaching(Response.Cache, etag);
-
-			await Task.Delay(1);
 
 			return File(stream, mime);
 		}

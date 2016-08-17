@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SmartStore.Core.Infrastructure;
+using SmartStore.Web.Framework.Theming;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Web;
@@ -10,11 +12,24 @@ namespace SmartStore.Web.Framework.UI
     public static class DataListExtensions
     {
         public static IHtmlString DataList<T>(this HtmlHelper helper, IEnumerable<T> items, int columns,
-            Func<T, HelperResult> template, int gridColumns = 12)
+            Func<T, HelperResult> template, int gridColumns = 24)
             where T : class
         {
             if (items == null)
                 return new HtmlString("");
+
+            //TODO NewAlpha: delete the following lines, set default for gridColumns to 12 and write vars spanClassPrefix and rowClass back into code
+            //BEGIN NewAlpha
+            var spanClassPrefix = "span";
+            var rowClass = "row-fluid";
+            var themeName = EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName;
+            if(themeName.Equals("NewAlpha"))
+            {
+                gridColumns = 12;
+                spanClassPrefix = "col-md-";
+                rowClass = "row";
+            }
+            //END NewAlpha
 
             Guard.Against<ArgumentOutOfRangeException>(gridColumns % columns != 0, "Wrong column count. Ensure that gridColumns is divisible by columns.");
 
@@ -22,12 +37,13 @@ namespace SmartStore.Web.Framework.UI
             sb.Append("<div class='data-list data-list-grid'>");
 
             int cellIndex = 0;
-            string spanClass = String.Format("col-md-{0}", gridColumns / columns);
+
+            string spanClass = spanClassPrefix + (gridColumns / columns).ToString();
 
             foreach (T item in items)
             {
                 if (cellIndex == 0)
-                    sb.Append("<div class='data-list-row row'>");
+                    sb.Append("<div class='data-list-row " + rowClass + "'>");
 
                 sb.Append("<div class='{0} data-list-item equalized-column' data-equalized-deep='true'>".FormatInvariant(spanClass));
                 sb.Append(template(item).ToHtmlString());

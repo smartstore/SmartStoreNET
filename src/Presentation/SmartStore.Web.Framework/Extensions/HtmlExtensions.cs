@@ -19,6 +19,7 @@ using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework
 {
@@ -452,16 +453,32 @@ namespace SmartStore.Web.Framework
 			var htmlAttributes = new RouteValueDictionary();
 			var dataTypeName = ModelMetadata.FromLambdaExpression(expression, html.ViewData).DataTypeName.EmptyNull();
 
-			var sb = new StringBuilder("<div class='form-group row'>");
+
+            //TODO NewAlpha: delete the following lines, write vars back into code
+            //BEGIN NewAlpha
+            var themeName = EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName;
+            var groupClass = "control-group";
+            var labelClass = "control-label";
+            var controlsClass = "controls";
+
+            if (themeName.Equals("NewAlpha"))
+            {
+                groupClass = "form-group row";
+                labelClass = "col-sm-3";
+                controlsClass = "col-sm-9";
+            }
+            //END NewAlpha
+            
+            var sb = new StringBuilder("<div class='{0}'>".FormatWith(groupClass));
 
             if (editorType != InputEditorType.Checkbox)
             {
-                var className = "col-sm-3" + (required ? " required" : "");
+                var className = labelClass + (required ? " required" : "");
                 var fieldId = html.IdFor(expression).ToString();
                 sb.AppendLine(html.LabelFor(expression, new { @class = className, @for = fieldId }).ToString());
             }
 
-            sb.AppendLine("<div class='col-sm-9'>");
+            sb.AppendLine("<div class='{0}'>".FormatWith(controlsClass));
 
             if (!required && (editorType == InputEditorType.TextBox || editorType == InputEditorType.Password))
             {
@@ -478,8 +495,13 @@ namespace SmartStore.Web.Framework
 					break;
 			}
 
-            // added
-            htmlAttributes.Add("class", "form-control");            
+            //TODO NewAlpha: Delete if clause
+            //BEGIN NewAlpha
+            if (themeName.Equals("NewAlpha"))
+            {
+                htmlAttributes.Add("class", "form-control");
+            }
+            //END NewAlpha
 
             switch (editorType)
             {

@@ -455,6 +455,11 @@ namespace SmartStore.Core.IO
 			{
 				return new FileStream(_fileInfo.FullName, FileMode.Truncate, FileAccess.ReadWrite, FileShare.Read, bufferSize: 4096, useAsync: true);
 			}
+
+			public Task<Stream> CreateFileAsync()
+			{
+				return Task.Run(() => CreateFile());
+			}
 		}
 
 		private class LocalFolder : IFolder

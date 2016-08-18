@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace SmartStore.Core.IO
 {
@@ -25,5 +26,10 @@ namespace SmartStore.Core.IO
 		/// Creates a stream for writing to the file, and truncates the existing content.
 		/// </summary>
 		Stream CreateFile();
+
+		/// <summary>
+		/// Asynchronously creates a stream for writing to the file, and truncates the existing content.
+		/// </summary>
+		Task<Stream> CreateFileAsync();
 	}
 }

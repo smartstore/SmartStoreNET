@@ -1,10 +1,10 @@
 using System;
-using System.Text.RegularExpressions;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
+using SmartStore.Core.Async;
 
 namespace SmartStore.Core.Caching
 {
@@ -79,43 +79,38 @@ namespace SmartStore.Core.Caching
 			return value;
 		}
 
-		//public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null)
-		//{
-		//	T value;
+		public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null)
+		{
+			T value;
 
-		//	if (TryGet(key, out value))
-		//	{
-		//		return value;
-		//	}
+			if (TryGet(key, out value))
+			{
+				return value;
+			}
 
-		//	// get the semaphore specific to this key
-		//	var keyLock = _keyLocks.GetOrAdd(key, x => new SemaphoreSlim(1));
+			// get the async (semaphore) locker specific to this key
+			var keyLock = AsyncLock.Acquire(key);
 
-		//	await keyLock.WaitAsync();
-		//	try
-		//	{
-		//		if (!TryGet(key, out value))
-		//		{
-		//			value = await acquirer().ConfigureAwait(false);
-		//			Set(key, value, duration);
-		//			return value;
-		//		}
-		//	}
-		//	finally
-		//	{
-		//		keyLock.Release();
-		//	}
+			using (await keyLock.LockAsync())
+			{
+				if (!TryGet(key, out value))
+				{
+					value = await acquirer().ConfigureAwait(false);
+					Set(key, value, duration);
+					return value;
+				}
+			}
 
-		//	return value;
-		//}
+			return value;
+		}
 
-		//private async Task Test()
-		//{
-		//	var t = await GetAsync("yo", async () => 
-		//	{
-		//		return await Task.FromResult(true);
-		//	});
-		//}
+		private async Task Test()
+		{
+			var t = await GetAsync("yo", async () =>
+			{
+				return await Task.FromResult(true);
+			});
+		}
 
 		public void Set(string key, object value, TimeSpan? duration = null)
 		{

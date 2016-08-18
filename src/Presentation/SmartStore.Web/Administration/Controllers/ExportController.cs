@@ -419,6 +419,11 @@ namespace SmartStore.Admin.Controllers
 				OrderStatusChangeId = projection.OrderStatusChangeId
 			};
 
+			if (profile.Projection.IsEmpty())
+			{
+				model.Projection.DescriptionMergingId = (int)ExportDescriptionMerging.Description;
+			}
+
 			model.Projection.AvailableStores = allStores
 				.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
 				.ToList();

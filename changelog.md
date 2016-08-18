@@ -11,6 +11,7 @@
 * BeezUP: Exports the product weight
 * Payone: Replace client API by Payone iFrame solution. Allows credit card payment compliant with PCI DSS, SAQ A.
 * Updated Elmar shop info XML from version 1.1 to 2.0
+* #1008 Export: Add support for description projection to all product exporting providers
 
 ### New Features
 * Added option to skip shipping method selection in checkout process when only one shipping method is active

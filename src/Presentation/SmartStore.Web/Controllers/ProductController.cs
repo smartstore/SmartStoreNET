@@ -356,7 +356,7 @@ namespace SmartStore.Web.Controllers
 					})
 					.ToList();
 				return model;
-			});
+			}, TimeSpan.FromHours(6));
 
 			if (cacheModel.Count == 0)
 				return Content("");
@@ -654,7 +654,7 @@ namespace SmartStore.Web.Controllers
 			// get merged model data
 			_helper.PrepareProductDetailModel(m, product, isAssociated, bundleItem, bundleItems, form, quantity);
 
-			if (bundleItem != null)		// update bundle item thumbnail
+			if (bundleItem != null)	// update bundle item thumbnail
 			{
 				if (!bundleItem.Item.HideThumbnail)
 				{
@@ -662,7 +662,7 @@ namespace SmartStore.Web.Controllers
 					dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.BundledProductPictureSize, false);
 				}
 			}
-			else if (isAssociated)		// update associated product thumbnail
+			else if (isAssociated) // update associated product thumbnail
 			{
 				var picture = m.GetAssignedPicture(_pictureService, null, productId);
 				dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.AssociatedProductPictureSize, false);

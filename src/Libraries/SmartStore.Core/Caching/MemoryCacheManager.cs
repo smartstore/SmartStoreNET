@@ -2,6 +2,9 @@ using System;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Runtime.Caching;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using System.Threading;
 
 namespace SmartStore.Core.Caching
 {
@@ -13,15 +16,16 @@ namespace SmartStore.Core.Caching
 		public const string FakeNull = "__[NULL]__";
 
 		private readonly MemoryCache _cache;
-
-		public bool IsDistributedCache
-		{
-			get { return false; }
-		}
+		private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new ConcurrentDictionary<string, SemaphoreSlim>();
 
 		public MemoryCacheManager()
 		{
 			_cache = new MemoryCache("SmartStore");
+		}
+
+		public bool IsDistributedCache
+		{
+			get { return false; }
 		}
 
 		private bool TryGet<T>(string key, out T value)
@@ -74,6 +78,44 @@ namespace SmartStore.Core.Caching
 
 			return value;
 		}
+
+		//public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null)
+		//{
+		//	T value;
+
+		//	if (TryGet(key, out value))
+		//	{
+		//		return value;
+		//	}
+
+		//	// get the semaphore specific to this key
+		//	var keyLock = _keyLocks.GetOrAdd(key, x => new SemaphoreSlim(1));
+
+		//	await keyLock.WaitAsync();
+		//	try
+		//	{
+		//		if (!TryGet(key, out value))
+		//		{
+		//			value = await acquirer().ConfigureAwait(false);
+		//			Set(key, value, duration);
+		//			return value;
+		//		}
+		//	}
+		//	finally
+		//	{
+		//		keyLock.Release();
+		//	}
+
+		//	return value;
+		//}
+
+		//private async Task Test()
+		//{
+		//	var t = await GetAsync("yo", async () => 
+		//	{
+		//		return await Task.FromResult(true);
+		//	});
+		//}
 
 		public void Set(string key, object value, TimeSpan? duration = null)
 		{

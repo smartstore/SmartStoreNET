@@ -1399,7 +1399,7 @@ namespace SmartStore.Web.Controllers
 						};
 
 						return pictureModel;
-					});
+					}, TimeSpan.FromHours(6));
 
 					#endregion
 				}
@@ -1849,7 +1849,7 @@ namespace SmartStore.Web.Controllers
                     AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName)
                 };
                 return pictureModel;
-            });
+            }, TimeSpan.FromHours(6));
 
             return model;
         }

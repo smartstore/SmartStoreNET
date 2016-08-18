@@ -209,7 +209,7 @@ namespace SmartStore.Web.Controllers
 					
                     // prepare picture model
                     int pictureSize = _mediaSettings.CategoryThumbPictureSize;
-					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, x.Id, pictureSize, true, _services.WorkContext.WorkingLanguage.Id, _services.WebHelper.IsCurrentConnectionSecured(), _services.StoreContext.CurrentStore.Id);
+					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, x.Id, pictureSize, true, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
                     subCatModel.PictureModel = _services.Cache.Get(categoryPictureCacheKey, () =>
                     {
 						var picture = _pictureService.GetPictureById(x.PictureId.GetValueOrDefault());
@@ -403,12 +403,8 @@ namespace SmartStore.Web.Controllers
 
                     //prepare picture model
                     int pictureSize = _mediaSettings.CategoryThumbPictureSize;
-					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, 
-						x.Id, 
-						pictureSize,
-						true, 
+					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, x.Id, pictureSize, true, 
 						_services.WorkContext.WorkingLanguage.Id, 
-						_services.WebHelper.IsCurrentConnectionSecured(), 
 						_services.StoreContext.CurrentStore.Id);
                     catModel.PictureModel = _services.Cache.Get(categoryPictureCacheKey, () =>
                     {

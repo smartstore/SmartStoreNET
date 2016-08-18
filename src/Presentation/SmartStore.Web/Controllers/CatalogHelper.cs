@@ -1385,7 +1385,7 @@ namespace SmartStore.Web.Controllers
 
 					//prepare picture model
 					var defaultProductPictureCacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_DEFAULTPICTURE_MODEL_KEY, product.Id, pictureSize, true,
-						_services.WorkContext.WorkingLanguage.Id, _services.WebHelper.IsCurrentConnectionSecured(), store.Id);
+						_services.WorkContext.WorkingLanguage.Id, store.Id);
 
 					model.DefaultPictureModel = _services.Cache.Get(defaultProductPictureCacheKey, () =>
 					{
@@ -1835,7 +1835,6 @@ namespace SmartStore.Web.Controllers
                 pictureSize,
 				!_catalogSettings.HideManufacturerDefaultPictures,
                 _services.WorkContext.WorkingLanguage.Id,
-                _services.WebHelper.IsCurrentConnectionSecured(),
                 _services.StoreContext.CurrentStore.Id);
 
             model = _services.Cache.Get(manufacturerPictureCacheKey, () =>

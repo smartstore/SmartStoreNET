@@ -191,7 +191,7 @@ namespace SmartStore.Web.Controllers
 			var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
 
             var pictureCacheKey = string.Format(ModelCacheEventConsumer.CART_PICTURE_MODEL_KEY, product.Id, combination == null ? 0 : combination.Id,
-				pictureSize, true, _workContext.WorkingLanguage.Id, _webHelper.IsCurrentConnectionSecured(), _storeContext.CurrentStore.Id);
+				pictureSize, true, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
 
             var model = _cacheManager.Get(pictureCacheKey, () =>
             {

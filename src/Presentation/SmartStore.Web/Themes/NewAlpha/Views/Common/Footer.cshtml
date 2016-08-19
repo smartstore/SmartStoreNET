@@ -1,37 +1,55 @@
 ﻿@model FooterModel
 @using SmartStore.Web.Models.Common;
 
-<div class="row">
-    <div class="col-md-3">
+<div class="row text-xs-center">
+    <div class="col-xs-12">
         @if (Model.ShowSocialLinks)
         {
-			<div class="footer-social">
-				<h4>@T("Footer.Social")</h4>
-				<div class="content">
-					@if (!String.IsNullOrEmpty(Model.FacebookLink))
-					{
-						<a href="@Model.FacebookLink" target="_blank"><i class="fa fa-facebook-square fa-3x"></i></a>
-					}
-					@if (!String.IsNullOrEmpty(Model.GooglePlusLink))
-					{
-						<a href="@Model.GooglePlusLink" target="_blank"><i class="fa fa-google-plus-square fa-3x"></i></a>
-					}
-					@if (!String.IsNullOrEmpty(Model.TwitterLink))
-					{
-						<a href="@Model.TwitterLink" target="_blank"><i class="fa fa-twitter-square fa-3x"></i></a>
-					}
-					@if (!String.IsNullOrEmpty(Model.PinterestLink))
-					{
-						<a href="@Model.PinterestLink" target="_blank"><i class="fa fa-pinterest-square fa-3x"></i></a>
-					}
-					@if (!String.IsNullOrEmpty(Model.YoutubeLink))
-					{
-						<a href="@Model.YoutubeLink" target="_blank"><i class="fa fa-youtube-square fa-3x"></i></a>
-					}
-				</div>
-			</div>
+            <div class="footer-social">
+                <div class="content">
+                    @if (!String.IsNullOrEmpty(Model.FacebookLink))
+                    {
+                        <a href="@Model.FacebookLink" target="_blank" class="fa-stack fa-lg brand-facebook">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                        </a>
+                    }
+                    @if (!String.IsNullOrEmpty(Model.GooglePlusLink))
+                    {
+                        <a href="@Model.GooglePlusLink" target="_blank" class="fa-stack fa-lg brand-googleplus">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+                        </a>
+                    }
+                    @if (!String.IsNullOrEmpty(Model.TwitterLink))
+                    {
+                        <a href="@Model.TwitterLink" target="_blank" class="fa-stack fa-lg brand-twitter">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                        </a>
+                    }
+                    @if (!String.IsNullOrEmpty(Model.PinterestLink))
+                    {
+                        <a href="@Model.PinterestLink" target="_blank" class="fa-stack fa-lg brand-pinterest">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-pinterest fa-stack-1x fa-inverse"></i>
+                        </a>
+                    }
+                    @if (!String.IsNullOrEmpty(Model.YoutubeLink))
+                    {
+                        <a href="@Model.YoutubeLink" target="_blank" class="fa-stack fa-lg brand-youtube">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
+                        </a>
+                    }
+                </div>
+            </div>
         }
+    </div>
+</div>
 
+<div class="row">
+    <div class="col-md-3">
         @if (Model.ShowThemeSelector)
         {
 			<div class="theme-selector">

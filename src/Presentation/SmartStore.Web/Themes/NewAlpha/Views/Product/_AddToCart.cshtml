@@ -117,7 +117,18 @@
                         }
                         else
                         {
-                            @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input form-control col-xs-1" })
+                            @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style = "width:60px" })
+                            
+                            <script type="text/javascript">
+                                $(function () {
+                                    //TODO NewAlpha: implement step in admin product detail
+                                    $(".qty-input").TouchSpin({
+                                        min: @Model.AddToCart.MinOrderAmount,
+                                        max: @Model.AddToCart.MaxOrderAmount,
+                                        step: 1
+                                    });
+                                });
+                            </script>
                         }
 
                         //if display measure unit

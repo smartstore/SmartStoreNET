@@ -141,7 +141,10 @@ namespace SmartStore.Web.Models.Catalog
 			public decimal CustomerEnteredPrice { get; set; }
 			public String CustomerEnteredPriceRange { get; set; }
 
-			public bool DisableBuyButton { get; set; }
+            public int MinOrderAmount { get; set; }
+            public int MaxOrderAmount { get; set; }
+
+            public bool DisableBuyButton { get; set; }
 			public bool DisableWishlistButton { get; set; }
 			public List<SelectListItem> AllowedQuantities { get; set; }
 			public bool AvailableForPreOrder { get; set; }

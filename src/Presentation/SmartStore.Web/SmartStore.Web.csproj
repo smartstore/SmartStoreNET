@@ -966,6 +966,7 @@
     <Content Include="Themes\NewAlpha\Content\css\font-awesome.css" />
     <Content Include="Themes\NewAlpha\Content\css\font-awesome.min.css" />
     <Content Include="Themes\NewAlpha\Content\css\fonts\fontawesome-webfont.svg" />
+    <Content Include="Themes\NewAlpha\Content\css\jquery.bootstrap-touchspin.css" />
     <Content Include="Themes\NewAlpha\Content\css\jquery.pnotify.default.css" />
     <Content Include="Themes\NewAlpha\Content\css\jquery.pnotify.default.icons.css" />
     <Content Include="Themes\NewAlpha\Content\css\smartstore.smartgallery.css" />
@@ -1371,6 +1372,7 @@
     <Content Include="Themes\NewAlpha\Scripts\jquery.ba-outside-events.js" />
     <Content Include="Themes\NewAlpha\Scripts\jquery.ba-outside-events.min.js" />
     <Content Include="Themes\NewAlpha\Scripts\jquery.backgroundpos.js" />
+    <Content Include="Themes\NewAlpha\Scripts\jquery.bootstrap-touchspin.js" />
     <Content Include="Themes\NewAlpha\Scripts\jquery.elevatezoom.js" />
     <Content Include="Themes\NewAlpha\Scripts\jquery.menu-aim.js" />
     <Content Include="Themes\NewAlpha\Scripts\jquery.mobile-events.min.js" />

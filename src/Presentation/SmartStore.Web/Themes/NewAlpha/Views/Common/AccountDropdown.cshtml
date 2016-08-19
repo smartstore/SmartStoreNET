@@ -37,7 +37,7 @@
 				@T("PrivateMessages.Inbox")
 				@if (Model.UnreadPrivateMessages != "")
 				{
-					<span class="badge badge-success">@Model.UnreadPrivateMessages</span>
+					<span class="label-pill label-pill-success">@Model.UnreadPrivateMessages</span>
 				}
 			</a>
 			if (!string.IsNullOrEmpty(Model.AlertMessage))
@@ -56,14 +56,14 @@
         {
             <a class="dropdown-item" href="@Url.RouteUrl("Wishlist")">
                 <i class="fa fa-fw fa-heart"></i>
-                @T("Wishlist") <span class="wishlist-qty badge @(Model.WishlistItems > 0 ? "badge-success" : "")">@Model.WishlistItems</span>
+                @T("Wishlist") <span class="wishlist-qty label label-pill @(Model.WishlistItems > 0 ? "label-success" : "")">@Model.WishlistItems</span>
 			</a> 
         }
         @if (Model.ShoppingCartEnabled)
         {
             <a id="topcartlink" class="dropdown-item" href="@Url.RouteUrl("ShoppingCart")">
                 <i class="fa fa-fw fa-shopping-cart"></i>
-                @T("ShoppingCart") <span class="cart-qty badge @(Model.ShoppingCartItems > 0 ? "badge-success" : "")" data-bind-to="TotalProducts">@Model.ShoppingCartItems</span>
+                @T("ShoppingCart") <span class="cart-qty label label-pill @(Model.ShoppingCartItems > 0 ? "label-success" : "")" data-bind-to="TotalProducts">@Model.ShoppingCartItems</span>
 			</a>
         }
         <div class="dropdown-divider"></div>

@@ -4,6 +4,13 @@
 // Misc Styles
 // --------------------------------------------------
 
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: initial;
+}
 
 // had to be to align menus to their menuitems
 .navbar-nav .nav-item {
@@ -224,6 +231,9 @@ fieldset legend {
     a {
         font-size: .8rem;
     }
+    .label {
+        font-size: .7rem;
+    }
 }
 
 //filter
@@ -282,6 +292,10 @@ fieldset legend {
     margin-bottom: 2rem;
 }
 
-.nav-category a {
+.nav-category a,
+.block-recently-viewed-products a,
+.text-smaller,
+.text-smaller a {
     font-size: .825rem;
 }
+

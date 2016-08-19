@@ -987,9 +987,11 @@ namespace SmartStore.Web.Controllers
 
 			//quantity
 			model.AddToCart.EnteredQuantity = product.OrderMinimumQuantity;
-
-			//'add to cart', 'add to wishlist' buttons
-			model.AddToCart.DisableBuyButton = product.DisableBuyButton || !_services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
+            model.AddToCart.MinOrderAmount = product.OrderMinimumQuantity;
+            model.AddToCart.MaxOrderAmount = product.OrderMaximumQuantity;
+            
+            //'add to cart', 'add to wishlist' buttons
+            model.AddToCart.DisableBuyButton = product.DisableBuyButton || !_services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
 			model.AddToCart.DisableWishlistButton = product.DisableWishlistButton || !_services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
 			if (!displayPrices)
 			{

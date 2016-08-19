@@ -66,7 +66,7 @@
 		}
 
 		<!-- Tool "Account" -->
-		<div class="shopbar-tool loaded" id="shopbar-account">
+		@*<div class="shopbar-tool loaded" id="shopbar-account">
 			<a class='shopbar-button@(!Model.IsAuthenticated ? " no-drop" : "")' data-target="shopbar-flyout-account" href="@accountUrl" rel="nofollow">
 				<figure class="shopbar-button-icon">
 					<i class="fa fa-user"></i>
@@ -93,7 +93,7 @@
 			{
 				@Html.Action("AccountDropdown", "Common")
 			}
-		</div>
+		</div>*@
 
 		<!-- Tool "Cart" -->
 		@if (Model.ShoppingCartEnabled)

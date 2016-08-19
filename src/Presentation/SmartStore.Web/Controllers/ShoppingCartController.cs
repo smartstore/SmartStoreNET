@@ -248,7 +248,9 @@ namespace SmartStore.Web.Controllers
 				Weight = product.Weight,
 				IsDownload = product.IsDownload,
 				HasUserAgreement = product.HasUserAgreement,
-				IsEsd = product.IsEsd
+				IsEsd = product.IsEsd,
+                MinOrderAmount = product.OrderMinimumQuantity,
+                MaxOrderAmount = product.OrderMaximumQuantity
 			};
 
 			model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);

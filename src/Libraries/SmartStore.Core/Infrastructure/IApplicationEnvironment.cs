@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 namespace SmartStore.Core
 {
-	public interface IHostNameProvider
+	public interface IApplicationEnvironment
 	{
-		string GetHostName();
+		string EnvironmentIdentifier { get; }
 	}
 }

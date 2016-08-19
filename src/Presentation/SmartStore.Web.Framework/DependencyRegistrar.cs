@@ -130,7 +130,7 @@ namespace SmartStore.Web.Framework
 
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<HostNameProvider>().As<IHostNameProvider>().SingleInstance();
+			builder.RegisterType<ApplicationEnvironment>().As<IApplicationEnvironment>().SingleInstance();
 			
 			// sources
 			builder.RegisterSource(new SettingsSource());

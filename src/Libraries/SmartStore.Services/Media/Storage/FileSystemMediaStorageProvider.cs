@@ -131,9 +131,16 @@ namespace SmartStore.Services.Media.Storage
 			{
 				var filePath = GetPicturePath(media);
 
-				_fileSystem.WriteAllBytes(filePath, data);
-
-				context.AffectedFiles.Add(filePath);
+				if (!_fileSystem.FileExists(filePath))
+				{
+					// TBD: (mc) We only save the file if it doesn't exist yet.
+					// This should save time and bandwidth in the case where the target
+					// is a cloud based file system (like Azure BLOB).
+					// In such a scenario it'd be advisable to copy the files manually
+					// with other - maybe more performant - tools before performing the provider switch.
+					_fileSystem.WriteAllBytes(filePath, data);
+					context.AffectedFiles.Add(filePath);
+				}
 			}
 		}
 

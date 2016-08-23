@@ -8,8 +8,7 @@ namespace SmartStore.Core.Domain.Orders
 	{
 		public OrganizedShoppingCartItem(ShoppingCartItem item)
 		{
-			if (item == null)
-				throw new ArgumentNullException("item");
+			Guard.NotNull(item, nameof(item));
 
 			Item = item;	// must not be null
 			ChildItems = new List<OrganizedShoppingCartItem>();

@@ -355,9 +355,9 @@ namespace SmartStore.Services.Catalog
 
         public virtual int CountProducts(ProductSearchContext ctx)
         {
-            Guard.ArgumentNotNull(() => ctx);
+            Guard.NotNull(ctx, nameof(ctx));
 
-            var query = this.PrepareProductSearchQuery(ctx);
+            var query = PrepareProductSearchQuery(ctx, p => p.Id);
             return query.Distinct().Count();
         }
 

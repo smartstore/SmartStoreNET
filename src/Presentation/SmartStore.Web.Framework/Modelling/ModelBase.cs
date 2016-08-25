@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using AutoMapper;
 
@@ -8,6 +9,7 @@ namespace SmartStore.Web.Framework.Modelling
 	{
 	}
 
+	[Serializable]
 	public abstract partial class ModelBase
     {
         protected ModelBase()

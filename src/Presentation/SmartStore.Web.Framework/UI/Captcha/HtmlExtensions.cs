@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Web.Mvc;
+using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
 
@@ -11,8 +12,14 @@ namespace SmartStore.Web.Framework.UI.Captcha
         {
 			var sb = new StringBuilder();
             var captchaSettings = EngineContext.Current.Resolve<CaptchaSettings>();
+			var workContext = EngineContext.Current.Resolve<IWorkContext>();
 			var widgetUrl = CommonHelper.GetAppSetting<string>("g:RecaptchaWidgetUrl");
 			var elementId = "GoogleRecaptchaWidget";
+
+			var url = "{0}?onload=googleRecaptchaOnloadCallback&render=explicit&hl={1}".FormatInvariant(
+				widgetUrl,
+				workContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower()
+			);
 
 			sb.AppendLine("<script type=\"text/javascript\">");
 			sb.AppendLine("var googleRecaptchaOnloadCallback = function() {");
@@ -22,7 +29,7 @@ namespace SmartStore.Web.Framework.UI.Captcha
 			sb.AppendLine("};");
 			sb.AppendLine("</script>");
 			sb.AppendLine("<div id=\"{0}\"></div>".FormatInvariant(elementId));
-			sb.AppendLine("<script src=\"{0}?onload=googleRecaptchaOnloadCallback&render=explicit\" async defer></script>".FormatInvariant(widgetUrl));
+			sb.AppendLine("<script src=\"{0}\" async defer></script>".FormatInvariant(url));
 
 			return sb.ToString();
         }

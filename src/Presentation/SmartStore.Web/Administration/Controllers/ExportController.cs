@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Text;
-using System.Web;
 using System.Web.Mvc;
 using SmartStore.Admin.Extensions;
 using SmartStore.Admin.Models.DataExchange;
@@ -20,10 +19,10 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.IO;
 using SmartStore.Core.Plugins;
-using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.Export;
+using SmartStore.Services.DataExchange.Export.Deployment;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -43,7 +42,6 @@ namespace SmartStore.Admin.Controllers
 	[AdminAuthorize]
 	public class ExportController : AdminControllerBase
 	{
-		private readonly ICommonServices _services;
 		private readonly IExportProfileService _exportService;
 		private readonly PluginMediator _pluginMediator;
 		private readonly ICategoryService _categoryService;
@@ -61,7 +59,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly Lazy<CustomerSettings> _customerSettings;
 
 		public ExportController(
-			ICommonServices services,
 			IExportProfileService exportService,
 			PluginMediator pluginMediator,
 			ICategoryService categoryService,
@@ -78,7 +75,6 @@ namespace SmartStore.Admin.Controllers
 			IDataExporter dataExporter,
 			Lazy<CustomerSettings> customerSettings)
 		{
-			_services = services;
 			_exportService = exportService;
 			_pluginMediator = pluginMediator;
 			_categoryService = categoryService;
@@ -113,43 +109,153 @@ namespace SmartStore.Admin.Controllers
 			return url;
 		}
 
-		private ExportProfileDetailsModel PrepareProfileDetailsModel(ExportProfile profile, bool forEdit)
+		private void ModelToEntity(ExportDeploymentModel model, ExportDeployment deployment)
 		{
-			var model = new ExportProfileDetailsModel
+			deployment.ProfileId = model.ProfileId;
+			deployment.Name = model.Name;
+			deployment.Enabled = model.Enabled;
+			deployment.DeploymentType = model.DeploymentType;
+			deployment.Username = model.Username;
+			deployment.Password = model.Password;
+			deployment.Url = model.Url;
+			deployment.HttpTransmissionType = model.HttpTransmissionType;
+			deployment.FileSystemPath = model.FileSystemPath;
+			deployment.SubFolder = model.SubFolder;
+			deployment.EmailAddresses = model.EmailAddresses;
+			deployment.EmailSubject = model.EmailSubject;
+			deployment.EmailAccountId = model.EmailAccountId;
+			deployment.PassiveMode = model.PassiveMode;
+			deployment.UseSsl = model.UseSsl;
+		}
+
+		private ActionResult SmartRedirect(bool continueEditing, int profileId, int deploymentId)
+		{
+			if (!continueEditing)
 			{
-				Id = profile.Id,
-				PublicFiles = new List<ExportProfileDetailsModel.PublicFile>()
+				TempData["SelectedTab.export-profile-edit"] = new SelectedTabInfo
+				{
+					TabId = "export-profile-edit-6",
+					Path = Url.Action("Edit", new { id = profileId })
+				};
+			}
+
+			return (continueEditing ?
+				RedirectToAction("EditDeployment", new { id = deploymentId }) :
+				RedirectToAction("Edit", new { id = profileId }));
+		}
+
+		private void AddFileInfo(
+			List<ExportFileDetailsModel.FileInfo> list,
+			string path,
+			DataExportResult.ExportFileInfo fileInfo = null,
+			string publicFolderUrl = null,
+			Store store = null)
+		{
+			if (System.IO.File.Exists(path) && !list.Any(x => x.FilePath == path))
+			{
+				var fi = new ExportFileDetailsModel.FileInfo();
+				fi.FilePath = path;
+				fi.FileName = Path.GetFileName(path);
+				fi.FileExtension = Path.GetExtension(path);
+				fi.DisplayOrder = (fi.FileExtension.IsCaseInsensitiveEqual(".zip") ? 0 : 1);
+
+				if (fileInfo != null)
+				{
+					if (fileInfo.Label.HasValue())
+						fi.Label = fileInfo.Label;
+					else if (fileInfo.IsDataFile)
+						fi.Label = T("Admin.Common.Data");
+				}
+
+				if (store != null)
+				{
+					fi.StoreId = store.Id;
+					fi.StoreName = store.Name;
+				}
+
+				if (publicFolderUrl.HasValue())
+				{
+					fi.FileUrl = publicFolderUrl + fi.FileName;
+				}
+
+				list.Add(fi);
+			}
+		}
+
+		private ExportFileDetailsModel CreateFileDetailsModel(ExportProfile profile, Provider<IExportProvider> provider, ExportDeployment deployment)
+		{
+			var model = new ExportFileDetailsModel
+			{
+				Id = (deployment == null ? profile.Id : deployment.Id),
+				IsForDeployment = (deployment != null),
+				ExportFiles = new List<ExportFileDetailsModel.FileInfo>(),
+				PublicFiles = new List<ExportFileDetailsModel.FileInfo>()
 			};
 
 			try
 			{
+				// add export files
 				var zipPath = profile.GetExportZipPath();
+				var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
 
-				model.ZipPath = (System.IO.File.Exists(zipPath) ? zipPath : null);
-				model.ExportFiles = profile.GetExportFiles();
-
-				if (forEdit && profile.Deployments.Any(x => x.IsPublic && x.DeploymentType == ExportDeploymentType.FileSystem))
+				if (deployment == null)
 				{
-					var allStores = _services.StoreService.GetAllStores();
-					var publicFolder = Path.Combine(HttpRuntime.AppDomainAppPath, DataExporter.PublicFolder);
-					var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
+					AddFileInfo(model.ExportFiles, zipPath);
 
-					if (resultInfo != null && resultInfo.Files != null)
+					if (resultInfo.Files != null)
 					{
-						foreach (var fileInfo in resultInfo.Files)
-						{
-							if (System.IO.File.Exists(Path.Combine(publicFolder, fileInfo.FileName)) && !model.PublicFiles.Any(x => x.FileName == fileInfo.FileName))
-							{
-								var store = allStores.FirstOrDefault(y => y.Id == fileInfo.StoreId) ?? _services.StoreContext.CurrentStore;
+						var exportFolder = profile.GetExportFolder(true);
 
-								model.PublicFiles.Add(new ExportProfileDetailsModel.PublicFile
-								{
-									StoreId = store.Id,
-									StoreName = store.Name,
-									FileName = fileInfo.FileName,
-									FileUrl = string.Concat(store.Url.EnsureEndsWith("/"), DataExporter.PublicFolder.EnsureEndsWith("/"), fileInfo.FileName)
-								});
-							}
+						resultInfo.Files.Each(x => AddFileInfo(model.ExportFiles, Path.Combine(exportFolder, x.FileName), x));
+					}
+				}
+				else if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
+				{
+					if (resultInfo.Files != null)
+					{
+						var deploymentFolder = deployment.GetDeploymentFolder();
+
+						resultInfo.Files.Each(x => AddFileInfo(model.ExportFiles, Path.Combine(deploymentFolder, x.FileName), x));
+					}
+				}
+
+				// add public files
+				ExportDeployment publicDeployment = null;
+
+				if (deployment == null)
+					publicDeployment = profile.Deployments.FirstOrDefault(x => x.DeploymentType == ExportDeploymentType.PublicFolder);
+				else
+					publicDeployment = (deployment.DeploymentType == ExportDeploymentType.PublicFolder ? deployment : null);
+
+				if (publicDeployment != null)
+				{
+					var currentStore = Services.StoreContext.CurrentStore;
+					var deploymentFolder = publicDeployment.GetDeploymentFolder();
+
+					// note public folder not cleaned up during export, so only display files that has been created during last export.
+					// otherwise the merchant might publish URLs of old export files.
+					if (profile.CreateZipArchive)
+					{
+						AddFileInfo(
+							model.PublicFiles,
+							Path.Combine(deploymentFolder, Path.GetFileName(zipPath)),
+							null,
+							publicDeployment.GetPublicFolderUrl(Services, currentStore));
+					}
+					else if (resultInfo.Files != null)
+					{
+						var allStores = Services.StoreService.GetAllStores();
+
+						foreach (var file in resultInfo.Files)
+						{
+							var store = (file.StoreId == 0 ? null : allStores.FirstOrDefault(x => x.Id == file.StoreId));
+
+							AddFileInfo(
+								model.PublicFiles,
+								Path.Combine(deploymentFolder, file.FileName),
+								file,
+								publicDeployment.GetPublicFolderUrl(Services, store ?? currentStore),
+								store);
 						}
 					}
 				}
@@ -162,7 +268,61 @@ namespace SmartStore.Admin.Controllers
 			return model;
         }
 
-		private void PrepareProfileModel(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider, bool forEdit)
+		private ExportDeploymentModel CreateDeploymentModel(ExportProfile profile, ExportDeployment deployment, Provider<IExportProvider> provider, bool forEdit)
+		{
+			var model = new ExportDeploymentModel
+			{
+				Id = deployment.Id,
+				ProfileId = deployment.ProfileId,
+				Name = deployment.Name,
+				Enabled = deployment.Enabled,
+				DeploymentType = deployment.DeploymentType,
+				DeploymentTypeName = deployment.DeploymentType.GetLocalizedEnum(Services.Localization, Services.WorkContext),
+				Username = deployment.Username,
+				Password = deployment.Password,
+				Url = deployment.Url,
+				HttpTransmissionType = deployment.HttpTransmissionType,
+				FileSystemPath = deployment.FileSystemPath,
+				SubFolder = deployment.SubFolder,
+				EmailAddresses = deployment.EmailAddresses,
+				EmailSubject = deployment.EmailSubject,
+				EmailAccountId = deployment.EmailAccountId,
+				PassiveMode = deployment.PassiveMode,
+				UseSsl = deployment.UseSsl
+			};
+
+			model.PublicFolderUrl = deployment.GetPublicFolderUrl(Services);
+
+			if (forEdit)
+			{
+				var allEmailAccounts = _emailAccountService.GetAllEmailAccounts();
+
+				model.CreateZip = profile.CreateZipArchive;
+				model.AvailableDeploymentTypes = ExportDeploymentType.FileSystem.ToSelectList(false).ToList();
+				model.AvailableHttpTransmissionTypes = ExportHttpTransmissionType.SimplePost.ToSelectList(false).ToList();
+
+				model.SerializedEmailAddresses = string.Join(",", deployment.EmailAddresses.SplitSafe(",").Select(x => x.EncodeJsString()));
+
+				model.AvailableEmailAccounts = allEmailAccounts
+					.Select(x => new SelectListItem { Text = x.FriendlyName, Value = x.Id.ToString() })
+					.ToList();
+
+				if (provider != null)
+				{
+					model.ThumbnailUrl = GetThumbnailUrl(provider);
+				}
+			}
+			else
+			{
+				var fileDetailsModel = CreateFileDetailsModel(profile, null, deployment);
+
+				model.FileCount = fileDetailsModel.FileCount;
+			}
+
+			return model;
+		}
+
+		private void PrepareProfileModel(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
 		{
 			model.Id = profile.Id;
 			model.Name = profile.Name;
@@ -183,36 +343,31 @@ namespace SmartStore.Admin.Controllers
 			model.Provider = new ExportProfileModel.ProviderModel();
 			model.Provider.ThumbnailUrl = GetThumbnailUrl(provider);
 
-			model.Details = PrepareProfileDetailsModel(profile, forEdit);
+			var descriptor = provider.Metadata.PluginDescriptor;
 
-			if (provider != null)
+			if (descriptor != null)
 			{
-				var descriptor = provider.Metadata.PluginDescriptor;
-
-				if (descriptor != null)
-				{
-					model.Provider.Url = descriptor.Url;
-					model.Provider.Author = descriptor.Author;
-					model.Provider.Version = descriptor.Version.ToString();
-				}
-
-				model.Provider.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
-				model.Provider.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata);
-				model.Provider.EntityType = provider.Value.EntityType;
-				model.Provider.EntityTypeName = provider.Value.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
-				model.Provider.FileExtension = provider.Value.FileExtension;
+				model.Provider.Url = descriptor.Url;
+				model.Provider.Author = descriptor.Author;
+				model.Provider.Version = descriptor.Version.ToString();
 			}
-        }
+
+			model.Provider.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
+			model.Provider.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata);
+			model.Provider.EntityType = provider.Value.EntityType;
+			model.Provider.EntityTypeName = provider.Value.EntityType.GetLocalizedEnum(Services.Localization, Services.WorkContext);
+			model.Provider.FileExtension = provider.Value.FileExtension;
+		}
 
 		private void PrepareProfileModelForEdit(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
 		{
 			var filter = XmlHelper.Deserialize<ExportFilter>(profile.Filtering);
 			var projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
 
-			var language = _services.WorkContext.WorkingLanguage;
-			var store = _services.StoreContext.CurrentStore;
+			var language = Services.WorkContext.WorkingLanguage;
+			var store = Services.StoreContext.CurrentStore;
 
-			var allStores = _services.StoreService.GetAllStores();
+			var allStores = Services.StoreService.GetAllStores();
 			var allLanguages = _languageService.GetAllLanguages(true);
 			var allCurrencies = _currencyService.GetAllCurrencies(true);
 			var allEmailAccounts = _emailAccountService.GetAllEmailAccounts();
@@ -260,8 +415,14 @@ namespace SmartStore.Admin.Controllers
 				AttributeCombinationAsProduct = projection.AttributeCombinationAsProduct,
 				AttributeCombinationValueMergingId = projection.AttributeCombinationValueMergingId,
 				NoGroupedProducts = projection.NoGroupedProducts,
+				OnlyIndividuallyVisibleAssociated = projection.OnlyIndividuallyVisibleAssociated,
 				OrderStatusChangeId = projection.OrderStatusChangeId
 			};
+
+			if (profile.Projection.IsEmpty())
+			{
+				model.Projection.DescriptionMergingId = (int)ExportDescriptionMerging.Description;
+			}
 
 			model.Projection.AvailableStores = allStores
 				.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
@@ -318,10 +479,19 @@ namespace SmartStore.Admin.Controllers
 			model.Deployments = profile.Deployments
 				.Select(x =>
 				{
-					var deploymentModel = PrepareDeploymentModel(x, null, false);
+					var deploymentModel = CreateDeploymentModel(profile, x, null, false);
 
-					deploymentModel.ProfileDetails = PrepareProfileDetailsModel(profile, true);
+					if (x.ResultInfo.HasValue())
+					{
+						var resultInfo = XmlHelper.Deserialize<DataDeploymentResult>(x.ResultInfo);
 
+						deploymentModel.LastResult = new ExportDeploymentModel.LastResultInfo
+						{
+							Execution = _dateTimeHelper.ConvertToUserTime(resultInfo.LastExecutionUtc, DateTimeKind.Utc),
+							ExecutionPretty = resultInfo.LastExecutionUtc.RelativeFormat(true, "f"),
+							Error = resultInfo.LastError
+						};
+					}
 					return deploymentModel;
 				})
 				.ToList();
@@ -417,88 +587,6 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private ExportDeploymentModel PrepareDeploymentModel(ExportDeployment deployment, Provider<IExportProvider> provider, bool forEdit)
-		{
-			var model = new ExportDeploymentModel
-			{
-				Id = deployment.Id,
-				ProfileId = deployment.ProfileId,
-				Name = deployment.Name,
-				Enabled = deployment.Enabled,
-				IsPublic = deployment.IsPublic,
-				CreateZip = deployment.CreateZip,
-				DeploymentType = deployment.DeploymentType,
-				DeploymentTypeName = deployment.DeploymentType.GetLocalizedEnum(_services.Localization, _services.WorkContext),
-				Username = deployment.Username,
-				Password = deployment.Password,
-				Url = deployment.Url,
-				HttpTransmissionType = deployment.HttpTransmissionType,
-				FileSystemPath = deployment.FileSystemPath,
-				EmailAddresses = deployment.EmailAddresses,
-				EmailSubject = deployment.EmailSubject,
-				EmailAccountId = deployment.EmailAccountId,
-				PassiveMode = deployment.PassiveMode,
-				UseSsl = deployment.UseSsl
-			};
-
-			if (forEdit)
-			{
-				var allEmailAccounts = _emailAccountService.GetAllEmailAccounts();
-
-				model.AvailableDeploymentTypes = ExportDeploymentType.FileSystem.ToSelectList(false).ToList();
-				model.AvailableHttpTransmissionTypes = ExportHttpTransmissionType.SimplePost.ToSelectList(false).ToList();
-
-				model.SerializedEmailAddresses = string.Join(",", deployment.EmailAddresses.SplitSafe(",").Select(x => x.EncodeJsString()));
-
-				model.AvailableEmailAccounts = allEmailAccounts
-					.Select(x => new SelectListItem { Text = x.FriendlyName, Value = x.Id.ToString() })
-					.ToList();
-
-				if (provider != null)
-				{
-					model.ThumbnailUrl = GetThumbnailUrl(provider);
-				}
-			}
-
-			return model;
-		}
-
-		private void ModelToEntity(ExportDeploymentModel model, ExportDeployment deployment)
-		{
-			deployment.ProfileId = model.ProfileId;
-			deployment.Name = model.Name;
-			deployment.Enabled = model.Enabled;
-			deployment.DeploymentType = model.DeploymentType;
-			deployment.IsPublic = model.IsPublic;
-			deployment.CreateZip = model.CreateZip;
-			deployment.Username = model.Username;
-			deployment.Password = model.Password;
-			deployment.Url = model.Url;
-			deployment.HttpTransmissionType = model.HttpTransmissionType;
-			deployment.FileSystemPath = model.FileSystemPath;
-			deployment.EmailAddresses = model.EmailAddresses;
-			deployment.EmailSubject = model.EmailSubject;
-			deployment.EmailAccountId = model.EmailAccountId;
-			deployment.PassiveMode = model.PassiveMode;
-			deployment.UseSsl = model.UseSsl;
-		}
-
-		private ActionResult SmartRedirect(bool continueEditing, int profileId, int deploymentId)
-		{
-			if (!continueEditing)
-			{
-				TempData["SelectedTab.export-profile-edit"] = new SelectedTabInfo
-				{
-					TabId = "export-profile-edit-6",
-					Path = Url.Action("Edit", new { id = profileId })
-				};
-			}
-
-			return (continueEditing ?
-				RedirectToAction("EditDeployment", new { id = deploymentId }) :
-				RedirectToAction("Edit", new { id = profileId }));
-		}
-
 		#endregion
 
 		public ActionResult Index()
@@ -508,7 +596,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult List()
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
 			var providers = _exportService.LoadAllExportProviders(0, false).ToList();
@@ -521,10 +609,12 @@ namespace SmartStore.Admin.Controllers
 				if (provider != null)
 				{
 					var profileModel = new ExportProfileModel();
+					var fileDetailsModel = CreateFileDetailsModel(profile, provider, null);
 
-					PrepareProfileModel(profileModel, profile, provider, false);
+					PrepareProfileModel(profileModel, profile, provider);
 
-					profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(_services.Localization, _dateTimeHelper, Url);
+					profileModel.FileCount = fileDetailsModel.FileCount;
+					profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(Services.Localization, _dateTimeHelper, Url);
 
 					model.Add(profileModel);
 				}
@@ -535,33 +625,48 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult ProfileListDetails(int profileId)
 		{
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 			{
 				var profile = _exportService.GetExportProfileById(profileId);
 				if (profile != null)
 				{
-					var model = PrepareProfileDetailsModel(profile, false);
-
-					return Json(new
+					var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+					if (provider != null && !provider.Metadata.IsHidden)
 					{
-						exportFileCount = this.RenderPartialViewToString("ProfileFileCount", model)
-                    }, JsonRequestBehavior.AllowGet);
+						var model = CreateFileDetailsModel(profile, provider, null);
+						return Json(this.RenderPartialViewToString("ProfileFileCount", model.FileCount), JsonRequestBehavior.AllowGet);
+					}
 				}
 			}
 
 			return new EmptyResult();
         }
 
-		public ActionResult ProfileFileDetails(int profileId)
+		public ActionResult ProfileFileDetails(int profileId, int deploymentId)
 		{
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 			{
-				var profile = _exportService.GetExportProfileById(profileId);
-				if (profile != null)
+				if (profileId != 0)
 				{
-					var model = PrepareProfileDetailsModel(profile, true);
-
-					return PartialView(model);
+					var profile = _exportService.GetExportProfileById(profileId);
+					if (profile != null)
+					{
+						var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+						if (provider != null && !provider.Metadata.IsHidden)
+						{
+							var model = CreateFileDetailsModel(profile, provider, null);
+							return PartialView(model);
+						}
+					}
+				}
+				else if (deploymentId != 0)
+				{
+					var deployment = _exportService.GetExportDeploymentById(deploymentId);
+					if (deployment != null)
+					{
+						var model = CreateFileDetailsModel(deployment.Profile, null, deployment);
+						return PartialView(model);
+					}
 				}
 			}
 
@@ -570,7 +675,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult Create()
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return Content(T("Admin.AccessDenied.Description"));
 
 			var count = 0;
@@ -617,7 +722,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult Create(ExportProfileModel model)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
 			if (model.ProviderSystemName.HasValue())
@@ -638,7 +743,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult Edit(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
 			var profile = _exportService.GetExportProfileById(id);
@@ -646,12 +751,12 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			var model = new ExportProfileModel();
 
-			PrepareProfileModel(model, profile, provider, true);
+			PrepareProfileModel(model, profile, provider);
 			PrepareProfileModelForEdit(model, profile, provider);
 
 			return View(model);
@@ -661,7 +766,7 @@ namespace SmartStore.Admin.Controllers
         [FormValueRequired("save", "save-continue")]
         public ActionResult Edit(ExportProfileModel model, bool continueEditing)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
 			var profile = _exportService.GetExportProfileById(model.Id);
@@ -669,12 +774,12 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			if (!ModelState.IsValid)
 			{
-				PrepareProfileModel(model, profile, provider, true);
+				PrepareProfileModel(model, profile, provider);
 				PrepareProfileModelForEdit(model, profile, provider);
 				return View(model);
 			}
@@ -723,10 +828,11 @@ namespace SmartStore.Admin.Controllers
 					AttributeCombinationAsProduct = model.Projection.AttributeCombinationAsProduct,
 					AttributeCombinationValueMergingId = model.Projection.AttributeCombinationValueMergingId,
 					NoGroupedProducts = model.Projection.NoGroupedProducts,
+					OnlyIndividuallyVisibleAssociated = model.Projection.OnlyIndividuallyVisibleAssociated,
 					OrderStatusChangeId = model.Projection.OrderStatusChangeId
 				};
 
-				profile.Projection = XmlHelper.Serialize<ExportProjection>(projection);
+				profile.Projection = XmlHelper.Serialize(projection);
 			}
 
 			// filtering
@@ -766,7 +872,7 @@ namespace SmartStore.Admin.Controllers
 					IsActiveSubscriber = model.Filter.IsActiveSubscriber
 				};
 
-				profile.Filtering = XmlHelper.Serialize<ExportFilter>(filter);
+				profile.Filtering = XmlHelper.Serialize(filter);
 			}
 
 			// provider configuration
@@ -794,7 +900,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, ActionName("Delete")]
 		public ActionResult DeleteConfirmed(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
 			var profile = _exportService.GetExportProfileById(id);
@@ -802,7 +908,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			try
@@ -823,7 +929,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult Preview(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
 			var profile = _exportService.GetExportProfileById(id);
@@ -831,7 +937,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			if (!profile.Enabled)
@@ -862,7 +968,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult PreviewList(GridCommand command, int id, int totalRecords)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 			{
 				NotifyAccessDenied();
 
@@ -905,7 +1011,7 @@ namespace SmartStore.Admin.Controllers
 						{
 							Id = product.Id,
 							ProductTypeId = product.ProductTypeId,
-							ProductTypeName = product.GetProductTypeLabel(_services.Localization),
+							ProductTypeName = product.GetProductTypeLabel(Services.Localization),
 							ProductTypeLabelHint = product.ProductTypeLabelHint,
 							Name = item.Name,
 							Sku = item.Sku,
@@ -986,7 +1092,7 @@ namespace SmartStore.Admin.Controllers
 						var subscription = item.Entity as NewsLetterSubscription;
 
 						if (allStores == null)
-							allStores = _services.StoreService.GetAllStores();
+							allStores = Services.StoreService.GetAllStores();
 
 						var store = allStores.FirstOrDefault(x => x.Id == subscription.StoreId);
 
@@ -1042,11 +1148,11 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			var taskParams = new Dictionary<string, string>();
-			taskParams.Add(TaskExecutor.CurrentCustomerIdParamName, _services.WorkContext.CurrentCustomer.Id.ToString());
+			taskParams.Add(TaskExecutor.CurrentCustomerIdParamName, Services.WorkContext.CurrentCustomer.Id.ToString());
 
 			if (selectedIds.HasValue())
 				taskParams.Add("SelectedIds", selectedIds);
@@ -1094,7 +1200,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult DownloadLogFile(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
 			var profile = _exportService.GetExportProfileById(id);
@@ -1120,35 +1226,48 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("List");
 		}
 
-		public ActionResult DownloadExportFile(int id, string name)
+		public ActionResult DownloadExportFile(int id, string name, bool? isDeployment)
 		{
 			string message = null;
+			string path = null;
 
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 			{
-				var profile = _exportService.GetExportProfileById(id);
-				if (profile != null)
+				if (isDeployment ?? false)
 				{
-					var path = Path.Combine(profile.GetExportFolder(true), name);
-
-					if (!System.IO.File.Exists(path))
-						path = Path.Combine(profile.GetExportFolder(false), name);
-
-					if (System.IO.File.Exists(path))
+					var deployment = _exportService.GetExportDeploymentById(id);
+					if (deployment != null)
 					{
-						try
-						{
-							var stream = new FileStream(path, FileMode.Open);
+						var deploymentFolder = deployment.GetDeploymentFolder();
+						if (deploymentFolder.HasValue())
+							path = Path.Combine(deploymentFolder, name);
+					}
+				}
+				else
+				{
+					var profile = _exportService.GetExportProfileById(id);
+					if (profile != null)
+					{
+						path = Path.Combine(profile.GetExportFolder(true), name);
+						if (!System.IO.File.Exists(path))
+							path = Path.Combine(profile.GetExportFolder(false), name);
+					}
+				}
 
-							var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path));
-							result.FileDownloadName = Path.GetFileName(path);
+				if (System.IO.File.Exists(path))
+				{
+					try
+					{
+						var stream = new FileStream(path, FileMode.Open);
 
-							return result;
-						}
-						catch (IOException)
-						{
-							NotifyWarning(T("Admin.Common.FileInUse"));
-						}
+						var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path));
+						result.FileDownloadName = Path.GetFileName(path);
+
+						return result;
+					}
+					catch (IOException)
+					{
+						NotifyWarning(T("Admin.Common.FileInUse"));
 					}
 				}
 			}
@@ -1169,12 +1288,10 @@ namespace SmartStore.Admin.Controllers
 		{
 			var profile = _exportService.GetExportProfileById(id);
 			
-			_services.DbContext.DetachEntity<ExportProfile>(profile);
+			Services.DbContext.DetachEntity(profile);
 			profile.FileNamePattern = pattern.EmptyNull();
 
-			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-
-			var resolvedPattern = profile.ResolveFileNamePattern(_services.StoreContext.CurrentStore, 1, _dataExchangeSettings.MaxFileNameLength);
+			var resolvedPattern = profile.ResolveFileNamePattern(Services.StoreContext.CurrentStore, 1, _dataExchangeSettings.MaxFileNameLength);
 
 			return this.Content(resolvedPattern);
 		}
@@ -1183,7 +1300,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult CreateDeployment(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
 			var profile = _exportService.GetExportProfileById(id);
@@ -1194,9 +1311,7 @@ namespace SmartStore.Admin.Controllers
 			if (provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
-			//var fileSystemName = ExportDeploymentType.FileSystem.GetLocalizedEnum(_services.Localization, _services.WorkContext);
-
-			var model = PrepareDeploymentModel(new ExportDeployment
+			var model = CreateDeploymentModel(profile, new ExportDeployment
 			{
 				ProfileId = id,
 				Enabled = true,
@@ -1211,7 +1326,7 @@ namespace SmartStore.Admin.Controllers
 		[FormValueRequired("save", "save-continue")]
 		public ActionResult CreateDeployment(ExportDeploymentModel model, bool continueEditing, ExportDeploymentType deploymentType)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
 			var profile = _exportService.GetExportProfileById(model.ProfileId);
@@ -1219,7 +1334,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			if (ModelState.IsValid)
@@ -1240,7 +1355,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult EditDeployment(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
 			var deployment = _exportService.GetExportDeploymentById(id);
@@ -1248,10 +1363,10 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(deployment.Profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
-			var model = PrepareDeploymentModel(deployment, provider, true);
+			var model = CreateDeploymentModel(deployment.Profile, deployment, provider, true);
 
 			return View(model);
 		}
@@ -1260,7 +1375,7 @@ namespace SmartStore.Admin.Controllers
 		[FormValueRequired("save", "save-continue")]
 		public ActionResult EditDeployment(ExportDeploymentModel model, bool continueEditing)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
 			var deployment = _exportService.GetExportDeploymentById(model.Id);
@@ -1268,7 +1383,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(deployment.Profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			if (ModelState.IsValid)
@@ -1282,14 +1397,15 @@ namespace SmartStore.Admin.Controllers
 				return SmartRedirect(continueEditing, deployment.ProfileId, deployment.Id);
 			}
 
-			model = PrepareDeploymentModel(deployment, _exportService.LoadProvider(deployment.Profile.ProviderSystemName), true);
+			model = CreateDeploymentModel(deployment.Profile, deployment, _exportService.LoadProvider(deployment.Profile.ProviderSystemName), true);
 
 			return View(model);
 		}
 
+		[HttpPost]
 		public ActionResult DeleteDeployment(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
 			var deployment = _exportService.GetExportDeploymentById(id);
@@ -1297,7 +1413,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 
 			var provider = _exportService.LoadProvider(deployment.Profile.ProviderSystemName);
-			if (provider.Metadata.IsHidden)
+			if (provider == null || provider.Metadata.IsHidden)
 				return RedirectToAction("List");
 
 			int profileId = deployment.ProfileId;

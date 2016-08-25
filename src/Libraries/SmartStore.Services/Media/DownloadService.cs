@@ -1,42 +1,55 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Events;
+using SmartStore.Core.Plugins;
+using SmartStore.Services.Configuration;
+using SmartStore.Services.Media.Storage;
 
 namespace SmartStore.Services.Media
 {
-    /// <summary>
-    /// Download service
-    /// </summary>
-    public partial class DownloadService : IDownloadService
+	public partial class DownloadService : IDownloadService
     {
-        #region Fields
-
         private readonly IRepository<Download> _downloadRepository;
         private readonly IEventPublisher _eventPubisher;
+		private readonly Provider<IMediaStorageProvider> _storageProvider;
 
-        #endregion
-
-        #region Ctor
-
-        public DownloadService(IRepository<Download> downloadRepository, IEventPublisher eventPubisher)
+		public DownloadService(
+			IRepository<Download> downloadRepository,
+			IEventPublisher eventPubisher,
+			ISettingService settingService,
+			IProviderManager providerManager)
         {
             _downloadRepository = downloadRepository;
             _eventPubisher = eventPubisher;
-        }
 
-        #endregion
+			var systemName = settingService.GetSettingByKey("Media.Storage.Provider", DatabaseMediaStorageProvider.SystemName);
 
-        #region Methods
+			_storageProvider = providerManager.GetProvider<IMediaStorageProvider>(systemName);
+		}
 
-        public virtual Download GetDownloadById(int downloadId)
+		private void UpdateDownloadCore(Download download, byte[] downloadBinary, bool updateDataStorage)
+		{
+			download.UpdatedOnUtc = DateTime.UtcNow;
+
+			_downloadRepository.Update(download);
+
+			if (updateDataStorage)
+			{
+				// save to storage
+				_storageProvider.Value.Save(download.ToMedia(), downloadBinary);
+			}
+
+			// event notification
+			_eventPubisher.EntityUpdated(download);
+		}
+
+		public virtual Download GetDownloadById(int downloadId)
         {
             if (downloadId == 0)
                 return null;
@@ -78,37 +91,47 @@ namespace SmartStore.Services.Media
 
         public virtual void DeleteDownload(Download download)
         {
-            if (download == null)
-                throw new ArgumentNullException("download");
+			Guard.ArgumentNotNull(() => download);
 
-            _downloadRepository.Delete(download);
+			// delete from storage
+			_storageProvider.Value.Remove(download.ToMedia());
 
-            _eventPubisher.EntityDeleted(download);
+			// delete entity
+			_downloadRepository.Delete(download);
+
+			// event notification
+			_eventPubisher.EntityDeleted(download);
         }
 
-        public virtual void InsertDownload(Download download)
+        public virtual void InsertDownload(Download download, byte[] downloadBinary)
         {
-            if (download == null)
-                throw new ArgumentNullException("download");
+			Guard.ArgumentNotNull(() => download);
 
-			download.UpdatedOnUtc = DateTime.UtcNow;
             _downloadRepository.Insert(download);
 
-            _eventPubisher.EntityInserted(download);
+			// save to storage
+			_storageProvider.Value.Save(download.ToMedia(), downloadBinary);
+
+			// event notification
+			_eventPubisher.EntityInserted(download);
         }
 
-        public virtual void UpdateDownload(Download download)
+		public virtual void UpdateDownload(Download download)
+		{
+			Guard.ArgumentNotNull(() => download);
+
+			// we use an overload because a byte array cannot be nullable
+			UpdateDownloadCore(download, null, false);
+		}
+
+		public virtual void UpdateDownload(Download download, byte[] downloadBinary)
         {
-            if (download == null)
-                throw new ArgumentNullException("download");
+			Guard.ArgumentNotNull(() => download);
 
-			download.UpdatedOnUtc = DateTime.UtcNow;
-            _downloadRepository.Update(download);
-
-            _eventPubisher.EntityUpdated(download);
+			UpdateDownloadCore(download, downloadBinary, true);
         }
 
-        public virtual bool IsDownloadAllowed(OrderItem orderItem)
+		public virtual bool IsDownloadAllowed(OrderItem orderItem)
         {
             if (orderItem == null)
                 return false;
@@ -183,6 +206,11 @@ namespace SmartStore.Services.Media
                 orderItem.LicenseDownloadId > 0;
         }
 
-        #endregion
-    }
+		public virtual byte[] LoadDownloadBinary(Download download)
+		{
+			Guard.ArgumentNotNull(() => download);
+
+			return _storageProvider.Value.Load(download.ToMedia());
+		}
+	}
 }

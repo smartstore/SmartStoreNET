@@ -63,7 +63,7 @@
 						{
 							<div>@address.Company</div>
 						}
-						<div>@JoinValues(new string[] { address.FirstName, address.LastName })</div>
+						<div>@JoinValues(new string[] { address.Salutation, address.Title, address.FirstName, address.LastName })</div>
 						@if (address.StreetAddressEnabled && address.Address1.HasValue())
 						{
 							<div>@address.Address1</div>

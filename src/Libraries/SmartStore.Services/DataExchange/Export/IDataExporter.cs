@@ -25,8 +25,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		public DataExportRequest(ExportProfile profile, Provider<IExportProvider> provider)
 		{
-			Guard.ArgumentNotNull(() => profile);
-			Guard.ArgumentNotNull(() => provider);
+			Guard.NotNull(profile, nameof(profile));
+			Guard.NotNull(provider, nameof(provider));
 
 			Profile = profile;
 			Provider = provider;

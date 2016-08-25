@@ -17,6 +17,10 @@ user_agent_parsers:
   - regex: 'Google.*/\+/web/snippet'
     family_replacement: 'GooglePlusBot'
 
+  # Twitter
+  - regex: '(Twitterbot)/(\d+)\.(\d+)'
+    family_replacement: 'TwitterBot'
+
   # Bots Pattern '/name-0.0'
   - regex: '/((?:Ant-)?Nutch|[A-z]+[Bb]ot|[A-z]+[Ss]pider|Axtaris|fetchurl|Isara|ShopSalad|Tailsweep)[ \-](\d+)(?:\.(\d+)(?:\.(\d+))?)?'
   # Bots Pattern 'name/0.0'
@@ -106,7 +110,7 @@ user_agent_parsers:
   # Opera will stop at 9.80 and hide the real version in the Version string.
   # see: http://dev.opera.com/articles/view/opera-ua-string-changes/
   - regex: '(Opera Tablet).*Version/(\d+)\.(\d+)(?:\.(\d+))?'
-  - regex: '(Opera Mini)(?:/att)?/(\d+)?(?:\.(\d+))?(?:\.(\d+))?'
+  - regex: '(Opera Mini)(?:/att)?/?(\d+)?(?:\.(\d+))?(?:\.(\d+))?'
   - regex: '(Opera)/.+Opera Mobi.+Version/(\d+)\.(\d+)'
     family_replacement: 'Opera Mobile'
   - regex: '(Opera)/(\d+)\.(\d+).+Opera Mobi'
@@ -205,6 +209,10 @@ user_agent_parsers:
   - regex: 'Windows Phone .*(Edge)/(\d+)\.(\d+)'
     family_replacement: 'Edge Mobile'
 
+  # Samsung Internet (based on Chrome, but lacking some features)
+  - regex: '(SamsungBrowser)/(\d+)\.(\d+)'
+    family_replacement: 'Samsung Internet'
+
   # Chrome Mobile
   - regex: '(CrMo)/(\d+)\.(\d+)\.(\d+)\.(\d+)'
     family_replacement: 'Chrome Mobile'
@@ -272,12 +280,12 @@ user_agent_parsers:
   - regex: '(AdobeAIR|FireWeb|Jasmine|ANTGalio|Midori|Fresco|Lobo|PaleMoon|Maxthon|Lynx|OmniWeb|Dillo|Camino|Demeter|Fluid|Fennec|Epiphany|Shiira|Sunrise|Spotify|Flock|Netscape|Lunascape|WebPilot|NetFront|Netfront|Konqueror|SeaMonkey|Kazehakase|Vienna|Iceape|Iceweasel|IceWeasel|Iron|K-Meleon|Sleipnir|Galeon|GranParadiso|Opera Mini|iCab|NetNewsWire|ThunderBrowse|Iris|UP\.Browser|Bunjalloo|Google Earth|Raven for Mac|Openwave)/(\d+)\.(\d+)\.(\d+)'
 
   # Outlook 2007
-  - regex: 'MSOffice 12'
+  - regex: 'Microsoft Office Outlook 12\.\d+\.\d+|MSOffice 12'
     family_replacement: 'Outlook'
     v1_replacement: '2007'
 
   # Outlook 2010
-  - regex: 'MSOffice 14'
+  - regex: 'Microsoft Outlook 14\.\d+\.\d+|MSOffice 14'
     family_replacement: 'Outlook'
     v1_replacement: '2010'
 
@@ -285,6 +293,15 @@ user_agent_parsers:
   - regex: 'Microsoft Outlook 15\.\d+\.\d+'
     family_replacement: 'Outlook'
     v1_replacement: '2013'
+
+  # Outlook 2016
+  - regex: 'Microsoft Outlook (?:Mail )?16\.\d+\.\d+'
+    family_replacement: 'Outlook'
+    v1_replacement: '2016'
+
+  # Windows Live Mail
+  - regex: 'Outlook-Express\/7\.0.*'
+    family_replacement: 'Windows Live Mail'
 
   # Apple Air Mail
   - regex: '(Airmail) (\d+)\.(\d+)(?:\.(\d+))?'
@@ -298,6 +315,10 @@ user_agent_parsers:
 
   # Edge/major_version.minor_version
   - regex: '(Edge)/(\d+)\.(\d+)'
+
+  # Brave Browser https://brave.com/
+  - regex: '(brave)/(\d+)\.(\d+)\.(\d+) Chrome'
+    family_replacement: 'Brave'
 
   # Chrome/Chromium/major_version.minor_version.beta_version
   - regex: '(Chromium|Chrome)/(\d+)\.(\d+)\.(\d+)'
@@ -388,15 +409,15 @@ user_agent_parsers:
   - regex: '(iPod|iPhone|iPad).+Version/(\d+)\.(\d+)(?:\.(\d+))?.* Safari'
     family_replacement: 'Mobile Safari'
   - regex: '(iPod|iPhone|iPad).+Version/(\d+)\.(\d+)(?:\.(\d+))?'
-    family_replacement: 'Mobile Safari UIWebView'
+    family_replacement: 'Mobile Safari UI/WKWebView'
   - regex: '(iPod|iPhone|iPad);.*CPU.*OS (\d+)_(\d+)(?:_(\d+))?.*Mobile.* Safari'
     family_replacement: 'Mobile Safari'
   - regex: '(iPod|iPhone|iPad);.*CPU.*OS (\d+)_(\d+)(?:_(\d+))?.*Mobile'
-    family_replacement: 'Mobile Safari UIWebView'
+    family_replacement: 'Mobile Safari UI/WKWebView'
   - regex: '(iPod|iPhone|iPad).* Safari'
     family_replacement: 'Mobile Safari'
   - regex: '(iPod|iPhone|iPad)'
-    family_replacement: 'Mobile Safari UIWebView'
+    family_replacement: 'Mobile Safari UI/WKWebView'
 
   - regex: '(AvantGo) (\d+).(\d+)'
 
@@ -498,7 +519,7 @@ user_agent_parsers:
 
   # apple mail - not directly detectable, have it after Safari stuff
   - regex: '(AppleWebKit)/(\d+)\.(\d+)\.(\d+)'
-    family_replacement: 'AppleMail'
+    family_replacement: 'Apple Mail'
 
   # AFTER THE EDGE CASES ABOVE!
   # AFTER IE11
@@ -513,6 +534,9 @@ user_agent_parsers:
     family_replacement: 'Python Requests'
 
   - regex: '(Java)[/ ]{0,1}\d+\.(\d+)\.(\d+)[_-]*([a-zA-Z0-9]+)*'
+
+  # Roku Digital-Video-Players https://www.roku.com/
+  - regex: '^(Roku)/DVP-(\d+)\.(\d+)'
 
 os_parsers:
   ##########
@@ -980,6 +1004,9 @@ os_parsers:
   - regex: '(Linux)(?:[ /](\d+)\.(\d+)(?:\.(\d+))?)?'
   - regex: 'SunOS'
     os_replacement: 'Solaris'
+
+  # Roku Digital-Video-Players https://www.roku.com/
+  - regex: '^(Roku)/DVP-(\d+)\.(\d+)'
 
 device_parsers:
 
@@ -2049,7 +2076,7 @@ device_parsers:
     device_replacement: 'Huawei Ideos$1'
     brand_replacement: 'Huawei'
     model_replacement: 'Ideos$1'
-  - regex: '; *(Orange Daytona|Pulse|Pulse Mini|Vodafone 858|C8500|C8600|C8650|C8660) Build'
+  - regex: '; *(Orange Daytona|Pulse|Pulse Mini|Vodafone 858|C8500|C8600|C8650|C8660|Nexus 6P) Build'
     device_replacement: 'Huawei $1'
     brand_replacement: 'Huawei'
     model_replacement: '$1'
@@ -2571,7 +2598,7 @@ device_parsers:
   # LG
   # @ref: http://www.lg.com/uk/mobile
   #########
-  - regex: '; *(E[34][0-9]{2}|LS[6-8][0-9]{2}|VS[6-9][0-9]+[^;/]+|Nexus [45]|GT540f?|Optimus (?:2X|G|4X HD)|OptimusX4HD) *(?:Build|;)'
+  - regex: '; *(E[34][0-9]{2}|LS[6-8][0-9]{2}|VS[6-9][0-9]+[^;/]+|Nexus 4|Nexus 5X?|GT540f?|Optimus (?:2X|G|4X HD)|OptimusX4HD) *(?:Build|;)'
     device_replacement: '$1'
     brand_replacement: 'LG'
     model_replacement: '$1'
@@ -3841,7 +3868,7 @@ device_parsers:
   # XiaoMi
   # @ref: http://www.xiaomi.com/event/buyphone
   #########
-  - regex: '; *((MI|HM|MI-ONE|Redmi)[ -](NOTE |Note )?[^;/]*) Build/'
+  - regex: '; *((MI|HM|MI-ONE|Redmi)[ -](NOTE |Note )?[^;/]*) (Build|MIUI)/'
     device_replacement: 'XiaoMi $1'
     brand_replacement: 'XiaoMi'
     model_replacement: '$1'
@@ -4698,6 +4725,10 @@ device_parsers:
   # WebTV
   ##########
   - regex: '(WebTV)/\d+.\d+'
+    brand_replacement: 'Generic_Inettv'
+    model_replacement: '$1'
+  # Roku Digital-Video-Players https://www.roku.com/
+  - regex: '^(Roku)/DVP-\d+\.\d+'
     brand_replacement: 'Generic_Inettv'
     model_replacement: '$1'
 

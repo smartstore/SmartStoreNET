@@ -121,9 +121,9 @@ namespace SmartStore.Services.DataExchange.Export
 		public string PublicFolderPath { get; internal set; }
 
 		/// <summary>
-		/// The public URL of the export file (accessible through the internet). <c>null</c> if the profile has no public deployment.
+		/// The URL of the public export folder "Exchange". <c>null</c> if the profile has no public deployment.
 		/// </summary>
-		public string PublicFileUrl { get; internal set; }
+		public string PublicFolderUrl { get; internal set; }
 
 		/// <summary>
 		/// Provider specific configuration data
@@ -194,5 +194,15 @@ namespace SmartStore.Services.DataExchange.Export
 		/// The name of the file to be created
 		/// </summary>
 		public string FileName { get; set; }
+
+		/// <summary>
+		/// Short optional text that describes the content of the file
+		/// </summary>
+		public string Label { get; set; }
+
+		/// <summary>
+		/// Whether to display the file in the profile file dialog
+		/// </summary>
+		public bool DisplayInFileDialog { get; set; }
 	}
 }

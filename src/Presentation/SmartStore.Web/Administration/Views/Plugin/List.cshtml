@@ -4,7 +4,6 @@
 @using SmartStore.Licensing;
 
 @{    
-    //page title
     ViewBag.Title = T("Admin.Configuration.Plugins").Text;
 
 	var allPluginsSelectList = Model.AllPlugins.Select(x => new SelectListItem { Value = x.SystemName, Text = x.FriendlyName });
@@ -231,14 +230,6 @@
 			<button type="button" class="close" data-dismiss="modal"><b>x</b></button>
 			<h4 class="caption">
 				@T("Admin.Common.License")
-				@if (Model.IsSandbox)
-				{
-					<span class="label label-warning">Sandbox</span>
-				}
-				@if (Model.IsLocalhost)
-				{
-					<span class="label label-success">Localhost</span>
-				}
 			</h4>
 		</div>
 		<div class="modal-body"></div>
@@ -482,19 +473,20 @@
     					}
     					return false;
     				});
-
-    				dialog.find('.licensing-reset-status-check').click(function() {
-    					$({}).doAjax({
-    						type: 'POST',
-    						url: dialog.find('form:first').attr('data-resetcheckurl')
-    					});
-    				});
     			}
     		});
 
     		dialog.find('.modal').modal('show');
     		return false;
     	});
+
+		// reset license status
+		$('#plugin-licence-modal').on('click', '.licensing-reset-status-check', function() {
+			$({}).doAjax({
+				type: 'POST',
+				url: $('#plugin-licence-modal').find('.modal-body form:first').attr('data-resetcheckurl')
+			});
+		});
 
         $('#btnRefresh').click(function () {
             // reload page

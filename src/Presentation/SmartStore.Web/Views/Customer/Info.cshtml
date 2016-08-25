@@ -52,11 +52,6 @@
         {
             @Html.AntiForgeryToken()
 
-            if (!ViewData.ModelState.IsValid)
-            {
-                @Html.ValidationSummary(true)
-            }
-          
             <fieldset class="form-fields">
                 <legend>@T("Account.YourPersonalDetails")</legend>
 
@@ -77,6 +72,11 @@
                             </label>
                         </div>
                     </div>
+                }
+
+                @if (Model.TitleEnabled)
+                {
+                    @Html.ControlGroupFor(model => model.Title, required: false)
                 }
 
                 @Html.ControlGroupFor(model => model.FirstName, required: true)

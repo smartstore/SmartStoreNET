@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.Routing;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Localization;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -31,7 +31,7 @@ using SmartStore.Web.Models.Catalog;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class ProductController : PublicControllerBase
+	public partial class ProductController : PublicControllerBase
 	{
 		#region Fields
 
@@ -153,29 +153,37 @@ namespace SmartStore.Web.Controllers
 			if (!_storeMappingService.Authorize(product))
 				return HttpNotFound();
 
-			//visible individually?
+			// is product individually visible?
 			if (!product.VisibleIndividually)
 			{
-				//is this one an associated products?
+				// find parent grouped product
 				var parentGroupedProduct = _productService.GetProductById(product.ParentGroupedProductId);
-				if (parentGroupedProduct != null)
-				{
-					return RedirectToRoute("Product", new { SeName = parentGroupedProduct.GetSeName() });
-				}
-				else
-				{
+
+				if (parentGroupedProduct == null)
 					return HttpNotFound();
-				}
+
+				var routeValues = new RouteValueDictionary();
+				routeValues.Add("SeName", parentGroupedProduct.GetSeName());
+
+				// add query string parameters
+				Request.QueryString.AllKeys.Each(x => routeValues.Add(x, Request.QueryString[x]));
+
+				return RedirectToRoute("Product", routeValues);
 			}
 
-			//prepare the model
 			var selectedAttributes = new NameValueCollection();
+			var attributesForProductId = 0;
 
-			selectedAttributes.ConvertAttributeQueryData(
-				_productAttributeParser.DeserializeQueryData(attributes),
-				product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing ? 0 : product.Id);
+			if (product.ProductType == ProductType.GroupedProduct || (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
+				attributesForProductId = 0;
+			else
+				attributesForProductId = product.Id;
 
-			var model = _helper.PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes);
+			// get selected attributes from query string
+			selectedAttributes.GetSelectedAttributes(Request.QueryString, _productAttributeParser.DeserializeQueryData(attributes),	attributesForProductId);
+
+			// prepare the view model
+			var model = _helper.PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes, queryData: Request.QueryString);
 
 			//save as recently viewed
 			_recentlyViewedProductsService.AddProductToRecentlyViewedList(product.Id);
@@ -348,7 +356,7 @@ namespace SmartStore.Web.Controllers
 					})
 					.ToList();
 				return model;
-			});
+			}, TimeSpan.FromHours(6));
 
 			if (cacheModel.Count == 0)
 				return Content("");
@@ -646,7 +654,7 @@ namespace SmartStore.Web.Controllers
 			// get merged model data
 			_helper.PrepareProductDetailModel(m, product, isAssociated, bundleItem, bundleItems, form, quantity);
 
-			if (bundleItem != null)		// update bundle item thumbnail
+			if (bundleItem != null)	// update bundle item thumbnail
 			{
 				if (!bundleItem.Item.HideThumbnail)
 				{
@@ -654,7 +662,7 @@ namespace SmartStore.Web.Controllers
 					dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.BundledProductPictureSize, false);
 				}
 			}
-			else if (isAssociated)		// update associated product thumbnail
+			else if (isAssociated) // update associated product thumbnail
 			{
 				var picture = m.GetAssignedPicture(_pictureService, null, productId);
 				dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.AssociatedProductPictureSize, false);

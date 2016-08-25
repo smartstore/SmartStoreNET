@@ -137,7 +137,7 @@ namespace SmartStore.Core
 			if (instance == null)
 				return null;
 
-			Guard.NotNull(() => type);
+			Guard.NotNull(type, nameof(type));
 
 			using (var writer = new StringWriter())
 			{
@@ -167,7 +167,7 @@ namespace SmartStore.Core
 		/// <returns>Object instance</returns>
 		public static object Deserialize(string xml, Type type)
 		{
-			Guard.NotNull(() => type);
+			Guard.NotNull(type, nameof(type));
 
 			try
 			{

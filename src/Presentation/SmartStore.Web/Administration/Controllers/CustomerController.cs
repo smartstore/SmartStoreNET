@@ -974,19 +974,22 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.Id);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
             {
-                var changePassRequest = new ChangePasswordRequest(model.Email,
-                    false, _customerSettings.DefaultPasswordFormat, model.Password);
+                var changePassRequest = new ChangePasswordRequest(model.Email, false, _customerSettings.DefaultPasswordFormat, model.Password);
                 var changePassResult = _customerRegistrationService.ChangePassword(changePassRequest);
-                if (changePassResult.Success)
-                    NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.PasswordChanged"));
-                else
-                    foreach (var error in changePassResult.Errors)
+
+				if (changePassResult.Success)
+				{
+					NotifySuccess(_localizationService.GetResource("Admin.Customers.Customers.PasswordChanged"));
+				}
+				else
+				{
+					foreach (var error in changePassResult.Errors)
 						NotifyError(error);
+				}
             }
 
             return RedirectToAction("Edit", customer.Id);
@@ -1001,7 +1004,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.Id);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
 			_genericAttributeService.SaveAttribute(customer,
@@ -1020,7 +1022,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.Id);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
 			_genericAttributeService.SaveAttribute(customer,
@@ -1078,7 +1079,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(id);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
 			// ensure that a non-admin user cannot impersonate as an administrator
@@ -1150,19 +1150,18 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.Id);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             try
             {
                 if (!_forumSettings.AllowPrivateMessages)
-                    throw new SmartException("Private messages are disabled");
+                    throw new SmartException(T("PrivateMessages.Disabled"));
                 if (customer.IsGuest())
-                    throw new SmartException("Customer should be registered");
+                    throw new SmartException(T("Common.MethodNotSupportedForGuests"));
                 if (String.IsNullOrWhiteSpace(model.SendPm.Subject))
-                    throw new SmartException("PM subject is empty");
+                    throw new SmartException(T("Admin.Customers.Customers.SendPM.Subject.Hint"));
                 if (String.IsNullOrWhiteSpace(model.SendPm.Message))
-                    throw new SmartException("PM message is empty");
+                    throw new SmartException(T("Admin.Customers.Customers.SendPM.Message.Hint"));
 
 
                 var privateMessage = new PrivateMessage
@@ -1314,7 +1313,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(customerId);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             var model = new CustomerAddressModel();
@@ -1359,7 +1357,6 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.CustomerId);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -1408,12 +1405,10 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(customerId);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             var address = _addressService.GetAddressById(addressId);
             if (address == null)
-                //No address found with the specified id
                 return RedirectToAction("Edit", new { id = customer.Id });
 
             var model = new CustomerAddressModel();
@@ -1466,12 +1461,10 @@ namespace SmartStore.Admin.Controllers
 
             var customer = _customerService.GetCustomerById(model.CustomerId);
             if (customer == null)
-                //No customer found with the specified id
                 return RedirectToAction("List");
 
             var address = _addressService.GetAddressById(model.Address.Id);
             if (address == null)
-                //No address found with the specified id
                 return RedirectToAction("Edit", new { id = customer.Id });
 
             if (ModelState.IsValid)

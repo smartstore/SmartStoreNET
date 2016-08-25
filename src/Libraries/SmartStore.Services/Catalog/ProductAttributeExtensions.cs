@@ -1,15 +1,14 @@
-
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Xml;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Extensions
-    /// </summary>
-    public static class ProductAttributeExtensions
+	public static class ProductAttributeExtensions
     {
         /// <summary>
         /// A value indicating whether this product variant attribute should have values
@@ -91,5 +90,39 @@ namespace SmartStore.Services.Catalog
 			}
 			return result;
 		}
-    }
+
+		/// <summary>
+		/// Searches the alias and returns values for fragments that begins with fieldPrefix
+		/// </summary>
+		/// <param name="attributeValues">Product variant attribute values</param>
+		/// <param name="fieldPrefix">Field prefix</param>
+		/// <param name="languageId">Language identifier</param>
+		/// <returns>Localized value names mapped by field names</returns>
+		public static Dictionary<string, string> GetMappedValuesFromAlias(this IList<ProductVariantAttributeValue> attributeValues, string fieldPrefix, int languageId)
+		{
+			Guard.NotNull(attributeValues, nameof(attributeValues));
+			Guard.NotEmpty(fieldPrefix, nameof(fieldPrefix));
+
+			var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+			if (!fieldPrefix.EndsWith(":"))
+				fieldPrefix = fieldPrefix + ":";
+
+			// TODO: do not use value alias, create a new attribute export field
+
+			//foreach (var value in attributeValues.Where(x => x.Alias.HasValue()))
+			//{
+			//	foreach (var item in value.Alias.SplitSafe(null).Where(x => x.EmptyNull().StartsWith(fieldPrefix)))
+			//	{
+			//		var fieldName = item.Substring(fieldPrefix.Length);
+			//		if (fieldName.HasValue() && !result.ContainsKey(fieldName))
+			//		{
+			//			result.Add(fieldName, value.GetLocalized(x => x.Name, languageId, true, false));
+			//		}
+			//	}
+			//}
+
+			return result;
+		}
+	}
 }

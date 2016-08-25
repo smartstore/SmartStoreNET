@@ -3,7 +3,6 @@ using System.Threading;
 
 namespace SmartStore.Utilities.Threading
 {
-
     public sealed class WriteLockDisposable : IDisposable
     {
         // Fields

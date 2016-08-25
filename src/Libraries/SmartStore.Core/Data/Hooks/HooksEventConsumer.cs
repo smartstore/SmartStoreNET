@@ -62,7 +62,7 @@ namespace SmartStore.Core.Data.Hooks
 				var preHooks = GetPreHookInstancesFor(e.Entity.GetType());
 				foreach (var hook in preHooks)
 				{
-					if (hook.HookStates == e.PreSaveState && hook.RequiresValidation == eventMessage.RequiresValidation)
+					if (hook.CanProcess(e.PreSaveState) && hook.RequiresValidation == eventMessage.RequiresValidation)
 					{
 						var metadata = new HookEntityMetadata(e.PreSaveState);
 						using (var scope = new DbContextScope(hooksEnabled: false))
@@ -106,7 +106,7 @@ namespace SmartStore.Core.Data.Hooks
 				var postHooks = GetPostHookInstancesFor(e.Entity.GetType());
 				foreach (var hook in postHooks)
 				{
-					if (hook.HookStates == e.PreSaveState)
+					if (hook.CanProcess(e.PreSaveState))
 					{
 						var metadata = new HookEntityMetadata(e.PreSaveState);
 						using (var scope = new DbContextScope(hooksEnabled: false))

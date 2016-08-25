@@ -16,8 +16,8 @@ namespace SmartStore.Services.Security
     {
         #region Constants
 
-        private const string ACLRECORD_BY_ENTITYID_NAME_KEY = "SmartStore.aclrecord.entityid-name-{0}-{1}";
-        private const string ACLRECORD_PATTERN_KEY = "SmartStore.aclrecord.";
+        private const string ACLRECORD_BY_ENTITYID_NAME_KEY = "aclrecord:entityid-name-{0}-{1}";
+        private const string ACLRECORD_PATTERN_KEY = "aclrecord:";
 
         #endregion
 
@@ -114,8 +114,8 @@ namespace SmartStore.Services.Security
 
 		public virtual IList<AclRecord> GetAclRecordsFor(string entityName, int entityId)
 		{
-			Guard.ArgumentIsPositive(entityId, "entityId");
-			Guard.ArgumentNotEmpty(() => entityName);
+			Guard.IsPositive(entityId, nameof(entityId));
+			Guard.NotEmpty(entityName, nameof(entityName));
 
 			var query = from ur in _aclRecordRepository.Table
 						where ur.EntityId == entityId &&

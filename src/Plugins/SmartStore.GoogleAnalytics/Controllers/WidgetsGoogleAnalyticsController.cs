@@ -82,13 +82,13 @@ namespace SmartStore.GoogleAnalytics.Controllers
             googleAnalyticsSettings.EcommerceDetailScript = model.EcommerceDetailScript;
             googleAnalyticsSettings.WidgetZone = model.ZoneId;
 
-			_settingService.SaveSetting(googleAnalyticsSettings, x => x.WidgetZone, 0, false);
+			using (_settingService.BeginBatch())
+			{
+				_settingService.SaveSetting(googleAnalyticsSettings, x => x.WidgetZone, 0, false);
 
-			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettingHelper.UpdateSettings(googleAnalyticsSettings, form, storeScope, _settingService);
-
-			//now clear settings cache
-			_settingService.ClearCache();
+				var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+				storeDependingSettingHelper.UpdateSettings(googleAnalyticsSettings, form, storeScope, _settingService);
+			}
 
             return Configure();
         }

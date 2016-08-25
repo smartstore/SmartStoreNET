@@ -538,7 +538,7 @@ namespace SmartStore.Admin.Controllers
 				//locales
                 UpdateLocales(category, model);
                 
-				//disounts
+				//discounts
                 var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, null, true);
                 foreach (var discount in allDiscounts)
                 {

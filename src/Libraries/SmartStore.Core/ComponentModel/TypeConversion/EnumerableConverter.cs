@@ -144,29 +144,11 @@ namespace SmartStore.ComponentModel
 
 		protected virtual string[] GetStringArray(string input)
 		{
-			if (!String.IsNullOrEmpty(input))
-			{
-				var splitChar = '|';
+			var result = input.SplitSafe(null);
 
-				if (input.IndexOf(splitChar) < 0)
-				{
-					if (input.IndexOf(';') > -1)
-					{
-						splitChar = ';';
-					}
-					else if (input.IndexOf(',') > -1)
-					{
-						splitChar = ',';
-					}
-				}
+			Array.ForEach(result, s => s.Trim());
 
-				var result = input.Split(new char[] { splitChar }, StringSplitOptions.RemoveEmptyEntries);
-				// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-				Array.ForEach(result, s => s.Trim());
-				return result;
-			}
-
-			return new string[0];
+			return result;
 		}
 	}
 }

@@ -6,8 +6,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OfficeOpenXml;
 
 namespace SmartStore.Services.DataExchange.Excel
@@ -29,7 +27,7 @@ namespace SmartStore.Services.DataExchange.Excel
 
 		public ExcelDataReader(Stream source, bool hasHeaders)
 		{
-			Guard.ArgumentNotNull(() => source);
+			Guard.NotNull(source, nameof(source));
 
 			_package = new ExcelPackage(source);
 
@@ -132,7 +130,7 @@ namespace SmartStore.Services.DataExchange.Excel
 
 		public int GetColumnIndex(string name)
 		{
-			Guard.ArgumentNotEmpty(name, "name");
+			Guard.NotEmpty(name, nameof(name));
 
 			EnsureInitialize();
 

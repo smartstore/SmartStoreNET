@@ -1,13 +1,48 @@
 ﻿# Release Notes
 
-## SmartStore.NET 2.5.1
+## SmartStore.NET 3.0
 
-### Highlights
-* #637 Integrated PayPal PLUS payment Provider
-* Major improvements in Importer: better field mapping, higher performance, bug fixes etc.
+### Breaking change
+* Removed Web API plugin from open source
+
+### Improvements
+* Added order message token for accepting third party email handover
+* ECB currency exchange rate provider now cross calculates rates based on euro rates
+* BeezUP: Exports the product weight
+* Payone: Replace client API by Payone iFrame solution. Allows credit card payment compliant with PCI DSS, SAQ A.
+* Updated Elmar shop info XML from version 1.1 to 2.0
+* #1008 Export: Add support for description projection to all product exporting providers
 
 ### New Features
-* #637 Integrated PayPal PLUS payment Provider
+* Added option to skip shipping method selection in checkout process when only one shipping method is active
+* Added options to capture salutation and title in addresses and customer info
+* Added projection to control the export of individually visible associated products
+* #1002 Web API: Add support for addresses and customer roles navigation property of customer entity
+* #966 Implement new tax calculation logic for shipping and payment fees
+* #922 New option whether to include the weight of free shipping products in shipping by weight calculation
+* #724 Allow discounts to be applied to manufacturers
+
+### Bugfixes
+* Currency wasn't displayed at shipping estimation
+* SKU, EAN, MPN of last attribute combination was exported for all combinations
+* GMC: Id should be unique when exporting attribute combinations as products
+* GMC: Attribute price adjustments were ignored when exporting attribute combinations as products
+* GMC: Associated products that are not individually visible are not exported anymore. GMC rejects them because the frontend redirects to the grouped product.
+* #999 Export: Projected customer id ignored during price calculation
+* Awarded reward points for a placed order sometimes wrong calculated
+
+
+## SmartStore.NET 2.6
+
+### Highlights
+* Major improvements in Importer & Exporter: better field mapping, higher performance, bug fixes etc.
+* 'PayPal PLUS' payment plugin
+* 'paydirekt' payment plugin
+* 'Viveum' payment plugin
+* 'BeezUP' export provider
+* (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.
+
+### New Features
 * #961 Fix "Open Redirection Vulnerability"
 * #571 Option to display another checkbox on confirm page to let the customer accept that his email address can be handed over to a third party
 * #870 Implement address import for customers (both billing & shipping address)
@@ -15,23 +50,30 @@
 * Import localized SEO names for product and categories
 * #477 Implement option to specify the number of exported and imported pictures
 * #859 Make checkout attributes suitable for multi-stores
+* Product details: Select attribute and gift card values by query string parameters
+* #950 make contact form comply with current German law
 
 ### Improvements
 * Major improvements in Importer: better field mapping, higher performance, bug fixes etc.
 * (Dev) Publishing SmartStore.Web from within Visual Studio now deploys the project correctly. No need to execute ClickToBuild.cmd anymore. Just publish directly to any target, including Azure.
 * Localization & SEO: language switcher now takes language specific SEO slugs into account when building links
+* Smarter import of plugin resource files with graceful fallbacks (de-DE > de > de-* > en-US > en > en-* > *)
+* (Perf) Faster language resource file import
 * Exports the product detail link including the attribute query string when exporting attribute combinations
 * #918 Compare products: Display base price information
 * Export email attachments needs to be stored in database because the temp file may not exist anymore when sending the email
 * #913 Use HTML5 Input types (tel, email)
 * Added paging to frontend order list
 * Added paging to backend checkout attribute list
+* #977 Show PAngV base/delivery amount also
+* Updated LiveEngage LiveChat plugin
 
 ### Bugfixes
+* TaskScheduler could fail polling when primary store url is an external IP address
 * Fixed ajax cache issue when saving payment or shipping restrictions. Internet Explorer showed the old data state (before storage).
 * "The provider failed at the Execute method: Member 'CurrentValues' cannot be called for the entity of type 'Product'" when exporting product attribute combinations
 * Bundles without selected attributes could throw an exception on product detail page
-* GMC feed did not export the product type (category path)
+* GMC feed did not export the product type and Billiger did not export shop_cat (category path)
 * The error message of a payment provider when capturing a payment was not displayed
 * Adding new shipping method threw an exception
 * Attribute Values: Assigning IsPreselected to more than one value causes an error
@@ -46,6 +88,14 @@
 * Download nor sample download were removable when editing product
 * Copied product must not share sample download of source product. Could produce "The DELETE statement conflicted with the REFERENCE constraint 'FK_dbo.Product_dbo.Download_SampleDownloadId'".
 * #921 Specification attribute options with single quotation marks are causing a Javascript error
+* #971 Product is added to cart automatically if it has a non-required file upload attribute
+* #973 Bundle item upload is nowhere linked
+* Base price in product list ignored PriceDisplayType (catalog settings) and possibly displayed the wrong base price info
+* Private messages: Fixes "No route in the route table matches the supplied values"
+* Payone: Hash string incorrect for frontend API payments where the order has more than 9 products
+* Export mail notification: Download link not working if SSL is enabled
+* Discount rule has spent amount including sub total option can cause wrong discount calculation if the cart contains a product several times
+* #986 File uploads possible through /content/filemanager/index.html
 
 
 ## SmartStore.NET 2.5

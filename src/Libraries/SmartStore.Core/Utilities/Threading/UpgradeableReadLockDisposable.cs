@@ -3,7 +3,6 @@ using System.Threading;
 
 namespace SmartStore.Utilities.Threading
 {
-
     public sealed class UpgradeableReadLockDisposable : IDisposable
     {
         private readonly ReaderWriterLockSlim _rwLock;
@@ -18,7 +17,5 @@ namespace SmartStore.Utilities.Threading
             this._rwLock.ExitUpgradeableReadLock();
         }
 
-
     }
-
 }

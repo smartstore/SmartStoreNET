@@ -305,8 +305,7 @@ namespace SmartStore.Admin.Controllers
 				storeId,
 				manifest.ThemeName);
 
-			HttpWebRequest request = WebRequest.CreateHttp(url);
-			request.UserAgent = "SmartStore.NET {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
+			var request = WebHelper.CreateHttpRequestForSafeLocalCall(new Uri(url));
 			WebResponse response = null;
 
 			try

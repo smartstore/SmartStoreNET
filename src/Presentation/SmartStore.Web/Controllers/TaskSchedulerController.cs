@@ -83,5 +83,10 @@ namespace SmartStore.Web.Controllers
             return Content("Task '{0}' executed".FormatCurrent(task.Name));
         }
 
-    }
+		public ContentResult Noop()
+		{
+			return Content("noop");
+		}
+
+	}
 }

@@ -136,23 +136,38 @@ namespace SmartStore.Services.DataExchange.Export
 			return price;
 		}
 
-		private decimal CalculatePrice(DataExporterContext ctx, Product product, bool forAttributeCombination)
+		private decimal CalculatePrice(
+			DataExporterContext ctx,
+			Product product,
+			ProductVariantAttributeCombination combination,
+			IList<ProductVariantAttributeValue> attributeValues)
 		{
-			decimal price = product.Price;
+			var price = product.Price;
+			var priceCalculationContext = ctx.ProductExportContext as PriceCalculationContext;
 
-			// price type
-			if (ctx.Projection.PriceType.HasValue && !forAttributeCombination)
+			if (combination != null)
 			{
-				var priceCalculationContext = ctx.ProductExportContext as PriceCalculationContext;
+				// price for attribute combination
+				var attributesTotalPriceBase = decimal.Zero;
 
+				if (attributeValues != null)
+				{
+					attributeValues.Each(x => attributesTotalPriceBase += _priceCalculationService.Value.GetProductVariantAttributeValuePriceAdjustment(x));
+				}
+
+				price = _priceCalculationService.Value.GetFinalPrice(product, null, ctx.ContextCustomer, attributesTotalPriceBase, true, 1, null, priceCalculationContext);
+			}
+			else if (ctx.Projection.PriceType.HasValue)
+			{
+				// price for product
 				if (ctx.Projection.PriceType.Value == PriceDisplayType.LowestPrice)
 				{
 					bool displayFromMessage;
-					price = _priceCalculationService.Value.GetLowestPrice(product, priceCalculationContext, out displayFromMessage);
+					price = _priceCalculationService.Value.GetLowestPrice(product, ctx.ContextCustomer, priceCalculationContext, out displayFromMessage);
 				}
 				else if (ctx.Projection.PriceType.Value == PriceDisplayType.PreSelectedPrice)
 				{
-					price = _priceCalculationService.Value.GetPreselectedPrice(product, priceCalculationContext);
+					price = _priceCalculationService.Value.GetPreselectedPrice(product, ctx.ContextCustomer, priceCalculationContext);
 				}
 				else if (ctx.Projection.PriceType.Value == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 				{
@@ -162,7 +177,6 @@ namespace SmartStore.Services.DataExchange.Export
 
 			return ConvertPrice(ctx, product, price) ?? price;
 		}
-
 
 		private List<dynamic> GetLocalized<T>(DataExporterContext ctx, T entity, params Expression<Func<T, string>>[] keySelectors)
 			where T : BaseEntity, ILocalizedEntity
@@ -391,7 +405,7 @@ namespace SmartStore.Services.DataExchange.Export
 			result._ImageUrl = _pictureService.Value.GetPictureUrl(picture, detailsPictureSize, false, ctx.Store.Url);
 			result._FullSizeImageUrl = _pictureService.Value.GetPictureUrl(picture, 0, false, ctx.Store.Url);
 
-			result._ThumbLocalPath = _pictureService.Value.GetThumbLocalPath(picture);
+			//result._ThumbLocalPath = _pictureService.Value.GetThumbLocalPath(picture);
 
 			return result;
 		}
@@ -487,6 +501,11 @@ namespace SmartStore.Services.DataExchange.Export
 
 			result.Picture = null;
 
+			if (ctx.CategoryTemplates.ContainsKey(category.CategoryTemplateId))
+				result._CategoryTemplateViewPath = ctx.CategoryTemplates[category.CategoryTemplateId];
+			else
+				result._CategoryTemplateViewPath = "";
+
 			result._Localized = GetLocalized(ctx, category,
 				x => x.Name,
 				x => x.FullName,
@@ -547,7 +566,6 @@ namespace SmartStore.Services.DataExchange.Export
 			product.MergeWithCombination(combination);
 
 			var languageId = (ctx.Projection.LanguageId ?? 0);
-			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
 			var pictureSize = _mediaSettings.Value.ProductDetailsPictureSize;
 			var numberOfPictures = (ctx.Projection.NumberOfPictures ?? int.MaxValue);
 			int[] pictureIds = (combination == null ? new int[0] : combination.GetAssignedPictureIds());
@@ -563,10 +581,11 @@ namespace SmartStore.Services.DataExchange.Export
 			var productTags = ctx.ProductExportContext.ProductTags.Load(product.Id);
 			var specificationAttributes = ctx.ProductExportContext.ProductSpecificationAttributes.Load(product.Id);
 
+			var variantAttributes = (combination != null ? _productAttributeParser.Value.DeserializeProductVariantAttributes(combination.AttributesXml) : null);
+			var variantAttributeValues = (combination != null ? _productAttributeParser.Value.ParseProductVariantAttributeValues(variantAttributes, productAttributes) : null);
+
 			if (pictureIds.Length > 0)
-			{
 				productPictures = productPictures.Where(x => pictureIds.Contains(x.PictureId));
-			}
 
 			productPictures = productPictures.Take(numberOfPictures);
 
@@ -574,34 +593,52 @@ namespace SmartStore.Services.DataExchange.Export
 
 			#region gerneral data
 
-			dynObject.Price = CalculatePrice(ctx, product, combination != null);
+			dynObject._CategoryName = null;
+			dynObject._CategoryPath = null;
+			dynObject._AttributeCombination = null;
+			dynObject._AttributeCombinationValues = null;
+			dynObject._AttributeCombinationId = (combination == null ? 0 : combination.Id);
+			dynObject._DetailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)dynObject.SeName;
 
-			if (combination != null && ctx.Projection.AttributeCombinationValueMerging == ExportAttributeValueMerging.AppendAllValuesToName)
-			{
-				var values = _productAttributeParser.Value.ParseProductVariantAttributeValues(combination.AttributesXml, productAttributes, ctx.Projection.LanguageId ?? 0);
+			if (combination == null)
+				dynObject._UniqueId = product.Id.ToString();
+			else
+				dynObject._UniqueId = string.Concat(product.Id, "-", combination.Id);
 
-				dynObject.Name = ((string)dynObject.Name).Grow(string.Join(", ", values), " ");
-			}
+			dynObject.Price = CalculatePrice(ctx, product, combination, variantAttributeValues);
 
 			dynObject._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
 				_priceCalculationService.Value, ctx.ContextCurrency, decimal.Zero, true);
 
-			dynObject._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
-
-			var detailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)dynObject.SeName;
+			if (ctx.ProductTemplates.ContainsKey(product.ProductTemplateId))
+				dynObject._ProductTemplateViewPath = ctx.ProductTemplates[product.ProductTemplateId];
+			else
+				dynObject._ProductTemplateViewPath = "";
 
 			if (combination != null)
 			{
+				if (ctx.Supports(ExportFeatures.UsesAttributeCombination))
+				{
+					dynObject._AttributeCombination = variantAttributes;
+					dynObject._AttributeCombinationValues = variantAttributeValues;
+				}
+
+				if (ctx.Projection.AttributeCombinationValueMerging == ExportAttributeValueMerging.AppendAllValuesToName)
+				{
+					var valueNames = variantAttributeValues
+						.Select(x => x.GetLocalized(y => y.Name, languageId, true, false))
+						.ToList();
+
+					dynObject.Name = ((string)dynObject.Name).Grow(string.Join(", ", valueNames), " ");
+				}
+
 				var attributeQueryString = _productAttributeParser.Value.SerializeQueryData(combination.AttributesXml, product.Id);
 				if (attributeQueryString.HasValue())
 				{
-					detailUrl = string.Concat(detailUrl, detailUrl.Contains("?") ? "&" : "?", "attributes=", attributeQueryString);
+					var url = (string)dynObject._DetailUrl;
+					dynObject._DetailUrl = string.Concat(url, url.Contains("?") ? "&" : "?", "attributes=", attributeQueryString);
 				}
 			}
-
-			dynObject._DetailUrl = detailUrl;
-
-			dynObject._CategoryName = null;
 
 			if (ctx.Categories.Count > 0)
 			{
@@ -614,13 +651,8 @@ namespace SmartStore.Services.DataExchange.Export
 					productCategories.OrderBy(x => x.DisplayOrder).FirstOrDefault()
 				);
 			}
-			else
-			{
-				dynObject._CategoryPath = null;
-			}
 
 			ToDeliveryTime(ctx, dynObject, product.DeliveryTimeId);
-
 			ToQuantityUnit(ctx, dynObject, product.QuantityUnitId);
 
 			dynObject.ProductPictures = productPictures
@@ -864,7 +896,9 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						decimal tmpSpecialPrice = product.SpecialPrice.Value;
 						product.SpecialPrice = null;
-						dynObject._RegularPrice = CalculatePrice(ctx, product, combination != null);
+
+						dynObject._RegularPrice = CalculatePrice(ctx, product, combination, variantAttributeValues);
+
 						product.SpecialPrice = tmpSpecialPrice;
 					}
 				}
@@ -998,19 +1032,17 @@ namespace SmartStore.Services.DataExchange.Export
 				//var productValues = new Dictionary<string, object>();
 				var dbContext = _dbContext as DbContext;
 
-				product = _dbContext.Attach(product);
-
-				var entry = dbContext.Entry(product);
-
-				// the returned object is not the entity and is not being tracked by the context.
-				// it also does not have any relationships set to other objects.
-				// CurrentValues only includes database (thus primitive) values.
-				var productClone = entry.CurrentValues.ToObject() as Product;
-
-				_dbContext.DetachEntity(product);
-
 				foreach (var combination in combinations.Where(x => x.IsActive))
 				{
+					product = _dbContext.Attach(product);
+					var entry = dbContext.Entry(product);
+
+					// the returned object is not the entity and is not being tracked by the context.
+					// it also does not have any relationships set to other objects.
+					// CurrentValues only includes database (thus primitive) values.
+					var productClone = entry.CurrentValues.ToObject() as Product;
+					_dbContext.DetachEntity(product);
+
 					var dynObject = ToDynamic(ctx, productClone, combinations, combination);
 					result.Add(dynObject);
 				}
@@ -1081,9 +1113,11 @@ namespace SmartStore.Services.DataExchange.Export
 				.Select(e =>
 				{
 					dynamic dyn = ToDynamic(ctx, e);
-					var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == e.Product.ProductTemplateId);
 
-					dyn.Product._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
+					if (ctx.ProductTemplates.ContainsKey(e.Product.ProductTemplateId))
+						dyn.Product._ProductTemplateViewPath = ctx.ProductTemplates[e.Product.ProductTemplateId];
+					else
+						dyn.Product._ProductTemplateViewPath = "";
 
 					dyn.Product._BasePriceInfo = e.Product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
 						_priceCalculationService.Value, ctx.ContextCurrency, decimal.Zero, true);

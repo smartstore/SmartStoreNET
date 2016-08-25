@@ -33,7 +33,10 @@
                     var address = Model.Addresses[i];
                     
                 <div class="address-item clearfix">
-                    <h4 class="title" style="color: #555; font-weight: 400">@address.FirstName @address.LastName</h4>
+                    <h4 class="title" style="color: #555; font-weight: 400">
+                        @address.Salutation @(!String.IsNullOrEmpty(address.Title) ? @address.Title + " " : "")
+                        @address.FirstName @address.LastName
+                    </h4>
                     <div class="info form-horizontal pull-left">
                         <div class="email">
                             @Html.LabelFor(model => model.Addresses[i].Email):
@@ -46,12 +49,12 @@
                             @address.PhoneNumber
                         </div>
                         }
-                        @if (address.FaxEnabled)
+                        @if (address.FaxEnabled && !String.IsNullOrEmpty(address.FaxNumber))
                         {
                         <div class="fax">
                             @Html.LabelFor(model => model.Addresses[i].FaxNumber):
-            @address.FaxNumber
-                            </div>
+                            @address.FaxNumber
+                        </div>
                         }
                         @if (address.CompanyEnabled && !String.IsNullOrEmpty(address.Company))
                         {

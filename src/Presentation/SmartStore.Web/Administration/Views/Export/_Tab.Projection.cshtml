@@ -35,7 +35,7 @@
 			@Html.SmartLabelFor(x => x.Projection.CustomerId)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(x => x.Projection.CustomerId)
+			@Html.TextBoxFor(x => x.Projection.CustomerId, new { autocomplete = "off", @class = "text-box single-line" })
 			@Html.ValidationMessageFor(x => x.Projection.CustomerId)
 		</td>
 	</tr>
@@ -60,13 +60,12 @@
 				<td class="adminData">
 					@Html.DropDownListFor(x => x.Projection.AttributeCombinationValueMergingId, Model.Projection.AvailableAttributeCombinationValueMerging)
 					@Html.ValidationMessageFor(x => x.Projection.AttributeCombinationValueMergingId)
-				</td>
-			</tr>
-			<tr id="AttributeCombinationAsProductNote">
-				<td colspan="2">
-					<div class="alert alert-warning">
-						@T("Admin.DataExchange.Export.NotPreviewCompatible")
-					</div>
+
+					<span id="AttributeCombinationAsProductNote" class="control-group warning">
+						<span class="help-inline">
+							@T("Admin.DataExchange.Export.NotPreviewCompatible")
+						</span>
+					</span>
 				</td>
 			</tr>
 		}
@@ -80,13 +79,21 @@
 				<td class="adminData">
 					@Html.EditorFor(x => x.Projection.NoGroupedProducts)
 					@Html.ValidationMessageFor(x => x.Projection.NoGroupedProducts)
+
+					<span id="NoGroupedProductsNote" class="control-group warning">
+						<span class="help-inline">
+							@T("Admin.DataExchange.Export.NotPreviewCompatible")
+						</span>
+					</span>
 				</td>
 			</tr>
-			<tr id="NoGroupedProductsNote">
-				<td colspan="2">
-					<div class="alert alert-warning">
-						@T("Admin.DataExchange.Export.NotPreviewCompatible")
-					</div>
+			<tr id="OnlyIndividuallyVisibleAssociatedContainer">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Projection.OnlyIndividuallyVisibleAssociated)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.Projection.OnlyIndividuallyVisibleAssociated)
+					@Html.ValidationMessageFor(x => x.Projection.OnlyIndividuallyVisibleAssociated)
 				</td>
 			</tr>
 		}

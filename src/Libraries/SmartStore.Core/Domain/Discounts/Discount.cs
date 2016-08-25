@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using SmartStore.Core.Domain.Catalog;
 using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Core.Domain.Discounts
 {
-    /// <summary>
-    /// Represents a discount
-    /// </summary>
+	/// <summary>
+	/// Represents a discount
+	/// </summary>
 	[DataContract]
 	public partial class Discount : BaseEntity
     {
         private ICollection<DiscountRequirement> _discountRequirements;
         private ICollection<Category> _appliedToCategories;
+		private ICollection<Manufacturer> _appliedToManufacturers;
 		private ICollection<Product> _appliedToProducts;
 
         /// <summary>
@@ -131,6 +132,16 @@ namespace SmartStore.Core.Domain.Discounts
 			get { return _appliedToCategories ?? (_appliedToCategories = new HashSet<Category>()); }
             protected set { _appliedToCategories = value; }
         }
+
+		/// <summary>
+		/// Gets or sets the manufacturers
+		/// </summary>
+		[DataMember]
+		public virtual ICollection<Manufacturer> AppliedToManufacturers
+		{
+			get { return _appliedToManufacturers ?? (_appliedToManufacturers = new HashSet<Manufacturer>()); }
+			protected set { _appliedToManufacturers = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets the products 

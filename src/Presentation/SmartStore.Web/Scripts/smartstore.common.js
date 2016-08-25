@@ -68,6 +68,43 @@
 	    return spinner;
 	}
 
+	window.copyTextToClipboard = function (text) {
+		var result = false;
+
+		if (window.clipboardData && window.clipboardData.setData) {
+			result = clipboardData.setData('Text', text);
+		}
+		else if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
+			var textarea = document.createElement('textarea'),
+				elFocus = document.activeElement,
+				elContext = elFocus || document.body;
+
+			textarea.textContent = text;
+			textarea.style.position = 'fixed';
+			textarea.style.width = '10px';
+			textarea.style.height = '10px';
+
+			elContext.appendChild(textarea);
+
+			textarea.focus();
+			textarea.setSelectionRange(0, textarea.value.length);
+
+			try {
+				result = document.execCommand('copy');
+			}
+			catch (e) {
+			}
+			finally {
+				elContext.removeChild(textarea);
+				if (elFocus) {
+					elFocus.focus();
+				}
+			}
+		}
+		return result;
+	}
+
+
     // on document ready
 	$(function () {
 

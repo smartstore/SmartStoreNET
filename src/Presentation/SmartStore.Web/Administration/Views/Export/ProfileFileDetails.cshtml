@@ -1,42 +1,82 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
 @using SmartStore.Web.Framework;
-@model ExportProfileDetailsModel
-@helper FileDownloadLink(string path, string fileName)
+@model ExportFileDetailsModel
+@{
+	ViewBag.DownloadString = T("Common.Download").Text;
+	ViewBag.AllStoresString = T("Admin.Common.StoresAll").Text;
+}
+@if (Model.ExportFiles.Any() || Model.PublicFiles.Any())
 {
 	<div>
-		@Html.IconForFileExtension(Path.GetExtension(fileName), false)
-		<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
+		@foreach (var grp in Model.ExportFiles.OrderBy(x => x.DisplayOrder).GroupBy(x => x.DisplayOrder))
+		{
+			foreach (var file in grp)
+			{
+				<div style="padding: 2px 0;">
+					<span class="label label-smnet label-info">
+						@Html.IconForFileExtension(file.FileExtension, false)
+						@(file.Label.HasValue() ? file.Label : file.FileExtension.EmptyNull().ToLower().TrimStart('.'))
+					</span>
+					<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = file.FileName, isDeployment = Model.IsForDeployment })"
+					   title="@ViewBag.DownloadString" style="vertical-align: top;" download>@file.FileRootPath</a>
+				</div>
+			}
+			<p>&nbsp;</p>
+		}
+
+		@foreach (var grp in Model.PublicFiles.OrderBy(x => x.StoreId).GroupBy(x => x.StoreId))
+		{
+			var storeName = grp.First().StoreName;
+			<div>
+				<div>
+					<span style="font-size: 1.15em;">@T("Admin.Common.PublicFiles")</span>
+					<span class="smaller">(@(storeName.HasValue() ? storeName : ViewBag.AllStoresString))</span>
+				</div>
+
+				@foreach (var file in grp)
+				{
+					<div class="clearfix" style="padding: 2px 0;">
+						<button type="button" class="btn btn-small pull-right copy-to-clipboard">
+							<i class="fa fa-clipboard"></i>
+						</button>
+						<span class="label label-smnet label-success">
+							@Html.IconForFileExtension(file.FileExtension, false)
+							@(file.Label.HasValue() ? file.Label : file.FileExtension.EmptyNull().ToLower().TrimStart('.'))
+						</span>
+						<a href="@file.FileUrl" title="@ViewBag.DownloadString" style="vertical-align: top;" download>@file.FileUrl</a>
+					</div>
+				}
+			</div>
+		}
 	</div>
-}
-@if (Model.ExportFiles.Count == 0)
-{
-	<div class="alert alert-info">@T("Admin.Common.NoTempFilesFound")</div>
 }
 else
 {
-	<h4>@T("Admin.Common.TemporaryFiles")</h4>
-	if (Model.ZipPath.HasValue())
-	{
-		<div style="margin-bottom: 4px;">@FileDownloadLink(Model.ZipPath, Path.GetFileName(Model.ZipPath))</div>
-	}
-
-	foreach (var path in Model.ExportFiles)
-	{
-		@FileDownloadLink(path, Path.GetFileName(path))
-	}
+	<div class="alert alert-info">@T("Common.NoFilesAvailable")</div>
 }
-@if (Model.PublicFiles.Count > 0)
-{
-	<p>&nbsp;</p>
-	<h4>@T("Admin.Common.PublicFiles")</h4>
 
-	foreach (var grp in Model.PublicFiles.OrderBy(x => x.StoreId).GroupBy(x => x.StoreId))
-	{
-		<p></p>
-		<div>@(grp.First().StoreName):</div>
-		foreach (var file in grp)
-		{
-			<div><a href="@file.FileUrl" download>@file.FileUrl</a></div>
-		}
-	}
-}
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		// copy url to clipboard button
+		$('button.copy-to-clipboard').tooltip({
+			placement: 'bottom',
+			trigger: 'hover',
+			title: '@T("Common.CopyToClipboard")'
+		}).click(function () {
+			var self = $(this),
+				url = self.parent().find('a').attr('href');
+
+			var succeeded = window.copyTextToClipboard(url);
+
+			self.attr('data-original-title', succeeded ? '@T("Common.CopyToClipboard.Succeeded")' : '@T("Common.CopyToClipboard.Failded")')
+				.tooltip('show');
+
+			setTimeout(function () {
+				self.attr('data-original-title', '@T("Common.CopyToClipboard")')
+					.tooltip('hide');
+			}, 2000);
+		});
+
+	});
+</script>

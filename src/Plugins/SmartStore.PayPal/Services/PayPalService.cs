@@ -184,7 +184,7 @@ namespace SmartStore.PayPal.Services
 			return dic;
 		}
 
-		public void AddOrderNote(PayPalSettingsBase settings, Order order, string anyString)
+		public void AddOrderNote(PayPalSettingsBase settings, Order order, string anyString, bool isIpn = false)
 		{
 			try
 			{
@@ -200,6 +200,9 @@ namespace SmartStore.PayPal.Services
 				var note = orderNoteStrings.SafeGet(0).FormatInvariant(anyString);
 
 				sb.AppendFormat("<span style=\"padding-left: 4px;\">{0}</span>", note);
+
+				if (isIpn)
+					order.HasNewPaymentNotification = true;
 
 				_orderService.AddOrderNote(order, sb.ToString());
 			}
@@ -448,6 +451,7 @@ namespace SmartStore.PayPal.Services
 				request.Headers["Authorization"] = "Bearer " + accessToken.EmptyNull();
 			}
 
+			request.Headers["PayPal-Partner-Attribution-Id"] = "SmartStoreAG_Cart_PayPalPlus";
 
 			if (data.HasValue() && (method.IsCaseInsensitiveEqual("POST") || method.IsCaseInsensitiveEqual("PUT") || method.IsCaseInsensitiveEqual("PATCH")))
 			{
@@ -1034,9 +1038,7 @@ namespace SmartStore.PayPal.Services
 					break;
 			}
 
-			order.HasNewPaymentNotification = true;
-
-			AddOrderNote(settings, order, (string)ToInfoString(json));
+			AddOrderNote(settings, order, (string)ToInfoString(json), true);
 
 			return HttpStatusCode.OK;
 		}

@@ -69,7 +69,7 @@
                 </a>
                 @if (ShouldRenderChildren(state))
                 {
-                    @CreateMenu(node.Children, "sub-level-" + (node.Depth + 2))
+                    @CreateMenu(node.Children, "sub-level-" + (node.Depth + 1))
                 }
             </li>
         }

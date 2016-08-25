@@ -164,10 +164,11 @@ namespace SmartStore.Core.Domain.Customers
             protected set { _customerContent = value; }
         }
 
-        /// <summary>
-        /// Gets or sets the customer roles
-        /// </summary>
-        public virtual ICollection<CustomerRole> CustomerRoles
+		/// <summary>
+		/// Gets or sets the customer roles
+		/// </summary>
+		[DataMember]
+		public virtual ICollection<CustomerRole> CustomerRoles
         {
 			get { return _customerRoles ?? (_customerRoles = new HashSet<CustomerRole>()); }
             protected set { _customerRoles = value; }

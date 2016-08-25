@@ -1,16 +1,15 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Shipping
 {
-    /// <summary>
-    /// Shipping service interface
-    /// </summary>
-    public partial interface IShippingService
+	/// <summary>
+	/// Shipping service interface
+	/// </summary>
+	public partial interface IShippingService
     {
         /// <summary>
         /// Load active shipping rate computation methods
@@ -77,7 +76,6 @@ namespace SmartStore.Services.Shipping
         /// <returns>Shopping cart item weight</returns>
 		decimal GetShoppingCartItemWeight(OrganizedShoppingCartItem shoppingCartItem);
 
-
         /// <summary>
         /// Gets shopping cart item total weight
         /// </summary>
@@ -89,8 +87,10 @@ namespace SmartStore.Services.Shipping
         /// Gets shopping cart weight
         /// </summary>
         /// <param name="cart">Cart</param>
+		/// <param name="includeFreeShippingProducts">Whether to include free shipping products</param>
         /// <returns>Shopping cart weight</returns>
-		decimal GetShoppingCartTotalWeight(IList<OrganizedShoppingCartItem> cart);
+		decimal GetShoppingCartTotalWeight(IList<OrganizedShoppingCartItem> cart, bool includeFreeShippingProducts = true);
+
         
         /// <summary>
         /// Create shipment package from shopping cart

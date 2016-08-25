@@ -18,7 +18,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public DataImportRequest(ImportProfile profile)
 		{
-			Guard.ArgumentNotNull(() => profile);
+			Guard.NotNull(profile, nameof(profile));
 
 			Profile = profile;
 			ProgressValueSetter = _voidProgressValueSetter;

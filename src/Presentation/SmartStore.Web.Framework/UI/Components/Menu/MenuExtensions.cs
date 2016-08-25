@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework.UI
-{
-	
+{	
 	public static class MenuExtensions
 	{
-
 		public static IList<MenuItem> GetBreadcrumb(this TreeNode<MenuItem> node)
 		{
-			var breadcrumb = new List<MenuItem>();
-			while (node != null && !node.IsRoot)
-			{
-				breadcrumb.Add(node.Value);
-				node = node.Parent;
-			}
-			breadcrumb.Reverse();
+			//var breadcrumb = new List<MenuItem>();
+			//while (node != null && !node.IsRoot)
+			//{
+			//	breadcrumb.Add(node.Value);
+			//	node = node.Parent;
+			//}
+			//breadcrumb.Reverse();
+
+			var breadcrumb = node.Trail.Where(x => !x.IsRoot).Select(x => x.Value).ToList();
 
 			return breadcrumb;
 		}
@@ -35,7 +35,7 @@ namespace SmartStore.Web.Framework.UI
 		///	</returns>
 		public static NodePathState GetNodePathState(this TreeNode<MenuItem> node, IList<MenuItem> currentPath)
 		{
-			Guard.ArgumentNotNull(() => currentPath);
+			Guard.NotNull(currentPath, nameof(currentPath));
 			
 			var state = NodePathState.Unknown;
 
@@ -44,17 +44,19 @@ namespace SmartStore.Web.Framework.UI
 				state = state | NodePathState.Parent;
 			}
 
+			var lastInPath = currentPath.LastOrDefault();
+
 			if (currentPath.Count > 0)
 			{
-				if (node.Value.Equals(currentPath.LastOrDefault()))
+				if (node.Value.Equals(lastInPath))
 				{
 					state = state | NodePathState.Selected;
 				}
 				else
 				{
-					if (node.Depth < currentPath.Count)
+					if (node.Depth - 1 < currentPath.Count)
 					{
-						if (currentPath[node.Depth].Equals(node.Value))
+						if (currentPath[node.Depth - 1].Equals(node.Value))
 						{
 							state = state | NodePathState.Expanded;
 						}
@@ -64,7 +66,5 @@ namespace SmartStore.Web.Framework.UI
 
 			return state;
 		}
-
 	}
-
 }

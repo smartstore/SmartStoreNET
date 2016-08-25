@@ -7,7 +7,6 @@ using SmartStore.Services;
 
 namespace SmartStore.Web.Framework.Plugins
 {
-	
 	public partial class ProviderManager : IProviderManager
 	{
 		private readonly IComponentContext _ctx;
@@ -40,6 +39,7 @@ namespace SmartStore.Web.Framework.Plugins
 				SetUserData(provider.Metadata);
 				return new Provider<TProvider>(provider);
 			}
+
 			return null;
 		}
 

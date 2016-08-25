@@ -17,9 +17,9 @@ namespace SmartStore.Services.Seo
         #region Constants
 
 		// {0} = id, {1} = name, {2} = language
-        private const string URLRECORD_KEY = "SmartStore.urlrecord.{0}-{1}-{2}";
-		private const string URLRECORD_ALL_ACTIVESLUGS_KEY = "SmartStore.urlrecord.all-active-slugs";
-		private const string URLRECORD_PATTERN_KEY = "SmartStore.urlrecord.";
+        private const string URLRECORD_KEY = "urlrecord:{0}-{1}-{2}";
+		private const string URLRECORD_ALL_ACTIVESLUGS_KEY = "urlrecord:all-active-slugs";
+		private const string URLRECORD_PATTERN_KEY = "urlrecord:";
 
         #endregion
 
@@ -124,7 +124,7 @@ namespace SmartStore.Services.Seo
 
 		public virtual IList<UrlRecord> GetUrlRecordsFor(string entityName, int entityId, bool activeOnly = false)
 		{
-			Guard.ArgumentNotEmpty(() => entityName);
+			Guard.NotEmpty(entityName, nameof(entityName));
 
 			var query = from ur in _urlRecordRepository.Table
 						where ur.EntityId == entityId &&

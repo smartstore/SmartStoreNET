@@ -80,7 +80,7 @@ namespace SmartStore.Services.Tests.Discounts
             var pluginFinder = new PluginFinder();
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
 
-			_discountService = new DiscountService(cacheManager, _discountRepo, _discountRequirementRepo,
+			_discountService = new DiscountService(NullRequestCache.Instance, _discountRepo, _discountRequirementRepo,
 				_discountUsageHistoryRepo, _storeContext, _genericAttributeService, pluginFinder, _eventPublisher,
 				_settingService, base.ProviderManager);
         }

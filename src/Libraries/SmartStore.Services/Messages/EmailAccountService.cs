@@ -17,7 +17,7 @@ namespace SmartStore.Services.Messages
 		private readonly IRepository<EmailAccount> _emailAccountRepository;
         private readonly EmailAccountSettings _emailAccountSettings;
         private readonly IEventPublisher _eventPublisher;
-		private readonly ICacheManager _cacheManager;
+		private readonly IRequestCache _requestCache;
 
 		private EmailAccount _defaultEmailAccount;
 
@@ -25,12 +25,12 @@ namespace SmartStore.Services.Messages
 			IRepository<EmailAccount> emailAccountRepository, 
 			EmailAccountSettings emailAccountSettings, 
 			IEventPublisher eventPublisher,
-			ICacheManager cacheManager /* request */)
+			IRequestCache requestCache)
         {
             this._emailAccountRepository = emailAccountRepository;
             this._emailAccountSettings = emailAccountSettings;
             this._eventPublisher = eventPublisher;
-			this._cacheManager = cacheManager;
+			this._requestCache = requestCache;
         }
 
         public virtual void InsertEmailAccount(EmailAccount emailAccount)
@@ -58,7 +58,7 @@ namespace SmartStore.Services.Messages
 
             _emailAccountRepository.Insert(emailAccount);
 
-			_cacheManager.RemoveByPattern(EMAILACCOUNT_PATTERN_KEY);
+			_requestCache.RemoveByPattern(EMAILACCOUNT_PATTERN_KEY);
 			_defaultEmailAccount = null;
 
             _eventPublisher.EntityInserted(emailAccount);
@@ -89,7 +89,7 @@ namespace SmartStore.Services.Messages
 
             _emailAccountRepository.Update(emailAccount);
 
-			_cacheManager.RemoveByPattern(EMAILACCOUNT_PATTERN_KEY);
+			_requestCache.RemoveByPattern(EMAILACCOUNT_PATTERN_KEY);
 			_defaultEmailAccount = null;
 
             _eventPublisher.EntityUpdated(emailAccount);
@@ -105,7 +105,7 @@ namespace SmartStore.Services.Messages
 
             _emailAccountRepository.Delete(emailAccount);
 
-			_cacheManager.RemoveByPattern(EMAILACCOUNT_PATTERN_KEY);
+			_requestCache.RemoveByPattern(EMAILACCOUNT_PATTERN_KEY);
 			_defaultEmailAccount = null;
 
             _eventPublisher.EntityDeleted(emailAccount);
@@ -117,7 +117,7 @@ namespace SmartStore.Services.Messages
                 return null;
 
 			string key = string.Format(EMAILACCOUNT_BY_ID_KEY, emailAccountId);
-			return _cacheManager.Get(key, () =>
+			return _requestCache.Get(key, () =>
 			{
 				return _emailAccountRepository.GetById(emailAccountId);
 			});

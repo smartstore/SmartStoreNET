@@ -1,18 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.DataExchange
 {
 	public class ExportProjectionModel
 	{
-		public ExportProjectionModel()
-		{
-			DescriptionMergingId = (int)ExportDescriptionMerging.Description;
-		}
-
 		#region All entity types
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.StoreId")]
@@ -87,6 +81,9 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.NoGroupedProducts")]
 		public bool NoGroupedProducts { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.OnlyIndividuallyVisibleAssociated")]
+		public bool OnlyIndividuallyVisibleAssociated { get; set; }
 
 		#endregion
 

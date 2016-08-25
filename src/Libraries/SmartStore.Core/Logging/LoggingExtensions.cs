@@ -47,7 +47,6 @@ namespace SmartStore.Core.Logging
 			while (exception != null)
 			{
 				FilteredLog(logger, LogLevel.Error, exception.Message, exception.StackTrace, exception, customer);
-
 				exception = exception.InnerException;
 			}
 		}
@@ -62,7 +61,7 @@ namespace SmartStore.Core.Logging
             {
 				if (exception != null && fullMessage.IsEmpty())
 				{
-					fullMessage = exception.StackTrace;
+					fullMessage = "{0}\n{1}\n{2}".FormatCurrent(exception.Message, new String('-', 20), exception.StackTrace);
 				}
 
                 logger.InsertLog(level, message, fullMessage, customer);

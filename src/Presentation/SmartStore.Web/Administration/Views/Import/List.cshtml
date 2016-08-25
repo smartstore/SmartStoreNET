@@ -76,9 +76,9 @@
 						</div>
 						<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
 					</td>
-					<td style="width: 200px">
+					<td style="width: 200px;">
 						<button type="button" class="btn btn-block btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"
-							data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId">
+							data-url="@Url.Action("Execute", "Import", new { area = "Admin", id = @profile.Id })" data-task-id="@profile.ScheduleTaskId">
 							<i class="fa fa-play"></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
 						</button>
 
@@ -104,10 +104,6 @@ else
 		@T("Admin.DataExchange.Import.NoProfiles")
 	</div>
 }
-
-<form id="ProfileImportForm" method="POST" action="@Url.Action("Execute", "Import", new { area = "Admin" })">
-	<input type="hidden" name="Id" value="" />
-</form>
 
 <form method="POST" action="@Url.Action("Create", "Import", new { area = "Admin" })">
 	<div id="import-profile-dialog" class="modal modal-large hide fade" tabindex="-1" data-profile="@T("Common.Profile")">
@@ -213,11 +209,9 @@ else
 		// start task
 		$(document).on('click', '.btn-run-task', function (e) {
 			e.preventDefault();
-			if (confirm('@T("Admin.Common.AskToProceed")')) {
-				var form = $('#ProfileImportForm');
-				form.find('input[name=Id]').val($(this).attr('data-id'));
-				form.submit();
-			}
+			$(this).doPostData({
+				ask: '@T("Admin.Common.AskToProceed")'
+			});
 			return false;
 		});
 

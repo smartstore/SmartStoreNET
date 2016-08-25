@@ -20,14 +20,14 @@ namespace SmartStore.DevTools
 				// intercept ALL public store controller actions
 				builder.RegisterType<ProfilerFilter>().AsActionFilterFor<SmartController>();
                 builder.RegisterType<WidgetZoneFilter>().AsActionFilterFor<SmartController>();
-                
+
 				//// intercept CatalogController's Product action
 				//builder.RegisterType<SampleResultFilter>().AsResultFilterFor<CatalogController>(x => x.Product(default(int), default(string))).InstancePerRequest();
 				//builder.RegisterType<SampleActionFilter>().AsActionFilterFor<PublicControllerBase>().InstancePerRequest();
 				//// intercept CheckoutController's Index action (to hijack the checkout or payment workflow)
 				//builder.RegisterType<SampleCheckoutFilter>().AsActionFilterFor<CheckoutController>(x => x.Index()).InstancePerRequest();
 			}
-        }
+		}
 
         public int Order
         {

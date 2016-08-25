@@ -3,7 +3,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework.UI
 {
-    public partial class WidgetRouteInfo : ModelBase
+	public partial class WidgetRouteInfo : ModelBase
     {
         public string ActionName { get; set; }
         public string ControllerName { get; set; }

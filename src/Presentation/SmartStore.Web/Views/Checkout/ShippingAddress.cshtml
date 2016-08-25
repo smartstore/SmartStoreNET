@@ -35,7 +35,9 @@
                                 </div>
                                 <div class="address-box" data-equalized-part="address-box">
                                     <div class="name">
-                                        <strong>@item.FirstName @item.LastName</strong>
+                                        <strong>
+                                            @item.Salutation @(String.IsNullOrEmpty(item.Title) ? "" : item.Title + " ")@item.FirstName @item.LastName
+                                        </strong>
                                     </div>
                                     <div class="email">@T("Address.Fields.Email"): @item.Email</div>
                                     @if (item.PhoneEnabled)

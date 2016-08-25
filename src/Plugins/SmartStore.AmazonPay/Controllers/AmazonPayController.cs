@@ -73,14 +73,16 @@ namespace SmartStore.AmazonPay.Controllers
 
 			model.Copy(settings, false);
 
-			storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
+			using (_services.Settings.BeginBatch())
+			{
+				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
 
-			_services.Settings.SaveSetting(settings, x => x.DataFetching, 0, false);
-			_services.Settings.SaveSetting(settings, x => x.PollingMaxOrderCreationDays, 0, false);
+				_services.Settings.SaveSetting(settings, x => x.DataFetching, 0, false);
+				_services.Settings.SaveSetting(settings, x => x.PollingMaxOrderCreationDays, 0, false);
+			}
 
 			_apiService.DataPollingTaskUpdate(settings.DataFetching == AmazonPayDataFetchingType.Polling, model.PollingTaskMinutes * 60);
 
-			_services.Settings.ClearCache();
 			NotifySuccess(_services.Localization.GetResource("Plugins.Payments.AmazonPay.ConfigSaveNote"));
 
 			return Configure();

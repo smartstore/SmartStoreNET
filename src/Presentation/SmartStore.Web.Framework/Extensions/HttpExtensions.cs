@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -281,5 +280,21 @@ namespace SmartStore
 			return disposable;
 		}
 
+		public static string GetContentUrl(this HttpContextBase context, string path)
+		{
+			if (path.HasValue())
+			{
+				if (!path.StartsWith("~"))
+				{
+					if (!path.StartsWith("/"))
+						path = "/" + path;
+					path = "~" + path;
+				}
+
+				return UrlHelper.GenerateContentUrl(path, context);
+			}
+
+			return path;
+		}
 	}
 }

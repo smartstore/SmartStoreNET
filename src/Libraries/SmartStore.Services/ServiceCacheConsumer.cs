@@ -18,13 +18,13 @@ namespace SmartStore.Services
         IConsumer<EntityUpdated<Language>>,
         IConsumer<EntityDeleted<Language>>
 	{
-		public const string STORE_LANGUAGE_MAP_KEY = "sm.svc.storelangmap";
+		public const string STORE_LANGUAGE_MAP_KEY = "svc:storelangmap";
 
 		private readonly ICacheManager _cacheManager;
 
-        public ServiceCacheConsumer(Func<string, ICacheManager> cache)
+        public ServiceCacheConsumer(ICacheManager cacheManager)
         {
-			this._cacheManager = cache("static");
+			_cacheManager = cacheManager;
         }
 
 		public void HandleEvent(EntityInserted<Store> eventMessage)

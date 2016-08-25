@@ -6,12 +6,12 @@ using SmartStore.Services.Customers;
 
 namespace SmartStore.Web.Framework.Filters
 {
-    public class CustomerLastActivityAttribute : ActionFilterAttribute
+    public class CustomerLastActivityAttribute : FilterAttribute, IActionFilter
     {
 		public Lazy<IWorkContext> WorkContext { get; set; }
 		public Lazy<ICustomerService> CustomerService { get; set; }
 		
-		public override void OnActionExecuting(ActionExecutingContext filterContext)
+		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (!DataSettings.DatabaseIsInstalled())
                 return;
@@ -36,5 +36,9 @@ namespace SmartStore.Web.Framework.Filters
 				CustomerService.Value.UpdateCustomer(customer);
             }
         }
-    }
+
+		public virtual void OnActionExecuted(ActionExecutedContext filterContext)
+		{
+		}
+	}
 }

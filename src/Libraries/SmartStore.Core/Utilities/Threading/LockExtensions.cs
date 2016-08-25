@@ -4,10 +4,8 @@ using System.Diagnostics;
 
 namespace SmartStore.Utilities.Threading
 {
-
     public static class LockExtensions
     {
-
         /// <summary>
         /// Acquires a disposable reader lock that can be used with a using statement.
         /// </summary>
@@ -103,7 +101,5 @@ namespace SmartStore.Utilities.Threading
 
             return ActionDisposable.Empty;
         }
-
     }
-
 }

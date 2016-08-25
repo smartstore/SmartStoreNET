@@ -32,6 +32,28 @@ namespace SmartStore.Utilities
 		}
 
 		/// <summary>
+		/// Ensures that path is a valid root path
+		/// </summary>
+		/// <param name="path">Relative path</param>
+		/// <returns>Valid root path</returns>
+		public static string ValidateRootPath(string path)
+		{
+			if (path.HasValue())
+			{
+				path = path.Replace('\\', '/');
+
+				if (!path.StartsWith("~/"))
+				{
+					if (path.StartsWith("~"))
+						path = path.Substring(1);
+
+					path = (path.StartsWith("/") ? "~" : "~/") + path;
+				}
+			}
+			return path;
+		}
+
+		/// <summary>
 		/// Safe way to cleanup the temp directory. Should be called via scheduled task.
 		/// </summary>
 		public static void TempCleanup()
@@ -114,8 +136,10 @@ namespace SmartStore.Utilities
 		/// <param name="source">Source directory</param>
 		/// <param name="target">Target directory</param>
 		/// <param name="overwrite">Whether to override existing files</param>
-		public static void CopyDirectory(DirectoryInfo source, DirectoryInfo target, bool overwrite = true)
+		public static bool CopyDirectory(DirectoryInfo source, DirectoryInfo target, bool overwrite = true)
 		{
+			var result = true;
+
 			foreach (FileInfo fi in source.GetFiles())
 			{
 				try
@@ -124,6 +148,7 @@ namespace SmartStore.Utilities
 				}
 				catch (Exception exc)
 				{
+					result = false;
 					exc.Dump();
 				}
 			}
@@ -137,9 +162,12 @@ namespace SmartStore.Utilities
 				}
 				catch (Exception exc)
 				{
+					result = false;
 					exc.Dump();
 				}
 			}
+
+			return result;
 		}
 
 		/// <summary>

@@ -211,7 +211,7 @@ namespace SmartStore.Web.Framework.UI
         public RouteValueDictionary RouteValues
         {
             get;
-            private set;
+            set;
         }
 
         public string Url

@@ -49,6 +49,8 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 		}
 
+		public ExportXmlExclude Exclude { get; set; }
+
 		public XmlWriter Writer
 		{
 			get { return _writer; }
@@ -330,36 +332,41 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			_writer.Write("Id", entity.Id.ToString());
-			_writer.Write("Name", (string)category.Name);
-			_writer.Write("FullName", (string)category.FullName);
-			_writer.Write("Description", (string)category.Description);
-			_writer.Write("BottomDescription", (string)category.BottomDescription);
-			_writer.Write("CategoryTemplateId", entity.CategoryTemplateId.ToString());
-			_writer.Write("MetaKeywords", (string)category.MetaKeywords);
-			_writer.Write("MetaDescription", (string)category.MetaDescription);
-			_writer.Write("MetaTitle", (string)category.MetaTitle);
-			_writer.Write("SeName", (string)category.SeName);
-			_writer.Write("ParentCategoryId", entity.ParentCategoryId.ToString());
-			_writer.Write("PictureId", entity.PictureId.HasValue ? entity.PictureId.Value.ToString() : "");
-			_writer.Write("PageSize", entity.PageSize.ToString());
-			_writer.Write("AllowCustomersToSelectPageSize", entity.AllowCustomersToSelectPageSize.ToString());
-			_writer.Write("PageSizeOptions", entity.PageSizeOptions);
-			_writer.Write("PriceRanges", entity.PriceRanges);
-			_writer.Write("ShowOnHomePage", entity.ShowOnHomePage.ToString());
-			_writer.Write("HasDiscountsApplied", entity.HasDiscountsApplied.ToString());
-			_writer.Write("Published", entity.Published.ToString());
-			_writer.Write("Deleted", entity.Deleted.ToString());
-			_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
-			_writer.Write("CreatedOnUtc", entity.CreatedOnUtc.ToString(_culture));
-			_writer.Write("UpdatedOnUtc", entity.UpdatedOnUtc.ToString(_culture));
-			_writer.Write("SubjectToAcl", entity.SubjectToAcl.ToString());
-			_writer.Write("LimitedToStores", entity.LimitedToStores.ToString());
-			_writer.Write("Alias", (string)category.Alias);
-			_writer.Write("DefaultViewMode", entity.DefaultViewMode);
 
-			WritePicture(category.Picture, "Picture");
+			if (!Exclude.HasFlag(ExportXmlExclude.Category))
+			{
+				_writer.Write("Name", (string)category.Name);
+				_writer.Write("FullName", (string)category.FullName);
+				_writer.Write("Description", (string)category.Description);
+				_writer.Write("BottomDescription", (string)category.BottomDescription);
+				_writer.Write("CategoryTemplateId", entity.CategoryTemplateId.ToString());
+				_writer.Write("CategoryTemplateViewPath", (string)category._CategoryTemplateViewPath);
+				_writer.Write("MetaKeywords", (string)category.MetaKeywords);
+				_writer.Write("MetaDescription", (string)category.MetaDescription);
+				_writer.Write("MetaTitle", (string)category.MetaTitle);
+				_writer.Write("SeName", (string)category.SeName);
+				_writer.Write("ParentCategoryId", entity.ParentCategoryId.ToString());
+				_writer.Write("PictureId", entity.PictureId.HasValue ? entity.PictureId.Value.ToString() : "");
+				_writer.Write("PageSize", entity.PageSize.ToString());
+				_writer.Write("AllowCustomersToSelectPageSize", entity.AllowCustomersToSelectPageSize.ToString());
+				_writer.Write("PageSizeOptions", entity.PageSizeOptions);
+				_writer.Write("PriceRanges", entity.PriceRanges);
+				_writer.Write("ShowOnHomePage", entity.ShowOnHomePage.ToString());
+				_writer.Write("HasDiscountsApplied", entity.HasDiscountsApplied.ToString());
+				_writer.Write("Published", entity.Published.ToString());
+				_writer.Write("Deleted", entity.Deleted.ToString());
+				_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
+				_writer.Write("CreatedOnUtc", entity.CreatedOnUtc.ToString(_culture));
+				_writer.Write("UpdatedOnUtc", entity.UpdatedOnUtc.ToString(_culture));
+				_writer.Write("SubjectToAcl", entity.SubjectToAcl.ToString());
+				_writer.Write("LimitedToStores", entity.LimitedToStores.ToString());
+				_writer.Write("Alias", (string)category.Alias);
+				_writer.Write("DefaultViewMode", entity.DefaultViewMode);
 
-			WriteLocalized(category);
+				WritePicture(category.Picture, "Picture");
+
+				WriteLocalized(category);
+			}
 
 			if (node.HasValue())
 			{
@@ -397,6 +404,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
 			_writer.Write("CreatedOnUtc", entity.CreatedOnUtc.ToString(_culture));
 			_writer.Write("UpdatedOnUtc", entity.UpdatedOnUtc.ToString(_culture));
+			_writer.Write("HasDiscountsApplied", entity.HasDiscountsApplied.ToString());
 
 			WritePicture(manufacturer.Picture, "Picture");
 
@@ -896,5 +904,16 @@ namespace SmartStore.Services.DataExchange.Export
 				_writer.WriteEndElement();
 			}
 		}
+	}
+
+
+	/// <summary>
+	/// Allows to exclude XML nodes from export
+	/// </summary>
+	[Flags]
+	public enum ExportXmlExclude
+	{
+		None = 0,
+		Category = 1
 	}
 }

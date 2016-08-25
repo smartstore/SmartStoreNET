@@ -21,8 +21,8 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public LightweightDataTable(IList<IDataColumn> columns, IList<object[]> data)
 		{
-			Guard.ArgumentNotNull(() => columns);
-			Guard.ArgumentNotNull(() => data);
+			Guard.NotNull(columns, nameof(columns));
+			Guard.NotNull(data, nameof(data));
 
 			if (columns.Select(x => x.Name.ToLower()).Distinct().ToArray().Length != columns.Count)
 			{
@@ -130,7 +130,7 @@ namespace SmartStore.Services.DataExchange.Import
 			int skip = 0,
 			int take = int.MaxValue)
 		{
-			Guard.ArgumentNotNull(() => file);
+			Guard.NotNull(file, nameof(file));
 
 			return FromFile(file.FileName, file.InputStream, file.ContentLength, new CsvConfiguration(), skip, take);
 		}
@@ -141,7 +141,7 @@ namespace SmartStore.Services.DataExchange.Import
 			int skip = 0,
 			int take = int.MaxValue)
 		{
-			Guard.ArgumentNotNull(() => file);
+			Guard.NotNull(file, nameof(file));
 
 			return FromFile(file.FileName, file.InputStream, file.ContentLength, configuration, skip, take);
 		}
@@ -154,9 +154,9 @@ namespace SmartStore.Services.DataExchange.Import
 			int skip = 0,
 			int take = int.MaxValue)
 		{
-			Guard.ArgumentNotEmpty(() => fileName);
-			Guard.ArgumentNotNull(() => stream);
-			Guard.ArgumentNotNull(() => configuration);
+			Guard.NotEmpty(fileName, nameof(fileName));
+			Guard.NotNull(stream, nameof(stream));
+			Guard.NotNull(configuration, nameof(configuration));
 
 			if (contentLength == 0)
 			{
@@ -210,7 +210,7 @@ namespace SmartStore.Services.DataExchange.Import
 			int skip = 0, 
 			int take = int.MaxValue)
 		{
-			Guard.ArgumentNotNull(() => reader);
+			Guard.NotNull(reader, nameof(reader));
 
 			if (reader.IsClosed)
 				throw new ArgumentException("This operation is invalid when the reader is closed.", "reader");
@@ -262,7 +262,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public LightweightDataRow(IDataTable table, object[] values)
 		{
-			Guard.ArgumentNotNull(() => values);
+			Guard.NotNull(values, nameof(values));
 
 			if (table.Columns.Count != values.Length)
 			{
@@ -384,8 +384,8 @@ namespace SmartStore.Services.DataExchange.Import
 	{
 		public LightweightDataColumn(string name, Type type)
 		{
-			Guard.ArgumentNotEmpty(() => name);
-			Guard.ArgumentNotNull(() => type);
+			Guard.NotEmpty(name, nameof(name));
+			Guard.NotNull(type, nameof(type));
 
 			this.Name = name;
 			this.Type = type;

@@ -16,17 +16,27 @@
 			
 			var opts = this.options;
 			
-			// update product data and gallery
-		    $(el).find(':input').change(function () {
+			// update product data. grouped product not supported because associated product has no mobile view.
+			$(el).find(':input').change(function () {
+				var inputType = $(this).attr('type');
+				if (inputType && (inputType === 'file' || inputType === 'submit'))
+					return this;
+
 		    	var context = $(this).closest('.update-container');
 
-		    	if (context[0]) {		// associated or bundled item
+		    	if (context[0]) {
 		    	}
 		    	else {
 		    		context = el;
 		    	}
 
-		    	context.doAjax({
+		    	var url = context.attr('data-url');
+		    	if (!url) {
+		    		return this;
+		    	}
+
+		    	$({}).doAjax({
+		    		url: url,
 		    		data: context.find(':input').serialize(),
 		    		callbackSuccess: function (response) {
 		    			self.updateDetailData(response, context);

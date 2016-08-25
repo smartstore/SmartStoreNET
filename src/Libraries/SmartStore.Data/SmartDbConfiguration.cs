@@ -10,6 +10,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Data.Setup;
 using SmartStore.Data.Caching;
+using SmartStore.Core.Caching;
 
 namespace SmartStore.Data
 {
@@ -33,8 +34,13 @@ namespace SmartStore.Data
 				ICache cache = null;
 				try
 				{
-					var innerCache = EngineContext.Current.Resolve<Func<Type, SmartStore.Core.Caching.ICache>>();
-					cache = new EfCacheImpl(innerCache(typeof(SmartStore.Core.Caching.StaticCache)));
+					var innerCache = EngineContext.Current.Resolve<ICacheManager>();
+					if (innerCache.IsDistributedCache)
+					{
+						// fuckin' EfCache puts internal, unserializable objects to the cache!!!
+						innerCache = EngineContext.Current.Resolve<ICacheManager>("memory");
+					}
+					cache = new EfCacheImpl(innerCache);
 				}
 				catch
 				{

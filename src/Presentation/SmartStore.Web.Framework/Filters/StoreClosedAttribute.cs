@@ -11,7 +11,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.Filters
 {
-    public class StoreClosedAttribute : ActionFilterAttribute
+    public class StoreClosedAttribute : FilterAttribute, IActionFilter
     {
 		private static readonly List<Tuple<string, string>> s_permittedRoutes = new List<Tuple<string, string>> 
 		{
@@ -26,42 +26,42 @@ namespace SmartStore.Web.Framework.Filters
 		public Lazy<IWorkContext> WorkContext { get; set; }
 		public Lazy<StoreInformationSettings> StoreInformationSettings { get; set; }
 		
-		public override void OnActionExecuting(ActionExecutingContext filterContext)
+		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (filterContext == null || filterContext.HttpContext == null)
-                return;
+			if (filterContext == null || filterContext.HttpContext == null)
+				return;
 
-            HttpRequestBase request = filterContext.HttpContext.Request;
-            if (request == null)
-                return;
+			HttpRequestBase request = filterContext.HttpContext.Request;
+			if (request == null)
+				return;
 
 			//don't apply filter to child methods
 			if (filterContext.IsChildAction)
 				return;
 
-            string actionName = filterContext.ActionDescriptor.ActionName;
-            if (String.IsNullOrEmpty(actionName))
-                return;
+			string actionName = filterContext.ActionDescriptor.ActionName;
+			if (String.IsNullOrEmpty(actionName))
+				return;
 
-            string controllerName = filterContext.Controller.ToString();
-            if (String.IsNullOrEmpty(controllerName))
-                return;
+			string controllerName = filterContext.Controller.ToString();
+			if (String.IsNullOrEmpty(controllerName))
+				return;
 
 			if (!DataSettings.DatabaseIsInstalled())
-                return;
+				return;
 
-            var storeInformationSettings = StoreInformationSettings.Value;
-            if (!storeInformationSettings.StoreClosed)
-                return;
+			var storeInformationSettings = StoreInformationSettings.Value;
+			if (!storeInformationSettings.StoreClosed)
+				return;
 
-            if (!IsPermittedRoute(controllerName, actionName)) 
+			if (!IsPermittedRoute(controllerName, actionName))
 			{
-                if (storeInformationSettings.StoreClosedAllowForAdmins && WorkContext.Value.CurrentCustomer.IsAdmin())
-                {
-                    //do nothing - allow admin access
-                }
-                else
-                {
+				if (storeInformationSettings.StoreClosedAllowForAdmins && WorkContext.Value.CurrentCustomer.IsAdmin())
+				{
+					//do nothing - allow admin access
+				}
+				else
+				{
 					if (request.IsAjaxRequest())
 					{
 						var storeClosedMessage = "{0} {1}".FormatCurrentUI(
@@ -77,9 +77,13 @@ namespace SmartStore.Web.Framework.Filters
 						filterContext.Result = new RedirectResult(storeClosedUrl);
 					}
 
-                }
-            }
-        }
+				}
+			}
+		}
+
+		public virtual void OnActionExecuted(ActionExecutedContext filterContext)
+		{
+		}
 
 		private static bool IsPermittedRoute(string controllerName, string actionName)
 		{
@@ -93,5 +97,5 @@ namespace SmartStore.Web.Framework.Filters
 
 			return false;
 		}
-    }
+	}
 }

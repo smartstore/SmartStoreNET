@@ -11,10 +11,10 @@ using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Manufacturer service
-    /// </summary>
-    public partial class ManufacturerService : IManufacturerService
+	/// <summary>
+	/// Manufacturer service
+	/// </summary>
+	public partial class ManufacturerService : IManufacturerService
     {
         #region Constants
         private const string PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY = "SmartStore.productmanufacturer.allbymanufacturerid-{0}-{1}-{2}-{3}-{4}";
@@ -34,23 +34,23 @@ namespace SmartStore.Services.Catalog
 		private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
         private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
-        #endregion
+        private readonly IRequestCache _requestCache;
+		#endregion
 
-        #region Ctor
+		#region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="manufacturerRepository">Category repository</param>
-        /// <param name="productManufacturerRepository">ProductCategory repository</param>
-        /// <param name="productRepository">Product repository</param>
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="requestCache">Cache manager</param>
+		/// <param name="manufacturerRepository">Category repository</param>
+		/// <param name="productManufacturerRepository">ProductCategory repository</param>
+		/// <param name="productRepository">Product repository</param>
 		/// <param name="storeMappingRepository">Store mapping repository</param>
 		/// <param name="workContext">Work context</param>
 		/// <param name="storeContext">Store context</param>
-        /// <param name="eventPublisher">Event published</param>
-        public ManufacturerService(ICacheManager cacheManager,
+		/// <param name="eventPublisher">Event published</param>
+		public ManufacturerService(IRequestCache requestCache,
             IRepository<Manufacturer> manufacturerRepository,
             IRepository<ProductManufacturer> productManufacturerRepository,
             IRepository<Product> productRepository,
@@ -59,7 +59,7 @@ namespace SmartStore.Services.Catalog
 			IStoreContext storeContext,
             IEventPublisher eventPublisher)
         {
-            _cacheManager = cacheManager;
+            _requestCache = requestCache;
             _manufacturerRepository = manufacturerRepository;
             _productManufacturerRepository = productManufacturerRepository;
             _productRepository = productRepository;
@@ -174,7 +174,7 @@ namespace SmartStore.Services.Catalog
                 return null;
 
             string key = string.Format(MANUFACTURERS_BY_ID_KEY, manufacturerId);
-            return _cacheManager.Get(key, () => { 
+            return _requestCache.Get(key, () => { 
                 return _manufacturerRepository.GetById(manufacturerId); 
             });
         }
@@ -191,8 +191,8 @@ namespace SmartStore.Services.Catalog
             _manufacturerRepository.Insert(manufacturer);
 
             //cache
-            _cacheManager.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(manufacturer);
@@ -210,18 +210,26 @@ namespace SmartStore.Services.Catalog
             _manufacturerRepository.Update(manufacturer);
 
             //cache
-            _cacheManager.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(manufacturer);
         }
 
-        /// <summary>
-        /// Deletes a product manufacturer mapping
-        /// </summary>
-        /// <param name="productManufacturer">Product manufacturer mapping</param>
-        public virtual void DeleteProductManufacturer(ProductManufacturer productManufacturer)
+		public virtual void UpdateHasDiscountsApplied(Manufacturer manufacturer)
+		{
+			Guard.NotNull(manufacturer, nameof(manufacturer));
+
+			manufacturer.HasDiscountsApplied = manufacturer.AppliedDiscounts.Count > 0;
+			UpdateManufacturer(manufacturer);
+		}
+
+		/// <summary>
+		/// Deletes a product manufacturer mapping
+		/// </summary>
+		/// <param name="productManufacturer">Product manufacturer mapping</param>
+		public virtual void DeleteProductManufacturer(ProductManufacturer productManufacturer)
         {
             if (productManufacturer == null)
                 throw new ArgumentNullException("productManufacturer");
@@ -229,8 +237,8 @@ namespace SmartStore.Services.Catalog
             _productManufacturerRepository.Delete(productManufacturer);
 
             //cache
-            _cacheManager.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(productManufacturer);
@@ -250,7 +258,7 @@ namespace SmartStore.Services.Catalog
                 return new PagedList<ProductManufacturer>(new List<ProductManufacturer>(), pageIndex, pageSize);
 
 			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYMANUFACTURERID_KEY, showHidden, manufacturerId, pageIndex, pageSize, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from pm in _productManufacturerRepository.Table
                             join p in _productRepository.Table on pm.ProductId equals p.Id
@@ -301,7 +309,7 @@ namespace SmartStore.Services.Catalog
                 return new List<ProductManufacturer>();
 
 			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
 				{
 					var query = from pm in _productManufacturerRepository.Table.Expand(x => x.Manufacturer.Picture)
 								join m in _manufacturerRepository.Table on
@@ -400,8 +408,8 @@ namespace SmartStore.Services.Catalog
             _productManufacturerRepository.Insert(productManufacturer);
 
             //cache
-            _cacheManager.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(productManufacturer);
@@ -419,8 +427,8 @@ namespace SmartStore.Services.Catalog
             _productManufacturerRepository.Update(productManufacturer);
 
             //cache
-            _cacheManager.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(MANUFACTURERS_PATTERN_KEY);
+            _requestCache.RemoveByPattern(PRODUCTMANUFACTURERS_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(productManufacturer);

@@ -12,13 +12,13 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework.Controllers
-{	
-	[AdminThemed]
-    [RequireHttpsByConfig(SslRequirement.Yes)]
-    [AdminValidateIpAddress]
-    [CustomerLastActivity]
-    [StoreIpAddress]
-    public abstract class AdminControllerBase : SmartController
+{
+	[AdminValidateIpAddress(Order = 100)]
+	[RequireHttpsByConfig(SslRequirement.Yes, Order = 110)]
+    [CustomerLastActivity(Order = 100)]
+    [StoreIpAddress(Order = 100)]
+	[AdminThemed(Order = -1)]
+	public abstract class AdminControllerBase : SmartController
     { 
         /// <summary>
         /// Initialize controller

@@ -32,5 +32,15 @@ namespace SmartStore.Core.Data.Hooks
         /// Entity States that this hook must be registered to listen for.
         /// </summary>
         public abstract EntityState HookStates { get; }
-    }
+
+		/// <summary>
+		/// Indicates whether the hook instance can be processed for the given <see cref="EntityState"/>
+		/// </summary>
+		/// <param name="state">The state of the entity</param>
+		/// <returns><c>true</c> when the hook should be processed, <c>false</c> otherwise</returns>
+		public virtual bool CanProcess(EntityState state)
+		{
+			return state == HookStates;
+		}
+	}
 }

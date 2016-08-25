@@ -227,6 +227,7 @@ namespace SmartStore.Web.Controllers
             if (!excludeProperties)
             {
 				model.VatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
+                model.Title = customer.GetAttribute<string>(SystemCustomerAttributeNames.Title);
                 model.FirstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
                 model.LastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName);
                 model.Gender = customer.GetAttribute<string>(SystemCustomerAttributeNames.Gender);
@@ -295,6 +296,7 @@ namespace SmartStore.Web.Controllers
 			model.VatNumberStatusNote = ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId))
 				 .GetLocalizedEnum(_localizationService, _workContext);
             model.GenderEnabled = _customerSettings.GenderEnabled;
+            model.TitleEnabled = _customerSettings.TitleEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
             model.CompanyEnabled = _customerSettings.CompanyEnabled;
             model.CompanyRequired = _customerSettings.CompanyRequired;
@@ -1029,6 +1031,10 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.GenderEnabled)
                     {
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
+                    }
+                    if (_customerSettings.TitleEnabled)
+                    {
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Title, model.Title);
                     }
 
                     if (_customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled)

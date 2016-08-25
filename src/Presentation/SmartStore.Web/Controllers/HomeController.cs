@@ -6,6 +6,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
@@ -41,6 +42,7 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<ISitemapGenerator> _sitemapGenerator;
 		private readonly Lazy<CaptchaSettings> _captchaSettings;
 		private readonly Lazy<CommonSettings> _commonSettings;
+        private readonly Lazy<CustomerSettings> _customerSettings;
 
 		#endregion
 
@@ -56,7 +58,8 @@ namespace SmartStore.Web.Controllers
 			Lazy<IEmailAccountService> emailAccountService,
 			Lazy<ISitemapGenerator> sitemapGenerator,
 			Lazy<CaptchaSettings> captchaSettings,
-			Lazy<CommonSettings> commonSettings)
+			Lazy<CommonSettings> commonSettings,
+            Lazy<CustomerSettings> customerSettings)
         {
 			this._services = services;
 			this._categoryService = categoryService;
@@ -68,6 +71,7 @@ namespace SmartStore.Web.Controllers
 			this._sitemapGenerator = sitemapGenerator;
 			this._captchaSettings = captchaSettings;
 			this._commonSettings = commonSettings;
+            this._customerSettings = customerSettings;
         }
         
         #endregion
@@ -119,7 +123,9 @@ namespace SmartStore.Web.Controllers
 			{
 				Email = _services.WorkContext.CurrentCustomer.Email,
 				FullName = _services.WorkContext.CurrentCustomer.GetFullName(),
-				DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage
+				DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage,
+                DisplayPrivacyAgreement = _customerSettings.Value.DisplayPrivacyAgreementOnContactUs
+
 			};
 
 			return View(model);
@@ -199,7 +205,7 @@ namespace SmartStore.Web.Controllers
 			var sitemap = _services.Cache.Get(cacheKey, () =>
 			{
 				return _sitemapGenerator.Value.Generate(this.Url);
-			}, 120);
+			}, TimeSpan.FromHours(2));
 
 			return Content(sitemap, "text/xml");
 		}

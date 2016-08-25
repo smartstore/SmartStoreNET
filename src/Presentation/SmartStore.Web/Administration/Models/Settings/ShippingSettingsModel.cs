@@ -22,5 +22,8 @@ namespace SmartStore.Admin.Models.Settings
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Shipping.ShippingOriginAddress")]
 		public AddressModel ShippingOriginAddress { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Shipping.SkipShippingIfSingleOption")]
+        public bool SkipShippingIfSingleOption { get; set; }
     }
 }

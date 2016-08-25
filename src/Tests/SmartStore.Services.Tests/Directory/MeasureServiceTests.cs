@@ -109,8 +109,6 @@ namespace SmartStore.Services.Tests.Directory
             _measureWeightRepository.Expect(x => x.GetById(measureWeight4.Id)).Return(measureWeight4);
 
 
-            var cacheManager = new NullCache();
-
             _measureSettings = new MeasureSettings();
             _measureSettings.BaseDimensionId = measureDimension1.Id; //inch(es)
             _measureSettings.BaseWeightId = measureWeight2.Id; //lb(s)
@@ -118,7 +116,7 @@ namespace SmartStore.Services.Tests.Directory
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
-            _measureService = new MeasureService(cacheManager,
+            _measureService = new MeasureService(NullRequestCache.Instance,
                 _measureDimensionRepository,
                 _measureWeightRepository,
                 _measureSettings, _eventPublisher);

@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Web.Routing;
 using System.Web.WebPages;
+using Newtonsoft.Json;
 
 namespace SmartStore.Web.Framework.UI
 {
-
-    public abstract class NavigationItem : IHtmlAttributesContainer, INavigatable, IHideObjectMembers
+	[Serializable]
+	public abstract class NavigationItem : IHtmlAttributesContainer, INavigatable, IHideObjectMembers
     {
         private bool _selected;
         private bool _enabled;
@@ -22,15 +23,15 @@ namespace SmartStore.Web.Framework.UI
             this.Visible = true;
             this.Encoded = true;
             this.Enabled = true;
-            this.HtmlAttributes = new RouteValueDictionary();
-            this.LinkHtmlAttributes = new RouteValueDictionary();
+            this.HtmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            this.LinkHtmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             this.RouteValues = new RouteValueDictionary();
             this.ModifiedParam = new ModifiedParameter();
         }
 
-        public IDictionary<string, object> HtmlAttributes { get; private set; }
+        public IDictionary<string, object> HtmlAttributes { get; set; }
 
-        public IDictionary<string, object> LinkHtmlAttributes { get; private set; }
+        public IDictionary<string, object> LinkHtmlAttributes { get; set; }
 
         public string ImageUrl { get; set; }
 
@@ -79,7 +80,8 @@ namespace SmartStore.Web.Framework.UI
         }
 
 
-        public string ActionName
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+		public string ActionName
         {
             get
             {
@@ -92,7 +94,8 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
-        public string ControllerName
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+		public string ControllerName
         {
             get
             {
@@ -105,7 +108,8 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
-        public string RouteName
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+		public string RouteName
         {
             get
             {
@@ -120,6 +124,7 @@ namespace SmartStore.Web.Framework.UI
 
         public RouteValueDictionary RouteValues { get; set; }
 
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Url
         {
             get
@@ -135,6 +140,7 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
+		[JsonIgnore]
         public ModifiedParameter ModifiedParam
         {
             get;
@@ -166,7 +172,7 @@ namespace SmartStore.Web.Framework.UI
 
 		public bool Ajax { get; set; }
 
-        public IDictionary<string, object> ContentHtmlAttributes { get; private set; }
+        public IDictionary<string, object> ContentHtmlAttributes { get; set; }
 
         public HelperResult Content { get; set; }
     }

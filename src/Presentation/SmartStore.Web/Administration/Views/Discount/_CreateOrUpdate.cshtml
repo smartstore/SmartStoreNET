@@ -41,15 +41,23 @@
             	var selectedDiscountTypeId = $("#@Html.FieldIdFor(model => model.DiscountTypeId)").val();
 
                 if (selectedDiscountTypeId == '@((int)DiscountType.AssignedToCategories)') {
-                    $('#pnlAppliedToCategories').show();
+                	$('#pnlAppliedToCategories').show();
+                	$('#pnlAppliedToManufacturers').hide();
                     $('#pnlAppliedToProducts').hide();
                 }
+            	else if (selectedDiscountTypeId == '@((int)DiscountType.AssignedToManufacturers)') {
+            		$('#pnlAppliedToCategories').hide();
+            		$('#pnlAppliedToManufacturers').show();
+            		$('#pnlAppliedToProducts').hide();
+            	}
                 else if (selectedDiscountTypeId == '@((int)DiscountType.AssignedToSkus)') {
-                    $('#pnlAppliedToCategories').hide();
+                	$('#pnlAppliedToCategories').hide();
+                	$('#pnlAppliedToManufacturers').hide();
                     $('#pnlAppliedToProducts').show();
                 }
                 else {
-                    $('#pnlAppliedToCategories').hide();
+                	$('#pnlAppliedToCategories').hide();
+                	$('#pnlAppliedToManufacturers').hide();
                     $('#pnlAppliedToProducts').hide();
                 }
             }
@@ -122,15 +130,32 @@
                         if (i != Model.AppliedToCategoryModels.Count - 1)
                         {
                             <text>, </text>
-                        }
-                    }
-                }
-                else
-                {
-                    @T("Admin.Promotions.Discounts.Fields.AppliedToCategories.NoRecords")
+						}
+					}
+				}
+				else
+				{
+					@T("Admin.Promotions.Discounts.NoObjectsAssigned")
                 }
             </td>
         </tr>
+		<tr id="pnlAppliedToManufacturers">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AppliedToManufacturerModels)
+			</td>
+			<td class="adminData">
+				@if (!Model.AppliedToManufacturerModels.Any())
+				{
+					@T("Admin.Promotions.Discounts.NoObjectsAssigned")
+				}
+				@foreach (var manu in Model.AppliedToManufacturerModels)
+				{
+					if (Model.AppliedToManufacturerModels.IndexOf(manu) != 0) {	<text>, </text>	}
+					<a href="@Url.Action("Edit", "Manufacturer", new { id = manu.ManufacturerId })">@manu.ManufacturerName</a>
+				}
+			</td>
+		</tr>
+
         <tr id="pnlAppliedToProducts">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AppliedToProductModels)
@@ -151,8 +176,8 @@
                 }
                 else
                 {
-                    @T("Admin.Promotions.Discounts.Fields.AppliedToProducts.NoRecords")
-                }
+                    @T("Admin.Promotions.Discounts.NoObjectsAssigned")
+				}
             </td>
         </tr>
         <tr>

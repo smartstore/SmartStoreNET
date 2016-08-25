@@ -161,7 +161,7 @@ namespace SmartStore.Data
 		private void SetEntityStateToModifiedIfApplicable(T entity)
 		{
 			var entry = InternalContext.Entry(entity);
-			if (entry.State == System.Data.Entity.EntityState.Detached || (this.AutoCommitEnabledInternal && !InternalContext.Configuration.AutoDetectChangesEnabled))
+			if (entry.State < System.Data.Entity.EntityState.Added || (this.AutoCommitEnabledInternal && !InternalContext.Configuration.AutoDetectChangesEnabled))
 			{
 				entry.State = System.Data.Entity.EntityState.Modified;
 			}

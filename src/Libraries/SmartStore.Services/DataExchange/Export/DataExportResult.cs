@@ -9,7 +9,7 @@ namespace SmartStore.Services.DataExchange.Export
 	{
 		public DataExportResult()
 		{
-			Files = new List<DataExportResult.ExportFileInfo>();
+			Files = new List<ExportFileInfo>();
 		}
 
 		/// <summary>
@@ -37,17 +37,11 @@ namespace SmartStore.Services.DataExchange.Export
 		[XmlIgnore]
 		public string FileFolder { get; set; }
 
-		/// <summary>
-		/// Suggested download file name
-		/// </summary>
-		[XmlIgnore]
-		public string DownloadFileName { get; set; }
-
 		[Serializable]
 		public class ExportFileInfo
 		{
 			/// <summary>
-			/// Store identifier
+			/// Store identifier, can be 0.
 			/// </summary>
 			public int StoreId { get; set; }
 
@@ -55,6 +49,16 @@ namespace SmartStore.Services.DataExchange.Export
 			/// Name of file
 			/// </summary>
 			public string FileName { get; set; }
+
+			/// <summary>
+			/// Short optional text that describes the content of the file
+			/// </summary>
+			public string Label { get; set; }
+
+			/// <summary>
+			/// Whether the file contains entity data
+			/// </summary>
+			public bool IsDataFile { get; set; }
 		}
 	}
 }

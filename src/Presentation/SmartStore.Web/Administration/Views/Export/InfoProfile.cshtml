@@ -16,15 +16,15 @@
 	}
 	@foreach (var profile in Model.Profiles)
 	{
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(m => m.Profiles)
-			</td>
-			<td class="adminData">
-				<a href="@Url.Action("Edit", "Export", new { id = profile.Id, area = "Admin" })">
-					@profile.Name
-				</a>
-			</td>
+		<tr class="info-profile">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(m => m.Profiles)
+            </td>
+            <td class="adminData">
+                <a href="@Url.Action("Edit", "Export", new { id = profile.Id, area = "Admin" })">
+                    @profile.Name
+                </a>
+            </td>
 		</tr>
 		if (profile.ScheduleTaskId.HasValue)
 		{

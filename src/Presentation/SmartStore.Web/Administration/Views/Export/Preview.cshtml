@@ -2,7 +2,7 @@
 @using SmartStore.Core.Domain.DataExchange
 @model ExportPreviewModel
 @{
-	var title = string.Concat(T("Admin.Common.Preview"), " ", T("Common.Export"));
+	var title = string.Concat(T("Common.Export"), " - ", T("Admin.Common.Preview"));
 	ViewBag.Title = title;
 }
 
@@ -37,11 +37,11 @@
 
 	jQuery(document).ready(function () {
 
-		// export clicked
+		// execute export
 		$('#ExportAll, #ExportSelected').click(function (e) {
 			e.preventDefault();
 			var form = $('#ProfileExportForm'),
-				exportAll = $(this).attr('id') === 'ExportAll';
+				exportAll = ($(this).attr('id') === 'ExportAll');
 
 			if (!exportAll && selectedIds.length === 0) {
 				displayNotification('@T("Admin.Common.NoEntriesSelected")', 'warning');

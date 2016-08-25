@@ -11,11 +11,11 @@ namespace SmartStore.Admin.Models.Localization
     {
         [SmartResourceDisplayName("Admin.Configuration.Languages.Resources.Fields.Name")]
         [AllowHtml]
-        public string Name { get; set; }
+        public string ResourceName { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Languages.Resources.Fields.Value")]
         [AllowHtml]
-        public string Value { get; set; }
+        public string ResourceValue { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Languages.Resources.Fields.LanguageName")]
         [AllowHtml]

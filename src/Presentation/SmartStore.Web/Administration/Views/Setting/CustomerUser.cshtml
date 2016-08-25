@@ -259,6 +259,15 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.StoreLastVisitedPage)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.DisplayPrivacyAgreementOnContactUs)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.DisplayPrivacyAgreementOnContactUs)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.DisplayPrivacyAgreementOnContactUs)
+            </td>
+        </tr>
     </table>
 }
 @helper TabCustomerFormFields()
@@ -355,6 +364,15 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.CustomerSettings.GenderEnabled)
                 @Html.ValidationMessageFor(model => model.CustomerSettings.GenderEnabled)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.TitleEnabled)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.TitleEnabled)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.TitleEnabled)
             </td>
         </tr>
         <tr>
@@ -528,6 +546,7 @@
 
             $("#@Html.FieldIdFor(model => model.AddressSettings.CountryEnabled)").click(toggleAddressCountryFormField);
             $("#@Html.FieldIdFor(model => model.AddressSettings.CompanyEnabled)").click(toggleAddressRequiredFormField);
+            $("#@Html.FieldIdFor(model => model.AddressSettings.SalutationEnabled)").click(toggleAddressRequiredFormField);
             $("#@Html.FieldIdFor(model => model.AddressSettings.StreetAddressEnabled)").click(toggleAddressRequiredFormField);
             $("#@Html.FieldIdFor(model => model.AddressSettings.StreetAddress2Enabled)").click(toggleAddressRequiredFormField);
             $("#@Html.FieldIdFor(model => model.AddressSettings.ZipPostalCodeEnabled)").click(toggleAddressRequiredFormField);
@@ -557,6 +576,13 @@
                 $('#pnlAddressCompanyRequired').hide();
             }
 
+            if ($('#@Html.FieldIdFor(model => model.AddressSettings.SalutationEnabled)').is(':checked')) {
+                $('#setting-customer-localized').parent().show();
+            }
+            else {
+                $('#setting-customer-localized').parent().hide();
+            }
+            
             if ($('#@Html.FieldIdFor(model => model.AddressSettings.StreetAddressEnabled)').is(':checked')) {
                 $('#pnlAddressStreetAddressRequired').show();
             }
@@ -615,6 +641,58 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.AddressSettings.ValidateEmailAddress)
                 @Html.ValidationMessageFor(model => model.AddressSettings.ValidateEmailAddress)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AddressSettings.SalutationEnabled)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AddressSettings.SalutationEnabled)
+                @Html.ValidationMessageFor(model => model.AddressSettings.SalutationEnabled)
+            </td>
+        </tr>
+    </table>
+    
+    @(Html.LocalizedEditor<CustomerUserSettingsModel, AddressSettingsLocalizedModel>("setting-customer-localized",
+		@<table class="adminContent pnlSalutations">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Locales[item].Salutations)
+				</td>
+				<td class="adminData">
+					@Html.TextBoxFor(model => Model.Locales[item].Salutations, new { @class = "input-xlarge" })
+					@Html.ValidationMessageFor(model => model.Locales[item].Salutations)
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+				</td>
+			</tr>
+		</table>
+		,
+		@<table class="adminContent pnlSalutations">
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.AddressSettings.Salutations)
+                </td>
+                <td class="adminData">
+                    @Html.TextBoxFor(model => model.AddressSettings.Salutations, new { @class = "input-xlarge" })
+                    @Html.ValidationMessageFor(model => model.AddressSettings.Salutations)
+                </td>
+            </tr>
+        </table>
+    ))
+
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AddressSettings.TitleEnabled)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AddressSettings.TitleEnabled)
+                @Html.ValidationMessageFor(model => model.AddressSettings.TitleEnabled)
             </td>
         </tr>
         <tr>

@@ -7,7 +7,7 @@ namespace SmartStore.Services.DataExchange.Import
 	{
 		public ImportMessage(string message, ImportMessageType messageType = ImportMessageType.Info)
 		{
-			Guard.ArgumentNotEmpty(() => message);
+			Guard.NotEmpty(message, nameof(message));
 
 			this.Message = message;
 			this.MessageType = messageType;

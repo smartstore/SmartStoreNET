@@ -79,7 +79,7 @@ namespace SmartStore.Services.Tasks
 		public void SetProgress(int? progress, string message, bool immediately =  false)
 		{
 			if (progress.HasValue)
-				Guard.ArgumentInRange(progress.Value, 0, 100, "progress");
+				Guard.InRange(progress.Value, 0, 100, nameof(progress));
 
 			// update cloned entity
 			ScheduleTask.ProgressPercent = progress;

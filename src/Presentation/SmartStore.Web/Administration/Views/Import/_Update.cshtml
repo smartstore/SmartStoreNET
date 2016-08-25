@@ -238,22 +238,18 @@
 		// delete import file
 		$('#ImportFileList').on('click', '.import-file-delete', function (e) {
 			e.preventDefault();
-
-			if (confirm('@T("Admin.Common.AskToProceed")')) {
-				var form = '<form id="DeleteImportFileForm" action="' + $(this).data('url') + '" method="post"></form>';
-				$('body').append(form);
-				$('#DeleteImportFileForm').submit();
-			}
-
+			$(this).doPostData({
+				ask: '@T("Admin.Common.AskToProceed")'
+			});
 			return false;
 		});
 
 		// execute import
 		$('#ProfileImportButton').click(function (e) {
 			e.preventDefault();
-			if (confirm('@T("Admin.Common.AskToProceed")')) {
-				$('#ProfileImportForm').submit();
-			}
+			$(this).doPostData({
+				ask: '@T("Admin.Common.AskToProceed")'
+			});
 			return false;
 		});
 

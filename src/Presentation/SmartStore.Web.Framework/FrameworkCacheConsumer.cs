@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Events;
 using SmartStore.Core.Themes;
+using System.Web;
 
 namespace SmartStore.Web.Framework
 {
@@ -27,8 +28,8 @@ namespace SmartStore.Web.Framework
         /// {0} : theme name
         /// {1} : store identifier
         /// </remarks>
-        public const string THEMEVARS_LESSCSS_KEY = "sm.pres.themevars-lesscss-{0}-{1}";
-		public const string THEMEVARS_LESSCSS_THEME_KEY = "sm.pres.themevars-lesscss-{0}";
+        public const string THEMEVARS_LESSCSS_KEY = "pres:themevars-lesscss-{0}-{1}";
+		public const string THEMEVARS_LESSCSS_THEME_KEY = "pres:themevars-lesscss-{0}";
 		
         
         /// <summary>
@@ -38,37 +39,35 @@ namespace SmartStore.Web.Framework
         /// {0} : customer role ids
         /// {1} : store identifier
         /// </remarks>
-        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY = "sm.fw.customerroles.taxdisplaytypes-{0}-{1}";
-        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY = "sm.fw.customerroles.taxdisplaytypes";
+        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_KEY = "fw:customerroles:taxdisplaytypes-{0}-{1}";
+        public const string CUSTOMERROLES_TAX_DISPLAY_TYPES_PATTERN_KEY = "fw:customerroles:taxdisplaytypes";
 
         private readonly ICacheManager _cacheManager;
-		private readonly ICacheManager _aspCache;
 
-		public FrameworkCacheConsumer(Func<string, ICacheManager> cache)
+		public FrameworkCacheConsumer(ICacheManager cacheManager)
         {
-			this._cacheManager = cache("static");
-			this._aspCache = cache("aspnet");
+			_cacheManager = cacheManager;
         }
 
         public void HandleEvent(EntityInserted<ThemeVariable> eventMessage)
         {
-			_aspCache.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
+			HttpRuntime.Cache.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
 
         public void HandleEvent(EntityUpdated<ThemeVariable> eventMessage)
         {
-			_aspCache.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
+			HttpRuntime.Cache.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
 
         public void HandleEvent(EntityDeleted<ThemeVariable> eventMessage)
         {
-			_aspCache.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
+			HttpRuntime.Cache.Remove(BuildThemeVarsCacheKey(eventMessage.Entity));
         }
 
 		public void HandleEvent(ThemeTouchedEvent eventMessage)
 		{
 			var cacheKey = BuildThemeVarsCacheKey(eventMessage.ThemeName, 0);
-			_aspCache.RemoveByPattern(cacheKey);
+			HttpRuntime.Cache.RemoveByPattern(cacheKey);
 		}
 
 
@@ -104,10 +103,10 @@ namespace SmartStore.Web.Framework
         {
 			if (storeId > 0)
 			{
-				return THEMEVARS_LESSCSS_KEY.FormatInvariant(themeName, storeId);
+				return HttpRuntime.Cache.BuildScopedKey(THEMEVARS_LESSCSS_KEY.FormatInvariant(themeName, storeId));
 			}
 
-			return THEMEVARS_LESSCSS_THEME_KEY.FormatInvariant(themeName);
+			return HttpRuntime.Cache.BuildScopedKey(THEMEVARS_LESSCSS_THEME_KEY.FormatInvariant(themeName));
         }
 
         #endregion

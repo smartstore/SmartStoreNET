@@ -31,26 +31,19 @@ namespace SmartStore.Services.Orders
         private readonly IRepository<CheckoutAttributeValue> _checkoutAttributeValueRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IEventPublisher _eventPublisher;
-        private readonly ICacheManager _cacheManager;
+        private readonly IRequestCache _requestCache;
         
         #endregion
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="checkoutAttributeRepository">Checkout attribute repository</param>
-        /// <param name="checkoutAttributeValueRepository">Checkout attribute value repository</param>
-        /// <param name="eventPublisher">Event published</param>
-        public CheckoutAttributeService(ICacheManager cacheManager,
+        public CheckoutAttributeService(IRequestCache requestCache,
             IRepository<CheckoutAttribute> checkoutAttributeRepository,
             IRepository<CheckoutAttributeValue> checkoutAttributeValueRepository,
 			IRepository<StoreMapping> storeMappingRepository,
 			IEventPublisher eventPublisher)
         {
-            _cacheManager = cacheManager;
+            _requestCache = requestCache;
             _checkoutAttributeRepository = checkoutAttributeRepository;
             _checkoutAttributeValueRepository = checkoutAttributeValueRepository;
 			_storeMappingRepository = storeMappingRepository;
@@ -78,8 +71,8 @@ namespace SmartStore.Services.Orders
 
             _checkoutAttributeRepository.Delete(checkoutAttribute);
 
-            _cacheManager.RemoveByPattern(CHECKOUTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CHECKOUTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(checkoutAttribute);
@@ -129,7 +122,7 @@ namespace SmartStore.Services.Orders
         {
 			string key = CHECKOUTATTRIBUTES_ALL_KEY.FormatInvariant(storeId, showHidden);
 
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
 				var query = GetCheckoutAttributes(storeId, showHidden);
 
@@ -148,7 +141,7 @@ namespace SmartStore.Services.Orders
                 return null;
 
             string key = string.Format(CHECKOUTATTRIBUTES_BY_ID_KEY, checkoutAttributeId);
-            return _cacheManager.Get(key, () => 
+            return _requestCache.Get(key, () => 
             { 
                 return _checkoutAttributeRepository.GetById(checkoutAttributeId); 
             });
@@ -165,8 +158,8 @@ namespace SmartStore.Services.Orders
 
             _checkoutAttributeRepository.Insert(checkoutAttribute);
 
-            _cacheManager.RemoveByPattern(CHECKOUTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CHECKOUTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(checkoutAttribute);
@@ -183,8 +176,8 @@ namespace SmartStore.Services.Orders
 
             _checkoutAttributeRepository.Update(checkoutAttribute);
 
-            _cacheManager.RemoveByPattern(CHECKOUTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CHECKOUTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(checkoutAttribute);
@@ -205,8 +198,8 @@ namespace SmartStore.Services.Orders
 
             _checkoutAttributeValueRepository.Delete(checkoutAttributeValue);
 
-            _cacheManager.RemoveByPattern(CHECKOUTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CHECKOUTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(checkoutAttributeValue);
@@ -220,7 +213,7 @@ namespace SmartStore.Services.Orders
         public virtual IList<CheckoutAttributeValue> GetCheckoutAttributeValues(int checkoutAttributeId)
         {
             string key = string.Format(CHECKOUTATTRIBUTEVALUES_ALL_KEY, checkoutAttributeId);
-            return _cacheManager.Get(key, () =>
+            return _requestCache.Get(key, () =>
             {
                 var query = from cav in _checkoutAttributeValueRepository.Table
                             orderby cav.DisplayOrder
@@ -242,7 +235,7 @@ namespace SmartStore.Services.Orders
                 return null;
 
             string key = string.Format(CHECKOUTATTRIBUTEVALUES_BY_ID_KEY, checkoutAttributeValueId);
-            return _cacheManager.Get(key, () => 
+            return _requestCache.Get(key, () => 
             { 
                 return _checkoutAttributeValueRepository.GetById(checkoutAttributeValueId); 
             });
@@ -259,8 +252,8 @@ namespace SmartStore.Services.Orders
 
             _checkoutAttributeValueRepository.Insert(checkoutAttributeValue);
 
-            _cacheManager.RemoveByPattern(CHECKOUTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CHECKOUTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(checkoutAttributeValue);
@@ -277,8 +270,8 @@ namespace SmartStore.Services.Orders
 
             _checkoutAttributeValueRepository.Update(checkoutAttributeValue);
 
-            _cacheManager.RemoveByPattern(CHECKOUTATTRIBUTES_PATTERN_KEY);
-            _cacheManager.RemoveByPattern(CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CHECKOUTATTRIBUTES_PATTERN_KEY);
+            _requestCache.RemoveByPattern(CHECKOUTATTRIBUTEVALUES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(checkoutAttributeValue);

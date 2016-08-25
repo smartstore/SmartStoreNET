@@ -5,6 +5,8 @@ namespace SmartStore.Web.Models.Checkout
     public partial class CheckoutProgressModel : ModelBase
     {
         public CheckoutProgressStep CheckoutProgressStep { get; set; }
+
+        public bool DisplayShippingOptions { get; set; }
     }
 
     public enum CheckoutProgressStep

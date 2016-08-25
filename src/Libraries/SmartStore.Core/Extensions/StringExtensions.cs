@@ -318,7 +318,7 @@ namespace SmartStore
         public static string Truncate(this string value, int maxLength, string suffix = "")
         {
             Guard.ArgumentNotNull(suffix, "suffix");
-            Guard.ArgumentIsPositive(maxLength, "maxLength");
+            Guard.IsPositive(maxLength, nameof(maxLength));
 
             int subStringLength = maxLength - suffix.Length;
 
@@ -478,28 +478,61 @@ namespace SmartStore
             return sb.ToString();
         }
 
-        [DebuggerStepThrough]
+		/// <summary>
+		/// Splits a string into a string array
+		/// </summary>
+		/// <param name="value">String value to split</param>
+		/// <param name="separator">If <c>null</c> then value is searched for a common delimiter like pipe, semicolon or comma</param>
+		/// <returns>String array</returns>
+		[DebuggerStepThrough]
 		public static string[] SplitSafe(this string value, string separator) 
         {
 			if (string.IsNullOrEmpty(value))
 				return new string[0];
+
+			// do not use separator.IsEmpty() here because whitespace like " " is a valid separator.
+			// an empty separator "" returns array with value.
+			if (separator == null)
+			{
+				separator = "|";
+
+				if (value.IndexOf(separator) < 0)
+				{
+					if (value.IndexOf(';') > -1)
+					{
+						separator = ";";
+					}
+					else if (value.IndexOf(',') > -1)
+					{
+						separator = ",";
+					}
+					else if (value.IndexOf(Environment.NewLine) > -1)
+					{
+						separator = Environment.NewLine;
+					}
+				}
+			}
+
 			return value.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
 		}
 
 		/// <summary>Splits a string into two strings</summary>
 		/// <returns>true: success, false: failure</returns>
-        [DebuggerStepThrough]
+		[DebuggerStepThrough]
         [SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
-		public static bool SplitToPair(this string value, out string strLeft, out string strRight, string delimiter) {
+		public static bool SplitToPair(this string value, out string strLeft, out string strRight, string delimiter)
+		{
 			int idx = -1;
-			if (value.IsEmpty() || delimiter.IsEmpty() || (idx = value.IndexOf(delimiter)) == -1)
+			if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(delimiter) || (idx = value.IndexOf(delimiter)) == -1)
 			{
 				strLeft = value;
 				strRight = "";
 				return false;
 			}
+
 			strLeft = value.Substring(0, idx);
 			strRight = value.Substring(idx + delimiter.Length);
+
 			return true;
 		}
 

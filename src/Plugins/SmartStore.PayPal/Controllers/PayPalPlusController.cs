@@ -209,11 +209,12 @@ namespace SmartStore.PayPal.Controllers
 
 			model.Copy(settings, false);
 
-			storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
+			using (Services.Settings.BeginBatch())
+			{
+				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
+				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+			}
 
-			Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
-
-			Services.Settings.ClearCache();
 			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
 
 			return Configure();

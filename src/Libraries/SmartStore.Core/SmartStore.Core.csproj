@@ -85,8 +85,8 @@
     <Reference Include="Microsoft.Web.XmlTransform">
       <HintPath>..\..\packages\Microsoft.Web.Xdt.1.0.0\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Core, Version=2.8.50126.400, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -143,15 +143,20 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Async\AsyncLock.cs" />
     <Compile Include="Async\AsyncState.cs" />
-    <Compile Include="Caching\DefaultCacheManager.cs" />
-    <Compile Include="Caching\AspNetCache.cs" />
+    <Compile Include="Caching\MemoryCacheManager.cs" />
+    <Compile Include="Caching\DisplayControl.cs" />
+    <Compile Include="Caching\IRequestCache.cs" />
+    <Compile Include="Caching\IDisplayControl.cs" />
+    <Compile Include="Caching\IOutputCacheProvider.cs" />
+    <Compile Include="Caching\NullOutputCacheProvider.cs" />
+    <Compile Include="Caching\OutputCacheItem.cs" />
     <Compile Include="Caching\RequestCache.cs" />
-    <Compile Include="Caching\StaticCache.cs" />
-    <Compile Include="Caching\ICache.cs" />
     <Compile Include="Collections\LazyMultimap.cs" />
     <Compile Include="Collections\Querystring.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
+    <Compile Include="Collections\TreeNodeBase.cs" />
     <Compile Include="ComponentModel\TypeConversion\BooleanConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\EnumerableConverter.cs" />
     <Compile Include="ComponentModel\TypeConversion\NullableConverter.cs" />
@@ -179,11 +184,15 @@
     <Compile Include="Domain\DataExchange\ExportEnums.cs" />
     <Compile Include="Domain\DataExchange\ExportFilter.cs" />
     <Compile Include="Domain\DataExchange\ExportProfile.cs" />
+    <Compile Include="Domain\Media\MediaStorage.cs" />
+    <Compile Include="Domain\Media\IHasMedia.cs" />
     <Compile Include="Domain\Messages\EmailAttachmentStorageLocation.cs" />
     <Compile Include="Domain\Messages\QueuedEmailAttachment.cs" />
     <Compile Include="Domain\Orders\CheckoutEnums.cs" />
     <Compile Include="Domain\Payments\PaymentMethod.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
+    <Compile Include="Domain\Tax\AuxiliaryServicesTaxType.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />
     <Compile Include="Data\IQueryableExtensions.cs" />
@@ -195,6 +204,10 @@
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeAccessor.cs" />
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeProvider.cs" />
     <Compile Include="Infrastructure\DependencyManagement\ILifetimeScopeAccessor.cs" />
+    <Compile Include="Infrastructure\DependencyManagement\Work.cs" />
+    <Compile Include="Infrastructure\ApplicationEnvironment.cs" />
+    <Compile Include="Infrastructure\IApplicationEnvironment.cs" />
+    <Compile Include="IO\IFileSystemExtensions.cs" />
     <Compile Include="ITransient.cs" />
     <Compile Include="Collections\MostRecentlyUsedList.cs" />
     <Compile Include="Localization\LocalizationHelper.cs" />
@@ -266,10 +279,10 @@
     <Compile Include="Extensions\XmlWriterExtensions.cs" />
     <Compile Include="IMergedData.cs" />
     <Compile Include="Async\AsyncRunner.cs" />
-    <Compile Include="IO\Media\FileSystemStorageProvider.cs" />
-    <Compile Include="IO\Media\IStorageFile.cs" />
-    <Compile Include="IO\Media\IStorageFolder.cs" />
-    <Compile Include="IO\Media\IStorageProvider.cs" />
+    <Compile Include="IO\LocalFileSystem.cs" />
+    <Compile Include="IO\IFile.cs" />
+    <Compile Include="IO\IFolder.cs" />
+    <Compile Include="IO\IFileSystem.cs" />
     <Compile Include="IO\MimeTypes.cs" />
     <Compile Include="IO\VirtualPath\DefaultVirtualPathProvider.cs" />
     <Compile Include="IO\VirtualPath\IVirtualPathProvider.cs" />
@@ -554,7 +567,6 @@
     <Compile Include="Domain\Catalog\SpecificationAttribute.cs" />
     <Compile Include="Domain\Catalog\SpecificationAttributeOption.cs" />
     <Compile Include="Domain\Catalog\TierPrice.cs" />
-    <Compile Include="IO\FileSystemSettings.cs" />
     <Compile Include="Domain\Customers\PasswordFormat.cs" />
     <Compile Include="HttpSecurityMode.cs" />
     <Compile Include="RouteInfo.cs" />

@@ -185,9 +185,6 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.SeoFriendlyUrlsForLanguagesEnabled")]
             public bool SeoFriendlyUrlsForLanguagesEnabled { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.LoadAllLocaleRecordsOnStartup")]
-            public bool LoadAllLocaleRecordsOnStartup { get; set; }
-
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.DefaultLanguageRedirectBehaviour")]
             public DefaultLanguageRedirectBehaviour DefaultLanguageRedirectBehaviour { get; set; }
 

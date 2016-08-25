@@ -54,7 +54,7 @@ namespace SmartStore.Services.DataExchange.Export
 			string profileSystemName = null,
 			int cloneFromProfileId = 0)
 		{
-			Guard.ArgumentNotEmpty(() => providerSystemName);
+			Guard.NotEmpty(providerSystemName, nameof(providerSystemName));
 
 			var profileCount = _exportProfileRepository.Table.Count(x => x.ProviderSystemName == providerSystemName);
 
@@ -116,6 +116,7 @@ namespace SmartStore.Services.DataExchange.Export
 						CriticalCharacters = "¼,½,¾",
 						PriceType = PriceDisplayType.PreSelectedPrice,
 						NoGroupedProducts = (features.HasFlag(ExportFeatures.CanOmitGroupedProducts) ? true : false),
+						OnlyIndividuallyVisibleAssociated = true,
 						DescriptionMerging = ExportDescriptionMerging.Description
 					};
 
@@ -144,11 +145,11 @@ namespace SmartStore.Services.DataExchange.Export
 				.Replace("/", "")
 				.Replace("-", "");
 
-			profile.FolderName = SeoHelper.GetSeName(cleanedSystemName, true, false)
+			var folderName = SeoHelper.GetSeName(cleanedSystemName, true, false)
 				.ToValidPath()
 				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 
-			profile.FolderName = FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath("~/App_Data/ExportProfiles"), profile.FolderName);
+			profile.FolderName = "~/App_Data/ExportProfiles/" + FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath("~/App_Data/ExportProfiles"), folderName);
 
 			if (profileSystemName.IsEmpty() && isSystemProfile)
 				profile.SystemName = cleanedSystemName;
@@ -167,13 +168,15 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					if (features.HasFlag(ExportFeatures.CreatesInitialPublicDeployment))
 					{
+						var subFolder = FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath("~/" + DataExporter.PublicFolder), folderName);
+
 						profile.Deployments.Add(new ExportDeployment
 						{
 							ProfileId = profile.Id,
 							Enabled = true,
-							IsPublic = true,
-							DeploymentType = ExportDeploymentType.FileSystem,
-							Name = profile.Name
+							DeploymentType = ExportDeploymentType.PublicFolder,
+							Name = profile.Name,
+							SubFolder = subFolder
 						});
 
 						UpdateExportProfile(profile);
@@ -201,7 +204,7 @@ namespace SmartStore.Services.DataExchange.Export
 			string profileSystemName = null,
 			int cloneFromProfileId = 0)
 		{
-			Guard.ArgumentNotNull(() => provider);
+			Guard.NotNull(provider, nameof(provider));
 
 			var profile = InsertExportProfile(
 				provider.Metadata.SystemName,
@@ -220,9 +223,7 @@ namespace SmartStore.Services.DataExchange.Export
 			if (profile == null)
 				throw new ArgumentNullException("profile");
 
-			profile.FolderName = profile.FolderName
-				.ToValidPath()
-				.Truncate(_dataExchangeSettings.MaxFileNameLength);
+			profile.FolderName = FileSystemHelper.ValidateRootPath(profile.FolderName);
 
 			_exportProfileRepository.Update(profile);
 
@@ -340,6 +341,16 @@ namespace SmartStore.Services.DataExchange.Export
 				.FirstOrDefault(x => x.Id == id);
 
 			return deployment;
+		}
+
+		public virtual void UpdateExportDeployment(ExportDeployment deployment)
+		{
+			if (deployment == null)
+				throw new ArgumentNullException("deployment");
+
+			_exportDeploymentRepository.Update(deployment);
+
+			_eventPublisher.EntityUpdated(deployment);
 		}
 
 		public virtual void DeleteExportDeployment(ExportDeployment deployment)

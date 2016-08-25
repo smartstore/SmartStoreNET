@@ -45,7 +45,8 @@ namespace SmartStore.Services.Tests.Orders
         TaxSettings _taxSettings;
         RewardPointsSettings _rewardPointsSettings;
         ICategoryService _categoryService;
-        IProductAttributeParser _productAttributeParser;
+		IManufacturerService _manufacturerService;
+		IProductAttributeParser _productAttributeParser;
 		IProductService _productService;
 		IProductAttributeService _productAttributeService;
         IPriceCalculationService _priceCalcService;
@@ -82,6 +83,7 @@ namespace SmartStore.Services.Tests.Orders
             //price calculation service
             _discountService = MockRepository.GenerateMock<IDiscountService>();
             _categoryService = MockRepository.GenerateMock<ICategoryService>();
+			_manufacturerService = MockRepository.GenerateMock<IManufacturerService>();
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
 			_productService = MockRepository.GenerateMock<IProductService>();
 			_productAttributeService = MockRepository.GenerateMock<IProductAttributeService>();
@@ -136,8 +138,8 @@ namespace SmartStore.Services.Tests.Orders
 
             _rewardPointsSettings = new RewardPointsSettings();
 
-			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings,
-				_productAttributeService, _downloadService, _services, _httpRequestBase, _taxService);
+			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _manufacturerService, _productAttributeParser, _productService,
+				_shoppingCartSettings, _catalogSettings, _productAttributeService, _downloadService, _services, _httpRequestBase, _taxService);
 
 			_orderTotalCalcService = new OrderTotalCalculationService(_workContext, _storeContext,
                 _priceCalcService, _taxService, _shippingService, _providerManager,
@@ -189,6 +191,7 @@ namespace SmartStore.Services.Tests.Orders
 			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
+			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToManufacturers)).Return(new List<Discount>());
 
 			decimal discountAmount;
 			Discount appliedDiscount;
@@ -252,6 +255,7 @@ namespace SmartStore.Services.Tests.Orders
 			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
+			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToManufacturers)).Return(new List<Discount>());
 
 			decimal discountAmount;
 			Discount appliedDiscount;
@@ -325,6 +329,7 @@ namespace SmartStore.Services.Tests.Orders
 			_discountService.Expect(ds => ds.IsDiscountValid(discount1, customer)).Return(true);
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToOrderSubTotal)).Return(new List<Discount> { discount1 });
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
+			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToManufacturers)).Return(new List<Discount>());
 
 			decimal discountAmount;
 			Discount appliedDiscount;
@@ -401,6 +406,7 @@ namespace SmartStore.Services.Tests.Orders
 			_discountService.Expect(ds => ds.IsDiscountValid(discount1, customer)).Return(true);
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToOrderSubTotal)).Return(new List<Discount> { discount1 });
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
+			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToManufacturers)).Return(new List<Discount>());
 
 			decimal discountAmount;
 			Discount appliedDiscount;
@@ -1005,6 +1011,7 @@ namespace SmartStore.Services.Tests.Orders
 			//_paymentService.Expect(ps => ps.GetAdditionalHandlingFee(cart, "test1")).Return(20);
 
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
+			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToManufacturers)).Return(new List<Discount>());
 
 			//56 - items, 10 - shipping (fixed), 20 - payment fee = 86
 			//56 - items, 10 - shipping (fixed) = 66
@@ -1360,6 +1367,7 @@ namespace SmartStore.Services.Tests.Orders
 			_discountService.Expect(ds => ds.IsDiscountValid(discount1, customer)).Return(true);
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToOrderTotal)).Return(new List<Discount>() { discount1 });
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
+			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToManufacturers)).Return(new List<Discount>());
 
 
 			//_genericAttributeService.Expect(x => x.GetAttributesForEntity(customer.Id, "Customer"))

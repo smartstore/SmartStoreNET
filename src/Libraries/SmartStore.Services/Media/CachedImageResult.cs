@@ -31,9 +31,9 @@ namespace SmartStore.Services.Media
         /// </summary>
         public string Path { get; set; }
 
-        /// <summary>
-        /// The local (physical) full path
-        /// </summary>
-        public string LocalPath { get; set; }
+        ///// <summary>
+        ///// The local (physical) full path
+        ///// </summary>
+        //public string LocalPath { get; set; }
     }
 }

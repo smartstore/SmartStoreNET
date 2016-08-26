@@ -11,7 +11,6 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public abstract class NavigationItemBuilder<TItem, TBuilder> : IHideObjectMembers
         where TItem : NavigationItem
         where TBuilder : NavigationItemBuilder<TItem, TBuilder>
@@ -178,7 +177,6 @@ namespace SmartStore.Web.Framework.UI
         {
             return this.Item;
         }
-
     }
 
     public abstract class NavigationItemtWithContentBuilder<TItem, TBuilder> : NavigationItemBuilder<TItem, TBuilder>

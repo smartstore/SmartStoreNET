@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SmartStore.Core.Search
 {
@@ -12,5 +13,7 @@ namespace SmartStore.Core.Search
 		bool GetBoolean(string name);
 		string GetString(string name);
 		DateTime GetDateTime(string name);
+
+		IEnumerable<string> GetStoredFieldNames();
 	}
 }

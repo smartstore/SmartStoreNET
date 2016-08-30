@@ -8,11 +8,11 @@ namespace SmartStore.Core.Search
 {
 	public interface IIndexDocument : IEnumerable<IndexField>
 	{
+		int Id { get; }
 		int Count { get; }
 		void Add(IndexField field);
 		int Remove(string name);
 		bool Contains(string name);
-		IndexField this[int index] { get; }
 		IEnumerable<IndexField> this[string name] { get; }
 	}
 

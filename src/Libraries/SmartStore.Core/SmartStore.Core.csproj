@@ -199,7 +199,6 @@
     <Compile Include="Extensions\XPathExtensions.cs" />
     <Compile Include="Fakes\FakeController.cs" />
     <Compile Include="IActivatable.cs" />
-    <Compile Include="Indexing\ISearchEngine.cs" />
     <Compile Include="Infrastructure\ContextState.cs" />
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeAccessor.cs" />
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeProvider.cs" />
@@ -388,14 +387,17 @@
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="Plugins\LoadPluginResult.cs" />
+    <Compile Include="Search\DefaultIndexManager.cs" />
     <Compile Include="Search\IIndexDocument.cs" />
+    <Compile Include="Search\IIndexManager.cs" />
     <Compile Include="Search\IIndexProvider.cs" />
     <Compile Include="Search\IIndexStore.cs" />
+    <Compile Include="Search\IndexDocument.cs" />
     <Compile Include="Search\IndexField.cs" />
+    <Compile Include="Search\IndexProviderBase.cs" />
     <Compile Include="Search\ISearchBits.cs" />
     <Compile Include="Search\ISearchEngine.cs" />
     <Compile Include="Search\ISearchHit.cs" />
-    <Compile Include="Search\ISearchQuery.cs" />
     <Compile Include="Search\NullIndexStore.cs" />
     <Compile Include="Search\SearchFilter.cs" />
     <Compile Include="Search\SearchQuery.cs" />
@@ -631,9 +633,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\ObjectSignatureAttribute.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Indexing\Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

@@ -125,7 +125,9 @@
                                     $(".qty-input").TouchSpin({
                                         min: @Model.AddToCart.MinOrderAmount,
                                         max: @Model.AddToCart.MaxOrderAmount,
-                                        step: 1
+                                        step: 1,
+                                        buttondown_class: "btn btn-secondary",
+                                        buttonup_class: "btn btn-secondary"
                                     });
                                 });
                             </script>

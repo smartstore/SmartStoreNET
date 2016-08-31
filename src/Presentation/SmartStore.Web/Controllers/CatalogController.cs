@@ -1076,6 +1076,7 @@ namespace SmartStore.Web.Controllers
 			JsonRequestBehavior.AllowGet);
 		}
 
+        // TODO: NewAlpha delete 
 		public ActionResult FlyoutCompare()
 		{
 			var model = new CompareProductsModel

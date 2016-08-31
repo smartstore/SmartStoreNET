@@ -8,7 +8,7 @@
     @RenderSection("teaser", required: false)
 }
 
-<div id="content-left" class="col-md-3"> 
+<div id="content-left" class="col-md-3 hidden-xs-down"> 
     @if (IsSectionDefined("left"))
     {
         @RenderSection("left")

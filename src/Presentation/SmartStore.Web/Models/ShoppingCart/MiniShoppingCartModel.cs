@@ -37,6 +37,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public string ProductName { get; set; }
 
+            public string ShortDesc { get; set; }
+
             public string ProductSeName { get; set; }
 
 			public string ProductUrl { get; set; }

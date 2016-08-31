@@ -365,6 +365,7 @@
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
     <Compile Include="Models\Common\EntityPickerModel.cs" />
     <Compile Include="Models\ShoppingCart\ButtonPaymentMethodModel.cs" />
+    <Compile Include="Models\ShoppingCart\OffCanvasCartModel.cs" />
     <Compile Include="Models\Topics\TopicWidgetModel.cs" />
     <Compile Include="Models\Common\AddressModel.cs" />
     <Compile Include="Models\Common\FooterModel.cs" />
@@ -1386,6 +1387,7 @@
     <Content Include="Themes\NewAlpha\Scripts\jquery.sortable.js" />
     <Content Include="Themes\NewAlpha\Scripts\jquery.transit.js" />
     <Content Include="Themes\NewAlpha\Scripts\jquery.validate.unobtrusive.custom.js" />
+    <Content Include="Themes\NewAlpha\Scripts\offcanvas.js" />
     <Content Include="Themes\NewAlpha\Scripts\prettify.js" />
     <Content Include="Themes\NewAlpha\Scripts\public.ajaxcart.js" />
     <Content Include="Themes\NewAlpha\Scripts\public.common.js" />
@@ -1393,6 +1395,7 @@
     <Content Include="Themes\NewAlpha\Scripts\public.product-filter.js" />
     <Content Include="Themes\NewAlpha\Scripts\public.product-list-scroller.js" />
     <Content Include="Themes\NewAlpha\Scripts\public.reviews.js" />
+    <Content Include="Themes\NewAlpha\Scripts\public.offcanvas-cart.js" />
     <Content Include="Themes\NewAlpha\Scripts\public.shopbar.js" />
     <Content Include="Themes\NewAlpha\Scripts\public.voting.js" />
     <Content Include="Themes\NewAlpha\Scripts\select2.js" />
@@ -1801,6 +1804,7 @@
     <Content Include="Themes\NewAlpha\Content\shared\select2\theme\default\layout.scss" />
     <Content Include="Themes\NewAlpha\Content\shared\select2\theme\default\_multiple.scss" />
     <Content Include="Themes\NewAlpha\Content\shared\select2\theme\default\_single.scss" />
+    <Content Include="Themes\NewAlpha\Content\shared\offcanvas.scss" />
     <None Include="Themes\NewAlpha\Content\_login.scss" />
     <None Include="Themes\NewAlpha\Content\theme.scss">
       <Compile>True</Compile>
@@ -2030,6 +2034,11 @@
     <None Include="Themes\NewAlpha\Content\_pages.scss" />
     <Content Include="Themes\NewAlpha\Content\_rating.scss" />
     <Content Include="Themes\NewAlpha\Views\Common\ServiceMenu.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\OffCanvasCart.cshtml" />
+    <Content Include="Themes\NewAlpha\Content\_cart.scss" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\OffCanvasShoppingCart.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\OffCanvasWishlist.cshtml" />
+    <Content Include="Themes\NewAlpha\Views\ShoppingCart\OffCanvasCompare.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Themes\NewAlpha\Content\shared\select2\mixins\" />

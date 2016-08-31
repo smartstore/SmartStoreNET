@@ -5,60 +5,71 @@
 @Html.Widget("body_start_html_tag_after")
 @Html.Partial("_Notifications")
 <div id="page">
+    <div class="canvas-blocker canvas-slidable"></div>
 
-    @if (IsSectionDefined("header"))
-    {
-        @RenderSection("header")
-    }
-    else {
-        <header>
-			<div class="menubar-section">
-				<div class="container menubar-container">
-					@Html.Action("Header", "Common", new { area = "" })
-				</div>
-			</div>
-			<div class="shopbar-section">
-				<div class="container shopbar-container">
-					@Html.Action("ShopBar", "Common", new { area = "" })
-				</div>
-			</div>
-            <div class="megamenu-section m-b-1">
-				<nav class='navbar @(GetThemeVariable<bool>("InverseNavbar") ? "navbar-dark bg-inverse" : "navbar-light bg-faded")'>
-					<div class="container megamenu-container">
-						@Html.Action("MegaMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" })
-					</div>
-				</nav>
-			</div>
-        </header>
-    }
+    <div class="page-main canvas-slidable">
 
-    @Html.Action("JavaScriptDisabledWarning", "Common", new { area = "" })
+        @if (IsSectionDefined("header"))
+        {
+            @RenderSection("header")
+        }
+        else
+        {
+            <header>
+                <div class="menubar-section">
+                    <div class="container menubar-container">
+                        @Html.Action("Header", "Common", new { area = "" })
+                    </div>
+                </div>
+                <div class="shopbar-section">
+                    <div class="container shopbar-container">
+                        @Html.Action("ShopBar", "Common", new { area = "" })
+                    </div>
+                </div>
+                <div class="megamenu-section m-b-1">
+                    <nav class='navbar @(GetThemeVariable<bool>("InverseNavbar") ? "navbar-dark bg-inverse" : "navbar-light bg-faded")'>
+                        <div class="container megamenu-container">
+                            @Html.Action("MegaMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" })
+                        </div>
+                    </nav>
+                </div>
+            </header>
+        }
 
-    <div id="content-wrapper">
+        @Html.Action("JavaScriptDisabledWarning", "Common", new { area = "" })
 
-        <!-- Terms of service -->
-        <section id="content" class="container drop-shadow lifted">
-            @Html.Widget("content_before")
-            @RenderSection("teaser", required: false)
-            <div id="content-body" class="row">
-                @RenderBody()
-                @Html.Widget("content_after")
+        <div id="content-wrapper">
+
+            <!-- Terms of service -->
+            <section id="content" class="container drop-shadow lifted">
+                @Html.Widget("content_before")
+                @RenderSection("teaser", required: false)
+                <div id="content-body" class="row">
+                    @RenderBody()
+                    @Html.Widget("content_after")
+                </div>
+            </section>
+        </div>
+
+        @if (IsSectionDefined("footer"))
+        {
+            @RenderSection("footer")
+        }
+        else
+        {
+            <div id="footer-wrapper">
+                <footer class="container">
+                    @Html.Action("Footer", "Common", new { area = "" })
+                </footer>
             </div>
-        </section>
+        }
     </div>
 
-    @if (IsSectionDefined("footer"))
-    {
-        @RenderSection("footer")
-    }
-    else
-    {
-        <div id="footer-wrapper">
-			<footer class="container">
-				@Html.Action("Footer", "Common", new { area = "" })
-			</footer>
+    <aside id="offcanvas-cart" class="offcanvas offcanvas-push offcanvas-right">
+        <div class="offcanvas-content">
+            @Html.Action("OffCanvasCart", "ShoppingCart")
         </div>
-    }
+    </aside>
 
 </div>
 @Html.Widget("body_end_html_tag_before")

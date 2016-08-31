@@ -67,6 +67,7 @@ $card-border-color:         rgba(0,0,0, 0.12);*/
 @import "shared/_sortable-grip.scss";
 @import "shared/_utils.scss";
 @import "shared/select2/core.scss";
+@import "shared/offcanvas.scss";
 
 // Main
 @import "_shopbar.scss";
@@ -79,3 +80,24 @@ $card-border-color:         rgba(0,0,0, 0.12);*/
 @import "_login.scss";
 @import "_rating.scss";
 @import "_product.scss";
+@import "_cart.scss";
+
+html {
+    width: 100%;
+    height: 100%;
+}
+
+body { 
+    background: $body-bg;
+}
+
+#page {
+    background: $body-bg;
+    overflow-x: hidden;
+}
+
+.page-main {
+    position: relative;
+    z-index: 1;
+    background: $body-bg;
+} 

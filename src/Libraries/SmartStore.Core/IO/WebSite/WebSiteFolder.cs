@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Hosting;
 using System.IO;
-using SmartStore.Core.IO.VirtualPath;
 
-namespace SmartStore.Core.IO.WebSite
+namespace SmartStore.Core.IO
 {
-
     public class WebSiteFolder : IWebSiteFolder
     {
         private readonly IVirtualPathProvider _virtualPathProvider;
@@ -17,7 +14,12 @@ namespace SmartStore.Core.IO.WebSite
             _virtualPathProvider = virtualPathProvider;
         }
 
-        public IEnumerable<string> ListDirectories(string virtualPath)
+		public string Combine(params string[] paths)
+		{
+			return _virtualPathProvider.Combine(paths);
+		}
+
+		public IEnumerable<string> ListDirectories(string virtualPath)
         {
             if (!_virtualPathProvider.DirectoryExists(virtualPath))
             {
@@ -50,18 +52,7 @@ namespace SmartStore.Core.IO.WebSite
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public string ReadFile(string virtualPath)
         {
-            if (!_virtualPathProvider.FileExists(virtualPath))
-            {
-                return null;
-            }
-
-            using (var stream = _virtualPathProvider.OpenFile(Normalize(virtualPath)))
-            {
-                using (var reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
-            }
+			return _virtualPathProvider.ReadFile(virtualPath);
         }
 
         public void CopyFileTo(string virtualPath, Stream destination)
@@ -77,5 +68,4 @@ namespace SmartStore.Core.IO.WebSite
 			return _virtualPathProvider.Normalize(virtualPath);
         }
     }
-
 }

@@ -22,8 +22,6 @@ using SmartStore.Core.Fakes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.IO;
-using SmartStore.Core.IO.VirtualPath;
-using SmartStore.Core.IO.WebSite;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Packaging;
@@ -783,8 +781,10 @@ namespace SmartStore.Web.Framework
 			// We may need this later in decorator classes as a kind of fallback.
 			builder.RegisterType<LocalFileSystem>().Named<IFileSystem>("local").SingleInstance();
 
-			builder.RegisterType<DefaultVirtualPathProvider>().As<IVirtualPathProvider>().InstancePerRequest();
-			builder.RegisterType<WebSiteFolder>().As<IWebSiteFolder>().InstancePerRequest();
+			builder.RegisterType<DefaultVirtualPathProvider>().As<IVirtualPathProvider>().SingleInstance();
+			builder.RegisterType<WebSiteFolder>().As<IWebSiteFolder>().SingleInstance();
+
+			builder.RegisterType<LockFileManager>().As<ILockFileManager>().SingleInstance();
 		}
 	}
 

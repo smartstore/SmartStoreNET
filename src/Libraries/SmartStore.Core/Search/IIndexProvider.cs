@@ -9,7 +9,8 @@ namespace SmartStore.Core.Search
 	public interface IIndexProvider
 	{
 		/// <summary>
-		/// Enumerates all existing indexes names
+		/// Enumerates the names of all existing indexes. 
+		/// A name is required for the <see cref="GetIndexStore(string)"/> method.
 		/// </summary>
 		IEnumerable<string> EnumerateIndexes();
 
@@ -36,7 +37,7 @@ namespace SmartStore.Core.Search
 		/// </summary>
 		/// <param name="store">The index store</param>
 		/// <param name="query">The query to execute against the store</param>
-		/// <returns>The search engine</returns>
+		/// <returns>The search engine instance</returns>
 		ISearchEngine GetSearchEngine(IIndexStore store, SearchQuery query);
 	}
 }

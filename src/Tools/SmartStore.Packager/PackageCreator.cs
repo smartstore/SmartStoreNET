@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using SmartStore.Core.IO.VirtualPath;
-using SmartStore.Core.IO.WebSite;
+using SmartStore.Core.IO;
 using SmartStore.Core.Packaging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Themes;
 
 namespace SmartStore.Packager
-{
-	
+{	
 	internal class PackageCreator
 	{
 		private readonly IVirtualPathProvider _vpp;
@@ -113,5 +108,4 @@ namespace SmartStore.Packager
 			return fileInfo;
 		}
 	}
-
 }

@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartStore.Core.Search
 {
 	public class DefaultIndexManager : IIndexManager
 	{
-		private readonly IEnumerable<IIndexProvider> _providers;
+		private readonly IEnumerable<Lazy<IIndexProvider>> _providers;
 
-		public DefaultIndexManager(IEnumerable<IIndexProvider> providers)
+		public DefaultIndexManager(IEnumerable<Lazy<IIndexProvider>> providers)
 		{
 			_providers = providers;
 		}
@@ -20,9 +18,9 @@ namespace SmartStore.Core.Search
 			return _providers.Any();
 		}
 
-		public IIndexProvider GetProvider()
+		public IIndexProvider GetIndexProvider()
 		{
-			return _providers.FirstOrDefault();
+			return _providers.FirstOrDefault()?.Value;
 		}
 
 

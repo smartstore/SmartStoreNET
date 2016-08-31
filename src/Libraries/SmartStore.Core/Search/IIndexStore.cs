@@ -1,19 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartStore.Core.Search
 {
-	public enum IndexingStatus
-	{
-		Rebuilding,
-		Updating,
-		Idle,
-		Unavailable
-	}
-
 	public interface IIndexStore
 	{
 		/// <summary>
@@ -35,32 +24,6 @@ namespace SmartStore.Core.Search
 		/// Checks whether the index is already existing or not
 		/// </summary>
 		bool Exists { get; }
-
-		IndexingStatus Status { get; }
-
-		/// <summary>
-		/// Gets the date of the last index operation, or <c>null</c>
-		/// if the index has never been processed before.
-		/// </summary>
-		/// <returns>A UTC datetime object</returns>
-		DateTime? GetLastIndexedUtc();
-
-		void SetLastIndexedUtc(DateTime date);
-
-		/// <summary>
-		/// Checks whether the index is locked.
-		/// </summary>
-		/// <remarks>
-		/// An index is locked when it is currently being written to
-		/// </remarks>
-		bool IsLocked { get; }
-
-		/// <summary>
-		/// Tries to acquire a lock for atomic write operations 
-		/// </summary>
-		/// <param name="lockObj">A special disposable object which releases the lock implicitly on dispose, or <c>null</c> when the lock could not be acquired.</param>
-		/// <returns><c>true</c> when a lock could be acquired successfully, or <c>false</c> when a lock is already is being held by another thread/process.</returns>
-		bool TryAcquireLock(out IDisposable lockObj);
 
 		/// <summary>
 		/// Gets the total number of indexed documents

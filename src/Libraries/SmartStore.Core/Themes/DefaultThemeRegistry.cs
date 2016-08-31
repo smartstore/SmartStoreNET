@@ -10,7 +10,7 @@ using System.Threading;
 using SmartStore.Collections;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.IO.WebSite;
+using SmartStore.Core.IO;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Themes

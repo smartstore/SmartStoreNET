@@ -6,11 +6,8 @@ using SmartStore.Core.Plugins;
 using SmartStore.Core.Themes;
 using NuGet;
 using NuGetPackageBuilder = NuGet.PackageBuilder;
-using System.Xml.Linq;
-using SmartStore.Core.IO.WebSite;
+using SmartStore.Core.IO;
 using System.Runtime.Versioning;
-using System.Net.Mime;
-using SmartStore.Core.IO.VirtualPath;
 
 namespace SmartStore.Core.Packaging
 {

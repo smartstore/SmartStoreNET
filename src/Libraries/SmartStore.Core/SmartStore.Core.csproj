@@ -207,6 +207,10 @@
     <Compile Include="Infrastructure\ApplicationEnvironment.cs" />
     <Compile Include="Infrastructure\IApplicationEnvironment.cs" />
     <Compile Include="IO\IFileSystemExtensions.cs" />
+    <Compile Include="IO\LockFile\ILockFile.cs" />
+    <Compile Include="IO\LockFile\ILockFileManager.cs" />
+    <Compile Include="IO\LockFile\LockFile.cs" />
+    <Compile Include="IO\LockFile\LockFileManager.cs" />
     <Compile Include="ITransient.cs" />
     <Compile Include="Collections\MostRecentlyUsedList.cs" />
     <Compile Include="Localization\LocalizationHelper.cs" />

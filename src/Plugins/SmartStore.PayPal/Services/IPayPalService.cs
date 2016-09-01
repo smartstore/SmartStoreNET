@@ -36,6 +36,12 @@ namespace SmartStore.PayPal.Services
 			string returnUrl,
 			string cancelUrl);
 
+		PayPalResponse PatchShipping(
+			PayPalApiSettingsBase settings,
+			PayPalSessionData session,
+			List<OrganizedShoppingCartItem> cart,
+			string providerSystemName);
+
 		PayPalResponse ExecutePayment(PayPalApiSettingsBase settings, PayPalSessionData session);
 
 		PayPalResponse Refund(PayPalApiSettingsBase settings, PayPalSessionData session, RefundPaymentRequest request);

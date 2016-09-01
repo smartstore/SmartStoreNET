@@ -1,5 +1,9 @@
 ﻿#Release Notes
 
+##Paypal 2.6.0.2
+###Bugfixes
+* PayPal PLUS: Integration review through PayPal
+
 ##PayPal 2.6.0.1
 ###Improvements
 * Added PayPal partner attribution Id as request header

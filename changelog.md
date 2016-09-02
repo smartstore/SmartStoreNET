@@ -12,6 +12,7 @@
 * Payone: Replace client API by Payone iFrame solution. Allows credit card payment compliant with PCI DSS, SAQ A.
 * Updated Elmar shop info XML from version 1.1 to 2.0
 * #1008 Export: Add support for description projection to all product exporting providers
+* #1015 Implement Entity Picker in discount requirements
 
 ### New Features
 * Added option to skip shipping method selection in checkout process when only one shipping method is active
@@ -30,6 +31,7 @@
 * GMC: Associated products that are not individually visible are not exported anymore. GMC rejects them because the frontend redirects to the grouped product.
 * #999 Export: Projected customer id ignored during price calculation
 * Awarded reward points for a placed order sometimes wrong calculated
+* PayPal PLUS: A changed shipping address/costs was not transmitted to PayPal
 
 
 ## SmartStore.NET 2.6

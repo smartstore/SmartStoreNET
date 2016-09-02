@@ -291,8 +291,6 @@
     <Compile Include="IO\IFolder.cs" />
     <Compile Include="IO\IFileSystem.cs" />
     <Compile Include="IO\MimeTypes.cs" />
-    <Compile Include="IO\WebSite\IWebSiteFolder.cs" />
-    <Compile Include="IO\WebSite\WebSiteFolder.cs" />
     <Compile Include="ISoftDeletable.cs" />
     <Compile Include="IStoreContext.cs" />
     <Compile Include="Linq\Expanders\IPathExpander.cs" />

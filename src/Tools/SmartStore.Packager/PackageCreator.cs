@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
+using SmartStore.Core;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.IO;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Packaging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Themes;
@@ -20,9 +23,7 @@ namespace SmartStore.Packager
 			_outputPath = outputPath;
 
 			_vpp = new RootedVirtualPathProvider(rootPath);
-			var wsf = new WebSiteFolder(_vpp);
-
-			_packageBuilder = new PackageBuilder(wsf);
+			_packageBuilder = new PackageBuilder(new ApplicationEnvironment(_vpp, new Work<ILogger>(x => NullLogger.Instance)));
 		}
 
 		public FileInfo CreatePluginPackage(string path)

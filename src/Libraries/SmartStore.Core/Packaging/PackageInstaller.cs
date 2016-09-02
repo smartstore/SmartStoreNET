@@ -191,7 +191,6 @@ namespace SmartStore.Core.Packaging
 
 		public void Uninstall(string packageId, string applicationFolder)
 		{
-
 			string extensionFullPath = string.Empty;
 
 			if (packageId.StartsWith(PackagingUtils.GetExtensionPrefix("Theme")))

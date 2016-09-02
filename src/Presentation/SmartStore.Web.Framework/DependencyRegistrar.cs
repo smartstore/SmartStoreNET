@@ -755,7 +755,7 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			// register theming services
-			builder.Register<DefaultThemeRegistry>(x => new DefaultThemeRegistry(x.Resolve<IEventPublisher>(), null, null, true)).As<IThemeRegistry>().SingleInstance();
+			builder.Register<DefaultThemeRegistry>(x => new DefaultThemeRegistry(x.Resolve<IEventPublisher>(), x.Resolve<IApplicationEnvironment>(), null, null, true)).As<IThemeRegistry>().SingleInstance();
 			builder.RegisterType<ThemeFileResolver>().As<IThemeFileResolver>().SingleInstance();
 
 			builder.RegisterType<ThemeContext>().As<IThemeContext>().InstancePerRequest();
@@ -782,8 +782,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<LocalFileSystem>().Named<IFileSystem>("local").SingleInstance();
 
 			builder.RegisterType<DefaultVirtualPathProvider>().As<IVirtualPathProvider>().SingleInstance();
-			builder.RegisterType<WebSiteFolder>().As<IWebSiteFolder>().SingleInstance();
-
 			builder.RegisterType<LockFileManager>().As<ILockFileManager>().SingleInstance();
 		}
 	}

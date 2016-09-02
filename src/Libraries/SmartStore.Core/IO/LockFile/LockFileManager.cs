@@ -7,7 +7,7 @@ namespace SmartStore.Core.IO
 {
 	public class LockFileManager : ILockFileManager
 	{
-		private readonly IVirtualPathProvider _vpp;
+		private readonly IApplicationEnvironment _env;
 		private readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 
 		static LockFileManager()
@@ -15,9 +15,9 @@ namespace SmartStore.Core.IO
 			Expiration = TimeSpan.FromMinutes(10);
 		}
 
-		public LockFileManager(IVirtualPathProvider vpp)
+		public LockFileManager(IApplicationEnvironment env)
 		{
-			_vpp = vpp;
+			_env = env;
 		}
 
 		public static TimeSpan Expiration
@@ -42,7 +42,7 @@ namespace SmartStore.Core.IO
 					return false;
 				}
 
-				lockFile = new LockFile(_vpp, _vpp.Combine("~/App_Data", path), DateTime.UtcNow.ToString("u"), _rwLock);
+				lockFile = new LockFile(_env.AppDataFolder, path, DateTime.UtcNow.ToString("u"), _rwLock);
 				return true;
 			}
 			catch
@@ -74,11 +74,9 @@ namespace SmartStore.Core.IO
 
 		private bool IsLockedInternal(string path)
 		{
-			path = _vpp.Combine("~/App_Data", path);
-
-			if (_vpp.FileExists(path))
+			if (_env.AppDataFolder.FileExists(path))
 			{
-				var content = _vpp.ReadFile(path);
+				var content = _env.AppDataFolder.ReadFile(path);
 
 				DateTime creationUtc;
 				if (DateTime.TryParse(content, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out creationUtc))

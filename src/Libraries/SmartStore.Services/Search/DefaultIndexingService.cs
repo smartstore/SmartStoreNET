@@ -17,20 +17,17 @@ namespace SmartStore.Services.Search
 		private readonly IIndexManager _indexManager;
 		private readonly IEnumerable<IIndexCollector> _collectors;
 		private readonly ILockFileManager _lockFileManager;
-		private readonly IVirtualPathProvider _vpp;
 		private readonly IApplicationEnvironment _env;
 
 		public DefaultIndexingService(
 			IIndexManager indexManager,
 			IEnumerable<IIndexCollector> collectors,
 			ILockFileManager lockFileManager,
-			IVirtualPathProvider vpp,
 			IApplicationEnvironment env)
 		{
 			_indexManager = indexManager;
 			_collectors = collectors;
 			_lockFileManager = lockFileManager;
-			_vpp = vpp;
 			_env = env;
 		}
 
@@ -57,7 +54,7 @@ namespace SmartStore.Services.Search
 			string path = GetStatusFilePath(scope);
 
 			ILockFile lockFile;
-			if (!_lockFileManager.TryAcquireLock(path, out lockFile))
+			if (!_lockFileManager.TryAcquireLock(path + ".lock", out lockFile))
 			{
 				// TODO: throw Exception or get out?
 			}
@@ -91,7 +88,7 @@ namespace SmartStore.Services.Search
 			string path = GetStatusFilePath(scope);
 
 			ILockFile lockFile;
-			if (!_lockFileManager.TryAcquireLock(path, out lockFile))
+			if (!_lockFileManager.TryAcquireLock(path + ".lock", out lockFile))
 			{
 				// TODO: throw Exception or get out?
 			}
@@ -155,14 +152,15 @@ namespace SmartStore.Services.Search
 		{
 			var info = new IndexInfo { Status = store.Exists ? IndexingStatus.Unavailable : IndexingStatus.Idle };
 
-			string path = _vpp.Combine("~/App_Data", GetStatusFilePath(store.Scope));
+			var folder = _env.AppDataFolder;
+			string path = GetStatusFilePath(store.Scope);
 
-			if (_vpp.FileExists(path))
+			if (folder.FileExists(path))
 			{
 				info.Status = IndexingStatus.Idle;
 
-				var xml = _vpp.ReadFile(path);
-
+				var xml = folder.ReadFile(path);
+				
 				try
 				{
 					var doc = XDocument.Parse(xml);
@@ -193,7 +191,7 @@ namespace SmartStore.Services.Search
 		private string GetStatusFilePath(string scope)
 		{
 			var fileName = SeoHelper.GetSeName("{0}-{1}.xml".FormatInvariant(scope, _env.EnvironmentIdentifier), false, false);
-			return _vpp.Combine("Indexing", fileName);
+			return _env.AppDataFolder.Combine("Indexing", fileName);
 		}
 
 		private IIndexCollector GetCollectorFor(string scope)

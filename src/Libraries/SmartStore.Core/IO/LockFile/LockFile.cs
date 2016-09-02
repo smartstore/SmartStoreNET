@@ -8,19 +8,19 @@ namespace SmartStore.Core.IO
 	{
 		private readonly string _path;
 		private readonly string _content;
-		private readonly IVirtualPathProvider _vpp;
+		private readonly IVirtualFolder _folder;
 		private readonly ReaderWriterLockSlim _rwLock;
 		private bool _released;
 
-		public LockFile(IVirtualPathProvider vpp, string path, string content, ReaderWriterLockSlim rwLock)
+		public LockFile(IVirtualFolder folder, string path, string content, ReaderWriterLockSlim rwLock)
 		{
-			_vpp = vpp;
+			_folder = folder;
 			_content = content;
 			_rwLock = rwLock;
 			_path = path;
 
 			// create the physical lock file
-			_vpp.CreateFile(_path, content);
+			_folder.CreateTextFile(_path, content);
 		}
 
 		public void Dispose()
@@ -32,7 +32,7 @@ namespace SmartStore.Core.IO
 		{
 			using (_rwLock.GetWriteLock())
 			{
-				if (_released || !_vpp.FileExists(_path))
+				if (_released || !_folder.FileExists(_path))
 				{
 					// nothing to do, might happen if re-granted or already released
 					return;
@@ -41,10 +41,10 @@ namespace SmartStore.Core.IO
 				_released = true;
 
 				// check it has not been granted in the meantime
-				var current = _vpp.ReadFile(_path);
+				var current = _folder.ReadFile(_path);
 				if (current == _content)
 				{
-					_vpp.DeleteFile(_path);
+					_folder.DeleteFile(_path);
 				}
 			}
 		}

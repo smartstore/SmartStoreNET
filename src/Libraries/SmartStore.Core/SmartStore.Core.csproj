@@ -206,6 +206,10 @@
     <Compile Include="Infrastructure\DependencyManagement\Work.cs" />
     <Compile Include="Infrastructure\ApplicationEnvironment.cs" />
     <Compile Include="Infrastructure\IApplicationEnvironment.cs" />
+    <Compile Include="IO\VirtualPath\DefaultVirtualPathProvider.cs" />
+    <Compile Include="IO\VirtualPath\IVirtualFolder.cs" />
+    <Compile Include="IO\VirtualPath\IVirtualPathProvider.cs" />
+    <Compile Include="IO\VirtualPath\VirtualFolder.cs" />
     <Compile Include="IO\IFileSystemExtensions.cs" />
     <Compile Include="IO\LockFile\ILockFile.cs" />
     <Compile Include="IO\LockFile\ILockFileManager.cs" />
@@ -287,8 +291,6 @@
     <Compile Include="IO\IFolder.cs" />
     <Compile Include="IO\IFileSystem.cs" />
     <Compile Include="IO\MimeTypes.cs" />
-    <Compile Include="IO\VirtualPath\DefaultVirtualPathProvider.cs" />
-    <Compile Include="IO\VirtualPath\IVirtualPathProvider.cs" />
     <Compile Include="IO\WebSite\IWebSiteFolder.cs" />
     <Compile Include="IO\WebSite\WebSiteFolder.cs" />
     <Compile Include="ISoftDeletable.cs" />

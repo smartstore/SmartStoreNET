@@ -21,6 +21,11 @@ namespace SmartStore.Services
 			get;
 		}
 
+		IApplicationEnvironment ApplicationEnvironment
+		{
+			get;
+		}
+
 		ICacheManager Cache 
 		{ 
 			get;

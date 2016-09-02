@@ -370,7 +370,8 @@ namespace SmartStore.Web.Framework
 
 					registration.WithMetadata<HookMetadata>(m => 
 					{ 
-						m.For(em => em.HookedType, hookedType); 
+						m.For(em => em.HookedType, hookedType);
+						m.For(em => em.Important, hookedType.HasAttribute<ImportantAttribute>(false));
 					});
 				}
 

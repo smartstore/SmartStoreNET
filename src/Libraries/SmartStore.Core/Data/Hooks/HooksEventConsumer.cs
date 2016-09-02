@@ -10,25 +10,31 @@ using SmartStore.Core.Events;
 
 namespace SmartStore.Core.Data.Hooks
 {
-
-	public class PreActionHookEvent
+	public abstract class HookEventBase
 	{
 		public IEnumerable<HookedEntityEntry> ModifiedEntries { get; set; }
+		public bool ImportantHooksOnly { get; set; }
+	}
 
+	public class PreActionHookEvent : HookEventBase
+	{
 		/// <summary>
 		/// If set to <c>true</c>, executes hooks that require validation, otherwise executes hooks that do NOT require validation
 		/// </summary>
 		public bool RequiresValidation { get; set; }
 	}
 
-	public class PostActionHookEvent
+	public class PostActionHookEvent : HookEventBase
 	{
-		public IEnumerable<HookedEntityEntry> ModifiedEntries { get; set; }
 	}
 
 	public class HookMetadata
 	{
 		public Type HookedType { get; set; }
+		/// <summary>
+		/// Whether the hook should run in any case, even if hooking has been turned off.
+		/// </summary>
+		public bool Important { get; set; }
 	}
 
 	public class HooksEventConsumer :
@@ -59,7 +65,7 @@ namespace SmartStore.Core.Data.Hooks
 			foreach (var entry in entries)
 			{
 				var e = entry; // Prevents access to modified closure
-				var preHooks = GetPreHookInstancesFor(e.Entity.GetType());
+				var preHooks = GetPreHookInstancesFor(e.Entity.GetType(), eventMessage.ImportantHooksOnly);
 				foreach (var hook in preHooks)
 				{
 					if (hook.CanProcess(e.PreSaveState) && hook.RequiresValidation == eventMessage.RequiresValidation)
@@ -81,15 +87,26 @@ namespace SmartStore.Core.Data.Hooks
 		}
 
 		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-		private IEnumerable<IPreActionHook> GetPreHookInstancesFor(Type hookedType)
+		private IEnumerable<IPreActionHook> GetPreHookInstancesFor(Type hookedType, bool importantOnly = false)
 		{
+			IEnumerable<IPreActionHook> hooks;
+
 			if (_preHooksCache.ContainsKey(hookedType)) 
 			{
-				return _preHooksCache[hookedType];
+				hooks = _preHooksCache[hookedType];
+			}
+			else
+			{
+				hooks = _preHooks.Where(x => x.Metadata.HookedType.IsAssignableFrom(hookedType)).Select(x => x.Value);
+				_preHooksCache.AddRange(hookedType, hooks);
 			}
 
-			var hooks = _preHooks.Where(x => x.Metadata.HookedType.IsAssignableFrom(hookedType)).Select(x => x.Value);
-			_preHooksCache.AddRange(hookedType, hooks);
+			if (importantOnly)
+			{
+				var importantHookTypes = _preHooks.Where(x => x.Metadata.Important == true).Select(x => x.Metadata.HookedType);
+				hooks = hooks.Where(x => importantHookTypes.Contains(x.GetType()));
+			}
+
 			return hooks;
 		}
 
@@ -103,7 +120,7 @@ namespace SmartStore.Core.Data.Hooks
 			foreach (var entry in entries)
 			{
 				var e = entry; // Prevents access to modified closure
-				var postHooks = GetPostHookInstancesFor(e.Entity.GetType());
+				var postHooks = GetPostHookInstancesFor(e.Entity.GetType(), eventMessage.ImportantHooksOnly);
 				foreach (var hook in postHooks)
 				{
 					if (hook.CanProcess(e.PreSaveState))
@@ -119,18 +136,28 @@ namespace SmartStore.Core.Data.Hooks
 			}
 		}
 
-		private IEnumerable<IPostActionHook> GetPostHookInstancesFor(Type hookedType)
+		private IEnumerable<IPostActionHook> GetPostHookInstancesFor(Type hookedType, bool importantOnly = false)
 		{
+			IEnumerable<IPostActionHook> hooks;
+
 			if (_postHooksCache.ContainsKey(hookedType))
 			{
-				return _postHooksCache[hookedType];
+				hooks = _postHooksCache[hookedType];
+			}
+			else
+			{
+				hooks = _postHooks.Where(x => x.Metadata.HookedType.IsAssignableFrom(hookedType)).Select(x => x.Value);
+				_postHooksCache.AddRange(hookedType, hooks);
 			}
 
-			var hooks = _postHooks.Where(x => x.Metadata.HookedType.IsAssignableFrom(hookedType)).Select(x => x.Value);
-			_postHooksCache.AddRange(hookedType, hooks);
+			if (importantOnly)
+			{
+				var importantHookTypes = _postHooks.Where(x => x.Metadata.Important == true).Select(x => x.Metadata.HookedType);
+				hooks = hooks.Where(x => importantHookTypes.Contains(x.GetType()));
+			}
+
 			return hooks;
 		}
 
 	}
-
 }

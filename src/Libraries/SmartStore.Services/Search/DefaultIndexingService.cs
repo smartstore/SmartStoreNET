@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using SmartStore.Core;
 using SmartStore.Core.IO;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
@@ -17,19 +18,25 @@ namespace SmartStore.Services.Search
 		private readonly IIndexManager _indexManager;
 		private readonly IEnumerable<IIndexCollector> _collectors;
 		private readonly ILockFileManager _lockFileManager;
+		private readonly ICommonServices _services;
 		private readonly IApplicationEnvironment _env;
 
 		public DefaultIndexingService(
 			IIndexManager indexManager,
 			IEnumerable<IIndexCollector> collectors,
 			ILockFileManager lockFileManager,
-			IApplicationEnvironment env)
+			ICommonServices services)
 		{
 			_indexManager = indexManager;
 			_collectors = collectors;
 			_lockFileManager = lockFileManager;
-			_env = env;
+			_services = services;
+			_env = services.ApplicationEnvironment;
+
+			Logger = NullLogger.Instance;
 		}
+
+		public ILogger Logger { get; set; }
 
 		public IEnumerable<string> EnumerateScopes()
 		{
@@ -51,10 +58,12 @@ namespace SmartStore.Services.Search
 			if (!_indexManager.HasAnyProvider())
 				return;
 
-			string path = GetStatusFilePath(scope);
+			// TODO: error handling
+
+			var lockFilePath = GetStatusFilePath(scope) + ".lock";
 
 			ILockFile lockFile;
-			if (!_lockFileManager.TryAcquireLock(path + ".lock", out lockFile))
+			if (!_lockFileManager.TryAcquireLock(lockFilePath, out lockFile))
 			{
 				// TODO: throw Exception or get out?
 			}
@@ -82,50 +91,61 @@ namespace SmartStore.Services.Search
 
 			if (collector == null)
 			{
-				// TODO: throw Exception or get out?
+				throw Error.Argument("A collector for indexing scope '{0}' does not exist.".FormatInvariant(scope), nameof(scope));
 			}
 
-			string path = GetStatusFilePath(scope);
+			var lockFilePath = GetStatusFilePath(scope) + ".lock";
 
 			ILockFile lockFile;
-			if (!_lockFileManager.TryAcquireLock(path + ".lock", out lockFile))
+			if (!_lockFileManager.TryAcquireLock(lockFilePath, out lockFile))
 			{
-				// TODO: throw Exception or get out?
+				Logger.Information("Could not build index, because it is already in use."); // TODO: Loc
 			}
 
 			using (lockFile)
 			{
-				// TODO: progress, cancellation, set status
+				// TODO: progress, cancellation, set status, proper error handling
 
 				var provider = _indexManager.GetIndexProvider();
 				var store = provider.GetIndexStore(scope);
 				var info = GetIndexInfo(scope);
+				var startedOnUtc = DateTime.UtcNow;
 
-				if (store.Exists && rebuild)
+				info.Status = rebuild ? IndexingStatus.Rebuilding : IndexingStatus.Updating;
+				SaveStatusFile(info);
+
+				try
 				{
-					store.Delete();
-				}
+					if (store.Exists && rebuild)
+						store.Delete();
+					
+					store.CreateIfNotExists();
 
-				store.CreateIfNotExists();
+					DateTime? lastIndexedUtc = rebuild
+						? null
+						: info.LastIndexedUtc;
 
-				DateTime? lastIndexedUtc = rebuild 
-					? null 
-					: info.LastIndexedUtc;
+					var segmenter = collector.Collect(lastIndexedUtc, (i) => provider.CreateDocument(i));
 
-				var segmenter = collector.Collect(lastIndexedUtc, (i) => provider.CreateDocument(i));
-
-				while (segmenter.ReadNextSegment())
-				{
-					var segment = segmenter.CurrentSegment;
-
-					if (!rebuild)
+					while (segmenter.ReadNextSegment())
 					{
-						var toDelete = segment.Where(x => x.OperationType == IndexOperationType.Delete).Select(x => x.Document.Id);
-						store.DeleteDocuments(toDelete);
-					}
+						var segment = segmenter.CurrentSegment;
 
-					var toIndex = segment.Where(x => x.OperationType == IndexOperationType.Index).Select(x => x.Document);
-					store.SaveDocuments(toIndex);
+						if (!rebuild)
+						{
+							var toDelete = segment.Where(x => x.OperationType == IndexOperationType.Delete).Select(x => x.Document.Id);
+							store.DeleteDocuments(toDelete);
+						}
+
+						var toIndex = segment.Where(x => x.OperationType == IndexOperationType.Index).Select(x => x.Document);
+						store.SaveDocuments(toIndex);
+					}
+				}
+				finally
+				{
+					info.Status = IndexingStatus.Idle;
+					info.LastIndexedUtc = startedOnUtc;
+					SaveStatusFile(info);
 				}
 			}
 		}
@@ -148,44 +168,32 @@ namespace SmartStore.Services.Search
 			return info;
 		}
 
-		private IndexInfo ReadStatusFile(IIndexStore store)
+		private IndexInfo ReadStatusFile(IIndexStore store, string path = null)
 		{
-			var info = new IndexInfo { Status = store.Exists ? IndexingStatus.Unavailable : IndexingStatus.Idle };
+			var info = new IndexInfo();
 
 			var folder = _env.AppDataFolder;
-			string path = GetStatusFilePath(store.Scope);
+			path = path ?? GetStatusFilePath(store.Scope);
 
 			if (folder.FileExists(path))
 			{
-				info.Status = IndexingStatus.Idle;
+				info = IndexInfo.FromXml(folder.ReadFile(path));
+			}
 
-				var xml = folder.ReadFile(path);
-				
-				try
-				{
-					var doc = XDocument.Parse(xml);
-
-					var elLastIndexed = doc.Descendants("last-indexed-utc").FirstOrDefault()?.Value;
-					if (elLastIndexed.HasValue())
-					{
-						info.LastIndexedUtc = elLastIndexed.Convert<DateTime?>()?.ToUniversalTime();
-					}
-
-					var elStatus = doc.Descendants("status").FirstOrDefault()?.Value;
-					if (elStatus.HasValue())
-					{
-						info.Status = elStatus.Convert<IndexingStatus>();
-					}
-				}
-				catch { }
+			if (!store.Exists)
+			{
+				info.Status = IndexingStatus.Unavailable;
 			}
 
 			return info;
 		}
 
-		private void SaveStatusFile(IndexInfo info)
+		private void SaveStatusFile(IndexInfo info, string path = null)
 		{
-			// ...
+			path = path ?? GetStatusFilePath(info.Scope);
+			var xml = info.ToXml();		
+
+			_env.AppDataFolder.CreateTextFile(path, xml);
 		}
 
 		private string GetStatusFilePath(string scope)

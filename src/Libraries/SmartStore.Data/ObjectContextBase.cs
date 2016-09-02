@@ -74,8 +74,8 @@ namespace SmartStore.Data
 			// prevents stack overflow
 			_hookedEntries.AddRange(modifiedEntries);
 
-			var hooksEnabled = this.HooksEnabled && modifiedEntries.Any();
-			if (hooksEnabled)
+			var canHook = modifiedEntries.Any();
+			if (canHook)
 			{
 				modifiedHookEntries = modifiedEntries
 								.Select(x => new HookedEntityEntry
@@ -86,7 +86,7 @@ namespace SmartStore.Data
 								.ToArray();
 
 				// Regardless of validation (possible fixing validation errors too)
-				this.EventPublisher.Publish(new PreActionHookEvent { ModifiedEntries = modifiedHookEntries, RequiresValidation = false });
+				this.EventPublisher.Publish(new PreActionHookEvent { ModifiedEntries = modifiedHookEntries, RequiresValidation = false, ImportantHooksOnly = !this.HooksEnabled });
 			}
 
 			if (this.Configuration.ValidateOnSaveEnabled)
@@ -106,9 +106,9 @@ namespace SmartStore.Data
 				}
 			}
 
-			if (hooksEnabled)
+			if (canHook)
 			{
-				this.EventPublisher.Publish(new PreActionHookEvent { ModifiedEntries = modifiedHookEntries, RequiresValidation = true });
+				this.EventPublisher.Publish(new PreActionHookEvent { ModifiedEntries = modifiedHookEntries, RequiresValidation = true, ImportantHooksOnly = !this.HooksEnabled });
 			}
 
 			modifiedEntries.Each(x => _hookedEntries.Remove(x));
@@ -120,9 +120,9 @@ namespace SmartStore.Data
 		{
 			IgnoreMergedData(modifiedEntries, false);
 
-			if (this.HooksEnabled && modifiedHookEntries != null && modifiedHookEntries.Any())
+			if (modifiedHookEntries != null && modifiedHookEntries.Any())
 			{
-				this.EventPublisher.Publish(new PostActionHookEvent { ModifiedEntries = modifiedHookEntries });
+				this.EventPublisher.Publish(new PostActionHookEvent { ModifiedEntries = modifiedHookEntries, ImportantHooksOnly = !this.HooksEnabled });
 			}
 		}
 

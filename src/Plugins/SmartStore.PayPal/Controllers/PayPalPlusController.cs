@@ -289,37 +289,39 @@ namespace SmartStore.PayPal.Controllers
 
 			model.ThirdPartyFees = sb.ToString();
 
-			if (session.PaymentId.IsEmpty() || session.ApprovalUrl.IsEmpty())
-			{
-				var result = PayPalService.EnsureAccessToken(session, settings);
-				if (result.Success)
-				{
-					var protocol = (store.SslEnabled ? "https" : "http");
-					var returnUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
-					var cancelUrl = Url.Action("CheckoutCancel", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
+			// we must create a new paypal payment each time the payment wall is rendered because otherwise patch payment can fail
+			// with "Item amount must add up to specified amount subtotal (or total if amount details not specified)".
+			session.PaymentId = null;
+			session.ApprovalUrl = null;
 
-					result = PayPalService.CreatePayment(settings, session, cart, PayPalPlusProvider.SystemName, returnUrl, cancelUrl);
-					if (result.Success && result.Json != null)
+			var result = PayPalService.EnsureAccessToken(session, settings);
+			if (result.Success)
+			{
+				var protocol = (store.SslEnabled ? "https" : "http");
+				var returnUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
+				var cancelUrl = Url.Action("CheckoutCancel", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
+
+				result = PayPalService.CreatePayment(settings, session, cart, PayPalPlusProvider.SystemName, returnUrl, cancelUrl);
+				if (result.Success && result.Json != null)
+				{
+					foreach (var link in result.Json.links)
 					{
-						foreach (var link in result.Json.links)
+						if (((string)link.rel).IsCaseInsensitiveEqual("approval_url"))
 						{
-							if (((string)link.rel).IsCaseInsensitiveEqual("approval_url"))
-							{
-								session.PaymentId = result.Id;
-								session.ApprovalUrl = link.href;
-								break;
-							}
+							session.PaymentId = result.Id;
+							session.ApprovalUrl = link.href;
+							break;
 						}
-					}
-					else
-					{
-						model.ErrorMessage = result.ErrorMessage;
 					}
 				}
 				else
 				{
 					model.ErrorMessage = result.ErrorMessage;
 				}
+			}
+			else
+			{
+				model.ErrorMessage = result.ErrorMessage;
 			}
 
 			model.ApprovalUrl = session.ApprovalUrl;

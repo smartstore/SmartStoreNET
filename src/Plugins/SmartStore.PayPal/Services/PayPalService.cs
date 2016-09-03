@@ -45,7 +45,7 @@ namespace SmartStore.PayPal.Services
 		private readonly IPaymentService _paymentService;
 		private readonly IPriceCalculationService _priceCalculationService;
 		private readonly ITaxService _taxService;
-		private readonly Lazy<ICurrencyService> _currencyService;
+		private readonly ICurrencyService _currencyService;
 		private readonly Lazy<IPictureService> _pictureService;
 		private readonly Lazy<CompanyInformationSettings> _companyInfoSettings;
 
@@ -59,7 +59,7 @@ namespace SmartStore.PayPal.Services
 			IPaymentService paymentService,
 			IPriceCalculationService priceCalculationService,
 			ITaxService taxService,
-			Lazy<ICurrencyService> currencyService,
+			ICurrencyService currencyService,
 			Lazy<IPictureService> pictureService,
 			Lazy<CompanyInformationSettings> companyInfoSettings)
 		{
@@ -126,6 +126,7 @@ namespace SmartStore.PayPal.Services
 			var amount = new Dictionary<string, object>();
 			var amountDetails = new Dictionary<string, object>();
 			var language = _services.WorkContext.WorkingLanguage;
+			var currency = _services.WorkContext.WorkingCurrency;
 			var currencyCode = store.PrimaryStoreCurrency.CurrencyCode;
 			var includingTax = (_services.WorkContext.GetTaxDisplayTypeFor(customer, store.Id) == TaxDisplayType.IncludingTax);
 
@@ -138,7 +139,9 @@ namespace SmartStore.PayPal.Services
 
 			var shipping = (_orderTotalCalculationService.GetShoppingCartShippingTotal(cart) ?? decimal.Zero);
 
-			var paymentFee = _paymentService.GetAdditionalHandlingFee(cart, providerSystemName);
+			var additionalHandlingFee = _paymentService.GetAdditionalHandlingFee(cart, providerSystemName);
+			var paymentFeeBase = _taxService.GetPaymentMethodAdditionalFee(additionalHandlingFee, customer);
+			var paymentFee = _currencyService.ConvertFromPrimaryStoreCurrency(paymentFeeBase, currency);
 
 			var total = (_orderTotalCalculationService.GetShoppingCartTotal(cart, out orderDiscountInclTax, out orderAppliedDiscount, out appliedGiftCards,
 				out redeemedRewardPoints, out redeemedRewardPointsAmount) ?? decimal.Zero);
@@ -150,7 +153,7 @@ namespace SmartStore.PayPal.Services
 				decimal unitPrice = _priceCalculationService.GetUnitPrice(item, true);
 				decimal productPrice = _taxService.GetProductPrice(item.Item.Product, unitPrice, includingTax, customer, out unitPriceTaxRate);
 
-				if (items != null)
+				if (items != null && productPrice != decimal.Zero)
 				{
 					var line = new Dictionary<string, object>();
 					line.Add("quantity", item.Item.Quantity);
@@ -168,18 +171,19 @@ namespace SmartStore.PayPal.Services
 
 			if (total != itemsPlusMisc)
 			{
-				if (items != null)
+				var otherAmount = (total - itemsPlusMisc);
+				totalOrderItems += otherAmount;
+
+				if (items != null && otherAmount != decimal.Zero)
 				{
 					// e.g. discount applied to cart total
 					var line = new Dictionary<string, object>();
 					line.Add("quantity", "1");
 					line.Add("name", T("Plugins.SmartStore.PayPal.Other").Text.Truncate(127));
-					line.Add("price", (total - itemsPlusMisc).FormatInvariant());
+					line.Add("price", otherAmount.FormatInvariant());
 					line.Add("currency", currencyCode);
 					items.Add(line);
 				}
-
-				totalOrderItems += (total - itemsPlusMisc);
 			}
 
 			// fill amount object
@@ -417,7 +421,7 @@ namespace SmartStore.PayPal.Services
 
 				try
 				{
-					var currency = _currencyService.Value.GetCurrencyByCode(instruct.AmountCurrencyCode);
+					var currency = _currencyService.GetCurrencyByCode(instruct.AmountCurrencyCode);
 					var format = (currency != null && currency.CustomFormatting.HasValue() ? currency.CustomFormatting : "C");
 
 					amount = instruct.Amount.ToString(format, culture);

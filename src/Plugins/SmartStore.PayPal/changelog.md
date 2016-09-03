@@ -1,6 +1,6 @@
 ﻿#Release Notes
 
-##Paypal 2.6.0.2
+##Paypal 2.6.0.3
 ###Bugfixes
 * PayPal PLUS: Integration review through PayPal
 

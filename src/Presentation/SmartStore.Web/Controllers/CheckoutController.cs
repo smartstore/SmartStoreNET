@@ -771,8 +771,8 @@ namespace SmartStore.Web.Controllers
 			if (!IsValidPaymentForm(paymentMethodProvider.Value, form))
 				return PaymentMethod();
 
-			// save payment data for later use
-			Session["PaymentData"] = form;
+			// save payment data so that the user must not re-enter it
+			form.CopyTo(_httpContext.GetCheckoutState().PaymentData, true);
 
 			return RedirectToAction("Confirm");
         }
@@ -898,7 +898,6 @@ namespace SmartStore.Web.Controllers
 			}
 			finally
 			{
-				_httpContext.Session["PaymentData"] = null;
 				_httpContext.Session["OrderPaymentInfo"] = null;
 				_httpContext.RemoveCheckoutState();
 			}

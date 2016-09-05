@@ -30,6 +30,7 @@ namespace SmartStore.AmazonPay.Services
 	}
 
 
+	[Serializable]
 	public class AmazonPayCheckoutState
 	{
 		public string OrderReferenceId { get; set; }
@@ -132,7 +133,7 @@ namespace SmartStore.AmazonPay.Services
 	}
 
 
-	public enum AmazonPayRequestType : int
+	public enum AmazonPayRequestType
 	{
 		None = 0,
 		ShoppingCart,
@@ -144,28 +145,28 @@ namespace SmartStore.AmazonPay.Services
 		LoginHandler
 	}
 
-	public enum AmazonPayTransactionType : int
+	public enum AmazonPayTransactionType
 	{
 		None = 0,
 		Authorize,
 		AuthorizeAndCapture
 	}
 
-	public enum AmazonPaySaveDataType : int
+	public enum AmazonPaySaveDataType
 	{
 		None = 0,
 		OnlyIfEmpty,
 		Always
 	}
 
-	public enum AmazonPayDataFetchingType : int
+	public enum AmazonPayDataFetchingType
 	{
 		None = 0,
 		Ipn,
 		Polling
 	}
 
-	public enum AmazonPayResultType : int
+	public enum AmazonPayResultType
 	{
 		None = 0,
 		PluginView,
@@ -173,7 +174,7 @@ namespace SmartStore.AmazonPay.Services
 		Unauthorized
 	}
 
-	public enum AmazonPayOrderNote : int
+	public enum AmazonPayOrderNote
 	{
 		FunctionExecuted = 0,
 		Answer,
@@ -182,7 +183,7 @@ namespace SmartStore.AmazonPay.Services
 		BillingAddressCountryNotAllowed
 	}
 
-	public enum AmazonPayMessage : int
+	public enum AmazonPayMessage
 	{
 		MessageTyp = 0,
 		MessageId,

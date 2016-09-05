@@ -739,40 +739,37 @@ namespace SmartStore.Web.Controllers
         [ValidateInput(false)]
         public ActionResult SelectPaymentMethod(string paymentmethod, CheckoutPaymentMethodModel model, FormCollection form)
         {
-            // validation
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+			// validation
+			var storeId = _storeContext.CurrentStore.Id;
+			var customer = _workContext.CurrentCustomer;
+			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
 
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+            if ((customer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
 
             // reward points
 			if (_rewardPointsSettings.Enabled)
 			{
-				_genericAttributeService.SaveAttribute(
-					_workContext.CurrentCustomer,
-					SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, model.UseRewardPoints,
-					_storeContext.CurrentStore.Id);
+				_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, model.UseRewardPoints, storeId);
 			}
 
             // payment method 
             if (String.IsNullOrEmpty(paymentmethod))
                 return PaymentMethod();
 
-			var paymentMethodProvider = _paymentService.LoadPaymentMethodBySystemName(paymentmethod, true, _storeContext.CurrentStore.Id);
+			var paymentMethodProvider = _paymentService.LoadPaymentMethodBySystemName(paymentmethod, true, storeId);
 			if (paymentMethodProvider == null)
                 return PaymentMethod();
 
             // save
-			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, _storeContext.CurrentStore.Id);
+			_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, storeId);
 
 			// validate info
 			if (!IsValidPaymentForm(paymentMethodProvider.Value, form))
-			{
 				return PaymentMethod();
-			}
 
 			// save payment data for later use
 			Session["PaymentData"] = form;

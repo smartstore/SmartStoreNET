@@ -158,6 +158,7 @@ namespace SmartStore.Services.Payments
     }
 
 
+	[Serializable]
 	public partial class CustomPaymentRequestValue
 	{
 		/// <summary>

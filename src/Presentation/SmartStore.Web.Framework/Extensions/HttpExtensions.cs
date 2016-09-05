@@ -132,7 +132,7 @@ namespace SmartStore
 
         public static RouteData GetRouteData(this HttpContextBase httpContext)
         {
-            Guard.ArgumentNotNull(() => httpContext);
+            Guard.NotNull(httpContext, nameof(httpContext));
 
             var handler = httpContext.Handler as MvcHandler;
             if (handler != null && handler.RequestContext != null)
@@ -151,8 +151,8 @@ namespace SmartStore
 
 		public static CheckoutState GetCheckoutState(this HttpContextBase httpContext)
 		{
-			Guard.ArgumentNotNull(() => httpContext);
-			
+			Guard.NotNull(httpContext, nameof(httpContext));
+
 			var state = httpContext.Session.SafeGetValue<CheckoutState>(CheckoutState.CheckoutStateSessionKey);
 
 			if (state != null)
@@ -166,7 +166,7 @@ namespace SmartStore
 
 		public static void RemoveCheckoutState(this HttpContextBase httpContext)
 		{
-			Guard.ArgumentNotNull(() => httpContext);
+			Guard.NotNull(httpContext, nameof(httpContext));
 
 			httpContext.Session.SafeRemove(CheckoutState.CheckoutStateSessionKey);
 		}
@@ -260,7 +260,8 @@ namespace SmartStore
 
 		public static IDisposable PreviewModeCookie(this HttpContextBase context)
 		{
-			var disposable = new ActionDisposable(() => {
+			var disposable = new ActionDisposable(() =>
+			{
 				var cookie = GetPreviewModeCookie(context, false);
 				if (cookie != null)
 				{

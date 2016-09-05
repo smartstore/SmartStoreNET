@@ -378,7 +378,7 @@ namespace SmartStore.Services.Media
         {
 			var url = PrepareGetPictureUrl(picture, targetSize, showDefaultPicture, storeLocation, defaultPictureType);
 
-			if (url.IsEmpty())
+			if (url.IsEmpty() && picture != null)
 			{
 				url = GetProcessedImageUrl(
 					picture,
@@ -400,7 +400,7 @@ namespace SmartStore.Services.Media
 		{
 			var url = PrepareGetPictureUrl(picture, targetSize, showDefaultPicture, storeLocation, defaultPictureType);
 
-			if (url.IsEmpty())
+			if (url.IsEmpty() && picture != null)
 			{
 				return GetProcessedImageUrlAsync(
 					picture,

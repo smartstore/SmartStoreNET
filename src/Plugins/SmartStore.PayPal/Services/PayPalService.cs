@@ -1114,6 +1114,7 @@ namespace SmartStore.PayPal.Services
 		public string Id { get; set; }
 	}
 
+	[Serializable]
 	public class PayPalSessionData
 	{
 		public PayPalSessionData()
@@ -1130,6 +1131,7 @@ namespace SmartStore.PayPal.Services
 		public PayPalPaymentInstruction PaymentInstruction { get; set; }
 	}
 
+	[Serializable]
 	public class PayPalPaymentInstruction
 	{
 		public string ReferenceNumber { get; set; }

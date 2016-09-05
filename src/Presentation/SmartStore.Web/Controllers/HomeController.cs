@@ -125,7 +125,6 @@ namespace SmartStore.Web.Controllers
 				FullName = _services.WorkContext.CurrentCustomer.GetFullName(),
 				DisplayCaptcha = _captchaSettings.Value.Enabled && _captchaSettings.Value.ShowOnContactUsPage,
                 DisplayPrivacyAgreement = _customerSettings.Value.DisplayPrivacyAgreementOnContactUs
-
 			};
 
 			return View(model);

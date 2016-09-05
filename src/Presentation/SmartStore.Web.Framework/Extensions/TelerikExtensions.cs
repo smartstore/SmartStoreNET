@@ -4,15 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
-using SmartStore.Core;
-using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Localization;
-using SmartStore.Core.Plugins;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Helpers;
-using SmartStore.Services.Localization;
-using SmartStore.Web.Framework.Localization;
 using Telerik.Web.Mvc;
 using Telerik.Web.Mvc.Extensions;
 using Telerik.Web.Mvc.UI.Fluent;
@@ -22,8 +13,18 @@ namespace SmartStore.Web.Framework
 	[Serializable]
 	public class GridStateInfo
 	{
-		public GridState State { get; set; }
+		public GridStateInfo.GridState State { get; set; }
 		public string Path { get; set; }
+
+		[Serializable]
+		public class GridState
+		{
+			public string Filter { get; set; }
+			public string GroupBy { get; set; }
+			public string OrderBy { get; set; }
+			public int Page { get; set; }
+			public int Size { get; set; }
+		}
 	}
 
 	public static class TelerikExtensions

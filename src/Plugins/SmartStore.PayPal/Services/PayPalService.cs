@@ -1144,16 +1144,19 @@ namespace SmartStore.PayPal.Services
 
 		public RecipientBankingInstruction RecipientBanking { get; set; }
 
+		[JsonIgnore]
 		public bool IsManualBankTransfer
 		{
 			get { return Type.IsCaseInsensitiveEqual("MANUAL_BANK_TRANSFER"); }
 		}
 
+		[JsonIgnore]
 		public bool IsPayUponInvoice
 		{
 			get { return Type.IsCaseInsensitiveEqual("PAY_UPON_INVOICE"); }
 		}
 
+		[Serializable]
 		public class RecipientBankingInstruction
 		{
 			public string BankName { get; set; }

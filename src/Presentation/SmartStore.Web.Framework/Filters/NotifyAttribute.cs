@@ -15,6 +15,9 @@ namespace SmartStore.Web.Framework.Filters
 
 		public virtual void OnResultExecuting(ResultExecutingContext filterContext)
 		{
+			if (filterContext.IsChildAction)
+				return;
+
 			if (Notifier == null || !Notifier.Entries.Any())
 				return;
 

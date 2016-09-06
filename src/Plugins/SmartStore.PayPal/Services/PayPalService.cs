@@ -41,7 +41,6 @@ namespace SmartStore.PayPal.Services
 		private readonly IOrderService _orderService;
 		private readonly IOrderProcessingService _orderProcessingService;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
-		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IPaymentService _paymentService;
 		private readonly IPriceCalculationService _priceCalculationService;
 		private readonly ITaxService _taxService;
@@ -55,7 +54,6 @@ namespace SmartStore.PayPal.Services
 			IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
 			IOrderTotalCalculationService orderTotalCalculationService,
-			IGenericAttributeService genericAttributeService,
 			IPaymentService paymentService,
 			IPriceCalculationService priceCalculationService,
 			ITaxService taxService,
@@ -68,7 +66,6 @@ namespace SmartStore.PayPal.Services
 			_orderService = orderService;
 			_orderProcessingService = orderProcessingService;
 			_orderTotalCalculationService = orderTotalCalculationService;
-			_genericAttributeService = genericAttributeService;
 			_paymentService = paymentService;
 			_priceCalculationService = priceCalculationService;
 			_taxService = taxService;
@@ -632,7 +629,7 @@ namespace SmartStore.PayPal.Services
 						if (result.ErrorMessage.IsEmpty())
 							result.ErrorMessage = webResponse.StatusDescription;
 
-						LogError(null, result.ErrorMessage, result.Json == null ? null : result.Json.ToString(), false);
+						LogError(null, result.ErrorMessage, string.Concat(data.NaIfEmpty(), "\r\n\r\n", result.Json == null ? "" : result.Json.ToString()), false);
 					}
 				}
 			}
@@ -702,8 +699,6 @@ namespace SmartStore.PayPal.Services
 			var customer = _services.WorkContext.CurrentCustomer;
 
 			//var dateOfBirth = customer.GetAttribute<DateTime?>(SystemCustomerAttributeNames.DateOfBirth);
-
-			_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, PayPalPlusProvider.SystemName, store.Id);
 
 			var data = new Dictionary<string, object>();
 			var redirectUrls = new Dictionary<string, object>();

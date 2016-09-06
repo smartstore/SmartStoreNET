@@ -41,8 +41,8 @@ namespace SmartStore.Services.DataExchange.Csv
 		/// <param name="reader">A <see cref="T:TextReader"/> pointing to the CSV file.</param>
 		public CsvDataReader(TextReader reader, CsvConfiguration configuration)
 		{
-			Guard.ArgumentNotNull(() => reader);
-			Guard.ArgumentNotNull(() => configuration);
+			Guard.NotNull(reader, nameof(reader));
+			Guard.NotNull(configuration, nameof(configuration));
 
 			this.Configuration = configuration;
 

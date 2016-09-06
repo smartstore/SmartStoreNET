@@ -10,7 +10,7 @@ using System.Threading;
 using SmartStore.Collections;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.IO.WebSite;
+using SmartStore.Core.IO;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Themes
@@ -22,6 +22,7 @@ namespace SmartStore.Core.Themes
 		private readonly bool _enableMonitoring;
 		private readonly string _themesBasePath;
 		private readonly IEventPublisher _eventPublisher;
+		private readonly IApplicationEnvironment _env;
 		private readonly ConcurrentDictionary<string, ThemeManifest> _themes = new ConcurrentDictionary<string, ThemeManifest>(StringComparer.InvariantCultureIgnoreCase);
 		private readonly ConcurrentDictionary<EventThrottleKey, Timer> _eventQueue = new ConcurrentDictionary<EventThrottleKey, Timer>();
 
@@ -34,11 +35,12 @@ namespace SmartStore.Core.Themes
 
 		#region Constructors
 
-		public DefaultThemeRegistry(IEventPublisher eventPublisher, bool? enableMonitoring, string themesBasePath, bool autoLoadThemes)
+		public DefaultThemeRegistry(IEventPublisher eventPublisher, IApplicationEnvironment env, bool? enableMonitoring, string themesBasePath, bool autoLoadThemes)
         {
 			this._enableMonitoring = enableMonitoring ?? CommonHelper.GetAppSetting("sm:MonitorThemesFolder", true);
-			this._themesBasePath = themesBasePath.NullEmpty() ?? CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/").EnsureEndsWith("/");
 			this._eventPublisher = eventPublisher;
+			this._env = env;
+			this._themesBasePath = themesBasePath.NullEmpty() ?? _env.ThemesFolder.RootPath;
 
 			if (autoLoadThemes)
 			{
@@ -212,16 +214,16 @@ namespace SmartStore.Core.Themes
 		{
 			_themes.Clear();
 			
-			var folder = EngineContext.Current.Resolve<IWebSiteFolder>();
+			var folder = _env.ThemesFolder;
 			var folderDatas = new List<ThemeFolderData>();
-			var dirs = folder.ListDirectories(_themesBasePath);
+			var dirs = folder.ListDirectories("");
 
 			// create folder (meta)datas first
 			foreach (var path in dirs)
 			{
 				try
 				{
-					var folderData = ThemeManifest.CreateThemeFolderData(CommonHelper.MapPath(path), _themesBasePath);
+					var folderData = ThemeManifest.CreateThemeFolderData(folder.MapPath(path), _themesBasePath);
 					if (folderData != null)
 					{
 						folderDatas.Add(folderData);

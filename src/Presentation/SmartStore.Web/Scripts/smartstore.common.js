@@ -76,11 +76,16 @@
 		}
 		else if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
 			var textarea = document.createElement('textarea'),
-				focusElement = document.activeElement;
+				elFocus = document.activeElement,
+				elContext = elFocus || document.body;
 
 			textarea.textContent = text;
 			textarea.style.position = 'fixed';
-			document.body.appendChild(textarea);
+			textarea.style.width = '10px';
+			textarea.style.height = '10px';
+
+			elContext.appendChild(textarea);
+
 			textarea.focus();
 			textarea.setSelectionRange(0, textarea.value.length);
 
@@ -90,9 +95,9 @@
 			catch (e) {
 			}
 			finally {
-				document.body.removeChild(textarea);
-				if (focusElement) {
-					focusElement.focus();
+				elContext.removeChild(textarea);
+				if (elFocus) {
+					elFocus.focus();
 				}
 			}
 		}

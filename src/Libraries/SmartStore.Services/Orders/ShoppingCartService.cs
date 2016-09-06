@@ -150,9 +150,7 @@ namespace SmartStore.Services.Orders
             _sciRepository.Delete(shoppingCartItem);
 
             //validate checkout attributes
-            if (ensureOnlyActiveCheckoutAttributes &&
-                //only for shopping cart items (ignore wishlist)
-                shoppingCartItem.ShoppingCartType == ShoppingCartType.ShoppingCart)
+            if (ensureOnlyActiveCheckoutAttributes && shoppingCartItem.ShoppingCartType == ShoppingCartType.ShoppingCart)
             {
 				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
 
@@ -172,7 +170,9 @@ namespace SmartStore.Services.Orders
 					.ToList();
 
 				foreach (var cartItem in childCartItems)
+				{
 					DeleteShoppingCartItem(cartItem, resetCheckoutData, ensureOnlyActiveCheckoutAttributes, false);
+				}
 			}
         }
 

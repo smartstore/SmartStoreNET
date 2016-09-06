@@ -78,6 +78,7 @@ namespace SmartStore
             {
                 return (string.Compare(type.FullName, "System.Xml.Linq.XElement", StringComparison.Ordinal) == 0);
             }
+			
             return true;
         }
 

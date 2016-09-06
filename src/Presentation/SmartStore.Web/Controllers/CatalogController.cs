@@ -209,7 +209,7 @@ namespace SmartStore.Web.Controllers
 					
                     // prepare picture model
                     int pictureSize = _mediaSettings.CategoryThumbPictureSize;
-					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, x.Id, pictureSize, true, _services.WorkContext.WorkingLanguage.Id, _services.WebHelper.IsCurrentConnectionSecured(), _services.StoreContext.CurrentStore.Id);
+					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, x.Id, pictureSize, true, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
                     subCatModel.PictureModel = _services.Cache.Get(categoryPictureCacheKey, () =>
                     {
 						var picture = _pictureService.GetPictureById(x.PictureId.GetValueOrDefault());
@@ -223,7 +223,7 @@ namespace SmartStore.Web.Controllers
                         };
 
                         return pictureModel;
-                    });
+                    }, TimeSpan.FromHours(6));
 
                     return subCatModel;
                 })
@@ -404,10 +404,11 @@ namespace SmartStore.Web.Controllers
                     //prepare picture model
                     int pictureSize = _mediaSettings.CategoryThumbPictureSize;
 					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, x.Id, pictureSize, true, 
-						_services.WorkContext.WorkingLanguage.Id, _services.WebHelper.IsCurrentConnectionSecured(), _services.StoreContext.CurrentStore.Id);
+						_services.WorkContext.WorkingLanguage.Id, 
+						_services.StoreContext.CurrentStore.Id);
                     catModel.PictureModel = _services.Cache.Get(categoryPictureCacheKey, () =>
                     {
-                        var pictureModel = new PictureModel()
+                        var pictureModel = new PictureModel
                         {
 							PictureId = x.PictureId.GetValueOrDefault(),
 							FullSizeImageUrl = _pictureService.GetPictureUrl(x.PictureId.GetValueOrDefault()),
@@ -416,7 +417,7 @@ namespace SmartStore.Web.Controllers
 							AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), catModel.Name)
                         };
                         return pictureModel;
-                    });
+                    }, TimeSpan.FromHours(6));
 
                     return catModel;
                 })
@@ -620,14 +621,13 @@ namespace SmartStore.Web.Controllers
                         Id = manufacturer.Id,
                         Name = manufacturer.GetLocalized(x => x.Name),
                         SeName = manufacturer.GetSeName(),
-                        PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize,
-							!_catalogSettings.HideManufacturerDefaultPictures),
+                        PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
                         IsActive = currentManufacturer != null && currentManufacturer.Id == manufacturer.Id,
                     };
                     model.Manufacturers.Add(modelMan);
                 }
                 return model;
-            });
+            }, TimeSpan.FromHours(6));
 
 			if (cacheModel.Manufacturers.Count == 0)
 				return Content("");

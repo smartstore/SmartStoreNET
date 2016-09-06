@@ -4,38 +4,37 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using SmartStore.Core;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
-using SmartStore.Core.Domain.Tax;
-using SmartStore.Services.Configuration;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Data;
-using SmartStore.Core.Caching;
+using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
-using SmartStore.Utilities;
-using SmartStore.Core.Domain.Configuration;
-using SmartStore.Data.Setup;
 using SmartStore.Core.Events;
-using SmartStore.Services.Common;
-using SmartStore.Services.Media;
+using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
+using SmartStore.Data;
+using SmartStore.Data.Setup;
+using SmartStore.Services.Common;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
-using System.Data.Entity.Migrations;
-using SmartStore.Data.Migrations;
 using SmartStore.Services.Stores;
-using SmartStore.Core.Domain.Orders;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
-    public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
+	public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
     {
         #region Fields & Constants
 
@@ -44,7 +43,6 @@ namespace SmartStore.Web.Infrastructure.Installation
         private InvariantSeedData _data;
 		private ISettingService _settingService;
 		private IGenericAttributeService _gaService;
-		private IPictureService _pictureService;
 		private ILocalizationService _locService;
 		private IUrlRecordService _urlRecordService;
 		private int _defaultStoreId;
@@ -396,17 +394,59 @@ namespace SmartStore.Web.Infrastructure.Installation
 			Save(product);
         }
 
-		private void MovePictures()
+		private void MoveMedia()
 		{
 			if (!_config.StoreMediaInDB)
 			{
-				// All pictures have initially been stored in the DB.
-				// Move the binaries to disk
-				var pics = _ctx.Set<Picture>().ToList();
+				// All pictures have initially been stored in the DB. Move the binaries to disk.
+				var fileSystemStorageProvider = new FileSystemMediaStorageProvider(new LocalFileSystem());
+				var mediaStorages = _ctx.Set<MediaStorage>();
+
+				// pictures
+				var pics = _ctx.Set<Picture>()
+					.Expand(x => x.MediaStorage)
+					.Where(x => x.MediaStorageId != null)
+					.ToList();
+
 				foreach (var pic in pics)
 				{
-					this.PictureService.UpdatePicture(pic.Id, pic.PictureBinary, pic.MimeType, pic.SeoFilename, pic.IsNew, false);
+					if (pic.MediaStorage != null && pic.MediaStorage.Data != null && pic.MediaStorage.Data.LongLength > 0)
+					{
+						fileSystemStorageProvider.Save(pic.ToMedia(), pic.MediaStorage.Data);
+
+						try
+						{
+							mediaStorages.Remove(pic.MediaStorage);
+						}
+						catch { }
+
+						pic.MediaStorageId = null;
+					}
 				}
+
+				_ctx.SaveChanges();
+
+				// downloads
+				var downloads = _ctx.Set<Download>()
+					.Expand(x => x.MediaStorage)
+					.ToList();
+
+				foreach (var download in downloads)
+				{
+					if (download.MediaStorage != null && download.MediaStorage.Data != null && download.MediaStorage.Data.LongLength > 0)
+					{
+						fileSystemStorageProvider.Save(download.ToMedia(), download.MediaStorage.Data);
+
+						try
+						{
+							mediaStorages.Remove(download.MediaStorage);
+						}
+						catch { }
+
+						download.MediaStorageId = null;
+					}
+				}
+
 				_ctx.SaveChanges();
 			}
 		}
@@ -464,38 +504,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 				}
 
 				return _gaService;
-			}
-		}
-
-		protected IPictureService PictureService
-		{
-			get
-			{
-				if (_pictureService == null)
-				{
-					var rs = new EfRepository<Picture>(_ctx);
-					rs.AutoCommitEnabled = false;
-
-					var rsMap = new EfRepository<ProductPicture>(_ctx);
-					rs.AutoCommitEnabled = false;
-					
-					var mediaSettings = new MediaSettings();
-					var webHelper = new WebHelper(null);
-
-					_pictureService = new PictureService(
-						rs, 
-						rsMap,
-						this.SettingService,
-						webHelper,
-						NullLogger.Instance,
-						NullEventPublisher.Instance,
-						mediaSettings,
-						new ImageResizerService(),
-						new ImageCache(mediaSettings, webHelper, null, null),
-						new Notifier());
-				}
-
-				return _pictureService;
 			}
 		}
 
@@ -561,7 +569,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             // special mandatory (non-visible) settings
 			_ctx.MigrateSettings(x =>
 			{
-				x.Add("Media.Images.StoreInDB", _config.StoreMediaInDB);
+				x.Add("Media.Storage.Provider", _config.StoreMediaInDB ? DatabaseMediaStorageProvider.SystemName : FileSystemMediaStorageProvider.SystemName);
 			});
 
 			Populate("PopulatePictures", _data.Pictures());
@@ -608,7 +616,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				Populate("PopulatePolls", _data.Polls());
             }
 
-			Populate("MovePictures", MovePictures);
+			Populate("MovePictures", MoveMedia);
         }
 
 		public bool RollbackOnFailure

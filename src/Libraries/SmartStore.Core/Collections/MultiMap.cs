@@ -21,20 +21,27 @@ namespace SmartStore.Collections
         private readonly bool _isReadonly = false;
 
         public Multimap()
-            : this(false)
+            : this(false, null)
         {
         }
 
-        internal Multimap(bool threadSafe)
+		public Multimap(IEqualityComparer<TKey> comparer)
+			: this(false, comparer)
+		{
+		}
+
+		public Multimap(bool threadSafe, IEqualityComparer<TKey> comparer)
         {
-            if (threadSafe)
+			comparer = comparer ?? EqualityComparer<TKey>.Default;
+
+			if (threadSafe)
             {
-				_items = new ConcurrentDictionary<TKey, ICollection<TValue>>();
+				_items = new ConcurrentDictionary<TKey, ICollection<TValue>>(comparer);
                 _listCreator = () => new SynchronizedCollection<TValue>();
             }
             else
             {
-				_items = new Dictionary<TKey, ICollection<TValue>>();
+				_items = new Dictionary<TKey, ICollection<TValue>>(comparer);
                 _listCreator = () => new List<TValue>();
             }
         }
@@ -263,11 +270,6 @@ namespace SmartStore.Collections
         }
 
         #region Static members
-
-        public static Multimap<TKey, TValue> ThreadSafe()
-        {
-            return new Multimap<TKey, TValue>(true);
-        }
 
         public static Multimap<TKey, TValue> CreateFromLookup(ILookup<TKey, TValue> source)
         {

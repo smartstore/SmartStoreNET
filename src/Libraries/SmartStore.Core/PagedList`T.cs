@@ -81,8 +81,6 @@ namespace SmartStore.Core
 
         #region IPageable Members
 
-        // codehint: sm-add/edit
-
         public int PageIndex
         {
             get;

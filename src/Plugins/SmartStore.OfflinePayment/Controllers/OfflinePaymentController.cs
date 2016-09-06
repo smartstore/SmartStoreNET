@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using Autofac;
 using FluentValidation;
 using FluentValidation.Results;
-using SmartStore.Core.Localization;
 using SmartStore.OfflinePayment.Models;
 using SmartStore.OfflinePayment.Settings;
 using SmartStore.OfflinePayment.Validators;
 using SmartStore.Services;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
@@ -20,20 +18,17 @@ using SmartStore.Web.Framework.Settings;
 namespace SmartStore.OfflinePayment.Controllers
 {
 
-    public class OfflinePaymentController : PaymentControllerBase
+	public class OfflinePaymentController : PaymentControllerBase
     {
 		private readonly IComponentContext _ctx;
-		private readonly ICommonServices _services;
-		private readonly IStoreService _storeService;
+		private readonly HttpContextBase _httpContext;
 
 		public OfflinePaymentController(
-			ICommonServices services,
-			IStoreService storeService,
+			HttpContextBase httpContext,
 			IComponentContext ctx)
         {
-			this._services = services;
-			this._storeService = storeService;
-			this._ctx = ctx;
+			_httpContext = httpContext;
+			_ctx = ctx;
         }
 
 		#region Global
@@ -57,8 +52,8 @@ namespace SmartStore.OfflinePayment.Controllers
 		{
 			var model = new TModel();
 
-			int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
-			var settings = _services.Settings.LoadSetting<TSetting>(storeScope);
+			int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var settings = Services.Settings.LoadSetting<TSetting>(storeScope);
 
 			model.DescriptionText = settings.DescriptionText;
 			model.AdditionalFee = settings.AdditionalFee;
@@ -70,7 +65,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			}
 
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
+			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, Services.Settings);
 
 			return model;
 		}
@@ -83,8 +78,8 @@ namespace SmartStore.OfflinePayment.Controllers
 			ModelState.Clear();
 
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
-			var settings = _services.Settings.LoadSetting<TSetting>(storeScope);
+			int storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var settings = Services.Settings.LoadSetting<TSetting>(storeScope);
 
 			settings.DescriptionText = model.DescriptionText;
 			settings.AdditionalFee = model.AdditionalFee;
@@ -95,9 +90,9 @@ namespace SmartStore.OfflinePayment.Controllers
 				fn(settings);
 			}
 
-			storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
+			storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
 
-			NotifySuccess(_services.Localization.GetResource("Admin.Common.DataSuccessfullySaved"));
+			NotifySuccess(Services.Localization.GetResource("Admin.Common.DataSuccessfullySaved"));
 		}
 
 		[NonAction]
@@ -140,7 +135,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			{
 				if (type == "Manual")
 				{
-					validator = new ManualPaymentInfoValidator(_services.Localization);
+					validator = new ManualPaymentInfoValidator(Services.Localization);
 					var model = new ManualPaymentInfoModel
 					{
 						CardholderName = form["CardholderName"],
@@ -151,7 +146,7 @@ namespace SmartStore.OfflinePayment.Controllers
 				}
 				else if (type == "DirectDebit")
 				{
-					validator = new DirectDebitPaymentInfoValidator(_services.Localization);
+					validator = new DirectDebitPaymentInfoValidator(Services.Localization);
 					var model = new DirectDebitPaymentInfoModel
 					{
 						EnterIBAN = form["EnterIBAN"],
@@ -401,15 +396,15 @@ namespace SmartStore.OfflinePayment.Controllers
 		public ActionResult DirectDebitPaymentInfo()
 		{
 			var model = PaymentInfoGet<DirectDebitPaymentInfoModel, DirectDebitPaymentSettings>();
+			var paymentData = _httpContext.GetCheckoutState().PaymentData;
 
-			var form = this.GetPaymentData();
-			model.DirectDebitAccountHolder = form["DirectDebitAccountHolder"];
-			model.DirectDebitAccountNumber = form["DirectDebitAccountNumber"];
-			model.DirectDebitBankCode = form["DirectDebitBankCode"];
-			model.DirectDebitBankName = form["DirectDebitBankName"];
-			model.DirectDebitBic = form["DirectDebitBic"];
-			model.DirectDebitCountry = form["DirectDebitCountry"];
-			model.DirectDebitIban = form["DirectDebitIban"];
+			model.DirectDebitAccountHolder = (string)paymentData.Get("DirectDebitAccountHolder");
+			model.DirectDebitAccountNumber = (string)paymentData.Get("DirectDebitAccountNumber");
+			model.DirectDebitBankCode = (string)paymentData.Get("DirectDebitBankCode");
+			model.DirectDebitBankName = (string)paymentData.Get("DirectDebitBankName");
+			model.DirectDebitBic = (string)paymentData.Get("DirectDebitBic");
+			model.DirectDebitCountry = (string)paymentData.Get("DirectDebitCountry");
+			model.DirectDebitIban = (string)paymentData.Get("DirectDebitIban");
 
 			return PartialView(model);
 		}
@@ -490,18 +485,23 @@ namespace SmartStore.OfflinePayment.Controllers
 			}
 
 			// set postback values
-			var form = this.GetPaymentData();
-			model.CardholderName = form["CardholderName"];
-			model.CardNumber = form["CardNumber"];
-			model.CardCode = form["CardCode"];
+			var paymentData = _httpContext.GetCheckoutState().PaymentData;
+			model.CardholderName = (string)paymentData.Get("CardholderName");
+			model.CardNumber = (string)paymentData.Get("CardNumber");
+			model.CardCode = (string)paymentData.Get("CardCode");
 
-			var selectedCcType = model.CreditCardTypes.Where(x => x.Value.Equals(form["CreditCardType"], StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+			var creditCardType = (string)paymentData.Get("CreditCardType");
+			var selectedCcType = model.CreditCardTypes.Where(x => x.Value.Equals(creditCardType, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 			if (selectedCcType != null)
 				selectedCcType.Selected = true;
-			var selectedMonth = model.ExpireMonths.Where(x => x.Value.Equals(form["ExpireMonth"], StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+
+			var expireMonth = (string)paymentData.Get("ExpireMonth");
+			var selectedMonth = model.ExpireMonths.Where(x => x.Value.Equals(expireMonth, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 			if (selectedMonth != null)
 				selectedMonth.Selected = true;
-			var selectedYear = model.ExpireYears.Where(x => x.Value.Equals(form["ExpireYear"], StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+
+			var expireYear = (string)paymentData.Get("ExpireYear");
+			var selectedYear = model.ExpireYears.Where(x => x.Value.Equals(expireYear, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 			if (selectedYear != null)
 				selectedYear.Selected = true;
 
@@ -535,9 +535,9 @@ namespace SmartStore.OfflinePayment.Controllers
         public ActionResult PurchaseOrderNumberPaymentInfo()
         {
             var model = PaymentInfoGet<PurchaseOrderNumberPaymentInfoModel, InvoicePaymentSettings>();
+			var paymentData = _httpContext.GetCheckoutState().PaymentData;
 
-            var form = this.GetPaymentData();
-            model.PurchaseOrderNumber = form["PurchaseOrderNumber"];
+            model.PurchaseOrderNumber = (string)paymentData.Get("PurchaseOrderNumber");
 
             return PartialView("PurchaseOrderNumberPaymentInfo", model);
         }

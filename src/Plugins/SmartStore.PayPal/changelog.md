@@ -1,5 +1,14 @@
 ﻿#Release Notes
 
+##Paypal 2.6.0.3
+###Bugfixes
+* PayPal PLUS: Integration review through PayPal
+* PayPal PLUS: Generic attribute caching problem. Fixes "Item amount must add up to specified amount subtotal (or total if amount details not specified)".
+
+##PayPal 2.6.0.1
+###Improvements
+* Added PayPal partner attribution Id as request header
+
 ##Paypal 2.5.0.2
 ###New Features
 * PayPal PLUS payment provider

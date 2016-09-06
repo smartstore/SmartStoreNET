@@ -423,7 +423,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public JsonResult SetGridState(string gridId, GridState state, string path)
+		public JsonResult SetGridState(string gridId, GridStateInfo.GridState state, string path)
 		{
 			if (gridId.HasValue() && state != null && path.HasValue())
 			{

@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading.Tasks;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Media
 {
-	/// <summary>
-	/// Picture service interface
-	/// </summary>
 	public partial interface IPictureService
     {
         /// <summary>
@@ -21,55 +20,50 @@ namespace SmartStore.Services.Media
 		/// <summary>
 		/// Finds an equal picture by comparing the binary buffer
 		/// </summary>
-		/// <param name="path">The picture to find a duplicate for</param>
-		/// <param name="pictures">The sequence of pictures to seek within for duplicates</param>
-		/// <param name="equalPictureId">Id of equal picture if any</param>
-		/// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
-		byte[] FindEqualPicture(string path, IEnumerable<Picture> pictures, out int equalPictureId);
-
-		/// <summary>
-		/// Finds an equal picture by comparing the binary buffer
-		/// </summary>
 		/// <param name="pictureBinary">Binary picture data</param>
 		/// <param name="pictures">The sequence of pictures to seek within for duplicates</param>
 		/// <param name="equalPictureId">Id of equal picture if any</param>
 		/// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
 		byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> pictures, out int equalPictureId);
-        
-        /// <summary>
-        /// Gets the loaded picture binary depending on picture storage settings
-        /// </summary>
-        /// <param name="picture">Picture</param>
-        /// <returns>Picture binary</returns>
-        byte[] LoadPictureBinary(Picture picture);
+
+		/// <summary>
+		/// Get picture SEO friendly name
+		/// </summary>
+		/// <param name="name">Name</param>
+		/// <returns>Picture SEO name</returns>
+		string GetPictureSeName(string name);
+
+		/// <summary>
+		/// Updates a SEO filename of a picture
+		/// </summary>
+		/// <param name="pictureId">The picture identifier</param>
+		/// <param name="seoFilename">The SEO filename</param>
+		/// <returns>Picture</returns>
+		Picture SetSeoFilename(int pictureId, string seoFilename);
+
+		/// <summary>
+		/// Loads the picture binary from the underlying storage provider
+		/// </summary>
+		/// <param name="picture">Picture</param>
+		/// <returns>Picture binary</returns>
+		byte[] LoadPictureBinary(Picture picture);
+
+		/// <summary>
+		/// Asynchronously loads the picture binary from the underlying storage provider
+		/// </summary>
+		/// <param name="picture">Picture</param>
+		/// <returns>Picture binary</returns>
+		Task<byte[]> LoadPictureBinaryAsync(Picture picture);
+
+		/// <summary>
+		/// Gets the size of a picture
+		/// </summary>
+		/// <param name="picture"></param>
+		/// <returns></returns>
+		Size GetPictureSize(Picture picture);
 
         /// <summary>
-        /// Get picture SEO friendly name
-        /// </summary>
-        /// <param name="name">Name</param>
-        /// <returns>Result</returns>
-        string GetPictureSeName(string name);
-
-        /// <summary>
-        /// Gets the size of a picture
-        /// </summary>
-        /// <param name="picture"></param>
-        /// <returns></returns>
-        Size GetPictureSize(Picture picture);
-
-        /// <summary>
-        /// Gets the default picture URL
-        /// </summary>
-        /// <param name="targetSize">The target picture size (longest side)</param>
-        /// <param name="defaultPictureType">Default picture type</param>
-        /// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
-        /// <returns>Picture URL</returns>
-        string GetDefaultPictureUrl(int targetSize = 0,
-            PictureType defaultPictureType = PictureType.Entity,
-            string storeLocation = null);
-
-        /// <summary>
-        /// Get a picture URL
+        /// Gets a picture URL
         /// </summary>
         /// <param name="pictureId">Picture identifier</param>
         /// <param name="targetSize">The target picture size (longest side)</param>
@@ -77,48 +71,78 @@ namespace SmartStore.Services.Media
         /// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
         /// <param name="defaultPictureType">Default picture type</param>
         /// <returns>Picture URL</returns>
-        string GetPictureUrl(int pictureId,
+        string GetPictureUrl(
+			int pictureId,
             int targetSize = 0,
             bool showDefaultPicture = true,
             string storeLocation = null,
             PictureType defaultPictureType = PictureType.Entity);
 
-        /// <summary>
-        /// Get a picture URL
-        /// </summary>
-        /// <param name="picture">Picture instance</param>
-        /// <param name="targetSize">The target picture size (longest side)</param>
-        /// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
-        /// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
-        /// <param name="defaultPictureType">Default picture type</param>
-        /// <returns>Picture URL</returns>
-        string GetPictureUrl(Picture picture,
+		/// <summary>
+		/// Gets a picture URL asynchronously
+		/// </summary>
+		/// <param name="pictureId">Picture identifier</param>
+		/// <param name="targetSize">The target picture size (longest side)</param>
+		/// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
+		/// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
+		/// <param name="defaultPictureType">Default picture type</param>
+		/// <returns>Picture URL</returns>
+		Task<string> GetPictureUrlAsync(
+			int pictureId,
+			int targetSize = 0,
+			bool showDefaultPicture = true,
+			string storeLocation = null,
+			PictureType defaultPictureType = PictureType.Entity);
+
+		/// <summary>
+		/// Gets a picture URL
+		/// </summary>
+		/// <param name="picture">Picture instance</param>
+		/// <param name="targetSize">The target picture size (longest side)</param>
+		/// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
+		/// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
+		/// <param name="defaultPictureType">Default picture type</param>
+		/// <returns>Picture URL</returns>
+		string GetPictureUrl(
+			Picture picture,
             int targetSize = 0,
             bool showDefaultPicture = true,
             string storeLocation = null,
             PictureType defaultPictureType = PictureType.Entity);
 
-        /// <summary>
-        /// Get a picture local path
-        /// </summary>
-        /// <param name="picture">Picture instance</param>
-        /// <param name="targetSize">The target picture size (longest side)</param>
-        /// <param name="showDefaultPicture">A value indicating whether the default picture should be shown</param>
-        /// <returns></returns>
-        string GetThumbLocalPath(Picture picture, int targetSize = 0, bool showDefaultPicture = true);
+		/// <summary>
+		/// Gets a picture URL asynchronously
+		/// </summary>
+		/// <param name="picture">Picture instance</param>
+		/// <param name="targetSize">The target picture size (longest side)</param>
+		/// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
+		/// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
+		/// <param name="defaultPictureType">Default picture type</param>
+		/// <returns>Picture URL</returns>
+		Task<string> GetPictureUrlAsync(
+			Picture picture,
+			int targetSize = 0,
+			bool showDefaultPicture = true,
+			string storeLocation = null,
+			PictureType defaultPictureType = PictureType.Entity);
 
-        /// <summary>
-        /// Gets a picture
-        /// </summary>
-        /// <param name="pictureId">Picture identifier</param>
-        /// <returns>Picture</returns>
-        Picture GetPictureById(int pictureId);
+		/// <summary>
+		/// Gets the default picture URL
+		/// </summary>
+		/// <param name="targetSize">The target picture size (longest side)</param>
+		/// <param name="defaultPictureType">Default picture type</param>
+		/// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
+		/// <returns>Picture URL</returns>
+		string GetDefaultPictureUrl(int targetSize = 0,
+			PictureType defaultPictureType = PictureType.Entity,
+			string storeLocation = null);
 
-        /// <summary>
-        /// Deletes a picture
-        /// </summary>
-        /// <param name="picture">Picture</param>
-        void DeletePicture(Picture picture);
+		/// <summary>
+		/// Gets a picture
+		/// </summary>
+		/// <param name="pictureId">Picture identifier</param>
+		/// <returns>Picture</returns>
+		Picture GetPictureById(int pictureId);
 
         /// <summary>
         /// Gets a collection of pictures
@@ -137,11 +161,25 @@ namespace SmartStore.Services.Media
         IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn = 0);
 
 		/// <summary>
+		/// Gets a pictures map by product identifiers
+		/// </summary>
+		/// <param name="productIds">The ids of products to retrieve pictures for</param>
+		/// <param name="maxPicturesPerProduct">Max number of pictures to retrieve per product</param>
+		/// <returns>A lookup map of product ids and pictures</returns>
+		Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = 1);
+
+		/// <summary>
 		/// Gets pictures by picture identifier
 		/// </summary>
 		/// <param name="pictureIds">Picture identifier</param>
 		/// <returns>Pictures</returns>
 		IList<Picture> GetPicturesByIds(int[] pictureIds);
+
+		/// <summary>
+		/// Deletes a picture
+		/// </summary>
+		/// <param name="picture">Picture</param>
+		void DeletePicture(Picture picture);
 
 		/// <summary>
 		/// Inserts a picture
@@ -153,31 +191,38 @@ namespace SmartStore.Services.Media
 		/// <param name="isTransient">A value indicating whether the picture is initially in transient state</param>
 		/// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
 		/// <returns>Picture</returns>
-        Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool isTransient = true, bool validateBinary = true);
+		Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool isTransient = true, bool validateBinary = true);
 
-        /// <summary>
-        /// Updates the picture
-        /// </summary>
-        /// <param name="pictureId">The picture identifier</param>
-        /// <param name="pictureBinary">The picture binary</param>
-        /// <param name="mimeType">The picture MIME type</param>
-        /// <param name="seoFilename">The SEO filename</param>
-        /// <param name="isNew">A value indicating whether the picture is new</param>
-        /// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
-        /// <returns>Picture</returns>
-        Picture UpdatePicture(int pictureId, byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true);
+		/// <summary>
+		/// Updates the picture
+		/// </summary>
+		/// <param name="picture">The picture</param>
+		/// <param name="pictureBinary">The picture binary</param>
+		/// <param name="mimeType">The picture MIME type</param>
+		/// <param name="seoFilename">The SEO filename</param>
+		/// <param name="isNew">A value indicating whether the picture is new</param>
+		/// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
+		void UpdatePicture(Picture picture, byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true);
+	}
 
-        /// <summary>
-        /// Updates a SEO filename of a picture
-        /// </summary>
-        /// <param name="pictureId">The picture identifier</param>
-        /// <param name="seoFilename">The SEO filename</param>
-        /// <returns>Picture</returns>
-        Picture SetSeoFilename(int pictureId, string seoFilename);
+	public static class IPictureServiceExtensions
+	{
+		public static Picture UpdatePicture(this IPictureService pictureService, 
+			int pictureId, 
+			byte[] pictureBinary, 
+			string mimeType, 
+			string seoFilename, 
+			bool isNew, 
+			bool validateBinary = true)
+		{
+			var picture = pictureService.GetPictureById(pictureId);
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the images should be stored in data base.
-        /// </summary>
-        bool StoreInDb { get; set; }
-    }
+			if (picture != null)
+			{
+				pictureService.UpdatePicture(picture, pictureBinary, mimeType, seoFilename, isNew, validateBinary);
+			}
+
+			return picture;
+		}
+	}
 }

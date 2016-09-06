@@ -30,8 +30,8 @@ namespace SmartStore.Services.DataExchange.Csv
 
 		public CsvWriter(TextWriter writer, CsvConfiguration configuration)
 		{
-			Guard.ArgumentNotNull(() => writer);
-			Guard.ArgumentNotNull(() => configuration);
+			Guard.NotNull(writer, nameof(writer));
+			Guard.NotNull(configuration, nameof(configuration));
 
 			_writer = writer;
             this.Configuration = configuration;
@@ -53,7 +53,7 @@ namespace SmartStore.Services.DataExchange.Csv
 		/// <param name="fields">The fields to write.</param>
 		public virtual void WriteFields(IEnumerable<string> fields)
 		{
-			Guard.ArgumentNotNull(() => fields);
+			Guard.NotNull(fields, nameof(fields));
 			fields.Each(x => WriteField(x));
 		}
 
@@ -71,7 +71,7 @@ namespace SmartStore.Services.DataExchange.Csv
 		/// <param name="shouldQuote">True to quote the fields, otherwise false.</param>
 		public virtual void WriteFields(IEnumerable<string> fields, bool shouldQuote)
 		{
-			Guard.ArgumentNotNull(() => fields);
+			Guard.NotNull(fields, nameof(fields));
 			fields.Each(x => WriteField(x, shouldQuote));
 		}
 

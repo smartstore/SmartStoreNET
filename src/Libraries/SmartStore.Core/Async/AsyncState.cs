@@ -5,7 +5,6 @@ using System.Threading;
 
 namespace SmartStore.Core.Async
 {
-
 	public class AsyncState
 	{
 		private static readonly AsyncState s_instance = new AsyncState();
@@ -170,5 +169,4 @@ namespace SmartStore.Core.Async
 			}
 		}
 	}
-
 }

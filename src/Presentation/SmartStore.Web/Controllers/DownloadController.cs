@@ -14,44 +14,47 @@ using SmartStore.Web.Framework.Controllers;
 namespace SmartStore.Web.Controllers
 {
 	public partial class DownloadController : PublicControllerBase
-    {
-        private readonly IDownloadService _downloadService;
-        private readonly IProductService _productService;
-        private readonly IOrderService _orderService;
-        private readonly IWorkContext _workContext;
+	{
+		private readonly IDownloadService _downloadService;
+		private readonly IProductService _productService;
+		private readonly IOrderService _orderService;
+		private readonly IWorkContext _workContext;
 
-        private readonly CustomerSettings _customerSettings;
+		private readonly CustomerSettings _customerSettings;
 
-        public DownloadController(
+		public DownloadController(
 			IDownloadService downloadService,
 			IProductService productService,
-            IOrderService orderService,
+			IOrderService orderService,
 			IWorkContext workContext,
 			CustomerSettings customerSettings)
-        {
-            this._downloadService = downloadService;
-            this._productService = productService;
-            this._orderService = orderService;
-            this._workContext = workContext;
-            this._customerSettings = customerSettings;
-        }
-
-		private ActionResult GetFileContentResultFor(Download download, Product product)
 		{
-			if (download.DownloadBinary == null)
-			{
+			this._downloadService = downloadService;
+			this._productService = productService;
+			this._orderService = orderService;
+			this._workContext = workContext;
+			this._customerSettings = customerSettings;
+		}
+
+		private ActionResult GetFileContentResultFor(Download download, Product product, byte[] data)
+		{
+			if (data == null || data.LongLength == 0)
 				return Content(T("Common.Download.NoDataAvailable"));
-			}
 
-			var id = (product != null ? product.Id : download.Id);
-			var fileName = !String.IsNullOrWhiteSpace(download.Filename) ? download.Filename : id.ToString();
-			var contentType = !String.IsNullOrWhiteSpace(download.ContentType) ? download.ContentType : "application/octet-stream";
+			var fileName = (download.Filename.HasValue() ? download.Filename : download.Id.ToString());
+			var contentType = (download.ContentType.HasValue() ? download.ContentType : "application/octet-stream");
 
-			return new FileContentResult(download.DownloadBinary, contentType)
+			return new FileContentResult(data, contentType)
 			{
 				FileDownloadName = fileName + download.Extension
 			};
 		}
+
+		private ActionResult GetFileContentResultFor(Download download, Product product)
+		{
+			return GetFileContentResultFor(download, product, _downloadService.LoadDownloadBinary(download));
+		}
+
 
 		public ActionResult Sample(int id /* productId */)
         {
@@ -114,13 +117,15 @@ namespace SmartStore.Web.Controllers
             }
             else
             {
-                if (download.DownloadBinary == null)
+				var data = _downloadService.LoadDownloadBinary(download);
+
+				if (data == null || data.LongLength == 0)
                     return Content(T("Common.Download.NoDataAvailable"));
 
                 orderItem.DownloadCount++;
                 _orderService.UpdateOrder(order);
 
-				return GetFileContentResultFor(download, product);
+				return GetFileContentResultFor(download, product, data);
             }
         }
 

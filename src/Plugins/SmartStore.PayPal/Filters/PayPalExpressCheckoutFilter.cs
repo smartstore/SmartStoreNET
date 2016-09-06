@@ -38,7 +38,7 @@ namespace SmartStore.PayPal.Filters
 			if (filterContext == null || filterContext.ActionDescriptor == null || filterContext.HttpContext == null || filterContext.HttpContext.Request == null)
 				return;
 
-			var attr = Convert.ToBoolean(filterContext.HttpContext.GetCheckoutState().CustomProperties["PayPalExpressButtonUsed"]);
+			var attr = Convert.ToBoolean(filterContext.HttpContext.GetCheckoutState().CustomProperties.Get("PayPalExpressButtonUsed"));
 
 			//verify paypalexpressprovider was used
 			if (attr == true)
@@ -58,7 +58,8 @@ namespace SmartStore.PayPal.Filters
 				_httpContext.GetCheckoutState().CustomProperties.Remove("PayPalExpressButtonUsed");
 
 				filterContext.Result = new RedirectToRouteResult(
-					new RouteValueDictionary {
+					new RouteValueDictionary
+					{
 						{ "Controller", "Checkout" },
 						{ "Action", "Confirm" },
 						{ "area", null }

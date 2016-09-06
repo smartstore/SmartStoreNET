@@ -13,7 +13,6 @@ namespace SmartStore.Services.Media
     
     public class ImageResizerService : IImageResizerService
     {
-
         static ImageResizerService()
         {
             new PrettyGifs().Install(Config.Current);
@@ -33,9 +32,9 @@ namespace SmartStore.Services.Media
         
         public MemoryStream ResizeImage(Stream source, int? maxWidth = null, int? maxHeight = null, int? quality = 0, object settings = null)
         {
-            Guard.ArgumentNotNull(() => source);
+            Guard.NotNull(source, nameof(source));
 
-            ResizeSettings resizeSettings = ImageResizerUtils.CreateResizeSettings(settings);
+            ResizeSettings resizeSettings = ImageResizerUtil.CreateResizeSettings(settings);
 
             if (quality.HasValue)
                 resizeSettings.Quality = quality.Value;

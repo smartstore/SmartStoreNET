@@ -242,12 +242,8 @@ namespace SmartStore.Services.Orders
 			if (order.RewardPointsWereAdded)
 				return;
 
-			// Truncate increases the risk of inaccuracy of rounding
-            //int points = (int)Math.Truncate((amount ?? order.OrderTotal) / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
-
-			// why are points awarded for OrderTotal? wouldn't be OrderSubtotalInclTax better?
-
-			int points = (int)Math.Round((amount ?? order.OrderTotal) / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
+			// Truncate same as Floor for positive amounts
+			var points = (int)Math.Truncate((amount ?? order.OrderTotal) / _rewardPointsSettings.PointsForPurchases_Amount * _rewardPointsSettings.PointsForPurchases_Points);
             if (points == 0)
                 return;
 
@@ -555,8 +551,12 @@ namespace SmartStore.Services.Orders
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
                     //load shopping cart
-                    if (processPaymentRequest.ShoppingCartItems.Count > 0)
-                        cart = processPaymentRequest.ShoppingCartItems;
+                    if (processPaymentRequest.ShoppingCartItemIds.Count > 0)
+                    {
+                        cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, processPaymentRequest.StoreId)
+                            .Where(x => processPaymentRequest.ShoppingCartItemIds.Contains(x.Item.Id))
+                            .ToList();
+                    }
                     else
                         cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, processPaymentRequest.StoreId);
 

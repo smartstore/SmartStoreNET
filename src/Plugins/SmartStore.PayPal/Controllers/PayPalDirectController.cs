@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.PayPal.Validators;
-using SmartStore.Services;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Controllers;
@@ -18,20 +18,20 @@ namespace SmartStore.PayPal.Controllers
 {
 	public class PayPalDirectController : PayPalControllerBase<PayPalDirectPaymentSettings>
 	{
-        private readonly ICommonServices _services;
+		private readonly HttpContextBase _httpContext;
 
 		public PayPalDirectController(
 			IPaymentService paymentService,
 			IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
 			PaymentSettings paymentSettings, 
-			ICommonServices services) : base(
+			HttpContextBase httpContext) : base(
 				PayPalDirectProvider.SystemName,
 				paymentService,
 				orderService,
 				orderProcessingService)
 		{
-            _services = services;
+			_httpContext = httpContext;
 		}
 
 		private SelectList TransactModeValues(TransactMode selected)
@@ -79,7 +79,7 @@ namespace SmartStore.PayPal.Controllers
 
             model.Copy(settings, false);
 
-			using (_services.Settings.BeginBatch())
+			using (Services.Settings.BeginBatch())
 			{
 				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
 
@@ -141,18 +141,23 @@ namespace SmartStore.PayPal.Controllers
 			}
 
 			//set postback values
-			var form = this.GetPaymentData();
-			model.CardholderName = form["CardholderName"];
-			model.CardNumber = form["CardNumber"];
-			model.CardCode = form["CardCode"];
+			var paymentData = _httpContext.GetCheckoutState().PaymentData;
+			model.CardholderName = (string)paymentData.Get("CardholderName");
+			model.CardNumber = (string)paymentData.Get("CardNumber");
+			model.CardCode = (string)paymentData.Get("CardCode");
 
-			var selectedCcType = model.CreditCardTypes.Where(x => x.Value.Equals(form["CreditCardType"], StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+			var creditCardType = (string)paymentData.Get("CreditCardType");
+			var selectedCcType = model.CreditCardTypes.Where(x => x.Value.Equals(creditCardType, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 			if (selectedCcType != null)
 				selectedCcType.Selected = true;
-			var selectedMonth = model.ExpireMonths.Where(x => x.Value.Equals(form["ExpireMonth"], StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+
+			var expireMonth = (string)paymentData.Get("ExpireMonth");
+			var selectedMonth = model.ExpireMonths.Where(x => x.Value.Equals(expireMonth, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 			if (selectedMonth != null)
 				selectedMonth.Selected = true;
-			var selectedYear = model.ExpireYears.Where(x => x.Value.Equals(form["ExpireYear"], StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+
+			var expireYear = (string)paymentData.Get("ExpireYear");
+			var selectedYear = model.ExpireYears.Where(x => x.Value.Equals(expireYear, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 			if (selectedYear != null)
 				selectedYear.Selected = true;
 

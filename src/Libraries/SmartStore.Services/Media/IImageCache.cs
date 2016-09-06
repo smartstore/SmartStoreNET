@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,29 +21,61 @@ namespace SmartStore.Services.Media
         /// <returns>The image http url</returns>
         string GetImageUrl(string imagePath, string storeLocation = null);
 
-        /// <summary>
-        /// Adds an image to the cache.
-        /// </summary>
-        /// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
-        /// <param name="buffer">The image binary data.</param>
-        void AddImageToCache(CachedImageResult cachedImage, byte[] buffer);
+		/// <summary>
+		/// Processes (resizes) and adds an image to the cache.
+		/// </summary>
+		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
+		/// <param name="source">The image binary data.</param>
+		/// <param name="targetSize">The max size of the target image.</param>
+		/// <returns>The binary buffer of the resized image</returns>
+		byte[] ProcessAndAddImageToCache(CachedImageResult cachedImage, byte[] source, int targetSize);
 
-        /// <summary>
-        /// Gets an instance of the <see cref="CachedImageResult"/> object, which contains information about a cached image.
-        /// </summary>
-        /// <param name="pictureId">The picture id of the image to be resolved.</param>
-        /// <param name="seoFileName">The seo friendly picture name of the image to be resolved.</param>
-        /// <param name="extension">The extension of the image to be resolved.</param>
-        /// <param name="settings">The image processing settings.</param>
-        /// <returns>An instance of the <see cref="CachedImageResult"/> object</returns>
-        /// <remarks>If the requested image does not exist in the cache, the value of the <c>Exists</c> property will be <c>false</c>.</remarks>
-        CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, object settings = null);
+		/// <summary>
+		/// Processes (resizes) and adds an image to the cache asynchronously.
+		/// </summary>
+		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
+		/// <param name="source">The image binary data.</param>
+		/// <param name="targetSize">The max size of the target image.</param>
+		/// <returns>The binary buffer of the resized image</returns>
+		Task<byte[]> ProcessAndAddImageToCacheAsync(CachedImageResult cachedImage, byte[] source, int targetSize);
 
-        /// <summary>
-        /// Deletes all cached images for the given <see cref="Picture"/>
-        /// </summary>
-        /// <param name="picture">The <see cref="Picture"/> for which to delete cached images</param>
-        void DeleteCachedImages(Picture picture);
+		/// <summary>
+		/// Adds an image to the cache.
+		/// </summary>
+		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
+		/// <param name="buffer">The image binary data.</param>
+		void AddImageToCache(CachedImageResult cachedImage, byte[] buffer);
+
+		/// <summary>
+		/// Asynchronously adds an image to the cache.
+		/// </summary>
+		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
+		/// <param name="buffer">The image binary data.</param>
+		Task AddImageToCacheAsync(CachedImageResult cachedImage, byte[] buffer);
+
+		/// <summary>
+		/// Gets an instance of the <see cref="CachedImageResult"/> object, which contains information about a cached image.
+		/// </summary>
+		/// <param name="pictureId">The picture id of the image to be resolved.</param>
+		/// <param name="seoFileName">The seo friendly picture name of the image to be resolved.</param>
+		/// <param name="extension">The extension of the image to be resolved.</param>
+		/// <param name="settings">The image processing settings.</param>
+		/// <returns>An instance of the <see cref="CachedImageResult"/> object</returns>
+		/// <remarks>If the requested image does not exist in the cache, the value of the <c>Exists</c> property will be <c>false</c>.</remarks>
+		CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, object settings = null);
+
+		/// <summary>
+		/// Opens a readonly file stream to the cached image
+		/// </summary>
+		/// <param name="cachedImage">An instance of the <see cref="CachedImageResult"/> object, which is returned by the <c>GetCachedImage()</c> method.</param>
+		/// <returns>File stream</returns>
+		Stream OpenCachedImage(CachedImageResult cachedImage);
+
+		/// <summary>
+		/// Deletes all cached images for the given <see cref="Picture"/>
+		/// </summary>
+		/// <param name="picture">The <see cref="Picture"/> for which to delete cached images</param>
+		void DeleteCachedImages(Picture picture);
 
         /// <summary>
         /// Deletes all cached images (nukes all files in the cache folder)

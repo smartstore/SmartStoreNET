@@ -9,9 +9,18 @@ namespace SmartStore.Data.Mapping.Media
         {
             this.ToTable("Picture");
             this.HasKey(p => p.Id);
-            this.Property(p => p.PictureBinary).IsMaxLength();
-            this.Property(p => p.MimeType).IsRequired().HasMaxLength(40);
+
+#pragma warning disable 612, 618
+			this.Property(p => p.PictureBinary).IsMaxLength();
+#pragma warning restore 612, 618
+
+			this.Property(p => p.MimeType).IsRequired().HasMaxLength(40);
             this.Property(p => p.SeoFilename).HasMaxLength(300);
+
+			HasOptional(x => x.MediaStorage)
+				.WithMany()
+				.HasForeignKey(x => x.MediaStorageId)
+				.WillCascadeOnDelete(false);
         }
     }
 }

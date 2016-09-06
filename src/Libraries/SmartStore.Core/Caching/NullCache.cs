@@ -2,6 +2,7 @@ using System;
 using SmartStore.Utilities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SmartStore.Core.Caching
 {
@@ -36,6 +37,14 @@ namespace SmartStore.Core.Caching
 			return acquirer();
 		}
 
+		public Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null)
+		{
+			if (acquirer == null)
+			{
+				return Task.FromResult(default(T));
+			}
+			return acquirer();
+		}
 
 		public void Set(string key, object value, TimeSpan? duration = null)
 		{

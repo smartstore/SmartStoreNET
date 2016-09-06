@@ -149,9 +149,9 @@ namespace SmartStore.Services.DataExchange.Import
 			IEnumerable<ImportRow<TEntity>> batch,
 			IDictionary<string, Expression<Func<TEntity, string>>> localizableProperties) where TEntity : BaseEntity, ILocalizedEntity
 		{
-			Guard.ArgumentNotNull(() => context);
-			Guard.ArgumentNotNull(() => batch);
-			Guard.ArgumentNotNull(() => localizableProperties);
+			Guard.NotNull(context, nameof(context));
+			Guard.NotNull(batch, nameof(batch));
+			Guard.NotNull(localizableProperties, nameof(localizableProperties));
 
 			// Perf: determine whether our localizable properties actually have 
 			// counterparts in the source BEFORE import batch begins. This way we spare ourself

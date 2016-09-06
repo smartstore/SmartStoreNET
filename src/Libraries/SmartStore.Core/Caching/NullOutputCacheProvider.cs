@@ -7,11 +7,11 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Core.Caching
 {
-	[SystemName("NullOutputCacheProvider")]
+	[SystemName("OutputCacheProvider.Idle")]
 	[FriendlyName("Idle")]
 	public class NullOutputCacheProvider : IOutputCacheProvider
 	{
-		public IPagedList<OutputCacheItem> All(int pageIndex, int pageSize)
+		public IPagedList<OutputCacheItem> All(int pageIndex, int pageSize, bool withContent = false)
 		{
 			return new PagedList<OutputCacheItem>(new List<OutputCacheItem>(), pageIndex, pageSize);
 		}

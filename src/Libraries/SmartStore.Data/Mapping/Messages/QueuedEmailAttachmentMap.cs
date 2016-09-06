@@ -11,7 +11,11 @@ namespace SmartStore.Data.Mapping.Messages
 			this.HasKey(x => x.Id);
 
 			this.Property(x => x.Path).IsOptional().HasMaxLength(1000);
+
+#pragma warning disable 612, 618
 			this.Property(x => x.Data).IsMaxLength();
+#pragma warning restore 612, 618
+
 			this.HasOptional(x => x.File)
 				.WithMany()
 				.HasForeignKey(x => x.FileId)
@@ -24,6 +28,11 @@ namespace SmartStore.Data.Mapping.Messages
 				.WithMany(qe => qe.Attachments)
 				.HasForeignKey(x => x.QueuedEmailId)
 				.WillCascadeOnDelete(true);
+
+			HasOptional(x => x.MediaStorage)
+				.WithMany()
+				.HasForeignKey(x => x.MediaStorageId)
+				.WillCascadeOnDelete(false);
 		}
 	}
 }

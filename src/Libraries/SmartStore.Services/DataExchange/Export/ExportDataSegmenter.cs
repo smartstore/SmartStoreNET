@@ -184,10 +184,7 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			// give provider the opportunity to make something with entity ids
-			if (_loaded != null)
-			{
-				_loaded(_data.AsReadOnly());
-			}
+			_loaded?.Invoke(_data.AsReadOnly());
 
 			return (_data.Count > 0);
 		}

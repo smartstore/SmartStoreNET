@@ -206,8 +206,7 @@ namespace SmartStore.Services.Common
 		/// <param name="storeId">Store identifier; pass 0 if this attribute will be available for all stores</param>
 		public virtual void SaveAttribute<TPropType>(BaseEntity entity, string key, TPropType value, int storeId = 0)
         {
-            if (entity == null)
-                throw new ArgumentNullException("entity");
+			Guard.ArgumentNotNull(() => entity);
 
 			SaveAttribute(entity.Id, key, entity.GetUnproxiedEntityType().Name, value, storeId);
         }
@@ -216,14 +215,11 @@ namespace SmartStore.Services.Common
 		{
 			Guard.NotZero(entityId, nameof(entityId));
 
-			var props = GetAttributesForEntity(entityId, keyGroup)
-				 .Where(x => x.StoreId == storeId)
-				 .ToList();
+			var valueStr = value.Convert<string>();
+			var props = GetAttributesForEntity(entityId, keyGroup);
 
-			var prop = props.FirstOrDefault(ga =>
-				ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); // should be culture invariant
-
-			string valueStr = value.Convert<string>();
+			// should be culture invariant
+			var prop = props.FirstOrDefault(ga => ga.StoreId == storeId && ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
 
 			if (prop != null)
 			{

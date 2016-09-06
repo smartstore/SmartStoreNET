@@ -96,7 +96,7 @@
 
 		var validationSummary = $('#payment-info-validation-summary');
 
-		if (validationSummary.length) {
+		if (validationSummary.length && $.scrollTo) {
 			$.scrollTo(validationSummary, 600, { offset: -100 });
 		}
 

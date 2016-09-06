@@ -176,6 +176,7 @@ namespace SmartStore
 							{
 								download.IsTransient = false;
 								downloadService.UpdateDownload(download);
+
 								selectedAttributes = productAttributeParser.AddProductAttribute(selectedAttributes, attribute, download.DownloadGuid.ToString());
 							}
 						}
@@ -197,13 +198,15 @@ namespace SmartStore
 										DownloadGuid = Guid.NewGuid(),
 										UseDownloadUrl = false,
 										DownloadUrl = "",
-										DownloadBinary = postedFile.InputStream.ToByteArray(),
 										ContentType = postedFile.ContentType,
 										Filename = System.IO.Path.GetFileNameWithoutExtension(postedFile.FileName),
 										Extension = System.IO.Path.GetExtension(postedFile.FileName),
-										IsNew = true
+										IsNew = true,
+										UpdatedOnUtc = DateTime.UtcNow
 									};
-									downloadService.InsertDownload(download);
+
+									downloadService.InsertDownload(download, postedFile.InputStream != null ? postedFile.InputStream.ToByteArray() : null);
+
 									//save attribute
 									selectedAttributes = productAttributeParser.AddProductAttribute(selectedAttributes, attribute, download.DownloadGuid.ToString());
 								}

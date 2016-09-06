@@ -10,7 +10,6 @@ using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public abstract class ComponentBuilder<TComponent, TBuilder> : IHtmlString, IHideObjectMembers 
         where TComponent : Component
         where TBuilder : ComponentBuilder<TComponent, TBuilder>

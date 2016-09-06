@@ -8,7 +8,6 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Core.Async
 {
-
 	public static class AsyncRunner
 	{
 		private static readonly BackgroundWorkHost _host = new BackgroundWorkHost();
@@ -368,5 +367,4 @@ namespace SmartStore.Core.Async
 		}
 
 	}
-
 }

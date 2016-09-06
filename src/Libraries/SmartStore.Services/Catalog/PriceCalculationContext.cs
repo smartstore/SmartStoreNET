@@ -20,12 +20,14 @@ namespace SmartStore.Services.Catalog
 		private Func<int[], Multimap<int, ProductVariantAttributeCombination>> _funcAttributeCombinations;
 		private Func<int[], Multimap<int, TierPrice>> _funcTierPrices;
 		private Func<int[], Multimap<int, ProductCategory>> _funcProductCategories;
+		private Func<int[], Multimap<int, ProductManufacturer>> _funcProductManufacturers;
 		private Func<int[], Multimap<int, Discount>> _funcAppliedDiscounts;
 
 		private LazyMultimap<ProductVariantAttribute> _attributes;
 		private LazyMultimap<ProductVariantAttributeCombination> _attributeCombinations;
 		private LazyMultimap<TierPrice> _tierPrices;
 		private LazyMultimap<ProductCategory> _productCategories;
+		private LazyMultimap<ProductManufacturer> _productManufacturers;
 		private LazyMultimap<Discount> _appliedDiscounts;
 
 		public PriceCalculationContext(IEnumerable<Product> products,
@@ -33,6 +35,7 @@ namespace SmartStore.Services.Catalog
 			Func<int[], Multimap<int, ProductVariantAttributeCombination>> attributeCombinations,
 			Func<int[], Multimap<int, TierPrice>> tierPrices,
 			Func<int[], Multimap<int, ProductCategory>> productCategories,
+			Func<int[], Multimap<int, ProductManufacturer>> productManufacturers,
 			Func<int[], Multimap<int, Discount>> appliedDiscounts)
 		{
 			if (products == null)
@@ -52,6 +55,7 @@ namespace SmartStore.Services.Catalog
 			_funcAttributeCombinations = attributeCombinations;
 			_funcTierPrices = tierPrices;
 			_funcProductCategories = productCategories;
+			_funcProductManufacturers = productManufacturers;
 			_funcAppliedDiscounts = appliedDiscounts;
 		}
 
@@ -65,6 +69,8 @@ namespace SmartStore.Services.Catalog
 				_tierPrices.Clear();
 			if (_productCategories != null)
 				_productCategories.Clear();
+			if (_productManufacturers != null)
+				_productManufacturers.Clear();
 			if (_appliedDiscounts != null)
 				_appliedDiscounts.Clear();
 		}
@@ -114,6 +120,18 @@ namespace SmartStore.Services.Catalog
 					_productCategories = new LazyMultimap<ProductCategory>(keys => _funcProductCategories(keys), _productIds);
 				}
 				return _productCategories;
+			}
+		}
+
+		public LazyMultimap<ProductManufacturer> ProductManufacturers
+		{
+			get
+			{
+				if (_productManufacturers == null)
+				{
+					_productManufacturers = new LazyMultimap<ProductManufacturer>(keys => _funcProductManufacturers(keys), _productIds);
+				}
+				return _productManufacturers;
 			}
 		}
 

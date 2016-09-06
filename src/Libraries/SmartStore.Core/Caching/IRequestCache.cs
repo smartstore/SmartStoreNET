@@ -86,7 +86,11 @@ namespace SmartStore.Core.Caching
 
 		public T Get<T>(string key, Func<T> acquirer)
 		{
-			return default(T);
+			if (acquirer == null)
+			{
+				return default(T);
+			}
+			return acquirer();
 		}
 
 		public void Remove(string key)

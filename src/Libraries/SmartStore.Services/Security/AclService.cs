@@ -115,7 +115,7 @@ namespace SmartStore.Services.Security
 		public virtual IList<AclRecord> GetAclRecordsFor(string entityName, int entityId)
 		{
 			Guard.IsPositive(entityId, nameof(entityId));
-			Guard.ArgumentNotEmpty(() => entityName);
+			Guard.NotEmpty(entityName, nameof(entityName));
 
 			var query = from ur in _aclRecordRepository.Table
 						where ur.EntityId == entityId &&

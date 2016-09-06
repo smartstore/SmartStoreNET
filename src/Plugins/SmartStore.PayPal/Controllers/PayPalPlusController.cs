@@ -194,6 +194,9 @@ namespace SmartStore.PayPal.Controllers
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(storeScope);
+			var oldClientId = settings.ClientId;
+			var oldSecret = settings.Secret;
+			var oldProfileId = settings.ExperienceProfileId;
 
 			var validator = new PayPalPlusConfigValidator(Services.Localization, x =>
 			{
@@ -208,6 +211,15 @@ namespace SmartStore.PayPal.Controllers
 			ModelState.Clear();
 
 			model.Copy(settings, false);
+
+			// credentials changed: reset profile and webhook id to avoid errors
+			if (!oldClientId.IsCaseInsensitiveEqual(settings.ClientId) || !oldSecret.IsCaseInsensitiveEqual(settings.Secret))
+			{
+				if (oldProfileId.IsCaseInsensitiveEqual(settings.ExperienceProfileId))
+					settings.ExperienceProfileId = null;
+
+				settings.WebhookId = null;
+			}
 
 			using (Services.Settings.BeginBatch())
 			{
@@ -277,31 +289,29 @@ namespace SmartStore.PayPal.Controllers
 
 			model.ThirdPartyFees = sb.ToString();
 
-			if (session.PaymentId.IsEmpty() || session.ApprovalUrl.IsEmpty())
-			{
-				var result = PayPalService.EnsureAccessToken(session, settings);
-				if (result.Success)
-				{
-					var protocol = (store.SslEnabled ? "https" : "http");
-					var returnUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
-					var cancelUrl = Url.Action("CheckoutCancel", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
+			// we must create a new paypal payment each time the payment wall is rendered because otherwise patch payment can fail
+			// with "Item amount must add up to specified amount subtotal (or total if amount details not specified)".
+			session.PaymentId = null;
+			session.ApprovalUrl = null;
 
-					result = PayPalService.CreatePayment(settings, session, cart, PayPalPlusProvider.SystemName, returnUrl, cancelUrl);
-					if (result.Success && result.Json != null)
+			var result = PayPalService.EnsureAccessToken(session, settings);
+			if (result.Success)
+			{
+				var protocol = (store.SslEnabled ? "https" : "http");
+				var returnUrl = Url.Action("CheckoutReturn", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
+				var cancelUrl = Url.Action("CheckoutCancel", "PayPalPlus", new { area = Plugin.SystemName }, protocol);
+
+				result = PayPalService.CreatePayment(settings, session, cart, PayPalPlusProvider.SystemName, returnUrl, cancelUrl);
+				if (result.Success && result.Json != null)
+				{
+					foreach (var link in result.Json.links)
 					{
-						foreach (var link in result.Json.links)
+						if (((string)link.rel).IsCaseInsensitiveEqual("approval_url"))
 						{
-							if (((string)link.rel).IsCaseInsensitiveEqual("approval_url"))
-							{
-								session.PaymentId = result.Id;
-								session.ApprovalUrl = link.href;
-								break;
-							}
+							session.PaymentId = result.Id;
+							session.ApprovalUrl = link.href;
+							break;
 						}
-					}
-					else
-					{
-						model.ErrorMessage = result.ErrorMessage;
 					}
 				}
 				else
@@ -309,10 +319,28 @@ namespace SmartStore.PayPal.Controllers
 					model.ErrorMessage = result.ErrorMessage;
 				}
 			}
+			else
+			{
+				model.ErrorMessage = result.ErrorMessage;
+			}
 
 			model.ApprovalUrl = session.ApprovalUrl;
 
 			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult PatchShipping()
+		{
+			var store = Services.StoreContext.CurrentStore;
+			var customer = Services.WorkContext.CurrentCustomer;
+			var settings = Services.Settings.LoadSetting<PayPalPlusPaymentSettings>(store.Id);
+			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
+			var session = HttpContext.GetPayPalSessionData();
+
+			var apiResult = PayPalService.PatchShipping(settings, session, cart, PayPalPlusProvider.SystemName);
+
+			return new JsonResult { Data = new { success = apiResult.Success, error = apiResult.ErrorMessage } };
 		}
 
 		public ActionResult CheckoutCompleted()

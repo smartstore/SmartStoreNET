@@ -49,13 +49,6 @@ namespace SmartStore.Services.Tax
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="addressService">Address service</param>
-        /// <param name="workContext">Work context</param>
-        /// <param name="taxSettings">Tax settings</param>
-        /// <param name="pluginFinder">Plugin finder</param>
         public TaxService(
 			IAddressService addressService,
             IWorkContext workContext,
@@ -450,7 +443,7 @@ namespace SmartStore.Services.Tax
 			if (price == decimal.Zero)
 			{
 				taxRate = decimal.Zero;
-				return taxRate;
+				return decimal.Zero;
 			}
 			
 			taxRate = GetTaxRate(product, taxCategoryId, customer);
@@ -482,108 +475,79 @@ namespace SmartStore.Services.Tax
 
 
 
-        /// <summary>
-        /// Gets shipping price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="customer">Customer</param>
-        /// <returns>Price</returns>
-        public virtual decimal GetShippingPrice(decimal price, Customer customer)
+		public virtual decimal GetShippingPrice(decimal price, Customer customer)
         {
-            bool includingTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
+            var includingTax = (_workContext.TaxDisplayType == TaxDisplayType.IncludingTax);
             return GetShippingPrice(price, includingTax, customer);
         }
 
-        /// <summary>
-        /// Gets shipping price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
-        /// <param name="customer">Customer</param>
-        /// <returns>Price</returns>
         public virtual decimal GetShippingPrice(decimal price, bool includingTax, Customer customer)
         {
-            decimal taxRate = decimal.Zero;
+            var taxRate = decimal.Zero;
             return GetShippingPrice(price, includingTax, customer, out taxRate);
         }
 
-        /// <summary>
-        /// Gets shipping price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
-        /// <param name="customer">Customer</param>
-        /// <param name="taxRate">Tax rate</param>
-        /// <returns>Price</returns>
         public virtual decimal GetShippingPrice(decimal price, bool includingTax, Customer customer, out decimal taxRate)
         {
-            taxRate = decimal.Zero;
+			return GetShippingPrice(price, includingTax, customer, _taxSettings.ShippingTaxClassId, out taxRate);
+		}
 
-            if (!_taxSettings.ShippingIsTaxable)
-            {
-                return price;
-            }
+		public virtual decimal GetShippingPrice(decimal price, bool includingTax, Customer customer, int taxCategoryId, out decimal taxRate)
+		{
+			taxRate = decimal.Zero;
 
-            bool priceIncludesTax = _taxSettings.ShippingPriceIncludesTax;
-            int taxClassId = _taxSettings.ShippingTaxClassId;
-            return GetProductPrice(null, taxClassId, price, includingTax, customer,
-                priceIncludesTax, out taxRate);
-        }
+			if (!_taxSettings.ShippingIsTaxable)
+				return price;
+
+			var result = GetProductPrice(
+				null,
+				taxCategoryId,
+				price,
+				includingTax,
+				customer,
+				_taxSettings.ShippingPriceIncludesTax,
+				out taxRate);
+
+			return result;
+		}
 
 
 
-
-
-        /// <summary>
-        /// Gets payment method additional handling fee
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="customer">Customer</param>
-        /// <returns>Price</returns>
-        public virtual decimal GetPaymentMethodAdditionalFee(decimal price, Customer customer)
+		public virtual decimal GetPaymentMethodAdditionalFee(decimal price, Customer customer)
         {
-            bool includingTax = _workContext.TaxDisplayType == TaxDisplayType.IncludingTax;
+            var includingTax = (_workContext.TaxDisplayType == TaxDisplayType.IncludingTax);
             return GetPaymentMethodAdditionalFee(price, includingTax, customer);
         }
 
-        /// <summary>
-        /// Gets payment method additional handling fee
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
-        /// <param name="customer">Customer</param>
-        /// <returns>Price</returns>
         public virtual decimal GetPaymentMethodAdditionalFee(decimal price, bool includingTax, Customer customer)
         {
-            decimal taxRate = decimal.Zero;
-            return GetPaymentMethodAdditionalFee(price, includingTax,
-                customer, out taxRate);
+            var taxRate = decimal.Zero;
+            return GetPaymentMethodAdditionalFee(price, includingTax, customer, out taxRate);
         }
 
-        /// <summary>
-        /// Gets payment method additional handling fee
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="includingTax">A value indicating whether calculated price should include tax</param>
-        /// <param name="customer">Customer</param>
-        /// <param name="taxRate">Tax rate</param>
-        /// <returns>Price</returns>
-        public virtual decimal GetPaymentMethodAdditionalFee(decimal price, bool includingTax, Customer customer, out decimal taxRate)
+		public virtual decimal GetPaymentMethodAdditionalFee(decimal price, bool includingTax, Customer customer, out decimal taxRate)
+		{
+			return GetPaymentMethodAdditionalFee(price, includingTax, customer, _taxSettings.PaymentMethodAdditionalFeeTaxClassId, out taxRate);
+		}
+
+		public virtual decimal GetPaymentMethodAdditionalFee(decimal price, bool includingTax, Customer customer, int taxCategoryId, out decimal taxRate)
         {
             taxRate = decimal.Zero;
 
             if (!_taxSettings.PaymentMethodAdditionalFeeIsTaxable)
-            {
                 return price;
-            }
 
-            bool priceIncludesTax = _taxSettings.PaymentMethodAdditionalFeeIncludesTax;
-            int taxClassId = _taxSettings.PaymentMethodAdditionalFeeTaxClassId;
-            return GetProductPrice(null, taxClassId, price, includingTax, customer,
-                priceIncludesTax, out taxRate);
+            var result = GetProductPrice(
+				null,
+				taxCategoryId,
+				price,
+				includingTax,
+				customer,
+				_taxSettings.PaymentMethodAdditionalFeeIncludesTax,
+				out taxRate);
+
+			return result;
         }
-
-
 
 
 

@@ -79,6 +79,7 @@ namespace SmartStore.ShippingByWeight.Controllers
 
             model.LimitMethodsToCreated = _shippingByWeightSettings.LimitMethodsToCreated;
             model.CalculatePerWeightUnit = _shippingByWeightSettings.CalculatePerWeightUnit;
+			model.IncludeWeightOfFreeShippingProducts = _shippingByWeightSettings.IncludeWeightOfFreeShippingProducts;
             model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
             model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name;
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
@@ -166,6 +167,8 @@ namespace SmartStore.ShippingByWeight.Controllers
             //save settings
             _shippingByWeightSettings.LimitMethodsToCreated = model.LimitMethodsToCreated;
             _shippingByWeightSettings.CalculatePerWeightUnit = model.CalculatePerWeightUnit;
+			_shippingByWeightSettings.IncludeWeightOfFreeShippingProducts = model.IncludeWeightOfFreeShippingProducts;
+
             _services.Settings.SaveSetting(_shippingByWeightSettings);
             
             return Configure();

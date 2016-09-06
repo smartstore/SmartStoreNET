@@ -170,7 +170,7 @@ namespace SmartStore.Services.Configuration
 			int storeId = 0, 
 			bool loadSharedValueIfNotFound = false)
         {
-			Guard.ArgumentNotEmpty(() => key);
+			Guard.NotEmpty(key, nameof(key));
 
 			var settings = GetAllCachedSettings();
 
@@ -311,7 +311,7 @@ namespace SmartStore.Services.Configuration
 
 		public virtual void SetSetting<T>(string key, T value, int storeId = 0, bool clearCache = true)
         {
-            Guard.ArgumentNotEmpty(() => key);
+            Guard.NotEmpty(key, nameof(key));
 
 			var str = value.Convert<string>();
 

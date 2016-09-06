@@ -63,6 +63,12 @@
   <LocaleResource Name="Fields.CalculatePerWeightUnit.Hint">
     <Value>Legt fest, ob die Gebühr mit dem Gesamt-Warengewicht multipliziert werden soll. Diese Option wird ignoriert, wenn eine prozentuale Gebühr erhoben wird.</Value>
   </LocaleResource>
+  <LocaleResource Name="Fields.IncludeWeightOfFreeShippingProducts">
+    <Value>Gewicht versandkostenbefreiter Produkte berücksichtigen</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.IncludeWeightOfFreeShippingProducts.Hint">
+    <Value>Legt fest, ob das Gewicht von versandkostenbefreiten Produkten bei der Berechnung berücksichtigt werden soll.</Value>
+  </LocaleResource>
   <LocaleResource Name="Fields.Store">
     <Value>Shop</Value>
   </LocaleResource>

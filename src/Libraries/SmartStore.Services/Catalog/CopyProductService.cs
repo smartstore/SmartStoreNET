@@ -97,14 +97,18 @@ namespace SmartStore.Services.Catalog
 						DownloadGuid = Guid.NewGuid(),
 						UseDownloadUrl = download.UseDownloadUrl,
 						DownloadUrl = download.DownloadUrl,
-						DownloadBinary = download.DownloadBinary,
 						ContentType = download.ContentType,
 						Filename = download.Filename,
 						Extension = download.Extension,
 						IsNew = download.IsNew,
+						UpdatedOnUtc = utcNow
 					};
 
-					_downloadService.InsertDownload(downloadCopy);
+					if ((download.MediaStorageId ?? 0) != 0 && download.MediaStorage != null)
+						_downloadService.InsertDownload(downloadCopy, download.MediaStorage.Data);
+					else
+						_downloadService.InsertDownload(downloadCopy, null);
+
 					downloadId = downloadCopy.Id;
 				}
 
@@ -118,14 +122,18 @@ namespace SmartStore.Services.Catalog
 							DownloadGuid = Guid.NewGuid(),
 							UseDownloadUrl = sampleDownload.UseDownloadUrl,
 							DownloadUrl = sampleDownload.DownloadUrl,
-							DownloadBinary = sampleDownload.DownloadBinary,
 							ContentType = sampleDownload.ContentType,
 							Filename = sampleDownload.Filename,
 							Extension = sampleDownload.Extension,
-							IsNew = sampleDownload.IsNew
+							IsNew = sampleDownload.IsNew,
+							UpdatedOnUtc = utcNow
 						};
 
-						_downloadService.InsertDownload(sampleDownloadCopy);
+						if ((sampleDownload.MediaStorageId ?? 0) != 0 && sampleDownload.MediaStorage != null)
+							_downloadService.InsertDownload(sampleDownloadCopy, sampleDownload.MediaStorage.Data);
+						else
+							_downloadService.InsertDownload(sampleDownloadCopy, null);
+
 						sampleDownloadId = sampleDownloadCopy.Id;
 					}
 				}

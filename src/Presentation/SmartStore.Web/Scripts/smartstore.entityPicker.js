@@ -68,6 +68,7 @@
 			returnField: 'id',
 			returnValueDelimiter: ',',
 			returnSelector: '',
+			appendValue: true,
 			maxReturnValues: 0,
 			onLoadDialogBefore: null,
 			onLoadDialogComplete: null,
@@ -263,6 +264,12 @@
 			});
 
 			if (!_.isEmpty(data.returnSelector)) {
+				var existingValue = $(data.returnSelector).val();
+
+				if (data.appendValue && !_.isEmpty(existingValue) && !_.isEmpty(result)) {
+					result = existingValue + (_.str.endsWith(existingValue, data.returnValueDelimiter) ? '' : data.returnValueDelimiter) + result;
+				}
+
 				$(data.returnSelector).val(result).focus().blur();
 			}
 

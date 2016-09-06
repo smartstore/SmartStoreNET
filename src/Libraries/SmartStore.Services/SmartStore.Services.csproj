@@ -237,7 +237,16 @@
     <Compile Include="Events\IMessageBus.cs" />
     <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
+    <Compile Include="Media\Storage\DatabaseMediaStorageProvider.cs" />
+    <Compile Include="Media\Storage\FileSystemMediaStorageProvider.cs" />
+    <Compile Include="Media\Storage\IMediaStorageProvider.cs" />
     <Compile Include="Media\MediaExtensions.cs" />
+    <Compile Include="Media\Storage\IMediaMover.cs" />
+    <Compile Include="Media\Storage\ISupportsMediaMoving.cs" />
+    <Compile Include="Media\Storage\MediaMoverContext.cs" />
+    <Compile Include="Media\Storage\MediaStorageExtensions.cs" />
+    <Compile Include="Media\Storage\MediaItem.cs" />
+    <Compile Include="Media\Storage\MediaMover.cs" />
     <Compile Include="Media\TransientMediaClearTask.cs" />
     <Compile Include="Messages\Importer\NewsLetterSubscriptionImporter.cs" />
     <Compile Include="Messages\QueuedMessagesClearTask.cs" />
@@ -352,7 +361,7 @@
     <Compile Include="Media\ImageCacheExtensions.cs" />
     <Compile Include="Media\ImageHeader.cs" />
     <Compile Include="Media\ImageResizerService.cs" />
-    <Compile Include="Media\ImageResizerUtils.cs" />
+    <Compile Include="Media\ImageResizerUtil.cs" />
     <Compile Include="Media\ImageTypes.cs" />
     <Compile Include="Messages\EventPublisherExtensions.cs" />
     <Compile Include="Messages\GenericMessageContext.cs" />
@@ -475,6 +484,11 @@
     <Compile Include="Customers\ChangePasswordRequest.cs" />
     <Compile Include="Customers\PasswordChangeResult.cs" />
     <Compile Include="Hooks\AclEntityPostDeleteHook.cs" />
+    <Compile Include="Search\DefaultIndexingService.cs" />
+    <Compile Include="Search\IIndexCollector.cs" />
+    <Compile Include="Search\IIndexDataSegmenter.cs" />
+    <Compile Include="Search\IIndexingService.cs" />
+    <Compile Include="Search\IndexInfo.cs" />
     <Compile Include="Security\AclService.cs" />
     <Compile Include="Security\EncryptionService.cs" />
     <Compile Include="Security\IAclService.cs" />

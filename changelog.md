@@ -2,15 +2,26 @@
 
 ## SmartStore.NET 3.0
 
+### Breaking change
+* Removed Web API plugin from open source
+
 ### Improvements
 * Added order message token for accepting third party email handover
 * ECB currency exchange rate provider now cross calculates rates based on euro rates
 * BeezUP: Exports the product weight
+* Payone: Replace client API by Payone iFrame solution. Allows credit card payment compliant with PCI DSS, SAQ A.
+* Updated Elmar shop info XML from version 1.1 to 2.0
+* #1008 Export: Add support for description projection to all product exporting providers
+* #1015 Implement Entity Picker in discount requirements
 
 ### New Features
 * Added option to skip shipping method selection in checkout process when only one shipping method is active
 * Added options to capture salutation and title in addresses and customer info
 * Added projection to control the export of individually visible associated products
+* #1002 Web API: Add support for addresses and customer roles navigation property of customer entity
+* #966 Implement new tax calculation logic for shipping and payment fees
+* #922 New option whether to include the weight of free shipping products in shipping by weight calculation
+* #724 Allow discounts to be applied to manufacturers
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation
@@ -18,6 +29,9 @@
 * GMC: Id should be unique when exporting attribute combinations as products
 * GMC: Attribute price adjustments were ignored when exporting attribute combinations as products
 * GMC: Associated products that are not individually visible are not exported anymore. GMC rejects them because the frontend redirects to the grouped product.
+* #999 Export: Projected customer id ignored during price calculation
+* Awarded reward points for a placed order sometimes wrong calculated
+* PayPal PLUS: A changed shipping address/costs was not transmitted to PayPal
 
 
 ## SmartStore.NET 2.6

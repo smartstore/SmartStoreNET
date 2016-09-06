@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media;
@@ -9,10 +7,10 @@ using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class DownloadController : AdminControllerBase
     {
-		const string TEMPLATE = "EditorTemplates/Download";
+		private const string DOWNLOAD_TEMPLATE = "~/Administration/Views/Shared/EditorTemplates/Download.cshtml";
 		
 		private readonly IDownloadService _downloadService;
 
@@ -25,7 +23,7 @@ namespace SmartStore.Admin.Controllers
         {
             var download = _downloadService.GetDownloadById(downloadId);
             if (download == null)
-                return Content("No download record found with the specified id");
+                return Content(T("Common.Download.NoDataAvailable"));
 
             if (download.UseDownloadUrl)
             {
@@ -33,15 +31,20 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                //use stored data
-                if (download.DownloadBinary == null)
-                    return Content(string.Format("Download data is not available any more. Download ID={0}", downloadId));
+				//use stored data
+				var data = _downloadService.LoadDownloadBinary(download);
 
-                string fileName = !String.IsNullOrWhiteSpace(download.Filename) ? download.Filename : downloadId.ToString();
-                string contentType = !String.IsNullOrWhiteSpace(download.ContentType) ? download.ContentType : "application/octet-stream";
-                return new FileContentResult(download.DownloadBinary, contentType) { FileDownloadName = fileName + download.Extension };
+				if (data == null || data.LongLength == 0)
+					return Content(T("Common.Download.NoDataAvailable"));
+
+				var fileName = (download.Filename.HasValue() ? download.Filename : downloadId.ToString());
+				var contentType = (download.ContentType.HasValue() ? download.ContentType : "application/octet-stream");
+
+                return new FileContentResult(data, contentType)
+				{
+					FileDownloadName = fileName + download.Extension
+				};
             }
-
         }
 
         [HttpPost]
@@ -54,16 +57,17 @@ namespace SmartStore.Admin.Controllers
 				UseDownloadUrl = true,
 				DownloadUrl = downloadUrl,
 				IsNew = true,
-				IsTransient = true
+				IsTransient = true,
+				UpdatedOnUtc = DateTime.UtcNow
 			};
 
-            _downloadService.InsertDownload(download);
+            _downloadService.InsertDownload(download, null);
 
 			return Json(new
 			{
 				success = true,
 				downloadId = download.Id,
-				html = this.RenderPartialViewToString(TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
+				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
 			}, JsonRequestBehavior.AllowGet);
         }
 
@@ -76,27 +80,27 @@ namespace SmartStore.Admin.Controllers
 				throw new ArgumentException(T("Common.NoFileUploaded"));
 			}
 
-            var download = new Download
+			var download = new Download
             {
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
                 DownloadUrl = "",
-                DownloadBinary = postedFile.Buffer,
-                ContentType = postedFile.ContentType,
+				ContentType = postedFile.ContentType,
                 // we store filename without extension for downloads
                 Filename = postedFile.FileTitle,
                 Extension = postedFile.FileExtension,
                 IsNew = true,
-				IsTransient = true
-            };
+				IsTransient = true,
+				UpdatedOnUtc = DateTime.UtcNow
+			};
 
-            _downloadService.InsertDownload(download);
+            _downloadService.InsertDownload(download, postedFile.Buffer);
 
             return Json(new 
             { 
                 success = true, 
 				downloadId = download.Id,
-				html = this.RenderPartialViewToString(TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
+				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
             });
         }
 
@@ -108,7 +112,7 @@ namespace SmartStore.Admin.Controllers
 			return Json(new
 			{
 				success = true,
-				html = this.RenderPartialViewToString(TEMPLATE, null, new { minimalMode = minimalMode, fieldName = fieldName }),
+				html = this.RenderPartialViewToString(DOWNLOAD_TEMPLATE, null, new { minimalMode = minimalMode, fieldName = fieldName }),
 			});
 		}
     }

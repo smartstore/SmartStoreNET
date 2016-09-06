@@ -21,9 +21,7 @@ using SmartStore.Core.Events;
 using SmartStore.Core.Fakes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
-using SmartStore.Core.IO.Media;
-using SmartStore.Core.IO.VirtualPath;
-using SmartStore.Core.IO.WebSite;
+using SmartStore.Core.IO;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Packaging;
@@ -36,10 +34,12 @@ using SmartStore.Services.Authentication;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Blogs;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Importer;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Customers.Importer;
 using SmartStore.Services.DataExchange;
 using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.DataExchange.Import;
@@ -52,7 +52,9 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
+using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Messages;
+using SmartStore.Services.Messages.Importer;
 using SmartStore.Services.News;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
@@ -77,9 +79,6 @@ using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using Module = Autofac.Module;
-using SmartStore.Services.Catalog.Importer;
-using SmartStore.Services.Customers.Importer;
-using SmartStore.Services.Messages.Importer;
 
 namespace SmartStore.Web.Framework
 {
@@ -129,7 +128,7 @@ namespace SmartStore.Web.Framework
 
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<HostNameProvider>().As<IHostNameProvider>().SingleInstance();
+			builder.RegisterType<ApplicationEnvironment>().As<IApplicationEnvironment>().SingleInstance();
 			
 			// sources
 			builder.RegisterSource(new SettingsSource());
@@ -203,6 +202,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();
 			builder.RegisterType<ImageResizerService>().As<IImageResizerService>().SingleInstance();
 			builder.RegisterType<PictureService>().As<IPictureService>().InstancePerRequest();
+			builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest();
 
 			builder.RegisterType<CheckoutAttributeFormatter>().As<ICheckoutAttributeFormatter>().InstancePerRequest();
 			builder.RegisterType<CheckoutAttributeParser>().As<ICheckoutAttributeParser>().InstancePerRequest();
@@ -370,7 +370,8 @@ namespace SmartStore.Web.Framework
 
 					registration.WithMetadata<HookMetadata>(m => 
 					{ 
-						m.For(em => em.HookedType, hookedType); 
+						m.For(em => em.HookedType, hookedType);
+						m.For(em => em.Important, hookedType.HasAttribute<ImportantAttribute>(false));
 					});
 				}
 
@@ -755,7 +756,7 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			// register theming services
-			builder.Register<DefaultThemeRegistry>(x => new DefaultThemeRegistry(x.Resolve<IEventPublisher>(), null, null, true)).As<IThemeRegistry>().SingleInstance();
+			builder.Register<DefaultThemeRegistry>(x => new DefaultThemeRegistry(x.Resolve<IEventPublisher>(), x.Resolve<IApplicationEnvironment>(), null, null, true)).As<IThemeRegistry>().SingleInstance();
 			builder.RegisterType<ThemeFileResolver>().As<IThemeFileResolver>().SingleInstance();
 
 			builder.RegisterType<ThemeContext>().As<IThemeContext>().InstancePerRequest();
@@ -775,9 +776,14 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<FileSystemStorageProvider>().As<IStorageProvider>().InstancePerRequest();
-			builder.RegisterType<DefaultVirtualPathProvider>().As<IVirtualPathProvider>().InstancePerRequest();
-			builder.RegisterType<WebSiteFolder>().As<IWebSiteFolder>().InstancePerRequest();
+			builder.RegisterType<LocalFileSystem>().As<IFileSystem>().SingleInstance();
+
+			// Register IFileSystem twice, this time explicitly named.
+			// We may need this later in decorator classes as a kind of fallback.
+			builder.RegisterType<LocalFileSystem>().Named<IFileSystem>("local").SingleInstance();
+
+			builder.RegisterType<DefaultVirtualPathProvider>().As<IVirtualPathProvider>().SingleInstance();
+			builder.RegisterType<LockFileManager>().As<ILockFileManager>().SingleInstance();
 		}
 	}
 
@@ -855,6 +861,7 @@ namespace SmartStore.Web.Framework
 				RegisterAsSpecificProvider<IPaymentMethod>(type, systemName, registration);
 				RegisterAsSpecificProvider<IExportProvider>(type, systemName, registration);
 				RegisterAsSpecificProvider<IOutputCacheProvider>(type, systemName, registration);
+				RegisterAsSpecificProvider<IMediaStorageProvider>(type, systemName, registration);
 			}
 
 		}

@@ -62,8 +62,8 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public void AddMapping(string sourceName, string index, string mappedName, string defaultValue = null)
 		{
-			Guard.ArgumentNotEmpty(() => sourceName);
-			Guard.ArgumentNotEmpty(() => mappedName);
+			Guard.NotEmpty(sourceName, nameof(sourceName));
+			Guard.NotEmpty(mappedName, nameof(mappedName));
 
 			var key = CreateSourceName(sourceName, index);
 

@@ -35,7 +35,7 @@
 			@Html.SmartLabelFor(x => x.Projection.CustomerId)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(x => x.Projection.CustomerId)
+			@Html.TextBoxFor(x => x.Projection.CustomerId, new { autocomplete = "off", @class = "text-box single-line" })
 			@Html.ValidationMessageFor(x => x.Projection.CustomerId)
 		</td>
 	</tr>

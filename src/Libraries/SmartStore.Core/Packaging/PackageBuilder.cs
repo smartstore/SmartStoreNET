@@ -6,22 +6,18 @@ using SmartStore.Core.Plugins;
 using SmartStore.Core.Themes;
 using NuGet;
 using NuGetPackageBuilder = NuGet.PackageBuilder;
-using System.Xml.Linq;
-using SmartStore.Core.IO.WebSite;
+using SmartStore.Core.IO;
 using System.Runtime.Versioning;
-using System.Net.Mime;
-using SmartStore.Core.IO.VirtualPath;
 
 namespace SmartStore.Core.Packaging
 {
-
 	public class PackageBuilder : IPackageBuilder
 	{
-		private readonly IWebSiteFolder _webSiteFolder;
+		private readonly IApplicationEnvironment _env;
 
-		public PackageBuilder(IWebSiteFolder webSiteFolder)
+		public PackageBuilder(IApplicationEnvironment env)
 		{
-			this._webSiteFolder = webSiteFolder;
+			this._env = env;
 		}
 
 		private static readonly string[] _ignoredThemeExtensions = new[] {
@@ -56,7 +52,7 @@ namespace SmartStore.Core.Packaging
 			BeginPackage(context);
 			try
 			{
-				EstablishPaths(context, _webSiteFolder, extensionDescriptor.Id, extensionDescriptor.ExtensionType);
+				EstablishPaths(context, _env.WebRootFolder, extensionDescriptor.Id, extensionDescriptor.ExtensionType);
 				SetCoreProperties(context, extensionDescriptor);
 				EmbedFiles(context);
 			}
@@ -98,17 +94,17 @@ namespace SmartStore.Core.Packaging
 			}
 		}
 
-		private static void EstablishPaths(BuildContext context, IWebSiteFolder webSiteFolder, string extensionName, string extensionType = "Plugin")
+		private static void EstablishPaths(BuildContext context, IVirtualFolder webRootFolder, string extensionName, string extensionType = "Plugin")
 		{
-			context.SourceFolder = webSiteFolder;
+			context.SourceFolder = webRootFolder;
 			if (extensionType.IsCaseInsensitiveEqual("theme"))
 			{
-				context.SourcePath = "~/Themes/" + extensionName + "/";
+				context.SourcePath = "Themes/" + extensionName + "/";
 				context.TargetPath = "\\Content\\Themes\\" + extensionName + "\\";
 			}
 			else
 			{
-				context.SourcePath = "~/Plugins/" + extensionName + "/";
+				context.SourcePath = "Plugins/" + extensionName + "/";
 				context.TargetPath = "\\Content\\Plugins\\" + extensionName + "\\";
 			}
 		}
@@ -116,17 +112,17 @@ namespace SmartStore.Core.Packaging
 		private static void EmbedFiles(BuildContext context)
 		{
 			var basePath = context.SourcePath;
-			foreach (var virtualPath in context.SourceFolder.ListFiles(context.SourcePath, true))
+			foreach (var path in context.SourceFolder.ListFiles(context.SourcePath, true))
 			{
 				// skip ignores files
-				if (IgnoreFile(virtualPath))
+				if (IgnoreFile(path))
 				{
 					continue;
 				}
 				// full virtual path given but we need the relative path so it can be put into
 				// the package that way (the package itself is the logical base path).
 				// Get it by stripping the basePath off including the slash.
-				var relativePath = virtualPath.Replace(basePath, "");
+				var relativePath = path.Replace(basePath, "");
 				EmbedVirtualFile(context, relativePath);
 			}
 		}
@@ -148,7 +144,7 @@ namespace SmartStore.Core.Packaging
 			public Stream Stream { get; set; }
 			public NuGetPackageBuilder Builder { get; set; }
 
-			public IWebSiteFolder SourceFolder { get; set; }
+			public IVirtualFolder SourceFolder { get; set; }
 			public string SourcePath { get; set; }
 			public string TargetPath { get; set; }
 		}
@@ -159,14 +155,14 @@ namespace SmartStore.Core.Packaging
 
 		private class VirtualPackageFile : IPackageFile
 		{
-			private readonly IWebSiteFolder _webSiteFolder;
-			private readonly string _virtualPath;
+			private readonly IVirtualFolder _webRootFolder;
+			private readonly string _relativePath;
 			private readonly string _packagePath;
 
-			public VirtualPackageFile(IWebSiteFolder webSiteFolder, string virtualPath, string packagePath)
+			public VirtualPackageFile(IVirtualFolder webRootFolder, string relativePath, string packagePath)
 			{
-				_webSiteFolder = webSiteFolder;
-				_virtualPath = virtualPath;
+				_webRootFolder = webRootFolder;
+				_relativePath = relativePath;
 				_packagePath = packagePath;
 			}
 
@@ -174,7 +170,7 @@ namespace SmartStore.Core.Packaging
 			public Stream GetStream()
 			{
 				var stream = new MemoryStream();
-				_webSiteFolder.CopyFileTo(_virtualPath, stream);
+				_webRootFolder.CopyFile(_relativePath, stream);
 				stream.Seek(0, SeekOrigin.Begin);
 				return stream;
 			}
@@ -201,7 +197,5 @@ namespace SmartStore.Core.Packaging
 		}
 
 		#endregion
-
 	}
-
 }

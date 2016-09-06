@@ -22,8 +22,8 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public ImportDataSegmenter(IDataTable table, ColumnMap map)
 		{
-			Guard.ArgumentNotNull(() => table);
-			Guard.ArgumentNotNull(() => map);
+			Guard.NotNull(table, nameof(table));
+			Guard.NotNull(map, nameof(map));
 
 			_table = table;
 			_columnMap = map;

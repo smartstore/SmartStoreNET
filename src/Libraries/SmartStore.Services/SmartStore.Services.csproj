@@ -484,11 +484,6 @@
     <Compile Include="Customers\ChangePasswordRequest.cs" />
     <Compile Include="Customers\PasswordChangeResult.cs" />
     <Compile Include="Hooks\AclEntityPostDeleteHook.cs" />
-    <Compile Include="Search\DefaultIndexingService.cs" />
-    <Compile Include="Search\IIndexCollector.cs" />
-    <Compile Include="Search\IIndexDataSegmenter.cs" />
-    <Compile Include="Search\IIndexingService.cs" />
-    <Compile Include="Search\IndexInfo.cs" />
     <Compile Include="Security\AclService.cs" />
     <Compile Include="Security\EncryptionService.cs" />
     <Compile Include="Security\IAclService.cs" />

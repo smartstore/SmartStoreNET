@@ -4,12 +4,13 @@ namespace SmartStore.Core.Data.Hooks
 {
     public class HookEntityMetadata
     {
-        public HookEntityMetadata(EntityState state)
+		private EntityState _state;
+
+		public HookEntityMetadata(EntityState state)
         {
             _state = state;
         }
-
-        private EntityState _state;
+      
         public EntityState State
         {
             get { return this._state; }
@@ -23,6 +24,10 @@ namespace SmartStore.Core.Data.Hooks
             }
         }
 
-        public bool HasStateChanged { get; private set; }
+        public bool HasStateChanged
+		{
+			get;
+			private set;
+		}
     }
 }

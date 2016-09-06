@@ -12,5 +12,6 @@ namespace SmartStore.DevTools
 
         public bool DisplayWidgetZones { get; set; }
 
+		public bool DisplayMachineName { get; set; }
 	}
 }

@@ -340,6 +340,8 @@ namespace SmartStore.Web.Framework
 			builder.Register(x => x.Resolve<DataProviderFactory>().LoadDataProvider()).As<IDataProvider>().InstancePerDependency();
 			builder.Register(x => (IEfDataProvider)x.Resolve<DataProviderFactory>().LoadDataProvider()).As<IEfDataProvider>().InstancePerDependency();
 
+			builder.RegisterType<DefaultHookHandler>().As<IHookHandler>().InstancePerRequest();
+
 			if (DataSettings.Current.IsValid())
 			{
 				// register DB Hooks (only when app was installed properly)
@@ -371,6 +373,7 @@ namespace SmartStore.Web.Framework
 					registration.WithMetadata<HookMetadata>(m => 
 					{ 
 						m.For(em => em.HookedType, hookedType);
+						m.For(em => em.ImplType, hook);
 						m.For(em => em.Important, hookedType.HasAttribute<ImportantAttribute>(false));
 					});
 				}

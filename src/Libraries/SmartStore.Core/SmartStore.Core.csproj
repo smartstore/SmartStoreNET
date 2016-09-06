@@ -168,6 +168,8 @@
     <Compile Include="ComponentModel\TypeConversion\TypeConverterAdapter.cs" />
     <Compile Include="ComponentModel\TypeConversion\TypeConverterBase.cs" />
     <Compile Include="ComponentModel\TypeConversion\TypeConverterFactory.cs" />
+    <Compile Include="Data\Hooks\DefaultHookHandler.cs" />
+    <Compile Include="Data\Hooks\IHookHandler.cs" />
     <Compile Include="Data\Hooks\ImportantAttribute.cs" />
     <Compile Include="Data\IDbContextExtensions.cs" />
     <Compile Include="Data\ITransaction.cs" />
@@ -236,18 +238,9 @@
     <Compile Include="Data\EntityState.cs" />
     <Compile Include="Data\Hooks\HookedEntityEntry.cs" />
     <Compile Include="Data\Hooks\HookEntityMetadata.cs" />
-    <Compile Include="Data\Hooks\HooksEventConsumer.cs" />
     <Compile Include="Data\Hooks\IHook.cs" />
-    <Compile Include="Data\Hooks\IPostActionHook .cs" />
-    <Compile Include="Data\Hooks\IPreActionHook.cs" />
     <Compile Include="Data\Hooks\PostActionHook.cs" />
-    <Compile Include="Data\Hooks\PostDeleteHook.cs" />
-    <Compile Include="Data\Hooks\PostInsertHook.cs" />
-    <Compile Include="Data\Hooks\PostUpdateHook.cs" />
     <Compile Include="Data\Hooks\PreActionHook.cs" />
-    <Compile Include="Data\Hooks\PreDeleteHook.cs" />
-    <Compile Include="Data\Hooks\PreInsertHook.cs" />
-    <Compile Include="Data\Hooks\PreUpdateHook.cs" />
     <Compile Include="Data\IDbContext.cs" />
     <Compile Include="Data\RepositoryExtensions.cs" />
     <Compile Include="Data\SqlFileTokenizer.cs" />

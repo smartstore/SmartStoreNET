@@ -2,7 +2,6 @@
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data.Hooks;
-using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Stores;
 

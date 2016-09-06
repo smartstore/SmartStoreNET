@@ -1586,7 +1586,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />
-    <Folder Include="Views\TaskScheduler\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">

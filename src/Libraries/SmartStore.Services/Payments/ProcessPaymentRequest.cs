@@ -15,8 +15,8 @@ namespace SmartStore.Services.Payments
 		{
 			CustomProperties = new Dictionary<string, CustomPaymentRequestValue>();
             IsMultiOrder = false;
-            ShoppingCartItems  = new List<OrganizedShoppingCartItem>();
-		}
+            ShoppingCartItemIds = new List<int>();
+        }
 
 		/// <summary>
 		/// Gets or sets a store identifier
@@ -57,6 +57,8 @@ namespace SmartStore.Services.Payments
 		/// Use that dictionary for any payment method or checkout flow specific data
 		/// </summary>
 		public Dictionary<string, CustomPaymentRequestValue> CustomProperties { get; set; }
+
+        public IList<int> ShoppingCartItemIds { get; set; }
 
         #region Payment method specific properties 
 
@@ -151,8 +153,6 @@ namespace SmartStore.Services.Payments
         /// Gets or sets the total cycles
         /// </summary>
         public int RecurringTotalCycles { get; set; }
-
-        public IList<OrganizedShoppingCartItem> ShoppingCartItems { get; set; }
 
         #endregion
     }

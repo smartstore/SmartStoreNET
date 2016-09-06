@@ -551,8 +551,12 @@ namespace SmartStore.Services.Orders
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
                     //load shopping cart
-                    if (processPaymentRequest.ShoppingCartItems.Count > 0)
-                        cart = processPaymentRequest.ShoppingCartItems;
+                    if (processPaymentRequest.ShoppingCartItemIds.Count > 0)
+                    {
+                        cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, processPaymentRequest.StoreId)
+                            .Where(x => processPaymentRequest.ShoppingCartItemIds.Contains(x.Item.Id))
+                            .ToList();
+                    }
                     else
                         cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, processPaymentRequest.StoreId);
 

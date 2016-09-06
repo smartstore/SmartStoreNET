@@ -110,6 +110,24 @@ namespace SmartStore.PayPal
 						relatedObject = apiResult.Json.transactions[0].related_resources[0].sale;
 
 						session.PaymentInstruction = PayPalService.ParsePaymentInstruction(apiResult.Json.payment_instruction) as PayPalPaymentInstruction;
+
+						// Test session data:
+						//session.PaymentInstruction = new PayPalPaymentInstruction
+						//{
+						//	ReferenceNumber = "123456789",
+						//	Type = "PAY_UPON_INVOICE",
+						//	Amount = 9.99M,
+						//	AmountCurrencyCode = "EUR",
+						//	Note = "This is a test instruction!",
+						//	RecipientBanking = new PayPalPaymentInstruction.RecipientBankingInstruction
+						//	{
+						//		BankName = "John Pierpont Morgan & Company",
+						//		AccountHolderName = "Max Mustermann",
+						//		AccountNumber = "987654321",
+						//		Iban = "DE654321987654321",
+						//		Bic = "DUDEXX321654"
+						//	}
+						//};
 					}
 					else
 					{

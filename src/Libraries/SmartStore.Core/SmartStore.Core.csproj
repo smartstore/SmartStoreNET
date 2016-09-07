@@ -153,6 +153,7 @@
     <Compile Include="Caching\NullOutputCacheProvider.cs" />
     <Compile Include="Caching\OutputCacheItem.cs" />
     <Compile Include="Caching\RequestCache.cs" />
+    <Compile Include="Collections\ConcurrentMultimap.cs" />
     <Compile Include="Collections\LazyMultimap.cs" />
     <Compile Include="Collections\Querystring.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
@@ -320,7 +321,7 @@
     <Compile Include="Packaging\PackagingResult.cs" />
     <Compile Include="Packaging\PackagingUtils.cs" />
     <Compile Include="PagedList.cs" />
-    <Compile Include="Collections\MultiMap.cs" />
+    <Compile Include="Collections\Multimap.cs" />
     <Compile Include="Collections\TreeNode.cs" />
     <Compile Include="ComponentModel\HybridExpando.cs" />
     <Compile Include="ComponentModel\PropertyBag.cs" />

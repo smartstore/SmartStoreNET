@@ -16,6 +16,7 @@ namespace SmartStore.Core.Data.Hooks
 
 		private static HashSet<Type> _importantPreHookTypes;
 		private static HashSet<Type> _importantPostHookTypes;
+		private readonly static object _lock = new object();
 
 		public DefaultHookHandler(
 			IEnumerable<Lazy<IPreActionHook, HookMetadata>> preHooks,
@@ -29,8 +30,14 @@ namespace SmartStore.Core.Data.Hooks
 		{
 			if (_importantPreHookTypes == null)
 			{
-				_importantPreHookTypes = new HashSet<Type>();
-				_importantPreHookTypes.AddRange(_preHooks.Where(x => x.Metadata.Important).Select(x => x.Metadata.ImplType));
+				lock (_lock)
+				{
+					if (_importantPreHookTypes == null)
+					{
+						_importantPreHookTypes = new HashSet<Type>();
+						_importantPreHookTypes.AddRange(_preHooks.Where(x => x.Metadata.Important).Select(x => x.Metadata.ImplType));
+					}
+				}
 			}
 
 			return _importantPreHookTypes.Any();
@@ -40,8 +47,14 @@ namespace SmartStore.Core.Data.Hooks
 		{
 			if (_importantPostHookTypes == null)
 			{
-				_importantPostHookTypes = new HashSet<Type>();
-				_importantPostHookTypes.AddRange(_postHooks.Where(x => x.Metadata.Important).Select(x => x.Metadata.ImplType));
+				lock (_lock)
+				{
+					if (_importantPostHookTypes == null)
+					{
+						_importantPostHookTypes = new HashSet<Type>();
+						_importantPostHookTypes.AddRange(_postHooks.Where(x => x.Metadata.Important).Select(x => x.Metadata.ImplType));
+					}
+				}
 			}
 
 			return _importantPostHookTypes.Any();
@@ -52,7 +65,7 @@ namespace SmartStore.Core.Data.Hooks
 			bool anyStateChanged = false;
 
 			if (entries == null || !_preHooks.Any() || (importantHooksOnly && !this.HasImportantPreHooks()))
-				return anyStateChanged;
+				return false;
 
 			var processedHooks = new HashSet<IPreActionHook>();
 
@@ -95,7 +108,7 @@ namespace SmartStore.Core.Data.Hooks
 
 			IEnumerable<IPreActionHook> hooks;
 
-			var hookedType = entity.GetType();
+			var hookedType = entity.GetUnproxiedType();
 
 			if (_preHooksRequestCache.ContainsKey(hookedType))
 			{
@@ -107,7 +120,7 @@ namespace SmartStore.Core.Data.Hooks
 				_preHooksRequestCache.AddRange(hookedType, hooks);
 			}
 
-			if (importantOnly)
+			if (importantOnly && hooks.Any())
 			{
 				hooks = hooks.Where(x => _importantPreHookTypes.Contains(x.GetType()));
 			}
@@ -152,7 +165,7 @@ namespace SmartStore.Core.Data.Hooks
 
 			IEnumerable<IPostActionHook> hooks;
 
-			var hookedType = entity.GetType();
+			var hookedType = entity.GetUnproxiedType();
 
 			if (_postHooksRequestCache.ContainsKey(hookedType))
 			{
@@ -164,7 +177,7 @@ namespace SmartStore.Core.Data.Hooks
 				_postHooksRequestCache.AddRange(hookedType, hooks);
 			}
 
-			if (importantOnly)
+			if (importantOnly && hooks.Any())
 			{
 				hooks = hooks.Where(x => _importantPostHookTypes.Contains(x.GetType()));
 			}

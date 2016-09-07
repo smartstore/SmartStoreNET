@@ -13,10 +13,10 @@ namespace SmartStore.Core.Data.Hooks
         /// </summary>
         public void HookObject(object entity, HookEntityMetadata metadata)
         {
-            if (typeof(TEntity).IsAssignableFrom(entity.GetType()))
-            {
+            //if (typeof(TEntity).IsAssignableFrom(entity.GetType()))
+            //{
                 Hook((TEntity)entity, metadata);
-            }
+            //}
         }
 
         /// <summary>

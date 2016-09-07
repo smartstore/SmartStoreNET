@@ -3,7 +3,7 @@
 ## SmartStore.NET 3.0
 
 ### Breaking change
-* Removed Web API plugin from open source
+* Removed Web API plugin from open source core
 
 ### Improvements
 * Added order message token for accepting third party email handover
@@ -32,7 +32,7 @@
 * #999 Export: Projected customer id ignored during price calculation
 * Awarded reward points for a placed order sometimes wrong calculated
 * PayPal PLUS: A changed shipping address/costs was not transmitted to PayPal
-* Bundle item couldn't be deleted, if it's in a shopping cart
+* Bundle item cannot be deleted if it's in a shopping cart
 
 
 ## SmartStore.NET 2.6

@@ -48,7 +48,8 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository;
 		private readonly IRepository<ProductBundleItem> _productBundleItemRepository;
-        private readonly IProductAttributeService _productAttributeService;
+		private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
+		private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly ILanguageService _languageService;
         private readonly IWorkflowMessageService _workflowMessageService;
@@ -99,7 +100,8 @@ namespace SmartStore.Services.Catalog
             IRepository<ProductSpecificationAttribute> productSpecificationAttributeRepository,
             IRepository<ProductVariantAttributeCombination> productVariantAttributeCombinationRepository,
 			IRepository<ProductBundleItem> productBundleItemRepository,
-            IProductAttributeService productAttributeService,
+			IRepository<ShoppingCartItem> shoppingCartItemRepository,
+			IProductAttributeService productAttributeService,
             IProductAttributeParser productAttributeParser,
             ILanguageService languageService,
             IWorkflowMessageService workflowMessageService,
@@ -121,6 +123,7 @@ namespace SmartStore.Services.Catalog
             this._productSpecificationAttributeRepository = productSpecificationAttributeRepository;
             this._productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
 			this._productBundleItemRepository = productBundleItemRepository;
+			this._shoppingCartItemRepository = shoppingCartItemRepository;
             this._productAttributeService = productAttributeService;
             this._productAttributeParser = productAttributeParser;
             this._languageService = languageService;
@@ -1978,9 +1981,34 @@ namespace SmartStore.Services.Catalog
 			if (bundleItem == null)
 				throw new ArgumentNullException("bundleItem");
 
+			// remove bundles from shopping carts (otherwise bundle item cannot be deleted)
+			var parentCartItemIds = _shoppingCartItemRepository.TableUntracked
+				.Where(x => x.BundleItemId == bundleItem.Id && x.ParentItemId != null)
+				.Select(x => x.ParentItemId)
+				.ToList();
+
+			if (parentCartItemIds.Any())
+			{
+				var cartItems = _shoppingCartItemRepository.Table
+					.Where(x => parentCartItemIds.Contains(x.Id))
+					.ToList();
+
+				foreach (var parentItem in cartItems)
+				{
+					var childItems = _shoppingCartItemRepository.Table
+						.Where(x => x.ParentItemId != null && x.ParentItemId.Value == parentItem.Id && x.Id != parentItem.Id)
+						.ToList();
+
+					childItems.Each(x => _shoppingCartItemRepository.Delete(x));
+
+					_shoppingCartItemRepository.Delete(parentItem);
+				}
+			}
+
+			// delete bundle item
 			_productBundleItemRepository.Delete(bundleItem);
 
-			//event notification
+			// event notification
 			_services.EventPublisher.EntityDeleted(bundleItem);
 		}
 

@@ -32,6 +32,7 @@
 * #999 Export: Projected customer id ignored during price calculation
 * Awarded reward points for a placed order sometimes wrong calculated
 * PayPal PLUS: A changed shipping address/costs was not transmitted to PayPal
+* Bundle item couldn't be deleted, if it's in a shopping cart
 
 
 ## SmartStore.NET 2.6

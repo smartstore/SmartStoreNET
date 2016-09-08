@@ -16,6 +16,11 @@ namespace SmartStore.Core.Search
 		void Delete();
 
 		/// <summary>
+		/// Optimizes the index
+		/// </summary>
+		void Optimize();
+
+		/// <summary>
 		/// Returns the name of the index
 		/// </summary>
 		string Scope { get; }

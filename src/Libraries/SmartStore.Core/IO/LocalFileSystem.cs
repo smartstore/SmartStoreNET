@@ -43,7 +43,7 @@ namespace SmartStore.Core.IO
 		/// </summary>
 		/// <param name="path">The relative path to be mapped.</param>
 		/// <returns>The relative path combined with the storage path.</returns>
-		private string MapStorage(string path)
+		protected virtual string MapStorage(string path)
 		{
 			var mappedPath = string.IsNullOrEmpty(path) ? _storagePath : Path.Combine(_storagePath, Fix(path));
 			return ValidatePath(_storagePath, mappedPath);
@@ -54,7 +54,7 @@ namespace SmartStore.Core.IO
 		/// </summary>
 		/// <param name="path">The relative path to be mapped.</param>
 		/// <returns>The relative path combined with the public path in an URL friendly format ('/' character for directory separator).</returns>
-		private string MapPublic(string path)
+		protected virtual string MapPublic(string path)
 		{
 			return string.IsNullOrEmpty(path) ? _publicPath : Path.Combine(_publicPath, path).Replace(Path.DirectorySeparatorChar, '/').Replace(" ", "%20");
 		}
@@ -73,7 +73,7 @@ namespace SmartStore.Core.IO
 			return MapPublic(path);
 		}
 
-		public string GetStoragePath(string url)
+		public virtual string GetStoragePath(string url)
 		{
 			if (url.HasValue())
 			{

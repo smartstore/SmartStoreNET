@@ -15,7 +15,7 @@ namespace SmartStore.Services.Media
 	public class MediaFileSystem : LocalFileSystem, IMediaFileSystem
 	{
 		public MediaFileSystem()
-			: base(CommonHelper.GetAppSetting<string>("sm:MediaBasePath", "Media"))
+			: base(CommonHelper.GetAppSetting<string>("sm:MediaStoragePath", "/Media"), CommonHelper.GetAppSetting<string>("sm:MediaPublicPath"))
 		{
 			this.TryCreateFolder("Thumbs");
 			this.TryCreateFolder("Uploaded");

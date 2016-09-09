@@ -265,9 +265,18 @@ namespace SmartStore
 		}
 
         [DebuggerStepThrough]
-        public static bool IsWebUrl(this string value)
+        public static bool IsWebUrl(this string value, bool schemeIsOptional = false)
         {
-            return !String.IsNullOrEmpty(value) && RegularExpressions.IsWebUrl.IsMatch(value.Trim());
+			if (String.IsNullOrEmpty(value))
+				return false;
+
+			if (schemeIsOptional)
+			{
+				Uri uri;
+				return Uri.TryCreate(value, UriKind.Absolute, out uri);
+			}
+
+			return RegularExpressions.IsWebUrl.IsMatch(value.Trim());
         }
 
         [DebuggerStepThrough]

@@ -11,10 +11,8 @@ using SmartStore.ComponentModel;
 
 namespace SmartStore.Utilities
 {
-
     public static partial class CommonHelper
-    {
-		
+    {	
 		/// <summary>
         /// Generate random digit code
         /// </summary>
@@ -54,7 +52,7 @@ namespace SmartStore.Utilities
 		/// </remarks>
 		public static string MapPath(string path, bool findAppRoot = true)
 		{
-			Guard.ArgumentNotNull(() => path);
+			Guard.NotNull(path, nameof(path));
 
 			if (HostingEnvironment.IsHosted)
 			{
@@ -209,6 +207,5 @@ namespace SmartStore.Utilities
 				return false;
 			}
 		}
-
 	}
 }

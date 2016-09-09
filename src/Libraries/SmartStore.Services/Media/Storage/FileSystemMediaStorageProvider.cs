@@ -26,8 +26,6 @@ namespace SmartStore.Services.Media.Storage
 
 		protected string GetPicturePath(MediaItem media)
 		{
-			Guard.NotEmpty(media.Path, nameof(media.Path));
-
 			return _fileSystem.Combine(media.Path, media.GetFileName());
 		}
 

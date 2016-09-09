@@ -25,6 +25,7 @@ using SmartStore.Data.Setup;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
@@ -399,7 +400,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			if (!_config.StoreMediaInDB)
 			{
 				// All pictures have initially been stored in the DB. Move the binaries to disk.
-				var fileSystemStorageProvider = new FileSystemMediaStorageProvider(new LocalFileSystem());
+				var fileSystemStorageProvider = new FileSystemMediaStorageProvider(new MediaFileSystem());
 				var mediaStorages = _ctx.Set<MediaStorage>();
 
 				// pictures

@@ -10,6 +10,7 @@ namespace SmartStore.Core.IO
 {
 	public class LocalFileSystem : IFileSystem
 	{
+		private readonly string _basePath;		// /base
 		private readonly string _virtualPath;	// ~/base
 		private readonly string _publicPath;	// /Shop/base
 		private readonly string _storagePath;	// C:\SMNET\base
@@ -22,9 +23,9 @@ namespace SmartStore.Core.IO
 		protected internal LocalFileSystem(string basePath)
 		{
 			// for testing purposes
-			basePath = basePath.EmptyNull().EnsureStartsWith("/").TrimEnd('/');
+			_basePath = basePath.EmptyNull().EnsureStartsWith("/").TrimEnd('/');
 
-			_virtualPath = "~" + basePath;
+			_virtualPath = "~" + _basePath;
 
 			_storagePath = CommonHelper.MapPath(_virtualPath, false);
 
@@ -35,7 +36,12 @@ namespace SmartStore.Core.IO
 				appPath = HostingEnvironment.ApplicationVirtualPath;
 			}
 
-			_publicPath = appPath.TrimEnd('/') + basePath;
+			_publicPath = appPath.TrimEnd('/') + _basePath;
+		}
+
+		public string Root
+		{
+			get { return _basePath; }
 		}
 
 		/// <summary>
@@ -64,8 +70,8 @@ namespace SmartStore.Core.IO
 			return string.IsNullOrEmpty(path)
 					   ? ""
 					   : Path.DirectorySeparatorChar != '/'
-							 ? path.Replace('/', Path.DirectorySeparatorChar)
-							 : path;
+							 ? path.Replace('/', Path.DirectorySeparatorChar).TrimStart('/', '\\')
+							 : path.TrimStart('/', '\\');
 		}
 
 		public string GetPublicUrl(string path)

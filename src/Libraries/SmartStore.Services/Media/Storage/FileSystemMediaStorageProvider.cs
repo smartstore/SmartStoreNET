@@ -12,9 +12,9 @@ namespace SmartStore.Services.Media.Storage
 	[DisplayOrder(1)]
 	public class FileSystemMediaStorageProvider : IMediaStorageProvider, ISupportsMediaMoving
 	{
-		private readonly IFileSystem _fileSystem;
+		private readonly IMediaFileSystem _fileSystem;
 
-		public FileSystemMediaStorageProvider(IFileSystem fileSystem)
+		public FileSystemMediaStorageProvider(IMediaFileSystem fileSystem)
 		{
 			_fileSystem = fileSystem;
 		}

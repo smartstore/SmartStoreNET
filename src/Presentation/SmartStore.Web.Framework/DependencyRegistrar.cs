@@ -780,10 +780,12 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.RegisterType<LocalFileSystem>().As<IFileSystem>().SingleInstance();
+			builder.RegisterType<MediaFileSystem>().As<IMediaFileSystem>().SingleInstance();
 
 			// Register IFileSystem twice, this time explicitly named.
 			// We may need this later in decorator classes as a kind of fallback.
 			builder.RegisterType<LocalFileSystem>().Named<IFileSystem>("local").SingleInstance();
+			builder.RegisterType<MediaFileSystem>().Named<IMediaFileSystem>("local").SingleInstance();
 
 			builder.RegisterType<DefaultVirtualPathProvider>().As<IVirtualPathProvider>().SingleInstance();
 			builder.RegisterType<LockFileManager>().As<ILockFileManager>().SingleInstance();

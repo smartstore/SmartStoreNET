@@ -58,20 +58,20 @@ namespace SmartStore.Services.Media
 		/// <summary>
 		/// Gets the size of a picture
 		/// </summary>
-		/// <param name="picture"></param>
-		/// <returns></returns>
-		Size GetPictureSize(Picture picture);
+		/// <param name="pictureBinary">The buffer</param>
+		/// <returns>Size</returns>
+		Size GetPictureSize(byte[] pictureBinary);
 
-        /// <summary>
-        /// Gets a picture URL
-        /// </summary>
-        /// <param name="pictureId">Picture identifier</param>
-        /// <param name="targetSize">The target picture size (longest side)</param>
-        /// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
-        /// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
-        /// <param name="defaultPictureType">Default picture type</param>
-        /// <returns>Picture URL</returns>
-        string GetPictureUrl(
+		/// <summary>
+		/// Gets a picture URL
+		/// </summary>
+		/// <param name="pictureId">Picture identifier</param>
+		/// <param name="targetSize">The target picture size (longest side)</param>
+		/// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
+		/// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
+		/// <param name="defaultPictureType">Default picture type</param>
+		/// <returns>Picture URL</returns>
+		string GetPictureUrl(
 			int pictureId,
             int targetSize = 0,
             bool showDefaultPicture = true,
@@ -223,6 +223,12 @@ namespace SmartStore.Services.Media
 			}
 
 			return picture;
+		}
+
+		public static Size GetPictureSize(this IPictureService pictureService, Picture picture)
+		{
+			var pictureBinary = pictureService.LoadPictureBinary(picture);
+			return pictureService.GetPictureSize(pictureBinary);
 		}
 	}
 }

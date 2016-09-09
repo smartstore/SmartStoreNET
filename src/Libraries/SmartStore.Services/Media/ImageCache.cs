@@ -20,14 +20,14 @@ namespace SmartStore.Services.Media
 		private readonly string _thumbsRootDir;
 		private readonly IStoreContext _storeContext;
 		private readonly HttpContextBase _httpContext;
-		private readonly IFileSystem _fileSystem;
+		private readonly IMediaFileSystem _fileSystem;
 		private readonly IImageResizerService _imageResizerService;
 
 		public ImageCache(
 			MediaSettings mediaSettings, 
 			IStoreContext storeContext, 
 			HttpContextBase httpContext,
-			IFileSystem fileSystem,
+			IMediaFileSystem fileSystem,
 			IImageResizerService imageResizerService)
         {
             _mediaSettings = mediaSettings;
@@ -36,10 +36,7 @@ namespace SmartStore.Services.Media
 			_fileSystem = fileSystem;
 			_imageResizerService = imageResizerService;
 
-			_thumbsRootDir = "Media/Thumbs/";
-
-			_fileSystem.TryCreateFolder("Media");
-			_fileSystem.TryCreateFolder("Media/Thumbs");
+			_thumbsRootDir = "Thumbs/";
 		}
 
 		public byte[] ProcessAndAddImageToCache(CachedImageResult cachedImage, byte[] source, int targetSize)

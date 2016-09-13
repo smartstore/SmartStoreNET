@@ -5,7 +5,6 @@ using System.Text;
 
 namespace SmartStore.Data.Setup
 {
-
 	internal class SettingEntry
 	{
 		public string Key { get; set; }
@@ -57,5 +56,4 @@ namespace SmartStore.Data.Setup
 			return _entries.Where(x => x.Key.HasValue());
 		}
 	}
-
 }

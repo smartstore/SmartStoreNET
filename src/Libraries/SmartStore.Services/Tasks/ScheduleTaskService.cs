@@ -207,7 +207,7 @@ namespace SmartStore.Services.Tasks
 
 		public ScheduleTask GetOrAddTask<T>(Action<ScheduleTask> newAction) where T : ITask
 		{
-			Guard.ArgumentNotNull(() => newAction);
+			Guard.NotNull(newAction, nameof(newAction));
 
 			var type = typeof(T);
 

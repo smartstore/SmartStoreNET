@@ -7,7 +7,6 @@ using System.Text;
 
 namespace SmartStore.Data.Setup
 {
-	
 	public class DbMigrationContext
 	{
 		private static DbMigrationContext s_dbMigrationContext;
@@ -41,5 +40,4 @@ namespace SmartStore.Data.Setup
 			return false;
 		}
 	}
-
 }

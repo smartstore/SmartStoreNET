@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SmartStore.Data.Setup
 {
 
 	public static class BuilderDbContextExtensions
 	{
-
 		#region Resource building
 
 		public static void MigrateLocaleResources(this SmartObjectContext ctx, Action<LocaleResourcesBuilder> fn, bool updateTouchedResources = false)
@@ -43,7 +39,6 @@ namespace SmartStore.Data.Setup
 		}
 
 		#endregion
-
 	}
 
 }

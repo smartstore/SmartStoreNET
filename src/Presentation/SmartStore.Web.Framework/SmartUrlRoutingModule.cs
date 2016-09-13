@@ -47,7 +47,7 @@ namespace SmartStore.Web.Framework
 		{
 			Guard.ArgumentNotEmpty(() => path);
 
-			if (RegularExpressions.IsWebUrl.IsMatch(path))
+			if (path.IsWebUrl())
 			{
 				throw new ArgumentException("Only relative paths are allowed.", "path");
 			}

@@ -270,14 +270,27 @@ namespace SmartStore
 			if (String.IsNullOrEmpty(value))
 				return false;
 
-			if (schemeIsOptional)
+			value = value.Trim().ToLowerInvariant();
+
+			if (schemeIsOptional && value.StartsWith("//"))
 			{
-				Uri uri;
-				return Uri.TryCreate(value, UriKind.Absolute, out uri);
+				value = "http:" + value;
 			}
 
-			return RegularExpressions.IsWebUrl.IsMatch(value.Trim());
-        }
+			return Uri.IsWellFormedUriString(value, UriKind.Absolute) &&
+				(value.StartsWith("http://") || value.StartsWith("https://") || value.StartsWith("ftp://"));
+
+			#region Old (obsolete)
+			//// Uri.TryCreate() does not accept port numbers in uri strings.
+			//if (schemeIsOptional)
+			//{
+			//	Uri uri;
+			//	return Uri.TryCreate(value, UriKind.Absolute, out uri);
+			//}
+
+			//return RegularExpressions.IsWebUrl.IsMatch(value.Trim());
+			#endregion
+		}
 
         [DebuggerStepThrough]
         public static bool IsEmail(this string value)

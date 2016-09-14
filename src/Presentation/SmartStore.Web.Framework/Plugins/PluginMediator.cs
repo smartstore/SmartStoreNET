@@ -48,7 +48,7 @@ namespace SmartStore.Web.Framework.Plugins
 			int languageId = 0,
 			bool returnDefaultValue = true)
 		{
-			Guard.ArgumentNotNull(() => metadata);
+			Guard.NotNull(metadata, nameof(metadata));
 
 			string systemName = metadata.SystemName;
 			var resourceName = metadata.ResourceKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
@@ -62,9 +62,9 @@ namespace SmartStore.Web.Framework.Plugins
 
 		public void SaveLocalizedValue(ProviderMetadata metadata, int languageId, string propertyName, string value)
 		{
-			Guard.ArgumentNotNull(() => metadata);
+			Guard.NotNull(metadata, nameof(metadata));
 			Guard.IsPositive(languageId, nameof(languageId));
-			Guard.ArgumentNotEmpty(() => propertyName);
+			Guard.NotEmpty(propertyName, nameof(propertyName));
 
 			var resourceName = metadata.ResourceKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
 			var resource = _services.Localization.GetLocaleStringResourceByName(resourceName, languageId, false);
@@ -112,7 +112,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 		public void SetUserDisplayOrder(ProviderMetadata metadata, int displayOrder)
 		{
-			Guard.ArgumentNotNull(() => metadata);
+			Guard.NotNull(metadata, nameof(metadata));
 
 			metadata.DisplayOrder = displayOrder;
 			SetSetting(metadata, "DisplayOrder", displayOrder);
@@ -120,8 +120,8 @@ namespace SmartStore.Web.Framework.Plugins
 
 		public void SetSetting<T>(ProviderMetadata metadata, string propertyName, T value)
 		{
-			Guard.ArgumentNotNull(() => metadata);
-			Guard.ArgumentNotEmpty(() => propertyName);
+			Guard.NotNull(metadata, nameof(metadata));
+			Guard.NotEmpty(propertyName, nameof(propertyName));
 
 			var settingKey = metadata.SettingKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
 
@@ -147,7 +147,7 @@ namespace SmartStore.Web.Framework.Plugins
 			where TModel : ProviderModel, new()
 			where TProvider : IProvider
 		{
-			Guard.ArgumentNotNull(() => provider);
+			Guard.NotNull(provider, nameof(provider));
 
 			var metadata = provider.Metadata;
 			var model = new TModel();
@@ -282,7 +282,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 		public void ActivateDependentWidgets(ProviderMetadata parent, bool activate)
 		{
-			Guard.ArgumentNotNull(() => parent);
+			Guard.NotNull(parent, nameof(parent));
 
 			if (parent.DependentWidgets == null || parent.DependentWidgets.Length == 0)
 				return;

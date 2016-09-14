@@ -110,8 +110,8 @@ namespace SmartStore.Core.Async
 
 		public static Task Run(Action<ILifetimeScope, CancellationToken> action, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
 		{
-			Guard.ArgumentNotNull(() => action);
-			Guard.ArgumentNotNull(() => scheduler);
+			Guard.NotNull(action, nameof(action));
+			Guard.NotNull(scheduler, nameof(scheduler));
 
 			var ct = _host.CreateCompositeCancellationTokenSource(cancellationToken).Token;
 			options |= TaskCreationOptions.LongRunning; // enforce an exclusive thread (not from pool)
@@ -131,9 +131,9 @@ namespace SmartStore.Core.Async
 
 		public static Task Run(Action<ILifetimeScope, CancellationToken, object> action, object state, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
 		{
-			Guard.ArgumentNotNull(() => state);
-			Guard.ArgumentNotNull(() => action);
-			Guard.ArgumentNotNull(() => scheduler);
+			Guard.NotNull(state, nameof(state));
+			Guard.NotNull(action, nameof(action));
+			Guard.NotNull(scheduler, nameof(scheduler));
 
 			var ct = _host.CreateCompositeCancellationTokenSource(cancellationToken).Token;
 			options |= TaskCreationOptions.LongRunning; // enforce an exclusive thread (not from pool)
@@ -181,8 +181,8 @@ namespace SmartStore.Core.Async
 
 		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, TResult> function, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
 		{
-			Guard.ArgumentNotNull(() => function);
-			Guard.ArgumentNotNull(() => scheduler);
+			Guard.NotNull(function, nameof(function));
+			Guard.NotNull(scheduler, nameof(scheduler));
 
 			var ct = _host.CreateCompositeCancellationTokenSource(cancellationToken).Token;
 			options |= TaskCreationOptions.LongRunning; // enforce an exclusive thread (not from pool)
@@ -203,9 +203,9 @@ namespace SmartStore.Core.Async
 
 		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, object, TResult> function, object state, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
 		{
-			Guard.ArgumentNotNull(() => state);
-			Guard.ArgumentNotNull(() => function);
-			Guard.ArgumentNotNull(() => scheduler);
+			Guard.NotNull(state, nameof(state));
+			Guard.NotNull(function, nameof(function));
+			Guard.NotNull(scheduler, nameof(scheduler));
 
 			var ct = _host.CreateCompositeCancellationTokenSource(cancellationToken).Token;
 			options |= TaskCreationOptions.LongRunning; // enforce an exclusive thread (not from pool)

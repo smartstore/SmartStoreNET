@@ -32,7 +32,7 @@ namespace SmartStore.Web.Framework.Theming
 
         internal static bool PathListContainsThemeVars(IEnumerable<string> pathes)
         {
-            Guard.ArgumentNotNull(() => pathes);
+            Guard.NotNull(pathes, nameof(pathes));
 
             return pathes.Any(x => PathIsThemeVars(x));
         }

@@ -118,7 +118,7 @@ namespace SmartStore.Services.Common
 
 		public virtual IList<Address> GetAddressByIds(int[] addressIds)
 		{
-			Guard.ArgumentNotNull(() => addressIds);
+			Guard.NotNull(addressIds, nameof(addressIds));
 
 			var query =
 				from x in _addressRepository.TableUntracked.Expand(x => x.Country).Expand(x => x.StateProvince)

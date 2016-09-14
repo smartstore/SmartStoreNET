@@ -13,8 +13,8 @@ namespace SmartStore.Core.Packaging
 
 		public ExtensionReferenceRepository(IProjectSystem project, IPackageRepository sourceRepository)
 		{
-			Guard.ArgumentNotNull(() => project);
-			Guard.ArgumentNotNull(() => sourceRepository);
+			Guard.NotNull(project, nameof(project));
+			Guard.NotNull(sourceRepository, nameof(sourceRepository));
 
 			Project = project;
 			SourceRepository = sourceRepository;

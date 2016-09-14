@@ -2561,7 +2561,7 @@ namespace SmartStore.Services.Orders
 
 		public virtual Shipment AddShipment(Order order, string trackingNumber, Dictionary<int, int> quantities)
 		{
-			Guard.ArgumentNotNull(() => order);
+			Guard.NotNull(order, nameof(order));
 
 			Shipment shipment = null;
 			decimal? totalWeight = null;

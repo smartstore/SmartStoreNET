@@ -168,7 +168,7 @@ namespace SmartStore.Services.Common
 
 		public virtual Multimap<int, GenericAttribute> GetAttributesForEntity(int[] entityIds, string keyGroup)
 		{
-			Guard.ArgumentNotNull(() => entityIds);
+			Guard.NotNull(entityIds, nameof(entityIds));
 
 			var query = _genericAttributeRepository.TableUntracked
 				.Where(x => entityIds.Contains(x.EntityId) && x.KeyGroup == keyGroup);
@@ -206,7 +206,7 @@ namespace SmartStore.Services.Common
 		/// <param name="storeId">Store identifier; pass 0 if this attribute will be available for all stores</param>
 		public virtual void SaveAttribute<TPropType>(BaseEntity entity, string key, TPropType value, int storeId = 0)
         {
-			Guard.ArgumentNotNull(() => entity);
+			Guard.NotNull(entity, nameof(entity));
 
 			SaveAttribute(entity.Id, key, entity.GetUnproxiedEntityType().Name, value, storeId);
         }

@@ -60,7 +60,7 @@ namespace SmartStore.Core.Packaging
 
 		public PackageInfo Install(Stream packageStream, string location, string applicationPath)
 		{
-			Guard.ArgumentNotNull(() => packageStream);
+			Guard.NotNull(packageStream, nameof(packageStream));
 			
 			IPackage package;
 			try

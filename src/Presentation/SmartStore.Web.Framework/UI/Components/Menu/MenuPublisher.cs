@@ -27,8 +27,8 @@ namespace SmartStore.Web.Framework.UI
 
 		public void RegisterMenus(TreeNode<MenuItem> rootNode, string menuName)
 		{
-			Guard.ArgumentNotNull(() => rootNode);
-			Guard.ArgumentNotEmpty(() => menuName);
+			Guard.NotNull(rootNode, nameof(rootNode));
+			Guard.NotEmpty(menuName, nameof(menuName));
 
 			var providers = _requestCache.Get("sm.menu.providers.{0}".FormatInvariant(menuName), () => 
 			{

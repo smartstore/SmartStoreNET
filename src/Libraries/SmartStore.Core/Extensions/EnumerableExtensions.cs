@@ -186,9 +186,9 @@ namespace SmartStore
 			 Func<TSource, TElement> elementSelector,
 			 IEqualityComparer<TKey> comparer)
 		{
-			Guard.ArgumentNotNull(() => source);
-			Guard.ArgumentNotNull(() => keySelector);
-			Guard.ArgumentNotNull(() => elementSelector);
+			Guard.NotNull(source, nameof(source));
+			Guard.NotNull(keySelector, nameof(keySelector));
+			Guard.NotNull(elementSelector, nameof(elementSelector));
 
 			var dictionary = new Dictionary<TKey, TElement>(comparer);
 
@@ -209,9 +209,9 @@ namespace SmartStore
                                                 Func<TSource, TKey> keySelector,
                                                 Func<TSource, TValue> valueSelector)
         {
-            Guard.ArgumentNotNull(() => source);
-            Guard.ArgumentNotNull(() => keySelector);
-            Guard.ArgumentNotNull(() => valueSelector);
+            Guard.NotNull(source, nameof(source));
+            Guard.NotNull(keySelector, nameof(keySelector));
+            Guard.NotNull(valueSelector, nameof(valueSelector));
 
             var map = new Multimap<TKey, TValue>();
 
@@ -229,7 +229,7 @@ namespace SmartStore
 
         public static void AddRange(this NameValueCollection initial, NameValueCollection other)
         {
-            Guard.ArgumentNotNull(initial, "initial");
+            Guard.NotNull(initial, "initial");
 
             if (other == null)
                 return;

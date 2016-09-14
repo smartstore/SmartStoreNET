@@ -161,7 +161,7 @@ namespace SmartStore
         /// that no duplicates can occur within the global descriptor collection.</remarks>
         protected void RegisterSignatureProperty(string propertyName)
         {
-            Guard.ArgumentNotEmpty(() => propertyName);
+            Guard.NotEmpty(propertyName, nameof(propertyName));
 
 			_extraSignatureProperties.Add(propertyName);
         }
@@ -184,7 +184,7 @@ namespace SmartStore
         /// that no duplicates can occur within the global descriptor collection.</remarks>
         protected void RegisterSignatureProperty(Expression<Func<T, object>> expression)
         {
-            Guard.ArgumentNotNull(() => expression);
+            Guard.NotNull(expression, nameof(expression));
 
             base.RegisterSignatureProperty(expression.ExtractPropertyInfo().Name);
         }

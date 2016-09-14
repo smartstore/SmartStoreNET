@@ -31,7 +31,7 @@ namespace SmartStore.Core.Data
 
 		public static void SetDefaultFactory(Func<DataSettings> factory) 
 		{
-			Guard.ArgumentNotNull(() => factory);
+			Guard.NotNull(factory, nameof(factory));
 
 			lock (s_rwLock.GetWriteLock())
 			{

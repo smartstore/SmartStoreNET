@@ -23,7 +23,7 @@ namespace SmartStore.Web.Framework.Pdf
 
 		protected internal static string ViewToString(string viewName, string masterName, object model, bool isPartial, ControllerContext context, bool throwOnError)
 		{
-			Guard.ArgumentNotNull(() => context);
+			Guard.NotNull(context, nameof(context));
 
 			string html = null;
 

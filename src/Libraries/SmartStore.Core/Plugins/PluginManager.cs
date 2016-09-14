@@ -183,7 +183,7 @@ namespace SmartStore.Core.Plugins
 
 		private static LoadPluginResult LoadPluginFromFolder(string pluginFolderPath, ICollection<string> installedPluginSystemNames)
 		{
-			Guard.ArgumentNotEmpty(() => pluginFolderPath);
+			Guard.NotEmpty(pluginFolderPath, nameof(pluginFolderPath));
 
 			var folder = new DirectoryInfo(pluginFolderPath);
 			if (!folder.Exists)
@@ -340,7 +340,7 @@ namespace SmartStore.Core.Plugins
         /// <param name="systemName">Plugin system name</param>
         public static void MarkPluginAsUninstalled(string systemName)
         {
-			Guard.ArgumentNotEmpty(() => systemName);
+			Guard.NotEmpty(systemName, nameof(systemName));
 
 			var installedPluginSystemNames = GetInstalledPluginNames();
 			bool alreadyMarkedAsInstalled = installedPluginSystemNames.Contains(systemName);
@@ -389,7 +389,7 @@ namespace SmartStore.Core.Plugins
         /// <returns><c>true</c> when the plugin is assumed to be compatible</returns>
         public static bool IsAssumedCompatible(PluginDescriptor descriptor)
         {
-			Guard.ArgumentNotNull(() => descriptor);
+			Guard.NotNull(descriptor, nameof(descriptor));
 
 			return IsAssumedCompatible(descriptor.MinAppVersion);
         }
@@ -407,7 +407,7 @@ namespace SmartStore.Core.Plugins
 		/// <returns><c>true</c> when the extension's version is assumed to be compatible</returns>
 		public static bool IsAssumedCompatible(Version minAppVersion)
 		{
-			Guard.ArgumentNotNull(() => minAppVersion);
+			Guard.NotNull(minAppVersion, nameof(minAppVersion));
 			
 			if (SmartStoreVersion.Version == minAppVersion)
 			{
@@ -448,7 +448,7 @@ namespace SmartStore.Core.Plugins
 		/// <returns><c>true</c> if the plugin exists, <c>false</c> otherwise</returns>
 		public static bool PluginExists(string systemName)
 		{
-			Guard.ArgumentNotEmpty(() => systemName);
+			Guard.NotEmpty(systemName, nameof(systemName));
 			return _referencedPlugins.ContainsKey(systemName);
 		}
 

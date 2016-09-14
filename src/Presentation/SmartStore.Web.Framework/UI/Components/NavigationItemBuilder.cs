@@ -18,7 +18,7 @@ namespace SmartStore.Web.Framework.UI
 
         protected NavigationItemBuilder(TItem item)
         {
-            Guard.ArgumentNotNull(() => item);
+            Guard.NotNull(item, nameof(item));
 
             this.Item = item;
         }
@@ -187,7 +187,7 @@ namespace SmartStore.Web.Framework.UI
         public NavigationItemtWithContentBuilder(TItem item, HtmlHelper htmlHelper)
             : base(item)
         {
-            Guard.ArgumentNotNull(() => htmlHelper);
+            Guard.NotNull(htmlHelper, nameof(htmlHelper));
 
             HtmlHelper = htmlHelper;
         }

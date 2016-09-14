@@ -125,7 +125,7 @@ namespace SmartStore.Services.Shipping
 
 		public virtual Multimap<int, Shipment> GetShipmentsByOrderIds(int[] orderIds)
 		{
-			Guard.ArgumentNotNull(() => orderIds);
+			Guard.NotNull(orderIds, nameof(orderIds));
 
 			var query =
 				from x in _shipmentRepository.TableUntracked.Expand(x => x.ShipmentItems)

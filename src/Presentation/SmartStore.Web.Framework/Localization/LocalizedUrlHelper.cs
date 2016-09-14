@@ -13,13 +13,13 @@ namespace SmartStore.Web.Framework.Localization
         public LocalizedUrlHelper(HttpRequestBase httpRequest, bool rawUrl = false) 
             : this(httpRequest.ApplicationPath, rawUrl ? httpRequest.RawUrl : httpRequest.AppRelativeCurrentExecutionFilePath, rawUrl)
         {
-            Guard.ArgumentNotNull(() => httpRequest);
+            Guard.NotNull(httpRequest, nameof(httpRequest));
         }
 
         public LocalizedUrlHelper(string applicationPath, string relativePath, bool rawUrl = false)
         {
-            Guard.ArgumentNotNull(() => applicationPath);
-            Guard.ArgumentNotNull(() => relativePath);
+            Guard.NotNull(applicationPath, nameof(applicationPath));
+            Guard.NotNull(relativePath, nameof(relativePath));
 
             this.ApplicationPath = applicationPath;
 
@@ -87,7 +87,7 @@ namespace SmartStore.Web.Framework.Localization
 
         public string PrependSeoCode(string seoCode, bool safe = false)
         {
-            Guard.ArgumentNotEmpty(() => seoCode);
+            Guard.NotEmpty(seoCode, nameof(seoCode));
 
             if (safe)
             {

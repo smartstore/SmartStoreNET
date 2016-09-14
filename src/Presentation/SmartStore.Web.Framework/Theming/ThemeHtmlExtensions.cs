@@ -21,7 +21,7 @@ namespace SmartStore.Web.Framework.Theming
 
         public static MvcHtmlString ThemeVarLabel(this HtmlHelper html, ThemeVariableInfo info)
         {
-            Guard.ArgumentNotNull(info, "info");
+            Guard.NotNull(info, "info");
 
             var result = new StringBuilder();
             var resKey = "ThemeVar.{0}.{1}".FormatInvariant(info.Manifest.ThemeName, info.Name);
@@ -43,7 +43,7 @@ namespace SmartStore.Web.Framework.Theming
          
         public static MvcHtmlString ThemeVarEditor(this HtmlHelper html, ThemeVariableInfo info, object value)
         {
-            Guard.ArgumentNotNull(info, "info");
+            Guard.NotNull(info, "info");
 
             string expression = html.NameForThemeVar(info);
 

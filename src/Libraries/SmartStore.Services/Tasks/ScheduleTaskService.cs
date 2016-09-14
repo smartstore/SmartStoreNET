@@ -230,7 +230,7 @@ namespace SmartStore.Services.Tasks
 
 		public void CalculateFutureSchedules(IEnumerable<ScheduleTask> tasks, bool isAppStart = false)
 		{
-			Guard.ArgumentNotNull(() => tasks);
+			Guard.NotNull(tasks, nameof(tasks));
 			
 			using (var scope = new DbContextScope(autoCommit: false))
 			{

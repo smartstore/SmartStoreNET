@@ -151,7 +151,7 @@ namespace SmartStore.Utilities
 
 		public static ExpandoObject ToExpando(object value)
 		{
-			Guard.ArgumentNotNull(() => value);
+			Guard.NotNull(value, nameof(value));
 
 			var anonymousDictionary = HtmlHelper.AnonymousObjectToHtmlAttributes(value);
 			IDictionary<string, object> expando = new ExpandoObject();
@@ -164,7 +164,7 @@ namespace SmartStore.Utilities
 
 		public static IDictionary<string, object> ObjectToDictionary(object obj)
 		{
-			Guard.ArgumentNotNull(() => obj);
+			Guard.NotNull(obj, nameof(obj));
 
 			return FastProperty.ObjectToDictionary(
 				obj,
@@ -180,7 +180,7 @@ namespace SmartStore.Utilities
 		/// <returns>The casted setting value</returns>
 		public static T GetAppSetting<T>(string key, T defValue = default(T))
 		{
-			Guard.ArgumentNotEmpty(() => key);
+			Guard.NotEmpty(key, nameof(key));
 
 			var setting = ConfigurationManager.AppSettings[key];
 
@@ -194,7 +194,7 @@ namespace SmartStore.Utilities
 
 		private static bool TryAction<T>(Func<T> func, out T output)
 		{
-			Guard.ArgumentNotNull(() => func);
+			Guard.NotNull(func, nameof(func));
 
 			try
 			{

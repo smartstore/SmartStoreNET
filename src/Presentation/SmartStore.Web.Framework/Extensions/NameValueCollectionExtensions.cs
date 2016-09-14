@@ -9,7 +9,7 @@ namespace SmartStore
 	{
         public static IDictionary<string, string> ToDictionary(this NameValueCollection collection)
         {
-            Guard.ArgumentNotNull(() => collection);
+            Guard.NotNull(collection, nameof(collection));
             
             var query = from key in collection.AllKeys
                         where key != null

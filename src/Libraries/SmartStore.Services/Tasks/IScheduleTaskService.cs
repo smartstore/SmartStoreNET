@@ -108,7 +108,7 @@ namespace SmartStore.Services.Tasks
 
 		public static ScheduleTask GetTaskByType(this IScheduleTaskService service, Type taskType)
 		{
-			Guard.ArgumentNotNull(() => taskType);
+			Guard.NotNull(taskType, nameof(taskType));
 
 			var name = taskType.AssemblyQualifiedNameWithoutVersion();
 

@@ -168,7 +168,7 @@ namespace SmartStore.Data
         /// <returns>The result returned by the database after executing the command.</returns>
         public int ExecuteSqlCommand(string sql, bool doNotEnsureTransaction = false, int? timeout = null, params object[] parameters)
         {
-            Guard.ArgumentNotEmpty(sql, "sql");
+            Guard.NotEmpty(sql, "sql");
 
             int? previousTimeout = null;
             if (timeout.HasValue)
@@ -195,7 +195,7 @@ namespace SmartStore.Data
 		/// <summary>Executes sql by using SQL-Server Management Objects which supports GO statements.</summary>
 		public int ExecuteSqlThroughSmo(string sql)
 		{
-			Guard.ArgumentNotEmpty(sql, "sql");
+			Guard.NotEmpty(sql, "sql");
 
 			int result = 0;
 
@@ -443,7 +443,7 @@ namespace SmartStore.Data
 
 			public DbContextTransactionWrapper(DbContextTransaction tx)
 			{
-				Guard.ArgumentNotNull(() => tx);
+				Guard.NotNull(tx, nameof(tx));
 
 				_tx = tx;
 			}

@@ -18,8 +18,8 @@ namespace SmartStore.Web.Framework.UI
 
         protected ComponentBuilder(TComponent component, HtmlHelper htmlHelper)
         {
-            Guard.ArgumentNotNull(() => component);
-            Guard.ArgumentNotNull(() => htmlHelper);
+            Guard.NotNull(component, nameof(component));
+            Guard.NotNull(htmlHelper, nameof(htmlHelper));
             
             this.Component = component;
             this.HtmlHelper = htmlHelper;
@@ -80,13 +80,13 @@ namespace SmartStore.Web.Framework.UI
         public TBuilder WithRenderer<T>(ComponentRenderer<TComponent> instance) 
             where T : ComponentRenderer<TComponent>
         {
-            Guard.ArgumentNotNull(() => instance);
+            Guard.NotNull(instance, nameof(instance));
             return this.WithRenderer(typeof(T));
         }
 
         public TBuilder WithRenderer(Type rendererType)
         {
-            Guard.ArgumentNotNull(() => rendererType);
+            Guard.NotNull(rendererType, nameof(rendererType));
             Guard.Implements<ComponentRenderer<TComponent>>(rendererType);
             var renderer = Activator.CreateInstance(rendererType) as ComponentRenderer<TComponent>;
             if (renderer != null)

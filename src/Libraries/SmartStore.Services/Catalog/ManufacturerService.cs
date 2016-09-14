@@ -351,7 +351,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByManufacturerIds(int[] manufacturerIds)
 		{
-			Guard.ArgumentNotNull(() => manufacturerIds);
+			Guard.NotNull(manufacturerIds, nameof(manufacturerIds));
 
 			var query = _productManufacturerRepository.TableUntracked
 				.Where(x => manufacturerIds.Contains(x.ManufacturerId))
@@ -366,7 +366,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByProductIds(int[] productIds)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query =
 				from pm in _productManufacturerRepository.TableUntracked.Expand(x => x.Manufacturer).Expand(x => x.Manufacturer.Picture)

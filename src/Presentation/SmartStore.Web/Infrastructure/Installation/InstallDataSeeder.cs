@@ -54,10 +54,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 		public InstallDataSeeder(SeedDataConfiguration configuration)
         {
-			Guard.ArgumentNotNull(() => configuration);
+			Guard.NotNull(configuration, nameof(configuration));
 
-			Guard.ArgumentNotNull(configuration.Language, "Language");
-			Guard.ArgumentNotNull(configuration.Data, "SeedData");
+			Guard.NotNull(configuration.Language, "Language");
+			Guard.NotNull(configuration.Data, "SeedData");
 
 			_config = configuration;
 			_data = configuration.Data;
@@ -556,7 +556,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         public virtual void Seed(SmartObjectContext context)
         {
-			Guard.ArgumentNotNull(() => context);
+			Guard.NotNull(context, nameof(context));
 
 			_ctx = context;
 			_data.Initialize(_ctx);

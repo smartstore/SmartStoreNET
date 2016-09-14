@@ -45,7 +45,7 @@ namespace SmartStore.Web.Framework
 		/// </remarks>
 		public static void RegisterRoutablePath(string path, string verb = ".*")
 		{
-			Guard.ArgumentNotEmpty(() => path);
+			Guard.NotEmpty(path, nameof(path));
 
 			if (path.IsWebUrl())
 			{
@@ -60,8 +60,8 @@ namespace SmartStore.Web.Framework
 
 		public static bool HasMatchingPathHandler(string path, string method = "GET")
 		{
-			Guard.ArgumentNotEmpty(() => path);
-			Guard.ArgumentNotEmpty(() => method);
+			Guard.NotEmpty(path, nameof(path));
+			Guard.NotEmpty(method, nameof(method));
 
 			if (_routes.Count > 0)
 			{

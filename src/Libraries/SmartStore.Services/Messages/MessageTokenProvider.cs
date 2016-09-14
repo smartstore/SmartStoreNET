@@ -888,7 +888,7 @@ namespace SmartStore.Services.Messages
 		{
 			// TODO: (mc) this actually belongs to PluginMediator, but we simply cannot add a dependency to framework from here. Refactor later!
 			
-			Guard.ArgumentNotNull(() => metadata);
+			Guard.NotNull(metadata, nameof(metadata));
 
 			string systemName = metadata.SystemName;
 			var languageId = _workContext.WorkingLanguage.Id;

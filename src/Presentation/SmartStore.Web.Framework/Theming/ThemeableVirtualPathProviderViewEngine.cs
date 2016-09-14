@@ -338,7 +338,7 @@ namespace SmartStore.Web.Framework.Theming
         protected virtual IEnumerable<string> ExpandLocationFormats(IEnumerable<string> formats)
         {
             // appends razor view file extensions to location formats
-            Guard.ArgumentNotNull(() => formats);
+            Guard.NotNull(formats, nameof(formats));
 
             foreach (var format in formats)
             {

@@ -20,7 +20,7 @@ namespace SmartStore.Core.Logging
 
 		public TraceLogger(string fileName)
 		{
-			Guard.ArgumentNotEmpty(() => fileName);
+			Guard.NotEmpty(fileName, nameof(fileName));
 
 			_traceSource = new TraceSource("SmartStore");
 			_traceSource.Switch = new SourceSwitch("LogSwitch", "Error");

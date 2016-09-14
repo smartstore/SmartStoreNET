@@ -72,13 +72,13 @@ namespace SmartStore.Core.Async
 
 		public void Set<T>(T state, string name = null, bool neverExpires = false)
 		{
-			Guard.ArgumentNotNull(() => state);
+			Guard.NotNull(state, nameof(state));
 			Set(state, null, name, neverExpires);
 		}
 
 		public void Update<T>(Action<T> update, string name = null)
 		{
-			Guard.ArgumentNotNull(() => update);
+			Guard.NotNull(update, nameof(update));
 
 			var key = BuildKey(typeof(T), name);
 
@@ -95,7 +95,7 @@ namespace SmartStore.Core.Async
 
 		public void SetCancelTokenSource<T>(CancellationTokenSource cancelTokenSource, string name = null)
 		{
-			Guard.ArgumentNotNull(() => cancelTokenSource);
+			Guard.NotNull(cancelTokenSource, nameof(cancelTokenSource));
 
 			Set<T>(default(T), cancelTokenSource, name);
 		}

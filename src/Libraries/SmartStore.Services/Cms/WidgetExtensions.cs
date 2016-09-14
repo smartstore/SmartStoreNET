@@ -9,15 +9,15 @@ namespace SmartStore.Services.Cms
     {
         public static bool IsWidgetActive(this Provider<IWidget> widget, WidgetSettings widgetSettings)
         {
-			Guard.ArgumentNotNull(() => widget);
+			Guard.NotNull(widget, nameof(widget));
 
 			return widget.ToLazy().IsWidgetActive(widgetSettings);
         }
 
 		public static bool IsWidgetActive(this Lazy<IWidget, ProviderMetadata> widget, WidgetSettings widgetSettings)
 		{
-			Guard.ArgumentNotNull(() => widget);
-			Guard.ArgumentNotNull(() => widgetSettings);
+			Guard.NotNull(widget, nameof(widget));
+			Guard.NotNull(widgetSettings, nameof(widgetSettings));
 
 			if (widgetSettings.ActiveWidgetSystemNames == null)
 			{

@@ -667,7 +667,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductCategory> GetProductCategoriesByProductIds(int[] productIds, bool? hasDiscountsApplied = null, bool showHidden = false)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query = 
 				from pc in _productCategoryRepository.TableUntracked.Expand(x => x.Category).Expand(x => x.Category.Picture)
@@ -695,7 +695,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductCategory> GetProductCategoriesByCategoryIds(int[] categoryIds)
 		{
-			Guard.ArgumentNotNull(() => categoryIds);
+			Guard.NotNull(categoryIds, nameof(categoryIds));
 
 			var query = _productCategoryRepository.TableUntracked
 				.Where(x => categoryIds.Contains(x.CategoryId))

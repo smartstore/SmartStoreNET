@@ -794,8 +794,8 @@ namespace SmartStore.Services.Catalog
 			IEnumerable<int> allowedCustomerRolesIds = null,
 			bool searchLocalizedValue = false)
 		{
-			Guard.ArgumentNotNull(() => ctx);
-			Guard.ArgumentNotNull(() => selector);
+			Guard.NotNull(ctx, nameof(ctx));
+			Guard.NotNull(selector, nameof(selector));
 
 			if (allowedCustomerRolesIds == null)
 			{
@@ -1389,7 +1389,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query = _productRepository.TableUntracked
 				.Expand(x => x.ProductTags)
@@ -1413,7 +1413,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query = _productRepository.TableUntracked
 				.Expand(x => x.AppliedDiscounts.Select(y => y.DiscountRequirements))
@@ -1437,7 +1437,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductSpecificationAttribute> GetProductSpecificationAttributesByProductIds(int[] productIds)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query = _productSpecificationAttributeRepository.TableUntracked
 				.Expand(x => x.SpecificationAttributeOption)
@@ -1735,7 +1735,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, TierPrice> GetTierPricesByProductIds(int[] productIds, Customer customer = null, int storeId = 0)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query =
 				from x in _tierPriceRepository.TableUntracked
@@ -2051,7 +2051,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductBundleItem> GetBundleItemsByProductIds(int[] productIds, bool showHidden = false)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query =
 				from pbi in _productBundleItemRepository.TableUntracked

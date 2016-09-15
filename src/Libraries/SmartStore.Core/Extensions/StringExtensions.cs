@@ -264,8 +264,7 @@ namespace SmartStore
 			return value;
 		}
 
-        [DebuggerStepThrough]
-        public static bool IsWebUrl(this string value, bool schemeIsOptional = false)
+        private static bool IsWebUrlInternal(this string value, bool schemeIsOptional)
         {
 			if (String.IsNullOrEmpty(value))
 				return false;
@@ -292,7 +291,19 @@ namespace SmartStore
 			#endregion
 		}
 
-        [DebuggerStepThrough]
+		[DebuggerStepThrough]
+		public static bool IsWebUrl(this string value)
+		{
+			return value.IsWebUrlInternal(false);
+		}
+
+		[DebuggerStepThrough]
+		public static bool IsWebUrl(this string value, bool schemeIsOptional)
+		{
+			return value.IsWebUrlInternal(schemeIsOptional);
+		}
+
+		[DebuggerStepThrough]
         public static bool IsEmail(this string value)
         {
             return !String.IsNullOrEmpty(value) && RegularExpressions.IsEmail.IsMatch(value.Trim());

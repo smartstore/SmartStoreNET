@@ -9,7 +9,7 @@ namespace SmartStore.Core.Search
 	public interface IIndexProvider
 	{
 		/// <summary>
-		/// Enumerates the names of all existing indexes. 
+		/// Enumerates the names of all EXISTING indexes. 
 		/// A name is required for the <see cref="GetIndexStore(string)"/> method.
 		/// </summary>
 		IEnumerable<string> EnumerateIndexes();

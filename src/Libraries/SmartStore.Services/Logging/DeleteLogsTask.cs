@@ -10,11 +10,11 @@ namespace SmartStore.Services.Logging
     /// </summary>
     public partial class DeleteLogsTask : ITask
     {
-        private readonly ILogger _logger;
+        private readonly ILogService _logService;
 
-        public DeleteLogsTask(ILogger logger)
+        public DeleteLogsTask(ILogService logService)
         {
-            this._logger = logger;
+            _logService = logService;
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace SmartStore.Services.Logging
             var olderThanDays = 7; // TODO: move to settings
             var toUtc = DateTime.UtcNow.AddDays(-olderThanDays);
 
-			_logger.ClearLog(toUtc, LogLevel.Error);
+			_logService.ClearLog(toUtc, LogLevel.Error);
         }
     }
 }

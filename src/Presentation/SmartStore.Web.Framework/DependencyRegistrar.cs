@@ -436,6 +436,7 @@ namespace SmartStore.Web.Framework
 		{
 			builder.RegisterType<Notifier>().As<INotifier>().InstancePerRequest();
 			builder.RegisterType<DefaultLogger>().As<ILogger>().InstancePerRequest();
+			builder.RegisterType<DbLogService>().As<ILogService>().InstancePerRequest();
 			builder.RegisterType<CustomerActivityService>().As<ICustomerActivityService>().InstancePerRequest();
 		}
 

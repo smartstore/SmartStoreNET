@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -63,39 +62,6 @@ namespace SmartStore.Core.Logging
 		public bool IsEnabled(LogLevel level)
 		{
 			return true;
-		}
-
-		public void DeleteLog(Log log)
-		{
-			// not supported
-		}
-
-		public void ClearLog()
-		{
-			// not supported
-		}
-
-		public void ClearLog(DateTime toUtc, LogLevel logLevel)
-		{
-			// not supported
-		}
-
-		public IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc, string message, LogLevel? logLevel, int pageIndex, int pageSize, int minFrequency)
-		{
-			// not supported
-			return null;
-		}
-
-		public Log GetLogById(int logId)
-		{
-			// not supported
-			return null;
-		}
-
-		public IList<Log> GetLogByIds(int[] logIds)
-		{
-			// not supported
-			return null;
 		}
 
 		public void InsertLog(LogContext context)

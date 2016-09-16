@@ -319,7 +319,7 @@ namespace SmartStore.PayPal.Services
 				if (shortMessage.HasValue())
 				{
 					shortMessage = "PayPal. " + shortMessage;
-					Logger.InsertLog(isWarning ? LogLevel.Warning : LogLevel.Error, shortMessage, fullMessage.EmptyNull());
+					Logger.Log(isWarning ? LogLevel.Warning : LogLevel.Error, shortMessage, fullMessage.EmptyNull());
 
 					if (notify)
 					{

@@ -79,7 +79,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 					HashIpAddress = true
 				};
 
-				logger.InsertLog(logContext);
+				logger.Log(logContext);
 			}
 			catch (Exception exc)
 			{

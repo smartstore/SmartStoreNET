@@ -178,7 +178,7 @@ namespace SmartStore.AmazonPay.Services
 
 				if (shortMessage.HasValue())
 				{
-					Logger.InsertLog(LogLevel.Error, shortMessage, fullMessage.EmptyNull());
+					Logger.Log(LogLevel.Error, shortMessage, fullMessage.EmptyNull());
 
 					if (notify)
 						_services.Notifier.Error(new LocalizedString(shortMessage));
@@ -197,7 +197,7 @@ namespace SmartStore.AmazonPay.Services
 
 				if (exception.GetErrorStrings(out shortMessage, out fullMessage))
 				{
-					Logger.InsertLog(LogLevel.Error, shortMessage, fullMessage);
+					Logger.Log(LogLevel.Error, shortMessage, fullMessage);
 
 					if (notify)
 						_services.Notifier.Error(new LocalizedString(shortMessage));
@@ -395,7 +395,7 @@ namespace SmartStore.AmazonPay.Services
 
 					if (checkoutState == null)
 					{
-						Logger.InsertLog(LogLevel.Warning, "Checkout state is null in AmazonPayService.ValidateAndInitiateCheckout!");
+						Logger.Log(LogLevel.Warning, "Checkout state is null in AmazonPayService.ValidateAndInitiateCheckout!");
 						model.Result = AmazonPayResultType.Redirect;
 						return model;
 					}
@@ -840,7 +840,7 @@ namespace SmartStore.AmazonPay.Services
 			}
 
 			if (errorId.HasValue())
-				Logger.InsertLog(LogLevel.Warning, T("Plugins.Payments.AmazonPay.OrderNotFound", errorId), "");
+				Logger.Log(LogLevel.Warning, T("Plugins.Payments.AmazonPay.OrderNotFound", errorId), "");
 
 			return order;
 		}

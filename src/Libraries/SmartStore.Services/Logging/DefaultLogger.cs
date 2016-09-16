@@ -26,7 +26,7 @@ namespace SmartStore.Services.Logging
 			this._workContext = workContext;
         }
 
-        public virtual bool IsEnabled(LogLevel level)
+        public virtual bool IsEnabledFor(LogLevel level)
         {
             switch (level)
             {
@@ -37,7 +37,7 @@ namespace SmartStore.Services.Logging
             }
         }
 
-		public virtual void InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
+		public virtual void Log(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
 		{
 			var context = new LogContext
 			{
@@ -47,10 +47,10 @@ namespace SmartStore.Services.Logging
 				Customer = customer
 			};
 
-			InsertLog(context);
+			Log(context);
 		}
 
-		public virtual void InsertLog(LogContext context)
+		public virtual void Log(LogContext context)
         {
 			_entries.Add(context);
 			if (_entries.Count == 50)

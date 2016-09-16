@@ -59,12 +59,12 @@ namespace SmartStore.Core.Logging
 			_traceSource.Switch.Level = SourceLevels.All;
 		}
 
-		public bool IsEnabled(LogLevel level)
+		public bool IsEnabledFor(LogLevel level)
 		{
 			return true;
 		}
 
-		public void InsertLog(LogContext context)
+		public void Log(LogContext context)
 		{
 			var type = LogLevelToEventType(context.LogLevel);
 			var msg = context.ShortMessage.Grow(context.FullMessage, Environment.NewLine);
@@ -75,7 +75,7 @@ namespace SmartStore.Core.Logging
 			}
 		}
 
-		public void InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
+		public void Log(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
 		{
 			var context = new LogContext
 			{
@@ -85,7 +85,7 @@ namespace SmartStore.Core.Logging
 				Customer = customer
 			};
 
-			InsertLog(context);
+			Log(context);
 		}
 
 		private TraceEventType LogLevelToEventType(LogLevel level)

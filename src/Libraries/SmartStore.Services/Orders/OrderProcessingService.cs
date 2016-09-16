@@ -217,7 +217,7 @@ namespace SmartStore.Services.Orders
 				var msg = string.Concat(T(messageKey, order.GetOrderNumber()), " ", string.Join(" ", errors));
 
 				_orderService.AddOrderNote(order, msg);
-				_logger.InsertLog(LogLevel.Error, msg, msg);
+				_logger.Log(LogLevel.Error, msg, msg);
 			}
 		}
 

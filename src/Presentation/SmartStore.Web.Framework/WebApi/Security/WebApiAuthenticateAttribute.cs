@@ -63,7 +63,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 		{
 			try
 			{
-				var logger = EngineContext.Current.Resolve<ILogger>();
+				var logger = EngineContext.Current.Resolve<ILoggerFactory>().CreateLogger(this.GetType());
 				var localization = EngineContext.Current.Resolve<ILocalizationService>();
 
 				string strResult = result.ToString();

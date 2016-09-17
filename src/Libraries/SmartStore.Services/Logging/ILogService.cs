@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Logging;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Logging
 {

@@ -811,6 +811,9 @@
     <Content Include="Media\Thumbs\placeholder.txt" />
     <Content Include="Config\ConnectionStrings.config" />
     <Content Include="Config\SessionState.config" />
+    <Content Include="Config\log4net.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-AE.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-BH.js" />

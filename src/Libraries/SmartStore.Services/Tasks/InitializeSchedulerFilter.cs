@@ -38,7 +38,7 @@ namespace SmartStore.Services.Tasks
                 {
                     s_initializing = true;
 
-					ILogger logger = EngineContext.Current.Resolve<ILogger>();
+					var logger = EngineContext.Current.Resolve<ILoggerFactory>().CreateLogger<InitializeSchedulerFilter>();
 					ITaskScheduler taskScheduler = EngineContext.Current.Resolve<ITaskScheduler>();
 
 					try

@@ -39,7 +39,7 @@ namespace SmartStore.Data.Setup
 				{
 					try
 					{
-						_logger = EngineContext.Current.Resolve<ILogger>();
+						_logger = EngineContext.Current.Resolve<ILoggerFactory>().CreateLogger(this.GetType());
 					}
 					catch
 					{

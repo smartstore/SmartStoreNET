@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Logging;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.PayPalSvc;
 using SmartStore.PayPal.Services;

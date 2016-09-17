@@ -4,6 +4,7 @@ using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Logging;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Logging
 {

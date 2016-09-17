@@ -19,7 +19,14 @@ namespace SmartStore.Services.Events
     {
 		private readonly ConcurrentDictionary<object, Timer> _queue = new ConcurrentDictionary<object, Timer>();
 
-        public void Publish<T>(T eventMessage)
+		public EventPublisher()
+		{
+			Logger = NullLogger.Instance;
+		}
+
+		public ILogger Logger { get; set; }
+
+		public void Publish<T>(T eventMessage)
         {
 			if (eventMessage != null)
 			{
@@ -87,15 +94,7 @@ namespace SmartStore.Services.Events
 
 		private void LogError(Exception exception)
 		{
-			try
-			{
-				var logger = EngineContext.Current.Resolve<ILogger>();
-				logger.Error(exception.Message, exception);
-			}
-			catch
-			{
-				//do nothing
-			}
+			Logger.Error(exception.Message, exception);
 		}
 
 		private void RemoveFromQueue(object eventMessage)

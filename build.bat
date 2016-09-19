@@ -22,7 +22,6 @@ echo "Unable to detect suitable environment. Build may not succeed."
 :findmsbuild
 
 SETLOCAL ENABLEDELAYEDEXPANSION
-SETLOCAL 
 
 FOR %%p in (
 	   "%ProgramFiles(x86)%\MSBuild\14.0\Bin"

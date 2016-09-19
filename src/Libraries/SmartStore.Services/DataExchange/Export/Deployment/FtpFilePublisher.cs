@@ -68,7 +68,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 				}
 			}
 
-			context.Log.Information("{0} file(s) successfully uploaded via FTP.".FormatInvariant(succeededFiles));
+			context.Log.Info("{0} file(s) successfully uploaded via FTP.".FormatInvariant(succeededFiles));
 		}
 	}
 }

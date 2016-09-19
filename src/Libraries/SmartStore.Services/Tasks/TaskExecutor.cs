@@ -136,9 +136,9 @@ namespace SmartStore.Services.Tasks
 				lastError = exception.Message.Truncate(995, "...");
 
 				if (canceled)
-					Logger.Warning(T("Admin.System.ScheduleTasks.Cancellation", task.Name), exception);
+					Logger.Warn(exception, T("Admin.System.ScheduleTasks.Cancellation", task.Name));
 				else
-					Logger.Error(string.Concat(T("Admin.System.ScheduleTasks.RunningError", task.Name), ": ", exception.Message), exception);
+					Logger.Error(exception, string.Concat(T("Admin.System.ScheduleTasks.RunningError", task.Name), ": ", exception.Message));
 
                 if (throwOnError)
                 {

@@ -351,7 +351,7 @@ namespace SmartStore.Admin.Controllers
 				}
 				catch (Exception ex)
 				{
-					Logger.Error("An error occurred while checking for update", ex);
+					Logger.Error(ex, "An error occurred while checking for update");
 					return noUpdateResult;
 				}
 			});
@@ -563,7 +563,7 @@ namespace SmartStore.Admin.Controllers
 					Text = T("Admin.System.Warnings.SitemapReachable.Wrong")
 				});
 
-				Logger.Warning(sitemapUrl.IsEmpty() ? "SitemapSEO" : sitemapUrl, exception);
+				Logger.Warn(exception, T("Admin.System.Warnings.SitemapReachable.Wrong"));
 			}
 
             //primary exchange rate currency

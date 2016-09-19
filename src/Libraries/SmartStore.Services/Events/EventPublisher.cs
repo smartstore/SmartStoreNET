@@ -94,7 +94,7 @@ namespace SmartStore.Services.Events
 
 		private void LogError(Exception exception)
 		{
-			Logger.Error(exception.Message, exception);
+			Logger.Error(exception);
 		}
 
 		private void RemoveFromQueue(object eventMessage)

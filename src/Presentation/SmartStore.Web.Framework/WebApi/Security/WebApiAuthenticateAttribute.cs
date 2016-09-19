@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -68,11 +69,10 @@ namespace SmartStore.Web.Framework.WebApi.Security
 
 				string strResult = result.ToString();
 				string description = localization.GetResource("Admin.WebApi.AuthResult." + strResult, 0, false, strResult);
-
-				logger.Log(
-					LogLevel.Warning,
-					localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatWith(strResult),
-					"{0}\r\n{1}".FormatWith(description, actionContext.Request.Headers.ToString()));
+				
+				logger.Warn(
+					new SecurityException("{0}\r\n{1}".FormatWith(description, actionContext.Request.Headers.ToString())),
+					localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatWith(strResult));
 			}
 			catch (Exception exc)
 			{

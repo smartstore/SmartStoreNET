@@ -189,7 +189,7 @@ namespace SmartStore.Services.Tasks
 						this.Stop();
 						using (var logger = new TraceLogger())
 						{
-							logger.Information("Stopping TaskScheduler sweep timer. Too many failed requests in succession.");
+							logger.Info("Stopping TaskScheduler sweep timer. Too many failed requests in succession.");
 						}
 					}
 				}
@@ -217,11 +217,11 @@ namespace SmartStore.Services.Tasks
 
 				if (wex == null)
 				{
-					logger.Error(msg, exception.InnerException);
+					logger.Error(exception.InnerException, msg);
 				}
 				else if (wex.Response == null)
 				{
-					logger.Error(msg, wex);
+					logger.Error(wex, msg);
 				}
 				else
 				{

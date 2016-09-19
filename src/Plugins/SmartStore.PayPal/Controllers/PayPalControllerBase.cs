@@ -232,11 +232,11 @@ namespace SmartStore.PayPal.Controllers
 									}
 								}
 
-								Logger.Information(T("Plugins.Payments.PayPal.IpnRecurringPaymentInfo"), new SmartException(sb.ToString()));
+								Logger.Info(new SmartException(sb.ToString()), T("Plugins.Payments.PayPal.IpnRecurringPaymentInfo"));
 							}
 							else
 							{
-								Logger.Error(T("Plugins.Payments.PayPal.IpnOrderNotFound"), new SmartException(sb.ToString()));
+								Logger.Error(new SmartException(sb.ToString()), T("Plugins.Payments.PayPal.IpnOrderNotFound"));
 							}
 						}
 						#endregion
@@ -306,7 +306,7 @@ namespace SmartStore.PayPal.Controllers
 							}
 							else
 							{
-								Logger.Error(T("Plugins.Payments.PayPal.IpnOrderNotFound"), new SmartException(sb.ToString()));
+								Logger.Error(new SmartException(sb.ToString()), T("Plugins.Payments.PayPal.IpnOrderNotFound"));
 							}
 						}
 						#endregion
@@ -315,7 +315,7 @@ namespace SmartStore.PayPal.Controllers
 			}
 			else
 			{
-				Logger.Error(T("Plugins.Payments.PayPal.IpnFailed"), new SmartException(strRequest));
+				Logger.Error(new SmartException(strRequest), T("Plugins.Payments.PayPal.IpnFailed"));
 			}
 
 			//nothing should be rendered to visitor

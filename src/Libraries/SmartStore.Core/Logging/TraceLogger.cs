@@ -64,14 +64,18 @@ namespace SmartStore.Core.Logging
 			return true;
 		}
 
-		public void Log(LogLevel logLevel, string shortMessage, string fullMessage = "")
+		public void Log(LogLevel level, Exception exception, string message, object[] args)
 		{
-			var type = LogLevelToEventType(logLevel);
-			var msg = shortMessage.Grow(fullMessage, Environment.NewLine);
+			var type = LogLevelToEventType(level);
 
-			if (msg.HasValue())
+			if (exception != null && !exception.IsFatal())
 			{
-				_traceSource.TraceEvent(type, (int)type, "{0}: {1}".FormatCurrent(type.ToString().ToUpper(), msg));
+				message = message.Grow(exception.ToAllMessages(), Environment.NewLine);
+			}
+
+			if (message.HasValue())
+			{
+				_traceSource.TraceEvent(type, (int)type, "{0}: {1}".FormatCurrent(type.ToString().ToUpper(), message));
 			}
 		}
 

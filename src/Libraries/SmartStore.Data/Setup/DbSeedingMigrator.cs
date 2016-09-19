@@ -148,7 +148,7 @@ namespace SmartStore.Data.Setup
 			// Apply external data seeders
 			RunSeeders<TContext>(externalSeeders, context);
 
-			Logger.Information("Database migration successful: {0} >> {1}".FormatInvariant(initialMigration, lastSuccessfulMigration));
+			Logger.Info("Database migration successful: {0} >> {1}".FormatInvariant(initialMigration, lastSuccessfulMigration));
 
 			return result;
 		}
@@ -171,14 +171,14 @@ namespace SmartStore.Data.Setup
 						throw new DbMigrationException(seederEntry.PreviousMigrationId, seederEntry.MigrationId, ex.InnerException ?? ex, true);
 					}
 
-					Logger.Warning("Seed error in migration '{0}'. The error was ignored because no rollback was requested.".FormatInvariant(seederEntry.MigrationId), ex);
+					Logger.WarnFormat(ex, "Seed error in migration '{0}'. The error was ignored because no rollback was requested.", seederEntry.MigrationId);
 				}
 			}
 		}
 
 		private void LogError(string initialMigration, string targetMigration, Exception exception)
 		{
-			Logger.Error("Database migration error: {0} >> {1}".FormatInvariant(initialMigration, targetMigration), exception);
+			Logger.ErrorFormat(exception, "Database migration error: {0} >> {1}", initialMigration, targetMigration);
 		}
 
 		private class SeederEntry

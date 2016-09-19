@@ -21,9 +21,9 @@ namespace SmartStore.Core.Logging
             return false;
         }
 
-        public void Log(LogLevel logLevel, string shortMessage, string fullMessage = "")
-        {
-        }
+		public void Log(LogLevel level, Exception exception, string message, object[] args)
+		{
+		}
 
 		public void Flush()
 		{

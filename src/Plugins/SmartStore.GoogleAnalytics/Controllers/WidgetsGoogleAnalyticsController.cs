@@ -115,7 +115,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
             }
             catch (Exception ex)
             {
-                Logger.Log(SmartStore.Core.Logging.LogLevel.Error, "Error creating scripts for google ecommerce tracking", ex.ToString());
+                Logger.Error(ex, "Error creating scripts for google ecommerce tracking");
             }
             return Content(globalScript);
         }

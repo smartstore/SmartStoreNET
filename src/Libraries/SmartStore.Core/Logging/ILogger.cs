@@ -1,29 +1,27 @@
 using System;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Logging;
 
 namespace SmartStore.Core.Logging
 {
-    /// <summary>
-    /// Logger interface
-    /// </summary>
-    public partial interface ILogger
+	/// <summary>
+	/// Interface that all loggers implement
+	/// </summary>
+	public partial interface ILogger
     {
-        /// <summary>
-        /// Determines whether a log level is enabled
-        /// </summary>
-        /// <param name="level">Log level</param>
-        /// <returns>Result</returns>
-        bool IsEnabledFor(LogLevel level);
+		/// <summary>
+		/// Checks if this logger is enabled for a given <see cref="LogLevel"/> passed as parameter. 
+		/// </summary>
+		/// <param name="level">true if this logger is enabled for level, otherwise false</param>
+		/// <returns>Result</returns>
+		bool IsEnabledFor(LogLevel level);
 
-        /// <summary>
-        /// Inserts a log item
-        /// </summary>
-        /// <param name="logLevel">Log level</param>
-        /// <param name="shortMessage">The short message</param>
-        /// <param name="fullMessage">The full message</param>
-		/// <returns>Always return <c>null</c></returns>
-        void Log(LogLevel logLevel, string shortMessage, string fullMessage = "");
+		/// <summary>
+		/// Generates a logging event for the specified level using the message and exception
+		/// </summary>
+		/// <param name="logLevel">The level of the message to be logged</param>
+		/// <param name="exception">The exception to log, including its stack trace. Pass null to not log an exception</param>
+		/// <param name="message">The message object to log</param>
+		/// <param name="args">An Object array containing zero or more objects to format. Can be null.</param>
+		void Log(LogLevel level, Exception exception, string message, object[] args);
 
 		/// <summary>
 		/// Commits log entries to the data store

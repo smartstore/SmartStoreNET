@@ -184,7 +184,7 @@ namespace SmartStore.Utilities
 						item.ExceptionStatus = webExc.Status;
 
 					if (context.Logger != null)
-						context.Logger.Error(item.ToString(), exception);
+						context.Logger.Error(exception, item.ToString());
 				}
 				catch { }
 			}

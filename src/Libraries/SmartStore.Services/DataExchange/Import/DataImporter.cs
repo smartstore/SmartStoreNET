@@ -94,16 +94,16 @@ namespace SmartStore.Services.DataExchange.Import
 			sb.AppendFormat("Warnings:\t\t{0}\r\n", result.Warnings);
 			sb.AppendFormat("Errors:\t\t\t{0}", result.Errors);
 
-			ctx.Log.Information(sb.ToString());
+			ctx.Log.Info(sb.ToString());
 
 			foreach (var message in result.Messages)
 			{
 				if (message.MessageType == ImportMessageType.Error)
-					ctx.Log.Error(message.ToString(), message.FullMessage);
+					ctx.Log.Error(new Exception(message.FullMessage), message.ToString());
 				else if (message.MessageType == ImportMessageType.Warning)
-					ctx.Log.Warning(message.ToString());
+					ctx.Log.Warn(message.ToString());
 				else
-					ctx.Log.Information(message.ToString());
+					ctx.Log.Info(message.ToString());
 			}
 		}
 
@@ -190,7 +190,7 @@ namespace SmartStore.Services.DataExchange.Import
 				var customer = _services.WorkContext.CurrentCustomer;
 				logHead.Append("Executed by:\t\t" + (customer.Email.HasValue() ? customer.Email : customer.SystemName));
 
-				ctx.Log.Information(logHead.ToString());
+				ctx.Log.Info(logHead.ToString());
 			}
 
 			if (!File.Exists(filePath))

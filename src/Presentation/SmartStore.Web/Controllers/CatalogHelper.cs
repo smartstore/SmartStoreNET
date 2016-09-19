@@ -1570,9 +1570,9 @@ namespace SmartStore.Web.Controllers
 					curNode = curNode.Parent;
 				}
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				Logger.Error(exc.Message, exc);
+				Logger.Error(ex);
 			}
 		}
 

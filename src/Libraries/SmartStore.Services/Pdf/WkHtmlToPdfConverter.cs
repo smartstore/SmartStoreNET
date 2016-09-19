@@ -42,7 +42,7 @@ namespace SmartStore.Services.Pdf
 			}
 			catch (Exception ex)
 			{
-				Logger.Error("Html to Pdf conversion error", ex);
+				Logger.Error(ex, "Html to Pdf conversion error");
 				throw;
 			}
 			finally

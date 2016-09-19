@@ -60,7 +60,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 				++count;
 			}
 
-			context.Log.Information("{0} email(s) created and queued for deployment.".FormatInvariant(count));
+			context.Log.Info("{0} email(s) created and queued for deployment.".FormatInvariant(count));
 		}
 	}
 }

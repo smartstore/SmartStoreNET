@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using log4net;
 using log4net.Core;
+using log4net.Util;
 using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Core.Logging
@@ -36,22 +38,25 @@ namespace SmartStore.Core.Logging
 			return _logger.IsEnabledFor(ConvertLevel(level));
 		}
 
-		public void Log(LogLevel logLevel, string shortMessage, string fullMessage = "")
+		public void Log(LogLevel level, Exception exception, string message, object[] args)
 		{
-			var level = ConvertLevel(logLevel);
+			var logLevel = ConvertLevel(level);
 
-			object messageObj = shortMessage;
+			if (message == null && exception != null)
+			{
+				message = exception.Message;
+			}
 
-			// TODO: refactor input
+			object messageObj = message;
 
-			//if (args != null && args.Length > 0)
-			//{
-			//	messageObj = new SystemStringFormat(CultureInfo.CurrentUICulture, message, args);
-			//}
+			if (args != null && args.Length > 0)
+			{
+				messageObj = new SystemStringFormat(CultureInfo.CurrentUICulture, message, args);
+			}
 
 			TryAddExtendedThreadInfo();
 
-			_logger.Log(_declaringType, level, messageObj, null);
+			_logger.Log(_declaringType, logLevel, messageObj, exception);
 		}
 
 		protected internal void TryAddExtendedThreadInfo()

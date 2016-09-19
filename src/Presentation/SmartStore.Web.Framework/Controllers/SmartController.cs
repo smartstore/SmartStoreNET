@@ -207,7 +207,7 @@ namespace SmartStore.Web.Framework.Controllers
 		/// <param name="ex">Exception</param>
 		private void LogException(Exception ex)
 		{
-			Logger.Error(ex.Message, ex);
+			Logger.Error(ex);
 		}
 
 		///// <summary>

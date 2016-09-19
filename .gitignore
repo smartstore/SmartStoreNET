@@ -276,6 +276,7 @@ $RECYCLE.BIN/
 *-symdir/
 [Ee]xternal[Ff]iles/
 /src/Plugins/*-sym
+/src/Tests/*-sym
 /src/Presentation/SmartStore.Web/Themes/*-sym
 
 

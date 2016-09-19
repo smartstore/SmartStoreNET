@@ -36,24 +36,11 @@ namespace SmartStore.Core.Logging
 			return _logger.IsEnabledFor(ConvertLevel(level));
 		}
 
-		public void Log(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
+		public void Log(LogLevel logLevel, string shortMessage, string fullMessage = "")
 		{
-			var context = new LogContext
-			{
-				LogLevel = logLevel,
-				ShortMessage = shortMessage,
-				FullMessage = fullMessage,
-				Customer = customer
-			};
+			var level = ConvertLevel(logLevel);
 
-			Log(context);
-		}
-
-		public void Log(LogContext context)
-		{
-			var logLevel = ConvertLevel(context.LogLevel);
-
-			object messageObj = context.ShortMessage;
+			object messageObj = shortMessage;
 
 			// TODO: refactor input
 
@@ -64,7 +51,7 @@ namespace SmartStore.Core.Logging
 
 			TryAddExtendedThreadInfo();
 
-			_logger.Log(_declaringType, logLevel, messageObj, null);
+			_logger.Log(_declaringType, level, messageObj, null);
 		}
 
 		protected internal void TryAddExtendedThreadInfo()

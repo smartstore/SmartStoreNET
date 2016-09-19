@@ -107,7 +107,7 @@ namespace SmartStore.Web.Framework.Controllers
 
 			if (log)
 			{
-				Logger.Error(message, null, Services.WorkContext.CurrentCustomer);
+				Logger.Error(message);
 			}
 
 			Services.Notifier.Error(message, durable);
@@ -204,11 +204,10 @@ namespace SmartStore.Web.Framework.Controllers
 		/// <summary>
 		/// Log exception
 		/// </summary>
-		/// <param name="exc">Exception</param>
-		private void LogException(Exception exc)
+		/// <param name="ex">Exception</param>
+		private void LogException(Exception ex)
 		{
-			var customer = Services.WorkContext.CurrentCustomer;
-			Logger.Error(exc.Message, exc, customer);
+			Logger.Error(ex.Message, ex);
 		}
 
 		///// <summary>

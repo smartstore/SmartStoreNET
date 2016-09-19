@@ -154,7 +154,7 @@ namespace SmartStore.Web.Framework.Filters
 			{
 				var logger = _logger.Value;
 				var workContext = _workContext.Value;
-				logger.Error(exception.Message, exception, workContext.CurrentCustomer);
+				logger.Error(exception.Message, exception);
 			}
 			catch
 			{

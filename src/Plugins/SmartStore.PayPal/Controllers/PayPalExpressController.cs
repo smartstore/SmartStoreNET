@@ -278,7 +278,7 @@ namespace SmartStore.PayPal.Controllers
 						error.AppendLine(String.Format("{0} | {1} | {2}", errormsg.ErrorCode, errormsg.ShortMessage, errormsg.LongMessage));
 					}
 
-					Logger.Log(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, customer);
+					Logger.Log(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage);
                     
                     NotifyError(error.ToString(), false);
 
@@ -287,7 +287,7 @@ namespace SmartStore.PayPal.Controllers
 			}
 			catch (Exception ex)
 			{
-				Logger.Log(LogLevel.Error, ex.Message, ex.StackTrace, Services.WorkContext.CurrentCustomer);
+				Logger.Log(LogLevel.Error, ex.Message, ex.StackTrace);
 
                 NotifyError(ex.Message, false);
 
@@ -339,7 +339,7 @@ namespace SmartStore.PayPal.Controllers
                     error.AppendLine(String.Format("{0} | {1} | {2}", errormsg.ErrorCode, errormsg.ShortMessage, errormsg.LongMessage));
                 }
 
-				Logger.Log(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, Services.WorkContext.CurrentCustomer);
+				Logger.Log(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage);
 
                 NotifyError(error.ToString(), false);
 

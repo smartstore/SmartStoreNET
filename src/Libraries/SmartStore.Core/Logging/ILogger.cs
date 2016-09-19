@@ -16,22 +16,14 @@ namespace SmartStore.Core.Logging
         /// <returns>Result</returns>
         bool IsEnabledFor(LogLevel level);
 
-		/// <summary>
-		/// Inserts a log item
-		/// </summary>
-		/// <param name="context">The log context</param>
-		/// <returns>Always return <c>null</c></returns>
-		void Log(LogContext context);
-
         /// <summary>
         /// Inserts a log item
         /// </summary>
         /// <param name="logLevel">Log level</param>
         /// <param name="shortMessage">The short message</param>
         /// <param name="fullMessage">The full message</param>
-        /// <param name="customer">The customer to associate log record with</param>
 		/// <returns>Always return <c>null</c></returns>
-        void Log(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null);
+        void Log(LogLevel logLevel, string shortMessage, string fullMessage = "");
 
 		/// <summary>
 		/// Commits log entries to the data store

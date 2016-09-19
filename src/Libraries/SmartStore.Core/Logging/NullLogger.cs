@@ -21,11 +21,7 @@ namespace SmartStore.Core.Logging
             return false;
         }
 
-		public void Log(LogContext context)
-		{
-		}
-
-        public void Log(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
+        public void Log(LogLevel logLevel, string shortMessage, string fullMessage = "")
         {
         }
 

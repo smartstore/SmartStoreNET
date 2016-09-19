@@ -82,7 +82,7 @@ namespace SmartStore.Core.IO
 
 		public virtual Stream OpenFile(string virtualPath)
 		{
-			return VirtualPathProvider.OpenFile(virtualPath);
+			return HostingEnvironment.VirtualPathProvider.GetFile(virtualPath).Open();
 		}
 
 		public virtual string ToAppRelative(string virtualPath)

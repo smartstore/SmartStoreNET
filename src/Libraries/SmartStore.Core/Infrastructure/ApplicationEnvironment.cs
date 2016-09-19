@@ -16,6 +16,14 @@ namespace SmartStore.Core
 			PluginsFolder = new VirtualFolder("~/Plugins/", vpp, logger);
 		}
 
+		public virtual string MachineName
+		{
+			get
+			{
+				return Environment.MachineName;
+			}
+		}
+
 		public virtual string EnvironmentIdentifier
 		{
 			get

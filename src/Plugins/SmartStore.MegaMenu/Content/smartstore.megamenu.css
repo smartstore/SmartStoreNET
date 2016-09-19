@@ -1,0 +1,154 @@
+﻿.megamenu-container {
+    position: relative;
+}
+.megamenu {
+    overflow: hidden;
+    position: relative;
+}
+.show-scroll-buttons .megamenu .nav-slider {
+    margin: 0 50px;
+}
+.megamenu ul.nav {
+    width: 5000px;
+}
+.megamenu-navigate-prev,
+.megamenu-navigate-next {
+    position: absolute;
+    top: 0;
+    display: none;
+}
+.show-scroll-buttons .megamenu-navigate-prev,
+.show-scroll-buttons .megamenu-navigate-next {
+    display: block;
+}
+.megamenu-navigate-next {
+    right: 0;
+}
+.megamenu-navigate-prev .btn,
+.megamenu-navigate-next .btn {
+    padding: 0;
+    font-size: 1.2rem;
+}
+
+
+.megamenu-container .megamenu-dropdown-container {
+    position: relative;
+}
+.megamenu-container .dropdown-menu {
+    width: 100%;
+    top: -3px;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+}
+.megamenu-container .dropdown-menu .col-md-3 {
+    overflow: hidden;
+}
+.megamenu-container .dropdown-item {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.megamenu-container .dropdown-item.first {
+    font-size: 1.25rem;
+    color: #0275d8;
+}
+.megamenu-container .dropdown-item.second {
+    font-size: .875rem;
+}
+.megamenu-container .dropdown-item.more-link {
+    font-style: italic;
+    text-align: right;
+}
+
+.megamenu-container .comma-separated .dropdown-item.second {
+    font-size: .875rem;
+    float: left;
+    display: inline-block;
+    clear: inherit;
+    width: inherit;
+    line-height: 1;
+    color: #373a3c;
+    padding-right: 0;
+}
+.megamenu-container .comma {
+    float: left;
+    color: #373a3c;
+}
+
+.megamenu-container .picture-container {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+/* BEGIN: little hack */
+/* TODO: create new html-structure */
+.megamenu-container .comma-separated .dropdown-item.second {
+    margin-right: -15px;
+}
+.megamenu-container .comma {
+    margin-left: 15px;
+    margin-right: -15px;
+}
+/* END: little hack */
+
+.megamenu-container .comma-separated .dropdown-item.second:focus, 
+.megamenu-container .comma-separated .dropdown-item.second:hover {
+    background-color: transparent;
+    color: #888;
+}
+.megamenu-container .megamenu-cat-img img {
+    max-width: 100%;
+    max-height: 100%;
+    padding: 20px;
+}
+.megamenu-container .below-preview-pic-text {
+    margin: 10px;
+    font-size: .875rem;
+}
+
+.megamenu-container .megamenu-html-text {
+    overflow: hidden;
+}
+
+.navbar {
+    padding: 0;
+}
+.megamenu-container .nav-item,
+.megamenu-navigate-prev,
+.megamenu-navigate-next {
+    padding: .5rem 0;
+}
+.megamenu-container .nav-item.active:before {
+    content: "";
+    border-bottom: 15px solid #fff;
+    border-right: 17px solid transparent;
+    border-left: 17px solid transparent;
+    position: absolute;
+    bottom: -1px;
+    right: -8px;
+    z-index: 1010;
+}
+.megamenu-container .nav-item.active:after {
+    content: "";
+    border-bottom: 17px solid #bbb;
+    border-right: 19px solid transparent;
+    border-left: 19px solid transparent;
+    position: absolute;
+    bottom: -2px;
+    right: -10px;
+    z-index: 1008;
+}
+
+.mega-menu-product-rotator {
+    margin-right: 10px;
+}
+.mega-menu-product-rotator .pl-row,
+.mega-menu-product-rotator .item-box {
+    width: 100%;
+}
+
+.mega-menu-product-rotator.scroll article {
+    min-width: 245px;
+    max-width: 245px;
+}

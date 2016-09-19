@@ -1,0 +1,10 @@
+﻿FriendlyName: MegaMenu
+SystemName: SmartStore.MegaMenu
+Group: Analytics
+Version: 2.6.0
+MinAppVersion: 2.6.0
+Author: SmartStore AG
+DisplayOrder: 1
+FileName: SmartStore.MegaMenu.dll
+ResourceRootKey: Plugins.SmartStore.MegaMenu
+Url: 

@@ -1,0 +1,22 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.MegaMenu" AppendRootKey="false">
+    <Value>MegaMenu</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.SmartStore.MegaMenu" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[
+            Enter your data below to configure this plugin.
+          ]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="ConfigSetting">
+        <Value>Setting</Value>
+      </LocaleResource>
+      <LocaleResource Name="ConfigSetting.Hint">
+        <Value>Help text for the setting</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+</Language>

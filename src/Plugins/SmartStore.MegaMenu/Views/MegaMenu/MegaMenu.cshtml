@@ -1,0 +1,582 @@
+﻿@model NavigationModel
+@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Services.Catalog;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Collections;
+@using SmartStore.MegaMenu.Settings;
+@using SmartStore.MegaMenu.Domain;
+
+@{
+    Layout = "";
+    Html.AddCssFileParts(true, "~/Plugins/SmartStore.MegaMenu/Content/smartstore.megamenu.css");
+    Html.AppendScriptParts(true, "~/Plugins/SmartStore.MegaMenu/Scripts/smartstore.megamenu.js");
+}
+
+@functions {
+
+    private int currentColumnItemCount = 0;
+    private int currentColumnCount = 1;
+    private int maxColumnCount = 4;
+
+    private string GetNodeLink(TreeNode<MenuItem> node)
+    {
+        return node.Value.GenerateUrl(this.Url);
+    }
+
+    private string GetContainerAlignmentCss(string alignmentX, string alignmentY, string OffsetX, string OffsetY)
+    {
+        // TODO: can be done on the server, create css and put into view model
+        // alignmentX = top || bottom
+        // alignmentY = left || center || right
+
+        var css = "";
+
+        if(alignmentX.Equals("top"))
+        {
+            css += "top:0;";
+        }
+        else
+        {
+            css += "bottom:0;";
+        }
+
+        if (alignmentY.Equals("left"))
+        {
+            css += "left:0;";
+        }
+        else if (alignmentY.Equals("center"))
+        {
+            css += "width: 100%;text-align: center;";
+        }
+        else
+        {
+            css += "bottom:0;";
+        }
+
+        css += "transform: translate({0}px, {1}px);".FormatWith(OffsetX, OffsetY);
+
+        return css;
+    }
+
+    private string GetCssClassForNode(TreeNode<MenuItem> node, NodePathState state)
+    {
+        var liClasses = new List<string>();
+
+        liClasses.Add("nav-item");
+
+        if (node.Depth <= 1 && node.HasChildren)
+        {
+            liClasses.Add(node.Depth > 0 ? "dropdown-submenu" : "dropdown");
+        }
+
+        return liClasses.Count > 0 ? String.Join(" ", liClasses) : null;
+    }
+
+    private bool CloseColumn(TreeNode<MenuItem> nextSibling)
+    {
+        var settings = getCurrentRecord();
+
+        // no wrap
+        if (nextSibling != null && !settings.ThirdLevelAllowWrap)
+        {
+            var nextSiblingChildren = nextSibling.Children.Count > settings.ThirdLevelDepth ? settings.ThirdLevelDepth : nextSibling.Children.Count;
+            nextSiblingChildren++;
+
+            if (currentColumnItemCount + nextSiblingChildren >= settings.TotalColumnDepth)
+            {
+                if (currentColumnCount == maxColumnCount)
+                {
+                    return false;
+                }
+                currentColumnCount++;
+                currentColumnItemCount = 0;
+                return true;
+            }
+        }
+
+        // wrap
+        if (currentColumnItemCount == settings.TotalColumnDepth)
+        {
+            if (currentColumnCount == maxColumnCount)
+            {
+                return false;
+            }
+            currentColumnCount++;
+            currentColumnItemCount = 0;
+            return true ;
+        }
+
+        return false;
+    }
+
+    private bool ShouldRender(TreeNode<MenuItem> node)
+    {
+        if (!node.Value.Visible)
+        {
+            return false;
+        }
+
+        var settings = getCurrentRecord();
+        var nodeChildren = node.Children.Count > settings.ThirdLevelDepth ? settings.ThirdLevelDepth : node.Children.Count;
+        nodeChildren++;
+
+        if ((settings.TotalColumnDepth >= nodeChildren + currentColumnItemCount) || settings.ThirdLevelAllowWrap)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private MegaMenuRecord getCurrentRecord()
+    {
+        return new MegaMenuRecord
+        {
+            IsActive = true,                            
+            BadgeText = "Neu",                          // TODO
+            BadgeLabel = "Info",                        // TODO
+            BackgroundLink = "",                        // TODO ???
+
+            ShowPreviewPicture = true,
+            TotalColumnDepth = 17,
+            ThirdLevelDepth = 4,
+            ThirdLevelAllowWrap = false,
+            ThirdLevelWrapTolerance = 1,                // TODO
+            BelowPreviewPicText = @"Beste Warengruppe der Welt! Hier gibt's nicht nur <b>gute Produkte</b> der Firma <i>SmartStore AG</i> sondern auch einen 
+                                    <a href=""#"" target=""_blank"">Link</a> der ganz woanders hinführt. ",
+            DisplayThirdLevelCommaSeparated = false,
+
+            // background pic
+            ShowBackgroundPicture = true,
+            BackgroundAlignmentX = "bottom",
+            BackgroundAlignmentY = "right",
+            OffsetX = 40,
+            OffsetY = 35,
+            //TODO: BackgroundPicturePath => has to be built into ViewModel, setting contains BackgroundPictureId 
+
+            DisplayReplacementText = false,
+            MenuReplacementText = @"<div>Hier geht schon ein bischen mehr als im BelowPreviewPicText. Der Text hier wird von eine richtigen HTML-Editor erfasst. 
+                                    Daher ist es auch ganz wichtig, dass <i>overflow:hidden</i> nicht vergessen wird.</div>",
+            MenuReplacementRange = 2,
+            DisplayProductRotator = true,   //More settings regarding ProductRotator: 
+                                            //ProductIds (can be choosen explicitly by entity picker) || PickRandomProducts (either globally or from the current category)
+                                            //cycle and interval must be passed into ProductListScroller
+        };
+    }
+}
+
+@if (!GetThemeVariable<bool>("DisplayNavbar", true))
+{
+    return;
+}
+
+<div class="megamenu">
+
+    <div class="megamenu-navigate-prev">
+        <a href="#" class="btn btn-icon btn-secondary disabled"><i class="fa fa-chevron-left"></i></a>
+    </div>
+
+    <ul class="nav navbar-nav">
+
+        @Html.Widget("megamenu_before_first_item")
+
+        @foreach (var node in Model.Root.Children)
+        {
+            var item = node.Value;
+
+            if (!item.Visible)
+            {
+                continue;
+            }
+
+            var itemUrl = GetNodeLink(node);
+            var itemState = node.GetNodePathState(Model.Path);
+
+            <li class='@(GetCssClassForNode(node, itemState))'>
+                @if (node.HasChildren)
+                {
+                    <a href="@itemUrl" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-target="#dropdown-menu-@node.Value.EntityId">
+                        @item.Text
+                    </a>
+                }
+                else
+                {
+                    <a href="@itemUrl" class="nav-link">
+                        @item.Text
+                    </a>
+                }
+            </li>
+        }
+
+        @Html.Widget("megamenu_after_last_item")
+
+    </ul>
+
+    <div class="megamenu-navigate-next">
+        <a href="#" class="btn btn-icon btn-secondary"><i class="fa fa-chevron-right"></i></a>
+    </div>
+</div>
+
+<div class="megamenu-dropdown-container">
+    @foreach (var node in Model.Root.Children)
+    {
+        currentColumnItemCount = 0;
+
+        var settings = getCurrentRecord();
+
+        if(settings.IsActive)
+        {
+            @CreateDrilldownMenu(node.Children, node)
+        }
+    }
+</div>
+
+@helper CreateDrilldownMenu(IEnumerable<TreeNode<MenuItem>> nodes, TreeNode<MenuItem> parent)
+{
+    var i = 1;
+    var settings = getCurrentRecord();
+    maxColumnCount = parent.Value.ImageUrl.HasValue() && settings.ShowPreviewPicture ? 3 : 4;
+
+    if(settings.DisplayProductRotator)
+    {
+        maxColumnCount = maxColumnCount - 1;
+    }
+
+    if (settings.DisplayReplacementText)
+    {
+        maxColumnCount = maxColumnCount - settings.MenuReplacementRange;
+    }
+
+    currentColumnCount = 1;
+
+    var css = GetContainerAlignmentCss(settings.BackgroundAlignmentX, settings.BackgroundAlignmentY, settings.OffsetX.ToString(), settings.OffsetY.ToString());
+
+    @Html.Widget("megamenu_dropdown_top")
+
+    <div id="dropdown-menu-@parent.Value.EntityId" data-entity-id="@parent.Value.EntityId">
+        <div class="dropdown-menu@(settings.DisplayThirdLevelCommaSeparated ? " comma-separated" : "")">
+
+            @if(settings.ShowBackgroundPicture)
+            {
+                <div class="picture-container" style="@css">
+
+                    @*<img src="./Plugins/SmartStore.MegaMenu/Content/mocks/kindle.png" border="0" />
+                    <img src="./Plugins/SmartStore.MegaMenu/Content/mocks/firestick.png" border="0" />*@
+
+                    <img src="./Plugins/SmartStore.MegaMenu/Content/mocks/babys.png" border="0" />
+                </div>
+            }
+
+            <div class="row">
+                @if(parent.Value.ImageUrl.HasValue() && settings.ShowPreviewPicture)
+                {
+                    <div class="col-md-3 text-xs-center megamenu-cat-img">
+                        <img src="@parent.Value.ImageUrl" />
+
+                        <div class="below-preview-pic-text text-xs-left">
+                            @Html.Raw(settings.BelowPreviewPicText)
+                        </div>
+                    </div>
+                }
+
+                <div class="col-md-3">
+
+                    @foreach (var node in nodes)
+                    {
+                        var item = node.Value;
+                        
+                        if(!ShouldRender(node))
+                        {
+                            continue;
+                        }
+
+                        currentColumnItemCount++;
+                        var itemUrl = GetNodeLink(node);
+                        var itemState = node.GetNodePathState(Model.Path);
+
+                        <a class='dropdown-item first@((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : "")' href="@itemUrl">
+                            @item.Text @*(@currentColumnItemCount)*@
+                        </a>
+
+                        if (CloseColumn(null))
+                        {
+                            @:</div><div class="col-md-3">
+                        }
+
+                        @CreateSubMenu(node.Children);
+                        
+                        if (i++ == settings.TotalColumnDepth)
+                        {
+                            break;
+                        }
+                    }
+                </div>
+
+                @if (settings.DisplayReplacementText)
+                {
+                    var colWidth = 3 * settings.MenuReplacementRange;
+                    <div class="col-md-@colWidth.ToString() megamenu-html-text">
+                        @Html.Raw(settings.MenuReplacementText)
+                    </div>
+                }
+
+                @if (settings.DisplayProductRotator)
+                {
+                    if (currentColumnCount <= 3)
+                    {
+                        var colWidth = 3 * (maxColumnCount - currentColumnCount);
+                        <div class="col-md-@colWidth.ToString()"></div>
+                    }
+
+                    <div class="col-md-3 rotator-@parent.Value.EntityId"></div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @Html.Widget("megamenu_dropdown_bottom")
+}
+
+@helper CreateSubMenu(IEnumerable<TreeNode<MenuItem>> nodes)
+{
+    var i = 1;
+    var settings = getCurrentRecord();
+
+    foreach (var node in nodes)
+    {
+        var item = node.Value;
+
+        if (!item.Visible)
+        {
+            continue;
+        }
+        currentColumnItemCount++;
+
+        var itemUrl = GetNodeLink(node);
+        var itemState = node.GetNodePathState(Model.Path);
+        
+        <a class='second dropdown-item@((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : "")' href="@itemUrl">
+            @item.Text
+            @*(@currentColumnItemCount)*@
+        </a>
+
+        if (settings.DisplayThirdLevelCommaSeparated)
+        {
+            <span class="comma">,</span>
+        }
+
+        if (i++ == settings.ThirdLevelDepth)
+        {
+            var parentUrl = GetNodeLink(node.Parent);
+            <a class='second dropdown-item more-link' href="@parentUrl">... alle Kategorien</a>
+            break;
+        }
+
+        if (CloseColumn(node.Parent.Next))
+        {
+            @:</div><div class="col-md-3">
+        }
+    }
+}
+
+<script type="text/javascript">
+
+    (function($) {
+        // Depends on:
+        // bootstrap 4
+        // jquery.ba-outside-events.js
+        // jquery.scrollTo.js
+        // jquery.serialScroll.js
+
+        $.fn.extend({
+            megaMenu: function(settings) {
+
+                var defaults = {
+                    productRotatorInterval:     4000,
+                    productRotatorDuration:     300,
+                    productRotatorCycle:        false,
+                    productRotatorAjaxUrl:      ""
+                };
+
+                var settings = $.extend(defaults, settings);
+
+                return this.each(function () {
+
+                    var megamenu = $(this);
+
+                    $('.nav-item a', megamenu).bind('clickoutside', function (event) {
+                        var clicked_elem = $(event.target).parent();
+
+                        $(".nav-item", megamenu).removeClass("active");
+
+                        if (clicked_elem.hasClass("dropdown-submenu")) {
+                            clicked_elem.addClass("active");
+
+                            initRotator($(event.target).data("target"));
+                        }
+                    });
+
+                    $(".dropdown-submenu, .megamenu-navigate-prev, .megamenu-navigate-next", megamenu).click(function () {
+
+                        var clicked_elem = $(event.target).parent();
+                        var wasOpened = clicked_elem.hasClass("active");
+
+                        $(".nav-item", megamenu).removeClass("active");
+
+                        if (!wasOpened) {
+                            $(this).addClass("active");
+
+                            initRotator($(event.target).data("target"));
+                        }
+                    });
+
+                    // prevent dropdowns from closing when clicking inside, to make product rotator work
+                    $(document).on('click', '.dropdown-menu', function (e) {
+                        e.stopPropagation();
+                    });
+
+                    // show scroll buttons when menu items don't fit into screen
+                    $(window).resize(function () {
+
+                        var liWidth = 0;
+                        $(".megamenu li", megamenu).each(function () {
+                            liWidth += $(this).width();
+                        });
+
+                        if (liWidth > megamenu.width()) {
+                            megamenu.addClass("show-scroll-buttons");
+                        }
+                        else {
+                            megamenu.removeClass("show-scroll-buttons");
+                        }
+                    }).trigger('resize');
+
+                    //oh, oh, oh, oh, can't touch this ;-/
+                    var hammertime = new Hammer($(".megamenu")[0]);
+                    hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 80, pointers: 1 }));
+
+                    hammertime.on('panend', function (ev) {
+                        if (ev.direction == Hammer.DIRECTION_LEFT) {
+                            $(".nav-slider", megamenu).trigger('next');
+                        }
+                        if (ev.direction == Hammer.DIRECTION_RIGHT) {
+                            $(".nav-slider", megamenu).trigger('prev');
+                        }
+                    });
+
+                    megamenu.evenIfHidden(function (el) {
+
+                        var visibleElements = 0;
+
+                        megamenu.find(".nav-item").each(function (i, val) {
+                            if (megamenu.isChildOverflowing($(val)) == false) {
+                                visibleElements++;
+                            }
+                        });
+
+                        megamenu.find('ul').wrap('<div class="nav-slider" style="overflow: hidden;position: relative;" />');
+
+                        megamenu.serialScroll({
+                            target: '.nav-slider',
+                            items: '.nav-item',
+                            prev: '.megamenu-navigate-prev',
+                            next: '.megamenu-navigate-next',
+                            axis: 'x',
+                            duration: 100,
+                            easing: 'easeInOutQuad',
+                            force: true,
+                            cycle: false,
+                            exclude: visibleElements - 1,
+                            onBefore: function (e, elem, $pane, $items, pos) {
+
+                                var menu = $pane.parent(),
+                                    isFirst = (pos == 0),
+                                    isLast = ((pos + visibleElements) == $items.length);
+
+                                if (isFirst)
+                                    menu.find('.megamenu-navigate-prev .btn').addClass("disabled").blur();
+                                else
+                                    menu.find('.megamenu-navigate-prev .btn').removeClass("disabled").blur();
+
+                                if (isLast)
+                                    menu.find('.megamenu-navigate-next .btn').addClass("disabled").blur();
+                                else
+                                    menu.find('.megamenu-navigate-next .btn').removeClass("disabled").blur();
+                            }
+                        });
+                    });
+
+                    function initRotator(containerId) {
+
+                        var container = $(containerId);
+                        var catId = container.data("entity-id");
+
+                        if ($(".pl-slider", container).length == 0 && catId != null) {
+
+                            $.ajax({
+                                cache: false,
+                                type: "POST",
+                                url: settings.productRotatorAjaxUrl,
+                                data: { "catId": catId },
+                                success: function (data) {
+
+                                    // add html view
+                                    $(".rotator-" + catId).html(data);
+
+                                    // init scrolling
+                                    $(".mega-menu-product-rotator.scroll", container).productListScroller({
+                                        interval: settings.productRotatorInterval,
+                                        cycle: settings.productRotatorCycle,
+                                        duration: settings.productRotatorDuration
+                                    });
+
+                                    // add buttons
+                                    container.find(".sb").scrollButton({
+                                        nearSize: 96,
+                                        farSize: 28,
+                                        target: $(".pl-slider", container),
+                                        showButtonAlways: true,
+                                        autoPosition: true,
+                                        position: "inside",
+                                        offset: 0,
+                                        handleCorners: true,
+                                        smallIcons: true,
+                                        hostFix: true
+                                    });
+
+                                    // and now its hammertime 
+                                    var hammertime = new Hammer($(".mega-menu-product-rotator.scroll", container)[0]);
+                                    hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 80, pointers: 1 }));
+
+                                    hammertime.on('panend', function (ev) {
+                                        if (ev.direction == Hammer.DIRECTION_LEFT) {
+                                            $(".mega-menu-product-rotator.scroll .pl-slider", container).trigger('next');
+                                        }
+                                        if (ev.direction == Hammer.DIRECTION_RIGHT) {
+                                            $(".mega-menu-product-rotator.scroll .pl-slider", container).trigger('prev');
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+                })
+            }
+        });
+    })(jQuery);
+
+    $(function () {
+        // TODO: enter setting from view Model for Interval, Duration, Cycle
+        var megamenu = $(".megamenu-container").megaMenu({
+            productRotatorAjaxUrl: "@(Url.Action("RotatorProducts", "Megamenu", new RouteValueDictionary() { { "area", "SmartStore.MegaMenu" } }))",
+            productRotatorInterval: 4000,
+            productRotatorDuration: 300,
+            productRotatorCycle: false
+        });
+    });
+</script>
+
+<style type="text/css">
+
+</style>

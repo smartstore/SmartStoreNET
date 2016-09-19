@@ -598,7 +598,7 @@ namespace SmartStore.Services.Localization
 
         public virtual XmlDocument FlattenResourceFile(XmlDocument source)
         {
-            Guard.ArgumentNotNull(() => source);
+            Guard.NotNull(source, nameof(source));
 
             if (source.SelectNodes("//Children").Count == 0)
             {

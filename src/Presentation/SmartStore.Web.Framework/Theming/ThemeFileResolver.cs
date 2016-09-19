@@ -118,7 +118,7 @@ namespace SmartStore.Web.Framework.Theming
 		/// </returns>
 		public InheritedThemeFileResult Resolve(string virtualPath)
 		{
-			Guard.ArgumentNotEmpty(() => virtualPath);
+			Guard.NotEmpty(virtualPath, nameof(virtualPath));
 
 			virtualPath = VirtualPathUtility.ToAppRelative(virtualPath);
 

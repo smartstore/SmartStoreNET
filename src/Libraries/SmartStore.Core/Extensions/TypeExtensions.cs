@@ -15,7 +15,7 @@ namespace SmartStore
 
         public static string AssemblyQualifiedNameWithoutVersion(this Type type)
         {
-			Guard.ArgumentNotNull(() => type);
+			Guard.NotNull(type, nameof(type));
 
 	        if (type.AssemblyQualifiedName != null)
 	        {
@@ -107,7 +107,7 @@ namespace SmartStore
 
         public static bool IsConstructable(this Type type)
         {
-            Guard.ArgumentNotNull(type, "type");
+            Guard.NotNull(type, "type");
 
             if (type.IsAbstract || type.IsInterface || type.IsArray || type.IsGenericTypeDefinition || type == typeof(void))
                 return false;
@@ -140,7 +140,7 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static bool HasDefaultConstructor(this Type type)
         {
-            Guard.ArgumentNotNull(() => type);
+            Guard.NotNull(type, nameof(type));
 
             if (type.IsValueType)
                 return true;
@@ -157,8 +157,8 @@ namespace SmartStore
 
         public static bool IsSubClass(this Type type, Type check, out Type implementingType)
         {
-            Guard.ArgumentNotNull(type, "type");
-            Guard.ArgumentNotNull(check, "check");
+            Guard.NotNull(type, "type");
+            Guard.NotNull(check, "check");
 
             return IsSubClassInternal(type, type, check, out implementingType);
         }
@@ -319,7 +319,7 @@ namespace SmartStore
         /// <returns>PropertyInfo for the property, or null if method is not part of a property.</returns>
         public static PropertyInfo GetPropertyFromMethod(this MethodBase method)
         {
-            Guard.ArgumentNotNull(method, "method");
+            Guard.NotNull(method, "method");
 
             PropertyInfo property = null;
             if (method.IsSpecialName)

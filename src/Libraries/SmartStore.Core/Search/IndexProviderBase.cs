@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Core.Search
 {
-	public abstract class IndexProviderBase : IIndexProvider
+	public abstract class IndexProviderBase : DisposableObject, IIndexProvider
 	{
 		public abstract IEnumerable<string> EnumerateIndexes();
 
@@ -19,5 +19,9 @@ namespace SmartStore.Core.Search
 		public abstract IIndexStore GetIndexStore(string scope);
 
 		public abstract ISearchEngine GetSearchEngine(IIndexStore store, SearchQuery query);
+
+		protected override void OnDispose(bool disposing)
+		{
+		}
 	}
 }

@@ -201,7 +201,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductVariantAttribute> GetProductVariantAttributesByProductIds(int[] productIds, AttributeControlType? controlType)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query = 
 				from pva in _productVariantAttributeRepository.TableUntracked.Expand(x => x.ProductAttribute).Expand(x => x.ProductVariantAttributeValues)
@@ -468,7 +468,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductVariantAttributeCombination> GetProductVariantAttributeCombinations(int[] productIds)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query =
 				from pvac in _pvacRepository.TableUntracked

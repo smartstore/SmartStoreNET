@@ -20,7 +20,7 @@ namespace SmartStore.Core
         /// <param name="pageSize">Page size</param>
         public PagedList(IQueryable<T> source, int pageIndex, int pageSize)
         {
-            Guard.ArgumentNotNull(source, "source");
+            Guard.NotNull(source, "source");
 
 			if (pageIndex == 0 && pageSize == int.MaxValue)     
 			{
@@ -50,7 +50,7 @@ namespace SmartStore.Core
         /// <param name="pageSize">Page size</param>
         public PagedList(IList<T> source, int pageIndex, int pageSize)
         {
-            Guard.ArgumentNotNull(source, "source");
+            Guard.NotNull(source, "source");
 
             Init(source.Skip(pageIndex * pageSize).Take(pageSize), pageIndex, pageSize, source.Count);
         }
@@ -64,7 +64,7 @@ namespace SmartStore.Core
         /// <param name="totalCount">Total count</param>
         public PagedList(IEnumerable<T> source, int pageIndex, int pageSize, int totalCount)
         {
-            Guard.ArgumentNotNull(source, "source");
+            Guard.NotNull(source, "source");
             Init(source, pageIndex, pageSize, totalCount);
         }
 

@@ -148,7 +148,7 @@ namespace SmartStore.Core.IO
 
 		public virtual void DeleteDirectory(string relativePath)
 		{
-			Directory.Delete(MapPath(relativePath));
+			Directory.Delete(MapPath(relativePath), true);
 		}
 
 		public virtual string ReadFile(string relativePath)

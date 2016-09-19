@@ -7,9 +7,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web;
 using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
+using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
@@ -28,17 +28,18 @@ namespace SmartStore.Admin.Controllers
 		private Dictionary<string, string> _lang = null;
 		private Dictionary<string, string> _settings = null;
 
-		private readonly IFileSystem _fileSystem;
-		private readonly HttpContextBase _context;
-		private readonly HttpResponseBase _response;
+		private readonly Lazy<IImageResizerService> _imageResizer;
+		private readonly Lazy<IPictureService> _pictureService;
+		private readonly IMediaFileSystem _fileSystem;
 
 		public RoxyFileManagerController(
-			IFileSystem fileSystem,
-			HttpContextBase context)
+			Lazy<IImageResizerService> imageResizer,
+			Lazy<IPictureService> pictureService,
+			IMediaFileSystem fileSystem)
 		{
+			_imageResizer = imageResizer;
+			_pictureService = pictureService;
 			_fileSystem = fileSystem;
-			_context = context;
-			_response = _context.Response;
 		}
 
 		#region Utilities
@@ -47,7 +48,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			var result = new Dictionary<string, string>();
 			var json = "";
-
+			
 			try
 			{
 				json = System.IO.File.ReadAllText(path, System.Text.Encoding.UTF8);
@@ -169,68 +170,27 @@ namespace SmartStore.Admin.Controllers
 			return result;
 		}
 
-		private void GetImageSize(IFile file, out int width, out int height)
+		private void GetImageSize(string path, out int width, out int height)
 		{
 			width = height = 0;
 
-			try
-			{
-				if (GetFileContentType(file.FileType).IsCaseInsensitiveEqual("image"))
-				{
-					using (var stream = file.OpenRead())
-					using (var image = Image.FromStream(stream))
-					{
-						width = image.Width;
-						height = image.Height;
-					}
-				}
-			}
-			catch { }
+			var size = _pictureService.Value.GetPictureSize(_fileSystem.ReadAllBytes(path));
+			width = size.Width;
+			height = size.Height;
 		}
 
 		private void ImageResize(string path, string dest, int width, int height)
 		{
-			if (dest.IsEmpty())
+			if (dest.IsEmpty() || (width == 0 && height == 0))
 				return;
 
-			var stream = new FileStream(path, FileMode.Open);
-			var image = Image.FromStream(stream);
-			var imageFormat = ImageFormat.Jpeg;
-
-			switch (Path.GetExtension(path).EmptyNull().ToLower())
+			using (var stream = new FileStream(path, FileMode.Open))
 			{
-				case ".png":
-					imageFormat = ImageFormat.Png;
-					break;
-				case ".gif":
-					imageFormat = ImageFormat.Gif;
-					break;
-			}
-
-			stream.Close();
-			stream.Dispose();
-
-			float ratio = (float)image.Width / (float)image.Height;
-			if ((image.Width <= width && image.Height <= height) || (width == 0 && height == 0))
-				return;
-
-			int newWidth = width;
-			int newHeight = Convert.ToInt16(Math.Floor((float)newWidth / ratio));
-			if ((height > 0 && newHeight > height) || (width == 0))
-			{
-				newHeight = height;
-				newWidth = Convert.ToInt16(Math.Floor((float)newHeight * ratio));
-			}
-
-			using (var newImage = new Bitmap(newWidth, newHeight))
-			using (var graph = Graphics.FromImage(newImage))
-			{
-				graph.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-				graph.DrawImage(image, 0, 0, newWidth, newHeight);
-
-				image.Dispose();
-
-				newImage.Save(dest, imageFormat);
+				using (var resultStream = _imageResizer.Value.ResizeImage(stream, width, height))
+				{
+					var result = resultStream.GetBuffer();
+					System.IO.File.WriteAllBytes(dest, result);
+				}
 			}
 		}
 
@@ -257,12 +217,12 @@ namespace SmartStore.Admin.Controllers
 				if (_fileRoot == null)
 				{
 					_fileRoot = GetSetting("FILES_ROOT");
-
-					if (GetSetting("SESSION_PATH_KEY") != "" && _context.Session[GetSetting("SESSION_PATH_KEY")] != null)
-						_fileRoot = (string)_context.Session[GetSetting("SESSION_PATH_KEY")];
+					
+					if (GetSetting("SESSION_PATH_KEY") != "" && Session[GetSetting("SESSION_PATH_KEY")] != null)
+						_fileRoot = (string)Session[GetSetting("SESSION_PATH_KEY")];
 
 					if (_fileRoot.IsEmpty())
-						_fileRoot = "Media/Uploaded";
+						_fileRoot = "Uploaded";
 				}
 
 				return _fileRoot;
@@ -271,23 +231,22 @@ namespace SmartStore.Admin.Controllers
 
 		private string GetRelativePath(string path)
 		{
-			if (path.IsEmpty())
-				return path;
-
-			if (path.StartsWith("~/"))
-				return path.Substring(2);
-
-			if (path.StartsWith("/"))
-				return path.Substring(1);
-
 			if (path.IsWebUrl())
 			{
 				var uri = new Uri(path);
-
-				return _fileSystem.GetStoragePath(uri.PathAndQuery);
+				path = uri.PathAndQuery;
 			}
 
-			return path;
+			var root = _fileSystem.Root;
+
+			if (path.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+			{
+				path = path.Substring(root.Length);
+			}
+
+			return path.TrimStart('/', '\\');
+
+			//return _fileSystem.GetStoragePath(path) ?? path;
 		}
 
 		private string GetUniqueFileName(string folder, string fileName)
@@ -327,7 +286,7 @@ namespace SmartStore.Admin.Controllers
 			if (type.IsEmpty() || type == "#")
 				return files.ToList();
 
-			return _fileSystem.ListFiles(path)
+			return files
 				.Where(x => GetFileContentType(x.FileType).IsCaseInsensitiveEqual(type))
 				.ToList();
 		}
@@ -363,26 +322,26 @@ namespace SmartStore.Admin.Controllers
 				SubFolders = folders.Count
 			});
 
-			_response.Write("[");
+			Response.Write("[");
 
 			foreach (var folder in folders)
 			{
 				if (isFirstItem)
 					isFirstItem = false;
 				else
-					_response.Write(",");
+					Response.Write(",");
 
 				var fileCount = GetFiles(folder.Folder.Path, type).Count;
 
-				_response.Write(
-					"{\"p\":\"/" + folder.Folder.Path.Replace(FileRoot, "").Replace("\\", "/")
+				Response.Write(
+					"{\"p\":\"/" + folder.Folder.Path.Replace("\\", "/")
 					+ "\",\"f\":\"" + fileCount.ToString()
 					+ "\",\"d\":\"" + folder.SubFolders.ToString()
 					+ "\"}"
 				);
 			}
 
-			_response.Write("]");
+			Response.Write("]");
 		}
 
 		private void ListFiles(string path, string type)
@@ -392,27 +351,27 @@ namespace SmartStore.Admin.Controllers
 			var height = 0;
 			var files = GetFiles(GetRelativePath(path), type);
 
-			_response.Write("[");
+			Response.Write("[");
 
 			foreach (var file in files)
 			{
 				if (isFirstItem)
 					isFirstItem = false;
 				else
-					_response.Write(",");
+					Response.Write(",");
 
-				GetImageSize(file, out width, out height);
+				GetImageSize(file.Path, out width, out height);
 
-				_response.Write("{");
-				_response.Write("\"p\":\"" + _context.GetContentUrl(file.Path) + "\"");
-				_response.Write(",\"t\":\"" + file.LastUpdated.ToUnixTime().ToString() + "\"");
-				_response.Write(",\"s\":\"" + file.Size.ToString() + "\"");
-				_response.Write(",\"w\":\"" + width.ToString() + "\"");
-				_response.Write(",\"h\":\"" + height.ToString() + "\"");
-				_response.Write("}");
+				Response.Write("{");
+				Response.Write("\"p\":\"" + HttpContext.GetContentUrl(_fileSystem.GetPublicUrl(file.Path)) + "\"");
+				Response.Write(",\"t\":\"" + file.LastUpdated.ToUnixTime().ToString() + "\"");
+				Response.Write(",\"s\":\"" + file.Size.ToString() + "\"");
+				Response.Write(",\"w\":\"" + width.ToString() + "\"");
+				Response.Write(",\"h\":\"" + height.ToString() + "\"");
+				Response.Write("}");
 			}
 
-			_response.Write("]");
+			Response.Write("]");
 		}
 
 		private void DownloadFile(string path)
@@ -429,19 +388,19 @@ namespace SmartStore.Admin.Controllers
 			{
 				using (var stream = file.OpenRead())
 				{
-					_response.Clear();
-					_response.Headers.Add("Content-Disposition", "attachment; filename=\"" + file.Name + "\"");
-					_response.ContentType = MimeTypes.MapNameToMimeType(file.Name);
+					Response.Clear();
+					Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + file.Name + "\"");
+					Response.ContentType = MimeTypes.MapNameToMimeType(file.Name);
 
-					while (_response.IsClientConnected && (len = stream.Read(buffer, 0, BUFFER_SIZE)) > 0)
+					while (Response.IsClientConnected && (len = stream.Read(buffer, 0, BUFFER_SIZE)) > 0)
 					{
-						_response.OutputStream.Write(buffer, 0, len);
-						_response.Flush();
+						Response.OutputStream.Write(buffer, 0, len);
+						Response.Flush();
 
 						Array.Clear(buffer, 0, BUFFER_SIZE);
 					}
 
-					_response.End();
+					Response.End();
 				}
 			}
 			catch (IOException)
@@ -480,16 +439,16 @@ namespace SmartStore.Admin.Controllers
 
 			ZipFile.CreateFromDirectory(tempDir, tempZip, CompressionLevel.Fastest, false);
 
-			_response.Clear();
-			_response.Headers.Add("Content-Disposition", "attachment; filename=\"" + folder.Name + ".zip\"");
-			_response.ContentType = "application/zip";
-			_response.TransmitFile(tempZip);
-			_response.Flush();
+			Response.Clear();
+			Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + folder.Name + ".zip\"");
+			Response.ContentType = "application/zip";
+			Response.TransmitFile(tempZip);
+			Response.Flush();
 
 			FileSystemHelper.Delete(tempZip);
 			FileSystemHelper.ClearDirectory(tempDir, true);
 
-			_response.End();
+			Response.End();
 		}
 
 		private void ShowThumbnail(string path, int width, int height)
@@ -547,13 +506,13 @@ namespace SmartStore.Admin.Controllers
 				image.Dispose();
 				var imgCallback = new Image.GetThumbnailImageAbort(() => false);
 
-				_response.AddHeader("Content-Type", "image/png");
+				Response.AddHeader("Content-Type", "image/png");
 
 				cropImg
 					.GetThumbnailImage(width, height, imgCallback, IntPtr.Zero)
-					.Save(_response.OutputStream, ImageFormat.Png);
+					.Save(Response.OutputStream, ImageFormat.Png);
 
-				_response.OutputStream.Close();
+				Response.OutputStream.Close();
 			}
 		}
 
@@ -579,7 +538,7 @@ namespace SmartStore.Admin.Controllers
 
 				_fileSystem.RenameFile(path, _fileSystem.Combine(folder.Path, name));
 
-				_response.Write(GetResultString());
+				Response.Write(GetResultString());
 			}
 			catch (Exception exception)
 			{
@@ -608,7 +567,7 @@ namespace SmartStore.Admin.Controllers
 
 				_fileSystem.RenameFolder(path, newPath);
 
-				_response.Write(GetResultString());
+				Response.Write(GetResultString());
 			}
 			catch
 			{
@@ -635,7 +594,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				_fileSystem.RenameFile(path, newPath);
 
-				_response.Write(GetResultString());
+				Response.Write(GetResultString());
 			}
 			catch
 			{
@@ -669,7 +628,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				_fileSystem.RenameFolder(path, newPath);
 
-				_response.Write(GetResultString());
+				Response.Write(GetResultString());
 			}
 			catch
 			{
@@ -694,7 +653,7 @@ namespace SmartStore.Admin.Controllers
 
 				_fileSystem.CopyFile(path, _fileSystem.Combine(newPath, newName));
 
-				_response.Write(GetResultString());
+				Response.Write(GetResultString());
 			}
 			catch
 			{
@@ -714,8 +673,8 @@ namespace SmartStore.Admin.Controllers
 			try
 			{
 				_fileSystem.DeleteFile(path);
-				
-				_response.Write(GetResultString());
+
+				Response.Write(GetResultString());
 			}
 			catch
 			{
@@ -743,7 +702,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				_fileSystem.DeleteFolder(path);
 
-				_response.Write(GetResultString());
+				Response.Write(GetResultString());
 			}
 			catch
 			{
@@ -767,7 +726,7 @@ namespace SmartStore.Admin.Controllers
 				if (!_fileSystem.FolderExists(path))
 					_fileSystem.CreateFolder(path);
 
-				_response.Write(GetResultString());
+				Response.Write(GetResultString());
 			}
 			catch
 			{
@@ -821,7 +780,7 @@ namespace SmartStore.Admin.Controllers
 
 			CopyDirCore(path, newPath);
 
-			_response.Write(GetResultString());
+			Response.Write(GetResultString());
 		}
 
 		private void Upload(string path)
@@ -880,9 +839,9 @@ namespace SmartStore.Admin.Controllers
 				FileSystemHelper.ClearDirectory(tempDir, true);
 			}
 
-			_response.Write("<script>");
-			_response.Write("parent.fileUploaded(" + (result ?? GetResultString()) + ");");
-			_response.Write("</script>");
+			Response.Write("<script>");
+			Response.Write("parent.fileUploaded(" + (result ?? GetResultString()) + ");");
+			Response.Write("</script>");
 		}
 
 		#endregion
@@ -891,7 +850,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (!Services.Permissions.Authorize(StandardPermissionProvider.UploadPictures))
 			{
-				_response.Write(T("Admin.AccessDenied.Description"));
+				Response.Write(T("Admin.AccessDenied.Description"));
 				return;
 			}
 
@@ -899,63 +858,63 @@ namespace SmartStore.Admin.Controllers
 
 			try
 			{
-				if (_context.Request["a"] != null)
+				if (Request["a"] != null)
 				{
-					action = _context.Request["a"];
+					action = Request["a"];
 				}
 
 				switch (action.ToUpper())
 				{
 					case "DIRLIST":
-						ListDirTree(_context.Request["type"]);
+						ListDirTree(Request["type"]);
 						break;
 					case "FILESLIST":
-						ListFiles(_context.Request["d"], _context.Request["type"]);
+						ListFiles(Request["d"], Request["type"]);
 						break;
 					case "COPYDIR":
-						CopyDir(_context.Request["d"], _context.Request["n"]);
+						CopyDir(Request["d"], Request["n"]);
 						break;
 					case "COPYFILE":
-						CopyFile(_context.Request["f"], _context.Request["n"]);
+						CopyFile(Request["f"], Request["n"]);
 						break;
 					case "CREATEDIR":
-						CreateDir(_context.Request["d"], _context.Request["n"]);
+						CreateDir(Request["d"], Request["n"]);
 						break;
 					case "DELETEDIR":
-						DeleteDir(_context.Request["d"]);
+						DeleteDir(Request["d"]);
 						break;
 					case "DELETEFILE":
-						DeleteFile(_context.Request["f"]);
+						DeleteFile(Request["f"]);
 						break;
 					case "DOWNLOAD":
-						DownloadFile(_context.Request["f"]);
+						DownloadFile(Request["f"]);
 						break;
 					case "DOWNLOADDIR":
-						DownloadDir(_context.Request["d"]);
+						DownloadDir(Request["d"]);
 						break;
 					case "MOVEDIR":
-						MoveDir(_context.Request["d"], _context.Request["n"]);
+						MoveDir(Request["d"], Request["n"]);
 						break;
 					case "MOVEFILE":
-						MoveFile(_context.Request["f"], _context.Request["n"]);
+						MoveFile(Request["f"], Request["n"]);
 						break;
 					case "RENAMEDIR":
-						RenameDir(_context.Request["d"], _context.Request["n"]);
+						RenameDir(Request["d"], Request["n"]);
 						break;
 					case "RENAMEFILE":
-						RenameFile(_context.Request["f"], _context.Request["n"]);
+						RenameFile(Request["f"], Request["n"]);
 						break;
 					case "GENERATETHUMB":
 						int w = 140, h = 0;
-						int.TryParse(_context.Request["width"].Replace("px", ""), out w);
-						int.TryParse(_context.Request["height"].Replace("px", ""), out h);
-						ShowThumbnail(_context.Request["f"], w, h);
+						int.TryParse(Request["width"].Replace("px", ""), out w);
+						int.TryParse(Request["height"].Replace("px", ""), out h);
+						ShowThumbnail(Request["f"], w, h);
 						break;
 					case "UPLOAD":
-						Upload(_context.Request["d"]);
+						Upload(Request["d"]);
 						break;
 					default:
-						_response.Write(GetResultString("This action is not implemented.", "error"));
+						Response.Write(GetResultString("This action is not implemented.", "error"));
 						break;
 				}
 			}
@@ -963,13 +922,13 @@ namespace SmartStore.Admin.Controllers
 			{
 				if (action == "UPLOAD")
 				{
-					_response.Write("<script>");
-					_response.Write("parent.fileUploaded(" + GetResultString(LangRes("E_UploadNoFiles"), "error") + ");");
-					_response.Write("</script>");
+					Response.Write("<script>");
+					Response.Write("parent.fileUploaded(" + GetResultString(LangRes("E_UploadNoFiles"), "error") + ");");
+					Response.Write("</script>");
 				}
 				else
 				{
-					_response.Write(GetResultString(exception.Message, "error"));
+					Response.Write(GetResultString(exception.Message, "error"));
 				}
 
 				Logger.ErrorsAll(exception);

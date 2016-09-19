@@ -42,6 +42,9 @@ namespace SmartStore.Core.Search
 			Take = Int16.MaxValue;
 		}
 
+		// language
+		public int? LanguageId { get; protected set; }
+
 		// Search term
 		public string[] Fields { get; protected set; }
 		public string Term { get; protected set; }
@@ -59,6 +62,15 @@ namespace SmartStore.Core.Search
 		public ICollection<SearchSort> Sorting { get; }
 
 		#region Fluent builder
+
+		public TQuery WithLanguage(int languageId)
+		{
+			Guard.IsPositive(languageId, nameof(languageId));
+
+			LanguageId = languageId;
+
+			return (this as TQuery);
+		}
 
 		public TQuery Slice(int skip, int take)
 		{

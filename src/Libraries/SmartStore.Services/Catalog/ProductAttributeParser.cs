@@ -387,7 +387,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual void DeserializeQueryData(List<List<int>> queryData, string attributesXml, int productId, int bundleItemId = 0)
 		{
-			Guard.ArgumentNotNull(() => queryData);
+			Guard.NotNull(queryData, nameof(queryData));
 
 			if (attributesXml.HasValue() && productId != 0)
 			{

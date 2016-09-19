@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -20,7 +19,7 @@ namespace SmartStore.Core.Logging
 
 		public TraceLogger(string fileName)
 		{
-			Guard.ArgumentNotEmpty(() => fileName);
+			Guard.NotEmpty(fileName, nameof(fileName));
 
 			_traceSource = new TraceSource("SmartStore");
 			_traceSource.Switch = new SourceSwitch("LogSwitch", "Error");
@@ -60,45 +59,12 @@ namespace SmartStore.Core.Logging
 			_traceSource.Switch.Level = SourceLevels.All;
 		}
 
-		public bool IsEnabled(LogLevel level)
+		public bool IsEnabledFor(LogLevel level)
 		{
 			return true;
 		}
 
-		public void DeleteLog(Log log)
-		{
-			// not supported
-		}
-
-		public void ClearLog()
-		{
-			// not supported
-		}
-
-		public void ClearLog(DateTime toUtc, LogLevel logLevel)
-		{
-			// not supported
-		}
-
-		public IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc, string message, LogLevel? logLevel, int pageIndex, int pageSize, int minFrequency)
-		{
-			// not supported
-			return null;
-		}
-
-		public Log GetLogById(int logId)
-		{
-			// not supported
-			return null;
-		}
-
-		public IList<Log> GetLogByIds(int[] logIds)
-		{
-			// not supported
-			return null;
-		}
-
-		public void InsertLog(LogContext context)
+		public void Log(LogContext context)
 		{
 			var type = LogLevelToEventType(context.LogLevel);
 			var msg = context.ShortMessage.Grow(context.FullMessage, Environment.NewLine);
@@ -109,7 +75,7 @@ namespace SmartStore.Core.Logging
 			}
 		}
 
-		public void InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
+		public void Log(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
 		{
 			var context = new LogContext
 			{
@@ -119,7 +85,7 @@ namespace SmartStore.Core.Logging
 				Customer = customer
 			};
 
-			InsertLog(context);
+			Log(context);
 		}
 
 		private TraceEventType LogLevelToEventType(LogLevel level)

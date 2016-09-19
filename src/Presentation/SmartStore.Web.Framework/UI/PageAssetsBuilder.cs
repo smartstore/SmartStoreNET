@@ -377,8 +377,8 @@ namespace SmartStore.Web.Framework.UI
 
 		public void AddLinkPart(string rel, string href, RouteValueDictionary htmlAttributes)
 		{
-			Guard.ArgumentNotEmpty(() => rel);
-			Guard.ArgumentNotEmpty(() => href);
+			Guard.NotEmpty(rel, nameof(rel));
+			Guard.NotEmpty(href, nameof(href));
 
 			if (htmlAttributes == null)
 			{

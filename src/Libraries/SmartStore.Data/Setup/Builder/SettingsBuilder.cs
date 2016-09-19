@@ -5,7 +5,6 @@ using System.Text;
 
 namespace SmartStore.Data.Setup
 {
-
 	internal class SettingEntry
 	{
 		public string Key { get; set; }
@@ -32,7 +31,7 @@ namespace SmartStore.Data.Setup
 		/// <param name="keys">The group/prefix (actually the settings class name)</param>
 		public void DeleteGroup(string group)
 		{
-			Guard.ArgumentNotEmpty(() => group);
+			Guard.NotEmpty(group, nameof(group));
 			_entries.Add(new SettingEntry { Key = group.Trim(), KeyIsGroup = true });
 		}
 
@@ -41,7 +40,7 @@ namespace SmartStore.Data.Setup
 		/// </summary>
 		public void Add<TValue>(string key, TValue value)
 		{
-			Guard.ArgumentNotEmpty(() => key);
+			Guard.NotEmpty(key, nameof(key));
 
 			var valueStr = value.Convert<string>();
 			_entries.Add(new SettingEntry { Key = key.Trim(), Value = valueStr });
@@ -57,5 +56,4 @@ namespace SmartStore.Data.Setup
 			return _entries.Where(x => x.Key.HasValue());
 		}
 	}
-
 }

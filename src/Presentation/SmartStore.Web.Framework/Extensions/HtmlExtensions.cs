@@ -166,7 +166,7 @@ namespace SmartStore.Web.Framework
 			bool displayHint = true,
 			object htmlAttributes = null)
 		{
-			Guard.ArgumentNotEmpty(() => resourceKey);
+			Guard.NotEmpty(resourceKey, nameof(resourceKey));
 			
 			var metadata = ModelMetadata.FromLambdaExpression(expression, helper.ViewData);
 			var resourceDisplayName = new SmartResourceDisplayName(resourceKey, metadata.PropertyName);
@@ -659,8 +659,8 @@ namespace SmartStore.Web.Framework
 
 		public static MvcHtmlString IconForFileExtension(this HtmlHelper helper, string fileExtension, string extraCssClasses = null, bool renderLabel = false)
 		{
-			Guard.ArgumentNotNull(() => helper);
-			Guard.ArgumentNotEmpty(() => fileExtension);
+			Guard.NotNull(helper, nameof(helper));
+			Guard.NotEmpty(fileExtension, nameof(fileExtension));
 
 			var icon = "file-o";
 			var ext = fileExtension;

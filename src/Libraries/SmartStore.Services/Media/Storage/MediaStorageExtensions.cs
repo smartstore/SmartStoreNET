@@ -15,12 +15,12 @@ namespace SmartStore.Services.Media.Storage
 		/// <returns>Media storage item</returns>
 		public static MediaItem ToMedia(this Picture picture)
 		{
-			Guard.ArgumentNotNull(() => picture);
+			Guard.NotNull(picture, nameof(picture));
 
 			var media = new MediaItem
 			{
 				Entity = picture,
-				Path = "Media",
+				Path = "",
 				MimeType = picture.MimeType
 			};
 
@@ -34,14 +34,14 @@ namespace SmartStore.Services.Media.Storage
 		/// <returns>Media storage item</returns>
 		public static MediaItem ToMedia(this Download download)
 		{
-			Guard.ArgumentNotNull(() => download);
+			Guard.NotNull(download, nameof(download));
 
 			var media = new MediaItem
 			{
 				Entity = download,
 				MimeType = download.ContentType,
 				FileExtension = download.Extension,
-				Path = @"Media\Downloads"
+				Path = "Downloads"
 			};
 
 			return media;
@@ -54,14 +54,14 @@ namespace SmartStore.Services.Media.Storage
 		/// <returns>Media storage item</returns>
 		public static MediaItem ToMedia(this QueuedEmailAttachment attachment)
 		{
-			Guard.ArgumentNotNull(() => attachment);
+			Guard.NotNull(attachment, nameof(attachment));
 
 			var media = new MediaItem
 			{
 				Entity = attachment,
 				MimeType = attachment.MimeType,
 				FileExtension = Path.GetExtension(attachment.Name),
-				Path = @"Media\QueuedEmailAttachment"
+				Path = "QueuedEmailAttachment"
 			};
 
 			return media;

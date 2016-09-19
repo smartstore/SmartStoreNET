@@ -106,7 +106,7 @@ namespace SmartStore.Data.Setup
 
 		public static void ExecutePendingResourceMigrations(string resPath, SmartObjectContext dbContext)
 		{
-			Guard.ArgumentNotNull(() => dbContext);
+			Guard.NotNull(dbContext, nameof(dbContext));
 			
 			string headPath = Path.Combine(resPath, "head.txt");
 			if (!File.Exists(headPath))

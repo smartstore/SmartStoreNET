@@ -2044,7 +2044,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Themes\NewAlpha\Content\shared\select2\mixins\" />
-    <Folder Include="Views\TaskScheduler\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">

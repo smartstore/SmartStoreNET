@@ -217,7 +217,7 @@ namespace SmartStore.Services.Orders
 				var msg = string.Concat(T(messageKey, order.GetOrderNumber()), " ", string.Join(" ", errors));
 
 				_orderService.AddOrderNote(order, msg);
-				_logger.InsertLog(LogLevel.Error, msg, msg);
+				_logger.Log(LogLevel.Error, msg, msg);
 			}
 		}
 
@@ -2561,7 +2561,7 @@ namespace SmartStore.Services.Orders
 
 		public virtual Shipment AddShipment(Order order, string trackingNumber, Dictionary<int, int> quantities)
 		{
-			Guard.ArgumentNotNull(() => order);
+			Guard.NotNull(order, nameof(order));
 
 			Shipment shipment = null;
 			decimal? totalWeight = null;

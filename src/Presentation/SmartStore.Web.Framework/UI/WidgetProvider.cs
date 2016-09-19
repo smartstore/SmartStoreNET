@@ -13,34 +13,38 @@ namespace SmartStore.Web.Framework.UI
 	{
 		private Multimap<string, WidgetRouteInfo> _zoneWidgetsMap = new Multimap<string, WidgetRouteInfo>();
 		private Multimap<Regex, WidgetRouteInfo> _zoneExpressionWidgetsMap = new Multimap<Regex, WidgetRouteInfo>();
-		
-		public void RegisterAction(string widgetZone, string actionName, string controllerName, RouteValueDictionary routeValues, int order = 0)
+
+		public void RegisterAction(string[] widgetZones, string actionName, string controllerName, RouteValueDictionary routeValues, int order = 0)
 		{
-			Guard.ArgumentNotEmpty(() => widgetZone);
-			Guard.ArgumentNotEmpty(() => actionName);
-			Guard.ArgumentNotEmpty(() => controllerName);
+			Guard.NotNull(widgetZones, nameof(widgetZones));
+			Guard.NotEmpty(actionName, nameof(actionName));
+			Guard.NotEmpty(controllerName, nameof(controllerName));
 
 			if (_zoneWidgetsMap == null)
 			{
 				_zoneWidgetsMap = new Multimap<string, WidgetRouteInfo>();
 			}
 
-			var routeInfo = new WidgetRouteInfo 
-			{ 
+			var routeInfo = new WidgetRouteInfo
+			{
 				ActionName = actionName,
 				ControllerName = controllerName,
 				RouteValues = routeValues ?? new RouteValueDictionary(),
 				Order = order
 			};
 
-			_zoneWidgetsMap.Add(widgetZone, routeInfo);
+			foreach (var zone in widgetZones)
+			{
+				if (zone.HasValue())
+					_zoneWidgetsMap.Add(zone, routeInfo);
+			}	
 		}
 
 		public void RegisterAction(Regex widgetZoneExpression, string actionName, string controllerName, RouteValueDictionary routeValues, int order = 0)
 		{
-			Guard.ArgumentNotNull(() => widgetZoneExpression);
-			Guard.ArgumentNotEmpty(() => actionName);
-			Guard.ArgumentNotEmpty(() => controllerName);
+			Guard.NotNull(widgetZoneExpression, nameof(widgetZoneExpression));
+			Guard.NotEmpty(actionName, nameof(actionName));
+			Guard.NotEmpty(controllerName, nameof(controllerName));
 
 			if (_zoneExpressionWidgetsMap == null)
 			{

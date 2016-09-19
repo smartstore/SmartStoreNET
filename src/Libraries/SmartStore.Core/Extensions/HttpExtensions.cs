@@ -40,8 +40,8 @@ namespace SmartStore
 	    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
 	    public static void SetFormsAuthenticationCookie(this HttpWebRequest webRequest, HttpRequestBase httpRequest)
 		{
-			Guard.ArgumentNotNull(() => webRequest);
-			Guard.ArgumentNotNull(() => httpRequest);
+			Guard.NotNull(webRequest, nameof(webRequest));
+			Guard.NotNull(httpRequest, nameof(httpRequest));
 
 			var authCookie = httpRequest.Cookies[FormsAuthentication.FormsCookieName];
 			if (authCookie == null)
@@ -64,8 +64,8 @@ namespace SmartStore
 
 		public static T GetOrAdd<T>(this Cache cache, string key, Func<T> acquirer, TimeSpan? duration = null)
 		{
-			Guard.ArgumentNotEmpty(() => key);
-			Guard.ArgumentNotNull(() => acquirer);
+			Guard.NotEmpty(key, nameof(key));
+			Guard.NotNull(acquirer, nameof(acquirer));
 
 			object obj = cache.Get(key);
 

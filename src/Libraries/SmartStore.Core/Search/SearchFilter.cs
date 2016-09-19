@@ -139,22 +139,22 @@ namespace SmartStore.Core.Search
 
 		public static SearchFilter ByField(string fieldName, int term)
 		{
-			return ByField(fieldName, term, IndexTypeCode.String);
+			return ByField(fieldName, term, IndexTypeCode.Int32);
 		}
 
 		public static SearchFilter ByField(string fieldName, bool term)
 		{
-			return ByField(fieldName, term, IndexTypeCode.String);
+			return ByField(fieldName, term, IndexTypeCode.Boolean);
 		}
 
 		public static SearchFilter ByField(string fieldName, double term)
 		{
-			return ByField(fieldName, term, IndexTypeCode.String);
+			return ByField(fieldName, term, IndexTypeCode.Double);
 		}
 
 		public static SearchFilter ByField(string fieldName, DateTime term)
 		{
-			return ByField(fieldName, term, IndexTypeCode.String);
+			return ByField(fieldName, term, IndexTypeCode.DateTime);
 		}
 
 		private static SearchFilter ByField(string fieldName, object term, IndexTypeCode typeCode)
@@ -187,7 +187,7 @@ namespace SmartStore.Core.Search
 
 		public static SearchFilter ByRange(string fieldName, DateTime? lower, DateTime? upper, bool includeLower = true, bool includeUpper = true)
 		{
-			return ByRange(fieldName, lower, upper, IndexTypeCode.Double, includeLower, includeUpper);
+			return ByRange(fieldName, lower, upper, IndexTypeCode.DateTime, includeLower, includeUpper);
 		}
 
 		private static SearchFilter ByRange(

@@ -192,7 +192,7 @@ namespace SmartStore.Services.Localization
             TPropType localeValue,
             int languageId) where T : BaseEntity, ILocalizedEntity
         {
-			Guard.ArgumentNotNull(() => entity);
+			Guard.NotNull(entity, nameof(entity));
 			Guard.NotZero(languageId, nameof(languageId));
 
             var member = keySelector.Body as MemberExpression;

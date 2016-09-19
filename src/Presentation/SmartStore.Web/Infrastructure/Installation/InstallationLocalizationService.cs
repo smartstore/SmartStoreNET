@@ -116,7 +116,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         public Lazy<InvariantSeedData, InstallationAppLanguageMetadata> GetAppLanguage(string culture)
         {
-            Guard.ArgumentNotEmpty(culture, "culture");
+            Guard.NotEmpty(culture, "culture");
             return _seedDatas.FirstOrDefault(x => x.Metadata.Culture == culture);
         }
 

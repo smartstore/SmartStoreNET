@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartStore.Core.Data.Hooks
 {
@@ -48,10 +44,56 @@ namespace SmartStore.Core.Data.Hooks
         /// </summary>
         public void HookObject(object entity, HookEntityMetadata metadata)
         {
-            if (typeof(TEntity).IsAssignableFrom(entity.GetType()))
-            {
+            //if (typeof(TEntity).IsAssignableFrom(entity.GetType()))
+            //{
                 this.Hook((TEntity)entity, metadata);
-            }
+            //}
         }
-    }
+
+		public virtual void OnCompleted()
+		{
+		}
+	}
+
+	/// <summary>
+	/// Implements a hook that will run before an entity gets inserted into the database.
+	/// </summary>
+	public abstract class PreInsertHook<TEntity> : PreActionHook<TEntity>
+	{
+		/// <summary>
+		/// Returns <see cref="EntityState.Added"/> as the hookstate to listen for.
+		/// </summary>
+		public override EntityState HookStates
+		{
+			get { return EntityState.Added; }
+		}
+	}
+
+	/// <summary>
+	/// Implements a hook that will run before an entity gets updated in the database.
+	/// </summary>
+	public abstract class PreUpdateHook<TEntity> : PreActionHook<TEntity>
+	{
+		/// <summary>
+		/// Returns <see cref="EntityState.Modified"/> as the hookstate to listen for.
+		/// </summary>
+		public override EntityState HookStates
+		{
+			get { return EntityState.Modified; }
+		}
+	}
+
+	/// <summary>
+	/// Implements a hook that will run before an entity gets deleted from the database.
+	/// </summary>
+	public abstract class PreDeleteHook<TEntity> : PreActionHook<TEntity>
+	{
+		/// <summary>
+		/// Returns <see cref="EntityState.Deleted"/> as the hookstate to listen for.
+		/// </summary>
+		public override EntityState HookStates
+		{
+			get { return EntityState.Deleted; }
+		}
+	}
 }

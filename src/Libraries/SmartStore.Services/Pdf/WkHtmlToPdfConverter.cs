@@ -19,7 +19,7 @@ namespace SmartStore.Services.Pdf
 
 		public byte[] Convert(PdfConvertSettings settings)
 		{
-			Guard.ArgumentNotNull(() => settings);
+			Guard.NotNull(settings, nameof(settings));
 			if (settings.Page == null)
 			{
 				throw Error.InvalidOperation("The 'Page' property of the 'settings' argument cannot be null.");

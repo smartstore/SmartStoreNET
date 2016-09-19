@@ -153,6 +153,7 @@
     <Compile Include="Caching\NullOutputCacheProvider.cs" />
     <Compile Include="Caching\OutputCacheItem.cs" />
     <Compile Include="Caching\RequestCache.cs" />
+    <Compile Include="Collections\ConcurrentMultimap.cs" />
     <Compile Include="Collections\LazyMultimap.cs" />
     <Compile Include="Collections\Querystring.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
@@ -168,6 +169,8 @@
     <Compile Include="ComponentModel\TypeConversion\TypeConverterAdapter.cs" />
     <Compile Include="ComponentModel\TypeConversion\TypeConverterBase.cs" />
     <Compile Include="ComponentModel\TypeConversion\TypeConverterFactory.cs" />
+    <Compile Include="Data\Hooks\DefaultHookHandler.cs" />
+    <Compile Include="Data\Hooks\IHookHandler.cs" />
     <Compile Include="Data\Hooks\ImportantAttribute.cs" />
     <Compile Include="Data\IDbContextExtensions.cs" />
     <Compile Include="Data\ITransaction.cs" />
@@ -236,18 +239,9 @@
     <Compile Include="Data\EntityState.cs" />
     <Compile Include="Data\Hooks\HookedEntityEntry.cs" />
     <Compile Include="Data\Hooks\HookEntityMetadata.cs" />
-    <Compile Include="Data\Hooks\HooksEventConsumer.cs" />
     <Compile Include="Data\Hooks\IHook.cs" />
-    <Compile Include="Data\Hooks\IPostActionHook .cs" />
-    <Compile Include="Data\Hooks\IPreActionHook.cs" />
     <Compile Include="Data\Hooks\PostActionHook.cs" />
-    <Compile Include="Data\Hooks\PostDeleteHook.cs" />
-    <Compile Include="Data\Hooks\PostInsertHook.cs" />
-    <Compile Include="Data\Hooks\PostUpdateHook.cs" />
     <Compile Include="Data\Hooks\PreActionHook.cs" />
-    <Compile Include="Data\Hooks\PreDeleteHook.cs" />
-    <Compile Include="Data\Hooks\PreInsertHook.cs" />
-    <Compile Include="Data\Hooks\PreUpdateHook.cs" />
     <Compile Include="Data\IDbContext.cs" />
     <Compile Include="Data\RepositoryExtensions.cs" />
     <Compile Include="Data\SqlFileTokenizer.cs" />
@@ -327,7 +321,7 @@
     <Compile Include="Packaging\PackagingResult.cs" />
     <Compile Include="Packaging\PackagingUtils.cs" />
     <Compile Include="PagedList.cs" />
-    <Compile Include="Collections\MultiMap.cs" />
+    <Compile Include="Collections\Multimap.cs" />
     <Compile Include="Collections\TreeNode.cs" />
     <Compile Include="ComponentModel\HybridExpando.cs" />
     <Compile Include="ComponentModel\PropertyBag.cs" />

@@ -10,7 +10,7 @@ namespace SmartStore
 		public RouteInfo(RouteInfo cloneFrom)
 			: this(cloneFrom.Action, cloneFrom.Controller, new RouteValueDictionary(cloneFrom.RouteValues))
 		{
-			Guard.ArgumentNotNull(() => cloneFrom);
+			Guard.NotNull(cloneFrom, nameof(cloneFrom));
 		}
 
         public RouteInfo(string action, object routeValues)
@@ -31,7 +31,7 @@ namespace SmartStore
         public RouteInfo(string action, string controller, IDictionary<string, object> routeValues)
 			: this(action, controller, new RouteValueDictionary(routeValues))
 		{
-			Guard.ArgumentNotNull(() => routeValues);
+			Guard.NotNull(routeValues, nameof(routeValues));
 		}
 
         public RouteInfo(string action, RouteValueDictionary routeValues)
@@ -41,8 +41,8 @@ namespace SmartStore
 
         public RouteInfo(string action, string controller, RouteValueDictionary routeValues)
 		{
-			Guard.ArgumentNotEmpty(() => action);
-			Guard.ArgumentNotNull(() => routeValues);
+			Guard.NotEmpty(action, nameof(action));
+			Guard.NotNull(routeValues, nameof(routeValues));
 
 			this.Action = action;
 			this.Controller = controller;

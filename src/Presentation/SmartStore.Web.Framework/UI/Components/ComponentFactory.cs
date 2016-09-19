@@ -62,7 +62,7 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual PagerBuilder Pager(IPageable model)
         {
-            Guard.ArgumentNotNull(model, "model");
+            Guard.NotNull(model, "model");
             return new PagerBuilder(new Pager(), this.HtmlHelper).Model(model);
         }
 

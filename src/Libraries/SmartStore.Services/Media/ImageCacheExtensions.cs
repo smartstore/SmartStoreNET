@@ -43,7 +43,7 @@ namespace SmartStore.Services.Media
         /// <param name="settings">The image processing settings. This object, if not <c>null</c>, is hashed and appended to the resulting file name.</param>
         public static void AddImageToCache(this IImageCache imageCache, Picture picture, byte[] buffer, object settings = null)
         {
-            Guard.ArgumentNotNull(() => picture);
+            Guard.NotNull(picture, nameof(picture));
             imageCache.AddImageToCache(picture.Id, picture.SeoFilename, MimeTypes.MapMimeTypeToExtension(picture.MimeType), buffer, settings);
         }
 

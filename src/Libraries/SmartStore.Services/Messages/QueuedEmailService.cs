@@ -56,7 +56,7 @@ namespace SmartStore.Services.Messages
      
         public virtual void InsertQueuedEmail(QueuedEmail queuedEmail)
         {
-			Guard.ArgumentNotNull(() => queuedEmail);
+			Guard.NotNull(queuedEmail, nameof(queuedEmail));
 
 			_queuedEmailRepository.Insert(queuedEmail);
 
@@ -100,7 +100,7 @@ namespace SmartStore.Services.Messages
 
         public virtual void UpdateQueuedEmail(QueuedEmail queuedEmail)
         {
-			Guard.ArgumentNotNull(() => queuedEmail);
+			Guard.NotNull(queuedEmail, nameof(queuedEmail));
 
 			_queuedEmailRepository.Update(queuedEmail);
 
@@ -110,7 +110,7 @@ namespace SmartStore.Services.Messages
 
         public virtual void DeleteQueuedEmail(QueuedEmail queuedEmail)
         {
-			Guard.ArgumentNotNull(() => queuedEmail);
+			Guard.NotNull(queuedEmail, nameof(queuedEmail));
 
             _queuedEmailRepository.Delete(queuedEmail);
 
@@ -158,7 +158,7 @@ namespace SmartStore.Services.Messages
 
         public virtual IPagedList<QueuedEmail> SearchEmails(SearchEmailsQuery query)
         {
-			Guard.ArgumentNotNull(() => query);
+			Guard.NotNull(query, nameof(query));
             
             var q = _queuedEmailRepository.Table;
 
@@ -320,7 +320,7 @@ namespace SmartStore.Services.Messages
 
 		public virtual void DeleteQueuedEmailAttachment(QueuedEmailAttachment attachment)
 		{
-			Guard.ArgumentNotNull(() => attachment);
+			Guard.NotNull(attachment, nameof(attachment));
 
 			// delete from storage
 			if (attachment.StorageLocation == EmailAttachmentStorageLocation.Blob)
@@ -335,7 +335,7 @@ namespace SmartStore.Services.Messages
 
 		public virtual byte[] LoadQueuedEmailAttachmentBinary(QueuedEmailAttachment attachment)
 		{
-			Guard.ArgumentNotNull(() => attachment);
+			Guard.NotNull(attachment, nameof(attachment));
 
 			if (attachment.StorageLocation == EmailAttachmentStorageLocation.Blob)
 			{

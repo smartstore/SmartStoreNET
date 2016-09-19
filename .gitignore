@@ -276,6 +276,7 @@ $RECYCLE.BIN/
 *-symdir/
 [Ee]xternal[Ff]iles/
 /src/Plugins/*-sym
+/src/Tests/*-sym
 /src/Presentation/SmartStore.Web/Themes/*-sym
 
 
@@ -296,6 +297,8 @@ Kopie von*
 /src/Presentation/SmartStore.Web/App_Data/_temp/
 /src/Presentation/SmartStore.Web/App_Data/ExportProfiles/
 /src/Presentation/SmartStore.Web/App_Data/ImportProfiles/
+/src/Presentation/SmartStore.Web/App_Data/Indexing/
+/src/Presentation/SmartStore.Web/App_Data/Lucene/
 /src/Presentation/SmartStore.Web/App_Data/Settings.txt
 /src/Presentation/SmartStore.Web/App_Data/InstalledPlugins.txt
 /src/Presentation/SmartStore.Web/App_Data/Licenses.lic

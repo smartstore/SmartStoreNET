@@ -57,14 +57,14 @@ namespace SmartStore.Core.Logging
             if ((exception != null) && (exception is System.Threading.ThreadAbortException))
                 return;
 
-            if (logger.IsEnabled(level))
+            if (logger.IsEnabledFor(level))
             {
 				if (exception != null && fullMessage.IsEmpty())
 				{
 					fullMessage = "{0}\n{1}\n{2}".FormatCurrent(exception.Message, new String('-', 20), exception.StackTrace);
 				}
 
-                logger.InsertLog(level, message, fullMessage, customer);
+                logger.Log(level, message, fullMessage, customer);
             }
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Hosting;
 using SmartStore.Utilities;
 
@@ -10,32 +11,87 @@ namespace SmartStore.Core.IO
 {
 	public class LocalFileSystem : IFileSystem
 	{
-		private readonly string _virtualPath;	// ~/base
-		private readonly string _publicPath;	// /Shop/base
-		private readonly string _storagePath;	// C:\SMNET\base
+		private string _root;
+		private string _publicPath;		// /Shop/base
+		private string _storagePath;    // C:\SMNET\base		
 
 		public LocalFileSystem()
-			: this(string.Empty)
+			: this(string.Empty, string.Empty)
 		{
 		}
 
 		protected internal LocalFileSystem(string basePath)
+			: this(basePath, string.Empty)
 		{
-			// for testing purposes
-			basePath = basePath.EmptyNull().EnsureStartsWith("/").TrimEnd('/');
+		}
 
-			_virtualPath = "~" + basePath;
+		protected internal LocalFileSystem(string basePath, string publicPath)
+		{
+			basePath = basePath.EmptyNull();
 
-			_storagePath = CommonHelper.MapPath(_virtualPath, false);
+			var pathIsAbsolute = FileSystemHelper.IsFullPath(basePath);
 
-			var appPath = "";
+			NormalizeStoragePath(ref basePath, pathIsAbsolute);
 
-			if (HostingEnvironment.IsHosted)
+			_publicPath = NormalizePublicPath(publicPath, basePath, pathIsAbsolute);
+
+			_root = basePath;
+		}
+
+		private void NormalizeStoragePath(ref string basePath, bool basePathIsAbsolute)
+		{
+			if (basePathIsAbsolute)
 			{
-				appPath = HostingEnvironment.ApplicationVirtualPath;
+				// Path is fully qualified (UNC or absolute with drive letter)
+
+				// In this case this is our root path...
+				basePath = basePath.TrimEnd(Path.DirectorySeparatorChar);
+
+				// ...AND our physical storage path
+				_storagePath = basePath;
+			}
+			else
+			{
+				// Path is relative to the app root
+				basePath = basePath.TrimEnd('/').EnsureStartsWith("/");
+				_storagePath = CommonHelper.MapPath("~" + basePath, false);
+			}
+		}
+
+		private string NormalizePublicPath(string publicPath, string basePath, bool basePathIsAbsolute)
+		{
+			publicPath = publicPath.EmptyNull();
+
+			if (basePathIsAbsolute)
+			{
+				if (publicPath.IsEmpty() || (!publicPath.StartsWith("~/") && !publicPath.IsWebUrl(true)))
+				{
+					throw new ArgumentException("When the base path is a fully qualified path, the public path must not be empty, and either be a fully qualified URL or a virtual path (e.g.: ~/Media)", nameof(publicPath));
+				}
 			}
 
-			_publicPath = appPath.TrimEnd('/') + basePath;
+			var appVirtualPath = HostingEnvironment.IsHosted 
+				? HostingEnvironment.ApplicationVirtualPath.TrimEnd('/') 
+				: string.Empty;
+
+			if (publicPath.StartsWith("~/"))
+			{
+				// prepend application virtual path
+				return appVirtualPath + publicPath.Substring(1);
+			}
+
+			if (publicPath.IsEmpty())
+			{
+				// > /MyAppRoot/Media
+				return appVirtualPath + basePath;
+			}
+
+			return publicPath;
+		}
+
+		public string Root
+		{
+			get { return _root; }
 		}
 
 		/// <summary>
@@ -43,7 +99,7 @@ namespace SmartStore.Core.IO
 		/// </summary>
 		/// <param name="path">The relative path to be mapped.</param>
 		/// <returns>The relative path combined with the storage path.</returns>
-		private string MapStorage(string path)
+		protected virtual string MapStorage(string path)
 		{
 			var mappedPath = string.IsNullOrEmpty(path) ? _storagePath : Path.Combine(_storagePath, Fix(path));
 			return ValidatePath(_storagePath, mappedPath);
@@ -54,9 +110,9 @@ namespace SmartStore.Core.IO
 		/// </summary>
 		/// <param name="path">The relative path to be mapped.</param>
 		/// <returns>The relative path combined with the public path in an URL friendly format ('/' character for directory separator).</returns>
-		private string MapPublic(string path)
+		protected virtual string MapPublic(string path)
 		{
-			return string.IsNullOrEmpty(path) ? _publicPath : Path.Combine(_publicPath, path).Replace(Path.DirectorySeparatorChar, '/').Replace(" ", "%20");
+			return string.IsNullOrEmpty(path) ? _publicPath : HttpUtility.UrlDecode(Path.Combine(_publicPath, path).Replace(Path.DirectorySeparatorChar, '/'));
 		}
 
 		static string Fix(string path)
@@ -64,8 +120,8 @@ namespace SmartStore.Core.IO
 			return string.IsNullOrEmpty(path)
 					   ? ""
 					   : Path.DirectorySeparatorChar != '/'
-							 ? path.Replace('/', Path.DirectorySeparatorChar)
-							 : path;
+							 ? path.Replace('/', Path.DirectorySeparatorChar).TrimStart('/', '\\')
+							 : path.TrimStart('/', '\\');
 		}
 
 		public string GetPublicUrl(string path)
@@ -73,18 +129,18 @@ namespace SmartStore.Core.IO
 			return MapPublic(path);
 		}
 
-		public string GetStoragePath(string url)
+		public virtual string GetStoragePath(string url)
 		{
 			if (url.HasValue())
 			{
-				if (url.StartsWith(_virtualPath))
+				if (url.StartsWith("~/"))
 				{
-					return url.Substring(_virtualPath.Length).Replace('/', Path.DirectorySeparatorChar).Replace("%20", " ");
+					url = VirtualPathUtility.ToAbsolute(url);
 				}
 
 				if (url.StartsWith(_publicPath))
 				{
-					return url.Substring(_publicPath.Length).Replace('/', Path.DirectorySeparatorChar).Replace("%20", " ");
+					return HttpUtility.UrlDecode(url.Substring(_publicPath.Length).Replace('/', Path.DirectorySeparatorChar));
 				}
 			}
 

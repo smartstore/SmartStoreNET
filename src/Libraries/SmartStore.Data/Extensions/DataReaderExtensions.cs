@@ -33,7 +33,7 @@ namespace SmartStore.Data
 		public static IEnumerable<T> MapSequence<T>(this IDataReader reader, params string[] fieldsToSkip)
 			where T : new()
 		{
-			Guard.ArgumentNotNull(() => reader);
+			Guard.NotNull(reader, nameof(reader));
 
 			while (reader.Read())
 			{
@@ -43,7 +43,7 @@ namespace SmartStore.Data
 
 		public static IEnumerable<dynamic> MapSequence(this IDataReader reader, params string[] fieldsToSkip)
 		{
-			Guard.ArgumentNotNull(() => reader);
+			Guard.NotNull(reader, nameof(reader));
 			
             while (reader.Read())
 			{
@@ -84,7 +84,7 @@ namespace SmartStore.Data
 
 		public static void Map(this IDataReader reader, object instance, params string[] fieldsToSkip)
 		{
-			Guard.ArgumentNotNull(instance, "instance");
+			Guard.NotNull(instance, "instance");
 
 			if (reader.IsClosed)
 				throw new InvalidOperationException("Data reader cannot be used because it's already closed");

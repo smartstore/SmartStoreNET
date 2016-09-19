@@ -17,7 +17,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public DefaultLifetimeScopeAccessor(ILifetimeScope rootContainer)
 		{
-			Guard.ArgumentNotNull(() => rootContainer);
+			Guard.NotNull(rootContainer, nameof(rootContainer));
 
 			//rootContainer.ChildLifetimeScopeBeginning += OnScopeBeginning;
 

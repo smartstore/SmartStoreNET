@@ -90,7 +90,7 @@ namespace SmartStore.Utilities
 
         public static object CreateAndPopulate(Type targetType, IDictionary<string, object> source, out ICollection<ConvertProblem> problems)
         {
-            Guard.ArgumentNotNull(() => targetType);
+            Guard.NotNull(targetType, nameof(targetType));
 
             var target = Activator.CreateInstance(targetType);
 
@@ -128,8 +128,8 @@ namespace SmartStore.Utilities
 
         public static void Populate(IDictionary<string, object> source, object target, out ICollection<ConvertProblem> problems, params object[] populated)
         {
-            Guard.ArgumentNotNull(() => source);
-            Guard.ArgumentNotNull(() => target);
+            Guard.NotNull(source, nameof(source));
+            Guard.NotNull(target, nameof(target));
 
             problems = new List<ConvertProblem>();
 

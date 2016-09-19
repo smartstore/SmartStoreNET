@@ -32,7 +32,7 @@ namespace SmartStore.Linq
 
         public virtual void Expand<T, TTarget>(Expression<Func<TTarget, object>> path)
         {
-            Guard.ArgumentNotNull(path, "path");
+            Guard.NotNull(path, "path");
 
             string pathExpression = String.Empty;
 
@@ -64,7 +64,7 @@ namespace SmartStore.Linq
 
         public virtual void Expand<T>(string path)
         {
-            Guard.ArgumentNotEmpty(path, "path");
+            Guard.NotEmpty(path, "path");
             _expands.Add(path);
         }
 

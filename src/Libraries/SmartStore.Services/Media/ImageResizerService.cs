@@ -1,17 +1,13 @@
-﻿using System;
+﻿using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using ImageResizer;
 using ImageResizer.Configuration;
 using ImageResizer.Plugins.PrettyGifs;
-using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Media
 {
-    
-    public class ImageResizerService : IImageResizerService
+
+	public class ImageResizerService : IImageResizerService
     {
         static ImageResizerService()
         {
@@ -34,17 +30,21 @@ namespace SmartStore.Services.Media
         {
             Guard.NotNull(source, nameof(source));
 
-            ResizeSettings resizeSettings = ImageResizerUtil.CreateResizeSettings(settings);
+			var resultStream = new MemoryStream();
+			var resizeSettings = ImageResizerUtil.CreateResizeSettings(settings);
 
-            if (quality.HasValue)
-                resizeSettings.Quality = quality.Value;
-            if (maxHeight.HasValue)
-                resizeSettings.MaxHeight = maxHeight.Value;
-            if (maxWidth.HasValue)
-                resizeSettings.MaxWidth = maxWidth.Value;
+			if (source.Length != 0)
+			{
+				if (quality.HasValue)
+					resizeSettings.Quality = quality.Value;
+				if (maxHeight.HasValue)
+					resizeSettings.MaxHeight = maxHeight.Value;
+				if (maxWidth.HasValue)
+					resizeSettings.MaxWidth = maxWidth.Value;
 
-            var resultStream = new MemoryStream();
-            ImageBuilder.Current.Build(source, resultStream, resizeSettings);
+				ImageBuilder.Current.Build(source, resultStream, resizeSettings);
+			}
+
             return resultStream;
         }
 

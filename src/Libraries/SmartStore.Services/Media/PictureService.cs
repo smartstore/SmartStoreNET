@@ -90,40 +90,6 @@ namespace SmartStore.Services.Media
 			return defaultImageFileName;
 		}
 
-		protected virtual Size GetPictureSize(byte[] pictureBinary)
-		{
-			if (pictureBinary == null || pictureBinary.Length == 0)
-			{
-				return new Size();
-			}
-
-			Size size;
-			var stream = new MemoryStream(pictureBinary);
-
-			try
-			{
-				using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
-				{
-					size = ImageHeader.GetDimensions(reader);
-				}
-			}
-			catch (Exception)
-			{
-				// something went wrong with fast image access,
-				// so get original size the classic way
-				using (var b = new Bitmap(stream))
-				{
-					size = new Size(b.Width, b.Height);
-				}
-			}
-			finally
-			{
-				stream.Dispose();
-			}
-
-			return size;
-		}
-
 		protected internal virtual string GetProcessedImageUrl(
 			object source, // byte[], string or Picture
 			string seoFileName,
@@ -343,13 +309,41 @@ namespace SmartStore.Services.Media
 			return _storageProvider.Value.LoadAsync(picture.ToMedia());
 		}
 
-		public virtual Size GetPictureSize(Picture picture)
-        {
-            var pictureBinary = LoadPictureBinary(picture);
-            return GetPictureSize(pictureBinary);
-        }
+		public virtual Size GetPictureSize(byte[] pictureBinary)
+		{
+			if (pictureBinary == null || pictureBinary.Length == 0)
+			{
+				return new Size();
+			}
 
-        public virtual string GetPictureUrl(
+			Size size;
+			var stream = new MemoryStream(pictureBinary);
+
+			try
+			{
+				using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
+				{
+					size = ImageHeader.GetDimensions(reader);
+				}
+			}
+			catch (Exception)
+			{
+				// something went wrong with fast image access,
+				// so get original size the classic way
+				using (var b = new Bitmap(stream))
+				{
+					size = new Size(b.Width, b.Height);
+				}
+			}
+			finally
+			{
+				stream.Dispose();
+			}
+
+			return size;
+		}
+
+		public virtual string GetPictureUrl(
             int pictureId,
             int targetSize = 0,
             bool showDefaultPicture = true,

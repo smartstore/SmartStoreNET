@@ -325,7 +325,7 @@ namespace SmartStore.Web.Framework.Theming
         /// <returns>The theme variable value</returns>
         public T GetThemeVariable<T>(string varName, T defaultValue = default(T))
         {
-            Guard.ArgumentNotEmpty(varName, "varName");
+            Guard.NotEmpty(varName, "varName");
 
             var vars = this.ThemeVariables as IDictionary<string, object>;
             if (vars != null && vars.ContainsKey(varName))

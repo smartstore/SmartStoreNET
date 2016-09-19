@@ -213,8 +213,8 @@ namespace SmartStore.Services.Seo
 			Func<string, UrlRecord> extraSlugLookup = null)
 			where T : BaseEntity, ISlugSupported
 		{
-			Guard.ArgumentNotNull(() => urlRecordService);
-			Guard.ArgumentNotNull(() => seoSettings);
+			Guard.NotNull(urlRecordService, nameof(urlRecordService));
+			Guard.NotNull(seoSettings, nameof(seoSettings));
 
 			if (entity == null)
 				throw new ArgumentNullException("entity");

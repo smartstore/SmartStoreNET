@@ -88,7 +88,7 @@ namespace SmartStore.Services.Configuration
 
 		public virtual void InsertSetting(Setting setting, bool clearCache = true)
         {
-			Guard.ArgumentNotNull(() => setting);
+			Guard.NotNull(setting, nameof(setting));
 
 			_settingRepository.Insert(setting);
 
@@ -102,7 +102,7 @@ namespace SmartStore.Services.Configuration
 
         public virtual void UpdateSetting(Setting setting, bool clearCache = true)
         {
-			Guard.ArgumentNotNull(() => setting);
+			Guard.NotNull(setting, nameof(setting));
 
             _settingRepository.Update(setting);
 

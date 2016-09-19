@@ -90,7 +90,7 @@ namespace SmartStore
 		/// <param name="delimiter">Delimiter to use</param>
 		public static void Grow(this StringBuilder sb, string grow, string delimiter)
 		{
-			Guard.ArgumentNotNull(delimiter, "delimiter");
+			Guard.NotNull(delimiter, "delimiter");
 
 			if (!string.IsNullOrWhiteSpace(grow))
 			{

@@ -116,7 +116,7 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static void IsEnumType(Type arg, string argName)
 		{
-			ArgumentNotNull(arg, argName);
+			NotNull(arg, argName);
 			if (!arg.IsEnum)
 				throw Error.Argument(argName, "Type '{0}' must be a valid Enum type.", arg.FullName);
 		}
@@ -158,7 +158,7 @@ namespace SmartStore
 		#endregion
 
         [DebuggerStepThrough]
-		//[Obsolete("Use NotNull() with nameof operator instead")]
+		[Obsolete("Use NotNull() with nameof operator instead")]
         public static void ArgumentNotNull(object arg, string argName)
         {
             if (arg == null)
@@ -166,7 +166,7 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
-		//[Obsolete("Use NotNull() with nameof operator instead")]
+		[Obsolete("Use NotNull() with nameof operator instead")]
 		public static void ArgumentNotNull<T>(Func<T> arg)
         {
             if (arg() == null)
@@ -174,7 +174,7 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
-		//[Obsolete("Use NotEmpty() with nameof operator instead")]
+		[Obsolete("Use NotEmpty() with nameof operator instead")]
 		public static void ArgumentNotEmpty(Func<string> arg)
         {
 			if (arg().IsEmpty())
@@ -185,7 +185,7 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
-		//[Obsolete("Use NotEmpty() with nameof operator instead")]
+		[Obsolete("Use NotEmpty() with nameof operator instead")]
 		public static void ArgumentNotEmpty(string arg, string argName)
         {
             if (arg.IsEmpty())

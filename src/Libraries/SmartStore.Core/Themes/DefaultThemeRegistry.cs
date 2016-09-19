@@ -103,7 +103,7 @@ namespace SmartStore.Core.Themes
 
 		private void AddThemeManifestInternal(ThemeManifest manifest, bool isInit)
 		{
-			Guard.ArgumentNotNull(() => manifest);
+			Guard.NotNull(manifest, nameof(manifest));
 
 			if (!isInit)
 			{
@@ -192,7 +192,7 @@ namespace SmartStore.Core.Themes
 
 		public IEnumerable<ThemeManifest> GetChildrenOf(string themeName, bool deep = true)
 		{
-			Guard.ArgumentNotEmpty(() => themeName);
+			Guard.NotEmpty(themeName, nameof(themeName));
 
 			if (!ThemeManifestExists(themeName))
 				Enumerable.Empty<ThemeManifest>();

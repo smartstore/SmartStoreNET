@@ -17,7 +17,7 @@ namespace SmartStore.Data.Setup
 
 		public SettingsMigrator(SmartObjectContext ctx)
 		{
-			Guard.ArgumentNotNull(() => ctx);
+			Guard.NotNull(ctx, nameof(ctx));
 
 			_ctx = ctx;
 			_settings = _ctx.Set<Setting>();
@@ -25,7 +25,7 @@ namespace SmartStore.Data.Setup
 
 		public void Migrate(IEnumerable<SettingEntry> entries)
 		{
-			Guard.ArgumentNotNull(() => entries);
+			Guard.NotNull(entries, nameof(entries));
 
 			if (!entries.Any())
 				return;

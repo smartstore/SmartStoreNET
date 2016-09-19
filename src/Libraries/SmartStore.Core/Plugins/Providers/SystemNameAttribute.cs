@@ -7,7 +7,7 @@ namespace SmartStore.Core.Plugins
 	{
 		public SystemNameAttribute(string name)
 		{
-			Guard.ArgumentNotEmpty(() => name);
+			Guard.NotEmpty(name, nameof(name));
 			Name = name;
 		}
 

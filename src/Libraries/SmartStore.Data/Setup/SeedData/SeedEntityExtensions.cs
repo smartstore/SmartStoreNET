@@ -8,10 +8,8 @@ using SmartStore.Core.Configuration;
 
 namespace SmartStore.Data.Setup
 {
-
     public static class SeedEntityExtensions
     {
-
         #region fluent extensions
 
         public static SeedEntityAlterer<T, TKey> WithKey<T, TKey>(this IList<T> list, Expression<Func<T, TKey>> expression) where T : BaseEntity
@@ -104,5 +102,4 @@ namespace SmartStore.Data.Setup
 
         #endregion
     }
-
 }

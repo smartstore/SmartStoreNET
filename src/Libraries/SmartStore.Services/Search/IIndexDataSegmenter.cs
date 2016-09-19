@@ -33,8 +33,8 @@ namespace SmartStore.Services.Search
 
 	public enum IndexOperationType
 	{
-		Delete,
-		Index
+		Index,
+		Delete
 	}
 
 	public class IndexOperation

@@ -23,7 +23,7 @@ namespace SmartStore
 
 		public PostedFileResult(HttpPostedFileBase httpFile)
 		{
-			Guard.ArgumentNotNull(() => httpFile);
+			Guard.NotNull(httpFile, nameof(httpFile));
 
 			this._httpFile = httpFile;
 

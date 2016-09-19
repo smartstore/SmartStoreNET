@@ -18,6 +18,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Security;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Security;
@@ -570,6 +571,9 @@ namespace SmartStore.Web.Controllers
 						dynamic provider = Activator.CreateInstance(providerType);
 						scope.Resolve<IPermissionService>().InstallPermissions(provider);
 					}
+
+					// do not ignore settings migrated by data seeder (e.g. default media storage provider)
+					scope.Resolve<ISettingService>().ClearCache();
 
 					// SUCCESS: Redirect to home page
 					return UpdateResult(x =>

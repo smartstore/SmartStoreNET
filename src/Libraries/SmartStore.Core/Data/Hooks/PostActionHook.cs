@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SmartStore.Core.Data.Hooks
 {
@@ -12,14 +9,14 @@ namespace SmartStore.Core.Data.Hooks
     public abstract class PostActionHook<TEntity> : IPostActionHook
     {
         /// <summary>
-        /// Implements the interface.  This causes the hook to only run for objects that are assignable to TEntity.
+        /// Implements the interface. This causes the hook to only run for objects that are assignable to TEntity.
         /// </summary>
         public void HookObject(object entity, HookEntityMetadata metadata)
         {
-            if (typeof(TEntity).IsAssignableFrom(entity.GetType()))
-            {
+            //if (typeof(TEntity).IsAssignableFrom(entity.GetType()))
+            //{
                 Hook((TEntity)entity, metadata);
-            }
+            //}
         }
 
         /// <summary>
@@ -41,6 +38,49 @@ namespace SmartStore.Core.Data.Hooks
 		public virtual bool CanProcess(EntityState state)
 		{
 			return state == HookStates;
+		}
+
+		public virtual void OnCompleted()
+		{
+		}
+	}
+
+	/// <summary>
+	/// Implements a hook that will run after an entity gets inserted into the database.
+	/// </summary>
+	public abstract class PostInsertHook<TEntity> : PostActionHook<TEntity>
+	{
+		/// <summary>
+		/// Returns <see cref="EntityState.Added"/> as the hookstate to listen for.
+		/// </summary>
+		public override EntityState HookStates
+		{
+			get { return EntityState.Added; }
+		}
+	}
+
+	/// <summary>
+	/// Implements a hook that will run after an entity gets updated in the database.
+	/// </summary>
+	public abstract class PostUpdateHook<TEntity> : PostActionHook<TEntity>
+	{
+		/// <summary>
+		/// Returns <see cref="EntityState.Modified"/> as the hookstate to listen for.
+		/// </summary>
+		public override EntityState HookStates
+		{
+			get { return EntityState.Modified; }
+		}
+	}
+
+	/// <summary>
+	/// Implements a hook that will run after an entity gets deleted from the database.
+	/// </summary>
+	public abstract class PostDeleteHook<TEntity> : PostActionHook<TEntity>
+	{
+		public override EntityState HookStates
+		{
+			get { return EntityState.Deleted; }
 		}
 	}
 }

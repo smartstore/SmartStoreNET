@@ -25,6 +25,7 @@ using SmartStore.Data.Setup;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
@@ -53,10 +54,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 
 		public InstallDataSeeder(SeedDataConfiguration configuration)
         {
-			Guard.ArgumentNotNull(() => configuration);
+			Guard.NotNull(configuration, nameof(configuration));
 
-			Guard.ArgumentNotNull(configuration.Language, "Language");
-			Guard.ArgumentNotNull(configuration.Data, "SeedData");
+			Guard.NotNull(configuration.Language, "Language");
+			Guard.NotNull(configuration.Data, "SeedData");
 
 			_config = configuration;
 			_data = configuration.Data;
@@ -399,7 +400,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			if (!_config.StoreMediaInDB)
 			{
 				// All pictures have initially been stored in the DB. Move the binaries to disk.
-				var fileSystemStorageProvider = new FileSystemMediaStorageProvider(new LocalFileSystem());
+				var fileSystemStorageProvider = new FileSystemMediaStorageProvider(new MediaFileSystem());
 				var mediaStorages = _ctx.Set<MediaStorage>();
 
 				// pictures
@@ -555,7 +556,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         public virtual void Seed(SmartObjectContext context)
         {
-			Guard.ArgumentNotNull(() => context);
+			Guard.NotNull(context, nameof(context));
 
 			_ctx = context;
 			_data.Initialize(_ctx);

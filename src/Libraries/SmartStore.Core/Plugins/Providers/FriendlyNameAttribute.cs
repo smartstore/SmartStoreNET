@@ -7,7 +7,7 @@ namespace SmartStore.Core.Plugins
 	{
 		public FriendlyNameAttribute(string name)
 		{
-			Guard.ArgumentNotNull(() => name);
+			Guard.NotNull(name, nameof(name));
 
 			Name = name;
 		}

@@ -66,8 +66,8 @@ namespace SmartStore.Services.Media.Storage
 
 		public virtual bool Move(Provider<IMediaStorageProvider> sourceProvider, Provider<IMediaStorageProvider> targetProvider)
 		{
-			Guard.ArgumentNotNull(() => sourceProvider);
-			Guard.ArgumentNotNull(() => targetProvider);
+			Guard.NotNull(sourceProvider, nameof(sourceProvider));
+			Guard.NotNull(targetProvider, nameof(targetProvider));
 
 			var success = false;
 			var utcNow = DateTime.UtcNow;

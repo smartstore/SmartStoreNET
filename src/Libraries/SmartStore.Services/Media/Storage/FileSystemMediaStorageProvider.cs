@@ -12,9 +12,9 @@ namespace SmartStore.Services.Media.Storage
 	[DisplayOrder(1)]
 	public class FileSystemMediaStorageProvider : IMediaStorageProvider, ISupportsMediaMoving
 	{
-		private readonly IFileSystem _fileSystem;
+		private readonly IMediaFileSystem _fileSystem;
 
-		public FileSystemMediaStorageProvider(IFileSystem fileSystem)
+		public FileSystemMediaStorageProvider(IMediaFileSystem fileSystem)
 		{
 			_fileSystem = fileSystem;
 		}
@@ -26,8 +26,6 @@ namespace SmartStore.Services.Media.Storage
 
 		protected string GetPicturePath(MediaItem media)
 		{
-			Guard.NotEmpty(media.Path, nameof(media.Path));
-
 			return _fileSystem.Combine(media.Path, media.GetFileName());
 		}
 

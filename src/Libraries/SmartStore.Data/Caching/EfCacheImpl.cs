@@ -13,7 +13,7 @@ namespace SmartStore.Data.Caching
 	internal class EfCacheImpl : EFCache.ICache
 	{
 		private const string KEYPREFIX = "efcache:";
-		private readonly Multimap<string, string> _entitySetToKey = new Multimap<string, string>(() => new HashSet<string>());
+		private readonly Multimap<string, string> _entitySetToKey = new Multimap<string, string>((values) => new HashSet<string>(values ?? Enumerable.Empty<string>()));
 		
 		private readonly ICacheManager _cache;
 		

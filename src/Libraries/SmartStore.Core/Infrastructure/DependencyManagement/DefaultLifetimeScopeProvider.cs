@@ -10,7 +10,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public DefaultLifetimeScopeProvider(ILifetimeScopeAccessor accessor)
 		{
-			Guard.ArgumentNotNull(() => accessor);
+			Guard.NotNull(accessor, nameof(accessor));
 
 			this._accessor = accessor;
 			AutofacRequestLifetimeHttpModule.SetLifetimeScopeProvider(this);

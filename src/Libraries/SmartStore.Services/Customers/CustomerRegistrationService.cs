@@ -113,8 +113,8 @@ namespace SmartStore.Services.Customers
         /// <returns>Result</returns>
         public virtual CustomerRegistrationResult RegisterCustomer(CustomerRegistrationRequest request)
         {
-			Guard.ArgumentNotNull(() => request);
-			Guard.ArgumentNotNull(() => request.Customer);
+			Guard.NotNull(request, nameof(request));
+			Guard.NotNull(request.Customer, nameof(request.Customer));
 
             var result = new CustomerRegistrationResult();
 

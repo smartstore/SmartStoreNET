@@ -21,8 +21,8 @@ namespace SmartStore
 		/// <returns>A new query object to which the expansion was applied.</returns>
 		public static IQueryable<T> Expand<T>(this IQueryable<T> query, string path) where T : BaseEntity
 		{
-			Guard.ArgumentNotNull(query, "query");
-			Guard.ArgumentNotEmpty(path, "path");
+			Guard.NotNull(query, "query");
+			Guard.NotEmpty(path, "path");
 
 			return query.Include(path);
 		}
@@ -35,8 +35,8 @@ namespace SmartStore
 		/// <returns>A new query object to which the expansion was applied.</returns>
 		public static IQueryable<T> Expand<T, TProperty>(this IQueryable<T> query, Expression<Func<T, TProperty>> path) where T : BaseEntity
 		{
-			Guard.ArgumentNotNull(query, "query");
-			Guard.ArgumentNotNull(path, "path");
+			Guard.NotNull(query, "query");
+			Guard.NotNull(path, "path");
 
 			return query.Include(path);
 		}

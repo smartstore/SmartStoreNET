@@ -207,7 +207,7 @@ namespace SmartStore.Services.Tasks
 
 		public ScheduleTask GetOrAddTask<T>(Action<ScheduleTask> newAction) where T : ITask
 		{
-			Guard.ArgumentNotNull(() => newAction);
+			Guard.NotNull(newAction, nameof(newAction));
 
 			var type = typeof(T);
 
@@ -230,7 +230,7 @@ namespace SmartStore.Services.Tasks
 
 		public void CalculateFutureSchedules(IEnumerable<ScheduleTask> tasks, bool isAppStart = false)
 		{
-			Guard.ArgumentNotNull(() => tasks);
+			Guard.NotNull(tasks, nameof(tasks));
 			
 			using (var scope = new DbContextScope(autoCommit: false))
 			{

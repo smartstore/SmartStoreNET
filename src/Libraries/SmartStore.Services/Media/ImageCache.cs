@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,11 +9,10 @@ using ImageResizer;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.IO;
-using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Media
 {
-    public class ImageCache : IImageCache
+	public class ImageCache : IImageCache
     {
         private const int MULTIPLE_THUMB_DIRECTORIES_LENGTH = 4;
 
@@ -22,14 +20,14 @@ namespace SmartStore.Services.Media
 		private readonly string _thumbsRootDir;
 		private readonly IStoreContext _storeContext;
 		private readonly HttpContextBase _httpContext;
-		private readonly IFileSystem _fileSystem;
+		private readonly IMediaFileSystem _fileSystem;
 		private readonly IImageResizerService _imageResizerService;
 
 		public ImageCache(
 			MediaSettings mediaSettings, 
 			IStoreContext storeContext, 
 			HttpContextBase httpContext,
-			IFileSystem fileSystem,
+			IMediaFileSystem fileSystem,
 			IImageResizerService imageResizerService)
         {
             _mediaSettings = mediaSettings;
@@ -38,10 +36,7 @@ namespace SmartStore.Services.Media
 			_fileSystem = fileSystem;
 			_imageResizerService = imageResizerService;
 
-			_thumbsRootDir = "Media/Thumbs/";
-
-			_fileSystem.TryCreateFolder("Media");
-			_fileSystem.TryCreateFolder("Media/Thumbs");
+			_thumbsRootDir = "Thumbs/";
 		}
 
 		public byte[] ProcessAndAddImageToCache(CachedImageResult cachedImage, byte[] source, int targetSize)
@@ -94,27 +89,31 @@ namespace SmartStore.Services.Media
 
 		public void AddImageToCache(CachedImageResult cachedImage, byte[] buffer)
         {
-			PrepareAddImageToCache(cachedImage, buffer);
-			
-            // save file
-			_fileSystem.WriteAllBytes(BuildPath(cachedImage.Path), buffer);
+			if (PrepareAddImageToCache(cachedImage, buffer))
+			{
+				// save file
+				_fileSystem.WriteAllBytes(BuildPath(cachedImage.Path), buffer);
+			}
         }
 
 		public Task AddImageToCacheAsync(CachedImageResult cachedImage, byte[] buffer)
 		{
-			PrepareAddImageToCache(cachedImage, buffer);
+			if (PrepareAddImageToCache(cachedImage, buffer))
+			{
+				// save file
+				return _fileSystem.WriteAllBytesAsync(BuildPath(cachedImage.Path), buffer);
+			}
 
-			// save file
-			return _fileSystem.WriteAllBytesAsync(BuildPath(cachedImage.Path), buffer);
+			return Task.FromResult(false);
 		}
 
-		private void PrepareAddImageToCache(CachedImageResult cachedImage, byte[] buffer)
+		private bool PrepareAddImageToCache(CachedImageResult cachedImage, byte[] buffer)
 		{
 			Guard.NotNull(cachedImage, nameof(cachedImage));
 
 			if (buffer == null || buffer.Length == 0)
 			{
-				throw new ArgumentException("The image buffer cannot be empty.", "buffer");
+				return false;
 			}
 
 			if (cachedImage.Exists)
@@ -128,6 +127,8 @@ namespace SmartStore.Services.Media
 			{
 				_fileSystem.TryCreateFolder(BuildPath(imageDir));
 			}
+
+			return true;
 		}
 
         public virtual CachedImageResult GetCachedImage(int? pictureId, string seoFileName, string extension, object settings = null)

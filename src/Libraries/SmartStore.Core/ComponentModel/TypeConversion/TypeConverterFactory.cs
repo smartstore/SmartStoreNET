@@ -42,8 +42,8 @@ namespace SmartStore.ComponentModel
 
 		public static void RegisterConverter(Type type, ITypeConverter typeConverter)
 		{
-			Guard.ArgumentNotNull(() => type);
-			Guard.ArgumentNotNull(() => typeConverter);
+			Guard.NotNull(type, nameof(type));
+			Guard.NotNull(typeConverter, nameof(typeConverter));
 
 			_typeConverters.TryAdd(type, typeConverter);
         }
@@ -55,7 +55,7 @@ namespace SmartStore.ComponentModel
 
 		public static ITypeConverter RemoveConverter(Type type)
 		{
-			Guard.ArgumentNotNull(() => type);
+			Guard.NotNull(type, nameof(type));
 
 			ITypeConverter converter = null;
 			_typeConverters.TryRemove(type, out converter);
@@ -69,14 +69,14 @@ namespace SmartStore.ComponentModel
 
 		public static ITypeConverter GetConverter(object component)
 		{
-			Guard.ArgumentNotNull(() => component);
+			Guard.NotNull(component, nameof(component));
 
 			return GetConverter(component.GetType());
 		}
 
 		public static ITypeConverter GetConverter(Type type)
 		{
-			Guard.ArgumentNotNull(() => type);
+			Guard.NotNull(type, nameof(type));
 
 			ITypeConverter converter;
 			if (_typeConverters.TryGetValue(type, out converter))

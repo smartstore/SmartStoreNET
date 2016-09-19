@@ -91,7 +91,7 @@ namespace SmartStore.Services.Media
 
         public virtual void DeleteDownload(Download download)
         {
-			Guard.ArgumentNotNull(() => download);
+			Guard.NotNull(download, nameof(download));
 
 			// delete from storage
 			_storageProvider.Value.Remove(download.ToMedia());
@@ -105,7 +105,7 @@ namespace SmartStore.Services.Media
 
         public virtual void InsertDownload(Download download, byte[] downloadBinary)
         {
-			Guard.ArgumentNotNull(() => download);
+			Guard.NotNull(download, nameof(download));
 
             _downloadRepository.Insert(download);
 
@@ -118,7 +118,7 @@ namespace SmartStore.Services.Media
 
 		public virtual void UpdateDownload(Download download)
 		{
-			Guard.ArgumentNotNull(() => download);
+			Guard.NotNull(download, nameof(download));
 
 			// we use an overload because a byte array cannot be nullable
 			UpdateDownloadCore(download, null, false);
@@ -126,7 +126,7 @@ namespace SmartStore.Services.Media
 
 		public virtual void UpdateDownload(Download download, byte[] downloadBinary)
         {
-			Guard.ArgumentNotNull(() => download);
+			Guard.NotNull(download, nameof(download));
 
 			UpdateDownloadCore(download, downloadBinary, true);
         }
@@ -208,7 +208,7 @@ namespace SmartStore.Services.Media
 
 		public virtual byte[] LoadDownloadBinary(Download download)
 		{
-			Guard.ArgumentNotNull(() => download);
+			Guard.NotNull(download, nameof(download));
 
 			return _storageProvider.Value.Load(download.ToMedia());
 		}

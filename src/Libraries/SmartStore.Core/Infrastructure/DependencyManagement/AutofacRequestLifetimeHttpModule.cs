@@ -13,7 +13,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public void Init(HttpApplication context)
 		{
-			Guard.ArgumentNotNull(() => context);
+			Guard.NotNull(context, nameof(context));
 
 			context.EndRequest += OnEndRequest;
 		}

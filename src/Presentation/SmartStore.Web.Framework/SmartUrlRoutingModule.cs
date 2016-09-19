@@ -45,9 +45,9 @@ namespace SmartStore.Web.Framework
 		/// </remarks>
 		public static void RegisterRoutablePath(string path, string verb = ".*")
 		{
-			Guard.ArgumentNotEmpty(() => path);
+			Guard.NotEmpty(path, nameof(path));
 
-			if (RegularExpressions.IsWebUrl.IsMatch(path))
+			if (path.IsWebUrl())
 			{
 				throw new ArgumentException("Only relative paths are allowed.", "path");
 			}
@@ -60,8 +60,8 @@ namespace SmartStore.Web.Framework
 
 		public static bool HasMatchingPathHandler(string path, string method = "GET")
 		{
-			Guard.ArgumentNotEmpty(() => path);
-			Guard.ArgumentNotEmpty(() => method);
+			Guard.NotEmpty(path, nameof(path));
+			Guard.NotEmpty(method, nameof(method));
 
 			if (_routes.Count > 0)
 			{

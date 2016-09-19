@@ -129,7 +129,7 @@ namespace SmartStore.Core.Caching
 
 		public string[] Keys(string pattern)
 		{
-			Guard.ArgumentNotEmpty(() => pattern);
+			Guard.NotEmpty(pattern, nameof(pattern));
 
 			var keys = _cache.AsParallel().Select(x => x.Key);
 

@@ -42,7 +42,7 @@ namespace SmartStore.Core.Data
 
 		public static void DeleteRange<T>(this IRepository<T> rs, IEnumerable<int> ids) where T : BaseEntity
 		{
-			Guard.ArgumentNotNull(() => ids);
+			Guard.NotNull(ids, nameof(ids));
 
 			ids.Each(id => rs.Delete(id));
 		}

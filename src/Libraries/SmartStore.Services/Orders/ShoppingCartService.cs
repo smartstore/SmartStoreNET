@@ -489,7 +489,7 @@ namespace SmartStore.Services.Orders
 			ProductBundleItem bundleItem = null,
 			ProductVariantAttributeCombination combination = null)
         {
-			Guard.ArgumentNotNull(() => product);
+			Guard.NotNull(product, nameof(product));
 
             var warnings = new List<string>();
 
@@ -603,7 +603,7 @@ namespace SmartStore.Services.Orders
         /// <returns>bool</returns>
         public virtual bool AreAllAttributesForCombinationSelected(string selectedAttributes, Product product) 
         {
-			Guard.ArgumentNotNull(() => product);
+			Guard.NotNull(product, nameof(product));
 
 			var hasAttributeCombinations = _sciRepository.Context.QueryForCollection(product, (Product p) => p.ProductVariantAttributeCombinations).Any();
 			if (!hasAttributeCombinations)

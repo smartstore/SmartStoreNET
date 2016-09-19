@@ -7,12 +7,17 @@ namespace SmartStore.Core.IO
 {
     public interface IFileSystem
     {
-        /// <summary>
-        /// Retrieves the public URL for a given file within the storage provider.
-        /// </summary>
-        /// <param name="path">The relative path within the storage provider.</param>
-        /// <returns>The public URL.</returns>
-        string GetPublicUrl(string path);
+		/// <summary>
+		/// Gets the root path
+		/// </summary>
+		string Root { get; }
+
+		/// <summary>
+		/// Retrieves the public URL for a given file within the storage provider.
+		/// </summary>
+		/// <param name="path">The relative path within the storage provider.</param>
+		/// <returns>The public URL.</returns>
+		string GetPublicUrl(string path);
 
 		/// <summary>
 		/// Retrieves the path within the storage provider for a given public url.

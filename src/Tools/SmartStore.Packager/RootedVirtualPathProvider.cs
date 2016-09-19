@@ -13,8 +13,7 @@ namespace SmartStore.Packager
 	{
 		private readonly string _rootPath;
 
-		public RootedVirtualPathProvider(string rootPath) 
-			: base(new Work<ILogger>(w => NullLogger.Instance))
+		public RootedVirtualPathProvider(string rootPath) : base(NullLogger.Instance)
 		{
 			Guard.NotEmpty(rootPath, nameof(rootPath));
 

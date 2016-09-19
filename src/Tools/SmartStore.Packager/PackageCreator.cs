@@ -23,7 +23,7 @@ namespace SmartStore.Packager
 			_outputPath = outputPath;
 
 			_vpp = new RootedVirtualPathProvider(rootPath);
-			_packageBuilder = new PackageBuilder(new ApplicationEnvironment(_vpp, new Work<ILogger>(x => NullLogger.Instance)));
+			_packageBuilder = new PackageBuilder(new ApplicationEnvironment(_vpp, NullLogger.Instance));
 		}
 
 		public FileInfo CreatePluginPackage(string path)

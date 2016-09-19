@@ -13,9 +13,9 @@ namespace SmartStore.Core.IO
 {
 	public class DefaultVirtualPathProvider : IVirtualPathProvider
 	{
-		private readonly Work<ILogger> _logger;
+		private readonly ILogger _logger;
 
-		public DefaultVirtualPathProvider(Work<ILogger> logger)
+		public DefaultVirtualPathProvider(ILogger logger)
 		{
 			_logger = logger;
 		}
@@ -102,7 +102,7 @@ namespace SmartStore.Core.IO
 				//   Result         : /Blah/Blah2  <= that is not an app relative path!
 				if (!result.StartsWith("~/"))
 				{
-					_logger.Value.Information("Path '{0}' cannot be made app relative: Path returned ('{1}') is not app relative.".FormatCurrent(virtualPath, result));
+					_logger.Information("Path '{0}' cannot be made app relative: Path returned ('{1}') is not app relative.".FormatCurrent(virtualPath, result));
 					return null;
 				}
 				return result;
@@ -110,7 +110,7 @@ namespace SmartStore.Core.IO
 			catch (Exception e)
 			{
 				// The initial path might have been invalid (e.g. path indicates a path outside the application root)
-				_logger.Value.Information("Path '{0}' cannot be made app relative".FormatCurrent(virtualPath), e);
+				_logger.Information("Path '{0}' cannot be made app relative".FormatCurrent(virtualPath), e);
 				return null;
 			}
 		}
@@ -143,7 +143,7 @@ namespace SmartStore.Core.IO
 						{
 							if (depth == 0)
 							{
-								_logger.Value.Information("Path '{0}' cannot be made app relative: Too many '..'".FormatCurrent(virtualPath));
+								_logger.Information("Path '{0}' cannot be made app relative: Too many '..'".FormatCurrent(virtualPath));
 								return true;
 							}
 							depth--;

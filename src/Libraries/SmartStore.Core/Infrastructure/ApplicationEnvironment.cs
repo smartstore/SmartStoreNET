@@ -8,7 +8,7 @@ namespace SmartStore.Core
 {
 	public class ApplicationEnvironment : IApplicationEnvironment
 	{
-		public ApplicationEnvironment(IVirtualPathProvider vpp, Work<ILogger> logger)
+		public ApplicationEnvironment(IVirtualPathProvider vpp, ILogger logger)
 		{
 			WebRootFolder = new VirtualFolder("~/", vpp, logger);
 			AppDataFolder = new VirtualFolder("~/App_Data/", vpp, logger);

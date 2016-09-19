@@ -10,15 +10,15 @@ namespace SmartStore.Core.IO
 	public class VirtualFolder : IVirtualFolder
 	{
 		private readonly IVirtualPathProvider _vpp;
-		private readonly Work<ILogger> _logger;
+		private readonly ILogger _logger;
 		private readonly string _root;
 
 		public VirtualFolder(string root, IVirtualPathProvider vpp)
-			: this(root, vpp, new Work<ILogger>(x => NullLogger.Instance))
+			: this(root, vpp, NullLogger.Instance)
 		{
 		}
 
-		public VirtualFolder(string root, IVirtualPathProvider vpp, Work<ILogger> logger)
+		public VirtualFolder(string root, IVirtualPathProvider vpp, ILogger logger)
 		{
 			Guard.NotEmpty(root, nameof(root));
 			Guard.NotNull(vpp, nameof(vpp));

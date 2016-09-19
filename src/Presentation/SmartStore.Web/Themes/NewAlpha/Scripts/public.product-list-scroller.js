@@ -4,7 +4,10 @@
         productListScroller: function(settings) {
             
             var defaults = {
-            	preloadElements:		0		// amount of products that get pre loaded
+                preloadElements:    0,		// amount of products that get pre loaded
+                interval:           0,
+                cycle:              false,
+                duration:           300
             };
             
             var settings = $.extend(defaults, settings);
@@ -27,15 +30,15 @@
 				        prev: 		'.pl-scroll-prev',
 				        next: 		'.pl-scroll-next',
 				        axis:		'x',
-				        duration:	300,
+				        duration:   settings.duration,
 				        easing:		'easeInOutQuad',
 				        force:		true,
-				        cycle: 		false,
+				        cycle:      settings.cycle,
+				        interval:   settings.interval,
 				        exclude:    visibleElemnts -1,
 				        onBefore:	function( e, elem, $pane, $items, pos ){
 				        	
 				        	var plList = $pane.parent(),
-				        		//lastOptimized = plList.data('last-opt'),
 				        		isFirst = (pos == 0),
 				        		isLast = ((pos + visibleElemnts) == $items.length);
 				        	
@@ -48,10 +51,6 @@
 				        		plList.find('.pl-scroll-next').data("ScrollButton").enable(false);
 				        	else
 				        		plList.find('.pl-scroll-next').data("ScrollButton").enable(true);
-				        	
-				        	//if (lastOptimized != 0) {
-					        	//plList.productListOptimizer.adjustElementRange( plList , 1 );
-				        	//}
 				        }
 					});
 					
@@ -59,7 +58,7 @@
 					//$.preload(list.find("img"), function() {
 						
 					    var itemsWidth = list.find('.item-box:first').outerWidth(true) * list.find('.item-box').length;
-						
+
 						if(itemsWidth > list.width()){
 							list.find(".sb").scrollButton({ 
 								nearSize: 96,

@@ -52,7 +52,7 @@
     <div class="col-md-3">
         @if (Model.ShowThemeSelector)
         {
-			<div class="theme-selector">
+			<div class="theme-selector hidden-sm-down">
 				<h4>@T("Footer.Themes")</h4>
 				<div class="content">
 					@Html.Action("StoreThemeSelector", "Common")
@@ -61,7 +61,7 @@
         }
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-3 col-xs-6">
         <nav class="footer-quicklinks">
             <h4>@T("Footer.Service")</h4>
             <ul class="list-unstyled">
@@ -85,7 +85,7 @@
         </nav>
     </div>
 
-	<div class="col-md-3">
+	<div class="col-md-3 col-xs-6">
 		<nav class="footer-quicklinks company">
 			<h4>@T("Footer.Company")</h4>
 			<ul class="list-unstyled">
@@ -157,7 +157,7 @@
 
 @Html.Widget("footer")
 
-<div class="footer-disclaimer container small text-muted">
+<div class="footer-disclaimer container text-muted">
     <div class="row">
 		<div class="col-md-4 text-xs-center text-md-left">
 			@if (Model.ShowLegalInfo)

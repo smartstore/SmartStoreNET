@@ -359,7 +359,7 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        [ChildActionOnly]
+        //[ChildActionOnly]
         public ActionResult Megamenu(int currentCategoryId, int currentProductId)
         {
 			var model = _helper.PrepareCategoryNavigationModel(currentCategoryId, currentProductId);

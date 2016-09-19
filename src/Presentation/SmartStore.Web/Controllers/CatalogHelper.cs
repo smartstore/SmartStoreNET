@@ -1604,7 +1604,8 @@ namespace SmartStore.Web.Controllers
 					{
 						EntityId = category.Id,
 						Text = category.GetLocalized(x => x.Name),
-						RouteName = "Category"
+						RouteName = "Category",
+                        ImageUrl = category.PictureId != null ? _pictureService.GetPictureUrl((int)category.PictureId) : ""
 					};
 					menuItem.RouteValues.Add("SeName", category.GetSeName());
 

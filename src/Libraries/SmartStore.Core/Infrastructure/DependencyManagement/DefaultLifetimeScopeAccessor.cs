@@ -50,7 +50,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 					{
 						if (DataSettings.DatabaseIsInstalled())
 						{
-							scope.Resolve<ILoggerFactory>().CreateLogger(this.GetType()).Flush();
+							scope.Resolve<ILoggerFactory>().GetLogger(this.GetType()).Flush();
 						}		
 					}
 					catch { }

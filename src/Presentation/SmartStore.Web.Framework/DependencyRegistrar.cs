@@ -454,7 +454,15 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<Log4netLoggerFactory>().As<ILoggerFactory>().SingleInstance();
 
 			// call CreateLogger in response to the request for an ILogger implementation
-			builder.Register(CreateLogger).As<ILogger>().ExternallyOwned();
+			if (DataSettings.DatabaseIsInstalled())
+			{
+				builder.Register(CreateLogger).As<ILogger>().ExternallyOwned();
+			}
+			else
+			{
+				// the install logger should append to a rolling text file only.
+				builder.Register(CreateInstallLogger).As<ILogger>().ExternallyOwned();
+			}
 		}
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
@@ -534,12 +542,17 @@ namespace SmartStore.Web.Framework
 			if (parameters != null && parameters.Any())
 			{
 				var containingType = parameters.TypedAs<Type>();
-				return loggerFactory.CreateLogger(containingType);
+				return loggerFactory.GetLogger(containingType);
 			}
 			else
 			{
-				return loggerFactory.CreateLogger("SmartStore");
+				return loggerFactory.GetLogger("SmartStore");
 			}	
+		}
+
+		private static ILogger CreateInstallLogger(IComponentContext context, IEnumerable<Parameter> parameters)
+		{
+			return context.Resolve<ILoggerFactory>().GetLogger("Install");
 		}
 	}
 

@@ -36,12 +36,12 @@ namespace SmartStore.Core.Logging
 
 	public class NullLoggerFactory : ILoggerFactory
 	{
-		public ILogger CreateLogger(Type type)
+		public ILogger GetLogger(Type type)
 		{
 			return NullLogger.Instance;
 		}
 
-		public ILogger CreateLogger(string name)
+		public ILogger GetLogger(string name)
 		{
 			return NullLogger.Instance;
 		}

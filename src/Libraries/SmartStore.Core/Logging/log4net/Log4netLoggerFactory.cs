@@ -31,12 +31,12 @@ namespace SmartStore.Core.Logging
 			return result;
 		}
 
-		public ILogger CreateLogger(Type type)
+		public ILogger GetLogger(Type type)
 		{
-			return CreateLogger(type.FullName);
+			return GetLogger(type.FullName);
 		}
 
-		public ILogger CreateLogger(string name)
+		public ILogger GetLogger(string name)
 		{
 			var log = LogManager.GetLogger(name);
 

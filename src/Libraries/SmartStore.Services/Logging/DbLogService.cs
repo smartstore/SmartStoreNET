@@ -80,14 +80,14 @@ namespace SmartStore.Services.Logging
 			catch { }
 		}
 
-		public virtual IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc, string message, LogLevel? logLevel, int pageIndex, int pageSize, int minFrequency)
+		public virtual IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc, string message, LogLevel? logLevel, int pageIndex, int pageSize)
 		{
 			var query = _logRepository.Table;
 
 			if (fromUtc.HasValue)
-				query = query.Where(l => fromUtc.Value <= l.CreatedOnUtc || fromUtc.Value <= l.UpdatedOnUtc);
+				query = query.Where(l => fromUtc.Value <= l.CreatedOnUtc);
 			if (toUtc.HasValue)
-				query = query.Where(l => toUtc.Value >= l.CreatedOnUtc || toUtc.Value >= l.UpdatedOnUtc);
+				query = query.Where(l => toUtc.Value >= l.CreatedOnUtc);
 			if (logLevel.HasValue)
 			{
 				int logLevelId = (int)logLevel.Value;
@@ -96,10 +96,7 @@ namespace SmartStore.Services.Logging
 			if (!String.IsNullOrEmpty(message))
 				query = query.Where(l => l.ShortMessage.Contains(message) || l.FullMessage.Contains(message));
 
-			query = query.OrderByDescending(l => l.UpdatedOnUtc).ThenByDescending(l => l.CreatedOnUtc);
-
-			if (minFrequency > 0)
-				query = query.Where(l => l.Frequency >= minFrequency);
+			query = query.OrderByDescending(l => l.CreatedOnUtc);
 
 			//query = _logRepository.Expand(query, x => x.Customer);
 

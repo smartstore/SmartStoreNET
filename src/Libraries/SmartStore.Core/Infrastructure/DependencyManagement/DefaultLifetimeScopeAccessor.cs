@@ -46,15 +46,6 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 				var scope = _state.GetState();
 				if (scope != null)
 				{
-					try
-					{
-						if (DataSettings.DatabaseIsInstalled())
-						{
-							scope.Resolve<ILoggerFactory>().GetLogger(this.GetType()).Flush();
-						}		
-					}
-					catch { }
-
 					scope.Dispose();
 					_state.RemoveState();
 				}

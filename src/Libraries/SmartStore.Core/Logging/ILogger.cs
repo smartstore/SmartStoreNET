@@ -22,10 +22,5 @@ namespace SmartStore.Core.Logging
 		/// <param name="message">The message object to log</param>
 		/// <param name="args">An Object array containing zero or more objects to format. Can be null.</param>
 		void Log(LogLevel level, Exception exception, string message, object[] args);
-
-		/// <summary>
-		/// Commits log entries to the data store
-		/// </summary>
-		void Flush();
     }
 }

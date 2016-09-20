@@ -57,14 +57,6 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MinFrequency)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.MinFrequency)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 &nbsp;
             </td>
             <td class="adminData">
@@ -80,30 +72,29 @@
         <tr>
             <td>
                 @(Html.Telerik().Grid<LogModel>()
-                        .Name("log-grid")
-                        .ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
-                        .Columns(columns =>
-                        {
-                            columns.Bound(x => x.Id)
-                                .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-                                .Title("<input id='mastercheckbox' type='checkbox'/>")
-                                .Width(50)
-                                .HtmlAttributes(new { style = "text-align:center" })
-                                .HeaderHtmlAttributes(new { style = "text-align:center" });
-                            columns.Bound(x => x.Frequency)
-                                .Centered()
-                                .Width(50);
-                            columns.Bound(x => x.ShortMessage)
-                                .ClientTemplate("<span class='label label-<#= LogLevelHint #>' style='margin-right: 4px'><#= LogLevel #></span><a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
+						.Name("log-grid")
+						.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
+						.Columns(columns =>
+						{
+							columns.Bound(x => x.Id)
+								.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+								.Title("<input id='mastercheckbox' type='checkbox'/>")
+								.Width(50)
+								.HtmlAttributes(new { style = "text-align:center" })
+								.HeaderHtmlAttributes(new { style = "text-align:center" });
+							columns.Bound(x => x.LoggerShort)
+								.Width(100)
+								.ClientTemplate("<span class='muted text-muted' title='<#= Logger #>'><#= LoggerShort #></span>");
+							columns.Bound(x => x.ShortMessage)
+								.ClientTemplate("<span class='label label-<#= LogLevelHint #>' style='margin-right: 4px'><#= LogLevel #></span><a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
+							columns.Bound(x => x.UserName).Width(50);
 							columns.Bound(x => x.CreatedOn)
 								.Width(160);
-							columns.Bound(x => x.UpdatedOn)
-								.Width(160);
-                        })
-                        .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                        .DataBinding(dataBinding => dataBinding.Ajax().Select("LogList", "Log"))
+						})
+						.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+						.DataBinding(dataBinding => dataBinding.Ajax().Select("LogList", "Log"))
 						.PreserveGridState()
-                        .EnableCustomBinding(true))
+						.EnableCustomBinding(true))
             </td>
         </tr>
     </table>
@@ -196,8 +187,7 @@
                 CreatedOnFrom: $('#@Html.FieldIdFor(model => model.CreatedOnFrom)').val(),
                 CreatedOnTo: $('#@Html.FieldIdFor(model => model.CreatedOnTo)').val(),
                 Message: $('#@Html.FieldIdFor(model => model.Message)').val(),
-                LogLevelId: $('#@Html.FieldIdFor(model => model.LogLevelId)').val(),
-                MinFrequency: $('#@Html.FieldIdFor(model => model.MinFrequency)').val()
+                LogLevelId: $('#@Html.FieldIdFor(model => model.LogLevelId)').val()
             };
             e.data = searchModel;
         }

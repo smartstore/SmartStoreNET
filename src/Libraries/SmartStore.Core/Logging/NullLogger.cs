@@ -24,10 +24,6 @@ namespace SmartStore.Core.Logging
 		public void Log(LogLevel level, Exception exception, string message, object[] args)
 		{
 		}
-
-		public void Flush()
-		{
-		}
 	}
 
 	public class NullLoggerFactory : ILoggerFactory

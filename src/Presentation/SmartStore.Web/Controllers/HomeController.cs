@@ -26,6 +26,8 @@ using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Topics;
 
+using SmartStore.Core.Logging;
+
 namespace SmartStore.Web.Controllers
 {
     public partial class HomeController : PublicControllerBase
@@ -79,6 +81,12 @@ namespace SmartStore.Web.Controllers
         [RequireHttpsByConfigAttribute(SslRequirement.No)]
         public ActionResult Index()
         {
+			Logger.Debug("Debug");
+			Logger.Info("Info");
+			Logger.Warn("Warn");
+			Logger.Error(new Exception("Error"), "Error");
+			Logger.Fatal(new Exception("fatal"), "Fatal");
+
 			return View();
         }
 

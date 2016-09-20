@@ -33,7 +33,7 @@ namespace SmartStore.Services.Logging
 		/// <param name="pageIndex">Page index</param>
 		/// <param name="pageSize">Page size</param>
 		/// <returns>Log item collection</returns>
-		IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc, string message, LogLevel? logLevel, int pageIndex, int pageSize, int minFrequency);
+		IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc, string message, LogLevel? logLevel, int pageIndex, int pageSize);
 
 		/// <summary>
 		/// Gets a log item

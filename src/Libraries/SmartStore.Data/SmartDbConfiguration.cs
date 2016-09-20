@@ -14,7 +14,6 @@ using SmartStore.Core.Caching;
 
 namespace SmartStore.Data
 {
-
 	public class SmartDbConfiguration : DbConfiguration
 	{
 		public SmartDbConfiguration()
@@ -57,5 +56,4 @@ namespace SmartStore.Data
 			}
 		}
 	}
-
 }

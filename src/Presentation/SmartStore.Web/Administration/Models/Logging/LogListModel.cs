@@ -27,9 +27,6 @@ namespace SmartStore.Admin.Models.Logging
         [SmartResourceDisplayName("Admin.System.Log.List.LogLevel")]
         public int LogLevelId { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.Log.List.MinFrequency")]
-		public int MinFrequency { get; set; }
-
         public IList<SelectListItem> AvailableLogLevels { get; set; }
     }
 }

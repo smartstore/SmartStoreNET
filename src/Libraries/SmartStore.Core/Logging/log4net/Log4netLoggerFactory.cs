@@ -1,17 +1,43 @@
 ﻿using System;
+using System.Data;
 using System.IO;
+using System.Linq;
 using log4net;
+using log4net.Appender;
 using log4net.Config;
+using log4net.Core;
+using log4net.Repository;
+using log4net.Util;
+using SmartStore.Core.Data;
 using SmartStore.Utilities;
 
 namespace SmartStore.Core.Logging
 {
 	public class Log4netLoggerFactory : ILoggerFactory
 	{
-		static Log4netLoggerFactory()
+		public Log4netLoggerFactory()
 		{
 			var configFile = GetConfigFile(CommonHelper.GetAppSetting<string>("log4net.Config", @"Config\log4net.config"));
+
 			XmlConfigurator.ConfigureAndWatch(configFile);
+
+			var repository = LogManager.GetRepository();
+			repository.ConfigurationChanged += (sender, e) => TryConfigureDbAppender(sender as ILoggerRepository);
+			TryConfigureDbAppender(repository);
+		}
+
+		private void TryConfigureDbAppender(ILoggerRepository repository)
+		{
+			if (repository == null || !DataSettings.DatabaseIsInstalled())
+				return;
+
+			var adoNetAppenders = repository.GetAppenders().OfType<AdoNetAppender>().Where(x => x.Name == "db").ToList();
+			foreach (var appender in adoNetAppenders)
+			{
+				appender.ConnectionString = DataSettings.Current.DataConnectionString;
+				appender.ConnectionType = DataSettings.Current.DataConnectionType;
+				appender.ActivateOptions();
+			}
 		}
 
 		private static FileInfo GetConfigFile(string fileName)
@@ -39,15 +65,6 @@ namespace SmartStore.Core.Logging
 		public ILogger GetLogger(string name)
 		{
 			var log = LogManager.GetLogger(name);
-
-			//// TODO!!!!
-			//var adoNetAppenders = log.Logger.Repository.GetAppenders().OfType<AdoNetAppender>();
-			//foreach (var appender in adoNetAppenders)
-			//{
-			//	appender.ConnectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-			//	appender.ActivateOptions();
-			//}
-
 			return new Log4netLogger(log.Logger);
 		}
 	}

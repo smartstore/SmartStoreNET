@@ -37,8 +37,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 {
 	public partial class InstallDataSeeder : IDataSeeder<SmartObjectContext>
     {
-        #region Fields & Constants
+		#region Fields & Constants
 
+		private ILogger _logger;
 		private SmartObjectContext _ctx;
         private SeedDataConfiguration _config;
         private InvariantSeedData _data;
@@ -52,15 +53,15 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         #region Ctor
 
-		public InstallDataSeeder(SeedDataConfiguration configuration)
+		public InstallDataSeeder(SeedDataConfiguration configuration, ILogger logger)
         {
 			Guard.NotNull(configuration, nameof(configuration));
-
 			Guard.NotNull(configuration.Language, "Language");
 			Guard.NotNull(configuration.Data, "SeedData");
 
 			_config = configuration;
 			_data = configuration.Data;
+			_logger = logger;
         }
 
         #endregion Ctor
@@ -598,6 +599,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 
             if (_config.SeedSampleData)
             {
+				_logger.Info("Seeding sample data");
+
 				_config.ProgressMessageCallback("Progress.CreatingSampleData");
 
 				Populate("PopulateSpecificationAttributes", _data.SpecificationAttributes());
@@ -654,11 +657,14 @@ namespace SmartStore.Web.Infrastructure.Installation
 		{
 			try
 			{
+				_logger.DebugFormat("Populate: {0}", stage);
 				SaveRange(entities);
 			}
 			catch (Exception ex)
 			{
-				throw new SeedDataException(stage, ex);
+				var ex2 = new SeedDataException(stage, ex);
+				_logger.Error(ex2);
+				throw ex2;
 			}
 		}
 
@@ -666,11 +672,14 @@ namespace SmartStore.Web.Infrastructure.Installation
 		{
 			try
 			{
+				_logger.DebugFormat("Populate: {0}", stage);
 				populateAction();
 			}
 			catch (Exception ex)
 			{
-				throw new SeedDataException(stage, ex);
+				var ex2 = new SeedDataException(stage, ex);
+				_logger.Error(ex2);
+				throw ex2;
 			}
 		}
 

@@ -151,10 +151,6 @@ GO
 CREATE NONCLUSTERED INDEX [IX_Product_LimitedToStores] ON [Product] ([LimitedToStores] ASC)
 GO
 
--- codehint: sm-add
-CREATE NONCLUSTERED INDEX [IX_Log_ContentHash] ON [Log] ([ContentHash] ASC)
-GO
-
 CREATE NONCLUSTERED INDEX [IX_ProductVariantAttributeCombination_SKU] ON [ProductVariantAttributeCombination] ([SKU] ASC)
 GO
 

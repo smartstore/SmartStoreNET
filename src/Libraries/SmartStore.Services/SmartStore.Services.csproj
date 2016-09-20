@@ -558,7 +558,6 @@
     <Compile Include="Catalog\IProductService.cs" />
     <Compile Include="Localization\LanguageService.cs" />
     <Compile Include="Localization\LocalizationService.cs" />
-    <Compile Include="Logging\DefaultLogger.cs" />
     <Compile Include="Catalog\ManufacturerService.cs" />
     <Compile Include="Catalog\ProductAttributeService.cs" />
     <Compile Include="Catalog\ProductService.cs" />

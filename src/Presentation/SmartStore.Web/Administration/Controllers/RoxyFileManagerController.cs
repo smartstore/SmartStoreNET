@@ -146,7 +146,7 @@ namespace SmartStore.Admin.Controllers
 
 		private bool IsAllowedFileType(string extension)
 		{
-			var result = true;
+			var result = false;
 			extension = extension.EmptyNull().ToLower().Replace(".", "");
 
 			var setting = GetSetting("FORBIDDEN_UPLOADS").EmptyNull().Trim().ToLower();
@@ -199,6 +199,10 @@ namespace SmartStore.Admin.Controllers
 			return "{\"res\":\"" + type + "\",\"msg\":\"" + message.EmptyNull().Replace("\"", "\\\"") + "\"}";
 		}
 
+		private bool IsAjax()
+		{
+			return (Request["method"] != null && Request["method"].ToString() == "ajax");
+		}
 
 		internal class RoxyFolder
 		{
@@ -787,7 +791,8 @@ namespace SmartStore.Admin.Controllers
 		{
 			path = GetRelativePath(path);
 
-			string result = null;
+			string message = null;
+			var hasError = false;
 			var width = 0;
 			var height = 0;
 
@@ -802,19 +807,21 @@ namespace SmartStore.Admin.Controllers
 				for (var i = 0; i < Request.Files.Count; ++i)
 				{
 					var file = Request.Files[i];
-					file.FileName.Dump();
 					var extension = Path.GetExtension(file.FileName);
 
-					if (GetFileContentType(extension).IsCaseInsensitiveEqual("image") && IsAllowedFileType(extension))
+					if (IsAllowedFileType(extension))
 					{
 						var dest = Path.Combine(tempDir, file.FileName);
 						file.SaveAs(dest);
 
-						ImageResize(dest, dest, width, height);
+						if (GetFileContentType(extension).IsCaseInsensitiveEqual("image"))
+						{
+							ImageResize(dest, dest, width, height);
+						}
 					}
 					else
 					{
-						result = GetResultString(LangRes("E_UploadNotAll"));
+						message = LangRes("E_UploadNotAll");
 					}
 				}
 
@@ -832,16 +839,27 @@ namespace SmartStore.Admin.Controllers
 			}
 			catch (Exception exception)
 			{
-				result = GetResultString(exception.Message, "error");
+				hasError = true;
+				message = exception.Message;
 			}
 			finally
 			{
 				FileSystemHelper.ClearDirectory(tempDir, true);
 			}
 
-			Response.Write("<script>");
-			Response.Write("parent.fileUploaded(" + (result ?? GetResultString()) + ");");
-			Response.Write("</script>");
+			if (IsAjax())
+			{
+				if (message.HasValue())
+				{
+					Response.Write(message);
+				}
+			}
+			else
+			{
+				Response.Write("<script>");
+				Response.Write("parent.fileUploaded(" + GetResultString(message, hasError ? "error" : "ok") + ");");
+				Response.Write("</script>");
+			}
 		}
 
 		#endregion
@@ -922,9 +940,16 @@ namespace SmartStore.Admin.Controllers
 			{
 				if (action == "UPLOAD")
 				{
-					Response.Write("<script>");
-					Response.Write("parent.fileUploaded(" + GetResultString(LangRes("E_UploadNoFiles"), "error") + ");");
-					Response.Write("</script>");
+					if (IsAjax())
+					{
+						Response.Write(LangRes("E_UploadNoFiles"));
+					}
+					else
+					{
+						Response.Write("<script>");
+						Response.Write("parent.fileUploaded(" + GetResultString(LangRes("E_UploadNoFiles"), "error") + ");");
+						Response.Write("</script>");
+					}
 				}
 				else
 				{

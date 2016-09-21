@@ -199,7 +199,7 @@ namespace SmartStore.Admin.Controllers
 			return "{\"res\":\"" + type + "\",\"msg\":\"" + message.EmptyNull().Replace("\"", "\\\"") + "\"}";
 		}
 
-		private bool IsAjax()
+		private bool IsAjaxUpload()
 		{
 			return (Request["method"] != null && Request["method"].ToString() == "ajax");
 		}
@@ -359,12 +359,16 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var file in files)
 			{
+				try
+				{
+					GetImageSize(file.Path, out width, out height);
+				}
+				catch {	}
+
 				if (isFirstItem)
 					isFirstItem = false;
 				else
 					Response.Write(",");
-
-				GetImageSize(file.Path, out width, out height);
 
 				Response.Write("{");
 				Response.Write("\"p\":\"" + HttpContext.GetContentUrl(_fileSystem.GetPublicUrl(file.Path)) + "\"");
@@ -461,12 +465,21 @@ namespace SmartStore.Admin.Controllers
 			if (!_fileSystem.FileExists(path))
 				return;
 
+			Bitmap image = null;
 			var file = _fileSystem.GetFile(path);
-			var stream = file.OpenRead();
-			var image = new Bitmap(Image.FromStream(stream));
+			using (var stream = file.OpenRead())
+			{
+				try
+				{
+					image = new Bitmap(Image.FromStream(stream));
+				}
+				catch {	}
 
-			stream.Close();
-			stream.Dispose();
+				stream.Close();
+			}
+
+			if (image == null)
+				return;
 
 			int cropWidth = image.Width, cropHeight = image.Height;
 			int cropX = 0, cropY = 0;
@@ -520,16 +533,16 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private void RenameFile(string path, string name)
+		private void RenameFile(string oldPath, string name)
 		{
-			path = GetRelativePath(path);
+			oldPath = GetRelativePath(oldPath);
 
-			if (!_fileSystem.FileExists(path))
+			if (!_fileSystem.FileExists(oldPath))
 			{
 				throw new Exception(LangRes("E_RenameFileInvalidPath"));
 			}
 
-			var fileType = _fileSystem.GetFile(path).FileType;
+			var fileType = Path.GetExtension(name);
 
 			if (!IsAllowedFileType(fileType))
 			{
@@ -538,15 +551,16 @@ namespace SmartStore.Admin.Controllers
 
 			try
 			{
-				var folder = _fileSystem.GetFolderForFile(path);
+				var folder = _fileSystem.GetFolderForFile(oldPath);
+				var newPath = _fileSystem.Combine(folder.Path, name);
 
-				_fileSystem.RenameFile(path, _fileSystem.Combine(folder.Path, name));
+				_fileSystem.RenameFile(oldPath, newPath);
 
 				Response.Write(GetResultString());
 			}
 			catch (Exception exception)
 			{
-				throw new Exception(exception.Message + "; " + LangRes("E_RenameFile") + " \"" + path + "\"");
+				throw new Exception(exception.Message + "; " + LangRes("E_RenameFile") + " \"" + oldPath + "\"");
 			}
 		}
 
@@ -847,11 +861,11 @@ namespace SmartStore.Admin.Controllers
 				FileSystemHelper.ClearDirectory(tempDir, true);
 			}
 
-			if (IsAjax())
+			if (IsAjaxUpload())
 			{
 				if (message.HasValue())
 				{
-					Response.Write(message);
+					Response.Write(GetResultString(message, hasError ? "error" : "ok"));
 				}
 			}
 			else
@@ -940,9 +954,9 @@ namespace SmartStore.Admin.Controllers
 			{
 				if (action == "UPLOAD")
 				{
-					if (IsAjax())
+					if (IsAjaxUpload())
 					{
-						Response.Write(LangRes("E_UploadNoFiles"));
+						Response.Write(GetResultString(LangRes("E_UploadNoFiles"), "error"));
 					}
 					else
 					{

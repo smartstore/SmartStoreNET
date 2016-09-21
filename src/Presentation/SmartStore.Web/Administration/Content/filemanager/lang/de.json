@@ -64,7 +64,7 @@
     "E_UploadNotAll": "Fehler beim Hochladen einiger Dateien ",
     "E_UploadNoFiles": "Keine Dateien zum Hochladen oder Datei zu gross.",
     "E_UploadInvalidPath": "Kein Hochladen von Dateien - Pfad existiert nicht",
-    "E_FileExtensionForbidden": "Dateitypen können nicht bearbeitet werden - Ungültige Dateiendungen ",
+    "E_FileExtensionForbidden": "Dateityp kann nicht bearbeitet werden - Ungültige Dateiendung.",
     "DownloadFile": "Download",
     "T_DownloadFile": "Datei downloaden",
     "E_CannotDeleteRoot": "Root-Ordner kann nicht gelöscht werden",

@@ -234,6 +234,7 @@
     <Compile Include="Logging\log4net\Log4netLogger.cs" />
     <Compile Include="Logging\log4net\Log4netLoggerFactory.cs" />
     <Compile Include="Logging\log4net\SmartFileAppender.cs" />
+    <Compile Include="Logging\LoggingModule.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
     <Compile Include="Plugins\Providers\DisplayOrderAttribute.cs" />

@@ -78,35 +78,44 @@ namespace SmartStore.Core.Logging
 					}
 					else
 					{
-						var workContext = EngineContext.Current.Resolve<IWorkContext>();
+						var container = EngineContext.Current.ContainerManager;
+
+						IWorkContext workContext;
 
 						// CustomerId
-						try
+						if (container.TryResolve<IWorkContext>(null, out workContext))
 						{
-							props["CustomerId"] = workContext.CurrentCustomer.Id;
-						}
-						catch
-						{
-							props["CustomerId"] = DBNull.Value;
+							try
+							{
+								props["CustomerId"] = workContext.CurrentCustomer.Id;
+							}
+							catch
+							{
+								props["CustomerId"] = DBNull.Value;
+							}
 						}
 
-						var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-						var httpContext = EngineContext.Current.Resolve<HttpContextBase>();
+
+						IWebHelper webHelper;
+						HttpContextBase httpContext;
 
 						// Url & stuff
-						try
+						if (container.TryResolve<IWebHelper>(null, out webHelper) && container.TryResolve<HttpContextBase>(null, out httpContext))
 						{
-							props["Url"] = webHelper.GetThisPageUrl(true);
-							props["Referrer"] = webHelper.GetUrlReferrer();
-							props["HttpMethod"] = httpContext.Request.HttpMethod;
-							props["Ip"] = webHelper.GetCurrentIpAddress();
-						}
-						catch
-						{
-							props["Url"] = DBNull.Value;
-							props["Referrer"] = DBNull.Value;
-							props["HttpMethod"] = DBNull.Value;
-							props["Ip"] = DBNull.Value;
+							try
+							{
+								props["Url"] = webHelper.GetThisPageUrl(true);
+								props["Referrer"] = webHelper.GetUrlReferrer();
+								props["HttpMethod"] = httpContext.Request.HttpMethod;
+								props["Ip"] = webHelper.GetCurrentIpAddress();
+							}
+							catch
+							{
+								props["Url"] = DBNull.Value;
+								props["Referrer"] = DBNull.Value;
+								props["HttpMethod"] = DBNull.Value;
+								props["Ip"] = DBNull.Value;
+							}
 						}
 					}
 				}

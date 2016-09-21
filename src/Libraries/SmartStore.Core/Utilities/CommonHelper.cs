@@ -192,6 +192,17 @@ namespace SmartStore.Utilities
 			return setting.Convert<T>();
 		}
 
+		public static bool HasConnectionString(string connectionStringName)
+		{
+			var conString = ConfigurationManager.ConnectionStrings[connectionStringName];
+			if (conString != null && conString.ConnectionString.HasValue())
+			{
+				return true;
+			}
+
+			return false;
+		}
+
 		private static bool TryAction<T>(Func<T> func, out T output)
 		{
 			Guard.NotNull(func, nameof(func));

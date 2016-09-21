@@ -10,7 +10,8 @@
 * REDIS providers for Business Cache, Output Cache and Session State (commercial plugin)
 * Microsoft AZURE provider for media storage (commercial plugin)
 * Message Bus for inter-process messaging between servers (commercial plugin)
-* Configurable media storage path for web farms 
+* Configurable media storage path for web farms
+* (Dev) log4net integration 
 * Added option to skip shipping method selection in checkout process when only one shipping method is active
 * Added options to capture salutation and title in addresses and customer info
 * Added projection to control the export of individually visible associated products
@@ -25,6 +26,8 @@
 * BeezUP: Exports the product weight
 * Payone: Replace client API by Payone iFrame solution. Allows credit card payment compliant with PCI DSS, SAQ A.
 * Updated Elmar shop info XML from version 1.1 to 2.0
+* (Perf) Application start faster by ~20%
+* (Perf) Lower memory consumption
 * #1008 Export: Add support for description projection to all product exporting providers
 * #1015 Implement Entity Picker in discount requirements
 

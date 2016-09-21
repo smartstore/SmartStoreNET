@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Web;
 using log4net;
 using log4net.Core;
 using log4net.Util;
+using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
 
@@ -53,11 +52,7 @@ namespace SmartStore.Core.Logging
 			}
 
 			ThreadContext.Properties["LevelId"] = (int)level;
-
-			if (Data.DataSettings.DatabaseIsInstalled())
-			{
-				TryAddExtendedThreadInfo();
-			}
+			TryAddExtendedThreadInfo();
 			
 			_logger.Log(_declaringType, logLevel, messageObj, exception);
 		}
@@ -73,36 +68,46 @@ namespace SmartStore.Core.Logging
 			{
 				using (new ActionDisposable(() => props["sm:ThreadInfoAdded"] = true))
 				{
-					
-					var workContext = EngineContext.Current.Resolve<IWorkContext>();			
-
-					// CustomerId
-					try
-					{
-						props["CustomerId"] = workContext.CurrentCustomer.Id;
-					}
-					catch
+					if (!DataSettings.DatabaseIsInstalled())
 					{
 						props["CustomerId"] = DBNull.Value;
-					}
-
-					var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-					var httpContext = EngineContext.Current.Resolve<HttpContextBase>();
-
-					// Url & stuff
-					try
-					{
-						props["Url"] = webHelper.GetThisPageUrl(true);
-						props["Referrer"] = webHelper.GetUrlReferrer();
-						props["HttpMethod"] = httpContext.Request.HttpMethod;
-						props["Ip"] = webHelper.GetCurrentIpAddress();
-					}
-					catch
-					{
 						props["Url"] = DBNull.Value;
 						props["Referrer"] = DBNull.Value;
 						props["HttpMethod"] = DBNull.Value;
 						props["Ip"] = DBNull.Value;
+					}
+					else
+					{
+						var workContext = EngineContext.Current.Resolve<IWorkContext>();
+
+						// CustomerId
+						try
+						{
+							props["CustomerId"] = workContext.CurrentCustomer.Id;
+						}
+						catch
+						{
+							props["CustomerId"] = DBNull.Value;
+						}
+
+						var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+						var httpContext = EngineContext.Current.Resolve<HttpContextBase>();
+
+						// Url & stuff
+						try
+						{
+							props["Url"] = webHelper.GetThisPageUrl(true);
+							props["Referrer"] = webHelper.GetUrlReferrer();
+							props["HttpMethod"] = httpContext.Request.HttpMethod;
+							props["Ip"] = webHelper.GetCurrentIpAddress();
+						}
+						catch
+						{
+							props["Url"] = DBNull.Value;
+							props["Referrer"] = DBNull.Value;
+							props["HttpMethod"] = DBNull.Value;
+							props["Ip"] = DBNull.Value;
+						}
 					}
 				}
 			}

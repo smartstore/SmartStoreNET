@@ -6,11 +6,6 @@ namespace SmartStore.Core.Data.Hooks
         void HookObject(object entity, HookEntityMetadata metadata);
 
 		/// <summary>
-		/// Gets the entity state to listen for.
-		/// </summary>
-		EntityState HookStates { get; }
-
-		/// <summary>
 		/// Indicates whether the hook instance can be processed for the given <see cref="EntityState"/>
 		/// </summary>
 		/// <param name="state">The state of the entity</param>

@@ -16,20 +16,12 @@ namespace SmartStore.Core.Data.Hooks
         /// </value>
         public abstract bool RequiresValidation { get; }
 
-        /// <summary>
-        /// Entity States that this hook must be registered to listen for.
-        /// </summary>
-        public abstract EntityState HookStates { get; }
-
 		/// <summary>
 		/// Indicates whether the hook instance can be processed for the given <see cref="EntityState"/>
 		/// </summary>
 		/// <param name="state">The state of the entity</param>
 		/// <returns><c>true</c> when the hook should be processed, <c>false</c> otherwise</returns>
-		public virtual bool CanProcess(EntityState state)
-		{
-			return state == HookStates;
-		}
+		public abstract bool CanProcess(EntityState state);
 
 		/// <summary>
 		/// The logic to perform per entity before the registered action gets performed.
@@ -60,12 +52,9 @@ namespace SmartStore.Core.Data.Hooks
 	/// </summary>
 	public abstract class PreInsertHook<TEntity> : PreActionHook<TEntity>
 	{
-		/// <summary>
-		/// Returns <see cref="EntityState.Added"/> as the hookstate to listen for.
-		/// </summary>
-		public override EntityState HookStates
+		public override bool CanProcess(EntityState state)
 		{
-			get { return EntityState.Added; }
+			return state == EntityState.Added;
 		}
 	}
 
@@ -74,12 +63,9 @@ namespace SmartStore.Core.Data.Hooks
 	/// </summary>
 	public abstract class PreUpdateHook<TEntity> : PreActionHook<TEntity>
 	{
-		/// <summary>
-		/// Returns <see cref="EntityState.Modified"/> as the hookstate to listen for.
-		/// </summary>
-		public override EntityState HookStates
+		public override bool CanProcess(EntityState state)
 		{
-			get { return EntityState.Modified; }
+			return state == EntityState.Modified;
 		}
 	}
 
@@ -88,12 +74,9 @@ namespace SmartStore.Core.Data.Hooks
 	/// </summary>
 	public abstract class PreDeleteHook<TEntity> : PreActionHook<TEntity>
 	{
-		/// <summary>
-		/// Returns <see cref="EntityState.Deleted"/> as the hookstate to listen for.
-		/// </summary>
-		public override EntityState HookStates
+		public override bool CanProcess(EntityState state)
 		{
-			get { return EntityState.Deleted; }
+			return state == EntityState.Deleted;
 		}
 	}
 }

@@ -15,7 +15,6 @@ using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Tasks
 {
-
 	public class TaskExecutor : ITaskExecutor
     {
         private readonly IScheduleTaskService _scheduledTaskService;
@@ -72,7 +71,10 @@ namespace SmartStore.Services.Tasks
 			{
 				taskType = Type.GetType(task.Type);
 
-				Debug.WriteLineIf(taskType == null, "Invalid task type: " + task.Type.NaIfEmpty());
+				if (taskType == null)
+				{
+					Logger.DebugFormat("Invalid scheduled task type: {0}", task.Type.NaIfEmpty());
+				}
 
 				if (taskType == null)
 					return;
@@ -127,7 +129,8 @@ namespace SmartStore.Services.Tasks
 					Parameters = taskParameters ?? new Dictionary<string, string>()
 				};
 
-                instance.Execute(ctx);
+				Logger.DebugFormat("Executing scheduled task: {0}", task.Type);
+				instance.Execute(ctx);
             }
             catch (Exception exception)
             {
@@ -159,7 +162,7 @@ namespace SmartStore.Services.Tasks
 				var now = DateTime.UtcNow;
 				task.LastError = lastError;
 				task.LastEndUtc = now;
-
+				
 				if (faulted)
 				{
 					if ((!canceled && task.StopOnError) || instance == null)
@@ -171,6 +174,8 @@ namespace SmartStore.Services.Tasks
 				{
 					task.LastSuccessUtc = now;
 				}
+
+				Logger.DebugFormat("Executed scheduled task: {0}. Elapsed: {1} ms.", task.Type, (now - task.LastStartUtc.Value).TotalMilliseconds);
 
 				if (task.Enabled)
 				{
@@ -186,5 +191,4 @@ namespace SmartStore.Services.Tasks
 			return CancellationTokenSource.CreateLinkedTokenSource(AsyncRunner.AppShutdownCancellationToken, userCancellationToken);
 		}
     }
-
 }

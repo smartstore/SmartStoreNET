@@ -13,26 +13,19 @@ namespace SmartStore.Core.Logging
 {
 	public class LoggingModule : Autofac.Module
 	{
-		private readonly ConcurrentDictionary<string, ILogger> _loggerCache;
-
-		public LoggingModule()
-		{
-			_loggerCache = new ConcurrentDictionary<string, ILogger>(StringComparer.OrdinalIgnoreCase);
-		}
-
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.RegisterType<Log4netLoggerFactory>().As<ILoggerFactory>().SingleInstance();
 
-			// call CreateLogger in response to the request for an ILogger implementation
+			// call GetLogger in response to the request for an ILogger implementation
 			if (DataSettings.DatabaseIsInstalled())
 			{
-				builder.Register(CreateLogger).As<ILogger>().ExternallyOwned();
+				builder.Register(GetContextualLogger).As<ILogger>().ExternallyOwned();
 			}
 			else
 			{
 				// the install logger should append to a rolling text file only.
-				builder.Register(CreateInstallLogger).As<ILogger>().ExternallyOwned();
+				builder.Register(GetInstallLogger).As<ILogger>().ExternallyOwned();
 			}
 		}
 
@@ -81,7 +74,7 @@ namespace SmartStore.Core.Logging
 			{
 				registration.Preparing += (sender, args) =>
 				{
-					var logger = GetCachedLogger(componentType, args.Context);
+					var logger = GetLoggerFor(componentType, args.Context);
 					args.Parameters = new[] { TypedParameter.From(logger) }.Concat(args.Parameters);
 				};
 			}
@@ -90,7 +83,7 @@ namespace SmartStore.Core.Logging
 			{
 				registration.Activating += (sender, args) =>
 				{
-					var logger = GetCachedLogger(componentType, args.Context);
+					var logger = GetLoggerFor(componentType, args.Context);
 					foreach (var prop in loggerProperties)
 					{
 						prop.SetValue(args.Instance, logger);
@@ -99,13 +92,12 @@ namespace SmartStore.Core.Logging
 			}
 		}
 
-		private ILogger GetCachedLogger(Type componentType, IComponentContext ctx)
+		private ILogger GetLoggerFor(Type componentType, IComponentContext ctx)
 		{
-			var logger = _loggerCache.GetOrAdd(componentType.FullName, key => ctx.Resolve<ILogger>(new TypedParameter(typeof(Type), componentType)));
-			return logger;
+			return ctx.Resolve<ILogger>(new TypedParameter(typeof(Type), componentType));
 		}
 
-		private static ILogger CreateLogger(IComponentContext context, IEnumerable<Parameter> parameters)
+		private static ILogger GetContextualLogger(IComponentContext context, IEnumerable<Parameter> parameters)
 		{
 			// return an ILogger in response to Resolve<ILogger>(componentTypeParameter)
 			var loggerFactory = context.Resolve<ILoggerFactory>();
@@ -121,7 +113,7 @@ namespace SmartStore.Core.Logging
 			}
 		}
 
-		private static ILogger CreateInstallLogger(IComponentContext context, IEnumerable<Parameter> parameters)
+		private static ILogger GetInstallLogger(IComponentContext context)
 		{
 			return context.Resolve<ILoggerFactory>().GetLogger("Install");
 		}

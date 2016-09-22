@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,8 @@ namespace SmartStore.Core.Logging
 {
 	public class Log4netLoggerFactory : ILoggerFactory
 	{
+		private readonly ConcurrentDictionary<string, ILogger> _loggerCache = new ConcurrentDictionary<string, ILogger>(StringComparer.OrdinalIgnoreCase);
+
 		public Log4netLoggerFactory()
 		{
 			var configFile = GetConfigFile(CommonHelper.GetAppSetting<string>("log4net.Config", @"Config\log4net.config"));
@@ -22,8 +25,14 @@ namespace SmartStore.Core.Logging
 			XmlConfigurator.ConfigureAndWatch(configFile);
 
 			var repository = LogManager.GetRepository();
-			repository.ConfigurationChanged += (sender, e) => TryConfigureDbAppender(sender as ILoggerRepository);
+			repository.ConfigurationChanged += OnConfigurationChanged;
 			TryConfigureDbAppender(repository);
+		}
+
+		private void OnConfigurationChanged(object sender, EventArgs e)
+		{
+			_loggerCache.Clear();
+			TryConfigureDbAppender(sender as ILoggerRepository);
 		}
 
 		private void TryConfigureDbAppender(ILoggerRepository repository)
@@ -59,13 +68,17 @@ namespace SmartStore.Core.Logging
 
 		public ILogger GetLogger(Type type)
 		{
+			Guard.NotNull(type, nameof(type));
+
 			return GetLogger(type.FullName);
 		}
 
 		public ILogger GetLogger(string name)
 		{
-			var log = LogManager.GetLogger(name);
-			return new Log4netLogger(log.Logger);
+			Guard.NotEmpty(name, nameof(name));
+
+			var logger = _loggerCache.GetOrAdd(name, key => new Log4netLogger(LogManager.GetLogger(name).Logger));
+			return logger;
 		}
 	}
 }

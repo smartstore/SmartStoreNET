@@ -811,9 +811,6 @@
     <Content Include="Media\Thumbs\placeholder.txt" />
     <Content Include="Config\ConnectionStrings.config" />
     <Content Include="Config\SessionState.config" />
-    <Content Include="Config\log4net.config">
-      <SubType>Designer</SubType>
-    </Content>
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-AE.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-BH.js" />
@@ -1834,6 +1831,25 @@
       <LastGenOutput>MvcLocalization.Designer.cs</LastGenOutput>
     </Content>
   </ItemGroup>
+	<ItemGroup>
+		<WebConfigsToTransform Include="Config\log4net.config">
+		  <DestinationRelativePath>Config\log4net.config</DestinationRelativePath>
+		  <Exclude>False</Exclude>
+		  <TransformFileFolder>$(TransformWebConfigIntermediateLocation)\original</TransformFileFolder>
+		  <TransformFile>Config\log4net.$(Configuration).config</TransformFile>
+		  <TransformOriginalFolder>$(TransformWebConfigIntermediateLocation)\original</TransformOriginalFolder>
+		  <TransformOriginalFile>$(TransformWebConfigIntermediateLocation)\original\%(DestinationRelativePath)</TransformOriginalFile>
+		  <TransformOutputFile>$(TransformWebConfigIntermediateLocation)\transformed\%(DestinationRelativePath)</TransformOutputFile>
+		  <TransformScope>$(_PackageTempDir)\%(DestinationRelativePath)</TransformScope>
+		  <SubType>Designer</SubType>
+		</WebConfigsToTransform>
+		<None Include="Config\log4net.Debug.config">
+		  <DependentUpon>log4net.config</DependentUpon>
+		</None>
+		<None Include="Config\log4net.Release.config">
+		  <DependentUpon>log4net.config</DependentUpon>
+		</None>
+	</ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

@@ -21,6 +21,7 @@
 * #724 Allow discounts to be applied to manufacturers
 
 ### Improvements
+* Updated .NET Target Framework from 4.5.1 to 4.5.2
 * Added order message token for accepting third party email handover
 * ECB currency exchange rate provider now cross calculates rates based on euro rates
 * BeezUP: Exports the product weight

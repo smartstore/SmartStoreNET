@@ -103,7 +103,7 @@ namespace SmartStore.Core.Infrastructure
 				{
 					if (!alreadyLoadedAssemblyNames.Contains(assembly.FullName))
 					{
-						App.Load(assembly.FullName);
+						App.Load(assembly.FullName); 
 						Logger.DebugFormat("Loaded plugin assembly '{0}'", assembly.FullName);
 					}
 				}

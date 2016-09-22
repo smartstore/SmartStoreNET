@@ -80,20 +80,33 @@ namespace SmartStore.Services.Logging
 			catch { }
 		}
 
-		public virtual IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc, string message, LogLevel? logLevel, int pageIndex, int pageSize)
+		public virtual IPagedList<Log> GetAllLogs(
+			DateTime? fromUtc, 
+			DateTime? toUtc,
+			string logger, 
+			string message, 
+			LogLevel? logLevel, 
+			int pageIndex, int 
+			pageSize)
 		{
 			var query = _logRepository.Table;
 
 			if (fromUtc.HasValue)
 				query = query.Where(l => fromUtc.Value <= l.CreatedOnUtc);
+
 			if (toUtc.HasValue)
 				query = query.Where(l => toUtc.Value >= l.CreatedOnUtc);
+
+			if (logger.HasValue())
+				query = query.Where(l => l.Logger.Contains(logger));
+
 			if (logLevel.HasValue)
 			{
 				int logLevelId = (int)logLevel.Value;
 				query = query.Where(l => logLevelId == l.LogLevelId);
 			}
-			if (!String.IsNullOrEmpty(message))
+
+			if (message.HasValue())
 				query = query.Where(l => l.ShortMessage.Contains(message) || l.FullMessage.Contains(message));
 
 			query = query.OrderByDescending(l => l.CreatedOnUtc);

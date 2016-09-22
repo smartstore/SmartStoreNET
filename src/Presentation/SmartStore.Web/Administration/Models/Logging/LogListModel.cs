@@ -27,6 +27,9 @@ namespace SmartStore.Admin.Models.Logging
         [SmartResourceDisplayName("Admin.System.Log.List.LogLevel")]
         public int LogLevelId { get; set; }
 
-        public IList<SelectListItem> AvailableLogLevels { get; set; }
+		[SmartResourceDisplayName("Admin.System.Log.Fields.Logger")]
+		public string Logger { get; set; }
+
+		public IList<SelectListItem> AvailableLogLevels { get; set; }
     }
 }

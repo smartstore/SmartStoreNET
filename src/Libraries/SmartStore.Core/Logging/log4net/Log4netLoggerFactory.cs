@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using log4net;
@@ -40,7 +41,7 @@ namespace SmartStore.Core.Logging
 			if (repository == null || !DataSettings.DatabaseIsInstalled())
 				return;
 
-			var adoNetAppenders = repository.GetAppenders().OfType<AdoNetAppender>().Where(x => x.Name == "db").ToList();
+			var adoNetAppenders = repository.GetAppenders().OfType<AdoNetAppender>().Where(x => x.Name == "database").ToList();
 			foreach (var appender in adoNetAppenders)
 			{
 				appender.ConnectionString = DataSettings.Current.DataConnectionString;
@@ -81,4 +82,19 @@ namespace SmartStore.Core.Logging
 			return logger;
 		}
 	}
+
+	//public class DbAppender : AdoNetAppender
+	//{
+	//	protected override void SendBuffer(IDbTransaction dbTran, LoggingEvent[] events)
+	//	{
+	//		try
+	//		{
+	//			base.SendBuffer(dbTran, events);
+	//		}
+	//		catch (Exception ex)
+	//		{
+	//			Debug.WriteLine(ex.Message);
+	//		}
+	//	}
+	//}
 }

@@ -85,7 +85,8 @@ namespace SmartStore.Admin.Controllers
 
 				var logItems = _logService.GetAllLogs(
 					createdOnFromValue, 
-					createdToFromValue, 
+					createdToFromValue,
+					model.Logger, 
 					model.Message,
 					logLevel, 
 					command.Page - 1, 

@@ -6,6 +6,7 @@ namespace SmartStore.Core.Logging
 	{
 		ILogger GetLogger(Type type);
 		ILogger GetLogger(string name);
+		void FlushAll();
 	}
 
 	public static class ILoggerFactoryExtensions

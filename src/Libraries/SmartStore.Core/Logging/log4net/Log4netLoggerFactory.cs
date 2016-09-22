@@ -81,6 +81,15 @@ namespace SmartStore.Core.Logging
 			var logger = _loggerCache.GetOrAdd(name, key => new Log4netLogger(LogManager.GetLogger(name).Logger));
 			return logger;
 		}
+
+		public void FlushAll()
+		{
+			var bufferingAppenders = LogManager.GetRepository().GetAppenders().OfType<BufferingAppenderSkeleton>();
+			foreach (var appender in bufferingAppenders)
+			{
+				appender.Flush();
+			}
+		}
 	}
 
 	//public class DbAppender : AdoNetAppender

@@ -64,14 +64,6 @@
         </tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.HttpMethod)
-			</td>
-			<td class="adminData">
-				@Html.DisplayFor(model => model.HttpMethod)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.UserName)
 			</td>
 			<td class="adminData">
@@ -83,7 +75,11 @@
                 @Html.SmartLabelFor(model => model.PageUrl)
             </td>
             <td class="adminData">
-                @Html.DisplayFor(model => model.PageUrl)
+				@if (Model.PageUrl.HasValue())
+				{
+					<span>@Model.HttpMethod </span>
+					<a href="@Model.PageUrl" target="_blank">@Model.PageUrl</a>
+				}
             </td>
         </tr>
         <tr>
@@ -91,7 +87,11 @@
                 @Html.SmartLabelFor(model => model.ReferrerUrl)
             </td>
             <td class="adminData">
-                @Html.DisplayFor(model => model.ReferrerUrl)
+				@if (Model.ReferrerUrl.HasValue())
+				{
+					<span>@Model.HttpMethod </span>
+					<a href="@Model.ReferrerUrl" target="_blank">@Model.ReferrerUrl</a>
+				}
             </td>
         </tr>
         <tr>

@@ -28,14 +28,8 @@ namespace SmartStore.Core.Logging
 
 	public class NullLoggerFactory : ILoggerFactory
 	{
-		public ILogger GetLogger(Type type)
-		{
-			return NullLogger.Instance;
-		}
-
-		public ILogger GetLogger(string name)
-		{
-			return NullLogger.Instance;
-		}
+		public ILogger GetLogger(Type type) => NullLogger.Instance;
+		public ILogger GetLogger(string name) => NullLogger.Instance;
+		public void FlushAll() { }
 	}
 }

@@ -14,11 +14,13 @@ namespace SmartStore.Services.Logging
 
 		private readonly IRepository<Log> _logRepository;
 		private readonly IDbContext _dbContext;
+		private readonly ILoggerFactory _loggerFactory;
 
-		public DbLogService(IRepository<Log> logRepository)
+		public DbLogService(IRepository<Log> logRepository, ILoggerFactory loggerFactory)
 		{
 			_logRepository = logRepository;
 			_dbContext = logRepository.Context;
+			_loggerFactory = loggerFactory;
 		}
 
 		public virtual void DeleteLog(Log log)
@@ -89,6 +91,9 @@ namespace SmartStore.Services.Logging
 			int pageIndex, int 
 			pageSize)
 		{
+			// force flush to get most recent entries
+			_loggerFactory.FlushAll();
+
 			var query = _logRepository.Table;
 
 			if (fromUtc.HasValue)

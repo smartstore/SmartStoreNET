@@ -1512,6 +1512,7 @@ namespace SmartStore.Web.Controllers
 		public NavigationModel PrepareCategoryNavigationModel(int currentCategoryId, int currentProductId)
 		{
 			var root = GetCategoryMenu();
+		
 			var breadcrumb = GetCategoryBreadCrumb(currentCategoryId, currentProductId);
 
 			// resolve number of products

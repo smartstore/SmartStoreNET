@@ -1,6 +1,4 @@
-﻿
-using System.Collections.Generic;
-namespace SmartStore.Core.Events
+﻿namespace SmartStore.Core.Events
 {
     /// <summary>
     /// A container for entities that are updated.

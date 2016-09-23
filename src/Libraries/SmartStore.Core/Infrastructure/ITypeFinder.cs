@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace SmartStore.Core.Infrastructure
@@ -19,6 +20,26 @@ namespace SmartStore.Core.Infrastructure
 		IEnumerable<Assembly> GetAssemblies(bool ignoreInactivePlugins = false);
 		IEnumerable<Type> FindClassesOfType(Type assignTypeFrom, IEnumerable<Assembly> assemblies, bool onlyConcreteClasses = true);
     }
+
+	public class NullTypeFinder : ITypeFinder
+	{
+		private static readonly ITypeFinder s_instance = new NullTypeFinder();
+
+		public static ITypeFinder Instance
+		{
+			get { return s_instance; }
+		}
+
+		public IEnumerable<Assembly> GetAssemblies(bool ignoreInactivePlugins = false)
+		{
+			return Enumerable.Empty<Assembly>();
+		}
+
+		public IEnumerable<Type> FindClassesOfType(Type assignTypeFrom, IEnumerable<Assembly> assemblies, bool onlyConcreteClasses = true)
+		{
+			return Enumerable.Empty<Type>();
+		}
+	}
 
 	public static class ITypeFinderExtensions
 	{

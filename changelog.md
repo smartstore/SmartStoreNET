@@ -38,7 +38,7 @@
 * Awarded reward points for a placed order sometimes wrong calculated
 * PayPal PLUS: A changed shipping address/costs was not transmitted to PayPal
 * Bundle item cannot be deleted if it's in a shopping cart
-
+* Fixed SSL issue for news items in RSS feed
 
 ## SmartStore.NET 2.6
 

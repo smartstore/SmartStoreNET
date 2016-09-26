@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SmartStore.Core.Search
 {
 	public interface IIndexProvider
 	{
+		/// <summary>
+		/// Gets a value indicating whether the index provider is active
+		/// </summary>
+		bool IsActive { get; }
+
 		/// <summary>
 		/// Enumerates the names of all EXISTING indexes. 
 		/// A name is required for the <see cref="GetIndexStore(string)"/> method.

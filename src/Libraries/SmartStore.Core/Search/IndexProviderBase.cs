@@ -1,13 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SmartStore.Core.Search
 {
 	public abstract class IndexProviderBase : DisposableObject, IIndexProvider
 	{
+		public virtual bool IsActive
+		{
+			get
+			{
+				return true;
+			}
+		}
+
 		public abstract IEnumerable<string> EnumerateIndexes();
 
 		public virtual IIndexDocument CreateDocument(int id)

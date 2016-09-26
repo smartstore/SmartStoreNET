@@ -39,7 +39,7 @@ namespace SmartStore.Core.Search
 			Filters = new List<SearchFilter>();
 			Sorting = new List<SearchSort>();
 
-			Take = Int16.MaxValue;
+			Take = int.MaxValue;
 		}
 
 		// language

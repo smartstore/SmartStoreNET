@@ -27,6 +27,9 @@ namespace SmartStore.Services.Search
 
 		protected virtual IQueryable<Product> GetProductQuery(CatalogSearchQuery searchQuery)
 		{
+			// TODO: (mg) put LINQ searcher in separate class
+			// TODO: (mg) don't use DynamicLinq: most field names in ISearchQuery has no matching db counterparts 
+
 			var whereClause = new StringBuilder();
 			var whereValues = new List<object>();
 			var query = _productRepository.Table.Where(x => !x.Deleted && x.Published);

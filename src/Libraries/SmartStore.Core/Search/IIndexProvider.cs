@@ -39,6 +39,6 @@ namespace SmartStore.Core.Search
 		/// <param name="store">The index store</param>
 		/// <param name="query">The query to execute against the store</param>
 		/// <returns>The search engine instance</returns>
-		ISearchEngine GetSearchEngine(IIndexStore store, SearchQuery query);
+		ISearchEngine GetSearchEngine(IIndexStore store, ISearchQuery query);
 	}
 }

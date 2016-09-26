@@ -25,7 +25,7 @@ namespace SmartStore.Services.Search
 			_productRepository = productRepository;
 		}
 
-		protected virtual IQueryable<Product> GetProductQuery(SearchQuery searchQuery)
+		protected virtual IQueryable<Product> GetProductQuery(CatalogSearchQuery searchQuery)
 		{
 			var whereClause = new StringBuilder();
 			var whereValues = new List<object>();
@@ -80,7 +80,7 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
-		public IEnumerable<Product> Search(SearchQuery query)
+		public IEnumerable<Product> Search(CatalogSearchQuery query)
 		{
 			if (_indexManager.HasAnyProvider())
 			{

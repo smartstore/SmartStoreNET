@@ -487,6 +487,7 @@
     <Compile Include="Customers\ChangePasswordRequest.cs" />
     <Compile Include="Customers\PasswordChangeResult.cs" />
     <Compile Include="Hooks\AclEntityPostDeleteHook.cs" />
+    <Compile Include="Search\CatalogSearchQuery.cs" />
     <Compile Include="Search\CatalogSearchService.cs" />
     <Compile Include="Search\ICatalogSearchService.cs" />
     <Compile Include="Security\AclService.cs" />

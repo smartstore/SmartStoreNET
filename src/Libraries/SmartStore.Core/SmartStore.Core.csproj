@@ -409,6 +409,7 @@
     <Compile Include="Search\ISearchBits.cs" />
     <Compile Include="Search\ISearchEngine.cs" />
     <Compile Include="Search\ISearchHit.cs" />
+    <Compile Include="Search\ISearchQuery.cs" />
     <Compile Include="Search\NullIndexStore.cs" />
     <Compile Include="Search\SearchFilter.cs" />
     <Compile Include="Search\SearchQuery.cs" />

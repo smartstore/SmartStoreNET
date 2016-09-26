@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Core.Search
 {
-	public class SearchQuery : SearchQueryBase<SearchQuery>
+	public class SearchQuery : SearchQuery<SearchQuery>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SearchQuery"/> class without a search term being set
@@ -27,9 +27,9 @@ namespace SmartStore.Core.Search
 		}
 	}
 
-	public class SearchQueryBase<TQuery> where TQuery : SearchQuery
+	public class SearchQuery<TQuery> : ISearchQuery where TQuery : class, ISearchQuery
 	{
-		protected SearchQueryBase(string[] fields, string term, bool escape = false, bool isFuzzySearch = false)
+		protected SearchQuery(string[] fields, string term, bool escape = false, bool isFuzzySearch = false)
 		{
 			Fields = fields;
 			Term = term;

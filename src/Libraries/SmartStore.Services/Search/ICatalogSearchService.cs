@@ -6,6 +6,6 @@ namespace SmartStore.Services.Search
 {
 	public partial interface ICatalogSearchService
 	{
-		IEnumerable<Product> Search(SearchQuery query);
+		IEnumerable<Product> Search(CatalogSearchQuery query);
 	}
 }

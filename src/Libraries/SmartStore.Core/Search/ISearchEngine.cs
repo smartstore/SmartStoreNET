@@ -8,7 +8,7 @@ namespace SmartStore.Core.Search
 {
 	public interface ISearchEngine
 	{
-		SearchQuery Query { get; }
+		ISearchQuery Query { get; }
 
 		IEnumerable<ISearchHit> Search();
 		ISearchHit Get(int id);

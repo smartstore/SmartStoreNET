@@ -26,6 +26,7 @@ using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Packaging;
 using SmartStore.Core.Plugins;
+using SmartStore.Core.Search;
 using SmartStore.Core.Themes;
 using SmartStore.Data;
 using SmartStore.Services;
@@ -60,6 +61,7 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Pdf;
 using SmartStore.Services.Polls;
+using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
@@ -255,6 +257,9 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<FilterService>().As<IFilterService>().InstancePerRequest();
 			builder.RegisterType<CommonServices>().As<ICommonServices>().InstancePerRequest();
+
+			builder.RegisterType<DefaultIndexManager>().As<IIndexManager>().InstancePerRequest();
+			builder.RegisterType<CatalogSearchService>().As<ICatalogSearchService>().InstancePerRequest();
 		}
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)

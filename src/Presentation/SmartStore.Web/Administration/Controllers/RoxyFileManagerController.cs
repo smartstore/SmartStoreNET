@@ -146,7 +146,7 @@ namespace SmartStore.Admin.Controllers
 
 		private bool IsAllowedFileType(string extension)
 		{
-			var result = true;
+			var result = false;
 			extension = extension.EmptyNull().ToLower().Replace(".", "");
 
 			var setting = GetSetting("FORBIDDEN_UPLOADS").EmptyNull().Trim().ToLower();
@@ -199,6 +199,10 @@ namespace SmartStore.Admin.Controllers
 			return "{\"res\":\"" + type + "\",\"msg\":\"" + message.EmptyNull().Replace("\"", "\\\"") + "\"}";
 		}
 
+		private bool IsAjaxUpload()
+		{
+			return (Request["method"] != null && Request["method"].ToString() == "ajax");
+		}
 
 		internal class RoxyFolder
 		{
@@ -355,12 +359,16 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var file in files)
 			{
+				try
+				{
+					GetImageSize(file.Path, out width, out height);
+				}
+				catch {	}
+
 				if (isFirstItem)
 					isFirstItem = false;
 				else
 					Response.Write(",");
-
-				GetImageSize(file.Path, out width, out height);
 
 				Response.Write("{");
 				Response.Write("\"p\":\"" + HttpContext.GetContentUrl(_fileSystem.GetPublicUrl(file.Path)) + "\"");
@@ -457,12 +465,21 @@ namespace SmartStore.Admin.Controllers
 			if (!_fileSystem.FileExists(path))
 				return;
 
+			Bitmap image = null;
 			var file = _fileSystem.GetFile(path);
-			var stream = file.OpenRead();
-			var image = new Bitmap(Image.FromStream(stream));
+			using (var stream = file.OpenRead())
+			{
+				try
+				{
+					image = new Bitmap(Image.FromStream(stream));
+				}
+				catch {	}
 
-			stream.Close();
-			stream.Dispose();
+				stream.Close();
+			}
+
+			if (image == null)
+				return;
 
 			int cropWidth = image.Width, cropHeight = image.Height;
 			int cropX = 0, cropY = 0;
@@ -516,16 +533,16 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private void RenameFile(string path, string name)
+		private void RenameFile(string oldPath, string name)
 		{
-			path = GetRelativePath(path);
+			oldPath = GetRelativePath(oldPath);
 
-			if (!_fileSystem.FileExists(path))
+			if (!_fileSystem.FileExists(oldPath))
 			{
 				throw new Exception(LangRes("E_RenameFileInvalidPath"));
 			}
 
-			var fileType = _fileSystem.GetFile(path).FileType;
+			var fileType = Path.GetExtension(name);
 
 			if (!IsAllowedFileType(fileType))
 			{
@@ -534,15 +551,16 @@ namespace SmartStore.Admin.Controllers
 
 			try
 			{
-				var folder = _fileSystem.GetFolderForFile(path);
+				var folder = _fileSystem.GetFolderForFile(oldPath);
+				var newPath = _fileSystem.Combine(folder.Path, name);
 
-				_fileSystem.RenameFile(path, _fileSystem.Combine(folder.Path, name));
+				_fileSystem.RenameFile(oldPath, newPath);
 
 				Response.Write(GetResultString());
 			}
 			catch (Exception exception)
 			{
-				throw new Exception(exception.Message + "; " + LangRes("E_RenameFile") + " \"" + path + "\"");
+				throw new Exception(exception.Message + "; " + LangRes("E_RenameFile") + " \"" + oldPath + "\"");
 			}
 		}
 
@@ -787,7 +805,8 @@ namespace SmartStore.Admin.Controllers
 		{
 			path = GetRelativePath(path);
 
-			string result = null;
+			string message = null;
+			var hasError = false;
 			var width = 0;
 			var height = 0;
 
@@ -802,19 +821,21 @@ namespace SmartStore.Admin.Controllers
 				for (var i = 0; i < Request.Files.Count; ++i)
 				{
 					var file = Request.Files[i];
-					file.FileName.Dump();
 					var extension = Path.GetExtension(file.FileName);
 
-					if (GetFileContentType(extension).IsCaseInsensitiveEqual("image") && IsAllowedFileType(extension))
+					if (IsAllowedFileType(extension))
 					{
 						var dest = Path.Combine(tempDir, file.FileName);
 						file.SaveAs(dest);
 
-						ImageResize(dest, dest, width, height);
+						if (GetFileContentType(extension).IsCaseInsensitiveEqual("image"))
+						{
+							ImageResize(dest, dest, width, height);
+						}
 					}
 					else
 					{
-						result = GetResultString(LangRes("E_UploadNotAll"));
+						message = LangRes("E_UploadNotAll");
 					}
 				}
 
@@ -832,16 +853,27 @@ namespace SmartStore.Admin.Controllers
 			}
 			catch (Exception exception)
 			{
-				result = GetResultString(exception.Message, "error");
+				hasError = true;
+				message = exception.Message;
 			}
 			finally
 			{
 				FileSystemHelper.ClearDirectory(tempDir, true);
 			}
 
-			Response.Write("<script>");
-			Response.Write("parent.fileUploaded(" + (result ?? GetResultString()) + ");");
-			Response.Write("</script>");
+			if (IsAjaxUpload())
+			{
+				if (message.HasValue())
+				{
+					Response.Write(GetResultString(message, hasError ? "error" : "ok"));
+				}
+			}
+			else
+			{
+				Response.Write("<script>");
+				Response.Write("parent.fileUploaded(" + GetResultString(message, hasError ? "error" : "ok") + ");");
+				Response.Write("</script>");
+			}
 		}
 
 		#endregion
@@ -922,9 +954,16 @@ namespace SmartStore.Admin.Controllers
 			{
 				if (action == "UPLOAD")
 				{
-					Response.Write("<script>");
-					Response.Write("parent.fileUploaded(" + GetResultString(LangRes("E_UploadNoFiles"), "error") + ");");
-					Response.Write("</script>");
+					if (IsAjaxUpload())
+					{
+						Response.Write(GetResultString(LangRes("E_UploadNoFiles"), "error"));
+					}
+					else
+					{
+						Response.Write("<script>");
+						Response.Write("parent.fileUploaded(" + GetResultString(LangRes("E_UploadNoFiles"), "error") + ");");
+						Response.Write("</script>");
+					}
 				}
 				else
 				{

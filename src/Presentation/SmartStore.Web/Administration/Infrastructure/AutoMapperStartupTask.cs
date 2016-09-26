@@ -314,11 +314,9 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<Log, LogModel>()
                 .ForMember(dest => dest.CustomerEmail, mo => mo.Ignore())
                 .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
-				.ForMember(dest => dest.UpdatedOn, mo => mo.Ignore())
 				.ForMember(dest => dest.LogLevelHint, mo => mo.Ignore());
             Mapper.CreateMap<LogModel, Log>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
-				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.LogLevelId, mo => mo.Ignore())
                 .ForMember(dest => dest.Customer, mo => mo.Ignore());
             //ActivityLogType

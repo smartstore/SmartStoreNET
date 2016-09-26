@@ -164,6 +164,7 @@
 
 		<!-- transform config files -->
 		<TransformXml Source="$(TransformInputFile)" Transform="$(TransformFile)" Destination="$(TransformOutputFile)" />
+		<TransformXml Source="$(WebFolder)\Config\log4net.Config" Transform="$(WebFolder)\Config\log4net.$(Configuration).Config" Destination="$(StageFolder)\Config\log4net.Config" />
 
 		<!-- delete obsolete config files -->							
 		<Attrib Files="$(StageFolder)\Web.Release.config" ReadOnly="false"/>

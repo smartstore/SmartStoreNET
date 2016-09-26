@@ -9,8 +9,8 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
-using Autofac;
 using SmartStore.Services.Helpers;
+using Autofac;
 
 namespace SmartStore.Services
 {	

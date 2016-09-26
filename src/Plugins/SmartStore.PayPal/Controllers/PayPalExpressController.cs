@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Logging;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.PayPalSvc;
 using SmartStore.PayPal.Services;
@@ -277,7 +278,7 @@ namespace SmartStore.PayPal.Controllers
 						error.AppendLine(String.Format("{0} | {1} | {2}", errormsg.ErrorCode, errormsg.ShortMessage, errormsg.LongMessage));
 					}
 
-					Logger.Log(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, customer);
+					Logger.Error(new Exception(error.ToString()), resp.Errors[0].ShortMessage);
                     
                     NotifyError(error.ToString(), false);
 
@@ -286,7 +287,7 @@ namespace SmartStore.PayPal.Controllers
 			}
 			catch (Exception ex)
 			{
-				Logger.Log(LogLevel.Error, ex.Message, ex.StackTrace, Services.WorkContext.CurrentCustomer);
+				Logger.Error(ex);
 
                 NotifyError(ex.Message, false);
 
@@ -338,9 +339,9 @@ namespace SmartStore.PayPal.Controllers
                     error.AppendLine(String.Format("{0} | {1} | {2}", errormsg.ErrorCode, errormsg.ShortMessage, errormsg.LongMessage));
                 }
 
-				Logger.Log(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, Services.WorkContext.CurrentCustomer);
+				Logger.Error(new Exception(error.ToString()), resp.Errors[0].ShortMessage);
 
-                NotifyError(error.ToString(), false);
+				NotifyError(error.ToString(), false);
 
                 return RedirectToAction("Cart", "ShoppingCart", new { area = "" });
             }

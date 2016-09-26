@@ -312,14 +312,13 @@ namespace SmartStore.PayPal.Services
 			{
 				if (exception != null)
 				{
-					shortMessage = exception.ToAllMessages();
-					fullMessage = exception.ToString();
+					shortMessage = exception.Message;
 				}
 
 				if (shortMessage.HasValue())
 				{
 					shortMessage = "PayPal. " + shortMessage;
-					Logger.Log(isWarning ? LogLevel.Warning : LogLevel.Error, shortMessage, fullMessage.EmptyNull());
+					Logger.Log(isWarning ? LogLevel.Warning : LogLevel.Error, exception, shortMessage, null);
 
 					if (notify)
 					{

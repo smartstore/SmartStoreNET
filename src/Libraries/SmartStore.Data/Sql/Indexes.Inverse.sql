@@ -151,9 +151,6 @@ GO
 DROP INDEX [IX_Product_LimitedToStores] ON [Product]
 GO
 
-DROP INDEX [IX_Log_ContentHash] ON [Log]
-GO
-
 DROP INDEX [IX_ProductVariantAttributeCombination_SKU]
 GO
 

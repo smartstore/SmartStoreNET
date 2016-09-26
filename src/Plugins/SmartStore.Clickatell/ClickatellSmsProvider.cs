@@ -59,7 +59,7 @@ namespace SmartStore.Clickatell
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message, ex);
+                _logger.Error(ex);
             }
             return false;
         }

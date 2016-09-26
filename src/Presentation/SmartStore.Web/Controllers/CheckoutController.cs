@@ -870,7 +870,7 @@ namespace SmartStore.Web.Controllers
             }
             catch (Exception exception)
             {
-				Logger.Warning(exception.Message, exception);
+				Logger.Warn(exception, exception.Message);
 
 				if (!model.Warnings.Any(x => x == exception.Message))
 				{

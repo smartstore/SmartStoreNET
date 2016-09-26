@@ -79,7 +79,7 @@ namespace SmartStore.Services.Messages
 						}
 						catch (Exception exception)
 						{
-							Logger.Error(T("Admin.Media.ProviderFailedToSave", _storageProvider.Metadata.SystemName, "QueuedEmailService.InsertQueuedEmail"), exception);
+							Logger.Error(exception, T("Admin.Media.ProviderFailedToSave", _storageProvider.Metadata.SystemName, "QueuedEmailService.InsertQueuedEmail"));
 						}
 						finally
 						{
@@ -215,9 +215,9 @@ namespace SmartStore.Services.Messages
 				queuedEmail.SentOnUtc = DateTime.UtcNow;
 				result = true;
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				Logger.Error(string.Concat(T("Admin.Common.ErrorSendingEmail"), ": ", exc.Message), exc);
+				Logger.Error(ex, string.Concat(T("Admin.Common.ErrorSendingEmail"), ": ", ex.Message));
 			}
 			finally
 			{

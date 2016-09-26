@@ -21,16 +21,15 @@ namespace SmartStore.Core.Logging
             return false;
         }
 
-		public void Log(LogContext context)
+		public void Log(LogLevel level, Exception exception, string message, object[] args)
 		{
 		}
+	}
 
-        public void Log(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
-        {
-        }
-
-		public void Flush()
-		{
-		}
+	public class NullLoggerFactory : ILoggerFactory
+	{
+		public ILogger GetLogger(Type type) => NullLogger.Instance;
+		public ILogger GetLogger(string name) => NullLogger.Instance;
+		public void FlushAll() { }
 	}
 }

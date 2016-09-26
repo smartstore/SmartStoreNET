@@ -31,7 +31,7 @@ namespace SmartStore.DevTools
         {
 			_settingService.SaveSetting(new ProfilerSettings());
 			base.Install();
-			Logger.Information(string.Format("Plugin installed: SystemName: {0}, Version: {1}, Description: '{2}'", PluginDescriptor.SystemName, PluginDescriptor.Version, PluginDescriptor.FriendlyName));
+			Logger.Info(string.Format("Plugin installed: SystemName: {0}, Version: {1}, Description: '{2}'", PluginDescriptor.SystemName, PluginDescriptor.Version, PluginDescriptor.FriendlyName));
         }
 
         /// <summary>

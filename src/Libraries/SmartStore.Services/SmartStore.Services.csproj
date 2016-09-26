@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Services</RootNamespace>
     <AssemblyName>SmartStore.Services</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -487,6 +487,8 @@
     <Compile Include="Customers\ChangePasswordRequest.cs" />
     <Compile Include="Customers\PasswordChangeResult.cs" />
     <Compile Include="Hooks\AclEntityPostDeleteHook.cs" />
+    <Compile Include="Search\CatalogSearchService.cs" />
+    <Compile Include="Search\ICatalogSearchService.cs" />
     <Compile Include="Security\AclService.cs" />
     <Compile Include="Security\EncryptionService.cs" />
     <Compile Include="Security\IAclService.cs" />
@@ -558,7 +560,6 @@
     <Compile Include="Catalog\IProductService.cs" />
     <Compile Include="Localization\LanguageService.cs" />
     <Compile Include="Localization\LocalizationService.cs" />
-    <Compile Include="Logging\DefaultLogger.cs" />
     <Compile Include="Catalog\ManufacturerService.cs" />
     <Compile Include="Catalog\ProductAttributeService.cs" />
     <Compile Include="Catalog\ProductService.cs" />

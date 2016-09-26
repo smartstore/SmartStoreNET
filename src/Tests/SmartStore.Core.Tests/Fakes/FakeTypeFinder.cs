@@ -27,9 +27,9 @@ namespace SmartStore.Core.Tests.Fakes
             this.Assemblies = assemblies;
         }
 
-		public IList<Assembly> GetAssemblies(bool ignoreInactivePlugins = false)
+		public IEnumerable<Assembly> GetAssemblies(bool ignoreInactivePlugins = false)
         {
-            return Assemblies.ToList();
+            return Assemblies;
         }
 
         public IEnumerable<Type> FindClassesOfType(Type assignTypeFrom, IEnumerable<Assembly> assemblies, bool onlyConcreteClasses = true)

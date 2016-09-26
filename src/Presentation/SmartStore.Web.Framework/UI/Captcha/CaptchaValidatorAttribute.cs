@@ -15,8 +15,13 @@ namespace SmartStore.Web.Framework.UI.Captcha
 {
 	public class CaptchaValidatorAttribute : ActionFilterAttribute
     {
+		public CaptchaValidatorAttribute()
+		{
+			Logger = NullLogger.Instance;
+		}
+
 		public Lazy<CaptchaSettings> CaptchaSettings { get; set; }
-		public Lazy<ILogger> Logger { get; set; }
+		public ILogger Logger { get; set; }
 		public Lazy<ILocalizationService> LocalizationService { get; set; }
 
 		public override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -45,7 +50,7 @@ namespace SmartStore.Web.Framework.UI.Captcha
 
 						if (result == null)
 						{
-							Logger.Value.Error(LocalizationService.Value.GetResource("Common.CaptchaUnableToVerify"));
+							Logger.Error(LocalizationService.Value.GetResource("Common.CaptchaUnableToVerify"));
 						}
 						else
 						{
@@ -59,7 +64,7 @@ namespace SmartStore.Web.Framework.UI.Captcha
 			}
 			catch (Exception exception)
 			{
-				Logger.Value.ErrorsAll(exception);
+				Logger.ErrorsAll(exception);
 			}
 
 			// this will push the result value into a parameter in our Action  

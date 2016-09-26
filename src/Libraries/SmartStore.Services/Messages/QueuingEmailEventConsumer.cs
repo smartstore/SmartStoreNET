@@ -57,7 +57,7 @@ namespace SmartStore.Services.Messages
 				}
 				catch (Exception ex)
 				{
-					Logger.Error(T("Admin.System.QueuedEmails.ErrorCreatingAttachment"), ex);
+					Logger.Error(ex, T("Admin.System.QueuedEmails.ErrorCreatingAttachment"));
 				}
 			}
 		}

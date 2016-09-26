@@ -25,20 +25,12 @@ namespace SmartStore.Core.Data.Hooks
         /// </summary>
         public abstract void Hook(TEntity entity, HookEntityMetadata metadata);
 
-        /// <summary>
-        /// Entity States that this hook must be registered to listen for.
-        /// </summary>
-        public abstract EntityState HookStates { get; }
-
 		/// <summary>
 		/// Indicates whether the hook instance can be processed for the given <see cref="EntityState"/>
 		/// </summary>
 		/// <param name="state">The state of the entity</param>
 		/// <returns><c>true</c> when the hook should be processed, <c>false</c> otherwise</returns>
-		public virtual bool CanProcess(EntityState state)
-		{
-			return state == HookStates;
-		}
+		public abstract bool CanProcess(EntityState state);
 
 		public virtual void OnCompleted()
 		{
@@ -50,12 +42,9 @@ namespace SmartStore.Core.Data.Hooks
 	/// </summary>
 	public abstract class PostInsertHook<TEntity> : PostActionHook<TEntity>
 	{
-		/// <summary>
-		/// Returns <see cref="EntityState.Added"/> as the hookstate to listen for.
-		/// </summary>
-		public override EntityState HookStates
+		public override bool CanProcess(EntityState state)
 		{
-			get { return EntityState.Added; }
+			return state == EntityState.Added;
 		}
 	}
 
@@ -64,12 +53,9 @@ namespace SmartStore.Core.Data.Hooks
 	/// </summary>
 	public abstract class PostUpdateHook<TEntity> : PostActionHook<TEntity>
 	{
-		/// <summary>
-		/// Returns <see cref="EntityState.Modified"/> as the hookstate to listen for.
-		/// </summary>
-		public override EntityState HookStates
+		public override bool CanProcess(EntityState state)
 		{
-			get { return EntityState.Modified; }
+			return state == EntityState.Modified;
 		}
 	}
 
@@ -78,9 +64,9 @@ namespace SmartStore.Core.Data.Hooks
 	/// </summary>
 	public abstract class PostDeleteHook<TEntity> : PostActionHook<TEntity>
 	{
-		public override EntityState HookStates
+		public override bool CanProcess(EntityState state)
 		{
-			get { return EntityState.Deleted; }
+			return state == EntityState.Deleted;
 		}
 	}
 }

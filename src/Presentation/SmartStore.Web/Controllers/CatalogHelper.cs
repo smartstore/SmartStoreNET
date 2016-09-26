@@ -1514,6 +1514,7 @@ namespace SmartStore.Web.Controllers
 		public NavigationModel PrepareCategoryNavigationModel(int currentCategoryId, int currentProductId)
 		{
 			var root = GetCategoryMenu();
+		
 			var breadcrumb = GetCategoryBreadCrumb(currentCategoryId, currentProductId);
 
 			// resolve number of products
@@ -1572,9 +1573,9 @@ namespace SmartStore.Web.Controllers
 					curNode = curNode.Parent;
 				}
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				Logger.Error(exc.Message, exc);
+				Logger.Error(ex);
 			}
 		}
 

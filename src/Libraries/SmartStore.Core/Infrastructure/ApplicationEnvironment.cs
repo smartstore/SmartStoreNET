@@ -8,12 +8,20 @@ namespace SmartStore.Core
 {
 	public class ApplicationEnvironment : IApplicationEnvironment
 	{
-		public ApplicationEnvironment(IVirtualPathProvider vpp, Work<ILogger> logger)
+		public ApplicationEnvironment(IVirtualPathProvider vpp, ILogger logger)
 		{
 			WebRootFolder = new VirtualFolder("~/", vpp, logger);
 			AppDataFolder = new VirtualFolder("~/App_Data/", vpp, logger);
 			ThemesFolder = new VirtualFolder(CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/"), vpp, logger);
 			PluginsFolder = new VirtualFolder("~/Plugins/", vpp, logger);
+		}
+
+		public virtual string MachineName
+		{
+			get
+			{
+				return Environment.MachineName;
+			}
 		}
 
 		public virtual string EnvironmentIdentifier

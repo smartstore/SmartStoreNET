@@ -6,7 +6,6 @@ using System.Text;
 
 namespace SmartStore.Core.Plugins
 {
-
 	public class LoadPluginResult
 	{
 		public FileInfo DescriptionFile { get; set; }
@@ -14,5 +13,4 @@ namespace SmartStore.Core.Plugins
 		public bool IsIncompatible { get; set; }
 		public bool Success { get; set; }
 	}
-
 }

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using Newtonsoft.Json;
+using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Collections
 {
@@ -15,9 +14,102 @@ namespace SmartStore.Collections
 		private int? _depth = null;
 		private int _index = -1;
 
+		private IDictionary<string, object> _metadata;
+		private readonly static ContextState<Dictionary<string, object>> _contextState = new ContextState<Dictionary<string, object>>("TreeNodeBase.ThreadMetadata");
+
 		public TreeNodeBase()
 		{
 		}
+
+		#region Metadata
+
+		public IDictionary<string, object> Metadata
+		{
+			get
+			{
+				return _metadata ?? (_metadata = new Dictionary<string, object>());
+			}
+			set
+			{
+				_metadata = value;
+			}
+		}
+
+		public void SetMetadata(string key, object value)
+		{
+			Guard.NotEmpty(key, nameof(key));
+
+			Metadata[key] = value;
+		}
+
+		public void SetThreadMetadata(string key, object value)
+		{
+			Guard.NotEmpty(key, nameof(key));
+
+			var state = _contextState.GetState();
+			if (state == null)
+			{
+				state = new Dictionary<string, object>();
+				_contextState.SetState(state);
+			}
+
+			state[GetContextKey(this, key)] = value;
+		}
+
+		public TMetadata GetMetadata<TMetadata>(string key, bool recursive = true)
+		{
+			Guard.NotEmpty(key, nameof(key));
+
+			object metadata;
+
+			if (!recursive)
+			{
+				return TryGetMetadataForNode(this, key, out metadata) ? (TMetadata)metadata : default(TMetadata);
+			}
+
+			// recursively search for the metadata value in current node and ancestors
+			var current = this;
+			while (!TryGetMetadataForNode(current, key, out metadata))
+			{
+				current = current.Parent;
+				if (current == null)
+					break;
+			}
+
+			return (TMetadata)metadata;
+		}
+
+		private bool TryGetMetadataForNode(TreeNodeBase<T> node, string key, out object metadata)
+		{
+			metadata = null;
+
+			var state = _contextState.GetState();
+
+			if (state != null)
+			{
+				var contextKey = GetContextKey(node, key);
+				if (state.ContainsKey(contextKey))
+				{
+					metadata = state[contextKey];
+					return true;
+				}
+			}
+
+			if (node._metadata != null && node._metadata.ContainsKey(key))
+			{
+				metadata = node._metadata[key];
+				return true;
+			}
+
+			return false;
+		}
+
+		private static string GetContextKey(TreeNodeBase<T> node, string key)
+		{
+			return node.GetHashCode().ToString() + key;
+		}
+
+		#endregion
 
 		private List<T> ChildrenInternal
 		{

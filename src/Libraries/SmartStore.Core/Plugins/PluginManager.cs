@@ -20,8 +20,8 @@ using SmartStore.Core.Packaging;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 
-//Contributor: Umbraco (http://www.umbraco.com). Thanks a lot!
-//SEE THIS POST for full details of what this does
+// Contributor: Umbraco (http://www.umbraco.com). Thanks a lot!
+// SEE THIS POST for full details of what this does
 //http://shazwazza.com/post/Developing-a-plugin-framework-in-ASPNET-with-medium-trust.aspx
 
 [assembly: PreApplicationStartMethod(typeof(PluginManager), "Initialize")]
@@ -161,7 +161,6 @@ namespace SmartStore.Core.Plugins
 							}
 						}
 					}
-
                 }
                 catch (Exception ex)
                 {
@@ -481,7 +480,7 @@ namespace SmartStore.Core.Plugins
         /// <returns>Result</returns>
         private static bool IsAlreadyLoaded(FileInfo fileInfo)
         {
-            //do not compare the full assembly name, just filename
+            // do not compare the full assembly name, just filename
             try
             {
                 string fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileInfo.FullName);
@@ -493,9 +492,9 @@ namespace SmartStore.Core.Plugins
                         return true;
                 }
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-                Debug.WriteLine("Cannot validate whether an assembly is already loaded. " + exc);
+                Debug.WriteLine("Cannot validate whether an assembly is already loaded. " + ex);
             }
             return false;
         }

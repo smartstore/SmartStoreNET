@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -63,23 +64,15 @@ namespace SmartStore.Web.Framework.WebApi.Security
 		{
 			try
 			{
-				var logger = EngineContext.Current.Resolve<ILogger>();
+				var logger = EngineContext.Current.Resolve<ILoggerFactory>().GetLogger(this.GetType());
 				var localization = EngineContext.Current.Resolve<ILocalizationService>();
 
 				string strResult = result.ToString();
 				string description = localization.GetResource("Admin.WebApi.AuthResult." + strResult, 0, false, strResult);
-
-				var logContext = new LogContext
-				{
-					ShortMessage = localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatWith(strResult),
-					FullMessage = "{0}\r\n{1}".FormatWith(description, actionContext.Request.Headers.ToString()),
-					LogLevel = LogLevel.Warning,
-					Customer = customer,
-					HashNotFullMessage = true,
-					HashIpAddress = true
-				};
-
-				logger.Log(logContext);
+				
+				logger.Warn(
+					new SecurityException("{0}\r\n{1}".FormatWith(description, actionContext.Request.Headers.ToString())),
+					localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatWith(strResult));
 			}
 			catch (Exception exc)
 			{

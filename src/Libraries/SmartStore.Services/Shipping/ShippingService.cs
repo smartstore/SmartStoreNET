@@ -425,7 +425,7 @@ namespace SmartStore.Services.Shipping
                     foreach (string error in getShippingOptionResponse.Errors)
                     {
                         result.AddError(error);
-						_logger.Warning(string.Concat(srcm.Metadata.FriendlyName, ": ", error));
+						_logger.Warn(string.Concat(srcm.Metadata.FriendlyName, ": ", error));
                     }
                 }
             }

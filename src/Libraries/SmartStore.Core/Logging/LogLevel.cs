@@ -1,4 +1,4 @@
-namespace SmartStore.Core.Domain.Logging
+namespace SmartStore.Core.Logging
 {
     /// <summary>
     /// Represents a log level

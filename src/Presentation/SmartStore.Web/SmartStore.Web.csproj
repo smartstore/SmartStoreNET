@@ -15,7 +15,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Web</RootNamespace>
     <AssemblyName>SmartStore.Web</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <SccProjectName>
@@ -2041,6 +2041,12 @@
     <Content Include="Themes\NewAlpha\Views\ShoppingCart\OffCanvasShoppingCart.cshtml" />
     <Content Include="Themes\NewAlpha\Views\ShoppingCart\OffCanvasWishlist.cshtml" />
     <Content Include="Themes\NewAlpha\Views\ShoppingCart\OffCanvasCompare.cshtml" />
+    <None Include="Web.EFMigrations.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.PluginDev.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Themes\NewAlpha\Content\shared\select2\mixins\" />
@@ -2288,6 +2294,25 @@
       <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>MvcLocalization.Designer.cs</LastGenOutput>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <WebConfigsToTransform Include="Config\log4net.config">
+      <DestinationRelativePath>Config\log4net.config</DestinationRelativePath>
+      <Exclude>False</Exclude>
+      <TransformFileFolder>$(TransformWebConfigIntermediateLocation)\original</TransformFileFolder>
+      <TransformFile>Config\log4net.$(Configuration).config</TransformFile>
+      <TransformOriginalFolder>$(TransformWebConfigIntermediateLocation)\original</TransformOriginalFolder>
+      <TransformOriginalFile>$(TransformWebConfigIntermediateLocation)\original\%(DestinationRelativePath)</TransformOriginalFile>
+      <TransformOutputFile>$(TransformWebConfigIntermediateLocation)\transformed\%(DestinationRelativePath)</TransformOutputFile>
+      <TransformScope>$(_PackageTempDir)\%(DestinationRelativePath)</TransformScope>
+      <SubType>Designer</SubType>
+    </WebConfigsToTransform>
+    <None Include="Config\log4net.Debug.config">
+      <DependentUpon>log4net.config</DependentUpon>
+    </None>
+    <None Include="Config\log4net.Release.config">
+      <DependentUpon>log4net.config</DependentUpon>
+    </None>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

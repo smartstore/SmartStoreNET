@@ -17,7 +17,7 @@ namespace SmartStore.Core.Search
 		}
 
 		public SearchQuery(string field, string term, bool escape = false, bool isFuzzySearch = false)
-			: base(new[] { field }, term, escape, isFuzzySearch)
+			: base(field.HasValue() ? new[] { field } : null, term, escape, isFuzzySearch)
 		{
 		}
 

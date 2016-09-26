@@ -141,7 +141,7 @@ namespace SmartStore.Services.Media
 					}
 					catch (Exception exception)
 					{
-						_logger.Error("Error reading media file '{0}'.".FormatInvariant(source), exception);
+						_logger.ErrorFormat(exception, "Error reading media file '{0}'.", source);
 						return string.Empty;
 					}
 
@@ -151,7 +151,7 @@ namespace SmartStore.Services.Media
 					}
 					catch (Exception exception)
 					{
-						_logger.Error("Error processing/writing media file '{0}'.".FormatInvariant(cachedImage.Path), exception);
+						_logger.ErrorFormat(exception, "Error processing/writing media file '{0}'.", cachedImage.Path);
 						return string.Empty;
 					}
 				}
@@ -210,7 +210,7 @@ namespace SmartStore.Services.Media
 				}
 				catch (Exception exception)
 				{
-					_logger.Error("Error reading media file '{0}'.".FormatInvariant(source), exception);
+					_logger.ErrorFormat(exception, "Error reading media file '{0}'.", source);
 					return string.Empty;
 				}
 
@@ -220,7 +220,7 @@ namespace SmartStore.Services.Media
 				}
 				catch (Exception exception)
 				{
-					_logger.Error("Error processing/writing media file '{0}'.".FormatInvariant(cachedImage.Path), exception);
+					_logger.ErrorFormat(exception, "Error processing/writing media file '{0}'.", cachedImage.Path);
 					return string.Empty;
 				}
 			}

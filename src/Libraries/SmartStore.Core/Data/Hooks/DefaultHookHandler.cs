@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using SmartStore.Collections;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Core.Data.Hooks
 {
@@ -24,6 +25,12 @@ namespace SmartStore.Core.Data.Hooks
 		{
 			_preHooks = preHooks;
 			_postHooks = postHooks;
+		}
+
+		public ILogger Logger
+		{
+			get;
+			set;
 		}
 
 		public bool HasImportantPreHooks()
@@ -80,7 +87,14 @@ namespace SmartStore.Core.Data.Hooks
 						var metadata = new HookEntityMetadata(e.PreSaveState);
 
 						// call hook
-						hook.HookObject(e.Entry.Entity, metadata);
+						try
+						{
+							hook.HookObject(e.Entry.Entity, metadata);
+						}
+						catch (Exception ex)
+						{
+							Logger.ErrorFormat(ex, "PreHook exception ({0})", hook.GetType().FullName);
+						}
 
 						processedHooks.Add(hook);
 
@@ -147,7 +161,14 @@ namespace SmartStore.Core.Data.Hooks
 						var metadata = new HookEntityMetadata(e.PreSaveState);
 
 						// call hook
-						hook.HookObject(e.Entry.Entity, metadata);
+						try
+						{
+							hook.HookObject(e.Entry.Entity, metadata);
+						}
+						catch (Exception ex)
+						{
+							Logger.ErrorFormat(ex, "PostHook exception ({0})", hook.GetType().FullName);
+						}
 
 						processedHooks.Add(hook);
 					}

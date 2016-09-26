@@ -1,4 +1,6 @@
-﻿@model SmartStore.MegaMenu.Models.AdminEditTabModel
+﻿@*@model SmartStore.MegaMenu.Models.AdminEditTabModel*@
+
+@model SmartStore.MegaMenu.Domain.MegaMenuRecord
 
 @using SmartStore.Web.Framework;
 @using SmartStore.Web.Framework.Plugins;
@@ -9,11 +11,13 @@
     Layout = "";
 }
 
-@* VERY IMPORTANT for proper model binding *@
 @Html.Hidden("__Type__", Model.GetType().AssemblyQualifiedName)
 
+@Html.HiddenFor(m => m.Id)
 @Html.HiddenFor(m => m.CategoryId)
-<table>
+@Html.HiddenFor(m => m.CreatedOnUtc)
+
+<table class="adminContent">
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.IsActive)
@@ -23,7 +27,156 @@
             @Html.ValidationMessageFor(model => model.IsActive)
         </td>
     </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.FavorInMegamenu)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.FavorInMegamenu)
+            @Html.ValidationMessageFor(model => model.FavorInMegamenu)
+        </td>
+    </tr>
 
+    <tr>
+        <td colspan="2">
+            <div class="admin-config-group">
+                <div class="title">Layout</div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.MaxItemsPerColumn)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.MaxItemsPerColumn)
+            @Html.ValidationMessageFor(model => model.MaxItemsPerColumn)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.MaxSubItemsPerCategory)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.MaxSubItemsPerCategory)
+            @Html.ValidationMessageFor(model => model.MaxSubItemsPerCategory)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.DisplaySubItemsInline)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.DisplaySubItemsInline)
+            @Html.ValidationMessageFor(model => model.DisplaySubItemsInline)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AllowSubItemsColumnWrap)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.AllowSubItemsColumnWrap)
+            @Html.ValidationMessageFor(model => model.AllowSubItemsColumnWrap)
+        </td>
+    </tr>
+    <tr class="item-wrap">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SubItemsWrapTolerance)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.SubItemsWrapTolerance)
+            @Html.ValidationMessageFor(model => model.SubItemsWrapTolerance)
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2">
+            <div class="admin-config-group">
+                <div class="title">Pictures</div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.DisplayCategoryPicture)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.DisplayCategoryPicture)
+            @Html.ValidationMessageFor(model => model.DisplayCategoryPicture)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.DisplayBgPicture)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.DisplayBgPicture)
+            @Html.ValidationMessageFor(model => model.DisplayBgPicture)
+        </td>
+    </tr>
+    <tr class="bg-picture">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.BgPictureId)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.BgPictureId)
+            @Html.ValidationMessageFor(model => model.BgPictureId)
+        </td>
+    </tr>
+    <tr class="bg-picture">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.BgLink)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.BgLink)
+            @Html.ValidationMessageFor(model => model.BgLink)
+        </td>
+    </tr>
+    <tr class="bg-picture">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.BgAlignX)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(model => model.BgAlignX, (List<SelectListItem>)ViewData["AvailableAlignmentsX"])
+            @Html.ValidationMessageFor(model => model.BgAlignX)
+        </td>
+    </tr>
+    <tr class="bg-picture">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.BgAlignY)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(model => model.BgAlignY, (List<SelectListItem>)ViewData["AvailableAlignmentsY"])
+            @Html.ValidationMessageFor(model => model.BgAlignY)
+        </td>
+    </tr>
+    <tr class="bg-picture">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.BgOffsetX)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.BgOffsetX)
+            @Html.ValidationMessageFor(model => model.BgOffsetX)
+        </td>
+    </tr>
+    <tr class="bg-picture">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.BgOffsetY)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.BgOffsetY)
+            @Html.ValidationMessageFor(model => model.BgOffsetY)
+        </td>
+    </tr>
+    
+    <tr>
+        <td colspan="2">
+            <div class="admin-config-group">
+                <div class="title">Text</div>
+            </div>
+        </td>
+    </tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.BadgeText)
@@ -38,181 +191,156 @@
             @Html.SmartLabelFor(model => model.BadgeLabel)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.BadgeLabel)
+            @Html.DropDownListFor(model => model.BadgeLabel, (List<SelectListItem>)ViewData["AvailableBadges"])
             @Html.ValidationMessageFor(model => model.BadgeLabel)
         </td>
     </tr>
-    <tr>
+    <tr class="cat-picture">
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ShowPreviewPicture)
+            @Html.SmartLabelFor(model => model.Summary)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.ShowPreviewPicture)
-            @Html.ValidationMessageFor(model => model.ShowPreviewPicture)
+            @Html.TextAreaFor(model => model.Summary, new { @style = "height:120px; width: 600px" })
+            @Html.ValidationMessageFor(model => model.Summary)
         </td>
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ShowBackgroundPicture)
+            @Html.SmartLabelFor(model => model.TeaserType)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.ShowBackgroundPicture)
-            @Html.ValidationMessageFor(model => model.ShowBackgroundPicture)
+            @Html.DropDownListFor(model => model.TeaserType, (List<SelectListItem>)ViewData["AvailableTeaserTypes"])
+            @Html.ValidationMessageFor(model => model.TeaserType)
         </td>
     </tr>
-    <tr>
+    <tr class="toggle-teaser-html">
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.BackgroundPictureId)
+            @Html.SmartLabelFor(model => model.TeaserHtml)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.BackgroundPictureId)
-            @Html.ValidationMessageFor(model => model.BackgroundPictureId)
+            @Html.EditorFor(model => model.TeaserHtml)
+            @Html.ValidationMessageFor(model => model.TeaserHtml)
         </td>
     </tr>
-    <tr>
+    <tr class="toggle-teaser-html">
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.BackgroundLink)
+            @Html.SmartLabelFor(model => model.HtmlColumnSpan)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.BackgroundLink)
-            @Html.ValidationMessageFor(model => model.BackgroundLink)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.OffsetX)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.OffsetX)
-            @Html.ValidationMessageFor(model => model.OffsetX)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.OffsetY)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.OffsetY)
-            @Html.ValidationMessageFor(model => model.OffsetY)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.TotalColumnDepth)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.TotalColumnDepth)
-            @Html.ValidationMessageFor(model => model.TotalColumnDepth)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ThirdLevelDepth)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.ThirdLevelDepth)
-            @Html.ValidationMessageFor(model => model.ThirdLevelDepth)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.BelowPreviewPicText)
-        </td>
-        <td class="adminData">
-            @Html.TextAreaFor(model => model.BelowPreviewPicText)
-            @Html.ValidationMessageFor(model => model.BelowPreviewPicText)
+            @Html.EditorFor(model => model.HtmlColumnSpan)
+            @Html.ValidationMessageFor(model => model.HtmlColumnSpan)
         </td>
     </tr>
 
-    <tr class="toggle-replacement">
+    <tr class="toggle-teaser-rotator">
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DisplayReplacementText)
+            @Html.SmartLabelFor(model => model.TeaserRotatorItemSelectType)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.DisplayReplacementText)
-            @Html.ValidationMessageFor(model => model.DisplayReplacementText)
+            @Html.DropDownListFor(model => model.TeaserRotatorItemSelectType, (List<SelectListItem>)ViewData["TeaserRotatorItemSelectType"])
+            @Html.ValidationMessageFor(model => model.TeaserRotatorItemSelectType)
         </td>
     </tr>
-    <tr>
+    <tr class="toggle-teaser-rotator">
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.MenuReplacementText)
+            @Html.SmartLabelFor(model => model.TeaserRotatorProductIds)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.MenuReplacementText)
-            @Html.ValidationMessageFor(model => model.MenuReplacementText)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.MenuReplacementRange)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.MenuReplacementRange)
-            @Html.ValidationMessageFor(model => model.MenuReplacementRange)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DisplayProductRotator)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.DisplayProductRotator)
-            @Html.ValidationMessageFor(model => model.DisplayProductRotator)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DisplayRandomProductsInRotator)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.DisplayRandomProductsInRotator)
-            @Html.ValidationMessageFor(model => model.DisplayRandomProductsInRotator)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ProductRotatorProductIds)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.ProductRotatorProductIds)
-            @Html.ValidationMessageFor(model => model.ProductRotatorProductIds)
+            @Html.EditorFor(model => model.TeaserRotatorProductIds, new { data_routeparam = "productIds" })
+
+            <button type="button" class="btn" id="SearchRotatorProductsButton" data-loading-text="@(T("Common.Loading"))&hellip;">
+                <i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+            </button>
+
+            @Html.ValidationMessageFor(model => model.TeaserRotatorProductIds)
         </td>
     </tr>
 
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DisplayThirdLevelCommaSeparated)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.DisplayThirdLevelCommaSeparated)
-            @Html.ValidationMessageFor(model => model.DisplayThirdLevelCommaSeparated)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ThirdLevelAllowWrap)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.ThirdLevelAllowWrap)
-            @Html.ValidationMessageFor(model => model.ThirdLevelAllowWrap)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ThirdLevelWrapTolerance)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.ThirdLevelWrapTolerance)
-            @Html.ValidationMessageFor(model => model.ThirdLevelWrapTolerance)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.FavorInMegamenu)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.FavorInMegamenu)
-            @Html.ValidationMessageFor(model => model.FavorInMegamenu)
-        </td>
-    </tr>
 </table>
+
+<script>
+    // TODO: put this script in admin-script.js
+    $(document).ready(function () {
+
+        // display bg picture
+        $("#@Html.FieldIdFor(model => model.DisplayBgPicture)").click(toggleBgPicture);
+
+        function toggleBgPicture() {
+            if ($('#@Html.FieldIdFor(model => model.DisplayBgPicture)').is(':checked')) {
+                $('.bg-picture').show();
+            }
+            else {
+                $('.bg-picture').hide();
+            }
+        }
+
+        // allow wrap
+        $("#@Html.FieldIdFor(model => model.AllowSubItemsColumnWrap)").click(toggleItemWrap);
+
+        function toggleItemWrap() {
+            if ($('#@Html.FieldIdFor(model => model.AllowSubItemsColumnWrap)').is(':checked')) {
+                $('.item-wrap').show();
+            }
+            else {
+                $('.item-wrap').hide();
+            }
+        }
+
+        // display cat pic
+        $("#@Html.FieldIdFor(model => model.DisplayCategoryPicture)").click(toggleCategoryPicture);
+
+        function toggleCategoryPicture() {
+            if ($('#@Html.FieldIdFor(model => model.DisplayCategoryPicture)').is(':checked')) {
+                $('.cat-picture').show();
+            }
+            else {
+                $('.cat-picture').hide();
+            }
+        }
+
+        // teaser
+        var fieldTeaserType = $("#@Html.FieldIdFor(model => model.TeaserType)");
+        fieldTeaserType.on("change", toogleTeaserControls);
+
+        function toogleTeaserControls() {
+            var type = fieldTeaserType.val();
+
+            switch (type) {
+                case 'Html':
+                    $('.toggle-teaser-html').show();
+                    $('.toggle-teaser-rotator').hide();
+                    break;
+                case 'Rotator':
+                    $('.toggle-teaser-html').hide();
+                    $('.toggle-teaser-rotator').show();
+                    break;
+                default:
+                    $('.toggle-teaser-html, .toggle-teaser-rotator').hide();
+                    break;
+            }
+        }
+
+        // Entity picker for rotator
+        $(document).on('click', '#SearchRotatorProductsButton', function () {
+            $('#@(Html.FieldIdFor(x => x.TeaserRotatorProductIds))').entityPicker('loadDialog', {
+                url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+                caption: '@T("Plugins.DiscountRules.HasOneProduct.Fields.Products")',
+                returnValueDelimiter: ',',
+                onLoadDialogBefore: function () {
+                    $('#SearchRotatorProductsButton').button('loading').prop('disabled', true);
+                },
+                onLoadDialogComplete: function () {
+                    $('#SearchRotatorProductsButton').prop('disabled', false).button('reset');
+                }
+            });
+        });
+
+        // init
+        $('.toggle-teaser-html, .toggle-teaser-rotator').hide();
+        toggleBgPicture();
+        toggleItemWrap();
+        toggleCategoryPicture();
+        fieldTeaserType.trigger("change");
+
+    });
+</script>

@@ -1,16 +1,12 @@
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using SmartStore.Core;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
 using SmartStore.MegaMenu.Data.Migrations;
+using SmartStore.MegaMenu.Domain;
 
 namespace SmartStore.MegaMenu.Data
 {
-	public class MegaMenuObjectContext : ObjectContextBase
+    public class MegaMenuObjectContext : ObjectContextBase
 	{
         public const string ALIASKEY = "sm_object_context_mega_menu";
 
@@ -35,8 +31,9 @@ namespace SmartStore.MegaMenu.Data
         
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{
-			modelBuilder.Configurations.Add(new MegaMenuRecordMap());
-			base.OnModelCreating(modelBuilder);
-		}
+            modelBuilder.Entity<MegaMenuRecord>();
+            
+            base.OnModelCreating(modelBuilder);
+        }
 	}
 }

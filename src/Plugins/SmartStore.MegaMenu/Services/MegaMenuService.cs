@@ -45,7 +45,7 @@ namespace SmartStore.MegaMenu.Services
 
             record = query.FirstOrDefault();
 
-            return record;
+            return record ?? new MegaMenuRecord();
         }
 
         public void InsertMegaMenuRecord(MegaMenuRecord record)
@@ -61,7 +61,14 @@ namespace SmartStore.MegaMenu.Services
             if (record == null)
                 throw new ArgumentNullException("MegaMenuRecord");
 
-            _cbRepository.Update(record);
+            try
+            {
+                _cbRepository.Update(record);
+            }
+            catch (Exception ex)
+            {
+                var exs = ex;
+            }
         }
 
         public void DeleteMegaMenuRecord(MegaMenuRecord record)

@@ -11,12 +11,172 @@
           ]]>
         </Value>
       </LocaleResource>
-      <LocaleResource Name="ConfigSetting">
-        <Value>Einstellung</Value>
+      
+      <LocaleResource Name="IsActive">
+        <Value>Ist aktiv</Value>
       </LocaleResource>
-      <LocaleResource Name="ConfigSetting.Hint">
-        <Value>Hilfstext zur Konfigurationsmöglichkeit.</Value>
+      <LocaleResource Name="IsActive.Hint">
+        <Value>Bestimmt ob für die Warengruppe ein Megamenu ausgegeben wird.</Value>
       </LocaleResource>
+      <LocaleResource Name="DisplayCategoryPicture">
+        <Value>Display category picture</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayCategoryPicture.Hint">
+        <Value>Specifies whether a category picture will be displayed in the first column (on the right side of dropdown).</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayBgPicture">
+        <Value>Display background picture</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplayBgPicture.Hint">
+        <Value>Specifies whether a backgrund picture for the catgory dropdown will be displayed.</Value>
+      </LocaleResource>
+      <LocaleResource Name="BgPictureId">
+        <Value>Background picture</Value>
+      </LocaleResource>
+      <LocaleResource Name="BgPictureId.Hint">
+        <Value>The background picture of the catgory dropdown.</Value>
+      </LocaleResource>
+      <LocaleResource Name="BgLink">
+        <Value>Link of the background picture</Value>
+      </LocaleResource>
+      <LocaleResource Name="BgLink.Hint">
+        <Value>Link of the background picture.</Value>
+      </LocaleResource>
+      <LocaleResource Name="BgAlignX">
+        <Value>Horizontal alignment</Value>
+      </LocaleResource>
+      <LocaleResource Name="BgAlignX.Hint">
+        <Value>Specifies the horizontal alignment of background picture.</Value>
+      </LocaleResource>
+      <LocaleResource Name="BgAlignY">
+        <Value>Vertical alignment</Value>
+      </LocaleResource>
+      <LocaleResource Name="BgAlignY.Hint">
+        <Value>Specifies the vertical alignment of background picture.</Value>
+      </LocaleResource>
+      <LocaleResource Name="BgOffsetX">
+        <Value>Horizontal offset</Value>
+      </LocaleResource>
+      <LocaleResource Name="BgOffsetX.Hint">
+        <Value>Specifies the horizontal offset of background picture.</Value>
+      </LocaleResource>
+      <LocaleResource Name="BgOffsetY">
+        <Value>Vertical offset</Value>
+      </LocaleResource>
+      <LocaleResource Name="BgOffsetY.Hint">
+        <Value>Specifies the vertical offset of background picture.</Value>
+      </LocaleResource>
+      <LocaleResource Name="MaxItemsPerColumn">
+        <Value>Maximum of items per column</Value>
+      </LocaleResource>
+      <LocaleResource Name="MaxItemsPerColumn.Hint">
+        <Value>Specifies the maximum of items in one column.</Value>
+      </LocaleResource>
+      <LocaleResource Name="MaxSubItemsPerCategory">
+        <Value>maximum of sub items per category</Value>
+      </LocaleResource>
+      <LocaleResource Name="MaxSubItemsPerCategory.Hint">
+        <Value>Specifies the maximum of sub items per category.</Value>
+      </LocaleResource>
+      <LocaleResource Name="Summary">
+        <Value>Summary</Value>
+      </LocaleResource>
+      <LocaleResource Name="Summary.Hint">
+        <Value>Specifies text that will be displayed below the category picture. This text will only be displayed if the category picture is displayed. Html is allowed.</Value>
+      </LocaleResource>
+      <LocaleResource Name="TeaserHtml">
+        <Value>Teaser Html</Value>
+      </LocaleResource>
+      <LocaleResource Name="TeaserHtml.Hint">
+        <Value>Replaces menu columns and displays the defined HTML instead.</Value>
+      </LocaleResource>
+      <LocaleResource Name="HtmlColumnSpan">
+        <Value>Html column span</Value>
+      </LocaleResource>
+      <LocaleResource Name="HtmlColumnSpan.Hint">
+        <Value>Ranges from columns 1-4. 4 means no sub categories will be displayed. Html display and column span count start on the right side of the dropdown.</Value>
+      </LocaleResource>
+      <LocaleResource Name="TeaserType">
+        <Value>Teaser type</Value>
+      </LocaleResource>
+      <LocaleResource Name="TeaserType.Hint">
+        <Value>Defines the type of the teaser.</Value>
+      </LocaleResource>
+      <LocaleResource Name="TeaserRotatorItemSelectType">
+        <Value>Teaser rotator item select type</Value>
+      </LocaleResource>
+      <LocaleResource Name="TeaserRotatorItemSelectType.Hint">
+        <Value>Defines the kind in which the rotatoritem will be choosen. The types deep-top, deep-random are implying to include sub categories when considering products.</Value>
+      </LocaleResource>
+      <LocaleResource Name="TeaserRotatorProductIds">
+        <Value>Product ids</Value>
+      </LocaleResource>
+      <LocaleResource Name="TeaserRotatorProductIds.Hint">
+        <Value>Ids of the picked products.</Value>
+      </LocaleResource>
+      <LocaleResource Name="BadgeText">
+        <Value>Badge text</Value>
+      </LocaleResource>
+      <LocaleResource Name="BadgeText.Hint">
+        <Value>defines the badge text next to the category.</Value>
+      </LocaleResource>
+      <LocaleResource Name="BadgeLabel">
+        <Value>Badge label</Value>
+      </LocaleResource>
+      <LocaleResource Name="BadgeLabel.Hint">
+        <Value>Defines the badge type next to the category.</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplaySubItemsInline">
+        <Value>Display sub-items inline</Value>
+      </LocaleResource>
+      <LocaleResource Name="DisplaySubItemsInline.Hint">
+        <Value>Determines whether sub-items will be displayed separated by comma.</Value>
+      </LocaleResource>
+      <LocaleResource Name="AllowSubItemsColumnWrap">
+        <Value>Allow sub-items column wrap</Value>
+      </LocaleResource>
+      <LocaleResource Name="AllowSubItemsColumnWrap.Hint">
+        <Value>Determines whether sub-items can be broken into a new comlumn.</Value>
+      </LocaleResource>
+      <LocaleResource Name="SubItemsWrapTolerance">
+        <Value>Sub-items wrap tolerance</Value>
+      </LocaleResource>
+      <LocaleResource Name="SubItemsWrapTolerance.Hint">
+        <Value>Specifies a treshold which defines a tolarance value.</Value>
+      </LocaleResource>
+      <LocaleResource Name="FavorInMegamenu">
+        <Value>Favor in megamenu</Value>
+      </LocaleResource>
+      <LocaleResource Name="FavorInMegamenu.Hint">
+        <Value>Specifies whether the category should be favored when building the nav structure (only applies to categories within the dropdown).</Value>
+      </LocaleResource>
+
+
+      <LocaleResource Name="ProductRotatorInterval">
+        <Value>Product rotator interval</Value>
+      </LocaleResource>
+      <LocaleResource Name="ProductRotatorInterval.Hint">
+        <Value>Specifies the interval after which the rotator scrolls to the next element.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ProductRotatorDuration">
+        <Value>Product rotator duration</Value>
+      </LocaleResource>
+      <LocaleResource Name="ProductRotatorDuration.Hint">
+        <Value>Specifies the duration the rotator needs to scroll to the next element.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ProductRotatorCycle">
+        <Value>Product-Rotator cycle</Value>
+      </LocaleResource>
+      <LocaleResource Name="ProductRotatorCycle.Hint">
+        <Value>Specifies whether the product rotator scrolls back to the first element after reaching the last scrollable element.</Value>
+      </LocaleResource>
+      <LocaleResource Name="MenuMinHeight">
+        <Value>Menu-Mindesthöhe</Value>
+      </LocaleResource>
+      <LocaleResource Name="MenuMinHeight.Hint">
+        <Value>Legt die Mindesthöhe des Dropdown.</Value>
+      </LocaleResource>
+      
     </Children>
   </LocaleResource>
 </Language>

@@ -6,6 +6,8 @@
 @using SmartStore.Collections;
 @using SmartStore.MegaMenu.Settings;
 @using SmartStore.MegaMenu.Domain;
+@using SmartStore.MegaMenu.Services;
+@using SmartStore.Services.Media;
 
 @{
     Layout = "";
@@ -24,7 +26,7 @@
         return node.Value.GenerateUrl(this.Url);
     }
 
-    private string GetContainerAlignmentCss(string alignmentX, string alignmentY, string OffsetX, string OffsetY)
+    private string GetContainerAlignmentCss(AlignX alignmentX, AlignY alignmentY, string OffsetX, string OffsetY)
     {
         // TODO: can be done on the server, create css and put into view model
         // alignmentX = top || bottom
@@ -73,17 +75,17 @@
         return liClasses.Count > 0 ? String.Join(" ", liClasses) : null;
     }
 
-    private bool CloseColumn(TreeNode<MenuItem> nextSibling)
+    private bool CloseColumn(TreeNode<MenuItem> nextSibling, MegaMenuRecord settings)
     {
-        var settings = getCurrentRecord();
+        //var settings = getCurrentRecord();
 
         // no wrap
-        if (nextSibling != null && !settings.ThirdLevelAllowWrap)
+        if (nextSibling != null && !settings.AllowSubItemsColumnWrap)
         {
-            var nextSiblingChildren = nextSibling.Children.Count > settings.ThirdLevelDepth ? settings.ThirdLevelDepth : nextSibling.Children.Count;
+            var nextSiblingChildren = nextSibling.Children.Count > settings.MaxSubItemsPerCategory ? settings.MaxSubItemsPerCategory : nextSibling.Children.Count;
             nextSiblingChildren++;
 
-            if (currentColumnItemCount + nextSiblingChildren >= settings.TotalColumnDepth)
+            if (currentColumnItemCount + nextSiblingChildren >= settings.MaxItemsPerColumn)
             {
                 if (currentColumnCount == maxColumnCount)
                 {
@@ -96,7 +98,7 @@
         }
 
         // wrap
-        if (currentColumnItemCount == settings.TotalColumnDepth)
+        if (currentColumnItemCount == settings.MaxItemsPerColumn)
         {
             if (currentColumnCount == maxColumnCount)
             {
@@ -117,11 +119,11 @@
             return false;
         }
 
-        var settings = getCurrentRecord();
-        var nodeChildren = node.Children.Count > settings.ThirdLevelDepth ? settings.ThirdLevelDepth : node.Children.Count;
+        var settings = getCurrentRecord(node.Value.EntityId);
+        var nodeChildren = node.Children.Count > settings.MaxSubItemsPerCategory ? settings.MaxSubItemsPerCategory : node.Children.Count;
         nodeChildren++;
 
-        if ((settings.TotalColumnDepth >= nodeChildren + currentColumnItemCount) || settings.ThirdLevelAllowWrap)
+        if ((settings.MaxItemsPerColumn >= nodeChildren + currentColumnItemCount) || settings.AllowSubItemsColumnWrap)
         {
             return true;
         }
@@ -129,40 +131,44 @@
         return false;
     }
 
-    private MegaMenuRecord getCurrentRecord()
+    private MegaMenuRecord getCurrentRecord(int categoryId)
     {
-        return new MegaMenuRecord
-        {
-            IsActive = true,                            
-            BadgeText = "Neu",                          // TODO
-            BadgeLabel = "Info",                        // TODO
-            BackgroundLink = "",                        // TODO ???
 
-            ShowPreviewPicture = true,
-            TotalColumnDepth = 17,
-            ThirdLevelDepth = 4,
-            ThirdLevelAllowWrap = false,
-            ThirdLevelWrapTolerance = 1,                // TODO
-            BelowPreviewPicText = @"Beste Warengruppe der Welt! Hier gibt's nicht nur <b>gute Produkte</b> der Firma <i>SmartStore AG</i> sondern auch einen 
-                                    <a href=""#"" target=""_blank"">Link</a> der ganz woanders hinführt. ",
-            DisplayThirdLevelCommaSeparated = false,
+        var _megaMenuService = EngineContext.Current.Resolve<IMegaMenuService>();
+        return _megaMenuService.GetMegaMenuRecord(categoryId);
 
-            // background pic
-            ShowBackgroundPicture = true,
-            BackgroundAlignmentX = "bottom",
-            BackgroundAlignmentY = "right",
-            OffsetX = 40,
-            OffsetY = 35,
-            //TODO: BackgroundPicturePath => has to be built into ViewModel, setting contains BackgroundPictureId 
+        //return new MegaMenuRecord
+        //{
+        //    IsActive = true,
+        //    BadgeText = "Neu",                          // TODO
+        //    BadgeLabel = BadgeLabelType.Info,           // TODO
+        //    BgLink = "#",                               // TODO
 
-            DisplayReplacementText = false,
-            MenuReplacementText = @"<div>Hier geht schon ein bischen mehr als im BelowPreviewPicText. Der Text hier wird von eine richtigen HTML-Editor erfasst. 
-                                    Daher ist es auch ganz wichtig, dass <i>overflow:hidden</i> nicht vergessen wird.</div>",
-            MenuReplacementRange = 2,
-            DisplayProductRotator = true,   //More settings regarding ProductRotator: 
-                                            //ProductIds (can be choosen explicitly by entity picker) || PickRandomProducts (either globally or from the current category)
-                                            //cycle and interval must be passed into ProductListScroller
-        };
+        //    DisplayCategoryPicture = true,
+        //    MaxItemsPerColumn = 17,
+        //    MaxSubItemsPerCategory = 4,
+        //    AllowSubItemsColumnWrap = false,
+        //    SubItemsWrapTolerance = 1,                  // TODO
+        //    Summary = @"Beste Warengruppe der Welt! Hier gibt's nicht nur <b>gute Produkte</b> der Firma <i>SmartStore AG</i> sondern auch einen 
+        //                            <a href=""#"" target=""_blank"">Link</a> der ganz woanders hinführt. ",
+        //    DisplaySubItemsInline = true,
+
+        //    // background pic
+        //    DisplayBgPicture = true,
+        //    BgAlignX = AlignX.Right,
+        //    BgAlignY = AlignY.Bottom,
+        //    BgOffsetX = 40,
+        //    BgOffsetY = 35,
+        //    //TODO: BackgroundPicturePath => has to be built into ViewModel, setting contains BackgroundPictureId 
+
+        //    TeaserType = TeaserType.Rotator,
+        //    TeaserHtml = @"<div>Hier geht schon ein bischen mehr als im BelowPreviewPicText. Der Text hier wird von eine richtigen HTML-Editor erfasst. 
+        //                            Daher ist es auch ganz wichtig, dass <i>overflow:hidden</i> nicht vergessen wird.</div>",
+        //    HtmlColumnSpan = 2,
+        //    //TeaserRotatorItemSelectType = "",   //More settings regarding ProductRotator: 
+        //    //ProductIds (can be choosen explicitly by entity picker) || PickRandomProducts (either globally or from the current category)
+        //    //cycle and interval must be passed into ProductListScroller
+        //};
     }
 }
 
@@ -223,59 +229,65 @@
     {
         currentColumnItemCount = 0;
 
-        var settings = getCurrentRecord();
+        var settings = getCurrentRecord(node.Value.EntityId);
 
         if(settings.IsActive)
         {
-            @CreateDrilldownMenu(node.Children, node)
+            @CreateDropdownMenu(node.Children, node)
         }
     }
 </div>
 
-@helper CreateDrilldownMenu(IEnumerable<TreeNode<MenuItem>> nodes, TreeNode<MenuItem> parent)
+@helper CreateDropdownMenu(IEnumerable<TreeNode<MenuItem>> nodes, TreeNode<MenuItem> parent)
 {
     var i = 1;
-    var settings = getCurrentRecord();
-    maxColumnCount = parent.Value.ImageUrl.HasValue() && settings.ShowPreviewPicture ? 3 : 4;
+    var settings = getCurrentRecord(parent.Value.EntityId);
+    maxColumnCount = parent.Value.ImageUrl.HasValue() && settings.DisplayCategoryPicture ? 3 : 4;
 
-    if(settings.DisplayProductRotator)
+    if(settings.TeaserType == TeaserType.Rotator)
     {
         maxColumnCount = maxColumnCount - 1;
     }
-
-    if (settings.DisplayReplacementText)
+    else if (settings.TeaserType == TeaserType.Html)
     {
-        maxColumnCount = maxColumnCount - settings.MenuReplacementRange;
+        maxColumnCount = maxColumnCount - settings.HtmlColumnSpan;
     }
 
     currentColumnCount = 1;
 
-    var css = GetContainerAlignmentCss(settings.BackgroundAlignmentX, settings.BackgroundAlignmentY, settings.OffsetX.ToString(), settings.OffsetY.ToString());
+    var css = GetContainerAlignmentCss(settings.BgAlignX, settings.BgAlignY, settings.BgOffsetX.ToString(), settings.BgOffsetY.ToString());
 
     @Html.Widget("megamenu_dropdown_top")
 
     <div id="dropdown-menu-@parent.Value.EntityId" data-entity-id="@parent.Value.EntityId">
-        <div class="dropdown-menu@(settings.DisplayThirdLevelCommaSeparated ? " comma-separated" : "")">
+        <div class="dropdown-menu mega-menu-dropdown@(settings.DisplaySubItemsInline ? " comma-separated" : "")">
 
-            @if(settings.ShowBackgroundPicture)
+            @if(settings.DisplayBgPicture)
             {
+                var _pictureService = EngineContext.Current.Resolve<IPictureService>();
+                var path = _pictureService.GetPictureUrl(settings.BgPictureId);
+
                 <div class="picture-container" style="@css">
 
-                    @*<img src="./Plugins/SmartStore.MegaMenu/Content/mocks/kindle.png" border="0" />
-                    <img src="./Plugins/SmartStore.MegaMenu/Content/mocks/firestick.png" border="0" />*@
-
-                    <img src="./Plugins/SmartStore.MegaMenu/Content/mocks/babys.png" border="0" />
+                    @if (!String.IsNullOrEmpty(settings.BgLink))
+                    {
+                        <a href="@settings.BgLink"><img src="@path" border="0" /></a>
+                    }
+                    else
+                    {
+                        <img src="@path" border="0" />
+                    }
                 </div>
             }
 
             <div class="row">
-                @if(parent.Value.ImageUrl.HasValue() && settings.ShowPreviewPicture)
+                @if(parent.Value.ImageUrl.HasValue() && settings.DisplayCategoryPicture)
                 {
                     <div class="col-md-3 text-xs-center megamenu-cat-img">
                         <img src="@parent.Value.ImageUrl" />
 
                         <div class="below-preview-pic-text text-xs-left">
-                            @Html.Raw(settings.BelowPreviewPicText)
+                            @Html.Raw(settings.Summary)
                         </div>
                     </div>
                 }
@@ -295,33 +307,32 @@
                         var itemUrl = GetNodeLink(node);
                         var itemState = node.GetNodePathState(Model.Path);
 
-                        <a class='dropdown-item first@((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : "")' href="@itemUrl">
+                        <a class='mega-menu-dropdown-heading @((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : "")' href="@itemUrl">
                             @item.Text @*(@currentColumnItemCount)*@
                         </a>
 
-                        if (CloseColumn(null))
+                        if (CloseColumn(null, settings))
                         {
                             @:</div><div class="col-md-3">
                         }
 
-                        @CreateSubMenu(node.Children);
-                        
-                        if (i++ == settings.TotalColumnDepth)
+                        @CreateSubMenu(node.Children, settings);
+
+                        if (i++ == settings.MaxItemsPerColumn)
                         {
                             break;
                         }
                     }
                 </div>
 
-                @if (settings.DisplayReplacementText)
+                @if (settings.TeaserType == TeaserType.Html)
                 {
-                    var colWidth = 3 * settings.MenuReplacementRange;
+                    var colWidth = 3 * settings.HtmlColumnSpan;
                     <div class="col-md-@colWidth.ToString() megamenu-html-text">
-                        @Html.Raw(settings.MenuReplacementText)
+                        @Html.Raw(settings.TeaserHtml)
                     </div>
                 }
-
-                @if (settings.DisplayProductRotator)
+                else if (settings.TeaserType == TeaserType.Rotator)
                 {
                     if (currentColumnCount <= 3)
                     {
@@ -338,10 +349,10 @@
     @Html.Widget("megamenu_dropdown_bottom")
 }
 
-@helper CreateSubMenu(IEnumerable<TreeNode<MenuItem>> nodes)
+@helper CreateSubMenu(IEnumerable<TreeNode<MenuItem>> nodes, MegaMenuRecord settings)
 {
     var i = 1;
-    var settings = getCurrentRecord();
+    //var settings = getCurrentRecord();
 
     foreach (var node in nodes)
     {
@@ -352,28 +363,28 @@
             continue;
         }
         currentColumnItemCount++;
-
+        
         var itemUrl = GetNodeLink(node);
         var itemState = node.GetNodePathState(Model.Path);
         
-        <a class='second dropdown-item@((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : "")' href="@itemUrl">
+        <a class='mega-menu-subitem @((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : "")' href="@itemUrl">
             @item.Text
             @*(@currentColumnItemCount)*@
         </a>
 
-        if (settings.DisplayThirdLevelCommaSeparated)
+        if (settings.DisplaySubItemsInline && (i != settings.MaxSubItemsPerCategory) && (i != nodes.Count()))
         {
-            <span class="comma">,</span>
+                <span class="comma">,</span>
         }
 
-        if (i++ == settings.ThirdLevelDepth)
+        if (i++ == settings.MaxSubItemsPerCategory)
         {
             var parentUrl = GetNodeLink(node.Parent);
-            <a class='second dropdown-item more-link' href="@parentUrl">... alle Kategorien</a>
+            <a class='mega-menu-subitem more-link' href="@parentUrl">... alle Kategorien</a>
             break;
         }
 
-        if (CloseColumn(node.Parent.Next))
+        if (CloseColumn(node.Parent.Next, settings))
         {
             @:</div><div class="col-md-3">
         }
@@ -533,16 +544,17 @@
 
                                     // add buttons
                                     container.find(".sb").scrollButton({
-                                        nearSize: 96,
-                                        farSize: 28,
+                                        nearSize: 36,
+                                        farSize: 124,
                                         target: $(".pl-slider", container),
                                         showButtonAlways: true,
                                         autoPosition: true,
                                         position: "inside",
-                                        offset: 0,
+                                        offset: -100,
                                         handleCorners: true,
                                         smallIcons: true,
-                                        hostFix: true
+                                        isBtnGroup: true,
+                                        btnType: "primary"
                                     });
 
                                     // and now its hammertime 
@@ -578,5 +590,181 @@
 </script>
 
 <style type="text/css">
+.megamenu-container {
+    position: relative;
+}
+.megamenu {
+    overflow: hidden;
+    position: relative;
+}
+.show-scroll-buttons .megamenu .nav-slider {
+    margin: 0 50px;
+}
+.megamenu ul.nav {
+    width: 5000px;
+}
+.megamenu-navigate-prev,
+.megamenu-navigate-next {
+    position: absolute;
+    top: 0;
+    display: none;
+}
+.show-scroll-buttons .megamenu-navigate-prev,
+.show-scroll-buttons .megamenu-navigate-next {
+    display: block;
+}
+.megamenu-navigate-next {
+    right: 0;
+}
+.megamenu-navigate-prev .btn,
+.megamenu-navigate-next .btn {
+    padding: 0;
+    font-size: 1.2rem;
+}
+
+
+.megamenu-container .megamenu-dropdown-container {
+    position: relative;
+}
+.megamenu-container .mega-menu-dropdown {
+    z-index: 1007;
+    width: 100%;
+    top: -3px;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    padding: 1.5rem;
+}
+.megamenu-container .dropdown-menu .col-md-3 {
+    overflow: hidden;
+}
+.megamenu-container .mega-menu-dropdown-heading:not(:first-child) {
+    padding-top: 1rem;
+}
+.megamenu-container .mega-menu-dropdown-heading {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4rem;
+    text-decoration: none;
+    display: block;
+    color: #444;
+    padding-bottom: .4rem;
+}
+
+
+.megamenu-container .mega-menu-subitem {
+    font-size: .875rem;
+    text-decoration: none;
+    display: block;
+    color: #999;
+}
+.megamenu-container .mega-menu-subitem:hover {
+    color: #444;
+} 
+
+.megamenu-container .mega-menu-subitem.more-link {
+    font-style: italic;
+}
+.megamenu-container .comma-separated .mega-menu-subitem {
+    display: inline;
+    margin-right: -.15rem;
+}
+.megamenu-container .comma-separated .mega-menu-subitem,
+.megamenu-container .comma-separated .comma { 
+
+}
+.megamenu-container .comma-separated .mega-menu-subitem.more-link {
+    display: block;
+}
+
+.megamenu-container .picture-container {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+
+
+.megamenu-container .comma-separated .mega-menu-subitem:focus, 
+.megamenu-container .comma-separated .mega-menu-subitem:hover {
+    background-color: transparent;
+    color: #888;
+}
+.megamenu-container .megamenu-cat-img img {
+    max-width: 100%;
+    max-height: 100%;
+    padding: 20px;
+}
+.megamenu-container .below-preview-pic-text {
+    margin: 10px;
+    font-size: .875rem;
+}
+
+.megamenu-container .megamenu-html-text {
+    overflow: hidden;
+}
+
+.navbar {
+    padding: 0;
+}
+.megamenu-container .nav-item,
+.megamenu-navigate-prev,
+.megamenu-navigate-next {
+    padding: .5rem 0;
+}
+.megamenu ul.nav .nav-item {
+    z-index: 1100;
+}
+.megamenu-container .nav-item.active:before {
+    content: "";
+    left: 50%;
+    position: absolute;
+    border-bottom: 15px solid #fff;
+    border-right: 17px solid transparent;
+    border-left: 17px solid transparent;
+    bottom: -1px;
+    margin-left: -17px;
+    z-index: 1010;
+}
+.megamenu-container .nav-item.active:after {
+    content: "";
+    left: 50%;
+    position: absolute;
+    border-bottom: 17px solid #bbb;
+    border-right: 19px solid transparent;
+    border-left: 19px solid transparent;
+    bottom: -2px;
+    margin-left: -19px;
+    z-index: 1008;
+}
+
+.mega-menu-product-rotator .pl-row,
+.mega-menu-product-rotator .item-box {
+    width: 100%;
+    border: none;
+}
+
+.mega-menu-product-rotator.scroll article {
+    min-width: 245px;
+    max-width: 245px;
+}
+
+
+.mega-menu-product-rotator.scroll .btn-group {
+    width: 100%;
+}
+
+.mega-menu-product-rotator.scroll .scroll-button {
+    bottom: 12px;
+    top: initial !important;
+    position: initial;
+}
+.mega-menu-product-rotator.scroll .scroll-button i {
+    width: initial;
+}
+
+/* TODO: get from setting */
+.mega-menu-dropdown {
+    min-height: 350px;
+}
 
 </style>

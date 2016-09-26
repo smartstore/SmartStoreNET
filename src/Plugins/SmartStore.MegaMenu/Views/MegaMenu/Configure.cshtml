@@ -15,14 +15,40 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ConfigSetting)
+                @Html.SmartLabelFor(model => model.ProductRotatorCycle)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ConfigSetting)
-                @Html.ValidationMessageFor(model => model.ConfigSetting)
+                @Html.SettingEditorFor(model => model.ProductRotatorCycle)
+                @Html.ValidationMessageFor(model => model.ProductRotatorCycle)
             </td>
         </tr>
-
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductRotatorDuration)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ProductRotatorDuration)
+                @Html.ValidationMessageFor(model => model.ProductRotatorDuration)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ProductRotatorInterval)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ProductRotatorInterval)
+                @Html.ValidationMessageFor(model => model.ProductRotatorInterval)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MenuMinHeight)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MenuMinHeight)
+                @Html.ValidationMessageFor(model => model.MenuMinHeight)
+            </td>
+        </tr>
         
 
         <tr>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Web;
@@ -15,8 +16,14 @@ namespace SmartStore.Core.Logging
 	public class Log4netLogger : ILogger
 	{
 		private static readonly Type _declaringType = typeof(Log4netLogger);
+		private static readonly ContextState<Dictionary<string, object>> _state;
 
 		private readonly log4net.Core.ILogger _logger;
+
+		static Log4netLogger()
+		{
+			_state = new ContextState<Dictionary<string, object>>("Log4netLogger.LogicalThreadContext", () => new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase));
+		}
 
 		public Log4netLogger(log4net.Core.ILogger logger)
 		{
@@ -27,7 +34,7 @@ namespace SmartStore.Core.Logging
 
 		public string Name
 		{
-			get { return _logger.Name;  }
+			get { return _logger.Name; }
 		}
 
 		public bool IsEnabledFor(LogLevel level)
@@ -51,32 +58,32 @@ namespace SmartStore.Core.Logging
 				messageObj = new SystemStringFormat(CultureInfo.CurrentUICulture, message, args);
 			}
 
-			ThreadContext.Properties["LevelId"] = (int)level;
-			TryAddExtendedThreadInfo();
-			
-			_logger.Log(_declaringType, logLevel, messageObj, exception);
+			var loggingEvent = new LoggingEvent(
+				_declaringType,
+				_logger.Repository,
+				_logger.Name,
+				logLevel,
+				messageObj,
+				exception);
+
+			loggingEvent.Properties["LevelId"] = (int)level;
+			TryAddExtendedThreadInfo(loggingEvent);
+
+			_logger.Log(loggingEvent);
 		}
 
-		protected internal void TryAddExtendedThreadInfo()
+		protected internal void TryAddExtendedThreadInfo(LoggingEvent loggingEvent)
 		{
-			var props = LogicalThreadContext.Properties;
+			var props = _state.GetState();
 
 			// Load the log4net thread with additional properties if they are available
-			var threadInfoMissing = props["sm:ThreadInfoAdded"] == null;
+			var threadInfoMissing = !props.ContainsKey("sm:ThreadInfoAdded");
 
 			if (threadInfoMissing)
 			{
 				using (new ActionDisposable(() => props["sm:ThreadInfoAdded"] = true))
 				{
-					if (!DataSettings.DatabaseIsInstalled())
-					{
-						props["CustomerId"] = DBNull.Value;
-						props["Url"] = DBNull.Value;
-						props["Referrer"] = DBNull.Value;
-						props["HttpMethod"] = DBNull.Value;
-						props["Ip"] = DBNull.Value;
-					}
-					else
+					if (DataSettings.DatabaseIsInstalled())
 					{
 						var container = EngineContext.Current.ContainerManager;
 
@@ -109,17 +116,17 @@ namespace SmartStore.Core.Logging
 								props["HttpMethod"] = httpContext.Request.HttpMethod;
 								props["Ip"] = webHelper.GetCurrentIpAddress();
 							}
-							catch
-							{
-								props["Url"] = DBNull.Value;
-								props["Referrer"] = DBNull.Value;
-								props["HttpMethod"] = DBNull.Value;
-								props["Ip"] = DBNull.Value;
-							}
+							catch { }
 						}
 					}
 				}
 			}
+
+			loggingEvent.Properties["CustomerId"] = props.Get("CustomerId") ?? DBNull.Value;
+			loggingEvent.Properties["Url"] = props.Get("Url") ?? DBNull.Value;
+			loggingEvent.Properties["Referrer"] = props.Get("Referrer") ?? DBNull.Value;
+			loggingEvent.Properties["HttpMethod"] = props.Get("HttpMethod") ?? DBNull.Value;
+			loggingEvent.Properties["Ip"] = props.Get("Ip") ?? DBNull.Value;
 		}
 
 		private static Level ConvertLevel(LogLevel level)

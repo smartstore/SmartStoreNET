@@ -260,6 +260,7 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<DefaultIndexManager>().As<IIndexManager>().InstancePerRequest();
 			builder.RegisterType<CatalogSearchService>().As<ICatalogSearchService>().InstancePerRequest();
+			builder.RegisterType<LinqCatalogSearchService>().As<ILinqCatalogSearchService>().InstancePerRequest();
 		}
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)

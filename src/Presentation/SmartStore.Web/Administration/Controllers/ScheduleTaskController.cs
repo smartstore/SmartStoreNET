@@ -69,7 +69,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (taskClassName.HasValue())
 			{
-				message = _localizationService.GetResource(string.Concat(resourceKey, ".", taskClassName), returnEmptyIfNotFound: true);
+				message = _localizationService.GetResource(string.Concat(resourceKey, ".", taskClassName), logIfNotFound: false, returnEmptyIfNotFound: true);
 			}
 
 			if (message.IsEmpty())

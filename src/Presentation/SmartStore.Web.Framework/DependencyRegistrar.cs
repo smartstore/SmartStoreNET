@@ -353,8 +353,6 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<DefaultHookHandler>().As<IHookHandler>().InstancePerRequest();
 
-			builder.RegisterType<QueryCache>().SingleInstance();
-
 			if (DataSettings.Current.IsValid())
 			{
 				// register DB Hooks (only when app was installed properly)

@@ -122,20 +122,20 @@ namespace SmartStore.Web.Controllers
             if (category == null || category.Deleted)
 				return HttpNotFound();
 
-            //Check whether the current user has a "Manage catalog" permission
-            //It allows him to preview a category before publishing
+            // Check whether the current user has a "Manage catalog" permission
+            // It allows him to preview a category before publishing
             if (!category.Published && !_services.Permissions.Authorize(StandardPermissionProvider.ManageCatalog))
 				return HttpNotFound();
 
-            //ACL (access control list)
+            // ACL (access control list)
             if (!_aclService.Authorize(category))
 				return HttpNotFound();
 
-			//Store mapping
+			// Store mapping
 			if (!_storeMappingService.Authorize(category))
 				return HttpNotFound();            
 
-            //'Continue shopping' URL
+            // 'Continue shopping' URL
 			_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
 				SystemCustomerAttributeNames.LastContinueShoppingPage,
 				_services.WebHelper.GetThisPageUrl(false),

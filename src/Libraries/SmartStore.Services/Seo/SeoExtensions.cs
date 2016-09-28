@@ -174,6 +174,7 @@ namespace SmartStore.Services.Seo
 					result = urlRecordService.GetActiveSlug(entity.Id, entityName, languageId);
 				}
 			}
+
 			// set default value if required
 			if (String.IsNullOrEmpty(result) && returnDefaultValue)
 			{

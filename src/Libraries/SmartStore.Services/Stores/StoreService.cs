@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Mvc;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
-using SmartStore.Services.Localization;
-using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Stores
 {
@@ -83,8 +80,7 @@ namespace SmartStore.Services.Stores
 					.OrderBy(x => x.DisplayOrder)
 					.ThenBy(x => x.Name);
 
-				//var stores = query.ToList();
-				var stores = query.FromCache();
+				var stores = query.ToList();
 				return stores;
 			});
 		}

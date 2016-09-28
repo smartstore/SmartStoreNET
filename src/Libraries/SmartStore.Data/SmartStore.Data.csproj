@@ -119,13 +119,8 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="Caching\CacheInvalidationInterceptor.cs" />
     <Compile Include="Caching\EfCacheImpl.cs" />
     <Compile Include="Caching\EfCachingPolicy.cs" />
-    <Compile Include="Caching\QueryCache.cs" />
-    <Compile Include="Caching\QueryCacheExtensionsAsync.cs" />
-    <Compile Include="Caching\QueryCacheExtensions.cs" />
-    <Compile Include="Caching\QueryCacheUtil.cs" />
     <Compile Include="Mapping\DataExchange\ImportProfileMap.cs" />
     <Compile Include="Mapping\DataExchange\SyncMappingMap.cs" />
     <Compile Include="Mapping\DataExchange\ExportDeploymentMap.cs" />

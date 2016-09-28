@@ -157,6 +157,11 @@ namespace SmartStore.Core.Search
 			return ByField(fieldName, term, IndexTypeCode.DateTime);
 		}
 
+		public static SearchFilter ByField(string fieldName, int[] term)
+		{
+			return ByField(fieldName, term, IndexTypeCode.Int32Array);
+		}
+
 		private static SearchFilter ByField(string fieldName, object term, IndexTypeCode typeCode)
 		{
 			Guard.NotEmpty(fieldName, nameof(fieldName));

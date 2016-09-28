@@ -110,7 +110,7 @@ namespace SmartStore.Services.Search
 
 						query = QueryLocalizedProperties(query, "Product", "FullDescription", languageId, term);
 					}
-					else if (field == "ProductTags")
+					else if (field == "ProductTags.Name")
 					{
 						query =
 							from p in query
@@ -127,7 +127,7 @@ namespace SmartStore.Services.Search
 
 			#region Filters
 
-			var showHidden = (searchQuery.Filters.FirstOrDefault(x => x.FieldName == "ShowHidden")?.Term as bool?) ?? false;
+			var showHidden = (searchQuery.Filters.FirstOrDefault(x => x.FieldName == "_ShowHidden")?.Term as bool?) ?? false;
 
 			if (!showHidden)
 			{
@@ -164,7 +164,7 @@ namespace SmartStore.Services.Search
 				{
 					query = query.Where(x => x.VisibleIndividually == (bool)filter.Term);
 				}
-				else if (filter.FieldName == "HomePageProducts")
+				else if (filter.FieldName == "ShowOnHomePage")
 				{
 					query = query.Where(p => p.ShowOnHomePage == (bool)filter.Term);
 				}
@@ -237,9 +237,9 @@ namespace SmartStore.Services.Search
 							query = query.Where(x => x.CreatedOnUtc <= (DateTime)filter.UpperTerm);
 					}
 				}
-				else if (filter.FieldName == "Ids")
+				else if (filter.FieldName == "_Ids")
 				{
-					var ids = ((string)filter.Term).ToIntArray().ToList();
+					var ids = filter.Term as int[];
 
 					query = query.Where(x => ids.Contains(x.Id));
 				}
@@ -258,10 +258,10 @@ namespace SmartStore.Services.Search
 						query = query.Where(x => x.Id == (int)filter.Term);
 					}
 				}
-				else if (filter.FieldName == "CategoryIds")
+				else if (filter.FieldName == "ProductCategories._CategoryIds")
 				{
-					var ids = ((string)filter.Term).ToIntArray().ToList();
-					var isFeaturedProduct = searchQuery.Filters.FirstOrDefault(x => x.FieldName == "IsFeaturedProduct")?.Term as bool?;
+					var ids = filter.Term as int[];
+					var isFeaturedProduct = searchQuery.Filters.FirstOrDefault(x => x.FieldName == "_IsFeaturedProduct")?.Term as bool?;
 
 					query =
 						from p in query
@@ -269,17 +269,17 @@ namespace SmartStore.Services.Search
 						where (!isFeaturedProduct.HasValue || isFeaturedProduct.Value == pc.IsFeaturedProduct)
 						select p;
 				}
-				else if (filter.FieldName == "WithoutCategories")
+				else if (filter.FieldName == "ProductCategories._Without")
 				{
 					if ((bool)filter.Term)
 						query = query.Where(x => x.ProductCategories.Count == 0);
 					else
 						query = query.Where(x => x.ProductCategories.Count > 0);
 				}
-				else if (filter.FieldName == "ManufacturerIds")
+				else if (filter.FieldName == "ProductManufacturers._ManufacturerIds")
 				{
-					var ids = ((string)filter.Term).ToIntArray().ToList();
-					var isFeaturedProduct = searchQuery.Filters.FirstOrDefault(x => x.FieldName == "IsFeaturedProduct")?.Term as bool?;
+					var ids = filter.Term as int[];
+					var isFeaturedProduct = searchQuery.Filters.FirstOrDefault(x => x.FieldName == "_IsFeaturedProduct")?.Term as bool?;
 
 					query =
 						from p in query
@@ -287,14 +287,14 @@ namespace SmartStore.Services.Search
 						where (!isFeaturedProduct.HasValue || isFeaturedProduct.Value == pm.IsFeaturedProduct)
 						select p;
 				}
-				else if (filter.FieldName == "WithoutManufacturers")
+				else if (filter.FieldName == "ProductManufacturers._Without")
 				{
 					if ((bool)filter.Term)
 						query = query.Where(x => x.ProductManufacturers.Count == 0);
 					else
 						query = query.Where(x => x.ProductManufacturers.Count > 0);
 				}
-				else if (filter.FieldName == "ProductTagIds")
+				else if (filter.FieldName == "ProductTags._Ids")
 				{
 					var ids = ((string)filter.Term).ToIntArray().ToList();
 
@@ -303,7 +303,7 @@ namespace SmartStore.Services.Search
 						from pt in p.ProductTags.Where(pt => ids.Contains(pt.Id))
 						select p;
 				}
-				else if (filter.FieldName == "StoreId")
+				else if (filter.FieldName == "_StoreId")
 				{
 					if (!QuerySettings.IgnoreMultiStore)
 					{
@@ -326,16 +326,17 @@ namespace SmartStore.Services.Search
 				if (sort.FieldName.IsEmpty())
 				{
 					// sort by relevance
-					if (searchQuery.Filters.Any(x => x.FieldName == "CategoryIds"))
+					if (searchQuery.Filters.Any(x => x.FieldName == "ProductCategories._CategoryIds"))
 					{
-						var categoryIds = searchQuery.Filters.First(x => x.FieldName == "CategoryIds").Term as List<int>;
+						var categoryIds = searchQuery.Filters.First(x => x.FieldName == "ProductCategories._CategoryIds").Term as int[];
 						var categoryId = categoryIds.First();
 
 						query = OrderBy(query, x => x.ProductCategories.Where(pc => pc.CategoryId == categoryId).FirstOrDefault().DisplayOrder);
 					}
-					else if (searchQuery.Filters.Any(x => x.FieldName == "ManufacturerId"))
+					else if (searchQuery.Filters.Any(x => x.FieldName == "ProductManufacturers._ManufacturerIds"))
 					{
-						var manufacturerId = (int)searchQuery.Filters.First(x => x.FieldName == "ManufacturerId").Term;
+						var manufacturerIds = searchQuery.Filters.First(x => x.FieldName == "ProductManufacturers._ManufacturerIds").Term as int[];
+						var manufacturerId = manufacturerIds.First();
 
 						query = OrderBy(query, x => x.ProductManufacturers.Where(pm => pm.ManufacturerId == manufacturerId).FirstOrDefault().DisplayOrder);
 					}

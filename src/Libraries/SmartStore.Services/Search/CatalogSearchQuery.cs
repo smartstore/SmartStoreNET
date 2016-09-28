@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
 
@@ -52,7 +53,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery ShowHidden(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("ShowHidden", value));
+			return WithFilter(SearchFilter.ByField("_ShowHidden", value));
 		}
 
 		public CatalogSearchQuery PublishedOnly(bool value)
@@ -62,7 +63,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery FeaturedOnly(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("IsFeaturedProduct", value));
+			return WithFilter(SearchFilter.ByField("_IsFeaturedProduct", value));
 		}
 
 		public CatalogSearchQuery VisibleIndividuallyOnly(bool value)
@@ -72,7 +73,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery HomePageProductsOnly(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("HomePageProducts", value));
+			return WithFilter(SearchFilter.ByField("ShowOnHomePage", value));
 		}
 
 		public CatalogSearchQuery IsParentGroupedProductId(int id)
@@ -82,7 +83,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery IsStoreId(int id)
 		{
-			return WithFilter(SearchFilter.ByField("StoreId", id));
+			return WithFilter(SearchFilter.ByField("_StoreId", id));
 		}
 
 		public CatalogSearchQuery IsProductType(ProductType type)
@@ -92,7 +93,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithProductIds(params int[] ids)
 		{
-			return WithFilter(SearchFilter.ByField("Ids", string.Join(",", ids)));
+			return WithFilter(SearchFilter.ByField("_Ids", ids));
 		}
 
 		public CatalogSearchQuery WithProductId(int? fromId, int? toId)
@@ -102,27 +103,27 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithCategoryIds(params int[] ids)
 		{
-			return WithFilter(SearchFilter.ByField("CategoryIds", string.Join(",", ids)));
+			return WithFilter(SearchFilter.ByField("ProductCategories._CategoryIds", ids));
 		}
 
 		public CatalogSearchQuery WithoutCategories(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("WithoutCategories", value));
+			return WithFilter(SearchFilter.ByField("ProductCategories._Without", value));
 		}
 
 		public CatalogSearchQuery WithManufacturerIds(params int[] ids)
 		{
-			return WithFilter(SearchFilter.ByField("ManufacturerIds", string.Join(",", ids)));
+			return WithFilter(SearchFilter.ByField("ProductManufacturers._ManufacturerIds", ids));
 		}
 
 		public CatalogSearchQuery WithoutManufacturers(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("WithoutManufacturers", value));
+			return WithFilter(SearchFilter.ByField("ProductManufacturers._Without", value));
 		}
 
 		public CatalogSearchQuery WithProductTagIds(params int[] ids)
 		{
-			return WithFilter(SearchFilter.ByField("ProductTagIds", string.Join(",", ids)));
+			return WithFilter(SearchFilter.ByField("ProductTags._Ids", ids));
 		}
 
 		public CatalogSearchQuery WithStockQuantity(int? fromQuantity, int? toQuantity)

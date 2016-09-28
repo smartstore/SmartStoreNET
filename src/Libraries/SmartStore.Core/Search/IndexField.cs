@@ -29,6 +29,11 @@ namespace SmartStore.Core.Search
 		{
 		}
 
+		public IndexField(string name, int[] value)
+			: this(name, value, IndexTypeCode.Int32Array)
+		{
+		}
+
 		private IndexField(string name, object value, IndexTypeCode typeCode)
 		{
 			Guard.NotEmpty(name, nameof(name));
@@ -105,6 +110,7 @@ namespace SmartStore.Core.Search
 		Int32 = 9,
 		Double = 14,
 		DateTime = 16,
-		String = 18
+		String = 18,
+		Int32Array = 20
 	}
 }

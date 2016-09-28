@@ -29,6 +29,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
 using SmartStore.Core.Themes;
 using SmartStore.Data;
+using SmartStore.Data.Caching;
 using SmartStore.Services;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Authentication;
@@ -351,6 +352,8 @@ namespace SmartStore.Web.Framework
 			builder.Register(x => (IEfDataProvider)x.Resolve<DataProviderFactory>().LoadDataProvider()).As<IEfDataProvider>().InstancePerDependency();
 
 			builder.RegisterType<DefaultHookHandler>().As<IHookHandler>().InstancePerRequest();
+
+			builder.RegisterType<QueryCache>().SingleInstance();
 
 			if (DataSettings.Current.IsValid())
 			{

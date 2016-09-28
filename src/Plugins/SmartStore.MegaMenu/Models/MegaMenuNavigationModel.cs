@@ -12,8 +12,6 @@ namespace SmartStore.MegaMenu.Models
     {
         public NavigationModel NavigationModel { get; set; }
 
-        public Dictionary<int, MegaMenuDropdownModel> DropdownModels { get; set; }
-
         public MegaMenuSettings Settings { get; set; }
     }
 

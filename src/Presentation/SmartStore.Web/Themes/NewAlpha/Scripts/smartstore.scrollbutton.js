@@ -38,7 +38,7 @@ $.ScrollButton = function(el, buttons, target, options) {
 	var isVert = opts.direction == "up" || opts.direction == "down";
 	
 	this._init = function() {
-	    el.addClass("scroll-button btn btn-secondary " + (opts.smallIcons ? "small" : "large"));
+	    el.addClass("scroll-button btn btn-" + opts.btnType + (opts.smallIcons ? " small" : " large"));
 		
 		// set size
 		if (isVert) {
@@ -236,7 +236,9 @@ $.ScrollButton.defaults = {
 	// function( string direction ). Slide/scroll here.
 	click: null,
 	enter: null,
-	leave: null
+	leave: null,
+    // bootstrap button classes: primary, secondary, success, info, warning, danger, link
+    btnType: "secondary"   
 }
 
 $.fn.extend( {

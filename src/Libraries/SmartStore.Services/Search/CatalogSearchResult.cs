@@ -1,23 +1,24 @@
-﻿using System;
-using SmartStore.Core;
+﻿using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Search;
 
 namespace SmartStore.Services.Search
 {
 	public partial class CatalogSearchResult
 	{
-		IPagedList<Product> Hits { get; }
+		/// <summary>
+		/// Products found
+		/// </summary>
+		public IPagedList<Product> Hits { get; set; }
 
 		/// <summary>
 		/// The original catalog search query
 		/// </summary>
-		CatalogSearchQuery Query { get; }
+		public CatalogSearchQuery Query { get; set; }
 
 		/// <summary>
 		/// Gets the word suggestions.
 		/// </summary>
-		string[] Suggestions { get; }
+		public string[] Suggestions { get; set; }
 
 		// TODO: Facets etc.
 	}

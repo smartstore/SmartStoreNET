@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
 using SmartStore.Services.Catalog;
@@ -23,8 +23,15 @@ namespace SmartStore.Services.Search
 			_linqCatalogSearchService = linqCatalogSearchService;
 		}
 
-		public IEnumerable<Product> Search(CatalogSearchQuery searchQuery)
+		public CatalogSearchResult Search(CatalogSearchQuery searchQuery)
 		{
+			Guard.IsPositive(searchQuery.Take, nameof(searchQuery.Take));
+
+			var result = new CatalogSearchResult();
+			result.Query = searchQuery;
+
+			var pageIndex = Math.Max((searchQuery.Skip - 1) / searchQuery.Take, 0);
+
 			if (_indexManager.HasAnyProvider())
 			{
 				var provider = _indexManager.GetIndexProvider();
@@ -33,16 +40,25 @@ namespace SmartStore.Services.Search
 				if (indexStore.Exists)
 				{
 					var searchEngine = provider.GetSearchEngine(indexStore, searchQuery);
+					var totalCount = searchEngine.Count();
 					var searchHits = searchEngine.Search();
 
 					var productIds = searchHits.Select(x => x.EntityId).ToArray();
+					var products = _productService.Value.GetProductsByIds(productIds);
 
-					return _productService.Value.GetProductsByIds(productIds);
+					result.Hits = new PagedList<Product>(products, pageIndex, searchQuery.Take, totalCount);
 				}
 			}
 
-			var products = _linqCatalogSearchService.Value.GetProducts(searchQuery).ToList();
-			return products;
+			if (result.Hits == null)
+			{
+				// fallback to linq search
+				var productQuery = _linqCatalogSearchService.Value.GetProducts(searchQuery);
+
+				result.Hits = new PagedList<Product>(productQuery, pageIndex, searchQuery.Take);
+			}
+
+			return result;
 		}
 	}
 }

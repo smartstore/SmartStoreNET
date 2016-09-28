@@ -939,6 +939,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 			dynamic result = new DynamicEntity(orderItem);
 
+			orderItem.Product.MergeWithCombination(orderItem.AttributesXml, _productAttributeParser.Value);
+
 			result.Product = ToDynamic(ctx, orderItem.Product);
 
 			return result;

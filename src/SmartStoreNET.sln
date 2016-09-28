@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A340B280-C12B-47E7-90B7-89C650F8AAFC}"
 EndProject
@@ -49,8 +49,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.WebApi.Client", "Tools\SmartStore.WebApi.Client\SmartStore.WebApi.Client.csproj", "{CD28D50C-38C3-4371-80B3-71FE7853D61D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.DiscountRules", "Plugins\SmartStore.DiscountRules\SmartStore.DiscountRules.csproj", "{E2291595-9C99-4408-898B-A3E3BB4864CC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.WebApi", "Plugins\SmartStore.WebApi\SmartStore.WebApi.csproj", "{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartStore.GoogleMerchantCenter", "Plugins\SmartStore.GoogleMerchantCenter\SmartStore.GoogleMerchantCenter.csproj", "{965A02F0-FC84-4AC4-91E4-79EADFC1CA9D}"
 EndProject
@@ -370,26 +368,6 @@ Global
 		{E2291595-9C99-4408-898B-A3E3BB4864CC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{E2291595-9C99-4408-898B-A3E3BB4864CC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{E2291595-9C99-4408-898B-A3E3BB4864CC}.Release|x86.ActiveCfg = Release|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.EFMigrations|Any CPU.ActiveCfg = EFMigrations|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.EFMigrations|Any CPU.Build.0 = EFMigrations|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.EFMigrations|Mixed Platforms.ActiveCfg = EFMigrations|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.EFMigrations|Mixed Platforms.Build.0 = EFMigrations|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.EFMigrations|x86.ActiveCfg = EFMigrations|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.PluginDev|Any CPU.ActiveCfg = PluginDev|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.PluginDev|Any CPU.Build.0 = PluginDev|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.PluginDev|Mixed Platforms.ActiveCfg = PluginDev|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.PluginDev|Mixed Platforms.Build.0 = PluginDev|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.PluginDev|x86.ActiveCfg = PluginDev|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8}.Release|x86.ActiveCfg = Release|Any CPU
 		{965A02F0-FC84-4AC4-91E4-79EADFC1CA9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{965A02F0-FC84-4AC4-91E4-79EADFC1CA9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{965A02F0-FC84-4AC4-91E4-79EADFC1CA9D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -623,7 +601,6 @@ Global
 		{DCC07617-E6EB-4F3C-AAFF-B15CA2B6E07F} = {DB17E553-DCB5-4851-A5AB-542C09CAC7CA}
 		{CD28D50C-38C3-4371-80B3-71FE7853D61D} = {DB17E553-DCB5-4851-A5AB-542C09CAC7CA}
 		{E2291595-9C99-4408-898B-A3E3BB4864CC} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
-		{D8947A85-F0D7-4FF5-8E77-ED4EE18447C8} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
 		{965A02F0-FC84-4AC4-91E4-79EADFC1CA9D} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
 		{446FED73-BCA1-4D8F-BC13-EA1507C7EF29} = {7881B112-7843-4542-B1F7-F99553FB9BB7}
 		{E3362B5B-DA5A-4515-BCB0-0DF982F80E89} = {7881B112-7843-4542-B1F7-F99553FB9BB7}

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -63,23 +64,15 @@ namespace SmartStore.Web.Framework.WebApi.Security
 		{
 			try
 			{
-				var logger = EngineContext.Current.Resolve<ILogger>();
+				var logger = EngineContext.Current.Resolve<ILoggerFactory>().GetLogger(this.GetType());
 				var localization = EngineContext.Current.Resolve<ILocalizationService>();
 
 				string strResult = result.ToString();
 				string description = localization.GetResource("Admin.WebApi.AuthResult." + strResult, 0, false, strResult);
-
-				var logContext = new LogContext
-				{
-					ShortMessage = localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatWith(strResult),
-					FullMessage = "{0}\r\n{1}".FormatWith(description, actionContext.Request.Headers.ToString()),
-					LogLevel = LogLevel.Warning,
-					Customer = customer,
-					HashNotFullMessage = true,
-					HashIpAddress = true
-				};
-
-				logger.InsertLog(logContext);
+				
+				logger.Warn(
+					new SecurityException("{0}\r\n{1}".FormatWith(description, actionContext.Request.Headers.ToString())),
+					localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatWith(strResult));
 			}
 			catch (Exception exc)
 			{
@@ -104,8 +97,9 @@ namespace SmartStore.Web.Framework.WebApi.Security
 		{
 			customer = null;
 
-			var request = HttpContext.Current.Request;
 			DateTime headDateTime;
+			var request = HttpContext.Current.Request;
+			var authorization = actionContext.Request.Headers.Authorization;
 
 			if (request == null)
 				return HmacResult.FailedForUnknownReason;
@@ -113,16 +107,18 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			if (cacheControllingData.ApiUnavailable)
 				return HmacResult.ApiUnavailable;
 
+			if (authorization == null || authorization.Scheme.IsEmpty() || authorization.Parameter.IsEmpty())
+				return HmacResult.InvalidAuthorizationHeader;
+
 			string headContentMd5 = request.Headers["Content-Md5"] ?? request.Headers["Content-MD5"];
 			string headTimestamp = request.Headers[WebApiGlobal.Header.Date];
 			string headPublicKey = request.Headers[WebApiGlobal.Header.PublicKey];
-			string scheme = actionContext.Request.Headers.Authorization.Scheme;
-			string signatureConsumer = actionContext.Request.Headers.Authorization.Parameter;
+			string signatureConsumer = authorization.Parameter;
 
 			if (string.IsNullOrWhiteSpace(headPublicKey))
 				return HmacResult.UserInvalid;
 
-			if (!_hmac.IsAuthorizationHeaderValid(scheme, signatureConsumer))
+			if (!_hmac.IsAuthorizationHeaderValid(authorization.Scheme, signatureConsumer))
 				return HmacResult.InvalidAuthorizationHeader;
 
 			if (!_hmac.ParseTimestamp(headTimestamp, out headDateTime))
@@ -236,9 +232,11 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				actionContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
 
 				var headers = actionContext.Response.Headers;
+				var authorization = actionContext.Request.Headers.Authorization;
 
-				var scheme = _hmac.GetWwwAuthenticateScheme(actionContext.Request.Headers.Authorization.Scheme);
-				headers.WwwAuthenticate.Add(new AuthenticationHeaderValue(scheme));		// see RFC-2616
+				// see RFC-2616
+				var scheme = _hmac.GetWwwAuthenticateScheme(authorization != null ? authorization.Scheme : null);
+				headers.WwwAuthenticate.Add(new AuthenticationHeaderValue(scheme));
 
 				headers.Add(WebApiGlobal.Header.Version, cacheControllingData.Version);
 				headers.Add(WebApiGlobal.Header.MaxTop, WebApiGlobal.MaxTop.ToString());

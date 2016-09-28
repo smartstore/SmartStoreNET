@@ -539,7 +539,7 @@ namespace SmartStore.PayPal
 			}
 			catch (Exception exception)
             {
-                _logger.Error(exception.Message, exception);
+                _logger.Error(exception);
             }
         }
 

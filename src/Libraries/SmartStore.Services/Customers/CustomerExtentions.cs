@@ -43,7 +43,7 @@ namespace SmartStore.Services.Customers
         /// <returns>Result</returns>
         public static bool IsBackgroundTaskAccount(this Customer customer)
         {
-			Guard.ArgumentNotNull(() => customer);
+			Guard.NotNull(customer, nameof(customer));
 
 			if (!customer.IsSystemAccount || customer.SystemName.IsEmpty())
 				return false;
@@ -59,7 +59,7 @@ namespace SmartStore.Services.Customers
         /// <returns>Result</returns>
         public static bool IsSearchEngineAccount(this Customer customer)
         {
-			Guard.ArgumentNotNull(() => customer);
+			Guard.NotNull(customer, nameof(customer));
 
 			if (!customer.IsSystemAccount || customer.SystemName.IsEmpty())
 				return false;
@@ -75,7 +75,7 @@ namespace SmartStore.Services.Customers
 		/// <returns>Result</returns>
 		public static bool IsPdfConverter(this Customer customer)
 		{
-			Guard.ArgumentNotNull(() => customer);
+			Guard.NotNull(customer, nameof(customer));
 
 			if (!customer.IsSystemAccount || customer.SystemName.IsEmpty())
 				return false;

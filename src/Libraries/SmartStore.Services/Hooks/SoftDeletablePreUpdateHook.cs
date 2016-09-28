@@ -34,39 +34,36 @@ namespace SmartStore.Services.Hooks
 
 			var entityType = baseEntity.GetUnproxiedType();
 
-			using (var scope = new DbContextScope(ctx: dbContext, autoCommit: false))
+			// mark orphaned ACL records as idle
+			var aclSupported = baseEntity as IAclSupported;
+			if (aclSupported != null && aclSupported.SubjectToAcl)
 			{
-				// mark orphaned ACL records as idle
-				var aclSupported = baseEntity as IAclSupported;
-				if (aclSupported != null && aclSupported.SubjectToAcl)
-				{
-					var shouldSetIdle = entity.Deleted;
-					var rsAclRecord = _ctx.Resolve<IRepository<AclRecord>>();
+				var shouldSetIdle = entity.Deleted;
+				var rsAclRecord = _ctx.Resolve<IRepository<AclRecord>>();
 
-					var aclService = _ctx.Resolve<IAclService>();
-					var records = aclService.GetAclRecordsFor(entityType.Name, baseEntity.Id);
-					foreach (var record in records)
-					{
-						record.IsIdle = shouldSetIdle;
-						aclService.UpdateAclRecord(record);
-					}
+				var aclService = _ctx.Resolve<IAclService>();
+				var records = aclService.GetAclRecordsFor(entityType.Name, baseEntity.Id);
+				foreach (var record in records)
+				{
+					record.IsIdle = shouldSetIdle;
+					aclService.UpdateAclRecord(record);
 				}
+			}
 
-				// Delete orphaned inactive UrlRecords.
-				// We keep the active ones on purpose in order to be able to fully restore a soft deletable entity once we implemented the "recycle bin" feature
-				var slugSupported = baseEntity as ISlugSupported;
-				if (slugSupported != null && entity.Deleted)
+			// Delete orphaned inactive UrlRecords.
+			// We keep the active ones on purpose in order to be able to fully restore a soft deletable entity once we implemented the "recycle bin" feature
+			var slugSupported = baseEntity as ISlugSupported;
+			if (slugSupported != null && entity.Deleted)
+			{
+				var rsUrlRecord = _ctx.Resolve<IRepository<UrlRecord>>();
+
+				var urlRecordService = _ctx.Resolve<IUrlRecordService>();
+				var activeRecords = urlRecordService.GetUrlRecordsFor(entityType.Name, baseEntity.Id);
+				foreach (var record in activeRecords)
 				{
-					var rsUrlRecord = _ctx.Resolve<IRepository<UrlRecord>>();
-
-					var urlRecordService = _ctx.Resolve<IUrlRecordService>();
-					var activeRecords = urlRecordService.GetUrlRecordsFor(entityType.Name, baseEntity.Id);
-					foreach (var record in activeRecords)
+					if (!record.IsActive)
 					{
-						if (!record.IsActive)
-						{
-							urlRecordService.DeleteUrlRecord(record);
-						}
+						urlRecordService.DeleteUrlRecord(record);
 					}
 				}
 			}

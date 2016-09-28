@@ -17,8 +17,8 @@ namespace SmartStore.Services.Media
 
 		public static void UpdateDownloadTransientStateFor<TEntity>(TEntity entity, Expression<Func<TEntity, int>> downloadIdProp, bool save = false) where TEntity : BaseEntity
 		{
-			Guard.ArgumentNotNull(() => entity);
-			Guard.ArgumentNotNull(() => downloadIdProp);
+			Guard.NotNull(entity, nameof(entity));
+			Guard.NotNull(downloadIdProp, nameof(downloadIdProp));
 
 			var propName = downloadIdProp.ExtractMemberInfo().Name;
 			int currentDownloadId = downloadIdProp.Compile().Invoke(entity);
@@ -29,8 +29,8 @@ namespace SmartStore.Services.Media
 
 		public static void UpdateDownloadTransientStateFor<TEntity>(TEntity entity, Expression<Func<TEntity, int?>> downloadIdProp, bool save = false) where TEntity : BaseEntity
 		{
-			Guard.ArgumentNotNull(() => entity);
-			Guard.ArgumentNotNull(() => downloadIdProp);
+			Guard.NotNull(entity, nameof(entity));
+			Guard.NotNull(downloadIdProp, nameof(downloadIdProp));
 
 			var propName = downloadIdProp.ExtractMemberInfo().Name;
 			int currentDownloadId = downloadIdProp.Compile().Invoke(entity).GetValueOrDefault();
@@ -41,8 +41,8 @@ namespace SmartStore.Services.Media
 
 		public static void UpdatePictureTransientStateFor<TEntity>(TEntity entity, Expression<Func<TEntity, int>> pictureIdProp, bool save = false) where TEntity : BaseEntity
 		{
-			Guard.ArgumentNotNull(() => entity);
-			Guard.ArgumentNotNull(() => pictureIdProp);
+			Guard.NotNull(entity, nameof(entity));
+			Guard.NotNull(pictureIdProp, nameof(pictureIdProp));
 
 			var propName = pictureIdProp.ExtractMemberInfo().Name;
 			int currentPictureId = pictureIdProp.Compile().Invoke(entity);
@@ -53,8 +53,8 @@ namespace SmartStore.Services.Media
 
 		public static void UpdatePictureTransientStateFor<TEntity>(TEntity entity, Expression<Func<TEntity, int?>> pictureIdProp, bool save = false) where TEntity : BaseEntity
 		{
-			Guard.ArgumentNotNull(() => entity);
-			Guard.ArgumentNotNull(() => pictureIdProp);
+			Guard.NotNull(entity, nameof(entity));
+			Guard.NotNull(pictureIdProp, nameof(pictureIdProp));
 
 			var propName = pictureIdProp.ExtractMemberInfo().Name;
 			int currentPictureId = pictureIdProp.Compile().Invoke(entity).GetValueOrDefault();

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Data.SqlServerCe;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -31,7 +33,7 @@ namespace SmartStore.Core.Data
 
 		public static void SetDefaultFactory(Func<DataSettings> factory) 
 		{
-			Guard.ArgumentNotNull(() => factory);
+			Guard.NotNull(factory, nameof(factory));
 
 			lock (s_rwLock.GetWriteLock())
 			{
@@ -154,7 +156,13 @@ namespace SmartStore.Core.Data
 			set; 
 		}
 
-        public IDictionary<string, string> RawDataSettings 
+		public string DataConnectionType
+		{
+			get;
+			set;
+		}
+
+		public IDictionary<string, string> RawDataSettings 
 		{ 
 			get; 
 			private set; 
@@ -187,6 +195,9 @@ namespace SmartStore.Core.Data
 						if (settings.ContainsKey("DataProvider"))
 						{
 							this.DataProvider = settings["DataProvider"];
+							this.DataConnectionType = this.IsSqlServer 
+								? typeof(SqlConnection).AssemblyQualifiedName 
+								: typeof(SqlCeConnection).AssemblyQualifiedName;
 						}
 						if (settings.ContainsKey("DataConnectionString"))
 						{
@@ -209,6 +220,7 @@ namespace SmartStore.Core.Data
 				this.AppVersion = null;
 				this.DataProvider = null;
 				this.DataConnectionString = null;
+				this.DataConnectionType = null;
 				s_installed = null;
 			}
 		}

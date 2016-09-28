@@ -9,13 +9,12 @@ using SmartStore.Core.Logging;
 using Log = SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Themes;
-using SmartStore.Core.IO.VirtualPath;
+using SmartStore.Core.IO;
 using SmartStore.Core;
 using SmartStore.Core.Localization;
 
 namespace SmartStore.Core.Packaging
 {
-
 	public class PackageInstaller : IPackageInstaller
 	{
 		private readonly IVirtualPathProvider _virtualPathProvider;
@@ -61,7 +60,7 @@ namespace SmartStore.Core.Packaging
 
 		public PackageInfo Install(Stream packageStream, string location, string applicationPath)
 		{
-			Guard.ArgumentNotNull(() => packageStream);
+			Guard.NotNull(packageStream, nameof(packageStream));
 			
 			IPackage package;
 			try
@@ -192,7 +191,6 @@ namespace SmartStore.Core.Packaging
 
 		public void Uninstall(string packageId, string applicationFolder)
 		{
-
 			string extensionFullPath = string.Empty;
 
 			if (packageId.StartsWith(PackagingUtils.GetExtensionPrefix("Theme")))

@@ -22,7 +22,7 @@ namespace SmartStore
 	    [SuppressMessage("ReSharper", "CanBeReplacedWithTryCastAndCheckForNull")]
 	    public static MemberInfo ExtractMemberInfo(this LambdaExpression propertyAccessor)
         {
-            Guard.ArgumentNotNull(() => propertyAccessor);
+            Guard.NotNull(propertyAccessor, nameof(propertyAccessor));
 
             MemberInfo info;
             try

@@ -351,7 +351,7 @@ namespace SmartStore.Admin.Controllers
 				}
 				catch (Exception ex)
 				{
-					Logger.Error("An error occurred while checking for update", ex);
+					Logger.Error(ex, "An error occurred while checking for update");
 					return noUpdateResult;
 				}
 			});
@@ -423,7 +423,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public JsonResult SetGridState(string gridId, GridState state, string path)
+		public JsonResult SetGridState(string gridId, GridStateInfo.GridState state, string path)
 		{
 			if (gridId.HasValue() && state != null && path.HasValue())
 			{
@@ -488,7 +488,7 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                model.LoadedAssemblies.Add(new SystemInfoModel.LoadedAssembly()
+                model.LoadedAssemblies.Add(new SystemInfoModel.LoadedAssembly
                 {
                     FullName =  assembly.FullName,
                     //we cannot use Location property in medium trust
@@ -563,7 +563,7 @@ namespace SmartStore.Admin.Controllers
 					Text = T("Admin.System.Warnings.SitemapReachable.Wrong")
 				});
 
-				Logger.Warning(sitemapUrl.IsEmpty() ? "SitemapSEO" : sitemapUrl, exception);
+				Logger.Warn(exception, T("Admin.System.Warnings.SitemapReachable.Wrong"));
 			}
 
             //primary exchange rate currency

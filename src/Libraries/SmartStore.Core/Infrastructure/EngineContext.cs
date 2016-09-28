@@ -46,11 +46,18 @@ namespace SmartStore.Core.Infrastructure
 			if (engineTypeSetting.HasValue())
             {
 				var engineType = Type.GetType(engineTypeSetting);
+
                 if (engineType == null)
+				{
 					throw new ConfigurationErrorsException("The type '" + engineType + "' could not be found. Please check the configuration at /configuration/appSettings/add[@key=sm:EngineType] or check for missing assemblies.");
+				}
+					
                 if (!typeof(IEngine).IsAssignableFrom(engineType))
+				{
 					throw new ConfigurationErrorsException("The type '" + engineType + "' doesn't implement 'SmartStore.Core.Infrastructure.IEngine' and cannot be configured in /configuration/appSettings/add[@key=sm:EngineType] for that purpose.");
-                return Activator.CreateInstance(engineType) as IEngine;
+				}				
+
+				return Activator.CreateInstance(engineType) as IEngine;
             }
 
             return new SmartStoreEngine();

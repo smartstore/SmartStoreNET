@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SmartStore.Core.Caching
 {
@@ -26,6 +27,17 @@ namespace SmartStore.Core.Caching
 		/// <param name="duration">Absolute expiration time</param>
 		/// <returns>Cached item value</returns>
 		T Get<T>(string key, Func<T> acquirer, TimeSpan? duration = null);
+
+		/// <summary>
+		/// Gets a cache item associated with the specified key or - if it doesn't exist in the cache -  
+		/// adds the item obtained from the asynchronous acquirer .
+		/// </summary>
+		/// <typeparam name="T">The type of the item to get or add</typeparam>
+		/// <param name="key">The cache item key</param>
+		/// <param name="acquirer">Func which returns value to be added to the cache</param>
+		/// <param name="duration">Absolute expiration time</param>
+		/// <returns>Cached item value</returns>
+		Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null);
 
 		/// <summary>
 		/// Adds a cache item with the specified key

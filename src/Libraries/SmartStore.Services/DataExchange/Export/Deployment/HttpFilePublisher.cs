@@ -71,7 +71,7 @@ namespace SmartStore.Services.DataExchange.Export.Deployment
 				}
 			}
 
-			context.Log.Information("{0} file(s) successfully uploaded via HTTP ({1}).".FormatInvariant(succeededFiles, deployment.HttpTransmissionType.ToString()));
+			context.Log.Info("{0} file(s) successfully uploaded via HTTP ({1}).".FormatInvariant(succeededFiles, deployment.HttpTransmissionType.ToString()));
 		}
 	}
 }

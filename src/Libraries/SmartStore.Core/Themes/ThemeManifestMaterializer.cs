@@ -15,7 +15,7 @@ namespace SmartStore.Core.Themes
 
         public ThemeManifestMaterializer(ThemeFolderData folderData)
         {
-			Guard.ArgumentNotNull(() => folderData);
+			Guard.NotNull(folderData, nameof(folderData));
 
             _manifest = new ThemeManifest();
 

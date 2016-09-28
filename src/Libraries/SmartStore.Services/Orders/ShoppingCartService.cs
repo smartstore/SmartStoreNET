@@ -150,9 +150,7 @@ namespace SmartStore.Services.Orders
             _sciRepository.Delete(shoppingCartItem);
 
             //validate checkout attributes
-            if (ensureOnlyActiveCheckoutAttributes &&
-                //only for shopping cart items (ignore wishlist)
-                shoppingCartItem.ShoppingCartType == ShoppingCartType.ShoppingCart)
+            if (ensureOnlyActiveCheckoutAttributes && shoppingCartItem.ShoppingCartType == ShoppingCartType.ShoppingCart)
             {
 				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
 
@@ -172,7 +170,9 @@ namespace SmartStore.Services.Orders
 					.ToList();
 
 				foreach (var cartItem in childCartItems)
+				{
 					DeleteShoppingCartItem(cartItem, resetCheckoutData, ensureOnlyActiveCheckoutAttributes, false);
+				}
 			}
         }
 
@@ -489,7 +489,7 @@ namespace SmartStore.Services.Orders
 			ProductBundleItem bundleItem = null,
 			ProductVariantAttributeCombination combination = null)
         {
-			Guard.ArgumentNotNull(() => product);
+			Guard.NotNull(product, nameof(product));
 
             var warnings = new List<string>();
 
@@ -603,7 +603,7 @@ namespace SmartStore.Services.Orders
         /// <returns>bool</returns>
         public virtual bool AreAllAttributesForCombinationSelected(string selectedAttributes, Product product) 
         {
-			Guard.ArgumentNotNull(() => product);
+			Guard.NotNull(product, nameof(product));
 
 			var hasAttributeCombinations = _sciRepository.Context.QueryForCollection(product, (Product p) => p.ProductVariantAttributeCombinations).Any();
 			if (!hasAttributeCombinations)

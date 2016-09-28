@@ -1,22 +1,26 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
-using System.Runtime.Serialization;
-using SmartStore.Core.Domain.Media;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartStore.Core.Domain.Catalog
 {
-    /// <summary>
-    /// Represents a manufacturer
-    /// </summary>
+	/// <summary>
+	/// Represents a manufacturer
+	/// </summary>
 	[DataContract]
 	public partial class Manufacturer : BaseEntity, ISoftDeletable, ILocalizedEntity, ISlugSupported, IStoreMappingSupported
     {
-        /// <summary>
-        /// Gets or sets the name
-        /// </summary>
+		private ICollection<Discount> _appliedDiscounts;
+
+		/// <summary>
+		/// Gets or sets the name
+		/// </summary>
 		[DataMember]
 		public string Name { get; set; }
 
@@ -121,5 +125,25 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
 		[DataMember]
 		public DateTime UpdatedOnUtc { get; set; }
-    }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this manufacturer has discounts applied
+		/// <remarks>The same as if we run Manufacturer.AppliedDiscounts.Count > 0
+		/// We use this property for performance optimization:
+		/// if this property is set to false, then we do not need to load Applied Discounts navigation property
+		/// </remarks>
+		/// </summary>
+		[DataMember]
+		public bool HasDiscountsApplied { get; set; }
+
+		/// <summary>
+		/// Gets or sets the collection of applied discounts
+		/// </summary>
+		[DataMember]
+		public virtual ICollection<Discount> AppliedDiscounts
+		{
+			get { return _appliedDiscounts ?? (_appliedDiscounts = new HashSet<Discount>()); }
+			protected set { _appliedDiscounts = value; }
+		}
+	}
 }

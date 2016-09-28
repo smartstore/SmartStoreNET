@@ -131,9 +131,9 @@ namespace SmartStore.PayPal.Controllers
 					{
 						total = decimal.Parse(values["mc_gross"], new CultureInfo("en-US"));
 					}
-					catch (Exception exc)
+					catch (Exception ex)
 					{
-						Logger.Error(T("Plugins.Payments.PayPalStandard.FailedGetGross"), exc);
+						Logger.Error(ex, T("Plugins.Payments.PayPalStandard.FailedGetGross"));
 					}
 
 					string payer_status = string.Empty;

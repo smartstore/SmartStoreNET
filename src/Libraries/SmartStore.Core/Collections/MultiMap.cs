@@ -14,40 +14,38 @@ namespace SmartStore.Collections
 	/// <typeparam name="TKey">The type of key.</typeparam>
 	/// <typeparam name="TValue">The type of value.</typeparam>
 	[JsonConverter(typeof(MultiMapConverter))]
+	[Serializable]
 	public class Multimap<TKey, TValue> : IEnumerable<KeyValuePair<TKey, ICollection<TValue>>>
     {
 		private readonly IDictionary<TKey, ICollection<TValue>> _items;
-		private readonly Func<ICollection<TValue>> _listCreator;
+		private readonly Func<IEnumerable<TValue>, ICollection<TValue>> _collectionCreator;
         private readonly bool _isReadonly = false;
 
-        public Multimap()
-            : this(false)
+		private readonly static Func<IEnumerable<TValue>, ICollection<TValue>> _defaultCollectionCreator = x => new List<TValue>(x ?? Enumerable.Empty<TValue>());
+
+		public Multimap()
+            : this(EqualityComparer<TKey>.Default)
         {
         }
 
-        internal Multimap(bool threadSafe)
+		public Multimap(IEqualityComparer<TKey> comparer)
         {
-            if (threadSafe)
-            {
-				_items = new ConcurrentDictionary<TKey, ICollection<TValue>>();
-                _listCreator = () => new SynchronizedCollection<TValue>();
-            }
-            else
-            {
-				_items = new Dictionary<TKey, ICollection<TValue>>();
-                _listCreator = () => new List<TValue>();
-            }
+			_items = new Dictionary<TKey, ICollection<TValue>>(comparer ?? EqualityComparer<TKey>.Default);
+            _collectionCreator = _defaultCollectionCreator;
         }
 
-		public Multimap(Func<ICollection<TValue>> listCreator)
-			: this(new Dictionary<TKey, ICollection<TValue>>(), listCreator)
+		public Multimap(Func<IEnumerable<TValue>, ICollection<TValue>> collectionCreator)
+			: this(new Dictionary<TKey, ICollection<TValue>>(), collectionCreator)
         {
         }
 
-		internal Multimap(IDictionary<TKey, ICollection<TValue>> dictionary, Func<ICollection<TValue>> listCreator)
+		internal Multimap(IDictionary<TKey, ICollection<TValue>> dictionary, Func<IEnumerable<TValue>, ICollection<TValue>> collectionCreator)
         {
-            _items = dictionary;
-            _listCreator = listCreator;
+			Guard.NotNull(dictionary, nameof(dictionary));
+			Guard.NotNull(collectionCreator, nameof(collectionCreator));
+
+			_items = dictionary;
+            _collectionCreator = collectionCreator;
         }
 
 		protected Multimap(IDictionary<TKey, ICollection<TValue>> dictionary, bool isReadonly)
@@ -67,18 +65,32 @@ namespace SmartStore.Collections
             _isReadonly = isReadonly;
         }
 
-		public Multimap(IEnumerable<KeyValuePair<TKey, ICollection<TValue>>> items)
+		public Multimap(IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> items)
+			: this(items, null)
 		{
 			// for serialization
-			Guard.ArgumentNotNull(() => items);
+		}
 
-			_items = new Dictionary<TKey, ICollection<TValue>>();
-			_listCreator = () => new List<TValue>();
+		public Multimap(IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> items, IEqualityComparer<TKey> comparer)
+		{
+			// for serialization
+			Guard.NotNull(items, nameof(items));
 
-			foreach (var kvp in items)
+			_items = new Dictionary<TKey, ICollection<TValue>>(comparer ?? EqualityComparer<TKey>.Default);
+			_collectionCreator = _defaultCollectionCreator;
+
+			if (items != null)
 			{
-				_items[kvp.Key] = kvp.Value;
+				foreach (var kvp in items)
+				{
+					_items[kvp.Key] = CreateCollection(kvp.Value);
+				}
 			}
+		}
+
+		protected virtual ICollection<TValue> CreateCollection(IEnumerable<TValue> values)
+		{
+			return (_collectionCreator ?? _defaultCollectionCreator)(values ?? Enumerable.Empty<TValue>());
 		}
 
 		/// <summary>
@@ -114,7 +126,7 @@ namespace SmartStore.Collections
                 if (!_items.ContainsKey(key))
                 {
                     if (!_isReadonly)
-                        _items[key] = _listCreator();
+                        _items[key] = CreateCollection(null);
                     else
                         return null;
                 }
@@ -264,11 +276,6 @@ namespace SmartStore.Collections
 
         #region Static members
 
-        public static Multimap<TKey, TValue> ThreadSafe()
-        {
-            return new Multimap<TKey, TValue>(true);
-        }
-
         public static Multimap<TKey, TValue> CreateFromLookup(ILookup<TKey, TValue> source)
         {
 			Guard.NotNull(source, nameof(source));
@@ -313,15 +320,22 @@ namespace SmartStore.Collections
 			var valueType = objectType.GetGenericArguments()[1];
 
 			// typeof IEnumerable<KeyValuePair<TKey, ICollection<TValue>>
-			var sequenceType = typeof(IEnumerable<>).MakeGenericType(typeof(KeyValuePair<,>).MakeGenericType(keyType, typeof(ICollection<>).MakeGenericType(valueType)));
+			var sequenceType = typeof(IEnumerable<>).MakeGenericType(typeof(KeyValuePair<,>).MakeGenericType(keyType, typeof(IEnumerable<>).MakeGenericType(valueType)));
 
 			// serialize JArray to sequenceType
 			var list = serializer.Deserialize(reader, sequenceType);
 
-			// call constructor Multimap(IEnumerable<KeyValuePair<TKey, ICollection<TValue>>> items)
-			var multimap = Activator.CreateInstance(objectType, new object[] { list });
-
-			return multimap;
+			if (keyType == typeof(string))
+			{
+				// call constructor Multimap(IEnumerable<KeyValuePair<TKey, ICollection<TValue>>> items, IEqualityComparer<TKey> comparer)
+				// TBD: we always assume string keys to be case insensitive. Serialize it somehow and fetch here!
+				return Activator.CreateInstance(objectType, new object[] { list, StringComparer.OrdinalIgnoreCase });
+			}
+			else
+			{
+				// call constructor Multimap(IEnumerable<KeyValuePair<TKey, ICollection<TValue>>> items)
+				return Activator.CreateInstance(objectType, new object[] { list });
+			}
 		}
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

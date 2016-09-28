@@ -1,9 +1,8 @@
-﻿@{
-    Layout = "";
-}
+﻿@using SmartStore.Web.Framework
 @model SmartStore.DiscountRules.Models.HasOneProductModel
-@using SmartStore.Web.Framework;
- 
+@{
+    Layout = "";
+} 
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
@@ -18,6 +17,11 @@
 				 data-success-msg='@T("Admin.Promotions.Discounts.Requirements.Saved").Text.EncodeJsString()'>
 				<div>
 					@Html.TextBoxFor(model => model.Products, new { data_routeparam = "productIds" })
+
+					<button type="button" class="btn" id="SearchRequiredProductsButton" data-loading-text="@(T("Common.Loading"))&hellip;">
+						<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+					</button>
+
 					<button type="button" class="btn btn-save-discount-rule">
 						<i class="fa fa-check"></i>
 						@T("Admin.Common.Save")
@@ -27,3 +31,24 @@
 		</td>
     </tr>
 </table>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+
+		// add required products
+		$(document).on('click', '#SearchRequiredProductsButton', function () {
+			$('#@(Html.FieldIdFor(x => x.Products))').entityPicker('loadDialog', {
+				url: '@Url.Action("EntityPicker", "Common", new { area = "" })',
+				caption: '@T("Plugins.DiscountRules.HasOneProduct.Fields.Products")',
+				returnValueDelimiter: ',',
+				onLoadDialogBefore: function () {
+					$('#SearchRequiredProductsButton').button('loading').prop('disabled', true);
+				},
+				onLoadDialogComplete: function () {
+					$('#SearchRequiredProductsButton').prop('disabled', false).button('reset');
+				}
+			});
+		});
+
+    });
+</script>

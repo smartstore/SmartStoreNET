@@ -7,9 +7,11 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
+using SmartStore.Services.Discounts;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -43,6 +45,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IWorkContext _workContext;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPermissionService _permissionService;
+		private readonly IDiscountService _discountService;
 		private readonly IDateTimeHelper _dateTimeHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
@@ -57,7 +60,9 @@ namespace SmartStore.Admin.Controllers
             IUrlRecordService urlRecordService, IPictureService pictureService,
             ILanguageService languageService, ILocalizationService localizationService, ILocalizedEntityService localizedEntityService,
             IWorkContext workContext,
-            ICustomerActivityService customerActivityService, IPermissionService permissionService,
+            ICustomerActivityService customerActivityService,
+			IPermissionService permissionService,
+			IDiscountService discountService,
 			IDateTimeHelper dateTimeHelper,
             AdminAreaSettings adminAreaSettings,
 			CatalogSettings catalogSettings)
@@ -76,6 +81,7 @@ namespace SmartStore.Admin.Controllers
             this._workContext = workContext;
             this._customerActivityService = customerActivityService;
             this._permissionService = permissionService;
+			this._discountService = discountService;
 			this._dateTimeHelper = dateTimeHelper;
             this._adminAreaSettings = adminAreaSettings;
             this._catalogSettings = catalogSettings;
@@ -161,14 +167,8 @@ namespace SmartStore.Admin.Controllers
 
 			if (!excludeProperties)
 			{
-				if (manufacturer != null)
-				{
-					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(manufacturer);
-				}
-				else
-				{
-					model.SelectedStoreIds = new int[0];
-				}
+				model.SelectedStoreIds = (manufacturer != null ? _storeMappingService.GetStoresIdsWithAccess(manufacturer) : new int[0]);
+				model.SelectedDiscountIds = manufacturer.AppliedDiscounts.Select(d => d.Id).ToArray();
 			}
 
 			if (manufacturer != null)
@@ -176,14 +176,16 @@ namespace SmartStore.Admin.Controllers
 				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.CreatedOnUtc, DateTimeKind.Utc);
 				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(manufacturer.UpdatedOnUtc, DateTimeKind.Utc);
 			}
+
+			model.AvailableDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers, null, true).ToList();
 		}
 
-        #endregion
-        
-        #region List
+		#endregion
 
-        //ajax
-        public ActionResult AllManufacturers(string label, int selectedId)
+		#region List
+
+		//ajax
+		public ActionResult AllManufacturers(string label, int selectedId)
         {
             var manufacturers = _manufacturerService.GetAllManufacturers(true);
 
@@ -332,9 +334,21 @@ namespace SmartStore.Admin.Controllers
                 
 				//locales
                 UpdateLocales(manufacturer, model);
-                
+
+				//discounts
+				var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers, null, true);
+				foreach (var discount in allDiscounts)
+				{
+					if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
+						manufacturer.AppliedDiscounts.Add(discount);
+				}
+				_manufacturerService.UpdateManufacturer(manufacturer);
+
+				//update "HasDiscountsApplied" property
+				_manufacturerService.UpdateHasDiscountsApplied(manufacturer);
+
 				//update picture seo file name
-                UpdatePictureSeoNames(manufacturer);
+				UpdatePictureSeoNames(manufacturer);
 				
 				//Stores
 				_storeMappingService.SaveStoreMappings<Manufacturer>(manufacturer, model.SelectedStoreIds);
@@ -404,9 +418,29 @@ namespace SmartStore.Admin.Controllers
                 
 				//locales
                 UpdateLocales(manufacturer, model);
-                
+
+				//discounts
+				var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers, null, true);
+				foreach (var discount in allDiscounts)
+				{
+					if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
+					{
+						if (manufacturer.AppliedDiscounts.Where(d => d.Id == discount.Id).Count() == 0)
+							manufacturer.AppliedDiscounts.Add(discount);
+					}
+					else
+					{
+						if (manufacturer.AppliedDiscounts.Where(d => d.Id == discount.Id).Count() > 0)
+							manufacturer.AppliedDiscounts.Remove(discount);
+					}
+				}
+				_manufacturerService.UpdateManufacturer(manufacturer);
+
+				//update "HasDiscountsApplied" property
+				_manufacturerService.UpdateHasDiscountsApplied(manufacturer);
+
 				//update picture seo file name
-                UpdatePictureSeoNames(manufacturer);
+				UpdatePictureSeoNames(manufacturer);
 				
 				//Stores
 				_storeMappingService.SaveStoreMappings<Manufacturer>(manufacturer, model.SelectedStoreIds);

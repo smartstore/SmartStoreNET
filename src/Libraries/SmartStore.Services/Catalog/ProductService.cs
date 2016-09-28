@@ -48,7 +48,8 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository;
 		private readonly IRepository<ProductBundleItem> _productBundleItemRepository;
-        private readonly IProductAttributeService _productAttributeService;
+		private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
+		private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly ILanguageService _languageService;
         private readonly IWorkflowMessageService _workflowMessageService;
@@ -99,7 +100,8 @@ namespace SmartStore.Services.Catalog
             IRepository<ProductSpecificationAttribute> productSpecificationAttributeRepository,
             IRepository<ProductVariantAttributeCombination> productVariantAttributeCombinationRepository,
 			IRepository<ProductBundleItem> productBundleItemRepository,
-            IProductAttributeService productAttributeService,
+			IRepository<ShoppingCartItem> shoppingCartItemRepository,
+			IProductAttributeService productAttributeService,
             IProductAttributeParser productAttributeParser,
             ILanguageService languageService,
             IWorkflowMessageService workflowMessageService,
@@ -121,6 +123,7 @@ namespace SmartStore.Services.Catalog
             this._productSpecificationAttributeRepository = productSpecificationAttributeRepository;
             this._productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
 			this._productBundleItemRepository = productBundleItemRepository;
+			this._shoppingCartItemRepository = shoppingCartItemRepository;
             this._productAttributeService = productAttributeService;
             this._productAttributeParser = productAttributeParser;
             this._languageService = languageService;
@@ -355,9 +358,9 @@ namespace SmartStore.Services.Catalog
 
         public virtual int CountProducts(ProductSearchContext ctx)
         {
-            Guard.ArgumentNotNull(() => ctx);
+            Guard.NotNull(ctx, nameof(ctx));
 
-            var query = this.PrepareProductSearchQuery(ctx);
+            var query = PrepareProductSearchQuery(ctx, p => p.Id);
             return query.Distinct().Count();
         }
 
@@ -791,8 +794,8 @@ namespace SmartStore.Services.Catalog
 			IEnumerable<int> allowedCustomerRolesIds = null,
 			bool searchLocalizedValue = false)
 		{
-			Guard.ArgumentNotNull(() => ctx);
-			Guard.ArgumentNotNull(() => selector);
+			Guard.NotNull(ctx, nameof(ctx));
+			Guard.NotNull(selector, nameof(selector));
 
 			if (allowedCustomerRolesIds == null)
 			{
@@ -1386,7 +1389,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query = _productRepository.TableUntracked
 				.Expand(x => x.ProductTags)
@@ -1410,7 +1413,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query = _productRepository.TableUntracked
 				.Expand(x => x.AppliedDiscounts.Select(y => y.DiscountRequirements))
@@ -1434,7 +1437,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductSpecificationAttribute> GetProductSpecificationAttributesByProductIds(int[] productIds)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query = _productSpecificationAttributeRepository.TableUntracked
 				.Expand(x => x.SpecificationAttributeOption)
@@ -1732,7 +1735,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, TierPrice> GetTierPricesByProductIds(int[] productIds, Customer customer = null, int storeId = 0)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query =
 				from x in _tierPriceRepository.TableUntracked
@@ -1978,9 +1981,34 @@ namespace SmartStore.Services.Catalog
 			if (bundleItem == null)
 				throw new ArgumentNullException("bundleItem");
 
+			// remove bundles from shopping carts (otherwise bundle item cannot be deleted)
+			var parentCartItemIds = _shoppingCartItemRepository.TableUntracked
+				.Where(x => x.BundleItemId == bundleItem.Id && x.ParentItemId != null)
+				.Select(x => x.ParentItemId)
+				.ToList();
+
+			if (parentCartItemIds.Any())
+			{
+				var cartItems = _shoppingCartItemRepository.Table
+					.Where(x => parentCartItemIds.Contains(x.Id))
+					.ToList();
+
+				foreach (var parentItem in cartItems)
+				{
+					var childItems = _shoppingCartItemRepository.Table
+						.Where(x => x.ParentItemId != null && x.ParentItemId.Value == parentItem.Id && x.Id != parentItem.Id)
+						.ToList();
+
+					childItems.Each(x => _shoppingCartItemRepository.Delete(x));
+
+					_shoppingCartItemRepository.Delete(parentItem);
+				}
+			}
+
+			// delete bundle item
 			_productBundleItemRepository.Delete(bundleItem);
 
-			//event notification
+			// event notification
 			_services.EventPublisher.EntityDeleted(bundleItem);
 		}
 
@@ -2023,7 +2051,7 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductBundleItem> GetBundleItemsByProductIds(int[] productIds, bool showHidden = false)
 		{
-			Guard.ArgumentNotNull(() => productIds);
+			Guard.NotNull(productIds, nameof(productIds));
 
 			var query =
 				from pbi in _productBundleItemRepository.TableUntracked

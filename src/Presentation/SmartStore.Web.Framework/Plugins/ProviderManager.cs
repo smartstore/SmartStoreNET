@@ -45,7 +45,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 		public Provider<IProvider> GetProvider(string systemName, int storeId = 0)
 		{
-			Guard.ArgumentNotEmpty(() => systemName);
+			Guard.NotEmpty(systemName, nameof(systemName));
 
 			var provider = _ctx.ResolveOptionalNamed<Lazy<IProvider, ProviderMetadata>>(systemName);
 			if (provider != null)

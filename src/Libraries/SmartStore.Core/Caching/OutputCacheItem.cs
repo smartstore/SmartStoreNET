@@ -5,7 +5,7 @@ namespace SmartStore.Core.Caching
 {
 	[Serializable]
 	[DebuggerDisplay("{CacheKey}, Url: {Url}, Query: {QueryString}, Duration: {Duration}, Tags: {Tags}")]
-	public class OutputCacheItem
+	public class OutputCacheItem : ICloneable<OutputCacheItem>
 	{
 		// used for serialization compatibility
 		public static readonly string Version = "1";
@@ -31,7 +31,7 @@ namespace SmartStore.Core.Caching
 		{
 			get { return CachedOnUtc.AddSeconds(Duration); }
 		}
-
+		
 		public bool IsValid(DateTime utcNow)
 		{
 			return utcNow < ExpiresOnUtc;
@@ -43,6 +43,16 @@ namespace SmartStore.Core.Caching
 				return "";
 
 			return String.Join(";", Tags);
+		}
+
+		public OutputCacheItem Clone()
+		{
+			return (OutputCacheItem)this.MemberwiseClone();
+		}
+
+		object ICloneable.Clone()
+		{
+			return this.MemberwiseClone();
 		}
 	}
 }

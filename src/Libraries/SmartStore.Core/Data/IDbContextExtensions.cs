@@ -23,7 +23,7 @@ namespace SmartStore
 
 		public static void DetachEntities<TEntity>(this IDbContext ctx, IEnumerable<TEntity> entities) where TEntity : BaseEntity
 		{
-			Guard.ArgumentNotNull(() => ctx);
+			Guard.NotNull(ctx, nameof(ctx));
 
 			entities.Each(x => ctx.DetachEntity(x));
 		}
@@ -56,8 +56,8 @@ namespace SmartStore
 			where TEntity : BaseEntity
 			where TCollection : BaseEntity
 		{
-			Guard.ArgumentNotNull(() => entity);
-			Guard.ArgumentNotNull(() => navigationProperty);
+			Guard.NotNull(entity, nameof(entity));
+			Guard.NotNull(navigationProperty, nameof(navigationProperty));
 
 			var dbContext = ctx as DbContext;
 			if (dbContext == null)
@@ -75,8 +75,8 @@ namespace SmartStore
 			where TEntity : BaseEntity
 			where TProperty : BaseEntity
 		{
-			Guard.ArgumentNotNull(() => entity);
-			Guard.ArgumentNotNull(() => navigationProperty);
+			Guard.NotNull(entity, nameof(entity));
+			Guard.NotNull(navigationProperty, nameof(navigationProperty));
 
 			var dbContext = ctx as DbContext;
 			if (dbContext == null)
@@ -96,8 +96,8 @@ namespace SmartStore
 			where TEntity : BaseEntity
 			where TCollection : BaseEntity
 		{
-			Guard.ArgumentNotNull(() => entity);
-			Guard.ArgumentNotNull(() => navigationProperty);
+			Guard.NotNull(entity, nameof(entity));
+			Guard.NotNull(navigationProperty, nameof(navigationProperty));
 
 			var dbContext = ctx as DbContext;
 			if (dbContext == null)
@@ -144,8 +144,8 @@ namespace SmartStore
 			where TEntity : BaseEntity
 			where TProperty : BaseEntity
 		{
-			Guard.ArgumentNotNull(() => entity);
-			Guard.ArgumentNotNull(() => navigationProperty);
+			Guard.NotNull(entity, nameof(entity));
+			Guard.NotNull(navigationProperty, nameof(navigationProperty));
 
 			var dbContext = ctx as DbContext;
 			if (dbContext == null)

@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Services</RootNamespace>
     <AssemblyName>SmartStore.Services</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -237,8 +237,19 @@
     <Compile Include="Events\IMessageBus.cs" />
     <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
-    <Compile Include="Media\IMediaStorageProvider.cs" />
+    <Compile Include="Logging\DbLogService.cs" />
+    <Compile Include="Logging\ILogService.cs" />
+    <Compile Include="Media\MediaFileSystem.cs" />
+    <Compile Include="Media\Storage\DatabaseMediaStorageProvider.cs" />
+    <Compile Include="Media\Storage\FileSystemMediaStorageProvider.cs" />
+    <Compile Include="Media\Storage\IMediaStorageProvider.cs" />
     <Compile Include="Media\MediaExtensions.cs" />
+    <Compile Include="Media\Storage\IMediaMover.cs" />
+    <Compile Include="Media\Storage\ISupportsMediaMoving.cs" />
+    <Compile Include="Media\Storage\MediaMoverContext.cs" />
+    <Compile Include="Media\Storage\MediaStorageExtensions.cs" />
+    <Compile Include="Media\Storage\MediaItem.cs" />
+    <Compile Include="Media\Storage\MediaMover.cs" />
     <Compile Include="Media\TransientMediaClearTask.cs" />
     <Compile Include="Messages\Importer\NewsLetterSubscriptionImporter.cs" />
     <Compile Include="Messages\QueuedMessagesClearTask.cs" />
@@ -476,6 +487,12 @@
     <Compile Include="Customers\ChangePasswordRequest.cs" />
     <Compile Include="Customers\PasswordChangeResult.cs" />
     <Compile Include="Hooks\AclEntityPostDeleteHook.cs" />
+    <Compile Include="Search\CatalogSearchQuery.cs" />
+    <Compile Include="Search\CatalogSearchResult.cs" />
+    <Compile Include="Search\CatalogSearchService.cs" />
+    <Compile Include="Search\ILinqCatalogSearchService.cs" />
+    <Compile Include="Search\ICatalogSearchService.cs" />
+    <Compile Include="Search\LinqCatalogSearchService.cs" />
     <Compile Include="Security\AclService.cs" />
     <Compile Include="Security\EncryptionService.cs" />
     <Compile Include="Security\IAclService.cs" />
@@ -547,7 +564,6 @@
     <Compile Include="Catalog\IProductService.cs" />
     <Compile Include="Localization\LanguageService.cs" />
     <Compile Include="Localization\LocalizationService.cs" />
-    <Compile Include="Logging\DefaultLogger.cs" />
     <Compile Include="Catalog\ManufacturerService.cs" />
     <Compile Include="Catalog\ProductAttributeService.cs" />
     <Compile Include="Catalog\ProductService.cs" />

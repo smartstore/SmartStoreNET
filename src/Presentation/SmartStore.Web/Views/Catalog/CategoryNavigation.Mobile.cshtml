@@ -69,7 +69,7 @@
                 <a href="@node.Value.GenerateUrl(this.Url)">@node.Value.Text
                     @if ((node.Value.ElementsCount ?? 0) > 0)
                     {
-                        <text> (@(node.Value.ElementsCount))</text>
+                        <text> (@(node.Value.ElementsCount.Value.ToString("N0")))</text>
                     }
                 </a>
                 @if (ShouldRenderChildren(state))

@@ -91,7 +91,7 @@ namespace SmartStore.Core.Packaging
 				}
 				catch (Exception ex)
 				{
-					_logger.Error("An error occured while updating the application: {0}".FormatCurrent(ex.Message), ex);
+					_logger.Error(ex, "An error occured while updating the application");
 					return false;
 				}
 			}
@@ -124,7 +124,7 @@ namespace SmartStore.Core.Packaging
 				if (createLogger)
 				{
 					_logger = CreateLogger(package);
-					_logger.Information("Found update package '{0}'".FormatInvariant(package.GetFullName()));
+					_logger.Info("Found update package '{0}'".FormatInvariant(package.GetFullName()));
 				}
 				return package;
 			}
@@ -168,7 +168,7 @@ namespace SmartStore.Core.Packaging
 			if (localTempPath == null)
 			{
 				var exception = new SmartException("Too many backups in '{0}'.".FormatInvariant(tempPath));
-				_logger.Error(exception.Message, exception);
+				_logger.Error(exception);
 				throw exception;
 			}
 
@@ -176,7 +176,7 @@ namespace SmartStore.Core.Packaging
 			var folderUpdater = new FolderUpdater(_logger);
 			folderUpdater.Backup(source, backupFolder, "App_Data", "Media");
 
-			_logger.Information("Backup successfully created in folder '{0}'.".FormatInvariant(localTempPath));
+			_logger.Info("Backup successfully created in folder '{0}'.".FormatInvariant(localTempPath));
 		}
 
 		private PackageInfo ExecuteUpdate(IPackage package)
@@ -208,7 +208,7 @@ namespace SmartStore.Core.Packaging
 				Path = appPath
 			};
 
-			_logger.Information("Update '{0}' successfully executed.".FormatInvariant(info.Name));
+			_logger.Info("Update '{0}' successfully executed.".FormatInvariant(info.Name));
 
 			return info;
 		}

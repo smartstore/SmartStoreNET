@@ -13,7 +13,7 @@ namespace SmartStore.Web.Framework.Pdf
 
 		public PdfResult(IPdfConverter converter, PdfConvertSettings settings)
 		{
-			Guard.ArgumentNotNull(() => converter);
+			Guard.NotNull(converter, nameof(converter));
 			
 			this.Converter = converter;
 			this.Settings = settings ?? new PdfConvertSettings();

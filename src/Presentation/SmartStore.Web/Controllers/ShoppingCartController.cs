@@ -191,7 +191,7 @@ namespace SmartStore.Web.Controllers
 			var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
 
             var pictureCacheKey = string.Format(ModelCacheEventConsumer.CART_PICTURE_MODEL_KEY, product.Id, combination == null ? 0 : combination.Id,
-				pictureSize, true, _workContext.WorkingLanguage.Id, _webHelper.IsCurrentConnectionSecured(), _storeContext.CurrentStore.Id);
+				pictureSize, true, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id);
 
             var model = _cacheManager.Get(pictureCacheKey, () =>
             {
@@ -1169,13 +1169,15 @@ namespace SmartStore.Web.Controllers
                                         DownloadGuid = Guid.NewGuid(),
                                         UseDownloadUrl = false,
                                         DownloadUrl = "",
-                                        DownloadBinary = postedFile.Buffer,
                                         ContentType = postedFile.ContentType,
                                         Filename = postedFile.FileTitle,
                                         Extension = postedFile.FileExtension,
-                                        IsNew = true
-                                    };
-                                    _downloadService.InsertDownload(download);
+                                        IsNew = true,
+										UpdatedOnUtc = DateTime.UtcNow
+									};
+
+                                    _downloadService.InsertDownload(download, postedFile.Buffer);
+
                                     //save attribute
                                     selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, download.DownloadGuid.ToString());
                                 }
@@ -1498,15 +1500,16 @@ namespace SmartStore.Web.Controllers
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
                 DownloadUrl = "",
-                DownloadBinary = postedFile.Buffer,
                 ContentType = postedFile.ContentType,
                 // we store filename without extension for downloads
                 Filename = postedFile.FileTitle,
                 Extension = postedFile.FileExtension,
                 IsNew = true,
-				IsTransient = true
-            };
-            _downloadService.InsertDownload(download);
+				IsTransient = true,
+				UpdatedOnUtc = DateTime.UtcNow
+			};
+
+            _downloadService.InsertDownload(download, postedFile.Buffer);
 
             return Json(new
             {
@@ -1556,31 +1559,32 @@ namespace SmartStore.Web.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
                 return RedirectToRoute("HomePage");
 
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+			var storeId = _storeContext.CurrentStore.Id;
+			var customer = _workContext.CurrentCustomer;
+			var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
 
-            var allIdsToRemove = form["removefromcart"] != null ? 
-				form["removefromcart"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse(x)).ToList() : new List<int>();
+			var allIdsToRemove = (form["removefromcart"] != null ? form["removefromcart"].ToIntArray() : new int[0]);
 
             //current warnings <cart item identifier, warnings>
             var innerWarnings = new Dictionary<int, IList<string>>();
+
             foreach (var sci in cart)
             {
-                bool remove = allIdsToRemove.Contains(sci.Item.Id);
+                var remove = allIdsToRemove.Contains(sci.Item.Id);
 				if (remove)
 				{
-					_shoppingCartService.DeleteShoppingCartItem(sci.Item, ensureOnlyActiveCheckoutAttributes: true);
+					_shoppingCartService.DeleteShoppingCartItem(sci.Item, false, true);
 				}
 				else
 				{
-					foreach (string formKey in form.AllKeys)
+					foreach (var formKey in form.AllKeys)
 					{
 						if (formKey.Equals(string.Format("itemquantity{0}", sci.Item.Id), StringComparison.InvariantCultureIgnoreCase))
 						{
-							int newQuantity = sci.Item.Quantity;
+							var newQuantity = sci.Item.Quantity;
 							if (int.TryParse(form[formKey], out newQuantity))
 							{
-								var currSciWarnings = _shoppingCartService.UpdateShoppingCartItem(_workContext.CurrentCustomer,
-									sci.Item.Id, newQuantity, true);
+								var currSciWarnings = _shoppingCartService.UpdateShoppingCartItem(customer, sci.Item.Id, newQuantity, false);
 								innerWarnings.Add(sci.Item.Id, currSciWarnings);
 							}
 							break;
@@ -1589,8 +1593,11 @@ namespace SmartStore.Web.Controllers
 				}
             }
 
-            //updated cart
-			cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+			// reset once, not several times
+			_customerService.ResetCheckoutData(customer, storeId);
+
+			//updated cart
+			cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
 
 			var model = new ShoppingCartModel();
             PrepareShoppingCartModel(model, cart);
@@ -1612,6 +1619,7 @@ namespace SmartStore.Web.Controllers
 					}
 				}
             }
+
             return View(model);
         }
 

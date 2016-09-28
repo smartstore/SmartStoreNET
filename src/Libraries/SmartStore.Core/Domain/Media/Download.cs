@@ -8,13 +8,8 @@ namespace SmartStore.Core.Domain.Media
     /// Represents a download
     /// </summary>
     [DataContract]
-	public partial class Download : BaseEntity, ITransient
-    {
-		public Download()
-		{
-			this.UpdatedOnUtc = DateTime.UtcNow;
-		}
-		
+	public partial class Download : BaseEntity, ITransient, IHasMedia
+	{		
 		/// <summary>
         /// Gets or sets a GUID
         /// </summary>
@@ -34,10 +29,11 @@ namespace SmartStore.Core.Domain.Media
 		[DataMember]
 		public string DownloadUrl { get; set; }
 
-        /// <summary>
-        /// Gets or sets the download binary
-        /// </summary>
-        public byte[] DownloadBinary { get; set; }
+		/// <summary>
+		/// Gets or sets the download binary
+		/// </summary>
+		[Obsolete("Use property MediaStorage instead")]
+		public byte[] DownloadBinary { get; set; }
 
         /// <summary>
         /// The mime-type of the download
@@ -76,5 +72,16 @@ namespace SmartStore.Core.Domain.Media
 		[DataMember]
 		[Index("IX_UpdatedOn_IsTransient", 0)]
 		public DateTime UpdatedOnUtc { get; set; }
-    }
+
+		/// <summary>
+		/// Gets or sets the media storage identifier
+		/// </summary>
+		[DataMember]
+		public int? MediaStorageId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the media storage
+		/// </summary>
+		public virtual MediaStorage MediaStorage { get; set; }
+	}
 }

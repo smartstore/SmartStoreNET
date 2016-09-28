@@ -21,34 +21,26 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Frequency)
-            </td>
-            <td class="adminData">
-                @Html.DisplayFor(model => model.Frequency)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.LogLevel)
             </td>
             <td class="adminData">
                 <span class='label label-@Model.LogLevelHint'>@Model.LogLevel</span>
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Logger)
+			</td>
+			<td class="adminData">
+				@Html.DisplayFor(model => model.Logger)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShortMessage)
             </td>
             <td class="adminData">
                 @Html.DisplayFor(model => model.ShortMessage)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ContentHash)
-            </td>
-            <td class="adminData">
-                @Html.DisplayFor(model => model.ContentHash)
             </td>
         </tr>
         <tr>
@@ -70,12 +62,24 @@
                 }
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.UserName)
+			</td>
+			<td class="adminData">
+				@Html.DisplayFor(model => model.UserName)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.PageUrl)
             </td>
             <td class="adminData">
-                @Html.DisplayFor(model => model.PageUrl)
+				@if (Model.PageUrl.HasValue())
+				{
+					<span>@Model.HttpMethod </span>
+					<a href="@Model.PageUrl" target="_blank">@Model.PageUrl</a>
+				}
             </td>
         </tr>
         <tr>
@@ -83,7 +87,11 @@
                 @Html.SmartLabelFor(model => model.ReferrerUrl)
             </td>
             <td class="adminData">
-                @Html.DisplayFor(model => model.ReferrerUrl)
+				@if (Model.ReferrerUrl.HasValue())
+				{
+					<span>@Model.HttpMethod </span>
+					<a href="@Model.ReferrerUrl" target="_blank">@Model.ReferrerUrl</a>
+				}
             </td>
         </tr>
         <tr>
@@ -92,14 +100,6 @@
             </td>
             <td class="adminData">
                 @Html.DisplayFor(model => model.CreatedOn)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.UpdatedOn)
-            </td>
-            <td class="adminData">
-                @Html.DisplayFor(model => model.UpdatedOn)
             </td>
         </tr>
         @if (Model.FullMessage.HasValue())

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Messages;
 
 namespace SmartStore.Services.Messages
 {
-    public partial interface IQueuedEmailService
+	public partial interface IQueuedEmailService
     {
         /// <summary>
         /// Inserts a queued email
@@ -69,7 +68,14 @@ namespace SmartStore.Services.Messages
 		/// <summary>
 		/// Deleted a queued email attachment
 		/// </summary>
-		/// <param name="qea">Queued email attachment</param>
-		void DeleteQueuedEmailAttachment(QueuedEmailAttachment qea);
-    }
+		/// <param name="attachment">Queued email attachment</param>
+		void DeleteQueuedEmailAttachment(QueuedEmailAttachment attachment);
+
+		/// <summary>
+		/// Load binary data of a queued email attachment
+		/// </summary>
+		/// <param name="attachment">Queued email attachment</param>
+		/// <returns>Binary data if <c>attachment.StorageLocation</c> is <c>EmailAttachmentStorageLocation.Blob</c>, otherwise <c>null</c></returns>
+		byte[] LoadQueuedEmailAttachmentBinary(QueuedEmailAttachment attachment);
+	}
 }

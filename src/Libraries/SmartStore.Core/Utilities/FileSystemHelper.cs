@@ -290,5 +290,18 @@ namespace SmartStore.Utilities
 			}
 			catch (Exception) { }
 		}
+
+		/// <summary>
+		/// Checks whether the given path is a fully qualified absolute path (either UNC or rooted with drive letter)
+		/// </summary>
+		/// <param name="path">Path to check</param>
+		/// <returns><c>true</c> if path is fully qualified</returns>
+		public static bool IsFullPath(string path)
+		{
+			return !String.IsNullOrWhiteSpace(path)
+				&& path.IndexOfAny(System.IO.Path.GetInvalidPathChars().ToArray()) == -1
+				&& Path.IsPathRooted(path)
+				&& !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
+		}
 	}
 }

@@ -85,9 +85,9 @@ namespace SmartStore.Services.DataExchange
 
 		public static SyncMapping InsertSyncMapping<T>(this ISyncMappingService svc, T entity, string contextName, string sourceKey) where T : BaseEntity
 		{
-			Guard.ArgumentNotNull(() => entity);
-			Guard.ArgumentNotEmpty(() => contextName);
-			Guard.ArgumentNotEmpty(() => sourceKey);
+			Guard.NotNull(entity, nameof(entity));
+			Guard.NotEmpty(contextName, nameof(contextName));
+			Guard.NotEmpty(sourceKey, nameof(sourceKey));
 
 			if (entity is SyncMapping)
 			{
@@ -112,8 +112,8 @@ namespace SmartStore.Services.DataExchange
 
 		public static SyncMapping GetSyncMappingByEntity<T>(this ISyncMappingService svc, T entity, string contextName) where T : BaseEntity
 		{
-			Guard.ArgumentNotNull(() => entity);
-			Guard.ArgumentNotEmpty(() => contextName);
+			Guard.NotNull(entity, nameof(entity));
+			Guard.NotEmpty(contextName, nameof(contextName));
 
 			if (entity is SyncMapping)
 			{
@@ -139,10 +139,10 @@ namespace SmartStore.Services.DataExchange
 		/// <remarks>Both sequences must contain at least one element and must be of equal size.</remarks>
 		public static IList<SyncMapping> InsertSyncMappings(this ISyncMappingService svc, string contextName, string entityName, IEnumerable<int> entityIds, IEnumerable<string> sourceKeys) 
 		{
-			Guard.ArgumentNotEmpty(() => contextName);
-			Guard.ArgumentNotEmpty(() => entityName);
-			Guard.ArgumentNotNull(() => entityIds);
-			Guard.ArgumentNotNull(() => sourceKeys);
+			Guard.NotEmpty(contextName, nameof(contextName));
+			Guard.NotEmpty(entityName, nameof(entityName));
+			Guard.NotNull(entityIds, nameof(entityIds));
+			Guard.NotNull(sourceKeys, nameof(sourceKeys));
 
 			if (!entityIds.Any() || !sourceKeys.Any() || entityIds.Count() != sourceKeys.Count())
 			{

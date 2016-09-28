@@ -57,8 +57,8 @@ namespace SmartStore
 
         public static bool ContentsEqual(this Stream src, Stream other) 
         {
-            Guard.ArgumentNotNull(() => src);
-            Guard.ArgumentNotNull(() => other);
+            Guard.NotNull(src, nameof(src));
+            Guard.NotNull(other, nameof(other));
 
             if (src.Length != other.Length)
                 return false;

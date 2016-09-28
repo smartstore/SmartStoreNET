@@ -72,7 +72,7 @@ namespace SmartStore.Services.Payments
 
 		public static RouteInfo GetConfigurationRoute(this IPaymentMethod method)
 		{
-			Guard.ArgumentNotNull(() => method);
+			Guard.NotNull(method, nameof(method));
 			
 			string action;
 			string controller;
@@ -94,7 +94,7 @@ namespace SmartStore.Services.Payments
 
 		public static RouteInfo GetPaymentInfoRoute(this IPaymentMethod method)
 		{
-			Guard.ArgumentNotNull(() => method);
+			Guard.NotNull(method, nameof(method));
 
 			string action;
 			string controller;

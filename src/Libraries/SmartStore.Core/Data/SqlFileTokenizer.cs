@@ -15,7 +15,7 @@ namespace SmartStore.Core.Data
 
 		public SqlFileTokenizer(string fileName, Assembly assembly = null, string location = null)
 		{
-			Guard.ArgumentNotEmpty(() => fileName);
+			Guard.NotEmpty(fileName, nameof(fileName));
 
 			this.FileName = fileName;
 			this.Assembly = assembly;

@@ -19,6 +19,8 @@ namespace SmartStore.Services.Tasks
 {
 	public class DefaultTaskScheduler : DisposableObject, ITaskScheduler, IRegisteredObject
     {
+		private readonly ILogger _logger;
+
 		private bool _intervalFixed;
 		private int _sweepInterval;
 		private string _baseUrl;
@@ -26,8 +28,10 @@ namespace SmartStore.Services.Tasks
         private bool _shuttingDown;
 		private int _errCount;
 
-        public DefaultTaskScheduler()
+        public DefaultTaskScheduler(ILogger logger)
         {
+			_logger = logger;
+
 			_sweepInterval = 1;
 			_timer = new System.Timers.Timer();
             _timer.Elapsed += Elapsed;
@@ -187,10 +191,7 @@ namespace SmartStore.Services.Tasks
 					{
 						// 10 failed attempts in succession. Stop the timer!
 						this.Stop();
-						using (var logger = new TraceLogger())
-						{
-							logger.Information("Stopping TaskScheduler sweep timer. Too many failed requests in succession.");
-						}
+						_logger.Info("Stopping TaskScheduler sweep timer. Too many failed requests in succession.");
 					}
 				}
 				else
@@ -198,10 +199,7 @@ namespace SmartStore.Services.Tasks
 					_errCount = 0;
 					var response = t.Result;
 
-					//using (var logger = new TraceLogger())
-					//{
-					//	logger.Debug("TaskScheduler Sweep called successfully: {0}".FormatCurrent(response.GetResponseStream().AsString()));
-					//}
+					//_logger.DebugFormat("TaskScheduler Sweep called successfully: {0}", response.GetResponseStream().AsString());
 
 					response.Dispose();
 				}
@@ -210,29 +208,26 @@ namespace SmartStore.Services.Tasks
 
 		private void HandleException(AggregateException exception, Uri uri)
 		{
-			using (var logger = new TraceLogger())
-			{
-				string msg = "Error while calling TaskScheduler endpoint '{0}'.".FormatInvariant(uri.OriginalString);
-				var wex = exception.InnerExceptions.OfType<WebException>().FirstOrDefault();
+			string msg = "Error while calling TaskScheduler endpoint '{0}'.".FormatInvariant(uri.OriginalString);
+			var wex = exception.InnerExceptions.OfType<WebException>().FirstOrDefault();
 
-				if (wex == null)
+			if (wex == null)
+			{
+				_logger.Error(exception.InnerException, msg);
+			}
+			else if (wex.Response == null)
+			{
+				_logger.Error(wex, msg);
+			}
+			else
+			{
+				using (var response = wex.Response as HttpWebResponse)
 				{
-					logger.Error(msg, exception.InnerException);
-				}
-				else if (wex.Response == null)
-				{
-					logger.Error(msg, wex);
-				}
-				else
-				{
-					using (var response = wex.Response as HttpWebResponse)
+					if (response != null)
 					{
-						if (response != null)
-						{
-							msg += " HTTP {0}, {1}".FormatCurrent((int)response.StatusCode, response.StatusDescription);
-						}
-						logger.Error(msg);
+						msg += " HTTP {0}, {1}".FormatCurrent((int)response.StatusCode, response.StatusDescription);
 					}
+					_logger.Error(msg);
 				}
 			}
 		}

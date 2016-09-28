@@ -23,7 +23,7 @@ namespace SmartStore.Web.Framework.Modelling
 
 		public JsonNetResult(IDateTimeHelper dateTimeHelper, JsonSerializerSettings settings)
 		{
-			Guard.ArgumentNotNull(() => dateTimeHelper);
+			Guard.NotNull(dateTimeHelper, nameof(dateTimeHelper));
 
 			_dateTimeHelper = dateTimeHelper;
 			_settings = settings;
@@ -31,7 +31,7 @@ namespace SmartStore.Web.Framework.Modelling
 
 		public override void ExecuteResult(ControllerContext context)
 		{
-			Guard.ArgumentNotNull(() => context);
+			Guard.NotNull(context, nameof(context));
 
 			if (this.Data == null)
 				return;
@@ -87,7 +87,7 @@ namespace SmartStore.Web.Framework.Modelling
 
 			public UTCDateTimeConverter(IDateTimeHelper dateTimeHelper, DateTimeConverterBase innerConverter)
 			{
-				Guard.ArgumentNotNull(() => innerConverter);
+				Guard.NotNull(innerConverter, nameof(innerConverter));
 
 				_dateTimeHelper = dateTimeHelper;
 				_innerConverter = innerConverter;

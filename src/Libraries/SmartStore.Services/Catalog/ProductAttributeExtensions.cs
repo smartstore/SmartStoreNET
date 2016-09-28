@@ -100,8 +100,8 @@ namespace SmartStore.Services.Catalog
 		/// <returns>Localized value names mapped by field names</returns>
 		public static Dictionary<string, string> GetMappedValuesFromAlias(this IList<ProductVariantAttributeValue> attributeValues, string fieldPrefix, int languageId)
 		{
-			Guard.ArgumentNotNull(() => attributeValues);
-			Guard.ArgumentNotEmpty(() => fieldPrefix);
+			Guard.NotNull(attributeValues, nameof(attributeValues));
+			Guard.NotEmpty(fieldPrefix, nameof(fieldPrefix));
 
 			var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 

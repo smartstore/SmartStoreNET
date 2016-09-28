@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using SmartStore.Core.IO.VirtualPath;
+using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 
 namespace SmartStore.Packager
 {
@@ -12,10 +13,9 @@ namespace SmartStore.Packager
 	{
 		private readonly string _rootPath;
 
-		public RootedVirtualPathProvider(string rootPath) 
-			: base(NullLogger.Instance)
+		public RootedVirtualPathProvider(string rootPath) : base(NullLogger.Instance)
 		{
-			Guard.ArgumentNotEmpty(() => rootPath);
+			Guard.NotEmpty(rootPath, nameof(rootPath));
 
 			_rootPath = rootPath;
 		}

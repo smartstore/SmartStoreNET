@@ -14,7 +14,7 @@ namespace SmartStore.Data.Setup
 
 		public PermissionMigrator(SmartObjectContext ctx)
 		{
-			Guard.ArgumentNotNull(() => ctx);
+			Guard.NotNull(ctx, nameof(ctx));
 
 			_ctx = ctx;
 			_permissionRecords = _ctx.Set<PermissionRecord>();
@@ -23,8 +23,8 @@ namespace SmartStore.Data.Setup
 
 		public void AddPermission(PermissionRecord permission, string[] rolesToMap)
 		{
-			Guard.ArgumentNotNull(() => permission);
-			Guard.ArgumentNotNull(() => rolesToMap);
+			Guard.NotNull(permission, nameof(permission));
+			Guard.NotNull(rolesToMap, nameof(rolesToMap));
 
 			if (permission.SystemName.IsEmpty())
 				return;

@@ -44,7 +44,7 @@ namespace SmartStore.Data.Setup
 		/// <param name="keys">The key(s) of the resources to delete</param>
 		public void DeleteFor(string lang, params string[] keys)
 		{
-			Guard.ArgumentNotEmpty(() => lang);
+			Guard.NotEmpty(lang, nameof(lang));
 			lang = lang.NullEmpty();
 
 			keys.Each(x => _entries.Add(new LocaleResourceEntry { Key = x, Lang = lang, Important = true }));
@@ -57,7 +57,7 @@ namespace SmartStore.Data.Setup
 		/// <returns>IResourceAddBuilder</returns>
 		public IResourceAddBuilder Update(string key)
 		{
-			Guard.ArgumentNotEmpty(() => key);
+			Guard.NotEmpty(key, nameof(key));
 
 			Action<string, string, bool> fn = (string v, string l, bool isHint) =>
 			{
@@ -80,7 +80,7 @@ namespace SmartStore.Data.Setup
 		/// <returns>IResourceAddBuilder</returns>
 		public IResourceAddBuilder AddOrUpdate(string key)
 		{
-			Guard.ArgumentNotEmpty(() => key);
+			Guard.NotEmpty(key, nameof(key));
 
 			Action<string, string, bool> fn = (string v, string l, bool isHint) => 
 			{
@@ -104,7 +104,7 @@ namespace SmartStore.Data.Setup
 		/// <param name="deValue">German value of the resource</param>
 		public void AddOrUpdate(string key, string value, string deValue)
 		{
-			Guard.ArgumentNotEmpty(() => key);
+			Guard.NotEmpty(key, nameof(key));
 
 			_entries.Add(new LocaleResourceEntry { Key = key, Value = value });
 			_entries.Add(new LocaleResourceEntry { Key = key, Value = deValue, Lang = "de" });
@@ -120,7 +120,7 @@ namespace SmartStore.Data.Setup
 		/// <param name="deHint">German hint resource</param>
 		public void AddOrUpdate(string key, string value, string deValue, string hint, string deHint)
 		{
-			Guard.ArgumentNotEmpty(() => key);
+			Guard.NotEmpty(key, nameof(key));
 
 			AddOrUpdate(key, value, deValue);
 			AddOrUpdate(key + ".Hint", hint, deHint);
@@ -154,7 +154,7 @@ namespace SmartStore.Data.Setup
 
 			public IResourceAddBuilder Value(string lang, string value)
 			{
-				Guard.ArgumentNotEmpty(() => value);
+				Guard.NotEmpty(value, nameof(value));
 				_fn(value, lang.NullEmpty(), false);
 				return this;
 			}
@@ -167,7 +167,7 @@ namespace SmartStore.Data.Setup
 
 			public IResourceAddBuilder Hint(string lang, string value)
 			{
-				Guard.ArgumentNotEmpty(() => value);
+				Guard.NotEmpty(value, nameof(value));
 				_fn(value, lang.NullEmpty(), true);
 				return this;
 			}

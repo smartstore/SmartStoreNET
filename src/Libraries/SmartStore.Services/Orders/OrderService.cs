@@ -506,7 +506,7 @@ namespace SmartStore.Services.Orders
 
 		public virtual Multimap<int, OrderItem> GetOrderItemsByOrderIds(int[] orderIds)
 		{
-			Guard.ArgumentNotNull(() => orderIds);
+			Guard.NotNull(orderIds, nameof(orderIds));
 
 			var query =
 				from x in _orderItemRepository.TableUntracked.Expand(x => x.Product)

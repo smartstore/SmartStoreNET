@@ -38,7 +38,7 @@ namespace SmartStore.Services.Tasks
                 {
                     s_initializing = true;
 
-					ILogger logger = EngineContext.Current.Resolve<ILogger>();
+					var logger = EngineContext.Current.Resolve<ILoggerFactory>().CreateLogger<InitializeSchedulerFilter>();
 					ITaskScheduler taskScheduler = EngineContext.Current.Resolve<ITaskScheduler>();
 
 					try
@@ -64,7 +64,7 @@ namespace SmartStore.Services.Tasks
 						taskScheduler.SweepIntervalMinutes = CommonHelper.GetAppSetting<int>("sm:TaskSchedulerSweepInterval", 1);
 						taskScheduler.Start();
 
-						logger.Information("Initialized TaskScheduler with base url '{0}'".FormatInvariant(taskScheduler.BaseUrl));
+						logger.Info("Initialized TaskScheduler with base url '{0}'".FormatInvariant(taskScheduler.BaseUrl));
 
 						eventPublisher.Publish(new AppInitScheduledTasksEvent { ScheduledTasks = tasks });
 					}
@@ -72,7 +72,7 @@ namespace SmartStore.Services.Tasks
 					{
 						s_errCount++;
 						s_initializing = false;
-						logger.Error("Error while initializing Task Scheduler", ex);
+						logger.Error(ex, "Error while initializing Task Scheduler");
 					}
 					finally
 					{
@@ -85,7 +85,7 @@ namespace SmartStore.Services.Tasks
 
 						if (tooManyFailures && logger != null)
 						{
-							logger.Warning("Stopped trying to initialize the Task Scheduler: too many failed attempts in succession (10+). Maybe uncommenting the setting 'sm:TaskSchedulerBaseUrl' in web.config solves the problem?");
+							logger.Warn("Stopped trying to initialize the Task Scheduler: too many failed attempts in succession (10+). Maybe uncommenting the setting 'sm:TaskSchedulerBaseUrl' in web.config solves the problem?");
 						}
 					}
                 }

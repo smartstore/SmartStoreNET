@@ -44,11 +44,11 @@ namespace SmartStore.Admin.Controllers
 
             if (currentCustomer == null || currentCustomer.IsGuest())
             {
-				Logger.Information(T("Admin.System.Warnings.AccessDeniedToAnonymousRequest", pageUrl.NaIfEmpty()));
+				Logger.Info(T("Admin.System.Warnings.AccessDeniedToAnonymousRequest", pageUrl.NaIfEmpty()));
                 return View();
             }
 
-			Logger.Information(T("Admin.System.Warnings.AccessDeniedToUser",
+			Logger.Info(T("Admin.System.Warnings.AccessDeniedToUser",
 				currentCustomer.Email.NaIfEmpty(), currentCustomer.Email.NaIfEmpty(), pageUrl.NaIfEmpty()));
 
             return View();

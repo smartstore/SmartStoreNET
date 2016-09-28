@@ -14,6 +14,8 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
+using SmartStore.Services.Logging;
+using System.Text;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -24,8 +26,9 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IPermissionService _permissionService;
+		private readonly ILogService _logService;
 
-        private static readonly Dictionary<LogLevel, string> s_logLevelHintMap = new Dictionary<LogLevel, string> 
+		private static readonly Dictionary<LogLevel, string> s_logLevelHintMap = new Dictionary<LogLevel, string> 
         { 
             { LogLevel.Fatal, "inverse" },
             { LogLevel.Error, "important" },
@@ -34,14 +37,18 @@ namespace SmartStore.Admin.Controllers
             { LogLevel.Debug, "default" }
         };
 
-        public LogController(IWorkContext workContext,
-            ILocalizationService localizationService, IDateTimeHelper dateTimeHelper,
-            IPermissionService permissionService)
+        public LogController(
+			IWorkContext workContext,
+            ILocalizationService localizationService, 
+			IDateTimeHelper dateTimeHelper,
+            IPermissionService permissionService,
+			ILogService logService)
         {
             this._workContext = workContext;
             this._localizationService = localizationService;
             this._dateTimeHelper = dateTimeHelper;
             this._permissionService = permissionService;
+			this._logService = logService;
         }
 
         public ActionResult Index()
@@ -76,8 +83,14 @@ namespace SmartStore.Admin.Controllers
 
 				LogLevel? logLevel = model.LogLevelId > 0 ? (LogLevel?)(model.LogLevelId) : null;
 
-				var logItems = Logger.GetAllLogs(createdOnFromValue, createdToFromValue, model.Message,
-					logLevel, command.Page - 1, command.PageSize, model.MinFrequency);
+				var logItems = _logService.GetAllLogs(
+					createdOnFromValue, 
+					createdToFromValue,
+					model.Logger, 
+					model.Message,
+					logLevel, 
+					command.Page - 1, 
+					command.PageSize);
 
 				gridModel.Data = logItems.Select(x =>
 				{
@@ -94,12 +107,11 @@ namespace SmartStore.Admin.Controllers
 						PageUrl = x.PageUrl,
 						ReferrerUrl = x.ReferrerUrl,
 						CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
-						Frequency = x.Frequency,
-						ContentHash = x.ContentHash
+						Logger = x.Logger,
+						LoggerShort = TruncateLoggerName(x.Logger),
+						HttpMethod = x.HttpMethod,
+						UserName = x.UserName
 					};
-
-					if (x.UpdatedOnUtc.HasValue)
-						logModel.UpdatedOn = _dateTimeHelper.ConvertToUserTime(x.UpdatedOnUtc.Value, DateTimeKind.Utc);
 
 					return logModel;
 				});
@@ -126,7 +138,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSystemLog))
                 return AccessDeniedView();
 
-			Logger.ClearLog();
+			_logService.ClearLog();
 
             NotifySuccess(_localizationService.GetResource("Admin.System.Log.Cleared"));
             return RedirectToAction("List");
@@ -137,33 +149,48 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSystemLog))
                 return AccessDeniedView();
 
-			var log = Logger.GetLogById(id);
+			var log = _logService.GetLogById(id);
             if (log == null)
                 //No log found with the specified id
                 return RedirectToAction("List");
 
-            var model = new LogModel()
-            {
-                Id = log.Id,
-                LogLevelHint = s_logLevelHintMap[log.LogLevel],
-                LogLevel = log.LogLevel.GetLocalizedEnum(_localizationService, _workContext),
-                ShortMessage = log.ShortMessage,
-                FullMessage = log.FullMessage,
-                IpAddress = log.IpAddress,
-                CustomerId = log.CustomerId,
-                CustomerEmail = log.Customer != null ? log.Customer.Email : null,
-                PageUrl = log.PageUrl,
-                ReferrerUrl = log.ReferrerUrl,
-                CreatedOn = _dateTimeHelper.ConvertToUserTime(log.CreatedOnUtc, DateTimeKind.Utc),
-				Frequency = log.Frequency,
-				ContentHash = log.ContentHash
-            };
-
-			if (log.UpdatedOnUtc.HasValue)
-				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(log.UpdatedOnUtc.Value, DateTimeKind.Utc);
+			var model = new LogModel()
+			{
+				Id = log.Id,
+				LogLevelHint = s_logLevelHintMap[log.LogLevel],
+				LogLevel = log.LogLevel.GetLocalizedEnum(_localizationService, _workContext),
+				ShortMessage = log.ShortMessage,
+				FullMessage = log.FullMessage,
+				IpAddress = log.IpAddress,
+				CustomerId = log.CustomerId,
+				CustomerEmail = log.Customer != null ? log.Customer.Email : null,
+				PageUrl = log.PageUrl,
+				ReferrerUrl = log.ReferrerUrl,
+				CreatedOn = _dateTimeHelper.ConvertToUserTime(log.CreatedOnUtc, DateTimeKind.Utc),
+				Logger = log.Logger,
+				LoggerShort = TruncateLoggerName(log.Logger),
+				HttpMethod = log.HttpMethod,
+				UserName = log.UserName
+			};
 
             return View(model);
         }
+
+		private string TruncateLoggerName(string loggerName)
+		{
+			if (loggerName.IndexOf('.') < 0)
+				return loggerName;
+
+			var sb = new StringBuilder();
+			var tokens = loggerName.Split('.');
+			for (int i = 0; i < tokens.Length; i++)
+			{
+				var token = tokens[i];
+				sb.Append(i == tokens.Length - 1 ? token : token.Substring(0, 1) + "...");
+			}
+
+			return sb.ToString();
+		}
 
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
@@ -171,13 +198,12 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSystemLog))
                 return AccessDeniedView();
 
-			var log = Logger.GetLogById(id);
+			var log = _logService.GetLogById(id);
             if (log == null)
                 //No log found with the specified id
                 return RedirectToAction("List");
 
-			Logger.DeleteLog(log);
-
+			_logService.DeleteLog(log);
 
             NotifySuccess(_localizationService.GetResource("Admin.System.Log.Deleted"));
             return RedirectToAction("List");
@@ -191,9 +217,9 @@ namespace SmartStore.Admin.Controllers
 
             if (selectedIds != null)
             {
-				var logItems = Logger.GetLogByIds(selectedIds.ToArray());
+				var logItems = _logService.GetLogByIds(selectedIds.ToArray());
                 foreach (var logItem in logItems)
-					Logger.DeleteLog(logItem);
+					_logService.DeleteLog(logItem);
             }
 
             return Json(new { Result = true});

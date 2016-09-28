@@ -23,7 +23,7 @@ namespace SmartStore.Services.Catalog
 
 		public static ProductVariantAttributeCombination MergeWithCombination(this Product product, string selectedAttributes, IProductAttributeParser productAttributeParser)
         {
-            Guard.ArgumentNotNull(productAttributeParser, "productAttributeParser");
+            Guard.NotNull(productAttributeParser, "productAttributeParser");
 
 			if (selectedAttributes.IsEmpty())
 				return null;
@@ -41,7 +41,7 @@ namespace SmartStore.Services.Catalog
 
 		public static void MergeWithCombination(this Product product, ProductVariantAttributeCombination combination)
 		{
-			Guard.ArgumentNotNull(product, "product");
+			Guard.NotNull(product, "product");
 
 			if (product.MergedDataValues != null)
 				product.MergedDataValues.Clear();
@@ -321,11 +321,11 @@ namespace SmartStore.Services.Catalog
 			decimal priceAdjustment = decimal.Zero,
 			bool languageInsensitive = false)
         {
-			Guard.ArgumentNotNull(() => product);
-			Guard.ArgumentNotNull(() => currencyService);
-			Guard.ArgumentNotNull(() => taxService);
-			Guard.ArgumentNotNull(() => priceCalculationService);
-			Guard.ArgumentNotNull(() => currency);
+			Guard.NotNull(product, nameof(product));
+			Guard.NotNull(currencyService, nameof(currencyService));
+			Guard.NotNull(taxService, nameof(taxService));
+			Guard.NotNull(priceCalculationService, nameof(priceCalculationService));
+			Guard.NotNull(currency, nameof(currency));
 
             if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
             {
@@ -360,10 +360,10 @@ namespace SmartStore.Services.Catalog
 			Currency currency,
 			bool languageInsensitive = false)
 		{
-			Guard.ArgumentNotNull(() => product);
-			Guard.ArgumentNotNull(() => localizationService);
-			Guard.ArgumentNotNull(() => priceFormatter);
-			Guard.ArgumentNotNull(() => currency);
+			Guard.NotNull(product, nameof(product));
+			Guard.NotNull(localizationService, nameof(localizationService));
+			Guard.NotNull(priceFormatter, nameof(priceFormatter));
+			Guard.NotNull(currency, nameof(currency));
 
 			if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
 			{

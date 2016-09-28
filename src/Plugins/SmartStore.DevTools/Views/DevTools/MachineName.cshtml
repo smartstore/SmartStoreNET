@@ -1,0 +1,20 @@
+﻿@model dynamic
+
+<style>
+	.devtools-machinename {
+		position: fixed;
+		right: 0;
+		bottom: 0;
+		z-index: 999999;
+		background: #333;
+		color: #fff;
+		font-size: 0.9em;
+		font-weight: 600;
+		padding: 0.3em 1em;
+		opacity: 0.92;
+		border: 1px solid #fff;
+		border-top-left-radius: 3px;
+	}
+</style>
+
+<div class="devtools-machinename">@ViewBag.EnvironmentIdentifier</div>

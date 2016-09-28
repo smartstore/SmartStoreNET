@@ -20,9 +20,9 @@ namespace SmartStore.Web.Framework.WebApi
 
 			var configBroadcaster = new WebApiConfigurationBroadcaster
 			{
+				Configuration = config,
 				ModelBuilder = new ODataConventionModelBuilder(),
-				RoutingConventions = ODataRoutingConventions.CreateDefault(),
-				Routes = config.Routes
+				RoutingConventions = ODataRoutingConventions.CreateDefault()
 			};
 
 			config.DependencyResolver = new AutofacWebApiDependencyResolver();

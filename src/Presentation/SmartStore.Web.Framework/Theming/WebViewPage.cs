@@ -11,6 +11,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
+using SmartStore.Services.Common;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Localization;
@@ -25,8 +26,10 @@ namespace SmartStore.Web.Framework.Theming
 		private IList<NotifyEntry> _internalNotifications;
         private IThemeRegistry _themeRegistry;
         private IThemeContext _themeContext;
-        private ExpandoObject _themeVars;
+		private IMobileDeviceHelper _mobileDeviceHelper;
+		private ExpandoObject _themeVars;
         private bool? _isHomePage;
+		private bool? _isMobileDevice;
 		private int? _currentCategoryId;
 		private int? _currentManufacturerId;
 		private int? _currentProductId;
@@ -103,6 +106,21 @@ namespace SmartStore.Web.Framework.Theming
             }
         }
 
+		protected bool IsMobileDevice
+		{
+			get
+			{
+				if (!_isMobileDevice.HasValue)
+				{
+					_isMobileDevice = _mobileDeviceHelper.MobileDevicesSupported()
+						 && _mobileDeviceHelper.IsMobileDevice()
+						 && !_mobileDeviceHelper.CustomerDontUseMobileVersion(); ;
+				}
+
+				return _isMobileDevice.Value;
+			}
+		}
+
 		protected bool HasMessages
 		{
 			get
@@ -117,8 +135,7 @@ namespace SmartStore.Web.Framework.Theming
 		}
 
 		private IEnumerable<LocalizedString> ResolveNotifications(NotifyType? type)
-		{	
-						
+		{						
 			IEnumerable<NotifyEntry> result = Enumerable.Empty<NotifyEntry>();
 
 			if (_internalNotifications == null)
@@ -182,7 +199,9 @@ namespace SmartStore.Web.Framework.Theming
             {
 				_text = EngineContext.Current.Resolve<IText>();
                 _workContext = EngineContext.Current.Resolve<IWorkContext>();
-            }
+				_mobileDeviceHelper = EngineContext.Current.Resolve<IMobileDeviceHelper>();
+
+			}
         }
 
         public HelperResult RenderWrappedSection(string name, object wrapperHtmlAttributes)
@@ -306,7 +325,7 @@ namespace SmartStore.Web.Framework.Theming
         /// <returns>The theme variable value</returns>
         public T GetThemeVariable<T>(string varName, T defaultValue = default(T))
         {
-            Guard.ArgumentNotEmpty(varName, "varName");
+            Guard.NotEmpty(varName, "varName");
 
             var vars = this.ThemeVariables as IDictionary<string, object>;
             if (vars != null && vars.ContainsKey(varName))

@@ -239,7 +239,7 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 			catch (Exception exception)
 			{
-				ctx.Log.Warning("Detaching all entities failed.", exception);
+				ctx.Log.Warn(exception, "Detaching all entities failed.");
 			}
 
 			try
@@ -250,7 +250,7 @@ namespace SmartStore.Services.DataExchange.Export
             }
 			catch (Exception exception)
 			{
-				ctx.Log.Warning("Re-attaching entities failed.", exception);
+				ctx.Log.Warn(exception, "Re-attaching entities failed.");
 			}
 
 			try
@@ -415,7 +415,7 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						if (!ctx.ExecuteContext.DataStream.CanSeek)
 						{
-							ctx.Log.Warning("Data stream seems to be closed!");
+							ctx.Log.Warn("Data stream seems to be closed!");
 						}
 
 						ctx.ExecuteContext.DataStream.Seek(0, SeekOrigin.Begin);
@@ -423,7 +423,7 @@ namespace SmartStore.Services.DataExchange.Export
 						using (_rwLock.GetWriteLock())
 						using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
 						{
-							ctx.Log.Information("Creating file {0}.".FormatInvariant(path));
+							ctx.Log.Info("Creating file {0}.".FormatInvariant(path));
 							ctx.ExecuteContext.DataStream.CopyTo(fileStream);
 						}
 					}
@@ -432,7 +432,7 @@ namespace SmartStore.Services.DataExchange.Export
 			catch (Exception exception)
 			{
 				ctx.ExecuteContext.Abort = DataExchangeAbortion.Hard;
-				ctx.Log.Error("The provider failed at the {0} method: {1}.".FormatInvariant(method, exception.ToAllMessages()), exception);
+				ctx.Log.ErrorFormat(exception, "The provider failed at the {0} method.", method);
 				ctx.Result.LastError = exception.ToString();
 			}
 			finally
@@ -516,8 +516,7 @@ namespace SmartStore.Services.DataExchange.Export
 						context.Result.LastError = exception.ToAllMessages();
 					}
 
-					ctx.Log.Error("Deployment \"{0}\" of type {1} failed: {2}".FormatInvariant(
-						deployment.Name, deployment.DeploymentType.ToString(), exception.Message), exception);
+					ctx.Log.ErrorFormat(exception, "Deployment \"{0}\" of type {1} failed", deployment.Name, deployment.DeploymentType.ToString());
 				}
 
 				deployment.ResultInfo = XmlHelper.Serialize(context.Result);
@@ -1075,7 +1074,7 @@ namespace SmartStore.Services.DataExchange.Export
 				var customer = _services.WorkContext.CurrentCustomer;
 				logHead.Append("Executed by:\t\t" + (customer.Email.HasValue() ? customer.Email : customer.SystemName));
 
-				ctx.Log.Information(logHead.ToString());
+				ctx.Log.Info(logHead.ToString());
 			}
 
 			ctx.ExecuteContext.Store = ToDynamic(ctx, ctx.Store);
@@ -1084,6 +1083,7 @@ namespace SmartStore.Services.DataExchange.Export
 			var publicDeployment = ctx.Request.Profile.Deployments.FirstOrDefault(x => x.DeploymentType == ExportDeploymentType.PublicFolder);
 			ctx.ExecuteContext.HasPublicDeployment = (publicDeployment != null);
 			ctx.ExecuteContext.PublicFolderPath = publicDeployment.GetDeploymentFolder(true);
+			ctx.ExecuteContext.PublicFolderUrl = publicDeployment.GetPublicFolderUrl(_services, ctx.Store);
 
 			var fileExtension = (ctx.Request.Provider.Value.FileExtension.HasValue() ? ctx.Request.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".") : "");
 
@@ -1097,7 +1097,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 				if (segmenter.TotalRecords <= 0)
 				{
-					ctx.Log.Information("There are no records to export.");
+					ctx.Log.Info("There are no records to export.");
 				}
 
 				while (ctx.ExecuteContext.Abort == DataExchangeAbortion.None && segmenter.HasData)
@@ -1117,14 +1117,15 @@ namespace SmartStore.Services.DataExchange.Export
 
 					if (CallProvider(ctx, null, "Execute", path))
 					{
-						ctx.Log.Information("Provider reports {0} successfully exported record(s).".FormatInvariant(ctx.ExecuteContext.RecordsSucceeded));
+						ctx.Log.Info("Provider reports {0} successfully exported record(s).".FormatInvariant(ctx.ExecuteContext.RecordsSucceeded));
 
 						if (ctx.IsFileBasedExport && File.Exists(path))
 						{
 							ctx.Result.Files.Add(new DataExportResult.ExportFileInfo
 							{
 								StoreId = ctx.Store.Id,
-								FileName = ctx.ExecuteContext.FileName
+								FileName = ctx.ExecuteContext.FileName,
+								IsDataFile = true
 							});
 						}
 					}
@@ -1132,10 +1133,10 @@ namespace SmartStore.Services.DataExchange.Export
 					ctx.EntityIdsPerSegment.Clear();
 
 					if (ctx.ExecuteContext.IsMaxFailures)
-						ctx.Log.Warning("Export aborted. The maximum number of failures has been reached.");
+						ctx.Log.Warn("Export aborted. The maximum number of failures has been reached.");
 
 					if (ctx.CancellationToken.IsCancellationRequested)
-						ctx.Log.Warning("Export aborted. A cancellation has been requested.");
+						ctx.Log.Warn("Export aborted. A cancellation has been requested.");
 
 					DetachAllEntitiesAndClear(ctx);
 				}
@@ -1149,7 +1150,20 @@ namespace SmartStore.Services.DataExchange.Export
 					ctx.ExecuteContext.ExtraDataUnits.ForEach(x =>
 					{
 						var path = (x.FileName.HasValue() ? Path.Combine(ctx.ExecuteContext.Folder, x.FileName) : null);
-						CallProvider(ctx, x.Id, "OnExecuted", path);
+						if (CallProvider(ctx, x.Id, "OnExecuted", path))
+						{
+							if (x.DisplayInFileDialog && ctx.IsFileBasedExport && File.Exists(path))
+							{
+								// save info about extra file
+								ctx.Result.Files.Add(new DataExportResult.ExportFileInfo
+								{
+									StoreId = ctx.Store.Id,
+									FileName = x.FileName,
+									Label = x.Label,
+									IsDataFile = false
+								});
+							}
+						}
 					});
 
 					ctx.ExecuteContext.ExtraDataUnits.Clear();
@@ -1254,7 +1268,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 								if (allDeploymentsSucceeded && ctx.Request.Profile.Cleanup)
 								{
-									logger.Information("Cleaning up export folder");
+									logger.Info("Cleaning up export folder");
 
 									FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
 								}
@@ -1349,7 +1363,7 @@ namespace SmartStore.Services.DataExchange.Export
 							}
 						}
 
-						logger.Information("Updated order status for {0} order(s).".FormatInvariant(ctx.EntityIdsLoaded.Count()));
+						logger.Info("Updated order status for {0} order(s).".FormatInvariant(ctx.EntityIdsLoaded.Count()));
 					}
 					catch (Exception exception)
 					{

@@ -2,20 +2,17 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Common;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.Infrastructure.DependencyResolution;
 using System.Linq;
 //using EFCache;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Data.Setup;
 //using SmartStore.Data.Caching;
 using SmartStore.Data.Caching2;
 using SmartStore.Core.Caching;
+using System.Web.Hosting;
 
 namespace SmartStore.Data
 {
-
 	public class SmartDbConfiguration : DbConfiguration
 	{
 		public SmartDbConfiguration()
@@ -52,5 +49,4 @@ namespace SmartStore.Data
 			}
 		}
 	}
-
 }

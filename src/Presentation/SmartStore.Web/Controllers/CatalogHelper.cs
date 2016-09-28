@@ -1385,7 +1385,7 @@ namespace SmartStore.Web.Controllers
 
 					//prepare picture model
 					var defaultProductPictureCacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_DEFAULTPICTURE_MODEL_KEY, product.Id, pictureSize, true,
-						_services.WorkContext.WorkingLanguage.Id, _services.WebHelper.IsCurrentConnectionSecured(), store.Id);
+						_services.WorkContext.WorkingLanguage.Id, store.Id);
 
 					model.DefaultPictureModel = _services.Cache.Get(defaultProductPictureCacheKey, () =>
 					{
@@ -1399,7 +1399,7 @@ namespace SmartStore.Web.Controllers
 						};
 
 						return pictureModel;
-					});
+					}, TimeSpan.FromHours(6));
 
 					#endregion
 				}
@@ -1512,6 +1512,7 @@ namespace SmartStore.Web.Controllers
 		public NavigationModel PrepareCategoryNavigationModel(int currentCategoryId, int currentProductId)
 		{
 			var root = GetCategoryMenu();
+		
 			var breadcrumb = GetCategoryBreadCrumb(currentCategoryId, currentProductId);
 
 			// resolve number of products
@@ -1570,9 +1571,9 @@ namespace SmartStore.Web.Controllers
 					curNode = curNode.Parent;
 				}
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				Logger.Error(exc.Message, exc);
+				Logger.Error(ex);
 			}
 		}
 
@@ -1835,7 +1836,6 @@ namespace SmartStore.Web.Controllers
                 pictureSize,
 				!_catalogSettings.HideManufacturerDefaultPictures,
                 _services.WorkContext.WorkingLanguage.Id,
-                _services.WebHelper.IsCurrentConnectionSecured(),
                 _services.StoreContext.CurrentStore.Id);
 
             model = _services.Cache.Get(manufacturerPictureCacheKey, () =>
@@ -1849,7 +1849,7 @@ namespace SmartStore.Web.Controllers
                     AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName)
                 };
                 return pictureModel;
-            });
+            }, TimeSpan.FromHours(6));
 
             return model;
         }

@@ -307,14 +307,14 @@ namespace SmartStore.Core
 
 		public static bool IsStaticResourceRequested(HttpRequest request)
 		{
-			Guard.ArgumentNotNull(() => request);
+			Guard.NotNull(request, nameof(request));
 			return s_staticExts.IsMatch(request.Path);
 		}
 
 		public static bool IsStaticResourceRequested(HttpRequestBase request)
 		{
 			// unit testable
-			Guard.ArgumentNotNull(() => request);
+			Guard.NotNull(request, nameof(request));
 			return s_staticExts.IsMatch(request.Path);
 		}
         
@@ -538,7 +538,7 @@ namespace SmartStore.Core
 		/// </remarks>
 		public static string MakeAllUrlsAbsolute(string html, HttpRequestBase request)
 		{
-			Guard.ArgumentNotNull(() => request);
+			Guard.NotNull(request, nameof(request));
 
 			if (request.Url == null)
 			{
@@ -560,9 +560,9 @@ namespace SmartStore.Core
 		/// </remarks>
 		public static string MakeAllUrlsAbsolute(string html, string protocol, string host)
 		{
-			Guard.ArgumentNotEmpty(() => html);
-			Guard.ArgumentNotEmpty(() => protocol);
-			Guard.ArgumentNotEmpty(() => host);
+			Guard.NotEmpty(html, nameof(html));
+			Guard.NotEmpty(protocol, nameof(protocol));
+			Guard.NotEmpty(host, nameof(host));
 
 			string baseUrl = string.Format("{0}://{1}", protocol, host.TrimEnd('/'));
 
@@ -584,8 +584,8 @@ namespace SmartStore.Core
 		[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
 		public static string GetAbsoluteUrl(string url, HttpRequestBase request)
 		{
-			Guard.ArgumentNotEmpty(() => url);
-			Guard.ArgumentNotNull(() => request);
+			Guard.NotEmpty(url, nameof(url));
+			Guard.NotNull(request, nameof(request));
 
 			if (request.Url == null)
 			{
@@ -680,7 +680,7 @@ namespace SmartStore.Core
 
 		public static HttpWebRequest CreateHttpRequestForSafeLocalCall(Uri requestUri)
 		{
-			Guard.ArgumentNotNull(() => requestUri);
+			Guard.NotNull(requestUri, nameof(requestUri));
 
 			var safeHostName = GetSafeLocalHostName(requestUri);
 

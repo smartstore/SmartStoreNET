@@ -13,7 +13,7 @@ namespace SmartStore.Core.Caching
 		void Remove(params string[] keys);
 		void RemoveAll();
 
-		IPagedList<OutputCacheItem> All(int pageIndex, int pageSize);
+		IPagedList<OutputCacheItem> All(int pageIndex, int pageSize, bool withContent = false);
 		int Count();
 
 		int InvalidateByRoute(params string[] routes);

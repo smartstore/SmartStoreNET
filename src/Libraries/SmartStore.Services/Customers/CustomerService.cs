@@ -658,7 +658,7 @@ namespace SmartStore.Services.Customers
 
 		public virtual Multimap<int, RewardPointsHistory> GetRewardPointsHistoriesByCustomerIds(int[] customerIds)
 		{
-			Guard.ArgumentNotNull(() => customerIds);
+			Guard.NotNull(customerIds, nameof(customerIds));
 
 			var query =
 				from x in _rewardPointsHistoryRepository.TableUntracked

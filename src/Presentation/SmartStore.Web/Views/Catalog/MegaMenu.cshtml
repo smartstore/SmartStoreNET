@@ -67,7 +67,7 @@
                                 @item.Text
                                 @if (item.ElementsCount.GetValueOrDefault() > 0)
                                 {
-                                    <text> (@(item.ElementsCount))</text>
+                                    <text> (@(item.ElementsCount.Value.ToString("N0")))</text>
                                 }
 
                                 @if (node.HasChildren)

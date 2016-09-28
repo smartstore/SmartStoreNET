@@ -1,5 +1,7 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Core.Domain.Logging
 {
@@ -8,10 +10,11 @@ namespace SmartStore.Core.Domain.Logging
     /// </summary>
     public partial class Log : BaseEntity
     {
-        /// <summary>
-        /// Gets or sets the log level identifier
-        /// </summary>
-        public int LogLevelId { get; set; }
+		/// <summary>
+		/// Gets or sets the log level identifier
+		/// </summary>
+		[Index("IX_Log_Level", IsUnique = false)]
+		public int LogLevelId { get; set; }
 
         /// <summary>
         /// Gets or sets the short message
@@ -48,16 +51,26 @@ namespace SmartStore.Core.Domain.Logging
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
 
-		public DateTime? UpdatedOnUtc { get; set; }
+		/// <summary>
+		/// Gets or sets the logger name
+		/// </summary>
+		[Index("IX_Log_Logger", IsUnique = false)]
+		public string Logger { get; set; }
 
-		public int Frequency { get; set; }
+		/// <summary>
+		/// Gets or sets the HTTP method
+		/// </summary>
+		public string HttpMethod { get; set; }
 
-		public string ContentHash { get; set; }
+		/// <summary>
+		/// Gets or sets the user name
+		/// </summary>
+		public string UserName { get; set; }
 
-        /// <summary>
-        /// Gets or sets the log level
-        /// </summary>
-        public LogLevel LogLevel
+		/// <summary>
+		/// Gets or sets the log level
+		/// </summary>
+		public LogLevel LogLevel
         {
             get
             {

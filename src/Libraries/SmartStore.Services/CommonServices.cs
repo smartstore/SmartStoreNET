@@ -18,6 +18,7 @@ namespace SmartStore.Services
 	public class CommonServices : ICommonServices
 	{
 		private readonly IComponentContext _container;
+		private readonly Lazy<IApplicationEnvironment> _env;
 		private readonly Lazy<ICacheManager> _cacheManager;
 		private readonly Lazy<IRequestCache> _requestCache;
 		private readonly Lazy<IDbContext> _dbContext;
@@ -36,7 +37,8 @@ namespace SmartStore.Services
 
 		public CommonServices(
 			IComponentContext container,
-            Lazy<ICacheManager> cacheManager,
+			Lazy<IApplicationEnvironment> env,
+			Lazy<ICacheManager> cacheManager,
 			Lazy<IRequestCache> requestCache,
 			Lazy<IDbContext> dbContext,
 			Lazy<IStoreContext> storeContext,
@@ -53,6 +55,7 @@ namespace SmartStore.Services
 			Lazy<IDisplayControl> displayControl)
 		{
 			this._container = container;
+			this._env = env;
 			this._cacheManager = cacheManager;
 			this._requestCache = requestCache;
 			this._dbContext = dbContext;
@@ -75,6 +78,14 @@ namespace SmartStore.Services
 			get
 			{
 				return _container;
+			}
+		}
+
+		public IApplicationEnvironment ApplicationEnvironment
+		{
+			get
+			{
+				return _env.Value;
 			}
 		}
 

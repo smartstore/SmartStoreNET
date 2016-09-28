@@ -22,24 +22,26 @@ using SmartStore.Core.Fakes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.IO;
-using SmartStore.Core.IO.VirtualPath;
-using SmartStore.Core.IO.WebSite;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Packaging;
 using SmartStore.Core.Plugins;
+using SmartStore.Core.Search;
 using SmartStore.Core.Themes;
 using SmartStore.Data;
+using SmartStore.Data.Caching;
 using SmartStore.Services;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Authentication;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Blogs;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Catalog.Importer;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Customers.Importer;
 using SmartStore.Services.DataExchange;
 using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.DataExchange.Import;
@@ -52,12 +54,15 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
+using SmartStore.Services.Media.Storage;
 using SmartStore.Services.Messages;
+using SmartStore.Services.Messages.Importer;
 using SmartStore.Services.News;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Pdf;
 using SmartStore.Services.Polls;
+using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
@@ -77,9 +82,6 @@ using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using Module = Autofac.Module;
-using SmartStore.Services.Catalog.Importer;
-using SmartStore.Services.Customers.Importer;
-using SmartStore.Services.Messages.Importer;
 
 namespace SmartStore.Web.Framework
 {
@@ -97,7 +99,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new DbModule(typeFinder));
 			builder.RegisterModule(new CachingModule());
 			builder.RegisterModule(new LocalizationModule());
-			builder.RegisterModule(new LoggingModule());
 			builder.RegisterModule(new EventModule(typeFinder, pluginFinder));
 			builder.RegisterModule(new MessagingModule());
 			builder.RegisterModule(new WebModule(typeFinder));
@@ -129,11 +130,16 @@ namespace SmartStore.Web.Framework
 
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<HostNameProvider>().As<IHostNameProvider>().SingleInstance();
+			builder.RegisterType<ApplicationEnvironment>().As<IApplicationEnvironment>().SingleInstance();
 			
 			// sources
 			builder.RegisterSource(new SettingsSource());
 			builder.RegisterSource(new WorkSource());
+
+			// Logging stuff
+			builder.RegisterType<Notifier>().As<INotifier>().InstancePerRequest();
+			builder.RegisterType<DbLogService>().As<ILogService>().InstancePerRequest();
+			builder.RegisterType<CustomerActivityService>().As<ICustomerActivityService>().InstancePerRequest();
 
 			// web helper
 			builder.RegisterType<WebHelper>().As<IWebHelper>().InstancePerRequest();
@@ -203,6 +209,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<ImageCache>().As<IImageCache>().InstancePerRequest();
 			builder.RegisterType<ImageResizerService>().As<IImageResizerService>().SingleInstance();
 			builder.RegisterType<PictureService>().As<IPictureService>().InstancePerRequest();
+			builder.RegisterType<MediaMover>().As<IMediaMover>().InstancePerRequest();
 
 			builder.RegisterType<CheckoutAttributeFormatter>().As<ICheckoutAttributeFormatter>().InstancePerRequest();
 			builder.RegisterType<CheckoutAttributeParser>().As<ICheckoutAttributeParser>().InstancePerRequest();
@@ -251,6 +258,10 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<FilterService>().As<IFilterService>().InstancePerRequest();
 			builder.RegisterType<CommonServices>().As<ICommonServices>().InstancePerRequest();
+
+			builder.RegisterType<DefaultIndexManager>().As<IIndexManager>().InstancePerRequest();
+			builder.RegisterType<CatalogSearchService>().As<ICatalogSearchService>().InstancePerRequest();
+			builder.RegisterType<LinqCatalogSearchService>().As<ILinqCatalogSearchService>().InstancePerRequest();
 		}
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
@@ -340,6 +351,8 @@ namespace SmartStore.Web.Framework
 			builder.Register(x => x.Resolve<DataProviderFactory>().LoadDataProvider()).As<IDataProvider>().InstancePerDependency();
 			builder.Register(x => (IEfDataProvider)x.Resolve<DataProviderFactory>().LoadDataProvider()).As<IEfDataProvider>().InstancePerDependency();
 
+			builder.RegisterType<DefaultHookHandler>().As<IHookHandler>().InstancePerRequest();
+
 			if (DataSettings.Current.IsValid())
 			{
 				// register DB Hooks (only when app was installed properly)
@@ -370,7 +383,9 @@ namespace SmartStore.Web.Framework
 
 					registration.WithMetadata<HookMetadata>(m => 
 					{ 
-						m.For(em => em.HookedType, hookedType); 
+						m.For(em => em.HookedType, hookedType);
+						m.For(em => em.ImplType, hook);
+						m.For(em => em.Important, hookedType.HasAttribute<ImportantAttribute>(false));
 					});
 				}
 
@@ -423,67 +438,6 @@ namespace SmartStore.Web.Framework
 		private static PropertyInfo FindQuerySettingsProperty(Type type)
 		{
 			return type.GetProperty("QuerySettings", typeof(DbQuerySettings));
-		}
-	}
-
-	public class LoggingModule : Module
-	{
-		protected override void Load(ContainerBuilder builder)
-		{
-			builder.RegisterType<Notifier>().As<INotifier>().InstancePerRequest();
-			builder.RegisterType<DefaultLogger>().As<ILogger>().InstancePerRequest();
-			builder.RegisterType<CustomerActivityService>().As<ICustomerActivityService>().InstancePerRequest();
-		}
-
-		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
-		{
-			if (!DataSettings.DatabaseIsInstalled())
-				return;
-			
-			var implementationType = registration.Activator.LimitType;
-
-			// build an array of actions on this type to assign loggers to member properties
-			var injectors = BuildLoggerInjectors(implementationType).ToArray();
-
-			// if there are no logger properties, there's no reason to hook the activated event
-			if (!injectors.Any())
-				return;
-
-			// otherwise, whan an instance of this component is activated, inject the loggers on the instance
-			registration.Activated += (s, e) =>
-			{
-				foreach (var injector in injectors)
-					injector(e.Context, e.Instance);
-			};
-		}
-
-		private IEnumerable<Action<IComponentContext, object>> BuildLoggerInjectors(Type componentType)
-		{
-			// Look for settable properties of type "ILogger" 
-			var loggerProperties = componentType
-				.GetProperties(BindingFlags.SetProperty | BindingFlags.Public | BindingFlags.Instance)
-				.Select(p => new
-				{
-					PropertyInfo = p,
-					p.PropertyType,
-					IndexParameters = p.GetIndexParameters(),
-					Accessors = p.GetAccessors(false)
-				})
-				.Where(x => x.PropertyType == typeof(ILogger)) // must be a logger
-				.Where(x => x.IndexParameters.Count() == 0) // must not be an indexer
-				.Where(x => x.Accessors.Length != 1 || x.Accessors[0].ReturnType == typeof(void)) //must have get/set, or only set
-				.Select(x => new FastProperty(x.PropertyInfo));
-
-			// Return an array of actions that resolve a logger and assign the property
-			foreach (var prop in loggerProperties)
-			{
-				yield return (ctx, instance) =>
-				{
-					string component = componentType.ToString();
-					var logger = ctx.Resolve<ILogger>();
-					prop.SetValue(instance, logger);
-				};
-			}
 		}
 	}
 
@@ -755,7 +709,7 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			// register theming services
-			builder.Register<DefaultThemeRegistry>(x => new DefaultThemeRegistry(x.Resolve<IEventPublisher>(), null, null, true)).As<IThemeRegistry>().SingleInstance();
+			builder.Register<DefaultThemeRegistry>(x => new DefaultThemeRegistry(x.Resolve<IEventPublisher>(), x.Resolve<IApplicationEnvironment>(), null, null, true)).As<IThemeRegistry>().SingleInstance();
 			builder.RegisterType<ThemeFileResolver>().As<IThemeFileResolver>().SingleInstance();
 
 			builder.RegisterType<ThemeContext>().As<IThemeContext>().InstancePerRequest();
@@ -775,9 +729,16 @@ namespace SmartStore.Web.Framework
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
-			builder.RegisterType<LocalFileSystem>().As<IFileSystem>().InstancePerRequest();
-			builder.RegisterType<DefaultVirtualPathProvider>().As<IVirtualPathProvider>().InstancePerRequest();
-			builder.RegisterType<WebSiteFolder>().As<IWebSiteFolder>().InstancePerRequest();
+			builder.RegisterType<LocalFileSystem>().As<IFileSystem>().SingleInstance();
+			builder.RegisterType<MediaFileSystem>().As<IMediaFileSystem>().SingleInstance();
+
+			// Register IFileSystem twice, this time explicitly named.
+			// We may need this later in decorator classes as a kind of fallback.
+			builder.RegisterType<LocalFileSystem>().Named<IFileSystem>("local").SingleInstance();
+			builder.RegisterType<MediaFileSystem>().Named<IMediaFileSystem>("local").SingleInstance();
+
+			builder.RegisterType<DefaultVirtualPathProvider>().As<IVirtualPathProvider>().SingleInstance();
+			builder.RegisterType<LockFileManager>().As<ILockFileManager>().SingleInstance();
 		}
 	}
 
@@ -855,6 +816,7 @@ namespace SmartStore.Web.Framework
 				RegisterAsSpecificProvider<IPaymentMethod>(type, systemName, registration);
 				RegisterAsSpecificProvider<IExportProvider>(type, systemName, registration);
 				RegisterAsSpecificProvider<IOutputCacheProvider>(type, systemName, registration);
+				RegisterAsSpecificProvider<IMediaStorageProvider>(type, systemName, registration);
 			}
 
 		}

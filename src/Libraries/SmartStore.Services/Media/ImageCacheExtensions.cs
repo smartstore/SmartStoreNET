@@ -16,7 +16,8 @@ namespace SmartStore.Services.Media
         /// <remarks>If the requested image does not exist in the cache, the value of the <c>Exists</c> property will be <c>false</c>.</remarks>
         public static CachedImageResult GetCachedImage(this IImageCache imageCache, Picture picture, object settings = null)
         {
-            Guard.ArgumentNotNull(() => picture);
+            Guard.NotNull(picture, nameof(picture));
+
             return imageCache.GetCachedImage(picture.Id, picture.SeoFilename, MimeTypes.MapMimeTypeToExtension(picture.MimeType), settings);
         }
 
@@ -42,7 +43,7 @@ namespace SmartStore.Services.Media
         /// <param name="settings">The image processing settings. This object, if not <c>null</c>, is hashed and appended to the resulting file name.</param>
         public static void AddImageToCache(this IImageCache imageCache, Picture picture, byte[] buffer, object settings = null)
         {
-            Guard.ArgumentNotNull(() => picture);
+            Guard.NotNull(picture, nameof(picture));
             imageCache.AddImageToCache(picture.Id, picture.SeoFilename, MimeTypes.MapMimeTypeToExtension(picture.MimeType), buffer, settings);
         }
 

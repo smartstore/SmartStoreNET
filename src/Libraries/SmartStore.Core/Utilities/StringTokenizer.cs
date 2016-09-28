@@ -26,7 +26,7 @@ namespace SmartStore.Utilities
 
         public StringTokenizer(string text, string delim, bool returnDelims)
         {
-            Guard.ArgumentNotEmpty(() => text);
+            Guard.NotEmpty(text, nameof(text));
 
             _text = text;
             _delim = delim.NullEmpty() ?? _defaultDelim;

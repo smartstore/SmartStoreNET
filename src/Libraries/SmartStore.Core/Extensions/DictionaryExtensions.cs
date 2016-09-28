@@ -57,25 +57,16 @@ namespace SmartStore
             instance[key] = !instance.ContainsKey(key) ? value.ToString() : (value + separator + instance[key]);
         }
 
-		public static TValue GetValue<TKey, TValue>(this IDictionary<TKey, object> instance, TKey key)
+		public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> instance, TKey key)
 		{
-			try
-			{
-				object val;
-				if (instance != null && instance.TryGetValue(key, out val) && val != null)
-				{
-					return (TValue)Convert.ChangeType(val, typeof(TValue), CultureInfo.InvariantCulture);
-				}
-			}
-			catch (Exception ex)
-			{
-				ex.Dump();
-			}
+			Guard.NotNull(instance, nameof(instance));
 
-			return default(TValue);
+			TValue val;
+			instance.TryGetValue(key, out val);
+			return val;
 		}
 
-        public static ExpandoObject ToExpandoObject(this IDictionary<string, object> source, bool castIfPossible = false)
+		public static ExpandoObject ToExpandoObject(this IDictionary<string, object> source, bool castIfPossible = false)
         {
 			Guard.NotNull(source, nameof(source));
 

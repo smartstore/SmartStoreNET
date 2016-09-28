@@ -266,11 +266,17 @@ namespace SmartStore.Admin.Controllers
 
 			var qea = _queuedEmailService.GetQueuedEmailAttachmentById(id);
 			if (qea == null)
+			{
 				return HttpNotFound("List");
+			}
 
 			if (qea.StorageLocation == EmailAttachmentStorageLocation.Blob)
 			{
-				return File(qea.Data, qea.MimeType, qea.Name);
+				var data = _queuedEmailService.LoadQueuedEmailAttachmentBinary(qea);
+				if (data != null)
+				{
+					return File(data, qea.MimeType, qea.Name);
+				}
 			}
 			else if (qea.StorageLocation == EmailAttachmentStorageLocation.Path)
 			{
@@ -293,9 +299,7 @@ namespace SmartStore.Admin.Controllers
 
 				return File(path, qea.MimeType, qea.Name);
 			}
-
-			// FileReference
-			if (qea.FileId.HasValue)
+			else if (qea.FileId.HasValue)
 			{
 				return RedirectToAction("DownloadFile", "Download", new { downloadId = qea.FileId.Value });
 			}

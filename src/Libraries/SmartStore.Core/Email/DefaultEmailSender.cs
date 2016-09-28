@@ -65,8 +65,8 @@ namespace SmartStore.Core.Email
 
         public void SendEmail(SmtpContext context, EmailMessage message)
         {
-			Guard.ArgumentNotNull(() => context);
-			Guard.ArgumentNotNull(() => message);
+			Guard.NotNull(context, nameof(context));
+			Guard.NotNull(message, nameof(message));
 			
 			using (var msg = this.BuildMailMessage(message))
 			{
@@ -79,8 +79,8 @@ namespace SmartStore.Core.Email
 
 		public Task SendEmailAsync(SmtpContext context, EmailMessage message)
 		{
-			Guard.ArgumentNotNull(() => context);
-			Guard.ArgumentNotNull(() => message);
+			Guard.NotNull(context, nameof(context));
+			Guard.NotNull(message, nameof(message));
 
 			var client = context.ToSmtpClient();
 			var msg = this.BuildMailMessage(message);

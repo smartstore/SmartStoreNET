@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Data.Entity.Infrastructure;
 
 namespace SmartStore.Core.Data.Hooks
 {
-    public class HookedEntityEntry
-    {
-        public object Entity { get; set; }
-        public EntityState PreSaveState { get; set; }
-    }
+	public class HookedEntityEntry
+	{
+		public DbEntityEntry Entry { get; set; }
+		public EntityState PreSaveState { get; set; }
+	}
 }

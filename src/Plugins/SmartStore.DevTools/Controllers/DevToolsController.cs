@@ -52,7 +52,14 @@ namespace SmartStore.DevTools.Controllers
 			return View();
 		}
 
-        public ActionResult WidgetZone(string widgetZone)
+		public ActionResult MachineName()
+		{
+			ViewBag.EnvironmentIdentifier = _services.ApplicationEnvironment.EnvironmentIdentifier;
+
+			return View();
+		}
+
+		public ActionResult WidgetZone(string widgetZone)
         {
 			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
 			var settings = _services.Settings.LoadSetting<ProfilerSettings>(storeScope);

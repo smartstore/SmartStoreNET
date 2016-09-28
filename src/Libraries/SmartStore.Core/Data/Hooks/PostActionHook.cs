@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SmartStore.Core.Data.Hooks
 {
@@ -12,14 +9,14 @@ namespace SmartStore.Core.Data.Hooks
     public abstract class PostActionHook<TEntity> : IPostActionHook
     {
         /// <summary>
-        /// Implements the interface.  This causes the hook to only run for objects that are assignable to TEntity.
+        /// Implements the interface. This causes the hook to only run for objects that are assignable to TEntity.
         /// </summary>
         public void HookObject(object entity, HookEntityMetadata metadata)
         {
-            if (typeof(TEntity).IsAssignableFrom(entity.GetType()))
-            {
+            //if (typeof(TEntity).IsAssignableFrom(entity.GetType()))
+            //{
                 Hook((TEntity)entity, metadata);
-            }
+            //}
         }
 
         /// <summary>
@@ -28,19 +25,48 @@ namespace SmartStore.Core.Data.Hooks
         /// </summary>
         public abstract void Hook(TEntity entity, HookEntityMetadata metadata);
 
-        /// <summary>
-        /// Entity States that this hook must be registered to listen for.
-        /// </summary>
-        public abstract EntityState HookStates { get; }
-
 		/// <summary>
 		/// Indicates whether the hook instance can be processed for the given <see cref="EntityState"/>
 		/// </summary>
 		/// <param name="state">The state of the entity</param>
 		/// <returns><c>true</c> when the hook should be processed, <c>false</c> otherwise</returns>
-		public virtual bool CanProcess(EntityState state)
+		public abstract bool CanProcess(EntityState state);
+
+		public virtual void OnCompleted()
 		{
-			return state == HookStates;
+		}
+	}
+
+	/// <summary>
+	/// Implements a hook that will run after an entity gets inserted into the database.
+	/// </summary>
+	public abstract class PostInsertHook<TEntity> : PostActionHook<TEntity>
+	{
+		public override bool CanProcess(EntityState state)
+		{
+			return state == EntityState.Added;
+		}
+	}
+
+	/// <summary>
+	/// Implements a hook that will run after an entity gets updated in the database.
+	/// </summary>
+	public abstract class PostUpdateHook<TEntity> : PostActionHook<TEntity>
+	{
+		public override bool CanProcess(EntityState state)
+		{
+			return state == EntityState.Modified;
+		}
+	}
+
+	/// <summary>
+	/// Implements a hook that will run after an entity gets deleted from the database.
+	/// </summary>
+	public abstract class PostDeleteHook<TEntity> : PostActionHook<TEntity>
+	{
+		public override bool CanProcess(EntityState state)
+		{
+			return state == EntityState.Deleted;
 		}
 	}
 }

@@ -8,6 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using SmartStore.ComponentModel;
 using SmartStore.Utilities;
 
@@ -231,37 +232,43 @@ namespace SmartStore
 			}
 			else
 			{
-				byte[] buffer;
-
-				int offset = 0;
-				long length = stream.Length;
-				if (length > 0x7fffffffL)
+				using (var streamReader = new MemoryStream())
 				{
-					throw new IOException("File too long.");
+					stream.CopyTo(streamReader);
+					return streamReader.ToArray();
 				}
-				int count = (int)length;
-				buffer = new byte[count];
-				while (count > 0)
-				{
-					int num3 = stream.Read(buffer, offset, count);
-					if (num3 == 0)
-					{
-						throw new EndOfStreamException();
-					}
-					offset += num3;
-					count -= num3;
-				}
-
-				return buffer;
 			}
-        }
+		}
+
+		public static async Task<byte[]> ToByteArrayAsync(this Stream stream)
+		{
+			Guard.NotNull(stream, nameof(stream));
+
+			if (stream is MemoryStream)
+			{
+				return ((MemoryStream)stream).ToArray();
+			}
+			else
+			{
+				using (var streamReader = new MemoryStream())
+				{
+					await stream.CopyToAsync(streamReader);
+					return streamReader.ToArray();
+				}
+			}
+		}
 
 		public static string AsString(this Stream stream)
 		{
 			return stream.AsString(Encoding.UTF8);
 		}
 
-        public static string AsString(this Stream stream, Encoding encoding)
+		public static Task<string> AsStringAsync(this Stream stream)
+		{
+			return stream.AsStringAsync(Encoding.UTF8);
+		}
+
+		public static string AsString(this Stream stream, Encoding encoding)
         {
 			Guard.NotNull(encoding, nameof(encoding));
 
@@ -281,16 +288,36 @@ namespace SmartStore
             return result;
         }
 
-        #endregion
+		public static Task<string> AsStringAsync(this Stream stream, Encoding encoding)
+		{
+			Guard.NotNull(encoding, nameof(encoding));
 
-        #region ByteArray
+			// convert stream to string
+			Task<string> result;
 
-        /// <summary>
-        /// Converts a byte array into an object.
-        /// </summary>
-        /// <param name="bytes">Object to deserialize. May be null.</param>
-        /// <returns>Deserialized object, or null if input was null.</returns>
-        public static object ToObject(this byte[] bytes)
+			if (stream.CanSeek)
+			{
+				stream.Position = 0;
+			}
+
+			using (StreamReader sr = new StreamReader(stream, encoding))
+			{
+				result = sr.ReadToEndAsync();
+			}
+
+			return result;
+		}
+
+		#endregion
+
+		#region ByteArray
+
+		/// <summary>
+		/// Converts a byte array into an object.
+		/// </summary>
+		/// <param name="bytes">Object to deserialize. May be null.</param>
+		/// <returns>Deserialized object, or null if input was null.</returns>
+		public static object ToObject(this byte[] bytes)
         {
             if (bytes == null)
                 return null;

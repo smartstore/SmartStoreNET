@@ -32,7 +32,7 @@ namespace SmartStore.Web.Framework.Pdf
 		protected PdfRouteContent(string routeName, string action, string controller, RouteValueDictionary routeValues, ControllerContext controllerContext)
 			: base(UrlHelper.GenerateUrl(routeName, action, controller, routeValues, RouteTable.Routes, controllerContext.RequestContext, true))
 		{
-			//Guard.ArgumentNotNull(() => controllerContext);
+			//Guard.NotNull(controllerContext, nameof(controllerContext));
 			
 			//if (routeName.IsEmpty() || action.IsEmpty())
 			//{

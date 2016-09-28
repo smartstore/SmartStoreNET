@@ -7942,10 +7942,14 @@ namespace SmartStore.Data.Setup
 				{
 					DownloadGuid = Guid.NewGuid(),
 					ContentType = "audio/mp3",
-					DownloadBinary = File.ReadAllBytes(sampleDownloadsPath + "vivaldi-four-seasons-spring.mp3"),
+					MediaStorage = new MediaStorage
+					{
+						Data = File.ReadAllBytes(sampleDownloadsPath + "vivaldi-four-seasons-spring.mp3")
+					},
 					Extension = ".mp3",
 					Filename = "vivaldi-four-seasons-spring",
 					IsNew = true,
+					UpdatedOnUtc = DateTime.UtcNow
 				}
 			};
 
@@ -8016,10 +8020,14 @@ namespace SmartStore.Data.Setup
 				{
 					DownloadGuid = Guid.NewGuid(),
 					ContentType = "audio/mp3",
-					DownloadBinary = File.ReadAllBytes(sampleDownloadsPath + "beethoven-fur-elise.mp3"),
+					MediaStorage = new MediaStorage
+					{
+						Data = File.ReadAllBytes(sampleDownloadsPath + "beethoven-fur-elise.mp3")
+					},
 					Extension = ".mp3",
 					Filename = "beethoven-fur-elise.mp3",
-					IsNew = true
+					IsNew = true,
+					UpdatedOnUtc = DateTime.UtcNow
 				}
 			};
 
@@ -9372,15 +9380,18 @@ namespace SmartStore.Data.Setup
 
 		protected Picture CreatePicture(byte[] pictureBinary, string mimeType, string seoFilename)
 		{
-			mimeType = mimeType.EmptyNull();
-			mimeType = mimeType.Truncate(20);
-
+			mimeType = mimeType.EmptyNull().Truncate(20);
 			seoFilename = seoFilename.Truncate(100);
 
 			var picture = _ctx.Set<Picture>().Create();
-			picture.PictureBinary = pictureBinary;
 			picture.MimeType = mimeType;
 			picture.SeoFilename = seoFilename;
+			picture.UpdatedOnUtc = DateTime.UtcNow;
+			
+			picture.MediaStorage = new MediaStorage
+			{
+				Data = pictureBinary
+			};
 
 			return picture;
 		}

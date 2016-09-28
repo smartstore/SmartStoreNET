@@ -14,24 +14,16 @@ namespace SmartStore.Services.Seo
     /// </summary>
     public partial class UrlRecordService : IUrlRecordService
     {
-        #region Constants
+		/// <summary>
+		/// 0 = segment (EntityName.IdRange), 1 = language id
+		/// </summary>
+		const string URLRECORD_SEGMENT_KEY = "urlrecord:{0}-lang-{1}";
+		const string URLRECORD_SEGMENT_PATTERN = "urlrecord:{0}";
+		const string URLRECORD_ALL_ACTIVESLUGS_KEY = "urlrecord:all-active-slugs";
 
-		// {0} = id, {1} = name, {2} = language
-        private const string URLRECORD_KEY = "urlrecord:{0}-{1}-{2}";
-		private const string URLRECORD_ALL_ACTIVESLUGS_KEY = "urlrecord:all-active-slugs";
-		private const string URLRECORD_PATTERN_KEY = "urlrecord:";
-
-        #endregion
-
-        #region Fields
-
-        private readonly IRepository<UrlRecord> _urlRecordRepository;
+		private readonly IRepository<UrlRecord> _urlRecordRepository;
         private readonly ICacheManager _cacheManager;
 		private readonly SeoSettings _seoSettings;
-
-        #endregion
-
-        #region Ctor
 
         public UrlRecordService(ICacheManager cacheManager, IRepository<UrlRecord> urlRecordRepository, SeoSettings seoSettings)
         {
@@ -40,19 +32,20 @@ namespace SmartStore.Services.Seo
 			this._seoSettings = seoSettings;
         }
 
-        #endregion
-
-        #region Methods
-
-        public virtual void DeleteUrlRecord(UrlRecord urlRecord)
+		public virtual void DeleteUrlRecord(UrlRecord urlRecord)
         {
-            if (urlRecord == null)
-                throw new ArgumentNullException("urlRecord");
+			Guard.NotNull(urlRecord, nameof(urlRecord));
 
-            _urlRecordRepository.Delete(urlRecord);
+			try
+			{
+				// cache
+				ClearCachedSlugsSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
 
-            _cacheManager.RemoveByPattern(URLRECORD_PATTERN_KEY);
-        }
+				// db
+				_urlRecordRepository.Delete(urlRecord);
+			}
+			catch { }
+		}
 
         public virtual UrlRecord GetUrlRecordById(int urlRecordId)
         {
@@ -77,25 +70,33 @@ namespace SmartStore.Services.Seo
 
         public virtual void InsertUrlRecord(UrlRecord urlRecord)
         {
-            if (urlRecord == null)
-                throw new ArgumentNullException("urlRecord");
+			Guard.NotNull(urlRecord, nameof(urlRecord));
 
-            _urlRecordRepository.Insert(urlRecord);
+			try
+			{
+				// db
+				_urlRecordRepository.Insert(urlRecord);
 
-            //cache
-            _cacheManager.RemoveByPattern(URLRECORD_PATTERN_KEY);
+				// cache
+				ClearCachedSlugsSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
+			}
+			catch { }
         }
 
         public virtual void UpdateUrlRecord(UrlRecord urlRecord)
         {
-            if (urlRecord == null)
-                throw new ArgumentNullException("urlRecord");
+			Guard.NotNull(urlRecord, nameof(urlRecord));
 
-            _urlRecordRepository.Update(urlRecord);
+			try
+			{
+				// db
+				_urlRecordRepository.Update(urlRecord);
 
-            //cache
-            _cacheManager.RemoveByPattern(URLRECORD_PATTERN_KEY);
-        }
+				// cache
+				ClearCachedSlugsSegment(urlRecord.EntityName, urlRecord.EntityId, urlRecord.LanguageId);
+			}
+			catch { }
+		}
 
         public virtual IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, int? entityId, int? languageId, bool? isActive)
         {
@@ -124,7 +125,7 @@ namespace SmartStore.Services.Seo
 
 		public virtual IList<UrlRecord> GetUrlRecordsFor(string entityName, int entityId, bool activeOnly = false)
 		{
-			Guard.ArgumentNotEmpty(() => entityName);
+			Guard.NotEmpty(entityName, nameof(entityName));
 
 			var query = from ur in _urlRecordRepository.Table
 						where ur.EntityId == entityId &&
@@ -181,18 +182,12 @@ namespace SmartStore.Services.Seo
 			}
 			else
 			{
-				string cacheKey = string.Format(URLRECORD_KEY, entityId, entityName, languageId);
-				slug = _cacheManager.Get(cacheKey, () =>
+				var slugs = GetCachedSlugsSegment(entityName, entityId, languageId);
+
+				if (!slugs.TryGetValue(entityId, out slug))
 				{
-					var query = from ur in _urlRecordRepository.Table
-								where ur.EntityId == entityId &&
-								ur.EntityName == entityName &&
-								ur.LanguageId == languageId &&
-								ur.IsActive
-								orderby ur.Id descending
-								select ur.Slug;
-					return query.FirstOrDefault() ?? string.Empty;
-				});
+					return string.Empty;
+				}
 			}
 
 			return slug;
@@ -200,8 +195,7 @@ namespace SmartStore.Services.Seo
 
         public virtual UrlRecord SaveSlug<T>(T entity, string slug, int languageId) where T : BaseEntity, ISlugSupported
         {
-            if (entity == null)
-                throw new ArgumentNullException("entity");
+			Guard.NotNull(entity, nameof(entity));
 
             int entityId = entity.Id;
             string entityName = typeof(T).Name;
@@ -360,6 +354,86 @@ namespace SmartStore.Services.Seo
 			return count;
 		}
 
-        #endregion
-    }
+		protected virtual IDictionary<int, string> GetCachedSlugsSegment(string entityName, int entityId, int languageId)
+		{
+			Guard.NotEmpty(entityName, nameof(entityName));
+
+			int minEntityId = 0;
+			int maxEntityId = 0;
+
+			var segmentKey = GetSegmentKey(entityName, entityId, out minEntityId, out maxEntityId);
+			var cacheKey = BuildCacheSegmentKey(segmentKey, languageId);
+
+			return _cacheManager.Get(cacheKey, () =>
+			{
+				var query = from ur in _urlRecordRepository.TableUntracked
+							where 
+								ur.EntityId >= minEntityId &&
+								ur.EntityId <= maxEntityId &&
+								ur.EntityName == entityName &&
+								ur.LanguageId == languageId &&
+								ur.IsActive
+							orderby ur.Id descending
+							select ur;
+
+				var urlRecords = query.ToList();
+
+				var dict = new Dictionary<int, string>(urlRecords.Count);
+
+				foreach (var ur in urlRecords)
+				{
+					dict[ur.EntityId] = ur.Slug.EmptyNull();
+				}
+
+				return dict;
+			});
+		}
+
+		/// <summary>
+		/// Clears the cached segment from the cache
+		/// </summary>
+		protected virtual void ClearCachedSlugsSegment(string entityName, int entityId, int? languageId = null)
+		{
+			var segmentKey = GetSegmentKey(entityName, entityId);
+
+			if (languageId.HasValue && languageId.Value > 0)
+			{
+				_cacheManager.Remove(BuildCacheSegmentKey(segmentKey, languageId.Value));
+			}
+			else
+			{
+				_cacheManager.RemoveByPattern(URLRECORD_SEGMENT_PATTERN.FormatInvariant(segmentKey));
+			}
+
+			// always delete this (in case when LoadAllOnStartup is true)
+			_cacheManager.Remove(URLRECORD_ALL_ACTIVESLUGS_KEY);
+		}
+
+		private string BuildCacheSegmentKey(string segment, int languageId)
+		{
+			return String.Format(URLRECORD_SEGMENT_KEY, segment, languageId);
+		}
+
+		private string GetSegmentKey(string entityName, int entityId)
+		{
+			int minId = 0;
+			int maxId = 0;
+
+			return GetSegmentKey(entityName, entityId, out minId, out maxId);
+		}
+
+		private string GetSegmentKey(string entityName, int entityId, out int minId, out int maxId)
+		{
+			minId = 0;
+			maxId = 0;
+			
+			// max 1000 values per cache item
+			var entityRange = Math.Ceiling((decimal)entityId / 1000) * 1000;
+
+			maxId = (int)entityRange;
+			minId = maxId - 999;
+
+			return (entityName + "." + entityRange.ToString()).ToLowerInvariant();
+		}
+	}
 }

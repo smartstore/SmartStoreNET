@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using SmartStore.Core.IO.VirtualPath;
-using SmartStore.Core.IO.WebSite;
+using SmartStore.Core;
+using SmartStore.Core.Infrastructure.DependencyManagement;
+using SmartStore.Core.IO;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Packaging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Themes;
 
 namespace SmartStore.Packager
-{
-	
+{	
 	internal class PackageCreator
 	{
 		private readonly IVirtualPathProvider _vpp;
@@ -25,9 +23,7 @@ namespace SmartStore.Packager
 			_outputPath = outputPath;
 
 			_vpp = new RootedVirtualPathProvider(rootPath);
-			var wsf = new WebSiteFolder(_vpp);
-
-			_packageBuilder = new PackageBuilder(wsf);
+			_packageBuilder = new PackageBuilder(new ApplicationEnvironment(_vpp, NullLogger.Instance));
 		}
 
 		public FileInfo CreatePluginPackage(string path)
@@ -113,5 +109,4 @@ namespace SmartStore.Packager
 			return fileInfo;
 		}
 	}
-
 }

@@ -87,7 +87,7 @@ namespace SmartStore.Core.Packaging
 			}
 			return new PackagingResult
 			{
-				ExtensionType = "Plugin",
+				ExtensionType = "Theme",
 				PackageName = themeManifest.ThemeName,
 				PackageVersion = themeManifest.Version,
 				PackageStream = _packageBuilder.BuildPackage(themeManifest)

@@ -23,6 +23,7 @@
 "LoadingFiles":"Loading files...",
 "DirIsEmpty":"This folder is empty",
 "NoFilesFound":"No files found",
+"Upload":"Upload",
 "T_CreateDir":"Create new folder",
 "T_RenameDir":"Rename folder",
 "T_DeleteDir":"Delete selected folder",
@@ -60,10 +61,10 @@
 "E_RenameDirInvalidPath":"Cannot rename directory - path doesn't exist",
 "E_RenameFile":"Error renaming file",
 "E_RenameFileInvalidPath":"Cannot rename file - file doesn't exist",
-"E_UploadNotAll":"There is and error uploading some files. ",
+"E_UploadNotAll":"There is and error uploading some files.",
 "E_UploadNoFiles":"There are no files to upload or file is too big.",
 "E_UploadInvalidPath":"Cannot upload files - path doesn't exist",
-"E_FileExtensionForbidden":"This type of files cannot be handeled - invalid extension ",
+"E_FileExtensionForbidden":"This type of file cannot be handled - invalid file extension.",
 "DownloadFile":"Download",
 "T_DownloadFile":"Download file",
 "E_CannotDeleteRoot":"Cannot delete root folder",
@@ -75,5 +76,6 @@
 "E_CopyFile":"Error copying file",
 "E_CopyFileInvalisPath":"Cannot copy file - path doesn't exist",
 "E_CopyDirInvalidPath":"Cannot copy directory - path doesn't exist",
-"E_CreateArchive":"Error creating zip archive."
+"E_CreateArchive":"Error creating zip archive.",
+"E_UploadingFile":"error"
 }

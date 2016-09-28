@@ -263,11 +263,11 @@ namespace SmartStore.Services.Shipping
             if (shoppingCartItem == null)
                 throw new ArgumentNullException("shoppingCartItem");
 
-            decimal weight = decimal.Zero;
+            var weight = decimal.Zero;
 
             if (shoppingCartItem.Item.Product != null)
             {
-                decimal attributesTotalWeight = decimal.Zero;
+                var attributesTotalWeight = decimal.Zero;
 
                 if (!String.IsNullOrEmpty(shoppingCartItem.Item.AttributesXml))
                 {
@@ -303,23 +303,31 @@ namespace SmartStore.Services.Shipping
             if (shoppingCartItem == null)
                 throw new ArgumentNullException("shoppingCartItem");
 
-            decimal totalWeight = GetShoppingCartItemWeight(shoppingCartItem) * shoppingCartItem.Item.Quantity;
+            var totalWeight = GetShoppingCartItemWeight(shoppingCartItem) * shoppingCartItem.Item.Quantity;
             return totalWeight;
         }
 
-        /// <summary>
-        /// Gets shopping cart weight
-        /// </summary>
-        /// <param name="cart">Cart</param>
-        /// <returns>Shopping cart weight</returns>
-		public virtual decimal GetShoppingCartTotalWeight(IList<OrganizedShoppingCartItem> cart)
+		public virtual decimal GetShoppingCartTotalWeight(IList<OrganizedShoppingCartItem> cart, bool includeFreeShippingProducts = true)
         {
-            Customer customer = cart.GetCustomer();
+			var totalWeight = decimal.Zero;
+			var customer = cart.GetCustomer();
 
-            decimal totalWeight = decimal.Zero;
-            // shopping cart items
-            foreach (var shoppingCartItem in cart)
-                totalWeight += GetShoppingCartItemTotalWeight(shoppingCartItem);
+			// shopping cart items
+			foreach (var cartItem in cart)
+			{
+				var product = cartItem.Item.Product;
+				if (product != null)
+				{
+					if (!includeFreeShippingProducts && product.IsFreeShipping)
+					{
+						// skip product
+					}
+					else
+					{
+						totalWeight += GetShoppingCartItemTotalWeight(cartItem);
+					}
+				}
+			}
 
             // checkout attributes
             if (customer != null)
@@ -329,7 +337,9 @@ namespace SmartStore.Services.Shipping
 				{
 					var caValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(checkoutAttributesXml);
 					foreach (var caValue in caValues)
+					{
 						totalWeight += caValue.WeightAdjustment;
+					}
 				}
             }
 
@@ -415,7 +425,7 @@ namespace SmartStore.Services.Shipping
                     foreach (string error in getShippingOptionResponse.Errors)
                     {
                         result.AddError(error);
-						_logger.Warning(string.Concat(srcm.Metadata.FriendlyName, ": ", error));
+						_logger.Warn(string.Concat(srcm.Metadata.FriendlyName, ": ", error));
                     }
                 }
             }

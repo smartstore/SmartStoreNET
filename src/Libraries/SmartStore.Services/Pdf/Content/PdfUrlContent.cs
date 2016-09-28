@@ -15,7 +15,7 @@ namespace SmartStore.Services.Pdf
 
 		public PdfUrlContent(string url)
 		{
-			Guard.ArgumentNotEmpty(() => url);
+			Guard.NotEmpty(url, nameof(url));
 			_url = url;
 
 			this.SendAuthCookie = false;

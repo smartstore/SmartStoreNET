@@ -54,7 +54,7 @@ namespace SmartStore
 
         internal static void WriteCharAsUnicode(char c, TextWriter writer)
         {
-            Guard.ArgumentNotNull(writer, "writer");
+            Guard.NotNull(writer, "writer");
 
             char h1 = ((c >> 12) & '\x000f').ToHex();
             char h2 = ((c >> 8) & '\x000f').ToHex();
@@ -207,7 +207,7 @@ namespace SmartStore
 		[DebuggerStepThrough]
         public static bool IsWhiteSpace(this string value)
         {
-            Guard.ArgumentNotNull(value, "value");
+            Guard.NotNull(value, "value");
 
             if (value.Length == 0)
                 return false;
@@ -264,13 +264,46 @@ namespace SmartStore
 			return value;
 		}
 
-        [DebuggerStepThrough]
-        public static bool IsWebUrl(this string value)
+        private static bool IsWebUrlInternal(this string value, bool schemeIsOptional)
         {
-            return !String.IsNullOrEmpty(value) && RegularExpressions.IsWebUrl.IsMatch(value.Trim());
-        }
+			if (String.IsNullOrEmpty(value))
+				return false;
 
-        [DebuggerStepThrough]
+			value = value.Trim().ToLowerInvariant();
+
+			if (schemeIsOptional && value.StartsWith("//"))
+			{
+				value = "http:" + value;
+			}
+
+			return Uri.IsWellFormedUriString(value, UriKind.Absolute) &&
+				(value.StartsWith("http://") || value.StartsWith("https://") || value.StartsWith("ftp://"));
+
+			#region Old (obsolete)
+			//// Uri.TryCreate() does not accept port numbers in uri strings.
+			//if (schemeIsOptional)
+			//{
+			//	Uri uri;
+			//	return Uri.TryCreate(value, UriKind.Absolute, out uri);
+			//}
+
+			//return RegularExpressions.IsWebUrl.IsMatch(value.Trim());
+			#endregion
+		}
+
+		[DebuggerStepThrough]
+		public static bool IsWebUrl(this string value)
+		{
+			return value.IsWebUrlInternal(false);
+		}
+
+		[DebuggerStepThrough]
+		public static bool IsWebUrl(this string value, bool schemeIsOptional)
+		{
+			return value.IsWebUrlInternal(schemeIsOptional);
+		}
+
+		[DebuggerStepThrough]
         public static bool IsEmail(this string value)
         {
             return !String.IsNullOrEmpty(value) && RegularExpressions.IsEmail.IsMatch(value.Trim());
@@ -317,7 +350,7 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static string Truncate(this string value, int maxLength, string suffix = "")
         {
-            Guard.ArgumentNotNull(suffix, "suffix");
+            Guard.NotNull(suffix, "suffix");
             Guard.IsPositive(maxLength, nameof(maxLength));
 
             int subStringLength = maxLength - suffix.Length;
@@ -349,8 +382,8 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static string EnsureStartsWith(this string value, string startsWith)
 		{
-			Guard.ArgumentNotNull(value, "value");
-			Guard.ArgumentNotNull(startsWith, "startsWith");
+			Guard.NotNull(value, "value");
+			Guard.NotNull(startsWith, "startsWith");
 
 			return value.StartsWith(startsWith) ? value : (startsWith + value);
 		}
@@ -364,8 +397,8 @@ namespace SmartStore
 		[DebuggerStepThrough]
         public static string EnsureEndsWith(this string value, string endWith)
         {
-            Guard.ArgumentNotNull(value, "value");
-            Guard.ArgumentNotNull(endWith, "endWith");
+            Guard.NotNull(value, "value");
+            Guard.NotNull(endWith, "endWith");
 
             if (value.Length >= endWith.Length)
             {

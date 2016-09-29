@@ -234,7 +234,7 @@ namespace SmartStore.ComponentModel
 			var key = new PropertyKey(type, propertyName);
 			if (!_singlePropertiesCache.TryGetValue(key, out fastProperty))
 			{
-				var pi = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance | BindingFlags.IgnoreCase);
+				var pi = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.IgnoreCase);
 				if (pi != null)
 				{
 					fastProperty = CreateInstance(pi);

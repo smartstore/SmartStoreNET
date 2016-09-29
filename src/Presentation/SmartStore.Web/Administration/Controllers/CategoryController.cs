@@ -118,6 +118,8 @@ namespace SmartStore.Admin.Controllers
 
 				_localizedEntityService.SaveLocalizedValue(category, x => x.BottomDescription, localized.BottomDescription, localized.LanguageId);
 
+                _localizedEntityService.SaveLocalizedValue(category, x => x.BadgeText, localized.BadgeText, localized.LanguageId);
+
                 _localizedEntityService.SaveLocalizedValue(category, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
 
                 _localizedEntityService.SaveLocalizedValue(category, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
@@ -183,6 +185,14 @@ namespace SmartStore.Admin.Controllers
             model.AvailableDefaultViewModes.Add(
                 new SelectListItem { Value = "list", Text = _localizationService.GetResource("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
             );
+
+            // add available badges
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "0", Text = "Default", Selected = model.BadgeStyle.ToString().Equals("0") });
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "1", Text = "Success", Selected = model.BadgeStyle.ToString().Equals("1") });
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "2", Text = "Warning", Selected = model.BadgeStyle.ToString().Equals("2") });
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "3", Text = "Important", Selected = model.BadgeStyle.ToString().Equals("3") });
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "4", Text = "Info", Selected = model.BadgeStyle.ToString().Equals("4") });
+            model.AvailableBadgeStyles.Add(new SelectListItem { Value = "5", Text = "Inverse", Selected = model.BadgeStyle.ToString().Equals("5") });
         }
 
         [NonAction]
@@ -617,6 +627,7 @@ namespace SmartStore.Admin.Controllers
 				locale.FullName = category.GetLocalized(x => x.FullName, languageId, false, false);
                 locale.Description = category.GetLocalized(x => x.Description, languageId, false, false);
 				locale.BottomDescription = category.GetLocalized(x => x.BottomDescription, languageId, false, false);
+                locale.BadgeText = category.GetLocalized(x => x.BadgeText, languageId, false, false);
                 locale.MetaKeywords = category.GetLocalized(x => x.MetaKeywords, languageId, false, false);
                 locale.MetaDescription = category.GetLocalized(x => x.MetaDescription, languageId, false, false);
                 locale.MetaTitle = category.GetLocalized(x => x.MetaTitle, languageId, false, false);

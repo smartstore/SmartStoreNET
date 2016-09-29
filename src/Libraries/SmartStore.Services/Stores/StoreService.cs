@@ -7,6 +7,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
+using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Stores
 {
@@ -82,7 +83,8 @@ namespace SmartStore.Services.Stores
 					.OrderBy(x => x.DisplayOrder)
 					.ThenBy(x => x.Name);
 
-				var stores = query.ToList();
+				//var stores = query.ToList();
+				var stores = query.FromCache();
 				return stores;
 			});
 		}

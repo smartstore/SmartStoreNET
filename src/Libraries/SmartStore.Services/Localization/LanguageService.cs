@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Stores;
 using SmartStore.Collections;
 using SmartStore.Core;
+using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Localization
 {
@@ -117,7 +118,8 @@ namespace SmartStore.Services.Localization
 				if (!showHidden)
 					query = query.Where(x => x.Published);
 				query = query.OrderBy(x => x.DisplayOrder);
-				return query.ToList();
+				//return query.ToList();
+				return query.FromCache();
 			});
 
 			// store mapping

@@ -191,6 +191,13 @@ namespace SmartStore.Core.IO
 
 		public string GetVirtualPath(string relativePath)
 		{
+			Guard.NotEmpty(relativePath, nameof(relativePath));
+
+			if (relativePath.StartsWith("~/"))
+			{
+				return relativePath;
+			}
+
 			return _root + relativePath.EmptyNull().Replace(Path.DirectorySeparatorChar, '/').TrimStart('/');
 		}
 	}

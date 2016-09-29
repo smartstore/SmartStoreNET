@@ -119,8 +119,13 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Caching\CacheInvalidationInterceptor.cs" />
     <Compile Include="Caching\EfCacheImpl.cs" />
     <Compile Include="Caching\EfCachingPolicy.cs" />
+    <Compile Include="Caching\QueryCache.cs" />
+    <Compile Include="Caching\QueryCacheExtensionsAsync.cs" />
+    <Compile Include="Caching\QueryCacheExtensions.cs" />
+    <Compile Include="Caching\QueryCacheUtil.cs" />
     <Compile Include="Mapping\DataExchange\ImportProfileMap.cs" />
     <Compile Include="Mapping\DataExchange\SyncMappingMap.cs" />
     <Compile Include="Mapping\DataExchange\ExportDeploymentMap.cs" />
@@ -420,6 +425,10 @@
     <Compile Include="Migrations\201609201852449_log4net.cs" />
     <Compile Include="Migrations\201609201852449_log4net.Designer.cs">
       <DependentUpon>201609201852449_log4net.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201609281549565_CategoryBadges.cs" />
+    <Compile Include="Migrations\201609281549565_CategoryBadges.Designer.cs">
+      <DependentUpon>201609281549565_CategoryBadges.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -781,6 +790,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201609201852449_log4net.resx">
       <DependentUpon>201609201852449_log4net.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201609281549565_CategoryBadges.resx">
+      <DependentUpon>201609281549565_CategoryBadges.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

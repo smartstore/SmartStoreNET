@@ -11,6 +11,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Data.Setup;
 using SmartStore.Data.Caching;
 using SmartStore.Core.Caching;
+using System.Web.Hosting;
 
 namespace SmartStore.Data
 {
@@ -29,30 +30,36 @@ namespace SmartStore.Data
 			{
 				base.SetDefaultConnectionFactory(provider.GetConnectionFactory());
 
-				// prepare EntityFramework 2nd level cache
-				ICache cache = null;
-				try
-				{
-					var innerCache = EngineContext.Current.Resolve<ICacheManager>();
-					if (innerCache.IsDistributedCache)
-					{
-						// fuckin' EfCache puts internal, unserializable objects to the cache!!!
-						innerCache = EngineContext.Current.Resolve<ICacheManager>("memory");
-					}
-					cache = new EfCacheImpl(innerCache);
-				}
-				catch
-				{
-					cache = new InMemoryCache();
-				}
+				//// prepare EntityFramework 2nd level cache
+				//ICache cache = null;
+				//try
+				//{
+				//	var innerCache = EngineContext.Current.Resolve<ICacheManager>();
+				//	if (innerCache.IsDistributedCache)
+				//	{
+				//		// fuckin' EfCache puts internal, unserializable objects to the cache!!!
+				//		innerCache = EngineContext.Current.Resolve<ICacheManager>("memory");
+				//	}
+				//	cache = new EfCacheImpl(innerCache);
+				//}
+				//catch
+				//{
+				//	cache = new InMemoryCache();
+				//}
 
-				var transactionHandler = new CacheTransactionHandler(cache);
-				AddInterceptor(transactionHandler);
+				//var transactionHandler = new CacheTransactionHandler(cache);
+				//AddInterceptor(transactionHandler);
 
-				Loaded +=
-				  (sender, args) => args.ReplaceService<DbProviderServices>(
-					(s, _) => new CachingProviderServices(s, transactionHandler,
-					  new EfCachingPolicy()));
+				//Loaded +=
+				//  (sender, args) => args.ReplaceService<DbProviderServices>(
+				//	(s, _) => new CachingProviderServices(s, transactionHandler,
+				//	  new EfCachingPolicy()));
+
+				if (HostingEnvironment.IsHosted)
+				{
+					var queryCache = EngineContext.Current.Resolve<QueryCache>();
+					AddInterceptor(new CacheInvalidationInterceptor(queryCache));
+				}	
 			}
 		}
 	}

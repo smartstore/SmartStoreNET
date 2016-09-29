@@ -3,6 +3,7 @@ using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Data.Caching2
 {
@@ -46,16 +47,13 @@ namespace SmartStore.Data.Caching2
 
 			if (dbQuery != null)
 			{
-				const BindingFlags privateFieldFlags =
-					BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public;
+				var internalQueryProperty = FastProperty.GetProperty(source.GetType(), "InternalQuery");
+				var internalQuery = internalQueryProperty.GetValue(source);
 
-				var internalQuery =
-					source.GetType().GetProperty("InternalQuery", privateFieldFlags)
-						.GetValue(source);
+				var objectQueryProperty = FastProperty.GetProperty(internalQuery.GetType(), "ObjectQuery");
+				var objectQuery = objectQueryProperty.GetValue(internalQuery);
 
-				return
-					(ObjectQuery)internalQuery.GetType().GetProperty("ObjectQuery", privateFieldFlags)
-						.GetValue(internalQuery);
+				return objectQuery as ObjectQuery;
 			}
 
 			return null;

@@ -12,6 +12,7 @@ namespace SmartStore.Data.Caching2
 	{
 		private const string KEYPREFIX = "efcache:";
 		private readonly ICacheManager _cache;
+		private readonly object _lock = new object();
 
 		public DbCache(ICacheManager innerCache)
 		{
@@ -74,24 +75,84 @@ namespace SmartStore.Data.Caching2
 
 		public void InvalidateSets(IEnumerable<string> entitySets)
 		{
+			Guard.NotNull(entitySets, nameof(entitySets));
+
+			if (!entitySets.Any())
+				return;
+
 			var sets = entitySets.Distinct().ToArray();
-			//throw new NotImplementedException();
+
+			var lookup = GetEntitySetToKeyLookup();
+
+			lock (_lock)
+			{
+				var itemsToInvalidate = new HashSet<string>();
+
+				foreach (var entitySet in sets)
+				{
+					HashSet<string> keys;
+
+					if (lookup.TryGetValue(entitySet, out keys))
+					{
+						itemsToInvalidate.UnionWith(keys);
+						lookup.Remove(entitySet);
+					}
+				}
+
+				var lookupIsDirty = false;
+
+				foreach (var key in itemsToInvalidate)
+				{
+					var tmp = InvalidateItemUnlocked(key, lookup);
+					if (tmp)
+						lookupIsDirty = true;
+				}
+
+				if (lookupIsDirty)
+				{
+					PutEntitySetToKeyLookup(lookup);
+				}
+			}
 		}
 
 		public void InvalidateItem(string key)
 		{
-			//key = HashKey(key);
+			Guard.NotEmpty(key, nameof(key));
 
-			//lock (String.Intern(key))
-			//{
-			//	_cache.Remove(key);
+			lock (String.Intern(key))
+			{
+				var lookup = GetEntitySetToKeyLookup();
+				var lookupIsDirty = InvalidateItemUnlocked(key, lookup);
 
-			//	var lookup = GetEntitySetToKeyLookup();
-			//	bool lookupIsDirty = false;
+				if (lookupIsDirty)
+				{
+					PutEntitySetToKeyLookup(lookup);
+				}
+			}
+		}
 
-			//	foreach (var p in _entitySetToKey)
-			//		p.Value.Remove(key);
-			//}
+		public bool InvalidateItemUnlocked(string key, Dictionary<string, HashSet<string>> lookup)
+		{
+			var lookupIsDirty = false;
+
+			if (_cache.Contains(key))
+			{
+				var entry = _cache.Get<DbCacheEntry>(key);
+
+				_cache.Remove(key);
+
+				foreach (var set in entry.EntitySets)
+				{
+					HashSet<string> keys;
+					if (lookup.TryGetValue(set, out keys))
+					{
+						keys.Remove(key);
+						lookupIsDirty = true;
+					}
+				}
+			}
+
+			return lookupIsDirty;
 		}
 
 		private Dictionary<string, HashSet<string>> GetEntitySetToKeyLookup()

@@ -10,15 +10,18 @@ namespace SmartStore.Data.Caching2
 		private readonly DbCommandDefinition _commandDefintion;
 		private readonly CommandTreeFacts _commandTreeFacts;
 		private readonly CacheTransactionInterceptor _cacheTransactionInterceptor;
+		private readonly DbCachingPolicy _policy;
 
 		public CachingCommandDefinition(
 			DbCommandDefinition commandDefinition, 
 			CommandTreeFacts commandTreeFacts, 
-			CacheTransactionInterceptor cacheTransactionInterceptor)
+			CacheTransactionInterceptor cacheTransactionInterceptor,
+			DbCachingPolicy policy)
 		{
 			_commandDefintion = commandDefinition;
 			_commandTreeFacts = commandTreeFacts;
 			_cacheTransactionInterceptor = cacheTransactionInterceptor;
+			_policy = policy;
 		}
 
 		public bool IsQuery
@@ -38,7 +41,7 @@ namespace SmartStore.Data.Caching2
 
 		public override DbCommand CreateCommand()
 		{
-			return new CachingCommand(_commandDefintion.CreateCommand(), _commandTreeFacts, _cacheTransactionInterceptor);
+			return new CachingCommand(_commandDefintion.CreateCommand(), _commandTreeFacts, _cacheTransactionInterceptor, _policy);
 		}
 	}
 }

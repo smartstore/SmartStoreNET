@@ -12,11 +12,13 @@ namespace SmartStore.Data.Caching2
 	{
 		private readonly DbProviderServices _providerServices;
 		private readonly CacheTransactionInterceptor _cacheTransactionInterceptor;
+		private readonly DbCachingPolicy _policy;
 
-		public CachingProviderServices(DbProviderServices providerServices, CacheTransactionInterceptor cacheTransactionInterceptor)
+		public CachingProviderServices(DbProviderServices providerServices, CacheTransactionInterceptor cacheTransactionInterceptor, DbCachingPolicy policy = null)
 		{
 			_providerServices = providerServices;
 			_cacheTransactionInterceptor = cacheTransactionInterceptor;
+			_policy = policy ?? new DbCachingPolicy();
 		}
 
 		protected override DbCommandDefinition CreateDbCommandDefinition(DbProviderManifest providerManifest, DbCommandTree commandTree)
@@ -24,7 +26,8 @@ namespace SmartStore.Data.Caching2
 			return new CachingCommandDefinition(
 				_providerServices.CreateCommandDefinition(providerManifest, commandTree),
 				new CommandTreeFacts(commandTree),
-				_cacheTransactionInterceptor);
+				_cacheTransactionInterceptor,
+				_policy);
 		}
 
 		protected override DbProviderManifest GetDbProviderManifest(string manifestToken)
@@ -91,16 +94,16 @@ namespace SmartStore.Data.Caching2
 
 		public override DbCommandDefinition CreateCommandDefinition(DbCommand prototype)
 		{
-			var cachingCommand = prototype as CachingCommand;
+			var command = prototype as CachingCommand;
 
 			var commandDefinition =
 				_providerServices.CreateCommandDefinition(
-					cachingCommand != null
-						? cachingCommand.WrappedCommand
+					command != null
+						? command.WrappedCommand
 						: prototype);
 
-			return cachingCommand != null
-				? new CachingCommandDefinition(commandDefinition, cachingCommand.CommandTreeFacts, cachingCommand.CacheTransactionInterceptor)
+			return command != null
+				? new CachingCommandDefinition(commandDefinition, command.CommandTreeFacts, command.CacheTransactionInterceptor, command.CachingPolicy)
 				: commandDefinition;
 		}
 	}

@@ -130,8 +130,8 @@
     <Compile Include="Caching2\CommandTreeFacts.cs" />
     <Compile Include="Caching2\DbCache.cs" />
     <Compile Include="Caching2\CachedDbResult.cs" />
+    <Compile Include="Caching2\DbCachingPolicy.cs" />
     <Compile Include="Caching2\IDbCache.cs" />
-    <Compile Include="Caching2\ObjectContextExtensions.cs" />
     <Compile Include="Caching2\QueryableExtensions.cs" />
     <Compile Include="Caching2\QueryRegistrar.cs" />
     <Compile Include="Caching2\SingletonQueries.cs" />

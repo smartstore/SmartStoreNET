@@ -15,11 +15,13 @@ namespace SmartStore.Data.Caching2
 		private readonly DbCommand _command;
 		private readonly CommandTreeFacts _commandTreeFacts;
 		private readonly CacheTransactionInterceptor _cacheTransactionInterceptor;
+		private readonly DbCachingPolicy _policy;
 
 		public CachingCommand(
 			DbCommand command, 
 			CommandTreeFacts commandTreeFacts,
-			CacheTransactionInterceptor cacheTransactionInterceptor)
+			CacheTransactionInterceptor cacheTransactionInterceptor,
+			DbCachingPolicy policy)
 		{
 			Guard.NotNull(command, nameof(command));
 			Guard.NotNull(commandTreeFacts, nameof(commandTreeFacts));
@@ -28,6 +30,7 @@ namespace SmartStore.Data.Caching2
 			_command = command;
 			_commandTreeFacts = commandTreeFacts;
 			_cacheTransactionInterceptor = cacheTransactionInterceptor;
+			_policy = policy;
 		}
 
 		internal CommandTreeFacts CommandTreeFacts
@@ -40,6 +43,11 @@ namespace SmartStore.Data.Caching2
 			get { return _cacheTransactionInterceptor; }
 		}
 
+		internal DbCachingPolicy CachingPolicy
+		{
+			get { return _policy; }
+		}
+
 		internal DbCommand WrappedCommand
 		{
 			get { return _command; }
@@ -49,7 +57,11 @@ namespace SmartStore.Data.Caching2
 		{
 			get
 			{
-				return _commandTreeFacts.IsQuery && IsQueryCached && !_commandTreeFacts.UsesNonDeterministicFunctions;
+				return _commandTreeFacts.IsQuery &&
+					   (IsQueryCached || !_commandTreeFacts.UsesNonDeterministicFunctions
+					   && _policy.CanBeCached(_commandTreeFacts.AffectedEntitySets, CommandText,
+						   Parameters.Cast<DbParameter>()
+							   .Select(p => new KeyValuePair<string, object>(p.ParameterName, p.Value))));
 			}
 		}
 
@@ -231,13 +243,12 @@ namespace SmartStore.Data.Caching2
 				RecordsAffected = reader.RecordsAffected
 			};
 
-			// TODO: somehow determine minCacheableRows & maxCachableRows
-			int minCacheableRows = 0, maxCachableRows = int.MaxValue;
+			int minCacheableRows, maxCachableRows;
+			_policy.GetCacheableRows(_commandTreeFacts.AffectedEntitySets, out minCacheableRows, out maxCachableRows);
 
 			if (IsQueryCached || (queryResults.Count >= minCacheableRows && queryResults.Count <= maxCachableRows))
 			{
-				// TODO: somehow determine expiration
-				TimeSpan? duration = null;
+				TimeSpan? duration = _policy.GetExpirationTimeout(_commandTreeFacts.AffectedEntitySets);
 
 				_cacheTransactionInterceptor.PutItem(
 					Transaction,

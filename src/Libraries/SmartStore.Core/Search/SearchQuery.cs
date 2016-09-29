@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Search
 {
@@ -44,6 +41,7 @@ namespace SmartStore.Core.Search
 
 		// language
 		public int? LanguageId { get; protected set; }
+		public string LanguageSeoCode { get; protected set; }
 
 		// Search term
 		public string[] Fields { get; protected set; }
@@ -63,11 +61,12 @@ namespace SmartStore.Core.Search
 
 		#region Fluent builder
 
-		public TQuery WithLanguage(int languageId)
+		public TQuery WithLanguage(Language language)
 		{
-			Guard.IsPositive(languageId, nameof(languageId));
+			Guard.NotNull(language, nameof(language));
 
-			LanguageId = languageId;
+			LanguageId = language.Id;
+			LanguageSeoCode = language.UniqueSeoCode.EmptyNull().ToLower();
 
 			return (this as TQuery);
 		}

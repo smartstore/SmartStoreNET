@@ -63,7 +63,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery FeaturedOnly(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("_IsFeaturedProduct", value));
+			return WithFilter(SearchFilter.ByField("_FeaturedOnly", value));
 		}
 
 		public CatalogSearchQuery VisibleIndividuallyOnly(bool value)
@@ -93,7 +93,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithProductIds(params int[] ids)
 		{
-			return WithFilter(SearchFilter.ByField("_Ids", ids));
+			return WithFilter(SearchFilter.ByField("Id", ids));
 		}
 
 		public CatalogSearchQuery WithProductId(int? fromId, int? toId)
@@ -103,27 +103,27 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithCategoryIds(params int[] ids)
 		{
-			return WithFilter(SearchFilter.ByField("ProductCategories._CategoryIds", ids));
+			return WithFilter(SearchFilter.ByField("ProductCategories.CategoryId", ids));
 		}
 
-		public CatalogSearchQuery WithoutCategories(bool value)
+		public CatalogSearchQuery HasAnyCategories(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("ProductCategories._Without", value));
+			return WithFilter(SearchFilter.ByField("ProductCategories._Any", value));
 		}
 
 		public CatalogSearchQuery WithManufacturerIds(params int[] ids)
 		{
-			return WithFilter(SearchFilter.ByField("ProductManufacturers._ManufacturerIds", ids));
+			return WithFilter(SearchFilter.ByField("ProductManufacturers.ManufacturerId", ids));
 		}
 
-		public CatalogSearchQuery WithoutManufacturers(bool value)
+		public CatalogSearchQuery HasAnyManufacturers(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("ProductManufacturers._Without", value));
+			return WithFilter(SearchFilter.ByField("ProductManufacturers._Any", value));
 		}
 
 		public CatalogSearchQuery WithProductTagIds(params int[] ids)
 		{
-			return WithFilter(SearchFilter.ByField("ProductTags._Ids", ids));
+			return WithFilter(SearchFilter.ByField("ProductTags.Id", ids));
 		}
 
 		public CatalogSearchQuery WithStockQuantity(int? fromQuantity, int? toQuantity)

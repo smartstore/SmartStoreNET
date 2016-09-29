@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SmartStore.Core.Search
 {
@@ -7,6 +6,7 @@ namespace SmartStore.Core.Search
 	{
 		// language
 		int? LanguageId { get; }
+		string LanguageSeoCode { get; }
 
 		// Search term
 		string[] Fields { get; }

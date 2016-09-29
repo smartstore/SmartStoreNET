@@ -45,7 +45,7 @@ namespace SmartStore.Core.Caching
 		/// <param name="key">Key</param>
 		/// <param name="value">Value</param>
 		/// <param name="duration">Absolute expiration time</param>
-		void Set(string key, object value, TimeSpan? duration = null);
+		void Put(string key, object value, TimeSpan? duration = null);
 
         /// <summary>
         /// Gets a value indicating whether the value associated with the specified key is cached

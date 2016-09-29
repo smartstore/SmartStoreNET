@@ -71,7 +71,7 @@ namespace SmartStore.Core.Caching
 				if (!TryGet(key, out value))
 				{
 					value = acquirer();
-					Set(key, value, duration);
+					Put(key, value, duration);
 					return value;
 				}
 			}
@@ -96,7 +96,7 @@ namespace SmartStore.Core.Caching
 				if (!TryGet(key, out value))
 				{
 					value = await acquirer().ConfigureAwait(false);
-					Set(key, value, duration);
+					Put(key, value, duration);
 					return value;
 				}
 			}
@@ -112,7 +112,7 @@ namespace SmartStore.Core.Caching
 			});
 		}
 
-		public void Set(string key, object value, TimeSpan? duration = null)
+		public void Put(string key, object value, TimeSpan? duration = null)
 		{
 			_cache.Set(key, value ?? FakeNull, GetCacheItemPolicy(duration));
 		}

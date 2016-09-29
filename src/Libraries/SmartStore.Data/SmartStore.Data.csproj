@@ -124,11 +124,12 @@
     <Compile Include="Caching\CachingDataReader.cs" />
     <Compile Include="Caching\CachingProviderServices.cs" />
     <Compile Include="Caching\CommandTreeFacts.cs" />
+    <Compile Include="Caching\DbCacheUtil.cs" />
     <Compile Include="Caching\EfDbCache.cs" />
     <Compile Include="Caching\DbCacheEntry.cs" />
     <Compile Include="Caching\DbCachingPolicy.cs" />
     <Compile Include="Caching\IDbCache.cs" />
-    <Compile Include="Caching\QueryableExtensions.cs" />
+    <Compile Include="Caching\DbCacheExtensions.cs" />
     <Compile Include="Caching\QueryRegistrar.cs" />
     <Compile Include="Caching\SingletonQueries.cs" />
     <Compile Include="Mapping\DataExchange\ImportProfileMap.cs" />

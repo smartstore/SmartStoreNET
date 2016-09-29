@@ -23,6 +23,41 @@ namespace SmartStore.Data.Caching
 			_requestCache = requestCache;
 		}
 
+		#region Request Scoped
+
+		public virtual bool RequestTryGet(string key, out DbCacheEntry value)
+		{
+			key = HashKey(key);
+
+			value = _requestCache.Value.Get<DbCacheEntry>(key);
+			return value != null;
+		}
+
+		public virtual void RequestPut(string key, object value, IEnumerable<string> dependentEntitySets)
+		{
+			key = HashKey(key);
+
+			var entitySets = dependentEntitySets.Distinct().ToArray();
+			var entry = new DbCacheEntry
+			{
+				Key = key,
+				Value = value,
+				EntitySets = entitySets,
+				CachedOnUtc = DateTime.UtcNow
+			};
+
+			_requestCache.Value.Set(key, entry);
+
+			//// TODO: implement lookups/invalidation for requests
+			//foreach (var entitySet in entitySets)
+			//{
+			//	var lookup = GetLookupSet(entitySet);
+			//	lookup.Add(key);
+			//}
+		}
+
+		#endregion
+
 		public virtual bool TryGet(string key, out object value)
 		{
 			value = null;

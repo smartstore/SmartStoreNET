@@ -41,6 +41,22 @@ namespace SmartStore.Data.Caching
 		/// Deletes all items from cache
 		/// </summary>
 		void Clear();
+
+		/// <summary>
+		/// Tries to the get cached entry by key from (HTTP) request scope
+		/// </summary>
+		/// <param name="key">The cache key.</param>
+		/// <param name="value">The retrieved value.</param>
+		/// <returns>A value of <c>true</c> if entry was found in the cache, <c>false</c> otherwise.</returns>
+		bool RequestTryGet(string key, out DbCacheEntry value);
+
+		/// <summary>
+		/// Adds the specified entry to the request scoped cache.
+		/// </summary>
+		/// <param name="key">The entry key.</param>
+		/// <param name="value">The entry value.</param>
+		/// <param name="dependentEntitySets">The list of dependent entity sets.</param>
+		void RequestPut(string key, object value, IEnumerable<string> dependentEntitySets);
 	}
 
 	internal class NullDbCache : IDbCache
@@ -64,6 +80,16 @@ namespace SmartStore.Data.Caching
 		}
 
 		public void Clear()
+		{
+		}
+
+		public bool RequestTryGet(string key, out DbCacheEntry value)
+		{
+			value = null;
+			return false;
+		}
+
+		public void RequestPut(string key, object value, IEnumerable<string> dependentEntitySets)
 		{
 		}
 	}

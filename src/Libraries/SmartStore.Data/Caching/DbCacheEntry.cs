@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace SmartStore.Data.Caching
 {
+	[Serializable]
 	public class DbCacheEntry
 	{
 		public string Key { get; set; }
@@ -22,6 +23,7 @@ namespace SmartStore.Data.Caching
 		}
 	}
 
+	[Serializable]
 	public class CachedRecords
 	{
 		public List<object[]> Records { get; set; }
@@ -29,6 +31,7 @@ namespace SmartStore.Data.Caching
 		public ColumnMetadata[] TableMetadata { get; set; }
 	}
 
+	[Serializable]
 	public class ColumnMetadata
 	{
 		public string Name { get; set; }

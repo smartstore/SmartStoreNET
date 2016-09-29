@@ -1603,7 +1603,9 @@ namespace SmartStore.Web.Controllers
 					{
 						EntityId = category.Id,
 						Text = category.GetLocalized(x => x.Name),
-						RouteName = "Category"
+                        BadgeText = category.GetLocalized(x => x.BadgeText),
+                        BadgeStyle = (BadgeStyle)category.BadgeStyle,
+                        RouteName = "Category"
 					};
 					menuItem.RouteValues.Add("SeName", category.GetSeName());
 

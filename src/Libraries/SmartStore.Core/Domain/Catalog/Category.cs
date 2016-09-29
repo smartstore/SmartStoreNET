@@ -45,11 +45,23 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public string BottomDescription { get; set; }
 
-		/// <summary>
-		/// Gets or sets the category alias 
-		/// (an optional key for advanced customization)
+        /// <summary>
+		/// Gets or sets a text displayed in a badge next to the category within menus
 		/// </summary>
-		[DataMember]
+        [DataMember]
+        public string BadgeText { get; set; }
+
+        /// <summary>
+		/// Gets or sets the type of the badge within menus
+		/// </summary>
+        [DataMember]
+        public int BadgeStyle { get; set; }
+
+        /// <summary>
+        /// Gets or sets the category alias 
+        /// (an optional key for advanced customization)
+        /// </summary>
+        [DataMember]
 		public string Alias { get; set; }
 
         /// <summary>

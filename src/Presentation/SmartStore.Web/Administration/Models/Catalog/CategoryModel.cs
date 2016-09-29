@@ -27,6 +27,7 @@ namespace SmartStore.Admin.Models.Catalog
             Locales = new List<CategoryLocalizedModel>();
             AvailableCategoryTemplates = new List<SelectListItem>();
             AvailableDefaultViewModes = new List<SelectListItem>();
+            AvailableBadgeStyles = new List<SelectListItem>();
         }
 
 		public int GridPageSize { get; set; }
@@ -46,7 +47,15 @@ namespace SmartStore.Admin.Models.Catalog
 		[AllowHtml]
 		public string BottomDescription { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Alias")]
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BadgeText")]
+        [AllowHtml]
+        public string BadgeText { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BadgeStyle")]
+        public int BadgeStyle { get; set; }
+        public IList<SelectListItem> AvailableBadgeStyles { get; set; }
+        
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Alias")]
 		public string Alias { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.CategoryTemplate")]
@@ -188,6 +197,10 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BottomDescription")]
 		[AllowHtml]
 		public string BottomDescription { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BadgeText")]
+        [AllowHtml]
+        public string BadgeText { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.MetaKeywords")]
         [AllowHtml]

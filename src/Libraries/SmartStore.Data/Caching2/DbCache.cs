@@ -23,12 +23,25 @@ namespace SmartStore.Data.Caching2
 		{
 			value = null;
 
-			var entry = _cache.Get<DbCacheEntry>(HashKey(key));
+			key = HashKey(key);
+			var now = DateTime.UtcNow;
+
+			var entry = _cache.Get<DbCacheEntry>(key);
 
 			if (entry != null)
 			{
-				value = entry.Value;
-				return true;
+				if (entry.HasExpired(now))
+				{
+					lock (String.Intern(key))
+					{
+						InvalidateItemUnlocked(entry);
+					}
+				}
+				else
+				{
+					value = entry.Value;
+					return true;
+				}
 			}
 
 			return false;
@@ -41,34 +54,21 @@ namespace SmartStore.Data.Caching2
 			lock (String.Intern(key))
 			{
 				var entitySets = dependentEntitySets.Distinct().ToArray();
-				var entry =  new DbCacheEntry { Value = value, EntitySets = entitySets };
+				var entry =  new DbCacheEntry
+				{
+					Key = key,
+					Value = value,
+					EntitySets = entitySets,
+					CachedOnUtc = DateTime.UtcNow,
+					Duration = duration
+				};
 
-				_cache.Set(key, entry, duration);
-
-				var lookup = GetEntitySetToKeyLookup();
-				bool lookupIsDirty = false;		
+				_cache.Put(key, entry);
 
 				foreach (var entitySet in entitySets)
 				{
-					HashSet<string> keys;
-
-					if (!lookup.TryGetValue(entitySet, out keys))
-					{
-						keys = new HashSet<string>();
-						lookup[entitySet] = keys;
-						lookupIsDirty = true;
-					}
-
-					if (!keys.Contains(key))
-					{
-						keys.Add(key);
-						lookupIsDirty = true;
-					}
-				}
-
-				if (lookupIsDirty)
-				{
-					PutEntitySetToKeyLookup(lookup);
+					var lookup = GetLookupSet(entitySet);
+					lookup.Add(key);
 				}
 			}
 		}
@@ -82,35 +82,22 @@ namespace SmartStore.Data.Caching2
 
 			var sets = entitySets.Distinct().ToArray();
 
-			var lookup = GetEntitySetToKeyLookup();
-
 			lock (_lock)
 			{
 				var itemsToInvalidate = new HashSet<string>();
 
 				foreach (var entitySet in sets)
 				{
-					HashSet<string> keys;
-
-					if (lookup.TryGetValue(entitySet, out keys))
+					var lookup = GetLookupSet(entitySet, false);
+					if (lookup != null)
 					{
-						itemsToInvalidate.UnionWith(keys);
-						lookup.Remove(entitySet);
+						itemsToInvalidate.UnionWith(lookup);
 					}
 				}
 
-				var lookupIsDirty = false;
-
 				foreach (var key in itemsToInvalidate)
 				{
-					var tmp = InvalidateItemUnlocked(key, lookup);
-					if (tmp)
-						lookupIsDirty = true;
-				}
-
-				if (lookupIsDirty)
-				{
-					PutEntitySetToKeyLookup(lookup);
+					InvalidateItemUnlocked(key);
 				}
 			}
 		}
@@ -121,75 +108,73 @@ namespace SmartStore.Data.Caching2
 
 			lock (String.Intern(key))
 			{
-				var lookup = GetEntitySetToKeyLookup();
-				var lookupIsDirty = InvalidateItemUnlocked(key, lookup);
-
-				if (lookupIsDirty)
-				{
-					PutEntitySetToKeyLookup(lookup);
-				}
+				InvalidateItemUnlocked(key);
 			}
 		}
 
-		public bool InvalidateItemUnlocked(string key, Dictionary<string, HashSet<string>> lookup)
+		private void InvalidateItemUnlocked(string key)
 		{
-			var lookupIsDirty = false;
-
 			if (_cache.Contains(key))
 			{
 				var entry = _cache.Get<DbCacheEntry>(key);
-
-				_cache.Remove(key);
-
-				foreach (var set in entry.EntitySets)
+				if (entry != null)
 				{
-					HashSet<string> keys;
-					if (lookup.TryGetValue(set, out keys))
-					{
-						keys.Remove(key);
-						lookupIsDirty = true;
-					}
+					InvalidateItemUnlocked(entry);
+				}
+			}
+		}
+
+		protected void InvalidateItemUnlocked(DbCacheEntry entry)
+		{
+			// remove item itself from cache
+			_cache.Remove(entry.Key);
+
+			// remove this key in all lookups
+			foreach (var set in entry.EntitySets)
+			{
+				var lookup = GetLookupSet(set, false);
+				if (lookup != null)
+				{
+					lookup.Remove(entry.Key);
+				}
+			}
+		}
+
+		private ICollection<string> GetLookupSet(string entitySet, bool create = true)
+		{
+			var key = GetLookupKeyFor(entitySet);
+
+			if (create)
+			{
+				return _cache.GetHashSet(key);
+			}
+			else
+			{
+				if (_cache.Contains(key))
+				{
+					return _cache.GetHashSet(key);
 				}
 			}
 
-			return lookupIsDirty;
+			return null;	
 		}
 
-		private Dictionary<string, HashSet<string>> GetEntitySetToKeyLookup()
+		private string GetLookupKeyFor(string entitySet)
 		{
-			return _cache.Get(KEYPREFIX + "lookup", () => 
-			{
-				return new Dictionary<string, HashSet<string>>();
-			});
-		}
-
-		private void PutEntitySetToKeyLookup(Dictionary<string, HashSet<string>> lookup)
-		{
-			_cache.Set(KEYPREFIX + "lookup", lookup);
-		}
-
-		private void RemoveEntitySetToKeyLookup()
-		{
-			_cache.Remove(KEYPREFIX + "lookup");
+			return KEYPREFIX + "lookup:" + entitySet;
 		}
 
 		private static string HashKey(string key)
 		{
 			// Looking up large Keys can be expensive (comparing Large Strings), so if keys are large, hash them, otherwise if keys are short just use as-is
 			if (key.Length <= 128)
-				return KEYPREFIX + key;
+				return KEYPREFIX + "data:" + key;
 
 			using (var sha = new SHA1CryptoServiceProvider())
 			{
 				key = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(key)));
-				return KEYPREFIX + key;
+				return KEYPREFIX + "data:" + key;
 			}
 		}
-	}
-
-	public class DbCacheEntry
-	{
-		public object Value { get; set; }
-		public string[] EntitySets { get; set; }
 	}
 }

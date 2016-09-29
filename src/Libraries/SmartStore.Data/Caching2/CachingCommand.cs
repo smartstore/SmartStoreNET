@@ -179,7 +179,7 @@ namespace SmartStore.Data.Caching2
 			object value;
 			if (_cacheTransactionInterceptor.GetItem(Transaction, key, out value))
 			{
-				return new CachingDataReader((CachedDbResult)value);
+				return new CachingDataReader((CachedRecords)value);
 			}
 
 			using (var reader = _command.ExecuteReader(behavior))
@@ -216,7 +216,7 @@ namespace SmartStore.Data.Caching2
 			object value;
 			if (_cacheTransactionInterceptor.GetItem(Transaction, key, out value))
 			{
-				return new CachingDataReader((CachedDbResult)value);
+				return new CachingDataReader((CachedRecords)value);
 			}
 
 			using (var reader = await _command.ExecuteReaderAsync(behavior, cancellationToken))
@@ -236,7 +236,7 @@ namespace SmartStore.Data.Caching2
 
 		private DbDataReader HandleCaching(DbDataReader reader, string key, List<object[]> queryResults)
 		{
-			var cachedResult = new CachedDbResult
+			var cachedResult = new CachedRecords
 			{
 				TableMetadata = GetTableMetadata(reader),
 				Records = queryResults,

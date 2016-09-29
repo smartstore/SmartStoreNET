@@ -100,7 +100,7 @@ namespace SmartStore.Data.Caching2
 		/// <returns>The absolute TTL</returns>
 		protected internal virtual TimeSpan? GetExpirationTimeout(ReadOnlyCollection<EntitySetBase> affectedEntitySets)
 		{
-			return TimeSpan.FromDays(1);
+			return TimeSpan.FromSeconds(1);
 		}
 	}
 }

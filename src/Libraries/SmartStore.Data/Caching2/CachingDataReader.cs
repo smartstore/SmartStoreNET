@@ -25,7 +25,7 @@ namespace SmartStore.Data.Caching2
 		// TODO: multiple resultsets?
 		private readonly IEnumerator<object[]> _resultRowsEnumerator;
 
-		internal CachingDataReader(CachedDbResult cachedResult)
+		internal CachingDataReader(CachedRecords cachedResult)
 		{
 			Guard.NotNull(cachedResult, nameof(cachedResult));
 

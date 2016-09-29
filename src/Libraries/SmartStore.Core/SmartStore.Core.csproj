@@ -153,11 +153,13 @@
     </Compile>
     <Compile Include="Async\AsyncLock.cs" />
     <Compile Include="Async\AsyncState.cs" />
+    <Compile Include="Caching\ISet.cs" />
     <Compile Include="Caching\MemoryCacheManager.cs" />
     <Compile Include="Caching\DisplayControl.cs" />
     <Compile Include="Caching\IRequestCache.cs" />
     <Compile Include="Caching\IDisplayControl.cs" />
     <Compile Include="Caching\IOutputCacheProvider.cs" />
+    <Compile Include="Caching\MemorySet.cs" />
     <Compile Include="Caching\NullOutputCacheProvider.cs" />
     <Compile Include="Caching\OutputCacheItem.cs" />
     <Compile Include="Caching\RequestCache.cs" />

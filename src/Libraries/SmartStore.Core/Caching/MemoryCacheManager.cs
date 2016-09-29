@@ -154,9 +154,9 @@ namespace SmartStore.Core.Caching
 			RemoveByPattern("*");
         }
 
-		public virtual ICollection<string> GetHashSet(string key)
+		public virtual ISet GetHashSet(string key)
 		{
-			var set = Get(key, () => new HashSet<string>());
+			var set = Get(key, () => new MemorySet(this));
 			return set;
 		}
 

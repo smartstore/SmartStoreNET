@@ -45,7 +45,7 @@ namespace SmartStore.Core.Caching
 		/// </summary>
 		/// <param name="key">The set cache item key</param>
 		/// <returns>Cached item value</returns>
-		ICollection<string> GetHashSet(string key);
+		ISet GetHashSet(string key);
 
 		/// <summary>
 		/// Adds a cache item with the specified key

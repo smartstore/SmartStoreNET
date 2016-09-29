@@ -140,7 +140,7 @@ namespace SmartStore.Data.Caching2
 			}
 		}
 
-		private ICollection<string> GetLookupSet(string entitySet, bool create = true)
+		private ISet GetLookupSet(string entitySet, bool create = true)
 		{
 			var key = GetLookupKeyFor(entitySet);
 

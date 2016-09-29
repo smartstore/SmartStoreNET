@@ -47,9 +47,9 @@ namespace SmartStore.Core.Caching
 		}
 
 
-		public ICollection<string> GetHashSet(string key)
+		public ISet GetHashSet(string key)
 		{
-			return new HashSet<string>();
+			return new MemorySet(this);
 		}
 
 		public void Put(string key, object value, TimeSpan? duration = null)

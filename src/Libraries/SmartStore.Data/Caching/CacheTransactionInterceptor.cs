@@ -6,7 +6,7 @@ using System.Data.Common;
 using System.Data.Entity.Infrastructure.Interception;
 using System.Linq;
 
-namespace SmartStore.Data.Caching2
+namespace SmartStore.Data.Caching
 {
 	public class CacheTransactionInterceptor : IDbTransactionInterceptor
 	{

@@ -5,21 +5,25 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core.Caching;
+using SmartStore.Core.Infrastructure.DependencyManagement;
 
-namespace SmartStore.Data.Caching2
+namespace SmartStore.Data.Caching
 {
-	public class DbCache : IDbCache
+	public partial class EfDbCache : IDbCache
 	{
 		private const string KEYPREFIX = "efcache:";
-		private readonly ICacheManager _cache;
 		private readonly object _lock = new object();
 
-		public DbCache(ICacheManager innerCache)
+		private readonly ICacheManager _cache;
+		private readonly Work<IRequestCache> _requestCache;
+
+		public EfDbCache(ICacheManager innerCache, Work<IRequestCache> requestCache)
 		{
 			_cache = innerCache;
+			_requestCache = requestCache;
 		}
 
-		public bool TryGet(string key, out object value)
+		public virtual bool TryGet(string key, out object value)
 		{
 			value = null;
 
@@ -47,7 +51,7 @@ namespace SmartStore.Data.Caching2
 			return false;
 		}
 
-		public void Put(string key, object value, IEnumerable<string> dependentEntitySets, TimeSpan? duration)
+		public virtual void Put(string key, object value, IEnumerable<string> dependentEntitySets, TimeSpan? duration)
 		{
 			key = HashKey(key);
 
@@ -73,7 +77,12 @@ namespace SmartStore.Data.Caching2
 			}
 		}
 
-		public void InvalidateSets(IEnumerable<string> entitySets)
+		public void Clear()
+		{
+			_cache.RemoveByPattern(KEYPREFIX);
+		}
+
+		public virtual void InvalidateSets(IEnumerable<string> entitySets)
 		{
 			Guard.NotNull(entitySets, nameof(entitySets));
 
@@ -102,7 +111,7 @@ namespace SmartStore.Data.Caching2
 			}
 		}
 
-		public void InvalidateItem(string key)
+		public virtual void InvalidateItem(string key)
 		{
 			Guard.NotEmpty(key, nameof(key));
 

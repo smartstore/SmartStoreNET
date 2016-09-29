@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using SmartStore.ComponentModel;
 
-namespace SmartStore.Data.Caching2
+namespace SmartStore.Data.Caching
 {
 	public static class QueryableExtensions
 	{

@@ -6,7 +6,7 @@ using System.Data.Entity.Core.Common.CommandTrees;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Spatial;
 
-namespace SmartStore.Data.Caching2
+namespace SmartStore.Data.Caching
 {
 	public class CachingProviderServices : DbProviderServices
 	{

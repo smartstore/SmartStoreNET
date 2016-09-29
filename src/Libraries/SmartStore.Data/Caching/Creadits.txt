@@ -1,0 +1,7 @@
+﻿The code in this namespace is inspired by "EntityFramework.Cache - Second Level Cache for Entity Framework 6.1".
+Source:		https://efcache.codeplex.com/
+Author:		moozzyk
+License:	Microsoft Public License (Ms-PL)
+
+Because the original library is not able to cache items in a distributed cache (like Redis),
+we had to reimplement and tweak a lot.

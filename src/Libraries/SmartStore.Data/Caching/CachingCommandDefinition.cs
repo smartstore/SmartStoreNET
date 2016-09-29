@@ -3,7 +3,7 @@ using System.Data.Common;
 using System.Data.Entity.Core.Common;
 using System.Data.Entity.Core.Metadata.Edm;
 
-namespace SmartStore.Data.Caching2
+namespace SmartStore.Data.Caching
 {
 	internal class CachingCommandDefinition : DbCommandDefinition
 	{

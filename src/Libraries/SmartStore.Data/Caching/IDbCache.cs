@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SmartStore.Data.Caching2
+namespace SmartStore.Data.Caching
 {
 	/// <summary>
 	/// Interface to be implemented by cache implementations.
@@ -36,6 +36,11 @@ namespace SmartStore.Data.Caching2
 		/// </summary>
 		/// <param name="key">The cache key.</param>
 		void InvalidateItem(string key);
+
+		/// <summary>
+		/// Deletes all items from cache
+		/// </summary>
+		void Clear();
 	}
 
 	internal class NullDbCache : IDbCache
@@ -55,6 +60,10 @@ namespace SmartStore.Data.Caching2
 		}
 
 		public void InvalidateItem(string key)
+		{
+		}
+
+		public void Clear()
 		{
 		}
 	}

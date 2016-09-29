@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SmartStore.Data.Caching2
+namespace SmartStore.Data.Caching
 {
 	public class DbCacheEntry
 	{
@@ -27,5 +27,12 @@ namespace SmartStore.Data.Caching2
 		public List<object[]> Records { get; set; }
 		public int RecordsAffected { get; set; }
 		public ColumnMetadata[] TableMetadata { get; set; }
+	}
+
+	public class ColumnMetadata
+	{
+		public string Name { get; set; }
+		public string DataTypeName { get; set; }
+		public Type DataType { get; set; }
 	}
 }

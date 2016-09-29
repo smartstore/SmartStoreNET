@@ -19,7 +19,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Domain.Topics;
 
-namespace SmartStore.Data.Caching2
+namespace SmartStore.Data.Caching
 {
 	/* TODO: (mc)
 	 * ========================

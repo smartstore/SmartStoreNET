@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Common;
-using System.Linq;
-//using EFCache;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
-//using SmartStore.Data.Caching;
-using SmartStore.Data.Caching2;
-using SmartStore.Core.Caching;
+using SmartStore.Data.Caching;
 using System.Web.Hosting;
 
 namespace SmartStore.Data
@@ -28,14 +23,13 @@ namespace SmartStore.Data
 			{
 				base.SetDefaultConnectionFactory(provider.GetConnectionFactory());
 
-				if (HostingEnvironment.IsHosted)
+				if (HostingEnvironment.IsHosted && DataSettings.DatabaseIsInstalled())
 				{
 					// prepare EntityFramework 2nd level cache
 					IDbCache cache = null;
 					try
 					{
-						var innerCache = EngineContext.Current.Resolve<ICacheManager>();
-						cache = new DbCache(innerCache);
+						cache = EngineContext.Current.Resolve<IDbCache>();
 					}
 					catch
 					{
@@ -46,8 +40,7 @@ namespace SmartStore.Data
 					AddInterceptor(cacheInterceptor);
 
 					Loaded +=
-					  (sender, args) => args.ReplaceService<DbProviderServices>(
-						(s, _) => new CachingProviderServices(s, cacheInterceptor));
+					  (sender, args) => args.ReplaceService<DbProviderServices>((s, _) => new CachingProviderServices(s, cacheInterceptor));
 				}
 			}
 		}

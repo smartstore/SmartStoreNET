@@ -5,7 +5,7 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 
-namespace SmartStore.Data.Caching2
+namespace SmartStore.Data.Caching
 {
 	internal class CachingDataReader : DbDataReader
 	{

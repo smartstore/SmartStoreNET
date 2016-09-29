@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SmartStore.Data.Caching2
+namespace SmartStore.Data.Caching
 {
 	internal class CachingCommand : DbCommand
 	{

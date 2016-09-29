@@ -1,6 +1,6 @@
 ﻿using System.Data.Entity.Core.Metadata.Edm;
 
-namespace SmartStore.Data.Caching2
+namespace SmartStore.Data.Caching
 {
 	public sealed class SingletonQueries
 	{

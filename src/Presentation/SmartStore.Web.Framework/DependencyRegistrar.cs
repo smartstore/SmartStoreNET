@@ -353,7 +353,9 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<DefaultHookHandler>().As<IHookHandler>().InstancePerRequest();
 
-			if (DataSettings.Current.IsValid())
+			builder.RegisterType<EfDbCache>().As<IDbCache>().SingleInstance();
+
+			if (DataSettings.DatabaseIsInstalled())
 			{
 				// register DB Hooks (only when app was installed properly)
 

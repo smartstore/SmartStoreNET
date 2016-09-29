@@ -7,7 +7,7 @@ using System.Data.Entity.Core.Metadata.Edm;
 using System.Diagnostics;
 using System.Linq;
 
-namespace SmartStore.Data.Caching2
+namespace SmartStore.Data.Caching
 {
 	internal class CommandTreeFacts
 	{

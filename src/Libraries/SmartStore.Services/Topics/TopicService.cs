@@ -6,7 +6,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Events;
-using SmartStore.Data.Caching2;
+using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Topics
 {

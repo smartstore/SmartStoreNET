@@ -103,7 +103,7 @@ namespace SmartStore.Services.Tasks
 			string authToken = Guid.NewGuid().ToString();
 
 			var cacheManager = EngineContext.Current.Resolve<ICacheManager>();
-			cacheManager.Set(GenerateAuthTokenCacheKey(authToken), true, TimeSpan.FromMinutes(1));
+			cacheManager.Put(GenerateAuthTokenCacheKey(authToken), true, TimeSpan.FromMinutes(1));
 
 			return authToken;
 		}

@@ -44,7 +44,7 @@ namespace SmartStore.Data.Caching
 			{
 				var now = DateTimeOffset.Now;
 				var expiresInMinutes = Math.Max(1, Math.Min(int.MaxValue, (absoluteExpiration - now).TotalMinutes));
-				_cache.Set(key, value, TimeSpan.FromMinutes(expiresInMinutes));
+				_cache.Put(key, value, TimeSpan.FromMinutes(expiresInMinutes));
 
 				foreach (var s in dependentEntitySets)
 				{

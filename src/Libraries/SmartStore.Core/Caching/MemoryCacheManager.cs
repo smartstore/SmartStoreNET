@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
 using SmartStore.Core.Async;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace SmartStore.Core.Caching
 {
@@ -71,7 +73,7 @@ namespace SmartStore.Core.Caching
 				if (!TryGet(key, out value))
 				{
 					value = acquirer();
-					Set(key, value, duration);
+					Put(key, value, duration);
 					return value;
 				}
 			}
@@ -96,7 +98,7 @@ namespace SmartStore.Core.Caching
 				if (!TryGet(key, out value))
 				{
 					value = await acquirer().ConfigureAwait(false);
-					Set(key, value, duration);
+					Put(key, value, duration);
 					return value;
 				}
 			}
@@ -104,15 +106,7 @@ namespace SmartStore.Core.Caching
 			return value;
 		}
 
-		private async Task Test()
-		{
-			var t = await GetAsync("yo", async () =>
-			{
-				return await Task.FromResult(true);
-			});
-		}
-
-		public void Set(string key, object value, TimeSpan? duration = null)
+		public void Put(string key, object value, TimeSpan? duration = null)
 		{
 			_cache.Set(key, value ?? FakeNull, GetCacheItemPolicy(duration));
 		}
@@ -159,6 +153,12 @@ namespace SmartStore.Core.Caching
         {
 			RemoveByPattern("*");
         }
+
+		public virtual ICollection<string> GetHashSet(string key)
+		{
+			var set = Get(key, () => new HashSet<string>());
+			return set;
+		}
 
 		private CacheItemPolicy GetCacheItemPolicy(TimeSpan? duration)
 		{

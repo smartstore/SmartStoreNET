@@ -80,8 +80,7 @@ namespace SmartStore.Services.Stores
 					.Expand(x => x.PrimaryStoreCurrency)
 					.Expand(x => x.PrimaryExchangeRateCurrency)
 					.OrderBy(x => x.DisplayOrder)
-					.ThenBy(x => x.Name)
-					.Cached();
+					.ThenBy(x => x.Name);
 
 				var stores = query.ToList();
 				return stores;

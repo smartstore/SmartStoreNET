@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
-using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using SmartStore.ComponentModel;
+using System.Text;
 using SmartStore.Core;
+using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Data.Caching
@@ -17,6 +18,152 @@ namespace SmartStore.Data.Caching
 		{
 			return EngineContext.Current.Resolve<IDbCache>();
 		}
+
+		#region Request Cache
+
+		/// <summary>
+		/// Returns the result of <paramref name="source"/> from the (HTTP)-REQUEST cache if available,
+		/// otherwise the query is materialized and cached before being returned. Cache result invalidation
+		/// is performed automatically by the underlying interceptor.
+		/// </summary>
+		/// <typeparam name="T">The type of the data in the data source.</typeparam>
+		/// <param name="source">The query to be materialized.</param>
+		/// <returns>The result of the query.</returns>
+		public static List<T> ToListCached<T>(this IQueryable<T> source)
+		{
+			return ToListCached(source, null);
+		}
+
+		/// <summary>
+		/// Returns the result of <paramref name="source"/> from the (HTTP)-REQUEST cache if available,
+		/// otherwise the query is materialized and cached before being returned. Cache result invalidation
+		/// is performed automatically by the underlying interceptor.
+		/// </summary>
+		/// <typeparam name="T">The type of the data in the data source.</typeparam>
+		/// <param name="source">The query to be materialized.</param>
+		/// <param name="customKey">A custom cache key to use instead of the computed one.</param>
+		/// <returns>The result of the query.</returns>
+		/// <remarks>
+		/// This overload is slightly faster, because the key does not need to be generated from the passed <paramref name="source"/>
+		/// </remarks>
+		public static List<T> ToListCached<T>(this IQueryable<T> source, string customKey)
+		{
+			var entry = GetCacheEntry(source, customKey, () => source.ToList());
+			if (entry == null)
+			{
+				return source.ToList();
+			}
+
+			return (List<T>)entry.Value;
+		}
+
+		/// <summary>
+		/// Returns the first element of <paramref name="source"/> from the (HTTP)-REQUEST cache if available,
+		/// otherwise the query is materialized and cached before being returned. Cache result invalidation
+		/// is performed automatically by the underlying interceptor.
+		/// </summary>
+		/// <typeparam name="T">The type of the data in the data source.</typeparam>
+		/// <param name="source">The query to be materialized.</param>
+		/// <returns>The result of the query.</returns>
+		public static T FirstOrDefaultCached<T>(this IQueryable<T> source)
+		{
+			return FirstOrDefaultCached(source, null);
+		}
+
+		/// <summary>
+		/// Returns the first element of <paramref name="source"/> from the (HTTP)-REQUEST cache if available,
+		/// otherwise the query is materialized and cached before being returned. Cache result invalidation
+		/// is performed automatically by the underlying interceptor.
+		/// </summary>
+		/// <typeparam name="T">The type of the data in the data source.</typeparam>
+		/// <param name="source">The query to be materialized.</param>
+		/// <param name="customKey">A custom cache key to use instead of the computed one.</param>
+		/// <returns>The result of the query.</returns>
+		/// <remarks>
+		/// This overload is slightly faster, because the key does not need to be generated from the passed <paramref name="source"/>
+		/// </remarks>
+		public static T FirstOrDefaultCached<T>(this IQueryable<T> source, string customKey)
+		{
+			var entry = GetCacheEntry(source, customKey, () => source.FirstOrDefault());
+			if (entry == null)
+			{
+				return source.FirstOrDefault();
+			}
+
+			return (T)entry.Value;
+		}
+
+		internal static DbCacheEntry GetCacheEntry<T>(this IQueryable<T> source, string customKey, Func<object> valueFactory)
+		{
+			// (Perf) Checking here means higher perf, as keys and entitysets does not need to be evaluated
+			var cache = GetDbCacheInstance();
+			if (!cache.Enabled)
+			{
+				return null;
+			}
+
+			Guard.NotNull(source, nameof(source));
+			Guard.NotNull(valueFactory, nameof(valueFactory));
+
+			var cacheKey = new CacheKey<T>(source, customKey);
+			if (cacheKey.Key.IsEmpty())
+			{
+				return null;
+			}
+			
+			DbCacheEntry entry;
+			if (!cache.RequestTryGet(cacheKey.Key, out entry))
+			{
+				entry = cache.RequestPut(cacheKey.Key, valueFactory(), cacheKey.AffectedEntitySets);
+			}
+			else
+			{
+				Debug.WriteLine("FromRequestCache: " + cacheKey.Key);
+			}
+
+			return entry;
+		}
+
+		#endregion
+
+		#region Repository extensions
+
+		/// <summary>
+		/// Gets an entity by id from the database, the local change tracker, or the (HTTP)-REQUEST cache.
+		/// Cache result invalidation is performed automatically by the underlying interceptor.
+		/// </summary>
+		/// <param name="id">The id of the entity. This can also be a composite key.</param>
+		/// <returns>The resolved entity</returns>
+		public static T GetByIdCached<T>(this IRepository<T> rs, object id)
+			where T : BaseEntity
+		{
+			return GetByIdCached(rs, id, null);
+		}
+
+		/// <summary>
+		/// Gets an entity by id from the database, the local change tracker, or the (HTTP)-REQUEST cache.
+		/// Cache result invalidation is performed automatically by the underlying interceptor.
+		/// </summary>
+		/// <param name="id">The id of the entity. This can also be a composite key.</param>
+		/// <param name="customKey">A custom cache key to use instead of the computed one.</param>
+		/// <returns>The resolved entity</returns>
+		/// <remarks>
+		/// This overload is slightly faster, because the key does not need to be generated.
+		/// </remarks>
+		public static T GetByIdCached<T>(this IRepository<T> rs, object id, string customKey)
+			where T : BaseEntity
+		{
+			var dbSet = ((DbSet<T>)rs.Table);
+			var entry = rs.Table.GetCacheEntry(customKey, () => dbSet.Find(id));
+			if (entry == null)
+			{
+				return dbSet.Find(id);
+			}
+
+			return (T)entry.Value;
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Forces query results to be cached.
@@ -43,76 +190,76 @@ namespace SmartStore.Data.Caching
 			return source;
 		}
 
-		public static List<T> FromRequestCache<T>(this IQueryable<T> source)
-			where T : BaseEntity
+		private class CacheKey<T>
 		{
-			Guard.NotNull(source, nameof(source));
+			private readonly IQueryable<T> _source;
+			private string _key;
+			private string[] _affectedEntitySets;
+			private ObjectQuery _objectQuery;
+			private bool _objectQueryResolved;
 
-			var cacheKey = GetCacheKeyFromQuery(source);
-
-			if (cacheKey.IsEmpty())
+			public CacheKey(IQueryable<T> source, string customKey = null)
 			{
-				return source.ToList();
+				Guard.NotNull(source, nameof(source));
+
+				_source = source;
+				_key = customKey.NullEmpty();
 			}
 
-			var cache = GetDbCacheInstance();
-			DbCacheEntry entry;
-			if (!cache.RequestTryGet(cacheKey, out entry))
+			private void EnsureObjectQuery()
 			{
-				// TODO: resolve and pass EntitySets
-				entry = new DbCacheEntry
+				if (!_objectQueryResolved && _objectQuery == null)
 				{
-					Key = cacheKey,
-					Value = source.ToList(),
-					EntitySets = Enumerable.Empty<string>().ToArray() // TODO
-				};
-
-				cache.RequestPut(cacheKey, entry, entry.EntitySets);
+					_objectQuery = DbCacheUtil.GetObjectQuery(_source) ?? _source as ObjectQuery;
+					_objectQueryResolved = true;
+				}
 			}
 
-			return (List<T>)entry.Value;
-		}
-
-		public static T FromRequestCacheFirstOrDefault<T>(this IQueryable<T> source)
-			where T : BaseEntity
-		{
-			Guard.NotNull(source, nameof(source));
-
-			var cacheKey = GetCacheKeyFromQuery(source);
-
-			if (cacheKey.IsEmpty())
+			public string Key
 			{
-				return source.FirstOrDefault();
-			}
-
-			var cache = GetDbCacheInstance();
-			DbCacheEntry entry;
-			if (!cache.RequestTryGet(cacheKey, out entry))
-			{
-				// TODO: resolve and pass EntitySets
-				entry = new DbCacheEntry
+				get
 				{
-					Key = cacheKey,
-					Value = source.FirstOrDefault(),
-					EntitySets = Enumerable.Empty<string>().ToArray() // TODO
-				};
+					if (_key == null && !_objectQueryResolved)
+					{
+						EnsureObjectQuery();
+						if (_objectQuery != null)
+						{
+							var commandInfo = _objectQuery.GetCommandInfo();
 
-				cache.RequestPut(cacheKey, entry, entry.EntitySets);
+							var sb = new StringBuilder();
+							sb.AppendLine(commandInfo.Sql);
+
+							foreach (DbParameter parameter in commandInfo.Parameters)
+							{
+								sb.Append(parameter.ParameterName);
+								sb.Append(";");
+								sb.Append(parameter.Value);
+								sb.AppendLine(";");
+							}
+
+							_key = sb.ToString();
+						}
+					}
+
+					return _key;
+				}
 			}
 
-			return (T)entry.Value;
-		}
-
-		private static string GetCacheKeyFromQuery<T>(IQueryable<T> source)
-		{
-			var objectQuery = DbCacheUtil.GetObjectQuery(source) ?? source as ObjectQuery;
-
-			if (objectQuery != null)
+			public string[] AffectedEntitySets
 			{
-				return objectQuery.ToTraceString();
-			}
+				get
+				{
+					if (_affectedEntitySets == null)
+					{
+						EnsureObjectQuery();
+						_affectedEntitySets = _objectQuery != null
+							? _objectQuery.GetAffectedEntitySets()
+							: new string[0];
+					}
 
-			return null;
+					return _affectedEntitySets;
+				}
+			}
 		}
 	}
 }

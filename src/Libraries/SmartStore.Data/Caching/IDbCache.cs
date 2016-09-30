@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartStore.Data.Caching
 {
@@ -8,6 +9,11 @@ namespace SmartStore.Data.Caching
 	/// </summary>
 	public interface IDbCache
 	{
+		/// <summary>
+		/// Controls whether query caching is enabled or idle
+		/// </summary>
+		bool Enabled { get; }
+
 		/// <summary>
 		/// Tries to the get cached entry by key.
 		/// </summary>
@@ -23,7 +29,7 @@ namespace SmartStore.Data.Caching
 		/// <param name="value">The entry value.</param>
 		/// <param name="dependentEntitySets">The list of dependent entity sets.</param>
 		/// <param name="duration">The absolute expiration.</param>
-		void Put(string key, object value, IEnumerable<string> dependentEntitySets, TimeSpan? duration);
+		DbCacheEntry Put(string key, object value, IEnumerable<string> dependentEntitySets, TimeSpan? duration);
 
 		/// <summary>
 		/// Invalidates all cache entries which are dependent on any of the specified entity sets.
@@ -38,7 +44,7 @@ namespace SmartStore.Data.Caching
 		void InvalidateItem(string key);
 
 		/// <summary>
-		/// Deletes all items from cache
+		/// Deletes all items from static and request cache
 		/// </summary>
 		void Clear();
 
@@ -56,19 +62,37 @@ namespace SmartStore.Data.Caching
 		/// <param name="key">The entry key.</param>
 		/// <param name="value">The entry value.</param>
 		/// <param name="dependentEntitySets">The list of dependent entity sets.</param>
-		void RequestPut(string key, object value, IEnumerable<string> dependentEntitySets);
+		DbCacheEntry RequestPut(string key, object value, string[] dependentEntitySets);
+
+		/// <summary>
+		/// Invalidates all request scoped cache entries which are dependent on any of the specified entity sets.
+		/// </summary>
+		/// <param name="entitySets">The entity sets.</param>
+		void RequestInvalidateSets(IEnumerable<string> entitySets);
+
+		/// <summary>
+		/// Invalidates request scoped cache entry with a given key.
+		/// </summary>
+		/// <param name="key">The cache key.</param>
+		void RequestInvalidateItem(string key);
 	}
 
 	internal class NullDbCache : IDbCache
 	{
+		public bool Enabled
+		{
+			get { return false; }
+		}
+
 		public bool TryGet(string key, out object value)
 		{
 			value = null;
 			return false;
 		}
 
-		public void Put(string key, object value, IEnumerable<string> dependentEntitySets, TimeSpan? duration)
+		public DbCacheEntry Put(string key, object value, IEnumerable<string> dependentEntitySets, TimeSpan? duration)
 		{
+			return new DbCacheEntry { Key = key, Value = value, CachedOnUtc = DateTime.UtcNow, EntitySets = dependentEntitySets.ToArray(), Duration = duration };
 		}
 
 		public void InvalidateSets(IEnumerable<string> entitySets)
@@ -89,7 +113,16 @@ namespace SmartStore.Data.Caching
 			return false;
 		}
 
-		public void RequestPut(string key, object value, IEnumerable<string> dependentEntitySets)
+		public DbCacheEntry RequestPut(string key, object value, string[] dependentEntitySets)
+		{
+			return new DbCacheEntry { Key = key, Value = value, CachedOnUtc = DateTime.UtcNow, EntitySets = dependentEntitySets.ToArray() };
+		}
+
+		public void RequestInvalidateSets(IEnumerable<string> entitySets)
+		{
+		}
+
+		public void RequestInvalidateItem(string key)
 		{
 		}
 	}

@@ -32,36 +32,36 @@ namespace SmartStore.Data.Caching
 	public partial class DbCachingPolicy
 	{
 		private static readonly HashSet<string> _cacheableSets = new HashSet<string>
-			{
-				typeof(AclRecord).Name,
-				typeof(ActivityLogType).Name,
-				typeof(CategoryTemplate).Name,
-				typeof(CheckoutAttribute).Name,
-				typeof(CheckoutAttributeValue).Name,
-				typeof(Country).Name,
-				typeof(Currency).Name,
-				typeof(CustomerRole).Name,
-				typeof(DeliveryTime).Name,
-				typeof(Discount).Name,
-				typeof(DiscountRequirement).Name,
-				typeof(EmailAccount).Name,
-				typeof(Language).Name,
-				typeof(ManufacturerTemplate).Name,
-				typeof(MeasureDimension).Name,
-				typeof(MeasureWeight).Name,
-				typeof(MessageTemplate).Name,
-				typeof(PaymentMethod).Name,
-				typeof(PermissionRecord).Name,
-				typeof(ProductTemplate).Name,
-				typeof(QuantityUnit).Name,
-				typeof(ShippingMethod).Name,
-				typeof(StateProvince).Name,
-				typeof(Store).Name,
-				typeof(StoreMapping).Name,
-				typeof(TaxCategory).Name,
-				typeof(ThemeVariable).Name,
-				typeof(Topic).Name
-			};
+		{
+			typeof(AclRecord).Name,
+			typeof(ActivityLogType).Name,
+			typeof(CategoryTemplate).Name,
+			typeof(CheckoutAttribute).Name,
+			typeof(CheckoutAttributeValue).Name,
+			typeof(Country).Name,
+			typeof(Currency).Name,
+			typeof(CustomerRole).Name,
+			typeof(DeliveryTime).Name,
+			typeof(Discount).Name,
+			typeof(DiscountRequirement).Name,
+			typeof(EmailAccount).Name,
+			typeof(Language).Name,
+			typeof(ManufacturerTemplate).Name,
+			typeof(MeasureDimension).Name,
+			typeof(MeasureWeight).Name,
+			typeof(MessageTemplate).Name,
+			typeof(PaymentMethod).Name,
+			typeof(PermissionRecord).Name,
+			typeof(ProductTemplate).Name,
+			typeof(QuantityUnit).Name,
+			typeof(ShippingMethod).Name,
+			typeof(StateProvince).Name,
+			typeof(Store).Name,
+			typeof(StoreMapping).Name,
+			typeof(TaxCategory).Name,
+			typeof(ThemeVariable).Name,
+			typeof(Topic).Name
+		};
 
 		/// <summary>
 		/// Determines whether the specified command definition can be cached.
@@ -90,7 +90,7 @@ namespace SmartStore.Data.Caching
 			out int minCacheableRows, out int maxCacheableRows)
 		{
 			minCacheableRows = 0;
-			maxCacheableRows = int.MaxValue;
+			maxCacheableRows = 5000; // int.MaxValue;
 		}
 
 		/// <summary>
@@ -100,7 +100,7 @@ namespace SmartStore.Data.Caching
 		/// <returns>The absolute TTL</returns>
 		protected internal virtual TimeSpan? GetExpirationTimeout(ReadOnlyCollection<EntitySetBase> affectedEntitySets)
 		{
-			return TimeSpan.FromSeconds(1);
+			return TimeSpan.FromDays(1);
 		}
 	}
 }

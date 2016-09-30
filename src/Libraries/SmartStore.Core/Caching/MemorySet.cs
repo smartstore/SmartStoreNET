@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Core.Caching
 {
+	[Serializable]
 	internal class MemorySet : HashSet<string>, ISet
 	{
 		private readonly ICacheManager _cache;

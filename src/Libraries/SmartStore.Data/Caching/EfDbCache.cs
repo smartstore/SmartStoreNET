@@ -5,14 +5,28 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using SmartStore.Core.Caching;
+using SmartStore.Core.Domain.Logging;
+using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 
 namespace SmartStore.Data.Caching
 {
 	public partial class EfDbCache : IDbCache
 	{
+		// Entity sets to be never cached or invalidated
+		private static readonly HashSet<string> _toxicSets = new HashSet<string>
+		{
+			typeof(ScheduleTask).Name,
+			typeof(Log).Name,
+			typeof(ActivityLog).Name,
+			typeof(QueuedEmail).Name
+		};
+
 		private const string KEYPREFIX = "efcache:";
 		private readonly object _lock = new object();
+
+		private bool _enabled;
 
 		private readonly ICacheManager _cache;
 		private readonly Work<IRequestCache> _requestCache;
@@ -21,39 +35,147 @@ namespace SmartStore.Data.Caching
 		{
 			_cache = innerCache;
 			_requestCache = requestCache;
+
+			_enabled = true;
+		}
+
+		public bool Enabled
+		{
+			get
+			{
+				return _enabled;
+			}
+			set
+			{
+				if (_enabled == value)
+					return;
+
+				lock (_lock)
+				{
+					if (_enabled == false && value == true)
+					{
+						// When cache was disabled previously and gets enabled,
+						// we should clear the cache, because no invalidation has been performed
+						// during disabled state. We would deal with stale data otherwise.
+						Clear();
+					}
+					_enabled = value;
+				}
+			}
+		}
+
+		private bool IsTocix(IEnumerable<string> entitySets)
+		{
+			return entitySets.Any(x => _toxicSets.Contains(x));
 		}
 
 		#region Request Scoped
 
 		public virtual bool RequestTryGet(string key, out DbCacheEntry value)
 		{
+			value = null;
+
+			if (!Enabled)
+			{
+				return false;
+			}
+
 			key = HashKey(key);
 
 			value = _requestCache.Value.Get<DbCacheEntry>(key);
 			return value != null;
 		}
 
-		public virtual void RequestPut(string key, object value, IEnumerable<string> dependentEntitySets)
+		public virtual DbCacheEntry RequestPut(string key, object value, string[] dependentEntitySets)
 		{
+			if (!Enabled || IsTocix(dependentEntitySets))
+			{
+				return null;
+			}
+
 			key = HashKey(key);
 
-			var entitySets = dependentEntitySets.Distinct().ToArray();
 			var entry = new DbCacheEntry
 			{
 				Key = key,
 				Value = value,
-				EntitySets = entitySets,
+				EntitySets = dependentEntitySets,
 				CachedOnUtc = DateTime.UtcNow
 			};
 
-			_requestCache.Value.Set(key, entry);
+			_requestCache.Value.Put(key, entry);
 
-			//// TODO: implement lookups/invalidation for requests
-			//foreach (var entitySet in entitySets)
-			//{
-			//	var lookup = GetLookupSet(entitySet);
-			//	lookup.Add(key);
-			//}
+			foreach (var entitySet in entry.EntitySets)
+			{
+				var lookup = RequestGetLookupSet(entitySet);
+				lookup.Add(key);
+			}
+
+			return entry;
+		}
+
+		public virtual void RequestInvalidateSets(IEnumerable<string> entitySets)
+		{
+			Guard.NotNull(entitySets, nameof(entitySets));
+
+			if (!Enabled || !entitySets.Any() || IsTocix(entitySets))
+				return;
+
+			var sets = entitySets.Distinct().ToArray();
+
+			var itemsToInvalidate = new HashSet<string>();
+
+			foreach (var entitySet in sets)
+			{
+				var lookup = RequestGetLookupSet(entitySet, false);
+				if (lookup != null)
+				{
+					itemsToInvalidate.UnionWith(lookup);
+				}
+			}
+
+			foreach (var key in itemsToInvalidate)
+			{
+				RequestInvalidateItem(key);
+			}
+		}
+
+		public virtual void RequestInvalidateItem(string key)
+		{
+			Guard.NotEmpty(key, nameof(key));
+
+			var cache = _requestCache.Value;
+
+			var entry = cache.Get<DbCacheEntry>(key);
+			if (entry != null)
+			{
+				// remove item itself from cache
+				cache.Remove(key);
+
+				// remove this key in all lookups
+				foreach (var set in entry.EntitySets)
+				{
+					var lookup = RequestGetLookupSet(set, false);
+					if (lookup != null)
+					{
+						lookup.Remove(entry.Key);
+					}
+				}
+			}
+		}
+
+		private HashSet<string> RequestGetLookupSet(string entitySet, bool create = true)
+		{
+			var key = GetLookupKeyFor(entitySet);
+
+			if (create)
+			{
+				return _requestCache.Value.Get(key, () => new HashSet<string>());
+			}
+			else
+			{
+				return _requestCache.Value.Get<HashSet<string>>(key);
+			}
 		}
 
 		#endregion
@@ -61,6 +183,11 @@ namespace SmartStore.Data.Caching
 		public virtual bool TryGet(string key, out object value)
 		{
 			value = null;
+
+			if (!Enabled)
+			{
+				return false;
+			}
 
 			key = HashKey(key);
 			var now = DateTime.UtcNow;
@@ -86,8 +213,13 @@ namespace SmartStore.Data.Caching
 			return false;
 		}
 
-		public virtual void Put(string key, object value, IEnumerable<string> dependentEntitySets, TimeSpan? duration)
+		public virtual DbCacheEntry Put(string key, object value, IEnumerable<string> dependentEntitySets, TimeSpan? duration)
 		{
+			if (!Enabled || IsTocix(dependentEntitySets))
+			{
+				return null;
+			}
+
 			key = HashKey(key);
 
 			lock (String.Intern(key))
@@ -109,19 +241,22 @@ namespace SmartStore.Data.Caching
 					var lookup = GetLookupSet(entitySet);
 					lookup.Add(key);
 				}
+
+				return entry;
 			}
 		}
 
 		public void Clear()
 		{
 			_cache.RemoveByPattern(KEYPREFIX);
+			_requestCache.Value.RemoveByPattern(KEYPREFIX);
 		}
 
 		public virtual void InvalidateSets(IEnumerable<string> entitySets)
 		{
 			Guard.NotNull(entitySets, nameof(entitySets));
 
-			if (!entitySets.Any())
+			if (!Enabled || !entitySets.Any() || IsTocix(entitySets))
 				return;
 
 			var sets = entitySets.Distinct().ToArray();
@@ -148,6 +283,11 @@ namespace SmartStore.Data.Caching
 
 		public virtual void InvalidateItem(string key)
 		{
+			if (!Enabled)
+			{
+				return;
+			}
+
 			Guard.NotEmpty(key, nameof(key));
 
 			lock (String.Intern(key))
@@ -158,6 +298,11 @@ namespace SmartStore.Data.Caching
 
 		private void InvalidateItemUnlocked(string key)
 		{
+			if (!Enabled)
+			{
+				return;
+			}
+
 			if (_cache.Contains(key))
 			{
 				var entry = _cache.Get<DbCacheEntry>(key);

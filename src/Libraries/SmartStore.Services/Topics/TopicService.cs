@@ -129,7 +129,7 @@ namespace SmartStore.Services.Topics
 
 				query = query.OrderBy(t => t.Priority).ThenBy(t => t.SystemName);
 
-				return query.Cached().ToList();
+				return query.ToList();
 			});
 
 			return result;

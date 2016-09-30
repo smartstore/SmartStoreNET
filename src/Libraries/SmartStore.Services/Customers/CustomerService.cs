@@ -16,6 +16,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
+using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 
@@ -589,30 +590,44 @@ namespace SmartStore.Services.Customers
                 return null;
 
             string key = string.Format(CUSTOMERROLES_BY_SYSTEMNAME_KEY, systemName);
-            return _requestCache.Get(key, () =>
-            {
-                var query = from cr in _customerRoleRepository.Table
-                            orderby cr.Id
-                            where cr.SystemName == systemName
-                            select cr;
-                var customerRole = query.FirstOrDefault();
-                return customerRole;
-            });
-        }
+			//return _requestCache.Get(key, () =>
+			//{
+			//    var query = from cr in _customerRoleRepository.Table
+			//                orderby cr.Id
+			//                where cr.SystemName == systemName
+			//                select cr;
+			//    var customerRole = query.FirstOrDefault();
+			//    return customerRole;
+			//});
+
+			var query = from cr in _customerRoleRepository.Table
+						orderby cr.Id
+						where cr.SystemName == systemName
+						select cr;
+			var customerRole = query.FirstOrDefaultCached(key);
+			return customerRole;
+		}
 
         public virtual IList<CustomerRole> GetAllCustomerRoles(bool showHidden = false)
         {
             string key = string.Format(CUSTOMERROLES_ALL_KEY, showHidden);
-            return _requestCache.Get(key, () =>
-            {
-                var query = from cr in _customerRoleRepository.Table
-                            orderby cr.Name
-                            where (showHidden || cr.Active)
-                            select cr;
-                var customerRoles = query.ToList();
-                return customerRoles;
-            });
-        }
+			//return _requestCache.Get(key, () =>
+			//{
+			//    var query = from cr in _customerRoleRepository.Table
+			//                orderby cr.Name
+			//                where (showHidden || cr.Active)
+			//                select cr;
+			//    var customerRoles = query.ToList();
+			//    return customerRoles;
+			//});
+
+			var query = from cr in _customerRoleRepository.Table
+						orderby cr.Name
+						where (showHidden || cr.Active)
+						select cr;
+			var customerRoles = query.ToListCached(key);
+			return customerRoles;
+		}
         
         public virtual void InsertCustomerRole(CustomerRole customerRole)
         {

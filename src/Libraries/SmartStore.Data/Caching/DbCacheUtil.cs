@@ -32,7 +32,7 @@ namespace SmartStore.Data.Caching
 			return null;
 		}
 
-		public static Tuple<string, DbParameterCollection> GetCommandTextAndParameters(this ObjectQuery objectQuery)
+		public static CommandInfo GetCommandInfo(this ObjectQuery objectQuery)
 		{
 			var stateField = objectQuery.GetType().BaseType.GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
 			var state = stateField.GetValue(objectQuery);
@@ -53,11 +53,11 @@ namespace SmartStore.Data.Caching
 				sql = prepareEntityCommandBeforeExecution.CommandText;
 				var parameters = prepareEntityCommandBeforeExecution.Parameters;
 
-				return new Tuple<string, DbParameterCollection>(sql, parameters);
+				return new CommandInfo(sql, parameters);
 			}
 		}
 
-		public static IEnumerable<string> GetAffectedEntitySets(this ObjectQuery objectQuery)
+		public static string[] GetAffectedEntitySets(this ObjectQuery objectQuery)
 		{
 			var result = new HashSet<string>();
 
@@ -80,7 +80,18 @@ namespace SmartStore.Data.Caching
 				}
 			}
 
-			return result;
+			return result.ToArray();
+		}
+
+		internal class CommandInfo : Tuple<string, DbParameterCollection>
+		{
+			public CommandInfo(string sql, DbParameterCollection parameters)
+				: base(sql, parameters)
+			{
+			}
+
+			public string Sql { get { return base.Item1; } }
+			public DbParameterCollection Parameters { get { return base.Item2; } }
 		}
 	}
 }

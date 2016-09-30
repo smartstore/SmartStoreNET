@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Stores;
 using SmartStore.Collections;
 using SmartStore.Core;
+using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Localization
 {
@@ -110,15 +111,24 @@ namespace SmartStore.Services.Localization
         /// <returns>Language collection</returns>
 		public virtual IList<Language> GetAllLanguages(bool showHidden = false, int storeId = 0)
         {
-			string key = string.Format(LANGUAGES_ALL_KEY, showHidden);
-			var languages = _requestCache.Get(key, () =>
+			//string key = string.Format(LANGUAGES_ALL_KEY, showHidden);
+			//var languages = _requestCache.Get(key, () =>
+			//{
+			//	var query = _languageRepository.Table;
+			//	if (!showHidden)
+			//		query = query.Where(x => x.Published);
+			//	query = query.OrderBy(x => x.DisplayOrder);
+			//	return query.ToList();
+			//});
+
+			var query = _languageRepository.Table;
+			if (!showHidden)
 			{
-				var query = _languageRepository.Table;
-				if (!showHidden)
-					query = query.Where(x => x.Published);
-				query = query.OrderBy(x => x.DisplayOrder);
-				return query.ToList();
-			});
+				query = query.Where(x => x.Published);
+			}
+			query = query.OrderBy(x => x.DisplayOrder);
+
+			var languages = query.ToListCached();
 
 			// store mapping
 			if (storeId > 0)
@@ -158,12 +168,14 @@ namespace SmartStore.Services.Localization
             if (languageId == 0)
                 return null;
 
-            string key = string.Format(LANGUAGES_BY_ID_KEY, languageId);
-            return _requestCache.Get(key, () => 
-            { 
-                return _languageRepository.GetById(languageId); 
-            });
-        }
+            //string key = string.Format(LANGUAGES_BY_ID_KEY, languageId);
+            //return _requestCache.Get(key, () => 
+            //{ 
+            //    return _languageRepository.GetById(languageId); 
+            //});
+
+			return _languageRepository.Table.Where(x => x.Id == languageId).FirstOrDefaultCached();
+		}
 
         /// <summary>
         /// Gets a language by culture code (e.g.: en-US)
@@ -175,24 +187,28 @@ namespace SmartStore.Services.Localization
             if (!culture.HasValue())
                 return null;
 
-            string key = string.Format(LANGUAGES_BY_CULTURE_KEY, culture);
-            return _requestCache.Get(key, () =>
-            {
-                return _languageRepository.Table.Where(x => culture.Equals(x.LanguageCulture, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-            });
-        }
+            //string key = string.Format(LANGUAGES_BY_CULTURE_KEY, culture);
+            //return _requestCache.Get(key, () =>
+            //{
+            //    return _languageRepository.Table.Where(x => culture.Equals(x.LanguageCulture, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            //});
+
+			return _languageRepository.Table.Where(x => culture.Equals(x.LanguageCulture, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefaultCached();
+		}
 
         public virtual Language GetLanguageBySeoCode(string seoCode)
         {
             if (!seoCode.HasValue())
                 return null;
 
-            string key = string.Format(LANGUAGES_BY_SEOCODE_KEY, seoCode);
-            return _requestCache.Get(key, () =>
-            {
-                return _languageRepository.Table.Where(x => seoCode.Equals(x.UniqueSeoCode, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-            });
-        }
+            //string key = string.Format(LANGUAGES_BY_SEOCODE_KEY, seoCode);
+            //return _requestCache.Get(key, () =>
+            //{
+            //    return _languageRepository.Table.Where(x => seoCode.Equals(x.UniqueSeoCode, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            //});
+
+			return _languageRepository.Table.Where(x => seoCode.Equals(x.UniqueSeoCode, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefaultCached();
+		}
 
         /// <summary>
         /// Inserts a language

@@ -45,6 +45,7 @@ namespace SmartStore.Data.Caching
 			if (transaction == null)
 			{
 				_cache.InvalidateSets(entitySets);
+				_cache.RequestInvalidateSets(entitySets);
 			}
 			else
 			{
@@ -76,7 +77,8 @@ namespace SmartStore.Data.Caching
 
 			if (entitySets != null)
 			{
-				_cache.InvalidateSets(entitySets.Distinct());
+				_cache.InvalidateSets(entitySets);
+				_cache.RequestInvalidateSets(entitySets);
 			}
 		}
 

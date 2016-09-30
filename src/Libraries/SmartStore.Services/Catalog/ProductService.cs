@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Data.Caching;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
@@ -278,12 +279,15 @@ namespace SmartStore.Services.Catalog
             if (productId == 0)
                 return null;
 
-            string key = string.Format(PRODUCTS_BY_ID_KEY, productId);
-            return _requestCache.Get(key, () =>
-            { 
-                return _productRepository.GetById(productId); 
-            });
-        }
+            //string key = string.Format(PRODUCTS_BY_ID_KEY, productId);
+            //return _requestCache.Get(key, () =>
+            //{ 
+            //    return _productRepository.GetById(productId); 
+            //});
+
+			return _productRepository.Table.Where(x => x.Id == productId).FirstOrDefaultCached();
+
+		}
 
         /// <summary>
         /// Get products by identifiers

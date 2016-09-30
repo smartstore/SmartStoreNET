@@ -12,7 +12,7 @@ namespace SmartStore.Data.Caching
 		/// <summary>
 		/// Controls whether query caching is enabled or idle
 		/// </summary>
-		bool Enabled { get; }
+		bool Enabled { get; set; }
 
 		/// <summary>
 		/// Tries to the get cached entry by key.
@@ -81,7 +81,8 @@ namespace SmartStore.Data.Caching
 	{
 		public bool Enabled
 		{
-			get { return false; }
+			get;
+			set;
 		}
 
 		public bool TryGet(string key, out object value)

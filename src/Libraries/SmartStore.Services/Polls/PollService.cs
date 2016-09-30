@@ -9,32 +9,20 @@ using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Polls
 {
-    /// <summary>
-    /// Poll service
-    /// </summary>
     public partial class PollService : IPollService
     {
-
-        #region Fields
-
         private readonly IRepository<Poll> _pollRepository;
         private readonly IRepository<PollAnswer> _pollAnswerRepository;
         private readonly IRepository<PollVotingRecord> _pollVotingRecords;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
-        private readonly IRequestCache _requestCache;
         private readonly IEventPublisher _eventPublisher;
 		private readonly IStoreContext _storeContext;
-
-        #endregion
-
-        #region Ctor
 
         public PollService(
 			IRepository<Poll> pollRepository, 
             IRepository<PollAnswer> pollAnswerRepository,
             IRepository<PollVotingRecord> pollVotingRecords,
 			IRepository<StoreMapping> storeMappingRepository,
-			IRequestCache requestCache, 
 			IEventPublisher eventPublisher,
 			IStoreContext storeContext)
         {
@@ -42,7 +30,6 @@ namespace SmartStore.Services.Polls
             this._pollAnswerRepository = pollAnswerRepository;
             this._pollVotingRecords = pollVotingRecords;
 			this._storeMappingRepository = storeMappingRepository;
-            this._requestCache = requestCache;
             this._eventPublisher = eventPublisher;
 			this._storeContext = storeContext;
 
@@ -50,10 +37,6 @@ namespace SmartStore.Services.Polls
         }
 
 		public DbQuerySettings QuerySettings { get; set; }
-
-        #endregion
-
-		#region Utilities
 
 		private IQueryable<Poll> Filter(IQueryable<Poll> query, bool showHidden)
 		{
@@ -81,15 +64,6 @@ namespace SmartStore.Services.Polls
 			return query;
 		}
 
-		#endregion Utilities
-
-		#region Methods
-
-		/// <summary>
-        /// Gets a poll
-        /// </summary>
-        /// <param name="pollId">The poll identifier</param>
-        /// <returns>Poll</returns>
         public virtual Poll GetPollById(int pollId)
         {
             if (pollId == 0)
@@ -98,13 +72,6 @@ namespace SmartStore.Services.Polls
             return _pollRepository.GetById(pollId);
         }
 
-        /// <summary>
-        /// Gets a poll
-        /// </summary>
-        /// <param name="systemKeyword">The poll system keyword</param>
-        /// <param name="languageId">Language identifier. 0 if you want to get all polls</param>
-		/// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Poll</returns>
 		public virtual Poll GetPollBySystemKeyword(string systemKeyword, int languageId, bool showHidden = false)
         {
             if (String.IsNullOrWhiteSpace(systemKeyword))
@@ -121,15 +88,6 @@ namespace SmartStore.Services.Polls
             return poll;
         }
         
-        /// <summary>
-        /// Gets poll collection
-        /// </summary>
-        /// <param name="languageId">Language identifier. 0 if you want to get all polls</param>
-        /// <param name="loadShownOnHomePageOnly">Retrieve only shown on home page polls</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Poll collection</returns>
         public virtual IPagedList<Poll> GetPolls(int languageId, bool loadShownOnHomePageOnly, int pageIndex, int pageSize, bool showHidden = false)
         {
             var query = _pollRepository.Table;
@@ -151,10 +109,6 @@ namespace SmartStore.Services.Polls
             return polls;
         }
 
-        /// <summary>
-        /// Deletes a poll
-        /// </summary>
-        /// <param name="poll">The poll</param>
         public virtual void DeletePoll(Poll poll)
         {
             if (poll == null)
@@ -166,10 +120,6 @@ namespace SmartStore.Services.Polls
             _eventPublisher.EntityDeleted(poll);
         }
 
-        /// <summary>
-        /// Inserts a poll
-        /// </summary>
-        /// <param name="poll">Poll</param>
         public virtual void InsertPoll(Poll poll)
         {
             if (poll == null)
@@ -181,10 +131,6 @@ namespace SmartStore.Services.Polls
             _eventPublisher.EntityInserted(poll);
         }
 
-        /// <summary>
-        /// Updates the poll
-        /// </summary>
-        /// <param name="poll">Poll</param>
         public virtual void UpdatePoll(Poll poll)
         {
             if (poll == null)
@@ -196,11 +142,6 @@ namespace SmartStore.Services.Polls
             _eventPublisher.EntityUpdated(poll);
         }
         
-        /// <summary>
-        /// Gets a poll answer
-        /// </summary>
-        /// <param name="pollAnswerId">Poll answer identifier</param>
-        /// <returns>Poll answer</returns>
         public virtual PollAnswer GetPollAnswerById(int pollAnswerId)
         {
             if (pollAnswerId == 0)
@@ -213,10 +154,6 @@ namespace SmartStore.Services.Polls
             return pollAnswer;
         }
         
-        /// <summary>
-        /// Deletes a poll answer
-        /// </summary>
-        /// <param name="pollAnswer">Poll answer</param>
         public virtual void DeletePollAnswer(PollAnswer pollAnswer)
         {
             if (pollAnswer == null)
@@ -228,12 +165,6 @@ namespace SmartStore.Services.Polls
             _eventPublisher.EntityDeleted(pollAnswer);
         }
 
-        /// <summary>
-        /// Gets a value indicating whether customer already vited for this poll
-        /// </summary>
-        /// <param name="pollId">Poll identifier</param>
-        /// <param name="customerId">Customer identifier</param>
-        /// <returns>Result</returns>
         public virtual bool AlreadyVoted(int pollId, int customerId)
         {
             if (pollId == 0 || customerId == 0)
@@ -245,7 +176,5 @@ namespace SmartStore.Services.Polls
                           select pvr).Count() > 0;
             return result;
         }
-
-        #endregion
     }
 }

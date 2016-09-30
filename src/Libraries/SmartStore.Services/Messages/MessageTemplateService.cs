@@ -13,15 +13,9 @@ namespace SmartStore.Services.Messages
 {
     public partial class MessageTemplateService: IMessageTemplateService
     {
-        #region Constants
-
         private const string MESSAGETEMPLATES_ALL_KEY = "SmartStore.messagetemplate.all-{0}";
         private const string MESSAGETEMPLATES_BY_NAME_KEY = "SmartStore.messagetemplate.name-{0}-{1}";
         private const string MESSAGETEMPLATES_PATTERN_KEY = "SmartStore.messagetemplate.";
-
-        #endregion
-
-        #region Fields
 
         private readonly IRepository<MessageTemplate> _messageTemplateRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
@@ -30,10 +24,6 @@ namespace SmartStore.Services.Messages
 		private readonly ILocalizedEntityService _localizedEntityService;
         private readonly IEventPublisher _eventPublisher;
         private readonly IRequestCache _requestCache;
-
-        #endregion
-
-        #region Ctor
 
         public MessageTemplateService(
 			IRequestCache requestCache,
@@ -57,14 +47,6 @@ namespace SmartStore.Services.Messages
 
 		public DbQuerySettings QuerySettings { get; set; }
 
-        #endregion
-
-        #region Methods
-
-		/// <summary>
-		/// Delete a message template
-		/// </summary>
-		/// <param name="messageTemplate">Message template</param>
 		public virtual void DeleteMessageTemplate(MessageTemplate messageTemplate)
 		{
 			if (messageTemplate == null)
@@ -78,10 +60,6 @@ namespace SmartStore.Services.Messages
 			_eventPublisher.EntityDeleted(messageTemplate);
 		}
 
-        /// <summary>
-        /// Inserts a message template
-        /// </summary>
-        /// <param name="messageTemplate">Message template</param>
         public virtual void InsertMessageTemplate(MessageTemplate messageTemplate)
         {
             if (messageTemplate == null)
@@ -95,10 +73,6 @@ namespace SmartStore.Services.Messages
             _eventPublisher.EntityInserted(messageTemplate);
         }
 
-        /// <summary>
-        /// Updates a message template
-        /// </summary>
-        /// <param name="messageTemplate">Message template</param>
         public virtual void UpdateMessageTemplate(MessageTemplate messageTemplate)
         {
             if (messageTemplate == null)
@@ -112,11 +86,6 @@ namespace SmartStore.Services.Messages
             _eventPublisher.EntityUpdated(messageTemplate);
         }
 
-        /// <summary>
-        /// Gets a message template
-        /// </summary>
-        /// <param name="messageTemplateId">Message template identifier</param>
-        /// <returns>Message template</returns>
         public virtual MessageTemplate GetMessageTemplateById(int messageTemplateId)
         {
             if (messageTemplateId == 0)
@@ -125,12 +94,6 @@ namespace SmartStore.Services.Messages
             return _messageTemplateRepository.GetById(messageTemplateId);
         }
 
-        /// <summary>
-        /// Gets a message template
-        /// </summary>
-        /// <param name="messageTemplateName">Message template name</param>
-		/// <param name="storeId">Store identifier</param>
-        /// <returns>Message template</returns>
 		public virtual MessageTemplate GetMessageTemplateByName(string messageTemplateName, int storeId)
         {
             if (string.IsNullOrWhiteSpace(messageTemplateName))
@@ -155,11 +118,6 @@ namespace SmartStore.Services.Messages
 
         }
 
-        /// <summary>
-        /// Gets all message templates
-        /// </summary>
-		/// <param name="storeId">Store identifier; pass 0 to load all records</param>
-        /// <returns>Message template list</returns>
 		public virtual IList<MessageTemplate> GetAllMessageTemplates(int storeId)
         {
 			string key = string.Format(MESSAGETEMPLATES_ALL_KEY, storeId);
@@ -190,11 +148,6 @@ namespace SmartStore.Services.Messages
             });
         }
 
-		/// <summary>
-		/// Create a copy of message template with all depended data
-		/// </summary>
-		/// <param name="messageTemplate">Message template</param>
-		/// <returns>Message template copy</returns>
 		public virtual MessageTemplate CopyMessageTemplate(MessageTemplate messageTemplate)
 		{
 			if (messageTemplate == null)
@@ -245,7 +198,5 @@ namespace SmartStore.Services.Messages
 
 			return mtCopy;
 		}
-
-        #endregion
     }
 }

@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Data.Caching;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
@@ -21,18 +22,11 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public partial class CategoryService : ICategoryService
     {
-        #region Constants
-
         private const string CATEGORIES_BY_PARENT_CATEGORY_ID_KEY = "SmartStore.category.byparent-{0}-{1}-{2}-{3}";
 		private const string PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY = "SmartStore.productcategory.allbycategoryid-{0}-{1}-{2}-{3}-{4}-{5}";
 		private const string PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY = "SmartStore.productcategory.allbyproductid-{0}-{1}-{2}-{3}";
         private const string CATEGORIES_PATTERN_KEY = "SmartStore.category.";
         private const string PRODUCTCATEGORIES_PATTERN_KEY = "SmartStore.productcategory.";
-        private const string CATEGORIES_BY_ID_KEY = "SmartStore.category.id-{0}";
-
-        #endregion
-
-        #region Fields
 
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<ProductCategory> _productCategoryRepository;
@@ -50,22 +44,6 @@ namespace SmartStore.Services.Catalog
         private readonly IProductService _productService;
         private readonly IStoreService _storeService;
 
-		#endregion
-
-		#region Ctor
-
-		/// <summary>
-		/// Ctor
-		/// </summary>
-		/// <param name="requestCache">Cache manager</param>
-		/// <param name="categoryRepository">Category repository</param>
-		/// <param name="productCategoryRepository">ProductCategory repository</param>
-		/// <param name="productRepository">Product repository</param>
-		/// <param name="aclRepository">ACL record repository</param>
-		/// <param name="storeMappingRepository">Store mapping repository</param>
-		/// <param name="workContext">Work context</param>
-		/// <param name="storeContext">Store context</param>
-		/// <param name="eventPublisher">Event publisher</param>
 		public CategoryService(IRequestCache requestCache,
             IRepository<Category> categoryRepository,
             IRepository<ProductCategory> productCategoryRepository,
@@ -103,10 +81,6 @@ namespace SmartStore.Services.Catalog
 
 		public DbQuerySettings QuerySettings { get; set; }
 
-        #endregion
-
-		#region Utilities
-
 		private void DeleteAllCategories(IList<Category> categories, bool delete)
 		{
 			foreach (var category in categories)
@@ -122,10 +96,6 @@ namespace SmartStore.Services.Catalog
 				DeleteAllCategories(childCategories, delete);
             }
 		}
-
-		#endregion
-
-		#region Methods
 
         public virtual void InheritAclIntoChildren(int categoryId, 
             bool touchProductsWithMultipleCategories = false,
@@ -298,11 +268,6 @@ namespace SmartStore.Services.Catalog
             }
         }
 
-		/// <summary>
-        /// Delete category
-        /// </summary>
-        /// <param name="category">Category</param>
-		/// <param name="deleteChilds">Whether to delete child categories or to set them to no parent.</param>
 		public virtual void DeleteCategory(Category category, bool deleteChilds = false)
         {
             if (category == null)
@@ -360,18 +325,6 @@ namespace SmartStore.Services.Catalog
 			return query;
 		}
         
-        /// <summary>
-        /// Gets all categories
-        /// </summary>
-        /// <param name="categoryName">Category name</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-		/// <param name="alias">Alias to be filtered</param>
-        /// <param name="applyNavigationFilters">Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
-		/// <param name="ignoreCategoriesWithoutExistingParent">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
-		/// <param name="storeId">Store identifier; 0 to load all records</param>
-        /// <returns>Categories</returns>
         public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null,
 			bool applyNavigationFilters = true, bool ignoreCategoriesWithoutExistingParent = true, int storeId = 0)
         {
@@ -391,12 +344,6 @@ namespace SmartStore.Services.Catalog
             return new PagedList<Category>(sortedCategories, pageIndex, pageSize);
         }
 
-        /// <summary>
-        /// Gets all categories filtered by parent category identifier
-        /// </summary>
-        /// <param name="parentCategoryId">Parent category identifier</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Category collection</returns>
         public IList<Category> GetAllCategoriesByParentCategoryId(int parentCategoryId, bool showHidden = false)
         {
 			int storeId = _storeContext.CurrentStore.Id;
@@ -404,8 +351,10 @@ namespace SmartStore.Services.Catalog
             return _requestCache.Get(key, () =>
             {
                 var query = _categoryRepository.Table;
+
                 if (!showHidden)
                     query = query.Where(c => c.Published);
+
                 query = query.Where(c => c.ParentCategoryId == parentCategoryId);
                 query = query.Where(c => !c.Deleted);
                 query = query.OrderBy(c => c.DisplayOrder);
@@ -419,7 +368,6 @@ namespace SmartStore.Services.Catalog
                 var categories = query.ToList();
                 return categories;
             });
-
         }
 
         protected virtual IQueryable<Category> ApplyHiddenCategoriesFilter(IQueryable<Category> query, bool applyNavigationFilters, int storeId = 0)
@@ -468,10 +416,6 @@ namespace SmartStore.Services.Catalog
 			return query;
         }
         
-        /// <summary>
-        /// Gets all categories displayed on the home page
-        /// </summary>
-        /// <returns>Categories</returns>
         public virtual IList<Category> GetAllCategoriesDisplayedOnHomePage()
         {
             var query = from c in _categoryRepository.Table
@@ -485,27 +429,14 @@ namespace SmartStore.Services.Catalog
             return categories;
         }
                 
-        /// <summary>
-        /// Gets a category
-        /// </summary>
-        /// <param name="categoryId">Category identifier</param>
-        /// <returns>Category</returns>
         public virtual Category GetCategoryById(int categoryId)
         {
             if (categoryId == 0)
                 return null;
 
-            string key = string.Format(CATEGORIES_BY_ID_KEY, categoryId);
-            return _requestCache.Get(key, () =>
-            {
-                return  _categoryRepository.GetById(categoryId);
-            });
-        }
+			return _categoryRepository.GetByIdCached(categoryId, "db.category.id-" + categoryId);
+		}
 
-        /// <summary>
-        /// Inserts category
-        /// </summary>
-        /// <param name="category">Category</param>
         public virtual void InsertCategory(Category category)
         {
             if (category == null)
@@ -521,10 +452,6 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityInserted(category);
         }
 
-        /// <summary>
-        /// Updates the category
-        /// </summary>
-        /// <param name="category">Category</param>
         public virtual void UpdateCategory(Category category)
         {
             if (category == null)
@@ -552,10 +479,6 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityUpdated(category);
         }
         
-        /// <summary>
-        /// Update HasDiscountsApplied property (used for performance optimization)
-        /// </summary>
-        /// <param name="category">Category</param>
         public virtual void UpdateHasDiscountsApplied(Category category)
         {
             if (category == null)
@@ -565,10 +488,6 @@ namespace SmartStore.Services.Catalog
             UpdateCategory(category);
         }
 
-        /// <summary>
-        /// Deletes a product category mapping
-        /// </summary>
-        /// <param name="productCategory">Product category</param>
         public virtual void DeleteProductCategory(ProductCategory productCategory)
         {
             if (productCategory == null)
@@ -584,14 +503,6 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityDeleted(productCategory);
         }
 
-        /// <summary>
-        /// Gets product category mapping collection
-        /// </summary>
-        /// <param name="categoryId">Category identifier</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Product a category mapping collection</returns>
         public virtual IPagedList<ProductCategory> GetProductCategoriesByCategoryId(int categoryId, int pageIndex, int pageSize, bool showHidden = false)
         {
             if (categoryId == 0)
@@ -622,12 +533,6 @@ namespace SmartStore.Services.Catalog
             });
         }
 
-        /// <summary>
-        /// Gets a product category mapping collection
-        /// </summary>
-        /// <param name="productId">Product identifier</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Product category mapping collection</returns>
         public virtual IList<ProductCategory> GetProductCategoriesByProductId(int productId, bool showHidden = false)
         {
             if (productId == 0)
@@ -752,11 +657,6 @@ namespace SmartStore.Services.Catalog
 			return query;
         }
 
-        /// <summary>
-        /// Gets a product category mapping 
-        /// </summary>
-        /// <param name="productCategoryId">Product category mapping identifier</param>
-        /// <returns>Product category mapping</returns>
         public virtual ProductCategory GetProductCategoryById(int productCategoryId)
         {
             if (productCategoryId == 0)
@@ -765,10 +665,6 @@ namespace SmartStore.Services.Catalog
             return _productCategoryRepository.GetById(productCategoryId);
         }
 
-        /// <summary>
-        /// Inserts a product category mapping
-        /// </summary>
-        /// <param name="productCategory">>Product category mapping</param>
         public virtual void InsertProductCategory(ProductCategory productCategory)
         {
             if (productCategory == null)
@@ -784,10 +680,6 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityInserted(productCategory);
         }
 
-        /// <summary>
-        /// Updates the product category mapping 
-        /// </summary>
-        /// <param name="productCategory">>Product category mapping</param>
         public virtual void UpdateProductCategory(ProductCategory productCategory)
         {
             if (productCategory == null)
@@ -847,7 +739,5 @@ namespace SmartStore.Services.Catalog
 
 			return string.Empty;
 		}
-
-        #endregion
     }
 }

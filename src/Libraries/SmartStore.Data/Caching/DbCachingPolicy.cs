@@ -72,7 +72,9 @@ namespace SmartStore.Data.Caching
 		/// <returns>
 		/// <c>true</c> when the specified command definition can be cached; otherwise, <c>false</c>.
 		/// </returns>
-		protected internal virtual bool CanBeCached(ReadOnlyCollection<EntitySetBase> affectedEntitySets, string sql,
+		protected internal virtual bool CanBeCached(
+			ReadOnlyCollection<EntitySetBase> affectedEntitySets, 
+			string sql,
 			IEnumerable<KeyValuePair<string, object>> parameters)
 		{
 			var entitySets = affectedEntitySets.Select(x => x.Name);
@@ -86,8 +88,10 @@ namespace SmartStore.Data.Caching
 		/// <param name="affectedEntitySets">Entity sets affected by the command.</param>
 		/// <param name="minCacheableRows">The minimum number of cacheable rows.</param>
 		/// <param name="maxCacheableRows">The maximum number of cacheable rows.</param>
-		protected internal virtual void GetCacheableRows(ReadOnlyCollection<EntitySetBase> affectedEntitySets,
-			out int minCacheableRows, out int maxCacheableRows)
+		protected internal virtual void GetCacheableRows(
+			ReadOnlyCollection<EntitySetBase> affectedEntitySets,
+			out int minCacheableRows, 
+			out int maxCacheableRows)
 		{
 			minCacheableRows = 0;
 			maxCacheableRows = 5000; // int.MaxValue;

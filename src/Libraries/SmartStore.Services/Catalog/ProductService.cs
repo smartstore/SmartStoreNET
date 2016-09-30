@@ -29,15 +29,6 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public partial class ProductService : IProductService
 	{
-		#region Constants
-
-		private const string PRODUCTS_BY_ID_KEY = "SmartStore.product.id-{0}";
-		private const string PRODUCTS_PATTERN_KEY = "SmartStore.product.";
-
-		#endregion
-
-		#region Fields
-
 		private readonly IRepository<Product> _productRepository;
         private readonly IRepository<RelatedProduct> _relatedProductRepository;
         private readonly IRepository<CrossSellProduct> _crossSellProductRepository;
@@ -56,39 +47,10 @@ namespace SmartStore.Services.Catalog
         private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IDataProvider _dataProvider;
         private readonly IDbContext _dbContext;
-		private readonly IRequestCache _requestCache;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CommonSettings _commonSettings;
 		private readonly ICommonServices _services;
 
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="requestCache">Cache manager</param>
-        /// <param name="productRepository">Product repository</param>
-        /// <param name="relatedProductRepository">Related product repository</param>
-        /// <param name="crossSellProductRepository">Cross-sell product repository</param>
-        /// <param name="tierPriceRepository">Tier price repository</param>
-        /// <param name="localizedPropertyRepository">Localized property repository</param>
-        /// <param name="aclRepository">ACL record repository</param>
-		/// <param name="storeMappingRepository">Store mapping repository</param>
-        /// <param name="productPictureRepository">Product picture repository</param>
-        /// <param name="productSpecificationAttributeRepository">Product specification attribute repository</param>
-        /// <param name="productAttributeService">Product attribute service</param>
-        /// <param name="productAttributeParser">Product attribute parser service</param>
-        /// <param name="languageService">Language service</param>
-        /// <param name="workflowMessageService">Workflow message service</param>
-        /// <param name="dataProvider">Data provider</param>
-        /// <param name="dbContext">Database Context</param>
-        /// <param name="workContext">Work context</param>
-		/// <param name="storeContext">Store context</param>
-        /// <param name="localizationSettings">Localization settings</param>
-        /// <param name="commonSettings">Common settings</param>
-        /// <param name="eventPublisher">Event published</param>
         public ProductService(
             IRepository<Product> productRepository,
             IRepository<RelatedProduct> relatedProductRepository,
@@ -108,7 +70,6 @@ namespace SmartStore.Services.Catalog
             IWorkflowMessageService workflowMessageService,
             IDataProvider dataProvider,
 			IDbContext dbContext,
-			IRequestCache requestCache,
             LocalizationSettings localizationSettings,
 			CommonSettings commonSettings,
 			ICommonServices services)
@@ -131,7 +92,6 @@ namespace SmartStore.Services.Catalog
             this._workflowMessageService = workflowMessageService;
             this._dataProvider = dataProvider;
             this._dbContext = dbContext;
-			this._requestCache = requestCache;
             this._localizationSettings = localizationSettings;
             this._commonSettings = commonSettings;
 			this._services = services;
@@ -140,8 +100,6 @@ namespace SmartStore.Services.Catalog
         }
 
 		public DbQuerySettings QuerySettings { get; set; }
-
-        #endregion
 
 		#region Utilities
 
@@ -222,14 +180,8 @@ namespace SmartStore.Services.Catalog
 
 		#endregion
 
-		#region Methods
-
 		#region Products
 
-		/// <summary>
-        /// Delete a product
-        /// </summary>
-        /// <param name="product">Product</param>
         public virtual void DeleteProduct(Product product)
         {
             if (product == null)
@@ -253,10 +205,6 @@ namespace SmartStore.Services.Catalog
 			}
         }
 
-        /// <summary>
-        /// Gets all products displayed on the home page
-        /// </summary>
-        /// <returns>Product collection</returns>
         public virtual IList<Product> GetAllProductsDisplayedOnHomePage()
         {
             var query = 
@@ -269,31 +217,15 @@ namespace SmartStore.Services.Catalog
             return products;
         }
         
-        /// <summary>
-        /// Gets product
-        /// </summary>
-        /// <param name="productId">Product identifier</param>
-        /// <returns>Product</returns>
         public virtual Product GetProductById(int productId)
         {
             if (productId == 0)
                 return null;
 
-            //string key = string.Format(PRODUCTS_BY_ID_KEY, productId);
-            //return _requestCache.Get(key, () =>
-            //{ 
-            //    return _productRepository.GetById(productId); 
-            //});
-
-			return _productRepository.Table.Where(x => x.Id == productId).FirstOrDefaultCached();
+			return _productRepository.GetByIdCached(productId, "db.product.id-" + productId);
 
 		}
 
-        /// <summary>
-        /// Get products by identifiers
-        /// </summary>
-        /// <param name="productIds">Product identifiers</param>
-        /// <returns>Products</returns>
         public virtual IList<Product> GetProductsByIds(int[] productIds)
         {
             if (productIds == null || productIds.Length == 0)
@@ -312,10 +244,6 @@ namespace SmartStore.Services.Catalog
 			return sortQuery.ToList();
         }
 
-        /// <summary>
-        /// Inserts a product
-        /// </summary>
-        /// <param name="product">Product</param>
         public virtual void InsertProduct(Product product)
         {
             if (product == null)
@@ -323,18 +251,11 @@ namespace SmartStore.Services.Catalog
 
             //insert
             _productRepository.Insert(product);
-
-			//clear cache
-			_requestCache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
             
             //event notification
             _services.EventPublisher.EntityInserted(product);
         }
 
-        /// <summary>
-        /// Updates the product
-        /// </summary>
-        /// <param name="product">Product</param>
 		public virtual void UpdateProduct(Product product, bool publishEvent = true)
         {
             if (product == null)
@@ -348,9 +269,6 @@ namespace SmartStore.Services.Catalog
 
             // update
             _productRepository.Update(product);
-
-			// cache
-			_requestCache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             // event notification
 			if (publishEvent && modified)
@@ -1044,10 +962,6 @@ namespace SmartStore.Services.Catalog
 			return query.Select(selector);
 		}
 
-        /// <summary>
-        /// Update product review totals
-        /// </summary>
-        /// <param name="product">Product</param>
         public virtual void UpdateProductReviewTotals(Product product)
         {
             if (product == null)
@@ -1078,11 +992,7 @@ namespace SmartStore.Services.Catalog
             product.NotApprovedTotalReviews = notApprovedTotalReviews;
             UpdateProduct(product);
         }
-        
-        /// <summary>
-        /// Get low stock products
-        /// </summary>
-        /// <returns>Result</returns>
+
         public virtual IList<Product> GetLowStockProducts()
         {
 			// Track inventory for product
@@ -1116,10 +1026,6 @@ namespace SmartStore.Services.Catalog
             return result;
         }
 
-		/// Gets a product by SKU
-		/// </summary>
-		/// <param name="sku">SKU</param>
-		/// <returns>Product</returns>
 		public virtual Product GetProductBySku(string sku)
 		{
 			if (String.IsNullOrEmpty(sku))
@@ -1135,11 +1041,6 @@ namespace SmartStore.Services.Catalog
 			return product;
 		}
 
-        /// <summary>
-        /// Gets a product by GTIN
-        /// </summary>
-        /// <param name="gtin">GTIN</param>
-        /// <returns>Product</returns>
         public virtual Product GetProductByGtin(string gtin)
         {
             if (String.IsNullOrEmpty(gtin))
@@ -1186,12 +1087,6 @@ namespace SmartStore.Services.Catalog
 			return product;
 		}
 
-		/// <summary>
-		/// Adjusts inventory
-		/// </summary>
-		/// <param name="sci">Shopping cart item</param>
-		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
-		/// <returns>Adjust inventory result</returns>
 		public virtual AdjustInventoryResult AdjustInventory(OrganizedShoppingCartItem sci, bool decrease)
 		{
 			if (sci == null)
@@ -1214,13 +1109,6 @@ namespace SmartStore.Services.Catalog
 			}
 		}
 
-		/// <summary>
-		/// Adjusts inventory
-		/// </summary>
-		/// <param name="orderItem">Order item</param>
-		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
-		/// <param name="quantity">Quantity</param>
-		/// <returns>Adjust inventory result</returns>
 		public virtual AdjustInventoryResult AdjustInventory(OrderItem orderItem, bool decrease, int quantity)
 		{
 			if (orderItem == null)
@@ -1251,14 +1139,6 @@ namespace SmartStore.Services.Catalog
 			}
 		}
 
-        /// <summary>
-        /// Adjusts inventory
-        /// </summary>
-		/// <param name="product">Product</param>
-		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
-        /// <param name="quantity">Quantity</param>
-        /// <param name="attributesXml">Attributes in XML format</param>
-		/// <returns>Adjust inventory result</returns>
 		public virtual AdjustInventoryResult AdjustInventory(Product product, bool decrease, int quantity, string attributesXml)
         {
 			if (product == null)
@@ -1344,10 +1224,6 @@ namespace SmartStore.Services.Catalog
 			return result;
         }
         
-        /// <summary>
-        /// Update HasTierPrices property (used for performance optimization)
-        /// </summary>
-		/// <param name="product">Product</param>
 		public virtual void UpdateHasTierPricesProperty(Product product)
         {
 			if (product == null)
@@ -1359,10 +1235,6 @@ namespace SmartStore.Services.Catalog
 				UpdateProduct(product);
         }
 
-		/// <summary>
-		/// Update LowestAttributeCombinationPrice property (used for performance optimization)
-		/// </summary>
-		/// <param name="product">Product</param>
 		public virtual void UpdateLowestAttributeCombinationPriceProperty(Product product)
 		{
 			if (product == null)
@@ -1376,10 +1248,6 @@ namespace SmartStore.Services.Catalog
 				UpdateProduct(product);
 		}
 
-        /// <summary>
-        /// Update HasDiscountsApplied property (used for performance optimization)
-        /// </summary>
-		/// <param name="product">Product</param>
 		public virtual void UpdateHasDiscountsApplied(Product product)
         {
 			if (product == null)
@@ -1460,10 +1328,6 @@ namespace SmartStore.Services.Catalog
 
         #region Related products
 
-        /// <summary>
-        /// Deletes a related product
-        /// </summary>
-        /// <param name="relatedProduct">Related product</param>
         public virtual void DeleteRelatedProduct(RelatedProduct relatedProduct)
         {
             if (relatedProduct == null)
@@ -1475,12 +1339,6 @@ namespace SmartStore.Services.Catalog
             _services.EventPublisher.EntityDeleted(relatedProduct);
         }
 
-        /// <summary>
-        /// Gets a related product collection by product identifier
-        /// </summary>
-        /// <param name="productId1">The first product identifier</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Related product collection</returns>
         public virtual IList<RelatedProduct> GetRelatedProductsByProductId1(int productId1, bool showHidden = false)
         {
             var query = from rp in _relatedProductRepository.Table
@@ -1493,11 +1351,6 @@ namespace SmartStore.Services.Catalog
             return relatedProducts;
         }
 
-        /// <summary>
-        /// Gets a related product
-        /// </summary>
-        /// <param name="relatedProductId">Related product identifier</param>
-        /// <returns>Related product</returns>
         public virtual RelatedProduct GetRelatedProductById(int relatedProductId)
         {
             if (relatedProductId == 0)
@@ -1507,10 +1360,6 @@ namespace SmartStore.Services.Catalog
             return relatedProduct;
         }
 
-        /// <summary>
-        /// Inserts a related product
-        /// </summary>
-        /// <param name="relatedProduct">Related product</param>
         public virtual void InsertRelatedProduct(RelatedProduct relatedProduct)
         {
             if (relatedProduct == null)
@@ -1522,10 +1371,6 @@ namespace SmartStore.Services.Catalog
             _services.EventPublisher.EntityInserted(relatedProduct);
         }
 
-        /// <summary>
-        /// Updates a related product
-        /// </summary>
-        /// <param name="relatedProduct">Related product</param>
         public virtual void UpdateRelatedProduct(RelatedProduct relatedProduct)
         {
             if (relatedProduct == null)
@@ -1537,11 +1382,6 @@ namespace SmartStore.Services.Catalog
             _services.EventPublisher.EntityUpdated(relatedProduct);
         }
 
-		/// <summary>
-		/// Ensure existence of all mutually related products
-		/// </summary>
-		/// <param name="productId1">First product identifier</param>
-		/// <returns>Number of inserted related products</returns>
 		public virtual int EnsureMutuallyRelatedProducts(int productId1)
 		{
 			var relatedProducts = GetRelatedProductsByProductId1(productId1, true);
@@ -1558,10 +1398,6 @@ namespace SmartStore.Services.Catalog
 
         #region Cross-sell products
 
-        /// <summary>
-        /// Deletes a cross-sell product
-        /// </summary>
-        /// <param name="crossSellProduct">Cross-sell identifier</param>
         public virtual void DeleteCrossSellProduct(CrossSellProduct crossSellProduct)
         {
             if (crossSellProduct == null)
@@ -1573,12 +1409,6 @@ namespace SmartStore.Services.Catalog
             _services.EventPublisher.EntityDeleted(crossSellProduct);
         }
 
-        /// <summary>
-        /// Gets a cross-sell product collection by product identifier
-        /// </summary>
-        /// <param name="productId1">The first product identifier</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Cross-sell product collection</returns>
         public virtual IList<CrossSellProduct> GetCrossSellProductsByProductId1(int productId1, bool showHidden = false)
         {
             var query = from csp in _crossSellProductRepository.Table
@@ -1592,11 +1422,6 @@ namespace SmartStore.Services.Catalog
             return crossSellProducts;
         }
 
-        /// <summary>
-        /// Gets a cross-sell product
-        /// </summary>
-        /// <param name="crossSellProductId">Cross-sell product identifier</param>
-        /// <returns>Cross-sell product</returns>
         public virtual CrossSellProduct GetCrossSellProductById(int crossSellProductId)
         {
             if (crossSellProductId == 0)
@@ -1606,10 +1431,6 @@ namespace SmartStore.Services.Catalog
             return crossSellProduct;
         }
 
-        /// <summary>
-        /// Inserts a cross-sell product
-        /// </summary>
-        /// <param name="crossSellProduct">Cross-sell product</param>
         public virtual void InsertCrossSellProduct(CrossSellProduct crossSellProduct)
         {
             if (crossSellProduct == null)
@@ -1621,10 +1442,6 @@ namespace SmartStore.Services.Catalog
             _services.EventPublisher.EntityInserted(crossSellProduct);
         }
 
-        /// <summary>
-        /// Updates a cross-sell product
-        /// </summary>
-        /// <param name="crossSellProduct">Cross-sell product</param>
         public virtual void UpdateCrossSellProduct(CrossSellProduct crossSellProduct)
         {
             if (crossSellProduct == null)
@@ -1636,12 +1453,6 @@ namespace SmartStore.Services.Catalog
             _services.EventPublisher.EntityUpdated(crossSellProduct);
         }
 
-        /// <summary>
-        /// Gets a cross-sells
-        /// </summary>
-        /// <param name="cart">Shopping cart</param>
-        /// <param name="numberOfProducts">Number of products to return</param>
-        /// <returns>Cross-sells</returns>
 		public virtual IList<Product> GetCrosssellProductsByShoppingCart(IList<OrganizedShoppingCartItem> cart, int numberOfProducts)
         {
             var result = new List<Product>();
@@ -1685,11 +1496,6 @@ namespace SmartStore.Services.Catalog
             return result;
         }
 
-		/// <summary>
-		/// Ensure existence of all mutually cross selling products
-		/// </summary>
-		/// <param name="productId1">First product identifier</param>
-		/// <returns>Number of inserted cross selling products</returns>
 		public virtual int EnsureMutuallyCrossSellProducts(int productId1)
 		{
 			var crossSellProducts = GetCrossSellProductsByProductId1(productId1, true);
@@ -1706,10 +1512,6 @@ namespace SmartStore.Services.Catalog
         
         #region Tier prices
         
-        /// <summary>
-        /// Deletes a tier price
-        /// </summary>
-        /// <param name="tierPrice">Tier price</param>
         public virtual void DeleteTierPrice(TierPrice tierPrice)
         {
             if (tierPrice == null)
@@ -1717,17 +1519,10 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Delete(tierPrice);
 
-			_requestCache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
-
             //event notification
             _services.EventPublisher.EntityDeleted(tierPrice);
         }
 
-        /// <summary>
-        /// Gets a tier price
-        /// </summary>
-        /// <param name="tierPriceId">Tier price identifier</param>
-        /// <returns>Tier price</returns>
         public virtual TierPrice GetTierPriceById(int tierPriceId)
         {
             if (tierPriceId == 0)
@@ -1762,10 +1557,6 @@ namespace SmartStore.Services.Catalog
 			return map;
 		}
 
-        /// <summary>
-        /// Inserts a tier price
-        /// </summary>
-        /// <param name="tierPrice">Tier price</param>
         public virtual void InsertTierPrice(TierPrice tierPrice)
         {
             if (tierPrice == null)
@@ -1773,24 +1564,16 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Insert(tierPrice);
 
-			_requestCache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
-
             //event notification
             _services.EventPublisher.EntityInserted(tierPrice);
         }
 
-        /// <summary>
-        /// Updates the tier price
-        /// </summary>
-        /// <param name="tierPrice">Tier price</param>
         public virtual void UpdateTierPrice(TierPrice tierPrice)
         {
             if (tierPrice == null)
                 throw new ArgumentNullException("tierPrice");
 
             _tierPriceRepository.Update(tierPrice);
-
-			_requestCache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityUpdated(tierPrice);
@@ -1800,10 +1583,6 @@ namespace SmartStore.Services.Catalog
 
         #region Product pictures
 
-        /// <summary>
-        /// Deletes a product picture
-        /// </summary>
-        /// <param name="productPicture">Product picture</param>
         public virtual void DeleteProductPicture(ProductPicture productPicture)
         {
             if (productPicture == null)
@@ -1847,11 +1626,6 @@ namespace SmartStore.Services.Catalog
             }
         }
 
-        /// <summary>
-        /// Gets a product pictures by product identifier
-        /// </summary>
-        /// <param name="productId">The product identifier</param>
-        /// <returns>Product pictures</returns>
         public virtual IList<ProductPicture> GetProductPicturesByProductId(int productId)
         {
             var query = from pp in _productPictureRepository.Table
@@ -1889,11 +1663,6 @@ namespace SmartStore.Services.Catalog
 			}
 		}
 
-        /// <summary>
-        /// Gets a product picture
-        /// </summary>
-        /// <param name="productPictureId">Product picture identifier</param>
-        /// <returns>Product picture</returns>
         public virtual ProductPicture GetProductPictureById(int productPictureId)
         {
             if (productPictureId == 0)
@@ -1903,10 +1672,6 @@ namespace SmartStore.Services.Catalog
             return pp;
         }
 
-        /// <summary>
-        /// Inserts a product picture
-        /// </summary>
-        /// <param name="productPicture">Product picture</param>
         public virtual void InsertProductPicture(ProductPicture productPicture)
         {
             if (productPicture == null)
@@ -1937,10 +1702,6 @@ namespace SmartStore.Services.Catalog
 
 		#region Bundled products
 
-		/// <summary>
-		/// Inserts a product bundle item
-		/// </summary>
-		/// <param name="bundleItem">Product bundle item</param>
 		public virtual void InsertBundleItem(ProductBundleItem bundleItem)
 		{
 			if (bundleItem == null)
@@ -1961,10 +1722,6 @@ namespace SmartStore.Services.Catalog
 			_services.EventPublisher.EntityInserted(bundleItem);
 		}
 
-		/// <summary>
-		/// Updates a product bundle item
-		/// </summary>
-		/// <param name="bundleItem">Product bundle item</param>
 		public virtual void UpdateBundleItem(ProductBundleItem bundleItem)
 		{
 			if (bundleItem == null)
@@ -1976,10 +1733,6 @@ namespace SmartStore.Services.Catalog
 			_services.EventPublisher.EntityUpdated(bundleItem);
 		}
 
-		/// <summary>
-		/// Deletes a product bundle item
-		/// </summary>
-		/// <param name="bundleItem">Product bundle item</param>
 		public virtual void DeleteBundleItem(ProductBundleItem bundleItem)
 		{
 			if (bundleItem == null)
@@ -2016,11 +1769,6 @@ namespace SmartStore.Services.Catalog
 			_services.EventPublisher.EntityDeleted(bundleItem);
 		}
 
-		/// <summary>
-		/// Get a product bundle item by item identifier
-		/// </summary>
-		/// <param name="bundleItemId">Product bundle item identifier</param>
-		/// <returns>Product bundle item</returns>
 		public virtual ProductBundleItem GetBundleItemById(int bundleItemId)
 		{
 			if (bundleItemId == 0)
@@ -2029,12 +1777,6 @@ namespace SmartStore.Services.Catalog
 			return _productBundleItemRepository.GetById(bundleItemId);
 		}
 
-		/// <summary>
-		/// Gets a list of bundle items for a particular product identifier
-		/// </summary>
-		/// <param name="bundleProductId">Product identifier</param>
-		/// <param name="showHidden">A value indicating whether to show hidden records</param>
-		/// <returns>List of bundle items</returns>
 		public virtual IList<ProductBundleItemData> GetBundleItems(int bundleProductId, bool showHidden = false)
 		{
 			var query =
@@ -2070,8 +1812,6 @@ namespace SmartStore.Services.Catalog
 
 			return map;
 		}
-
-		#endregion
 
 		#endregion
 	}

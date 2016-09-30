@@ -25,13 +25,13 @@ namespace SmartStore.Services.Discounts
         /// <returns>Discount</returns>
         Discount GetDiscountById(int discountId);
 
-        /// <summary>
-        /// Gets all discounts
-        /// </summary>
-        /// <param name="discountType">Discount type; null to load all discount</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Discount collection</returns>
-        IList<Discount> GetAllDiscounts(DiscountType? discountType, string couponCode = "", bool showHidden = false);
+		/// <summary>
+		/// Gets all discounts
+		/// </summary>
+		/// <param name="discountType">Discount type; null to load all discount</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>Discount collection</returns>
+		IEnumerable<Discount> GetAllDiscounts(DiscountType? discountType, string couponCode = "", bool showHidden = false);
 
         /// <summary>
         /// Inserts a discount

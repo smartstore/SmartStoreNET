@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
@@ -11,7 +11,7 @@ using SmartStore.Core.Search;
 
 namespace SmartStore.Services.Search
 {
-	public partial class LinqCatalogSearchService : ILinqCatalogSearchService
+	public partial class LinqCatalogSearchService : ICatalogSearchService
 	{
 		private readonly IRepository<Product> _productRepository;
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
@@ -72,9 +72,7 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
-		#endregion
-
-		public virtual IQueryable<Product> GetProducts(CatalogSearchQuery searchQuery)
+		protected virtual IQueryable<Product> GetProducts(CatalogSearchQuery searchQuery)
 		{
 			var utcNow = DateTime.UtcNow;
 			var term = searchQuery.Term;
@@ -240,13 +238,13 @@ namespace SmartStore.Services.Search
 				}
 				else if (filter.FieldName == "Id")
 				{
-					if (filter.TypeCode == IndexTypeCode.Int32Array)
-					{
-						var ids = filter.Term as int[];
+					//if (filter.TypeCode == IndexTypeCode.Int32Array)
+					//{
+					//	var ids = filter.Term as int[];
 
-						query = query.Where(x => ids.Contains(x.Id));
-					}
-					else if (filter.IsRangeFilter)
+					//	query = query.Where(x => ids.Contains(x.Id));
+					//}
+					if (filter.IsRangeFilter)
 					{
 						if (filter.IncludesLower)
 							query = query.Where(x => x.Id >= (int)filter.Term);
@@ -390,6 +388,16 @@ namespace SmartStore.Services.Search
 			#endregion
 
 			return query;
+		}
+
+		#endregion
+
+		public CatalogSearchResult Search(CatalogSearchQuery searchQuery)
+		{
+			var productQuery = GetProducts(searchQuery);
+			var hits = new PagedList<Product>(productQuery, searchQuery.PageIndex, searchQuery.Take);
+
+			return new CatalogSearchResult(hits, searchQuery, null);
 		}
 	}
 }

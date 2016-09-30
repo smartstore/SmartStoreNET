@@ -93,7 +93,8 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithProductIds(params int[] ids)
 		{
-			return WithFilter(SearchFilter.ByField("Id", ids));
+			ids.Each(x => WithFilter(SearchFilter.ByField("id", x)));
+			return this;
 		}
 
 		public CatalogSearchQuery WithProductId(int? fromId, int? toId)
@@ -103,7 +104,8 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithCategoryIds(params int[] ids)
 		{
-			return WithFilter(SearchFilter.ByField("ProductCategories.CategoryId", ids));
+			ids.Each(x => WithFilter(SearchFilter.ByField("ProductCategories.CategoryId", x)));
+			return this;
 		}
 
 		public CatalogSearchQuery HasAnyCategories(bool value)
@@ -113,7 +115,8 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithManufacturerIds(params int[] ids)
 		{
-			return WithFilter(SearchFilter.ByField("ProductManufacturers.ManufacturerId", ids));
+			ids.Each(x => WithFilter(SearchFilter.ByField("ProductManufacturers.ManufacturerId", x)));
+			return this;
 		}
 
 		public CatalogSearchQuery HasAnyManufacturers(bool value)
@@ -123,7 +126,8 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithProductTagIds(params int[] ids)
 		{
-			return WithFilter(SearchFilter.ByField("ProductTags.Id", ids));
+			ids.Each(x => WithFilter(SearchFilter.ByField("ProductTags.Id", x)));
+			return this;
 		}
 
 		public CatalogSearchQuery WithStockQuantity(int? fromQuantity, int? toQuantity)

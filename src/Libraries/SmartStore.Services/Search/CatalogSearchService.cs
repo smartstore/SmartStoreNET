@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
@@ -9,28 +10,24 @@ namespace SmartStore.Services.Search
 {
 	public partial class CatalogSearchService : ICatalogSearchService
 	{
+		private readonly IComponentContext _ctx;
 		private readonly IIndexManager _indexManager;
 		private readonly Lazy<IProductService> _productService;
-		private readonly Lazy<ILinqCatalogSearchService> _linqCatalogSearchService;
 
 		public CatalogSearchService(
+			IComponentContext ctx,
 			IIndexManager indexManager,
-			Lazy<IProductService> productService,
-			Lazy<ILinqCatalogSearchService> linqCatalogSearchService)
+			Lazy<IProductService> productService)
 		{
+			_ctx = ctx;
 			_indexManager = indexManager;
 			_productService = productService;
-			_linqCatalogSearchService = linqCatalogSearchService;
 		}
 
 		public CatalogSearchResult Search(CatalogSearchQuery searchQuery)
 		{
+			Guard.NotNull(searchQuery, nameof(searchQuery));
 			Guard.IsPositive(searchQuery.Take, nameof(searchQuery.Take));
-
-			var result = new CatalogSearchResult();
-			result.Query = searchQuery;
-
-			var pageIndex = Math.Max((searchQuery.Skip - 1) / searchQuery.Take, 0);
 
 			if (_indexManager.HasAnyProvider())
 			{
@@ -46,19 +43,15 @@ namespace SmartStore.Services.Search
 					var productIds = searchHits.Select(x => x.EntityId).ToArray();
 					var products = _productService.Value.GetProductsByIds(productIds);
 
-					result.Hits = new PagedList<Product>(products, pageIndex, searchQuery.Take, totalCount);
+					var hits = new PagedList<Product>(products, searchQuery.PageIndex, searchQuery.Take, totalCount);
+
+					return new CatalogSearchResult(hits, searchQuery, null);					
 				}
 			}
 
-			if (result.Hits == null)
-			{
-				// fallback to linq search
-				var productQuery = _linqCatalogSearchService.Value.GetProducts(searchQuery);
-
-				result.Hits = new PagedList<Product>(productQuery, pageIndex, searchQuery.Take);
-			}
-
-			return result;
+			// fallback to linq search
+			var linqCatalogSearchService = _ctx.ResolveNamed<ICatalogSearchService>("linq");
+			return linqCatalogSearchService.Search(searchQuery);
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Search
@@ -55,6 +56,13 @@ namespace SmartStore.Core.Search
 		// Paging
 		public int Skip { get; protected set; }
 		public int Take { get; protected set; }
+		public int PageIndex
+		{
+			get
+			{
+				return Math.Max((Skip - 1) / Take, 0);
+			}
+		}
 
 		// sorting
 		public ICollection<SearchSort> Sorting { get; }

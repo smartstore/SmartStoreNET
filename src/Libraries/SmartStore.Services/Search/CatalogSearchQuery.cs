@@ -58,8 +58,8 @@ namespace SmartStore.Services.Search
 
 			WithFilter(SearchFilter.ByField("published", true).Mandatory());
 
-			WithFilter(SearchFilter.ByRange("availablestart", null, utcNow, false, true));
-			WithFilter(SearchFilter.ByRange("availableend", utcNow, null, true, false));
+			WithFilter(SearchFilter.ByRange("availablestart", null, utcNow, false, false));
+			WithFilter(SearchFilter.ByRange("availableend", utcNow, null, false, false));
 
 			// TODO: too flat. missing parentheses.
 			WithFilter(SearchFilter.ByField("subjecttoacl", false));

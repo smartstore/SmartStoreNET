@@ -8,7 +8,6 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Search;
 
 namespace SmartStore.Services.Search
 {
@@ -137,7 +136,7 @@ namespace SmartStore.Services.Search
 
 			if (!QuerySettings.IgnoreAcl)
 			{
-				var roleIds = searchQuery.Filters.Where(x => x.FieldName == "roleid").Select(x => (int)x.Term).ToList();
+				var roleIds = GetIdList(searchQuery, "roleid");
 				if (roleIds.Any())
 				{
 					query =
@@ -196,11 +195,24 @@ namespace SmartStore.Services.Search
 				{
 					if (filter.IsRangeFilter)
 					{
-						if (filter.IncludesLower)
-							query = query.Where(x => x.Id >= (int)filter.Term);
+						var lower = filter.Term as int?;
+						var upper = filter.UpperTerm as int?;
 
-						if (filter.IncludesUpper)
-							query = query.Where(x => x.Id <= (int)filter.UpperTerm);
+						if (lower.HasValue)
+						{
+							if (filter.IncludesLower)
+								query = query.Where(x => x.Id >= lower.Value);
+							else
+								query = query.Where(x => x.Id > lower.Value);
+						}
+
+						if (upper.HasValue)
+						{
+							if (filter.IncludesUpper)
+								query = query.Where(x => x.Id <= upper.Value);
+							else
+								query = query.Where(x => x.Id < upper.Value);
+						}
 					}
 				}
 				else if (filter.FieldName == "published")
@@ -209,16 +221,50 @@ namespace SmartStore.Services.Search
 				}
 				else if (filter.FieldName == "availablestart")
 				{
-					if (filter.IsRangeFilter && filter.IncludesUpper)
+					if (filter.IsRangeFilter)
 					{
-						query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc < (DateTime)filter.UpperTerm);
+						var lower = filter.Term as DateTime?;
+						var upper = filter.UpperTerm as DateTime?;
+
+						if (lower.HasValue)
+						{
+							if (filter.IncludesLower)
+								query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc >= lower.Value);
+							else
+								query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc > lower.Value);
+						}
+
+						if (upper.HasValue)
+						{
+							if (filter.IncludesLower)
+								query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc <= upper.Value);
+							else
+								query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc < upper.Value);
+						}
 					}
 				}
 				else if (filter.FieldName == "availableend")
 				{
-					if (filter.IsRangeFilter && filter.IncludesLower)
+					if (filter.IsRangeFilter)
 					{
-						query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc > (DateTime)filter.Term);
+						var lower = filter.Term as DateTime?;
+						var upper = filter.UpperTerm as DateTime?;
+
+						if (lower.HasValue)
+						{
+							if (filter.IncludesLower)
+								query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc >= lower.Value);
+							else
+								query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc > lower.Value);
+						}
+
+						if (upper.HasValue)
+						{
+							if (filter.IncludesLower)
+								query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc <= upper.Value);
+							else
+								query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc < upper.Value);
+						}
 					}
 				}
 				else if (filter.FieldName == "visibleindividually")
@@ -241,20 +287,36 @@ namespace SmartStore.Services.Search
 				{
 					if (filter.IsRangeFilter)
 					{
-						if (filter.IncludesLower)
-							query = query.Where(x => x.StockQuantity >= (int)filter.Term);
+						var lower = filter.Term as int?;
+						var upper = filter.UpperTerm as int?;
 
-						if (filter.IncludesUpper)
-							query = query.Where(x => x.StockQuantity <= (int)filter.UpperTerm);
+						if (lower.HasValue)
+						{
+							if (filter.IncludesLower)
+								query = query.Where(x => x.StockQuantity >= lower.Value);
+							else
+								query = query.Where(x => x.StockQuantity > lower.Value);
+						}
+
+						if (upper.HasValue)
+						{
+							if (filter.IncludesUpper)
+								query = query.Where(x => x.StockQuantity <= upper.Value);
+							else
+								query = query.Where(x => x.StockQuantity < upper.Value);
+						}
 					}
 				}
 				else if (filter.FieldName == "price")
 				{
 					if (filter.IsRangeFilter)
 					{
-						if (filter.IncludesLower)
+						var lower = filter.Term as double?;
+						var upper = filter.UpperTerm as double?;
+
+						if (lower.HasValue)
 						{
-							var minPrice = Convert.ToDecimal(filter.Term);
+							var minPrice = Convert.ToDecimal(lower.Value);
 
 							query = query.Where(x =>
 								((x.SpecialPrice.HasValue &&
@@ -269,9 +331,9 @@ namespace SmartStore.Services.Search
 							);
 						}
 
-						if (filter.IncludesUpper)
+						if (upper.HasValue)
 						{
-							var maxPrice = Convert.ToDecimal(filter.UpperTerm);
+							var maxPrice = Convert.ToDecimal(upper);
 
 							query = query.Where(x =>
 								((x.SpecialPrice.HasValue &&
@@ -291,11 +353,24 @@ namespace SmartStore.Services.Search
 				{
 					if (filter.IsRangeFilter)
 					{
-						if (filter.IncludesLower)
-							query = query.Where(x => x.CreatedOnUtc >= (DateTime)filter.Term);
+						var lower = filter.Term as DateTime?;
+						var upper = filter.UpperTerm as DateTime?;
 
-						if (filter.IncludesUpper)
-							query = query.Where(x => x.CreatedOnUtc <= (DateTime)filter.UpperTerm);
+						if (lower.HasValue)
+						{
+							if (filter.IncludesLower)
+								query = query.Where(x => x.CreatedOnUtc >= lower.Value);
+							else
+								query = query.Where(x => x.CreatedOnUtc > lower.Value);
+						}
+
+						if (upper.HasValue)
+						{
+							if (filter.IncludesLower)
+								query = query.Where(x => x.CreatedOnUtc <= upper.Value);
+							else
+								query = query.Where(x => x.CreatedOnUtc < upper.Value);
+						}
 					}
 				}
 				else if (filter.FieldName == "storeid")

@@ -15,7 +15,7 @@ namespace SmartStore.Services.Search
 
 			Hits = hits;
 			Query = query;
-			Suggestions = suggestions;
+			Suggestions = suggestions ?? new string[0];
 		}
 
 		/// <summary>

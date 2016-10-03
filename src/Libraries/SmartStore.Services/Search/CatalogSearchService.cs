@@ -10,6 +10,8 @@ namespace SmartStore.Services.Search
 {
 	public partial class CatalogSearchService : ICatalogSearchService
 	{
+		private const int NUMBER_OF_SUGGESTIONS = 2;
+
 		private readonly IComponentContext _ctx;
 		private readonly IIndexManager _indexManager;
 		private readonly Lazy<IProductService> _productService;
@@ -37,15 +39,17 @@ namespace SmartStore.Services.Search
 				if (indexStore.Exists)
 				{
 					var searchEngine = provider.GetSearchEngine(indexStore, searchQuery);
-					var totalCount = searchEngine.Count();
-					var searchHits = searchEngine.Search();
+
+					var totalCount = 0;
+					var searchHits = searchEngine.Search(out totalCount);
 
 					var productIds = searchHits.Select(x => x.EntityId).ToArray();
 					var products = _productService.Value.GetProductsByIds(productIds);
 
 					var hits = new PagedList<Product>(products, searchQuery.PageIndex, searchQuery.Take, totalCount);
+					var suggestions = searchEngine.GetSuggestions(NUMBER_OF_SUGGESTIONS);
 
-					return new CatalogSearchResult(hits, searchQuery, null);					
+					return new CatalogSearchResult(hits, searchQuery, suggestions);
 				}
 			}
 

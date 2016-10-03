@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
@@ -33,15 +34,15 @@ namespace SmartStore.Services.Search
 			{
 				case ProductSortingEnum.CreatedOnAsc:
 				case ProductSortingEnum.CreatedOn:
-					return SortBy(SearchSort.ByDateTimeField("CreatedOnUtc", sort == ProductSortingEnum.CreatedOn));
+					return SortBy(SearchSort.ByDateTimeField("createdon", sort == ProductSortingEnum.CreatedOn));
 
 				case ProductSortingEnum.NameAsc:
 				case ProductSortingEnum.NameDesc:
-					return SortBy(SearchSort.ByStringField("Name", sort == ProductSortingEnum.NameDesc));
+					return SortBy(SearchSort.ByStringField("name", sort == ProductSortingEnum.NameDesc));
 
 				case ProductSortingEnum.PriceAsc:
 				case ProductSortingEnum.PriceDesc:
-					return SortBy(SearchSort.ByDoubleField("Price", sort == ProductSortingEnum.PriceDesc));
+					return SortBy(SearchSort.ByDoubleField("price", sort == ProductSortingEnum.PriceDesc));
 
 				case ProductSortingEnum.Position:
 					return SortBy(SearchSort.ByRelevance());
@@ -51,44 +52,59 @@ namespace SmartStore.Services.Search
 			}			
 		}
 
-		public CatalogSearchQuery ShowHidden(bool value)
+		public CatalogSearchQuery NotShowHidden(List<int> allowedCustomerRolesIds)
 		{
-			return WithFilter(SearchFilter.ByField("_ShowHidden", value));
+			var utcNow = DateTime.UtcNow;
+
+			WithFilter(SearchFilter.ByField("published", true).Mandatory());
+
+			WithFilter(SearchFilter.ByRange("availablestart", null, utcNow, false, true));
+			WithFilter(SearchFilter.ByRange("availableend", utcNow, null, true, false));
+
+			// TODO: too flat. missing parentheses.
+			WithFilter(SearchFilter.ByField("subjecttoacl", false));
+
+			if (allowedCustomerRolesIds != null)
+			{
+				allowedCustomerRolesIds.Each(x => WithFilter(SearchFilter.ByField("roleid", x)));
+			}
+
+			return this;
 		}
 
 		public CatalogSearchQuery PublishedOnly(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("Published", value));
+			return WithFilter(SearchFilter.ByField("published", value).Mandatory());
 		}
 
 		public CatalogSearchQuery FeaturedOnly(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("_FeaturedOnly", value));
+			return WithFilter(SearchFilter.ByField("featured", value).Mandatory());
 		}
 
 		public CatalogSearchQuery VisibleIndividuallyOnly(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("VisibleIndividually", value));
+			return WithFilter(SearchFilter.ByField("visibleindividually", value).Mandatory());
 		}
 
 		public CatalogSearchQuery HomePageProductsOnly(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("ShowOnHomePage", value));
+			return WithFilter(SearchFilter.ByField("showonhomepage", value).Mandatory());
 		}
 
 		public CatalogSearchQuery IsParentGroupedProductId(int id)
 		{
-			return WithFilter(SearchFilter.ByField("ParentGroupedProductId", id));
+			return WithFilter(SearchFilter.ByField("parentid", id).Mandatory());
 		}
 
 		public CatalogSearchQuery IsStoreId(int id)
 		{
-			return WithFilter(SearchFilter.ByField("_StoreId", id));
+			return WithFilter(SearchFilter.ByField("storeid", id).Mandatory());
 		}
 
 		public CatalogSearchQuery IsProductType(ProductType type)
 		{
-			return WithFilter(SearchFilter.ByField("ProductTypeId", (int)type));
+			return WithFilter(SearchFilter.ByField("typeid", (int)type).Mandatory());
 		}
 
 		public CatalogSearchQuery WithProductIds(params int[] ids)
@@ -99,54 +115,77 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithProductId(int? fromId, int? toId)
 		{
-			return WithFilter(SearchFilter.ByRange("Id", fromId, toId, fromId.HasValue, toId.HasValue));
+			return WithFilter(SearchFilter.ByRange("id", fromId, toId, fromId.HasValue, toId.HasValue).Mandatory());
 		}
 
 		public CatalogSearchQuery WithCategoryIds(params int[] ids)
 		{
-			ids.Each(x => WithFilter(SearchFilter.ByField("ProductCategories.CategoryId", x)));
+			ids.Each(x => WithFilter(SearchFilter.ByField("categoryid", x)));
 			return this;
 		}
 
 		public CatalogSearchQuery HasAnyCategories(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("ProductCategories._Any", value));
+			if (value)
+			{
+				WithFilter(SearchFilter.ByRange("categoryid", 1, int.MaxValue, true, true).Mandatory());
+			}
+			else
+			{
+				// TODO: how, index id 0?
+				//WithFilter(SearchFilter.ByRange("categoryid", 1, int.MaxValue, true, true).Forbidden());
+			}
+
+			return this;
 		}
 
 		public CatalogSearchQuery WithManufacturerIds(params int[] ids)
 		{
-			ids.Each(x => WithFilter(SearchFilter.ByField("ProductManufacturers.ManufacturerId", x)));
+			ids.Each(x => WithFilter(SearchFilter.ByField("manufacturerid", x)));
 			return this;
 		}
 
 		public CatalogSearchQuery HasAnyManufacturers(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("ProductManufacturers._Any", value));
+			if (value)
+			{
+				WithFilter(SearchFilter.ByRange("manufacturerid", 1, int.MaxValue, true, true).Mandatory());
+			}
+			else
+			{
+				// TODO: how, index id 0?
+				//WithFilter(SearchFilter.ByRange("manufacturerid", 1, int.MaxValue, true, true).Forbidden());
+			}
+
+			return this;
 		}
 
 		public CatalogSearchQuery WithProductTagIds(params int[] ids)
 		{
-			ids.Each(x => WithFilter(SearchFilter.ByField("ProductTags.Id", x)));
+			ids.Each(x => WithFilter(SearchFilter.ByField("tagid", x)));
 			return this;
 		}
 
 		public CatalogSearchQuery WithStockQuantity(int? fromQuantity, int? toQuantity)
 		{
-			return WithFilter(SearchFilter.ByRange("StockQuantity", fromQuantity, toQuantity, fromQuantity.HasValue, toQuantity.HasValue));
+			return WithFilter(SearchFilter.ByRange("stockquantity", fromQuantity, toQuantity, fromQuantity.HasValue, toQuantity.HasValue).Mandatory());
 		}
 
 		public CatalogSearchQuery WithPrice(decimal? fromPrice, decimal? toPrice)
 		{
-			return WithFilter(SearchFilter.ByRange("Price",
+			// TODO: how?
+			WithFilter(SearchFilter.ByRange("price",
 				fromPrice.HasValue ? decimal.ToDouble(fromPrice.Value) : (double?)null,
 				toPrice.HasValue ? decimal.ToDouble(toPrice.Value) : (double?)null,
 				fromPrice.HasValue,
-				toPrice.HasValue));
+				toPrice.HasValue).Mandatory());
+
+			return this;
 		}
 
 		public CatalogSearchQuery WithCreatedUtc(DateTime? fromUtc, DateTime? toUtc)
 		{
-			return WithFilter(SearchFilter.ByRange("CreatedOnUtc", fromUtc, toUtc, fromUtc.HasValue, toUtc.HasValue));
+			return WithFilter(SearchFilter.ByRange("createdon", fromUtc, toUtc, fromUtc.HasValue, toUtc.HasValue).Mandatory());
 		}
 
 		#endregion

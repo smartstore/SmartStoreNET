@@ -43,6 +43,7 @@
 * PayPal PLUS: A changed shipping address/costs was not transmitted to PayPal
 * Bundle item cannot be deleted if it's in a shopping cart
 * #1030: Order export: does not export the data of the attribute combination
+* Order export does not export shipping address
 
 
 ## SmartStore.NET 2.6

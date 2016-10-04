@@ -153,11 +153,10 @@ namespace SmartStore.Data.Caching
 		public static T GetByIdCached<T>(this IRepository<T> rs, object id, string customKey)
 			where T : BaseEntity
 		{
-			var dbSet = ((DbSet<T>)rs.Table);
-			var entry = rs.Table.GetCacheEntry(customKey, () => dbSet.Find(id));
+			var entry = rs.Table.GetCacheEntry(customKey, () => rs.GetById(id));
 			if (entry == null)
 			{
-				return dbSet.Find(id);
+				return rs.GetById(id);
 			}
 
 			return (T)entry.Value;

@@ -1073,10 +1073,13 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			var result = new List<dynamic>();
 
-			ctx.OrderExportContext.Addresses.Collect(order.ShippingAddressId ?? 0);
+			if (!ctx.IsPreview)
+			{
+				ctx.OrderExportContext.Addresses.Collect(order.ShippingAddressId.HasValue ? order.ShippingAddressId.Value : 0);
+				ctx.OrderExportContext.Addresses.Load(order.BillingAddressId);
+			}
 
 			var perfLoadId = (ctx.IsPreview ? 0 : order.Id);
-			var addresses = ctx.OrderExportContext.Addresses.Load(ctx.IsPreview ? 0 : order.BillingAddressId);
 			var customers = ctx.OrderExportContext.Customers.Load(order.CustomerId);
 			var rewardPointsHistories = ctx.OrderExportContext.RewardPointsHistories.Load(ctx.IsPreview ? 0 : order.CustomerId);
 			var orderItems = ctx.OrderExportContext.OrderItems.Load(perfLoadId);
@@ -1104,11 +1107,14 @@ namespace SmartStore.Services.DataExchange.Export
 					.PointsBalance;
 			}
 
-			dynObject.BillingAddress = ToDynamic(ctx, addresses.FirstOrDefault(x => x.Id == order.BillingAddressId));
-
-			if (order.ShippingAddressId.HasValue)
+			if (ctx.OrderExportContext.Addresses.ContainsKey(order.BillingAddressId))
 			{
-				dynObject.ShippingAddress = ToDynamic(ctx, addresses.FirstOrDefault(x => x.Id == order.ShippingAddressId.Value));
+				dynObject.BillingAddress = ToDynamic(ctx, ctx.OrderExportContext.Addresses[order.BillingAddressId].FirstOrDefault());
+			}
+
+			if (order.ShippingAddressId.HasValue && ctx.OrderExportContext.Addresses.ContainsKey(order.ShippingAddressId.Value))
+			{
+				dynObject.ShippingAddress = ToDynamic(ctx, ctx.OrderExportContext.Addresses[order.ShippingAddressId.Value].FirstOrDefault());
 			}
 
 			dynObject.OrderItems = orderItems

@@ -99,7 +99,7 @@ namespace SmartStore.Collections
 		}
 
 		/// <summary>
-		/// Collect single key for combinde loading
+		/// Collect single key for combined loading
 		/// </summary>
 		/// <param name="key">Data key</param>
 		public virtual void Collect(int key)

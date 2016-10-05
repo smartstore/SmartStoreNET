@@ -220,7 +220,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 					var segment = context.DataSegmenter.CurrentSegment;
 
 					int[] productIds = segment.Select(x => (int)((dynamic)x).Id).ToArray();
-					var googleProducts = _googleFeedService.GetGoogleProductRecords(productIds);
+					var googleProducts = _googleFeedService.GetGoogleProductRecords(productIds).ToDictionarySafe(x => x.ProductId);
 
 					foreach (dynamic product in segment)
 					{
@@ -228,7 +228,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							break;
 
 						Product entity = product.Entity;
-						var gmc = googleProducts.FirstOrDefault(x => x.ProductId == entity.Id);
+						var gmc = googleProducts.Get(entity.Id);
 
 						if (gmc != null && !gmc.Export)
 							continue;

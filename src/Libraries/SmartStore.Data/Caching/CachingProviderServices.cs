@@ -28,6 +28,8 @@ namespace SmartStore.Data.Caching
 				new CommandTreeFacts(commandTree),
 				_cacheTransactionInterceptor,
 				_policy);
+
+			//return _providerServices.CreateCommandDefinition(providerManifest, commandTree);
 		}
 
 		protected override DbProviderManifest GetDbProviderManifest(string manifestToken)

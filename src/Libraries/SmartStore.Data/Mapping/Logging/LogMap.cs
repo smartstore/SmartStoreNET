@@ -15,8 +15,8 @@ namespace SmartStore.Data.Mapping.Logging
             this.Property(l => l.IpAddress).HasMaxLength(200);
 			this.Property(l => l.UserName).HasMaxLength(100);
 			this.Property(l => l.HttpMethod).HasMaxLength(10);
-			this.Property(l => l.PageUrl).HasMaxLength(500);
-			this.Property(l => l.ReferrerUrl).HasMaxLength(500);
+			this.Property(l => l.PageUrl).HasMaxLength(1500);
+			this.Property(l => l.ReferrerUrl).HasMaxLength(1500);
 
 			this.Ignore(l => l.LogLevel);
 			

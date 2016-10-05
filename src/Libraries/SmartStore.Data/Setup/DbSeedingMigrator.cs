@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.Migrations.Infrastructure;
 using System.Linq;
-using System.Text.RegularExpressions;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Data.Setup
 {
-	
 	/// <summary>
 	/// Provides advanced migrations by providing a seeding platform for each migration.
 	/// This allows for initial seed data after each new database version (for example when 

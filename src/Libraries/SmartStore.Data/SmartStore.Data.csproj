@@ -117,9 +117,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Caching\CacheTransactionInterceptor.cs" />
-    <Compile Include="Caching\CachingCommand.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Caching\CachingCommand.cs" />
     <Compile Include="Caching\CachingCommandDefinition.cs" />
     <Compile Include="Caching\CachingDataReader.cs" />
     <Compile Include="Caching\CachingProviderServices.cs" />

@@ -14,6 +14,7 @@ namespace SmartStore.Data.Migrations
 			if (DataSettings.DatabaseIsInstalled())
 			{
 				DropIndex("dbo.Log", "IX_Log_ContentHash");
+				Sql(@"Truncate Table [Log]");
 			}			
 			// Custom END
 
@@ -21,8 +22,8 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.Log", "HttpMethod", c => c.String(maxLength: 10));
             AddColumn("dbo.Log", "UserName", c => c.String(maxLength: 100));
             AlterColumn("dbo.Log", "ShortMessage", c => c.String(nullable: false, maxLength: 4000));
-            AlterColumn("dbo.Log", "PageUrl", c => c.String(maxLength: 500));
-            AlterColumn("dbo.Log", "ReferrerUrl", c => c.String(maxLength: 500));
+            AlterColumn("dbo.Log", "PageUrl", c => c.String(maxLength: 1500));
+            AlterColumn("dbo.Log", "ReferrerUrl", c => c.String(maxLength: 1500));
             CreateIndex("dbo.Log", "LogLevelId", name: "IX_Log_Level");
             CreateIndex("dbo.Log", "Logger", name: "IX_Log_Logger");
             DropColumn("dbo.Log", "UpdatedOnUtc");

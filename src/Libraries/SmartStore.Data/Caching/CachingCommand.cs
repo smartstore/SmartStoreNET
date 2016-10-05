@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
@@ -10,7 +11,8 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Data.Caching
 {
-	internal class CachingCommand : DbCommand
+	[DesignerCategory("")]
+	internal sealed class CachingCommand : DbCommand
 	{
 		private readonly DbCommand _command;
 		private readonly CommandTreeFacts _commandTreeFacts;

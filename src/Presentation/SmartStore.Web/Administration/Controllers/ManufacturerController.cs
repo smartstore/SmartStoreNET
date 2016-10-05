@@ -168,7 +168,7 @@ namespace SmartStore.Admin.Controllers
 			if (!excludeProperties)
 			{
 				model.SelectedStoreIds = (manufacturer != null ? _storeMappingService.GetStoresIdsWithAccess(manufacturer) : new int[0]);
-				model.SelectedDiscountIds = manufacturer.AppliedDiscounts.Select(d => d.Id).ToArray();
+				model.SelectedDiscountIds = (manufacturer != null ? manufacturer.AppliedDiscounts.Select(d => d.Id).ToArray() : new int[0]);
 			}
 
 			if (manufacturer != null)

@@ -455,8 +455,10 @@ namespace SmartStore.Web.Controllers
 				Quantity = item.Quantity,
 				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
-				VisibleIndividually = product.VisibleIndividually
-			};
+				VisibleIndividually = product.VisibleIndividually,
+                MinOrderAmount = product.OrderMinimumQuantity,
+                MaxOrderAmount = product.OrderMaximumQuantity
+            };
 
 			model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);
 

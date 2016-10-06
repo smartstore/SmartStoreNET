@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
 {
@@ -16,6 +17,9 @@ namespace SmartStore.Core.Search
 
 		// Filtering
 		ICollection<ISearchFilter> Filters { get; }
+
+		// Facets
+		ICollection<FacetSelection> FacetSelections { get; }
 
 		// Paging
 		int Skip { get; }

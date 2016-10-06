@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
 {
@@ -36,6 +37,7 @@ namespace SmartStore.Core.Search
 
 			Filters = new List<ISearchFilter>();
 			Sorting = new List<SearchSort>();
+			FacetSelections = new List<FacetSelection>();
 
 			Take = int.MaxValue;
 		}
@@ -52,6 +54,9 @@ namespace SmartStore.Core.Search
 
 		// Filtering
 		public ICollection<ISearchFilter> Filters { get; }
+
+		// Facets
+		public ICollection<FacetSelection> FacetSelections { get; }
 
 		// Paging
 		public int Skip { get; protected set; }

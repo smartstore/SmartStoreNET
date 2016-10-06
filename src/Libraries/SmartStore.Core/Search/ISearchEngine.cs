@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
 {
@@ -33,6 +34,12 @@ namespace SmartStore.Core.Search
 		/// </summary>
 		/// <returns>Search hits</returns>
 		IEnumerable<ISearchHit> Search();
+
+		/// <summary>
+		/// Gets the facet map for drilldown navigation
+		/// </summary>
+		/// <returns>The facet groups</returns>
+		IDictionary<string, FacetGroup> GetFacetMap();
 
 		/// <summary>
 		/// Get suggestions of similar words

@@ -32,7 +32,5 @@ namespace SmartStore.Services.Search
 		/// Gets the word suggestions.
 		/// </summary>
 		public string[] Suggestions { get; private set; }
-
-		// TODO: Facets etc.
 	}
 }

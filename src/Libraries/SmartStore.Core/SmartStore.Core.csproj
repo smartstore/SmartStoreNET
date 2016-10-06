@@ -401,6 +401,9 @@
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="Plugins\LoadPluginResult.cs" />
     <Compile Include="Search\DefaultIndexManager.cs" />
+    <Compile Include="Search\Facets\Facet.cs" />
+    <Compile Include="Search\Facets\FacetGroup.cs" />
+    <Compile Include="Search\Facets\FacetSelection.cs" />
     <Compile Include="Search\Filter\CombinedSearchFilter.cs" />
     <Compile Include="Search\Filter\RangeSearchFilter.cs" />
     <Compile Include="Search\Filter\SearchFilterBase.cs" />

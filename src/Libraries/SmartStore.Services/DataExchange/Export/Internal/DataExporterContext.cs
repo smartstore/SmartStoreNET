@@ -54,6 +54,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 
 			ExecuteContext = new ExportExecuteContext(Result, CancellationToken, FolderContent);
 			ExecuteContext.Projection = XmlHelper.Deserialize<ExportProjection>(request.Profile.Projection);
+			ExecuteContext.ProfileId = request.Profile.Id;
 
 			if (!IsPreview)
 			{

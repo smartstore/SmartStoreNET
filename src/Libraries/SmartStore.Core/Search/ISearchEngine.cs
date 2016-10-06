@@ -31,9 +31,8 @@ namespace SmartStore.Core.Search
 		/// <summary>
 		/// Search
 		/// </summary>
-		/// <param name="totalCount">Total number of search hits</param>
 		/// <returns>Search hits</returns>
-		IEnumerable<ISearchHit> Search(out int totalCount);
+		IEnumerable<ISearchHit> Search();
 
 		/// <summary>
 		/// Get suggestions of similar words

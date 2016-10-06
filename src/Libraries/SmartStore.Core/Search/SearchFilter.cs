@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartStore.Core.Search
 {
@@ -79,6 +75,12 @@ namespace SmartStore.Core.Search
 			protected set;
 		}
 
+		public bool? Group
+		{
+			get;
+			protected set;
+		}
+
 		#region Fluent builder
 
 		/// <summary>
@@ -125,6 +127,12 @@ namespace SmartStore.Core.Search
 		public SearchFilter Weighted(float weight)
 		{
 			Boost = weight;
+			return this;
+		}
+
+		public SearchFilter Grouped(bool begin)
+		{
+			Group = begin;
 			return this;
 		}
 

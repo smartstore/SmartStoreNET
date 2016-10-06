@@ -40,8 +40,8 @@ namespace SmartStore.Services.Search
 				{
 					var searchEngine = provider.GetSearchEngine(indexStore, searchQuery);
 
-					var totalCount = 0;
-					var searchHits = searchEngine.Search(out totalCount);
+					var totalCount = searchEngine.Count();
+					var searchHits = searchEngine.Search();
 
 					var productIds = searchHits.Select(x => x.EntityId).ToArray();
 					var products = _productService.Value.GetProductsByIds(productIds);

@@ -77,17 +77,7 @@ namespace SmartStore.Services.Search
 				}
 				else
 				{
-					for (var i = 0; i < roleIdCount; ++i)
-					{
-						var roleFilter = SearchFilter.ByField("roleid", roleIds[i]).ExactMatch().NotAnalyzed();
-
-						if (i == 0)
-							roleFilter.Grouped(true);
-						else if (i == roleIdCount - 1)
-							roleFilter.Grouped(false);
-
-						WithFilter(roleFilter);
-					}
+					WithFilter(SearchFilter.Combined(roleIds.Select(x => SearchFilter.ByField("roleid", x).ExactMatch().NotAnalyzed()).ToArray()));
 				}
 			}
 

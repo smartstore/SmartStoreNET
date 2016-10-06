@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SmartStore.Core.Search
 {
@@ -8,9 +9,9 @@ namespace SmartStore.Core.Search
 		float Boost { get; }
 	}
 
-	public interface ICompositeSearchFilter : ISearchFilter
+	public interface ICombinedSearchFilter : ISearchFilter
 	{
-		ISearchFilter[] Filters { get; }
+		IEnumerable<ISearchFilter> Filters { get; }
 	}
 
 	public interface ITermSearchFilter : ISearchFilter

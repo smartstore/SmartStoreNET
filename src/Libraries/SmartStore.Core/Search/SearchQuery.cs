@@ -34,7 +34,7 @@ namespace SmartStore.Core.Search
 			EscapeTerm = escape;
 			IsFuzzySearch = isFuzzySearch;
 
-			Filters = new List<SearchFilter>();
+			Filters = new List<ISearchFilter>();
 			Sorting = new List<SearchSort>();
 
 			Take = int.MaxValue;
@@ -51,7 +51,7 @@ namespace SmartStore.Core.Search
 		public bool IsFuzzySearch { get; protected set; }
 
 		// Filtering
-		public ICollection<SearchFilter> Filters { get; }
+		public ICollection<ISearchFilter> Filters { get; }
 
 		// Paging
 		public int Skip { get; protected set; }
@@ -90,7 +90,7 @@ namespace SmartStore.Core.Search
 			return (this as TQuery);
 		}
 
-		public TQuery WithFilter(SearchFilter filter)
+		public TQuery WithFilter(ISearchFilter filter)
 		{
 			Guard.NotNull(filter, nameof(filter));
 

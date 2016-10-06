@@ -2,11 +2,11 @@
 
 namespace SmartStore.Core.Search
 {
-	public class SearchFilter
+	public class SearchFilter : SearchFilterBase, ITermSearchFilter
 	{
 		protected SearchFilter()
+			: base()
 		{
-			Occurence = SearchFilterOccurence.Should;
 		}
 
 		public string FieldName
@@ -27,36 +27,6 @@ namespace SmartStore.Core.Search
 			protected set;
 		}
 
-		public object UpperTerm
-		{
-			get;
-			protected set;
-		}
-
-		public bool IsRangeFilter
-		{
-			get;
-			protected set;
-		}
-
-		public bool IncludesLower
-		{
-			get;
-			protected set;
-		}
-
-		public bool IncludesUpper
-		{
-			get;
-			protected set;
-		}
-
-		public SearchFilterOccurence Occurence
-		{
-			get;
-			protected set;
-		}
-
 		public bool IsExactMatch
 		{
 			get;
@@ -64,18 +34,6 @@ namespace SmartStore.Core.Search
 		}
 
 		public bool IsNotAnalyzed
-		{
-			get;
-			protected set;
-		}
-
-		public float Boost
-		{
-			get;
-			protected set;
-		}
-
-		public bool? Group
 		{
 			get;
 			protected set;
@@ -130,15 +88,16 @@ namespace SmartStore.Core.Search
 			return this;
 		}
 
-		public SearchFilter Grouped(bool begin)
-		{
-			Group = begin;
-			return this;
-		}
-
 		#endregion
 
 		#region Static factories
+
+		public static CombinedSearchFilter Combined(params ISearchFilter[] filters)
+		{
+			var filter = new CombinedSearchFilter(filters);
+			filter.Occurence = SearchFilterOccurence.Must;
+			return filter;
+		}
 
 		public static SearchFilter ByField(string fieldName, string term)
 		{
@@ -178,27 +137,27 @@ namespace SmartStore.Core.Search
 		}
 
 
-		public static SearchFilter ByRange(string fieldName, string lower, string upper, bool includeLower = true, bool includeUpper = true)
+		public static RangeSearchFilter ByRange(string fieldName, string lower, string upper, bool includeLower = true, bool includeUpper = true)
 		{
 			return ByRange(fieldName, lower, upper, IndexTypeCode.String, includeLower, includeUpper);
 		}
 
-		public static SearchFilter ByRange(string fieldName, int? lower, int? upper, bool includeLower = true, bool includeUpper = true)
+		public static RangeSearchFilter ByRange(string fieldName, int? lower, int? upper, bool includeLower = true, bool includeUpper = true)
 		{
 			return ByRange(fieldName, lower, upper, IndexTypeCode.Int32, includeLower, includeUpper);
 		}
 
-		public static SearchFilter ByRange(string fieldName, double? lower, double? upper, bool includeLower = true, bool includeUpper = true)
+		public static RangeSearchFilter ByRange(string fieldName, double? lower, double? upper, bool includeLower = true, bool includeUpper = true)
 		{
 			return ByRange(fieldName, lower, upper, IndexTypeCode.Double, includeLower, includeUpper);
 		}
 
-		public static SearchFilter ByRange(string fieldName, DateTime? lower, DateTime? upper, bool includeLower = true, bool includeUpper = true)
+		public static RangeSearchFilter ByRange(string fieldName, DateTime? lower, DateTime? upper, bool includeLower = true, bool includeUpper = true)
 		{
 			return ByRange(fieldName, lower, upper, IndexTypeCode.DateTime, includeLower, includeUpper);
 		}
 
-		private static SearchFilter ByRange(
+		private static RangeSearchFilter ByRange(
 			string fieldName, 
 			object lowerTerm, 
 			object upperTerm, 
@@ -208,15 +167,14 @@ namespace SmartStore.Core.Search
 		{
 			Guard.NotEmpty(fieldName, nameof(fieldName));
 
-			return new SearchFilter
+			return new RangeSearchFilter
 			{
 				FieldName = fieldName,
 				Term = lowerTerm,
 				UpperTerm = upperTerm,
 				TypeCode = typeCode,
 				IncludesLower = includeLower,
-				IncludesUpper = includeUpper,
-				IsRangeFilter = true
+				IncludesUpper = includeUpper
 			};
 		}
 

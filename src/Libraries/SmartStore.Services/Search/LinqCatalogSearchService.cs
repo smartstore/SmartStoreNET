@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Search;
 
 namespace SmartStore.Services.Search
 {
@@ -42,7 +43,8 @@ namespace SmartStore.Services.Search
 		private List<int> GetIdList(CatalogSearchQuery searchQuery, string fieldName)
 		{
 			return searchQuery.Filters
-				.Where(x => !x.IsRangeFilter && x.FieldName == fieldName)
+				.OfType<ITermSearchFilter>()
+				.Where(x => !(x is IRangeSearchFilter) && x.FieldName == fieldName)
 				.Select(x => (int)x.Term)
 				.ToList();
 		}
@@ -154,11 +156,13 @@ namespace SmartStore.Services.Search
 				query = query.Where(x => productIds.Contains(x.Id));
 			}
 
+			var termFilters = searchQuery.Filters.OfType<ITermSearchFilter>().ToList();
+
 			// TODO: HasAnyCategories, ProductCategories.Count
 			var categoryIds = GetIdList(searchQuery, "categoryid");
 			if (categoryIds.Any())
 			{
-				var featuredOnly = searchQuery.Filters.FirstOrDefault(x => x.FieldName == "featured")?.Term as bool?;
+				var featuredOnly = termFilters.FirstOrDefault(x => x.FieldName == "featured")?.Term as bool?;
 
 				query =
 					from p in query
@@ -171,7 +175,7 @@ namespace SmartStore.Services.Search
 			var manufacturerIds = GetIdList(searchQuery, "manufacturerid");
 			if (manufacturerIds.Any())
 			{
-				var featuredOnly = searchQuery.Filters.FirstOrDefault(x => x.FieldName == "featured")?.Term as bool?;
+				var featuredOnly = termFilters.FirstOrDefault(x => x.FieldName == "featured")?.Term as bool?;
 
 				query =
 					from p in query
@@ -189,18 +193,22 @@ namespace SmartStore.Services.Search
 					select p;
 			}
 
-			foreach (var filter in searchQuery.Filters)
+			foreach (var filter in termFilters)
 			{
+				// TODO: (mg) what about ICombinedSearchFilter here?
+
+				var rangeFilter = filter as IRangeSearchFilter;
+
 				if (filter.FieldName == "id")
 				{
-					if (filter.IsRangeFilter)
+					if (rangeFilter != null)
 					{
 						var lower = filter.Term as int?;
-						var upper = filter.UpperTerm as int?;
+						var upper = rangeFilter.UpperTerm as int?;
 
 						if (lower.HasValue)
 						{
-							if (filter.IncludesLower)
+							if (rangeFilter.IncludesLower)
 								query = query.Where(x => x.Id >= lower.Value);
 							else
 								query = query.Where(x => x.Id > lower.Value);
@@ -208,7 +216,7 @@ namespace SmartStore.Services.Search
 
 						if (upper.HasValue)
 						{
-							if (filter.IncludesUpper)
+							if (rangeFilter.IncludesUpper)
 								query = query.Where(x => x.Id <= upper.Value);
 							else
 								query = query.Where(x => x.Id < upper.Value);
@@ -221,14 +229,14 @@ namespace SmartStore.Services.Search
 				}
 				else if (filter.FieldName == "availablestart")
 				{
-					if (filter.IsRangeFilter)
+					if (rangeFilter != null)
 					{
 						var lower = filter.Term as DateTime?;
-						var upper = filter.UpperTerm as DateTime?;
+						var upper = rangeFilter.UpperTerm as DateTime?;
 
 						if (lower.HasValue)
 						{
-							if (filter.IncludesLower)
+							if (rangeFilter.IncludesLower)
 								query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc >= lower.Value);
 							else
 								query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc > lower.Value);
@@ -236,7 +244,7 @@ namespace SmartStore.Services.Search
 
 						if (upper.HasValue)
 						{
-							if (filter.IncludesLower)
+							if (rangeFilter.IncludesLower)
 								query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc <= upper.Value);
 							else
 								query = query.Where(x => !x.AvailableStartDateTimeUtc.HasValue || x.AvailableStartDateTimeUtc < upper.Value);
@@ -245,14 +253,14 @@ namespace SmartStore.Services.Search
 				}
 				else if (filter.FieldName == "availableend")
 				{
-					if (filter.IsRangeFilter)
+					if (rangeFilter != null)
 					{
 						var lower = filter.Term as DateTime?;
-						var upper = filter.UpperTerm as DateTime?;
+						var upper = rangeFilter.UpperTerm as DateTime?;
 
 						if (lower.HasValue)
 						{
-							if (filter.IncludesLower)
+							if (rangeFilter.IncludesLower)
 								query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc >= lower.Value);
 							else
 								query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc > lower.Value);
@@ -260,7 +268,7 @@ namespace SmartStore.Services.Search
 
 						if (upper.HasValue)
 						{
-							if (filter.IncludesLower)
+							if (rangeFilter.IncludesLower)
 								query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc <= upper.Value);
 							else
 								query = query.Where(x => !x.AvailableEndDateTimeUtc.HasValue || x.AvailableEndDateTimeUtc < upper.Value);
@@ -285,14 +293,14 @@ namespace SmartStore.Services.Search
 				}
 				else if (filter.FieldName == "stockquantity")
 				{
-					if (filter.IsRangeFilter)
+					if (rangeFilter != null)
 					{
 						var lower = filter.Term as int?;
-						var upper = filter.UpperTerm as int?;
+						var upper = rangeFilter.UpperTerm as int?;
 
 						if (lower.HasValue)
 						{
-							if (filter.IncludesLower)
+							if (rangeFilter.IncludesLower)
 								query = query.Where(x => x.StockQuantity >= lower.Value);
 							else
 								query = query.Where(x => x.StockQuantity > lower.Value);
@@ -300,7 +308,7 @@ namespace SmartStore.Services.Search
 
 						if (upper.HasValue)
 						{
-							if (filter.IncludesUpper)
+							if (rangeFilter.IncludesUpper)
 								query = query.Where(x => x.StockQuantity <= upper.Value);
 							else
 								query = query.Where(x => x.StockQuantity < upper.Value);
@@ -309,10 +317,10 @@ namespace SmartStore.Services.Search
 				}
 				else if (filter.FieldName == "price")
 				{
-					if (filter.IsRangeFilter)
+					if (rangeFilter != null)
 					{
 						var lower = filter.Term as double?;
-						var upper = filter.UpperTerm as double?;
+						var upper = rangeFilter.UpperTerm as double?;
 
 						if (lower.HasValue)
 						{
@@ -351,14 +359,14 @@ namespace SmartStore.Services.Search
 				}
 				else if (filter.FieldName == "createdon")
 				{
-					if (filter.IsRangeFilter)
+					if (rangeFilter != null)
 					{
 						var lower = filter.Term as DateTime?;
-						var upper = filter.UpperTerm as DateTime?;
+						var upper = rangeFilter.UpperTerm as DateTime?;
 
 						if (lower.HasValue)
 						{
-							if (filter.IncludesLower)
+							if (rangeFilter.IncludesLower)
 								query = query.Where(x => x.CreatedOnUtc >= lower.Value);
 							else
 								query = query.Where(x => x.CreatedOnUtc > lower.Value);
@@ -366,7 +374,7 @@ namespace SmartStore.Services.Search
 
 						if (upper.HasValue)
 						{
-							if (filter.IncludesLower)
+							if (rangeFilter.IncludesLower)
 								query = query.Where(x => x.CreatedOnUtc <= upper.Value);
 							else
 								query = query.Where(x => x.CreatedOnUtc < upper.Value);
@@ -406,7 +414,7 @@ namespace SmartStore.Services.Search
 						var manufacturerId = manufacturerIds.First();
 						query = OrderBy(query, x => x.ProductManufacturers.Where(pm => pm.ManufacturerId == manufacturerId).FirstOrDefault().DisplayOrder);
 					}
-					else if (searchQuery.Filters.Any(x => x.FieldName == "parentid"))
+					else if (searchQuery.Filters.OfType<ITermSearchFilter>().Any(x => x.FieldName == "parentid"))
 					{
 						query = OrderBy(query, x => x.DisplayOrder);
 					}

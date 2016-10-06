@@ -15,7 +15,7 @@ namespace SmartStore.Core.Search
 		bool IsFuzzySearch { get; }
 
 		// Filtering
-		ICollection<SearchFilter> Filters { get; }
+		ICollection<ISearchFilter> Filters { get; }
 
 		// Paging
 		int Skip { get; }

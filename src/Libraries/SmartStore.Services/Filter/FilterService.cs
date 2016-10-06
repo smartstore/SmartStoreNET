@@ -350,6 +350,20 @@ namespace SmartStore.Services.Filter
 			return criterias;
 		}
 
+		private void AddChildCategoryIds(List<int> result, int categoryId)
+		{
+			var ids = _categoryService.GetAllCategoriesByParentCategoryId(categoryId).Select(x => x.Id);
+
+			foreach (var id in ids)
+			{
+				if (!result.Contains(id))
+				{
+					result.Add(id);
+					AddChildCategoryIds(result, id);
+				}
+			}
+		}
+
 		public virtual List<FilterCriteria> Deserialize(string jsonData)
 		{
 			if (jsonData.HasValue())
@@ -389,9 +403,7 @@ namespace SmartStore.Services.Filter
 
 			if (_catalogSettings.ShowProductsFromSubcategories)
 			{
-				context.CategoryIds.AddRange(
-					_categoryService.GetAllCategoriesByParentCategoryId(categoryID).Select(x => x.Id)
-				);
+				AddChildCategoryIds(context.CategoryIds, categoryID);
 			}
 
 			int languageId = _services.WorkContext.WorkingLanguage.Id;

@@ -44,6 +44,7 @@
 * Bundle item cannot be deleted if it's in a shopping cart
 * #1030: Order export: does not export the data of the attribute combination
 * Order export does not export shipping address
+* Filter shows wrong number of products if "Include products from subcategories" is activated
 
 
 ## SmartStore.NET 2.6

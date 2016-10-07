@@ -2,7 +2,7 @@
 
 namespace SmartStore.Core.Search
 {
-	public class SearchFilter : SearchFilterBase, ITermSearchFilter
+	public class SearchFilter : SearchFilterBase, IAttributeSearchFilter
 	{
 		protected SearchFilter()
 			: base()

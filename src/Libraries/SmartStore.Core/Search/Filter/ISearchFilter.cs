@@ -14,7 +14,7 @@ namespace SmartStore.Core.Search
 		IEnumerable<ISearchFilter> Filters { get; }
 	}
 
-	public interface ITermSearchFilter : ISearchFilter
+	public interface IAttributeSearchFilter : ISearchFilter
 	{
 		string FieldName { get; }
 		IndexTypeCode TypeCode { get; }
@@ -23,7 +23,7 @@ namespace SmartStore.Core.Search
 		bool IsNotAnalyzed { get; }
 	}
 
-	public interface IRangeSearchFilter : ITermSearchFilter
+	public interface IRangeSearchFilter : IAttributeSearchFilter
 	{
 		object UpperTerm { get; }
 		bool IncludesLower { get; }

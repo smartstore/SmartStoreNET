@@ -43,7 +43,7 @@ namespace SmartStore.Services.Search
 		private List<int> GetIdList(CatalogSearchQuery searchQuery, string fieldName)
 		{
 			return searchQuery.Filters
-				.OfType<ITermSearchFilter>()
+				.OfType<IAttributeSearchFilter>()
 				.Where(x => !(x is IRangeSearchFilter) && x.FieldName == fieldName)
 				.Select(x => (int)x.Term)
 				.ToList();
@@ -156,7 +156,7 @@ namespace SmartStore.Services.Search
 				query = query.Where(x => productIds.Contains(x.Id));
 			}
 
-			var termFilters = searchQuery.Filters.OfType<ITermSearchFilter>().ToList();
+			var termFilters = searchQuery.Filters.OfType<IAttributeSearchFilter>().ToList();
 
 			// TODO: HasAnyCategories, ProductCategories.Count
 			var categoryIds = GetIdList(searchQuery, "categoryid");
@@ -414,7 +414,7 @@ namespace SmartStore.Services.Search
 						var manufacturerId = manufacturerIds.First();
 						query = OrderBy(query, x => x.ProductManufacturers.Where(pm => pm.ManufacturerId == manufacturerId).FirstOrDefault().DisplayOrder);
 					}
-					else if (searchQuery.Filters.OfType<ITermSearchFilter>().Any(x => x.FieldName == "parentid"))
+					else if (searchQuery.Filters.OfType<IAttributeSearchFilter>().Any(x => x.FieldName == "parentid"))
 					{
 						query = OrderBy(query, x => x.DisplayOrder);
 					}

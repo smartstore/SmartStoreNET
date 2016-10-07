@@ -96,7 +96,7 @@
 <div class="megamenu">
 
     <div class="megamenu-navigate-prev">
-        <a href="#" class="btn btn-icon btn-secondary disabled"><i class="fa fa-chevron-left"></i></a>
+        <a href="#" class="btn btn-icon btn-secondary"><i class="fa fa-chevron-left"></i></a>
     </div>
 
     <ul class="nav navbar-nav">
@@ -118,7 +118,7 @@
             <li class='@(GetCssClassForNode(node, itemState))'>
                 @if (node.HasChildren)
                 {
-                    <a href="@itemUrl" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-target="#dropdown-menu-@node.Value.EntityId">
+                    <a href="@itemUrl" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false" data-target="#dropdown-menu-@node.Value.EntityId">
                         @item.Text
                     </a>
                 }
@@ -128,6 +128,12 @@
                         @item.Text
                     </a>
                 }
+
+                @if (!String.IsNullOrEmpty(item.BadgeText))
+                {
+                    <label class="label label-@item.BadgeStyle.ToString().ToLower()">@item.BadgeText</label>
+                }
+
             </li>
         }
 
@@ -207,8 +213,8 @@
                     @foreach (var node in nodes)
                     {
                         var item = node.Value;
-                        
-                        if(!ShouldRender(node, dropdownModel))
+
+                        if (!ShouldRender(node, dropdownModel))
                         {
                             continue;
                         }
@@ -219,6 +225,13 @@
 
                         <a class='mega-menu-dropdown-heading @((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : "")' href="@itemUrl">
                             @item.Text @*(@currentColumnItemCount)*@
+
+
+                            @if (!String.IsNullOrEmpty(item.BadgeText))
+                            {
+                                <label class="label label-@item.BadgeStyle.ToString().ToLower()">@item.BadgeText</label>
+                            }
+
                         </a>
 
                         if (CloseColumn(null, dropdownModel))
@@ -277,8 +290,11 @@
         var itemState = node.GetNodePathState(Model.NavigationModel.Path);
         
         <a class='mega-menu-subitem @((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : "")' href="@itemUrl">
-            @item.Text
-            @*(@currentColumnItemCount)*@
+            @item.Text @*(@currentColumnItemCount)*@
+            @if (!String.IsNullOrEmpty(item.BadgeText))
+            {
+                <label class="label label-@item.BadgeStyle.ToString().ToLower()">@item.BadgeText</label>
+            }
         </a>
 
         if (dropdownModel.DisplaySubItemsInline && (i != dropdownModel.MaxSubItemsPerCategory) && (i != nodes.Count()))
@@ -324,9 +340,7 @@
     (function($) {
         // Depends on:
         // bootstrap 4
-        // jquery.ba-outside-events.js
         // jquery.scrollTo.js
-        // jquery.serialScroll.js
 
         $.fn.extend({
             megaMenu: function(settings) {
@@ -344,28 +358,26 @@
 
                     var megamenu = $(this);
 
-                    $('.nav-item a', megamenu).bind('clickoutside', function (event) {
-                        var clicked_elem = $(event.target).parent();
-
-                        $(".nav-item", megamenu).removeClass("active");
-
-                        if (clicked_elem.hasClass("dropdown-submenu")) {
-                            clicked_elem.addClass("active");
-
-                            initRotator($(event.target).data("target"));
-                        }
+                    $('.megamenu-dropdown-container').on('show.bs.dropdown', function (e) {
+                        var id = e.target.id;
+                        var link = $('.megamenu .nav-item [data-target="#' + id + '"]');
+                        link.closest("li").addClass("active");
                     });
 
-                    $(".dropdown-submenu, .megamenu-navigate-prev, .megamenu-navigate-next", megamenu).click(function () {
+                    $('.megamenu-dropdown-container').on('hide.bs.dropdown', function (e) {
+                        var id = e.target.id;
+                        var link = $('.megamenu .nav-item [data-target="#' + id + '"]');
+                        link.closest("li").removeClass("active");
+                    });
+
+                    $(".dropdown-submenu", megamenu).click(function () {
 
                         var clicked_elem = $(event.target).parent();
                         var wasOpened = clicked_elem.hasClass("active");
 
-                        $(".nav-item", megamenu).removeClass("active");
-
                         if (!wasOpened) {
-                            $(this).addClass("active");
-
+                            
+                            // TODO: only init if it wasn't loaded before
                             initRotator($(event.target).data("target"));
                         }
                     });
@@ -397,53 +409,101 @@
 
                     hammertime.on('panend', function (ev) {
                         if (ev.direction == Hammer.DIRECTION_LEFT) {
-                            $(".nav-slider", megamenu).trigger('next');
+                            //$(".nav-slider", megamenu).trigger('next');
+                            $(".megamenu-navigate-next", megamenu).trigger('click');
                         }
                         if (ev.direction == Hammer.DIRECTION_RIGHT) {
-                            $(".nav-slider", megamenu).trigger('prev');
+                            //$(".nav-slider", megamenu).trigger('prev');
+                            $(".megamenu-navigate-prev", megamenu).trigger('click');
                         }
                     });
 
                     megamenu.evenIfHidden(function (el) {
 
-                        var visibleElements = 0;
-
-                        megamenu.find(".nav-item").each(function (i, val) {
-                            if (megamenu.isChildOverflowing($(val)) == false) {
-                                visibleElements++;
-                            }
-                        });
+                        var scrollCorrection = null;
+                        var lastVisibleElem = null;
+                        var firstVisibleElem = null;
+                        var isFirstItemVisible = true;
+                        var isLastItemVisible = false;
 
                         megamenu.find('ul').wrap('<div class="nav-slider" style="overflow: hidden;position: relative;" />');
 
-                        megamenu.serialScroll({
-                            target: '.nav-slider',
-                            items: '.nav-item',
-                            prev: '.megamenu-navigate-prev',
-                            next: '.megamenu-navigate-next',
-                            axis: 'x',
-                            duration: 100,
-                            easing: 'easeInOutQuad',
-                            force: true,
-                            cycle: false,
-                            exclude: visibleElements - 1,
-                            onBefore: function (e, elem, $pane, $items, pos) {
+                        getCurrentNavigationElements();
 
-                                var menu = $pane.parent(),
-                                    isFirst = (pos == 0),
-                                    isLast = ((pos + visibleElements) == $items.length);
-
-                                if (isFirst)
-                                    menu.find('.megamenu-navigate-prev .btn').addClass("disabled").blur();
-                                else
-                                    menu.find('.megamenu-navigate-prev .btn').removeClass("disabled").blur();
-
-                                if (isLast)
-                                    menu.find('.megamenu-navigate-next .btn').addClass("disabled").blur();
-                                else
-                                    menu.find('.megamenu-navigate-next .btn').removeClass("disabled").blur();
+                        $(".megamenu-navigate-next").click(function() {
+                            
+                            /*
+                            if (scrollCorrection == null) {
+                                // item is only half visible
+                                scrollCorrection = "+=" + ($(".nav-slider").width() - $(lastVisibleElem).position().left) + "px";
                             }
+                            else {
+                                // item is fully hidden 
+                                */
+                                scrollCorrection = "+=" + ($(lastVisibleElem).position().left + 30 + $(lastVisibleElem).width() - $(".nav-slider").width()) + "px";
+                            //}
+                            
+                            $(".nav-slider").scrollTo(scrollCorrection, 400, {
+                                onAfter: function() {
+                                    getCurrentNavigationElements();
+                                } 
+                            });    
                         });
+
+                        $(".megamenu-navigate-prev").click(function() {
+                            $(".nav-slider").scrollTo(firstVisibleElem, 400, {
+                                offset: { left: -20 },
+                                onAfter: function() {
+                                    getCurrentNavigationElements();
+                                } 
+                            });
+                        });
+
+                        function getCurrentNavigationElements() {
+                            firstVisibleElem = null;
+                            var p = $(".nav-slider", megamenu);
+                            var items = megamenu.find(".nav-item");
+
+                            items.each(function (i, val) {
+    
+                                var el = $(val);
+
+                                if((el.offset().left > p.offset().left) && firstVisibleElem == null)
+                                {
+                                    firstVisibleElem = $(val).prev();
+                                    
+                                    if(firstVisibleElem.position().left == 0) 
+                                        isFirstItemVisible = true;
+                                    else
+                                        isFirstItemVisible = false;
+                                }
+
+                                // if visible
+                                if (el.offset().left + el.width() > p.offset().left + p.width()) {
+                                    
+                                    lastVisibleElem = $(val);
+                                    
+                                    if(parseInt(el.offset().left) + parseInt(el.width()) == parseInt(p.offset().left) + parseInt(p.width())) 
+                                        isLastItemVisible = true;
+                                    else
+                                        isLastItemVisible = false;
+
+                                    // we've got everything we need, so get out of here
+                                    return false;
+                                }
+                            });
+
+                            // show or hide navigation buttons depending on whether first or last navitems are displayed
+                            if(isFirstItemVisible)
+                                megamenu.find('.megamenu-navigate-prev').css("display", "none");
+                            else 
+                                megamenu.find('.megamenu-navigate-prev').css("display", "block");
+
+                            if(isLastItemVisible)
+                                megamenu.find('.megamenu-navigate-next').css("display", "none");
+                            else 
+                                megamenu.find('.megamenu-navigate-next').css("display", "block");
+                        }
                     });
 
                     function initRotator(containerId) {
@@ -473,7 +533,7 @@
                                     // add buttons
                                     container.find(".sb").scrollButton({
                                         nearSize: 36,
-                                        farSize: 121,
+                                        farSize: "50%",
                                         target: $(".pl-slider", container),
                                         showButtonAlways: true,
                                         autoPosition: true,
@@ -508,6 +568,7 @@
 </script>
 
 <style type="text/css">
+
 .megamenu-container {
     position: relative;
 }
@@ -516,7 +577,7 @@
     position: relative;
 }
 .show-scroll-buttons .megamenu .nav-slider {
-    margin: 0 50px;
+    margin: 0 20px;
 }
 .megamenu ul.nav {
     width: 5000px;
@@ -525,12 +586,14 @@
 .megamenu-navigate-next {
     position: absolute;
     top: 0;
-    display: none;
+    /*display: none;*/
 }
+/*
 .show-scroll-buttons .megamenu-navigate-prev,
 .show-scroll-buttons .megamenu-navigate-next {
     display: block;
 }
+*/
 .megamenu-navigate-next {
     right: 0;
 }
@@ -572,6 +635,13 @@
     padding-bottom: .4rem;
 }
 
+.megamenu-container .mega-menu-dropdown-heading + .mega-menu-dropdown-heading {
+    padding-top: .5rem;
+}
+
+.megamenu-container .mega-menu-dropdown-heading label {
+    vertical-align: top;
+}
 
 .megamenu-container .mega-menu-subitem {
     font-size: .875rem;
@@ -637,7 +707,24 @@
 }
 .megamenu ul.nav .nav-item {
     z-index: 1100;
+    position: relative;
 }
+.megamenu ul.nav .nav-item .label {
+    position: absolute;
+    right: 3px;
+    top: 7px;
+    font-size: 0.7rem;
+}
+
+/* TODO: correct enum BadgeStyle, determine valid entries for bs4 */
+.label-important {
+    background: #0275d8; /* $brand-primary */
+}
+.label-inverse {
+    background: #d9534f; /* $brand-danger */
+}
+
+
 .megamenu-container .nav-item.active:before {
     content: "";
     left: 50%;
@@ -685,4 +772,28 @@
 .mega-menu-product-rotator.scroll .scroll-button i {
     width: initial;
 }
+
+
+.megamenu-navigate-next .btn,
+.megamenu-navigate-prev .btn {
+    border: none;
+    box-shadow: none;
+    position: relative;
+    z-index: 10000;
+}
+.megamenu-navigate-prev .btn:active:focus,
+.megamenu-navigate-prev .btn {
+    background: -webkit-linear-gradient(right, rgba(0,0,0,0), #f7f7f7 30%, #f7f7f7 100%);
+}
+.megamenu-navigate-next .btn:active:focus,
+.megamenu-navigate-next .btn {
+    background: -webkit-linear-gradient(left, rgba(0,0,0,0), #f7f7f7 30%, #f7f7f7 100%);
+}
+
+/*
+.megamenu-navigate-prev {
+    display: none;
+}
+*/
+
 </style>

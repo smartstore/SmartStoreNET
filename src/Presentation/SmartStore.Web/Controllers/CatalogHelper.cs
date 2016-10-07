@@ -1606,10 +1606,9 @@ namespace SmartStore.Web.Controllers
 						EntityId = category.Id,
 						Text = category.GetLocalized(x => x.Name),
 						RouteName = "Category",
-                        ImageUrl = category.PictureId != null ? _pictureService.GetPictureUrl((int)category.PictureId) : ""
+                        ImageUrl = category.PictureId != null ? _pictureService.GetPictureUrl((int)category.PictureId) : "",
                         BadgeText = category.GetLocalized(x => x.BadgeText),
-                        BadgeStyle = (BadgeStyle)category.BadgeStyle,
-                        RouteName = "Category"
+                        BadgeStyle = (BadgeStyle)category.BadgeStyle
 					};
 					menuItem.RouteValues.Add("SeName", category.GetSeName());
 

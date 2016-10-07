@@ -23,7 +23,6 @@ namespace SmartStore.MegaMenu.Domain
             BgAlignX = AlignX.Right;
             BgAlignY = AlignY.Bottom;
             TeaserType = TeaserType.None;
-            BadgeLabel = BadgeLabelType.Default;
             TeaserRotatorItemSelectType = TeaserRotatorItemSelectType.Top;
         }
 
@@ -142,19 +141,6 @@ namespace SmartStore.MegaMenu.Domain
         [StringLength(512)]
         [SmartResourceDisplayName("Plugins.SmartStore.MegaMenu.TeaserRotatorProductIds")]
         public string TeaserRotatorProductIds { get; set; }
-
-        /// <summary>
-        /// defines the badge text next to the category
-        /// </summary>
-        [StringLength(128)]
-        [SmartResourceDisplayName("Plugins.SmartStore.MegaMenu.BadgeText")]
-        public string BadgeText { get; set; }
-
-        /// <summary>
-        /// defines the badge type next to the category, enum: info, danger, warning, usw
-        /// </summary>
-        [SmartResourceDisplayName("Plugins.SmartStore.MegaMenu.BadgeLabel")]
-        public BadgeLabelType BadgeLabel { get; set; }
 
         /// <summary>
         /// Determines whether sub items (third level elements) will be displayed separated by comma

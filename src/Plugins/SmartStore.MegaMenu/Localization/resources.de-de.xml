@@ -114,18 +114,6 @@
       <LocaleResource Name="TeaserRotatorProductIds.Hint">
         <Value>Ids of the picked products.</Value>
       </LocaleResource>
-      <LocaleResource Name="BadgeText">
-        <Value>Badge text</Value>
-      </LocaleResource>
-      <LocaleResource Name="BadgeText.Hint">
-        <Value>defines the badge text next to the category.</Value>
-      </LocaleResource>
-      <LocaleResource Name="BadgeLabel">
-        <Value>Badge label</Value>
-      </LocaleResource>
-      <LocaleResource Name="BadgeLabel.Hint">
-        <Value>Defines the badge type next to the category.</Value>
-      </LocaleResource>
       <LocaleResource Name="DisplaySubItemsInline">
         <Value>Display sub-items inline</Value>
       </LocaleResource>

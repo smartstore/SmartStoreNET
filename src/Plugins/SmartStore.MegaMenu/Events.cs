@@ -71,8 +71,6 @@ namespace SmartStore.MegaMenu
             var utcNow = DateTime.UtcNow;
             var insert = (model.CreatedOnUtc == null);
 
-            model.BadgeLabel = (BadgeLabelType)model.BadgeLabel;
-
             //var megaMenuRecord = _megaMenuService.GetMegaMenuRecord(model.CategoryId);
 
             //var insert = (megaMenuRecord == null);
@@ -103,8 +101,6 @@ namespace SmartStore.MegaMenu
             //megaMenuRecord.TeaserType = model.TeaserType;
             //megaMenuRecord.TeaserRotatorItemSelectType = model.TeaserRotatorItemSelectType;
             //megaMenuRecord.TeaserRotatorProductIds = model.TeaserRotatorProductIds;
-            //megaMenuRecord.BadgeText = model.BadgeText;
-            //megaMenuRecord.BadgeLabel = model.BadgeLabel;
             //megaMenuRecord.DisplaySubItemsInline = model.DisplaySubItemsInline;
             //megaMenuRecord.AllowSubItemsColumnWrap = model.AllowSubItemsColumnWrap;
             //megaMenuRecord.SubItemsWrapTolerance = model.SubItemsWrapTolerance;

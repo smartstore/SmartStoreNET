@@ -1,11 +1,6 @@
-﻿@*@model SmartStore.MegaMenu.Models.AdminEditTabModel*@
-
-@model SmartStore.MegaMenu.Domain.MegaMenuRecord
+﻿@model SmartStore.MegaMenu.Domain.MegaMenuRecord
 
 @using SmartStore.Web.Framework;
-@using SmartStore.Web.Framework.Plugins;
-@using SmartStore.Web.Framework.WebApi;
-@using SmartStore.Web.Framework.UI;
 
 @{
     Layout = "";
@@ -175,24 +170,6 @@
             <div class="admin-config-group">
                 <div class="title">Text</div>
             </div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.BadgeText)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.BadgeText)
-            @Html.ValidationMessageFor(model => model.BadgeText)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.BadgeLabel)
-        </td>
-        <td class="adminData">
-            @Html.DropDownListFor(model => model.BadgeLabel, (List<SelectListItem>)ViewData["AvailableBadges"])
-            @Html.ValidationMessageFor(model => model.BadgeLabel)
         </td>
     </tr>
     <tr class="cat-picture">

@@ -30,8 +30,6 @@ namespace SmartStore.MegaMenu.Data.Migrations
                         TeaserType = c.Int(nullable: false),
                         TeaserRotatorItemSelectType = c.Int(nullable: false),
                         TeaserRotatorProductIds = c.String(maxLength: 512),
-                        BadgeText = c.String(maxLength: 128),
-                        BadgeLabel = c.Int(nullable: false),
                         DisplaySubItemsInline = c.Boolean(nullable: false),
                         AllowSubItemsColumnWrap = c.Boolean(nullable: false),
                         SubItemsWrapTolerance = c.Int(nullable: false),

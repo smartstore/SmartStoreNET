@@ -133,26 +133,16 @@ namespace SmartStore.Controllers
             //model.TeaserType = megaMenuRecord.TeaserType;
             //model.TeaserRotatorItemSelectType = megaMenuRecord.TeaserRotatorItemSelectType;
             //model.TeaserRotatorProductIds = megaMenuRecord.TeaserRotatorProductIds;
-            //model.BadgeText = megaMenuRecord.BadgeText;
-            //model.BadgeLabel = megaMenuRecord.BadgeLabel;
             //model.DisplaySubItemsInline = megaMenuRecord.DisplaySubItemsInline;
             //model.AllowSubItemsColumnWrap = megaMenuRecord.AllowSubItemsColumnWrap;
             //model.SubItemsWrapTolerance = megaMenuRecord.SubItemsWrapTolerance;
             //model.FavorInMegamenu = megaMenuRecord.FavorInMegamenu;
 
             // make enums
-            var availableBadges = new List<SelectListItem>();
             var availableTeaserTypes = new List<SelectListItem>();
             var teaserRotatorItemSelectType = new List<SelectListItem>();
             var availableAlignmentsX = new List<SelectListItem>();
             var availableAlignmentsY = new List<SelectListItem>();
-
-            availableBadges.Add(new SelectListItem { Text = "Default", Value = BadgeLabelType.Default.ToString(), Selected = megaMenuRecord.BadgeLabel.Equals(BadgeLabelType.Default) });
-            availableBadges.Add(new SelectListItem { Text = "Primary", Value = BadgeLabelType.Primary.ToString(), Selected = megaMenuRecord.BadgeLabel.Equals(BadgeLabelType.Primary) });
-            availableBadges.Add(new SelectListItem { Text = "Success", Value = BadgeLabelType.Success.ToString(), Selected = megaMenuRecord.BadgeLabel.Equals(BadgeLabelType.Success) });
-            availableBadges.Add(new SelectListItem { Text = "Info", Value = BadgeLabelType.Info.ToString(), Selected = megaMenuRecord.BadgeLabel.Equals(BadgeLabelType.Info) });
-            availableBadges.Add(new SelectListItem { Text = "Warning", Value = BadgeLabelType.Warning.ToString(), Selected = megaMenuRecord.BadgeLabel.Equals(BadgeLabelType.Warning) });
-            availableBadges.Add(new SelectListItem { Text = "Danger", Value = BadgeLabelType.Danger.ToString(), Selected = megaMenuRecord.BadgeLabel.Equals(BadgeLabelType.Danger) });
 
             availableTeaserTypes.Add(new SelectListItem { Text = "None", Value = TeaserType.None.ToString(), Selected = megaMenuRecord.TeaserType.Equals(TeaserType.None) });
             availableTeaserTypes.Add(new SelectListItem { Text = "Html", Value = TeaserType.Html.ToString(), Selected = megaMenuRecord.TeaserType.Equals(TeaserType.Html) });
@@ -176,7 +166,6 @@ namespace SmartStore.Controllers
             result.ViewData.TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "CustomProperties[MegaMenu]" };
 
             //init list values
-            ViewData["AvailableBadges"] = availableBadges;
             ViewData["AvailableTeaserTypes"] = availableTeaserTypes;
             ViewData["TeaserRotatorItemSelectType"] = teaserRotatorItemSelectType;
             ViewData["AvailableAlignmentsX"] = availableAlignmentsX;

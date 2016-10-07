@@ -195,7 +195,6 @@
     <Compile Include="Services\IMegaMenuService.cs" />
     <Compile Include="Settings\MegaMenuSettings.cs" />
     <Compile Include="Events.cs" />
-    <Compile Include="Models\AdminEditTabModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\mocks\babys.png">
@@ -214,9 +213,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\MegaMenu\Configure.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Views\MegaMenu\PublicInfo.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\MegaMenu\AdminEditTab.cshtml">

@@ -19,8 +19,13 @@ $.ScrollButton = function(el, buttons, target, options) {
 	var opts = $.extend({}, options);
 	
 	// make "corrections" to important options
-	opts.nearSize = Math.max(12, opts.nearSize || (opts.smallIcons ? 16 : 32));
-	opts.farSize = Math.max(12, opts.farSize || (opts.smallIcons ? 16 : 32));
+	
+	if (typeof opts.farSize !== 'string')
+	    opts.farSize = Math.max(12, opts.farSize || (opts.smallIcons ? 16 : 32));
+
+	if (typeof opts.nearSize !== 'string')
+	    opts.nearSize = Math.max(12, opts.nearSize || (opts.smallIcons ? 16 : 32));
+
 	opts.offset = _.isNumber(opts.offset) ? opts.offset : 0;
 	this.direction = opts.direction = el.hasClass("sb-dir-left") ? 'left' : 'right';
 	this.target = target;

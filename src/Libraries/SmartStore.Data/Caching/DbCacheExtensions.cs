@@ -116,10 +116,10 @@ namespace SmartStore.Data.Caching
 			{
 				entry = cache.RequestPut(cacheKey.Key, valueFactory(), cacheKey.AffectedEntitySets);
 			}
-			else
-			{
-				Debug.WriteLine("FromRequestCache: " + cacheKey.Key);
-			}
+			//else
+			//{
+			//	Debug.WriteLine("FromRequestCache: " + cacheKey.Key);
+			//}
 
 			return entry;
 		}

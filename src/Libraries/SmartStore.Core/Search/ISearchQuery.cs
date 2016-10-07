@@ -19,7 +19,7 @@ namespace SmartStore.Core.Search
 		ICollection<ISearchFilter> Filters { get; }
 
 		// Facets
-		ICollection<FacetSelection> FacetSelections { get; }
+		IReadOnlyDictionary<string, FacetDescriptor> FacetDescriptors { get; }
 
 		// Paging
 		int Skip { get; }

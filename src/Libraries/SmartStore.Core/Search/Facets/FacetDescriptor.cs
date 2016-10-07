@@ -6,44 +6,50 @@ using System.Text;
 namespace SmartStore.Core.Search.Facets
 {
 	/// <summary>
-	/// A selection or filter to be applied, e.g. Color=Red.
+	/// A filter and its selection to be applied, e.g. Color=Red.
 	/// </summary>
 	[Serializable]
-	public class FacetSelection
+	public class FacetDescriptor
 	{
 		public enum ValueOperator
 		{
-			And,
-			Or
+			Or,
+			And	
 		}
 
-		private readonly List<string> _values;
-
-		public FacetSelection(string fieldName)
+		public enum Sorting
 		{
-			Guard.NotEmpty(fieldName, nameof(fieldName));
+			HitsDesc,
+			ValueAsc
+		}
 
-			_values = new List<string>();
-			FieldName = fieldName;
+		private readonly List<string> _selectedValues;
+
+		public FacetDescriptor(string key)
+		{
+			Guard.NotEmpty(key, nameof(key));
+
+			_selectedValues = new List<string>();
+			Key = key;
 		}
 
 		/// <summary>
-		/// Gets or sets the field name.
+		/// Gets the key / field name.
 		/// </summary>
-		public string FieldName
+		public string Key
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Gets the selected values for this facet.
+		/// Gets the initially selected values for this facet.
 		/// </summary>
-		public ICollection<string> Values
+		public ICollection<string> SelectedValues
 		{
 			get
 			{
-				return _values;
+				return _selectedValues;
 			}
 		}
 
@@ -51,9 +57,9 @@ namespace SmartStore.Core.Search.Facets
 		/// Adds a selection value.
 		/// </summary>
 		/// <param name="value">Value to select</param>
-		public FacetSelection AddValue(params string[] values)
+		public FacetDescriptor AddSelectedValue(params string[] values)
 		{
-			_values.AddRange(values);
+			_selectedValues.AddRange(values);
 			return this;
 		}
 
@@ -61,6 +67,15 @@ namespace SmartStore.Core.Search.Facets
 		/// Gets or sets the boolean value operator.
 		/// </summary>
 		public ValueOperator Operator
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the minimum number of hits a choice would need to have to be returned.
+		/// </summary>
+		public int MinHitCount
 		{
 			get;
 			set;
@@ -76,9 +91,9 @@ namespace SmartStore.Core.Search.Facets
 		}
 
 		/// <summary>
-		/// Gets or sets the minimum number of hits a choice would need to have to be returned.
+		/// Gets or sets the result choices sort order.
 		/// </summary>
-		public int MinHitCount
+		public Sorting OrderBy
 		{
 			get;
 			set;
@@ -88,8 +103,8 @@ namespace SmartStore.Core.Search.Facets
 		{
 			var sb = new StringBuilder();
 
-			sb.Append("FieldName: ").Append(FieldName).Append(" ");
-			sb.Append("Values: " + string.Join(",", _values.ToArray())).Append(" ");
+			sb.Append("FieldName: ").Append(Key).Append(" ");
+			sb.Append("Values: " + string.Join(",", _selectedValues.ToArray())).Append(" ");
 			sb.Append("op: " + Operator.ToString()).Append(" ");
 
 			return sb.ToString();

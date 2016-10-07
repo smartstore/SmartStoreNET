@@ -28,6 +28,8 @@ namespace SmartStore.Core.Search
 
 	public class SearchQuery<TQuery> : ISearchQuery where TQuery : class, ISearchQuery
 	{
+		private readonly Dictionary<string, FacetDescriptor> _facetDescriptors;
+
 		protected SearchQuery(string[] fields, string term, bool escape = false, bool isFuzzySearch = false)
 		{
 			Fields = fields;
@@ -37,7 +39,7 @@ namespace SmartStore.Core.Search
 
 			Filters = new List<ISearchFilter>();
 			Sorting = new List<SearchSort>();
-			FacetSelections = new List<FacetSelection>();
+			_facetDescriptors = new Dictionary<string, FacetDescriptor>(StringComparer.OrdinalIgnoreCase);
 
 			Take = int.MaxValue;
 		}
@@ -56,7 +58,13 @@ namespace SmartStore.Core.Search
 		public ICollection<ISearchFilter> Filters { get; }
 
 		// Facets
-		public ICollection<FacetSelection> FacetSelections { get; }
+		public IReadOnlyDictionary<string, FacetDescriptor> FacetDescriptors
+		{
+			get
+			{
+				return _facetDescriptors;
+			}
+		}
 
 		// Paging
 		public int Skip { get; protected set; }
@@ -109,6 +117,20 @@ namespace SmartStore.Core.Search
 			Guard.NotNull(sort, nameof(sort));
 
 			Sorting.Add(sort);
+
+			return (this as TQuery);
+		}
+
+		public TQuery AddFacetDescriptor(FacetDescriptor facetDescription)
+		{
+			Guard.NotNull(facetDescription, nameof(facetDescription));
+
+			if (_facetDescriptors.ContainsKey(facetDescription.Key))
+			{
+				throw new InvalidOperationException("A facet description object with the same key has already been added. Key: {0}".FormatInvariant(facetDescription.Key));
+			}
+
+			_facetDescriptors.Add(facetDescription.Key, facetDescription);
 
 			return (this as TQuery);
 		}

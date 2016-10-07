@@ -3,6 +3,7 @@ using System.Linq;
 using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Services.Catalog;
 
@@ -13,15 +14,18 @@ namespace SmartStore.Services.Search
 		private const int NUMBER_OF_SUGGESTIONS = 2;
 
 		private readonly IComponentContext _ctx;
+		private readonly ILogger _logger;
 		private readonly IIndexManager _indexManager;
 		private readonly Lazy<IProductService> _productService;
 
 		public CatalogSearchService(
 			IComponentContext ctx,
+			ILogger logger,
 			IIndexManager indexManager,
 			Lazy<IProductService> productService)
 		{
 			_ctx = ctx;
+			_logger = logger;
 			_indexManager = indexManager;
 			_productService = productService;
 		}
@@ -47,7 +51,18 @@ namespace SmartStore.Services.Search
 					var products = _productService.Value.GetProductsByIds(productIds);
 
 					var hits = new PagedList<Product>(products, searchQuery.PageIndex, searchQuery.Take, totalCount);
-					var suggestions = searchEngine.GetSuggestions(NUMBER_OF_SUGGESTIONS);
+
+					string[] suggestions = null;
+
+					try
+					{
+						suggestions = searchEngine.GetSuggestions(NUMBER_OF_SUGGESTIONS);
+					}
+					catch (Exception exception)
+					{
+						// suggestions should not break the search
+						_logger.Error(exception);
+					}
 
 					return new CatalogSearchResult(hits, searchQuery, suggestions);
 				}

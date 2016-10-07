@@ -11,7 +11,7 @@ namespace SmartStore.Core.Search
 
 	public interface ICombinedSearchFilter : ISearchFilter
 	{
-		IEnumerable<ISearchFilter> Filters { get; }
+		ICollection<ISearchFilter> Filters { get; }
 	}
 
 	public interface IAttributeSearchFilter : ISearchFilter

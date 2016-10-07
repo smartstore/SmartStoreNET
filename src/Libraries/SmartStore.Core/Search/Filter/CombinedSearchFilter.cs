@@ -19,7 +19,7 @@ namespace SmartStore.Core.Search
 			_filters = new List<ISearchFilter>(filters);
 		}
 
-		public IEnumerable<ISearchFilter> Filters
+		public ICollection<ISearchFilter> Filters
 		{
 			get
 			{

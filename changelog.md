@@ -45,6 +45,7 @@
 * #1030: Order export: does not export the data of the attribute combination
 * Order export does not export shipping address
 * Filter shows wrong number of products if "Include products from subcategories" is activated
+* Guest user cannot be deleted if he has a private message
 
 
 ## SmartStore.NET 2.6

@@ -440,6 +440,9 @@ namespace SmartStore.Services.Customers
 				// no customer content
 				query = JoinWith<CustomerContent>(query, x => x.CustomerId);
 
+				// no private messages (guests can only receive but not send messages)
+				query = JoinWith<PrivateMessage>(query, x => x.ToCustomerId);
+
 				// no forum posts
 				query = JoinWith<ForumPost>(query, x => x.CustomerId);
 

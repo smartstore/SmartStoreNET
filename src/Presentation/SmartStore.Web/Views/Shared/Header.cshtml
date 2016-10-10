@@ -3,9 +3,8 @@
 
 <div id="logobar" class="container">
 
-    <a href="@Url.RouteUrl("HomePage")" class="brand@(Model.LogoUploaded ? "" : " textual")">
-            
-        @*@if (Model.LogoUploaded) 
+    <a href="@Url.RouteUrl("HomePage")" class="brand@(Model.LogoUploaded ? "" : " textual")">          
+        @if (Model.LogoUploaded) 
         {
             <img src='@Url.Content(Model.LogoUrl.EmptyNull())' 
                 alt="@Model.LogoTitle" 
@@ -16,7 +15,7 @@
         else
         {
             @Model.LogoTitle    
-        }*@
+        }
     </a>
 
     <nav id="nav-home" class="clearfix">

@@ -89,11 +89,6 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByField("published", true).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
-		public CatalogSearchQuery FeaturedOnly(bool value)
-		{
-			return WithFilter(SearchFilter.ByField("featured", value).Mandatory().ExactMatch().NotAnalyzed());
-		}
-
 		public CatalogSearchQuery VisibleIndividuallyOnly(bool value)
 		{
 			return WithFilter(SearchFilter.ByField("visibleindividually", value).Mandatory().ExactMatch().NotAnalyzed());
@@ -130,9 +125,16 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByRange("id", fromId, toId, fromId.HasValue, toId.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
-		public CatalogSearchQuery WithCategoryIds(params int[] ids)
+		public CatalogSearchQuery WithCategoryIds(bool? featuredOnly, params int[] ids)
 		{
-			ids.Each(x => WithFilter(SearchFilter.ByField("categoryid", x).ExactMatch().NotAnalyzed()));
+			string fieldName = null;
+
+			if (featuredOnly.HasValue)
+				fieldName = (featuredOnly.Value ? "featuredcategoryid" : "notfeaturedcategoryid");
+			else
+				fieldName = "categoryid";
+
+			ids.Each(x => WithFilter(SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()));
 			return this;
 		}
 
@@ -148,9 +150,16 @@ namespace SmartStore.Services.Search
 			}
 		}
 
-		public CatalogSearchQuery WithManufacturerIds(params int[] ids)
+		public CatalogSearchQuery WithManufacturerIds(bool? featuredOnly, params int[] ids)
 		{
-			ids.Each(x => WithFilter(SearchFilter.ByField("manufacturerid", x).ExactMatch().NotAnalyzed()));
+			string fieldName = null;
+
+			if (featuredOnly.HasValue)
+				fieldName = (featuredOnly.Value ? "featuredmanufacturerid" : "notfeaturedmanufacturerid");
+			else
+				fieldName = "manufacturerid";
+
+			ids.Each(x => WithFilter(SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()));
 			return this;
 		}
 

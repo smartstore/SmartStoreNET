@@ -40,13 +40,33 @@ namespace SmartStore.Services.Search
 
 		#region Utilities
 
-		private List<int> GetIdList(CatalogSearchQuery searchQuery, string fieldName)
+		private void FlattenFilters(ICollection<ISearchFilter> filters, List<ISearchFilter> result)
 		{
-			return searchQuery.Filters
-				.OfType<IAttributeSearchFilter>()
-				.Where(x => !(x is IRangeSearchFilter) && x.FieldName == fieldName)
-				.Select(x => (int)x.Term)
-				.ToList();
+			foreach (var filter in filters)
+			{
+				var combinedFilter = filter as ICombinedSearchFilter;
+				if (combinedFilter != null)
+				{
+					FlattenFilters(combinedFilter.Filters, result);
+				}
+				else
+				{
+					result.Add(filter);
+				}
+			}
+		}
+
+		private List<int> GetIdList(List<ISearchFilter> filters, string fieldName)
+		{
+			var result = new List<int>();
+
+			foreach (IAttributeSearchFilter filter in filters)
+			{
+				if (!(filter is IRangeSearchFilter) && filter.FieldName == fieldName)
+					result.Add((int)filter.Term);
+			}
+
+			return result;
 		}
 
 		private IOrderedQueryable<Product> OrderBy<TKey>(IQueryable<Product> query, Expression<Func<Product, TKey>> keySelector, bool descending = false)
@@ -65,6 +85,34 @@ namespace SmartStore.Services.Search
 				return ordered.ThenByDescending(keySelector);
 
 			return ordered.ThenBy(keySelector);
+		}
+
+		private IQueryable<Product> QueryCategories(IQueryable<Product> query, List<int> ids, bool? featuredOnly)
+		{
+			if (ids.Any())
+			{
+				return
+					from p in query
+					from pc in p.ProductCategories.Where(pc => ids.Contains(pc.CategoryId))
+					where (!featuredOnly.HasValue || featuredOnly.Value == pc.IsFeaturedProduct)
+					select p;
+			}
+
+			return query;
+		}
+
+		private IQueryable<Product> QueryManufacturers(IQueryable<Product> query, List<int> ids, bool? featuredOnly)
+		{
+			if (ids.Any())
+			{
+				return
+					from p in query
+					from pm in p.ProductManufacturers.Where(pm => ids.Contains(pm.ManufacturerId))
+					where (!featuredOnly.HasValue || featuredOnly.Value == pm.IsFeaturedProduct)
+					select p;
+			}
+
+			return query;
 		}
 
 		private IQueryable<Product> QueryLocalizedProperties(IQueryable<Product> query, string keyGroup, string key, int languageId, string term)
@@ -136,9 +184,61 @@ namespace SmartStore.Services.Search
 
 			#region Filters
 
+			var filters = new List<ISearchFilter>();
+			FlattenFilters(searchQuery.Filters, filters);
+
+			var productIds = GetIdList(filters, "id");
+			if (productIds.Any())
+			{
+				query = query.Where(x => productIds.Contains(x.Id));
+			}
+
+			var categoryIds = GetIdList(filters, "categoryid");
+			if (categoryIds.Any())
+			{
+				if (categoryIds.Count == 1 && categoryIds.First() == 0)
+				{
+					// has no category
+					query = query.Where(x => x.ProductCategories.Count == 0);
+				}
+				else
+				{
+					query = QueryCategories(query, categoryIds, null);
+				}
+			}
+
+			query = QueryCategories(query, GetIdList(filters, "featuredcategoryid"), true);
+			query = QueryCategories(query, GetIdList(filters, "notfeaturedcategoryid"), false);
+
+			var manufacturerIds = GetIdList(filters, "manufacturerid");
+			if (manufacturerIds.Any())
+			{
+				if (manufacturerIds.Count == 1 && manufacturerIds.First() == 0)
+				{
+					// has no manufacturer
+					query = query.Where(x => x.ProductManufacturers.Count == 0);
+				}
+				else
+				{
+					query = QueryManufacturers(query, manufacturerIds, null);
+				}
+			}
+
+			query = QueryManufacturers(query, GetIdList(filters, "featuredmanufacturerid"), true);
+			query = QueryManufacturers(query, GetIdList(filters, "notfeaturedmanufacturerid"), false);
+
+			var tagIds = GetIdList(filters, "tagid");
+			if (tagIds.Any())
+			{
+				query =
+					from p in query
+					from pt in p.ProductTags.Where(pt => tagIds.Contains(pt.Id))
+					select p;
+			}
+
 			if (!QuerySettings.IgnoreAcl)
 			{
-				var roleIds = GetIdList(searchQuery, "roleid");
+				var roleIds = GetIdList(filters, "roleid");
 				if (roleIds.Any())
 				{
 					query =
@@ -150,53 +250,8 @@ namespace SmartStore.Services.Search
 				}
 			}
 
-			var productIds = GetIdList(searchQuery, "id");
-			if (productIds.Any())
+			foreach (IAttributeSearchFilter filter in filters)
 			{
-				query = query.Where(x => productIds.Contains(x.Id));
-			}
-
-			var termFilters = searchQuery.Filters.OfType<IAttributeSearchFilter>().ToList();
-
-			// TODO: HasAnyCategories, ProductCategories.Count
-			var categoryIds = GetIdList(searchQuery, "categoryid");
-			if (categoryIds.Any())
-			{
-				var featuredOnly = termFilters.FirstOrDefault(x => x.FieldName == "featured")?.Term as bool?;
-
-				query =
-					from p in query
-					from pm in p.ProductManufacturers.Where(pm => categoryIds.Contains(pm.ManufacturerId))
-					where (!featuredOnly.HasValue || featuredOnly.Value == pm.IsFeaturedProduct)
-					select p;
-			}
-
-			// TODO: HasAnyManufacturers, ProductManufacturers.Count
-			var manufacturerIds = GetIdList(searchQuery, "manufacturerid");
-			if (manufacturerIds.Any())
-			{
-				var featuredOnly = termFilters.FirstOrDefault(x => x.FieldName == "featured")?.Term as bool?;
-
-				query =
-					from p in query
-					from pm in p.ProductManufacturers.Where(pm => manufacturerIds.Contains(pm.ManufacturerId))
-					where (!featuredOnly.HasValue || featuredOnly.Value == pm.IsFeaturedProduct)
-					select p;
-			}
-
-			var tagIds = GetIdList(searchQuery, "tagid");
-			if (tagIds.Any())
-			{
-				query =
-					from p in query
-					from pt in p.ProductTags.Where(pt => tagIds.Contains(pt.Id))
-					select p;
-			}
-
-			foreach (var filter in termFilters)
-			{
-				// TODO: (mg) what about ICombinedSearchFilter here?
-
 				var rangeFilter = filter as IRangeSearchFilter;
 
 				if (filter.FieldName == "id")
@@ -221,6 +276,22 @@ namespace SmartStore.Services.Search
 							else
 								query = query.Where(x => x.Id < upper.Value);
 						}
+					}
+				}
+				else if (filter.FieldName == "categoryid")
+				{
+					if (rangeFilter != null && 1 == ((filter.Term as int?) ?? 0) && int.MaxValue == ((rangeFilter.UpperTerm as int?) ?? 0))
+					{
+						// has any category
+						query = query.Where(x => x.ProductCategories.Count > 0);
+					}
+				}
+				else if (filter.FieldName == "manufacturerid")
+				{
+					if (rangeFilter != null && 1 == ((filter.Term as int?) ?? 0) && int.MaxValue == ((rangeFilter.UpperTerm as int?) ?? 0))
+					{
+						// has any manufacturer
+						query = query.Where(x => x.ProductManufacturers.Count > 0);
 					}
 				}
 				else if (filter.FieldName == "published")

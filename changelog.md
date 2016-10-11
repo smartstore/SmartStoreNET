@@ -11,7 +11,8 @@
 * Microsoft AZURE provider for media storage (commercial plugin)
 * Message Bus for inter-process messaging between servers (commercial plugin)
 * Configurable media storage path for web farms
-* (Dev) log4net integration 
+* (Dev) log4net integration
+* XML Sitemap index: partitions for very large sitemaps (> 50.000 nodes or > 10 MB)
 * Added option to skip shipping method selection in checkout process when only one shipping method is active
 * Added options to capture salutation and title in addresses and customer info
 * Added projection to control the export of individually visible associated products

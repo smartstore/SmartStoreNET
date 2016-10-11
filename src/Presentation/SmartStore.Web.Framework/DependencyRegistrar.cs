@@ -243,7 +243,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<NewsService>().As<INewsService>().InstancePerRequest();
 
 			builder.RegisterType<DateTimeHelper>().As<IDateTimeHelper>().InstancePerRequest();
-			builder.RegisterType<SitemapGenerator>().As<ISitemapGenerator>().InstancePerRequest();
+			builder.RegisterType<XmlSitemapGenerator>().As<IXmlSitemapGenerator>().InstancePerRequest();
 			builder.RegisterType<PageAssetsBuilder>().As<IPageAssetsBuilder>().InstancePerRequest();
 
 			builder.RegisterType<ScheduleTaskService>().As<IScheduleTaskService>().InstancePerRequest();

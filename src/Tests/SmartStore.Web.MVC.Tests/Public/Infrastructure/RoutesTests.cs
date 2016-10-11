@@ -162,7 +162,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         {
             "~/contactus".ShouldMapTo<HomeController>(c => c.ContactUs());
 			"~/sitemap".ShouldMapTo<HomeController>(c => c.Sitemap());
-			"~/sitemap.xml".ShouldMapTo<HomeController>(c => c.SitemapSeo());
+			"~/sitemap.xml".ShouldMapTo<HomeController>(c => c.SitemapSeo(1));
             "~/settings".ShouldMapTo<CommonController>(c => c.Settings());
         }
 

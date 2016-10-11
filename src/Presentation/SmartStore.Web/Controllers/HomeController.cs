@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -39,7 +41,7 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<ITopicService> _topicService;
 		private readonly Lazy<IQueuedEmailService> _queuedEmailService;
 		private readonly Lazy<IEmailAccountService> _emailAccountService;
-		private readonly Lazy<ISitemapGenerator> _sitemapGenerator;
+		private readonly Lazy<IXmlSitemapGenerator> _sitemapGenerator;
 		private readonly Lazy<CaptchaSettings> _captchaSettings;
 		private readonly Lazy<CommonSettings> _commonSettings;
         private readonly Lazy<CustomerSettings> _customerSettings;
@@ -56,7 +58,7 @@ namespace SmartStore.Web.Controllers
 			Lazy<ITopicService> topicService,
 			Lazy<IQueuedEmailService> queuedEmailService,
 			Lazy<IEmailAccountService> emailAccountService,
-			Lazy<ISitemapGenerator> sitemapGenerator,
+			Lazy<IXmlSitemapGenerator> sitemapGenerator,
 			Lazy<CaptchaSettings> captchaSettings,
 			Lazy<CommonSettings> commonSettings,
             Lazy<CustomerSettings> customerSettings)
@@ -194,19 +196,43 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult SitemapSeo()
+		public ActionResult SitemapSeo(int? index = null)
 		{
 			if (!_commonSettings.Value.SitemapEnabled)
 				return HttpNotFound();
 
-			var roleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
-			string cacheKey = ModelCacheEventConsumer.SITEMAP_XML_MODEL_KEY.FormatInvariant(_services.WorkContext.WorkingLanguage.Id, string.Join(",", roleIds), _services.StoreContext.CurrentStore.Id);
-			var sitemap = _services.Cache.Get(cacheKey, () =>
-			{
-				return _sitemapGenerator.Value.Generate(this.Url);
-			}, TimeSpan.FromHours(2));
+			string content = GetSitemapXml(index);
 
-			return Content(sitemap, "text/xml");
+			if (content == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Sitemap index is out of range.");
+			}
+
+			return Content(content, "text/xml", Encoding.UTF8);
+		}
+
+		[NonAction]
+		private string GetSitemapXml(int? index = null)
+		{
+			var roleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+
+			string cacheKey = ModelCacheEventConsumer.SITEMAP_XML_MODEL_KEY.FormatInvariant(
+				_services.WorkContext.WorkingLanguage.Id,
+				string.Join(",", roleIds),
+				_services.StoreContext.CurrentStore.Id);
+
+			var documents = _services.Cache.Get(cacheKey, () =>
+			{
+				//return _sitemapGenerator.Value.Generate(this.Url);
+				return _sitemapGenerator.Value.Generate();
+			}, TimeSpan.FromDays(1));
+
+			if (index.HasValue && ((index < 1) || (index.Value >= documents.Count)))
+			{
+				return null;
+			}
+
+			return documents[index.HasValue ? index.Value : 0];
 		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
@@ -216,7 +242,11 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 
 			var roleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
-			string cacheKey = ModelCacheEventConsumer.SITEMAP_PAGE_MODEL_KEY.FormatInvariant(_services.WorkContext.WorkingLanguage.Id, string.Join(",", roleIds), _services.StoreContext.CurrentStore.Id);
+
+			string cacheKey = ModelCacheEventConsumer.SITEMAP_PAGE_MODEL_KEY.FormatInvariant(
+				_services.WorkContext.WorkingLanguage.Id, 
+				string.Join(",", roleIds), 
+				_services.StoreContext.CurrentStore.Id);
 
 			var result = _services.Cache.Get(cacheKey, () =>
 			{

@@ -1,1 +1,212 @@
 ﻿
+.megamenu-container {
+    position: relative;
+}
+.megamenu {
+    overflow: hidden;
+    position: relative;
+}
+.show-scroll-buttons .megamenu .nav-slider {
+    margin: 0 20px;
+}
+.megamenu ul.nav {
+    width: 5000px;
+}
+.megamenu-navigate-prev,
+.megamenu-navigate-next {
+    position: absolute;
+    top: 0;
+}
+.megamenu-navigate-next {
+    right: 0;
+}
+.megamenu-navigate-prev .btn,
+.megamenu-navigate-next .btn {
+    padding: 0;
+    font-size: 1.2rem;
+}
+.megamenu-container .megamenu-dropdown-container {
+    position: relative;
+}
+.megamenu-container .mega-menu-dropdown {
+    z-index: 1007;
+    width: 100%;
+    top: -3px;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    padding: 1.5rem;
+}
+.megamenu-container .dropdown-menu .col-md-3 {
+    overflow: hidden;
+}
+.megamenu-container .mega-menu-dropdown-heading:not(:first-child) {
+    padding-top: 1rem;
+    /*
+    border-top: 1px solid #eaeaea;
+    margin-top: .375rem;
+    */
+}
+.megamenu-container .mega-menu-dropdown-heading {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4rem;
+    text-decoration: none;
+    display: block;
+    color: #222;
+    padding-bottom: .4rem;
+}
+
+.megamenu-container .mega-menu-dropdown-heading + .mega-menu-dropdown-heading {
+    padding-top: .5rem;
+}
+
+.megamenu-container .mega-menu-dropdown-heading label {
+    vertical-align: top;
+}
+
+.megamenu-container .mega-menu-subitem {
+    font-size: .875rem;
+    text-decoration: none;
+    display: block;
+    color: #999;
+}
+.megamenu-container .mega-menu-subitem:hover {
+    color: #222;
+} 
+
+.megamenu-container .mega-menu-subitem.more-link {
+    font-weight: bold;
+    color: #464646;
+    font-size: .825rem;
+}
+.megamenu-container .comma-separated .mega-menu-subitem {
+    display: inline;
+    margin-right: -.15rem;
+}
+.megamenu-container .comma-separated .mega-menu-subitem,
+.megamenu-container .comma-separated .comma { 
+
+}
+.megamenu-container .comma-separated .mega-menu-subitem.more-link {
+    display: block;
+}
+
+.megamenu-container .picture-container {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+
+
+.megamenu-container .comma-separated .mega-menu-subitem:focus, 
+.megamenu-container .comma-separated .mega-menu-subitem:hover {
+    background-color: transparent;
+    color: #888;
+}
+.megamenu-container .megamenu-cat-img img {
+    max-width: 100%;
+    max-height: 100%;
+    padding: 20px;
+}
+.megamenu-container .below-preview-pic-text {
+    margin: 10px;
+    font-size: .875rem;
+}
+
+.megamenu-container .megamenu-html-text {
+    overflow: hidden;
+}
+
+.navbar {
+    padding: 0;
+}
+.megamenu-container .nav-item,
+.megamenu-navigate-prev,
+.megamenu-navigate-next {
+    padding: .5rem 0;
+}
+.megamenu ul.nav .nav-item {
+    z-index: 1100;
+    position: relative;
+}
+.megamenu ul.nav .nav-item .label {
+    position: absolute;
+    right: 3px;
+    top: 7px;
+    font-size: 0.7rem;
+}
+
+/* TODO: correct enum BadgeStyle, determine valid entries for bs4 */
+.label-important {
+    background: #0275d8; /* $brand-primary */
+}
+.label-inverse {
+    background: #d9534f; /* $brand-danger */
+}
+
+
+.megamenu-container .nav-item.active:before {
+    content: "";
+    left: 50%;
+    position: absolute;
+    border-bottom: 15px solid #fff;
+    border-right: 17px solid transparent;
+    border-left: 17px solid transparent;
+    bottom: -1px;
+    margin-left: -17px;
+    z-index: 1010;
+}
+.megamenu-container .nav-item.active:after {
+    content: "";
+    left: 50%;
+    position: absolute;
+    border-bottom: 17px solid #bbb;
+    border-right: 19px solid transparent;
+    border-left: 19px solid transparent;
+    bottom: -2px;
+    margin-left: -19px;
+    z-index: 1008;
+}
+
+.mega-menu-product-rotator .pl-row,
+.mega-menu-product-rotator .item-box {
+    width: 100%;
+    border: none;
+}
+
+.mega-menu-product-rotator.scroll article {
+    min-width: 245px;
+    max-width: 245px;
+}
+
+
+.mega-menu-product-rotator.scroll .btn-group {
+    width: 100%;
+}
+
+.mega-menu-product-rotator.scroll .scroll-button {
+    bottom: 12px;
+    top: initial !important;
+    position: initial;
+}
+.mega-menu-product-rotator.scroll .scroll-button i {
+    width: initial;
+}
+
+
+.megamenu-navigate-next .btn,
+.megamenu-navigate-prev .btn {
+    border: none;
+    box-shadow: none;
+    position: relative;
+    z-index: 10000;
+}
+.megamenu-navigate-prev .btn:active:focus,
+.megamenu-navigate-prev .btn {
+    background: -webkit-linear-gradient(right, rgba(0,0,0,0), #f7f7f7 30%, #f7f7f7 100%);
+}
+.megamenu-navigate-next .btn:active:focus,
+.megamenu-navigate-next .btn {
+    background: -webkit-linear-gradient(left, rgba(0,0,0,0), #f7f7f7 30%, #f7f7f7 100%);
+}

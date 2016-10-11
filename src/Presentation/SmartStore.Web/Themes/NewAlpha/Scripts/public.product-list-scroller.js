@@ -19,8 +19,10 @@
             	list.evenIfHidden(function(el) {
             		
             	    var visibleElemnts = parseInt(list.outerWidth() / list.find(".item-box:first").outerWidth());
-					visibleElemnts = (visibleElemnts >= 1) ? 1 : (visibleElemnts - 1);
-					
+
+            	    //visibleElemnts = (visibleElemnts >= 1) ? 1 : (visibleElemnts - 1);
+            	    visibleElemnts = (visibleElemnts >= 1) ? (visibleElemnts - 2) : 0;
+				    
 					list.find('.pl-row').wrap('<div class="pl-slider" style="overflow: hidden;position: relative;" />') ;
 					
 					// init serial scroll
@@ -35,22 +37,28 @@
 				        force:		true,
 				        cycle:      settings.cycle,
 				        interval:   settings.interval,
-				        exclude:    visibleElemnts -1,
-				        onBefore:	function( e, elem, $pane, $items, pos ){
+				        exclude:    visibleElemnts,
+				        onBefore:	function( e, elem, $pane, $items, pos ) {
 				        	
 				        	var plList = $pane.parent(),
 				        		isFirst = (pos == 0),
-				        		isLast = ((pos + visibleElemnts) == $items.length);
-				        	
+				        		isLast = ((pos + visibleElemnts) == $items.length - 1);
+
+				        	var btnPrev = plList.find('.pl-scroll-prev');
+				        	var btnNext = plList.find('.pl-scroll-next');
+
 				        	if (isFirst)
-				        		plList.find('.pl-scroll-prev').data("ScrollButton").enable(false);
+				        	    btnPrev.data("ScrollButton").enable(false);
 				        	else
-				        		plList.find('.pl-scroll-prev').data("ScrollButton").enable(true);
+				        	    btnPrev.data("ScrollButton").enable(true);
 				        	
 				        	if (isLast)
-				        		plList.find('.pl-scroll-next').data("ScrollButton").enable(false);
+				        	    btnNext.data("ScrollButton").enable(false);
 				        	else
-				        		plList.find('.pl-scroll-next').data("ScrollButton").enable(true);
+				        	    btnNext.data("ScrollButton").enable(true);
+
+				        	btnPrev.blur();
+				        	btnNext.blur();
 				        }
 					});
 					

@@ -1,10 +1,11 @@
 namespace SmartStore.Data.Migrations
 {
-    using Setup;
-    using System;
-    using System.Data.Entity.Migrations;
+	using Setup;
+	using System;
+	using System.Data.Entity.Migrations;
+	using Core.Domain.Tasks;
 
-    public partial class CategoryBadges : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
+	public partial class CategoryBadges : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
@@ -26,7 +27,19 @@ namespace SmartStore.Data.Migrations
         public void Seed(SmartObjectContext context)
         {
             context.MigrateLocaleResources(MigrateLocaleResources);
-            context.SaveChanges();
+
+			context.Set<ScheduleTask>().AddOrUpdate(x => x.Type,
+				new ScheduleTask
+				{
+					Name = "Rebuild XML Sitemap",
+					CronExpression = "45 3 * * *",
+					Type = "SmartStore.Services.Seo.RebuildXmlSitemapTask, SmartStore.Services",
+					Enabled = true,
+					StopOnError = false
+				}
+			);
+
+			context.SaveChanges();
         }
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)

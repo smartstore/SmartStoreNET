@@ -9,17 +9,32 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Caching;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Topics;
 using SmartStore.Services.Seo;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Data;
 using SmartStore.Services.Localization;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Services.Customers;
+using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Services.Seo
 {
     public partial class XmlSitemapGenerator : IXmlSitemapGenerator
     {
+		/// <summary>
+		/// Key for seo sitemap
+		/// </summary>
+		/// <remarks>
+		/// {0} : sitemap index
+		/// {1} : current store id
+		/// {2} : current language id
+		/// </remarks>
+		public const string XMLSITEMAP_DOCUMENT_KEY = "sitemap:xml-idx{0}-{1}-{2}";
+		public const string XMLSITEMAP_PATTERN_KEY = "sitemap:xml";
+
 		private const string SiteMapsNamespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
 		private const string XhtmlNamespace = "http://www.w3.org/1999/xhtml";
 
@@ -40,41 +55,38 @@ namespace SmartStore.Services.Seo
 		/// </summary>
 		private const int MaximumSiteMapSizeInBytes = 10485760;
 
-		private readonly IStoreContext _storeContext;
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
         private readonly IManufacturerService _manufacturerService;
         private readonly ITopicService _topicService;
 		private readonly ILanguageService _languageService;
-		private readonly CommonSettings _commonSettings;
-        private readonly IWebHelper _webHelper;
+		private readonly ICustomerService _customerService;
+		private readonly SeoSettings _seoSettings;
 		private readonly SecuritySettings _securitySettings;
-		private readonly IDbContext _dbContext;
+		private readonly ICommonServices _services;
 		private readonly UrlHelper _urlHelper;
 
 		public XmlSitemapGenerator(
-			IStoreContext storeContext, 
 			ICategoryService categoryService,
             IProductService productService, 
 			IManufacturerService manufacturerService,
             ITopicService topicService,
 			ILanguageService languageService,
-			CommonSettings commonSettings, 
-			IWebHelper webHelper,
+			ICustomerService customerService,
+			SeoSettings commonSettings, 
 			SecuritySettings securitySettings,
-			IDbContext dbContext,
+			ICommonServices services,
 			UrlHelper urlHelper)
         {
-			this._storeContext = storeContext;
             this._categoryService = categoryService;
             this._productService = productService;
             this._manufacturerService = manufacturerService;
             this._topicService = topicService;
 			this._languageService = languageService;
-            this._commonSettings = commonSettings;
-            this._webHelper = webHelper;
+			this._customerService = customerService;
+            this._seoSettings = commonSettings;
 			this._securitySettings = securitySettings;
-			this._dbContext = dbContext;
+			this._services = services;
 			this._urlHelper = urlHelper;
 
 			Logger = NullLogger.Instance;
@@ -86,7 +98,81 @@ namespace SmartStore.Services.Seo
 			set;
 		}
 
-		public IList<string> Generate()
+		public void Invalidate()
+		{
+			_services.Cache.RemoveByPattern(XMLSITEMAP_PATTERN_KEY);
+		}
+
+		public bool IsGenerated
+		{
+			get
+			{
+				string cacheKey = XMLSITEMAP_DOCUMENT_KEY.FormatInvariant(0, 
+					_services.StoreContext.CurrentStore.Id, 
+					_services.WorkContext.WorkingLanguage.Id);
+
+				return _services.Cache.Contains(cacheKey);
+			}
+		}
+
+		public string GetSitemap(int? index = null)
+		{
+			var storeId = _services.StoreContext.CurrentStore.Id;
+			var langId = _services.WorkContext.WorkingLanguage.Id;
+			var cache = _services.Cache;		
+
+			string cacheKey = XMLSITEMAP_DOCUMENT_KEY.FormatInvariant(0, storeId, langId);
+
+			if (!cache.Contains(cacheKey))
+			{
+				// The main sitemap document with index 0 does not exist, meaning: the whole sitemap
+				// needs to be created and cached by partitions.
+				lock (String.Intern(cacheKey))
+				{
+					var prevCustomer = _services.WorkContext.CurrentCustomer;
+					var bot = _customerService.GetCustomerBySystemName(SystemCustomerNames.SearchEngine);
+
+					try
+					{
+						// no need to vary xml sitemap by customer roles: it's relevant to crawlers only.
+						_services.WorkContext.CurrentCustomer = bot;
+
+						// we need a scoped lock, because we're going to split the cache entries.
+						var documents = Generate();
+
+						for (int i = 0; i < documents.Count; i++)
+						{
+							// Put segment into cache
+							cacheKey = XMLSITEMAP_DOCUMENT_KEY.FormatInvariant(i, storeId, langId);
+							cache.Put(cacheKey, documents[i], TimeSpan.FromDays(1));
+						}
+					}
+					finally
+					{
+						// Undo impersonation
+						_services.WorkContext.CurrentCustomer = prevCustomer;
+					}
+				}
+			}
+
+			var page = index ?? 0;
+			cacheKey = XMLSITEMAP_DOCUMENT_KEY.FormatInvariant(page, storeId, langId);
+			
+			if (cache.Contains(cacheKey))
+			{
+				return cache.Get<string>(cacheKey);
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Gets the collection of XML sitemap documents for the current site. If there are less than 1.000 sitemap 
+		/// nodes, only one sitemap document will exist in the collection, otherwise a sitemap index document will be 
+		/// the first entry in the collection and all other entries will be sitemap XML documents.
+		/// </summary>
+		/// <returns>A collection of XML sitemap documents.</returns>
+		protected IList<string> Generate()
 		{
 			var protocol = _securitySettings.ForceSslForAllPages ? "https" : "http";
 
@@ -95,24 +181,24 @@ namespace SmartStore.Services.Seo
 			using (var scope = new DbContextScope(autoDetectChanges: false, forceNoTracking: true, proxyCreation: false, lazyLoading: false))
 			{
 
-				if (_commonSettings.SitemapIncludeCategories)
+				if (_seoSettings.XmlSitemapIncludesCategories)
 				{
 					nodes.AddRange(GetCategoryNodes(0, protocol));
 				}
 
-				if (_commonSettings.SitemapIncludeManufacturers)
+				if (_seoSettings.XmlSitemapIncludesManufacturers)
 				{
 					nodes.AddRange(GetManufacturerNodes(protocol));
 				}
 
-				if (_commonSettings.SitemapIncludeProducts)
-				{
-					nodes.AddRange(GetProductNodes(protocol));
-				}
-
-				if (_commonSettings.SitemapIncludeTopics)
+				if (_seoSettings.XmlSitemapIncludesTopics)
 				{
 					nodes.AddRange(GetTopicNodes(protocol));
+				}
+
+				if (_seoSettings.XmlSitemapIncludesProducts)
+				{
+					nodes.AddRange(GetProductNodes(protocol));
 				}
 			}
 
@@ -193,7 +279,7 @@ namespace SmartStore.Services.Seo
 			}
 
 			var document = new XDocument(root);
-			var xml = document.ToString();
+			var xml = document.ToString(SaveOptions.DisableFormatting);
 			CheckDocumentSize(xml);
 
 			return xml;
@@ -262,7 +348,7 @@ namespace SmartStore.Services.Seo
 			}
 
 			XDocument document = new XDocument(root);
-			var xml = document.ToString();
+			var xml = document.ToString(SaveOptions.DisableFormatting);
 			CheckDocumentSize(xml);
 
 			return xml;
@@ -272,7 +358,7 @@ namespace SmartStore.Services.Seo
 		{
 			var categories = _categoryService.GetAllCategories(showHidden: false);
 
-			_dbContext.DetachAll();
+			_services.DbContext.DetachAll();
 
 			return categories.Select(x => 
 			{
@@ -294,7 +380,7 @@ namespace SmartStore.Services.Seo
 		{
 			var manufacturers = _manufacturerService.GetAllManufacturers(false);
 
-			_dbContext.DetachAll();
+			_services.DbContext.DetachAll();
 
 			return manufacturers.Select(x =>
 			{
@@ -314,9 +400,9 @@ namespace SmartStore.Services.Seo
 
 		protected virtual IEnumerable<XmlSitemapNode> GetTopicNodes(string protocol)
 		{
-			var topics = _topicService.GetAllTopics(_storeContext.CurrentStore.Id).ToList().FindAll(t => t.IncludeInSitemap && !t.RenderAsWidget);
+			var topics = _topicService.GetAllTopics(_services.StoreContext.CurrentStore.Id).ToList().FindAll(t => t.IncludeInSitemap && !t.RenderAsWidget);
 
-			_dbContext.DetachAll();
+			_services.DbContext.DetachAll();
 
 			return topics.Select(x =>
 			{
@@ -339,8 +425,8 @@ namespace SmartStore.Services.Seo
 			var ctx = new ProductSearchContext
 			{
 				OrderBy = ProductSortingEnum.CreatedOn,
-				PageSize = 500,
-				StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode,
+				PageSize = 1000,
+				StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode,
 				VisibleIndividuallyOnly = true
 			};
 
@@ -365,7 +451,7 @@ namespace SmartStore.Services.Seo
 					return node;
 				}));
 
-				_dbContext.DetachAll();
+				_services.DbContext.DetachAll();
 
 				if (!products.HasNextPage)
 					break;

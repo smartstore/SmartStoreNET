@@ -4,14 +4,13 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Localization;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
@@ -44,7 +43,8 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<IXmlSitemapGenerator> _sitemapGenerator;
 		private readonly Lazy<CaptchaSettings> _captchaSettings;
 		private readonly Lazy<CommonSettings> _commonSettings;
-        private readonly Lazy<CustomerSettings> _customerSettings;
+		private readonly Lazy<SeoSettings> _seoSettings;
+		private readonly Lazy<CustomerSettings> _customerSettings;
 
 		#endregion
 
@@ -61,7 +61,8 @@ namespace SmartStore.Web.Controllers
 			Lazy<IXmlSitemapGenerator> sitemapGenerator,
 			Lazy<CaptchaSettings> captchaSettings,
 			Lazy<CommonSettings> commonSettings,
-            Lazy<CustomerSettings> customerSettings)
+			Lazy<SeoSettings> seoSettings,
+			Lazy<CustomerSettings> customerSettings)
         {
 			this._services = services;
 			this._categoryService = categoryService;
@@ -73,6 +74,7 @@ namespace SmartStore.Web.Controllers
 			this._sitemapGenerator = sitemapGenerator;
 			this._captchaSettings = captchaSettings;
 			this._commonSettings = commonSettings;
+			this._seoSettings = seoSettings;
             this._customerSettings = customerSettings;
         }
         
@@ -198,10 +200,10 @@ namespace SmartStore.Web.Controllers
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
 		public ActionResult SitemapSeo(int? index = null)
 		{
-			if (!_commonSettings.Value.SitemapEnabled)
+			if (!_seoSettings.Value.XmlSitemapEnabled)
 				return HttpNotFound();
-
-			string content = GetSitemapXml(index);
+			
+			string content = _sitemapGenerator.Value.GetSitemap(index);
 
 			if (content == null)
 			{
@@ -209,30 +211,6 @@ namespace SmartStore.Web.Controllers
 			}
 
 			return Content(content, "text/xml", Encoding.UTF8);
-		}
-
-		[NonAction]
-		private string GetSitemapXml(int? index = null)
-		{
-			var roleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
-
-			string cacheKey = ModelCacheEventConsumer.SITEMAP_XML_MODEL_KEY.FormatInvariant(
-				_services.WorkContext.WorkingLanguage.Id,
-				string.Join(",", roleIds),
-				_services.StoreContext.CurrentStore.Id);
-
-			var documents = _services.Cache.Get(cacheKey, () =>
-			{
-				//return _sitemapGenerator.Value.Generate(this.Url);
-				return _sitemapGenerator.Value.Generate();
-			}, TimeSpan.FromDays(1));
-
-			if (index.HasValue && ((index < 1) || (index.Value >= documents.Count)))
-			{
-				return null;
-			}
-
-			return documents[index.HasValue ? index.Value : 0];
 		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]

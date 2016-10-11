@@ -437,16 +437,6 @@ namespace SmartStore.Web.Infrastructure.Cache
 		/// {2} : current store id
 		/// </remarks>
 		public const string SITEMAP_PAGE_MODEL_KEY = "pres:sitemap:page-{0}-{1}-{2}";
-
-		/// <summary>
-		/// Key for seo sitemap
-		/// </summary>
-		/// <remarks>
-		/// {0} : language id
-		/// {1} : current user roles
-		/// {2} : current store id
-		/// </remarks>
-		public const string SITEMAP_XML_MODEL_KEY = "pres:sitemap:xml-{0}-{1}-{2}";
 		public const string SITEMAP_PATTERN_KEY = "pres:sitemap";
 
         private readonly ICacheManager _cacheManager;

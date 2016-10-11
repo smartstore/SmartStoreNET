@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SmartStore.Core.Search.Facets
+﻿namespace SmartStore.Core.Search.Facets
 {
 	public class Facet
 	{
-		public Facet(string key, string value, int hitCount)
+		public Facet(string key, string value, long hitCount)
 		{
 			Guard.NotEmpty(key, nameof(key));
 			Guard.NotNull(value, nameof(value));

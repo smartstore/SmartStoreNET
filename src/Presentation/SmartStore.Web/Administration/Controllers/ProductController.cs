@@ -552,6 +552,12 @@ namespace SmartStore.Admin.Controllers
 			m.SeName = p.ValidateSeName(m.SeName, p.Name, true, _urlRecordService, _seoSettings);
 			_urlRecordService.SaveSlug(p, m.SeName, 0);
 
+			if (editMode)
+			{
+				// we need the event to be fired
+				_productService.UpdateProduct(p);
+			}
+
 			foreach (var localized in model.Locales)
 			{
 				_localizedEntityService.SaveLocalizedValue(product, x => x.Name, localized.Name, localized.LanguageId);

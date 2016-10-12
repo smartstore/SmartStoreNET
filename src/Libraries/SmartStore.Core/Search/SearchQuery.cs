@@ -15,13 +15,13 @@ namespace SmartStore.Core.Search
 		{
 		}
 
-		public SearchQuery(string field, string term, bool escape = false, bool isFuzzySearch = false)
-			: base(field.HasValue() ? new[] { field } : null, term, escape, isFuzzySearch)
+		public SearchQuery(string field, string term, bool escape = false, bool isExactMatch = false, bool isFuzzySearch = false)
+			: base(field.HasValue() ? new[] { field } : null, term, escape, isExactMatch, isFuzzySearch)
 		{
 		}
 
-		public SearchQuery(string[] fields, string term, bool escape = false, bool isFuzzySearch = false)
-			: base(fields, term, escape, isFuzzySearch)
+		public SearchQuery(string[] fields, string term, bool escape = false, bool isExactMatch = false, bool isFuzzySearch = false)
+			: base(fields, term, escape, isExactMatch, isFuzzySearch)
 		{
 		}
 	}
@@ -30,11 +30,12 @@ namespace SmartStore.Core.Search
 	{
 		private readonly Dictionary<string, FacetDescriptor> _facetDescriptors;
 
-		protected SearchQuery(string[] fields, string term, bool escape = false, bool isFuzzySearch = false)
+		protected SearchQuery(string[] fields, string term, bool escape = false, bool isExactMatch = false, bool isFuzzySearch = false)
 		{
 			Fields = fields;
 			Term = term;
 			EscapeTerm = escape;
+			IsExactMatch = IsExactMatch;
 			IsFuzzySearch = isFuzzySearch;
 
 			Filters = new List<ISearchFilter>();
@@ -44,7 +45,7 @@ namespace SmartStore.Core.Search
 			Take = int.MaxValue;
 		}
 
-		// language
+		// Language
 		public int? LanguageId { get; protected set; }
 		public string LanguageSeoCode { get; protected set; }
 
@@ -52,6 +53,7 @@ namespace SmartStore.Core.Search
 		public string[] Fields { get; protected set; }
 		public string Term { get; protected set; }
 		public bool EscapeTerm { get; protected set; }
+		public bool IsExactMatch { get; protected set; }
 		public bool IsFuzzySearch { get; protected set; }
 
 		// Filtering
@@ -77,7 +79,7 @@ namespace SmartStore.Core.Search
 			}
 		}
 
-		// sorting
+		// Sorting
 		public ICollection<SearchSort> Sorting { get; }
 
 		#region Fluent builder

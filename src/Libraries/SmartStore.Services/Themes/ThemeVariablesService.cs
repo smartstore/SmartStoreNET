@@ -59,7 +59,9 @@ namespace SmartStore.Services.Themes
                 var query = from v in _rsVariables.Table
 							where v.StoreId == storeId && v.Theme.Equals(themeName, StringComparison.OrdinalIgnoreCase)
                             select v;
-                query.Each(v => {
+
+				query.ToList().Each(v => 
+				{
                     if (v.Value.HasValue() && dict.ContainsKey(v.Name))
                     {
                         dict[v.Name] = v.Value;

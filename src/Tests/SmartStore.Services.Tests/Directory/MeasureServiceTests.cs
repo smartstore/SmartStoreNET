@@ -116,7 +116,7 @@ namespace SmartStore.Services.Tests.Directory
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
-            _measureService = new MeasureService(NullRequestCache.Instance,
+            _measureService = new MeasureService(
                 _measureDimensionRepository,
                 _measureWeightRepository,
                 _measureSettings, _eventPublisher);

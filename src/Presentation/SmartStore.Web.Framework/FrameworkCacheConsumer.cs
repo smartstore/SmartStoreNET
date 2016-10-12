@@ -1,15 +1,14 @@
 ﻿using System;
+using System.Web;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Events;
 using SmartStore.Core.Themes;
-using System.Web;
 
 namespace SmartStore.Web.Framework
 {
-
     public class FrameworkCacheConsumer :
         IConsumer<EntityInserted<ThemeVariable>>,
         IConsumer<EntityUpdated<ThemeVariable>>,

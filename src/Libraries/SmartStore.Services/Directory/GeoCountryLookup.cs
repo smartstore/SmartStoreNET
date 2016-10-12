@@ -1,17 +1,11 @@
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Net;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
-using MaxMind.GeoIP;
 using SmDir = SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.Directory
 {
-    /// <summary>
-    /// Country lookup helper
-    /// </summary>
     public partial class GeoCountryLookup : IGeoCountryLookup
     {
         private readonly IWebHelper _webHelper;

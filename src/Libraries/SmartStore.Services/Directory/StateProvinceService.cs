@@ -1,64 +1,32 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Events;
+using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Directory
 {
-	/// <summary>
-	/// State province service
-	/// </summary>
 	public partial class StateProvinceService : IStateProvinceService
     {
-        #region Constants
-        private const string STATEPROVINCES_ALL_KEY = "SmartStore.stateprovince.all-{0}";
-        private const string STATEPROVINCES_PATTERN_KEY = "SmartStore.stateprovince.";
-        #endregion
-
-        #region Fields
-
         private readonly IRepository<StateProvince> _stateProvinceRepository;
         private readonly IEventPublisher _eventPublisher;
-        private readonly IRequestCache _requestCache;
 
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="requestCache">Cache manager</param>
-        /// <param name="stateProvinceRepository">State/province repository</param>
-        /// <param name="eventPublisher">Event published</param>
-        public StateProvinceService(IRequestCache requestCache,
+        public StateProvinceService(
             IRepository<StateProvince> stateProvinceRepository,
             IEventPublisher eventPublisher)
         {
-            _requestCache = requestCache;
             _stateProvinceRepository = stateProvinceRepository;
             _eventPublisher = eventPublisher;
         }
 
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Deletes a state/province
-        /// </summary>
-        /// <param name="stateProvince">The state/province</param>
         public virtual void DeleteStateProvince(StateProvince stateProvince)
         {
             if (stateProvince == null)
                 throw new ArgumentNullException("stateProvince");
             
             _stateProvinceRepository.Delete(stateProvince);
-
-            _requestCache.RemoveByPattern(STATEPROVINCES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityDeleted(stateProvince);
@@ -74,11 +42,6 @@ namespace SmartStore.Services.Directory
 			return query;
 		}
 
-		/// <summary>
-		/// Gets a state/province
-		/// </summary>
-		/// <param name="stateProvinceId">The state/province identifier</param>
-		/// <returns>State/province</returns>
 		public virtual StateProvince GetStateProvinceById(int stateProvinceId)
         {
             if (stateProvinceId == 0)
@@ -87,11 +50,6 @@ namespace SmartStore.Services.Directory
             return _stateProvinceRepository.GetById(stateProvinceId);
         }
 
-        /// <summary>
-        /// Gets a state/province 
-        /// </summary>
-        /// <param name="abbreviation">The state/province abbreviation</param>
-        /// <returns>State/province</returns>
         public virtual StateProvince GetStateProvinceByAbbreviation(string abbreviation)
         {
             var query = from sp in _stateProvinceRepository.Table
@@ -101,31 +59,18 @@ namespace SmartStore.Services.Directory
             return stateProvince;
         }
         
-        /// <summary>
-        /// Gets a state/province collection by country identifier
-        /// </summary>
-        /// <param name="countryId">Country identifier</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>State/province collection</returns>
         public virtual IList<StateProvince> GetStateProvincesByCountryId(int countryId, bool showHidden = false)
         {
-            string key = string.Format(STATEPROVINCES_ALL_KEY, countryId);
-            return _requestCache.Get(key, () =>
-            {
-                var query = from sp in _stateProvinceRepository.Table
-                            orderby sp.DisplayOrder
-                            where sp.CountryId == countryId &&
-                            (showHidden || sp.Published)
-                            select sp;
-                var stateProvinces = query.ToList();
-                return stateProvinces;
-            });
-        }
+			var query = from sp in _stateProvinceRepository.Table
+						orderby sp.DisplayOrder
+						where sp.CountryId == countryId &&
+						(showHidden || sp.Published)
+						select sp;
 
-        /// <summary>
-        /// Inserts a state/province
-        /// </summary>
-        /// <param name="stateProvince">State/province</param>
+			var stateProvinces = query.ToListCached("db.regions.{0}.{1}".FormatInvariant(countryId, showHidden));
+			return stateProvinces;
+		}
+
         public virtual void InsertStateProvince(StateProvince stateProvince)
         {
             if (stateProvince == null)
@@ -133,16 +78,10 @@ namespace SmartStore.Services.Directory
 
             _stateProvinceRepository.Insert(stateProvince);
 
-            _requestCache.RemoveByPattern(STATEPROVINCES_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityInserted(stateProvince);
         }
 
-        /// <summary>
-        /// Updates a state/province
-        /// </summary>
-        /// <param name="stateProvince">State/province</param>
         public virtual void UpdateStateProvince(StateProvince stateProvince)
         {
             if (stateProvince == null)
@@ -150,12 +89,8 @@ namespace SmartStore.Services.Directory
 
             _stateProvinceRepository.Update(stateProvince);
 
-            _requestCache.RemoveByPattern(STATEPROVINCES_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityUpdated(stateProvince);
         }
-
-        #endregion
     }
 }

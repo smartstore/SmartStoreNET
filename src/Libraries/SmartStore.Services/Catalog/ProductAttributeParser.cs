@@ -16,9 +16,6 @@ using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Catalog
 {
-	/// <summary>
-	/// Product attribute parser
-	/// </summary>
 	public partial class ProductAttributeParser : IProductAttributeParser
     {
 		// 0 = ProductId, 1 = AttributeXml Hash
@@ -40,11 +37,6 @@ namespace SmartStore.Services.Catalog
 
 		#region Product attributes
 
-		/// <summary>
-        /// Gets selected product variant attribute identifiers
-        /// </summary>
-        /// <param name="attributesXml">Attributes</param>
-        /// <returns>Selected product variant attribute identifiers</returns>
         private IEnumerable<int> ParseProductVariantAttributeIds(string attributesXml)
         {
             var ids = new List<int>();
@@ -72,45 +64,6 @@ namespace SmartStore.Services.Catalog
             }
             finally { }
         }
-
-		//public virtual Multimap<int, string> DeserializeProductVariantAttributes(string attributesXml)
-		//{
-		//    var attrs = new Multimap<int, string>();
-		//    if (String.IsNullOrEmpty(attributesXml))
-		//        return attrs;
-
-		//    try
-		//    {
-		//        var xmlDoc = new XmlDocument();
-		//        xmlDoc.LoadXml(attributesXml);
-
-		//        var nodeList1 = xmlDoc.SelectNodes(@"//Attributes/ProductVariantAttribute");
-		//        foreach (var node1 in nodeList1.Cast<XmlElement>())
-		//        {
-		//            string sid = node1.GetAttribute("ID").Trim();
-		//            if (sid.HasValue())
-		//            {
-		//                int id = 0;
-		//                if (int.TryParse(sid, out id))
-		//                {
-
-		//                    var nodeList2 = node1.SelectNodes(@"ProductVariantAttributeValue/Value").Cast<XmlElement>();
-		//                    foreach (var node2 in nodeList2)
-		//                    {
-		//                        string value = node2.InnerText.Trim();
-		//                        attrs.Add(id, value);
-		//                    }
-		//                }
-		//            }
-		//        }
-		//    }
-		//    catch (Exception exc)
-		//    {
-		//        Debug.Write(exc.ToString());
-		//    }
-
-		//    return attrs;
-		//}
 
 		public virtual Multimap<int, string> DeserializeProductVariantAttributes(string attributesXml)
 		{
@@ -148,11 +101,6 @@ namespace SmartStore.Services.Catalog
 			return attrs;
 		}
 
-		/// <summary>
-		/// Gets selected product variant attributes
-		/// </summary>
-		/// <param name="attributesXml">Attributes</param>
-		/// <returns>Selected product variant attributes</returns>
 		public virtual IList<ProductVariantAttribute> ParseProductVariantAttributes(string attributesXml)
 		{
 			var ids = ParseProductVariantAttributeIds(attributesXml);
@@ -229,12 +177,6 @@ namespace SmartStore.Services.Catalog
 			return result;
 		}
 
-		/// <summary>
-		/// Gets selected product variant attribute value
-		/// </summary>
-		/// <param name="attributesXml">Attributes</param>
-		/// <param name="productVariantAttributeId">Product variant attribute identifier</param>
-		/// <returns>Product variant attribute value</returns>
 		public virtual IList<string> ParseValues(string attributesXml, int productVariantAttributeId)
         {
             var selectedProductVariantAttributeValues = new List<string>();
@@ -273,13 +215,6 @@ namespace SmartStore.Services.Catalog
             return selectedProductVariantAttributeValues;
         }
 
-        /// <summary>
-        /// Adds an attribute
-        /// </summary>
-        /// <param name="attributesXml">Attributes</param>
-        /// <param name="pva">Product variant attribute</param>
-        /// <param name="value">Value</param>
-        /// <returns>Attributes</returns>
         public virtual string AddProductAttribute(string attributesXml, ProductVariantAttribute pva, string value)
         {
 			return pva.AddProductAttribute(attributesXml, value);
@@ -465,16 +400,6 @@ namespace SmartStore.Services.Catalog
 
         #region Gift card attributes
 
-        /// <summary>
-        /// Add gift card attrbibutes
-        /// </summary>
-        /// <param name="attributesXml">Attributes</param>
-        /// <param name="recipientName">Recipient name</param>
-        /// <param name="recipientEmail">Recipient email</param>
-        /// <param name="senderName">Sender name</param>
-        /// <param name="senderEmail">Sender email</param>
-        /// <param name="giftCardMessage">Message</param>
-        /// <returns>Attributes</returns>
         public string AddGiftCardAttribute(string attributesXml, string recipientName,
             string recipientEmail, string senderName, string senderEmail, string giftCardMessage)
         {
@@ -535,15 +460,6 @@ namespace SmartStore.Services.Catalog
             return result;
         }
 
-        /// <summary>
-        /// Get gift card attrbibutes
-        /// </summary>
-        /// <param name="attributesXml">Attributes</param>
-        /// <param name="recipientName">Recipient name</param>
-        /// <param name="recipientEmail">Recipient email</param>
-        /// <param name="senderName">Sender name</param>
-        /// <param name="senderEmail">Sender email</param>
-        /// <param name="giftCardMessage">Message</param>
         public void GetGiftCardAttribute(string attributesXml, out string recipientName,
             out string recipientEmail, out string senderName,
             out string senderEmail, out string giftCardMessage)

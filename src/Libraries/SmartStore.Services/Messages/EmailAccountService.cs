@@ -1,36 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Events;
+using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Messages
 {
     public partial class EmailAccountService : IEmailAccountService
     {
-		private const string EMAILACCOUNT_BY_ID_KEY = "SmartStore.emailaccount.id-{0}";
-		private const string EMAILACCOUNT_PATTERN_KEY = "SmartStore.emailaccount.";
-		
 		private readonly IRepository<EmailAccount> _emailAccountRepository;
         private readonly EmailAccountSettings _emailAccountSettings;
         private readonly IEventPublisher _eventPublisher;
-		private readonly IRequestCache _requestCache;
 
 		private EmailAccount _defaultEmailAccount;
 
         public EmailAccountService(
 			IRepository<EmailAccount> emailAccountRepository, 
 			EmailAccountSettings emailAccountSettings, 
-			IEventPublisher eventPublisher,
-			IRequestCache requestCache)
+			IEventPublisher eventPublisher)
         {
             this._emailAccountRepository = emailAccountRepository;
             this._emailAccountSettings = emailAccountSettings;
             this._eventPublisher = eventPublisher;
-			this._requestCache = requestCache;
         }
 
         public virtual void InsertEmailAccount(EmailAccount emailAccount)
@@ -58,7 +51,6 @@ namespace SmartStore.Services.Messages
 
             _emailAccountRepository.Insert(emailAccount);
 
-			_requestCache.RemoveByPattern(EMAILACCOUNT_PATTERN_KEY);
 			_defaultEmailAccount = null;
 
             _eventPublisher.EntityInserted(emailAccount);
@@ -89,7 +81,6 @@ namespace SmartStore.Services.Messages
 
             _emailAccountRepository.Update(emailAccount);
 
-			_requestCache.RemoveByPattern(EMAILACCOUNT_PATTERN_KEY);
 			_defaultEmailAccount = null;
 
             _eventPublisher.EntityUpdated(emailAccount);
@@ -105,7 +96,6 @@ namespace SmartStore.Services.Messages
 
             _emailAccountRepository.Delete(emailAccount);
 
-			_requestCache.RemoveByPattern(EMAILACCOUNT_PATTERN_KEY);
 			_defaultEmailAccount = null;
 
             _eventPublisher.EntityDeleted(emailAccount);
@@ -116,12 +106,8 @@ namespace SmartStore.Services.Messages
             if (emailAccountId == 0)
                 return null;
 
-			string key = string.Format(EMAILACCOUNT_BY_ID_KEY, emailAccountId);
-			return _requestCache.Get(key, () =>
-			{
-				return _emailAccountRepository.GetById(emailAccountId);
-			});
-        }
+			return _emailAccountRepository.GetByIdCached(emailAccountId, "db.emailaccount.id-" + emailAccountId);
+		}
 
 		public virtual EmailAccount GetDefaultEmailAccount()
 		{

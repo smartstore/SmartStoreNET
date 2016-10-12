@@ -31,7 +31,7 @@ namespace SmartStore.Core.Caching
 		/// </summary>
 		/// <param name="key">Key</param>
 		/// <param name="value">Value</param>
-		void Set(string key, object value);
+		void Put(string key, object value);
 
         /// <summary>
         /// Gets a value indicating whether the value associated with the specified key is cached
@@ -101,7 +101,7 @@ namespace SmartStore.Core.Caching
 		{
 		}
 
-		public void Set(string key, object value)
+		public void Put(string key, object value)
 		{
 		}
 	}

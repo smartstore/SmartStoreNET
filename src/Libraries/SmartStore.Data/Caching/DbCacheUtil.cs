@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.Entity;
@@ -7,58 +6,33 @@ using System.Data.Entity.Core.EntityClient;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using SmartStore.ComponentModel;
 
 namespace SmartStore.Data.Caching
 {
-	internal static class QueryCacheUtil
+	internal static class DbCacheUtil
 	{
-		public static ObjectQuery GetObjectQuery(this IQueryable query)
+		public static ObjectQuery GetObjectQuery<T>(this IQueryable<T> source)
 		{
-			// CHECK ObjectQuery
-			var objectQuery = query as ObjectQuery;
-			if (objectQuery != null)
-			{
-				return objectQuery;
-			}
-
-			// check DbQuery
-			var dbQuery = query as DbQuery;
+			var dbQuery = source as DbQuery<T>;
 
 			if (dbQuery != null)
 			{
-				return GetObjectQueryReflected(query, dbQuery.GetType());
+				var internalQueryProperty = FastProperty.GetProperty(source.GetType(), "InternalQuery");
+				var internalQuery = internalQueryProperty.GetValue(source);
+
+				var objectQueryProperty = FastProperty.GetProperty(internalQuery.GetType(), "ObjectQuery");
+				var objectQuery = objectQueryProperty.GetValue(internalQuery);
+
+				return objectQuery as ObjectQuery;
 			}
 
-			var type = query.GetType();
-
-			if (query.GetType().IsGenericType && query.GetType().GetGenericTypeDefinition() == typeof(DbQuery<>))
-			{
-				return GetObjectQueryReflected(query, typeof(DbQuery<>).MakeGenericType(query.ElementType));
-			}
-
-			if (query.GetType().IsGenericType && query.GetType().GetGenericTypeDefinition() == typeof(DbSet<>))
-			{
-				return GetObjectQueryReflected(query, typeof(DbSet<>).MakeGenericType(query.ElementType));
-			}
-
-			throw new SmartException("Unable to resolve ObjectQuery from IQueryable");
+			return null;
 		}
 
-		private static ObjectQuery GetObjectQueryReflected(IQueryable query, Type queryType)
-		{
-			var internalQueryProperty = FastProperty.GetProperty(queryType, "InternalQuery");
-			var internalQuery = internalQueryProperty.GetValue(query);
-			var objectQueryContextProperty = FastProperty.GetProperty(internalQuery.GetType(), "ObjectQuery");
-			var objectQueryContext = objectQueryContextProperty.GetValue(internalQuery);
-
-			return objectQueryContext as ObjectQuery;
-		}
-
-		public static Tuple<string, DbParameterCollection> GetCommandTextAndParameters(this ObjectQuery objectQuery)
+		public static CommandInfo GetCommandInfo(this ObjectQuery objectQuery)
 		{
 			var stateField = objectQuery.GetType().BaseType.GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
 			var state = stateField.GetValue(objectQuery);
@@ -79,11 +53,11 @@ namespace SmartStore.Data.Caching
 				sql = prepareEntityCommandBeforeExecution.CommandText;
 				var parameters = prepareEntityCommandBeforeExecution.Parameters;
 
-				return new Tuple<string, DbParameterCollection>(sql, parameters);
+				return new CommandInfo(sql, parameters);
 			}
 		}
 
-		public static IEnumerable<string> GetAffectedEntitySets(this ObjectQuery objectQuery)
+		public static string[] GetAffectedEntitySets(this ObjectQuery objectQuery)
 		{
 			var result = new HashSet<string>();
 
@@ -102,11 +76,22 @@ namespace SmartStore.Data.Caching
 					else
 					{
 						result.Add(edmType.Name);
-					}	
+					}
 				}
 			}
 
-			return result;
+			return result.ToArray();
+		}
+
+		internal class CommandInfo : Tuple<string, DbParameterCollection>
+		{
+			public CommandInfo(string sql, DbParameterCollection parameters)
+				: base(sql, parameters)
+			{
+			}
+
+			public string Sql { get { return base.Item1; } }
+			public DbParameterCollection Parameters { get { return base.Item2; } }
 		}
 	}
 }

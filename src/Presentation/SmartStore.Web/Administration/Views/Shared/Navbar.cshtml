@@ -126,6 +126,13 @@
 					</a>
 				</li>
 				<li>
+					<a href="@Url.Action("ClearDatabaseCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
+						<i class="fa fa-fw"></i>
+						@T("Admin.Header.ClearDbCache")
+					</a>
+				</li>
+				<li class="divider"></li>
+				<li>
 					<a id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
 						<i class="fa fa-fw fa-power-off"></i>
 						@T("Admin.Header.RestartApplication")

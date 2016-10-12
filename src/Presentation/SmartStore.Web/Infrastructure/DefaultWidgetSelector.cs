@@ -17,11 +17,9 @@ using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Topics;
 
 namespace SmartStore.Web.Infrastructure
-{
-    
+{  
     public partial class DefaultWidgetSelector : IWidgetSelector
     {
-
         #region Fields
 
         private readonly IWidgetService _widgetService;

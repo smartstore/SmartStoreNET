@@ -14,7 +14,7 @@ namespace SmartStore.Data.Migrations
 
 	public partial class MediaStorageData : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
 	{
-		private const int PAGE_SIZE = 100;
+		private const int PAGE_SIZE = 1000;
 
 		private void PageEntities<TEntity>(
 			SmartObjectContext context,
@@ -30,12 +30,12 @@ namespace SmartStore.Data.Migrations
 				if (entities != null)
 				{
 					// detach all entities from previous page to save memory
-					context.DetachEntities(entities);
+					context.DetachAll(false);
 					entities.Clear();
 					entities = null;
 				}
 
-				// load max 100 entities at once
+				// load max 1000 entities at once
 				entities = new PagedList<TEntity>(query, pageIndex++, PAGE_SIZE);
 
 				entities.Each(x => moveEntity(x));
@@ -155,11 +155,8 @@ namespace SmartStore.Data.Migrations
 					if (picture.PictureBinary != null && picture.PictureBinary.LongLength > 0)
 					{
 						var mediaStorage = new MediaStorage { Data = picture.PictureBinary };
-						mediaStorages.AddOrUpdate(mediaStorage);
-						context.SaveChanges();
-
+						picture.MediaStorage = mediaStorage;
 						picture.PictureBinary = null;
-						picture.MediaStorageId = mediaStorage.Id;
 					}
 #pragma warning restore 612, 618
 				});
@@ -178,10 +175,7 @@ namespace SmartStore.Data.Migrations
 					{
 						// move binary data
 						var mediaStorage = new MediaStorage { Data = download.DownloadBinary };
-						mediaStorages.AddOrUpdate(mediaStorage);
-						context.SaveChanges();
-
-						download.MediaStorageId = mediaStorage.Id;
+						download.MediaStorage = mediaStorage;
 					}
 					else
 					{
@@ -215,10 +209,7 @@ namespace SmartStore.Data.Migrations
 					{
 						// move binary data
 						var mediaStorage = new MediaStorage { Data = attachment.Data };
-						mediaStorages.AddOrUpdate(mediaStorage);
-						context.SaveChanges();
-
-						attachment.MediaStorageId = mediaStorage.Id;
+						attachment.MediaStorage = mediaStorage;
 					}
 					else
 					{

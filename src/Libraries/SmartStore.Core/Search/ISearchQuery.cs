@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
 {
@@ -7,6 +7,7 @@ namespace SmartStore.Core.Search
 	{
 		// language
 		int? LanguageId { get; }
+		string LanguageSeoCode { get; }
 
 		// Search term
 		string[] Fields { get; }
@@ -15,7 +16,10 @@ namespace SmartStore.Core.Search
 		bool IsFuzzySearch { get; }
 
 		// Filtering
-		ICollection<SearchFilter> Filters { get; }
+		ICollection<ISearchFilter> Filters { get; }
+
+		// Facets
+		IReadOnlyDictionary<string, FacetDescriptor> FacetDescriptors { get; }
 
 		// Paging
 		int Skip { get; }

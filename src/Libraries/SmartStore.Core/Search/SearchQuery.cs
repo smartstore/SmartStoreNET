@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
 {
@@ -29,6 +28,8 @@ namespace SmartStore.Core.Search
 
 	public class SearchQuery<TQuery> : ISearchQuery where TQuery : class, ISearchQuery
 	{
+		private readonly Dictionary<string, FacetDescriptor> _facetDescriptors;
+
 		protected SearchQuery(string[] fields, string term, bool escape = false, bool isFuzzySearch = false)
 		{
 			Fields = fields;
@@ -36,14 +37,16 @@ namespace SmartStore.Core.Search
 			EscapeTerm = escape;
 			IsFuzzySearch = isFuzzySearch;
 
-			Filters = new List<SearchFilter>();
+			Filters = new List<ISearchFilter>();
 			Sorting = new List<SearchSort>();
+			_facetDescriptors = new Dictionary<string, FacetDescriptor>(StringComparer.OrdinalIgnoreCase);
 
 			Take = int.MaxValue;
 		}
 
 		// language
 		public int? LanguageId { get; protected set; }
+		public string LanguageSeoCode { get; protected set; }
 
 		// Search term
 		public string[] Fields { get; protected set; }
@@ -52,22 +55,39 @@ namespace SmartStore.Core.Search
 		public bool IsFuzzySearch { get; protected set; }
 
 		// Filtering
-		public ICollection<SearchFilter> Filters { get; }
+		public ICollection<ISearchFilter> Filters { get; }
+
+		// Facets
+		public IReadOnlyDictionary<string, FacetDescriptor> FacetDescriptors
+		{
+			get
+			{
+				return _facetDescriptors;
+			}
+		}
 
 		// Paging
 		public int Skip { get; protected set; }
 		public int Take { get; protected set; }
+		public int PageIndex
+		{
+			get
+			{
+				return Math.Max((Skip - 1) / Take, 0);
+			}
+		}
 
 		// sorting
 		public ICollection<SearchSort> Sorting { get; }
 
 		#region Fluent builder
 
-		public TQuery WithLanguage(int languageId)
+		public TQuery WithLanguage(Language language)
 		{
-			Guard.IsPositive(languageId, nameof(languageId));
+			Guard.NotNull(language, nameof(language));
 
-			LanguageId = languageId;
+			LanguageId = language.Id;
+			LanguageSeoCode = language.UniqueSeoCode.EmptyNull().ToLower();
 
 			return (this as TQuery);
 		}
@@ -83,7 +103,7 @@ namespace SmartStore.Core.Search
 			return (this as TQuery);
 		}
 
-		public TQuery WithFilter(SearchFilter filter)
+		public TQuery WithFilter(ISearchFilter filter)
 		{
 			Guard.NotNull(filter, nameof(filter));
 
@@ -97,6 +117,20 @@ namespace SmartStore.Core.Search
 			Guard.NotNull(sort, nameof(sort));
 
 			Sorting.Add(sort);
+
+			return (this as TQuery);
+		}
+
+		public TQuery AddFacetDescriptor(FacetDescriptor facetDescription)
+		{
+			Guard.NotNull(facetDescription, nameof(facetDescription));
+
+			if (_facetDescriptors.ContainsKey(facetDescription.Key))
+			{
+				throw new InvalidOperationException("A facet description object with the same key has already been added. Key: {0}".FormatInvariant(facetDescription.Key));
+			}
+
+			_facetDescriptors.Add(facetDescription.Key, facetDescription);
 
 			return (this as TQuery);
 		}

@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartStore.Core.Search
 {
-	public class SearchFilter
+	public class SearchFilter : SearchFilterBase, IAttributeSearchFilter
 	{
 		protected SearchFilter()
+			: base()
 		{
-			Occurence = SearchFilterOccurence.Should;
 		}
 
 		public string FieldName
@@ -31,36 +27,6 @@ namespace SmartStore.Core.Search
 			protected set;
 		}
 
-		public object UpperTerm
-		{
-			get;
-			protected set;
-		}
-
-		public bool IsRangeFilter
-		{
-			get;
-			protected set;
-		}
-
-		public bool IncludesLower
-		{
-			get;
-			protected set;
-		}
-
-		public bool IncludesUpper
-		{
-			get;
-			protected set;
-		}
-
-		public SearchFilterOccurence Occurence
-		{
-			get;
-			protected set;
-		}
-
 		public bool IsExactMatch
 		{
 			get;
@@ -68,12 +34,6 @@ namespace SmartStore.Core.Search
 		}
 
 		public bool IsNotAnalyzed
-		{
-			get;
-			protected set;
-		}
-
-		public float Boost
 		{
 			get;
 			protected set;
@@ -132,6 +92,13 @@ namespace SmartStore.Core.Search
 
 		#region Static factories
 
+		public static CombinedSearchFilter Combined(params ISearchFilter[] filters)
+		{
+			var filter = new CombinedSearchFilter(filters);
+			filter.Occurence = SearchFilterOccurence.Must;
+			return filter;
+		}
+
 		public static SearchFilter ByField(string fieldName, string term)
 		{
 			return ByField(fieldName, term, IndexTypeCode.String);
@@ -157,11 +124,6 @@ namespace SmartStore.Core.Search
 			return ByField(fieldName, term, IndexTypeCode.DateTime);
 		}
 
-		public static SearchFilter ByField(string fieldName, int[] term)
-		{
-			return ByField(fieldName, term, IndexTypeCode.Int32Array);
-		}
-
 		private static SearchFilter ByField(string fieldName, object term, IndexTypeCode typeCode)
 		{
 			Guard.NotEmpty(fieldName, nameof(fieldName));
@@ -175,27 +137,27 @@ namespace SmartStore.Core.Search
 		}
 
 
-		public static SearchFilter ByRange(string fieldName, string lower, string upper, bool includeLower = true, bool includeUpper = true)
+		public static RangeSearchFilter ByRange(string fieldName, string lower, string upper, bool includeLower = true, bool includeUpper = true)
 		{
 			return ByRange(fieldName, lower, upper, IndexTypeCode.String, includeLower, includeUpper);
 		}
 
-		public static SearchFilter ByRange(string fieldName, int? lower, int? upper, bool includeLower = true, bool includeUpper = true)
+		public static RangeSearchFilter ByRange(string fieldName, int? lower, int? upper, bool includeLower = true, bool includeUpper = true)
 		{
 			return ByRange(fieldName, lower, upper, IndexTypeCode.Int32, includeLower, includeUpper);
 		}
 
-		public static SearchFilter ByRange(string fieldName, double? lower, double? upper, bool includeLower = true, bool includeUpper = true)
+		public static RangeSearchFilter ByRange(string fieldName, double? lower, double? upper, bool includeLower = true, bool includeUpper = true)
 		{
 			return ByRange(fieldName, lower, upper, IndexTypeCode.Double, includeLower, includeUpper);
 		}
 
-		public static SearchFilter ByRange(string fieldName, DateTime? lower, DateTime? upper, bool includeLower = true, bool includeUpper = true)
+		public static RangeSearchFilter ByRange(string fieldName, DateTime? lower, DateTime? upper, bool includeLower = true, bool includeUpper = true)
 		{
 			return ByRange(fieldName, lower, upper, IndexTypeCode.DateTime, includeLower, includeUpper);
 		}
 
-		private static SearchFilter ByRange(
+		private static RangeSearchFilter ByRange(
 			string fieldName, 
 			object lowerTerm, 
 			object upperTerm, 
@@ -205,15 +167,14 @@ namespace SmartStore.Core.Search
 		{
 			Guard.NotEmpty(fieldName, nameof(fieldName));
 
-			return new SearchFilter
+			return new RangeSearchFilter
 			{
 				FieldName = fieldName,
 				Term = lowerTerm,
 				UpperTerm = upperTerm,
 				TypeCode = typeCode,
 				IncludesLower = includeLower,
-				IncludesUpper = includeUpper,
-				IsRangeFilter = true
+				IncludesUpper = includeUpper
 			};
 		}
 

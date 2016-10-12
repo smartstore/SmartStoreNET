@@ -16,26 +16,14 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
+using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Customers
 {
-	/// <summary>
-	/// Customer service
-	/// </summary>
 	public partial class CustomerService : ICustomerService
     {
-        #region Constants
-
-        private const string CUSTOMERROLES_ALL_KEY = "SmartStore.customerrole.all-{0}";
-        private const string CUSTOMERROLES_BY_SYSTEMNAME_KEY = "SmartStore.customerrole.systemname-{0}";
-        private const string CUSTOMERROLES_PATTERN_KEY = "SmartStore.customerrole.";
-
-        #endregion
-
-        #region Fields
-
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<CustomerRole> _customerRoleRepository;
         private readonly IRepository<GenericAttribute> _gaRepository;
@@ -44,10 +32,6 @@ namespace SmartStore.Services.Customers
         private readonly IRequestCache _requestCache;
         private readonly IEventPublisher _eventPublisher;
 		private readonly RewardPointsSettings _rewardPointsSettings;
-
-        #endregion
-
-        #region Ctor
 
         public CustomerService(IRequestCache requestCache,
             IRepository<Customer> customerRepository,
@@ -70,15 +54,7 @@ namespace SmartStore.Services.Customers
 			T = NullLocalizer.Instance;
         }
 
-        #endregion
-
-		#region Properties
-
 		public Localizer T { get; set; }
-
-		#endregion
-
-        #region Methods
 
         #region Customers
         
@@ -464,6 +440,9 @@ namespace SmartStore.Services.Customers
 				// no customer content
 				query = JoinWith<CustomerContent>(query, x => x.CustomerId);
 
+				// no private messages (guests can only receive but not send messages)
+				query = JoinWith<PrivateMessage>(query, x => x.ToCustomerId);
+
 				// no forum posts
 				query = JoinWith<ForumPost>(query, x => x.CustomerId);
 
@@ -569,8 +548,6 @@ namespace SmartStore.Services.Customers
 
             _customerRoleRepository.Delete(customerRole);
 
-            _requestCache.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
-
             //event notification
             _eventPublisher.EntityDeleted(customerRole);
         }
@@ -588,31 +565,25 @@ namespace SmartStore.Services.Customers
             if (String.IsNullOrWhiteSpace(systemName))
                 return null;
 
-            string key = string.Format(CUSTOMERROLES_BY_SYSTEMNAME_KEY, systemName);
-            return _requestCache.Get(key, () =>
-            {
-                var query = from cr in _customerRoleRepository.Table
-                            orderby cr.Id
-                            where cr.SystemName == systemName
-                            select cr;
-                var customerRole = query.FirstOrDefault();
-                return customerRole;
-            });
-        }
+			var query = from cr in _customerRoleRepository.Table
+						orderby cr.Id
+						where cr.SystemName == systemName
+						select cr;
+
+			var customerRole = query.FirstOrDefaultCached();
+			return customerRole;
+		}
 
         public virtual IList<CustomerRole> GetAllCustomerRoles(bool showHidden = false)
         {
-            string key = string.Format(CUSTOMERROLES_ALL_KEY, showHidden);
-            return _requestCache.Get(key, () =>
-            {
-                var query = from cr in _customerRoleRepository.Table
-                            orderby cr.Name
-                            where (showHidden || cr.Active)
-                            select cr;
-                var customerRoles = query.ToList();
-                return customerRoles;
-            });
-        }
+			var query = from cr in _customerRoleRepository.Table
+						orderby cr.Name
+						where (showHidden || cr.Active)
+						select cr;
+
+			var customerRoles = query.ToListCached();
+			return customerRoles;
+		}
         
         public virtual void InsertCustomerRole(CustomerRole customerRole)
         {
@@ -620,8 +591,6 @@ namespace SmartStore.Services.Customers
                 throw new ArgumentNullException("customerRole");
 
             _customerRoleRepository.Insert(customerRole);
-
-            _requestCache.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityInserted(customerRole);
@@ -633,8 +602,6 @@ namespace SmartStore.Services.Customers
                 throw new ArgumentNullException("customerRole");
 
             _customerRoleRepository.Update(customerRole);
-
-            _requestCache.RemoveByPattern(CUSTOMERROLES_PATTERN_KEY);
 
             //event notification
             _eventPublisher.EntityUpdated(customerRole);
@@ -676,7 +643,5 @@ namespace SmartStore.Services.Customers
 		}
 
 		#endregion Reward points
-
-		#endregion
 	}
 }

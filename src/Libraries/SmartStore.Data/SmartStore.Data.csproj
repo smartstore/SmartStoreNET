@@ -66,9 +66,6 @@
       <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EFCache">
-      <HintPath>..\..\packages\EntityFramework.Cache.1.0.0\lib\net45\EFCache.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
@@ -119,13 +116,20 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="Caching\CacheInvalidationInterceptor.cs" />
-    <Compile Include="Caching\EfCacheImpl.cs" />
-    <Compile Include="Caching\EfCachingPolicy.cs" />
-    <Compile Include="Caching\QueryCache.cs" />
-    <Compile Include="Caching\QueryCacheExtensionsAsync.cs" />
-    <Compile Include="Caching\QueryCacheExtensions.cs" />
-    <Compile Include="Caching\QueryCacheUtil.cs" />
+    <Compile Include="Caching\CacheTransactionInterceptor.cs" />
+    <Compile Include="Caching\CachingCommand.cs" />
+    <Compile Include="Caching\CachingCommandDefinition.cs" />
+    <Compile Include="Caching\CachingDataReader.cs" />
+    <Compile Include="Caching\CachingProviderServices.cs" />
+    <Compile Include="Caching\CommandTreeFacts.cs" />
+    <Compile Include="Caching\DbCacheUtil.cs" />
+    <Compile Include="Caching\EfDbCache.cs" />
+    <Compile Include="Caching\DbCacheEntry.cs" />
+    <Compile Include="Caching\DbCachingPolicy.cs" />
+    <Compile Include="Caching\IDbCache.cs" />
+    <Compile Include="Caching\DbCacheExtensions.cs" />
+    <Compile Include="Caching\QueryRegistrar.cs" />
+    <Compile Include="Caching\SingletonQueries.cs" />
     <Compile Include="Mapping\DataExchange\ImportProfileMap.cs" />
     <Compile Include="Mapping\DataExchange\SyncMappingMap.cs" />
     <Compile Include="Mapping\DataExchange\ExportDeploymentMap.cs" />
@@ -812,7 +816,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Sql\LatestProductLoadAllPaged.sql" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Caching\Creadits.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

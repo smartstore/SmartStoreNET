@@ -46,7 +46,13 @@ namespace SmartStore.Core.Caching
 			return acquirer();
 		}
 
-		public void Set(string key, object value, TimeSpan? duration = null)
+
+		public ISet GetHashSet(string key)
+		{
+			return new MemorySet(this);
+		}
+
+		public void Put(string key, object value, TimeSpan? duration = null)
 		{
 		}
 

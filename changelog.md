@@ -11,7 +11,10 @@
 * Microsoft AZURE provider for media storage (commercial plugin)
 * Message Bus for inter-process messaging between servers (commercial plugin)
 * Configurable media storage path for web farms
-* (Dev) log4net integration 
+* (Dev) log4net integration
+* XML Sitemap optimized for very large catalogs:
+	* Partitions for very large sitemaps (> 50.000 nodes or > 10 MB)
+	* Generated in a background task. No instant invalidation anymore.
 * Added option to skip shipping method selection in checkout process when only one shipping method is active
 * Added options to capture salutation and title in addresses and customer info
 * Added projection to control the export of individually visible associated products
@@ -44,6 +47,9 @@
 * Bundle item cannot be deleted if it's in a shopping cart
 * Fixed SSL issue for news items in RSS feed
 * #1030: Order export: does not export the data of the attribute combination
+* Order export does not export shipping address
+* Filter shows wrong number of products if "Include products from subcategories" is activated
+* Guest user cannot be deleted if he has a private message
 
 ## SmartStore.NET 2.6
 

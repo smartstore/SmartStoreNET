@@ -46,7 +46,7 @@ namespace SmartStore.Core.Caching
 			return default(T);
 		}
 
-		public void Set(string key, object value)
+		public void Put(string key, object value)
 		{
 			var items = GetItems();
 

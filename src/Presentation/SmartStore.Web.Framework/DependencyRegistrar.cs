@@ -243,7 +243,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<NewsService>().As<INewsService>().InstancePerRequest();
 
 			builder.RegisterType<DateTimeHelper>().As<IDateTimeHelper>().InstancePerRequest();
-			builder.RegisterType<SitemapGenerator>().As<ISitemapGenerator>().InstancePerRequest();
+			builder.RegisterType<XmlSitemapGenerator>().As<IXmlSitemapGenerator>().InstancePerRequest();
 			builder.RegisterType<PageAssetsBuilder>().As<IPageAssetsBuilder>().InstancePerRequest();
 
 			builder.RegisterType<ScheduleTaskService>().As<IScheduleTaskService>().InstancePerRequest();
@@ -261,7 +261,7 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<DefaultIndexManager>().As<IIndexManager>().InstancePerRequest();
 			builder.RegisterType<CatalogSearchService>().As<ICatalogSearchService>().InstancePerRequest();
-			builder.RegisterType<LinqCatalogSearchService>().As<ILinqCatalogSearchService>().InstancePerRequest();
+			builder.RegisterType<LinqCatalogSearchService>().Named<ICatalogSearchService>("linq").InstancePerRequest();
 		}
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
@@ -353,9 +353,9 @@ namespace SmartStore.Web.Framework
 
 			builder.RegisterType<DefaultHookHandler>().As<IHookHandler>().InstancePerRequest();
 
-			builder.RegisterType<QueryCache>().SingleInstance();
+			builder.RegisterType<EfDbCache>().As<IDbCache>().SingleInstance();
 
-			if (DataSettings.Current.IsValid())
+			if (DataSettings.DatabaseIsInstalled())
 			{
 				// register DB Hooks (only when app was installed properly)
 

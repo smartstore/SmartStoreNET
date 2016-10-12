@@ -74,6 +74,23 @@ namespace SmartStore.Core.Logging
 
 		protected internal void TryAddExtendedThreadInfo(LoggingEvent loggingEvent)
 		{
+			HttpRequest httpRequest = null;
+
+			try
+			{
+				httpRequest = HttpContext.Current.Request;
+			}
+			catch
+			{
+				loggingEvent.Properties["CustomerId"] = DBNull.Value;
+				loggingEvent.Properties["Url"] = DBNull.Value;
+				loggingEvent.Properties["Referrer"] = DBNull.Value;
+				loggingEvent.Properties["HttpMethod"] = DBNull.Value;
+				loggingEvent.Properties["Ip"] = DBNull.Value;
+
+				return;
+			}
+
 			var props = _state.GetState();
 
 			// Load the log4net thread with additional properties if they are available
@@ -104,16 +121,15 @@ namespace SmartStore.Core.Logging
 
 
 						IWebHelper webHelper;
-						HttpContextBase httpContext;
 
 						// Url & stuff
-						if (container.TryResolve<IWebHelper>(null, out webHelper) && container.TryResolve<HttpContextBase>(null, out httpContext))
+						if (container.TryResolve<IWebHelper>(null, out webHelper))
 						{
 							try
 							{
 								props["Url"] = webHelper.GetThisPageUrl(true);
 								props["Referrer"] = webHelper.GetUrlReferrer();
-								props["HttpMethod"] = httpContext.Request.HttpMethod;
+								props["HttpMethod"] = httpRequest?.HttpMethod;
 								props["Ip"] = webHelper.GetCurrentIpAddress();
 							}
 							catch { }

@@ -17,7 +17,7 @@ namespace SmartStore.Services.Localization
     public partial class LocalizedEntityService : ILocalizedEntityService
     {
 		/// <summary>
-		/// 0 = segment (keygroup.key), 1 = language id
+		/// 0 = segment (keygroup.key.idrange), 1 = language id
 		/// </summary>
 		const string LOCALIZEDPROPERTY_SEGMENT_KEY = "localizedproperty:{0}-lang-{1}";
 		const string LOCALIZEDPROPERTY_SEGMENT_PATTERN = "localizedproperty:{0}";
@@ -38,7 +38,10 @@ namespace SmartStore.Services.Localization
 			Guard.NotEmpty(localeKeyGroup, nameof(localeKeyGroup));
 			Guard.NotEmpty(localeKey, nameof(localeKey));
 
-			var segmentKey = GetSegmentKey(localeKeyGroup, localeKey, entityId);
+			int minEntityId = 0;
+			int maxEntityId = 0;
+
+			var segmentKey = GetSegmentKey(localeKeyGroup, localeKey, entityId, out minEntityId, out maxEntityId);
 			var cacheKey = BuildCacheSegmentKey(segmentKey, languageId);
 
 			// TODO: (MC) skip caching product.fulldescription (?), OR
@@ -47,7 +50,7 @@ namespace SmartStore.Services.Localization
 			return _cacheManager.Get(cacheKey, () =>
 			{
 				var properties = _localizedPropertyRepository.TableUntracked
-					.Where(x => x.LocaleKey == localeKey && x.LocaleKeyGroup == localeKeyGroup && x.LanguageId == languageId)
+					.Where(x => x.EntityId >= minEntityId && x.EntityId <= maxEntityId && x.LocaleKey == localeKey && x.LocaleKeyGroup == localeKeyGroup && x.LanguageId == languageId)
 					.ToList();
 
 				var dict = new Dictionary<int, string>(properties.Count);
@@ -260,8 +263,22 @@ namespace SmartStore.Services.Localization
 
 		private string GetSegmentKey(string localeKeyGroup, string localeKey, int entityId)
 		{
+			int minId = 0;
+			int maxId = 0;
+
+			return GetSegmentKey(localeKeyGroup, localeKey, entityId, out minId, out maxId);
+		}
+
+		private string GetSegmentKey(string localeKeyGroup, string localeKey, int entityId, out int minId, out int maxId)
+		{
+			minId = 0;
+			maxId = 0;
+
 			// max 500 values per cache item
 			var entityRange = Math.Ceiling((decimal)entityId / 500) * 500;
+
+			maxId = (int)entityRange;
+			minId = maxId - 499;
 
 			return (localeKeyGroup + "." + localeKey + "." + entityRange.ToString()).ToLowerInvariant();
 		}

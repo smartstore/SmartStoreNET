@@ -25,6 +25,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Packaging;
 using SmartStore.Core.Plugins;
+using SmartStore.Data.Caching;
 using SmartStore.Services;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -36,6 +37,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
+using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
@@ -49,8 +51,6 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class CommonController : AdminControllerBase
     {
-        #region Fields
-
         private readonly Lazy<IPaymentService> _paymentService;
         private readonly Lazy<IShippingService> _shippingService;
         private readonly Lazy<ICurrencyService> _currencyService;
@@ -68,13 +68,11 @@ namespace SmartStore.Admin.Controllers
         private readonly Lazy<IPluginFinder> _pluginFinder;
 		private readonly Lazy<IImportProfileService> _importProfileService;
 		private readonly IGenericAttributeService _genericAttributeService;
+		private readonly IDbCache _dbCache;
+		private readonly ITaskScheduler _taskScheduler;
 		private readonly ICommonServices _services;
 
 		private readonly static object s_lock = new object();
-
-        #endregion
-
-        #region Constructors
 
         public CommonController(
 			Lazy<IPaymentService> paymentService,
@@ -94,6 +92,8 @@ namespace SmartStore.Admin.Controllers
             Lazy<IPluginFinder> pluginFinder,
 			Lazy<IImportProfileService> importProfileService,
 			IGenericAttributeService genericAttributeService,
+			IDbCache dbCache,
+			ITaskScheduler taskScheduler,
 			ICommonServices services)
         {
             this._paymentService = paymentService;
@@ -113,12 +113,10 @@ namespace SmartStore.Admin.Controllers
 			this._pluginFinder = pluginFinder;
 			this._importProfileService = importProfileService;
             this._genericAttributeService = genericAttributeService;
+			this._dbCache = dbCache;
+			this._taskScheduler = taskScheduler;
 			this._services = services;
         }
-
-        #endregion
-
-        #region Methods
 
         #region Navbar & Menu
 
@@ -409,7 +407,9 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-        #endregion
+		#endregion
+
+		#region UI Helpers
 
 		[HttpPost]
 		public JsonResult SetSelectedTab(string navId, string tabId, string path)
@@ -433,7 +433,11 @@ namespace SmartStore.Admin.Controllers
 			return Json(new { Success = true });
 		}
 
-        public ActionResult SystemInfo()
+		#endregion
+
+		#region Maintenance
+
+		public ActionResult SystemInfo()
         {
             var model = new SystemInfoModel();
             model.AppVersion = SmartStoreVersion.CurrentFullVersion;
@@ -503,7 +507,8 @@ namespace SmartStore.Admin.Controllers
             var model = new List<SystemWarningModel>();
 			var store = _services.StoreContext.CurrentStore;
             
-            //store URL
+            // Store URL
+			// ====================================
 			var storeUrl = store.Url.EnsureEndsWith("/");
 			if (storeUrl.HasValue() && (storeUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(false)) || storeUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(true))))
 			{
@@ -522,7 +527,51 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-			// sitemap reachability
+			// TaskScheduler reachability
+			// ====================================
+			string taskSchedulerUrl = null;
+			try
+			{
+				taskSchedulerUrl = Path.Combine(_taskScheduler.BaseUrl.EnsureEndsWith("/"), "noop").Replace(Path.DirectorySeparatorChar, '/');
+				var request = WebHelper.CreateHttpRequestForSafeLocalCall(new Uri(taskSchedulerUrl));
+				request.Method = "HEAD";
+				request.Timeout = 5000;
+
+				using (var response = (HttpWebResponse)request.GetResponse())
+				{
+					var status = response.StatusCode;
+					var warningModel = new SystemWarningModel();
+					warningModel.Level = (status == HttpStatusCode.OK ? SystemWarningLevel.Pass : SystemWarningLevel.Fail);
+
+					if (status == HttpStatusCode.OK)
+					{
+						warningModel.Text = T("Admin.System.Warnings.TaskScheduler.OK");
+					}
+					else
+					{
+						warningModel.Text = T("Admin.System.Warnings.TaskScheduler.Fail", _taskScheduler.BaseUrl, status + " - " + status.ToString());
+					}
+
+					model.Add(warningModel);
+				}
+			}
+			catch (WebException exception)
+			{
+				var msg = T("Admin.System.Warnings.TaskScheduler.Fail", _taskScheduler.BaseUrl, exception.Message);
+
+				var xxx = T("Admin.System.Warnings.TaskScheduler.Fail");
+
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Fail,
+					Text = msg
+				});
+
+				Logger.Error(exception, msg);
+			}
+
+			// Sitemap reachability
+			// ====================================
 			string sitemapUrl = null;
 			try
 			{
@@ -566,7 +615,8 @@ namespace SmartStore.Admin.Controllers
 				Logger.Warn(exception, T("Admin.System.Warnings.SitemapReachable.Wrong"));
 			}
 
-            //primary exchange rate currency
+			// Primary exchange rate currency
+			// ====================================
 			var perCurrency = store.PrimaryExchangeRateCurrency;
             if (perCurrency != null)
             {
@@ -594,7 +644,8 @@ namespace SmartStore.Admin.Controllers
                 });
             }
 
-            //primary store currency
+			// Primary store currency
+			// ====================================
 			var pscCurrency = store.PrimaryStoreCurrency;
             if (pscCurrency != null)
             {
@@ -614,7 +665,8 @@ namespace SmartStore.Admin.Controllers
             }
 
 
-            //base measure weight
+			// Base measure weight
+			// ====================================
 			var bWeight = _measureService.Value.GetMeasureWeightById(_measureSettings.Value.BaseWeightId);
             if (bWeight != null)
             {
@@ -643,7 +695,8 @@ namespace SmartStore.Admin.Controllers
             }
 
 
-            //base dimension weight
+			// Base dimension weight
+			// ====================================
 			var bDimension = _measureService.Value.GetMeasureDimensionById(_measureSettings.Value.BaseDimensionId);
             if (bDimension != null)
             {
@@ -671,7 +724,8 @@ namespace SmartStore.Admin.Controllers
                 });
             }
 
-			// shipping rate coputation methods
+			// Shipping rate coputation methods
+			// ====================================
 			int activeShippingMethodCount = 0;
 
 			try
@@ -691,7 +745,8 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-            //payment methods
+			// Payment methods
+			// ====================================
 			int activePaymentMethodCount = 0;
 
 			try
@@ -717,7 +772,8 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-            //incompatible plugins
+			// Incompatible plugins
+			// ====================================
 			if (PluginManager.IncompatiblePlugins != null)
 			{
 				foreach (var pluginName in PluginManager.IncompatiblePlugins)
@@ -730,8 +786,9 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-            //validate write permissions (the same procedure like during installation)
-            var dirPermissionsOk = true;
+			// Validate write permissions (the same procedure like during installation)
+			// ====================================
+			var dirPermissionsOk = true;
 			var dirsToCheck = FilePermissionHelper.GetDirectoriesWrite(_services.WebHelper);
 			foreach (string dir in dirsToCheck)
 			{
@@ -1013,10 +1070,26 @@ namespace SmartStore.Admin.Controllers
 			this.NotifySuccess(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));
 
 			if (previousUrl.HasValue())
+			{
 				return Redirect(previousUrl);
+			}
 
-            return RedirectToAction("Index", "Home");
+			return RedirectToAction("Index", "Home");
         }
+
+		public ActionResult ClearDatabaseCache(string previousUrl)
+		{
+			_dbCache.Clear();
+
+			this.NotifySuccess(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));
+
+			if (previousUrl.HasValue())
+			{
+				return Redirect(previousUrl);
+			}			
+
+			return RedirectToAction("Index", "Home");
+		}
 
 		public ActionResult RestartApplication(string previousUrl)
         {
@@ -1031,11 +1104,11 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        #endregion
+		#endregion
 
-        #region Generic Attributes
+		#region Generic Attributes
 
-        [ChildActionOnly]
+		[ChildActionOnly]
         public ActionResult GenericAttributes(string entityName, int entityId)
         {
             ViewBag.EntityName = entityName;

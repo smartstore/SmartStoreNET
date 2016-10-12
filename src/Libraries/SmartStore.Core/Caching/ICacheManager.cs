@@ -40,12 +40,20 @@ namespace SmartStore.Core.Caching
 		Task<T> GetAsync<T>(string key, Func<Task<T>> acquirer, TimeSpan? duration = null);
 
 		/// <summary>
+		/// Gets a hashset associated with the specified key or. If key does not exist,
+		/// a new set is created and put to cache automatically
+		/// </summary>
+		/// <param name="key">The set cache item key</param>
+		/// <returns>Cached item value</returns>
+		ISet GetHashSet(string key);
+
+		/// <summary>
 		/// Adds a cache item with the specified key
 		/// </summary>
 		/// <param name="key">Key</param>
 		/// <param name="value">Value</param>
 		/// <param name="duration">Absolute expiration time</param>
-		void Set(string key, object value, TimeSpan? duration = null);
+		void Put(string key, object value, TimeSpan? duration = null);
 
         /// <summary>
         /// Gets a value indicating whether the value associated with the specified key is cached

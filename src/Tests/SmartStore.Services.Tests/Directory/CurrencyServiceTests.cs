@@ -97,7 +97,7 @@ namespace SmartStore.Services.Tests.Directory
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
             
             var pluginFinder = new PluginFinder();
-            _currencyService = new CurrencyService(NullRequestCache.Instance, _currencyRepository, _storeMappingService,
+            _currencyService = new CurrencyService(_currencyRepository, _storeMappingService,
 				_currencySettings, pluginFinder, _eventPublisher, this.ProviderManager, _storeContext);
         }
         

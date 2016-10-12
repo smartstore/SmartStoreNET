@@ -490,7 +490,6 @@
     <Compile Include="Search\CatalogSearchQuery.cs" />
     <Compile Include="Search\CatalogSearchResult.cs" />
     <Compile Include="Search\CatalogSearchService.cs" />
-    <Compile Include="Search\ILinqCatalogSearchService.cs" />
     <Compile Include="Search\ICatalogSearchService.cs" />
     <Compile Include="Search\LinqCatalogSearchService.cs" />
     <Compile Include="Security\AclService.cs" />
@@ -504,12 +503,12 @@
     <Compile Include="Customers\CustomerRegistrationResult.cs" />
     <Compile Include="Directory\StateProvinceService.cs" />
     <Compile Include="Security\StandardPermissionProvider.cs" />
-    <Compile Include="Seo\BaseSitemapGenerator.cs" />
     <Compile Include="Seo\IUrlRecordService.cs" />
     <Compile Include="Seo\SeoExtensions.cs" />
-    <Compile Include="Seo\ISitemapGenerator.cs" />
-    <Compile Include="Seo\SitemapGenerator.cs" />
-    <Compile Include="Seo\UpdateFrequency.cs" />
+    <Compile Include="Seo\IXmlSitemapGenerator.cs" />
+    <Compile Include="Seo\Tasks\RebuildXmlSitemapTask.cs" />
+    <Compile Include="Seo\XmlSitemapGenerator.cs" />
+    <Compile Include="Seo\XmlSitemapNode.cs" />
     <Compile Include="Seo\UrlRecordService.cs" />
     <Compile Include="ServiceCacheConsumer.cs" />
     <Compile Include="Shipping\IShipmentService.cs" />
@@ -622,7 +621,9 @@
       <CachedSettingsPropName>Nop_Services_EuropaCheckVatService_checkVatService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Seo\Hooks\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>

@@ -2,13 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
-using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Data.Caching;
 
 namespace SmartStore.Data
 {

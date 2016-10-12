@@ -850,6 +850,10 @@
       <Project>{6bda8332-939f-45b7-a25e-7a797260ae59}</Project>
       <Name>SmartStore.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\SmartStore.Data\SmartStore.Data.csproj">
+      <Project>{CCD7F2C9-6A2C-4CF0-8E89-076B8FC0F144}</Project>
+      <Name>SmartStore.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\SmartStore.Services\SmartStore.Services.csproj">
       <Project>{210541ad-f659-47da-8763-16f36c5cd2f4}</Project>
       <Name>SmartStore.Services</Name>

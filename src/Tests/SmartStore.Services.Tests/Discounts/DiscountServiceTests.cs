@@ -90,7 +90,7 @@ namespace SmartStore.Services.Tests.Discounts
         {
             var discounts = _discountService.GetAllDiscounts(null);
             discounts.ShouldNotBeNull();
-            (discounts.Count > 0).ShouldBeTrue();
+            (discounts.Count() > 0).ShouldBeTrue();
         }
 
         [Test]

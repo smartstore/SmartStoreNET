@@ -10,8 +10,7 @@ using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Admin.Infrastructure
-{
-	
+{	
 	public class PreviewModeFilter : IResultFilter
 	{
 		private readonly IThemeContext _themeContext;
@@ -50,7 +49,5 @@ namespace SmartStore.Admin.Infrastructure
 		{
 			// Noop
 		}
-
 	}
-
 }

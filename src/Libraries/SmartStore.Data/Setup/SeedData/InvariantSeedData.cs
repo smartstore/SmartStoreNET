@@ -4795,7 +4795,7 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Clear cache",
-					CronExpression = "0 */4 * * *", // Every 04 hours
+					CronExpression = "0 */12 * * *", // Every 12 hours
 					Type = "SmartStore.Services.Caching.ClearCacheTask, SmartStore.Services",
 					Enabled = false,
 					StopOnError = false,

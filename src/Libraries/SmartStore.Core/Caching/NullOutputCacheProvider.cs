@@ -36,6 +36,11 @@ namespace SmartStore.Core.Caching
 			return 0;
 		}
 
+		public int InvalidateByPrefix(string keyPrefix)
+		{
+			return 0;
+		}
+
 		public int InvalidateByTag(params string[] tags)
 		{
 			return 0;

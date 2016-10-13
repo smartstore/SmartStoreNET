@@ -17,6 +17,7 @@ namespace SmartStore.Core.Caching
 		int Count();
 
 		int InvalidateByRoute(params string[] routes);
+		int InvalidateByPrefix(string keyPrefix);
 		int InvalidateByTag(params string[] tags);
 	}
 }

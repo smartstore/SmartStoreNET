@@ -221,7 +221,7 @@ namespace SmartStore.PayPal.Controllers
 				settings.WebhookId = null;
 			}
 
-			using (Services.Settings.BeginBatch())
+			using (Services.Settings.BeginScope())
 			{
 				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
 				Services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);

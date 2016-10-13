@@ -149,7 +149,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (filterContext.HttpContext.Request.HttpMethod.IsCaseInsensitiveEqual("POST"))
 			{
-				_settingsWriteBatch = _services.Settings.BeginBatch(true);
+				_settingsWriteBatch = _services.Settings.BeginScope(true);
 			}
 
 			base.OnActionExecuting(filterContext);

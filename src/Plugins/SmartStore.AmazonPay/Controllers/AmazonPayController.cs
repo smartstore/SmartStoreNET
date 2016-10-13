@@ -73,7 +73,7 @@ namespace SmartStore.AmazonPay.Controllers
 
 			model.Copy(settings, false);
 
-			using (_services.Settings.BeginBatch())
+			using (_services.Settings.BeginScope())
 			{
 				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
 

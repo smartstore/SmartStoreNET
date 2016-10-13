@@ -352,7 +352,7 @@ namespace SmartStore.Web.Controllers
 
                 return new ShopHeaderModel()
                 {
-                    LogoUploaded = picture != null,
+                    LogoUploaded = picture != null && logoUrl.HasValue(),
                     LogoUrl = logoUrl,
                     LogoWidth = logoSize.Width,
                     LogoHeight = logoSize.Height,

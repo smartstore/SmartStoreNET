@@ -82,7 +82,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
             googleAnalyticsSettings.EcommerceDetailScript = model.EcommerceDetailScript;
             googleAnalyticsSettings.WidgetZone = model.ZoneId;
 
-			using (_settingService.BeginBatch())
+			using (_settingService.BeginScope())
 			{
 				_settingService.SaveSetting(googleAnalyticsSettings, x => x.WidgetZone, 0, false);
 

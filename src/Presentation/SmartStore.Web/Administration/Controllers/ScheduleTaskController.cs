@@ -132,8 +132,8 @@ namespace SmartStore.Admin.Controllers
 
 			return Json(new 
 			{
-				lastRunHtml = this.RenderPartialViewToString("~/Administration/Views/ScheduleTask/_LastRun.cshtml", model),
-				nextRunHtml = this.RenderPartialViewToString("~/Administration/Views/ScheduleTask/_NextRun.cshtml", model)
+				lastRunHtml = this.RenderPartialViewToString("_LastRun", model),
+				nextRunHtml = this.RenderPartialViewToString("_NextRun", model)
 			});
 		}
 

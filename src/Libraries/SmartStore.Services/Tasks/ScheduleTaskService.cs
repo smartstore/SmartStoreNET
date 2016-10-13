@@ -9,33 +9,20 @@ using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services.Tasks
 {
-    /// <summary>
-    /// Task service
-    /// </summary>
     public partial class ScheduleTaskService : IScheduleTaskService
     {
-        #region Fields
-
         private readonly IRepository<ScheduleTask> _taskRepository;
-		private readonly IDateTimeHelper _dateTimeHelper;
+		private readonly IDateTimeHelper _dtHelper;
 
-        #endregion
-
-        #region Ctor
-
-		public ScheduleTaskService(IRepository<ScheduleTask> taskRepository, IDateTimeHelper dateTimeHelper)
+		public ScheduleTaskService(IRepository<ScheduleTask> taskRepository, IDateTimeHelper dtHelper)
         {
-            this._taskRepository = taskRepository;
-			this._dateTimeHelper = dateTimeHelper;
+            _taskRepository = taskRepository;
+			_dtHelper = dtHelper;
 
 			T = NullLocalizer.Instance;
         }
 
 		public Localizer T { get; set; }
-
-        #endregion
-
-        #region Methods
 
         public virtual void DeleteTask(ScheduleTask task)
         {
@@ -261,17 +248,14 @@ namespace SmartStore.Services.Tasks
 			{
 				try
 				{
-					var baseTime = DateTime.UtcNow;
+					var baseTime = _dtHelper.ConvertToUserTime(DateTime.UtcNow);
 					var next = CronExpression.GetNextSchedule(task.CronExpression, baseTime);
-					return next;
+					return _dtHelper.ConvertToUtcTime(next, _dtHelper.CurrentTimeZone);
 				}
 				catch { }
 			}
 
 			return null;
 		}
-
-		#endregion
-
 	}
 }

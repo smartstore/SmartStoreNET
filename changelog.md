@@ -49,6 +49,7 @@
 * Order export does not export shipping address
 * Filter shows wrong number of products if "Include products from subcategories" is activated
 * Guest user cannot be deleted if he has a private message
+* #1029 Biz-Importer: Imports fixed tax rates as zero percentage
 
 
 ## SmartStore.NET 2.6

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\LibSassHost.0.5.0\build\LibSassHost.props" Condition="Exists('..\..\packages\LibSassHost.0.5.0\build\LibSassHost.props')" />
-  <Import Project="..\..\packages\JavaScriptEngineSwitcher.V8.1.5.2\build\JavaScriptEngineSwitcher.V8.props" Condition="Exists('..\..\packages\JavaScriptEngineSwitcher.V8.1.5.2\build\JavaScriptEngineSwitcher.V8.props')" />
+  <Import Project="..\..\packages\JavaScriptEngineSwitcher.V8.2.0.0\build\JavaScriptEngineSwitcher.V8.props" Condition="Exists('..\..\packages\JavaScriptEngineSwitcher.V8.2.0.0\build\JavaScriptEngineSwitcher.V8.props')" />
+  <Import Project="..\..\packages\LibSassHost.0.5.2\build\LibSassHost.props" Condition="Exists('..\..\packages\LibSassHost.0.5.2\build\LibSassHost.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -83,16 +83,16 @@
       <HintPath>..\..\packages\Autofac.Mvc5.3.3.4\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="BundleTransformer.Autoprefixer, Version=1.9.99.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\BundleTransformer.Autoprefixer.1.9.99\lib\net40\BundleTransformer.Autoprefixer.dll</HintPath>
+    <Reference Include="BundleTransformer.Autoprefixer, Version=1.9.128.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BundleTransformer.Autoprefixer.1.9.128\lib\net40\BundleTransformer.Autoprefixer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="BundleTransformer.Core, Version=1.9.92.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
       <HintPath>..\..\packages\BundleTransformer.Core.1.9.92\lib\net40\BundleTransformer.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="BundleTransformer.Less, Version=1.9.103.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\BundleTransformer.Less.1.9.103\lib\net40\BundleTransformer.Less.dll</HintPath>
+    <Reference Include="BundleTransformer.Less, Version=1.9.122.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BundleTransformer.Less.1.9.122\lib\net40\BundleTransformer.Less.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="BundleTransformer.MicrosoftAjax, Version=1.9.92.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
@@ -103,8 +103,8 @@
       <HintPath>..\..\packages\BundleTransformer.SassAndScss.1.9.104\lib\net40\BundleTransformer.SassAndScss.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ClearScript, Version=5.4.5.0, Culture=neutral, PublicKeyToken=935d0c957da47c73, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\JavaScriptEngineSwitcher.V8.1.5.2\lib\net40\ClearScript.dll</HintPath>
+    <Reference Include="ClearScript, Version=5.4.7.0, Culture=neutral, PublicKeyToken=935d0c957da47c73, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\JavaScriptEngineSwitcher.V8.2.0.0\lib\net451\ClearScript.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -127,28 +127,28 @@
       <HintPath>..\..\packages\FluentValidation.MVC5.5.6.2.0\lib\Net45\FluentValidation.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="JavaScriptEngineSwitcher.Core, Version=1.5.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Core.1.5.0\lib\net40\JavaScriptEngineSwitcher.Core.dll</HintPath>
+    <Reference Include="JavaScriptEngineSwitcher.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Core.2.0.0\lib\net451\JavaScriptEngineSwitcher.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="JavaScriptEngineSwitcher.Msie, Version=1.5.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Msie.1.5.0\lib\net40\JavaScriptEngineSwitcher.Msie.dll</HintPath>
+    <Reference Include="JavaScriptEngineSwitcher.Msie, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Msie.2.0.0\lib\net451\JavaScriptEngineSwitcher.Msie.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="JavaScriptEngineSwitcher.V8, Version=1.5.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\JavaScriptEngineSwitcher.V8.1.5.2\lib\net40\JavaScriptEngineSwitcher.V8.dll</HintPath>
+    <Reference Include="JavaScriptEngineSwitcher.V8, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\JavaScriptEngineSwitcher.V8.2.0.0\lib\net451\JavaScriptEngineSwitcher.V8.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LibSassHost, Version=0.5.0.0, Culture=neutral, PublicKeyToken=3e24e88796a38e46, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LibSassHost.0.5.0\lib\net40-client\LibSassHost.dll</HintPath>
+    <Reference Include="LibSassHost, Version=0.5.2.0, Culture=neutral, PublicKeyToken=3e24e88796a38e46, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LibSassHost.0.5.2\lib\net40-client\LibSassHost.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="MsieJavaScriptEngine, Version=1.7.0.0, Culture=neutral, PublicKeyToken=a3a2846a37ac0d3e, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MsieJavaScriptEngine.1.7.0\lib\net40\MsieJavaScriptEngine.dll</HintPath>
+    <Reference Include="MsieJavaScriptEngine, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a3a2846a37ac0d3e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MsieJavaScriptEngine.2.0.0\lib\net451\MsieJavaScriptEngine.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -221,6 +221,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\AssemblySharedInfo.cs">
@@ -2438,7 +2439,7 @@
     <PropertyGroup>
       <ErrorText>Dieses Projekt verweist auf mindestens ein NuGet-Paket, das auf diesem Computer fehlt. Verwenden Sie die Wiederherstellung von NuGet-Paketen, um die fehlenden Dateien herunterzuladen. Weitere Informationen finden Sie unter "http://go.microsoft.com/fwlink/?LinkID=322105". Die fehlende Datei ist "{0}".</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\JavaScriptEngineSwitcher.V8.1.5.2\build\JavaScriptEngineSwitcher.V8.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\JavaScriptEngineSwitcher.V8.1.5.2\build\JavaScriptEngineSwitcher.V8.props'))" />
-    <Error Condition="!Exists('..\..\packages\LibSassHost.0.5.0\build\LibSassHost.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\LibSassHost.0.5.0\build\LibSassHost.props'))" />
+    <Error Condition="!Exists('..\..\packages\LibSassHost.0.5.2\build\LibSassHost.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\LibSassHost.0.5.2\build\LibSassHost.props'))" />
+    <Error Condition="!Exists('..\..\packages\JavaScriptEngineSwitcher.V8.2.0.0\build\JavaScriptEngineSwitcher.V8.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\JavaScriptEngineSwitcher.V8.2.0.0\build\JavaScriptEngineSwitcher.V8.props'))" />
   </Target>
 </Project>

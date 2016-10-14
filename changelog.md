@@ -34,6 +34,7 @@
 * (Perf) Lower memory consumption
 * #1008 Export: Add support for description projection to all product exporting providers
 * #1015 Implement Entity Picker in discount requirements
+* #1028 Debitoor: Company name send as customer name if present
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation

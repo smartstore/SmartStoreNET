@@ -7,20 +7,20 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
-using System.Collections.Concurrent;
 
 namespace SmartStore.Services.Localization
 {
     /// <summary>
     /// Provides information about localizable entities
     /// </summary>
-    public partial class LocalizedEntityService : ILocalizedEntityService
+    public partial class LocalizedEntityService : ScopedServiceBase, ILocalizedEntityService
     {
 		/// <summary>
 		/// 0 = segment (keygroup.key.idrange), 1 = language id
 		/// </summary>
 		const string LOCALIZEDPROPERTY_SEGMENT_KEY = "localizedproperty:{0}-lang-{1}";
 		const string LOCALIZEDPROPERTY_SEGMENT_PATTERN = "localizedproperty:{0}";
+		const string LOCALIZEDPROPERTY_ALLSEGMENTS_PATTERN = "localizedproperty:";
 
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
         private readonly ICacheManager _cacheManager;
@@ -32,6 +32,11 @@ namespace SmartStore.Services.Localization
             _cacheManager = cacheManager;
             _localizedPropertyRepository = localizedPropertyRepository;
         }
+
+		protected override void OnClearCache()
+		{
+			_cacheManager.RemoveByPattern(LOCALIZEDPROPERTY_ALLSEGMENTS_PATTERN);
+		}
 
 		protected virtual IDictionary<int, string> GetCachedPropertySegment(string localeKeyGroup, string localeKey, int entityId, int languageId)
 		{
@@ -69,6 +74,9 @@ namespace SmartStore.Services.Localization
 		/// </summary>
 		protected virtual void ClearCachedPropertySegment(string localeKeyGroup, string localeKey, int entityId, int? languageId = null)
 		{
+			if (IsInScope)
+				return;
+
 			var segmentKey = GetSegmentKey(localeKeyGroup, localeKey, entityId);
 
 			if (languageId.HasValue && languageId.Value > 0)
@@ -83,6 +91,11 @@ namespace SmartStore.Services.Localization
 
 		public virtual string GetLocalizedValue(int languageId, int entityId, string localeKeyGroup, string localeKey)
 		{
+			if (IsInScope)
+			{
+				return GetLocalizedValueUncached(languageId, entityId, localeKeyGroup, localeKey);
+			}
+
 			if (languageId <= 0)
 				return string.Empty;
 
@@ -98,7 +111,23 @@ namespace SmartStore.Services.Localization
 			return val;
 		}
 
-        public virtual IList<LocalizedProperty> GetLocalizedProperties(int entityId, string localeKeyGroup)
+		protected string GetLocalizedValueUncached(int languageId, int entityId, string localeKeyGroup, string localeKey)
+		{
+			if (languageId <= 0)
+				return string.Empty;
+
+			var query = from lp in _localizedPropertyRepository.TableUntracked
+						where
+							lp.EntityId == entityId &&
+							lp.LocaleKey == localeKey &&
+							lp.LocaleKeyGroup == localeKeyGroup &&
+							lp.LanguageId == languageId
+						select lp.LocaleValue;
+
+			return query.FirstOrDefault().EmptyNull();
+		}
+
+		public virtual IList<LocalizedProperty> GetLocalizedProperties(int entityId, string localeKeyGroup)
         {
             if (localeKeyGroup.IsEmpty())
                 return new List<LocalizedProperty>();
@@ -134,6 +163,7 @@ namespace SmartStore.Services.Localization
 			{
 				// db
 				_localizedPropertyRepository.Insert(property);
+				HasChanges = true;
 
 				// cache
 				ClearCachedPropertySegment(property.LocaleKeyGroup, property.LocaleKey, property.EntityId, property.LanguageId);
@@ -149,6 +179,7 @@ namespace SmartStore.Services.Localization
 			{
 				// db
 				_localizedPropertyRepository.Update(property);
+				HasChanges = true;
 
 				// cache
 				ClearCachedPropertySegment(property.LocaleKeyGroup, property.LocaleKey, property.EntityId, property.LanguageId);
@@ -167,6 +198,7 @@ namespace SmartStore.Services.Localization
 
 				// db
 				_localizedPropertyRepository.Delete(property);
+				HasChanges = true;
 			}
 			catch { }
 		}

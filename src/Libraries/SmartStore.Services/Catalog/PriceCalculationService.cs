@@ -319,12 +319,18 @@ namespace SmartStore.Services.Catalog
 			return result;
 		}
 
-		public virtual PriceCalculationContext CreatePriceCalculationContext(IEnumerable<Product> products = null)
+		public virtual PriceCalculationContext CreatePriceCalculationContext(IEnumerable<Product> products = null, Customer customer = null, int? storeId = null)
 		{
+			if (customer == null)
+				customer = _services.WorkContext.CurrentCustomer;
+
+			if (!storeId.HasValue)
+				storeId = _services.StoreContext.CurrentStore.Id;
+
 			var context = new PriceCalculationContext(products,
 				x => _productAttributeService.GetProductVariantAttributesByProductIds(x, null),
 				x => _productAttributeService.GetProductVariantAttributeCombinations(x),
-				x => _productService.GetTierPricesByProductIds(x, _services.WorkContext.CurrentCustomer, _services.StoreContext.CurrentStore.Id),
+				x => _productService.GetTierPricesByProductIds(x, customer, storeId.Value),
 				x => _categoryService.GetProductCategoriesByProductIds(x, true),
 				x => _manufacturerService.GetProductManufacturersByProductIds(x),
 				x => _productService.GetAppliedDiscountsByProductIds(x)
@@ -492,7 +498,7 @@ namespace SmartStore.Services.Catalog
 			// note: attribute price adjustments were never regarded here cause of many reasons
 
 			if (context == null)
-				context = CreatePriceCalculationContext();
+				context = CreatePriceCalculationContext(customer: customer);
 
 			var isBundlePerItemPricing = (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing);
 
@@ -548,7 +554,7 @@ namespace SmartStore.Services.Catalog
 			decimal? lowestPrice = null;
 
 			if (context == null)
-				context = CreatePriceCalculationContext();
+				context = CreatePriceCalculationContext(customer: customer);
 
 			foreach (var associatedProduct in associatedProducts)
 			{
@@ -580,7 +586,7 @@ namespace SmartStore.Services.Catalog
 			var result = decimal.Zero;
 
 			if (context == null)
-				context = CreatePriceCalculationContext();
+				context = CreatePriceCalculationContext(customer: customer);
 
 			if (product.ProductType == ProductType.BundledProduct)
 			{

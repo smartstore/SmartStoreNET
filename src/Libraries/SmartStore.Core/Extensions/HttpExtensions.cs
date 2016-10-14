@@ -8,6 +8,8 @@ using System.Text;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Security;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core;
 
 namespace SmartStore
 {  
@@ -26,13 +28,76 @@ namespace SmartStore
             return (request.IsSecureConnection || (request.ServerVariables[HTTP_CLUSTER_VAR] != null || request.ServerVariables[HTTP_CLUSTER_VAR] == "on"));
         }
 
-        /// <summary>
-        /// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
-        /// Works with Cloud's load balancers.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        public static bool IsSecureConnection(this HttpRequest request)
+
+		/// <summary>
+		/// Returns wether the specified url is local to the host or not
+		/// </summary>
+		/// <param name="request"></param>
+		/// <param name="url"></param>
+		/// <returns></returns>
+		public static bool IsAppLocalUrl(this HttpRequestBase request, string url)
+		{
+
+			if (string.IsNullOrWhiteSpace(url))
+			{
+				return false;
+			}
+
+			if (url.StartsWith("~/"))
+			{
+				return true;
+			}
+
+			if (url.StartsWith("//") || url.StartsWith("/\\"))
+			{
+				return false;
+			}
+
+			// at this point when the url starts with "/" it is local
+			if (url.StartsWith("/"))
+			{
+				return true;
+			}
+
+			// at this point, check for a fully qualified url
+			try
+			{
+				var uri = new Uri(url);
+				if (uri.Authority.Equals(request.Headers["Host"], StringComparison.OrdinalIgnoreCase))
+				{
+					return true;
+				}
+
+				// finally, check the base url from the settings
+				var storeContext = EngineContext.Current.Resolve<IStoreContext>();
+				if (storeContext != null)
+				{
+					var baseUrl = storeContext.CurrentStore.Url;
+					if (baseUrl.HasValue())
+					{
+						if (uri.Authority.Equals(new Uri(baseUrl).Authority, StringComparison.OrdinalIgnoreCase))
+						{
+							return true;
+						}
+					}
+				}
+
+				return false;
+			}
+			catch
+			{
+				// mall-formed url e.g, "abcdef"
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value which indicates whether the HTTP connection uses secure sockets (HTTPS protocol). 
+		/// Works with Cloud's load balancers.
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns></returns>
+		public static bool IsSecureConnection(this HttpRequest request)
         {
             return (request.IsSecureConnection || (request.ServerVariables[HTTP_CLUSTER_VAR] != null || request.ServerVariables[HTTP_CLUSTER_VAR] == "on"));
         }

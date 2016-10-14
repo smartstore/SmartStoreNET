@@ -386,7 +386,7 @@ namespace SmartStore.Services.Search
 						}
 					}
 				}
-				else if (filter.FieldName == "price")
+				else if (filter.FieldName.StartsWith("price"))
 				{
 					if (rangeFilter != null)
 					{

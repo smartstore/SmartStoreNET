@@ -17,7 +17,7 @@ namespace SmartStore.Services.Configuration
 		/// </summary>
 		/// <param name="clearCache">Specifies whether the cache should be evicted completely on batch disposal</param>
 		/// <returns>A disposable unit of work</returns>
-		IDisposable BeginBatch(bool clearCache = true);
+		IDisposable BeginScope(bool clearCache = true);
 
 		/// <summary>
 		/// Gets a value indicating whether settings have changed during a request, making cache eviction necessary.

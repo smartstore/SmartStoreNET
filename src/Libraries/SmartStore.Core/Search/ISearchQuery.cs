@@ -5,7 +5,7 @@ namespace SmartStore.Core.Search
 {
 	public interface ISearchQuery
 	{
-		// language
+		// Language
 		int? LanguageId { get; }
 		string LanguageSeoCode { get; }
 
@@ -13,6 +13,7 @@ namespace SmartStore.Core.Search
 		string[] Fields { get; }
 		string Term { get; }
 		bool EscapeTerm { get; }
+		bool IsExactMatch { get; }
 		bool IsFuzzySearch { get; }
 
 		// Filtering
@@ -25,7 +26,7 @@ namespace SmartStore.Core.Search
 		int Skip { get; }
 		int Take { get; }
 
-		// sorting
+		// Sorting
 		ICollection<SearchSort> Sorting { get; }
 	}
 }

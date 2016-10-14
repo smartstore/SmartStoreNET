@@ -292,7 +292,7 @@ namespace SmartStore.Services.DataExchange.Export
 							ctx.ProductExportContext = new ProductExportContext(entities,
 								x => _productAttributeService.Value.GetProductVariantAttributesByProductIds(x, null),
 								x => _productAttributeService.Value.GetProductVariantAttributeCombinations(x),
-								x => _productService.Value.GetTierPricesByProductIds(x, (ctx.Projection.CurrencyId ?? 0) != 0 ? ctx.ContextCustomer : null, ctx.Store.Id),
+								x => _productService.Value.GetTierPricesByProductIds(x, ctx.ContextCustomer, ctx.Store.Id),
 								x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, true),
 								x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),
 								x => _productService.Value.GetProductPicturesByProductIds(x),

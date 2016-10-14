@@ -258,7 +258,7 @@ namespace SmartStore.Services.Catalog.Importer
 						switch (keyName)
 						{
 							case "Id":
-								product = _productService.GetProductById(id);
+								product = _productRepository.GetById(id); // get it uncached
 								break;
 							case "Sku":
 								product = _productService.GetProductBySku(keyValue);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Search;
 
 namespace SmartStore.Services.Search
@@ -16,13 +17,13 @@ namespace SmartStore.Services.Search
 		{
 		}
 
-		public CatalogSearchQuery(string field, string term, bool escape = false, bool isFuzzySearch = false)
-			: base(field.HasValue() ? new[] { field } : null, term, escape, isFuzzySearch)
+		public CatalogSearchQuery(string field, string term, bool escape = false, bool isExactMatch = false, bool isFuzzySearch = false)
+			: base(field.HasValue() ? new[] { field } : null, term, escape, isExactMatch, isFuzzySearch)
 		{
 		}
 
-		public CatalogSearchQuery(string[] fields, string term, bool escape = false, bool isFuzzySearch = false)
-			: base(fields, term, escape, isFuzzySearch)
+		public CatalogSearchQuery(string[] fields, string term, bool escape = false, bool isExactMatch = false, bool isFuzzySearch = false)
+			: base(fields, term, escape, isExactMatch, isFuzzySearch)
 		{
 		}
 
@@ -186,9 +187,13 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByRange("stockquantity", fromQuantity, toQuantity, fromQuantity.HasValue, toQuantity.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
-		public CatalogSearchQuery WithPrice(decimal? fromPrice, decimal? toPrice)
+		public CatalogSearchQuery WithPrice(Currency currency, decimal? fromPrice, decimal? toPrice)
 		{
-			return WithFilter(SearchFilter.ByRange("price",
+			Guard.NotNull(currency, nameof(currency));
+
+			var fieldName = "price_" + currency.CurrencyCode.EmptyNull().ToLower();
+
+			return WithFilter(SearchFilter.ByRange(fieldName,
 				fromPrice.HasValue ? decimal.ToDouble(fromPrice.Value) : (double?)null,
 				toPrice.HasValue ? decimal.ToDouble(toPrice.Value) : (double?)null,
 				fromPrice.HasValue,

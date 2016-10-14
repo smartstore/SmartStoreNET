@@ -237,6 +237,7 @@
     <Compile Include="Events\IMessageBus.cs" />
     <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
+    <Compile Include="IScopedService.cs" />
     <Compile Include="Logging\DbLogService.cs" />
     <Compile Include="Logging\ILogService.cs" />
     <Compile Include="Media\MediaFileSystem.cs" />
@@ -487,6 +488,7 @@
     <Compile Include="Customers\ChangePasswordRequest.cs" />
     <Compile Include="Customers\PasswordChangeResult.cs" />
     <Compile Include="Hooks\AclEntityPostDeleteHook.cs" />
+    <Compile Include="ScopedServiceBase.cs" />
     <Compile Include="Search\CatalogSearchQuery.cs" />
     <Compile Include="Search\CatalogSearchResult.cs" />
     <Compile Include="Search\CatalogSearchService.cs" />

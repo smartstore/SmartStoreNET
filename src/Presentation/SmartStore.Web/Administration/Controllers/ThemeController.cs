@@ -566,7 +566,7 @@ namespace SmartStore.Admin.Controllers
 			var themeSettings = _settingService.LoadSetting<ThemeSettings>(storeId);
 			var oldTheme = themeSettings.DefaultDesktopTheme;
 			themeSettings.DefaultDesktopTheme = theme;
-			var themeSwitched = oldTheme.IsCaseInsensitiveEqual(theme);
+			var themeSwitched = !oldTheme.IsCaseInsensitiveEqual(theme);
 
 			if (themeSwitched)
 			{

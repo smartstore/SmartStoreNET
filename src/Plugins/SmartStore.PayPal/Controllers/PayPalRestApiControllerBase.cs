@@ -88,7 +88,7 @@ namespace SmartStore.PayPal.Controllers
 			var settings = Services.Settings.LoadSetting<TSetting>();
 			var session = new PayPalSessionData();
 
-			using (Services.Settings.BeginBatch())
+			using (Services.Settings.BeginScope())
 			{
 				if (settings.WebhookId.HasValue())
 				{

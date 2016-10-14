@@ -79,7 +79,7 @@ namespace SmartStore.PayPal.Controllers
 
             model.Copy(settings, false);
 
-			using (Services.Settings.BeginBatch())
+			using (Services.Settings.BeginScope())
 			{
 				storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, Services.Settings);
 

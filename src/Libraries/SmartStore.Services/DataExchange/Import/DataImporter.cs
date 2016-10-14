@@ -17,6 +17,8 @@ using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Utilities;
 using SmartStore.Data.Caching;
+using SmartStore.Services.Seo;
+using System.Collections.Generic;
 
 namespace SmartStore.Services.DataExchange.Import
 {
@@ -31,6 +33,8 @@ namespace SmartStore.Services.DataExchange.Import
 		private readonly Lazy<ContactDataSettings> _contactDataSettings;
 		private readonly Lazy<DataExchangeSettings> _dataExchangeSettings;
 		private readonly IDbCache _dbCache;
+		private readonly IUrlRecordService _urlRecordService;
+		private readonly ILocalizedEntityService _localizedEntityService;
 
 		public DataImporter(
 			ICommonServices services,
@@ -41,7 +45,9 @@ namespace SmartStore.Services.DataExchange.Import
 			Lazy<IEmailSender> emailSender,
 			Lazy<ContactDataSettings> contactDataSettings,
 			Lazy<DataExchangeSettings> dataExchangeSettings,
-			IDbCache dbCache)
+			IDbCache dbCache,
+			IUrlRecordService urlRecordService,
+			ILocalizedEntityService localizedEntityService)
 		{
 			_services = services;
 			_importProfileService = importProfileService;
@@ -52,6 +58,8 @@ namespace SmartStore.Services.DataExchange.Import
 			_contactDataSettings = contactDataSettings;
 			_dataExchangeSettings = dataExchangeSettings;
 			_dbCache = dbCache;
+			_urlRecordService = urlRecordService;
+			_localizedEntityService = localizedEntityService;
 
 			T = NullLocalizer.Instance;
 		}
@@ -256,9 +264,13 @@ namespace SmartStore.Services.DataExchange.Import
 
 			using (var logger = new TraceLogger(logPath))
 			{
+				var scopes = new List<IDisposable>();
+
 				try
 				{
 					_dbCache.Enabled = false;
+					scopes.Add(_localizedEntityService.BeginScope());
+					scopes.Add(_urlRecordService.BeginScope());
 
 					ctx.Log = logger;
 
@@ -295,6 +307,7 @@ namespace SmartStore.Services.DataExchange.Import
 				finally
 				{
 					_dbCache.Enabled = true;
+					scopes.Each(x => x.Dispose());
 
 					try
 					{

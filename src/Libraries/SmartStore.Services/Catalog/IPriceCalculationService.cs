@@ -15,8 +15,10 @@ namespace SmartStore.Services.Catalog
 		/// Creates a price calculation context
 		/// </summary>
 		/// <param name="products">Products. <c>null</c> to lazy load data if required.</param>
+		/// <param name="customer">Customer, <c>null</c> to use current customer.</param>
+		/// <param name="storeId">Store identifier, <c>null</c> to use current store.</param>
 		/// <returns>Price calculation context</returns>
-		PriceCalculationContext CreatePriceCalculationContext(IEnumerable<Product> products = null);
+		PriceCalculationContext CreatePriceCalculationContext(IEnumerable<Product> products = null, Customer customer = null, int? storeId = null);
 
 		/// <summary>
 		/// Get product special price (is valid)

@@ -210,6 +210,7 @@
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />
     <Compile Include="Data\IQueryableExtensions.cs" />
+    <Compile Include="Extensions\RegexExtensions.cs" />
     <Compile Include="Extensions\XPathExtensions.cs" />
     <Compile Include="Fakes\FakeController.cs" />
     <Compile Include="IActivatable.cs" />

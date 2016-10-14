@@ -634,7 +634,7 @@ namespace SmartStore.Admin.Controllers
 					if (provider != null && !provider.Metadata.IsHidden)
 					{
 						var model = CreateFileDetailsModel(profile, provider, null);
-						return Json(this.RenderPartialViewToString("ProfileFileCount", model.FileCount), JsonRequestBehavior.AllowGet);
+						return Json(this.RenderPartialViewToString("~/Administration/Views/Export/ProfileFileCount.cshtml", model.FileCount), JsonRequestBehavior.AllowGet);
 					}
 				}
 			}

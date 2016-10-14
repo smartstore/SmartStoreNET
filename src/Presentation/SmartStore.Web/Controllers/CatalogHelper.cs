@@ -1606,7 +1606,8 @@ namespace SmartStore.Web.Controllers
 						EntityId = category.Id,
 						Text = category.GetLocalized(x => x.Name),
 						RouteName = "Category",
-                        ImageUrl = category.PictureId != null ? _pictureService.GetPictureUrl((int)category.PictureId) : "",
+						// Performance KILLER!!
+                        //ImageUrl = category.PictureId != null ? _pictureService.GetPictureUrl((int)category.PictureId) : "",
                         BadgeText = category.GetLocalized(x => x.BadgeText),
                         BadgeStyle = (BadgeStyle)category.BadgeStyle
 					};

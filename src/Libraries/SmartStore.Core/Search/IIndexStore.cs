@@ -57,6 +57,11 @@ namespace SmartStore.Core.Search
 		/// Removes a set of existing documents from the index
 		/// </summary>
 		void DeleteDocuments(IEnumerable<int> ids);
+
+		/// <summary>
+		/// Called after an indexing operation ended
+		/// </summary>
+		void OnIndexed();
 	}
 
 	public static class IIndexStoreExtensions

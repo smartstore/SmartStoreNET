@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Core.Caching
@@ -11,6 +8,13 @@ namespace SmartStore.Core.Caching
 	[FriendlyName("Idle")]
 	public class NullOutputCacheProvider : IOutputCacheProvider
 	{
+		private static readonly IOutputCacheProvider s_instance = new NullOutputCacheProvider();
+
+		public static IOutputCacheProvider Instance
+		{
+			get { return s_instance; }
+		}
+
 		public IPagedList<OutputCacheItem> All(int pageIndex, int pageSize, bool withContent = false)
 		{
 			return new PagedList<OutputCacheItem>(new List<OutputCacheItem>(), pageIndex, pageSize);

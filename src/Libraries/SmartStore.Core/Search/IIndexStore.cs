@@ -46,6 +46,11 @@ namespace SmartStore.Core.Search
 		void Clear();
 
 		/// <summary>
+		/// Acquire an index writer
+		/// </summary>
+		IDisposable AcquireWriter();
+
+		/// <summary>
 		/// Adds a set of new documents to the index
 		/// </summary>
 		/// <remarks>
@@ -57,11 +62,6 @@ namespace SmartStore.Core.Search
 		/// Removes a set of existing documents from the index
 		/// </summary>
 		void DeleteDocuments(IEnumerable<int> ids);
-
-		/// <summary>
-		/// Called after an indexing operation ended
-		/// </summary>
-		void OnIndexed();
 	}
 
 	public static class IIndexStoreExtensions

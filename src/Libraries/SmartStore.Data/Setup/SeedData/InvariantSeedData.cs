@@ -4803,9 +4803,9 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Update currency exchange rates",
-					CronExpression = "0/15 * * * *", // Every 15 minutes
+					CronExpression = "0 */6 * * *", // Every 6 hours
 					Type = "SmartStore.Services.Directory.UpdateExchangeRateTask, SmartStore.Services",
-					Enabled = true,
+					Enabled = false,
 					StopOnError = false,
 				},
 				new ScheduleTask

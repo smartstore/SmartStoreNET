@@ -46,8 +46,11 @@ namespace SmartStore.Core.Search
 		void Clear();
 
 		/// <summary>
-		/// Acquire an index writer
+		/// Acquires an index writer
 		/// </summary>
+		/// <remarks>
+		/// This method creates a transient writer instance which automatically gets released on dispose.
+		/// </remarks>
 		IDisposable AcquireWriter();
 
 		/// <summary>

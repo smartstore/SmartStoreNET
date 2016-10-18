@@ -19,6 +19,7 @@ using SmartStore.Utilities;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Seo;
 using System.Collections.Generic;
+using SmartStore.Services.DataExchange.Import.Events;
 
 namespace SmartStore.Services.DataExchange.Import
 {
@@ -274,6 +275,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 					ctx.Log = logger;
 
+					ctx.ExecuteContext.Request = ctx.Request;
 					ctx.ExecuteContext.DataExchangeSettings = _dataExchangeSettings.Value;
 					ctx.ExecuteContext.Services = _services;
 					ctx.ExecuteContext.Log = logger;
@@ -296,7 +298,9 @@ namespace SmartStore.Services.DataExchange.Import
 					if (!HasPermission(ctx))
 						throw new SmartException("You do not have permission to perform the selected import.");
 
-					ctx.Importer = _importerFactory(ctx.Request.Profile.EntityType);	
+					ctx.Importer = _importerFactory(ctx.Request.Profile.EntityType);
+
+					_services.EventPublisher.Publish(new ImportExecutingEvent(ctx.ExecuteContext));
 
 					files.ForEach(x => ImportCoreInner(ctx, x));
 				}
@@ -306,8 +310,17 @@ namespace SmartStore.Services.DataExchange.Import
 				}
 				finally
 				{
-					_dbCache.Enabled = true;
-					scopes.Each(x => x.Dispose());
+					try
+					{
+						_dbCache.Enabled = true;
+						scopes.Each(x => x.Dispose());
+
+						_services.EventPublisher.Publish(new ImportExecutedEvent(ctx.ExecuteContext));
+					}
+					catch (Exception exception)
+					{
+						ctx.ExecuteContext.Result.AddError(exception);
+					}
 
 					try
 					{
@@ -334,7 +347,6 @@ namespace SmartStore.Services.DataExchange.Import
 					try
 					{
 						ctx.ExecuteContext.Result.EndDateUtc = DateTime.UtcNow;
-
 						LogResult(ctx);
 					}
 					catch (Exception exception)
@@ -345,7 +357,6 @@ namespace SmartStore.Services.DataExchange.Import
 					try
 					{
 						ctx.Request.Profile.ResultInfo = XmlHelper.Serialize(ctx.ExecuteContext.Result.Clone());
-
 						_importProfileService.UpdateImportProfile(ctx.Request.Profile);
 					}
 					catch (Exception exception)

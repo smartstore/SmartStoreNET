@@ -13,7 +13,7 @@ namespace SmartStore.Services.DataExchange.Import.Internal
 			Request = request;
 			CancellationToken = cancellationToken;
 
-			ExecuteContext = new ImportExecuteContext(CancellationToken, Request.ProgressValueSetter, progressInfo);
+			ExecuteContext = new ImportExecuteContext(CancellationToken, Request.ProgressValueSetter, progressInfo) { Request = request };
 		}
 
 		public DataImportRequest Request { get; private set; }

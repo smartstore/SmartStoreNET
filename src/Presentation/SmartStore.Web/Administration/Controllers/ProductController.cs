@@ -1003,20 +1003,36 @@ namespace SmartStore.Admin.Controllers
         [FormValueRequired("go-to-product-by-sku")]
         public ActionResult GoToSku(ProductListModel model)
         {
-            string sku = model.GoDirectlyToSku;
+            var sku = model.GoDirectlyToSku;
 
 			if (sku.HasValue())
 			{
 				var product = _productService.GetProductBySku(sku);
 				if (product != null)
+				{
 					return RedirectToAction("Edit", "Product", new { id = product.Id });
+				}
 
 				var combination = _productAttributeService.GetProductVariantAttributeCombinationBySku(sku);
-				if (combination != null && combination.Product != null && !combination.Product.Deleted)
-					return RedirectToAction("Edit", "Product", new { id = combination.Product.Id });
+
+				if (combination != null)
+				{
+					if (combination.Product == null)
+					{
+						NotifyWarning(T("Products.NotFound", combination.ProductId));
+					}
+					else if (combination.Product.Deleted)
+					{
+						NotifyWarning(T("Products.Deleted", combination.ProductId));
+					}
+					else
+					{
+						return RedirectToAction("Edit", "Product", new { id = combination.Product.Id });
+					}
+				}
 			}
 
-            //not found
+            // not found
             return List(model);
         }
 
@@ -1101,11 +1117,20 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var product = _productService.GetProductById(id);
-            
-            if (product == null || product.Deleted)
-                return RedirectToAction("List");
 
-            var model = product.ToModel();
+			if (product == null)
+			{
+				NotifyWarning(T("Products.NotFound", id));
+				return RedirectToAction("List");
+			}
+
+			if (product.Deleted)
+			{
+				NotifyWarning(T("Products.Deleted", id));
+				return RedirectToAction("List");
+			}
+
+			var model = product.ToModel();
 			PrepareProductModel(model, product, false, false);
 
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
@@ -1137,12 +1162,19 @@ namespace SmartStore.Admin.Controllers
 			}
 
             var product = _productService.GetProductById(model.Id);
-			if (product == null || product.Deleted)
+			if (product == null)
 			{
+				NotifyWarning(T("Products.NotFound", model.Id));
 				return RedirectToAction("List");
 			}
 
-            if (ModelState.IsValid)
+			if (product.Deleted)
+			{
+				NotifyWarning(T("Products.Deleted", model.Id));
+				return RedirectToAction("List");
+			}
+
+			if (ModelState.IsValid)
             {
 				MapModelToProduct(model, product, form);
 				UpdateDataOfExistingProduct(product, model, true);

@@ -67,6 +67,14 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.System.Warnings.TaskScheduler.Fail",
 				"The task scheduler cannot poll and execute tasks. Base URL: {0}, Status: {1}. Please specify a working base url in web.config, setting 'sm:TaskSchedulerBaseUrl'.",
 				"Der Task-Scheduler kann keine Hintergrund-Aufgaben planen und ausführen. Basis-URL: {0}, Status: {1}. Bitte legen Sie eine vom Webserver erreichbare Basis-URL in der web.config Datei fest, Einstellung: 'sm:TaskSchedulerBaseUrl'.");
+
+			builder.AddOrUpdate("Products.NotFound",
+				"The product with ID {0} was not found.",
+				"Das Produkt mit der ID {0} wurde nicht gefunden.");
+
+			builder.AddOrUpdate("Products.Deleted",
+				"The product with ID {0} has been deleted.",
+				"Das Produkt mit der ID {0} wurde gelöscht.");
 		}
     }
 }

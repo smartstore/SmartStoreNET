@@ -16,6 +16,7 @@ using System.Linq;
 using SmartStore.MegaMenu.Services;
 using SmartStore.MegaMenu.Domain;
 using System;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Controllers
 {
@@ -28,6 +29,7 @@ namespace SmartStore.Controllers
         private readonly IProductService _productService;
         private readonly IPermissionService _permissionService;
         private readonly IMegaMenuService _megaMenuService;
+        private readonly ILanguageService _languageService;
 
         public MegaMenuController(
             ICommonServices commonServices,
@@ -36,7 +38,8 @@ namespace SmartStore.Controllers
             IStoreMappingService storeMappingService,
             IProductService productService,
             IPermissionService permissionService,
-            IMegaMenuService megaMenuService)
+            IMegaMenuService megaMenuService,
+            ILanguageService languageService)
         {
             _commonServices = commonServices;
             _helper = helper;
@@ -45,6 +48,7 @@ namespace SmartStore.Controllers
             _productService = productService;
             _permissionService = permissionService;
             _megaMenuService = megaMenuService;
+            _languageService = languageService;
         }
 
         [AdminAuthorize]
@@ -92,18 +96,6 @@ namespace SmartStore.Controllers
             return Configure();
         }
 
-        //[ChildActionOnly]
-        //public ActionResult PublicInfo(string widgetZone)
-        //{
-        //    var settings = _commonServices.Settings.LoadSetting<MegaMenuSettings>(_commonServices.StoreContext.CurrentStore.Id);
-
-        //    var model = new MegaMenuNavigationModel();
-        //    //model.ConfigSetting = settings.ConfigSetting;
-
-        //    return View(model);
-        //}
-
-
         [AdminAuthorize]
         public ActionResult AdminEditTab(int categoryId)
         {
@@ -112,64 +104,80 @@ namespace SmartStore.Controllers
 
             var megaMenuRecord = _megaMenuService.GetMegaMenuRecord(categoryId) ?? new MegaMenuRecord { CategoryId = categoryId };
             megaMenuRecord.CategoryId = categoryId;
+
+            // prepare model
+            var model = new DropdownConfigurationModel();
+
+            model.AllowSubItemsColumnWrap = megaMenuRecord.AllowSubItemsColumnWrap;
+            model.BgAlignX = megaMenuRecord.BgAlignX;
+            model.BgAlignY = megaMenuRecord.BgAlignY;
+            model.BgLink = megaMenuRecord.BgLink;
+            model.BgOffsetX = megaMenuRecord.BgOffsetX;
+            model.BgOffsetY = megaMenuRecord.BgOffsetY;
+            model.BgPictureId = megaMenuRecord.BgPictureId;
+            model.CategoryId = megaMenuRecord.CategoryId;
+            model.DisplayBgPicture = megaMenuRecord.DisplayBgPicture;
+            model.DisplayCategoryPicture = megaMenuRecord.DisplayCategoryPicture;
+            model.DisplaySubItemsInline = megaMenuRecord.DisplaySubItemsInline;
+            model.FavorInMegamenu = megaMenuRecord.FavorInMegamenu;
+            model.HtmlColumnSpan = megaMenuRecord.HtmlColumnSpan;
+            model.EntityId = megaMenuRecord.Id;
+            model.IsActive = megaMenuRecord.IsActive;
+            model.MaxItemsPerColumn = megaMenuRecord.MaxItemsPerColumn;
+            model.MaxRotatorItems = megaMenuRecord.MaxRotatorItems;
+            model.MaxSubItemsPerCategory = megaMenuRecord.MaxSubItemsPerCategory;
+            model.MinChildCategoryThreshold = megaMenuRecord.MinChildCategoryThreshold;
+            model.RotatorHeading = megaMenuRecord.RotatorHeading;
+            model.SubItemsWrapTolerance = megaMenuRecord.SubItemsWrapTolerance;
+            model.Summary = megaMenuRecord.Summary;
+            model.TeaserHtml = megaMenuRecord.TeaserHtml;
+            model.TeaserRotatorItemSelectType = megaMenuRecord.TeaserRotatorItemSelectType;
+            model.TeaserRotatorProductIds = megaMenuRecord.TeaserRotatorProductIds;
+            model.TeaserType = megaMenuRecord.TeaserType;
+
+            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+            {
+                locale.BgLink = megaMenuRecord.GetLocalized(x => x.BgLink, languageId, false, false);
+                locale.RotatorHeading = megaMenuRecord.GetLocalized(x => x.RotatorHeading, languageId, false, false);
+                locale.Summary = megaMenuRecord.GetLocalized(x => x.Summary, languageId, false, false);
+                locale.TeaserHtml = megaMenuRecord.GetLocalized(x => x.TeaserHtml, languageId, false, false);
+            });
             
-            //var model = new AdminEditTabModel();
-
-            //model.CategoryId = megaMenuRecord.CategoryId;
-            //model.IsActive = megaMenuRecord.IsActive;
-            //model.DisplayCategoryPicture = megaMenuRecord.DisplayCategoryPicture;
-            //model.DisplayBgPicture = megaMenuRecord.DisplayBgPicture;
-            //model.BgPictureId = megaMenuRecord.BgPictureId;
-            //model.BgLink = megaMenuRecord.BgLink;
-            ////model.BgAlignX = megaMenuRecord.BgAlignX;
-            ////model.BgAlignY = megaMenuRecord.BgAlignY;
-            //model.BgOffsetX = megaMenuRecord.BgOffsetX;
-            //model.BgOffsetY = megaMenuRecord.BgOffsetY;
-            //model.MaxItemsPerColumn = megaMenuRecord.MaxItemsPerColumn;
-            //model.MaxSubItemsPerCategory = megaMenuRecord.MaxSubItemsPerCategory;
-            //model.Summary = megaMenuRecord.Summary;
-            //model.TeaserHtml = megaMenuRecord.TeaserHtml;
-            //model.HtmlColumnSpan = megaMenuRecord.HtmlColumnSpan;
-            //model.TeaserType = megaMenuRecord.TeaserType;
-            //model.TeaserRotatorItemSelectType = megaMenuRecord.TeaserRotatorItemSelectType;
-            //model.TeaserRotatorProductIds = megaMenuRecord.TeaserRotatorProductIds;
-            //model.DisplaySubItemsInline = megaMenuRecord.DisplaySubItemsInline;
-            //model.AllowSubItemsColumnWrap = megaMenuRecord.AllowSubItemsColumnWrap;
-            //model.SubItemsWrapTolerance = megaMenuRecord.SubItemsWrapTolerance;
-            //model.FavorInMegamenu = megaMenuRecord.FavorInMegamenu;
-
             // make enums
-            var availableTeaserTypes = new List<SelectListItem>();
-            var teaserRotatorItemSelectType = new List<SelectListItem>();
-            var availableAlignmentsX = new List<SelectListItem>();
-            var availableAlignmentsY = new List<SelectListItem>();
+            //var availableTeaserTypes = new List<SelectListItem>();
+            //var teaserRotatorItemSelectType = new List<SelectListItem>();
+            //var availableAlignmentsX = new List<SelectListItem>();
+            //var availableAlignmentsY = new List<SelectListItem>();
 
-            availableTeaserTypes.Add(new SelectListItem { Text = "None", Value = TeaserType.None.ToString(), Selected = megaMenuRecord.TeaserType.Equals(TeaserType.None) });
-            availableTeaserTypes.Add(new SelectListItem { Text = "Html", Value = TeaserType.Html.ToString(), Selected = megaMenuRecord.TeaserType.Equals(TeaserType.Html) });
-            availableTeaserTypes.Add(new SelectListItem { Text = "Rotator", Value = TeaserType.Rotator.ToString(), Selected = megaMenuRecord.TeaserType.Equals(TeaserType.Rotator) });
+            //availableTeaserTypes.Add(new SelectListItem { Text = "None", Value = TeaserType.None.ToString(), Selected = megaMenuRecord.TeaserType.Equals(TeaserType.None) });
+            //availableTeaserTypes.Add(new SelectListItem { Text = "Html", Value = TeaserType.Html.ToString(), Selected = megaMenuRecord.TeaserType.Equals(TeaserType.Html) });
+            //availableTeaserTypes.Add(new SelectListItem { Text = "Rotator", Value = TeaserType.Rotator.ToString(), Selected = megaMenuRecord.TeaserType.Equals(TeaserType.Rotator) });
 
-            teaserRotatorItemSelectType.Add(new SelectListItem { Text = "Custom", Value = TeaserRotatorItemSelectType.Custom.ToString(), Selected = megaMenuRecord.TeaserRotatorItemSelectType.Equals(TeaserRotatorItemSelectType.Custom) });
-            teaserRotatorItemSelectType.Add(new SelectListItem { Text = "Top", Value = TeaserRotatorItemSelectType.Top.ToString(), Selected = megaMenuRecord.TeaserRotatorItemSelectType.Equals(TeaserRotatorItemSelectType.Top) });
-            teaserRotatorItemSelectType.Add(new SelectListItem { Text = "Random", Value = TeaserRotatorItemSelectType.Random.ToString(), Selected = megaMenuRecord.TeaserRotatorItemSelectType.Equals(TeaserRotatorItemSelectType.Random) });
-            teaserRotatorItemSelectType.Add(new SelectListItem { Text = "DeepTop", Value = TeaserRotatorItemSelectType.DeepTop.ToString(), Selected = megaMenuRecord.TeaserRotatorItemSelectType.Equals(TeaserRotatorItemSelectType.DeepTop) });
-            teaserRotatorItemSelectType.Add(new SelectListItem { Text = "DeepRandom", Value = TeaserRotatorItemSelectType.DeepRandom.ToString(), Selected = megaMenuRecord.TeaserRotatorItemSelectType.Equals(TeaserRotatorItemSelectType.DeepRandom) });
+            //teaserRotatorItemSelectType.Add(new SelectListItem { Text = "Custom", Value = TeaserRotatorItemSelectType.Custom.ToString(), Selected = megaMenuRecord.TeaserRotatorItemSelectType.Equals(TeaserRotatorItemSelectType.Custom) });
+            //teaserRotatorItemSelectType.Add(new SelectListItem { Text = "Top", Value = TeaserRotatorItemSelectType.Top.ToString(), Selected = megaMenuRecord.TeaserRotatorItemSelectType.Equals(TeaserRotatorItemSelectType.Top) });
+            //teaserRotatorItemSelectType.Add(new SelectListItem { Text = "Random", Value = TeaserRotatorItemSelectType.Random.ToString(), Selected = megaMenuRecord.TeaserRotatorItemSelectType.Equals(TeaserRotatorItemSelectType.Random) });
+            //teaserRotatorItemSelectType.Add(new SelectListItem { Text = "DeepTop", Value = TeaserRotatorItemSelectType.DeepTop.ToString(), Selected = megaMenuRecord.TeaserRotatorItemSelectType.Equals(TeaserRotatorItemSelectType.DeepTop) });
+            //teaserRotatorItemSelectType.Add(new SelectListItem { Text = "DeepRandom", Value = TeaserRotatorItemSelectType.DeepRandom.ToString(), Selected = megaMenuRecord.TeaserRotatorItemSelectType.Equals(TeaserRotatorItemSelectType.DeepRandom) });
 
-            availableAlignmentsX.Add(new SelectListItem { Text = "Left", Value = AlignX.Left.ToString(), Selected = megaMenuRecord.BgAlignX.Equals(AlignX.Left) });
-            availableAlignmentsX.Add(new SelectListItem { Text = "Center", Value = AlignX.Center.ToString(), Selected = megaMenuRecord.BgAlignX.Equals(AlignX.Center) });
-            availableAlignmentsX.Add(new SelectListItem { Text = "Right", Value = AlignX.Right.ToString(), Selected = megaMenuRecord.BgAlignX.Equals(AlignX.Right) });
+            //availableAlignmentsX.Add(new SelectListItem { Text = "Left", Value = AlignX.Left.ToString(), Selected = megaMenuRecord.BgAlignX.Equals(AlignX.Left) });
+            //availableAlignmentsX.Add(new SelectListItem { Text = "Center", Value = AlignX.Center.ToString(), Selected = megaMenuRecord.BgAlignX.Equals(AlignX.Center) });
+            //availableAlignmentsX.Add(new SelectListItem { Text = "Right", Value = AlignX.Right.ToString(), Selected = megaMenuRecord.BgAlignX.Equals(AlignX.Right) });
 
-            availableAlignmentsY.Add(new SelectListItem { Text = "Top", Value = AlignY.Top.ToString(), Selected = megaMenuRecord.BgAlignY.Equals(AlignY.Top) });
-            availableAlignmentsY.Add(new SelectListItem { Text = "Center", Value = AlignY.Center.ToString(), Selected = megaMenuRecord.BgAlignY.Equals(AlignY.Center) });
-            availableAlignmentsY.Add(new SelectListItem { Text = "Bottom", Value = AlignY.Bottom.ToString(), Selected = megaMenuRecord.BgAlignY.Equals(AlignY.Bottom) });
-            
-            var result = PartialView(megaMenuRecord);
+            //availableAlignmentsY.Add(new SelectListItem { Text = "Top", Value = AlignY.Top.ToString(), Selected = megaMenuRecord.BgAlignY.Equals(AlignY.Top) });
+            //availableAlignmentsY.Add(new SelectListItem { Text = "Center", Value = AlignY.Center.ToString(), Selected = megaMenuRecord.BgAlignY.Equals(AlignY.Center) });
+            //availableAlignmentsY.Add(new SelectListItem { Text = "Bottom", Value = AlignY.Bottom.ToString(), Selected = megaMenuRecord.BgAlignY.Equals(AlignY.Bottom) });
+
+            //var result = PartialView(megaMenuRecord);
+
+            var result = PartialView(model);
+
             result.ViewData.TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "CustomProperties[MegaMenu]" };
 
             //init list values
-            ViewData["AvailableTeaserTypes"] = availableTeaserTypes;
-            ViewData["TeaserRotatorItemSelectType"] = teaserRotatorItemSelectType;
-            ViewData["AvailableAlignmentsX"] = availableAlignmentsX;
-            ViewData["AvailableAlignmentsY"] = availableAlignmentsY;
+            //ViewData["AvailableTeaserTypes"] = availableTeaserTypes;
+            //ViewData["TeaserRotatorItemSelectType"] = teaserRotatorItemSelectType;
+            //ViewData["AvailableAlignmentsX"] = availableAlignmentsX;
+            //ViewData["AvailableAlignmentsY"] = availableAlignmentsY;
             
             return result;
         }
@@ -178,7 +186,7 @@ namespace SmartStore.Controllers
         public ActionResult RotatorProducts(int catId)
         {
             var products = new List<Product>();
-            var megaMenuRecord = _megaMenuService.GetMegaMenuRecord(catId);
+            var megaMenuRecord = _megaMenuService.GetMegaMenuRecord(catId) ?? new MegaMenuRecord();
 
             var rotatorProducts = new List<Product>();
 
@@ -188,7 +196,6 @@ namespace SmartStore.Controllers
             }
 
             // TODO: get elems for other TeaserRotatorItemSelectType
-
             foreach (var product in rotatorProducts)
             {
                 //ensure has ACL permission and appropriate store mapping
@@ -199,7 +206,9 @@ namespace SmartStore.Controllers
             if (products.Count == 0)
                 return Content("");
 
-            var model = _helper.PrepareProductOverviewModels(products, true, true, 100, false, false, false, false, true).ToList();
+            var model = _helper.PrepareProductOverviewModels(products, true, true, 100, false, false, false, false, true)
+                .Take(megaMenuRecord.MaxRotatorItems)
+                .ToList();
 
             return PartialView(model);
         }

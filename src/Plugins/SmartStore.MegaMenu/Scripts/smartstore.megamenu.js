@@ -2,7 +2,7 @@
     // Depends on:
     // bootstrap 4
     // jquery.scrollTo.js
-
+    
     $.fn.extend({
         megaMenu: function (settings) {
 
@@ -98,7 +98,7 @@
 
                     megamenuNext.click(function () {
 
-                        scrollCorrection = "+=" + ($(lastVisibleElem).position().left + 30 + $(lastVisibleElem).width() - $(".nav-slider").width()) + "px";
+                        scrollCorrection = "+=" + ($(lastVisibleElem).position().left + 55 + $(lastVisibleElem).width() - $(".nav-slider").width()) + "px";
 
                         $(".nav-slider").scrollTo(scrollCorrection, 400, {
                             onAfter: function () {
@@ -109,11 +109,21 @@
 
                     megamenuPrev.click(function () {
                         $(".nav-slider").scrollTo(firstVisibleElem, 400, {
-                            offset: { left: -20 },
+                            offset: { left: -40 },
                             onAfter: function () {
                                 getCurrentNavigationElements();
                             }
                         });
+                    });
+
+                    megamenuNext.bind("mouseleave", function () {
+                        if (isLastItemVisible)
+                            megamenuNext.fadeOut(600);
+                    });
+
+                    megamenuPrev.bind("mouseleave", function () {
+                        if (isFirstItemVisible)
+                            megamenuPrev.fadeOut(600);
                     });
 
                     function getCurrentNavigationElements() {
@@ -150,14 +160,10 @@
                         });
 
                         // show or hide navigation buttons depending on whether first or last navitems are displayed
-                        if (isFirstItemVisible)
-                            megamenuPrev.css("display", "none");
-                        else
+                        if (!isFirstItemVisible)
                             megamenuPrev.css("display", "block");
 
-                        if (isLastItemVisible)
-                            megamenuNext.css("display", "none");
-                        else
+                        if (!isLastItemVisible)
                             megamenuNext.css("display", "block");
                     }
                 });
@@ -166,13 +172,14 @@
 
                     var container = $(containerId);
                     var catId = container.data("entity-id");
+                    var displayRotator = container.data("display-rotator");
 
-                    if ($(".pl-slider", container).length == 0 && catId != null) {
+                    if ($(".pl-slider", container).length == 0 && catId != null && displayRotator) {
 
                         var rotatorColumn = $(".rotator-" + catId);
 
                         // init throbber
-                        rotatorColumn.height(300).throbber({ white: true, small: true, message: '' });
+                        rotatorColumn.find(".rotator-content").throbber({ white: true, small: true, message: '' });
 
                         // wait a little to imply hard work is going on ;-)
                         setTimeout(function () {
@@ -185,7 +192,7 @@
                                 success: function (data) {
 
                                     // add html view
-                                    rotatorColumn.html(data);
+                                    rotatorColumn.find(".rotator-content").html(data);
 
                                     // init scrolling
                                     var scrollableProductList = $(".mega-menu-product-rotator.scroll", container);
@@ -230,6 +237,9 @@
                                 }
                             });
                         }, 1000);
+                    }
+                    else {
+                        container.find(".placeholder").addClass("empty");
                     }
                 }
             })

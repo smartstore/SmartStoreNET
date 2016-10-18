@@ -10,7 +10,7 @@ using SmartStore.Services.Cms;
 namespace SmartStore.MegaMenu
 {
 
-    public class Plugin : BasePlugin, IConfigurable, IWidget
+    public class Plugin : BasePlugin, IConfigurable
     {
         private readonly ISettingService _settingService;
         private readonly ICommonServices _services;
@@ -29,27 +29,6 @@ namespace SmartStore.MegaMenu
             routeValues = new RouteValueDictionary() { { "area", "SmartStore.MegaMenu" } };
         }
         
-        public IList<string> GetWidgetZones()
-        {
-            var zones = new List<string>() { "content_before" };
-            
-            return zones;
-        }
-
-        public void GetDisplayWidgetRoute(string widgetZone, object model, int storeId, out string actionName, out string controllerName, out RouteValueDictionary routeValues)
-        {
-            actionName = "PublicInfo";
-            controllerName = "MegaMenu";
-            routeValues = new RouteValueDictionary()
-            {
-                {"Namespaces", "SmartStore.MegaMenu.Controllers"},
-                {"area", "SmartStore.MegaMenu"},
-                {"widgetZone", widgetZone},
-                {"model", model}
-            };
-        }
-
-
         public override void Install()
         {
             _services.Settings.SaveSetting<MegaMenuSettings>(new MegaMenuSettings());

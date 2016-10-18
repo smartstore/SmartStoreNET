@@ -38,6 +38,8 @@ namespace SmartStore.MegaMenu.Models
 
         public int MaxSubItemsPerCategory { get; set; }
 
+        public int MinChildCategoryThreshold { get; set; }
+        
         public string Summary { get; set; }
 
         public string TeaserHtml { get; set; }
@@ -49,6 +51,8 @@ namespace SmartStore.MegaMenu.Models
         public TeaserRotatorItemSelectType TeaserRotatorItemSelectType { get; set; }
 
         public string TeaserRotatorProductIds { get; set; }
+
+        public string RotatorHeading { get; set; }
 
         public bool DisplaySubItemsInline { get; set; }
 

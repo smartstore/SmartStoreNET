@@ -5,8 +5,8 @@
 
 @{
     Layout = "";
-    Html.AddCssFileParts(true, "~/Plugins/SmartStore.MegaMenu/Content/smartstore.megamenu.css");
-    Html.AppendScriptParts(true, "~/Plugins/SmartStore.MegaMenu/Scripts/smartstore.megamenu.js");
+    Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.MegaMenu/Content/smartstore.megamenu.css"));
+    Html.AppendScriptParts(true, Url.Content("~/Plugins/SmartStore.MegaMenu/Scripts/smartstore.megamenu.js"));
 }
 
 @functions {
@@ -79,7 +79,7 @@
         var nodeChildren = node.Children.Count > dropdownModel.MaxSubItemsPerCategory ? dropdownModel.MaxSubItemsPerCategory : node.Children.Count;
         nodeChildren++;
 
-        if ((dropdownModel.MaxItemsPerColumn >= nodeChildren + currentColumnItemCount) || dropdownModel.AllowSubItemsColumnWrap)
+        if (((dropdownModel.MaxItemsPerColumn >= nodeChildren + currentColumnItemCount) || dropdownModel.AllowSubItemsColumnWrap) && node.Children.Count >= dropdownModel.MinChildCategoryThreshold)
         {
             return true;
         }
@@ -95,8 +95,8 @@
 
 <div class="megamenu">
 
-    <div class="megamenu-navigate-prev">
-        <a href="#" class="btn btn-icon btn-secondary"><i class="fa fa-chevron-left"></i></a>
+    <div class="megamenu-navigate-prev megamenu-nav-btn">
+        <a href="#" class="btn btn-icon btn-secondary"><i class="fa fa-angle-left"></i></a>
     </div>
 
     <ul class="nav navbar-nav">
@@ -141,8 +141,8 @@
 
     </ul>
 
-    <div class="megamenu-navigate-next">
-        <a href="#" class="btn btn-icon btn-secondary"><i class="fa fa-chevron-right"></i></a>
+    <div class="megamenu-navigate-next megamenu-nav-btn">
+        <a href="#" class="btn btn-icon btn-secondary"><i class="fa fa-angle-right"></i></a>
     </div>
 </div>
 
@@ -178,7 +178,7 @@
 
     @Html.Widget("megamenu_dropdown_top")
 
-    <div id="dropdown-menu-@parent.Value.EntityId" data-entity-id="@parent.Value.EntityId">
+    <div id="dropdown-menu-@parent.Value.EntityId" data-entity-id="@parent.Value.EntityId" data-display-rotator="@((!String.IsNullOrEmpty(dropdownModel.TeaserRotatorProductIds)).ToString().ToLower())">
         <div class="dropdown-menu mega-menu-dropdown@(dropdownModel.DisplaySubItemsInline ? " comma-separated" : "")">
 
             @if(dropdownModel.DisplayBgPicture)
@@ -263,7 +263,14 @@
                         <div class="col-md-@colWidth.ToString()"></div>
                     }
 
-                    <div class="col-md-3 rotator-@parent.Value.EntityId"></div>
+                    <div class="col-md-3 rotator-@parent.Value.EntityId">
+                        <div class="rotator-heading text-xs-center">
+                            <h4>@dropdownModel.RotatorHeading</h4>
+                        </div>
+                        <div class="rotator-content">
+                            <div class="placeholder"></div>
+                        </div>
+                    </div>
                 }
             </div>
         </div>
@@ -275,6 +282,11 @@
 @helper CreateSubMenu(IEnumerable<TreeNode<MenuItem>> nodes, MegaMenuDropdownModel dropdownModel)
 {
     var i = 1;
+
+    if(dropdownModel.DisplaySubItemsInline)
+    {
+        @:<div class="inline-container">
+    }
 
     foreach (var node in nodes)
     {
@@ -289,18 +301,20 @@
         var itemUrl = GetNodeLink(node);
         var itemState = node.GetNodePathState(Model.NavigationModel.Path);
         
-        <a class='mega-menu-subitem @((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : "")' href="@itemUrl">
-            @item.Text @*(@currentColumnItemCount)*@
-            @if (!String.IsNullOrEmpty(item.BadgeText))
-            {
-                <label class="label label-@item.BadgeStyle.ToString().ToLower()">@item.BadgeText</label>
-            }
-        </a>
+        <span class="mega-menu-subitem-wrap">
+            <a class='mega-menu-subitem@((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : "")' href="@itemUrl">
+                @item.Text @*(@currentColumnItemCount)*@
+                @if (!String.IsNullOrEmpty(item.BadgeText) && !dropdownModel.DisplaySubItemsInline)
+                {
+                    <label class="label label-@item.BadgeStyle.ToString().ToLower()">@item.BadgeText</label>
+                }
+            </a>
 
-        if (dropdownModel.DisplaySubItemsInline && (i != dropdownModel.MaxSubItemsPerCategory) && (i != nodes.Count()))
-        {
-            <span class="comma">,</span>
-        }
+            @if (dropdownModel.DisplaySubItemsInline && (i != dropdownModel.MaxSubItemsPerCategory) && (i != nodes.Count()))
+            {
+                <text>,</text>
+            }
+        </span>
 
         if (i++ == dropdownModel.MaxSubItemsPerCategory)
         {
@@ -311,19 +325,30 @@
 
         if (CloseColumn(node.Parent.Next, dropdownModel))
         {
-            @:</div><div class="col-md-3">
+            if(dropdownModel.DisplaySubItemsInline)
+            {
+                @:</div></div><div class="col-md-3"><div class="empty">
+            }
+            else {
+                @:</div><div class="col-md-3">
+            }
         }
+    }
+
+    if(dropdownModel.DisplaySubItemsInline)
+    {
+        @:</div>
     }
 }
 
 <script type="text/javascript">
     $(function () {
         var megamenu = $(".megamenu-container").megaMenu({
-            productRotatorAjaxUrl: "@(Url.Action("RotatorProducts", "Megamenu", new RouteValueDictionary() { { "area", "SmartStore.MegaMenu" } }))",
+            productRotatorAjaxUrl:      "@(Url.Action("RotatorProducts", "Megamenu", new RouteValueDictionary() { { "area", "SmartStore.MegaMenu" } }))",
             productRotatorInterval:     @Model.Settings.ProductRotatorInterval,
             productRotatorDuration:     @Model.Settings.ProductRotatorDuration,
             productRotatorCycle:        @(Model.Settings.ProductRotatorCycle ? "true" : "false"),
-        });
+        }); 
     });
 </script>
 

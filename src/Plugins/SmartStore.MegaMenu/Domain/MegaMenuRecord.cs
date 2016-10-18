@@ -3,6 +3,10 @@ using SmartStore.Core;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SmartStore.Web.Framework;
+using SmartStore.Core.Domain.Localization;
+using SmartStore.Web.Framework.Localization;
+using System.Collections.Generic;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.MegaMenu.Domain
 {
@@ -10,10 +14,11 @@ namespace SmartStore.MegaMenu.Domain
     /// Represents a mega menu record
     /// </summary>
     [Table("MegaMenu")]
-    public partial class MegaMenuRecord : BaseEntity
+    public partial class MegaMenuRecord : BaseEntity, ILocalizedEntity
     {
         public MegaMenuRecord()
         {
+            Locales = new List<MegaMenuLocalizedRecord>();
             IsActive = true;
             MaxItemsPerColumn = 15;
             MaxSubItemsPerCategory = 8;
@@ -24,8 +29,13 @@ namespace SmartStore.MegaMenu.Domain
             BgAlignY = AlignY.Bottom;
             TeaserType = TeaserType.None;
             TeaserRotatorItemSelectType = TeaserRotatorItemSelectType.Top;
+            MaxRotatorItems = 10;
+            MinChildCategoryThreshold = 0;
         }
 
+        [NotMapped]
+        public IList<MegaMenuLocalizedRecord> Locales { get; set; }
+        
         /// <summary>
         /// represents the categoryId of the record
         /// </summary>
@@ -155,7 +165,7 @@ namespace SmartStore.MegaMenu.Domain
         public bool AllowSubItemsColumnWrap { get; set; }
 
         /// <summary>
-        /// specifies a treshold which defines a tolarance value
+        /// specifies a treshold which defines a tolerance value
         /// </summary>
         [SmartResourceDisplayName("Plugins.SmartStore.MegaMenu.SubItemsWrapTolerance")]
         public int SubItemsWrapTolerance { get; set; }
@@ -165,9 +175,46 @@ namespace SmartStore.MegaMenu.Domain
         /// </summary>
         [SmartResourceDisplayName("Plugins.SmartStore.MegaMenu.FavorInMegamenu")]
         public bool FavorInMegamenu { get; set; }
+        
+        /// <summary>
+        /// specifies a treshold that must be reached before a subcategory will be rendered into the menu
+        /// </summary>
+        [SmartResourceDisplayName("Plugins.SmartStore.MegaMenu.MinChildCategoryThreshold")]
+        public int MinChildCategoryThreshold { get; set; }
+
+        /// <summary>
+        /// specifies the maximum of products that will be displayed as rotator items
+        /// </summary>
+        [SmartResourceDisplayName("Plugins.SmartStore.MegaMenu.MaxRotatorItems")]
+        public int MaxRotatorItems { get; set; }
+
+        /// <summary>
+        /// specifies a heading for the product rotator
+        /// </summary>
+        [SmartResourceDisplayName("Plugins.SmartStore.MegaMenu.RotatorHeading")]
+        public string RotatorHeading { get; set; }
+
 
         public DateTime? CreatedOnUtc { get; set; }
         public DateTime? UpdatedOnUtc { get; set; }
+    }
+
+    public class MegaMenuLocalizedRecord : ILocalizedModelLocal
+    {
+        public int LanguageId { get; set; }
+
+        [SmartResourceDisplayName("Plugins.SmartStore.MegaMenu.BgLink")]
+        public string BgLink { get; set; }
+
+        [SmartResourceDisplayName("Plugins.SmartStore.MegaMenu.Summary")]
+        public string Summary { get; set; }
+
+        [UIHint("RichEditor")]
+        [SmartResourceDisplayName("Plugins.SmartStore.MegaMenu.TeaserHtml")]
+        public string TeaserHtml { get; set; }
+
+        [SmartResourceDisplayName("Plugins.SmartStore.MegaMenu.RotatorHeading")]
+        public string RotatorHeading { get; set; }
     }
 
     public enum BadgeLabelType

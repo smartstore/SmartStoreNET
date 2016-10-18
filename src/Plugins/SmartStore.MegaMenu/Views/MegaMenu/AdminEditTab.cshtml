@@ -1,6 +1,8 @@
-﻿@model SmartStore.MegaMenu.Domain.MegaMenuRecord
+﻿@model DropdownConfigurationModel
 
+@using SmartStore.MegaMenu.Models;
 @using SmartStore.Web.Framework;
+@using SmartStore.Web.Framework.UI;
 
 @{
     Layout = "";
@@ -8,9 +10,14 @@
 
 @Html.Hidden("__Type__", Model.GetType().AssemblyQualifiedName)
 
-@Html.HiddenFor(m => m.Id)
+@Html.HiddenFor(m => m.EntityId)
 @Html.HiddenFor(m => m.CategoryId)
-@Html.HiddenFor(m => m.CreatedOnUtc)
+
+<div class="alert alert-info">
+    @Html.Raw(@T("Plugins.SmartStore.MegaMenu.AdminInstructionCatMain").Text.FormatWith(
+        Url.Action("ConfigurePlugin", "Plugin", new { area = "Admin", systemName = "SmartStore.MegaMenu" })
+    ))
+</div>
 
 <table class="adminContent">
     <tr>
@@ -84,23 +91,30 @@
             @Html.ValidationMessageFor(model => model.SubItemsWrapTolerance)
         </td>
     </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.MinChildCategoryThreshold)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.MinChildCategoryThreshold)
+            @Html.ValidationMessageFor(model => model.MinChildCategoryThreshold)
+        </td>
+    </tr>
 
     <tr>
         <td colspan="2">
             <div class="admin-config-group">
-                <div class="title">Pictures</div>
+                <div class="title">
+                    @T("Plugins.SmartStore.MegaMenu.BgPictures.Heading")
+                </div>
+
+                <div class="alert alert-info">
+                    @T("Plugins.SmartStore.MegaMenu.BgPictures.AdminInstruction")
+                </div>
             </div>
         </td>
     </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DisplayCategoryPicture)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.DisplayCategoryPicture)
-            @Html.ValidationMessageFor(model => model.DisplayCategoryPicture)
-        </td>
-    </tr>
+
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.DisplayBgPicture)
@@ -119,21 +133,46 @@
             @Html.ValidationMessageFor(model => model.BgPictureId)
         </td>
     </tr>
-    <tr class="bg-picture">
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.BgLink)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.BgLink)
-            @Html.ValidationMessageFor(model => model.BgLink)
-        </td>
-    </tr>
+</table>
+
+@(Html.LocalizedEditor<DropdownConfigurationModel, DropdownConfigurationLocalizedModel>("mm-bg-link-localized",
+    @<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].BgLink)
+            </td>
+            <td class="adminData">
+                @Html.TextBoxFor(model => Model.Locales[item].BgLink, new { @style = "width: 600px" })
+                @Html.ValidationMessageFor(model => model.Locales[item].BgLink)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.HiddenFor(model => model.Locales[item].LanguageId)
+            </td>
+        </tr>
+    </table>
+    ,
+    @<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.BgLink)
+            </td>
+            <td class="adminData">
+                @Html.TextBoxFor(model => model.BgLink, new { @style = "width: 600px" })
+                @Html.ValidationMessageFor(model => model.BgLink)
+            </td>
+        </tr>
+    </table>
+))
+
+<table class="adminContent">
     <tr class="bg-picture">
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.BgAlignX)
         </td>
         <td class="adminData">
-            @Html.DropDownListFor(model => model.BgAlignX, (List<SelectListItem>)ViewData["AvailableAlignmentsX"])
+            @Html.DropDownListForEnum(model => model.BgAlignX)
             @Html.ValidationMessageFor(model => model.BgAlignX)
         </td>
     </tr>
@@ -142,7 +181,7 @@
             @Html.SmartLabelFor(model => model.BgAlignY)
         </td>
         <td class="adminData">
-            @Html.DropDownListFor(model => model.BgAlignY, (List<SelectListItem>)ViewData["AvailableAlignmentsY"])
+            @Html.DropDownListForEnum(model => model.BgAlignY)
             @Html.ValidationMessageFor(model => model.BgAlignY)
         </td>
     </tr>
@@ -164,21 +203,76 @@
             @Html.ValidationMessageFor(model => model.BgOffsetY)
         </td>
     </tr>
-    
+
     <tr>
         <td colspan="2">
             <div class="admin-config-group">
-                <div class="title">Text</div>
+                <div class="title">
+                    @T("Plugins.SmartStore.MegaMenu.ShortSummary.Heading")
+                </div>
+
+                <div class="alert alert-info">
+                    @T("Plugins.SmartStore.MegaMenu.ShortSummary.AdminInstruction")
+                </div>
             </div>
         </td>
     </tr>
-    <tr class="cat-picture">
+
+    <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Summary)
+            @Html.SmartLabelFor(model => model.DisplayCategoryPicture)
         </td>
         <td class="adminData">
-            @Html.TextAreaFor(model => model.Summary, new { @style = "height:120px; width: 600px" })
-            @Html.ValidationMessageFor(model => model.Summary)
+            @Html.EditorFor(model => model.DisplayCategoryPicture)
+            @Html.ValidationMessageFor(model => model.DisplayCategoryPicture)
+        </td>
+    </tr>
+</table>
+
+@(Html.LocalizedEditor<DropdownConfigurationModel, DropdownConfigurationLocalizedModel>("mm-short-summary",
+    @<table class="adminContent">
+         <tr class="cat-picture">
+             <td class="adminTitle">
+                 @Html.SmartLabelFor(model => Model.Locales[item].Summary)
+             </td>
+             <td class="adminData">
+                 @Html.TextAreaFor(model => Model.Locales[item].Summary, new { @style = "height:120px; width: 600px" })
+                 @Html.ValidationMessageFor(model => Model.Locales[item].Summary)
+             </td>
+         </tr>
+        <tr>
+            <td colspan="2">
+                @Html.HiddenFor(model => model.Locales[item].LanguageId)
+            </td>
+        </tr>
+    </table>
+    ,
+    @<table class="adminContent">
+         <tr class="cat-picture">
+             <td class="adminTitle">
+                 @Html.SmartLabelFor(model => model.Summary)
+             </td>
+             <td class="adminData">
+                 @Html.TextAreaFor(model => model.Summary, new { @style = "height:120px; width: 600px" })
+                 @Html.ValidationMessageFor(model => model.Summary)
+             </td>
+         </tr>
+    </table>
+))
+
+
+<table class="adminContent">
+    <tr>
+        <td colspan="2">
+            <div class="admin-config-group">
+                <div class="title">
+                    @T("Plugins.SmartStore.MegaMenu.Teaser.Heading")
+                </div>
+
+                <div class="alert alert-info">
+                    @T("Plugins.SmartStore.MegaMenu.Teaser.AdminInstruction")
+                </div>
+            </div>
         </td>
     </tr>
     <tr>
@@ -186,19 +280,44 @@
             @Html.SmartLabelFor(model => model.TeaserType)
         </td>
         <td class="adminData">
-            @Html.DropDownListFor(model => model.TeaserType, (List<SelectListItem>)ViewData["AvailableTeaserTypes"])
+            @Html.DropDownListForEnum(model => model.TeaserType)
             @Html.ValidationMessageFor(model => model.TeaserType)
         </td>
     </tr>
-    <tr class="toggle-teaser-html">
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.TeaserHtml)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.TeaserHtml)
-            @Html.ValidationMessageFor(model => model.TeaserHtml)
-        </td>
-    </tr>
+</table>
+
+@(Html.LocalizedEditor<DropdownConfigurationModel, DropdownConfigurationLocalizedModel>("mm-teaser-html",
+    @<table class="adminContent">
+         <tr class="toggle-teaser-html">
+             <td class="adminTitle">
+                 @Html.SmartLabelFor(model => model.Locales[item].TeaserHtml)
+             </td>
+             <td class="adminData">
+                 @Html.EditorFor(model => model.Locales[item].TeaserHtml, new { @style = "width: 600px" })
+                 @Html.ValidationMessageFor(model => model.Locales[item].TeaserHtml)
+             </td>
+         </tr>
+        <tr>
+            <td colspan="2">
+                @Html.HiddenFor(model => model.Locales[item].LanguageId)
+            </td>
+        </tr>
+    </table>
+    ,
+    @<table class="adminContent">
+         <tr class="toggle-teaser-html">
+             <td class="adminTitle">
+                 @Html.SmartLabelFor(model => model.TeaserHtml)
+             </td>
+             <td class="adminData">
+                 @Html.EditorFor(model => model.TeaserHtml, new { @style = "width: 600px" })
+                 @Html.ValidationMessageFor(model => model.TeaserHtml)
+             </td>
+         </tr>
+    </table>
+))
+
+<table class="adminContent">
     <tr class="toggle-teaser-html">
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.HtmlColumnSpan)
@@ -208,13 +327,47 @@
             @Html.ValidationMessageFor(model => model.HtmlColumnSpan)
         </td>
     </tr>
+</table>
 
+@(Html.LocalizedEditor<DropdownConfigurationModel, DropdownConfigurationLocalizedModel>("mm-rotator-heading",
+    @<table class="adminContent">
+         <tr class="toggle-teaser-rotator">
+             <td class="adminTitle">
+                 @Html.SmartLabelFor(model => model.Locales[item].RotatorHeading)
+             </td>
+             <td class="adminData">
+                 @Html.EditorFor(model => model.Locales[item].RotatorHeading, new { @style = "width: 600px" })
+                 @Html.ValidationMessageFor(model => model.Locales[item].RotatorHeading)
+             </td>
+         </tr>
+        <tr>
+            <td colspan="2">
+                @Html.HiddenFor(model => model.Locales[item].LanguageId)
+            </td>
+        </tr>
+    </table>
+    ,
+    @<table class="adminContent">
+         <tr class="toggle-teaser-rotator">
+             <td class="adminTitle">
+                 @Html.SmartLabelFor(model => model.RotatorHeading)
+             </td>
+             <td class="adminData">
+                 @Html.EditorFor(model => model.RotatorHeading, new { @style = "width: 600px" })
+                 @Html.ValidationMessageFor(model => model.RotatorHeading)
+             </td>
+         </tr>
+    </table>
+))
+
+<table class="adminContent">
     <tr class="toggle-teaser-rotator">
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.TeaserRotatorItemSelectType)
         </td>
         <td class="adminData">
-            @Html.DropDownListFor(model => model.TeaserRotatorItemSelectType, (List<SelectListItem>)ViewData["TeaserRotatorItemSelectType"])
+            @*@Html.DropDownListFor(model => model.TeaserRotatorItemSelectType, (List<SelectListItem>)ViewData["TeaserRotatorItemSelectType"])*@
+            @Html.DropDownListForEnum(model => model.TeaserRotatorItemSelectType)
             @Html.ValidationMessageFor(model => model.TeaserRotatorItemSelectType)
         </td>
     </tr>
@@ -233,10 +386,21 @@
         </td>
     </tr>
 
+    <tr class="toggle-teaser-rotator">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.MaxRotatorItems)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.MaxRotatorItems)
+            @Html.ValidationMessageFor(model => model.MaxRotatorItems)
+        </td>
+    </tr>
+
 </table>
 
 <script>
     // TODO: put this script in admin-script.js
+
     $(document).ready(function () {
 
         // display bg picture
@@ -245,9 +409,11 @@
         function toggleBgPicture() {
             if ($('#@Html.FieldIdFor(model => model.DisplayBgPicture)').is(':checked')) {
                 $('.bg-picture').show();
+                $('#mm-bg-link-localized').closest(".well").show();
             }
             else {
                 $('.bg-picture').hide();
+                $('#mm-bg-link-localized').closest(".well").hide();
             }
         }
 
@@ -269,9 +435,11 @@
         function toggleCategoryPicture() {
             if ($('#@Html.FieldIdFor(model => model.DisplayCategoryPicture)').is(':checked')) {
                 $('.cat-picture').show();
+                $('#mm-short-summary').closest(".well").show();
             }
             else {
                 $('.cat-picture').hide();
+                $('#mm-short-summary').closest(".well").hide();
             }
         }
 
@@ -285,14 +453,19 @@
             switch (type) {
                 case 'Html':
                     $('.toggle-teaser-html').show();
+                    $('#mm-teaser-html').closest(".well").show();
                     $('.toggle-teaser-rotator').hide();
+                    $('#mm-rotator-heading').closest(".well").hide();
                     break;
                 case 'Rotator':
                     $('.toggle-teaser-html').hide();
+                    $('#mm-teaser-html').closest(".well").hide();
                     $('.toggle-teaser-rotator').show();
+                    $('#mm-rotator-heading').closest(".well").show();
                     break;
                 default:
                     $('.toggle-teaser-html, .toggle-teaser-rotator').hide();
+                    $('#mm-rotator-heading, #mm-teaser-html').closest(".well").hide();
                     break;
             }
         }
@@ -321,3 +494,8 @@
 
     });
 </script>
+<style type="text/css">
+    .well {
+        margin-top: 10px;
+    }
+</style>

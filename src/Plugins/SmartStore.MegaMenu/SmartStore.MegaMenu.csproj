@@ -185,6 +185,7 @@
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Domain\MegaMenuRecord.cs" />
     <Compile Include="Filter\MegaMenuFilter.cs" />
+    <Compile Include="Models\DropdownConfigurationModel.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteProvider.cs" />

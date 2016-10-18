@@ -6,10 +6,13 @@ using SmartStore.Services;
 using SmartStore.Services.Media;
 using SmartStore.Web.Controllers;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Web.Infrastructure.Cache;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.MegaMenu.Filters
 {
@@ -19,16 +22,19 @@ namespace SmartStore.MegaMenu.Filters
         private readonly IMegaMenuService _megaMenuService;
         private readonly IPictureService _pictureService;
         private readonly CatalogHelper _helper;
+        private readonly MegaMenuSettings _megaMenuSettings;
         
         public MegaMenuFilter(CatalogHelper helper, 
             IMegaMenuService megaMenuService,
             ICommonServices services,
-            IPictureService pictureService)
+            IPictureService pictureService,
+            MegaMenuSettings megaMenuSettings)
 		{
             _services = services;
             _megaMenuService = megaMenuService;
             _pictureService = pictureService;
             _helper = helper;
+            _megaMenuSettings = megaMenuSettings;
         }
         
 		public void OnActionExecuting(ActionExecutingContext filterContext)
@@ -49,43 +55,60 @@ namespace SmartStore.MegaMenu.Filters
         public MegaMenuNavigationModel GetModel(NavigationModel navigationModel)
         {
             var model = new MegaMenuNavigationModel();
-
-            model.NavigationModel = navigationModel;
             
-            foreach (var cat in navigationModel.Root.Children)
+            var cacheKey = _megaMenuService.GetCacheKey(
+                _services.StoreContext.CurrentStore.Id, 
+                _services.WorkContext.CurrentCustomer.CustomerRoles.Select(x => x.Id).ToString(),
+                _services.WorkContext.WorkingLanguage.Id);
+
+            var cachedResult = _services.Cache.Get(cacheKey, () => 
             {
-                var megaMenuRecord = _megaMenuService.GetMegaMenuRecord(cat.Value.EntityId);
+                var dropdownModels = new Dictionary<int, MegaMenuDropdownModel>();
 
-                var dropdownModel = new MegaMenuDropdownModel
+                var catIds = navigationModel.Root.Children.Select(x => x.Value.EntityId).ToArray();
+                var recordsMap = _megaMenuService.GetMegaMenuRecords(catIds).ToDictionarySafe(x => x.CategoryId);
+
+                foreach (var catId in catIds)
                 {
-                    AllowSubItemsColumnWrap = megaMenuRecord.AllowSubItemsColumnWrap,
-                    BgCss = GetContainerAlignmentCss(megaMenuRecord.BgAlignX, megaMenuRecord.BgAlignY, megaMenuRecord.BgOffsetX.ToString(), megaMenuRecord.BgOffsetY.ToString()),
-                    BgLink = megaMenuRecord.BgLink,
-                    BgPicturePath = _pictureService.GetPictureUrl(megaMenuRecord.BgPictureId),
-                    DisplayBgPicture = megaMenuRecord.DisplayBgPicture,
-                    DisplayCategoryPicture = megaMenuRecord.DisplayCategoryPicture,
-                    DisplaySubItemsInline = megaMenuRecord.DisplaySubItemsInline,
-                    HtmlColumnSpan = megaMenuRecord.HtmlColumnSpan,
-                    IsActive = megaMenuRecord.IsActive,
-                    MaxItemsPerColumn = megaMenuRecord.MaxItemsPerColumn,
-                    MaxSubItemsPerCategory = megaMenuRecord.MaxSubItemsPerCategory,
-                    SubItemsWrapTolerance = megaMenuRecord.SubItemsWrapTolerance,
-                    Summary = megaMenuRecord.Summary,
-                    TeaserHtml = megaMenuRecord.TeaserHtml,
-                    TeaserRotatorItemSelectType = megaMenuRecord.TeaserRotatorItemSelectType,
-                    TeaserRotatorProductIds = megaMenuRecord.TeaserRotatorProductIds,
-                    TeaserType = megaMenuRecord.TeaserType
+                    var record = recordsMap.Get(catId) ?? new MegaMenuRecord { CategoryId = catId };
+                    var dropdownModel = new MegaMenuDropdownModel
+                    {
+                        AllowSubItemsColumnWrap = record.AllowSubItemsColumnWrap,
+                        BgCss = GetContainerAlignmentCss(record.BgAlignX, record.BgAlignY, record.BgOffsetX.ToString(), record.BgOffsetY.ToString()),
+                        BgLink = record.GetLocalized(x => x.BgLink),
+                        BgPicturePath = _pictureService.GetPictureUrl(record.BgPictureId),
+                        DisplayBgPicture = record.DisplayBgPicture,
+                        DisplayCategoryPicture = record.DisplayCategoryPicture,
+                        DisplaySubItemsInline = record.DisplaySubItemsInline,
+                        HtmlColumnSpan = record.HtmlColumnSpan,
+                        IsActive = record.IsActive,
+                        MaxItemsPerColumn = record.MaxItemsPerColumn,
+                        MaxSubItemsPerCategory = record.MaxSubItemsPerCategory,
+                        MinChildCategoryThreshold = record.MinChildCategoryThreshold,
+                        SubItemsWrapTolerance = record.SubItemsWrapTolerance,
+                        Summary = record.GetLocalized(x => x.Summary),
+                        TeaserHtml = record.GetLocalized(x => x.TeaserHtml),
+                        TeaserRotatorItemSelectType = record.TeaserRotatorItemSelectType,
+                        TeaserRotatorProductIds = record.TeaserRotatorProductIds,
+                        TeaserType = record.TeaserType,
+                        RotatorHeading = record.GetLocalized(x => x.RotatorHeading)
+                    };
 
-                    //CloseColumn ???
-                };
+                    dropdownModels[catId] = dropdownModel;
+                }
 
-                cat.SetThreadMetadata("MegamenuModel", dropdownModel);
+                return dropdownModels;
+            });
+
+            foreach (var child in navigationModel.Root.Children)
+            {
+                child.SetThreadMetadata("MegamenuModel", cachedResult.Get(child.Value.EntityId));
             }
 
-            // get plugin settings
-            model.Settings = _services.Settings.LoadSetting<MegaMenuSettings>(_services.StoreContext.CurrentStore.Id);
+            model.NavigationModel = navigationModel;
+            model.Settings = _megaMenuSettings;
 
-            return model; 
+            return model;
         }
 
         private string GetContainerAlignmentCss(AlignX alignmentX, AlignY alignmentY, string OffsetX, string OffsetY)

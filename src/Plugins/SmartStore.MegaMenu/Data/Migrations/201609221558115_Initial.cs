@@ -13,6 +13,7 @@ namespace SmartStore.MegaMenu.Data.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
                         CategoryId = c.Int(nullable: false),
+                        LimitedToStores = c.Boolean(nullable: false),
                         IsActive = c.Boolean(nullable: false),
                         DisplayCategoryPicture = c.Boolean(nullable: false),
                         DisplayBgPicture = c.Boolean(nullable: false),
@@ -34,11 +35,13 @@ namespace SmartStore.MegaMenu.Data.Migrations
                         AllowSubItemsColumnWrap = c.Boolean(nullable: false),
                         SubItemsWrapTolerance = c.Int(nullable: false),
                         FavorInMegamenu = c.Boolean(nullable: false),
+                        MinChildCategoryThreshold = c.Int(nullable: false),
+                        MaxRotatorItems = c.Int(nullable: false),
+                        RotatorHeading = c.String(maxLength: 512),
                         CreatedOnUtc = c.DateTime(),
                         UpdatedOnUtc = c.DateTime(),
                     })
-                .PrimaryKey(t => t.Id);
-            
+                .PrimaryKey(t => t.Id);    
         }
         
         public override void Down()

@@ -488,7 +488,6 @@ namespace SmartStore.Web.Framework
 		{
 			// Output cache
 			builder.RegisterType<DisplayControl>().As<IDisplayControl>().InstancePerRequest();
-			builder.Register<IOutputCacheProvider>(c => NullOutputCacheProvider.Instance).InstancePerRequest();
 			builder.Register<IOutputCacheInvalidationObserver>(c => NullOutputCacheInvalidationObserver.Instance).SingleInstance();
 
 			// Request cache

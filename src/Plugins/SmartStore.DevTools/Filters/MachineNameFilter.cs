@@ -29,14 +29,13 @@ namespace SmartStore.DevTools.Filters
 
 			if (filterContext.IsChildAction)
 				return;
-			
-			// should only run on a full view rendering result
-			var result = filterContext.Result as ViewResultBase;
-			if (result == null)
-			{
-				return;
-			}
 
+			var result = filterContext.Result;
+
+			// should only run on a full view rendering result or HTML ContentResult
+			if (!result.IsHtmlViewResult())
+				return;
+			
 			if (!_services.WorkContext.CurrentCustomer.IsAdmin() && !filterContext.HttpContext.Request.IsLocal)
 			{
 				return;

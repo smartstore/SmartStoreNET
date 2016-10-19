@@ -54,7 +54,7 @@ namespace SmartStore.DevTools.Filters
 			if (!_profilerSettings.EnableMiniProfilerInPublicStore)
 				return;
 
-			if (!(filterContext.Result is ViewResultBase))
+			if (!filterContext.Result.IsHtmlViewResult())
 			{
 				this._profiler.Value.StepStop("ActionFilter");
 			}
@@ -66,8 +66,7 @@ namespace SmartStore.DevTools.Filters
 				return;
 			
 			// should only run on a full view rendering result
-			var result = filterContext.Result as ViewResultBase;
-			if (result == null)
+			if (!filterContext.Result.IsHtmlViewResult())
 			{
 				return;
 			}
@@ -77,14 +76,16 @@ namespace SmartStore.DevTools.Filters
 				return;
 			}
 
-			var viewName = result.ViewName;
+			var viewResult = filterContext.Result as ViewResultBase;
+
+			string viewName = viewResult?.ViewName;
 			if (viewName.IsEmpty())
 			{
 				string action = (filterContext.RouteData.Values["action"] as string).EmptyNull();
 				viewName = action;
 			}
 
-			this._profiler.Value.StepStart("ResultFilter", string.Format("{0}: {1}", result is PartialViewResult ? "Partial" : "View", viewName));
+			this._profiler.Value.StepStart("ResultFilter", string.Format("{0}: {1}", viewResult is PartialViewResult ? "Partial" : "View", viewName));
 
 			if (!filterContext.IsChildAction)
 			{
@@ -102,7 +103,7 @@ namespace SmartStore.DevTools.Filters
 				return;
 			
 			// should only run on a full view rendering result
-			if (!(filterContext.Result is ViewResultBase))
+			if (!filterContext.Result.IsHtmlViewResult())
 			{
 				return;
 			}

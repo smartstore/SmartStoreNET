@@ -219,6 +219,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Controllers\AdminControllerBase.cs" />
+    <Compile Include="Extensions\ActionResultExtensions.cs" />
     <Compile Include="Filters\JsonNetAttribute.cs" />
     <Compile Include="Localization\SetWorkingCultureAttribute.cs" />
     <Compile Include="Modelling\Results\JsonNetResult.cs" />

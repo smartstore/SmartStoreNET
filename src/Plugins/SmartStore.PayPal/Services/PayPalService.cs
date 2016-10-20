@@ -133,6 +133,7 @@ namespace SmartStore.PayPal.Services
 			decimal redeemedRewardPointsAmount;
 			decimal orderDiscountInclTax;
 			decimal totalOrderItems = decimal.Zero;
+			var taxTotal = decimal.Zero;
 
 			var shipping = (_orderTotalCalculationService.GetShoppingCartShippingTotal(cart) ?? decimal.Zero);
 
@@ -164,7 +165,20 @@ namespace SmartStore.PayPal.Services
 				totalOrderItems += (productPrice * item.Item.Quantity);
 			}
 
-			var itemsPlusMisc = (totalOrderItems + shipping + paymentFee);
+			if (!includingTax)
+			{
+				// "To avoid rounding errors we recommend not submitting tax amounts on line item basis. 
+				// Calculated tax amounts for the entire shopping basket may be submitted in the amount objects.
+				// In this case the item amounts will be treated as amounts excluding tax.
+				// In a B2C scenario, where taxes are included, no taxes should be submitted to PayPal."
+
+				SortedDictionary<decimal, decimal> taxRates = null;
+				taxTotal = _orderTotalCalculationService.GetTaxTotal(cart, out taxRates);
+
+				amountDetails.Add("tax", taxTotal.FormatInvariant());
+			}
+
+			var itemsPlusMisc = (totalOrderItems + taxTotal + shipping + paymentFee);
 
 			if (total != itemsPlusMisc)
 			{
@@ -186,18 +200,7 @@ namespace SmartStore.PayPal.Services
 			// fill amount object
 			amountDetails.Add("shipping", shipping.FormatInvariant());
 			amountDetails.Add("subtotal", totalOrderItems.FormatInvariant());
-			if (!includingTax)
-			{
-				// "To avoid rounding errors we recommend not submitting tax amounts on line item basis. 
-				// Calculated tax amounts for the entire shopping basket may be submitted in the amount objects.
-				// In this case the item amounts will be treated as amounts excluding tax.
-				// In a B2C scenario, where taxes are included, no taxes should be submitted to PayPal."
 
-				SortedDictionary<decimal, decimal> taxRates = null;
-				var taxTotal = _orderTotalCalculationService.GetTaxTotal(cart, out taxRates);
-
-				amountDetails.Add("tax", taxTotal.FormatInvariant());
-			}
 			if (paymentFee != decimal.Zero)
 			{
 				amountDetails.Add("handling_fee", paymentFee.FormatInvariant());

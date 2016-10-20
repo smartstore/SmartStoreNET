@@ -48,10 +48,11 @@ namespace SmartStore.Core.Search
 		/// <summary>
 		/// Acquires an index writer
 		/// </summary>
+		/// <param name="writerContext">Provides information about the indexing operation</param>
 		/// <remarks>
 		/// This method creates a transient writer instance which automatically gets released on dispose.
 		/// </remarks>
-		IDisposable AcquireWriter();
+		IDisposable AcquireWriter(AcquireWriterContext writerContext);
 
 		/// <summary>
 		/// Adds a set of new documents to the index

@@ -402,6 +402,7 @@
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="Plugins\LoadPluginResult.cs" />
+    <Compile Include="Search\AcquireWriterContext.cs" />
     <Compile Include="Search\DefaultIndexManager.cs" />
     <Compile Include="Search\Facets\Facet.cs" />
     <Compile Include="Search\Facets\FacetGroup.cs" />

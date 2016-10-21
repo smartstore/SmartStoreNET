@@ -22,6 +22,11 @@
 		public AcquirementReason Reason { get; private set; }
 
 		/// <summary>
+		/// Indicates whether old and new search index uses different languages
+		/// </summary>
+		public bool? HasDifferentLanguages { get; set; }
+
+		/// <summary>
 		/// SEO codes of languages used for indexing
 		/// </summary>
 		public string[] LanguageSeoCodes { get; set; }

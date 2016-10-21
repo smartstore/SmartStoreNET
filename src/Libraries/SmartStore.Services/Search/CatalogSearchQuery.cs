@@ -191,7 +191,7 @@ namespace SmartStore.Services.Search
 		{
 			Guard.NotNull(currency, nameof(currency));
 
-			var fieldName = "price_" + currency.CurrencyCode.EmptyNull().ToLower();
+			var fieldName = "price_c-" + currency.CurrencyCode.EmptyNull().ToLower();
 
 			return WithFilter(SearchFilter.ByRange(fieldName,
 				fromPrice.HasValue ? decimal.ToDouble(fromPrice.Value) : (double?)null,

@@ -5,17 +5,19 @@ namespace SmartStore.Data.Migrations
 	using System.Data.Entity.Migrations;
 	using Setup;
 	using Core.Data;
+	using System.Web.Hosting;
 
 	public partial class log4net : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
 	{
 		public override void Up()
         {
 			// Custom START
-			if (DataSettings.DatabaseIsInstalled())
+			if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
 			{
-				DropIndex("dbo.Log", "IX_Log_ContentHash");
+				//DropIndex("dbo.Log", "IX_Log_ContentHash");
+				Sql("IF EXISTS (SELECT * FROM sys.indexes WHERE name='IX_Log_ContentHash' AND object_id = OBJECT_ID('[dbo].[Log]')) DROP INDEX [IX_Log_ContentHash] ON [dbo].[Log];");
 				Sql(@"Truncate Table [Log]");
-			}			
+			}
 			// Custom END
 
 			AddColumn("dbo.Log", "Logger", c => c.String(nullable: false, maxLength: 400));
@@ -49,7 +51,7 @@ namespace SmartStore.Data.Migrations
 			if (DataSettings.DatabaseIsInstalled())
 			{
 				CreateIndex("dbo.Log", "ContentHash", name: "IX_Log_ContentHash");
-			}	
+			}
 			// Custom END
 		}
 

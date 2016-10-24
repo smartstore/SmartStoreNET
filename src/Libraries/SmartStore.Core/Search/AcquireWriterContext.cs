@@ -1,13 +1,14 @@
 ﻿namespace SmartStore.Core.Search
 {
+	public enum AcquirementReason
+	{
+		Indexing,
+		Optimizing,
+		Deleting
+	}
+
 	public class AcquireWriterContext
 	{
-		public enum AcquirementReason
-		{
-			Indexing,
-			Optimize,
-			Delete
-		}
 
 		public AcquireWriterContext(AcquirementReason reason)
 		{
@@ -24,7 +25,7 @@
 		/// <summary>
 		/// Indicates whether old and new search index uses different languages
 		/// </summary>
-		public bool? HasDifferentLanguages { get; set; }
+		public bool? LanguagesChangedSinceLastIndexing { get; set; }
 
 		/// <summary>
 		/// SEO codes of languages used for indexing

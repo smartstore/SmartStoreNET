@@ -35,7 +35,7 @@ namespace SmartStore.Core.Search
 			Fields = fields;
 			Term = term;
 			EscapeTerm = escape;
-			IsExactMatch = IsExactMatch;
+			IsExactMatch = isExactMatch;
 			IsFuzzySearch = isFuzzySearch;
 
 			Filters = new List<ISearchFilter>();

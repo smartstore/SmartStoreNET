@@ -234,6 +234,7 @@
     <Compile Include="ITransient.cs" />
     <Compile Include="Collections\MostRecentlyUsedList.cs" />
     <Compile Include="Localization\LocalizationHelper.cs" />
+    <Compile Include="Logging\IChronometer.cs" />
     <Compile Include="Logging\ILoggerFactory.cs" />
     <Compile Include="Logging\log4net\Log4netLogger.cs" />
     <Compile Include="Logging\log4net\Log4netLoggerFactory.cs" />

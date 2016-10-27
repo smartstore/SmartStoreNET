@@ -2,7 +2,7 @@
     // Depends on:
     // bootstrap 4
     // jquery.scrollTo.js
-    
+
     $.fn.extend({
         megaMenu: function (settings) {
 
@@ -17,74 +17,97 @@
 
             return this.each(function () {
 
-                var megamenu = $(this);
-                var megamenuNext = $(".megamenu-navigate-next", megamenu);
-                var megamenuPrev = $(".megamenu-navigate-prev", megamenu);
-                var megamenuContainer = $('.megamenu-dropdown-container');
+                var megamenuContainer = $(this);
+                var megamenu = $(".megamenu", megamenuContainer);
+                var megamenuNext = $(".megamenu-nav--next", megamenuContainer);
+                var megamenuPrev = $(".megamenu-nav--prev", megamenuContainer);
+                var megamenuDropdownContainer = $('.megamenu-dropdown-container');
+                var navElems = megamenu.find(".nav .nav-item");	// li
+                var zoomContainer = $(".zoomContainer");		// needed to fix elevateZoom z-index problem e.g. in product detail gallery
+                var closingTimeout = 0;							// timeout to handle delay of dropdown closing
+                var openTimeout;								// timeout to handle opening attempts in tryOpen
+                var tempLink; 		// for temporary storage of the link that was passed into tryOpen, its needed to determine whether a new link was passed into tryOpen so the timeout for the old link can be cleared
 
-                megamenuContainer.on('show.bs.dropdown', function (e) {
-                    var id = e.target.id;
-                    var link = $('.megamenu .nav-item [data-target="#' + id + '"]');
-                    link.closest("li").addClass("active");
+                function closeMenuHandler(link, closeImmediatly) {
+                    closingTimeout = setTimeout(function () { closeNow(link) }, 250);
+                }
 
-                    // fix elevateZoom z-index problem
-                    $(".zoomContainer").css("z-index", "0")
-                });
+                function closeNow(link) {
+                    $(link.data("target")).removeClass("open");
 
-                megamenuContainer.on('hide.bs.dropdown', function (e) {
-                    var id = e.target.id;
-                    var link = $('.megamenu .nav-item [data-target="#' + id + '"]');
-                    link.closest("li").removeClass("active");
-
-                    // fix elevateZoom z-index problem
-                    $(".zoomContainer").css("z-index", "999")
-                });
-
-                $(".dropdown-submenu", megamenu).click(function () {
-
-                    var clicked_elem = $(event.target).parent();
-                    var wasOpened = clicked_elem.hasClass("active");
-
-                    if (!wasOpened) {
-                        initRotator($(event.target).data("target"));
+                    if (link.hasClass("dropdown-toggle")) {
+                        link.closest("li").removeClass("active");
                     }
+
+                    zoomContainer.css("z-index", "999");
+                }
+
+                function tryOpen(link) {
+
+                    // if new link was passed into function clear tryOpen-timeout
+                    if (tempLink && link.data("target") != tempLink.data("target")) {
+                        clearTimeout(openTimeout);
+                    }
+
+                    // just open if there are no open menus, else wait and try again as long as there is a menu open
+                    if (navElems.hasClass('active') || $(".dropdown-container").hasClass('open')) {
+                        tempLink = link;
+
+                        openTimeout = setTimeout(function () { tryOpen(link); }, 50);
+                    } else {
+                        clearTimeout(openTimeout);
+
+                        $(link.data("target")).addClass("open");
+
+                        if (link.hasClass("dropdown-toggle")) {
+                            link.closest("li").addClass("active");
+                        }
+
+                        initRotator(link.data("target"));
+
+                        zoomContainer.css("z-index", "0");
+                    }
+                }
+
+                $(".mega-menu-dropdown").on('mouseenter', function () {
+                    clearTimeout(closingTimeout);
+                })
+                .on('mouseleave', function () {
+                    var targetId = $(this).parent().attr("id");
+                    var link = megamenu.find("[data-target='#" + targetId + "']");
+
+                    closeMenuHandler(link);
                 });
 
-                // prevent dropdowns from closing when clicking inside, to make product rotator work
-                $(document).on('click', '.dropdown-menu', function (e) {
-                    e.stopPropagation();
-                });
+                navElems.on("mouseenter", function () {
+                    var link = $(this).find(".nav-link");
 
-                // show scroll buttons when menu items don't fit into screen
-                $(window).resize(function () {
+                    // if correct dropdown is already open then don't open it again
+                    var opendMenuSelector = $(".nav-item.active .nav-link").data("target");
 
-                    var liWidth = 0;
-                    $(".megamenu li", megamenu).each(function () {
-                        liWidth += $(this).width();
-                    });
-
-                    if (liWidth > megamenu.width()) {
-                        megamenu.addClass("show-scroll-buttons");
+                    if (opendMenuSelector == link.data("target")) {
+                        clearTimeout(closingTimeout);
+                        return;
                     }
-                    else {
-                        megamenu.removeClass("show-scroll-buttons");
-                    }
-                }).trigger('resize');
+
+                    tryOpen(link);
+                })
+			  	.on("mouseleave", function () {
+			  	    var link = $(this).find(".nav-link");
+
+			  	    closeMenuHandler(link);
+			  	});
 
                 //oh, oh, oh, oh, can't touch this ;-/
                 var hammertime = new Hammer($(".megamenu")[0]);
                 hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 80, pointers: 1 }));
 
                 hammertime.on('panend', function (ev) {
-                    if (ev.direction == Hammer.DIRECTION_LEFT) {
-                        megamenuNext.trigger('click');
-                    }
-                    if (ev.direction == Hammer.DIRECTION_RIGHT) {
-                        megamenuPrev.trigger('click');
-                    }
+                    if (ev.direction == Hammer.DIRECTION_LEFT) { megamenuNext.trigger('click'); }
+                    if (ev.direction == Hammer.DIRECTION_RIGHT) { megamenuPrev.trigger('click'); }
                 });
 
-                megamenu.evenIfHidden(function (el) {
+                megamenuContainer.evenIfHidden(function (el) {
 
                     var scrollCorrection = null;
                     var lastVisibleElem = null;
@@ -92,23 +115,29 @@
                     var isFirstItemVisible = true;
                     var isLastItemVisible = false;
 
-                    megamenu.find('ul').wrap('<div class="nav-slider" style="overflow: hidden;position: relative;" />');
+                    megamenuContainer.find('ul').wrap('<div class="nav-slider" style="overflow: hidden;position: relative;" />');
 
                     getCurrentNavigationElements();
 
-                    megamenuNext.click(function () {
+                    megamenuNext.click(function (e) {
 
-                        scrollCorrection = "+=" + ($(lastVisibleElem).position().left + 55 + $(lastVisibleElem).width() - $(".nav-slider").width()) + "px";
+                        e.preventDefault();
 
-                        $(".nav-slider").scrollTo(scrollCorrection, 400, {
+                        var scrollDelta = $(lastVisibleElem).position().left + 55 + $(lastVisibleElem).width() - $(".nav-slider").width();
+                        scrollCorrection = "+=" + scrollDelta + "px";
+
+                        $(".nav-slider").scrollTo(scrollCorrection, 200, {
                             onAfter: function () {
                                 getCurrentNavigationElements();
                             }
                         });
                     });
 
-                    megamenuPrev.click(function () {
-                        $(".nav-slider").scrollTo(firstVisibleElem, 400, {
+                    megamenuPrev.click(function (e) {
+
+                        e.preventDefault();
+
+                        $(".nav-slider").scrollTo(firstVisibleElem, 200, {
                             offset: { left: -40 },
                             onAfter: function () {
                                 getCurrentNavigationElements();
@@ -116,27 +145,35 @@
                         });
                     });
 
-                    megamenuNext.bind("mouseleave", function () {
-                        if (isLastItemVisible)
-                            megamenuNext.fadeOut(600);
-                    });
+                    // show scroll buttons when menu items don't fit into screen
+                    $(window).resize(function () {
 
-                    megamenuPrev.bind("mouseleave", function () {
-                        if (isFirstItemVisible)
-                            megamenuPrev.fadeOut(600);
-                    });
+                        var liWidth = 0;
+                        navElems.each(function () {
+                            liWidth += $(this).width();
+                        });
+
+                        if (liWidth > megamenuContainer.width()) {
+                            megamenuContainer.addClass("show-scroll-buttons");
+                        }
+                        else {
+                            megamenuContainer.removeClass("show-scroll-buttons");
+                        }
+
+                        getCurrentNavigationElements();
+
+                    }).trigger('resize');
 
                     function getCurrentNavigationElements() {
                         firstVisibleElem = null;
-                        var p = $(".nav-slider", megamenu);
-                        var items = megamenu.find(".nav-item");
+                        var p = $(".nav-slider", megamenuContainer);
 
-                        items.each(function (i, val) {
+                        navElems.each(function (i, val) {
 
                             var el = $(val);
 
                             if ((el.offset().left > p.offset().left) && firstVisibleElem == null) {
-                                firstVisibleElem = $(val).prev();
+                                firstVisibleElem = el.prev();
 
                                 if (firstVisibleElem.position().left == 0)
                                     isFirstItemVisible = true;
@@ -147,7 +184,7 @@
                             // if visible
                             if (el.offset().left + el.width() > p.offset().left + p.width()) {
 
-                                lastVisibleElem = $(val);
+                                lastVisibleElem = el;
 
                                 if (parseInt(el.offset().left) + parseInt(el.width()) == parseInt(p.offset().left) + parseInt(p.width()))
                                     isLastItemVisible = true;
@@ -160,11 +197,19 @@
                         });
 
                         // show or hide navigation buttons depending on whether first or last navitems are displayed
-                        if (!isFirstItemVisible)
-                            megamenuPrev.css("display", "block");
+                        if (!isFirstItemVisible) {
+                            megamenu.addClass("megamenu--blend-prev");
+                        }
+                        else {
+                            megamenu.removeClass("megamenu--blend-prev");
+                        }
 
-                        if (!isLastItemVisible)
-                            megamenuNext.css("display", "block");
+                        if (!isLastItemVisible) {
+                            megamenu.addClass("megamenu--blend-next");
+                        }
+                        else {
+                            megamenu.removeClass("megamenu--blend-next");
+                        }
                     }
                 });
 
@@ -227,12 +272,8 @@
                                     hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 80, pointers: 1 }));
 
                                     hammertime.on('panend', function (ev) {
-                                        if (ev.direction == Hammer.DIRECTION_LEFT) {
-                                            plSlider.trigger('next');
-                                        }
-                                        if (ev.direction == Hammer.DIRECTION_RIGHT) {
-                                            plSlider.trigger('prev');
-                                        }
+                                        if (ev.direction == Hammer.DIRECTION_LEFT) { plSlider.trigger('next'); }
+                                        if (ev.direction == Hammer.DIRECTION_RIGHT) { plSlider.trigger('prev'); }
                                     });
                                 }
                             });

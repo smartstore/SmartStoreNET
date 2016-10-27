@@ -7,9 +7,9 @@
       <LocaleResource Name="AdminInstruction">
         <Value>
           <![CDATA[
-            Dieses Plugin wird hauptsächlich innerhalb der Warengruppen-Konfiguration bedient.<br />
-            Zu diesem Zweck gibt es im Administrationsbereich von Warengruppen ein "Mega-Menu"-Tab, in dem jedes Megamenu individuell konfiguriert werden kann.<br />
-            Im Konfigurations-Bereich des Plugins werden nur Einstellungen vorgenommen, die globale Gültigkeit haben.<br />
+            Dieses Plugin wird hauptsächlich innerhalb der Warengruppen-Konfiguration bedient.
+            Zu diesem Zweck gibt es im Administrationsbereich von Warengruppen ein "Mega-Menu"-Tab, in dem jedes Megamenu individuell konfiguriert werden kann.
+            Im Konfigurations-Bereich des Plugins werden nur Einstellungen vorgenommen, die globale Gültigkeit haben.
           ]]>
         </Value>
       </LocaleResource>
@@ -18,7 +18,7 @@
         <Value>
           <![CDATA[
             In diesem Tab nehmen Sie die Konfiguration des <i>MegaMenu</i>-Plugins für diese Warengruppe vor.
-            Im <a href="{0}">Konfigurations-Bereich des Plugins</a> werden lediglich Einstellungen vorgenommen, die globale Gültigkeit haben.<br />
+            Im <a href="{0}">Konfigurations-Bereich des Plugins</a> werden lediglich Einstellungen vorgenommen, die globale Gültigkeit haben.
           ]]>
         </Value>
       </LocaleResource>
@@ -29,9 +29,9 @@
       <LocaleResource Name="BgPictures.AdminInstruction">
         <Value>
           <![CDATA[
-            Hintergrund-Grafiken werden innerhalb des Dropdown-Elements dargestellt.<br/>
-            Die besten Ergebnisse erreicht man mit freigestellten PNG-Grafiken. <br/>
-            Diese können durch die Angabe der Offset-Eigenschaften sogar über den Bereich des Dropdown-Menus hinausragen. <br/>
+            Hintergrund-Grafiken werden innerhalb des Dropdown-Elements dargestellt.
+            Die besten Ergebnisse erreicht man mit freigestellten PNG-Grafiken.
+            Diese können durch die Angabe der Offset-Eigenschaften sogar über den Bereich des Dropdown-Menus hinausragen.
             Außerdem können Sie die Grafik frei verlinken, wodurch sie sich hervorragend als Promotion-Werkzeug nutzen lässt.
           ]]>
         </Value>
@@ -43,8 +43,8 @@
       <LocaleResource Name="ShortSummary.AdminInstruction">
         <Value>
           <![CDATA[
-            Für den Einleitungsbereich, der sich über die erste Spalte des Dropdown-Elements erstreckt, können Sie festlegen ob das Bild der Hauptwarengruppe dargestellt wird <br/>
-            und einen kleinen Einleitungstext erfassen. Bei diesem Text können Sie auch mit HTML-Formatierungen arbeiten (z.B. &lt;i&gt;, &lt;b&gt;, &lt;a&gt;, usw.).  <br/>
+            Für den Einleitungsbereich, der sich über die erste Spalte des Dropdown-Elements erstreckt, können Sie festlegen ob das Bild der Hauptwarengruppe dargestellt wird 
+            und einen kleinen Einleitungstext erfassen. Bei diesem Text können Sie auch mit HTML-Formatierungen arbeiten (z.B. &lt;i&gt;, &lt;b&gt;, &lt;a&gt;, usw.). 
             Der Text wird nur im Verbund mit der Grafik dargestellt.
           ]]>
         </Value>
@@ -56,9 +56,9 @@
       <LocaleResource Name="Teaser.AdminInstruction">
         <Value>
           <![CDATA[
-            Der Teaser-Bereich in einem Dropdown-Menu bietet ihnen die Möglichkeit mehr Aufmerksamkeit auf Ihre Produkte zu lenken, <br/>
-            indem Sie z.B. eine Auswahl von Produkten bereits mit dem Produkt-Rotator innerhalb des Dropdown-Menus darstellen <br/>
-            oder vollkommen frei eigenes HTML definieren. <br/>
+            Der Teaser-Bereich in einem Dropdown-Menu bietet ihnen die Möglichkeit mehr Aufmerksamkeit auf Ihre Produkte zu lenken, 
+            indem Sie z.B. eine Auswahl von Produkten bereits mit dem Produkt-Rotator innerhalb des Dropdown-Menus darstellen 
+            oder vollkommen frei eigenes HTML definieren.
           ]]>
         </Value>
       </LocaleResource>

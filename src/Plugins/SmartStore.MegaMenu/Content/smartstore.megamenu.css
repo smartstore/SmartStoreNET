@@ -13,10 +13,9 @@
 .megamenu ul.nav {
     width: 5000px;
 }
-.megamenu-nav-btn i {
-    font-size:          38px;
-    -webkit-transition: all 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    transition:         all 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+.megamenu-nav i {
+    font-size: 38px;
+    transition: all .2s ease-in-out;
     height: 56px;
     line-height: 56px;
     vertical-align: middle;
@@ -24,44 +23,38 @@
     padding: 0;
     margin: 0;
     display: inline-block;
+    opacity: .4;
 }
-.megamenu-nav-btn i:hover {
-    font-size: 64px;
+.megamenu-nav i:hover {
+    xfont-size: 64px;
+    opacity: .6;
 } 
-.megamenu-navigate-prev a {
+.megamenu-nav i:active {
+    opacity: 1;
+} 
+.megamenu-nav--prev a {
     padding-right: 10px;
     padding-top: 0;
 }
-.megamenu-navigate-next a {
+.megamenu-nav--next a {
     padding-left: 10px;
     padding-top: 0;
 }
-.megamenu-nav-btn {
+.megamenu-nav {
     position: absolute;
     top: 0;
+    bottom: 0;
 }
-.megamenu-nav-btn .btn {
+.megamenu-nav .megamenu-nav-btn {
     border: none;
     box-shadow: none;
     position: relative;
     z-index: 10000;
+    height: 98%;
 }
-.megamenu-navigate-prev .btn:active:focus,
-.megamenu-navigate-prev .btn {
-    background: -webkit-linear-gradient(right, rgba(0,0,0,0), #f7f7f7 40%, #f7f7f7 100%);
-}
-.megamenu-navigate-next .btn:active:focus,
-.megamenu-navigate-next .btn {
-    background: -webkit-linear-gradient(left, rgba(0,0,0,0), #f7f7f7 40%, #f7f7f7 100%);
-}
-.megamenu-navigate-prev {
-    display:none;
-}
-.megamenu-navigate-next {
+.megamenu-nav--next {
     right: 0;
 }     
-
-
 .megamenu-container .megamenu-dropdown-container {
     position: relative;
 }
@@ -169,11 +162,26 @@
 .navbar {
     padding: 0;
 }
-.megamenu-container .nav-item,
-.megamenu-navigate-prev a,
-.megamenu-navigate-next a {
-    padding: .5rem 0;
+
+/*
+.megamenu-container .nav-item {
+    xpadding: .5rem 0;
 }
+*/
+
+.megamenu .navbar-nav .nav-item + .nav-item {
+    margin-left: 0;
+}
+.megamenu-container .nav-link {
+    padding: 1rem .5rem;
+}
+.megamenu-container .nav-item:first-child .nav-link {
+    padding-left: 0;
+}
+.megamenu-container .nav-item:last-child .nav-link {
+    padding-right: 0;
+}
+
 .megamenu ul.nav .nav-item {
     z-index: 1100;
     position: relative;
@@ -184,6 +192,54 @@
     top: 7px;
     font-size: 0.7rem;
 }
+
+
+
+.nav-slider {
+    z-index: 3000;
+}
+
+.megamenu .megamenu-nav--next,
+.megamenu .megamenu-nav--prev {
+    transition: opacity .5s ease-in-out .1s;
+    opacity: 0;
+    z-index: 3001;
+}
+
+.megamenu.megamenu--blend-next .megamenu-nav--next,
+.megamenu.megamenu--blend-prev .megamenu-nav--prev {
+    opacity: 1;
+}
+
+.megamenu .megamenu-nav-btn {
+    width: 1px;
+}
+.megamenu .megamenu-nav--prev .megamenu-nav-btn {
+    background-image: linear-gradient(to left, rgba(0,0,0,0), #f7f7f7 40%, #f7f7f7 100%);
+}
+.megamenu .megamenu-nav--next .megamenu-nav-btn {
+    background-image: linear-gradient(to right, rgba(0,0,0,0), #f7f7f7 40%, #f7f7f7 100%);
+}
+
+.megamenu.megamenu--blend-next .megamenu-nav--next .megamenu-nav-btn,
+.megamenu.megamenu--blend-prev .megamenu-nav--prev .megamenu-nav-btn {
+    width: 40px;
+}
+    
+.megamenu .megamenu-nav i {
+    color: #000;
+    display: none;
+}
+/*
+TODO: nav-bar => megamenu-navbar
+*/
+.navbar:hover .megamenu-nav--prev i,
+.navbar:hover .megamenu-nav--next i  {
+    display: block;
+}
+
+
+
 
 /* TODO: correct enum BadgeStyle, determine valid entries for bs4 */
 .label-important {
@@ -244,3 +300,4 @@
 .mega-menu-product-rotator.scroll .scroll-button i {
     width: initial;
 }
+

@@ -133,40 +133,6 @@
             @Html.ValidationMessageFor(model => model.BgPictureId)
         </td>
     </tr>
-</table>
-
-@(Html.LocalizedEditor<DropdownConfigurationModel, DropdownConfigurationLocalizedModel>("mm-bg-link-localized",
-    @<table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Locales[item].BgLink)
-            </td>
-            <td class="adminData">
-                @Html.TextBoxFor(model => Model.Locales[item].BgLink, new { @style = "width: 600px" })
-                @Html.ValidationMessageFor(model => model.Locales[item].BgLink)
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                @Html.HiddenFor(model => model.Locales[item].LanguageId)
-            </td>
-        </tr>
-    </table>
-    ,
-    @<table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.BgLink)
-            </td>
-            <td class="adminData">
-                @Html.TextBoxFor(model => model.BgLink, new { @style = "width: 600px" })
-                @Html.ValidationMessageFor(model => model.BgLink)
-            </td>
-        </tr>
-    </table>
-))
-
-<table class="adminContent">
     <tr class="bg-picture">
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.BgAlignX)
@@ -203,7 +169,40 @@
             @Html.ValidationMessageFor(model => model.BgOffsetY)
         </td>
     </tr>
+</table>
 
+@(Html.LocalizedEditor<DropdownConfigurationModel, DropdownConfigurationLocalizedModel>("mm-bg-link-localized",
+    @<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].BgLink)
+            </td>
+            <td class="adminData">
+                @Html.TextBoxFor(model => Model.Locales[item].BgLink, new { @style = "width: 600px" })
+                @Html.ValidationMessageFor(model => model.Locales[item].BgLink)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.HiddenFor(model => model.Locales[item].LanguageId)
+            </td>
+        </tr>
+    </table>
+    ,
+    @<table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.BgLink)
+            </td>
+            <td class="adminData">
+                @Html.TextBoxFor(model => model.BgLink, new { @style = "width: 600px" })
+                @Html.ValidationMessageFor(model => model.BgLink)
+            </td>
+        </tr>
+    </table>
+))
+
+<table class="adminContent">
     <tr>
         <td colspan="2">
             <div class="admin-config-group">

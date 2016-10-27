@@ -93,10 +93,17 @@
     return;
 }
 
-<div class="megamenu">
 
-    <div class="megamenu-navigate-prev megamenu-nav-btn">
-        <a href="#" class="btn btn-icon btn-secondary"><i class="fa fa-angle-left"></i></a>
+<style type="text/css">
+    .mega-menu-dropdown {
+        min-height: @(Model.Settings.MenuMinHeight)px;
+    }
+</style>
+
+<div class="megamenu megamenu--blend-next">
+
+    <div class="megamenu-nav megamenu-nav--prev">
+        <a href="#" class="megamenu-nav-btn btn btn-icon"><i class="fa fa-angle-left"></i></a>
     </div>
 
     <ul class="nav navbar-nav">
@@ -118,7 +125,7 @@
             <li class='@(GetCssClassForNode(node, itemState))'>
                 @if (node.HasChildren)
                 {
-                    <a href="@itemUrl" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false" data-target="#dropdown-menu-@node.Value.EntityId">
+                    <a href="@itemUrl" class="nav-link dropdown-toggle" x-data-toggle="dropdown" aria-expanded="false" data-target="#dropdown-menu-@node.Value.EntityId">
                         @item.Text
                     </a>
                 }
@@ -141,8 +148,8 @@
 
     </ul>
 
-    <div class="megamenu-navigate-next megamenu-nav-btn">
-        <a href="#" class="btn btn-icon btn-secondary"><i class="fa fa-angle-right"></i></a>
+    <div class="megamenu-nav megamenu-nav--next">
+        <a href="#" class="megamenu-nav-btn btn btn-icon"><i class="fa fa-angle-right"></i></a>
     </div>
 </div>
 
@@ -178,7 +185,7 @@
 
     @Html.Widget("megamenu_dropdown_top")
 
-    <div id="dropdown-menu-@parent.Value.EntityId" data-entity-id="@parent.Value.EntityId" data-display-rotator="@((!String.IsNullOrEmpty(dropdownModel.TeaserRotatorProductIds)).ToString().ToLower())">
+    <div id="dropdown-menu-@parent.Value.EntityId" class="" data-entity-id="@parent.Value.EntityId" data-display-rotator="@((!String.IsNullOrEmpty(dropdownModel.TeaserRotatorProductIds)).ToString().ToLower())">
         <div class="dropdown-menu mega-menu-dropdown@(dropdownModel.DisplaySubItemsInline ? " comma-separated" : "")">
 
             @if(dropdownModel.DisplayBgPicture)
@@ -343,17 +350,11 @@
 
 <script type="text/javascript">
     $(function () {
-        var megamenu = $(".megamenu-container").megaMenu({
+        var megamenuContainer = $(".megamenu-container").megaMenu({
             productRotatorAjaxUrl:      "@(Url.Action("RotatorProducts", "Megamenu", new RouteValueDictionary() { { "area", "SmartStore.MegaMenu" } }))",
             productRotatorInterval:     @Model.Settings.ProductRotatorInterval,
             productRotatorDuration:     @Model.Settings.ProductRotatorDuration,
             productRotatorCycle:        @(Model.Settings.ProductRotatorCycle ? "true" : "false"),
         }); 
     });
-</script>
-
-<style type="text/css">
-    .mega-menu-dropdown {
-        min-height: @(Model.Settings.MenuMinHeight)px;
-    }
-</style>
+</script>               

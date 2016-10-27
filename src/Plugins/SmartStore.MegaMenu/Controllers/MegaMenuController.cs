@@ -27,6 +27,7 @@ namespace SmartStore.Controllers
         private readonly IAclService _aclService;
         private readonly IStoreMappingService _storeMappingService;
         private readonly IProductService _productService;
+        private readonly ICategoryService _categoryService;
         private readonly IPermissionService _permissionService;
         private readonly IMegaMenuService _megaMenuService;
         private readonly ILanguageService _languageService;
@@ -37,6 +38,7 @@ namespace SmartStore.Controllers
             IAclService aclService,
             IStoreMappingService storeMappingService,
             IProductService productService,
+            ICategoryService categoryService,
             IPermissionService permissionService,
             IMegaMenuService megaMenuService,
             ILanguageService languageService)
@@ -46,6 +48,7 @@ namespace SmartStore.Controllers
             _aclService = aclService;
             _storeMappingService = storeMappingService;
             _productService = productService;
+            _categoryService = categoryService;
             _permissionService = permissionService;
             _megaMenuService = megaMenuService;
             _languageService = languageService;
@@ -189,13 +192,47 @@ namespace SmartStore.Controllers
             var megaMenuRecord = _megaMenuService.GetMegaMenuRecord(catId) ?? new MegaMenuRecord();
 
             var rotatorProducts = new List<Product>();
-
-            if (megaMenuRecord.TeaserRotatorItemSelectType == TeaserRotatorItemSelectType.Custom && megaMenuRecord.TeaserRotatorProductIds != null)
+            var catIds = new List<int>();
+            
+            // get products for rotator
+            switch (megaMenuRecord.TeaserRotatorItemSelectType)
             {
-                rotatorProducts = _productService.GetProductsByIds(megaMenuRecord.TeaserRotatorProductIds.Split(',').Select(Int32.Parse).ToArray()).ToList();
+                case TeaserRotatorItemSelectType.Custom:
+                    if(megaMenuRecord.TeaserRotatorProductIds != null)
+                    {
+                        rotatorProducts = _productService.GetProductsByIds(megaMenuRecord.TeaserRotatorProductIds.Split(',').Select(Int32.Parse).ToArray()).ToList();
+                    }
+                    break;
+                case TeaserRotatorItemSelectType.DeepRandom:
+                case TeaserRotatorItemSelectType.DeepTop:
+                    catIds = _categoryService.GetAllCategoriesByParentCategoryId(catId).Select(x => x.Id).ToList();
+                    catIds.Add(catId);
+                    break;
+                case TeaserRotatorItemSelectType.Random:
+                case TeaserRotatorItemSelectType.Top:
+                default:
+                    catIds.Add(catId);
+                    break;
             }
 
-            // TODO: get elems for other TeaserRotatorItemSelectType
+            if(megaMenuRecord.TeaserRotatorItemSelectType != TeaserRotatorItemSelectType.Custom)
+            {
+                rotatorProducts = _productService.SearchProducts(new ProductSearchContext
+                {
+                    FeaturedProducts = true,
+                    CategoryIds = catIds,
+                    ShowHidden = false,
+                    WithoutManufacturers = true,
+                    PageSize = 500
+                }).ToList();
+            }
+
+            if(megaMenuRecord.TeaserRotatorItemSelectType == TeaserRotatorItemSelectType.DeepRandom || megaMenuRecord.TeaserRotatorItemSelectType == TeaserRotatorItemSelectType.Random)
+            {
+                Random rnd = new Random();
+                rotatorProducts = rotatorProducts.OrderBy(product => rnd.Next()).ToList();
+            }
+
             foreach (var product in rotatorProducts)
             {
                 //ensure has ACL permission and appropriate store mapping

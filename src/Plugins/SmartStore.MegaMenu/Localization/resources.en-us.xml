@@ -7,8 +7,8 @@
       <LocaleResource Name="AdminInstruction">
         <Value>
           <![CDATA[
-            This Plugin will mainly be configured in category administration area.<br />
-            For this purpose there is a <i>MegaMenu</i> tab in configuration view of a category in which every megamenu dropdown element can be configured individually. <br /> 
+            This Plugin will mainly be configured in category administration area.
+            For this purpose there is a <i>MegaMenu</i> tab in configuration view of a category in which every megamenu dropdown element can be configured individually. 
             Settings which have a global scope can be configured in the configuration view of the plugin.
           ]]>
         </Value>
@@ -17,7 +17,7 @@
       <LocaleResource Name="AdminInstructionCatMain">
         <Value>
           <![CDATA[
-            In this tab you can configure the <i>MegaMenu</i> plugin for this category.</br>
+            In this tab you can configure the <i>MegaMenu</i> plugin for this category.
             Settings which have a global scope can be configured in the <a href="{0}">configuration view of the plugin</a>.
           ]]>
         </Value>
@@ -29,8 +29,8 @@
       <LocaleResource Name="BgPictures.AdminInstruction">
         <Value>
           <![CDATA[
-            Background images will be displayed within dropdown elements. For best results it's recommended to use exempted <i>png</i> graphics. </br>
-            These graphics can even protrude the borders of the dropdown element by specifying the offset properties. </br>
+            Background images will be displayed within dropdown elements. For best results it's recommended to use exempted <i>png</i> graphics. 
+            These graphics can even protrude the borders of the dropdown element by specifying the offset properties. 
             In addition you can freely link the graphics to any site you like thus making it a perfect promotion tool.
           ]]>
         </Value>
@@ -42,8 +42,8 @@
       <LocaleResource Name="ShortSummary.AdminInstruction">
         <Value>
           <![CDATA[
-            For the introduction area which will be displayed in the first column of the dropdown element you can specify whether the category picture will be displayed <br />
-            and you can enter a short introductory text. For this text you can work with HTML formating (e.g. &lt;i&gt;, &lt;b&gt;, &lt;a&gt;, etc.).  <br/>
+            For the introduction area which will be displayed in the first column of the dropdown element you can specify whether the category picture will be displayed 
+            and you can enter a short introductory text. For this text you can work with HTML formating (e.g. &lt;i&gt;, &lt;b&gt;, &lt;a&gt;, etc.). 
             The text will only be displayed along with the category picture.
           ]]>
         </Value>
@@ -55,9 +55,9 @@
       <LocaleResource Name="Teaser.AdminInstruction">
         <Value>
           <![CDATA[           
-            The teaser area within a dropdown element enables you to put more emphasis on your products <br>
-            by displaying for instance a certain selection of products within the product rotator in the dropdown menu <br/>
-            or by displaying entirely freely defined HTML.<br/>
+            The teaser area within a dropdown element enables you to put more emphasis on your products
+            by displaying for instance a certain selection of products within the product rotator in the dropdown menu 
+            or by displaying entirely freely defined HTML.
           ]]>
         </Value>
       </LocaleResource>

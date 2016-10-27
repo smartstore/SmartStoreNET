@@ -1601,17 +1601,20 @@ namespace SmartStore.Web.Controllers
 				var categories = _categoryService.GetAllCategories();
 				foreach (var category in categories)
 				{
-					var menuItem = new MenuItem
+                    var menuItem = new MenuItem
 					{
 						EntityId = category.Id,
 						Text = category.GetLocalized(x => x.Name),
 						RouteName = "Category",
-						// Performance KILLER!!
-                        //ImageUrl = category.PictureId != null ? _pictureService.GetPictureUrl((int)category.PictureId) : "",
                         BadgeText = category.GetLocalized(x => x.BadgeText),
                         BadgeStyle = (BadgeStyle)category.BadgeStyle
 					};
 					menuItem.RouteValues.Add("SeName", category.GetSeName());
+
+                    if (category.ParentCategoryId == 0 && category.Published && category.PictureId != null)
+                    {
+                        menuItem.ImageUrl = _pictureService.GetPictureUrl(category.PictureId.Value);
+                    }
 
 					// determine parent
 					if (prevCat != null)

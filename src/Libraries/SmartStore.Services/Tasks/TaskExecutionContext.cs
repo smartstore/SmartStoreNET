@@ -76,7 +76,7 @@ namespace SmartStore.Services.Tasks
 		/// <param name="progress">Percentual progress. Can be <c>null</c> or a value between 0 and 100.</param>
 		/// <param name="message">Progress message. Can be <c>null</c>.</param>
 		/// <param name="immediately">if <c>true</c>, saves the updated task entity immediately, or lazily with the next database commit otherwise.</param>
-		public void SetProgress(int? progress, string message, bool immediately =  false)
+		public virtual void SetProgress(int? progress, string message, bool immediately =  false)
 		{
 			if (progress.HasValue)
 				Guard.InRange(progress.Value, 0, 100, nameof(progress));
@@ -99,6 +99,50 @@ namespace SmartStore.Services.Tasks
 				}
 				catch { }
 			}
+		}
+
+		/// <summary>
+		/// Creates a transient context, which can be passed to methods requiring a <see cref="TaskExecutionContext"/> instance. 
+		/// Such methods are usually executed by the task executor in the background. If a manual invocation of such
+		/// methods is required, this is the way to go.
+		/// </summary>
+		/// <param name="componentContext">The component context</param>
+		/// <returns>A transient context</returns>
+		public static TaskExecutionContext CreateTransientContext(IComponentContext componentContext)
+		{
+			return CreateTransientContext(componentContext, CancellationToken.None);
+		}
+
+		/// <summary>
+		/// Creates a transient context, which can be passed to methods requiring a <see cref="TaskExecutionContext"/> instance. 
+		/// Such methods are usually executed by the task executor in the background. If a manual invocation of such
+		/// methods is required, this is the way to go.
+		/// </summary>
+		/// <param name="componentContext">The component context</param>
+		/// <param name="cancellationToken">The cancellation token</param>
+		/// <returns>A transient context</returns>
+		public static TaskExecutionContext CreateTransientContext(IComponentContext componentContext, CancellationToken cancellationToken)
+		{
+			var originalTask = new ScheduleTask { Name = "Transient", IsHidden = true, Enabled = true };
+			var context = new TransientTaskExecutionContext(componentContext, originalTask);
+
+			context.CancellationToken = cancellationToken;
+			context.ScheduleTask = originalTask.Clone();
+
+			return context;
+		}
+	}
+
+	internal class TransientTaskExecutionContext : TaskExecutionContext
+	{
+		public TransientTaskExecutionContext(IComponentContext componentContext, ScheduleTask originalTask)
+			: base(componentContext, originalTask)
+		{
+		}
+
+		public override void SetProgress(int? progress, string message, bool immediately = false)
+		{
+			base.SetProgress(progress, message, false /* skip committing to DB */);
 		}
 	}
 }

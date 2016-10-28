@@ -23,15 +23,17 @@ namespace SmartStore.Services.Tasks
 		private readonly IWorkContext _workContext;
         private readonly Func<Type, ITask> _taskResolver;
 		private readonly IComponentContext _componentContext;
+		private readonly IAsyncState _asyncState;
 
-        public const string CurrentCustomerIdParamName = "CurrentCustomerId";
+		public const string CurrentCustomerIdParamName = "CurrentCustomerId";
 
         public TaskExecutor(
 			IScheduleTaskService scheduledTaskService, 
 			IDbContext dbContext,
  			ICustomerService customerService,
 			IWorkContext workContext,
-			IComponentContext componentContext, 
+			IComponentContext componentContext,
+			IAsyncState asyncState,
 			Func<Type, ITask> taskResolver)
         {
             this._scheduledTaskService = scheduledTaskService;
@@ -39,6 +41,7 @@ namespace SmartStore.Services.Tasks
 			this._customerService = customerService;
 			this._workContext = workContext;
 			this._componentContext = componentContext;
+			this._asyncState = asyncState;
             this._taskResolver = taskResolver;
 
             Logger = NullLogger.Instance;
@@ -120,7 +123,7 @@ namespace SmartStore.Services.Tasks
 
 				// create & set a composite CancellationTokenSource which also contains the global app shoutdown token
 				var cts = CancellationTokenSource.CreateLinkedTokenSource(AsyncRunner.AppShutdownCancellationToken, new CancellationTokenSource().Token);
-				AsyncState.Current.SetCancelTokenSource<ScheduleTask>(cts, stateName);
+				_asyncState.SetCancelTokenSource<ScheduleTask>(cts, stateName);
 
 				var ctx = new TaskExecutionContext(_componentContext, task)
 				{
@@ -153,7 +156,7 @@ namespace SmartStore.Services.Tasks
 				// remove from AsyncState
 				if (stateName.HasValue())
 				{
-					AsyncState.Current.Remove<ScheduleTask>(stateName);
+					_asyncState.Remove<ScheduleTask>(stateName);
 				}
 
 				task.ProgressPercent = null;

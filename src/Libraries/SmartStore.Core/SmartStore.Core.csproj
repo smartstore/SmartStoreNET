@@ -153,6 +153,9 @@
     </Compile>
     <Compile Include="Async\AsyncLock.cs" />
     <Compile Include="Async\AsyncState.cs" />
+    <Compile Include="Async\AsyncStateInfo.cs" />
+    <Compile Include="Async\IAsyncState.cs" />
+    <Compile Include="Async\LocalAsyncState.cs" />
     <Compile Include="Caching\ISet.cs" />
     <Compile Include="Caching\MemoryCacheManager.cs" />
     <Compile Include="Caching\OutputCache\DisplayControl.cs" />

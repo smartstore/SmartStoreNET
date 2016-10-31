@@ -2,10 +2,11 @@
 {
 	public class Facet
 	{
-		public Facet(string key, string value, long hitCount)
+		public Facet(string key, FacetValue value, long hitCount)
 		{
 			Guard.NotEmpty(key, nameof(key));
 			Guard.NotNull(value, nameof(value));
+			Guard.NotNull(value.Value, nameof(value.Value));
 
 			Key = key;
 			Value = value;
@@ -18,7 +19,7 @@
 			private set;
 		}
 
-		public string Value
+		public FacetValue Value
 		{
 			get;
 			private set;

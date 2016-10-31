@@ -13,8 +13,8 @@ namespace SmartStore.Core.Search.Facets
 	{
 		public enum ValueOperator
 		{
-			Or,
-			And	
+			And,
+			Or
 		}
 
 		public enum Sorting
@@ -23,13 +23,13 @@ namespace SmartStore.Core.Search.Facets
 			ValueAsc
 		}
 
-		private readonly List<string> _selectedValues;
+		private readonly List<FacetValue> _selectedValues;
 
 		public FacetDescriptor(string key)
 		{
 			Guard.NotEmpty(key, nameof(key));
 
-			_selectedValues = new List<string>();
+			_selectedValues = new List<FacetValue>();
 			Key = key;
 		}
 
@@ -45,7 +45,7 @@ namespace SmartStore.Core.Search.Facets
 		/// <summary>
 		/// Gets the initially selected values for this facet.
 		/// </summary>
-		public ICollection<string> SelectedValues
+		public ICollection<FacetValue> SelectedValues
 		{
 			get
 			{
@@ -57,7 +57,7 @@ namespace SmartStore.Core.Search.Facets
 		/// Adds a selection value.
 		/// </summary>
 		/// <param name="value">Value to select</param>
-		public FacetDescriptor AddSelectedValue(params string[] values)
+		public FacetDescriptor AddSelectedValue(params FacetValue[] values)
 		{
 			_selectedValues.AddRange(values);
 			return this;
@@ -104,10 +104,58 @@ namespace SmartStore.Core.Search.Facets
 			var sb = new StringBuilder();
 
 			sb.Append("FieldName: ").Append(Key).Append(" ");
-			sb.Append("Values: " + string.Join(",", _selectedValues.ToArray())).Append(" ");
+			sb.Append("Values: " + string.Join(",", _selectedValues.Select(x => x.Value.ToString()))).Append(" ");
 			sb.Append("op: " + Operator.ToString()).Append(" ");
 
 			return sb.ToString();
+		}
+	}
+
+
+	[Serializable]
+	public class FacetValue
+	{
+		public FacetValue(bool value)
+			: this(value, IndexTypeCode.Boolean)
+		{
+		}
+
+		public FacetValue(int value)
+			: this(value, IndexTypeCode.Int32)
+		{
+		}
+
+		public FacetValue(double value)
+			: this(value, IndexTypeCode.Double)
+		{
+		}
+
+		public FacetValue(DateTime value)
+			: this(value, IndexTypeCode.DateTime)
+		{
+		}
+
+		public FacetValue(string value)
+			: this(value, IndexTypeCode.String)
+		{
+		}
+
+		public FacetValue(object value, IndexTypeCode typeCode)
+		{
+			Value = value;
+			TypeCode = typeCode;
+		}
+
+		public object Value
+		{
+			get;
+			private set;
+		}
+
+		public IndexTypeCode TypeCode
+		{
+			get;
+			private set;
 		}
 	}
 }

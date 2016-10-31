@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Search.Facets;
 
@@ -138,5 +139,36 @@ namespace SmartStore.Core.Search
 		}
 
 		#endregion
+
+		public override string ToString()
+		{
+			var sb = new StringBuilder();
+
+			if (Term.HasValue())
+			{
+				var fields = (Fields != null && Fields.Length > 0 ? string.Join(", ", Fields) : "".NaIfEmpty());
+
+				sb.AppendFormat("'{0}' in {1}", Term, fields);
+
+				var parameters = string.Join(" ", EscapeTerm ? "escape" : "", IsFuzzySearch ? "fuzzy" : (IsExactMatch ? "exact" : "")).TrimSafe();
+
+				if (parameters.HasValue())
+				{
+					sb.AppendFormat(" ({0})", parameters);
+				}
+			}
+
+			foreach (var filter in Filters)
+			{
+				if (sb.Length > 0)
+				{
+					sb.Append(" ");
+				}
+
+				sb.Append(filter.ToString());
+			}
+
+			return sb.ToString();
+		}
 	}
 }

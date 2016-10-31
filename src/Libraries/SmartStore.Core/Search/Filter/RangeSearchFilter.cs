@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SmartStore.Core.Search
+﻿namespace SmartStore.Core.Search
 {
 	public class RangeSearchFilter : SearchFilter, IRangeSearchFilter
 	{
@@ -24,6 +18,14 @@ namespace SmartStore.Core.Search
 		{
 			get;
 			protected internal set;
+		}
+
+		public override string ToString()
+		{
+			return "{0}: {1} - {2}".FormatInvariant(
+				FieldName,
+				Term != null ? Term.ToString() : "*",
+				UpperTerm != null ? UpperTerm.ToString() : "*");
 		}
 	}
 }

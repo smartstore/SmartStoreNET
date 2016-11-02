@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.Entity.Infrastructure;
+﻿using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 
 namespace SmartStore
@@ -15,6 +14,9 @@ namespace SmartStore
 		public static bool IsUniquenessViolationException(this DbUpdateException exception)
 		{
 			var sqlException = exception?.InnerException as SqlException;
+
+			if (sqlException == null)
+				sqlException = exception?.InnerException?.InnerException as SqlException;
 
 			if (sqlException == null)
 				return false;

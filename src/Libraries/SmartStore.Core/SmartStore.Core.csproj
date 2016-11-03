@@ -410,6 +410,7 @@
     <Compile Include="Search\Facets\Facet.cs" />
     <Compile Include="Search\Facets\FacetGroup.cs" />
     <Compile Include="Search\Facets\FacetDescriptor.cs" />
+    <Compile Include="Search\Facets\FacetValue.cs" />
     <Compile Include="Search\Filter\CombinedSearchFilter.cs" />
     <Compile Include="Search\Filter\RangeSearchFilter.cs" />
     <Compile Include="Search\Filter\SearchFilterBase.cs" />

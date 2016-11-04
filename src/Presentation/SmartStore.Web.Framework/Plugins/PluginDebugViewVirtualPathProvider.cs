@@ -117,7 +117,12 @@ namespace SmartStore.Web.Framework.Plugins
 		{
 			this._debugPath = debugPath;
 		}
-		
+
+		public string PhysicalPath
+		{
+			get { return _debugPath; }
+		}
+
 		public override bool IsDirectory
 		{
 			get { return false; }

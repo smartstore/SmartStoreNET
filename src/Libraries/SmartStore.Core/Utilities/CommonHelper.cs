@@ -12,7 +12,9 @@ using SmartStore.ComponentModel;
 namespace SmartStore.Utilities
 {
     public static partial class CommonHelper
-    {	
+    {
+		private static bool? _isDevEnvironment;
+		
 		/// <summary>
         /// Generate random digit code
         /// </summary>
@@ -89,22 +91,32 @@ namespace SmartStore.Utilities
 		{
 			get 
 			{
-				if (!HostingEnvironment.IsHosted)
-					return true;
+				if (!_isDevEnvironment.HasValue)
+				{
+					_isDevEnvironment = IsDevEnvironmentInternal();
+				}
 
-				if (HostingEnvironment.IsDevelopmentEnvironment)
-					return true;
-
-				if (System.Diagnostics.Debugger.IsAttached)
-					return true;
-
-				// if there's a 'SmartStore.NET.sln' in one of the parent folders,
-				// then we're likely in a dev environment
-				if (FindSolutionRoot(HostingEnvironment.MapPath("~/")) != null)
-					return true;
-
-				return false;
+				return _isDevEnvironment.Value;
 			}
+		}
+
+		private static bool IsDevEnvironmentInternal()
+		{
+			if (!HostingEnvironment.IsHosted)
+				return true;
+
+			if (HostingEnvironment.IsDevelopmentEnvironment)
+				return true;
+
+			if (System.Diagnostics.Debugger.IsAttached)
+				return true;
+
+			// if there's a 'SmartStore.NET.sln' in one of the parent folders,
+			// then we're likely in a dev environment
+			if (FindSolutionRoot(HostingEnvironment.MapPath("~/")) != null)
+				return true;
+
+			return false;
 		}
 
 		private static DirectoryInfo FindSolutionRoot(string currentDir)

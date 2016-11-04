@@ -11,6 +11,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Tasks;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Bundling;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -21,7 +22,6 @@ using SmartStore.Web.Framework.Routing;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.Validators;
 
-
 namespace SmartStore.Web
 {
     // Note: For instructions on enabling IIS6 or IIS7 classic mode, 
@@ -29,7 +29,6 @@ namespace SmartStore.Web
 
     public class MvcApplication : System.Web.HttpApplication
     {
-
 		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
 			var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
@@ -112,7 +111,7 @@ namespace SmartStore.Web
 				BundleTable.VirtualPathProvider = HostingEnvironment.VirtualPathProvider;
 
 				// register plugin debug view virtual path provider
-				if (HttpContext.Current.IsDebuggingEnabled)
+				if (HttpContext.Current.IsDebuggingEnabled && CommonHelper.IsDevEnvironment)
 				{
 					HostingEnvironment.RegisterVirtualPathProvider(new PluginDebugViewVirtualPathProvider());
 				}

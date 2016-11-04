@@ -12,6 +12,7 @@
 * Message Bus for inter-process messaging between servers (commercial plugin)
 * Configurable media storage path for web farms
 * (Dev) log4net integration
+* (Dev) changes to static plugin files (css, js, etc.) immediately apply to running project
 * XML Sitemap optimized for very large catalogs:
 	* Partitions for very large sitemaps (> 50.000 nodes or > 10 MB)
 	* Generated in a background task. No instant invalidation anymore.

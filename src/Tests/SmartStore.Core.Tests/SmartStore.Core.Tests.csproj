@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="Files\testdata.html" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

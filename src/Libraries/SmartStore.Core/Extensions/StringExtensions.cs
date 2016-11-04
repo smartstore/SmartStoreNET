@@ -9,12 +9,13 @@ using System.IO;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using HtmlAgilityPack;
 
 namespace SmartStore
 {
     public static class StringExtensions
     {
-        public const string CarriageReturnLineFeed = "\r\n";
+		public const string CarriageReturnLineFeed = "\r\n";
         public const string Empty = "";
         public const char CarriageReturn = '\r';
         public const char LineFeed = '\n';
@@ -444,42 +445,44 @@ namespace SmartStore
             return HttpUtility.HtmlDecode(value);
         }
 
-        [DebuggerStepThrough]
-        public static string RemoveHtml(this string value)
-        {
-            return RemoveHtmlInternal(value, null);
-        }
+		[Obsolete("The 'removeTags' parameter is not supported anymore. Use the parameterless method instead.")]
+		public static string RemoveHtml(this string source, ICollection<string> removeTags)
+		{
+			return RemoveHtml(source);
+		}
 
-        public static string RemoveHtml(this string value, ICollection<string> removeTags)
-        {
-            return RemoveHtmlInternal(value, removeTags);
-        }
+		public static string RemoveHtml(this string source)
+		{
+			if (source.IsEmpty())
+				return string.Empty;
 
-        private static string RemoveHtmlInternal(string s, ICollection<string> removeTags)
-        {
-            List<string> removeTagsUpper = null;
-            if (removeTags != null)
-            {
-                removeTagsUpper = new List<string>(removeTags.Count);
+			var doc = new HtmlDocument()
+			{
+				OptionOutputOriginalCase = true,
+				OptionFixNestedTags = true,
+				OptionAutoCloseOnEnd = true,
+				OptionDefaultStreamEncoding = Encoding.UTF8
+			};
 
-                foreach (string tag in removeTags)
-                {
-                    removeTagsUpper.Add(tag.ToUpperInvariant());
-                }
-            }
+			doc.LoadHtml(source);
+			var nodes = doc.DocumentNode.Descendants().Where(n =>
+			   n.NodeType == HtmlNodeType.Text &&
+			   n.ParentNode.Name != "script" &&
+			   n.ParentNode.Name != "style" &&
+			   n.ParentNode.Name != "svg");
 
-            return RegularExpressions.RemoveHTML.Replace(s, delegate(Match match)
-            {
-                string tag = match.Groups["tag"].Value.ToUpperInvariant();
+			var sb = new StringBuilder();
+			foreach (var node in nodes)
+			{
+				var text = node.InnerText;
+				if (text.HasValue())
+				{
+					sb.AppendLine(node.InnerText);
+				}
+			}
 
-                if (removeTagsUpper == null)
-                    return string.Empty;
-                else if (removeTagsUpper.Contains(tag))
-                    return string.Empty;
-                else
-                    return match.Value;
-            });
-        }
+			return sb.ToString().HtmlDecode();
+		}
 
 		/// <summary>
 		/// Replaces pascal casing with spaces. For example "CustomerId" would become "Customer Id".

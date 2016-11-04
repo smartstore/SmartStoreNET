@@ -105,7 +105,6 @@ namespace SmartStore.Web.Framework.Plugins
 			var result = appRelativePath.StartsWith("~/Plugins/", StringComparison.InvariantCultureIgnoreCase);
 			return result;
 		}
-
 	}
 
 	internal class DebugPluginVirtualFile : VirtualFile

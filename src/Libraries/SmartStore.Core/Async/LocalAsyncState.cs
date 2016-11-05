@@ -146,10 +146,12 @@ namespace SmartStore.Core.Async
 
 			var key = BuildKey<T>(name);
 
-			OnRemoveCancelTokenSource(key);
+			if (Exists<T>(name))
+			{
+				OnRemoveCancelTokenSource(key);
+			}		
 
-			var state = GetStateInfo<T>(name);
-			var policy = new CacheItemPolicy { SlidingExpiration = state != null ? state.Duration : TimeSpan.FromMinutes(15) };
+			var policy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(15) };
 
 			_cancelTokens.Set(key, cancelTokenSource, policy);
 		}

@@ -62,11 +62,12 @@ namespace SmartStore.Core.Async
 				// add new entry
 				var duration = neverExpires ? TimeSpan.Zero : TimeSpan.FromMinutes(15);
 				var policy = new CacheItemPolicy { SlidingExpiration = duration };
+				var key = BuildKey<T>(name);
 
 				// On expiration or removal: remove corresponding cancel token also.
-				policy.RemovedCallback = (x) => RemoveCancelTokenSource<T>(name);
+				policy.RemovedCallback = (x) => OnRemoveCancelTokenSource(key);
 
-				_states.Set(BuildKey<T>(name), new AsyncStateInfo { Progress = state, Duration = duration }, policy);
+				_states.Set(key, new AsyncStateInfo { Progress = state, Duration = duration }, policy);
 			}
 		}
 
@@ -88,19 +89,26 @@ namespace SmartStore.Core.Async
 
 		public virtual bool Remove<T>(string name = null)
 		{
-			var value = _states.Remove(BuildKey<T>(name));
+			var key = BuildKey<T>(name);
 
-			if (value != null)
+			if (OnRemoveStateInfo(key))
 			{
-				RemoveCancelTokenSource<T>(name);
+				OnRemoveCancelTokenSource(key);
+				return true;
 			}
 
 			return false;
 		}
 
-		protected bool RemoveCancelTokenSource<T>(string name = null)
+		protected virtual bool OnRemoveStateInfo(string key)
 		{
-			var key = BuildKey<T>(name);
+			return _states.Remove(key) != null;
+		}
+
+		protected virtual bool OnRemoveCancelTokenSource(string key, bool successive = false)
+		{
+			Guard.NotEmpty(key, nameof(key));
+
 			var token = _cancelTokens.Remove(key) as CancellationTokenSource;
 
 			if (token != null)
@@ -113,9 +121,15 @@ namespace SmartStore.Core.Async
 		}
 
 
-		public virtual CancellationTokenSource GetCancelTokenSource<T>(string name = null)
+		public CancellationTokenSource GetCancelTokenSource<T>(string name = null)
 		{
-			var key = BuildKey<T>(name);
+			return OnGetCancelTokenSource(BuildKey<T>(name));
+		}
+
+		protected virtual CancellationTokenSource OnGetCancelTokenSource(string key, bool successive = false)
+		{
+			Guard.NotEmpty(key, nameof(key));
+
 			var token = _cancelTokens.Get(key);
 
 			if (token != null)
@@ -130,18 +144,26 @@ namespace SmartStore.Core.Async
 		{
 			Guard.NotNull(cancelTokenSource, nameof(cancelTokenSource));
 
-			RemoveCancelTokenSource<T>(name);
+			var key = BuildKey<T>(name);
+
+			OnRemoveCancelTokenSource(key);
 
 			var state = GetStateInfo<T>(name);
-
 			var policy = new CacheItemPolicy { SlidingExpiration = state != null ? state.Duration : TimeSpan.FromMinutes(15) };
 
-			_cancelTokens.Set(BuildKey<T>(name), cancelTokenSource, policy);
+			_cancelTokens.Set(key, cancelTokenSource, policy);
 		}
 
-		public virtual bool Cancel<T>(string name = null)
+		public bool Cancel<T>(string name = null)
 		{
-			var cts = GetCancelTokenSource<T>(name);
+			return OnCancel(BuildKey<T>(name));
+		}
+
+		protected virtual bool OnCancel(string key, bool successive = false)
+		{
+			Guard.NotEmpty(key, nameof(key));
+
+			var cts = OnGetCancelTokenSource(key);
 
 			if (cts != null)
 			{
@@ -174,7 +196,7 @@ namespace SmartStore.Core.Async
 
 		protected virtual string BuildKey(Type type, string name)
 		{
-			return "{0}:{1}:{2}".FormatInvariant("AsyncStateKey", type.FullName, name.EmptyNull());
+			return "{0}{1}".FormatInvariant(type.FullName, name.HasValue() ? ":" + name : "");
 		}
 	}
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Autofac;
-using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Tasks;
 
@@ -19,9 +18,9 @@ namespace SmartStore.Services.Tasks
 
 		internal TaskExecutionContext(IComponentContext componentContext, ScheduleTask originalTask)
 		{
-			this._componentContext = componentContext;
-			this._originalTask = originalTask;
-			this.Parameters = new Dictionary<string, string>();
+			_componentContext = componentContext;
+			_originalTask = originalTask;
+			Parameters = new Dictionary<string, string>();
 		}
 
 		public T Resolve<T>(object key = null) where T : class

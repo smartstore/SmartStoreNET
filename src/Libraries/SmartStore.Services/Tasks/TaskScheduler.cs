@@ -96,10 +96,9 @@ namespace SmartStore.Services.Tasks
             get { return _timer.Enabled; }
         }
 
-		public CancellationTokenSource GetCancelTokenSourceFor(int scheduleTaskId)
+		public string GetAsyncStateKey(int scheduleTaskId)
 		{
-			var cts = _asyncState.GetCancelTokenSource<ScheduleTask>(scheduleTaskId.ToString());
-			return cts;
+			return scheduleTaskId.ToString();
 		}
 
 		private string CreateAuthToken()

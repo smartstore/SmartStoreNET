@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
@@ -274,18 +275,275 @@ namespace SmartStore.Services.Tests.Search
 			Assert.That(Search(new CatalogSearchQuery().HasStoreId(3)).Hits.Count, Is.EqualTo(2));
 		}
 
+		[Test]
+		public void LinqSearch_filter_is_product_type()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct { },
+				new SearchProduct { ProductType = ProductType.BundledProduct },
+				new SearchProduct { ProductType = ProductType.GroupedProduct }
+			};
+
+			InitMocks(products);
+
+			Assert.That(Search(new CatalogSearchQuery().IsProductType(ProductType.SimpleProduct)).Hits.Count, Is.EqualTo(1));
+			Assert.That(Search(new CatalogSearchQuery().IsProductType(ProductType.GroupedProduct)).Hits.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void LinqSearch_filter_with_product_ids()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct(1),
+				new SearchProduct(2),
+				new SearchProduct(3),
+				new SearchProduct(4),
+				new SearchProduct(5)
+			};
+
+			InitMocks(products);
+
+			Assert.That(Search(new CatalogSearchQuery().WithProductIds(2, 3, 4, 99)).Hits.Count, Is.EqualTo(3));
+			Assert.IsNull(Search(new CatalogSearchQuery().WithProductIds(98)).Hits.FirstOrDefault());
+		}
+
+		[Test]
+		public void LinqSearch_filter_with_product_id()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct(1),
+				new SearchProduct(2),
+				new SearchProduct(3),
+				new SearchProduct(4),
+				new SearchProduct(5),
+				new SearchProduct(6),
+				new SearchProduct(7),
+				new SearchProduct(8),
+				new SearchProduct(9),
+				new SearchProduct(10)
+			};
+
+			InitMocks(products);
+
+			Assert.That(Search(new CatalogSearchQuery().WithProductId(4, 7)).Hits.Count(), Is.EqualTo(4));
+			Assert.That(Search(new CatalogSearchQuery().WithProductId(6, null)).Hits.Count(), Is.EqualTo(5));
+			Assert.That(Search(new CatalogSearchQuery().WithProductId(null, 3)).Hits.Count(), Is.EqualTo(3));
+		}
+
+		[Test]
+		public void LinqSearch_filter_with_category_ids()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct(new ProductCategory[] { new ProductCategory { CategoryId = 11 } }) { Id = 1 },
+				new SearchProduct(new ProductCategory[] { new ProductCategory { CategoryId = 12, IsFeaturedProduct = true } }) { Id = 2 },
+				new SearchProduct(new ProductCategory[] { new ProductCategory { CategoryId = 13 } }) { Id = 3 },
+				new SearchProduct(new ProductCategory[] { new ProductCategory { CategoryId = 14 } }) { Id = 4 },
+				new SearchProduct(new ProductCategory[] { new ProductCategory { CategoryId = 15 } }) { Id = 5 },
+				new SearchProduct(new ProductCategory[] { new ProductCategory { CategoryId = 16, IsFeaturedProduct = true } }) { Id = 6 },
+				new SearchProduct(new ProductCategory[] { new ProductCategory { CategoryId = 17 } }) { Id = 7 },
+				new SearchProduct(new ProductCategory[] { new ProductCategory { CategoryId = 18 } }) { Id = 8 }
+			};
+
+			InitMocks(products);
+
+			Assert.That(Search(new CatalogSearchQuery().WithCategoryIds(null, 68, 98)).Hits.Count(), Is.EqualTo(0));
+			Assert.That(Search(new CatalogSearchQuery().WithCategoryIds(null, 12, 15, 18, 24)).Hits.Count(), Is.EqualTo(3));
+			Assert.That(Search(new CatalogSearchQuery().WithCategoryIds(true, 12, 15, 18, 24)).Hits.Count(), Is.EqualTo(1));
+			Assert.That(Search(new CatalogSearchQuery().WithCategoryIds(false, 12, 15, 18, 24)).Hits.Count(), Is.EqualTo(2));
+		}
+
+		[Test]
+		public void LinqSearch_filter_has_any_category()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct(new ProductCategory[] { new ProductCategory { CategoryId = 11 } }) { Id = 1 },
+				new SearchProduct(new ProductCategory[] { new ProductCategory { CategoryId = 12, IsFeaturedProduct = true } }) { Id = 2 },
+				new SearchProduct(new ProductCategory[] { }) { Id = 3 },
+				new SearchProduct(new ProductCategory[] { new ProductCategory { CategoryId = 14 } }) { Id = 4 },
+				new SearchProduct(new ProductCategory[] { new ProductCategory { CategoryId = 15 } }) { Id = 5 },
+				new SearchProduct(new ProductCategory[] { }) { Id = 6 },
+				new SearchProduct(new ProductCategory[] { }) { Id = 7 },
+				new SearchProduct(new ProductCategory[] { new ProductCategory { CategoryId = 18 } }) { Id = 8 }
+			};
+
+			InitMocks(products);
+
+			Assert.That(Search(new CatalogSearchQuery().HasAnyCategory(true)).Hits.Count(), Is.EqualTo(5));
+			Assert.That(Search(new CatalogSearchQuery().HasAnyCategory(false)).Hits.Count(), Is.EqualTo(3));
+		}
+
+		[Test]
+		public void LinqSearch_filter_with_manufacturer_ids()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct(new ProductManufacturer[] { new ProductManufacturer { ManufacturerId = 11 } }) { Id = 1 },
+				new SearchProduct(new ProductManufacturer[] { new ProductManufacturer { ManufacturerId = 12, IsFeaturedProduct = true } }) { Id = 2 },
+				new SearchProduct(new ProductManufacturer[] { new ProductManufacturer { ManufacturerId = 13 } }) { Id = 3 },
+				new SearchProduct(new ProductManufacturer[] { new ProductManufacturer { ManufacturerId = 14 } }) { Id = 4 },
+				new SearchProduct(new ProductManufacturer[] { new ProductManufacturer { ManufacturerId = 15 } }) { Id = 5 },
+				new SearchProduct(new ProductManufacturer[] { new ProductManufacturer { ManufacturerId = 16, IsFeaturedProduct = true } }) { Id = 6 },
+				new SearchProduct(new ProductManufacturer[] { new ProductManufacturer { ManufacturerId = 17 } }) { Id = 7 },
+				new SearchProduct(new ProductManufacturer[] { new ProductManufacturer { ManufacturerId = 18 } }) { Id = 8 }
+			};
+
+			InitMocks(products);
+
+			Assert.That(Search(new CatalogSearchQuery().WithManufacturerIds(null, 68, 98)).Hits.Count(), Is.EqualTo(0));
+			Assert.That(Search(new CatalogSearchQuery().WithManufacturerIds(null, 12, 15, 18, 24)).Hits.Count(), Is.EqualTo(3));
+			Assert.That(Search(new CatalogSearchQuery().WithManufacturerIds(true, 12, 15, 18, 24)).Hits.Count(), Is.EqualTo(1));
+			Assert.That(Search(new CatalogSearchQuery().WithManufacturerIds(false, 12, 15, 18, 24)).Hits.Count(), Is.EqualTo(2));
+		}
+
+		[Test]
+		public void LinqSearch_filter_has_any_manufacturer()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct(new ProductManufacturer[] { new ProductManufacturer { ManufacturerId = 11 } }) { Id = 1 },
+				new SearchProduct(new ProductManufacturer[] { new ProductManufacturer { ManufacturerId = 12, IsFeaturedProduct = true } }) { Id = 2 },
+				new SearchProduct(new ProductManufacturer[] { }) { Id = 3 },
+				new SearchProduct(new ProductManufacturer[] { new ProductManufacturer { ManufacturerId = 14 } }) { Id = 4 },
+				new SearchProduct(new ProductManufacturer[] { new ProductManufacturer { ManufacturerId = 15 } }) { Id = 5 },
+				new SearchProduct(new ProductManufacturer[] { }) { Id = 6 },
+				new SearchProduct(new ProductManufacturer[] { }) { Id = 7 },
+				new SearchProduct(new ProductManufacturer[] { new ProductManufacturer { ManufacturerId = 18 } }) { Id = 8 }
+			};
+
+			InitMocks(products);
+
+			Assert.That(Search(new CatalogSearchQuery().HasAnyManufacturer(true)).Hits.Count(), Is.EqualTo(5));
+			Assert.That(Search(new CatalogSearchQuery().HasAnyManufacturer(false)).Hits.Count(), Is.EqualTo(3));
+		}
+
+		[Test]
+		public void LinqSearch_filter_with_product_tag_ids()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct(new ProductTag[] { new ProductTag { Id = 16 } }) { Id = 1 },
+				new SearchProduct(new ProductTag[] { }) { Id = 2 },
+				new SearchProduct(new ProductTag[] { new ProductTag { Id = 32 } }) { Id = 3 },
+				new SearchProduct(new ProductTag[] { new ProductTag { Id = 16 } }) { Id = 4 },
+				new SearchProduct(new ProductTag[] { }) { Id = 5 }
+			};
+
+			InitMocks(products);
+
+			Assert.That(Search(new CatalogSearchQuery().WithProductTagIds(16, 32)).Hits.Count(), Is.EqualTo(3));
+			Assert.IsNull(Search(new CatalogSearchQuery().WithProductTagIds(22)).Hits.FirstOrDefault());
+		}
+
+		[Test]
+		public void LinqSearch_filter_with_stock_quantity()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct(1) { StockQuantity = 10000 },
+				new SearchProduct(2) { StockQuantity = 10001 },
+				new SearchProduct(3) { StockQuantity = 10002 },
+				new SearchProduct(4) { StockQuantity = 10003 },
+				new SearchProduct(5) { StockQuantity = 10004 },
+				new SearchProduct(6) { StockQuantity = 0 },
+				new SearchProduct(7) { StockQuantity = 650 },
+				new SearchProduct(8) { StockQuantity = 0 }
+			};
+
+			InitMocks(products);
+
+			Assert.That(Search(new CatalogSearchQuery().WithStockQuantity(10001, 10003)).Hits.Count(), Is.EqualTo(3));
+			Assert.That(Search(new CatalogSearchQuery().WithStockQuantity(10003, null)).Hits.Count(), Is.EqualTo(2));
+			Assert.That(Search(new CatalogSearchQuery().WithStockQuantity(null, 10002)).Hits.Count(), Is.EqualTo(6));
+		}
+
+		[Test]
+		public void LinqSearch_filter_with_price()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct(1) { Price = 102.0M },
+				new SearchProduct(2) { Price = 22.5M },
+				new SearchProduct(3) { Price = 658.99M },
+				new SearchProduct(4) { Price = 25.3M },
+				new SearchProduct(5) { Price = 14.9M }
+			};
+
+			InitMocks(products);
+
+			var eur = new Currency { CurrencyCode = "EUR" };
+
+			Assert.That(Search(new CatalogSearchQuery().WithPrice(eur, 100M, 200M)).Hits.Count(), Is.EqualTo(1));
+			Assert.That(Search(new CatalogSearchQuery().WithPrice(eur, 100M, null)).Hits.Count(), Is.EqualTo(2));
+			Assert.That(Search(new CatalogSearchQuery().WithPrice(eur, null, 100M)).Hits.Count(), Is.EqualTo(3));
+		}
+
+		[Test]
+		public void LinqSearch_filter_with_created_utc()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct(1) { CreatedOnUtc = new DateTime(2016, 2, 16) },
+				new SearchProduct(2) { CreatedOnUtc = new DateTime(2016, 2, 23) },
+				new SearchProduct(3) { CreatedOnUtc = new DateTime(2016, 3, 20) },
+				new SearchProduct(4) { CreatedOnUtc = new DateTime(2016, 4, 5) },
+				new SearchProduct(5) { CreatedOnUtc = new DateTime(2016, 6, 25) },
+				new SearchProduct(6) { CreatedOnUtc = new DateTime(2016, 8, 4) }
+			};
+
+			InitMocks(products);
+
+			Assert.That(Search(new CatalogSearchQuery().WithCreatedUtc(new DateTime(2016, 1, 1), new DateTime(2016, 3, 1))).Hits.Count(), Is.EqualTo(2));
+			Assert.That(Search(new CatalogSearchQuery().WithCreatedUtc(new DateTime(2016, 4, 1), null)).Hits.Count(), Is.EqualTo(3));
+			Assert.That(Search(new CatalogSearchQuery().WithCreatedUtc(null, new DateTime(2016, 7, 1))).Hits.Count(), Is.EqualTo(5));
+		}
+
 		#endregion
+
+		#region SearchProduct
 
 		internal class SearchProduct : Product
 		{
 			internal SearchProduct()
-				: this((new Random()).Next(100, int.MaxValue))
+				: this(0, null, null, null)
 			{
 			}
 
 			internal SearchProduct(int id)
+				: this(id, null, null, null)
 			{
-				Id = id;
+			}
+
+			internal SearchProduct(ICollection<ProductCategory> categories)
+				: this(0, categories, null, null)
+			{
+			}
+
+			internal SearchProduct(ICollection<ProductManufacturer> manufacturers)
+				: this(0, null, manufacturers, null)
+			{
+			}
+
+			internal SearchProduct(ICollection<ProductTag> tags)
+				: this(0, null, null, tags)
+			{
+			}
+
+			internal SearchProduct(
+				int id,
+				ICollection<ProductCategory> categories,
+				ICollection<ProductManufacturer> manufacturers,
+				ICollection<ProductTag> tags)
+			{
+				Id = (id == 0 ? (new Random()).Next(100, int.MaxValue) : id);
+				ProductCategories = categories ?? new HashSet<ProductCategory>();
+				ProductManufacturers = manufacturers ?? new HashSet<ProductManufacturer>();
+				ProductTags = tags ?? new HashSet<ProductTag>();
+
 				Name = "Holisticly implement optimal web services";
 				ShortDescription = "Continually synthesize fully researched benefits with granular benefits.";
 				FullDescription = "Enthusiastically utilize compelling systems with vertical collaboration and idea-sharing. Interactively incubate bleeding-edge innovation with future-proof catalysts for change. Distinctively exploit parallel paradigms rather than progressive scenarios. Compellingly synergize visionary ROI after process-centric resources. Objectively negotiate performance based best practices with 24/7 vortals. Globally pontificate reliable processes for innovative services. Monotonectally enable mission - critical information and quality.";
@@ -296,6 +554,12 @@ namespace SmartStore.Services.Tests.Search
 				StockQuantity = 10000;
 				CreatedOnUtc = new DateTime(2016, 8, 24);
 			}
+
+			public override ICollection<ProductCategory> ProductCategories { get; protected set; }
+			public override ICollection<ProductManufacturer> ProductManufacturers { get; protected set; }
+			public override ICollection<ProductTag> ProductTags { get; protected set; }
 		}
+
+		#endregion
 	}
 }

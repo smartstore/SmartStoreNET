@@ -69,43 +69,60 @@
                     }
                 }
 
-                $(".mega-menu-dropdown").on('mouseenter', function () {
-                    clearTimeout(closingTimeout);
-                })
-                .on('mouseleave', function () {
-                    var targetId = $(this).parent().attr("id");
-                    var link = megamenu.find("[data-target='#" + targetId + "']");
 
-                    closeMenuHandler(link);
-                });
+                if ($("html").hasClass("touch")) {
 
-                navElems.on("mouseenter", function () {
-                    var link = $(this).find(".nav-link");
+                    // Handle opening events for touch devices
 
-                    // if correct dropdown is already open then don't open it again
-                    var opendMenuSelector = $(".nav-item.active .nav-link").data("target");
+                    megamenuContainer.on('clickoutside', function (e) {
+                        closeNow($(".nav-item.active .nav-link"));
+                    });
 
-                    if (opendMenuSelector == link.data("target")) {
+                    navElems.on("click", function (e) {
+
+                        var link = $(this).find(".nav-link");
+                        var opendMenuSelector = $(".nav-item.active .nav-link").data("target");
+
+                        if (opendMenuSelector != link.data("target")) {
+                            e.preventDefault();
+                            closeNow($(".nav-item.active .nav-link"));
+                            tryOpen(link);
+                        }
+                    });
+                }
+                else {
+
+                    // Handle opening events for desktop workstations
+
+                    $(".mega-menu-dropdown").on('mouseenter', function () {
                         clearTimeout(closingTimeout);
-                        return;
-                    }
+                    })
+                    .on('mouseleave', function () {
+                        var targetId = $(this).parent().attr("id");
+                        var link = megamenu.find("[data-target='#" + targetId + "']");
 
-                    tryOpen(link);
-                })
-			  	.on("mouseleave", function () {
-			  	    var link = $(this).find(".nav-link");
+                        closeMenuHandler(link);
+                    });
 
-			  	    closeMenuHandler(link);
-			  	});
+                    navElems.on("mouseenter", function () {
+                        var link = $(this).find(".nav-link");
 
-                //oh, oh, oh, oh, can't touch this ;-/
-                var hammertime = new Hammer($(".megamenu")[0]);
-                hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 80, pointers: 1 }));
+                        // if correct dropdown is already open then don't open it again
+                        var opendMenuSelector = $(".nav-item.active .nav-link").data("target");
 
-                hammertime.on('panend', function (ev) {
-                    if (ev.direction == Hammer.DIRECTION_LEFT) { megamenuNext.trigger('click'); }
-                    if (ev.direction == Hammer.DIRECTION_RIGHT) { megamenuPrev.trigger('click'); }
-                });
+                        if (opendMenuSelector == link.data("target")) {
+                            clearTimeout(closingTimeout);
+                            return;
+                        }
+
+                        tryOpen(link);
+                    })
+                    .on("mouseleave", function () {
+                        var link = $(this).find(".nav-link");
+
+                        closeMenuHandler(link);
+                    });
+                }
 
                 megamenuContainer.evenIfHidden(function (el) {
 
@@ -117,36 +134,136 @@
 
                     megamenuContainer.find('ul').wrap('<div class="nav-slider" style="overflow: hidden;position: relative;" />');
 
+                    // 
                     getCurrentNavigationElements();
 
+                    var nav = $('.megamenu .nav');
+                    var navSlider = $('.megamenu .nav-slider');
+                    updateNavState();
+
                     megamenuNext.click(function (e) {
-
                         e.preventDefault();
-
-                        var scrollDelta = $(lastVisibleElem).position().left + 55 + $(lastVisibleElem).width() - $(".nav-slider").width();
-                        scrollCorrection = "+=" + scrollDelta + "px";
-
-                        $(".nav-slider").scrollTo(scrollCorrection, 200, {
-                            onAfter: function () {
-                                getCurrentNavigationElements();
-                            }
-                        });
+                        scrollToNextInvisibleNavItem(false);
                     });
 
                     megamenuPrev.click(function (e) {
-
                         e.preventDefault();
+                        scrollToNextInvisibleNavItem(true);
+                    });
 
-                        $(".nav-slider").scrollTo(firstVisibleElem, 200, {
-                            offset: { left: -40 },
-                            onAfter: function () {
-                                getCurrentNavigationElements();
+
+                    // MC Start (Funktionen)
+                    function scrollToNextInvisibleNavItem(backwards) {
+                        // Ermittle den ersten komplett sichtbaren NavItem (von links oder rechts, je nach 'backwards')
+                        var firstVisible = findFirstVisibleNavItem(backwards);
+
+                        // Je nach 'backwards': nimm nächsten oder vorherigen Item (dieser ist ja unsichtbar und da soll jetzt hingescrollt werden)
+                        var nextItem = backwards
+							? firstVisible.prev()
+							: firstVisible.next();
+
+                        if (nextItem.length == 0)
+                            return;
+
+                        // Linke Pos des Items ermitteln
+                        var leftPos = nextItem.position().left;
+
+                        // Wenn 'backwards == true': zur linken Pos des Items scrollen
+                        var newMarginLeft = (leftPos * -1) + 1;
+                        if (!backwards) {
+                            // Wenn 'backwards == true': zur rechten Pos des Items scrollen
+                            var rightPos = leftPos + nextItem.outerWidth(true) + 1;
+                            newMarginLeft = navSlider.width() - rightPos;
+                        }
+
+                        newMarginLeft = Math.min(0, newMarginLeft);
+                        nav.css('margin-left', newMarginLeft + 'px').one("transitionend webkitTransitionEnd", function (e) {
+                            // Führt UI-Aktualisierung NACH Anim-Ende durch (.one(trans...))
+                            updateNavState();
+                        });
+                    }
+
+                    function findFirstVisibleNavItem(fromLeft) {
+                        var navItems = navElems;
+                        if (!fromLeft) {
+                            // NavItems umdrehen, da wir die Iteration von rechts starten
+                            navItems = $($.makeArray(navElems).reverse());
+                        }
+
+                        var result;
+                        var cntWidth = navSlider.width();
+                        var curMarginLeft = parseFloat(nav.css('margin-left'));
+
+                        function isInView(pos) {
+                            var realPos = pos + curMarginLeft;
+                            return realPos >= 0 && realPos < cntWidth;
+                        }
+
+                        navItems.each(function (i, el) {
+                            // Durchläuft alle NavItems von links ODER rechts und steigt aus,
+                            // sobald die linke UND rechte Kante des Items im sichtbaren Bereich liegen.
+                            var navItem = $(el);
+                            var leftPos = navItem.position().left;
+                            var leftIn = isInView(leftPos);
+                            if (leftIn) {
+                                var rightIn = isInView(leftPos + navItem.outerWidth(true));
+                                if (rightIn) {
+                                    result = navItem;
+                                    return false;
+                                }
                             }
                         });
+
+                        return result;
+                    }
+
+                    function updateNavState() {
+                        // Aktualisiert Megamenü-Status: Arrows etc.
+                        var realNavWidth = 0;
+                        navElems.each(function (i, el) { realNavWidth += parseFloat($(this).outerWidth(true)); });
+
+                        var curMarginLeft = parseFloat(nav.css('margin-left'));
+
+                        if (realNavWidth > megamenu.width()) {
+                            // NavItems passen nicht in Megamnü-Container: NextArrow anzeigen.
+                            megamenu.addClass('megamenu--blend-next');
+                        }
+
+                        if (curMarginLeft < 0) {
+                            // Es wurde nach rechts gescrollt: PrevArrow anzeigen.
+                            megamenu.addClass('megamenu--blend-prev');
+
+                            // Ermitteln, ob wir am Ende sind
+                            var endReached = nav.width() >= realNavWidth;
+                            if (endReached)
+                                megamenu.removeClass('megamenu--blend-next')
+                            else
+                                megamenu.addClass('megamenu--blend-next');
+                        }
+                        else {
+                            // Wir sind am Anfang: PrevArrow ausblenden.
+                            megamenu.removeClass('megamenu--blend-prev');
+                        }
+                    }
+                    // MC Ende (Funktionen)
+
+                    //oh, oh, oh, oh, can't touch this ;-/
+                    var hammertime = new Hammer($(".megamenu")[0]);
+                    hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
+
+                    hammertime.on('panend', function (ev) {
+
+                        getCurrentNavigationElements();
+                        closeNow($(".nav-item.active .nav-link"));
+
+                        if (ev.direction == Hammer.DIRECTION_LEFT) {megamenu.addClass("megamenu--blend-prev");}
+                        if (ev.direction == Hammer.DIRECTION_RIGHT) {megamenu.addClass("megamenu--blend-next");}
                     });
 
                     // show scroll buttons when menu items don't fit into screen
                     $(window).resize(function () {
+
+                        updateNavState();
 
                         var liWidth = 0;
                         navElems.each(function () {
@@ -219,12 +336,18 @@
                     var catId = container.data("entity-id");
                     var displayRotator = container.data("display-rotator");
 
-                    if ($(".pl-slider", container).length == 0 && catId != null && displayRotator) {
+                    //if ($(".pl-slider", container).length == 0 && catId != null && displayRotator) {
+                    if (catId != null && displayRotator) {
 
                         var rotatorColumn = $(".rotator-" + catId);
 
                         // init throbber
-                        rotatorColumn.find(".rotator-content").throbber({ white: true, small: true, message: '' });
+                        //rotatorColumn.find(".rotator-content").throbber({ white: true, small: true, message: '' });
+
+                        // clear content & init throbber
+                        rotatorColumn.find(".rotator-content")
+							.html('<div class="placeholder"></div>')
+							.throbber({ white: true, small: true, message: '' });
 
                         // wait a little to imply hard work is going on ;-)
                         setTimeout(function () {
@@ -260,8 +383,8 @@
                                         offset: -100,
                                         handleCorners: true,
                                         smallIcons: true,
-                                        isBtnGroup: true,
-                                        btnType: "primary"
+                                        btnType: "primary",
+                                        opacityOnHover: false
                                     });
 
                                     // set article item width (important for mobile devices)
@@ -275,6 +398,10 @@
                                         if (ev.direction == Hammer.DIRECTION_LEFT) { plSlider.trigger('next'); }
                                         if (ev.direction == Hammer.DIRECTION_RIGHT) { plSlider.trigger('prev'); }
                                     });
+
+                                    if (container.hasClass("open")) {
+                                        container.data("display-rotator", false);
+                                    }
                                 }
                             });
                         }, 1000);

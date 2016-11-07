@@ -35,8 +35,8 @@ $.ScrollButton = function(el, buttons, target, options) {
 	var inButton = false;
 	var inTarget = false;
 	var outside = opts.position === "outside";
-	var offOpacity = opts.showButtonAlways ? 40 : 0;
-	var onOpacity = !target ? 100 : (opts.showButtonAlways ? 80 : 40);
+	var offOpacity = opts.showButtonAlways || !opts.opacityOnHover ? 40 : 0;
+	var onOpacity = !target ? 100 : (opts.showButtonAlways || !opts.opacityOnHover ? 80 : 40);
 	var hoverOpacity = 100;
 	var removableOpacityClasses = "o{0} o{1} o{2}".format(hoverOpacity, onOpacity, offOpacity);
 	
@@ -121,7 +121,7 @@ $.ScrollButton = function(el, buttons, target, options) {
 		
 		el.addClass("sb-dir-" + opts.direction);
 
-		el.bind({
+		el.on({
 			"mouseenter.scrollbutton": function() { 
 				inButton = true;
 				// ohne defer würde target.enter HIERNACH gefeuert, dat wollen wir nicht.
@@ -132,7 +132,7 @@ $.ScrollButton = function(el, buttons, target, options) {
 			}, 
 			"mouseleave.scrollbutton": function() {
 				self.setState("on");
-				inButton = false;
+				//inButton = false;
 				if ($.isFunction(opts.leave)) {
 					opts.leave.call(this, opts.direction);
 				} 
@@ -167,7 +167,7 @@ $.ScrollButton = function(el, buttons, target, options) {
 	this.enable = function(enable) {
 		enabled = enable;
 		if (enabled) {
-			self.setState(inButton ? "hovered" : (inTarget || !target ? "on" : "off"));
+		    self.setState(inButton || !opts.opacityOnHover ? "hovered" : (inTarget || !target ? "on" : "off"));
 			el.removeClass("disabled");
 		}
 		else {
@@ -243,7 +243,9 @@ $.ScrollButton.defaults = {
 	enter: null,
 	leave: null,
     // bootstrap button classes: primary, secondary, success, info, warning, danger, link
-    btnType: "secondary"   
+	btnType: "secondary",
+    // if true buttons will get more visible if user hovers over button container
+	opacityOnHover: true
 }
 
 $.fn.extend( {
@@ -267,7 +269,10 @@ $.fn.extend( {
 					_.each(buttons, function(val, i){
 						var plugin = val.data("ScrollButton");
 						plugin.setInTarget(false);
-						plugin.setState("off", true);
+
+						if (opts.opacityOnHover){
+						    plugin.setState("off", true);
+						}
 					});
 				}
 			});

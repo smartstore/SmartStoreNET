@@ -78,6 +78,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.5, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HtmlAgilityPack.1.4.9.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -152,16 +156,19 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Async\AsyncLock.cs" />
-    <Compile Include="Async\AsyncState.cs" />
+    <Compile Include="Async\AsyncStateInfo.cs" />
+    <Compile Include="Async\IAsyncState.cs" />
+    <Compile Include="Async\LocalAsyncState.cs" />
     <Compile Include="Caching\ISet.cs" />
     <Compile Include="Caching\MemoryCacheManager.cs" />
-    <Compile Include="Caching\DisplayControl.cs" />
+    <Compile Include="Caching\OutputCache\DisplayControl.cs" />
     <Compile Include="Caching\IRequestCache.cs" />
-    <Compile Include="Caching\IDisplayControl.cs" />
-    <Compile Include="Caching\IOutputCacheProvider.cs" />
+    <Compile Include="Caching\OutputCache\IDisplayControl.cs" />
+    <Compile Include="Caching\OutputCache\IOutputCacheInvalidationObserver.cs" />
+    <Compile Include="Caching\OutputCache\IOutputCacheProvider.cs" />
     <Compile Include="Caching\MemorySet.cs" />
-    <Compile Include="Caching\NullOutputCacheProvider.cs" />
-    <Compile Include="Caching\OutputCacheItem.cs" />
+    <Compile Include="Caching\OutputCache\NullOutputCacheProvider.cs" />
+    <Compile Include="Caching\OutputCache\OutputCacheItem.cs" />
     <Compile Include="Caching\RequestCache.cs" />
     <Compile Include="Collections\ConcurrentMultimap.cs" />
     <Compile Include="Collections\LazyMultimap.cs" />
@@ -233,6 +240,7 @@
     <Compile Include="ITransient.cs" />
     <Compile Include="Collections\MostRecentlyUsedList.cs" />
     <Compile Include="Localization\LocalizationHelper.cs" />
+    <Compile Include="Logging\IChronometer.cs" />
     <Compile Include="Logging\ILoggerFactory.cs" />
     <Compile Include="Logging\log4net\Log4netLogger.cs" />
     <Compile Include="Logging\log4net\Log4netLoggerFactory.cs" />
@@ -401,10 +409,12 @@
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="Plugins\LoadPluginResult.cs" />
+    <Compile Include="Search\AcquireWriterContext.cs" />
     <Compile Include="Search\DefaultIndexManager.cs" />
     <Compile Include="Search\Facets\Facet.cs" />
     <Compile Include="Search\Facets\FacetGroup.cs" />
     <Compile Include="Search\Facets\FacetDescriptor.cs" />
+    <Compile Include="Search\Facets\FacetValue.cs" />
     <Compile Include="Search\Filter\CombinedSearchFilter.cs" />
     <Compile Include="Search\Filter\RangeSearchFilter.cs" />
     <Compile Include="Search\Filter\SearchFilterBase.cs" />

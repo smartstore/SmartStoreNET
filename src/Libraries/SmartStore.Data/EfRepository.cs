@@ -91,8 +91,8 @@ namespace SmartStore.Data
                 {
                     if (batchSize <= 0)
                     {
-                        // insert all in one step
-                        entities.Each(x => this.Entities.Add(x));
+						// insert all in one step
+						this.Entities.AddRange(entities);
 						if (this.AutoCommitEnabledInternal)
                             _context.SaveChanges();
                     }

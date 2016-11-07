@@ -6,7 +6,6 @@ using StackExchange.Profiling;
 
 namespace SmartStore.DevTools
 {
-
 	public class ProfilerHttpModule : IHttpModule
 	{
 		private const string MP_KEY = "sm.miniprofiler.started";
@@ -74,5 +73,4 @@ namespace SmartStore.DevTools
 			// nothing to dispose
 		}
 	}
-
 }

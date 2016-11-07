@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartStore.Core.Search
 {
@@ -39,5 +39,15 @@ namespace SmartStore.Core.Search
 		}
 
 		#endregion
+
+		public override string ToString()
+		{
+			if (_filters.Any())
+			{
+				return string.Concat("(", string.Join(", ", _filters.Select(x => x.ToString())), ")");
+			}
+
+			return "";
+		}
 	}
 }

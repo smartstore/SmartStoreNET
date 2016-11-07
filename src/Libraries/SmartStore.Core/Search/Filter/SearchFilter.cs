@@ -179,6 +179,11 @@ namespace SmartStore.Core.Search
 		}
 
 		#endregion
+
+		public override string ToString()
+		{
+			return $"{FieldName}: {Term.ToString()}";
+		}
 	}
 
 	public enum SearchFilterOccurence

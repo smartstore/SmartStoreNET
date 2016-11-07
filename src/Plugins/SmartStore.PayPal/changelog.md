@@ -1,5 +1,9 @@
 ﻿#Release Notes
 
+##Paypal 2.6.0.4
+###Bugfixes
+* PayPal PLUS: Excluding tax issue. Fixes "Transaction amount details (subtotal, tax, shipping) must add up to specified amount total".
+
 ##Paypal 2.6.0.3
 ###Bugfixes
 * PayPal PLUS: Integration review through PayPal

@@ -192,6 +192,8 @@
     <Compile Include="DataExchange\Export\ExportConfigurationInfo.cs" />
     <Compile Include="DataExchange\Import\DataImporter.cs" />
     <Compile Include="DataExchange\Import\EntityImporterBase.cs" />
+    <Compile Include="DataExchange\Import\Events\ImportExecutingEvent.cs" />
+    <Compile Include="DataExchange\Import\Events\ImportExecutedEvent.cs" />
     <Compile Include="DataExchange\Import\IEntityImporter.cs" />
     <Compile Include="DataExchange\Import\ImportExtraData.cs" />
     <Compile Include="DataExchange\Import\ImportExecuteContext.cs" />

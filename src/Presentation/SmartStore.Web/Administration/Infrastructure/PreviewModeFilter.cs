@@ -26,7 +26,10 @@ namespace SmartStore.Admin.Infrastructure
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)
 		{
-			if (!(filterContext.Result is ViewResult))
+			if (filterContext.IsChildAction)
+				return;
+
+			if (!filterContext.Result.IsHtmlViewResult())
 				return;
 
 			var theme = _themeContext.GetPreviewTheme();

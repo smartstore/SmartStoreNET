@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SmartStore.Core.Search
+﻿namespace SmartStore.Core.Search
 {
 	public class SearchSort
 	{
@@ -48,9 +42,9 @@ namespace SmartStore.Core.Search
 			}
 		}
 
-		public static SearchSort ByRelevance()
+		public static SearchSort ByRelevance(bool descending = false)
 		{
-			return new SearchSort(null, IndexTypeCode.Empty, false);
+			return new SearchSort(null, IndexTypeCode.Empty, descending);
 		}
 
 		public static SearchSort ByStringField(string fieldName, bool descending = false)

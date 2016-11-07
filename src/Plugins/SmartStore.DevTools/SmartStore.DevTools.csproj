@@ -161,8 +161,7 @@
     <Compile Include="ProfilerHttpModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteProvider.cs" />
-    <Compile Include="Services\IProfilerService.cs" />
-    <Compile Include="Services\ProfilerService.cs" />
+    <Compile Include="Services\MiniProfilerChronometer.cs" />
     <Compile Include="Settings\ProfilerSettings.cs" />
     <Compile Include="Starter.cs" />
   </ItemGroup>

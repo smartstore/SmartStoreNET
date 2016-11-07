@@ -18,20 +18,17 @@ namespace SmartStore.Services.Search
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IRepository<AclRecord> _aclRepository;
-		private readonly ICommonServices _services;
 
 		public LinqCatalogSearchService(
 			IRepository<Product> productRepository,
 			IRepository<LocalizedProperty> localizedPropertyRepository,
 			IRepository<StoreMapping> storeMappingRepository,
-			IRepository<AclRecord> aclRepository,
-			ICommonServices services)
+			IRepository<AclRecord> aclRepository)
 		{
 			_productRepository = productRepository;
 			_localizedPropertyRepository = localizedPropertyRepository;
 			_storeMappingRepository = storeMappingRepository;
 			_aclRepository = aclRepository;
-			_services = services;
 
 			QuerySettings = DbQuerySettings.Default;
 		}
@@ -115,25 +112,11 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
-		private IQueryable<Product> QueryLocalizedProperties(IQueryable<Product> query, string keyGroup, string key, int languageId, string term)
-		{
-			if (languageId != 0)
-			{
-				query =
-					from p in query
-					join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
-					from lp in plp.DefaultIfEmpty()
-					where lp.LanguageId == languageId && lp.LocaleKeyGroup == keyGroup && lp.LocaleKey == key && lp.LocaleValue.Contains(term)
-					select p;
-			}
-
-			return query;
-		}
-
 		protected virtual IQueryable<Product> GetProducts(CatalogSearchQuery searchQuery)
 		{
 			var utcNow = DateTime.UtcNow;
 			var term = searchQuery.Term;
+			var fields = searchQuery.Fields;
 			var languageId = searchQuery.LanguageId ?? 0;
 
 			var query = _productRepository.Table
@@ -141,43 +124,24 @@ namespace SmartStore.Services.Search
 
 			#region Search Term
 
-			if (term.HasValue() && searchQuery.Fields != null && searchQuery.Fields.Length != 0 && searchQuery.Fields.Any(x => x.HasValue()))
+			if (term.HasValue() && fields != null && fields.Length != 0 && fields.Any(x => x.HasValue()))
 			{
-				foreach (var field in searchQuery.Fields)
-				{
-					if (field == "sku")
-					{
-						query = query.Where(x => x.Sku.Contains(term));
-					}
-					else if (field == "name")
-					{
-						query = query.Where(x => x.Name.Contains(term));
-
-						query = QueryLocalizedProperties(query, "Product", "Name", languageId, term);
-					}
-					else if (field == "shortdescription")
-					{
-						query = query.Where(x => x.ShortDescription.Contains(term));
-
-						query = QueryLocalizedProperties(query, "Product", "ShortDescription", languageId, term);
-					}
-					else if (field == "fulldescription")
-					{
-						query = query.Where(x => x.FullDescription.Contains(term));
-
-						query = QueryLocalizedProperties(query, "Product", "FullDescription", languageId, term);
-					}
-					else if (field == "tagname")
-					{
-						query =
-							from p in query
-							from pt in p.ProductTags.DefaultIfEmpty()
-							where pt.Name.Contains(term)
-							select p;
-
-						query = QueryLocalizedProperties(query, "ProductTag", "Name", languageId, term);
-					}
-				}
+				query =
+					from p in query
+					join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
+					from lp in plp.DefaultIfEmpty()
+					from pt in p.ProductTags.DefaultIfEmpty()
+					where
+					(fields.Contains("name") && p.Name.Contains(term)) ||
+					(fields.Contains("sku") && p.Sku.Contains(term)) ||
+					(fields.Contains("shortdescription") && p.ShortDescription.Contains(term)) ||
+					(fields.Contains("fulldescription") && p.FullDescription.Contains(term)) ||
+					(fields.Contains("tagname") && pt.Name.Contains(term)) ||
+					(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(term)) ||
+					(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(term)) ||
+					(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "FullDescription" && lp.LocaleValue.Contains(term)) ||
+					(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "ProductTag" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(term))
+					select p;
 			}
 
 			#endregion

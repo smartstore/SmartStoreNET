@@ -12,6 +12,8 @@
 * Message Bus for inter-process messaging between servers (commercial plugin)
 * Configurable media storage path for web farms
 * (Dev) log4net integration
+* (Dev) proper plugin view debugging
+* (Dev) changes to static plugin files (css, js, etc.) immediately apply to running project
 * XML Sitemap optimized for very large catalogs:
 	* Partitions for very large sitemaps (> 50.000 nodes or > 10 MB)
 	* Generated in a background task. No instant invalidation anymore.
@@ -35,6 +37,7 @@
 * #1008 Export: Add support for description projection to all product exporting providers
 * #1015 Implement Entity Picker in discount requirements
 * #1028 Debitoor: Company name send as customer name if present
+* #1044 Debitoor: Additional order notes for tax exemption within and outside EU
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation

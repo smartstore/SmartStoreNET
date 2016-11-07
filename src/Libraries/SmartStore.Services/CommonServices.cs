@@ -34,6 +34,7 @@ namespace SmartStore.Services
 		private readonly Lazy<IStoreService> _storeService;
 		private readonly Lazy<IDateTimeHelper> _dateTimeHelper;
 		private readonly Lazy<IDisplayControl> _displayControl;
+		private readonly Lazy<IChronometer> _chronometer;
 
 		public CommonServices(
 			IComponentContext container,
@@ -52,7 +53,8 @@ namespace SmartStore.Services
 			Lazy<ISettingService> settings,
 			Lazy<IStoreService> storeService,
 			Lazy<IDateTimeHelper> dateTimeHelper,
-			Lazy<IDisplayControl> displayControl)
+			Lazy<IDisplayControl> displayControl,
+			Lazy<IChronometer> chronometer)
 		{
 			this._container = container;
 			this._env = env;
@@ -71,6 +73,7 @@ namespace SmartStore.Services
 			this._storeService = storeService;
 			this._dateTimeHelper = dateTimeHelper;
 			this._displayControl = displayControl;
+			this._chronometer = chronometer;
 		}
 
 		public IComponentContext Container
@@ -207,6 +210,14 @@ namespace SmartStore.Services
 			get
 			{
 				return _displayControl.Value;
+			}
+		}
+
+		public IChronometer Chronometer
+		{
+			get
+			{
+				return _chronometer.Value;
 			}
 		}
 	}

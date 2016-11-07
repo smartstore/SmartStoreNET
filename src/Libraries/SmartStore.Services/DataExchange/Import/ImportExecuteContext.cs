@@ -28,6 +28,12 @@ namespace SmartStore.Services.DataExchange.Import
 			Result = new ImportResult();
 		}
 
+		public DataImportRequest Request
+		{
+			get;
+			internal set;
+		}
+
 		/// <summary>
 		/// Import settings
 		/// </summary>
@@ -204,8 +210,7 @@ namespace SmartStore.Services.DataExchange.Import
 		{
 			try
 			{
-				if (_progressValueSetter != null)
-					_progressValueSetter.Invoke(value, maximum, _progressInfo.FormatInvariant(value, maximum));
+				_progressValueSetter?.Invoke(value, maximum, _progressInfo.FormatInvariant(value, maximum));
 			}
 			catch { }
 		}
@@ -218,8 +223,8 @@ namespace SmartStore.Services.DataExchange.Import
         {
             try
             {
-                if (_progressValueSetter != null && message.HasValue())
-                    _progressValueSetter.Invoke(0, 0, message);
+                if (message.HasValue())
+                    _progressValueSetter?.Invoke(0, 0, message);
             }
             catch { }
         }

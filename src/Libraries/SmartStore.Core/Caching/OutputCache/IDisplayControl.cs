@@ -19,6 +19,8 @@ namespace SmartStore.Core.Caching
 		IEnumerable<string> GetCacheControlTagsFor(BaseEntity entity);
 
 		IEnumerable<string> GetAllCacheControlTags();
+
+		IDisposable BeginIdleScope();
 	}
 
 	public static class IDisplayControlExtensions

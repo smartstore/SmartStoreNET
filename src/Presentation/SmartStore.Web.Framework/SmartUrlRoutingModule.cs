@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
 using System.Web.Routing;
 using System.Text.RegularExpressions;
+using SmartStore.Utilities;
+using SmartStore.Core;
+using SmartStore.Web.Framework.Plugins;
+using SmartStore.Core.IO;
+using System.IO;
+using System.Web.Hosting;
 
 namespace SmartStore.Web.Framework
 {
@@ -22,15 +23,16 @@ namespace SmartStore.Web.Framework
 			if (application.Context.Items[_contextKey] == null)
 			{
 				application.Context.Items[_contextKey] = _contextKey;
-				application.PostResolveRequestCache += OnApplicationPostResolveRequestCache;
-			}
-		}
 
-		private void OnApplicationPostResolveRequestCache(object sender, EventArgs e)
-		{
-			var application = (HttpApplication)sender;
-			var context = new HttpContextWrapper(application.Context);
-			this.PostResolveRequestCache(context);
+				if (CommonHelper.IsDevEnvironment && HttpContext.Current.IsDebuggingEnabled)
+				{
+					// Handle plugin static file in DevMode
+					application.PostAuthorizeRequest += (s, e) => PostAuthorizeRequest(new HttpContextWrapper(((HttpApplication)s).Context));
+					application.PreSendRequestHeaders += (s, e) => PreSendRequestHeaders(new HttpContextWrapper(((HttpApplication)s).Context));
+				}
+				
+				application.PostResolveRequestCache += (s, e) => PostResolveRequestCache(new HttpContextWrapper(((HttpApplication)s).Context));
+			}
 		}
 
 		/// <summary>
@@ -77,24 +79,67 @@ namespace SmartStore.Web.Framework
 			return false;
 		}
 
-		public virtual void PostResolveRequestCache(HttpContextBase context)
+		public virtual void PostAuthorizeRequest(HttpContextBase context)
 		{
-			var request = context.Request;
-			if (request == null || _routes.Count == 0)
+			var request = context?.Request;
+			if (request == null)
 				return;
 
-			var path = request.AppRelativeCurrentExecutionFilePath.TrimStart('~').TrimEnd('/');
-			var method = request.HttpMethod.EmptyNull();
-
-			foreach (var route in _routes)
+			if (IsPluginPath(request) && WebHelper.IsStaticResourceRequested(request))
 			{
-				if (route.PathPattern.IsMatch(path) && route.HttpMethodPattern.IsMatch(method))
+				// We're in debug mode and in dev environment, so we can be sure that 'PluginDebugViewVirtualPathProvider' is running
+				var file = HostingEnvironment.VirtualPathProvider.GetFile(request.AppRelativeCurrentExecutionFilePath) as DebugPluginVirtualFile;
+				if (file != null)
 				{
-					var module = new UrlRoutingModule();
-					module.PostResolveRequestCache(context);
-					return;
+					context.Items["DebugFile"] = file;
+					context.Response.WriteFile(file.PhysicalPath);
+					context.Response.End();
 				}
-			}		
+			}
+		}
+
+		public virtual void PreSendRequestHeaders(HttpContextBase context)
+		{
+			if (context?.Response == null)
+				return;
+
+			var file = context.Items?["DebugFile"] as DebugPluginVirtualFile;
+			if (file != null)
+			{
+				context.Response.AddFileDependency(file.PhysicalPath);
+				context.Response.ContentType = MimeTypes.MapNameToMimeType(Path.GetFileName(file.PhysicalPath));
+				context.Response.Cache.SetNoStore();
+				context.Response.Cache.SetLastModifiedFromFileDependencies();
+			}
+		}
+
+		public virtual void PostResolveRequestCache(HttpContextBase context)
+		{
+			var request = context?.Request;
+			if (request == null)
+				return;
+
+			if (_routes.Count > 0)
+			{
+				var path = request.AppRelativeCurrentExecutionFilePath.TrimStart('~').TrimEnd('/');
+				var method = request.HttpMethod.EmptyNull();
+
+				foreach (var route in _routes)
+				{
+					if (route.PathPattern.IsMatch(path) && route.HttpMethodPattern.IsMatch(method))
+					{
+						var module = new UrlRoutingModule();
+						module.PostResolveRequestCache(context);
+						return;
+					}
+				}
+			}	
+		}
+
+		private bool IsPluginPath(HttpRequestBase request)
+		{
+			var result = request.AppRelativeCurrentExecutionFilePath.StartsWith("~/Plugins/", StringComparison.InvariantCultureIgnoreCase);
+			return result;
 		}
 
 		public void Dispose()

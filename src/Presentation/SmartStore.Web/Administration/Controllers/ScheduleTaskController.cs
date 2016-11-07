@@ -15,6 +15,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Core;
+using SmartStore.Core.Async;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -27,6 +28,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly ILocalizationService _localizationService;
         private readonly IWorkContext _workContext;
+		private readonly IAsyncState _asyncState;
 
         public ScheduleTaskController(
             IScheduleTaskService scheduleTaskService, 
@@ -34,7 +36,8 @@ namespace SmartStore.Admin.Controllers
             IPermissionService permissionService, 
             IDateTimeHelper dateTimeHelper,
 			ILocalizationService localizationService,
-            IWorkContext workContext)
+            IWorkContext workContext,
+			IAsyncState asyncState)
         {
             this._scheduleTaskService = scheduleTaskService;
 			this._taskScheduler = taskScheduler;
@@ -42,6 +45,7 @@ namespace SmartStore.Admin.Controllers
             this._dateTimeHelper = dateTimeHelper;
 			this._localizationService = localizationService;
             this._workContext = workContext;
+			this._asyncState = asyncState;
         }
 
 		private bool IsTaskVisible(ScheduleTask task)
@@ -132,8 +136,8 @@ namespace SmartStore.Admin.Controllers
 
 			return Json(new 
 			{
-				lastRunHtml = this.RenderPartialViewToString("_LastRun", model),
-				nextRunHtml = this.RenderPartialViewToString("_NextRun", model)
+				lastRunHtml = this.RenderPartialViewToString("~/Administration/Views/ScheduleTask/_LastRun.cshtml", model),
+				nextRunHtml = this.RenderPartialViewToString("~/Administration/Views/ScheduleTask/_NextRun.cshtml", model)
 			});
 		}
 
@@ -179,11 +183,9 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
 				return AccessDeniedView();
-
-			var cts = _taskScheduler.GetCancelTokenSourceFor(id);
-			if (cts != null)
+	
+			if (_asyncState.Cancel<ScheduleTask>(id.ToString()))
 			{
-				cts.Cancel();
 				NotifyWarning(T("Admin.System.ScheduleTasks.CancellationRequested"));
 			}
 

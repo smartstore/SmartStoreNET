@@ -328,32 +328,35 @@ namespace SmartStore.Admin.Controllers
                 
 				_manufacturerService.InsertManufacturer(manufacturer);
                 
-				//search engine name
+				// search engine name
                 model.SeName = manufacturer.ValidateSeName(model.SeName, manufacturer.Name, true);
                 _urlRecordService.SaveSlug(manufacturer, model.SeName, 0);
                 
-				//locales
+				// locales
                 UpdateLocales(manufacturer, model);
 
-				//discounts
+				// discounts
 				var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers, null, true);
 				foreach (var discount in allDiscounts)
 				{
 					if (model.SelectedDiscountIds != null && model.SelectedDiscountIds.Contains(discount.Id))
 						manufacturer.AppliedDiscounts.Add(discount);
 				}
-				_manufacturerService.UpdateManufacturer(manufacturer);
 
-				//update "HasDiscountsApplied" property
-				_manufacturerService.UpdateHasDiscountsApplied(manufacturer);
+				var hasDiscountsApplied = manufacturer.AppliedDiscounts.Count > 0;
+				if (hasDiscountsApplied)
+				{
+					manufacturer.HasDiscountsApplied = manufacturer.AppliedDiscounts.Count > 0;
+					_manufacturerService.UpdateManufacturer(manufacturer);
+				}
 
-				//update picture seo file name
+				// update picture seo file name
 				UpdatePictureSeoNames(manufacturer);
 				
-				//Stores
+				// Stores
 				_storeMappingService.SaveStoreMappings<Manufacturer>(manufacturer, model.SelectedStoreIds);
 
-                //activity log
+                // activity log
                 _customerActivityService.InsertActivity("AddNewManufacturer", _localizationService.GetResource("ActivityLog.AddNewManufacturer"), manufacturer.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Manufacturers.Added"));
@@ -409,17 +412,19 @@ namespace SmartStore.Admin.Controllers
             {
                 manufacturer = model.ToEntity(manufacturer);
 				MediaHelper.UpdatePictureTransientStateFor(manufacturer, m => m.PictureId);
-                manufacturer.UpdatedOnUtc = DateTime.UtcNow;
-                _manufacturerService.UpdateManufacturer(manufacturer);
+
+				////TBD: is it really necessary here already?
+				//manufacturer.UpdatedOnUtc = DateTime.UtcNow;
+				//_manufacturerService.UpdateManufacturer(manufacturer);
+
+				// search engine name
+				model.SeName = manufacturer.ValidateSeName(model.SeName, manufacturer.Name, true);
+				_urlRecordService.SaveSlug(manufacturer, model.SeName, 0);
                 
-				//search engine name
-                model.SeName = manufacturer.ValidateSeName(model.SeName, manufacturer.Name, true);
-                _urlRecordService.SaveSlug(manufacturer, model.SeName, 0);
-                
-				//locales
+				// locales
                 UpdateLocales(manufacturer, model);
 
-				//discounts
+				// discounts
 				var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToManufacturers, null, true);
 				foreach (var discount in allDiscounts)
 				{
@@ -434,18 +439,20 @@ namespace SmartStore.Admin.Controllers
 							manufacturer.AppliedDiscounts.Remove(discount);
 					}
 				}
+
+				manufacturer.UpdatedOnUtc = DateTime.UtcNow;
+				manufacturer.HasDiscountsApplied = manufacturer.AppliedDiscounts.Count > 0;
+
+				// Commit now
 				_manufacturerService.UpdateManufacturer(manufacturer);
 
-				//update "HasDiscountsApplied" property
-				_manufacturerService.UpdateHasDiscountsApplied(manufacturer);
-
-				//update picture seo file name
+				// update picture seo file name
 				UpdatePictureSeoNames(manufacturer);
 				
-				//Stores
+				// Stores
 				_storeMappingService.SaveStoreMappings<Manufacturer>(manufacturer, model.SelectedStoreIds);
 
-                //activity log
+                // activity log
                 _customerActivityService.InsertActivity("EditManufacturer", _localizationService.GetResource("ActivityLog.EditManufacturer"), manufacturer.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Manufacturers.Updated"));

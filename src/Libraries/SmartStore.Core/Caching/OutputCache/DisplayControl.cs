@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Topics;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Caching
 {
@@ -40,11 +41,18 @@ namespace SmartStore.Core.Caching
 
 		private readonly HashSet<BaseEntity> _entities = new HashSet<BaseEntity>();
 
+		private bool _isIdle;
 		private bool? _isUncacheableRequest;
 
-		public void Announce(BaseEntity entity)
+		public IDisposable BeginIdleScope()
 		{
-			if (entity != null)
+			_isIdle = true;
+			return new ActionDisposable(() => _isIdle = false);
+		}
+
+		public virtual void Announce(BaseEntity entity)
+		{
+			if (!_isIdle && entity != null)
 			{
 				_entities.Add(entity);
 			}
@@ -61,7 +69,8 @@ namespace SmartStore.Core.Caching
 		public void MarkRequestAsUncacheable()
 		{
 			// First wins: subsequent calls should not be able to cancel this
-			_isUncacheableRequest = true;
+			if (!_isIdle)
+				_isUncacheableRequest = true;
 		}
 
 		public bool IsUncacheableRequest
@@ -72,7 +81,7 @@ namespace SmartStore.Core.Caching
 			}
 		}
 
-		public IEnumerable<string> GetCacheControlTagsFor(BaseEntity entity)
+		public virtual IEnumerable<string> GetCacheControlTagsFor(BaseEntity entity)
 		{
 			Guard.NotNull(entity, nameof(entity));
 

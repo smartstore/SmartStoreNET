@@ -11,6 +11,7 @@ using Autofac.Integration.Mvc;
 using Autofac.Integration.WebApi;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
+using SmartStore.Core.Async;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
@@ -488,6 +489,7 @@ namespace SmartStore.Web.Framework
 		{
 			// Output cache
 			builder.RegisterType<DisplayControl>().As<IDisplayControl>().InstancePerRequest();
+			builder.Register<IOutputCacheInvalidationObserver>(c => NullOutputCacheInvalidationObserver.Instance).SingleInstance();
 
 			// Request cache
 			builder.RegisterType<RequestCache>().As<IRequestCache>().InstancePerRequest();
@@ -564,6 +566,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<MessageTokenProvider>().As<IMessageTokenProvider>().InstancePerRequest();
 			builder.RegisterType<Tokenizer>().As<ITokenizer>().InstancePerRequest();
 			builder.RegisterType<DefaultEmailSender>().As<IEmailSender>().SingleInstance(); // xxx (http)
+			builder.RegisterType<LocalAsyncState>().As<IAsyncState>().SingleInstance();
 		}
 	}
 

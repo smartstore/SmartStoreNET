@@ -15,6 +15,8 @@ namespace SmartStore.Core.Logging
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
+			builder.RegisterType<NullChronometer>().As<IChronometer>().SingleInstance();
+
 			builder.RegisterType<Log4netLoggerFactory>().As<ILoggerFactory>().SingleInstance();
 
 			// call GetLogger in response to the request for an ILogger implementation

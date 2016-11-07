@@ -66,22 +66,24 @@ namespace SmartStore.Services.Search
 			return result;
 		}
 
-		private IOrderedQueryable<Product> OrderBy<TKey>(IQueryable<Product> query, Expression<Func<Product, TKey>> keySelector, bool descending = false)
+		private IOrderedQueryable<Product> OrderBy<TKey>(ref bool ordered, IQueryable<Product> query, Expression<Func<Product, TKey>> keySelector, bool descending = false)
 		{
-			var ordered = query as IOrderedQueryable<Product>;
-
-			if (ordered == null)
+			if (ordered)
 			{
+				if (descending)
+					return ((IOrderedQueryable<Product>)query).ThenByDescending(keySelector);
+
+				return ((IOrderedQueryable<Product>)query).ThenBy(keySelector);
+			}
+			else
+			{
+				ordered = true;
+
 				if (descending)
 					return query.OrderByDescending(keySelector);
 
 				return query.OrderBy(keySelector);
 			}
-
-			if (descending)
-				return ordered.ThenByDescending(keySelector);
-
-			return ordered.ThenBy(keySelector);
 		}
 
 		private IQueryable<Product> QueryCategories(IQueryable<Product> query, List<int> ids, bool? featuredOnly)
@@ -114,6 +116,7 @@ namespace SmartStore.Services.Search
 
 		protected virtual IQueryable<Product> GetProducts(CatalogSearchQuery searchQuery)
 		{
+			var ordered = false;
 			var utcNow = DateTime.UtcNow;
 			var term = searchQuery.Term;
 			var fields = searchQuery.Fields;
@@ -126,22 +129,44 @@ namespace SmartStore.Services.Search
 
 			if (term.HasValue() && fields != null && fields.Length != 0 && fields.Any(x => x.HasValue()))
 			{
-				query =
-					from p in query
-					join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
-					from lp in plp.DefaultIfEmpty()
-					from pt in p.ProductTags.DefaultIfEmpty()
-					where
-					(fields.Contains("name") && p.Name.Contains(term)) ||
-					(fields.Contains("sku") && p.Sku.Contains(term)) ||
-					(fields.Contains("shortdescription") && p.ShortDescription.Contains(term)) ||
-					(fields.Contains("fulldescription") && p.FullDescription.Contains(term)) ||
-					(fields.Contains("tagname") && pt.Name.Contains(term)) ||
-					(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(term)) ||
-					(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(term)) ||
-					(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "FullDescription" && lp.LocaleValue.Contains(term)) ||
-					(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "ProductTag" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(term))
-					select p;
+				if (searchQuery.IsExactMatch)
+				{
+					query =
+						from p in query
+						join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
+						from lp in plp.DefaultIfEmpty()
+						from pt in p.ProductTags.DefaultIfEmpty()
+						where
+						(fields.Contains("name") && p.Name == term) ||
+						(fields.Contains("sku") && p.Sku == term) ||
+						(fields.Contains("shortdescription") && p.ShortDescription == term) ||
+						(fields.Contains("fulldescription") && p.FullDescription == term) ||
+						(fields.Contains("tagname") && pt.Name == term) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue == term) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue == term) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "FullDescription" && lp.LocaleValue == term) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "ProductTag" && lp.LocaleKey == "Name" && lp.LocaleValue == term)
+						select p;
+				}
+				else
+				{
+					query =
+						from p in query
+						join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
+						from lp in plp.DefaultIfEmpty()
+						from pt in p.ProductTags.DefaultIfEmpty()
+						where
+						(fields.Contains("name") && p.Name.Contains(term)) ||
+						(fields.Contains("sku") && p.Sku.Contains(term)) ||
+						(fields.Contains("shortdescription") && p.ShortDescription.Contains(term)) ||
+						(fields.Contains("fulldescription") && p.FullDescription.Contains(term)) ||
+						(fields.Contains("tagname") && pt.Name.Contains(term)) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(term)) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(term)) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "FullDescription" && lp.LocaleValue.Contains(term)) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "ProductTag" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(term))
+						select p;
+				}
 			}
 
 			#endregion
@@ -420,12 +445,16 @@ namespace SmartStore.Services.Search
 				{
 					if (!QuerySettings.IgnoreMultiStore)
 					{
-						query =
-							from p in query
-							join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
-							from sm in psm.DefaultIfEmpty()
-							where !p.LimitedToStores || sm.StoreId == (int)filter.Term
-							select p;
+						var storeId = (int)filter.Term;
+						if (storeId != 0)
+						{
+							query =
+								from p in query
+								join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
+								from sm in psm.DefaultIfEmpty()
+								where !p.LimitedToStores || sm.StoreId == storeId
+								select p;
+						}
 					}
 				}
 			}
@@ -442,57 +471,43 @@ namespace SmartStore.Services.Search
 					if (categoryIds.Any())
 					{
 						var categoryId = categoryIds.First();
-						query = OrderBy(query, x => x.ProductCategories.Where(pc => pc.CategoryId == categoryId).FirstOrDefault().DisplayOrder);
+						query = OrderBy(ref ordered, query, x => x.ProductCategories.Where(pc => pc.CategoryId == categoryId).FirstOrDefault().DisplayOrder);
 					}
 					else if (manufacturerIds.Any())
 					{
 						var manufacturerId = manufacturerIds.First();
-						query = OrderBy(query, x => x.ProductManufacturers.Where(pm => pm.ManufacturerId == manufacturerId).FirstOrDefault().DisplayOrder);
+						query = OrderBy(ref ordered, query, x => x.ProductManufacturers.Where(pm => pm.ManufacturerId == manufacturerId).FirstOrDefault().DisplayOrder);
 					}
 					else if (searchQuery.Filters.OfType<IAttributeSearchFilter>().Any(x => x.FieldName == "parentid"))
 					{
-						query = OrderBy(query, x => x.DisplayOrder);
+						query = OrderBy(ref ordered, query, x => x.DisplayOrder);
 					}
 					else
 					{
-						query = OrderBy(query, x => x.Name);
+						query = OrderBy(ref ordered, query, x => x.Name);
 					}
 				}
 				else if (sort.FieldName == "createdon")
 				{
-					query = OrderBy(query, x => x.CreatedOnUtc, sort.Descending);
+					query = OrderBy(ref ordered, query, x => x.CreatedOnUtc, sort.Descending);
 				}
 				else if (sort.FieldName == "name")
 				{
-					query = OrderBy(query, x => x.Name, sort.Descending);
+					query = OrderBy(ref ordered, query, x => x.Name, sort.Descending);
 				}
 				else if (sort.FieldName == "price")
 				{
-					query = OrderBy(query, x => x.Price, sort.Descending);
+					query = OrderBy(ref ordered, query, x => x.Price, sort.Descending);
 				}
 				else
 				{
-					query = OrderBy(query, x => x.Name);
+					query = OrderBy(ref ordered, query, x => x.Name);
 				}
 			}
 
-			if ((query as IOrderedQueryable<Product>) == null)
+			if (!ordered)
 			{
 				query = query.OrderBy(x => x.Id);
-			}
-
-			#endregion
-
-			#region Paging
-
-			if (searchQuery.Skip > 0)
-			{
-				query = query.Skip(searchQuery.Skip);
-			}
-
-			if (searchQuery.Take != int.MaxValue)
-			{
-				query = query.Take(searchQuery.Take);
 			}
 
 			#endregion

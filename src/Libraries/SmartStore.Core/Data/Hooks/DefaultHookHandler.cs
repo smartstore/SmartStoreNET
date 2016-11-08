@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace SmartStore.Core.Data.Hooks
 		// Prevents repetitive hooking of the same entity/state/[pre|post] combination within a single request
 		private readonly HashSet<HookedEntityKey> _hookedEntities = new HashSet<HookedEntityKey>();
 
+		private readonly static ConcurrentDictionary<Type, bool> _hookableEntities = new ConcurrentDictionary<Type, bool>();
 		private static HashSet<Type> _importantPreHookTypes;
 		private static HashSet<Type> _importantPostHookTypes;
 		private readonly static object _lock = new object();
@@ -74,7 +76,13 @@ namespace SmartStore.Core.Data.Hooks
 		{
 			bool anyStateChanged = false;
 
-			if (entries == null || !_preHooks.Any() || (importantHooksOnly && !this.HasImportantPreHooks()))
+			if (entries != null)
+			{
+				// Skip entities explicitly marked as unhookable
+				entries = entries.Where(IsHookableEntry);
+			}
+
+			if (entries == null || !entries.Any() || !_preHooks.Any() || (importantHooksOnly && !this.HasImportantPreHooks()))
 				return false;
 
 			var processedHooks = new HashSet<IPreActionHook>();
@@ -83,7 +91,7 @@ namespace SmartStore.Core.Data.Hooks
 			{
 				var e = entry; // Prevents access to modified closure
 				var entity = e.Entry.Entity as BaseEntity;
-				if (HookedAlready(entity, e.PreSaveState, false))
+				if (HandledAlready(entity, e.PreSaveState, false))
 				{
 					// Prevent repetitive hooking of the same entity/state/pre combination within a single request
 					continue;
@@ -154,7 +162,13 @@ namespace SmartStore.Core.Data.Hooks
 
 		public void TriggerPostActionHooks(IEnumerable<HookedEntityEntry> entries, bool importantHooksOnly)
 		{
-			if (entries == null || !_postHooks.Any() || (importantHooksOnly && !this.HasImportantPostHooks()))
+			if (entries != null)
+			{
+				// Skip entities explicitly marked as unhookable
+				entries = entries.Where(IsHookableEntry);
+			}
+
+			if (entries == null || !entries.Any() || !_postHooks.Any() || (importantHooksOnly && !this.HasImportantPostHooks()))
 				return;
 
 			var processedHooks = new HashSet<IPostActionHook>();
@@ -163,7 +177,7 @@ namespace SmartStore.Core.Data.Hooks
 			{
 				var e = entry; // Prevents access to modified closure
 				var entity = e.Entry.Entity as BaseEntity;
-				if (HookedAlready(entity, e.PreSaveState, true))
+				if (HandledAlready(entity, e.PreSaveState, true))
 				{
 					// Prevent repetitive hooking of the same entity/state/post combination within a single request
 					continue;
@@ -221,7 +235,30 @@ namespace SmartStore.Core.Data.Hooks
 			return hooks;
 		}
 
-		private bool HookedAlready(BaseEntity entity, EntityState preSaveState, bool isPostActionHook)
+		private bool IsHookableEntry(HookedEntityEntry entry)
+		{
+			var entity = entry.Entry.Entity as BaseEntity;
+			if (entity == null)
+			{
+				return false;
+			}
+
+			var isHookable = _hookableEntities.GetOrAdd(entity.GetUnproxiedType(), t => 
+			{
+				var attr = t.GetAttribute<HookableAttribute>(true);
+				if (attr != null)
+				{
+					return attr.IsHookable;
+				}
+
+				// Entities are hookable by default
+				return true;
+			});
+
+			return isHookable;
+		}
+
+		private bool HandledAlready(BaseEntity entity, EntityState preSaveState, bool isPostActionHook)
 		{
 			if (entity.IsTransientRecord())
 				return false;

@@ -209,13 +209,7 @@
     <Content Include="Views\OfflinePayment\ManualPaymentInfo.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\OfflinePayment\ManualPaymentInfo.Mobile.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Views\OfflinePayment\DirectDebitPaymentInfo.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Views\OfflinePayment\PurchaseOrderNumberPaymentInfo.Mobile.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\OfflinePayment\PurchaseOrderNumberPaymentInfo.cshtml">

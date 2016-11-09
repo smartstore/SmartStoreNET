@@ -1617,8 +1617,13 @@ namespace SmartStore.Web.Controllers
 						};
 						menuItem.RouteValues.Add("SeName", category.GetSeName());
 
-						// determine parent
-						if (prevCat != null)
+                        if (category.ParentCategoryId == 0 && category.Published && category.PictureId != null)
+                        {
+                            menuItem.ImageUrl = _pictureService.GetPictureUrl(category.PictureId.Value);
+                        }
+
+                        // determine parent
+                        if (prevCat != null)
 						{
 							if (category.ParentCategoryId != curParent.Value.EntityId)
 							{

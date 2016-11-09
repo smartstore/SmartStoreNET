@@ -986,6 +986,7 @@
     <Content Include="Themes\NewAlpha\Content\images\star-on.png" />
     <Content Include="Themes\NewAlpha\Content\compiled\theme.css" />
     <Content Include="Themes\NewAlpha\Content\shared\img\grippy.png" />
+    <None Include="Themes\NewAlpha\Content\_megamenu.scss" />
     <Content Include="Themes\NewAlpha\preview.png" />
     <Content Include="Themes\AlphaBlack\preview.png" />
     <Content Include="Themes\AlphaBlue\preview.png" />
@@ -1411,6 +1412,7 @@
     <Content Include="Themes\NewAlpha\Scripts\smartstore.hacks.js" />
     <Content Include="Themes\NewAlpha\Scripts\smartstore.instantsearch.js" />
     <Content Include="Themes\NewAlpha\Scripts\smartstore.jquery.utils.js" />
+    <Content Include="Themes\NewAlpha\Scripts\smartstore.megamenu.js" />
     <Content Include="Themes\NewAlpha\Scripts\smartstore.navbar.js" />
     <Content Include="Themes\NewAlpha\Scripts\smartstore.placeholder.js" />
     <Content Include="Themes\NewAlpha\Scripts\smartstore.scrollbutton.js" />

@@ -3,10 +3,12 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
+using SmartStore.Core.Data.Hooks;
 
 namespace SmartStore.Core.Domain.Tasks
 {
     [DebuggerDisplay("{Name} (Type: {Type})")]
+	[Hookable(false)]
 	public class ScheduleTask : BaseEntity, ICloneable<ScheduleTask>
     {
         /// <summary>

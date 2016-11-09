@@ -187,6 +187,7 @@
     <Compile Include="ComponentModel\TypeConversion\TypeConverterBase.cs" />
     <Compile Include="ComponentModel\TypeConversion\TypeConverterFactory.cs" />
     <Compile Include="Data\Hooks\DefaultHookHandler.cs" />
+    <Compile Include="Data\Hooks\HookableAttribute.cs" />
     <Compile Include="Data\Hooks\IHookHandler.cs" />
     <Compile Include="Data\Hooks\ImportantAttribute.cs" />
     <Compile Include="Data\IDbContextExtensions.cs" />

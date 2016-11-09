@@ -76,7 +76,7 @@ namespace SmartStore.Core.Search
 		{
 			get
 			{
-				return Math.Max((Skip - 1) / Take, 0);
+				return Math.Max(Skip / Take, 0);
 			}
 		}
 

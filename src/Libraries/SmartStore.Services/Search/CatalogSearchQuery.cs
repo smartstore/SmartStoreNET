@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Search;
 
@@ -56,7 +57,19 @@ namespace SmartStore.Services.Search
 		/// <summary>
 		/// Only products that are visible in frontend
 		/// </summary>
-		/// <param name="allowedCustomerRoleIds">Allowed customer role id, cane be <c>null</c></param>
+		/// <param name="customer">Customer whose customer roles should be checked</param>
+		/// <returns>Catalog search query</returns>
+		public CatalogSearchQuery VisibleOnly(Customer customer)
+		{
+			var allowedCustomerRoleIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToArray();
+
+			return VisibleOnly(allowedCustomerRoleIds);
+		}
+
+		/// <summary>
+		/// Only products that are visible in frontend
+		/// </summary>
+		/// <param name="allowedCustomerRoleIds">Allowed customer role id, can be <c>null</c></param>
 		/// <returns>Catalog search query</returns>
 		public CatalogSearchQuery VisibleOnly(params int[] allowedCustomerRoleIds)
 		{

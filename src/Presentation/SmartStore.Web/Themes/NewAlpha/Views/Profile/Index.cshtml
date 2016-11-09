@@ -1,0 +1,34 @@
+﻿@model ProfileIndexModel
+@using SmartStore.Web.Models.Profile;
+@using SmartStore.Web.Framework.UI;
+
+@{    
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+    Html.AddTitleParts(T("PageTitle.Profile").Text);
+}
+
+<div class="page profile-page">
+    <div class="page-title">
+        <h1>@Model.ProfileTitle</h1>
+    </div>
+
+    <div class="page-body">
+        @{
+            var postsTabSelected = Model.PagingPosts;
+        }
+
+        @Html.SmartStore().TabStrip().Name("tabs").SmartTabSelection(false).Items(c => 
+        {
+            c.Add().Text(T("Profile.PersonalInfo").Text)
+                .Selected(!postsTabSelected)
+                .Content(Html.Action("info", new { customerProfileId = Model.CustomerProfileId }).ToString());
+            if (Model.ForumsEnabled)
+            {
+                c.Add().Text(T("Profile.LatestPosts").Text)
+                    .Selected(postsTabSelected)
+                    .Content(Html.Action("posts", new { customerProfileId = Model.CustomerProfileId, page = Model.PostsPage }).ToString());
+            }
+        })
+
+    </div>
+</div>

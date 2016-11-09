@@ -1,0 +1,301 @@
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// Misc Styles
+// --------------------------------------------------
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: initial;
+}
+
+// had to be to align menus to their menuitems
+.navbar-nav .nav-item {
+    position: relative;
+}
+
+// make heading on homepage bigger and center them
+.page-title h1,
+.page.home-page .block-title {
+        font-size: 2.3rem;
+        font-weight: 100;
+        text-align: center;
+        padding: 2rem 0 1rem 0;
+    }
+
+
+// homepage news
+.link-rss:hover {
+    text-decoration: none;
+}
+.news-date {
+    float: right; 
+    font-size: .8rem;
+    font-weight: bold;
+}
+.news-item {
+    margin-bottom: 2rem;
+}
+
+// delivery times
+.delivery-time {
+	text-align: center;
+	padding-bottom: 5px;
+	@include smaller();
+	.delivery-time-label {
+		padding-right: 4px;
+		font-weight: bold;
+	}
+	.delivery-time-color {
+		height: 8px;
+		width: 32px;
+		display: inline-block;
+        border: 1px solid rgba(0,0,0, .25);
+        background-image: url('images/deliv-bg-aero.png');
+	}
+}
+
+//
+// Breadcrumb Styles
+// --------------------------------------------------
+#breadcrumb {
+    border: 1px solid #DDDDDD;
+    background: none;
+}
+
+
+#iframe-backinstocksubsription {
+    max-width: 100%;
+}
+
+// a lot of centering ;-)
+.category-item,
+.manufacturer-pics-container,
+.manufacturer-list-page .card {
+    text-align: center;
+}
+
+// generic:
+//      block titles
+.contact-page .block .block-title {
+    padding: 0 0 1.5rem 0;
+    font-size: 2rem;
+}
+
+fieldset legend {
+    padding: 2rem 0 1rem 0;
+}
+
+//manu all
+.manufacturer-list-page .card-title {
+    font-size: 1.25em;
+}
+
+//polls
+
+.todays-poll-box-block input {
+    margin-right: .5rem;
+}
+
+//
+// List Scroller Styles
+// --------------------------------------------------
+
+.product-list.scroll {
+	position: relative;
+}
+
+.product-list .pl-slider {
+	overflow: hidden;
+	position: relative;
+
+    //new
+    padding-left: 15px;
+}
+
+.product-list.scroll .pl-row {
+	width: 30000px;
+}
+
+.product-list.scroll .pl-controls {
+	text-align: center !important;
+}
+
+.product-list.scroll .pl-forward,
+.product-list.scroll .pl-backward {
+	display: inline-block;
+	margin-right: 5px;
+}
+
+.product-list.scroll .pl-scroll-prev,
+.product-list.scroll .pl-scroll-next{
+	position: absolute;
+}
+
+.product-list.scroll article {
+    text-align: center;
+    min-width: 220px;
+    max-width: 220px;
+    margin-right: 20px;
+}
+
+
+/* Manufacturers in left column
+================================================ */
+.block-manufacturer-navigation .manufacturer-pic {
+    float: left;
+    width: 50px;
+    height: 50px;
+    margin: 0 0 10px 10px;
+
+    img {
+        max-width: 50px;
+        max-height: 50px;
+    }
+}
+
+/* recently viewed products
+================================================ */
+.block-recently-viewed-products li {
+	padding: 3px;
+	border-bottom: 1px solid #e5e5e5;
+	.product-name {
+		//.smaller();
+		text-align: left;
+		margin-left: 40px;
+		display: block;
+	}
+	.picture img {
+		max-width: 32px;
+		max-height: 50px;
+	}
+	figure.picture {
+		margin: 0;
+		text-align: center;
+		width: 40px;
+	}
+}
+.block-recently-viewed-products .omega {
+	border: none;
+}
+.block-recently-viewed-products .listbox {
+	padding: 2px;
+}
+
+
+//
+
+.star-rating-parent {
+    padding-left: 0 !important;
+}
+.star-rating {
+    display: inline-block !important;
+}
+
+
+
+
+// temp: will probably not be needed in the final release
+
+.product-grid .btn-group .fa {
+    margin-right: 0 !important;
+}
+.product-box-button-bar {
+    position: absolute;
+    right: 0;
+    left: 0;
+    bottom: 10px;
+}
+.product-grid .product-box-big {
+    padding-bottom: 50px;
+}
+
+.price.text-success {
+    font-weight: bold;
+}
+
+
+
+//Tags
+.block-popular-tags li, 
+.block-popular-blogtags li {
+    display: inline;
+}
+
+// menu
+.dropdown {
+    display: inline;
+    a {
+        font-size: .8rem;
+    }
+    .label {
+        font-size: .7rem;
+    }
+}
+
+//filter
+.product-filter-block .filter-group {
+    clear: initial;
+    float: left;
+    min-width: 120px;
+}
+.product-filter-block .filter-group:hover {
+    background: transparent;
+}
+.product-filter-block .block-title {
+    font-size: 1.5rem;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 1rem;
+    
+}
+.filter-group {
+    margin-right: 5px;
+    .name span {
+        font-weight: bold;
+    }
+}
+.product-filter-block .listbox {
+    background-color: transparent !important;
+}
+.applied-filter {
+    display: inline-block;
+}
+
+
+
+/* Sitemap
+================================================ */
+
+.sitemap-page .entity { 
+    margin: 5px 0 30px; 
+}
+.sitemap-page .topic-box,
+.sitemap-page .manufacturer-box,
+.sitemap-page .category-box,
+.sitemap-page .product-box {
+    text-align: center;
+    vertical-align:bottom;
+
+    .item {
+        text-align: left; 
+        margin: 3px 10px;
+        width: 180px;
+        border-bottom: 1px dotted #ADACAC;
+    }
+}
+
+
+.data-list-row {
+    margin-bottom: 2rem;
+}
+
+.nav-category a,
+.block-recently-viewed-products a,
+.text-smaller,
+.text-smaller a {
+    font-size: .825rem;
+}
+

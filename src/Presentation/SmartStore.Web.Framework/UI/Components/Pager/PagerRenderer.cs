@@ -323,7 +323,7 @@ namespace SmartStore.Web.Framework.UI
             }
             writer.AddAttributes(pager.HtmlAttributes);
             //writer.AddAttribute("id", pager.Id);
-            writer.RenderBeginTag("div");
+            writer.RenderBeginTag("nav");
 
             if (pager.ShowSummary && pager.Model.TotalPages > 1)
             {
@@ -371,6 +371,8 @@ namespace SmartStore.Web.Framework.UI
                 AppendCssClass(attrs, (item.Type == PagerItemType.PreviousPage || item.Type == PagerItemType.FirstPage) ? "previous" : "next");
             }
 
+            AppendCssClass(attrs, "page-item");
+            
             writer.AddAttributes(attrs);
             writer.RenderBeginTag("li");
 
@@ -384,7 +386,7 @@ namespace SmartStore.Web.Framework.UI
                     if (Component.Style != PagerStyle.Blog)
                     {
                         writer.AddAttribute("rel", "tooltip");
-                        writer.AddAttribute("class", "pager-nav");
+                        writer.AddAttribute("class", "pager-nav page-link");
                     }
                 }
                 else
@@ -396,6 +398,9 @@ namespace SmartStore.Web.Framework.UI
                         writer.AddAttribute("rel", "tooltip");
                     }
                 }
+
+                writer.AddAttribute("class", "page-link");
+
                 writer.RenderBeginTag("a");
             }
             else

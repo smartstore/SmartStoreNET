@@ -49,12 +49,12 @@
 * Awarded reward points for a placed order sometimes wrong calculated
 * PayPal PLUS: A changed shipping address/costs was not transmitted to PayPal
 * Bundle item cannot be deleted if it's in a shopping cart
+* Fixed SSL issue for news items in RSS feed
 * #1030: Order export: does not export the data of the attribute combination
 * Order export does not export shipping address
 * Filter shows wrong number of products if "Include products from subcategories" is activated
 * Guest user cannot be deleted if he has a private message
 * #1029 Biz-Importer: Imports fixed tax rates as zero percentage
-
 
 ## SmartStore.NET 2.6
 

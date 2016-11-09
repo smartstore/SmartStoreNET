@@ -1,0 +1,47 @@
+﻿@model ShoppingCartModel.DiscountBoxModel
+@using SmartStore.Web.Models.ShoppingCart;
+@if (Model.Display)
+{
+    <div class="coupon-box cart-box card">
+        <h4 class="title card-header">@T("ShoppingCart.DiscountCouponCode")</h4>
+        
+        <div class="card-block">
+
+            @if (!String.IsNullOrEmpty(Model.Message))
+            {
+                <div class="alert alert-info fade in">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    @Model.Message
+                </div>
+            }
+
+            <div class="coupon-code form-group">
+                <div class="input-group">
+                    <input name="discountcouponcode" type="text" class="form-control discount-coupon-code" placeholder="@T("ShoppingCart.DiscountCouponCode.Tooltip")" />
+                    <button type="submit"
+                            class="btn btn-warning tooltip-toggle apply-discount-coupon-code-button input-group-addon"
+                            title="@T("ShoppingCart.DiscountCouponCode.Button")"
+                            name="applydiscountcouponcode"
+                            value="applydiscountcouponcode">
+                        <i class="fa fa-check"></i>
+                    </button>
+                </div>
+            </div>
+
+            @if (!String.IsNullOrEmpty(Model.CurrentCode))
+            {
+                <div class="current-code clearfix">
+                    <button type="submit"
+                            class="btn btn-sm tooltip-toggle remove-discount-button"
+                            title="@T("Common.Remove")"
+                            name="removediscountcouponcode"
+                            value="removediscountcouponcode">
+                        <i class="fa fa-times" style="font-size: 10px"></i>
+                    </button>
+                    <span style="vertical-align: middle">@string.Format(T("ShoppingCart.DiscountCouponCode.CurrentCode").Text, Model.CurrentCode)</span>
+                </div>
+            }
+        </div>
+        
+    </div>    
+}

@@ -1,0 +1,323 @@
+﻿.megamenu-container {
+    position: relative;
+}
+.megamenu {
+    overflow: hidden;
+    position: relative;
+}
+.megamenu ul.nav {
+    width: 5000px;
+}
+.megamenu-nav i {
+    font-size: 38px;
+    transition: all .2s ease-in-out;
+    height: 58px;
+    line-height: 58px;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    opacity: .4;
+}
+.megamenu-nav i:hover {
+    xfont-size: 64px;
+    opacity: .6;
+} 
+.megamenu-nav i:active {
+    opacity: 1;
+} 
+.megamenu-nav--prev a {
+    padding-right: 10px;
+    padding-top: 0;
+}
+.megamenu-nav--next a {
+    padding-left: 10px;
+    padding-top: 0;
+}
+.megamenu-nav {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
+.megamenu-nav .megamenu-nav-btn {
+    border: none;
+    box-shadow: none;
+    position: relative;
+    z-index: 10000;
+    height: 100%;
+}
+.megamenu-nav--next {
+    right: 0;
+}     
+.megamenu-container .megamenu-dropdown-container {
+    position: relative;
+}
+.megamenu-container .mega-menu-dropdown {
+    z-index: 1007;
+    width: 100%;
+    top: -3px;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    padding: 1.5rem;
+}
+.megamenu-container .dropdown-menu .col-md-3 {
+    overflow: hidden;
+}
+.megamenu-container .mega-menu-dropdown-heading:not(:first-child) {
+    padding-top: 1rem;
+    /*
+    border-top: 1px solid #eaeaea;
+    margin-top: .375rem;
+    */
+}
+.megamenu-container .mega-menu-dropdown-heading {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4rem;
+    text-decoration: none;
+    display: block;
+    color: #222;
+    padding-bottom: .4rem;
+}
+.megamenu-container .mega-menu-dropdown-heading + .mega-menu-dropdown-heading {
+    padding-top: .5rem;
+}
+.megamenu-container .mega-menu-dropdown-heading label {
+    vertical-align: top;
+}
+.megamenu-container .mega-menu-subitem {
+    font-size: .875rem;
+    text-decoration: none;
+    display: block;
+    color: #999;
+}
+.megamenu-container .mega-menu-subitem:hover {
+    color: #222;
+} 
+.megamenu-container .mega-menu-subitem.more-link {
+    font-weight: bold;
+    color: #464646;
+    font-size: .825rem;
+}
+.megamenu-container .inline-container .mega-menu-subitem {
+    font-size: .8125rem;
+    line-height: .875rem;
+}
+.megamenu-container .inline-container .mega-menu-subitem:hover {
+    text-decoration: underline;
+}
+.mega-menu-subitem-wrap {
+    white-space: nowrap;
+}
+.megamenu-container .inline-container {
+    line-height: 1.25rem;
+}
+.megamenu-container .comma-separated .mega-menu-subitem {
+    display: inline;
+    margin-right: -.15rem;
+}
+.megamenu-container .comma-separated .mega-menu-subitem.more-link {
+    display: block;
+}
+.megamenu-container .comma-separated .mega-menu-subitem:focus, 
+.megamenu-container .comma-separated .mega-menu-subitem:hover {
+    background-color: transparent;
+    color: #888;
+}
+.megamenu-dropdown-container .empty {
+    margin-bottom: -1rem !important;
+}
+.megamenu-dropdown-container .megamenu-cat-img img {
+    max-width: 100%;
+    max-height: 100%;
+    padding: 20px;
+}
+.megamenu-dropdown-container .picture-container {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+.megamenu-dropdown-container .below-preview-pic-text {
+    margin: 10px;
+    font-size: .875rem;
+}
+.megamenu-dropdown-container .megamenu-html-text {
+    overflow: hidden;
+}
+.megamenu-section .navbar {
+    padding: 0;
+}
+.megamenu .navbar-nav .nav-item + .nav-item {
+    margin-left: 0;
+}
+.megamenu-container .nav-link {
+    padding: 1rem .5rem;
+}
+.megamenu-container .nav-item:first-child .nav-link {
+    padding-left: 0;
+}
+.megamenu-container .nav-item:last-child .nav-link {
+    padding-right: 0;
+}
+.megamenu ul.nav .nav-item {
+    z-index: 1100;
+    position: relative;
+}
+.megamenu ul.nav .nav-item .label {
+    position: absolute;
+    right: 3px;
+    top: 7px;
+    font-size: 0.7rem;
+}
+.megamenu .nav-slider {
+    z-index: 3000;
+}
+.megamenu .megamenu-nav--next,
+.megamenu .megamenu-nav--prev {
+    transition: opacity .5s ease-in-out .1s;
+    opacity: 0;
+    z-index: 3001;
+}
+.megamenu.megamenu-blend--next .megamenu-nav--next,
+.megamenu.megamenu-blend--prev .megamenu-nav--prev {
+    opacity: 1;
+}
+.megamenu .megamenu-nav-btn {
+    width: 1px;
+    padding: 0px;
+    transition: width .01s ease-in-out 1.5s;
+}
+.megamenu .megamenu-nav--prev .megamenu-nav-btn {
+    background-image: linear-gradient(to left, rgba(0,0,0,0), #f7f7f7 40%, #f7f7f7 100%);
+}
+.megamenu .megamenu-nav--next .megamenu-nav-btn {
+    background-image: linear-gradient(to right, rgba(0,0,0,0), #f7f7f7 40%, #f7f7f7 100%);
+}
+.megamenu.megamenu-blend--next .megamenu-nav--next .megamenu-nav-btn,
+.megamenu.megamenu-blend--prev .megamenu-nav--prev .megamenu-nav-btn {
+    width: 40px;
+    transition: none;
+    height: 98%;
+} 
+
+.touch .megamenu-section .navbar:hover .megamenu-nav--prev i,
+.touch .megamenu-section .navbar:hover .megamenu-nav--next i,
+.megamenu .megamenu-nav i {
+    color: #000;
+    display: none;
+}
+.megamenu-section .navbar:hover .megamenu-nav--prev i,
+.megamenu-section .navbar:hover .megamenu-nav--next i  {
+    display: block;
+}
+
+
+
+/* TODO: correct enum BadgeStyle, determine valid entries for bs4 */
+.megamenu .label-important {
+    background: #0275d8; /* $brand-primary */
+}
+.megamenu .label-inverse {
+    background: #d9534f; /* $brand-danger */
+}
+
+
+/* active state */
+.megamenu-container .nav-item:before,
+.megamenu-container .nav-item:after {
+	content: "";
+}
+.megamenu-container .nav-item.active:before {
+    content: "";
+    right: 0;
+    position: absolute;
+    border-bottom: 15px solid #fff;
+    border-right: 17px solid transparent;
+    border-left: 17px solid transparent;
+    bottom: -1px;
+    z-index: 1010;
+}
+.megamenu-container .nav-item.active:after {
+    content: "";
+    right: -2px;
+    position: absolute;
+    border-bottom: 17px solid #bbb;
+    border-right: 19px solid transparent;
+    border-left: 19px solid transparent;
+    bottom: -2px;
+    z-index: 1008;
+}
+
+/* Product rotator */
+.megamenu-container .rotator-content {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+.megamenu-container .rotator-content > div.placeholder {
+    height: 280px;
+    background-color: rgba(255,255,255, 0.85);
+}
+.megamenu-container .rotator-content > div.placeholder.empty {
+    background-color: transparent;
+}
+.mega-menu-product-rotator .pl-row,
+.mega-menu-product-rotator .item-box {
+    width: 100%;
+    border: none;
+}
+.mega-menu-product-rotator.scroll .item-box {
+    min-width: 245px;
+    max-width: 245px;
+    margin-bottom: 0;
+}
+.mega-menu-product-rotator.scroll .btn-group {
+    width: 100%;
+}
+.mega-menu-product-rotator.scroll .scroll-button {
+    top: initial !important;
+    position: initial;
+    margin-left: 0;
+}
+.mega-menu-product-rotator.scroll .scroll-button i {
+    width: initial;
+}
+
+
+
+
+
+.touch .megamenu .nav-slider {
+	overflow-x: auto !important;
+}
+
+.megamenu .nav:after {
+	/* clearfix simulieren */
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.megamenu .nav {
+	position: relative;
+	/* Nobreak */
+	white-space: nowrap;
+	/* überschreibt lediglich die Inline width-Angabe */
+	width: auto !important;
+	/* Transition */
+	transition: margin-left 0.12s ease-in-out;
+	margin-left: 0;
+}
+
+.megamenu .nav .nav-item {
+	/* Nobreak */
+	float: none !important;
+	display: inline-block;
+}
+
+
+@include media-breakpoint-down(md) {
+    .picture-container {
+        display: none;
+    }
+}

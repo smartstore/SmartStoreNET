@@ -8,6 +8,8 @@ using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework.UI
 { 
@@ -223,12 +225,20 @@ namespace SmartStore.Web.Framework.UI
 			string temp = "";
 			string loadedTabName = null;
 
-			// <li [class="active [hide]"]><a href="#{id}" data-toggle="tab">{text}</a></li>
-			if (item.Selected)
+            // <li [class="active [hide]"]><a href="#{id}" data-toggle="tab">{text}</a></li>
+            item.HtmlAttributes.AppendCssClass("nav-item");
+            if (item.Selected)
 			{
-				item.HtmlAttributes.AppendCssClass("active");
-			}
-			else
+                //TODO NewAlpha: delete the following lines, write vars back into code
+                //BEGIN NewAlpha
+                var themeName = EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName;
+                if (!themeName.Equals("NewAlpha"))
+                { 
+                    item.HtmlAttributes.AppendCssClass("active");
+                }
+                //END NewAlpha
+            }
+            else
 			{
 				if (!item.Visible)
 				{
@@ -246,13 +256,14 @@ namespace SmartStore.Web.Framework.UI
 			writer.RenderBeginTag("li");
 			{
 				var itemId = "#" + BuildItemId(item, index);
-
-				if (item.Content != null)
+                
+                if (item.Content != null)
 				{
 					writer.AddAttribute("href", itemId);
 					writer.AddAttribute("data-toggle", "tab");
 					writer.AddAttribute("data-loaded", "true");
-					loadedTabName = GetTabName(item) ?? itemId;
+                    writer.AddAttribute("class", "nav-link" + (item.Selected ? " active" : ""));
+                    loadedTabName = GetTabName(item) ?? itemId;
 				}
 				else
 				{
@@ -270,7 +281,8 @@ namespace SmartStore.Web.Framework.UI
 							writer.AddAttribute("href", itemId);
 							writer.AddAttribute("data-ajax-url", url);
 							writer.AddAttribute("data-toggle", "tab");
-						}
+                            writer.AddAttribute("class", "nav-link" + (item.Selected ? " active" : ""));
+                        }
 						else
 						{
 							writer.AddAttribute("href", url);
@@ -315,7 +327,7 @@ namespace SmartStore.Web.Framework.UI
 						writer.RenderEndTag(); // span > badge
 
 						// label
-						temp = "label";
+						temp = "m-l-05 label";
 						if (item.BadgeStyle != BadgeStyle.Default)
 						{
 							temp += " label-" + item.BadgeStyle.ToString().ToLower();

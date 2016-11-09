@@ -1,0 +1,27 @@
+﻿@model PrivateMessageIndexModel
+@using SmartStore.Web.Models.PrivateMessages;
+@using SmartStore.Web.Framework.UI;
+
+@{    
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
+    Html.AddTitleParts(T("PageTitle.PrivateMessages").Text);
+}
+<div class="page private-messages-page">
+    <div class="page-title">
+        <h1>@T("PrivateMessages.PrivateMessages")</h1>
+    </div>
+    <div class="page-body">
+        @Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Items(x =>
+        {
+            x.Add().Text(@T("PrivateMessages.Inbox"))
+                .Content( Html.Action("Inbox", new { page = Model.InboxPage, tab = "inbox" }).ToString() )
+                .Selected(!Model.SentItemsTabSelected);
+            
+            x.Add().Text(@T("PrivateMessages.SentItems"))
+                .Content( Html.Action("SentItems", new { page = Model.SentItemsPage, tab = "sent" }).ToString() )
+                .Selected(Model.SentItemsTabSelected);
+        })
+
+    </div>
+</div>

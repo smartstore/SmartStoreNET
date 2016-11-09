@@ -98,7 +98,11 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public int Quantity { get; set; }
             public List<SelectListItem> AllowedQuantities { get; set; }
-            
+
+            public int MinOrderAmount { get; set; }
+
+            public int MaxOrderAmount { get; set; }
+
             public string AttributeInfo { get; set; }
 
             public string RecurringInfo { get; set; }

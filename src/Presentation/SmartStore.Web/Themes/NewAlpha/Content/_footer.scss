@@ -1,0 +1,66 @@
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// Footer Styles
+// --------------------------------------------------
+
+
+#footer-wrapper {
+    border-top: 1px solid #ddd;
+    background: #f2f2f2;
+    padding-top: 3rem;
+    margin-top: 2rem;
+    h4 {
+        padding: .5rem 0 1rem 0;
+    }
+    a {
+        text-decoration: none;
+        color: #333;
+        &:hover {
+            color: #0275d8;
+        }       
+    }
+}
+.footer-social {
+    padding-bottom: 2rem;
+
+    a {
+        color: #888 !important;
+        
+        &.brand-facebook:hover {
+            color: $clr-brand-facebook !important;
+        }
+
+        &.brand-googleplus:hover {
+            color: $clr-brand-googleplus !important;
+        }
+        &.brand-twitter:hover {
+            color: $clr-brand-twitter !important;
+        }
+        &.brand-pinterest:hover {
+            color: $clr-brand-pinterest !important;
+        }
+        &.brand-youtube:hover {
+            color: $clr-brand-youtube !important;
+        }
+    }
+    
+    .fa-stack {
+        width: 3rem;
+        height: 3rem;
+    }
+    .fa-stack-2x {
+        font-size: 3rem;
+    }
+    .fa-stack-1x {
+        padding-top: .2rem;
+        font-size: 1.5rem;
+    }
+}
+
+.footer-disclaimer {
+    border-top: 1px solid #bbb;
+    padding: 2rem 0;
+    margin-top: 2rem;
+    font-size: .8rem;
+}

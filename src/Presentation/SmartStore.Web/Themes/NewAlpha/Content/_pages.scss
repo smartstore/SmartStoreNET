@@ -1,0 +1,23 @@
+﻿//
+// 404 page
+// --------------------------------------------------
+.not-found-page {
+	text-align: center;
+}
+.not-found-page .page-title h1 {
+	color: $clr-grey-500;
+	font-weight: 400;
+	font-size: 220px;
+	line-height: 280px;
+}
+.not-found-page .page-body {
+	font-size: 20px;
+	line-height: 30px;
+}
+.not-found-page .buttons {
+	margin: 50px 0;
+}
+.not-found-page .buttons .btn {
+	min-width: 150px;
+	&:first-child { margin-right: 10px }
+}

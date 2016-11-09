@@ -1,0 +1,25 @@
+﻿@model dynamic
+
+@{
+	Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>@Html.SmartTitle(false)</title>
+	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+	
+	<link rel="stylesheet" type="text/css" href="~/Content/print.css" />
+
+	@Html.SmartCssFiles(this.Url, ResourceLocation.Head)
+	@Html.CustomHead()
+</head>
+<body class="@Html.BodyCssClass()">
+	@RenderBody()
+	@Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
+</body>
+</html>
+
+
+		

@@ -1,0 +1,181 @@
+/*
+Document   : jquery.pnotify.default.css
+Created on : Nov 23, 2009, 3:14:10 PM
+Author     : Hunter Perrin
+Version    : 1.2.2
+Link       : http://pinesframework.org/pnotify/
+Description:
+	Default styling for Pines Notify jQuery plugin.
+*/
+/* -- Notice */
+.ui-pnotify {
+	top: 25px;
+	right: 25px;
+	position: absolute;
+	height: auto;
+	/* Ensures notices are above everything */
+	z-index: 9999;
+}
+/* Hides position: fixed from IE6 */
+html > body .ui-pnotify {
+	position: fixed;
+}
+.ui-pnotify .ui-pnotify-shadow {
+	-webkit-box-shadow: 1px 1px 2px rgba(0,0,0, 0.35);
+	box-shadow: 1px 1px 2px rgba(0,0,0, 0.35);
+}
+.ui-pnotify-container {
+background-position: 0 0;
+padding: .8em;
+height: 100%;
+margin: 0;
+}
+.ui-pnotify-sharp {
+	border-radius: 0;
+}
+.ui-pnotify-closer, .ui-pnotify-sticker {
+	float: right;
+	margin-left: .2em;
+}
+.ui-pnotify-title {
+	display: block;
+	margin-bottom: .4em;
+}
+.ui-pnotify-text {
+	display: block;
+}
+.ui-pnotify-icon, .ui-pnotify-icon span {
+	display: block;
+	float: left;
+	margin-right: .2em;
+}
+/* -- History Pulldown */
+.ui-pnotify-history-container {
+	position: absolute;
+	top: 0;
+	right: 18px;
+	width: 70px;
+	border-top: none;
+	padding: 0;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	/* Ensures history container is above notices. */
+	z-index: 10000;
+}
+.ui-pnotify-history-container .ui-pnotify-history-header {
+	padding: 2px;
+}
+.ui-pnotify-history-container button {
+	cursor: pointer;
+	display: block;
+	width: 100%;
+}
+.ui-pnotify-history-container .ui-pnotify-history-pulldown {
+	display: block;
+	margin: 0 auto;
+}
+/* Alternate stack initial positioning. */
+.ui-pnotify.stack-topleft, .ui-pnotify.stack-bottomleft {
+	left: 25px;
+	right: auto;
+}
+.ui-pnotify.stack-bottomright, .ui-pnotify.stack-bottomleft {
+	bottom: 25px;
+	top: auto;
+}
+
+/* codehint: sm-add */
+
+.ui-pnotify {
+	-webkit-box-shadow: 1px 1px 2px rgba(0,0,0, 0.15);
+	        box-shadow: 1px 1px 2px rgba(0,0,0, 0.15);
+	border: 1px solid rgba(0,0,0, .2);
+	width: 500px !important;
+}
+
+.ui-pnotify-container {
+    padding: 10px 10px 10px 50px !important;
+	margin-bottom: 0 !important;
+	border: none !important;
+	position: relative;
+	overflow: hidden;
+}
+
+.ui-pnotify .ui-pnotify-shadow {
+	-webkit-box-shadow: none;
+	        box-shadow: none; 
+}
+
+.ui-pnotify-icon {
+    position: absolute;
+    left: 0;
+	top: 0;
+	width: 40px;
+	height: 100%;
+	color: #fff;
+	background-color: #c09853; 
+	text-align: center;
+	display: block;
+}
+.ui-pnotify-container.alert-success .ui-pnotify-icon { background-color: #468847 }
+.ui-pnotify-container.alert-info .ui-pnotify-icon { background-color: #3a87ad }
+.ui-pnotify-container.alert-error .ui-pnotify-icon { background-color: #b94a48 }
+
+.ui-pnotify-icon > .fa {
+    font-size: 16px;
+	line-height: 16px;
+	margin: 0;
+	color: #fff;
+	opacity: 0.87;
+	float: none;
+	position: relative;
+	top: 50%;
+	margin-top: -8px;
+}
+
+.ui-pnotify-title {
+    margin-bottom: 0 !important;
+}
+
+.ui-pnotify .ui-pnotify-text {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	max-height: 500px;
+	overflow: auto;
+	position: relative;
+}
+
+.ui-pnotify-closer, 
+.ui-pnotify-sticker {
+    width: 16px;
+    opacity: .35;
+    filter: alpha(35);
+	margin: 0;
+	padding-left: 2px;
+	position: relative;
+	top: -5px;
+	left: 5px;
+}
+
+.ui-pnotify-closer:hover, 
+.ui-pnotify-sticker:hover {
+    opacity: .75;
+    filter: alpha(75);
+}
+
+.ui-pnotify.stack-topcenter,
+.ui-pnotify.stack-bottomcenter {
+	left: 50% !important;
+	margin-left: -250px !important;
+}
+
+.ui-pnotify.stack-bottomcenter {
+	top: auto;
+}
+
+/*.ui-pnotify.stack-bottomright {
+	right: auto;
+	top: auto;
+	left: auto;
+	bottom: auto;
+}*/

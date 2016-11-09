@@ -1,0 +1,70 @@
+﻿@model SendPrivateMessageModel
+@using SmartStore.Web;
+@using SmartStore.Web.Models.PrivateMessages;
+@{    
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
+    Html.AddTitleParts(T("PageTitle.SendPM").Text);
+}
+@using (Html.BeginForm())
+{
+    <div class="page private-message-send-page">
+        <h2>
+            @T("PrivateMessages.Send.PostMessage")
+        </h2>
+        <div class="page-body">
+            <div class="message-error">
+                @Html.ValidationSummary(true)
+            </div>
+            @Html.HiddenFor(model => model.ToCustomerId)
+            @Html.HiddenFor(model => model.ReplyToMessageId)
+            
+            <table class="post-message">
+                <tr>
+                    <td class="fieldname">
+                        @T("PrivateMessages.Send.To")
+                    </td>
+                    <td>
+                        @if (Model.AllowViewingToProfile)
+						{
+							<a href="@Url.RouteUrl("CustomerProfile", new { id = Model.ToCustomerId })" rel="nofollow">@(Model.CustomerToName)</a>
+						}
+						else
+						{
+                               @Model.CustomerToName
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fieldname">
+                        @T("PrivateMessages.Send.Subject")
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.Subject, new { @class = "pm-title-text" })
+                        @Html.ValidationMessageFor(model => model.Subject)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fieldname">
+                        @T("PrivateMessages.Send.Message")
+                    </td>
+                    <td>
+                        @Html.BBCodeEditor("Message")
+                        @Html.TextAreaFor(model => model.Message, new { @class = "bb-editor-text", TextMode = "MultiLine" })
+                        @Html.ValidationMessageFor(model => model.Message)
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="options">
+                        <button type="submit" class="btn btn-primary">
+                            @T("PrivateMessages.Send.SendButton")
+                        </button>
+                        <button class="btn" onclick="setLocation('@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })')" >
+                            @T("PrivateMessages.Send.CancelButton")
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+}

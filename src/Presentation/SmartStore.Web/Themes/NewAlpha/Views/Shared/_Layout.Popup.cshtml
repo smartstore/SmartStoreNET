@@ -1,0 +1,13 @@
+﻿@{
+    
+    Layout = "~/Views/Shared/_Document.cshtml";
+    Html.AddBodyCssClass("popup");
+}
+
+<div id="popup-content">
+    @Html.Widget("body_start_html_tag_after")
+    @RenderBody()
+    @Html.Widget("body_end_html_tag_before")
+</div>
+
+

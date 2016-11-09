@@ -1,0 +1,132 @@
+﻿//
+// Blog Styles
+// --------------------------------------------------
+
+.link-rss {
+    float: right;
+    color: $clr-green;
+}
+
+.blog-page .blogpost {
+	padding: 20px 0;		
+    border-top: 1px solid #ddd;
+}
+
+.blog-page .blogpost:first-child {
+    border-top: none;
+}
+
+.blog-page .blogpost .blogpost-info {
+	
+	.blogpost-comments {
+		position: relative;
+		display: block;
+		text-decoration: none;
+		font-weight: bold;
+		width: 50px;
+		height: 50px;
+		float: right;
+	}
+	
+	.blogpost-comments .blogpost-comments-icon {
+		position: absolute;
+		font-size: 50px;
+		line-height: 50px;
+		color: #f1f1f1;
+	}
+	
+	.blogpost-comments .blogpost-comments-count {
+		position: absolute;
+		top: 13px;
+		font-size: 13px;
+		line-height: 16px;
+		width: 38px;
+		text-align: center;
+		color: #c5c5c5;
+	}
+	
+    
+	.blogpost-comments.vivid {
+		.blogpost-comments-icon { color: #444 }
+		.blogpost-comments-count { color: #fff }
+	}
+	
+	.blogpost-date {
+		clear: both;
+		float: right;
+		text-align: right;
+		margin-bottom: 8px;
+	}
+	
+	.blogpost-tags {
+		clear: both;
+        border-radius: 3px;
+        border: 1px solid #e5e5e5;
+        font-size: .8rem;
+        padding: .3rem;
+        background-color: #fafafa;
+	}
+}
+
+
+.blog-page .blogpost .blogpost-content {
+	.blogpost-title {
+		margin-top: 0;
+		& > a {
+			text-decoration: none;
+		}	
+	}
+}
+
+
+.blogpost-page .page-title {
+    text-align: left;
+    padding: 1rem 0 2rem 0;
+}
+
+.news-item-page .news-date,
+.blogpost-page .blogpost-date {
+	float: right;
+	margin-top: 12px;
+    font-size: .8rem;
+    color: #aaa;
+}
+
+.new-comment .comment-title {
+	width: 70%;
+}
+.new-comment .comment-text {
+	width: 70%;
+	height: 150px;
+}
+
+.comment-item {
+	margin-bottom: 20px;
+	position: relative;
+	.comment-avatar {
+		position: absolute;
+		top: 2px;
+		left: 0;
+	}
+	.comment-content { }
+	.comment-content .comment-info {
+		margin-bottom: 12px;
+		.username {
+			font-weight: bold;
+			color: inherit;
+			font-size: 16px;
+		}
+		.comment-time {
+			margin-left: 4px;
+			color: #bbb;
+		}
+	}
+}
+
+.comment-list .title {
+    border-bottom: 1px solid #ddd;
+    font-size: 1.2rem;
+    padding: .5rem 0 .2rem 0;
+    margin-bottom: 1.2rem;
+}
+

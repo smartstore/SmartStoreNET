@@ -1,0 +1,45 @@
+@functions{
+	private DateTime? Value
+	{
+		get
+		{
+			DateTime? value = null;
+			if (ViewData.Model != null)
+			{
+				value = Convert.ToDateTime(ViewData.Model, System.Globalization.CultureInfo.CurrentCulture);
+			}
+			return value;
+		}
+	}
+}
+
+@{
+	var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+	var name = ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty);
+	var value = String.Empty;
+	if (Value.HasValue && Value.Value > DateTime.MinValue)
+	{
+		value = Value.Value.ToLongTimeString();
+	}
+}
+
+<div class="input-append date" id="@id-parent" data-date="@value">
+	@Html.TextBox("", value, new { @class = "span2" })<span class="add-on"><i class="fa fa-clock-o"></i></span>
+</div>
+
+<script>
+	$(function () {
+		var c = Globalize.culture().calendars.standard;
+		var fmt = c.patterns["T"];
+		$("#@id-parent").datetimepicker({
+			language: 'glob',
+			format: fmt,
+			pickDate: false,
+			pickTime: true,
+			pickSeconds: true,
+			pick12HourFormat: false,
+			maskInput: true });
+	});
+</script>
+
+

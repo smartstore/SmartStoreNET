@@ -1,0 +1,23 @@
+﻿@model TopicWidgetModel
+@using SmartStore.Web.Models.Topics;
+
+@{
+    Layout = "";
+}
+
+@if (!Model.WrapContent)
+{
+	<text>@Html.Raw(Model.Html)</text>
+	return;
+}
+
+<div class="block @(Model.IsBordered ? "block-bordered" : "") topic-widget topic-widget-@Model.SystemName">
+    @if (Model.ShowTitle) {
+        @Html.Raw("<" + Model.TitleTag + " class=\"block-title\">")
+            @Html.Raw(Model.Title)
+        @Html.Raw("</" + Model.TitleTag + ">")
+    }
+    <div class="block-body">
+        @Html.Raw(Html.CollapsedText(Model.Html))
+    </div>
+</div>

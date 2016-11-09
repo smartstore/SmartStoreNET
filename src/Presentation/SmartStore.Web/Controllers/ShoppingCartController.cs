@@ -41,6 +41,8 @@ using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.ShoppingCart;
+using SmartStore.Web.Models.Catalog;
+using SmartStore.Services;
 
 namespace SmartStore.Web.Controllers
 {
@@ -48,6 +50,7 @@ namespace SmartStore.Web.Controllers
     {
         #region Fields
 
+        private readonly ICommonServices _services;
         private readonly IProductService _productService;
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
@@ -95,12 +98,14 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<ITopicService> _topicService;
         private readonly IMeasureService _measureService;
         private readonly MeasureSettings _measureSettings;
+        private readonly ICompareProductsService _compareProductsService;
+        private readonly CatalogHelper _helper;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public ShoppingCartController(IProductService productService,
+        public ShoppingCartController(ICommonServices services, IProductService productService,
 			IWorkContext workContext, IStoreContext storeContext,
             IShoppingCartService shoppingCartService, IPictureService pictureService,
             ILocalizationService localizationService, 
@@ -127,8 +132,10 @@ namespace SmartStore.Web.Controllers
 			HttpContextBase httpContext, PluginMediator pluginMediator,
             IQuantityUnitService quantityUnitService,
 			Lazy<ITopicService> topicService,
-            IMeasureService measureService, MeasureSettings measureSettings)
+            IMeasureService measureService, MeasureSettings measureSettings,
+            CatalogHelper helper, ICompareProductsService compareProductsService)
         {
+            this._services = services;
             this._productService = productService;
             this._workContext = workContext;
 			this._storeContext = storeContext;
@@ -176,6 +183,8 @@ namespace SmartStore.Web.Controllers
 			this._topicService = topicService;
             this._measureService = measureService;
             this._measureSettings = measureSettings;
+            this._helper = helper;
+            this._compareProductsService = compareProductsService;
         }
 
         #endregion
@@ -248,7 +257,9 @@ namespace SmartStore.Web.Controllers
 				Weight = product.Weight,
 				IsDownload = product.IsDownload,
 				HasUserAgreement = product.HasUserAgreement,
-				IsEsd = product.IsEsd
+				IsEsd = product.IsEsd,
+                MinOrderAmount = product.OrderMinimumQuantity,
+                MaxOrderAmount = product.OrderMaximumQuantity
 			};
 
 			model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);
@@ -444,8 +455,10 @@ namespace SmartStore.Web.Controllers
 				Quantity = item.Quantity,
 				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
-				VisibleIndividually = product.VisibleIndividually
-			};
+				VisibleIndividually = product.VisibleIndividually,
+                MinOrderAmount = product.OrderMinimumQuantity,
+                MaxOrderAmount = product.OrderMaximumQuantity
+            };
 
 			model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);
 
@@ -1007,6 +1020,7 @@ namespace SmartStore.Web.Controllers
                         Id = item.Id,
                         ProductId = product.Id,
 						ProductName = product.GetLocalized(x => x.Name),
+                        ShortDesc = product.GetLocalized(x => x.ShortDescription),
                         ProductSeName = product.GetSeName(),
                         Quantity = item.Quantity,
                         AttributeInfo = _productAttributeFormatter.FormatAttributes(
@@ -1682,7 +1696,7 @@ namespace SmartStore.Web.Controllers
 			}
             return View(model);
         }
-
+        
         //remove a certain shopping cart item on the page
         [ValidateInput(false)]
         [HttpPost, ActionName("Cart")]
@@ -2159,6 +2173,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
+        // TODO: NewAlpha delete 
         //[ChildActionOnly]
         public ActionResult FlyoutShoppingCart()
         {
@@ -2173,6 +2188,109 @@ namespace SmartStore.Web.Controllers
 			_httpContext.Session.SafeSet(CheckoutState.CheckoutStateSessionKey, new CheckoutState());
 
             return PartialView(model);
+        }
+
+        public ActionResult OffCanvasCart()
+        {
+            var model = new OffCanvasCartModel();
+            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+            var whishlist = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
+
+            // counts
+            model.ShoppingCartItems = cart.GetTotalProducts();
+            model.WishlistItems = whishlist.GetTotalProducts();
+            model.CompareItems = _compareProductsService.GetComparedProducts().Count;
+
+            // settings
+            model.ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart) && _shoppingCartSettings.MiniShoppingCartEnabled;
+            model.WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
+            model.CompareProductsEnabled = _catalogSettings.CompareProductsEnabled;
+
+            return PartialView(model);
+        }
+
+        public ActionResult OffCanvasShoppingCart()
+        {
+            if (!_shoppingCartSettings.MiniShoppingCartEnabled)
+                return Content("");
+
+            if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
+                return Content("");
+
+            var model = PrepareMiniShoppingCartModel();
+
+            _httpContext.Session.SafeSet(CheckoutState.CheckoutStateSessionKey, new CheckoutState());
+
+            return PartialView(model);
+        }
+
+        public ActionResult OffCanvasWishlist()
+        {
+            Customer customer = _workContext.CurrentCustomer;
+
+            var cart = customer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
+            var model = new WishlistModel();
+
+            PrepareWishlistModel(model, cart, true);
+
+            // TODO: MiniWishlistModel analog zu MiniCart implementieren
+            model.Items = model.Items.Take(_shoppingCartSettings.MiniShoppingCartProductNumber).ToList();
+
+            // reformat AttributeInfo: this is bad! Put this in PrepareMiniWishlistModel later.
+            model.Items.Each(x =>
+            {
+                var sci = cart.Where(c => c.Item.Id == x.Id).FirstOrDefault();
+                if (sci != null)
+                {
+                    x.AttributeInfo = _productAttributeFormatter.FormatAttributes(
+                        sci.Item.Product,
+                        sci.Item.AttributesXml,
+                        null,
+                        htmlEncode: false,
+                        serapator: ", ",
+                        renderPrices: false,
+                        renderGiftCardAttributes: false,
+                        allowHyperlinks: false);
+                }
+            });
+
+            model.IgnoredProductsCount = Math.Max(0, cart.Count - _shoppingCartSettings.MiniShoppingCartProductNumber);
+            model.ThumbSize = _mediaSettings.MiniCartThumbPictureSize;
+
+            return PartialView(model);
+        }
+
+        public ActionResult OffCanvasCompare()
+        {
+            var model = new CompareProductsModel
+            {
+                IncludeShortDescriptionInCompareProducts = _catalogSettings.IncludeShortDescriptionInCompareProducts,
+                IncludeFullDescriptionInCompareProducts = _catalogSettings.IncludeFullDescriptionInCompareProducts,
+            };
+
+            var products = _compareProductsService.GetComparedProducts();
+
+            _helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, isCompareList: true)
+                .ToList()
+                .ForEach(model.Products.Add);
+
+            return PartialView(model);
+        }
+
+        [HttpPost]
+        public ActionResult UpdateOcCartItem(int sciItemId, int newQuantity)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
+                return RedirectToRoute("HomePage");
+
+            var warnings = new List<string>();
+            warnings.AddRange(_shoppingCartService.UpdateShoppingCartItem(_workContext.CurrentCustomer, sciItemId, newQuantity, false));
+
+            return Json(new
+            {
+                success = warnings.Count > 0 ? false : true,
+                message = warnings
+            });
         }
 
         // Ajax
@@ -2636,6 +2754,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
+        // TODO: NewAlpha delete 
         public ActionResult FlyoutWishlist()
         {
             Customer customer = _workContext.CurrentCustomer;

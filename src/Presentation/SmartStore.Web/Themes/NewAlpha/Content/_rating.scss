@@ -1,0 +1,79 @@
+﻿//
+// Review & Rating Styles
+// --------------------------------------------------
+
+.write-review .title {
+    color: #ccc;
+    border-bottom: 1px solid #ccc;
+    font-weight: 100;
+    font-size: 1.25rem;
+    padding: 0 0 .3rem 0 !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Ratings
+================================================ */
+.rating {
+	display: inline-block;
+	height: 16px;
+	width: 80px;
+	background-image: url('images/star-off.png');
+	background-repeat: repeat-x;
+	background-position: 0 50%;
+}
+.rating > div {
+	height: 16px;
+	background-image: url('images/star-on.png');
+}
+.rating.rating-small {
+	height: 11px;
+	width: 60px;
+	padding: 1px 0;
+	background-image: url('images/star-off-12.png');
+}
+.rating.rating-small > div {
+	height: 11px;
+	background-image: url('images/star-on-12.png');
+}
+
+/* Reviews
+================================================ */
+.product-reviews-page .write-review .inputs,
+.product-reviews-page .write-review .captcha-box { 
+    margin-bottom:12px;
+}
+.product-reviews-page .write-review .review-title { width:350px; }
+.product-reviews-page .write-review .review-text{ width:350px; height:150px; }
+.product-reviews-page .write-review .review-rating{ display:inline-block; }
+.product-reviews-page .write-review .review-rating input{ vertical-align:bottom; }
+.product-reviews-page .write-review .buttons{ text-align:left; }
+
+.product-review-item {
+	padding: 12px 0;
+}
+.product-review-item .review-title .rating {
+	margin-right: 8px;
+}
+.product-review-item .review-text,
+.product-review-vote {
+	margin-top: 12px;
+}
+.product-review-vote {
+    font-size: .8rem;
+}
+.product-review-vote .vote {
+	text-decoration: none;
+	margin-right: 2px;
+	padding: 0 2px;
+	&.vote-yes { color: $clr-green }
+	&.vote-yes:hover { background: $clr-green; color: #fff }
+	&.vote-no { color: $clr-red }
+	&.vote-no:hover { background: $clr-red-700; color: #fff }
+}
+.product-review-vote .vote-count {
+	font-weight: bold;
+}
+.product-review-vote .fa-thumbs-up,
+.product-review-vote .fa-thumbs-down {
+	font-size: 16px;
+}

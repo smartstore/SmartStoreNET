@@ -1,0 +1,64 @@
+﻿@model PrivateMessageModel
+@using SmartStore.Web.Models.PrivateMessages;
+@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
+    Html.AddTitleParts(T("PageTitle.ViewPM").Text);
+}
+<div class="page private-message-view-page">
+    <h2>
+        @T("PrivateMessages.View.ViewMessage")
+    </h2>
+    <div class="page-body">
+        <table class="view-message">
+            <tr>
+                <td class="fieldname">
+                    @T("PrivateMessages.View.From")
+                </td>
+                <td>
+                    @Model.CustomerFromName
+                </td>
+            </tr>
+            <tr>
+                <td class="fieldname">
+                    @T("PrivateMessages.View.To")
+                </td>
+                <td>
+                    @Model.CustomerToName
+                </td>
+            </tr>
+            <tr>
+                <td class="fieldname">
+                    @T("PrivateMessages.View.Subject")
+                </td>
+                <td>
+                    @Model.Subject
+                </td>
+            </tr>
+            <tr>
+                <td class="fieldname">
+                    @T("PrivateMessages.View.Message")
+                </td>
+                <td class="message">
+                    @Html.Raw(@Model.Message)
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="options">
+					<a class="btn btn-primary" href='@Url.Action("Send", new { id = Model.FromCustomerId, replyToMessageId = Model.Id })' rel="nofollow">
+						<i class="fa fa-share"></i>
+						@T("PrivateMessages.View.ReplyButton")
+					</a>
+					<a class="btn btn-danger" href='@Url.Action("Delete", new { id = Model.Id })' rel="nofollow">
+						<i class="fa fa-trash-o"></i>
+						@T("PrivateMessages.View.DeleteButton")
+					</a>
+					<a class="btn" href='@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })' rel="nofollow">
+						<i class="fa fa-user"></i>
+						@T("PrivateMessages.View.BackButton")
+					</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,83 @@
+﻿@model EditForumTopicModel
+@using SmartStore.Core.Domain.Forums;
+@using SmartStore.Services.Forums;
+@using SmartStore.Services.Seo;
+@using SmartStore.Web;
+@using SmartStore.Web.Models.Boards;
+
+
+@using (Html.BeginForm())
+{
+    <div class="page post-edit">
+        @Html.Action("ForumBreadcrumb", new { forumId = Model.ForumId, forumTopicId = Model.Id })
+
+        <div class="title">
+            <h2>@(Model.IsEdit ? T("Forum.EditTopic") : T("Forum.NewTopic"))</h2>
+        </div>
+
+        <div class="message-error">
+            @Html.ValidationSummary(true)
+        </div>
+
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.ForumId)
+
+        <div class="form-group row">
+            <label class="col-sm-2 text-xs-right form-control-label">@T("Forum.ForumName")</label>
+            <div class="col-sm-10">
+                <span>@Model.ForumName</span>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-sm-2 text-xs-right form-control-label">@T("Forum.TopicTitle")</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(model => model.Subject, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Subject)
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-push-2 col-sm-10 m-t-1">
+                @if (Model.ForumEditor == EditorType.BBCodeEditor)
+                {
+                    @Html.BBCodeEditor("Text");
+                }
+                @Html.TextAreaFor(model => model.Text, new { @class = "forum-post-text", TextMode = "MultiLine" })
+                @Html.ValidationMessageFor(model => model.Text)
+            </div>
+        </div>
+
+        @if (Model.IsCustomerAllowedToSetTopicPriority)
+        {
+            <div class="form-group row">
+                <label class="col-sm-2 text-xs-right form-control-label">@T("Forum.Priority")</label>
+                <div class="col-sm-10">
+                    @Html.DropDownList("TopicTypeId", new SelectList(@Model.TopicPriorities, "Value", "Text", @Model.TopicTypeId))
+                </div>
+            </div>
+        }
+                           
+        @if (Model.IsCustomerAllowedToSubscribe)
+        {
+            <div class="row">
+                <div class="col-sm-push-2 col-sm-10 m-t-1">
+                    <label>
+                        @Html.CheckBox("Subscribed", @Model.Subscribed)
+                        @T("Forum.NotifyWhenSomeonePostsInThisTopic")
+                    </label>
+                </div>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-sm-push-2 col-sm-10 m-t-1">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-reply"></i>@T("Forum.Submit")</button>
+                <button class="btn" onclick="setLocation('@Url.RouteUrl("ForumSlug", new { id = Model.ForumId, slug = Model.ForumSeName }) '); return false;">
+                    <i class="fa fa-times"></i>
+                    @T("Forum.Cancel")
+                </button>
+            </div>
+        </div>
+    </div>
+}

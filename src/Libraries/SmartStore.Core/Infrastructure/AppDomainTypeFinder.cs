@@ -196,7 +196,7 @@ namespace SmartStore.Core.Infrastructure
 		/// <returns>True if the assembly should be loaded into SmartStore.</returns>
 		public virtual bool Matches(Assembly assembly)
 		{
-			var name = assembly.FullName;
+            var name = assembly.FullName;
 
 			// Check if passed assembly is a system assembly
 			if (_systemAssembliesPattern.IsMatch(name))

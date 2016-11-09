@@ -1,0 +1,72 @@
+﻿@model OffCanvasCartModel
+@using SmartStore.Web.Models.ShoppingCart;
+
+<div class="offcanvas-cart-header">
+    <div class="text-xs-right">
+        <button class="btn btn-link offcanvas-closer">
+            X
+        </button>
+    </div>
+
+    <ul class="nav nav-tabs" role="tablist">
+        @if (Model.ShoppingCartEnabled)
+        {
+            <li class="nav-item">
+                <a id="cart-tab" class="nav-link text-xs-center text-sm-left" data-toggle="tab" href="#occ-cart" role="tab" data-url="@Url.Action("OffCanvasShoppingCart", "ShoppingCart")">
+
+                    <i class="fa fa-shopping-basket hidden-sm-up"></i>
+                    
+                    <span class="title hidden-sm-down">@T("PageTitle.ShoppingCart")</span>
+                    &nbsp;
+                    <span class="label label-warning" data-bind-to="TotalProducts">@Model.ShoppingCartItems</span>
+
+                </a>
+            </li>
+        }
+
+        @if (Model.WishlistEnabled)
+        {
+            <li class="nav-item">
+                <a id="wishlist-tab" class="nav-link text-xs-center text-sm-left" data-toggle="tab" href="#occ-wishlist" role="tab" data-url="@Url.Action("OffCanvasWishlist", "ShoppingCart")">
+                    
+                    <i class="fa fa-heart-o hidden-sm-up"></i>
+
+                    <span class="title hidden-sm-down">@T("PageTitle.Wishlist")</span>
+                    &nbsp;
+                    <span class="label label-warning" data-bind-to="TotalProducts">@Model.WishlistItems</span>
+                </a>
+            </li>
+        }
+
+        @if (Model.CompareProductsEnabled)
+        {
+            <li class="nav-item">
+                <a id="compare-tab" class="nav-link text-xs-center text-sm-left" data-toggle="tab" href="#occ-compare" role="tab" data-url="@Url.Action("OffCanvasCompare", "ShoppingCart")">
+
+                    <i class="fa fa-retweet hidden-sm-up"></i>
+
+                    <span class="title hidden-sm-down">@T("Products.Compare.Title")</span>
+                    &nbsp;
+                    <span class="label label-warning" data-bind-to="Count">@Model.CompareItems</span>
+                </a>
+            </li>
+        }
+    </ul>
+</div>
+
+<div class="tab-content">
+    @if (Model.ShoppingCartEnabled)
+    {
+        <div class="tab-pane fade in" id="occ-cart" role="tabpanel"></div>
+    }
+
+    @if (Model.WishlistEnabled)
+    {
+        <div class="tab-pane fade in" id="occ-wishlist" role="tabpanel"></div>
+    }
+
+    @if (Model.CompareProductsEnabled)
+    {
+        <div class="tab-pane fade in" id="occ-compare" role="tabpanel"></div>
+    }
+</div>

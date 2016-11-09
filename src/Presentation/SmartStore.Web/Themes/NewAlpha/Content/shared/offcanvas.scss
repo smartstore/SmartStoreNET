@@ -1,0 +1,282 @@
+﻿/// <reference path="../common/common.scss" />
+/// <reference path="../bootstrap/bootstrap.scss" />
+
+
+$offcanvas-width: 570px;
+$offcanvas-easing: ease;
+$offcanvas-duration: 0.4s;
+$offcanvas-offset: 0.5;
+$offcanvas-offset-p: $offcanvas-offset * 100%;
+$offcanvas-offset-p-neg: ($offcanvas-offset * 100) * -1%;
+
+$offcanvas-menu-bg: $clr-blue-grey-900;
+
+
+/* PARENT CANVAS
+--------------------------------------------*/
+
+.canvas-slidable {
+    z-index: 0;
+    transform: translate3d(0, 0, 0);
+    transition: opacity $offcanvas-duration $offcanvas-easing,
+                transform $offcanvas-duration $offcanvas-easing;
+
+    /*body.canvas-sliding & {
+        overflow: hidden; 
+    }
+    body.canvas-slid &{
+    }
+    */
+    body.canvas-sliding-left & {
+        transform: translate3d($offcanvas-width * -1, 0, 0);
+    }
+    body.canvas-sliding-left.canvas-fullscreen & { 
+        transform: translate3d(-100%, 0, 0);
+    }
+    body.canvas-sliding-right & {
+        transform: translate3d($offcanvas-width, 0, 0);
+    }
+    body.canvas-sliding-right.canvas-fullscreen & {
+        transform: translate3d(100%, 0, 0);
+    }
+
+}
+
+body.canvas-noscroll {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+
+/* HAMBURGER
+--------------------------------------------*/
+
+.navbar-toggler {
+    position: relative;
+    background-color: transparent;
+    /*
+    width: 3.2rem;
+    height: 3.2rem;
+        */
+    outline: none;
+    &:focus { outline: none }
+}
+
+.navbar-toggler .hamburger {
+    display: block;
+    position: relative;
+    margin: 0 auto;
+
+    &, &:before, &:after {
+        background-color: #fff;
+        width: 1.6rem;
+        height: 3px;
+        border-radius: 1px;
+        transition: background-color $offcanvas-duration $offcanvas-easing,
+                    transform $offcanvas-duration $offcanvas-easing;
+    }
+
+    &:before, &:after {
+        display: block;
+        content: '';
+        position: absolute;
+        opacity: 1 !important;
+    }
+    &:before {
+        top: 8px;
+    }
+    &:after {
+        top: -8px;
+    }
+
+    .navbar-light &, .navbar-light &:before, .navbar-light &:after {
+        background-color: $body-color;
+    }
+
+    .canvas-sliding & {
+        background-color: transparent !important;
+        &:before {
+            transform: translate3d(0, -8px, 0) rotate(45deg);
+        }
+        &:after {
+            transform: translate3d(0, 8px, 0) rotate(-45deg);
+        }
+    }
+}
+
+
+/* PARENT CANVAS BLOCKER
+--------------------------------------------*/
+
+.canvas-blocker {
+    position: fixed;
+    z-index: 0 !important;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    opacity: 0;
+    transition: opacity $offcanvas-duration $offcanvas-easing,
+                transform $offcanvas-duration $offcanvas-easing,
+                z-index 0s linear $offcanvas-duration;
+}
+
+body.canvas-blocking .canvas-blocker {
+    z-index: $zindex-navbar-fixed+1 !important;
+    opacity: 0.4;
+    transition: opacity $offcanvas-duration $offcanvas-easing,
+                transform $offcanvas-duration $offcanvas-easing,
+                z-index 0s 0s !important;
+
+}
+
+
+/* OFFCANVAS ELEMENT
+--------------------------------------------*/
+
+.offcanvas {
+    display: block;
+    visibility: hidden;
+    position: fixed;
+    top: 0;
+    height: 100%;
+    z-index: 0;
+    margin: 0; 
+    background-color: #fff;
+    overflow-x: auto;
+    transition: transform $offcanvas-duration $offcanvas-easing, 
+                visibility 0s ease $offcanvas-duration;
+
+    width: $offcanvas-width;
+    left: 0;
+    right: auto;
+    transform: translate3d($offcanvas-offset-p-neg, 0, 0);
+
+    &.offcanvas-right {
+        left: auto !important;
+        right: 0;
+        transform: translate3d($offcanvas-offset-p, 0, 0);
+    }
+
+    &.offcanvas-fullscreen {
+        width: 100%;
+    }
+
+    &.on {
+        visibility: visible;
+        transition: transform $offcanvas-duration $offcanvas-easing;
+        transform: translate3d(0, 0, 0) !important;
+    }
+}
+
+.offcanvas.offcanvas-push {
+    transform: translate3d(-100%, 0, 0);
+
+    &.offcanvas-right {
+        transform: translate3d(100%, 0, 0);
+    }
+}
+
+.offcanvas-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+
+/* OFFCANVAS MENU
+--------------------------------------------*/
+
+#offcanvas-nav {
+    background-color: $offcanvas-menu-bg;
+    color: #fff;
+}
+
+.ocm-panels {
+    position: absolute;
+    left: 0;
+    top: 50px;
+    right: 0;
+    bottom: 0;
+}
+
+.ocm-menu,
+.ocm-menu > ul {
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.ocm-menu {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0;
+    background-color: $offcanvas-menu-bg;
+    transform: translate3d(100%, 0, 0);
+    z-index: 90;
+
+    &.expanded {
+        z-index: 95;
+        transform: translate3d(-35%, 0, 0);
+    }
+    &.current {
+        z-index: 99;
+        transform: translate3d(0, 0, 0);
+    }
+    &.out {
+        z-index: 100;
+    }
+}
+
+.ocm-menu > ul {
+    @include list-unstyled;
+    transform: scale(0.8);
+    opacity: 0.5;
+    transform-origin: center center;
+}
+.ocm-menu.current > ul {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.ocm-menu > ul > li {
+    border-bottom: 1px solid rgba(255,255,255, 0.08);
+}
+
+.ocm-menu .ocm-link {
+    display: block;
+    position: relative;
+    padding: 0.8rem 3rem 0.8rem 1.5rem;
+    text-transform: uppercase;
+    color: $clr-blue-grey-300;
+    text-decoration: none !important;
+    transition: color 0.15s ease;
+    border-right: 3px solid transparent;
+    @include text-truncate;
+
+    &.ocm-back {
+        font-weight: 600;
+    }
+
+    &:hover, &:active {
+        color: #fff;
+    }
+    &.active {
+        border-right-color: $clr-orange;
+    }
+
+    &.has-children:after {
+        position: absolute;
+        font-family: FontAwesome;
+        content: "\f105"; // fa-angle-right
+        color: inherit;
+        right: 1.5rem;
+        font-size: 1.2em;
+        line-height: 1;
+        top: 50%;
+        margin-top: -0.6em;
+    }
+}

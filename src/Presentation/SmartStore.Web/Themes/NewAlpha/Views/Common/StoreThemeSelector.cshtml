@@ -1,0 +1,28 @@
+﻿@model StoreThemeSelectorModel
+@using SmartStore.Web.Models.Common;
+@if (Model.AvailableStoreThemes.Count > 1)
+{
+	using (Ajax.BeginForm("ChangeTheme", "Common", null, new AjaxOptions { OnComplete = "onStoreThemeChangedRequestCompleted();" }, new { id = "form-store-theme-selector" }))
+    {
+        var themes = Model.AvailableStoreThemes.Select(x => new SelectListItem
+        {
+            Text = x.Title,
+            Value = x.Name,
+            Selected = x.Name.Equals(Model.CurrentStoreTheme.Name, StringComparison.InvariantCultureIgnoreCase)
+        });
+    
+        @Html.DropDownList("themeName", themes, new { @class = "store-theme-list form-control noskin" })
+    }
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#themeName").change(onStoreThemeChanged);
+        });
+
+        function onStoreThemeChanged() {
+            $("#form-store-theme-selector").submit();
+        }
+        function onStoreThemeChangedRequestCompleted() {
+            location.reload();
+        }
+    </script>
+}

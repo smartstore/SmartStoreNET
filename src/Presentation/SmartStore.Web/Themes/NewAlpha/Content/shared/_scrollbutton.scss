@@ -1,0 +1,47 @@
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+// Scroll Button
+// TODOs: px to rem
+// ==============================================================
+
+.scroll-button {
+	position: relative;
+	display: block;
+	outline: 0 !important;
+	overflow: hidden;
+    border-radius: 0;
+    padding-right: 0;
+    padding-left: 0;
+}
+.scroll-button.disabled {
+	cursor: default !important;
+}
+
+.scroll-button i {
+	position: relative;
+	top: 50%;
+	display: block !important;
+	width: 28px;
+	height: 22px;
+	background-position: 0 0;
+	background-repeat: no-repeat;
+	overflow: hidden;
+	-webkit-transform: translateZ(0);
+}
+.scroll-button.small i {
+    font-size: 11px;
+    margin: -4px 0 0 -11px;
+}
+.scroll-button.large i {
+    font-size: 20px;
+    margin: -11px 0 0 -11px;
+}
+
+.scroll-button.sb-dir-left.large {
+    border-top-right-radius: $border-radius-sm;
+    border-bottom-right-radius: $border-radius-sm;
+}
+.scroll-button.sb-dir-right.large {
+    border-top-left-radius: $border-radius-sm;
+    border-bottom-left-radius: $border-radius-sm;
+}

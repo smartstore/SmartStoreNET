@@ -1,0 +1,57 @@
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+// Font weight Helpers
+// ===================
+
+$font-weight-light:       300;
+$font-weight-normal:      400;
+$font-weight-medium:      500;
+$font-weight-bold:        700;
+
+@each $weight, $var in (unset, 100, 200, 300, 400, 500, 600, 700, 800, 900) {
+    .fw-#{$weight} {
+        font-weight: $weight !important;
+    }
+}
+
+.fw-light {
+    font-weight: $font-weight-light !important;
+}
+.fw-normal {
+    font-weight: $font-weight-normal !important;
+}
+.fw-medium {
+    font-weight: $font-weight-medium !important;
+}
+.fw-bold {
+    font-weight: $font-weight-bold !important;
+}
+
+
+
+// jQuery UI stuff
+// ===================
+
+.ui-effects-transfer, .transfer {
+	border: 2px dotted $body-color !important;
+	background: transparent;
+	z-index: $zindex-modal+1;
+}
+
+
+// Utils
+// ===================
+
+@mixin font-inherit() {
+	font-family: inherit;
+	font-weight: inherit;
+	font-style: inherit;
+	color: inherit;
+	font-size: inherit;
+	color: inherit;
+	text-decoration: inherit;
+}
+
+@mixin smaller() {
+    font-size: .825rem !important;
+}

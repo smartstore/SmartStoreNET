@@ -1,0 +1,116 @@
+﻿@model HandleErrorInfo
+
+@using SmartStore.Utilities;
+
+@{
+	Layout = null;
+	
+	var showCustomErrors = CommonHelper.GetAppSetting<bool>("sm:ShowCustomErrors", false);
+	string title = "";
+	string text = "";
+	try
+	{
+		title = T("ErrorPage.Title");
+		text = T("ErrorPage.Body");
+	}
+	catch
+	{
+	}
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Internal Server Error</title>
+	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+	<style type="text/css">
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 20px;
+            color: #444;
+        }
+		.page {
+            width: 740px;
+            margin: 50px auto;
+            text-align: center;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Arial', 'Segoe UI', Arial, helvetica, sans-serif;
+            font-weight: 400;
+			margin: 0;
+        }
+        h1 {
+            font-size: 100px;
+			line-height: 140px;
+			color: #999;
+			margin-bottom: 50px;
+        }
+		p {
+			font-size: 16px;
+			line-height: 22px;
+		}
+
+		.error {
+			margin-top: 30px;
+			padding: 15px;
+			color: #a94442;
+			background-color: #f2dede;
+			border: 1px solid #ebccd1;
+		}
+	</style>
+</head>
+<body>
+	<div class="page">
+		<img src="~/Content/Images/sad.png" width="128" height="128" />
+		
+		@if (title.HasValue())
+		{
+			<h1>@Html.Raw(title)</h1>
+		}
+		else
+		{
+			<h1>Oops!</h1>
+		}
+
+		@if (text.HasValue())
+		{
+			<p>@Html.Raw(text)</p>
+		}
+		else
+		{
+			<p>
+				We apologize, an error ocurred while handling your request, this is not a problem with your computer or internet connection.
+				The details have been sent to our support team and we will investigate the issue very soon.
+				<br />
+				<br />
+				In the meantime, please retry your request as it may have been temporary.
+			</p>
+		}
+
+		@if (showCustomErrors && Model != null)
+		{
+			<p class="error">
+				<strong>Controller:</strong> @Model.ControllerName, <strong>Action:</strong> @Model.ActionName
+				@{	
+					var ex = Model.Exception;
+					if (ex != null)
+					{
+						do
+						{
+							<br/>
+							<br/>
+							<span>@ex.Message</span>
+							ex = ex.InnerException;
+						} while (ex != null);					
+					}
+				} 
+			</p>
+		}
+
+	</div>
+</body>
+</html>
+
+
+		

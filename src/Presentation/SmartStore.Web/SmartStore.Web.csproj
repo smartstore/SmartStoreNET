@@ -2036,9 +2036,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Themes\AlphaOld\theme.config">
+    <None Include="Themes\AlphaOld\theme.config.obsolete">
       <SubType>Designer</SubType>
-    </Content>
+    </None>
     <Content Include="Themes\AlphaOld\Views\Shared\Head.cshtml" />
     <Content Include="Themes\AlphaOld\Views\Web.config">
       <SubType>Designer</SubType>

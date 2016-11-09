@@ -57,14 +57,9 @@
 
 @helper ThemesTab()
 {
-	if (Model.DesktopThemes.Count > 0)
+	if (Model.Themes.Count > 0)
 	{
-        @ThemeList(Model.DesktopThemes, T("Admin.Configuration.Themes.AvailableDesktopThemes"), false)
-	}
-
-	if (Model.MobileThemes.Count > 0)
-	{
-        @ThemeList(Model.MobileThemes, T("Admin.Configuration.Themes.AvailableMobileThemes"), true)
+        @ThemeList(Model.Themes, T("Admin.Configuration.Themes.AvailableDesktopThemes"))
 	}
     
     <script>
@@ -75,16 +70,7 @@
             $("#themes-tab").on("click", ".set-as-defaulttheme", function (e) {
                 var el = $(this);
                 var name = el.data("name");
-                var mobile = toBool(el.data("mobile"));
-
-                var hidden;
-
-                if (mobile) {
-                    hidden = $('#@Html.FieldIdFor(x => x.DefaultMobileTheme)');
-                }
-                else {
-                    hidden = $('#@Html.FieldIdFor(x => x.DefaultDesktopTheme)');
-                }
+                var hidden = $('#@Html.FieldIdFor(x => x.DefaultTheme)');
 
                 hidden.val(name);
 
@@ -96,7 +82,7 @@
     </script>
 }
 
-@helper ThemeList(IList<ThemeManifestModel> themes, string caption, bool mobile)
+@helper ThemeList(IList<ThemeManifestModel> themes, string caption)
 {
 	<fieldset class="">
 		<legend style="border: none">@caption</legend>
@@ -133,7 +119,7 @@
 						<div class="theme-buttons clearfix">
 							@if (!theme.IsActive)
 							{
-								<a href="#" class="btn btn-primary set-as-defaulttheme@(isBroken ? " invisible" : "")" data-mobile="@theme.IsMobileTheme" data-name="@theme.Name">
+								<a href="#" class="btn btn-primary set-as-defaulttheme@(isBroken ? " invisible" : "")" data-name="@theme.Name">
 									@T("Admin.Common.Activate")
 								</a>
 							}
@@ -148,12 +134,9 @@
 							@if (!isBroken)
 							{	
 								<div class="btn-group pull-right">
-									@if (!theme.IsMobileTheme)
-									{
-										<a href='@Url.Action("Preview", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn tooltip-toggle" title="@T("Admin.Configuration.Themes.Preview")">
-											<i class="fa fa-fw fa-eye"></i>
-										</a>
-									}
+									<a href='@Url.Action("Preview", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn tooltip-toggle" title="@T("Admin.Configuration.Themes.Preview")">
+										<i class="fa fa-fw fa-eye"></i>
+									</a>
 									@if (theme.IsConfigurable)
 									{
 										<a href='@Url.Action("Configure", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn tooltip-toggle" title="@T("Admin.Common.Configure")">
@@ -197,8 +180,7 @@
 		}
 	</script>
 
-    @Html.HiddenFor(x => x.DefaultDesktopTheme)
-    @Html.HiddenFor(x => x.DefaultMobileTheme)
+    @Html.HiddenFor(x => x.DefaultTheme)
     
     @Html.ValidationSummary(false)
     <table class="adminContent">
@@ -220,15 +202,6 @@
 				@Html.ValidationMessageFor(model => model.SaveThemeChoiceInCookie)
 			</td>
 		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MobileDevicesSupported)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.MobileDevicesSupported)
-                @Html.ValidationMessageFor(model => model.MobileDevicesSupported)
-            </td>
-        </tr>
         <tr>
             <td colspan="2" class="adminSeparator">
                 <hr />

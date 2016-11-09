@@ -59,7 +59,6 @@ namespace SmartStore.Web.Controllers
         private readonly Lazy<IThemeRegistry> _themeRegistry;
         private readonly Lazy<IForumService> _forumservice;
         private readonly Lazy<IGenericAttributeService> _genericAttributeService;
-        private readonly Lazy<IMobileDeviceHelper> _mobileDeviceHelper;
 		private readonly Lazy<ICompareProductsService> _compareProductsService;
 		private readonly Lazy<IUrlRecordService> _urlRecordService;
 
@@ -129,7 +128,6 @@ namespace SmartStore.Web.Controllers
             this._themeRegistry = themeRegistry;
             this._forumservice = forumService;
             this._genericAttributeService = genericAttributeService;
-            this._mobileDeviceHelper = mobileDeviceHelper;
 			this._compareProductsService = compareProductsService;
 			this._urlRecordService = urlRecordService;
 
@@ -419,22 +417,6 @@ namespace SmartStore.Web.Controllers
             return RedirectToReferrer(returnUrl);
         }
 
-        //Configuration page (used on mobile devices)
-        [ChildActionOnly]
-        public ActionResult ConfigButton()
-        {
-            var langModel = PrepareLanguageSelectorModel();
-            var currModel = PrepareCurrencySelectorModel();
-            var taxModel = PrepareTaxTypeSelectorModel();
-            //should we display the button?
-            if (langModel.AvailableLanguages.Count > 1 ||
-                currModel.AvailableCurrencies.Count > 1 ||
-                taxModel.Enabled)
-                return PartialView();
-            else
-                return Content("");
-        }
-
         public ActionResult Settings()
         {
             return View();
@@ -584,10 +566,9 @@ namespace SmartStore.Web.Controllers
 			var taxInfo = T(taxDisplayType == TaxDisplayType.IncludingTax ? "Tax.InclVAT" : "Tax.ExclVAT");
 
 			var availableStoreThemes = !_themeSettings.AllowCustomerToSelectTheme ? new List<StoreThemeModel>() : _themeRegistry.Value.GetThemeManifests()
-                .Where(x => !x.MobileTheme)
                 .Select(x =>
                 {
-                    return new StoreThemeModel()
+                    return new StoreThemeModel
                     {
                         Name = x.ThemeName,
                         Title = x.ThemeTitle
@@ -709,24 +690,24 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
             var model = new StoreThemeSelectorModel();
-            var currentTheme = _themeRegistry.Value.GetThemeManifest(_themeContext.WorkingDesktopTheme);
+            var currentTheme = _themeRegistry.Value.GetThemeManifest(_themeContext.WorkingThemeName);
             model.CurrentStoreTheme = new StoreThemeModel()
             {
                 Name = currentTheme.ThemeName,
                 Title = currentTheme.ThemeTitle
             };
-			model.AvailableStoreThemes = _themeRegistry.Value.GetThemeManifests()
-                //do not display themes for mobile devices
-                .Where(x => !x.MobileTheme)
+			model.AvailableStoreThemes = _themeRegistry.Value
+				.GetThemeManifests()
                 .Select(x =>
                 {
-                    return new StoreThemeModel()
+                    return new StoreThemeModel
                     {
                         Name = x.ThemeName,
                         Title = x.ThemeTitle
                     };
                 })
                 .ToList();
+
             return PartialView(model);
         }
 
@@ -737,7 +718,7 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();
 			}
 
-			_themeContext.WorkingDesktopTheme = themeName;
+			_themeContext.WorkingThemeName = themeName;
 
 			if (HttpContext.Request.IsAjaxRequest())
 			{
@@ -780,37 +761,6 @@ namespace SmartStore.Web.Controllers
             };
 
             return PartialView(model);
-        }
-
-        /// <summary>
-        /// Change presentation layer (desktop or mobile version)
-        /// </summary>
-        /// <param name="dontUseMobileVersion">True - use desktop version; false - use version for mobile devices</param>
-        /// <returns>Action result</returns>
-        [HttpPost]
-        public ActionResult ChangeDevice(bool dontUseMobileVersion)
-        {
-			_genericAttributeService.Value.SaveAttribute(
-				_services.WorkContext.CurrentCustomer,
-				SystemCustomerAttributeNames.DontUseMobileVersion, 
-				dontUseMobileVersion, 
-				_services.StoreContext.CurrentStore.Id);
-
-            return RedirectToReferrer();
-        }
-
-        [ChildActionOnly]
-        public ActionResult ChangeDeviceBlock()
-        {
-			if (!_mobileDeviceHelper.Value.MobileDevicesSupported())
-                //mobile devices support is disabled
-                return Content("");
-
-			if (!_mobileDeviceHelper.Value.IsMobileDevice())
-                //request is made by a desktop computer
-                return Content("");
-
-            return View();
         }
 
         public ActionResult RobotsTextFile()

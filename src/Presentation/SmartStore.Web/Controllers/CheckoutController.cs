@@ -54,7 +54,6 @@ namespace SmartStore.Web.Controllers
         private readonly IOrderService _orderService;
         private readonly IWebHelper _webHelper;
         private readonly HttpContextBase _httpContext;
-        private readonly IMobileDeviceHelper _mobileDeviceHelper;
 		private readonly ISettingService _settingService;
 
         private readonly OrderSettings _orderSettings;
@@ -104,7 +103,6 @@ namespace SmartStore.Web.Controllers
             this._orderService = orderService;
             this._webHelper = webHelper;
             this._httpContext = httpContext;
-            this._mobileDeviceHelper = mobileDeviceHelper;
 			this._settingService = settingService;
 
             this._orderSettings = orderSettings;

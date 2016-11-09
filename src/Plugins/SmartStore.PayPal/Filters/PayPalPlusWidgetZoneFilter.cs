@@ -46,7 +46,6 @@ namespace SmartStore.PayPal.Filters
 				if (instruct.HasValue())
 				{
 					_widgetProvider.Value.RegisterAction("checkout_completed_top", "CheckoutCompleted", "PayPalPlus", new { area = Plugin.SystemName });
-					_widgetProvider.Value.RegisterAction("mobile_checkout_completed_top", "CheckoutCompleted", "PayPalPlus", new { area = Plugin.SystemName });
 				}
 			}
 		}

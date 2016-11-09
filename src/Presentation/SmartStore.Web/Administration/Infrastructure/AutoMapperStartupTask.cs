@@ -698,12 +698,10 @@ namespace SmartStore.Admin.Infrastructure
 
 			Mapper.CreateMap<ThemeSettings, ThemeListModel>()
 				.ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())
-				.ForMember(dest => dest.DesktopThemes, mo => mo.Ignore())
-				.ForMember(dest => dest.MobileThemes, mo => mo.Ignore())
+				.ForMember(dest => dest.Themes, mo => mo.Ignore())
 				.ForMember(dest => dest.StoreId, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore());
-            Mapper.CreateMap<ThemeListModel, ThemeSettings>()
-                .ForMember(dest => dest.EmulateMobileDevice, mo => mo.Ignore());
+            Mapper.CreateMap<ThemeListModel, ThemeSettings>();
         }
         
         public int Order

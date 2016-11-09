@@ -290,9 +290,6 @@
     <Content Include="Views\PayPalPlus\PaymentWall.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PayPalPlus\PaymentWall.Mobile.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Views\PayPalPlus\PaymentWallScripting.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

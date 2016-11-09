@@ -32,7 +32,6 @@ namespace SmartStore.Core.Themes
 
 			_manifest.ThemeTitle = root.GetAttribute("title").NullEmpty() ?? _manifest.ThemeName;
             _manifest.SupportRtl = root.GetAttribute("supportRTL").ToBool();
-            _manifest.MobileTheme = root.GetAttribute("mobileTheme").ToBool();
             _manifest.PreviewImageUrl = root.GetAttribute("previewImageUrl").NullEmpty() ?? "~/Themes/{0}/preview.png".FormatCurrent(_manifest.ThemeName);
             _manifest.PreviewText = root.GetAttribute("previewText").ToSafe();
             _manifest.Author = root.GetAttribute("author").ToSafe();

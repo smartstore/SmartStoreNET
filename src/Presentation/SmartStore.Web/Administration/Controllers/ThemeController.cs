@@ -95,8 +95,7 @@ namespace SmartStore.Admin.Controllers
             model.AvailableBundleOptimizationValues.FirstOrDefault(x => int.Parse(x.Value) == model.BundleOptimizationEnabled).Selected = true;
 
             // add theme configs
-            model.DesktopThemes.AddRange(GetThemes(false, themeSettings));
-            model.MobileThemes.AddRange(GetThemes(true, themeSettings));
+            model.Themes.AddRange(GetThemes(themeSettings));
 
 			model.StoreId = selectedStoreId;
 			model.AvailableStores = _storeService.GetAllStores().ToSelectListItems();
@@ -104,10 +103,9 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        private IList<ThemeManifestModel> GetThemes(bool mobile, ThemeSettings themeSettings, bool includeHidden = true)
+        private IList<ThemeManifestModel> GetThemes(ThemeSettings themeSettings, bool includeHidden = true)
         {
 			var themes = from m in _themeRegistry.GetThemeManifests(includeHidden)
-                                where m.MobileTheme == mobile
                                 select PrepareThemeManifestModel(m, themeSettings);
 
 			var sortedThemes = themes.ToArray().SortTopological(StringComparer.OrdinalIgnoreCase).Cast<ThemeManifestModel>();
@@ -126,10 +124,9 @@ namespace SmartStore.Admin.Controllers
                     Author = manifest.Author,
 					Url = manifest.Url,
                     Version = manifest.Version,
-                    IsMobileTheme = manifest.MobileTheme,
                     SupportsRtl = manifest.SupportRtl,
                     PreviewImageUrl = manifest.PreviewImageUrl.HasValue() ? manifest.PreviewImageUrl : "{0}/{1}/preview.png".FormatInvariant(manifest.Location, manifest.ThemeName),
-                    IsActive = manifest.MobileTheme ? themeSettings.DefaultMobileTheme == manifest.ThemeName : themeSettings.DefaultDesktopTheme == manifest.ThemeName,
+                    IsActive = themeSettings.DefaultTheme == manifest.ThemeName,
 					State = manifest.State
                 };
 
@@ -149,22 +146,13 @@ namespace SmartStore.Admin.Controllers
 
 			var themeSettings = _settingService.LoadSetting<ThemeSettings>(model.StoreId);
 
-            bool showRestartNote = model.MobileDevicesSupported != themeSettings.MobileDevicesSupported;
-
-            bool mobileThemeSwitched = false;
-            bool themeSwitched = themeSettings.DefaultDesktopTheme.IsCaseInsensitiveEqual(model.DefaultDesktopTheme);
-            if (!themeSwitched)
-            {
-                themeSwitched = themeSettings.DefaultMobileTheme.IsCaseInsensitiveEqual(model.DefaultMobileTheme);
-                mobileThemeSwitched = themeSwitched;
-            }
+            bool themeSwitched = themeSettings.DefaultTheme.IsCaseInsensitiveEqual(model.DefaultTheme);
 
             if (themeSwitched)
             {
                 _services.EventPublisher.Publish<ThemeSwitchedEvent>(new ThemeSwitchedEvent { 
-                    IsMobile = mobileThemeSwitched,
-                    OldTheme = mobileThemeSwitched ? themeSettings.DefaultMobileTheme : themeSettings.DefaultDesktopTheme,
-                    NewTheme = mobileThemeSwitched ? model.DefaultMobileTheme : model.DefaultDesktopTheme
+                    OldTheme = themeSettings.DefaultTheme,
+                    NewTheme = model.DefaultTheme
                 });
             }
 
@@ -175,11 +163,6 @@ namespace SmartStore.Admin.Controllers
 			_services.CustomerActivity.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
 
 			NotifySuccess(T("Admin.Configuration.Updated"));
-
-            if (showRestartNote)
-            {
-				NotifyInfo(T("Admin.Common.RestartAppRequest"));
-            }
 
 			return RedirectToAction("List", new { storeId = model.StoreId });
         }
@@ -475,10 +458,10 @@ namespace SmartStore.Admin.Controllers
 
 			if (theme.IsEmpty())
 			{
-				theme = _settingService.LoadSetting<ThemeSettings>(storeId.Value).DefaultDesktopTheme;
+				theme = _settingService.LoadSetting<ThemeSettings>(storeId.Value).DefaultTheme;
 			}
 
-			if (!_themeRegistry.ThemeManifestExists(theme) || _themeRegistry.GetThemeManifest(theme).MobileTheme)
+			if (!_themeRegistry.ThemeManifestExists(theme))
 				return HttpNotFound();
 
 			using (HttpContext.PreviewModeCookie())
@@ -503,7 +486,6 @@ namespace SmartStore.Admin.Controllers
 
 			var currentTheme = _themeContext.CurrentTheme;
 			ViewBag.Themes = (from m in _themeRegistry.GetThemeManifests(false)
-						 where !m.MobileTheme
 						 select new SelectListItem
 						 {
 							 Value = m.ThemeName,
@@ -520,7 +502,7 @@ namespace SmartStore.Admin.Controllers
 						 })).ToList();
 
 			var themeSettings = _settingService.LoadSetting<ThemeSettings>(currentStore.Id);
-			ViewBag.DisableApply = themeSettings.DefaultDesktopTheme.IsCaseInsensitiveEqual(currentTheme.ThemeName);
+			ViewBag.DisableApply = themeSettings.DefaultTheme.IsCaseInsensitiveEqual(currentTheme.ThemeName);
 			var cookie = Request.Cookies["sm:PreviewToolOpen"];
 			ViewBag.ToolOpen = cookie != null ? cookie.Value.ToBool() : false;
 
@@ -564,15 +546,14 @@ namespace SmartStore.Admin.Controllers
 			// Applies the current previewed theme and exits the preview mode
 
 			var themeSettings = _settingService.LoadSetting<ThemeSettings>(storeId);
-			var oldTheme = themeSettings.DefaultDesktopTheme;
-			themeSettings.DefaultDesktopTheme = theme;
+			var oldTheme = themeSettings.DefaultTheme;
+			themeSettings.DefaultTheme = theme;
 			var themeSwitched = !oldTheme.IsCaseInsensitiveEqual(theme);
 
 			if (themeSwitched)
 			{
 				_services.EventPublisher.Publish<ThemeSwitchedEvent>(new ThemeSwitchedEvent
 				{
-					IsMobile = false,
 					OldTheme = oldTheme,
 					NewTheme = theme
 				});

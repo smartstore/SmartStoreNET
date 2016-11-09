@@ -192,12 +192,6 @@
     <Content Include="Views\AmazonPayShoppingCart\ShoppingCart.Mobile.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\AmazonPayCheckout\ShippingAddress.Mobile.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Views\AmazonPayCheckout\PaymentMethod.Mobile.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Views\AmazonPayShoppingCart\OrderReviewData.Mobile.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

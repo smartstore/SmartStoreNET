@@ -310,7 +310,6 @@
     <Compile Include="UI\Components\Menu\MenuExtensions.cs" />
     <Compile Include="UI\Components\Menu\NavigationModel.cs" />
     <Compile Include="UI\Components\Menu\NodePathState.cs" />
-    <Compile Include="UI\Components\Pager\MobilePagerRenderer.cs" />
     <Compile Include="UI\Components\Window\WindowRenderer.cs" />
     <Compile Include="UI\Components\Window\WindowBuilder.cs" />
     <Compile Include="UI\Components\Window\Window.cs" />

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SmartStore.Core.Configuration;
 
 namespace SmartStore.Core.Domain.Themes
@@ -11,10 +7,8 @@ namespace SmartStore.Core.Domain.Themes
     {
 		public ThemeSettings()
 		{
-			DefaultDesktopTheme = "Alpha";
-			DefaultMobileTheme = "Mobile";
+			DefaultTheme = "Alpha";
 			AllowCustomerToSelectTheme = true;
-			MobileDevicesSupported = true;
 		}
 
         /// <summary>
@@ -31,7 +25,7 @@ namespace SmartStore.Core.Domain.Themes
         /// <summary>
         /// Gets or sets a default store theme for desktops
         /// </summary>
-        public string DefaultDesktopTheme { get; set; }
+        public string DefaultTheme { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether customers are allowed to select a theme
@@ -46,21 +40,6 @@ namespace SmartStore.Core.Domain.Themes
 		/// which may be undesirable when, for example, multiple users share a guest account.
 		/// </remarks>
 		public bool SaveThemeChoiceInCookie { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether mobile devices supported
-        /// </summary>
-        public bool MobileDevicesSupported { get; set; }
-
-        /// <summary>
-        /// Gets or sets a default store theme used by mobile devices (if enabled)
-        /// </summary>
-        public string DefaultMobileTheme { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether all requests will be handled as mobile devices (used for testing)
-        /// </summary>
-        public bool EmulateMobileDevice { get; set; }
 
     }
 }

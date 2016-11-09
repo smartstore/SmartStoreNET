@@ -112,9 +112,7 @@ namespace SmartStore.Web.Framework.Theming
 			{
 				if (!_isMobileDevice.HasValue)
 				{
-					_isMobileDevice = _mobileDeviceHelper.MobileDevicesSupported()
-						 && _mobileDeviceHelper.IsMobileDevice()
-						 && !_mobileDeviceHelper.CustomerDontUseMobileVersion(); ;
+					_isMobileDevice = _mobileDeviceHelper.IsMobileDevice();
 				}
 
 				return _isMobileDevice.Value;
@@ -289,7 +287,7 @@ namespace SmartStore.Web.Framework.Theming
             get
             {
                 EnsureThemeContextInitialized();
-                return _themeContext.WorkingDesktopTheme;
+                return _themeContext.WorkingThemeName;
             }
         }
 

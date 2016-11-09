@@ -695,7 +695,29 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityUpdated(productCategory);
         }
 
-		public virtual string GetCategoryPath(Product product, int? languageId, Func<int, string> pathLookup, Action<int, string> addPathToCache, Func<int, Category> categoryLookup,
+		public virtual ICollection<Category> GetCategoryTrail(Category category)
+		{
+			Guard.NotNull(category, nameof(category));
+
+			var trail = new List<Category>(10);
+
+			do
+			{
+				trail.Add(category);
+				category = GetCategoryById(category.ParentCategoryId);
+			}
+			while (category != null && !category.Deleted && category.Published);
+
+			trail.Reverse();
+			return trail;
+		}
+
+		public virtual string GetCategoryPath(
+			Product product, 
+			int? languageId, 
+			Func<int, string> pathLookup,
+			Action<int, string> addPathToCache, 
+			Func<int, Category> categoryLookup,
 			ProductCategory prodCategory = null)
 		{
 			if (product == null)

@@ -1076,24 +1076,6 @@ namespace SmartStore.Web.Controllers
 			JsonRequestBehavior.AllowGet);
 		}
 
-        // TODO: NewAlpha delete 
-		public ActionResult FlyoutCompare()
-		{
-			var model = new CompareProductsModel
-			{
-				IncludeShortDescriptionInCompareProducts = _catalogSettings.IncludeShortDescriptionInCompareProducts,
-				IncludeFullDescriptionInCompareProducts = _catalogSettings.IncludeFullDescriptionInCompareProducts,
-			};
-
-			var products = _compareProductsService.GetComparedProducts();
-
-			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, isCompareList: true)
-				.ToList()
-				.ForEach(model.Products.Add);
-
-			return PartialView(model);
-		}
-
 		#endregion
 
 		#region Searching

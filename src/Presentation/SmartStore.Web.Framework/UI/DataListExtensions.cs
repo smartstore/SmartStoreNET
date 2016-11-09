@@ -12,25 +12,15 @@ namespace SmartStore.Web.Framework.UI
     public static class DataListExtensions
     {
         public static IHtmlString DataList<T>(this HtmlHelper helper, IEnumerable<T> items, int columns,
-            Func<T, HelperResult> template, int gridColumns = 24)
+            Func<T, HelperResult> template, int gridColumns = 12)
             where T : class
         {
             if (items == null)
                 return new HtmlString("");
-
-            //TODO NewAlpha: delete the following lines, set default for gridColumns to 12 and write vars spanClassPrefix and rowClass back into code
-            //BEGIN NewAlpha
-            var spanClassPrefix = "span";
-            var rowClass = "row-fluid";
-            var themeName = EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName;
-            if(themeName.Equals("NewAlpha"))
-            {
-                gridColumns = 12;
-                spanClassPrefix = "col-md-";
-                rowClass = "row";
-            }
-            //END NewAlpha
-
+            
+            var spanClassPrefix = "col-md-";
+            var rowClass = "row";
+            
             Guard.Against<ArgumentOutOfRangeException>(gridColumns % columns != 0, "Wrong column count. Ensure that gridColumns is divisible by columns.");
 
             var sb = new StringBuilder();

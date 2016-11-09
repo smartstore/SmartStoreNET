@@ -229,14 +229,7 @@ namespace SmartStore.Web.Framework.UI
             item.HtmlAttributes.AppendCssClass("nav-item");
             if (item.Selected)
 			{
-                //TODO NewAlpha: delete the following lines, write vars back into code
-                //BEGIN NewAlpha
-                var themeName = EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName;
-                if (!themeName.Equals("NewAlpha"))
-                { 
-                    item.HtmlAttributes.AppendCssClass("active");
-                }
-                //END NewAlpha
+                item.HtmlAttributes.AppendCssClass("active");   
             }
             else
 			{

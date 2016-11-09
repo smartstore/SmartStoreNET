@@ -2173,23 +2173,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        // TODO: NewAlpha delete 
-        //[ChildActionOnly]
-        public ActionResult FlyoutShoppingCart()
-        {
-            if (!_shoppingCartSettings.MiniShoppingCartEnabled)
-                return Content("");
-
-            if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart))
-                return Content("");
-
-            var model = PrepareMiniShoppingCartModel();
-
-			_httpContext.Session.SafeSet(CheckoutState.CheckoutStateSessionKey, new CheckoutState());
-
-            return PartialView(model);
-        }
-
         public ActionResult OffCanvasCart()
         {
             var model = new OffCanvasCartModel();
@@ -2752,43 +2735,6 @@ namespace SmartStore.Web.Controllers
             ModelState.AddModelError("", _localizationService.GetResource("Common.Error.Sendmail"));
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnEmailWishlistToFriendPage;
             return View(model);
-        }
-
-        // TODO: NewAlpha delete 
-        public ActionResult FlyoutWishlist()
-        {
-            Customer customer = _workContext.CurrentCustomer;
-
-            var cart = customer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
-			var model = new WishlistModel();
-
-            PrepareWishlistModel(model, cart, true);
-            
-            // TODO: MiniWishlistModel analog zu MiniCart implementieren
-            model.Items = model.Items.Take(_shoppingCartSettings.MiniShoppingCartProductNumber).ToList();
-            
-            // reformat AttributeInfo: this is bad! Put this in PrepareMiniWishlistModel later.
-            model.Items.Each(x =>
-            {
-                var sci = cart.Where(c => c.Item.Id == x.Id).FirstOrDefault();
-                if (sci != null)
-                {
-                    x.AttributeInfo = _productAttributeFormatter.FormatAttributes(
-                        sci.Item.Product,
-                        sci.Item.AttributesXml,
-                        null,
-                        htmlEncode: false,
-                        serapator: ", ",
-                        renderPrices: false,
-                        renderGiftCardAttributes: false,
-                        allowHyperlinks: false);
-                }
-            });
-
-            model.IgnoredProductsCount = Math.Max(0, cart.Count - _shoppingCartSettings.MiniShoppingCartProductNumber);
-            model.ThumbSize = _mediaSettings.MiniCartThumbPictureSize;
-
-            return PartialView(model);
         }
 
         #endregion

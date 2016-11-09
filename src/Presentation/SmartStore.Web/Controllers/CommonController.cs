@@ -671,39 +671,6 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        // TODO NewAlpha: Delete action
-        //info block
-        [ChildActionOnly]
-        public ActionResult InfoBlock()
-        {
-			var store = _services.StoreContext.CurrentStore;
-			var allTopics = _topicService.GetAllTopics(store.Id);
-
-			var model = new InfoBlockModel
-            {
-                RecentlyAddedProductsEnabled = _catalogSettings.RecentlyAddedProductsEnabled,
-                RecentlyViewedProductsEnabled = _catalogSettings.RecentlyViewedProductsEnabled,
-                CompareProductsEnabled = _catalogSettings.CompareProductsEnabled,
-                BlogEnabled = _blogSettings.Enabled,
-                SitemapEnabled = _commonSettings.SitemapEnabled,
-                ForumEnabled = _forumSettings.ForumsEnabled,
-                AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
-            };
-
-			model.TopicPageUrls = allTopics
-				.Where(x => !x.RenderAsWidget)
-				.GroupBy(x => x.SystemName)
-				.ToDictionary(x => x.Key.EmptyNull().ToLower(), x =>
-				{
-					if (x.Key.IsCaseInsensitiveEqual("contactus"))
-						return Url.RouteUrl("ContactUs");
-
-					return Url.RouteUrl("Topic", new { SystemName = x.Key });
-				});
-
-            return PartialView(model);
-        }
-
         [ChildActionOnly]
         public ActionResult ServiceMenu()
         {

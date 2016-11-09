@@ -452,23 +452,9 @@ namespace SmartStore.Web.Framework
 			string inputHtml = "";
 			var htmlAttributes = new RouteValueDictionary();
 			var dataTypeName = ModelMetadata.FromLambdaExpression(expression, html.ViewData).DataTypeName.EmptyNull();
-
-
-            //TODO NewAlpha: delete the following lines, write vars back into code
-            //BEGIN NewAlpha
-            var themeName = EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName;
-            var groupClass = "control-group";
-            var labelClass = "control-label";
-            var controlsClass = "controls";
-
-            if (themeName.Equals("NewAlpha"))
-            {
-                groupClass = "form-group row";
-                labelClass = "col-sm-3";
-                controlsClass = "col-sm-9";
-            }
-            //END NewAlpha
-            
+            var groupClass = "form-group row";
+            var labelClass = "col-sm-3";
+            var controlsClass = "col-sm-9";
             var sb = new StringBuilder("<div class='{0}'>".FormatWith(groupClass));
 
             if (editorType != InputEditorType.Checkbox)
@@ -494,15 +480,9 @@ namespace SmartStore.Web.Framework
 					htmlAttributes.Add("type", "tel");
 					break;
 			}
-
-            //TODO NewAlpha: Delete if clause
-            //BEGIN NewAlpha
-            if (themeName.Equals("NewAlpha"))
-            {
-                htmlAttributes.Add("class", "form-control");
-            }
-            //END NewAlpha
-
+            
+            htmlAttributes.Add("class", "form-control");
+            
             switch (editorType)
             {
                 case InputEditorType.Checkbox:

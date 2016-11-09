@@ -1,0 +1,32 @@
+﻿@{
+    Layout = "~/Views/Shared/_Root.cshtml";
+    Html.AddBodyCssClass("lyt-cols-2");
+    string[] spanWidths = GetThemeVariable<string>("GridSettings", "5/14/5").Split('/');
+}
+
+@section teaser {
+    @RenderSection("teaser", required: false)
+}
+<div id="content-left" class="span@(spanWidths[0])">
+    @if (IsSectionDefined("left"))
+    {
+        @RenderSection("left")
+    }
+    else
+    {
+        @Html.Widget("left_side_column_before")
+
+        @Html.Action("CategoryNavigation", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" })
+        @Html.Widget("left_side_column_after_category_navigation")
+
+        @Html.Action("ManufacturerNavigation", "Catalog", new { currentManufacturerId = this.CurrentManufacturerId, area = "" })
+        @Html.Widget("left_side_column_after_manufacturer_navigation")        
+
+        @Html.Widget("left_side_column_after")
+    }
+</div>
+<div id="content-center" class="span@(Convert.ToInt16(spanWidths[1]) + Convert.ToInt16(spanWidths[2])) omega">
+    @Html.Widget("main_column_before")
+    @RenderBody()
+    @Html.Widget("main_column_after")
+</div>

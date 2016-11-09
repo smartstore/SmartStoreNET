@@ -5,12 +5,12 @@
 @model ManufacturerNavigationModel
 @if (Model.Manufacturers.Count > 0)
 {
-    <div class="block block-bordered block-manufacturer-navigation">
-        <div class="block-title">
+    <div class="block block-bordered block-manufacturer-navigation card">
+        <div class="card-header">
             @T("Manufacturers")
         </div>
-        <div class="block-body listbox">
-            <ul>
+        <div class="block-body listbox card-block">
+            <ul class="list-unstyled">
                 @foreach (var manufacturer in Model.Manufacturers)
                 {
                     <li class="@(manufacturer.IsActive ? "active" : "inactive") @(Model.DisplayImages ? "manufacturer-pic" : "")">

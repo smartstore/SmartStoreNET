@@ -11,7 +11,7 @@
             Selected = x.Name.Equals(Model.CurrentStoreTheme.Name, StringComparison.InvariantCultureIgnoreCase)
         });
     
-        @Html.DropDownList("themeName", themes, new { @class = "store-theme-list noskin" })
+        @Html.DropDownList("themeName", themes, new { @class = "store-theme-list form-control noskin" })
     }
     <script type="text/javascript">
         $(document).ready(function () {

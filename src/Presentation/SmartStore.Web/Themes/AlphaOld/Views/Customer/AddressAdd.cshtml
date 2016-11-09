@@ -1,0 +1,41 @@
+﻿@model CustomerAddressEditModel
+@using SmartStore.Web.Models.Customer;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title
+    Html.AddTitleParts(T("PageTitle.Account").Text);
+}
+@section left
+{
+    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
+}
+@using (Html.BeginForm())
+{
+    <div class="page account-page address-edit-page">
+        <div class="page-title">
+            <h1>@T("Account.MyAccount") - @T("Account.CustomerAddresses.AddNew")</h1>
+        </div>
+        <div class="clear">
+        </div>
+        <div class="page-body">
+            @{
+                var dataDictAddress = new ViewDataDictionary();
+                //Merge ModelState (required for validation)
+                dataDictAddress.ModelState.Merge(ViewData.ModelState);
+                dataDictAddress.TemplateInfo.HtmlFieldPrefix = "Address";
+                @Html.Partial("_CreateOrUpdateAddress", Model.Address, dataDictAddress)              
+            }
+            <div class="clear">
+            </div>
+
+            <div class="buttons form-horizontal">
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" class="btn save-address-button">@T("Common.Save")</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

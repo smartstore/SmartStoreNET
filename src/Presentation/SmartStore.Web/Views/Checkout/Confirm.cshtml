@@ -46,10 +46,12 @@
                         });
                     });
                 </script>
-                <label class="checkbox">
-                    <input id="termsofservice" type="checkbox" name="termsofservice" />
-                    @Html.Raw(terms)
-                </label>
+                <div class="checkbox">
+                    <label>
+                        <input id="termsofservice" type="checkbox" name="termsofservice" />
+                        @Html.Raw(terms)
+                    </label>
+                </div>
 
                 <!-- Terms of service -->
                 <div id="terms-of-service-modal" class="modal modal-flex hide fade" tabindex="-1" style="width: 650px">
@@ -185,7 +187,7 @@
                         });
                     </script>
                     
-                    <a class="btn pull-left" href="@Url.Action("PaymentMethod")">
+                    <a class="btn btn-secondary pull-left" href="@Url.Action("PaymentMethod")">
                         <i class="fa fa-caret-left"></i>&nbsp;
                         @T("Common.Back")
                     </a>

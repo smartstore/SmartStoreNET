@@ -4,12 +4,12 @@
     int attrMaxLength = Model.ShowProductImages ? 50 : 70;
 }
 <div class="shopbar-flyout-inner">
-    <div class="no-items muted @(Model.TotalProducts > 0 ? "hide" : "")">
+    <div class="no-items text-muted@(Model.TotalProducts > 0 ? " hidden-xs-up" : "")">
         @T("ShoppingCart.Mini.NoItems")
     </div>
     @if (Model.TotalProducts > 0)
     {
-        <ul class="items unstyled">
+        <ul class="items list-unstyled">
             @for (int i = 0, length = Model.Items.Count; i < length; i++)
             {
                 var item = Model.Items[i];
@@ -47,7 +47,7 @@
                         @if (item.AttributeInfo.HasValue())
                         {
                             <br />
-                            <span class="attributes muted" title="@item.AttributeInfo">
+                            <span class="attributes text-muted" title="@item.AttributeInfo">
                                 @Html.Raw(item.AttributeInfo.Truncate(attrMaxLength, "..."))
                             </span>
                         }
@@ -103,7 +103,7 @@
             <div class="pull-left">
                 @T("ShoppingCart.Totals.SubTotal"):
             </div>
-            <div class="price text-success pull-right">
+            <div class="price pull-right">
                 @Model.SubTotal
             </div>
         </div>
@@ -111,7 +111,7 @@
         <div class="buttons clearfix">
             @if (Model.DisplayShoppingCartButton)
             {
-                <a class="btn btn-primary btn-small pull-left" href="@Url.RouteUrl("ShoppingCart")">
+                <a class="btn btn-primary btn-sm pull-left" href="@Url.RouteUrl("ShoppingCart")">
                     @T("ShoppingCart.Mini.ViewCart")
                     <i class="fa fa-shopping-cart" style="display: none"></i>
                 </a>    
@@ -127,7 +127,7 @@
                 {
                     checkoutUrl = Url.RouteUrl("Checkout");
                 }
-                <a class="btn btn-warning btn-small pull-right" href="@checkoutUrl">
+                <a class="btn btn-warning btn-sm pull-right" href="@checkoutUrl">
                     @T("Checkout.Button")&nbsp;
                     <i class="fa fa-caret-right"></i>
                 </a>

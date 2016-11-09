@@ -6,16 +6,11 @@
     //title
     Html.AddTitleParts(Model.ProductName);
     Html.AddTitleParts(T("PageTitle.ProductReviews").Text);
-    
-    if (Model.Items.Count == 0)
-    {
-        Html.AddCustomHeadParts("<meta name=\"robots\" content=\"noindex, follow\">");
-    }
 }
 <div class="page product-reviews-page">
-    <h4 class="muted">@T("Reviews.ProductReviewsFor")</h4>
+    <h4 class="text-muted">@T("Reviews.ProductReviewsFor")</h4>
     <div class="page-title">
-        <h1>
+        <h1 class="text-xs-left">
 			<a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" style="text-decoration: none;">@Model.ProductName</a>
 		</h1>
     </div>
@@ -43,10 +38,11 @@
 						{
 							<div class="message-error">@Html.ValidationSummary(true)</div>
 						}
-                        <div class="forms-box">
-                            <div class="inputs">
-                                @Html.LabelFor(model => model.AddProductReview.Rating)
-                                <div class="input-box review-rating star-rating star-rating-large">
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AddProductReview.Rating)
+                            <div class="col-sm-12 text-xs-left star-rating-parent">
+                                <div class="review-rating star-rating star-rating-large">
                                     @{
                                         var srName = Html.FieldNameFor(x => x.AddProductReview.Rating);
                                     }
@@ -57,30 +53,27 @@
                                     <input type="radio" id="@(srName)1" name="@srName" value="1" checked="@(1 == Model.AddProductReview.Rating)" /><label for="@(srName)1" class="tooltip-toggle" title="@T("Reviews.Fields.Rating.Bad")"></label>
                                 </div>
                             </div>
-                            <div class="inputs">
-                                @Html.LabelFor(model => model.AddProductReview.Title)
-                                <div class="input-box">
-                                    @Html.TextBoxFor(model => model.AddProductReview.Title, Model.AddProductReview.CanCurrentCustomerLeaveReview ? (object)(new { @class = "review-title" }) : (object)(new { @class = "review-title", disabled = "disabled" }))
-                                </div>
-                                @Html.ValidationMessageFor(model => model.AddProductReview.Title)
-                            </div>
-                            <div class="inputs">
-                                @Html.LabelFor(model => model.AddProductReview.ReviewText)
-                                <div class="input-box">
-                                    @Html.TextAreaFor(model => model.AddProductReview.ReviewText, Model.AddProductReview.CanCurrentCustomerLeaveReview ? (object)(new { @class = "review-text" }) : (object)(new { @class = "review-text", disabled = "disabled" }))
-                                </div>
-                                @Html.ValidationMessageFor(model => model.AddProductReview.ReviewText)
-                            </div>
-                            @if (Model.AddProductReview.DisplayCaptcha)
-                            {
-                                <div class="captcha-box clearfix">
-                                    @Html.Raw(Html.GenerateCaptcha())
-                                </div>
-                            }
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AddProductReview.Title)
+                            @Html.TextBoxFor(model => model.AddProductReview.Title, Model.AddProductReview.CanCurrentCustomerLeaveReview ? (object)(new { @class = "review-title form-control" }) : (object)(new { @class = "review-title form-control", disabled = "disabled" }))
+                            @Html.ValidationMessageFor(model => model.AddProductReview.Title, null, new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.AddProductReview.ReviewText)
+                            @Html.TextAreaFor(model => model.AddProductReview.ReviewText, Model.AddProductReview.CanCurrentCustomerLeaveReview ? (object)(new { @class = "review-text form-control" }) : (object)(new { @class = "review-text form-control", disabled = "disabled" }))
+                            @Html.ValidationMessageFor(model => model.AddProductReview.ReviewText, null, new { @class = "text-danger" })
                         </div>
 
-                        <div class="buttons clearfix">
-                            <button type="submit" name="add-review" class="btn btn-primary write-product-review-button" value="@T("Reviews.SubmitButton")">
+                        @if (Model.AddProductReview.DisplayCaptcha)
+                        {
+                            <div class="captcha-box">
+                                @Html.Raw(Html.GenerateCaptcha())
+                            </div>
+                        }
+
+                        <div class="form-group">
+                            <button type="submit" name="add-review" class="btn btn-primary write-product-review-button">
 								<i class="fa fa-check"></i>
 								@T("Reviews.SubmitButton")
 							</button>
@@ -89,15 +82,15 @@
                 }
             </fieldset>
         }
+
         @if (Model.Items.Count > 0)
         {
-
-            <div class="block">
+            <div class="block m-t-3">
                 <div class="block-title">
-                    <h3>@T("Reviews.ExistingReviews")</h3>
+                    <h4>@T("Reviews.ExistingReviews")</h4>
                 </div>
+                <hr />
                 <div class="block-body">
-
                     <div class="product-review-list">
                         @foreach (var review in Model.Items)
                         {
@@ -109,10 +102,10 @@
                                         <div style="width: @(ratingPercent)%"></div>
                                     </div>
                                     <strong>@review.Title</strong>,
-                                    <span class="muted"><small>@review.WrittenOnStr</small></span>
+                                    <span class="text-muted"><small>@review.WrittenOnStr</small></span>
                                 </div>
 
-                                <div class="review-author muted">
+                                <div class="review-author text-muted">
                                     <strong>@T("Reviews.From"):</strong>
                                     @if (review.AllowViewingProfiles)
                                     {

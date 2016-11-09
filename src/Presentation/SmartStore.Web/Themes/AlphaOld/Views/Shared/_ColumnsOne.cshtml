@@ -1,0 +1,14 @@
+﻿@{
+    Layout = "~/Views/Shared/_Root.cshtml";
+    Html.AddBodyCssClass("lyt-cols-1");
+}
+
+@section teaser {
+    @RenderSection("teaser", required: false)
+}
+
+<div id="content-center" class="span24 alpha omega">
+    @Html.Widget("main_column_before")
+    @RenderBody()
+    @Html.Widget("main_column_after")
+</div>

@@ -2,12 +2,12 @@
 @using SmartStore.Web.Models.Catalog;
 
 <div class="shopbar-flyout-inner">
-    <div class="no-items muted @(Model.Products.Count > 0 ? "hide" : "")">
+    <div class="no-items text-muted @(Model.Products.Count > 0 ? "hidden-xs-up" : "")">
         @T("Products.Compare.ListIsEmpty")
     </div>
     @if (Model.Products.Count > 0)
     {
-        <ul class="items unstyled">
+        <ul class="items list-unstyled">
             @for (int i = 0, length = Model.Products.Count; i < length; i++)
             {
                 var item = Model.Products[i];
@@ -47,11 +47,11 @@
         
         <div class="buttons clearfix">
 
-            <a class="btn btn-primary btn-small pull-left" href="@Url.RouteUrl("CompareProducts")">
+            <a class="btn btn-primary btn-sm pull-left" href="@Url.RouteUrl("CompareProducts")">
                 @T("Products.Compare.List")
             </a>
             
-            <a class="btn btn-danger btn-small pull-right" href="@Url.Action("ClearCompareList")" rel="nofollow">
+            <a class="btn btn-danger btn-sm pull-right" href="@Url.Action("ClearCompareList")" rel="nofollow">
                 @T("Products.Compare.Clear")
             </a>   
 

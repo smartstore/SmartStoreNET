@@ -18,58 +18,29 @@
 	var productDetailLink = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
 }
 
-@if (showQuicklinks)
-{
-    <div class="quicklinks">        
-        @if (!Model.ProductPrice.DisableWishListButton)
-		{
-			<a class="ajax-cart-link"
-			   data-href='@Url.Action("AddProduct", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "shoppingCartTypeId", (int)ShoppingCartType.Wishlist } })'
-			   href="#"
-			   rel="nofollow"
-			   data-form-selector="#product-details-form"
-			   data-type="wishlist"
-			   data-action="add">
-				<i class="fa fa-heart"></i>
-				@T("Categories.Wishlist")
-			</a>
-		}
-        @if (Model.CompareEnabled)
-		{
-			<a class="ajax-cart-link pull-right"
-			   data-href="@Url.Action("AddProductToCompare", "Catalog", new RouteValueDictionary { { "id", Model.Id } })"
-			   href="#"
-			   rel="nofollow"
-			   data-type="compare"
-			   data-action="add">
-				<i class="fa fa-file-text"></i>
-				@T("Categories.Compare")
-			</a>
-		}
-    </div>
-}
+<div class="product-box-big">
 
-<figure class="picture" data-equalized-part="picture" data-equalized-valign="true">
-	@if (Model.DefaultPictureModel.ImageUrl.HasValue())
+    <figure class="picture" data-equalized-part="picture" data-equalized-valign="true">
+        @if (Model.DefaultPictureModel.ImageUrl.HasValue())
 	{
-		<a href="@productDetailLink" title="@Model.DefaultPictureModel.Title">
-			<img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl" title="@Model.DefaultPictureModel.Title" />
-		</a>
+            <a href="@productDetailLink" title="@Model.DefaultPictureModel.Title">
+                <img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl" title="@Model.DefaultPictureModel.Title" />
+            </a>
 	}
-    @if (Model.ColorAttributes.Any())
+        @if (Model.ColorAttributes.Any())
     {
-        <div class="colors">
-            @foreach (var clr in Model.ColorAttributes)
+            <div class="colors">
+                @foreach (var clr in Model.ColorAttributes)
             {
-                <span style="background-color: @clr.Color" title="@clr.FriendlyName"></span>
+                    <span style="background-color: @clr.Color" title="@clr.FriendlyName"></span>
             }
-        </div>
+            </div>
     }
-</figure>
+    </figure>
 
-<div class="data">
+    <div class="data">
 
-    @if (Model.ShowReviews)
+        @if (Model.ShowReviews)
 	{
         int ratingPercent = 0;
         if (Model.TotalReviews != 0)
@@ -89,24 +60,24 @@
         </div>
     }
 
-    @{
+        @{
         string name = null, nameTitle = null;
         name = Model.Name.Truncate(50, "...");
         if (Model.Name.Length > name.Length)
         {
             nameTitle = Model.Name;
         }
-    }
-    <h3 class="name" data-equalized-part="name">
-        <a href="@productDetailLink" title="@nameTitle">
-            @if (Model.IsNew)
+        }
+        <h4 class="card-title h6" data-equalized-part="name">
+            <a href="@productDetailLink" title="@nameTitle">
+                @if (Model.IsNew)
             {
-                <span class="label label-isnew">@T("Common.New")</span>
-            } 
-            <span>@name</span>
-        </a>
-    </h3>
-    @{
+                    <span class="label label-isnew">@T("Common.New")</span>
+            }
+                <span>@name</span>
+            </a>
+        </h4>
+        @{
 		string desc = null, descTitle = null;
 		if (Model.ShortDescription.HasValue())
 		{
@@ -116,90 +87,115 @@
 				descTitle = Model.ShortDescription;
 			}
 		}
-    }
-    <p class="description" title="@descTitle" data-equalized-part="description">
-        @Html.Raw(desc)
-    </p>
-    
-    @if (Model.ShowDeliveryTimes)
+        }
+
+        <h6 class="card-subtitle text-muted" title="@descTitle" data-equalized-part="description">
+            @Html.Raw(desc)
+        </h6>
+
+        @if (Model.ShowDeliveryTimes)
 	{
-		<div class="delivery-time@(Model.InvisibleDeliveryTime ? " invisible" : "")" data-equalized-part="delivery-time">
-			@if ((!String.IsNullOrEmpty(Model.DeliveryTimeName) && !String.IsNullOrEmpty(Model.DeliveryTimeHexValue)) && Model.IsShipEnabled)
+            <div class="delivery-time@(Model.InvisibleDeliveryTime ? " invisible" : "")" data-equalized-part="delivery-time">
+                @if ((!String.IsNullOrEmpty(Model.DeliveryTimeName) && !String.IsNullOrEmpty(Model.DeliveryTimeHexValue)) && Model.IsShipEnabled)
 			{
-				<span class="delivery-time-label">@T("Products.DeliveryTime")</span>
+                    <span class="delivery-time-label">@T("Products.DeliveryTime")</span>
 				if (Model.DisplayDeliveryTimeAccordingToStock)
 				{
-					<span class="delivery-time-color" style="background-color:@Model.DeliveryTimeHexValue" title="@Model.DeliveryTimeName"></span>
+                        <span class="delivery-time-color" style="background-color:@Model.DeliveryTimeHexValue" title="@Model.DeliveryTimeName"></span>
 				}
 				else
 				{
-					<span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailablity"></span>
+                        <span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailablity"></span>
 				}
 			}
-		</div>
+            </div>
 	}
 
-    <div class="prices" data-equalized-part="prices">
-        @if (!String.IsNullOrEmpty(Model.ProductPrice.OldPrice))
+        <div class="prices" data-equalized-part="prices">
+            @if (!String.IsNullOrEmpty(Model.ProductPrice.OldPrice))
         {
-            <p class="old-product-price">
-                <span class="price">@Model.ProductPrice.OldPrice</span>
-            </p>
+                <p class="old-product-price">
+                    <span class="price">@Model.ProductPrice.OldPrice</span>
+                </p>
         }
-        <p class="product-price">
-            @if (Model.ProductPrice.ShowDiscountSign && Model.ProductPrice.HasDiscount)
+            <p class="product-price">
+                @if (Model.ProductPrice.ShowDiscountSign && Model.ProductPrice.HasDiscount)
             {
-                <span class="label label-important label-discount-sign">%</span>
+                    <span class="label label-important label-discount-sign">%</span>
             }
-            <span class="price text-success">@Model.ProductPrice.Price</span>
-        </p>
+                <span class="price text-success">@Model.ProductPrice.Price</span>
+            </p>
 
-        @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(Model.BasePriceInfo))
+            @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(Model.BasePriceInfo))
         {
-        <div class="base-price muted">
-            @Model.BasePriceInfo
-        </div>
+                <div class="base-price text-muted">
+                    @Model.BasePriceInfo
+                </div>
         }
 
-        @if (Model.TransportSurcharge.HasValue())
+            @if (Model.TransportSurcharge.HasValue())
         {
-        <div class="transport-charge muted">
-            @Model.TransportSurcharge
-        </div>
+                <div class="transport-charge text-muted">
+                    @Model.TransportSurcharge
+                </div>
         }
-    </div>
+        </div>
 
-    <div class="buttons">
-                
-        @if (!Model.ProductPrice.DisableBuyButton && !Model.HideBuyButtonInLists)
+
+        <div class="product-box-button-bar">
+            <div class="btn-group" role="group" aria-label="First group">
+
+                @if (!Model.ProductPrice.DisableWishListButton)
         {
-            if (!Model.ProductPrice.CallForPrice) { 
+                    <a class="ajax-cart-link btn btn-secondary" title="@T("Categories.Wishlist")" href="#"
+                       data-href='@Url.Action("AddProduct", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "shoppingCartTypeId", (int)ShoppingCartType.Wishlist } })'
+                       rel="nofollow" data-form-selector="#product-details-form" data-type="wishlist" data-action="add">
+                        <i class="fa fa-heart"></i>
+                    </a>
+        }
+
+                @if (!Model.ProductPrice.DisableBuyButton && !Model.HideBuyButtonInLists)
+        {
+            if (!Model.ProductPrice.CallForPrice)
+            {
                 var title = (Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"));
-                <a data-href='@addtocartlink' 
-                    href="#"
-                    class="btn btn-warning ajax-cart-link"
-                    title="@title" 
-                    rel="tooltip nofollow"
-                    data-type="cart"
-                    data-action="add">
-                    <i class="fa fa-lg fa-cart-arrow-down"></i>      
+
+                        <a data-href='@addtocartlink'
+                           href="#"
+                           class="btn btn-secondary ajax-cart-link"
+                           title="@title"
+                           rel="tooltip nofollow"
+                           data-type="cart"
+                           data-action="add">
+                            <i class="fa fa-cart-arrow-down"></i>
+                        </a>
+            }
+            else
+            {
+                        <a class="btn btn-secondary add-to-cart-button" rel="nofollow" title="@T("Products.CallForPrice.GoToForm")"
+                           href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })">
+                            <i class="fa fa-envelope"></i>
+                        </a>
+            }
+        }
+
+                <a href='@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })' class="btn btn-secondary" title="@T("Products.Details")">
+                    <i class="fa fa-info-circle"></i>
                 </a>
-			}
-			else
-			{
-				<a class="btn btn-primary add-to-cart-button" rel="nofollow"
-				   href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })"
-				   title="@T("Products.CallForPrice.GoToForm")">
-					<i class="fa fa-envelope"></i>
-				</a>
-			}
-		}
-        <a href='@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })' class="btn">
-            <i class="fa fa-info-circle"></i>
-            @T("Products.Details")
-        </a>
+
+                @if (Model.CompareEnabled)
+        {
+                    <a class="ajax-cart-link btn btn-secondary" title="@T("Categories.Compare")" href="#"
+                       data-href="@Url.Action("AddProductToCompare", "Catalog", new RouteValueDictionary { { "id", Model.Id } })"
+                       rel="nofollow" data-type="compare" data-action="add">
+                        <i class="fa fa-file-text"></i>
+                    </a>}
+
+            </div>
+        </div>
+
+        @Html.Widget("productbox_add_info")
+
     </div>
 
-    @Html.Widget("productbox_add_info")
-    
 </div>

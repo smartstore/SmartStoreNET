@@ -1,0 +1,31 @@
+﻿@model ProductDetailsModel.ProductBreadcrumbModel
+@using SmartStore.Web.Models.Catalog;
+<ul id="breadcrumb" class="breadcrumb">
+    @Html.Widget("productbreadcrumb_before")
+    <li>
+        <a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")" itemprop="url">
+            <i class="fa fa-home"></i>
+        </a> 
+        <span class="divider">/</span>
+    </li>
+    @for (int i = 0; i < Model.CategoryBreadcrumb.Count; i++)
+    {
+        var menuItem = Model.CategoryBreadcrumb[i];
+        <li>
+            <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+                <a href="@menuItem.GenerateUrl(this.Url)" title="@menuItem.Text" itemprop="url">
+                    <span itemprop="title">@menuItem.Text</span>
+                </a>
+            </span>
+            <span class="divider">/</span>
+        </li>
+    }
+    @*uncomment to enable clickable link
+    <li>
+        <a href="@Url.RouteUrl("Product", new { productId = Model.ProductId, SeName = Model.ProductSeName })">@Model.ProductName</a>
+        @Html.Widget("productbreadcrumb_after")
+    </li>
+    *@
+
+    <li>@Model.ProductName</li>
+</ul>

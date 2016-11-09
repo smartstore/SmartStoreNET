@@ -1,24 +1,28 @@
 ﻿@model ProductDetailsModel
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Core.Domain.Orders;
+@using SmartStore.Core.Infrastructure;
 @using System.Globalization;
 @using System.Text.RegularExpressions;
 
-    @if (Model.AddToCart.CustomerEntersPrice)
-    {
-        <div class="customer-entered-price line">
-            @Html.LabelFor(model => Model.AddToCart.CustomerEnteredPrice, new { @class = "enter-price-label" })
-            @*round price*@
-            @Html.TextBox("CustomerEnteredPrice", Convert.ToInt32(Math.Ceiling(Model.AddToCart.CustomerEnteredPrice)), new { @class = "enter-price-input" })
-            <div class="price-range">
-                @Model.AddToCart.CustomerEnteredPriceRange
-            </div>
+@using SmartStore.Services.Tax;
+@using SmartStore.Services.Catalog;
+
+@if (Model.AddToCart.CustomerEntersPrice)
+{
+    <div class="customer-entered-price line">
+        @Html.LabelFor(model => Model.AddToCart.CustomerEnteredPrice, new { @class = "enter-price-label" })
+
+        @Html.TextBox("CustomerEnteredPrice", Convert.ToInt32(Math.Ceiling(Model.AddToCart.CustomerEnteredPrice)), new { @class = "enter-price-input" })
+        <div class="price-range">
+            @Model.AddToCart.CustomerEnteredPriceRange
         </div>
-    }
+    </div>
+}
 
     @if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
     {
-        <div class="price-details price-block line well" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+        <div class="price-details price-block line card card-block m-t-1" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
             @if(!Model.ProductPrice.CallForPrice) 
             {
                 <div class="clearfix">
@@ -33,21 +37,13 @@
 						
 						<span>@Html.Raw(Model.ProductPrice.NoteWithoutDiscount)</span>
 
-                        <span 
-                        @if (String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount))
-                        {
-                            <text>class="product-price current text-success"</text>
-                        }
-                        else
-                        {
-                            <text>class="line-through"</text>
-                        }
-                        >
+                        <span class="@(String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount) ? "product-price current" : "line-through")">
+
                             <span class="product-price-without-discount" itemprop="price">
-                            @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.Price))
-                            {
-                                @Html.Raw(Model.ProductPrice.Price)
-                            }
+                                @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.Price))
+                                {
+                                    @Html.Raw(Model.ProductPrice.Price)
+                                }
                             </span>
                         </span>
                     </div>
@@ -77,7 +73,7 @@
             }
 
             <!-- base price -->
-            <div class="base-price muted @(!Model.IsBasePriceEnabled ? "hide fade" : "")">
+            <div class="base-price text-muted @(!Model.IsBasePriceEnabled ? "hide fade" : "")">
                 @Model.BasePriceInfo
             </div>
 
@@ -102,7 +98,7 @@
 
             @if(Model.ShowLegalInfo)
             {
-                <div class="muted legal-info">
+                <div class="text-muted legal-info">
                     @Html.Raw(Model.LegalInfo)
                 </div>
             }
@@ -121,7 +117,20 @@
                         }
                         else
                         {
-                            @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style="width:25px" })
+                            @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style = "width:60px" })
+                            
+                            <script type="text/javascript">
+                                $(function () {
+                                    //TODO NewAlpha: implement step in admin product detail
+                                    $(".qty-input").TouchSpin({
+                                        min: @Model.AddToCart.MinOrderAmount,
+                                        max: @Model.AddToCart.MaxOrderAmount,
+                                        step: 1,
+                                        buttondown_class: "btn btn-secondary",
+                                        buttonup_class: "btn btn-secondary"
+                                    });
+                                });
+                            </script>
                         }
 
                         //if display measure unit

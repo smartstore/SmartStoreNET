@@ -1,0 +1,137 @@
+﻿@model ForumPostModel
+@using SmartStore.Services.Customers;
+@using SmartStore.Services.Forums;
+@using SmartStore.Services.Seo;
+@using SmartStore.Web.Models.Boards;
+@Html.Raw(String.Format("<a name=\"{0}\"></a>", @Model.Id))
+
+<div class="block block-bordered forum-post clearfix" id="@Html.Encode(String.Format("post{0}", @Model.Id))">
+    <div class="block-title">
+        @if (@Model.CustomerId > 0)
+        {
+            if (Model.AllowViewingProfiles && !Model.IsCustomerGuest)
+            {
+            @Html.RouteLink(Model.CustomerName, "CustomerProfile", new { id = Model.CustomerId }, new { @class = "username" })
+            }
+            else
+            {                    
+            <span class="username">@Model.CustomerName</span>
+            }
+        }
+        <div class="pull-right">
+
+            @if (Model.IsCurrentCustomerAllowedToEditPost)
+            {                
+                    <i class="fa fa-pencil-square-o"></i>
+                    @Html.ActionLink(@T("Forum.EditPost").Text, "PostEdit", new { id = Model.Id }, new { @class = "edit-post-link-button" })
+            }
+            @if (Model.IsCurrentCustomerAllowedToDeletePost)
+            {
+                    <i class="fa fa-times"></i>
+                    @Html.ActionLink(@T("Forum.DeletePost").Text, "PostDelete", new { id = Model.Id }, new { onClick = String.Format("return confirm('{0}');", T("Common.AreYouSure").Text), @class = "delete-post-link-button" })
+            }
+
+            @if (@Model.CurrentTopicPage > 1)
+            {                
+                @Html.RouteLink(String.Format("#{0}", Model.Id.ToString()), "TopicSlug", "http", string.Empty, Model.Id.ToString(), new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName, page = Model.CurrentTopicPage }, new { @class = "post-link", title = T("Forum.PostLinkTitle") })
+            }
+            else
+            {                
+                @Html.RouteLink(String.Format("#{0}", Model.Id.ToString()), "TopicSlug", "http", string.Empty, @Model.Id.ToString(), new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { @class = "post-link", title = T("Forum.PostLinkTitle") })
+            }
+        </div>
+    </div>
+    <div class="block-body">
+        <div class="post-info pull-left">
+@*        <div class="manage">
+            @if (Model.IsCurrentCustomerAllowedToEditPost)
+            {                
+                <div>
+                    <i class="fa fa-pencil-square-o"></i>
+                    @Html.ActionLink(@T("Forum.EditPost").Text, "PostEdit", new { id = Model.Id }, new { @class = "edit-post-link-button" })
+                </div>
+            }
+            @if (Model.IsCurrentCustomerAllowedToDeletePost)
+            {
+                <div>
+                    <i class="fa fa-times"></i>
+                    @Html.ActionLink(@T("Forum.DeletePost").Text, "PostDelete", new { id = Model.Id }, new { onClick = String.Format("return confirm('{0}');", T("Common.AreYouSure").Text), @class = "delete-post-link-button" })
+                </div>
+            }
+        </div>*@
+        <div class="user-info">
+            @if (!String.IsNullOrEmpty(Model.CustomerAvatarUrl))
+            {
+                <div class="avatar">
+                    <img src="@(Model.CustomerAvatarUrl)" class="avatar-img img-polaroid" alt="Avatar" />
+                </div>
+            }
+            <div class="user-stats muted">
+                @if (Model.IsCustomerForumModerator)
+                {
+                    <div class="status">
+                        @T("Forum.Status"): <span class="stat-value">@T("Forum.Moderator")</span>
+                    </div>
+                }
+                @if (Model.ShowCustomersPostCount)
+                {
+                    <div class="totalposts">
+                        @T("Forum.TotalPosts"): <span class="stat-value">
+                            @Model.ForumPostCount</span>
+                    </div>
+                }
+                @if (Model.ShowCustomersJoinDate && !Model.IsCustomerGuest)
+                {
+                    <div class="joined">
+                        @T("Forum.Joined"): <span class="stat-value">@Model.CustomerJoinDate.ToString("d")</span>
+                    </div>
+                }
+                @if (Model.ShowCustomersLocation && !Model.IsCustomerGuest & !String.IsNullOrEmpty(Model.CustomerLocation))
+                {
+                    <div class="location">
+                        @T("Forum.Location"): <span class="stat-value">@Model.CustomerLocation</span>
+                    </div>
+                }
+                @if (Model.AllowPrivateMessages && !Model.IsCustomerGuest)
+				{
+					<a class="btn button-pm" rel="nofollow" href='@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerId })'>
+						<i class="fa fa-user"></i>
+						@T("Forum.PrivateMessages.PM")
+					</a>
+				}
+            </div>
+        </div>
+    </div>
+    <div class="post-content">
+        <div class="posttime muted">
+            @T("Forum.Posted"): <span class="stat-value">@Model.PostCreatedOnStr</span>
+        </div>
+        <div class="post-body">
+            <div class="posttext">
+                @Html.Raw(@Model.FormattedText)
+            </div>
+            @Html.Hidden("Id", @Model.Id)
+        </div>
+
+        @if (Model.SignaturesEnabled & !String.IsNullOrEmpty(Model.FormattedSignature))
+        {            
+            <div class="signature muted">
+                @Html.Raw(@Model.FormattedSignature)
+            </div>
+        }
+
+        <div class="functions">
+            <a href="#" class="btn btn-mini">
+                @T("Forum.Top")
+            </a>
+            <button class="btn btn-mini" onclick="setLocation('@Url.Action("PostCreate", new { id = Model.ForumTopicId, quote = Model.Id })')">
+                <i class="fa fa-quote-left"></i>
+                @T("Forum.QuotePost")
+            </button>
+        </div>
+
+    </div>
+
+    </div>
+   
+</div>

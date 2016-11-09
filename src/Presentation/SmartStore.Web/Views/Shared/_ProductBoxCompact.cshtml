@@ -18,23 +18,23 @@
             nameTitle = Model.Name;
         }
     }
-    <h3 class="name" data-equalized-part="name">
+    <h4 class="card-title h6" data-equalized-part="name">
         <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })" title="@nameTitle">
             @if (Model.IsNew)
             {
                 <span class="label label-isnew">@T("Common.New")</span>
-            } 
+            }
             <span>@name</span>
         </a>
-    </h3>
+    </h4>
     <div class="prices" data-equalized-part="prices">
         <div class="text-success product-price">
             <span class="price">@Model.ProductPrice.Price</span>
         </div>
         <div>
             @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(Model.BasePriceInfo))
-            {
-                <span class="base-price muted">
+        {
+                <span class="base-price text-muted">
                     @Model.BasePriceInfo
                 </span>
             }

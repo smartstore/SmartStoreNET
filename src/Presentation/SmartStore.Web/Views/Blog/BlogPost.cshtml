@@ -18,15 +18,13 @@
 
 <article class="page blogpost-page">
     
-    <div class="blogpost-date muted">
+    <div class="blogpost-date text-muted">
         @Model.CreatedOn.ToString("D")
     </div>
 
-    <div class="page-title">
-        <h1>
-            @Model.Title
-        </h1>
-    </div>
+    <h1 class="page-title fs-h3">
+        @Model.Title
+    </h1>
 
     <div class="blogpost-body">
 
@@ -37,7 +35,7 @@
 
         @if (Model.Tags.Count > 0)
         {
-            <div class="blogpost-tags well well-small">
+            <div class="blogpost-tags card-block">
                 <i class="fa fa-tags" title='@T("Blog.Tags")'></i>
                 @for (int i = 0, length = Model.Tags.Count; i < length; i++)
                 {
@@ -51,35 +49,38 @@
         @Html.Widget("blogpost_page_before_comments")
         @if (Model.AllowComments)
         {
-            <div class="new-comment well" id="new-comment">
-                <h3 class="title">@T("Blog.Comments.LeaveYourComment")</h3>
-                @using (Html.BeginForm())
-                {
-                    <div>
-						@Html.ValidationSummary()
-                        <div class="forms-box">
-                            <div class="inputs">
-                                @Html.LabelFor(model => model.AddNewComment.CommentText)
-                                <div class="input-box">
-                                    @Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "comment-text" })
+            <div id="new-comment" class="new-comment card">
+                <div class="card-block">
+                    <h3 class="card-title">@T("Blog.Comments.LeaveYourComment")</h3>
+                    @using (Html.BeginForm())
+                    {
+                        <div class="card-text">
+                            @Html.ValidationSummary()
+                            <div class="forms-box">
+                                <div class="inputs">
+                                    @Html.LabelFor(model => model.AddNewComment.CommentText)
+                                    <div class="input-box">
+                                        @Html.TextAreaFor(model => model.AddNewComment.CommentText, new { @class = "comment-text" })
+                                    </div>
                                 </div>
+                                @if (Model.AddNewComment.DisplayCaptcha)
+                                {
+                                    <div class="captcha-box">
+                                        @Html.Raw(Html.GenerateCaptcha())
+                                    </div>
+                                }
                             </div>
-                            @if (Model.AddNewComment.DisplayCaptcha)
-                            {
-                                <div class="captcha-box">
-                                    @Html.Raw(Html.GenerateCaptcha())
-                                </div>
-                            }
-                        </div>
 
-                        <div class="buttons">
-                            <button type="submit" name="add-comment" value="add-comment" class="btn btn-primary blog-post-add-comment-button">
-								<i class="fa fa-check"></i>
-                                @T("Blog.Comments.SubmitButton")
-                            </button>
+                            <div class="buttons">
+                                <button type="submit" name="add-comment" value="add-comment" class="btn btn-primary blog-post-add-comment-button">
+                                    <i class="fa fa-check"></i>
+                                    @T("Blog.Comments.SubmitButton")
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
+
             </div>
             
             if (Model.Comments.Count > 0)

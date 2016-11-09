@@ -1,0 +1,33 @@
+﻿@model LanguageSelectorModel
+@using SmartStore.Web.Models.Common;
+@using SmartStore.Core;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Infrastructure.DependencyManagement;
+
+@if (Model.AvailableLanguages.Count > 1)
+{
+    var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+    
+    <div id="language-selector" class="regional-selector">
+        <ul class="unstyled clearfix">
+            @foreach (var lang in Model.AvailableLanguages)
+            {
+                <li @Html.Attr("class", "selected", Model.CurrentLanguageId == lang.Id)>
+                    <a title="@lang.NativeName" rel="tooltip nofollow" class='language @(Model.UseImages ? "flag" : "regional-label")'
+                        href="@webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + Url.Encode(Model.ReturnUrls[lang.SeoCode]), null)">
+                        @if (Model.UseImages) 
+                        {
+                            <img title='@lang.Name' alt='@lang.Name' @(lang.Id == Model.CurrentLanguageId ? " class=selected" : null)
+                                 src="@Url.Content("~/Content/Images/flags/" + @lang.FlagImageFileName)" width="16" height="11" />
+                        }
+                        else 
+                        {
+                            @lang.ISOCode.ToUpper().Substring(0, 2)
+                        }
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+   
+}

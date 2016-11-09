@@ -1,11 +1,11 @@
 ﻿@model InfoBlockModel
 @using SmartStore.Web.Models.Common;
-<div class="block block-bordered block-info">
-    <div class="block-title">
+<div class="block block-bordered block-info card">
+    <div class="card-header">
         @T("Information")
     </div>
-    <div class="block-body listbox">
-        <ul>
+    <div class="block-body listbox card-block">
+        <ul class="list-unstyled">
             @Html.Widget("infoblock_before")
 
 			@if (Model.TopicPageUrls.ContainsKey("contactus"))

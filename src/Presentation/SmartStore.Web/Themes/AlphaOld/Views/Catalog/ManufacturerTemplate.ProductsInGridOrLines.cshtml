@@ -1,0 +1,125 @@
+﻿@model ManufacturerModel
+@{
+    Layout = "~/Views/Shared/_ColumnsThree.cshtml";
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
+
+    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+    if (canonicalUrlsEnabled)
+    {
+        var manufacturerUrl = Url.RouteUrl("Manufacturer", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+        Html.AddCanonicalUrlParts(manufacturerUrl);
+    }
+}
+
+@using SmartStore.Core;
+@using SmartStore.Core.Domain.Common;
+@using SmartStore.Core.Domain.Seo;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Web;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web.Framework.UI;
+
+@functions{
+    private bool ShowListOptions() {
+        return Model.Products.Count > 0 &&
+               (Model.PagingFilteringContext.AllowProductViewModeChanging ||
+               Model.PagingFilteringContext.AllowProductSorting ||
+               Model.PagingFilteringContext.AllowCustomersToSelectPageSize);
+    }
+}
+
+<div class="page manufacturer-page">
+    <div class="page-title">
+        <h1>@Model.Name</h1>
+    </div>
+    <div class="clear">
+    </div>
+    <div class="page-body">
+        @Html.Widget("manufacturerdetails_top")
+        @*description*@
+        @if (!String.IsNullOrWhiteSpace(Model.Description))
+        {
+            <div class="manufacturer-description">
+                @Html.Raw(Model.Description)
+            </div>
+            <div class="clear">
+            </div>
+        }
+        @Html.Widget("manufacturerdetails_before_featured_products")
+        @*featured products*@
+        @if (Model.FeaturedProducts.Count > 0)
+        {
+            <div class="product-grid featured-product-grid">
+                <div class="section-title">
+                    @T("Products.FeaturedProducts")
+                </div>
+                <div>
+                    @(Html.DataList<ProductOverviewModel>(Model.FeaturedProducts, 2,
+                    @<div class="item-box">
+                        @Html.Partial("_ProductBox", @item)
+                    </div>
+                ))
+                </div>
+            </div>
+            <div class="clear">
+            </div>
+        }
+        @Html.Widget("manufacturerdetails_after_featured_products")
+
+        @if (ShowListOptions()) {
+            @Html.Partial("_ProductListOptions", Model.PagingFilteringContext)
+        }
+
+        @Html.Widget("manufacturerdetails_before_filters")
+        @*filtering*@
+        @if (Model.PagingFilteringContext.PriceRangeFilter.Enabled)
+        {
+            <div class="product-filters">
+                <div class="filter-title">
+                    <span>@T("Filtering.FilterResults")</span>
+                </div>
+                <div class="filter-item">
+                    @Html.Partial("_FilterPriceBox", Model.PagingFilteringContext.PriceRangeFilter, new ViewDataDictionary())
+                </div>
+            </div>
+            <div class="clear">
+            </div>
+        }
+        @Html.Widget("manufacturerdetails_before_product_list")
+        @*product list*@
+        @if (Model.Products.Count > 0)
+        {
+            if (Model.PagingFilteringContext.ViewMode == "list")
+            {
+            @*list mode*@
+            <div class="product-list">
+                @foreach (var product in Model.Products)
+                {
+                    <article class="item-box details">
+                        @Html.Partial("_ProductBoxList", product)
+                    </article>
+                }
+            </div>
+            }
+            else
+            {
+            @*grid mode*@
+            <div class="product-grid">
+                @(Html.DataList<ProductOverviewModel>(Model.Products, 3,
+                        @<article class="item-box">
+                            @Html.Partial("_ProductBox", @item)
+                        </article>
+                    ))
+            </div>
+            }
+        }
+        <div class="clear">
+        </div>
+
+        @Html.SmartStore().Pager(Model.PagingFilteringContext).Name("pagination-bottom").QueryParam("pagenumber")
+
+        @Html.Widget("manufacturerdetails_bottom")
+    </div>
+</div>

@@ -89,7 +89,7 @@
     </ul>
 </nav>
 
-<nav class="order-progress hide">
+<nav class="order-progress hidden-sm-up">
     <ul>
         @Html.Widget("checkout_progress_before")
         <li>
@@ -102,16 +102,11 @@
                 <span class="order-progress-label">@T("Checkout.Progress.Address")</span>
             </a>
         </li>
-
-        @if(Model.DisplayShippingOptions)
-        { 
         <li>
             <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Shipping ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Address && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.Action("ShippingMethod"))) : null)>
                 <span class="order-progress-label">@T("Checkout.Progress.Shipping")</span>
             </a>
         </li>
-        }
-        
         <li>
             <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Payment ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Cart && Model.CheckoutProgressStep != CheckoutProgressStep.Address && Model.CheckoutProgressStep != CheckoutProgressStep.Shipping && Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.Action("PaymentMethod"))) : null)>
                 <span class="order-progress-label">@T("Checkout.Progress.Payment")</span>

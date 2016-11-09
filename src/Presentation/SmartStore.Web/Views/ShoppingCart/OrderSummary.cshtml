@@ -8,19 +8,48 @@
     <tr class="cart-item-row">
 		@if (Model.IsEditable)
 		{
-			<td class="remove">
-				<input type="checkbox" name="removefromcart" value="@(item.Id)" />
+			<td class="remove text-xs-center">
+                <a class="remove ajax-cart-link btn btn-secondary btn-sm"
+                   href="#"
+                   rel="nofollow"
+                   data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id })'
+                   data-name="@item.ProductName"
+                   data-type="cart"
+                   data-action="remove"
+                   title='@T("Common.Remove")'>
+                    <i class="fa fa-trash-o m-r-0"></i>
+                </a>
+
+                <script type="text/javascript">
+                    //TODO NewAlpha: implement smooth animation and relocate script
+                    $(".ajax-cart-link").click(function () {
+
+                        //if there is more then one line
+                        if ($(".product-body[style!='display: none;']").length > 1)
+                        {
+                            var itemLine = $(this).closest(".product-body");
+                            //$(itemLine, "td").wrapInner('<div style="display:inline" />').slideUp();
+                            itemLine.slideUp();
+                        }
+                        else 
+                        {
+                            //reload page
+                            location.reload();
+                        }
+                    });
+                </script>
+
 			</td>
 		}
 		@if (Model.ShowSku)
 		{
-			<td class="nobr">
+			<td class="text-nowrap">
 				@item.Sku
 			</td>
 		}
 		@if (Model.ShowProductImages)
 		{
-			<td class="productpicture nobr">
+			<td class="productpicture text-nowrap">
 				@if (item.Picture.ImageUrl.HasValue())
 				{
 					<img class="img-polaroid" alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" style="max-width:@(Model.MediaDimensions)px;max-height:@(Model.MediaDimensions)px"/>
@@ -33,13 +62,13 @@
 			@if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
 			{
 				<div class="short-desc">
-					@item.ShortDesc
+					@Html.Raw(item.ShortDesc)
 				</div>
 			}
 
             @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
             {
-                <div class="base-price muted ">
+                <div class="base-price text-muted text-smaller">
                     @item.BasePrice
                 </div>
             }
@@ -55,7 +84,7 @@
 
 			@if (!String.IsNullOrEmpty(item.AttributeInfo))
 			{
-				<div class="attributes muted">
+				<div class="attributes text-muted text-smaller">
 					@Html.Raw(item.AttributeInfo)
 				</div>
 			}
@@ -100,14 +129,15 @@
 
         @if (Model.DisplayWeight)
 		{
-        <td class="weight nobr">
-            <span class="product-weight">@((item.Weight * item.Quantity).ToString("N2")) @Model.MeasureUnitName</span>
+        <td class="weight text-nowrap">
+            <span class="product-weight">@((item.Weight * item.Quantity).ToString("N2")) kg</span>
         </td>
         }
-		<td class="unit-price nobr">
+
+		<td class="unit-price text-nowrap">
 			<span class="product-unit-price">@item.UnitPrice</span>
 		</td>
-		<td class="nobr">
+		<td class="text-nowrap" style="width:170px">
 			@if (Model.IsEditable)
 			{
 				if (item.AllowedQuantities.Count > 0)
@@ -121,16 +151,27 @@
 				}
 				else
 				{
-					<input name="itemquantity@(item.Id)" type="text" value="@(item.Quantity)" class="qty-input hide" />
-				}
-			}
-			else
-			{
+                    <input id="qty-input-@(item.Id)" name="itemquantity@(item.Id)" type="text" value="@(item.Quantity)" class="qty-input text-xs-right form-control" />   
+
+                    <script type="text/javascript">
+                        $(function () {
+                            //TODO NewAlpha: implement step in admin product detail
+                            $("#qty-input-@(item.Id)").TouchSpin({
+                                min: @item.MinOrderAmount,
+                                max: @item.MaxOrderAmount,
+                                step: 1
+                            });
+                        });
+                    </script>
+                }
+            }
+            else
+            {
 				<span>@item.Quantity</span>
 			}
             <span class="measure-unit">@item.QuantityUnit</span>
 		</td>
-		<td class="nobr omega">
+		<td class="text-nowrap omega">
 			<span class="product-subtotal">@item.SubTotal</span>
 			@if (!String.IsNullOrEmpty(item.Discount))
 			{
@@ -204,13 +245,13 @@
 							}
                             @if (Model.DisplayBasePrice && !String.IsNullOrEmpty(item.BasePrice))
                             {
-                                <div class="base-price muted ">
+                                <div class="base-price text-muted">
                                     @item.BasePrice
                                 </div>
                             }
 							@if (!String.IsNullOrEmpty(item.AttributeInfo))
 							{
-								<div class="bundle-item-attribute-info muted">
+								<div class="bundle-item-attribute-info text-muted">
 									@Html.Raw(item.AttributeInfo)
 								</div>
 							}
@@ -226,18 +267,10 @@
 						</div>
 					</div>
 				</td>
-
-                @if (Model.DisplayWeight)
-                {
-                    <td class="weight nobr">
-                        <span class="product-weight">@((item.Weight * item.Quantity).ToString("N2")) @Model.MeasureUnitName</span>
-                    </td>
-                }
-
-				<td class="unit-price nobr">
+				<td class="unit-price text-nowrap">
 					@if (!String.IsNullOrWhiteSpace(item.BundleItem.PriceWithDiscount))
 					{
-						<span class="muted">
+						<span class="text-muted">
 							@Html.Raw(item.BundleItem.PriceWithDiscount)
 						</span>
 					}
@@ -246,10 +279,10 @@
 						<text>&nbsp;</text>
 					}
 				</td>
-				<td class="nobr">
+				<td class="text-nowrap">
 					&nbsp;
 				</td>
-				<td class="nobr text-success omega">
+				<td class="text-nowrap text-success omega">
 					&nbsp;
 				</td>
 			</tr>
@@ -297,9 +330,9 @@
 
     @if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
     {
-    <div class="selected-checkout-attributes well well-small" style="text-align: left">
-        @Html.Raw(Model.CheckoutAttributeInfo)
-    </div>
+        <div class="selected-checkout-attributes card card-block text-xs-left">
+            @Html.Raw(Model.CheckoutAttributeInfo)
+        </div>
     }
 
 	@if (Model.Items.Count > 0)
@@ -379,40 +412,41 @@
 		if (Model.IsEditable)
 		{
 			<div class="common-buttons clearfix">
-				<button type="submit" name="updatecart" value="updatecart" class="btn pull-right update-cart-button">
+				<button type="submit" name="updatecart" value="updatecart" class="btn btn-secondary pull-right update-cart-button">
 					<i class="fa fa-refresh"></i>&nbsp;@T("ShoppingCart.UpdateCart")
 				</button>
-                <button type="submit" name="continueshopping" value="continueshopping" class="btn pull-left continue-shopping-button">
+                <button type="submit" name="continueshopping" value="continueshopping" class="btn btn-secondary pull-left continue-shopping-button">
                     <i class="fa fa-caret-left"></i>&nbsp;@T("ShoppingCart.ContinueShopping")
                 </button>
 				<input type="submit" name="startcheckout" value="startcheckout" id="startcheckout" style="display: none;" />
 			</div>
 		}
         
-		<div class="cart-footer row-fluid">
+		<div class="cart-footer row m-t-3">
 
-			<div class="span16 order-totals-left">
+			<div class="col-sm-8 order-totals-left">
 				@Html.Widget("order_summary_content_totals_left")
 
 				@if (Model.IsEditable)
-				{
-					<!-- Discount Code, Gift Cards, Estimate shipping -->
-					<div class="column">
-						@Html.Partial("_DiscountBox", Model.DiscountBox)
-						@Html.Partial("_GiftCardBox", Model.GiftCardBox)
-						@Html.Widget("order_summary_content_deals")
-					</div>
+                {
+                    <div class="row">
+                        <!-- Discount Code, Gift Cards, Estimate shipping -->
+                        <div class="col-sm-6">
+                            @Html.Partial("_DiscountBox", Model.DiscountBox)
+                            @Html.Partial("_GiftCardBox", Model.GiftCardBox)
+                            @Html.Widget("order_summary_content_deals")
+                        </div>
 
-					<!-- Checkout attributes -->
-					<div class="column">
-						@Html.Partial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary())
-						@Html.Partial("EstimateShipping", Model.EstimateShipping)
-					</div>
-				}
+                        <!-- Checkout attributes -->
+                        <div class="col-sm-6">
+                            @Html.Partial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary())
+                            @Html.Partial("EstimateShipping", Model.EstimateShipping)
+                        </div>
+                    </div>}
 			</div>
 
 			<!-- Totals -->
-			<div class="span8">
+			<div class="col-sm-4">
 				@if (Model.IsEditable && !String.IsNullOrEmpty(Model.MinOrderSubtotalWarning)) 
 				{
 					<div class="alert alert-info" style="margin-top: 0">
@@ -428,7 +462,7 @@
 				{
                     if (String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
 					{
-					    <div class="checkout-buttons">
+					    <div class="checkout-buttons clearfix">
 						
 							    <button type="button" 
 									    class="btn btn-primary btn-large pull-right checkout-button" 

@@ -1,0 +1,50 @@
+﻿@model PollModel
+@using SmartStore.Web.Models.Polls;
+
+@{
+    Html.AddScriptParts("~/Scripts/public.voting.js");
+}
+
+<div id="poll-block-@(Model.Id)" class="poll-item equalized-column" data-equalized-deep="true">
+    <div class="poll-display-text" data-equalized-part="name">
+        @Model.Name
+    </div>
+    @if (Model.AlreadyVoted)
+    {
+        <div class="poll-results">
+            @foreach (var item in Model.Answers)
+            {
+                <div class="answer">
+                    <div class="vote-result-percent">@((item.PercentOfTotalVotes/100).ToString("#0.##%"))</div>
+                    <div class="vote-result-line">@item.Name (@item.NumberOfVotes)</div>
+                    <div class="progress progress-info">
+                        <div class="bar fade in" style="width: @(Math.Round(item.PercentOfTotalVotes, 0))%"></div>
+                    </div>
+                </div>
+            }
+            <div class="poll-total-votes text-success">@string.Format(T("Polls.TotalVotes").Text, Model.TotalVotes)</div>
+        </div>
+    }
+    else
+    {
+        <div class="poll-take-poll">
+            <div data-equalized-part="data">
+                @foreach (var item in Model.Answers)
+                {
+                    <label class="radio">
+                      <input type="radio" id="pollanswers-@(item.Id)" name="pollanswers-@(Model.Id)" value="@item.Id" />@item.Name
+                    </label>
+                }
+            </div>
+            <button id="vote-poll-@(Model.Id)" 
+                data-id="@(Model.Id)" 
+                data-target="@(Url.Action("Vote"))" 
+                data-message="@T("Polls.SelectAnswer")" 
+                class="btn btn-warning btn-block btn-votenow">
+                @T("Polls.Vote")
+            </button>
+
+        </div>
+        
+    }
+</div>

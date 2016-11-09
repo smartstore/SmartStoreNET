@@ -14,7 +14,6 @@
 @using (Html.BeginForm())
 {
     <div class="page account-page address-edit-page">
-        <h4 class="muted">@T("Account.MyAccount")</h4>
         <div class="page-title">
             <h1>@T("Account.CustomerAddresses.Edit")</h1>
         </div>
@@ -25,16 +24,14 @@
                 //Merge ModelState (required for validation)
                 dataDictAddress.ModelState.Merge(ViewData.ModelState);
                 dataDictAddress.TemplateInfo.HtmlFieldPrefix = "Address";
-                @Html.Partial("_CreateOrUpdateAddress", Model.Address, dataDictAddress)          
+                @Html.Partial("_CreateOrUpdateAddress", Model.Address, dataDictAddress)
             }
-            <div class="buttons form-horizontal">
-                <div class="control-group">
-                    <div class="controls">
-                        <button type="submit" class="btn btn-primary">
-							<i class="fa fa-floppy-o"></i>
-							@T("Common.Save")
-						</button>
-                    </div>
+            <div class="form-group row">
+                <div class="col-sm-offset-3 col-sm-9">
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fa fa-floppy-o"></i>
+                        @T("Common.Save")
+                    </button>
                 </div>
             </div>
         </div>

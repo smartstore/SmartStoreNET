@@ -1,12 +1,16 @@
 ﻿@model ShopHeaderModel
+
 @using SmartStore.Web.Models.Common;
 
-<div id="logobar" class="container">
+@Html.Action("Menu", "Common")
 
-    <a href="@Url.RouteUrl("HomePage")" class="brand@(Model.LogoUploaded ? "" : " textual")">          
+@*<div id="logobar" class="container clearfix">
+
+    <a href="@Url.RouteUrl("HomePage")" class="pull-left brand@(Model.LogoUploaded ? "" : " textual")">
+            
         @if (Model.LogoUploaded) 
         {
-            <img src='@Url.Content(Model.LogoUrl.EmptyNull())' 
+            <img src='@Url.Content(Model.LogoUrl)' 
                 alt="@Model.LogoTitle" 
                 title="@Model.LogoTitle"
                 @Html.Attr("width", Model.LogoWidth.ToString(), Model.LogoWidth > 0)
@@ -18,12 +22,12 @@
         }
     </a>
 
-    <nav id="nav-home" class="clearfix">
+    <nav id="nav-home pull-left" class="clearfix">
         @Html.Action("Menu", "Common")
     </nav>
 
-    <div class="regional-selectors">
+    <div class="regional-selectors pull-left">
         @Html.Action("LanguageSelector", "Common")
         @Html.Action("CurrencySelector", "Common")
     </div>
-</div>
+</div>*@

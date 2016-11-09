@@ -1,0 +1,40 @@
+﻿@model LastPostModel
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Web.Models.Boards;
+@using SmartStore.Services.Customers;
+@using SmartStore.Services.Forums;
+@using SmartStore.Services.Helpers;
+@using SmartStore.Services.Seo;
+
+@if (@Model.Id > 0)
+{
+    <div class="last-post muted">
+        <div class="createdon">@Model.PostCreatedOnStr</div>
+        @if (Model.ShowTopic)
+        {
+            <div>
+                @T("Forum.In"):
+                @Html.RouteLink(Model.ForumTopicSubject.Truncate(30, "..."), "TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName }, new { title = Model.ForumTopicSubject })
+            </div>
+        }
+        @if (Model.CustomerId > 0)
+        {
+            <div>
+                @if (Model.AllowViewingProfiles && !Model.IsCustomerGuest)
+                {
+                    @T("Forum.By")<text>:</text> @Html.RouteLink(Model.CustomerName, "CustomerProfile", new { Id = Model.CustomerId })
+                }
+                else
+                {
+                    @T("Forum.By")<text>:</text> @Model.CustomerName
+                }
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="nopost">
+        @T("Forum.NoPosts")
+    </div>
+}

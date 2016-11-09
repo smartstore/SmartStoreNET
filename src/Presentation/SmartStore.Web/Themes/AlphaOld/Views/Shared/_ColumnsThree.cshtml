@@ -1,0 +1,64 @@
+﻿@{
+    Layout = "~/Views/Shared/_Root.cshtml";
+    Html.AddBodyCssClass("lyt-cols-3");
+
+    string[] spanWidths = GetThemeVariable<string>("GridSettings", "5/14/5").Split('/');
+}
+@section teaser {
+  @RenderSection("teaser", required: false)
+}
+
+<div id="content-left" class="span@(spanWidths[0])">
+    @if (IsSectionDefined("left"))
+    {
+        @RenderSection("left")
+    }
+    else
+    {
+        @Html.Widget("left_side_column_before")
+
+        @Html.Action("CategoryNavigation", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" })
+        @Html.Widget("left_side_column_after_category_navigation")
+
+        @Html.Action("ManufacturerNavigation", "Catalog", new { currentManufacturerId = this.CurrentManufacturerId, area = "" })
+        @Html.Widget("left_side_column_after_manufacturer_navigation")
+
+        @Html.Action("PopularProductTags", "Catalog", new { area = "" })
+        @Html.Widget("left_side_column_after_tags")
+
+        @Html.Action("InfoBlock", "Common", new { area = "" })
+        @Html.Widget("left_side_column_after_info")
+
+        @Html.Action("PollBlock", "Poll", new { systemKeyword = "LeftColumnPoll", area = "" })
+        @Html.Widget("left_side_column_after_poll")
+
+        @Html.Widget("left_side_column_after")
+    }
+</div>
+<div id="content-center" class="span@(spanWidths[1])">
+    @Html.Widget("main_column_before")
+    @RenderBody()
+    @Html.Widget("main_column_after")
+</div>
+<div id="content-right" class="span@(spanWidths[2])">
+    @if (IsSectionDefined("right_top"))
+    {
+        @RenderSection("right_top", false)
+    }
+
+    @if (IsSectionDefined("right"))
+    {
+        @RenderSection("right")
+    }
+    else
+    {
+        @Html.Widget("right_side_column_before")
+
+        @Html.Action("RecentlyViewedProductsBlock", "Catalog", new { area = "" })
+        @Html.Widget("right_side_column_after_recentlyviewed")             
+        @Html.Action("PollBlock", "Poll", new { systemKeyword = "RightColumnPoll", area = "" })
+        @Html.Widget("right_side_column_after_poll")   
+
+        @Html.Widget("right_side_column_after")
+    }
+</div>

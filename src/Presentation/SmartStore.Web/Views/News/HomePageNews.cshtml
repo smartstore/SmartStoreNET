@@ -7,8 +7,8 @@
 {
     <div class="block news-list-homepage">
         <div class="block-title clearfix">
-            <a href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" class="link-rss pull-right" title="@T("News.RSS.Hint")" rel="tooltip">
-                <i class="fa fa-rss muted"></i>
+            <a href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("News.RSS.Hint")" rel="tooltip">
+                <i class="fa fa-rss text-muted"></i>
                 @T("News.RSS")
             </a>
             @T("News")
@@ -21,7 +21,7 @@
                         <a class="news-title" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
                             @item.Title
                         </a>
-                        <span class="news-date muted pull-right">
+                        <span class="news-date text-muted pull-right">
                            @item.CreatedOn.ToString("D")
                         </span>
                     </h4>

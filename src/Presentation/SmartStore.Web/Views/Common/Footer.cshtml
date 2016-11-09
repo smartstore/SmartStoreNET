@@ -1,152 +1,165 @@
 ﻿@model FooterModel
 @using SmartStore.Web.Models.Common;
 
-<section id="footer" class="container">
-
-    <div class="row">
-
-        <div class="span8">
-            @if (Model.ShowSocialLinks)
-            {
-            <div class="first-col footer-social">
-                <h4>@T("Footer.Social")</h4>
+<div class="row text-xs-center">
+    <div class="col-xs-12">
+        @if (Model.ShowSocialLinks)
+        {
+            <div class="footer-social">
                 <div class="content">
                     @if (!String.IsNullOrEmpty(Model.FacebookLink))
                     {
-                        <a href="@Model.FacebookLink" target="_blank"><i class="fa fa-facebook-square fa-4x"></i></a>
+                        <a href="@Model.FacebookLink" target="_blank" class="fa-stack fa-lg brand-facebook">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                        </a>
                     }
                     @if (!String.IsNullOrEmpty(Model.GooglePlusLink))
                     {
-                        <a href="@Model.GooglePlusLink" target="_blank"><i class="fa fa-google-plus-square fa-4x"></i></a>
+                        <a href="@Model.GooglePlusLink" target="_blank" class="fa-stack fa-lg brand-googleplus">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+                        </a>
                     }
                     @if (!String.IsNullOrEmpty(Model.TwitterLink))
                     {
-                        <a href="@Model.TwitterLink" target="_blank"><i class="fa fa-twitter-square fa-4x"></i></a>
+                        <a href="@Model.TwitterLink" target="_blank" class="fa-stack fa-lg brand-twitter">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                        </a>
                     }
                     @if (!String.IsNullOrEmpty(Model.PinterestLink))
                     {
-                        <a href="@Model.PinterestLink" target="_blank"><i class="fa fa-pinterest-square fa-4x"></i></a>
+                        <a href="@Model.PinterestLink" target="_blank" class="fa-stack fa-lg brand-pinterest">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-pinterest fa-stack-1x fa-inverse"></i>
+                        </a>
                     }
                     @if (!String.IsNullOrEmpty(Model.YoutubeLink))
                     {
-                        <a href="@Model.YoutubeLink" target="_blank"><i class="fa fa-youtube-square fa-4x"></i></a>
+                        <a href="@Model.YoutubeLink" target="_blank" class="fa-stack fa-lg brand-youtube">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-youtube fa-stack-1x fa-inverse"></i>
+                        </a>
                     }
                 </div>
             </div>
-            }
+        }
+    </div>
+</div>
 
-            @if (Model.ShowThemeSelector)
-            {
-            <div class="first-col theme-selector">
-                <h4>@T("Footer.Themes")</h4>
-                <div class="content">
-                    @Html.Action("StoreThemeSelector", "Common")
-                </div>
-            </div>
-            }
-        </div>
+<div class="row">
+    <div class="col-md-3">
+        @if (Model.ShowThemeSelector)
+        {
+			<div class="theme-selector hidden-sm-down">
+				<h4>@T("Footer.Themes")</h4>
+				<div class="content">
+					@Html.Action("StoreThemeSelector", "Common")
+				</div>
+			</div>
+        }
+    </div>
 
-        <div class="span8">
-            <div class="x-first-col">
-                <div class="row-fluid">
-                    <nav class="footer-quicklinks service span12 first-col">
-                        <h4>@T("Footer.Service")</h4>
-                        <ul class="unstyled">
-							@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
-							{
-								<li><a href="@Model.TopicPageUrls["shippinginfo"]">@T("ShippingReturns")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
-							{
-								<li><a href="@Model.TopicPageUrls["privacyinfo"]">@T("PrivacyNotice")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("conditionsofuse"))
-							{
-								<li><a href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("paymentinfo"))
-							{
-								<li><a href="@Model.TopicPageUrls["paymentinfo"]">@T("Paymentinfo")</a></li>
-							}
-                        </ul>
-                    </nav>
+    <div class="col-md-3 col-xs-6">
+        <nav class="footer-quicklinks">
+            <h4>@T("Footer.Service")</h4>
+            <ul class="list-unstyled">
+				@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
+				{
+					<li><a href="@Model.TopicPageUrls["shippinginfo"]">@T("ShippingReturns")</a></li>
+				}
+				@if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
+				{
+					<li><a href="@Model.TopicPageUrls["privacyinfo"]">@T("PrivacyNotice")</a></li>
+				}
+				@if (Model.TopicPageUrls.ContainsKey("conditionsofuse"))
+				{
+					<li><a href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
+				}
+				@if (Model.TopicPageUrls.ContainsKey("paymentinfo"))
+				{
+					<li><a href="@Model.TopicPageUrls["paymentinfo"]">@T("Paymentinfo")</a></li>
+				}
+            </ul>
+        </nav>
+    </div>
 
-                    <nav class="footer-quicklinks company span12 first-col">
-                        <h4>@T("Footer.Company")</h4>
-                        <ul class="unstyled">
-							@if (Model.TopicPageUrls.ContainsKey("contactus"))
-							{
-								<li><a href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("aboutus"))
-							{
-								<li><a href="@Model.TopicPageUrls["aboutus"]">@T("AboutUs")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("imprint"))
-							{
-								<li><a href="@Model.TopicPageUrls["imprint"]">@T("Imprint")</a></li>
-							}
-							@if (Model.TopicPageUrls.ContainsKey("disclaimer"))
-							{
-								<li><a href="@Model.TopicPageUrls["disclaimer"]">@T("Disclaimer")</a></li>
-							}
+	<div class="col-md-3 col-xs-6">
+		<nav class="footer-quicklinks company">
+			<h4>@T("Footer.Company")</h4>
+			<ul class="list-unstyled">
+				@if (Model.TopicPageUrls.ContainsKey("contactus"))
+				{
+					<li><a href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
+				}
+				@if (Model.TopicPageUrls.ContainsKey("aboutus"))
+				{
+					<li><a href="@Model.TopicPageUrls["aboutus"]">@T("AboutUs")</a></li>
+				}
+				@if (Model.TopicPageUrls.ContainsKey("imprint"))
+				{
+					<li><a href="@Model.TopicPageUrls["imprint"]">@T("Imprint")</a></li>
+				}
+				@if (Model.TopicPageUrls.ContainsKey("disclaimer"))
+				{
+					<li><a href="@Model.TopicPageUrls["disclaimer"]">@T("Disclaimer")</a></li>
+				}
 
-                            @if (Model.BlogEnabled)
-                            {
-                                <li><a href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
-                            }
-                            @if (Model.ForumEnabled)
-                            {
-                                <li><a href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
-                            }
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div>
+				@if (Model.BlogEnabled)
+				{
+					<li><a href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
+				}
+				@if (Model.ForumEnabled)
+				{
+					<li><a href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
+				}
+			</ul>
+		</nav>
 
-        <div class="span8">
-            @if (!Model.HideNewsletterBlock)
-            {
-                <div class="footer-newsletter last-col">
-                    <h4>@T("Newsletter.Title")</h4>
+	</div>
 
-                    <div id="newsletter-subscribe-block">
+    <div class="col-md-3">
+        @if (!Model.HideNewsletterBlock)
+        {
+            <div class="footer-newsletter">
+                <h4>@T("Newsletter.Title")</h4>
 
-						<div class="input-append input-block-level">
-							@Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email", placeholder = T("Newsletter.Email") })
-							<button id="newsletter-subscribe-button" class="btn btn-success">@T("Newsletter.Button")</button>
-						</div>
+                <div id="newsletter-subscribe-block">
 
-                        <label class="radio inline">
-							<input type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked"> 
-							@T("Newsletter.Subscribe")
-                        </label>
-                        <label class="radio inline">
-							<input type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios"> 
-							@T("Newsletter.Unsubscribe")
-                        </label>
+					<div class="input-group m-b-05">
+						@Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email", @class="form-control", placeholder = T("Newsletter.Email") })
+						<span class="input-group-btn">
+							<button id="newsletter-subscribe-button" class="btn btn-icon btn-success" title="@T("Newsletter.Button")">
+								<i class="fa fa-envelope"></i>
+							</button>
+						</span>
+					</div>
 
-						@Html.ValidationMessageFor(x => x.NewsletterEmail)
+					<label class="radio-inline">
+						<input type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked">
+						@T("Newsletter.Subscribe")
+					</label>
+					<label class="radio-inline">
+						<input type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios">
+						@T("Newsletter.Unsubscribe")
+					</label>
+
+					@Html.ValidationMessageFor(x => x.NewsletterEmail)
                     
-                    </div>
-                    <div id="newsletter-result-block" class="alert alert-success hide"></div>
                 </div>
-            }
-        </div>
-
+                <div id="newsletter-result-block" class="alert alert-success" hidden></div>
+            </div>
+        }
     </div>
 
-    <div class="row">
-        <div class="span24">
-            @Html.Widget("footer")
-        </div>
-    </div>
-</section>
+</div>
 
-<div class="footer-disclaimer container">
+@Html.Widget("footer")
+
+<div class="footer-disclaimer container text-muted">
     <div class="row">
-		<div class="span8">
+		<div class="col-md-4 text-xs-center text-md-left">
 			@if (Model.ShowLegalInfo)
 			{
 				<div class="footer-legal">
@@ -155,20 +168,16 @@
 			}
 		</div>
 
-		<div class="span8 ac">
+		<div class="col-md-4 text-xs-center text-md-center">
 			@Html.Raw(Model.SmartStoreHint)
 		</div>
 
-		<div class="span8 ar">
+		<div class="col-md-4 text-xs-center text-md-right">
 			<div>
 				@T("Content.CopyrightNotice", DateTime.Now.Year.ToString(), @Model.StoreName)
 			</div>
 		</div>
 	</div>
-</div>
-
-<div id="switch-to-mobile">
-    @Html.Action("ChangeDeviceBlock", "Common")
 </div>
 
 <script type="text/javascript">
@@ -202,9 +211,5 @@
             });                
             return false;
         });
-
-        if (Modernizr.touch) {
-            $('#switch-to-mobile').css('display', 'block');
-        }
     });
 </script>

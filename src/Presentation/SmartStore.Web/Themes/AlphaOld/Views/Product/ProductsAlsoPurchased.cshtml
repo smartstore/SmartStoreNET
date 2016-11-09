@@ -1,0 +1,37 @@
+﻿@model IList<ProductOverviewModel>
+
+@using SmartStore.Web.Models.Catalog;
+
+@if (Model.Count > 0)
+{
+    
+    <div class="block">
+        <div class="block-title">
+            <h3>@T("Products.AlsoPurchased")</h3>
+        </div>
+        <div class="block-body">
+
+            <div class="also-purchased-products-grid">
+                <div class="product-list scroll">
+                    <div class="pl-row row clearfix" style="position: relative">
+                        @foreach (var item in Model)
+                        {
+                            <article class="item-box product-compact span4 equalized-column" data-equalized-deep="true">
+                                @Html.Partial("_ProductBoxCompact", item)
+                            </article>
+                        }
+                    </div>
+                    <a class="sb invisible pl-scroll-prev sb-dir-left disabled" href="#" rel="nofollow"><</a>
+			        <a class="sb invisible pl-scroll-next sb-dir-right" href="#" rel="nofollow">></a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            $(".also-purchased-products-grid .product-list").productListScroller();
+        });
+    </script>
+}

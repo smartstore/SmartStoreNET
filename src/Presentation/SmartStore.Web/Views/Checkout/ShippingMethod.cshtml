@@ -37,8 +37,8 @@
 										@shippingMethod.Fee
 									</div>
 								}
-								<div class="opt-control option-name">
-									<label for="shippingoption_@(i)" class="radio">
+								<div class="opt-control option-name radio">
+									<label for="shippingoption_@(i)">
 										<input id="shippingoption_@(i)" type="radio" name="shippingoption" class="opt-radio"
 											   @Html.Attr("checked", "checked", shippingMethod.Selected)
 											   value="@(shippingMethod.Name)___@(shippingMethod.ShippingRateComputationMethodSystemName)" />
@@ -48,7 +48,7 @@
 							</div>
 							@if (!String.IsNullOrEmpty(shippingMethod.Description))
 							{
-								<div class="opt-info muted shipping-option-description">
+								<div class="opt-info text-muted shipping-option-description">
 									@if (!String.IsNullOrEmpty(shippingMethod.BrandUrl))
 									{
 										<div class="media">
@@ -83,7 +83,7 @@
             </div>
 			
             <div class="select-button clearfix">
-                <a class="btn pull-left" href="@Url.Action("ShippingAddress")">
+                <a class="btn btn-secondary pull-left" href="@Url.Action("ShippingAddress")">
                     <i class="fa fa-caret-left"></i>&nbsp;
                     @T("Common.Back")
                 </a>    

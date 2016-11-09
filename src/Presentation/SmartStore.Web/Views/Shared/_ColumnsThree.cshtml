@@ -1,14 +1,15 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Root.cshtml";
-    Html.AddBodyCssClass("lyt-cols-3");
+	Layout = "_Layout";
+	Html.AddBodyCssClass("lyt-cols-3");
 
-    string[] spanWidths = GetThemeVariable<string>("GridSettings", "5/14/5").Split('/');
+	string[] spanWidths = GetThemeVariable<string>("GridSettings", "5/14/5").Split('/');
 }
+
 @section teaser {
   @RenderSection("teaser", required: false)
 }
 
-<div id="content-left" class="span@(spanWidths[0])">
+<div id="content-left" class="col-md-3">
     @if (IsSectionDefined("left"))
     {
         @RenderSection("left")
@@ -35,12 +36,12 @@
         @Html.Widget("left_side_column_after")
     }
 </div>
-<div id="content-center" class="span@(spanWidths[1])">
+<div id="content-center" class="col-md-9">
     @Html.Widget("main_column_before")
     @RenderBody()
     @Html.Widget("main_column_after")
 </div>
-<div id="content-right" class="span@(spanWidths[2])">
+<div id="content-right" class="col-md-3 hidden-xs-up">
     @if (IsSectionDefined("right_top"))
     {
         @RenderSection("right_top", false)

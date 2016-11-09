@@ -15,14 +15,14 @@
 }
 
 <div class="attributes">
-        
+
     @foreach (var attribute in Model.Where(x => x.ShouldBeRendered()))
-    {		
+    {
         string controlId = string.Format("product_attribute_{0}_{1}_{2}_{3}", attribute.ProductId, attribute.BundleItemId, attribute.ProductAttributeId, attribute.Id);
         string textPrompt = !string.IsNullOrEmpty(attribute.TextPrompt) ? attribute.TextPrompt : attribute.Name;
-		string disabled = (attribute.IsDisabled ? " disabled=\"disabled\"" : null);
-		
-        <div class="control-group">
+        string disabled = (attribute.IsDisabled ? " disabled=\"disabled\"" : null);
+
+        <div class="control-group m-t-1">
             <label class='control-label@(attribute.IsRequired ? " required" : "")' for="@(controlId)">@textPrompt</label>
 
             @if (!string.IsNullOrEmpty(attribute.Description))
@@ -31,21 +31,19 @@
                     @Html.Raw(attribute.Description)
                 </div>
             }
-                
+
             <div class="controls">
                 @switch (attribute.AttributeControlType)
                 {
                     case AttributeControlType.DropdownList:
                         {
-                            <select name="@(controlId)" id="@(controlId)" style="width:100%"@(Html.Raw(disabled))>
+                            <select name="@(controlId)" id="@(controlId)" style="width:100%" @(Html.Raw(disabled))>
                                 @if (!attribute.IsRequired)
                                 {
-                                    <option value="0">@T("Common.Unspecified")</option>
-						        }
-						        else if (attribute.Values.Count > 0 && !attribute.Values.Any(x => x.IsPreSelected))
-						        {
-							        <option value="0">@T("Common.PleaseSelect")</option>
-						        }
+                                    <option value="0">@T("Common.Unspecified")</option>   }
+                                else if (attribute.Values.Count > 0 && !attribute.Values.Any(x => x.IsPreSelected))
+                                {
+                                    <option value="0">@T("Common.PleaseSelect")</option>   }
                                 @foreach (var pvaValue in attribute.Values)
                                 {
                                     <option value="@pvaValue.Id" @Html.Attr("selected", "selected", pvaValue.IsPreSelected) @Html.Attr("data-imageurl", pvaValue.ImageUrl, pvaValue.ImageUrl.HasValue())>@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</option>
@@ -60,7 +58,7 @@
                             {
                                 var inputType = attribute.AttributeControlType == AttributeControlType.RadioList ? "radio" : "checkbox";
 
-                                <div class="clearfix">
+                                <div class="clearfix radio">
                                     @if (pvaValue.ImageUrl.HasValue())
                                     {
                                         if (!String.IsNullOrEmpty(pvaValue.SeName))
@@ -78,7 +76,7 @@
                                     <label for="@(controlId)_@(pvaValue.Id)" class="@inputType @(pvaValue.ImageUrl.HasValue() ? "image-has-value" : "")">
                                         <input id="@(controlId)_@(pvaValue.Id)" type="@inputType" name="@(controlId)" value="@pvaValue.Id" @Html.Attr("checked", "checked", pvaValue.IsPreSelected) @(Html.Raw(disabled)) />
                                         @(pvaValue.Name)
-                                        <span class="nobr">
+                                        <span class="text-nowrap">
                                             @(pvaValue.GetAttributeValueInfo())
                                         </span>
                                     </label>
@@ -88,33 +86,33 @@
                         break;
                     case AttributeControlType.TextBox:
                         {
-							<input name="@(controlId)" type="text" class="textbox input-block-level" id="@(controlId)" value="@attribute.TextValue"@(Html.Raw(disabled)) />
+                            <input name="@(controlId)" type="text" class="textbox input-block-level" id="@(controlId)" value="@attribute.TextValue" @(Html.Raw(disabled)) />
                         }
                         break;
                     case AttributeControlType.MultilineTextbox:
                         {
-							<textarea cols="20" id="@(controlId)" class="input-block-level" name="@(controlId)"@(Html.Raw(disabled))>@attribute.TextValue</textarea>
+                            <textarea cols="20" id="@(controlId)" class="input-block-level" name="@(controlId)" @(Html.Raw(disabled))>@attribute.TextValue</textarea>
                         }
                         break;
                     case AttributeControlType.Datepicker:
                         {
-							@Html.DatePickerDropDowns(controlId + "_day", controlId + "_month", controlId + "_year", attribute.BeginYear, attribute.EndYear, attribute.SelectedDay, attribute.SelectedMonth, attribute.SelectedYear, true, attribute.IsDisabled)
-						}
-						break;
-					case AttributeControlType.FileUpload:
-						{
-							Html.AddScriptParts("~/bundles/fileupload");
-							Html.AddCssFileParts("~/css/fileupload");
+                            @Html.DatePickerDropDowns(controlId + "_day", controlId + "_month", controlId + "_year", attribute.BeginYear, attribute.EndYear, attribute.SelectedDay, attribute.SelectedMonth, attribute.SelectedYear, true, attribute.IsDisabled)
+                        }
+                        break;
+                    case AttributeControlType.FileUpload:
+                        {
+                            Html.AddScriptParts("~/bundles/fileupload");
+                            Html.AddCssFileParts("~/css/fileupload");
 
-							var random = CommonHelper.GenerateRandomInteger();
-							var clientId = "upload" + CommonHelper.GenerateRandomInteger();
+                            var random = CommonHelper.GenerateRandomInteger();
+                            var clientId = "upload" + CommonHelper.GenerateRandomInteger();
 
-							//ex. ['jpg', 'jpeg', 'png', 'gif'] or []
-							var allowedFileExtensions = string.Join("|", attribute.AllowedFileExtensions.Select(x => x.Trim()).ToList());
+                            //ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+                            var allowedFileExtensions = string.Join("|", attribute.AllowedFileExtensions.Select(x => x.Trim()).ToList());
 
 
                             <div id="@clientId" class="fileupload">
-    
+
                                 <input id="@(controlId)" name="@(controlId)" type="hidden" class="hidden" />
 
                                 <button class="btn remove" @Html.Attr("style", "display:none", true)>
@@ -122,10 +120,10 @@
                                     @T("Common.Remove")
                                 </button>
 
-                                <span class="btn btn-primary fileinput-button"@(Html.Raw(disabled))>
+                                <span class="btn btn-primary fileinput-button" @(Html.Raw(disabled))>
                                     <i class="fa fa-upload"></i>
                                     <span>@T("Common.Fileuploader.Upload")</span>
-                                    <input id="fileupload-@random" type="file" name="file"@(Html.Raw(disabled)) />
+                                    <input id="fileupload-@random" type="file" name="file" @(Html.Raw(disabled)) />
                                 </span>
 
                                 <button class="btn btn-warning cancel">
@@ -147,9 +145,9 @@
                                 </div>
 
                             </div>
-                                    
-                    <script type="text/javascript">
-                        $(function () {                   
+
+                            <script type="text/javascript">
+                        $(function () {
 
                             var el = $('#@clientId'),
                                 elHidden = el.find('.hidden'),
@@ -188,37 +186,37 @@
                                 $(this).hide();
                                 e.preventDefault();
                             });
-                                    
+
                         });
-                    </script>
+                            </script>
                         }
                         break;
 
                     case AttributeControlType.ColorSquares:
                         {
-                        <ul class="option-list color-squares clearfix" id="color-squares-@(attribute.Id)">
-                            @foreach (var pvaValue in attribute.Values)
+                            <ul class="option-list color-squares clearfix" id="color-squares-@(attribute.Id)">
+                                @foreach (var pvaValue in attribute.Values)
                             {
-                                <li @(pvaValue.IsPreSelected ? @Html.Raw(" class=\"selected-value\"") : null)>
-                                    <label for="@(controlId)_@(pvaValue.Id)">
-										<span class="color-container tooltip-toggle" title="@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())">
-											<span class="color" style="background-color:@(pvaValue.ColorSquaresRgb);">&nbsp;</span>
-										</span>
-										<input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" @Html.Attr("checked", "checked", pvaValue.IsPreSelected) @Html.Raw(disabled) />
-                                        @*uncomment below to display attribute value name*@
-                                        @*<span class="name">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</span>*@
-                                    </label>
-                                </li>
-                            }
-                        </ul>
-                        <script type="text/javascript">
+                                    <li @(pvaValue.IsPreSelected ? @Html.Raw(" class=\"selected-value\"") : null)>
+                                        <label for="@(controlId)_@(pvaValue.Id)">
+                                            <span class="color-container tooltip-toggle" title="@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())">
+                                                <span class="color" style="background-color:@(pvaValue.ColorSquaresRgb);">&nbsp;</span>
+                                            </span>
+                                            <input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" @Html.Attr("checked", "checked", pvaValue.IsPreSelected) @Html.Raw(disabled) />
+                                            @*uncomment below to display attribute value name*@
+                                            @*<span class="name">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</span>*@
+                                        </label>
+                                    </li>
+                                }
+                            </ul>
+                            <script type="text/javascript">
                             $(document).ready(function() {
                                 $('.attributes #color-squares-@(attribute.Id)').delegate('input', 'click', function(event) {
                                     $('.attributes #color-squares-@(attribute.Id)').find('li').removeClass('selected-value');
                                     $(this).closest('li').addClass('selected-value');
                                 });
                             });
-                        </script>
+                            </script>
                         }
                         break;
                 }

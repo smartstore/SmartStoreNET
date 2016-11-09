@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Root.cshtml";
+    Layout = "_Layout";
     Html.AddBodyCssClass("lyt-cols-1");
 }
 
@@ -7,7 +7,7 @@
     @RenderSection("teaser", required: false)
 }
 
-<div id="content-center" class="span24 alpha omega">
+<div id="content-center" class="col-md-12">
     @Html.Widget("main_column_before")
     @RenderBody()
     @Html.Widget("main_column_after")

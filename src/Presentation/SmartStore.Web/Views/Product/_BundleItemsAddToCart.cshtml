@@ -10,6 +10,16 @@
         <div class="form-inline clearfix" style="@(Model.IsAvailable ? "" : "display:none;")">
             @if (!Model.AddToCart.DisableBuyButton)
             {
+                @*@Html.LabelFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-label" })<text>:</text>
+                if (Model.AddToCart.AllowedQuantities.Count > 0)
+                {
+                    @Html.DropDownListFor(model => Model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown" })
+                }
+                else
+                {
+                    @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style = "width:25px" })
+                }*@
+
                 <a class="btn btn-warning add-to-cart-button ajax-cart-link"
                    href="#"
 				   rel="nofollow"
@@ -41,8 +51,8 @@
 
 <div class="bundle-item-overview">
     @{
-		var i = 0;
-		var bundleItemCount = Model.BundledItems.Where(x => x.BundleItem.Visible).Count();
+        int i = 0;
+        int bundleItemAmount = Model.BundledItems.Count;
     }
 
     @foreach (var item in Model.BundledItems.Where(x => x.BundleItem.Visible))
@@ -67,10 +77,10 @@
         if (item.BundleItem.Quantity > 1)
         {
             <strong>&#215;&nbsp;@item.BundleItem.Quantity</strong>
-		}
+        }
 
-		if (bundleItemCount != (i + 1))
-		{
+        if (bundleItemAmount != (i + 1))
+        {
             <i class="fa fa-plus"></i>
         }
 

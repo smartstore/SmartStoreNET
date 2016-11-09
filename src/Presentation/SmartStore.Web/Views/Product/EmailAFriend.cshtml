@@ -11,8 +11,6 @@
     <div class="page-title">
         <h1>@T("Products.EmailAFriend.Title")</h1>
     </div>
-    <div class="clear">
-    </div>
     <div class="page-body">
         @if (Model.SuccessfullySent)
         {
@@ -23,56 +21,47 @@
         else
         {
             using (Html.BeginForm("EmailAFriend", null, FormMethod.Post, new { @class = "form-horizontal" }))
-            {
-                               
-            <fieldset>
-                
-                <p class="message-error">
-                    @Html.ValidationSummary(true)
-                </p>
-
-                <legend><a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" class="product">@Model.ProductName</a></legend>
-                
-                <div class="control-group">
-                    @Html.LabelFor(model => model.FriendEmail, new { @class="control-label required" , @for="FriendEmail" } )
-                    <div class="controls">
-                        @Html.TextBoxFor(model => model.FriendEmail, new { @class = "fullname", placeholder = T("Products.EmailAFriend.FriendEmail.Hint") })
-                        @Html.ValidationMessageFor(model => model.FriendEmail)
+            {                  
+                <fieldset>
+               
+                    <legend><a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" class="product">@Model.ProductName</a></legend>
+                    
+                    <p class="message-error">
+                        @Html.ValidationSummary(true)
+                    </p>
+                     
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FriendEmail, new { @for = "FriendEmail" })
+                        @Html.TextBoxFor(model => model.FriendEmail, new { @class = "fullname form-control", placeholder = T("Products.EmailAFriend.FriendEmail.Hint") })
+                        @Html.ValidationMessageFor(model => model.FriendEmail, null, new { @class = "text-danger" })
                     </div>
-                </div>
 
-                <div class="control-group">
-                    @Html.LabelFor(model => model.YourEmailAddress, new { @class="control-label required" , @for="YourEmailAddress" } )
-                    <div class="controls">
-                        @Html.TextBoxFor(model => model.YourEmailAddress, new { @class = "fullname", placeholder = T("Products.EmailAFriend.YourEmailAddress.Hint") })
-                        @Html.ValidationMessageFor(model => model.YourEmailAddress)
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.YourEmailAddress, new { @for = "YourEmailAddress" })
+                        @Html.TextBoxFor(model => model.YourEmailAddress, new { @class = "fullname form-control", placeholder = T("Products.EmailAFriend.YourEmailAddress.Hint") })
+                        @Html.ValidationMessageFor(model => model.YourEmailAddress, null, new { @class = "text-danger" })
                     </div>
-                </div>
 
-                <div class="control-group">
-                    @Html.LabelFor(model => model.PersonalMessage, new { @class="control-label" , @for="PersonalMessage" } )
-                    <div class="controls">
-                        @Html.TextAreaFor(model => model.PersonalMessage, new { @class = "personal-message", placeholder = T("Products.EmailAFriend.PersonalMessage.Hint") })
-                        @Html.ValidationMessageFor(model => model.PersonalMessage)
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PersonalMessage, new { @for = "PersonalMessage" })
+                        @Html.TextAreaFor(model => model.PersonalMessage, new { @class = "personal-message form-control", placeholder = T("Products.EmailAFriend.PersonalMessage.Hint") })
+                        @Html.ValidationMessageFor(model => model.PersonalMessage, null, new { @class = "text-danger" })
                     </div>
-                </div>
 
-                @if (Model.DisplayCaptcha)
-                {
-                    <div class="captcha-box">
-                        @Html.Raw(Html.GenerateCaptcha())
-                    </div>
-                }
+                    @if (Model.DisplayCaptcha)
+                    {
+                        <div class="captcha-box">
+                            @Html.Raw(Html.GenerateCaptcha())
+                        </div>
+                    }
 
-                <div class="control-group">
-                    <div class="controls">
+                    <div class="form-group">
                         <button type="submit" name="send-email" class="btn btn-primary send-email-a-friend-button">
-							<i class="fa fa-envelope"></i>&nbsp;@T("Products.EmailAFriend.Button")
-						</button>
+						    <i class="fa fa-envelope"></i>&nbsp;@T("Products.EmailAFriend.Button")
+					    </button>
                     </div>
-                </div>
 
-            </fieldset>
+                </fieldset>
             }
         }
     </div>

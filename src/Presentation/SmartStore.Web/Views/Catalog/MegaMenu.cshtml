@@ -10,113 +10,94 @@
 	{
 		return node.Value.GenerateUrl(this.Url);
 	}
-	
-	private string GetCssClassForNode(TreeNode<MenuItem> node, NodePathState state) 
-    {
-        var liClasses = new List<string>();
 
-        if (node.Depth == 2)
-        {
-            liClasses.Add("drop-list-item");
+	private string GetCssClassForNode(TreeNode<MenuItem> node, NodePathState state)
+	{
+		var liClasses = new List<string>();
+
+		liClasses.Add("nav-item");
+
+		if (node.Depth <= 1 && node.HasChildren)
+		{
+			liClasses.Add(node.Depth > 0 ? "dropdown-submenu" : "dropdown");
 		}
 
-		if (node.Depth <= 2 && node.HasChildren)
+		if ((state & NodePathState.Expanded) == NodePathState.Expanded)
 		{
-			liClasses.Add(node.Depth > 1 ? "dropdown-submenu" : "dropdown");
-        }
-        
-        if ((state & NodePathState.Expanded) == NodePathState.Expanded)
-        {
-            liClasses.Add("expanded");
-        }
+			liClasses.Add("active expanded");
+		}
 
-        if ((state & NodePathState.Selected) == NodePathState.Selected)
-        {
-            liClasses.Add("selected");
-        }
+		if ((state & NodePathState.Selected) == NodePathState.Selected)
+		{
+			liClasses.Add("active");
+		}
 
-        return liClasses.Count > 0 ? String.Join(" ", liClasses) : null;
-    }
-    
+		return liClasses.Count > 0 ? String.Join(" ", liClasses) : null;
+	}
+
 }
 
-@if(GetThemeVariable<bool>("DisplayNavbar") )
-{ 
-<div class="container">
-    <div id='megamenu' class='navbar@(GetThemeVariable<bool>("InverseNavbar") ? " navbar-inverse" : "")@(GetThemeVariable<bool>("DisplayNavbar") ? "" : " hide")'>
-        <div class="navbar-inner">
-            <div class="container">
-                <ul class="nav nav-smart shrinkable" style="margin-right: 0;">
-                    
-                    @Html.Widget("megamenu_before_first_item")
+@if (!GetThemeVariable<bool>("DisplayNavbar", true))
+{
+	return;
+}
 
-                    @foreach (var node in Model.Root.Children)
-                    {
-                        var item = node.Value;
+<div class="megamenu">
+	<ul class="nav navbar-nav x-nav-smart shrinkable">
 
-                        if (!item.Visible)
-                        {
-                            continue;
-                        }
+		@Html.Widget("megamenu_before_first_item")
 
-                        var itemUrl = GetNodeLink(node);
-                        var itemState = node.GetNodePathState(Model.Path);
+		@foreach (var node in Model.Root.Children)
+		{
+			var item = node.Value;
 
-                        <li class='@(GetCssClassForNode(node, itemState))'>
-                            <a href="@itemUrl" @Html.Attr("class", "dropdown-toggle", node.HasChildren) data-target="#">
-                                @item.Text
-                                @if (item.ElementsCount.GetValueOrDefault() > 0)
-                                {
-                                    <text> (@(item.ElementsCount.Value.ToString("N0")))</text>
-                                }
+			if (!item.Visible)
+			{
+				continue;
+			}
 
-                                @if (node.HasChildren)
-                                {
-                                    <i class="fa fa-caret-down chevron"></i>
-                                }
-                            </a>
+			var itemUrl = GetNodeLink(node);
+			var itemState = node.GetNodePathState(Model.Path);
 
-                            @if (node.HasChildren)
-                            {
-                                @CreateDrilldownMenu(node.Children, true)
-                            }
+			<li class='@(GetCssClassForNode(node, itemState))'>
+				@if (node.HasChildren)
+				{
+					<a href="@itemUrl" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						@item.Text
+					</a>
+					@CreateDrilldownMenu(node.Children, true)
+				}
+				else
+				{
+					<a href="@itemUrl" class="nav-link">
+						@item.Text
+					</a>
+				}
+			</li>
+		}
 
-                        </li>
-                        if (node.Next != null)
-                        {
-                            <li class="divider-vertical"></li>
-                        }
-                    }
+		@Html.Widget("megamenu_after_last_item")
 
-                    @Html.Widget("megamenu_after_last_item")
+	</ul>
 
-                </ul>
-
-                <ul class="nav nav-smart shrink-menu pull-right hide">
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" href="#" data-target="#" onclick="return false;" rel="nofollow">
-                            <sup>...</sup>
-                        </a>
-                        <div class="dropdown-menu pull-right"></div>
-                    </li>
-                </ul>
-
-            </div>
-        </div>
-    </div>
+	<ul class="nav navbar-nav x-nav-smart shrink-menu pull-right">
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" rel="nofollow">
+				<i class="fa fa-ellipsis-h"></i>
+			</a>
+			<div class="dropdown-menu dropdown-menu-right"></div>
+		</li>
+	</ul>
 </div>
-
-}
 
 @helper CreateDrilldownMenu(IEnumerable<TreeNode<MenuItem>> nodes, bool isRoot)
 {
     if (isRoot)
     {
-        @Html.Raw("<div class='dropdown-menu'><div class='dropdown-menu-inner clearfix'>")
+        @Html.Raw("<div class='dropdown-menu'>")
     }
     
-    <ul class='@(isRoot ? "drop-list" : "dropdown-menu")'>
-    @foreach (var node in nodes)
+    foreach (var node in nodes)
 	{
 		var item = node.Value;
 
@@ -128,18 +109,11 @@
 		var itemUrl = GetNodeLink(node);
 		var itemState = node.GetNodePathState(Model.Path);
 		
-        <li class='@(GetCssClassForNode(node, itemState))'> 
-            <a href="@itemUrl">@item.Text</a>
-            @if (node.Depth <= 2 && node.HasChildren)
-            {
-                @CreateDrilldownMenu(node.Children, false)
-            }
-        </li>
+        <a class='dropdown-item@((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : "")' href="@itemUrl">@item.Text</a>
     }
-    </ul>
     
     if (isRoot)
     {
-        @Html.Raw("</div></div>")
+        @Html.Raw("</div>")
     }
 }

@@ -2,17 +2,16 @@
 @using SmartStore.Web.Models.Catalog;
 @if (Model.Count > 0)
 {   
-    
-    <div class="block">
+    <div class="block related-products">
         <div class="block-title">
             <h3>@T("Products.RelatedProducts")</h3>
         </div>
         <div class="block-body">
-            <div class="related-products-grid product-list scroll">
+            <div class="product-list scroll">
                 <div class="pl-row row">
                 @foreach (var item in Model)
                 {
-                    <article class="item-box product-compact equalized-column" data-equalized-deep="true">
+                    <article class="item-box card card-block card-shadow equalized-column" data-equalized-deep="true">
                         @Html.Partial("_ProductBoxCompact", item)
                     </article>
                 }
@@ -26,7 +25,7 @@
     
     <script type="text/javascript">
         $(function () {
-            $(".related-products-grid").productListScroller();
+            $(".related-products .product-list.scroll").productListScroller();
         });
     </script>
 }

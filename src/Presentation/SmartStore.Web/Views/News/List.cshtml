@@ -11,7 +11,7 @@
 <div class="page news-list-page">
     <div class="page-title">
         <a href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("News.RSS.Hint")">
-            <i class="fa fa-rss muted"></i>
+            <i class="fa fa-rss text-muted"></i>
             @T("News.RSS")
         </a>
         <h1>@T("News")</h1>
@@ -28,7 +28,7 @@
                         <a class="news-title" href="@Url.RouteUrl("NewsItem", new { SeName = item.SeName })">
                             @item.Title
                         </a>
-                        <span class="news-date muted pull-right">
+                        <span class="news-date text-muted pull-right">
                            @item.CreatedOn.ToString("D")
                         </span>
                     </h4>

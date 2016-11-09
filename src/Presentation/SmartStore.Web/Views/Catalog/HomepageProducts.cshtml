@@ -7,22 +7,28 @@
             @T("HomePage.Products")
         </div>
         <div class="block-body">
-        @if (Model.UseSmallProductBox)
-        {
-            @(Html.DataList<ProductOverviewModel>(Model.Products, 4,
-            @<div class="item-box product-compact">
-                @Html.Partial("_ProductBoxCompact", @item)
-            </div>
-            ))
-        }
-        else
-        {
-            @(Html.DataList<ProductOverviewModel>(Model.Products, 3,
-            @<div class="item-box">
-                @Html.Partial("_ProductBox", @item)
-            </div>
-            ))
-        }
+            @if (Model.UseSmallProductBox)
+            {
+                <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 card-cols-xl-4 product-grid">
+                    @foreach (var product in Model.Products)
+                    {
+                        <article class="card card-block card-shadow text-xs-center">
+                            @Html.Partial("_ProductBoxCompact", product)
+                        </article>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 product-grid">
+                    @foreach (var product in Model.Products)
+                    {
+                        <article class="card card-block card-shadow text-xs-center">
+                            @Html.Partial("_ProductBox", product)
+                        </article>
+                    }
+                </div>
+            }
         </div>
     </div>
 }

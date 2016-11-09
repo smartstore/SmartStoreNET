@@ -22,11 +22,13 @@
             @Html.Widget("checkout_payment_method_top")
             if (Model.DisplayRewardPoints && Model.PaymentMethods.Count > 0)
             {
-                <div class="alert alert-info">
-                    <label class="checkbox">
-                        @Html.EditorFor(model => model.UseRewardPoints)
-                        @Html.Raw(string.Format(T("Checkout.UseRewardPoints").Text, "<strong>" + Model.RewardPointsBalance + "</strong>", "<strong>" + Model.RewardPointsAmount + "</strong>"))
-                    </label>
+                <div class="reward-points alert alert-info">
+                    <div class="checkbox">
+                        <label>
+                            @Html.EditorFor(model => model.UseRewardPoints)
+                            @Html.Raw(string.Format(T("Checkout.UseRewardPoints").Text, "<strong>" + Model.RewardPointsBalance + "</strong>", "<strong>" + Model.RewardPointsAmount + "</strong>"))
+                        </label>
+                    </div>
                 </div>
             }
             <div class="opt-list payment-methods">
@@ -45,8 +47,8 @@
 										@paymentMethod.Fee
 									</div>
 								}
-								<div class="opt-control option-name">
-									<label for="paymentmethod_@(i)" class="radio">
+								<div class="opt-control option-name radio">
+									<label for="paymentmethod_@(i)">
 										<input id="paymentmethod_@(i)" type="radio" name="paymentmethod"
 											   @Html.Attr("checked", "checked", paymentMethod.Selected)
 											   data-has-info='@(infoRoute != null ? "true" : "false")'
@@ -94,7 +96,7 @@
 			if (Model.PaymentMethods.Count > 0)
 			{
 				<div class="select-button clearfix">
-					<a class="btn pull-left" href="@(Model.SkippedSelectShipping ? Url.Action("BillingAddress") : Url.Action("ShippingMethod"))">
+					<a class="btn btn-secondary pull-left" href="@Url.Action("ShippingMethod")">
 						<i class="fa fa-caret-left"></i>&nbsp;
 						@T("Common.Back")
 					</a>    

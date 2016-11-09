@@ -42,13 +42,13 @@
 
 @if (Model.Root.HasChildren)
 {
-    <div class="block block-bordered block-category-navigation">
-        <div class="block-title">
+    <div class="block block-bordered block-category-navigation card">
+        <div class="card-header">
             @T("Categories")
         </div>
-        <div class="block-body listbox">
+        <div class="block-body listbox card-block">
             <nav class="nav-category">
-                @CreateMenu(Model.Root.Children, "level-1")
+                @CreateMenu(Model.Root.Children, "level-1 list-unstyled")
             </nav>
         </div>
     </div>
@@ -64,12 +64,12 @@
                 <a href="@url">@node.Value.Text
                     @if ((node.Value.ElementsCount ?? 0) > 0)
                     {
-                        <text> (@(node.Value.ElementsCount.Value.ToString("N0")))</text>
+                        <text> (@(node.Value.ElementsCount))</text>
                     }
                 </a>
                 @if (ShouldRenderChildren(state))
                 {
-                    @CreateMenu(node.Children, "sub-level-" + (node.Depth + 1))
+                    @CreateMenu(node.Children, "sub-level-" + (node.Depth + 2))
                 }
             </li>
         }

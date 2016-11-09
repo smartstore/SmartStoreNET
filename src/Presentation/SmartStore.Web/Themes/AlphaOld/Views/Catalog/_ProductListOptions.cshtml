@@ -1,0 +1,57 @@
+﻿@model PagingFilteringModel
+@using SmartStore.Web.Models.Catalog;
+
+@helper CreateOptionChooser(IList<ListOptionItem> options, string label = "", string icon = "", bool rightFloat = false)
+{
+    var selectedOption = options.FirstOrDefault(x => x.Selected);
+    var floatClass = rightFloat ? "pull-right" : "pull-left";
+    <div class="btn-group @floatClass">
+		<a class="btn dropdown-toggle tooltip-toggle" data-toggle="dropdown" href="#" rel="nofollow" title="@label: @selectedOption.Text">
+			@if (icon.HasValue())
+			{
+				<i class="fa fa-fw fa-@icon"></i>
+			}
+			@selectedOption.Text
+			<span class="fa fa-fw fa-caret-down"></span>
+		</a>
+        <ul class="dropdown-menu">
+            @foreach(var opt in options)
+			{
+                <li @Html.Attr("class", "disabled", opt.Selected)>
+                    <a href="@opt.Url">@opt.Text</a>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+<div class="product-list-options clearfix">
+    @if (Model.AllowProductViewModeChanging)
+    {
+        <div class="product-viewmode pull-right">
+            <div class="btn-group" data-toggle="buttons-radio">
+                @foreach (var mode in Model.AvailableViewModes)
+                {
+                    <a href="@mode.Url" class='btn@(mode.Selected ? " active" : "") tooltip-toggle' rel="tooltip nofollow" title='@T("Categories.ViewMode"): @mode.Text'>
+                        @if ((string)mode.ExtraData == "grid") {
+                            <i class="fa fa-th"></i>
+                        }
+                        else {
+                            <i class="fa fa-bars"></i>
+                        }
+                    </a>
+                }
+            </div>
+        </div>
+	}
+	@*sorting*@
+	@if (Model.AllowProductSorting)
+	{
+		@CreateOptionChooser(Model.AvailableSortOptions, T("Categories.OrderBy").Text, "sort")
+	}
+	@*page size *@
+	@if (Model.AllowCustomersToSelectPageSize)
+	{
+		@CreateOptionChooser(Model.PageSizeOptions, T("Categories.PageSize").Text, "sort-amount-asc")
+	}
+</div>

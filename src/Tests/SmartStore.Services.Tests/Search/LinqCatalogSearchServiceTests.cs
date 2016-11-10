@@ -77,18 +77,17 @@ namespace SmartStore.Services.Tests.Search
 
 			for (var i = 97; i <= 110; ++i)
 			{
-				products.Add(new SearchProduct { Name = Convert.ToChar(i).ToString() });
+				products.Add(new SearchProduct { Name = Convert.ToChar(i).ToString(), ShortDescription = "smart" });
 			}
 
 			InitMocks(products);
 
-			var query = new CatalogSearchQuery();
+			var query = new CatalogSearchQuery(new string[] { "shortdescription" }, "smart");
 			query.SortBy(ProductSortingEnum.NameDesc);
 
 			var result = Search(query);
-			var chars = string.Join(",", result.Hits.Select(x => x.Name));
 
-			Assert.That(chars, Is.EqualTo("n,m,l,k,j,i,h,g,f,e,d,c,b,a"));
+			Assert.That(string.Join(",", result.Hits.Select(x => x.Name)), Is.EqualTo("n,m,l,k,j,i,h,g,f,e,d,c,b,a"));
 		}
 
 		[Test]

@@ -75,6 +75,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Products.Deleted",
 				"The product with ID {0} has been deleted.",
 				"Das Produkt mit der ID {0} wurde gelöscht.");
+
+			builder.AddOrUpdate("Common.ShowLess", "Show less", "Weniger anzeigen");
 		}
     }
 }

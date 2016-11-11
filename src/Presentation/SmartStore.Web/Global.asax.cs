@@ -130,13 +130,14 @@ namespace SmartStore.Web
 
 				// register virtual path provider for theming (file inheritance & variables handling)
 				HostingEnvironment.RegisterVirtualPathProvider(new ThemingVirtualPathProvider(HostingEnvironment.VirtualPathProvider));
-				BundleTable.VirtualPathProvider = HostingEnvironment.VirtualPathProvider;
-
+				
 				// register plugin debug view virtual path provider
 				if (HttpContext.Current.IsDebuggingEnabled && CommonHelper.IsDevEnvironment)
 				{
 					HostingEnvironment.RegisterVirtualPathProvider(new PluginDebugViewVirtualPathProvider());
 				}
+
+				BundleTable.VirtualPathProvider = HostingEnvironment.VirtualPathProvider;
 
 				// "throw-away" filter for task scheduler initialization (the filter removes itself when processed)
 				GlobalFilters.Filters.Add(new InitializeSchedulerFilter());

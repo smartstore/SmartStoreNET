@@ -57,12 +57,19 @@ namespace SmartStore.Services.Catalog
         /// <returns>Attributes</returns>
         string AddProductAttribute(string attributesXml, ProductVariantAttribute pva, string value);
 
-        /// <summary>
-        /// Are attributes equal
-        /// </summary>
-        /// <param name="attributeXml1">The attributes of the first product</param>
-        /// <param name="attributeXml2">The attributes of the second product</param>
-        /// <returns>Result</returns>
+		/// <summary>
+		/// Creates formatted xml for a list of product variant attribute values
+		/// </summary>
+		/// <param name="attributes">The attributes map</param>
+		/// <returns>Attributes XML</returns>
+		string CreateAttributesXml(Multimap<int, string> attributes);
+
+		/// <summary>
+		/// Are attributes equal
+		/// </summary>
+		/// <param name="attributeXml1">The attributes of the first product</param>
+		/// <param name="attributeXml2">The attributes of the second product</param>
+		/// <returns>Result</returns>
 		bool AreProductAttributesEqual(string attributeXml1, string attributeXml2);
 
 		/// <summary>

@@ -152,14 +152,14 @@ namespace SmartStore.Web.Framework.Theming
 			}
 			else
 			{
-				bool isLess;
-				bool isBundle;
-				if (ThemeHelper.IsStyleSheet(relativePath, out isLess, out isBundle) && isLess)
+				var styleResult = ThemeHelper.IsStyleSheet(relativePath);
+				var isPreprocessor = styleResult != null && styleResult.IsPreprocessor;
+				if (isPreprocessor)
 				{
-					// special consideration for LESS files: they can be validated
+					// special consideration for SASS/LESS files: they can be validated
 					// in the backend. For validation, a "theme" query is appended 
 					// to the url. During validation we must work with the actual
-					// requested theme instead dynamically resolving the working theme.
+					// requested theme instead of dynamically resolving the working theme.
 					var httpContext = HttpContext.Current;
 					if (httpContext != null && httpContext.Request != null)
 					{
@@ -171,13 +171,13 @@ namespace SmartStore.Web.Framework.Theming
 					}
 				}
 
-				if (isLess && query != null && query.StartsWith("explicit", StringComparison.OrdinalIgnoreCase))
+				if (isPreprocessor && query != null && query.StartsWith("explicit", StringComparison.OrdinalIgnoreCase))
 				{
-					// special case to support LESS @import declarations
-					// within inherited LESS files. Snenario: an inheritor wishes to
-					// include the same file from it's base theme (e.g. custom.less) just to tweak it
+					// special case to support SASS/LESS @import declarations
+					// within inherited SASS/LESS files. Snenario: an inheritor wishes to
+					// include the same file from it's base theme (e.g. custom.scss) just to tweak it
 					// a bit for his child theme. Without the 'explicit' query the resolution starting point
-					// for custom.less would be the CURRENT theme's folder, and NOT the requested one's,
+					// for custom.scss would be the CURRENT theme's folder, and NOT the requested one's,
 					// which inevitably would result in a cyclic dependency.
 					currentTheme = _themeRegistry.GetThemeManifest(requestedThemeName);
 					isExplicit = true;

@@ -14,6 +14,7 @@
 * (Dev) log4net integration
 * (Dev) proper plugin view debugging
 * (Dev) changes to static plugin files (css, js, etc.) immediately apply to running project
+* (Dev) Theming: plugins now support implicitly imported SASS files (Content/[public|admin].scss)
 * XML Sitemap optimized for very large catalogs:
 	* Partitions for very large sitemaps (> 50.000 nodes or > 10 MB)
 	* Generated in a background task. No instant invalidation anymore.

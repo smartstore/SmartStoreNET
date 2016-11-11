@@ -1,8 +1,10 @@
 /*@import url(https://fonts.googleapis.com/css?family=Roboto:400,400italic,500,500italic,700,700italic,300,300italic);*/
 
 
-/* Theme: NEW ALPHA 
+/* Theme: ALPHA 
 ------------------------------ */
+
+@import '~/.app/themevars.scss';
 
 $enable-flex:               true;
 $enable-rounded:            true;
@@ -54,7 +56,7 @@ $card-border-color:         rgba(0,0,0, 0.12);*/
 @import "bs4/scss/bootstrap.scss"; 
 
 // Global
-@import 'shared/_colors.scss';
+@import 'shared/_colors.scss'; 
 @import 'shared/_typo.scss';
 @import 'shared/_buttons.scss';
 @import 'shared/_forms.scss';
@@ -82,6 +84,9 @@ $card-border-color:         rgba(0,0,0, 0.12);*/
 @import "_product.scss";
 @import "_cart.scss";
 @import "_megamenu.scss";
+
+// Custom imports from plugins
+@import '~/.app/moduleimports.scss';
 
 html {
     width: 100%;

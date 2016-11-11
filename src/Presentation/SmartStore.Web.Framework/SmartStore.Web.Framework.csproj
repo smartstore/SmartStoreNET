@@ -275,6 +275,7 @@
     <Compile Include="Theming\HttpHandlers\CssHttpHandlerBase.cs" />
     <Compile Include="Theming\HttpHandlers\SassCssHttpHandler.cs" />
     <Compile Include="Theming\LocalizedDisplayMode.cs" />
+    <Compile Include="Theming\ModuleImportsVirtualFile.cs" />
     <Compile Include="Theming\ThemeFileResolver.cs" />
     <Compile Include="Theming\InheritedVirtualThemeFile.cs" />
     <Compile Include="Theming\TwoLevelViewLocationCache.cs" />

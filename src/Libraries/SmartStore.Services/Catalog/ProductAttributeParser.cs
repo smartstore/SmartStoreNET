@@ -220,6 +220,32 @@ namespace SmartStore.Services.Catalog
 			return pva.AddProductAttribute(attributesXml, value);
         }
 
+		public virtual string CreateAttributesXml(Multimap<int, string> attributes)
+		{
+			Guard.NotNull(attributes, nameof(attributes));
+
+			if (attributes.Count == 0)
+				return null;
+
+			var doc = new XmlDocument();
+			var root = doc.AppendChild(doc.CreateElement("Attributes"));
+
+			foreach (var attr in attributes)
+			{
+				var xelAttr = root.AppendChild(doc.CreateElement("ProductVariantAttribute")) as XmlElement;
+				xelAttr.SetAttribute("ID", attr.Key.ToString());
+
+				foreach (var val in attr.Value)
+				{
+					var xelAttrValue = xelAttr.AppendChild(doc.CreateElement("ProductVariantAttributeValue"));
+					var xelValue = xelAttrValue.AppendChild(doc.CreateElement("Value"));
+					xelValue.InnerText = val;
+				}
+			}
+
+			return doc.OuterXml;
+		}
+
 		public virtual bool AreProductAttributesEqual(string attributeXml1, string attributeXml2)
         {
 			if (attributeXml1.IsCaseInsensitiveEqual(attributeXml2))

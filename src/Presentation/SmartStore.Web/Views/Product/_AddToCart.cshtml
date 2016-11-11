@@ -27,48 +27,48 @@
             {
                 <div class="clearfix">
 
-                    <div class="pull-right without-discount-block">
-                        @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.OldPrice))
-                        {
-                            @T("Products.Price.OldPrice")<text>:</text>
-                            <span class="old-product-price">@Html.Raw(Model.ProductPrice.OldPrice)</span>
-                            <br />
-                        }
-						
-						<span>@Html.Raw(Model.ProductPrice.NoteWithoutDiscount)</span>
+					@if (Model.ProductPrice.Price.HasValue())
+					{
+						<div class="pull-right without-discount-block">
+							@if (!String.IsNullOrWhiteSpace(Model.ProductPrice.OldPrice))
+							{
+								@T("Products.Price.OldPrice")<text>:</text>
+								<span class="old-product-price">@Html.Raw(Model.ProductPrice.OldPrice)</span>
+								<br />
+							}
 
-                        <span class="@(String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount) ? "product-price current" : "line-through")">
+							<span>@Html.Raw(Model.ProductPrice.NoteWithoutDiscount)</span>
 
-                            <span class="product-price-without-discount" itemprop="price">
-                                @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.Price))
-                                {
-                                    @Html.Raw(Model.ProductPrice.Price)
-                                }
-                            </span>
-                        </span>
-                    </div>
-        
-					<div class="pull-left">
-						@if (!String.IsNullOrWhiteSpace(Model.ProductPrice.OldPrice))
-						{
-							<br />
-						}
-						<span>@Html.Raw(Model.ProductPrice.NoteWithDiscount)</span>
+							<span class="@(String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount) ? "product-price current" : "line-through")">
 
-						<span class="product-price with-discount current">
-							<span class="product-price-with-discount" itemprop="price">
-								@if (!String.IsNullOrWhiteSpace(Model.ProductPrice.PriceWithDiscount))
-								{
-									@Html.Raw(Model.ProductPrice.PriceWithDiscount)
-								}
+								<span class="product-price-without-discount" itemprop="price" content="@Model.ProductPrice.PriceValue.ToString("F", CultureInfo.InvariantCulture)">
+									@Html.Raw(Model.ProductPrice.Price)
+								</span>
 							</span>
-						</span>
-					</div>
-                    
+						</div>
+					}
+
+					@if (Model.ProductPrice.PriceWithDiscount.HasValue())
+					{
+						<div class="pull-left">
+							@if (!String.IsNullOrWhiteSpace(Model.ProductPrice.OldPrice))
+							{
+								<br />
+							}
+							<span>@Html.Raw(Model.ProductPrice.NoteWithDiscount)</span>
+
+							<span class="product-price with-discount current">
+								<span class="product-price-with-discount" itemprop="price" content="@Model.ProductPrice.PriceWithDiscountValue.ToString("F", CultureInfo.InvariantCulture)">
+									@Html.Raw(Model.ProductPrice.PriceWithDiscount)
+								</span>
+							</span>
+						</div>
+					}                  
                 </div>
-            } 
-            else 
-            {
+				<meta itemprop="priceCurrency" content="@WorkContext.WorkingCurrency.CurrencyCode" />
+			}
+			else
+			{
                 <h4 class="call-for-price">@T("Products.CallForPrice")</h4>
             }
 

@@ -18,7 +18,7 @@ namespace SmartStore.Core.Domain.Directory
 		public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the currency code
+        /// Gets or sets the ISO currency code
         /// </summary>
 		[DataMember]
 		public string CurrencyCode { get; set; }

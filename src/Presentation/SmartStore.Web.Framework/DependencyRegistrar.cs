@@ -352,7 +352,7 @@ namespace SmartStore.Web.Framework
 			builder.Register(x => x.Resolve<DataProviderFactory>().LoadDataProvider()).As<IDataProvider>().InstancePerDependency();
 			builder.Register(x => (IEfDataProvider)x.Resolve<DataProviderFactory>().LoadDataProvider()).As<IEfDataProvider>().InstancePerDependency();
 
-			builder.RegisterType<DefaultHookHandler>().As<IHookHandler>().InstancePerRequest();
+			builder.RegisterType<DefaultDbHookHandler>().As<IDbHookHandler>().InstancePerRequest();
 
 			builder.RegisterType<EfDbCache>().As<IDbCache>().SingleInstance();
 
@@ -372,24 +372,24 @@ namespace SmartStore.Web.Framework
 						x = x.BaseType;
 					}
 
-					return typeof(object);
+					return typeof(BaseEntity);
 				};
 
-				var hooks = _typeFinder.FindClassesOfType<IHook>(ignoreInactivePlugins: true);
+				var hooks = _typeFinder.FindClassesOfType<IDbHook>(ignoreInactivePlugins: true);
 				foreach (var hook in hooks)
 				{
 					var hookedType = findHookedType(hook);
 
 					var registration = builder.RegisterType(hook)
-						.As(typeof(IPreActionHook).IsAssignableFrom(hook) ? typeof(IPreActionHook) : typeof(IPostActionHook))
-						.InstancePerRequest();
-
-					registration.WithMetadata<HookMetadata>(m => 
-					{ 
-						m.For(em => em.HookedType, hookedType);
-						m.For(em => em.ImplType, hook);
-						m.For(em => em.Important, hookedType.HasAttribute<ImportantAttribute>(false));
-					});
+						.As<IDbHook>()
+						.InstancePerRequest()
+						.WithMetadata<HookMetadata>(m =>
+						{
+							m.For(em => em.HookedType, hookedType);
+							m.For(em => em.ImplType, hook);
+							m.For(em => em.IsLoadHook, typeof(IDbLoadHook).IsAssignableFrom(hook));
+							m.For(em => em.Important, hookedType.HasAttribute<ImportantAttribute>(false));
+						});
 				}
 
 				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString))

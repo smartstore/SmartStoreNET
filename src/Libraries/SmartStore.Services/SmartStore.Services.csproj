@@ -237,8 +237,8 @@
     <Compile Include="Events\DefaultMessageBus.cs" />
     <Compile Include="Events\IMessageBroker.cs" />
     <Compile Include="Events\IMessageBus.cs" />
-    <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
-    <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
+    <Compile Include="Hooks\SlugSupportedHook.cs" />
+    <Compile Include="Hooks\StoreMappingEntityHook.cs" />
     <Compile Include="IScopedService.cs" />
     <Compile Include="Logging\DbLogService.cs" />
     <Compile Include="Logging\ILogService.cs" />
@@ -266,7 +266,7 @@
     <Compile Include="Pdf\IPdfConverter.cs" />
     <Compile Include="Directory\EcbExchangeRateProvider.cs" />
     <Compile Include="Catalog\AdjustInventoryResult.cs" />
-    <Compile Include="Hooks\SoftDeletablePreUpdateHook.cs" />
+    <Compile Include="Hooks\SoftDeletableHook.cs" />
     <Compile Include="Affiliates\AffiliateService.cs" />
     <Compile Include="Affiliates\IAffiliateService.cs" />
     <Compile Include="Authentication\External\AuthorizeState.cs" />
@@ -307,8 +307,8 @@
     <Compile Include="Catalog\IProductTagService.cs" />
     <Compile Include="Catalog\ProductTagService.cs" />
     <Compile Include="Catalog\IRecentlyViewedProductsService.cs" />
-    <Compile Include="Hooks\ProductVariantAttributePostDeleteHook.cs" />
-    <Compile Include="Hooks\ProductVariantAttributeValuePostDeleteHook.cs" />
+    <Compile Include="Hooks\ProductVariantAttributeHook.cs" />
+    <Compile Include="Hooks\ProductVariantAttributeValueHook.cs" />
     <Compile Include="Catalog\RecentlyViewedProductsService.cs" />
     <Compile Include="Catalog\TierPriceExtensions.cs" />
     <Compile Include="Catalog\ProductExtensions.cs" />
@@ -358,7 +358,7 @@
     <Compile Include="Filter\IFilterService.cs" />
     <Compile Include="Forums\ForumExtensions.cs" />
     <Compile Include="ICommonServices.cs" />
-    <Compile Include="Hooks\LocalizedEntityPostDeleteHook.cs" />
+    <Compile Include="Hooks\LocalizedEntityHook.cs" />
     <Compile Include="Logging\DeleteLogsTask.cs" />
     <Compile Include="Media\CachedImageResult.cs" />
     <Compile Include="Media\IImageCache.cs" />
@@ -489,7 +489,7 @@
     </Compile>
     <Compile Include="Customers\ChangePasswordRequest.cs" />
     <Compile Include="Customers\PasswordChangeResult.cs" />
-    <Compile Include="Hooks\AclEntityPostDeleteHook.cs" />
+    <Compile Include="Hooks\AclEntityHook.cs" />
     <Compile Include="ScopedServiceBase.cs" />
     <Compile Include="Search\CatalogSearchQuery.cs" />
     <Compile Include="Search\CatalogSearchResult.cs" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
@@ -37,6 +38,21 @@ namespace SmartStore.Data
 			this.HooksEnabled = true;
 			this.AutoCommitEnabled = true;
             this.Alias = null;
+
+			// listen to 'ObjectMaterialized' for load hooking
+			((IObjectContextAdapter)this).ObjectContext.ObjectMaterialized += ObjectMaterialized;
+		}
+
+		private void ObjectMaterialized(object sender, ObjectMaterializedEventArgs e)
+		{
+			var entity = e.Entity as BaseEntity;
+			if (entity == null)
+				return;
+
+			var hookHandler = GetDbHookHandler();
+			var importantHooksOnly = !this.HooksEnabled && hookHandler.HasImportantLoadHooks();
+
+			hookHandler.TriggerLoadHooks(entity, importantHooksOnly);
 		}
 
 		public bool HooksEnabled

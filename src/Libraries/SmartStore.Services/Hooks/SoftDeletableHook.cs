@@ -9,27 +9,21 @@ using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Hooks
 {
-
-	public class SoftDeletablePreUpdateHook : PreUpdateHook<ISoftDeletable>
+	public class SoftDeletablePreUpdateHook : DbSaveHook<ISoftDeletable>
 	{
 		private readonly IComponentContext _ctx;
 
 		public SoftDeletablePreUpdateHook(IComponentContext ctx)
 		{
-			this._ctx = ctx;
+			_ctx = ctx;
 		}
 
-		public override void Hook(ISoftDeletable entity, HookEntityMetadata metadata)
+		protected override void OnUpdating(ISoftDeletable entity, HookedEntity entry)
 		{
-			var baseEntity = entity as BaseEntity;
+			var baseEntity = entry.Entity;
 
-			if (baseEntity == null)
-				return;
-
-			var dbContext = _ctx.Resolve<IDbContext>();
-			var modifiedProps = dbContext.GetModifiedProperties(baseEntity);
-
-			if (!modifiedProps.ContainsKey("Deleted"))
+			var deletedModified = entry.Entry.Property("Deleted").IsModified;
+			if (!deletedModified)
 				return;
 
 			var entityType = baseEntity.GetUnproxiedType();
@@ -59,19 +53,17 @@ namespace SmartStore.Services.Hooks
 
 				var urlRecordService = _ctx.Resolve<IUrlRecordService>();
 				var activeRecords = urlRecordService.GetUrlRecordsFor(entityType.Name, baseEntity.Id);
-				foreach (var record in activeRecords)
+				using (urlRecordService.BeginScope())
 				{
-					if (!record.IsActive)
+					foreach (var record in activeRecords)
 					{
-						urlRecordService.DeleteUrlRecord(record);
+						if (!record.IsActive)
+						{
+							urlRecordService.DeleteUrlRecord(record);
+						}
 					}
 				}
 			}
-		}
-
-		public override bool RequiresValidation
-		{
-			get { return false; }
 		}
 	}
 }

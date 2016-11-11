@@ -188,8 +188,17 @@
     <Compile Include="ComponentModel\TypeConversion\TypeConverterFactory.cs" />
     <Compile Include="Data\Hooks\DefaultHookHandler.cs" />
     <Compile Include="Data\Hooks\HookableAttribute.cs" />
+    <Compile Include="Data\Hooks\HookMetadata.cs" />
     <Compile Include="Data\Hooks\IHookHandler.cs" />
     <Compile Include="Data\Hooks\ImportantAttribute.cs" />
+    <Compile Include="Data\Hooks\New\DbLoadHook.cs" />
+    <Compile Include="Data\Hooks\New\DbSaveHook.cs" />
+    <Compile Include="Data\Hooks\New\DefaultDbHookHandler.cs" />
+    <Compile Include="Data\Hooks\New\HookedEntity.cs" />
+    <Compile Include="Data\Hooks\New\IDbHook.cs" />
+    <Compile Include="Data\Hooks\New\IDbLoadHook.cs" />
+    <Compile Include="Data\Hooks\New\IDbSaveHook.cs" />
+    <Compile Include="Data\Hooks\New\IDbHookHandler.cs" />
     <Compile Include="Data\IDbContextExtensions.cs" />
     <Compile Include="Data\ITransaction.cs" />
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />

@@ -5,6 +5,11 @@
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Collections;
 
+@{
+    Layout = "";
+    Html.AppendScriptParts(true, Url.Content("~/Themes/Alpha/Scripts/smartstore.megamenu.js"));
+}
+
 @functions {
 	private string GetNodeLink(TreeNode<MenuItem> node)
 	{
@@ -24,17 +29,16 @@
 
 		if ((state & NodePathState.Expanded) == NodePathState.Expanded)
 		{
-			liClasses.Add("active expanded");
+			liClasses.Add("expanded");
 		}
 
 		if ((state & NodePathState.Selected) == NodePathState.Selected)
 		{
-			liClasses.Add("active");
+			liClasses.Add("selected");
 		}
 
 		return liClasses.Count > 0 ? String.Join(" ", liClasses) : null;
 	}
-
 }
 
 @if (!GetThemeVariable<bool>("DisplayNavbar", true))
@@ -42,8 +46,13 @@
 	return;
 }
 
-<div class="megamenu">
-	<ul class="nav navbar-nav x-nav-smart shrinkable">
+<div class="megamenu simple">
+
+    <div class="megamenu-nav megamenu-nav--prev">
+        <a href="#" class="megamenu-nav-btn btn btn-icon"><i class="fa fa-angle-left"></i></a>
+    </div>
+
+	<ul class="nav navbar-nav">
 
 		@Html.Widget("megamenu_before_first_item")
 
@@ -62,17 +71,17 @@
 			<li class='@(GetCssClassForNode(node, itemState))'>
 				@if (node.HasChildren)
 				{
-					<a href="@itemUrl" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<a href="@itemUrl" class="nav-link dropdown-toggle" aria-haspopup="true" aria-expanded="false" data-target="#dropdown-menu-@node.Value.EntityId">
 						@item.Text
 					</a>
-					@CreateDrilldownMenu(node.Children, true)
-				}
-				else
-				{
+                }
+                else
+                {
 					<a href="@itemUrl" class="nav-link">
 						@item.Text
 					</a>
 				}
+
 			</li>
 		}
 
@@ -80,14 +89,19 @@
 
 	</ul>
 
-	<ul class="nav navbar-nav x-nav-smart shrink-menu pull-right">
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" rel="nofollow">
-				<i class="fa fa-ellipsis-h"></i>
-			</a>
-			<div class="dropdown-menu dropdown-menu-right"></div>
-		</li>
-	</ul>
+    <div class="megamenu-nav megamenu-nav--next">
+        <a href="#" class="megamenu-nav-btn btn btn-icon"><i class="fa fa-angle-right"></i></a>
+    </div>
+</div>
+
+<div class="megamenu-dropdown-container simple">
+    @foreach (var node in Model.Root.Children)
+    {
+        var parent = node;
+        <div id="dropdown-menu-@parent.Value.EntityId" data-entity-id="@parent.Value.EntityId">
+             @CreateDrilldownMenu(node.Children, true)
+        </div>
+    }
 </div>
 
 @helper CreateDrilldownMenu(IEnumerable<TreeNode<MenuItem>> nodes, bool isRoot)
@@ -109,7 +123,7 @@
 		var itemUrl = GetNodeLink(node);
 		var itemState = node.GetNodePathState(Model.Path);
 		
-        <a class='dropdown-item@((itemState & NodePathState.Selected) == NodePathState.Selected ? " active" : "")' href="@itemUrl">@item.Text</a>
+        <a class='dropdown-item@((itemState & NodePathState.Selected) == NodePathState.Selected ? " selected" : "")' href="@itemUrl">@item.Text</a>
     }
     
     if (isRoot)
@@ -117,3 +131,9 @@
         @Html.Raw("</div>")
     }
 }
+
+<script type="text/javascript">
+    $(function () {
+        $(".megamenu-container").megaMenu();
+    });
+</script>    

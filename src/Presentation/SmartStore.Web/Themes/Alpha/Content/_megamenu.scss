@@ -321,3 +321,23 @@
         display: none;
     }
 }
+
+
+// exclusiv for .simple
+.megamenu-dropdown-container.simple .dropdown-menu {
+    margin-top: -1px;
+    min-width: 250px;
+}
+.megamenu-dropdown-container.simple .dropdown-item {
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+    font-size: 0.85rem;
+}
+.megamenu-container .simple .nav-item.active:before {
+    right: initial;
+    left: 12px;
+}
+.megamenu-container .simple .nav-item.active:after {
+    right: initial;
+    left: 10px;
+}

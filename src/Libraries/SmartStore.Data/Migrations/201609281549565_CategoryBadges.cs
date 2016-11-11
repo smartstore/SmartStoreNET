@@ -77,6 +77,8 @@ namespace SmartStore.Data.Migrations
 				"Das Produkt mit der ID {0} wurde gelöscht.");
 
 			builder.AddOrUpdate("Common.ShowLess", "Show less", "Weniger anzeigen");
-		}
+
+            builder.AddOrUpdate("Menu.ServiceMenu", "Help & Services", "Hilfe & Service");
+        }
     }
 }

@@ -282,7 +282,6 @@ $.fn.extend( {
 			(new $.ScrollButton($(this), buttons, target, options));
 		});
 	}
-	
 });
 
 })( jQuery );

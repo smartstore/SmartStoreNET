@@ -19,6 +19,7 @@
 
                 var megamenuContainer = $(this);
                 var megamenu = $(".megamenu", megamenuContainer);
+                var isSimple = megamenu.hasClass("simple");
                 var megamenuNext = $(".megamenu-nav--next", megamenuContainer);
                 var megamenuPrev = $(".megamenu-nav--prev", megamenuContainer);
                 var megamenuDropdownContainer = $('.megamenu-dropdown-container');
@@ -93,7 +94,7 @@
 
                     // Handle opening events for desktop workstations
 
-                    $(".mega-menu-dropdown").on('mouseenter', function (e) {
+                    $(".dropdown-menu").on('mouseenter', function (e) {
 
                         clearTimeout(closingTimeout);
                     })
@@ -110,7 +111,7 @@
                         // if correct dropdown is already open then don't open it again
                         var opendMenuSelector = $(".nav-item.active .nav-link").data("target");
 
-                        if ($(this).hasClass("dropdown-submenu")) {
+                        if ($(this).hasClass("nav-item")) {
                             closeNow($(".nav-item.active .nav-link"));
                             
                         } else if (opendMenuSelector == link.data("target")) {
@@ -124,6 +125,27 @@
                         var link = $(this).find(".nav-link");
 
                         closeMenuHandler(link);
+                    });
+                }
+
+                // correct dropdown position
+                if (isSimple) {
+
+                    var event = $("html").hasClass("touch") ? "click" : "mouseenter";
+
+                    navElems.on(event, function (e) {
+                        var navItem = $(this);
+                        var opendMenu = $(".dropdown-menu", $(".nav-item.active .nav-link").data("target"));
+                        var offsetLeft = navItem.offset().left - megamenu.offset().left;
+
+                        if (offsetLeft < 0) {
+                            offsetLeft = 0;
+                        }
+                        else if (offsetLeft + opendMenu.width() > megamenu.width()) {
+                            offsetLeft = megamenu.width() - opendMenu.width();
+                        }
+
+                        opendMenu.css("left", offsetLeft);
                     });
                 }
 
@@ -252,6 +274,23 @@
                     //oh, oh, oh, oh, can't touch this ;-/
                     var hammertime = new Hammer($(".megamenu")[0]);
                     hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
+
+                    if (isSimple) {
+                        hammertime.on('panstart', function (ev) {
+
+                            closeNow($(".nav-item.active .nav-link"));
+
+                            /*
+                            var link = $(".nav-item.active .nav-link");
+
+                            $(link.data("target")).removeClass("open");
+
+                            if (link.hasClass("dropdown-toggle")) {
+                                link.closest("li").removeClass("active");
+                            }
+                            */
+                        });
+                    }
 
                     hammertime.on('panend', function (ev) {
 

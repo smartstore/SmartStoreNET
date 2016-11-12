@@ -1475,7 +1475,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (orderItem.Quantity > 0)
 			{
-				var returnRequest = new ReturnRequest()
+				var returnRequest = new ReturnRequest
 				{
 					StoreId = order.StoreId,
 					OrderItemId = orderItem.Id,
@@ -1484,9 +1484,7 @@ namespace SmartStore.Admin.Controllers
 					ReasonForReturn = "",
 					RequestedAction = "",
 					StaffNotes = "",
-					ReturnRequestStatus = ReturnRequestStatus.Pending,
-					CreatedOnUtc = DateTime.UtcNow,
-					UpdatedOnUtc = DateTime.UtcNow
+					ReturnRequestStatus = ReturnRequestStatus.Pending
 				};
 
 				order.Customer.ReturnRequests.Add(returnRequest);

@@ -790,9 +790,7 @@ namespace SmartStore.Web.Controllers
                         ForumId = forum.Id,
                         CustomerId = _workContext.CurrentCustomer.Id,
                         TopicTypeId = (int) topicType,
-                        Subject = subject,
-                        CreatedOnUtc = nowUtc,
-                        UpdatedOnUtc = nowUtc
+                        Subject = subject
                     };
 
                     _forumService.InsertTopic(forumTopic, true);
@@ -804,8 +802,6 @@ namespace SmartStore.Web.Controllers
                         CustomerId = _workContext.CurrentCustomer.Id,
                         Text = text,
                         IPAddress = ipAddress,
-                        CreatedOnUtc = nowUtc,
-                        UpdatedOnUtc = nowUtc
                     };
 
                     _forumService.InsertPost(forumPost, false);
@@ -815,7 +811,6 @@ namespace SmartStore.Web.Controllers
                     forumTopic.LastPostId = forumPost.Id;
                     forumTopic.LastPostCustomerId = forumPost.CustomerId;
                     forumTopic.LastPostTime = forumPost.CreatedOnUtc;
-                    forumTopic.UpdatedOnUtc = nowUtc;
 
                     _forumService.UpdateTopic(forumTopic);
 
@@ -968,7 +963,6 @@ namespace SmartStore.Web.Controllers
                     //forum topic
                     forumTopic.TopicTypeId = (int) topicType;
                     forumTopic.Subject = subject;
-                    forumTopic.UpdatedOnUtc = nowUtc;
 
                     _forumService.UpdateTopic(forumTopic);
 
@@ -977,19 +971,17 @@ namespace SmartStore.Web.Controllers
                     if (firstPost != null)
                     {
                         firstPost.Text = text;
-                        firstPost.UpdatedOnUtc = nowUtc;
                         _forumService.UpdatePost(firstPost);
                     }
                     else
                     {
                         //error (not possible)
-                        firstPost = new ForumPost()
+                        firstPost = new ForumPost
                         {
                             TopicId = forumTopic.Id,
                             CustomerId = forumTopic.CustomerId,
                             Text = text,
                             IPAddress = ipAddress,
-                            UpdatedOnUtc = nowUtc
                         };
 
                         _forumService.InsertPost(firstPost, false);
@@ -1190,9 +1182,7 @@ namespace SmartStore.Web.Controllers
                         TopicId = forumTopic.Id,
                         CustomerId = _workContext.CurrentCustomer.Id,
                         Text = text,
-                        IPAddress = ipAddress,
-                        CreatedOnUtc = nowUtc,
-                        UpdatedOnUtc = nowUtc
+                        IPAddress = ipAddress
                     };
 
                     _forumService.InsertPost(forumPost, true);
@@ -1364,7 +1354,6 @@ namespace SmartStore.Web.Controllers
                         text = text.Substring(0, maxPostLength);
                     }
 
-                    forumPost.UpdatedOnUtc = nowUtc;
                     forumPost.Text = text;
 
                     _forumService.UpdatePost(forumPost);

@@ -238,6 +238,7 @@
     <Compile Include="Events\IMessageBroker.cs" />
     <Compile Include="Events\IMessageBus.cs" />
     <Compile Include="Hooks\SlugSupportedHook.cs" />
+    <Compile Include="Hooks\AuditableHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityHook.cs" />
     <Compile Include="IScopedService.cs" />
     <Compile Include="Logging\DbLogService.cs" />

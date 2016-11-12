@@ -141,9 +141,7 @@ namespace SmartStore.Web.Controllers
                     PollAnswerId = pollAnswer.Id,
                     CustomerId = _workContext.CurrentCustomer.Id,
                     IpAddress = _webHelper.GetCurrentIpAddress(),
-                    IsApproved = true,
-                    CreatedOnUtc = DateTime.UtcNow,
-                    UpdatedOnUtc = DateTime.UtcNow,
+                    IsApproved = true
                 });
 
                 //update totals

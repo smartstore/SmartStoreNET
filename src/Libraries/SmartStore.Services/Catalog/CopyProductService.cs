@@ -220,8 +220,6 @@ namespace SmartStore.Services.Catalog
 				DisplayOrder = product.DisplayOrder,
                 Published = isPublished,
                 Deleted = product.Deleted,
-				CreatedOnUtc = utcNow,
-				UpdatedOnUtc = utcNow,
 				DeliveryTimeId = product.DeliveryTimeId,
                 QuantityUnitId = product.QuantityUnitId,
 				BasePriceEnabled = product.BasePriceEnabled,
@@ -551,8 +549,6 @@ namespace SmartStore.Services.Catalog
 			{
 				var newBundleItem = bundleItem.Item.Clone();
 				newBundleItem.BundleProductId = productCopy.Id;
-				newBundleItem.CreatedOnUtc = utcNow;
-				newBundleItem.UpdatedOnUtc = utcNow;
 
 				_productService.InsertBundleItem(newBundleItem);
 

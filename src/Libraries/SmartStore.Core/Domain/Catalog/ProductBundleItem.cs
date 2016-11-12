@@ -6,7 +6,7 @@ using SmartStore.Core.Domain.Localization;
 namespace SmartStore.Core.Domain.Catalog
 {
 	[DataContract]
-	public partial class ProductBundleItem : BaseEntity, ILocalizedEntity, ICloneable<ProductBundleItem>
+	public partial class ProductBundleItem : BaseEntity, IAuditable, ILocalizedEntity, ICloneable<ProductBundleItem>
 	{
 		private ICollection<ProductBundleItemAttributeFilter> _attributeFilters;
 
@@ -117,7 +117,7 @@ namespace SmartStore.Core.Domain.Catalog
 
 		public ProductBundleItem Clone()
 		{
-			var bundleItem = new ProductBundleItem()
+			var bundleItem = new ProductBundleItem
 			{
 				ProductId = this.ProductId,
 				BundleProductId = this.BundleProductId,

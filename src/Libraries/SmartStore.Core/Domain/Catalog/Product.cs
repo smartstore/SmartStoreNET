@@ -17,7 +17,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a product
     /// </summary>
     [DataContract]
-	public partial class Product : BaseEntity, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IMergedData
+	public partial class Product : BaseEntity, IAuditable, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported, IMergedData
 	{
         private ICollection<ProductCategory> _productCategories;
         private ICollection<ProductManufacturer> _productManufacturers;

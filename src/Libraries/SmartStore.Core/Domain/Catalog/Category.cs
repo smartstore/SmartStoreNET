@@ -17,7 +17,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// </summary>
     [DataContract]
 	[DebuggerDisplay("{Id}: {Name} (Parent: {ParentCategoryId})")]
-	public partial class Category : BaseEntity, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported
+	public partial class Category : BaseEntity, IAuditable, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported
     {
         private ICollection<Discount> _appliedDiscounts;
 

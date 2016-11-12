@@ -3104,8 +3104,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.NotifyAdminForQuantityBelow = 1;
 					x.AllowBackInStockSubscriptions = false;
 					x.Published = true;
-					x.CreatedOnUtc = DateTime.UtcNow;
-					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 				})
 
@@ -3126,8 +3124,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.NotifyAdminForQuantityBelow = 1;
 					x.AllowBackInStockSubscriptions = false;
 					x.Published = true;
-					x.CreatedOnUtc = DateTime.UtcNow;
-					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 				})
 
@@ -3147,8 +3143,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.NotifyAdminForQuantityBelow = 1;
 					x.AllowBackInStockSubscriptions = false;
 					x.Published = true;
-					x.CreatedOnUtc = DateTime.UtcNow;
-					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 				})
 
@@ -3170,8 +3164,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.NotifyAdminForQuantityBelow = 1;
 					x.AllowBackInStockSubscriptions = false;
 					x.Published = true;
-					x.CreatedOnUtc = DateTime.UtcNow;
-					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 				})
 
@@ -3190,8 +3182,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.NotifyAdminForQuantityBelow = 1;
 					x.AllowBackInStockSubscriptions = false;
 					x.Published = true;
-					x.CreatedOnUtc = DateTime.UtcNow;
-					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 				})
 
@@ -3210,8 +3200,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.NotifyAdminForQuantityBelow = 1;
 					x.AllowBackInStockSubscriptions = false;
 					x.Published = true;
-					x.CreatedOnUtc = DateTime.UtcNow;
-					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 				})
 
@@ -3230,8 +3218,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.NotifyAdminForQuantityBelow = 1;
 					x.AllowBackInStockSubscriptions = false;
 					x.Published = true;
-					x.CreatedOnUtc = DateTime.UtcNow;
-					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 				})
 
@@ -3250,8 +3236,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.NotifyAdminForQuantityBelow = 1;
 					x.AllowBackInStockSubscriptions = false;
 					x.Published = true;
-					x.CreatedOnUtc = DateTime.UtcNow;
-					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 				})
 
@@ -3278,8 +3262,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.NotifyAdminForQuantityBelow = 1;
 					x.AllowBackInStockSubscriptions = false;
 					x.Published = true;
-					x.CreatedOnUtc = DateTime.UtcNow;
-					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 				})
 				#endregion Dell Inspiron One 23
@@ -3299,8 +3281,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.NotifyAdminForQuantityBelow = 1;
 					x.AllowBackInStockSubscriptions = false;
 					x.Published = true;
-					x.CreatedOnUtc = DateTime.UtcNow;
-					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 				})
 				#endregion Dell Optiplex 3010 DT Base
@@ -3324,8 +3304,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.NotifyAdminForQuantityBelow = 1;
 					x.AllowBackInStockSubscriptions = false;
 					x.Published = true;
-					x.CreatedOnUtc = DateTime.UtcNow;
-					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 				})
 				#endregion Acer Aspire One 8.9
@@ -3352,8 +3330,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.NotifyAdminForQuantityBelow = 1;
 					x.AllowBackInStockSubscriptions = false;
 					x.Published = true;
-					x.CreatedOnUtc = DateTime.UtcNow;
-					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 					x.ProductReviews.Clear();
 				})
@@ -3406,8 +3382,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.NotifyAdminForQuantityBelow = 1;
 					x.AllowBackInStockSubscriptions = false;
 					x.Published = true;
-					x.CreatedOnUtc = DateTime.UtcNow;
-					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
 					x.ProductReviews.Clear();
 				})

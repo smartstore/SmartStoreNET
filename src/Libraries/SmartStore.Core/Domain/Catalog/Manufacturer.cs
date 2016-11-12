@@ -14,7 +14,7 @@ namespace SmartStore.Core.Domain.Catalog
 	/// Represents a manufacturer
 	/// </summary>
 	[DataContract]
-	public partial class Manufacturer : BaseEntity, ISoftDeletable, ILocalizedEntity, ISlugSupported, IStoreMappingSupported
+	public partial class Manufacturer : BaseEntity, IAuditable, ISoftDeletable, ILocalizedEntity, ISlugSupported, IStoreMappingSupported
     {
 		private ICollection<Discount> _appliedDiscounts;
 

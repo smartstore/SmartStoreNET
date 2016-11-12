@@ -6,8 +6,8 @@ namespace SmartStore.Core.Domain.Forums
     /// <summary>
     /// Represents a forum topic
     /// </summary>
-    public partial class ForumTopic : BaseEntity
-    {
+    public partial class ForumTopic : BaseEntity, IAuditable
+	{
         /// <summary>
         /// Gets or sets the forum identifier
         /// </summary>

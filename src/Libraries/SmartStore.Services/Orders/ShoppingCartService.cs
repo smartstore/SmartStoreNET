@@ -1116,8 +1116,6 @@ namespace SmartStore.Services.Orders
 						AttributesXml = selectedAttributes,
 						CustomerEnteredPrice = customerEnteredPrice,
 						Quantity = quantity,
-						CreatedOnUtc = now,
-						UpdatedOnUtc = now,
 						ParentItemId = null	//parentItemId
 					};
 

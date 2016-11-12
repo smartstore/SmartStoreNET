@@ -250,7 +250,6 @@ namespace SmartStore.Admin.Controllers
 			p.IsTaxExempt = m.IsTaxExempt;
 			p.TaxCategoryId = m.TaxCategoryId;
 
-			p.UpdatedOnUtc = DateTime.UtcNow;
 			p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
 			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
 		}
@@ -1066,7 +1065,6 @@ namespace SmartStore.Admin.Controllers
 
 				MapModelToProduct(model, product, form);
 
-				product.CreatedOnUtc = DateTime.UtcNow;
 				product.StockQuantity = 10000;
 				product.OrderMinimumQuantity = 1;
 				product.OrderMaximumQuantity = 10000;
@@ -2124,9 +2122,7 @@ namespace SmartStore.Admin.Controllers
 							Quantity = 1,
 							Visible = true,
 							Published = true,
-							DisplayOrder = ++maxDisplayOrder,
-							CreatedOnUtc = utcNow,
-							UpdatedOnUtc = utcNow
+							DisplayOrder = ++maxDisplayOrder
 						};
 
 						_productService.InsertBundleItem(bundleItem);
@@ -2175,7 +2171,6 @@ namespace SmartStore.Admin.Controllers
 					throw new ArgumentException("No bundle item found with the specified id");
 
 				bundleItem = model.ToEntity(bundleItem);
-				bundleItem.UpdatedOnUtc = DateTime.UtcNow;
 
 				_productService.UpdateBundleItem(bundleItem);
 

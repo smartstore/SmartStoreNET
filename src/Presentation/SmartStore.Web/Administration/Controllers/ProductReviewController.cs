@@ -173,7 +173,6 @@ namespace SmartStore.Admin.Controllers
                 productReview.Title = model.Title;
                 productReview.ReviewText = model.ReviewText;
                 productReview.IsApproved = model.IsApproved;
-                productReview.UpdatedOnUtc = DateTime.UtcNow;
                 _customerContentService.UpdateCustomerContent(productReview);
                 
                 //update product totals

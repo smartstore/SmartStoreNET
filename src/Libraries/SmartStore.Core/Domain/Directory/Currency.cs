@@ -9,7 +9,7 @@ namespace SmartStore.Core.Domain.Directory
     /// Represents a currency
     /// </summary>
 	[DataContract]
-	public partial class Currency : BaseEntity, ILocalizedEntity, IStoreMappingSupported
+	public partial class Currency : BaseEntity, IAuditable, ILocalizedEntity, IStoreMappingSupported
     {
         /// <summary>
         /// Gets or sets the name

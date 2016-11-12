@@ -724,7 +724,7 @@ namespace SmartStore.Web.Controllers
 				bool isApproved = !_catalogSettings.ProductReviewsMustBeApproved;
 				var customer = _services.WorkContext.CurrentCustomer;
 
-				var productReview = new ProductReview()
+				var productReview = new ProductReview
 				{
 					ProductId = product.Id,
 					CustomerId = customer.Id,
@@ -735,8 +735,6 @@ namespace SmartStore.Web.Controllers
 					HelpfulYesTotal = 0,
 					HelpfulNoTotal = 0,
 					IsApproved = isApproved,
-					CreatedOnUtc = DateTime.UtcNow,
-					UpdatedOnUtc = DateTime.UtcNow,
 				};
 				_customerContentService.InsertCustomerContent(productReview);
 
@@ -809,15 +807,13 @@ namespace SmartStore.Web.Controllers
 				_customerContentService.DeleteCustomerContent(oldPrh);
 
 			//insert new helpfulness
-			var newPrh = new ProductReviewHelpfulness()
+			var newPrh = new ProductReviewHelpfulness
 			{
 				ProductReviewId = productReview.Id,
 				CustomerId = _services.WorkContext.CurrentCustomer.Id,
 				IpAddress = _services.WebHelper.GetCurrentIpAddress(),
 				WasHelpful = washelpful,
 				IsApproved = true, //always approved
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow,
 			};
 			_customerContentService.InsertCustomerContent(newPrh);
 

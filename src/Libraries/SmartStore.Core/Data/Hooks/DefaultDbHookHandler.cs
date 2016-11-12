@@ -129,6 +129,7 @@ namespace SmartStore.Core.Data.Hooks
 					// call hook
 					try
 					{
+						Logger.DebugFormat("PRE save hook: {0}, State: {1}, Entity: {2}", hook.GetType().Name, e.InitialState, e.Entity.GetUnproxiedType().Name);
 						hook.OnBeforeSave(e);
 						processedHooks.Add(hook);
 					}
@@ -179,6 +180,7 @@ namespace SmartStore.Core.Data.Hooks
 					// call hook
 					try
 					{
+						Logger.DebugFormat("POST save hook: {0}, State: {1}, Entity: {2}", hook.GetType().Name, e.InitialState, e.Entity.GetUnproxiedType().Name);
 						hook.OnAfterSave(e);
 						processedHooks.Add(hook);
 					}

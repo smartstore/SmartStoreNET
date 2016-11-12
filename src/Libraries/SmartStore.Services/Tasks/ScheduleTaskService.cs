@@ -154,8 +154,9 @@ namespace SmartStore.Services.Tasks
 					var entry = ex.Entries.Single();
 					var current = (ScheduleTask)entry.CurrentValues.ToObject(); // from current scope
 
-					// When 'StopOnError' is true, the 'Enabled' property could have been be set to true on exception.
-					var enabledModified = entry.Property("Enabled").IsModified;
+					// When 'StopOnError' is true, the 'Enabled' property could have been set to true on exception.
+					var prop = entry.Property("Enabled");
+					var enabledModified = !prop.CurrentValue.Equals(prop.OriginalValue);
 
 					// Save current cron expression
 					var cronExpression = task.CronExpression;

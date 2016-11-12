@@ -534,8 +534,6 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var category = model.ToEntity();
-                category.CreatedOnUtc = DateTime.UtcNow;
-                category.UpdatedOnUtc = DateTime.UtcNow;
 
 				MediaHelper.UpdatePictureTransientStateFor(category, c => c.PictureId);
 
@@ -661,7 +659,6 @@ namespace SmartStore.Admin.Controllers
 
 				MediaHelper.UpdatePictureTransientStateFor(category, c => c.PictureId);
 
-                category.UpdatedOnUtc = DateTime.UtcNow;
                 _categoryService.UpdateCategory(category);
 
                 //search engine name

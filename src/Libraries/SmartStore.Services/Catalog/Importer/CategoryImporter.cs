@@ -417,9 +417,6 @@ namespace SmartStore.Services.Catalog.Importer
 					category.CategoryTemplateId = (tvp.HasValue() && templateViewPaths.ContainsKey(tvp) ? templateViewPaths[tvp] : defaultTemplateId);
 				}
 
-				row.SetProperty(context.Result, (x) => x.CreatedOnUtc, UtcNow);
-				category.UpdatedOnUtc = UtcNow;
-
 				if (id != 0 && !srcToDestId.ContainsKey(id))
 				{
 					srcToDestId.Add(id, new ImportCategoryMapping { Inserted = row.IsTransient });

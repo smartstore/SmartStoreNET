@@ -321,8 +321,6 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var manufacturer = model.ToEntity();
-                manufacturer.CreatedOnUtc = DateTime.UtcNow;
-                manufacturer.UpdatedOnUtc = DateTime.UtcNow;
 
 				MediaHelper.UpdatePictureTransientStateFor(manufacturer, m => m.PictureId);
                 
@@ -440,7 +438,6 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 
-				manufacturer.UpdatedOnUtc = DateTime.UtcNow;
 				manufacturer.HasDiscountsApplied = manufacturer.AppliedDiscounts.Count > 0;
 
 				// Commit now

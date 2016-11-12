@@ -552,7 +552,6 @@ namespace SmartStore.Services.Forums
                     if (previousForumId != newForumId)
                     {
                         forumTopic.ForumId = newForum.Id;
-                        forumTopic.UpdatedOnUtc = DateTime.UtcNow;
                         UpdateTopic(forumTopic);
 
                         //update forum stats

@@ -265,7 +265,7 @@ namespace SmartStore.Data
 			{
 				var modifiedProperties = from p in entry.CurrentValues.PropertyNames
 										 let prop = entry.Property(p)
-										 where prop.IsModified
+										 where PropIsModified(prop) // prop.IsModified seems to return true even if values are equal
 										 select prop;
 
 				foreach (var prop in modifiedProperties)
@@ -275,6 +275,22 @@ namespace SmartStore.Data
 			}
 
 			return props;
+		}
+
+		private static bool PropIsModified(DbPropertyEntry prop)
+		{
+			var cur = prop.CurrentValue;
+			var orig = prop.OriginalValue;
+
+			if (cur == null && orig == null)
+				return false;
+
+			if (orig != null)
+			{
+				return !orig.Equals(cur);
+			}
+
+			return !cur.Equals(orig);	
 		}
 
         // required for UoW implementation

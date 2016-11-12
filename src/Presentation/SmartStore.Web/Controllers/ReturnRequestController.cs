@@ -193,7 +193,7 @@ namespace SmartStore.Web.Controllers
                     }
                 if (quantity > 0)
                 {
-                    var rr = new ReturnRequest()
+                    var rr = new ReturnRequest
                     {
 						StoreId = _storeContext.CurrentStore.Id,
                         OrderItemId = orderItem.Id,
@@ -203,9 +203,7 @@ namespace SmartStore.Web.Controllers
                         RequestedAction = model.ReturnAction,
                         CustomerComments = model.Comments,
                         StaffNotes = string.Empty,
-                        ReturnRequestStatus = ReturnRequestStatus.Pending,
-                        CreatedOnUtc = DateTime.UtcNow,
-                        UpdatedOnUtc = DateTime.UtcNow
+                        ReturnRequestStatus = ReturnRequestStatus.Pending
                     };
                     _workContext.CurrentCustomer.ReturnRequests.Add(rr);
                     _customerService.UpdateCustomer(_workContext.CurrentCustomer);

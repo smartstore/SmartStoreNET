@@ -22,7 +22,8 @@ namespace SmartStore.Services.Hooks
 		{
 			var baseEntity = entry.Entity;
 
-			var deletedModified = entry.Entry.Property("Deleted").IsModified;
+			var prop = entry.Entry.Property("Deleted");
+			var deletedModified = !prop.CurrentValue.Equals(prop.OriginalValue);
 			if (!deletedModified)
 				return;
 

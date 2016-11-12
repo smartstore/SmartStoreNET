@@ -410,9 +410,6 @@ namespace SmartStore.Services.Catalog.Importer
 					product.ProductTemplateId = (tvp.HasValue() && templateViewPaths.ContainsKey(tvp) ? templateViewPaths[tvp] : defaultTemplateId);
 				}
 
-				row.SetProperty(context.Result, (x) => x.CreatedOnUtc, UtcNow);
-				product.UpdatedOnUtc = UtcNow;
-
 				if (id != 0 && !srcToDestId.ContainsKey(id))
 				{
 					srcToDestId.Add(id, new ImportProductMapping { Inserted = row.IsTransient });

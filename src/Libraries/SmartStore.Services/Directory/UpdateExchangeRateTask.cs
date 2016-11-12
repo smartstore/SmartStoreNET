@@ -48,7 +48,6 @@ namespace SmartStore.Services.Directory
 						if (currency.Rate != exchageRate.Rate)
 						{
 							currency.Rate = exchageRate.Rate;
-							currency.UpdatedOnUtc = DateTime.UtcNow;
 							_currencyService.UpdateCurrency(currency);
 						}
                     }

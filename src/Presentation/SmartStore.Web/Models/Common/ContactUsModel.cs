@@ -32,5 +32,9 @@ namespace SmartStore.Web.Models.Common
         public string Result { get; set; }
 
         public bool DisplayCaptcha { get; set; }
+
+        public string MetaTitle { get; set; }
+        public string MetaDescription { get; set; }
+        public string MetaKeywords { get; set; }
     }
 }

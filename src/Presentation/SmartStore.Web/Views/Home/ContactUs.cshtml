@@ -3,8 +3,9 @@
 @{
     Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 
-    //title
-    Html.AddTitleParts(T("PageTitle.ContactUs").Text);
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : T("PageTitle.ContactUs").Text);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
 }
 <div class="page contact-page">
     @Html.Action("TopicBlock", "Topic", new { systemName = "ContactUs" })

@@ -170,6 +170,29 @@ namespace SmartStore.Services.Tests.Search
 
 		#endregion
 
+		#region Suggestions
+
+		[Test]
+		public void LinqSearch_can_get_suggestions()
+		{
+			var products = new List<Product>
+			{
+				new SearchProduct { Name = "SmartStore.NET" },
+				new SearchProduct { Name = "Apple iPhone Smartphone 6" },
+				new SearchProduct { Name = "Energistically recaptiualize superior e-markets without next-generation platforms" },
+				new SearchProduct { Name = "Rapidiously SmartPhone conceptualize future-proof imperatives" }
+			};
+
+			InitMocks(products);
+
+			var result = Search(new CatalogSearchQuery(new string[] { "name" }, "Smart").WithSuggestions(10).Slice(0, 0));
+
+			Assert.That(result.Suggestions.Length, Is.EqualTo(2));
+			Assert.That(result.Suggestions[0].IsCaseInsensitiveEqual("Smartphone"));
+		}
+
+		#endregion
+
 		#region Filter
 
 		[Test]

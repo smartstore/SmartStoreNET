@@ -515,14 +515,67 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
+		protected virtual string[] GetSuggestions(CatalogSearchQuery searchQuery)
+		{
+			var maxHits = 4 * searchQuery.NumberOfSuggestions;
+			var tokens = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+			var names = _productRepository.TableUntracked
+				.Where(x => !x.Deleted && x.Name.Contains(searchQuery.Term))
+				.Select(x => x.Name)
+				.Take(maxHits)
+				.ToList();
+
+			foreach (var name in names)
+			{
+				foreach (var str in name.SplitSafe(" "))
+				{
+					var token = str.Trim();
+					if (token.IndexOf(searchQuery.Term, StringComparison.OrdinalIgnoreCase) >= 0 && !token.IsCaseInsensitiveEqual(searchQuery.Term))
+					{
+						if (tokens.ContainsKey(token))
+						{
+							tokens[token] = tokens[token] + 1;
+						}
+						else
+						{
+							tokens.Add(token, 1);
+						}
+					}
+				}
+			}
+
+			var suggestions = tokens
+				.OrderByDescending(x => x.Value)
+				.Select(x => x.Key)
+				.Take(searchQuery.NumberOfSuggestions)
+				.ToArray();
+
+			return suggestions;
+		}
+
 		#endregion
 
 		public CatalogSearchResult Search(CatalogSearchQuery searchQuery)
 		{
-			var productQuery = GetProducts(searchQuery);
-			var hits = new PagedList<Product>(productQuery, searchQuery.PageIndex, searchQuery.Take);
+			string[] suggestions = null;
+			PagedList<Product> hits;
 
-			return new CatalogSearchResult(hits, searchQuery, null);
+			if (searchQuery.Take > 0)
+			{
+				hits = new PagedList<Product>(GetProducts(searchQuery), searchQuery.PageIndex, searchQuery.Take);
+			}
+			else
+			{
+				hits = new PagedList<Product>(new List<Product>(), searchQuery.PageIndex, searchQuery.Take);
+			}
+
+			if (searchQuery.NumberOfSuggestions > 0 && searchQuery.Term.HasValue())
+			{
+				suggestions = GetSuggestions(searchQuery);
+			}
+
+			return new CatalogSearchResult(hits, searchQuery, suggestions);
 		}
 	}
 }

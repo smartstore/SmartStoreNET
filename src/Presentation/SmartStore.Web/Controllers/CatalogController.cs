@@ -16,6 +16,7 @@ using SmartStore.Services.Filter;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
@@ -51,7 +52,8 @@ namespace SmartStore.Web.Controllers
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly IAclService _aclService;
 		private readonly IStoreMappingService _storeMappingService;
-        private readonly MediaSettings _mediaSettings;
+		private readonly ICatalogSearchService _catalogSearchService;
+		private readonly MediaSettings _mediaSettings;
         private readonly CatalogSettings _catalogSettings;
         private readonly IFilterService _filterService;
 		private readonly ICompareProductsService _compareProductsService;
@@ -79,33 +81,35 @@ namespace SmartStore.Web.Controllers
 			IGenericAttributeService genericAttributeService,
 			IAclService aclService,
 			IStoreMappingService storeMappingService,
-            MediaSettings mediaSettings, 
+			ICatalogSearchService catalogSearchService,
+			MediaSettings mediaSettings, 
 			CatalogSettings catalogSettings,
 			IFilterService filterService,
  			CatalogHelper helper)
         {
-			this._services = services;
-			this._categoryService = categoryService;
-            this._manufacturerService = manufacturerService;
-            this._productService = productService;
-            this._categoryTemplateService = categoryTemplateService;
-            this._manufacturerTemplateService = manufacturerTemplateService;
-            this._currencyService = currencyService;
-			this._orderReportService = orderReportService;
-			this._productTagService = productTagService;
-			this._recentlyViewedProductsService = recentlyViewedProductsService;
-			this._compareProductsService = compareProductsService;
-            this._pictureService = pictureService;
-            this._priceFormatter = priceFormatter;
-            this._specificationAttributeService = specificationAttributeService;
-            this._genericAttributeService = genericAttributeService;
-            this._aclService = aclService;
-			this._storeMappingService = storeMappingService;
-            this._filterService = filterService;
-            this._mediaSettings = mediaSettings;
-            this._catalogSettings = catalogSettings;
+			_services = services;
+			_categoryService = categoryService;
+            _manufacturerService = manufacturerService;
+            _productService = productService;
+            _categoryTemplateService = categoryTemplateService;
+            _manufacturerTemplateService = manufacturerTemplateService;
+            _currencyService = currencyService;
+			_orderReportService = orderReportService;
+			_productTagService = productTagService;
+			_recentlyViewedProductsService = recentlyViewedProductsService;
+			_compareProductsService = compareProductsService;
+            _pictureService = pictureService;
+            _priceFormatter = priceFormatter;
+            _specificationAttributeService = specificationAttributeService;
+            _genericAttributeService = genericAttributeService;
+            _aclService = aclService;
+			_storeMappingService = storeMappingService;
+			_catalogSearchService = catalogSearchService;
+            _filterService = filterService;
+            _mediaSettings = mediaSettings;
+            _catalogSettings = catalogSettings;
 
-			this._helper = helper;
+			_helper = helper;
         }
 
         #endregion
@@ -1251,36 +1255,43 @@ namespace SmartStore.Web.Controllers
 
 		public ActionResult SearchTermAutoComplete(string term)
 		{
-			if (String.IsNullOrWhiteSpace(term) || term.Length < _catalogSettings.ProductSearchTermMinimumLength)
+			if (string.IsNullOrWhiteSpace(term) || term.Length < _catalogSettings.ProductSearchTermMinimumLength)
 				return Content("");
 
-			var ctx = new ProductSearchContext();
-			ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
-			ctx.Keywords = term;
-			ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
-			ctx.SearchDescriptions = _catalogSettings.SearchDescriptions;
-			ctx.OrderBy = ProductSortingEnum.Position;
-			ctx.PageSize = (_catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0 ? _catalogSettings.ProductSearchAutoCompleteNumberOfProducts : 10);
-			ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
-			ctx.VisibleIndividuallyOnly = true;
+			var numberOfSuggestions = (_catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0 ? _catalogSettings.ProductSearchAutoCompleteNumberOfProducts : 10);
+			var searchQuery = new CatalogSearchQuery("name", term).WithSuggestions(numberOfSuggestions).Slice(0, 0);
 
-			var products = _productService.SearchProducts(ctx);
+			var hits = _catalogSearchService.Search(searchQuery);
 
-			var models = _helper.PrepareProductOverviewModels(products, 
-				false, 
-				_catalogSettings.ShowProductImagesInSearchAutoComplete, 
-				_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage
-				).ToList();
+			return Json(hits.Suggestions, JsonRequestBehavior.AllowGet);
 
-			var result = models.Select(x => new
-			{
-				label = x.Name,
-				secondary = x.ShortDescription.Truncate(70, "...") ?? "",
-				producturl = Url.RouteUrl("Product", new { SeName = x.SeName }),
-				productpictureurl = x.DefaultPictureModel.ImageUrl
-			}).ToList();
+			//var ctx = new ProductSearchContext();
+			//ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
+			//ctx.Keywords = term;
+			//ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
+			//ctx.SearchDescriptions = _catalogSettings.SearchDescriptions;
+			//ctx.OrderBy = ProductSortingEnum.Position;
+			//ctx.PageSize = (_catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0 ? _catalogSettings.ProductSearchAutoCompleteNumberOfProducts : 10);
+			//ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
+			//ctx.VisibleIndividuallyOnly = true;
 
-			return Json(result, JsonRequestBehavior.AllowGet);
+			//var products = _productService.SearchProducts(ctx);
+
+			//var models = _helper.PrepareProductOverviewModels(products, 
+			//	false, 
+			//	_catalogSettings.ShowProductImagesInSearchAutoComplete, 
+			//	_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage
+			//	).ToList();
+
+			//var result = models.Select(x => new
+			//{
+			//	label = x.Name,
+			//	secondary = x.ShortDescription.Truncate(70, "...") ?? "",
+			//	producturl = Url.RouteUrl("Product", new { SeName = x.SeName }),
+			//	productpictureurl = x.DefaultPictureModel.ImageUrl
+			//}).ToList();
+
+			//return Json(result, JsonRequestBehavior.AllowGet);
 		}
 
 		#endregion

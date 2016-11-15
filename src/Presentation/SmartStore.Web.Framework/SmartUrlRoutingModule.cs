@@ -40,14 +40,18 @@ namespace SmartStore.Web.Framework
 
 		private void StopSubDirMonitoring()
 		{
-			// http://stackoverflow.com/questions/2248825/asp-net-restarts-when-a-folder-is-created-renamed-or-deleted
-			var prop = typeof(HttpRuntime).GetProperty("FileChangesMonitor", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
-			var o = prop.GetValue(null, null);
+			try
+			{
+				// http://stackoverflow.com/questions/2248825/asp-net-restarts-when-a-folder-is-created-renamed-or-deleted
+				var prop = typeof(HttpRuntime).GetProperty("FileChangesMonitor", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+				var o = prop.GetValue(null, null);
 
-			var fi = o.GetType().GetField("_dirMonSubdirs", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase);
-			var monitor = fi.GetValue(o);
-			var mi = monitor.GetType().GetMethod("StopMonitoring", BindingFlags.Instance | BindingFlags.NonPublic);
-			mi.Invoke(monitor, new object[] { });
+				var fi = o.GetType().GetField("_dirMonSubdirs", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase);
+				var monitor = fi.GetValue(o);
+				var mi = monitor.GetType().GetMethod("StopMonitoring", BindingFlags.Instance | BindingFlags.NonPublic);
+				mi.Invoke(monitor, new object[] { });
+			}
+			catch { }
 		}
 
 		/// <summary>

@@ -261,6 +261,13 @@ namespace SmartStore.Core.Packaging
 			// Move InstalledPlugins.txt
 			File.Move(Path.Combine(appDataDir, "InstalledPlugins.txt"), Path.Combine(tenantDir.FullName, "InstalledPlugins.txt"));
 
+			// Move SmartStore.db.sdf
+			var path = Path.Combine(appDataDir, "SmartStore.db.sdf");
+			if (File.Exists(path))
+			{
+				File.Move(path, Path.Combine(tenantDir.FullName, "SmartStore.db.sdf"));
+			}			
+
 			// Move tenant specific Folders
 			Directory.Move(Path.Combine(appDataDir, "ImportProfiles"), Path.Combine(tenantDir.FullName, "ImportProfiles"));
 			Directory.Move(Path.Combine(appDataDir, "ExportProfiles"), Path.Combine(tenantDir.FullName, "ExportProfiles"));

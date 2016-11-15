@@ -17,7 +17,10 @@ namespace SmartStore.Data
 			{
 				provider = (new EfDataProviderFactory(DataSettings.Current).LoadDataProvider()) as IEfDataProvider;
 			}
-			catch { /* SmartStore is not installed yet! */ }
+			catch
+			{
+				/* SmartStore is not installed yet! */
+			}
 
 			if (provider != null)
 			{

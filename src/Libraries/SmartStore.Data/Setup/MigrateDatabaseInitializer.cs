@@ -3,19 +3,10 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
-using System.Data.Entity.Migrations.Infrastructure;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using SmartStore.Core.Data;
-using SmartStore.Utilities;
 
 namespace SmartStore.Data.Setup
 {
-
 	/// <summary>
 	///     An implementation of <see cref="IDatabaseInitializer{TContext}" /> that will use Code First Migrations
 	///     to update the database to the latest version.

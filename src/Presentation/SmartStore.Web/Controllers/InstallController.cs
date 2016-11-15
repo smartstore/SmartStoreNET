@@ -477,10 +477,10 @@ namespace SmartStore.Web.Controllers
 						// SQL CE
 						string databaseFileName = "SmartStore.Db.sdf";
 						string databasePath = @"|DataDirectory|\Tenants\{0}\{1}".FormatInvariant(DataSettings.Current.TenantName, databaseFileName);
-						connectionString = "Data Source=" + databasePath + ";Persist Security Info=False";
+						connectionString = "Data Source=" + databasePath + "; Persist Security Info=False";
 
 						// drop database if exists
-						string databaseFullPath = HostingEnvironment.MapPath(DataSettings.Current.TenantPath) + "/" + databaseFileName;
+						string databaseFullPath = HostingEnvironment.MapPath(DataSettings.Current.TenantPath.EnsureEndsWith("/")) + databaseFileName;
 						if (System.IO.File.Exists(databaseFullPath))
 						{
 							System.IO.File.Delete(databaseFullPath);
@@ -499,12 +499,12 @@ namespace SmartStore.Web.Controllers
 
 					// init data provider
 					var dataProviderInstance = scope.Resolve<IEfDataProvider>();
-					
+
 					// Although obsolete we have no other chance than using this here.
 					// Delegating this to DbConfiguration is not possible during installation.
-					#pragma warning disable 618
+#pragma warning disable 618
 					Database.DefaultConnectionFactory = dataProviderInstance.GetConnectionFactory();
-					#pragma warning restore 618
+#pragma warning restore 618
 
 					// resolve SeedData instance from primary language
 					var lazyLanguage = _locService.GetAppLanguage(model.PrimaryLanguage);

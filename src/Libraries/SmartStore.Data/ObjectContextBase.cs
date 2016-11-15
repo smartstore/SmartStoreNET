@@ -369,7 +369,7 @@ namespace SmartStore.Data
 		/// Resolves the connection string from the <c>Settings.txt</c> file
 		/// </summary>
 		/// <returns>The connection string</returns>
-		/// <remarks>This helper is called from parameterless DbContext constructors which are required for EF tooling support.</remarks>
+		/// <remarks>This helper is called from parameterless DbContext constructors which are required for EF tooling support or during installation.</remarks>
 		public static string GetConnectionString()
 		{
 			if (DataSettings.Current.IsValid())

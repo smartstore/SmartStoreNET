@@ -76,9 +76,14 @@ namespace SmartStore.Core.Search
 		{
 			get
 			{
+				if (Take == 0)
+					return 0;
+
 				return Math.Max(Skip / Take, 0);
 			}
 		}
+
+		public int NumberOfSuggestions { get; protected set; }
 
 		// Sorting
 		public ICollection<SearchSort> Sorting { get; }
@@ -98,10 +103,19 @@ namespace SmartStore.Core.Search
 		public TQuery Slice(int skip, int take)
 		{
 			Guard.NotNegative(skip, nameof(skip));
-			Guard.IsPositive(take, nameof(take));
+			Guard.NotNegative(take, nameof(take));
 
 			Skip = skip;
 			Take = take;
+
+			return (this as TQuery);
+		}
+
+		public TQuery WithSuggestions(int numberOfSuggestions)
+		{
+			Guard.IsPositive(numberOfSuggestions, nameof(numberOfSuggestions));
+
+			NumberOfSuggestions = numberOfSuggestions;
 
 			return (this as TQuery);
 		}

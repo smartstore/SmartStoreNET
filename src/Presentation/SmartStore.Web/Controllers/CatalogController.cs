@@ -16,6 +16,7 @@ using SmartStore.Services.Filter;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
@@ -51,7 +52,8 @@ namespace SmartStore.Web.Controllers
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly IAclService _aclService;
 		private readonly IStoreMappingService _storeMappingService;
-        private readonly MediaSettings _mediaSettings;
+		private readonly ICatalogSearchService _catalogSearchService;
+		private readonly MediaSettings _mediaSettings;
         private readonly CatalogSettings _catalogSettings;
         private readonly IFilterService _filterService;
 		private readonly ICompareProductsService _compareProductsService;
@@ -79,33 +81,35 @@ namespace SmartStore.Web.Controllers
 			IGenericAttributeService genericAttributeService,
 			IAclService aclService,
 			IStoreMappingService storeMappingService,
-            MediaSettings mediaSettings, 
+			ICatalogSearchService catalogSearchService,
+			MediaSettings mediaSettings, 
 			CatalogSettings catalogSettings,
 			IFilterService filterService,
  			CatalogHelper helper)
         {
-			this._services = services;
-			this._categoryService = categoryService;
-            this._manufacturerService = manufacturerService;
-            this._productService = productService;
-            this._categoryTemplateService = categoryTemplateService;
-            this._manufacturerTemplateService = manufacturerTemplateService;
-            this._currencyService = currencyService;
-			this._orderReportService = orderReportService;
-			this._productTagService = productTagService;
-			this._recentlyViewedProductsService = recentlyViewedProductsService;
-			this._compareProductsService = compareProductsService;
-            this._pictureService = pictureService;
-            this._priceFormatter = priceFormatter;
-            this._specificationAttributeService = specificationAttributeService;
-            this._genericAttributeService = genericAttributeService;
-            this._aclService = aclService;
-			this._storeMappingService = storeMappingService;
-            this._filterService = filterService;
-            this._mediaSettings = mediaSettings;
-            this._catalogSettings = catalogSettings;
+			_services = services;
+			_categoryService = categoryService;
+            _manufacturerService = manufacturerService;
+            _productService = productService;
+            _categoryTemplateService = categoryTemplateService;
+            _manufacturerTemplateService = manufacturerTemplateService;
+            _currencyService = currencyService;
+			_orderReportService = orderReportService;
+			_productTagService = productTagService;
+			_recentlyViewedProductsService = recentlyViewedProductsService;
+			_compareProductsService = compareProductsService;
+            _pictureService = pictureService;
+            _priceFormatter = priceFormatter;
+            _specificationAttributeService = specificationAttributeService;
+            _genericAttributeService = genericAttributeService;
+            _aclService = aclService;
+			_storeMappingService = storeMappingService;
+			_catalogSearchService = catalogSearchService;
+            _filterService = filterService;
+            _mediaSettings = mediaSettings;
+            _catalogSettings = catalogSettings;
 
-			this._helper = helper;
+			_helper = helper;
         }
 
         #endregion
@@ -1094,7 +1098,6 @@ namespace SmartStore.Web.Controllers
 				_services.StoreContext.CurrentStore.Id);
 
 			if (command.PageSize <= 0)
-
 				command.PageSize = _catalogSettings.SearchPageProductsPerPage;
 			if (command.PageNumber <= 0)
 				command.PageNumber = 1;
@@ -1159,66 +1162,128 @@ namespace SmartStore.Web.Controllers
 				}
 				else
 				{
-					var categoryIds = new List<int>();
-					var manufacturerId = 0;
-					decimal? minPriceConverted = null;
-					decimal? maxPriceConverted = null;
-					var searchInDescriptions = _catalogSettings.SearchDescriptions;
+					var fields = new List<string> { "name", "shortdescription" };
+					if (!_catalogSettings.SuppressSkuSearch)
+					{
+						fields.Add("sku");
+					}
+					if (model.Sid)
+					{
+						fields.Add("tagname");
+						fields.Add("fulldescription");
+					}
+
+					var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.Q, true)
+						.Slice((command.PageNumber - 1) * command.PageSize, command.PageSize)
+						.HasStoreId(_services.StoreContext.CurrentStore.Id)
+						.WithLanguage(_services.WorkContext.WorkingLanguage)
+						.VisibleIndividuallyOnly(true)
+						.SortBy((ProductSortingEnum)command.OrderBy);
 
 					if (model.As)
 					{
-						// advanced search
-						var categoryId = model.Cid;
-						if (categoryId > 0)
+						if (model.Cid > 0)
 						{
-							categoryIds.Add(categoryId);
+							var categoryIds = new List<int> { model.Cid };
 							if (model.Isc)
 							{
-								// include subcategories
-								categoryIds.AddRange(_helper.GetChildCategoryIds(categoryId));
+								categoryIds.AddRange(_helper.GetChildCategoryIds(model.Cid));
 							}
+
+							searchQuery = searchQuery.WithCategoryIds(null, categoryIds.ToArray());
 						}
 
-						manufacturerId = model.Mid;
+						if (model.Mid > 0)
+						{
+							searchQuery = searchQuery.WithManufacturerIds(null, model.Mid);
+						}
 
-						// min price
+						decimal? fromPrice = null;
+						decimal? toPrice = null;
+						var currency = _services.WorkContext.WorkingCurrency;
+
 						if (model.Pf.HasValue())
 						{
 							var minPrice = decimal.Zero;
 							if (decimal.TryParse(model.Pf, out minPrice))
-								minPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(minPrice, _services.WorkContext.WorkingCurrency);
+								fromPrice = _currencyService.ConvertToPrimaryStoreCurrency(minPrice, currency);
 						}
-						// max price
 						if (model.Pt.HasValue())
 						{
 							var maxPrice = decimal.Zero;
 							if (decimal.TryParse(model.Pt, out maxPrice))
-								maxPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(maxPrice, _services.WorkContext.WorkingCurrency);
+								toPrice = _currencyService.ConvertToPrimaryStoreCurrency(maxPrice, currency);
 						}
 
-						searchInDescriptions = model.Sid;
+						if (fromPrice.HasValue || toPrice.HasValue)
+						{
+							searchQuery = searchQuery.WithPrice(currency, fromPrice, toPrice);
+						}
 					}
 
-					//var searchInProductTags = false;
-					var searchInProductTags = searchInDescriptions;
+					var hits = _catalogSearchService.Search(searchQuery);
+					products = hits.Hits;
 
-					var ctx = new ProductSearchContext();
-					ctx.CategoryIds = categoryIds;
-					ctx.ManufacturerId = manufacturerId;
-					ctx.PriceMin = minPriceConverted;
-					ctx.PriceMax = maxPriceConverted;
-					ctx.Keywords = model.Q;
-					ctx.SearchDescriptions = searchInDescriptions;
-					ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
-					ctx.SearchProductTags = searchInProductTags;
-					ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
-					ctx.OrderBy = (ProductSortingEnum)command.OrderBy; // ProductSortingEnum.Position;
-					ctx.PageIndex = command.PageNumber - 1;
-					ctx.PageSize = command.PageSize;
-					ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
-					ctx.VisibleIndividuallyOnly = true;
+					//var categoryIds = new List<int>();
+					//var manufacturerId = 0;
+					//decimal? minPriceConverted = null;
+					//decimal? maxPriceConverted = null;
+					//var searchInDescriptions = _catalogSettings.SearchDescriptions;
 
-					products = _productService.SearchProducts(ctx);
+					//if (model.As)
+					//{
+					//	// advanced search
+					//	var categoryId = model.Cid;
+					//	if (categoryId > 0)
+					//	{
+					//		categoryIds.Add(categoryId);
+					//		if (model.Isc)
+					//		{
+					//			// include subcategories
+					//			categoryIds.AddRange(_helper.GetChildCategoryIds(categoryId));
+					//		}
+					//	}
+
+					//	manufacturerId = model.Mid;
+
+					//	// min price
+					//	if (model.Pf.HasValue())
+					//	{
+					//		var minPrice = decimal.Zero;
+					//		if (decimal.TryParse(model.Pf, out minPrice))
+					//			minPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(minPrice, _services.WorkContext.WorkingCurrency);
+					//	}
+					//	// max price
+					//	if (model.Pt.HasValue())
+					//	{
+					//		var maxPrice = decimal.Zero;
+					//		if (decimal.TryParse(model.Pt, out maxPrice))
+					//			maxPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(maxPrice, _services.WorkContext.WorkingCurrency);
+					//	}
+
+					//	searchInDescriptions = model.Sid;
+					//}
+
+					////var searchInProductTags = false;
+					//var searchInProductTags = searchInDescriptions;
+
+					//var ctx = new ProductSearchContext();
+					//ctx.CategoryIds = categoryIds;
+					//ctx.ManufacturerId = manufacturerId;
+					//ctx.PriceMin = minPriceConverted;
+					//ctx.PriceMax = maxPriceConverted;
+					//ctx.Keywords = model.Q;
+					//ctx.SearchDescriptions = searchInDescriptions;
+					//ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
+					//ctx.SearchProductTags = searchInProductTags;
+					//ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
+					//ctx.OrderBy = (ProductSortingEnum)command.OrderBy; // ProductSortingEnum.Position;
+					//ctx.PageIndex = command.PageNumber - 1;
+					//ctx.PageSize = command.PageSize;
+					//ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
+					//ctx.VisibleIndividuallyOnly = true;
+
+					//products = _productService.SearchProducts(ctx);
 
 					model.Products = _helper.PrepareProductOverviewModels(
 						products,
@@ -1251,36 +1316,47 @@ namespace SmartStore.Web.Controllers
 
 		public ActionResult SearchTermAutoComplete(string term)
 		{
-			if (String.IsNullOrWhiteSpace(term) || term.Length < _catalogSettings.ProductSearchTermMinimumLength)
+			if (string.IsNullOrWhiteSpace(term) || term.Length < _catalogSettings.ProductSearchTermMinimumLength)
 				return Content("");
 
-			var ctx = new ProductSearchContext();
-			ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
-			ctx.Keywords = term;
-			ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
-			ctx.SearchDescriptions = _catalogSettings.SearchDescriptions;
-			ctx.OrderBy = ProductSortingEnum.Position;
-			ctx.PageSize = (_catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0 ? _catalogSettings.ProductSearchAutoCompleteNumberOfProducts : 10);
-			ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
-			ctx.VisibleIndividuallyOnly = true;
+			var numberOfSuggestions = (_catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0 ? _catalogSettings.ProductSearchAutoCompleteNumberOfProducts : 10);
+			var searchQuery = new CatalogSearchQuery("name", term)
+				.WithSuggestions(numberOfSuggestions)
+				.Slice(0, 0)
+				.HasStoreId(_services.StoreContext.CurrentStore.Id)
+				.WithLanguage(_services.WorkContext.WorkingLanguage);
 
-			var products = _productService.SearchProducts(ctx);
+			var hits = _catalogSearchService.Search(searchQuery);
 
-			var models = _helper.PrepareProductOverviewModels(products, 
-				false, 
-				_catalogSettings.ShowProductImagesInSearchAutoComplete, 
-				_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage
-				).ToList();
+			return Json(hits.Suggestions, JsonRequestBehavior.AllowGet);
 
-			var result = models.Select(x => new
-			{
-				label = x.Name,
-				secondary = x.ShortDescription.Truncate(70, "...") ?? "",
-				producturl = Url.RouteUrl("Product", new { SeName = x.SeName }),
-				productpictureurl = x.DefaultPictureModel.ImageUrl
-			}).ToList();
+			//var ctx = new ProductSearchContext();
+			//ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
+			//ctx.Keywords = term;
+			//ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
+			//ctx.SearchDescriptions = _catalogSettings.SearchDescriptions;
+			//ctx.OrderBy = ProductSortingEnum.Position;
+			//ctx.PageSize = (_catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0 ? _catalogSettings.ProductSearchAutoCompleteNumberOfProducts : 10);
+			//ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
+			//ctx.VisibleIndividuallyOnly = true;
 
-			return Json(result, JsonRequestBehavior.AllowGet);
+			//var products = _productService.SearchProducts(ctx);
+
+			//var models = _helper.PrepareProductOverviewModels(products, 
+			//	false, 
+			//	_catalogSettings.ShowProductImagesInSearchAutoComplete, 
+			//	_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage
+			//	).ToList();
+
+			//var result = models.Select(x => new
+			//{
+			//	label = x.Name,
+			//	secondary = x.ShortDescription.Truncate(70, "...") ?? "",
+			//	producturl = Url.RouteUrl("Product", new { SeName = x.SeName }),
+			//	productpictureurl = x.DefaultPictureModel.ImageUrl
+			//}).ToList();
+
+			//return Json(result, JsonRequestBehavior.AllowGet);
 		}
 
 		#endregion

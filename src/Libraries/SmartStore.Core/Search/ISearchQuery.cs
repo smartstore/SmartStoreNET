@@ -26,6 +26,8 @@ namespace SmartStore.Core.Search
 		int Skip { get; }
 		int Take { get; }
 
+		int NumberOfSuggestions { get; }
+
 		// Sorting
 		ICollection<SearchSort> Sorting { get; }
 	}

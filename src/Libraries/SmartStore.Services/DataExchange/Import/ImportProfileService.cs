@@ -227,7 +227,8 @@ namespace SmartStore.Services.DataExchange.Import
 				.ToValidPath()
 				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 
-			profile.FolderName = FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath("~/App_Data/ImportProfiles"), profile.FolderName);
+			var path = DataSettings.Current.TenantPath + "/ImportProfiles";
+			profile.FolderName = FileSystemHelper.CreateNonExistingDirectoryName(CommonHelper.MapPath(path), profile.FolderName);
 
 			_importProfileRepository.Insert(profile);
 

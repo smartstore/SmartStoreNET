@@ -900,14 +900,23 @@ namespace SmartStore
         {
             var result = input.ToSafe();
 
-            char[] invalidChars = isPath ? Path.GetInvalidPathChars() : Path.GetInvalidFileNameChars();
+            var invalidChars = new HashSet<char>(isPath ? Path.GetInvalidPathChars() : Path.GetInvalidFileNameChars());
 
-            foreach (var c in invalidChars)
-            {
-                result = result.Replace(c.ToString(), replacement ?? "-");
-            }
+			var sb = new StringBuilder();
+			foreach (var c in input)
+			{
+				if (invalidChars.Contains(c))
+				{
+					sb.Append(replacement ?? "-");
+				}
+				else
+				{
+					sb.Append(c);
+				}
+				result = result.Replace(c.ToString(), replacement ?? "-");
+			}
 
-            return result;
+			return sb.ToString();
         }
 
 		[DebuggerStepThrough]

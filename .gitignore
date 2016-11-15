@@ -294,6 +294,7 @@ Kopie von*
 
 /build
 /src/Presentation/SmartStore.Web/Plugins
+/src/Presentation/SmartStore.Web/App_Data/Tenants/
 /src/Presentation/SmartStore.Web/App_Data/_temp/
 /src/Presentation/SmartStore.Web/App_Data/ExportProfiles/
 /src/Presentation/SmartStore.Web/App_Data/ImportProfiles/

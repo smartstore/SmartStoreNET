@@ -1,5 +1,5 @@
 ﻿using System;
-using SmartStore.Core.Infrastructure.DependencyManagement;
+using SmartStore.Core.Data;
 using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Utilities;
@@ -14,6 +14,11 @@ namespace SmartStore.Core
 			AppDataFolder = new VirtualFolder("~/App_Data/", vpp, logger);
 			ThemesFolder = new VirtualFolder(CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/"), vpp, logger);
 			PluginsFolder = new VirtualFolder("~/Plugins/", vpp, logger);
+
+			if (DataSettings.Current.IsValid())
+			{
+				TenantFolder = new VirtualFolder(DataSettings.Current.TenantPath, vpp, logger);
+			}
 		}
 
 		public virtual string MachineName
@@ -37,5 +42,6 @@ namespace SmartStore.Core
 		public virtual IVirtualFolder AppDataFolder { get; private set; }
 		public virtual IVirtualFolder ThemesFolder { get; private set; }
 		public virtual IVirtualFolder PluginsFolder { get; private set; }
+		public virtual IVirtualFolder TenantFolder { get; private set; }
 	}
 }

@@ -17,7 +17,6 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Core.Packaging
 {
-	
 	public sealed class AppUpdater : DisposableObject
 	{
 		public const string UpdatePackagePath = "~/App_Data/Update";
@@ -220,6 +219,8 @@ namespace SmartStore.Core.Packaging
 
 		internal void ExecuteMigrations()
 		{
+			TryMigrateDefaultTenant();	
+
 			if (!DataSettings.DatabaseIsInstalled())
 				return;
 
@@ -238,6 +239,66 @@ namespace SmartStore.Core.Packaging
 
 			DataSettings.Current.AppVersion = currentVersion;
 			DataSettings.Current.Save();
+		}
+
+		private bool TryMigrateDefaultTenant()
+		{
+			// We introduced basic multi-tenancy in V3 [...]
+
+			if (!IsPreTenancyVersion())
+			{
+				return false;
+			}
+
+			var tenantDir = Directory.CreateDirectory(CommonHelper.MapPath("~/App_Data/Tenants/Default"));
+			var tenantTempDir = tenantDir.CreateSubdirectory("_temp");
+			
+			var appDataDir = CommonHelper.MapPath("~/App_Data");
+
+			// Move Settings.txt
+			File.Move(Path.Combine(appDataDir, "Settings.txt"), Path.Combine(tenantDir.FullName, "Settings.txt"));
+
+			// Move InstalledPlugins.txt
+			File.Move(Path.Combine(appDataDir, "InstalledPlugins.txt"), Path.Combine(tenantDir.FullName, "InstalledPlugins.txt"));
+
+			// Move tenant specific Folders
+			Directory.Move(Path.Combine(appDataDir, "ImportProfiles"), Path.Combine(tenantDir.FullName, "ImportProfiles"));
+			Directory.Move(Path.Combine(appDataDir, "ExportProfiles"), Path.Combine(tenantDir.FullName, "ExportProfiles"));
+			Directory.Move(Path.Combine(appDataDir, "Indexing"), Path.Combine(tenantDir.FullName, "Indexing"));
+			Directory.Move(Path.Combine(appDataDir, "Lucene"), Path.Combine(tenantDir.FullName, "Lucene"));
+			Directory.Move(Path.Combine(appDataDir, "_temp\\BizBackups"), Path.Combine(tenantTempDir.FullName, "BizBackups"));
+			Directory.Move(Path.Combine(appDataDir, "_temp\\ShopConnector"), Path.Combine(tenantTempDir.FullName, "ShopConnector"));
+
+			// Move all media files and folders to new subfolder "Default"
+			var mediaInfos = (new DirectoryInfo(CommonHelper.MapPath("~/Media"))).GetFileSystemInfos().Where(x => !x.Name.IsCaseInsensitiveEqual("Default"));
+			var mediaFiles = mediaInfos.OfType<FileInfo>();
+			var mediaDirs = mediaInfos.OfType<DirectoryInfo>();
+			var tenantMediaDir = new DirectoryInfo(CommonHelper.MapPath("~/Media/Default"));
+			if (!tenantMediaDir.Exists)
+			{
+				tenantMediaDir.Create();
+			}
+
+			foreach (var file in mediaFiles)
+			{
+				file.MoveTo(Path.Combine(tenantMediaDir.FullName, file.Name));
+			}
+
+			foreach (var dir in mediaDirs)
+			{
+				dir.MoveTo(Path.Combine(tenantMediaDir.FullName, dir.Name));
+			}
+
+			return true;
+		}
+
+		private bool IsPreTenancyVersion()
+		{
+			var appDataDir = CommonHelper.MapPath("~/App_Data");
+
+			return File.Exists(Path.Combine(appDataDir, "Settings.txt"))
+				&& File.Exists(Path.Combine(appDataDir, "InstalledPlugins.txt"))
+				&& !Directory.Exists(Path.Combine(appDataDir, "Tenants\\Default"));
 		}
 
 		private void MigrateInitial()

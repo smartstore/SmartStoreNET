@@ -35,7 +35,6 @@ namespace SmartStore.Core.Plugins
     {
         private static readonly ReaderWriterLockSlim Locker = new ReaderWriterLockSlim();
         private static DirectoryInfo _shadowCopyFolder;
-        //private static readonly string _installedPluginsFilePath = CommonHelper.MapPath("~/App_Data/InstalledPlugins.txt");
         private static readonly string _pluginsPath = "~/Plugins";
         private static readonly string _shadowCopyPath = "~/Plugins/bin";
         private static bool _clearShadowDirectoryOnStartup;

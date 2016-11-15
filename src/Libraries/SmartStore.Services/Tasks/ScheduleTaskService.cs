@@ -235,11 +235,21 @@ namespace SmartStore.Services.Tasks
 							task.LastEndUtc = task.LastStartUtc;
 							task.LastError = T("Admin.System.ScheduleTasks.AbnormalAbort");
 						}
+						FixTypeName(task);
 					}
 					this.UpdateTask(task);
 				}
 
 				scope.Commit();
+			}
+		}
+
+		private void FixTypeName(ScheduleTask task)
+		{
+			// in versions prior V3 a double space could exist in ScheduleTask type name
+			if (task.Type.IndexOf(",  ") > 0)
+			{
+				task.Type = task.Type.Replace(",  ", ", ");
 			}
 		}
 

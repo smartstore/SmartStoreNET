@@ -428,7 +428,7 @@ namespace SmartStore.Admin.Controllers
 			var folder = _fileSystem.GetFolder(path);
 
 			// copy files from file storage to temp folder
-			var tempDir = FileSystemHelper.TempDir("roxy " + folder.Name);	
+			var tempDir = FileSystemHelper.TempDirTenant("roxy " + folder.Name);	
 			FileSystemHelper.ClearDirectory(tempDir, false);
 			var files = GetFiles(path, null);
 
@@ -442,7 +442,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			// create zip from temp folder
-			var tempZip = Path.Combine(FileSystemHelper.TempDir(), folder.Name + ".zip");
+			var tempZip = Path.Combine(FileSystemHelper.TempDirTenant(), folder.Name + ".zip");
 			FileSystemHelper.Delete(tempZip);
 
 			ZipFile.CreateFromDirectory(tempDir, tempZip, CompressionLevel.Fastest, false);
@@ -813,7 +813,7 @@ namespace SmartStore.Admin.Controllers
 			int.TryParse(GetSetting("MAX_IMAGE_WIDTH"), out width);
 			int.TryParse(GetSetting("MAX_IMAGE_HEIGHT"), out height);
 
-			var tempDir = FileSystemHelper.TempDir("roxy " + CommonHelper.GenerateRandomInteger().ToString());
+			var tempDir = FileSystemHelper.TempDirTenant("roxy " + CommonHelper.GenerateRandomInteger().ToString());
 
 			try
 			{

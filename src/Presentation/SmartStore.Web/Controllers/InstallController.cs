@@ -476,11 +476,11 @@ namespace SmartStore.Web.Controllers
 					{
 						// SQL CE
 						string databaseFileName = "SmartStore.Db.sdf";
-						string databasePath = @"|DataDirectory|\" + databaseFileName;
+						string databasePath = @"|DataDirectory|\Tenants\{0}\{1}".FormatInvariant(DataSettings.Current.TenantName, databaseFileName);
 						connectionString = "Data Source=" + databasePath + ";Persist Security Info=False";
 
 						// drop database if exists
-						string databaseFullPath = HostingEnvironment.MapPath("~/App_Data/") + databaseFileName;
+						string databaseFullPath = HostingEnvironment.MapPath(DataSettings.Current.TenantPath) + "/" + databaseFileName;
 						if (System.IO.File.Exists(databaseFullPath))
 						{
 							System.IO.File.Delete(databaseFullPath);

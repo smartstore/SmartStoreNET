@@ -10,6 +10,7 @@ using SmartStore.Web.Framework.Plugins;
 using SmartStore.Core.IO;
 using System.IO;
 using System.Web.Hosting;
+using System.Reflection;
 
 namespace SmartStore.Web.Framework
 {
@@ -32,7 +33,21 @@ namespace SmartStore.Web.Framework
 				}
 				
 				application.PostResolveRequestCache += (s, e) => PostResolveRequestCache(new HttpContextWrapper(((HttpApplication)s).Context));
-			}
+
+				StopSubDirMonitoring();
+			}			
+		}
+
+		private void StopSubDirMonitoring()
+		{
+			// http://stackoverflow.com/questions/2248825/asp-net-restarts-when-a-folder-is-created-renamed-or-deleted
+			var prop = typeof(HttpRuntime).GetProperty("FileChangesMonitor", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+			var o = prop.GetValue(null, null);
+
+			var fi = o.GetType().GetField("_dirMonSubdirs", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase);
+			var monitor = fi.GetValue(o);
+			var mi = monitor.GetType().GetMethod("StopMonitoring", BindingFlags.Instance | BindingFlags.NonPublic);
+			mi.Invoke(monitor, new object[] { });
 		}
 
 		/// <summary>

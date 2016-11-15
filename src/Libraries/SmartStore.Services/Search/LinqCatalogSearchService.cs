@@ -114,7 +114,7 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
-		protected virtual IQueryable<Product> GetProducts(CatalogSearchQuery searchQuery)
+		protected virtual IQueryable<Product> GetProductQuery(CatalogSearchQuery searchQuery)
 		{
 			var ordered = false;
 			var utcNow = DateTime.UtcNow;
@@ -517,13 +517,11 @@ namespace SmartStore.Services.Search
 
 		protected virtual string[] GetSuggestions(CatalogSearchQuery searchQuery)
 		{
-			var maxHits = 4 * searchQuery.NumberOfSuggestions;
 			var tokens = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
-			var names = _productRepository.TableUntracked
-				.Where(x => !x.Deleted && x.Name.Contains(searchQuery.Term))
+			var names = GetProductQuery(searchQuery)
 				.Select(x => x.Name)
-				.Take(maxHits)
+				.Take(5 * searchQuery.NumberOfSuggestions)
 				.ToList();
 
 			foreach (var name in names)
@@ -563,7 +561,7 @@ namespace SmartStore.Services.Search
 
 			if (searchQuery.Take > 0)
 			{
-				hits = new PagedList<Product>(GetProducts(searchQuery), searchQuery.PageIndex, searchQuery.Take);
+				hits = new PagedList<Product>(GetProductQuery(searchQuery), searchQuery.PageIndex, searchQuery.Take);
 			}
 			else
 			{

@@ -39,8 +39,11 @@ namespace SmartStore.Data
 			this.AutoCommitEnabled = true;
             this.Alias = null;
 
-			// listen to 'ObjectMaterialized' for load hooking
-			((IObjectContextAdapter)this).ObjectContext.ObjectMaterialized += ObjectMaterialized;
+			if (DataSettings.DatabaseIsInstalled())
+			{
+				// listen to 'ObjectMaterialized' for load hooking
+				((IObjectContextAdapter)this).ObjectContext.ObjectMaterialized += ObjectMaterialized;
+			}
 		}
 
 		private void ObjectMaterialized(object sender, ObjectMaterializedEventArgs e)
@@ -49,7 +52,7 @@ namespace SmartStore.Data
 			if (entity == null)
 				return;
 
-			var hookHandler = GetDbHookHandler();
+			var hookHandler = this.DbHookHandler;
 			var importantHooksOnly = !this.HooksEnabled && hookHandler.HasImportantLoadHooks();
 
 			hookHandler.TriggerLoadHooks(entity, importantHooksOnly);

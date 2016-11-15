@@ -13,6 +13,7 @@ using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Async;
 using SmartStore.Core.Data;
+using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
@@ -20,6 +21,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Hooks;
 using SmartStore.Services.Security;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Security;
@@ -522,6 +524,12 @@ namespace SmartStore.Web.Controllers
 
 					// create the DataContext
 					dbContext = new SmartObjectContext();
+
+					// AuditableHook must run
+					dbContext.DbHookHandler = new DefaultDbHookHandler(new[] 
+					{
+						new Lazy<IDbHook, HookMetadata>(() => new AuditableHook(), HookMetadata.Create<AuditableHook>(typeof(IAuditable), true), false)
+					});
 
 					// IMPORTANT: Migration would run way too early otherwise
 					Database.SetInitializer<SmartObjectContext>(null);

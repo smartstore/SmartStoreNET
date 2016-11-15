@@ -20,5 +20,18 @@ namespace SmartStore.Core.Data.Hooks
 		/// Whether the hook should run in any case, even if hooking has been turned off.
 		/// </summary>
 		public bool Important { get; set; }
+
+		public static HookMetadata Create<THook>(Type hookedType, bool important = false) where THook : IDbHook
+		{
+			Guard.NotNull(hookedType, nameof(hookedType));
+
+			return new HookMetadata
+			{
+				ImplType = typeof(THook),
+				HookedType = hookedType,
+				Important = important,
+				IsLoadHook = typeof(IDbLoadHook).IsAssignableFrom(hookedType)
+			};
+		}
 	}
 }

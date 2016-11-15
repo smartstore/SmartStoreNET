@@ -29,17 +29,24 @@ namespace SmartStore.Data
 		{
 			return ChangeTracker.Entries().Where(x => x.State > System.Data.Entity.EntityState.Unchanged);
 		}
-		
-		private IDbHookHandler GetDbHookHandler()
-		{
-			if (_dbHookHandler == null)
-			{
-				_dbHookHandler = HostingEnvironment.IsHosted
-					? EngineContext.Current.Resolve<IDbHookHandler>()
-					: NullDbHookHandler.Instance; // never trigger hooks during tooling or tests
-			}
 
-			return _dbHookHandler;
+		public IDbHookHandler DbHookHandler
+		{
+			get
+			{
+				if (_dbHookHandler == null)
+				{
+					_dbHookHandler = HostingEnvironment.IsHosted
+						? EngineContext.Current.Resolve<IDbHookHandler>()
+						: NullDbHookHandler.Instance; // never trigger hooks during tooling or tests
+				}
+
+				return _dbHookHandler;
+			}
+			set
+			{
+				_dbHookHandler = value;
+			}
 		}
 
 		public override int SaveChanges()
@@ -64,7 +71,7 @@ namespace SmartStore.Data
 				}
 			}
 
-			_currentSaveOperation = new SaveChangesOperation(this, GetDbHookHandler());
+			_currentSaveOperation = new SaveChangesOperation(this, this.DbHookHandler);
 
 			using (new ActionDisposable(() => _currentSaveOperation = null))
 			{
@@ -94,7 +101,7 @@ namespace SmartStore.Data
 				}
 			}
 
-			_currentSaveOperation = new SaveChangesOperation(this, GetDbHookHandler());
+			_currentSaveOperation = new SaveChangesOperation(this, this.DbHookHandler);
 
 			using (new ActionDisposable(() => _currentSaveOperation = null))
 			{

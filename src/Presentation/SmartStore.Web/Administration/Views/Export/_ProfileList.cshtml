@@ -10,16 +10,16 @@
 		<div class="head">@T(titleResKey)</div>
 	</div>
 
-	@if (isSystemProfiles)
-	{
-		<div class="alert alert-info">
-			<button type="button" class="close" data-dismiss="alert">&#215;</button>
-			@Html.Raw(T("Admin.DataExchange.Export.SystemProfileNote"))
-		</div>
-	}
-
 	@if (Model.Any())
 	{
+		if (isSystemProfiles)
+		{
+			<div class="alert alert-info">
+				<button type="button" class="close" data-dismiss="alert">&#215;</button>
+				@Html.Raw(T("Admin.DataExchange.Export.SystemProfileNote"))
+			</div>
+		}
+
 		<table class="table admin-table export-profile-list profile-list">
 			<thead>
 				<tr>

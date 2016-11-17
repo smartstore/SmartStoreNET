@@ -5,9 +5,6 @@
     overflow: hidden;
     position: relative;
 }
-.megamenu ul.nav {
-    width: 5000px;
-}
 .megamenu-nav i {
     font-size: 38px;
     transition: all .2s ease-in-out;
@@ -161,7 +158,7 @@
     padding-right: 0;
 }
 .megamenu ul.nav .nav-item {
-    z-index: 1100;
+    //z-index: 1100;
     position: relative;
 }
 .megamenu ul.nav .nav-item .label {
@@ -170,14 +167,16 @@
     top: 7px;
     font-size: 0.7rem;
 }
+/*
 .megamenu .nav-slider {
     z-index: 3000;
 }
+*/
 .megamenu .megamenu-nav--next,
 .megamenu .megamenu-nav--prev {
     transition: opacity .5s ease-in-out .1s;
     opacity: 0;
-    z-index: 3001;
+    z-index: 1001;
 }
 .megamenu.megamenu-blend--next .megamenu-nav--next,
 .megamenu.megamenu-blend--prev .megamenu-nav--prev {
@@ -207,8 +206,8 @@
     color: #000;
     display: none;
 }
-.megamenu-section .navbar:hover .megamenu-nav--prev i,
-.megamenu-section .navbar:hover .megamenu-nav--next i  {
+.megamenu-section .navbar:hover .show-scroll-buttons .megamenu-nav--prev i,
+.megamenu-section .navbar:hover .show-scroll-buttons .megamenu-nav--next i  {
     display: block;
 }
 

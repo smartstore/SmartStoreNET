@@ -94,7 +94,7 @@
 
                     // Handle opening events for desktop workstations
 
-                    $(".dropdown-menu").on('mouseenter', function (e) {
+                    $(".dropdown-menu", megamenuContainer).on('mouseenter', function (e) {
 
                         clearTimeout(closingTimeout);
                     })
@@ -135,7 +135,9 @@
 
                     navElems.on(event, function (e) {
                         var navItem = $(this);
-                        var opendMenu = $(".dropdown-menu", $(".nav-item.active .nav-link").data("target"));
+                        //var opendMenu = $(".dropdown-menu", $(".nav-item.active .nav-link").data("target"));
+                        var opendMenu = $($(".nav-item.active .nav-link").data("target")).find(".dropdown-menu");
+
                         var offsetLeft = navItem.offset().left - megamenu.offset().left;
 
                         if (offsetLeft < 0) {

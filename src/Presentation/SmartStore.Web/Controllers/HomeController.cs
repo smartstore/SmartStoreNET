@@ -86,35 +86,6 @@ namespace SmartStore.Web.Controllers
 			return View();
         }
 
-
-        [ChildActionOnly]
-        public ActionResult ContentSlider()
-        {
-			var pictureService = EngineContext.Current.Resolve<IPictureService>();
-			var settings = _services.Settings.LoadSetting<ContentSliderSettings>();
-
-            settings.BackgroundPictureUrl = pictureService.GetPictureUrl(settings.BackgroundPictureId, 0, false);
-            
-            var slides = settings.Slides
-				.Where(s => 
-					s.LanguageCulture == _services.WorkContext.WorkingLanguage.LanguageCulture && 
-					(!s.LimitedToStores || (s.SelectedStoreIds != null && s.SelectedStoreIds.Contains(_services.StoreContext.CurrentStore.Id)))
-				)
-				.OrderBy(s => s.DisplayOrder);
-            
-            foreach (var slide in slides)
-            {
-                slide.PictureUrl = pictureService.GetPictureUrl(slide.PictureId, 0, false);
-                slide.Button1.Url = CheckButtonUrl(slide.Button1.Url);
-                slide.Button2.Url = CheckButtonUrl(slide.Button2.Url);
-                slide.Button3.Url = CheckButtonUrl(slide.Button3.Url);
-            }
-
-            settings.Slides = slides.ToList();
-
-            return PartialView(settings);
-        }
-
 		public ActionResult StoreClosed()
 		{
 			return View();

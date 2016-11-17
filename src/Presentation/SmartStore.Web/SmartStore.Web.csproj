@@ -1796,7 +1796,6 @@
     <Content Include="Views\Shared\ConditionalComments.cshtml" />
     <Content Include="Themes\Alpha\Views\Shared\ConfigureTheme.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\Header.cshtml" />
     <Content Include="Views\Shared\LanguageAttributes.cshtml" />
     <Content Include="Views\Shared\LicenseRequired.cshtml" />
     <Content Include="Views\Shared\NotFound.cshtml" />
@@ -2006,6 +2005,7 @@
     <Content Include="Views\ShoppingCart\OffCanvasShoppingCart.cshtml" />
     <Content Include="Views\ShoppingCart\OffCanvasWishlist.cshtml" />
     <Content Include="Views\ShoppingCart\OffCanvasCompare.cshtml" />
+    <Content Include="Views\Common\Logo.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

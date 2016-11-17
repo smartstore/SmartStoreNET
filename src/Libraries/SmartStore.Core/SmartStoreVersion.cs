@@ -21,7 +21,7 @@ namespace SmartStore.Core
 			new Version("2.1"),
 			new Version("2.2"),
             new Version("2.5"),
-			new Version("3.0")
+			//new Version("3.0")
 		};
 
 		//private const string HELP_BASEURL = "http://docs.smartstore.com/display/SMNET25/";

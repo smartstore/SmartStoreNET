@@ -2006,6 +2006,7 @@
     <Content Include="Views\ShoppingCart\OffCanvasShoppingCart.cshtml" />
     <Content Include="Views\ShoppingCart\OffCanvasWishlist.cshtml" />
     <Content Include="Views\ShoppingCart\OffCanvasCompare.cshtml" />
+    <Content Include="Views\Common\Logo.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

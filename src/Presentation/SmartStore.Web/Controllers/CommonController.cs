@@ -327,7 +327,7 @@ namespace SmartStore.Web.Controllers
         }
 
         [ChildActionOnly]
-        public ActionResult Header()
+        public ActionResult Logo()
         {
 			var model = _services.Cache.Get(ModelCacheEventConsumer.SHOPHEADER_MODEL_KEY.FormatWith(_services.StoreContext.CurrentStore.Id), () =>
 			{
@@ -358,7 +358,6 @@ namespace SmartStore.Web.Controllers
                 };
             });
             
-
             return PartialView(model);
         }
 

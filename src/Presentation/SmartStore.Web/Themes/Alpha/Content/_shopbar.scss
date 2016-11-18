@@ -22,6 +22,7 @@
 
 .shopbar-col--stretch {
     flex: 1 1 auto;
+    padding-right: 0;
 }
 
 
@@ -33,13 +34,6 @@
     max-width: 16rem;
     max-height: 6rem;
 }
-
-
-//
-// Search
-// --------------------------------------------------
-
-// ...
 
 
 
@@ -113,11 +107,12 @@
 .shopbar-button {
     display: block;
     text-decoration: none !important;
-    height: $input-height;
+    //height: $input-height;
     padding: 6px 10px;
     border: 1px solid transparent;
     border-radius: 0.125rem;
     transition: all 0.12s ease;
+    cursor: pointer;
 
     &:hover {
         //border-color: $btn-secondary-border;

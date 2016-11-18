@@ -73,6 +73,7 @@ $card-border-color:         rgba(0,0,0, 0.12);*/
 
 // Main
 @import "_shopbar.scss";
+@import "_search.scss";
 @import "_footer.scss";
 @import "_misc.scss";
 @import "_blog.scss";
@@ -100,6 +101,7 @@ body {
 #page {
     background: $body-bg;
     overflow-x: hidden;
+    
 }
 
 .page-main {

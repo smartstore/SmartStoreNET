@@ -273,6 +273,7 @@
     <Compile Include="Controllers\ExternalAuthenticationController.cs" />
     <Compile Include="Controllers\InstallController.cs" />
     <Compile Include="Controllers\PollController.cs" />
+    <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\TaskSchedulerController.cs" />
     <Compile Include="Controllers\ThemeController.cs" />
     <Compile Include="Controllers\WidgetController.cs" />
@@ -365,6 +366,7 @@
     <Compile Include="Models\Checkout\CheckoutCompletedModel.cs" />
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
     <Compile Include="Models\Common\EntityPickerModel.cs" />
+    <Compile Include="Models\Search\InstantSearchResultModel.cs" />
     <Compile Include="Models\ShoppingCart\ButtonPaymentMethodModel.cs" />
     <Compile Include="Models\ShoppingCart\OffCanvasCartModel.cs" />
     <Compile Include="Models\Topics\TopicWidgetModel.cs" />
@@ -1851,12 +1853,12 @@
     <Content Include="Views\Catalog\RecentlyAddedProducts.cshtml" />
     <Content Include="Views\Catalog\RecentlyViewedProducts.cshtml" />
     <Content Include="Views\Catalog\RecentlyViewedProductsBlock.cshtml" />
-    <Content Include="Views\Catalog\Search.cshtml" />
-    <Content Include="Views\Catalog\SearchBox.cshtml" />
+    <Content Include="Views\Search\Search.cshtml" />
+    <Content Include="Views\Search\SearchBox.cshtml" />
     <Content Include="Views\Catalog\_FilterPriceBox.cshtml" />
     <Content Include="Views\Catalog\_FilterSpecsBox.cshtml" />
     <Content Include="Views\Catalog\_ProductBoxList.cshtml" />
-    <Content Include="Views\Catalog\_ProductListOptions.cshtml" />
+    <Content Include="Views\Shared\_ProductListOptions.cshtml" />
     <Content Include="Views\Checkout\BillingAddress.cshtml" />
     <Content Include="Views\Checkout\CheckoutProgress.cshtml" />
     <Content Include="Views\Checkout\Completed.cshtml" />
@@ -2006,6 +2008,8 @@
     <Content Include="Views\ShoppingCart\OffCanvasWishlist.cshtml" />
     <Content Include="Views\ShoppingCart\OffCanvasCompare.cshtml" />
     <Content Include="Views\Common\Logo.cshtml" />
+    <Content Include="Themes\Alpha\Content\_search.scss" />
+    <Content Include="Views\Search\InstantSearch.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

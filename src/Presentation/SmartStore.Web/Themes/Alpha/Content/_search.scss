@@ -1,0 +1,73 @@
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// InstantSearchBox Styles
+// --------------------------------------------------
+
+$searchbox-border-color:            rgba(0,0,0, 0.12);
+$searchbox-border-active-color:     rgba(0,0,0, 0.2);
+
+.instasearch-form {
+    position: relative;
+}
+
+.instasearch-term {
+    padding: 0.5rem 1rem;
+    border-radius: 2px;
+    position: relative;
+    border-color: $searchbox-border-color;
+    box-shadow: none;
+    transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+    padding-right: 60px;
+
+    &:hover, &:focus, &:active {
+        box-shadow: 0 2px 6px 0 rgba(0,0,0, 0.12);
+    }
+     &:focus, &:active {
+        background-color: #fff;
+        border-color: $searchbox-border-active-color;
+    }
+}
+
+.instasearch-button {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    //color: #333;
+    //color: $brand-primary;
+    //opacity: 0.3;
+    border: 0;
+    font-size: 1.2rem;
+    height: 100%;
+    padding: 0 0.25rem;
+    border-radius: 0 2px 2px 0;
+}
+
+.instasearch-icon {
+    position: relative;
+    top: -0.2rem;
+}
+
+#instasearch-drop {
+    position: absolute;
+    display: none;
+    left: 0;
+    top: 100%;
+    margin-top: -1px;
+    min-width: 100%;
+    min-height: 50px;
+    border: 1px solid $searchbox-border-active-color;
+    box-shadow: 0 6px 6px 0 rgba(0,0,0, 0.12);
+    background-color: #fff;
+    z-index: $zindex-dropdown + 100;
+    border-radius: 0 0 2px 2px;   
+
+    &.open {
+        display: block;
+    }
+    
+    .instasearch-match {
+        font-weight: bold;
+    }  
+}

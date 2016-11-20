@@ -56,6 +56,12 @@ namespace SmartStore.Core.Search
 			return this;
 		}
 
+		public IndexField Boost(float factor)
+		{
+			Boosted = factor;
+			return this;
+		}
+
 		public string Name
 		{
 			get;
@@ -87,6 +93,12 @@ namespace SmartStore.Core.Search
 		}
 
 		public bool ShouldRemoveTags
+		{
+			get;
+			private set;
+		}
+
+		public float Boosted
 		{
 			get;
 			private set;

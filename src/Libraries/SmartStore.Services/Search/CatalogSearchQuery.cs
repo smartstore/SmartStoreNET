@@ -218,18 +218,18 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByRange("createdon", fromUtc, toUtc, fromUtc.HasValue, toUtc.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
-		public CatalogSearchQuery WithReviewRate(int? fromRatePercent, int? toRatePercent)
+		public CatalogSearchQuery WithRating(double? fromRate, double? toRate)
 		{
-			if (fromRatePercent.HasValue)
+			if (fromRate.HasValue)
 			{
-				Guard.InRange(fromRatePercent.Value, 0, 100, nameof(fromRatePercent.Value));
+				Guard.InRange(fromRate.Value, 0.0, 5.0, nameof(fromRate.Value));
 			}
-			if (toRatePercent.HasValue)
+			if (toRate.HasValue)
 			{
-				Guard.InRange(toRatePercent.Value, 0, 100, nameof(toRatePercent.Value));
+				Guard.InRange(toRate.Value, 0.0, 5.0, nameof(toRate.Value));
 			}
 
-			return WithFilter(SearchFilter.ByRange("rate", fromRatePercent, toRatePercent, fromRatePercent.HasValue, toRatePercent.HasValue).Mandatory().ExactMatch().NotAnalyzed());
+			return WithFilter(SearchFilter.ByRange("rate", fromRate, toRate, fromRate.HasValue, toRate.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
 		#endregion

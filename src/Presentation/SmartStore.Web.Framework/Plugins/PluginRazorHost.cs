@@ -16,7 +16,8 @@ namespace SmartStore.Web.Framework.Plugins
 
 			if (!host.IsSpecialPage)
 			{
-				return new PluginRazorHost(virtualPath, physicalPath);
+				//return new PluginRazorHost(virtualPath, physicalPath);
+				return new MvcWebPageRazorHost(virtualPath, physicalPath);
 			}
 
 			return host;

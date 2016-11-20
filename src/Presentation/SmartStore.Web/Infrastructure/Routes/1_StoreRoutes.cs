@@ -66,14 +66,14 @@ namespace SmartStore.Web.Infrastructure
 				new { controller = "Topic", action = "TopicDetailsPopup" },
 				new[] { "SmartStore.Web.Controllers" });
 
-			routes.MapLocalizedRoute("ProductSearch",
+			routes.MapLocalizedRoute("Search",
 				"search/",
-				new { controller = "Catalog", action = "Search" },
+				new { controller = "Search", action = "Search" },
 				new[] { "SmartStore.Web.Controllers" });
 
-			routes.MapLocalizedRoute("ProductSearchAutoComplete",
-				"catalog/searchtermautocomplete",
-				new { controller = "Catalog", action = "SearchTermAutoComplete" },
+			routes.MapLocalizedRoute("InstantSearch",
+				"instantsearch",
+				new { controller = "Search", action = "InstantSearch" },
 				new[] { "SmartStore.Web.Controllers" });
 
 			routes.MapLocalizedRoute("ChangeDevice",

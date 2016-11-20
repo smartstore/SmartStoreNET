@@ -1,0 +1,23 @@
+﻿@using SmartStore.Web.Models.Search
+
+@model InstantSearchResultModel
+
+@if (Model.TopProducts.Count == 0)
+{
+	return;
+}
+
+@foreach (var hit in Model.TopProducts)
+{
+	<a class="dropdown-item" style="white-space: normal" href="@Url.RouteUrl("Product", new { SeName = hit.SeName })">
+		@Html.Raw(hit.Name.HighlightKeywords(Model.Term, "<span class='instasearch-match'>{0}</span>"))
+	</a>
+}
+
+@if (Model.TotalProductsCount > Model.TopProducts.Count)
+{
+	<div class="dropdown-divider"></div>
+	<a class="dropdown-item" href="@Url.RouteUrl("Search", new { q = Model.Term })">
+		Alle Ergebnisse (@Model.TotalProductsCount Produkte)
+	</a>
+}

@@ -969,10 +969,11 @@ namespace SmartStore
 				return input;
 			}
 
-			var pattern = String.Join("|", keywords.Trim().Split(' ')
+			var pattern = String.Join("|", keywords.Trim().Split(' ', '-')
 				.Select(x => x.Trim())
 				.Where(x => x.HasValue())
-				.Select(x => Regex.Escape(x)));
+				.Select(x => Regex.Escape(x))
+				.Distinct());
 
 			if (pattern.HasValue())
 			{

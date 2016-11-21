@@ -1,8 +1,5 @@
 ﻿(function ($, window, document, undefined) {
 	$(function () {
-
-		var _baseHighlighter = $.fn.typeahead.Constructor.prototype.highlighter;
-
 		var box = $('#instasearch');
 		if (box.length == 0)
 			return;
@@ -37,13 +34,19 @@
 				return;
 			}
 
+			var spinner = $('#instasearch-progress');
+			if (spinner.length === 0) {
+				spinner = createCircularSpinner(20).attr('id', 'instasearch-progress').appendTo(box.parent());
+			}
+			// don't show spinner when result is coming fast (< 100 ms.)
+			var spinnerTimeout = setTimeout(function () { spinner.addClass('active'); }, 100)
+			
 			$.ajax({
 				dataType: "html",
 				url: url,
 				data: { term: term },
 				type: 'POST',
 				success: function (html) {
-					console.log(html);
 					if (_.str.isBlank(html)) {
 						drop.removeClass('open').html('');
 					}
@@ -55,7 +58,8 @@
 					drop.removeClass('open').html('');
 				},
 				complete: function () {
-					//spinner.removeClass('active');
+					clearTimeout(spinnerTimeout);
+					spinner.removeClass('active');
 				}
 			});
 		}

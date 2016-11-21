@@ -88,7 +88,14 @@ namespace SmartStore.Web.Controllers
 				return Content("");
 
 			var maxItems = Math.Min(16, _catalogSettings.ProductSearchAutoCompleteNumberOfProducts);
-			var searchQuery = new CatalogSearchQuery("name", term, isExactMatch: false)
+			var searchFields = new List<string> { "name", "sku", "shortdescription", "tagname", "manufacturer" };
+
+			if (_catalogSettings.SearchDescriptions)
+			{
+				searchFields.Add("fulldescription");
+			}
+
+			var searchQuery = new CatalogSearchQuery(searchFields.ToArray(), term)
 				.Slice(0, maxItems)
 				.SortBy(ProductSortingEnum.Position)
 				.HasStoreId(Services.StoreContext.CurrentStore.Id)

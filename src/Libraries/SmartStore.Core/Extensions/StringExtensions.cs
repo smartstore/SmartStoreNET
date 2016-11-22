@@ -960,9 +960,10 @@ namespace SmartStore
 		}
 
 		[DebuggerStepThrough]
-		public static string HighlightKeywords(this string input, string keywords, string highlighter = "<strong>{0}</strong>")
+		public static string HighlightKeywords(this string input, string keywords, string preMatch = "<strong>", string postMatch = "</strong>")
 		{
-			Guard.NotEmpty(highlighter, nameof(highlighter));
+			Guard.NotNull(preMatch, nameof(preMatch));
+			Guard.NotNull(postMatch, nameof(postMatch));
 
 			if (input.IsEmpty() || keywords.IsEmpty())
 			{
@@ -978,7 +979,7 @@ namespace SmartStore
 			if (pattern.HasValue())
 			{
 				var rg = new Regex(pattern, RegexOptions.IgnoreCase);
-				input = rg.Replace(input, m => string.Format(highlighter, m.Value));
+				input = rg.Replace(input, m => preMatch + m.Value + postMatch);
 			}
 
 			return input;

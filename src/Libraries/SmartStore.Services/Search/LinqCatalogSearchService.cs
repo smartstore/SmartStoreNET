@@ -572,8 +572,8 @@ namespace SmartStore.Services.Search
 			{
 				suggestions = GetSuggestions(searchQuery);
 			}
-
-			return new CatalogSearchResult(hits, searchQuery, suggestions);
+			
+			return new CatalogSearchResult(null, hits, searchQuery, suggestions);
 		}
 	}
 }

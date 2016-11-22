@@ -47,5 +47,14 @@ namespace SmartStore.Core.Search
 		/// <param name="numberOfSuggestions">Maximum number of similar words to be returned</param>
 		/// <returns>Suggestions of similar words</returns>
 		string[] GetSuggestions(int numberOfSuggestions);
+
+		/// <summary>
+		/// Highlights chosen terms in a text, extracting the most relevant sections
+		/// </summary>
+		/// <param name="input">Text to highlight terms in</param>
+		/// <param name="preMatch">Text/HTML to prepend to matched keyword</param>
+		/// <param name="postMatch">Text/HTML to append to matched keyword</param>
+		/// <returns>Highlighted text fragments</returns>
+		string Highlight(string input, string preMatch, string postMatch);
 	}
 }

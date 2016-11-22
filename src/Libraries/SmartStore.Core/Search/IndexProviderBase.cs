@@ -2,7 +2,7 @@
 
 namespace SmartStore.Core.Search
 {
-	public abstract class IndexProviderBase : DisposableObject, IIndexProvider
+	public abstract class IndexProviderBase : IIndexProvider
 	{
 		public virtual bool IsActive
 		{
@@ -23,9 +23,5 @@ namespace SmartStore.Core.Search
 		public abstract IIndexStore GetIndexStore(string scope);
 
 		public abstract ISearchEngine GetSearchEngine(IIndexStore store, ISearchQuery query);
-
-		protected override void OnDispose(bool disposing)
-		{
-		}
 	}
 }

@@ -101,7 +101,7 @@ namespace SmartStore.Services.Search
 							}
 						}
 
-						return new CatalogSearchResult(hits, searchQuery, suggestions);
+						return new CatalogSearchResult(searchEngine, hits, searchQuery, suggestions);
 					}
 				}
 			}

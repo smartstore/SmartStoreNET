@@ -10,7 +10,7 @@
 @foreach (var hit in Model.TopProducts)
 {
 	<a class="dropdown-item" style="white-space: normal" href="@Url.RouteUrl("Product", new { SeName = hit.SeName })">
-		@Html.Raw(hit.Name.HighlightKeywords(Model.Term, "<span class='instasearch-match'>{0}</span>"))
+		@Html.Raw(Model.SearchResult.Highlight(hit.Name, "<span class='instasearch-match'>", "</span>"))
 	</a>
 }
 

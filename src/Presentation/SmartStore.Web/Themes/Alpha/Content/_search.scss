@@ -34,9 +34,6 @@ $searchbox-border-active-color:     rgba(0,0,0, 0.2);
     z-index: 1;
     top: 0;
     right: 0;
-    //color: #333;
-    //color: $brand-primary;
-    //opacity: 0.3;
     border: 0;
     font-size: 1.2rem;
     height: 100%;
@@ -70,4 +67,14 @@ $searchbox-border-active-color:     rgba(0,0,0, 0.2);
     .instasearch-match {
         font-weight: bold;
     }  
+}
+
+#instasearch-progress {
+    position: absolute;
+    z-index: 2;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    margin-top: -10px;
+    right: 56px;
 }

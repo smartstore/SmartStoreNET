@@ -111,6 +111,7 @@ namespace SmartStore.Web.Controllers
 
 			var model = new InstantSearchResultModel
 			{
+				SearchResult = result,
 				Term = term,
 				TotalProductsCount = result.Hits.TotalCount
 			};

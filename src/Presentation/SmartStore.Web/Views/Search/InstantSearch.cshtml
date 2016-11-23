@@ -7,17 +7,23 @@
 	return;
 }
 
-@foreach (var hit in Model.TopProducts)
-{
-	<a class="dropdown-item" style="white-space: normal" href="@Url.RouteUrl("Product", new { SeName = hit.SeName })">
-		@Html.Raw(Model.SearchResult.Highlight(hit.Name, "<span class='instasearch-match'>", "</span>"))
-	</a>
-}
+<ul class="instasearch-hits">
+	@foreach (var hit in Model.TopProducts)
+	{
+		<li>
+			<a class="instasearch-hit" href="@Url.RouteUrl("Product", new { SeName = hit.SeName })">
+				@Html.Raw(Model.SearchResult.Highlight(hit.Name, "<span class='instasearch-match'>", "</span>"))
+			</a>
+		</li>
+	}
+</ul>
+
 
 @if (Model.TotalProductsCount > Model.TopProducts.Count)
 {
-	<div class="dropdown-divider"></div>
-	<a class="dropdown-item" href="@Url.RouteUrl("Search", new { q = Model.Term })">
-		Alle Ergebnisse (@Model.TotalProductsCount Produkte)
-	</a>
+	<li>
+		<a class="instasearch-hit" href="@Url.RouteUrl("Search", new { q = Model.Term })">
+			Alle Treffer (@Model.TotalProductsCount Produkte)
+		</a>
+	</li>
 }

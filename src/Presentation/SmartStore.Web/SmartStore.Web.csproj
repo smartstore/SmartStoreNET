@@ -1389,6 +1389,7 @@
     <Content Include="Themes\Alpha\Scripts\smartstore.instantsearch.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.jquery.utils.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.megamenu.js" />
+    <Content Include="Themes\Alpha\Scripts\smartstore.keynav.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.navbar.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.placeholder.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.scrollbutton.js" />

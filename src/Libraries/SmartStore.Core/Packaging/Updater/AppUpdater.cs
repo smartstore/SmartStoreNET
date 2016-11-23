@@ -266,15 +266,28 @@ namespace SmartStore.Core.Packaging
 			if (File.Exists(path))
 			{
 				File.Move(path, Path.Combine(tenantDir.FullName, "SmartStore.db.sdf"));
-			}			
+			}
+
+			Func<string, string, bool> moveTenantFolder = (sourceFolder, targetFolder) => 
+			{
+				var sourcePath = Path.Combine(appDataDir, sourceFolder);
+
+				if (Directory.Exists(sourcePath))
+				{
+					Directory.Move(sourcePath, Path.Combine(tenantDir.FullName, targetFolder ?? sourceFolder));
+					return true;
+				}
+
+				return false;
+			};
 
 			// Move tenant specific Folders
-			Directory.Move(Path.Combine(appDataDir, "ImportProfiles"), Path.Combine(tenantDir.FullName, "ImportProfiles"));
-			Directory.Move(Path.Combine(appDataDir, "ExportProfiles"), Path.Combine(tenantDir.FullName, "ExportProfiles"));
-			Directory.Move(Path.Combine(appDataDir, "Indexing"), Path.Combine(tenantDir.FullName, "Indexing"));
-			Directory.Move(Path.Combine(appDataDir, "Lucene"), Path.Combine(tenantDir.FullName, "Lucene"));
-			Directory.Move(Path.Combine(appDataDir, "_temp\\BizBackups"), Path.Combine(tenantTempDir.FullName, "BizBackups"));
-			Directory.Move(Path.Combine(appDataDir, "_temp\\ShopConnector"), Path.Combine(tenantTempDir.FullName, "ShopConnector"));
+			moveTenantFolder("ImportProfiles", null);
+			moveTenantFolder("ExportProfiles", null);
+			moveTenantFolder("Indexing", null);
+			moveTenantFolder("Lucene", null);
+			moveTenantFolder("_temp\\BizBackups", null);
+			moveTenantFolder("_temp\\ShopConnector", null);
 
 			// Move all media files and folders to new subfolder "Default"
 			var mediaInfos = (new DirectoryInfo(CommonHelper.MapPath("~/Media"))).GetFileSystemInfos().Where(x => !x.Name.IsCaseInsensitiveEqual("Default"));

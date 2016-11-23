@@ -81,18 +81,10 @@ namespace SmartStore.Services.Search
 			WithFilter(SearchFilter.ByRange("availableend", utcNow, null, false, false).Mandatory().NotAnalyzed());
 
 			var roleIds = (allowedCustomerRoleIds != null ? allowedCustomerRoleIds.Where(x => x != 0).Distinct().ToList() : new List<int>());
-			var roleIdCount = roleIds.Count;
-
-			if (roleIdCount > 0)
+			if (roleIds.Any())
 			{
-				if (roleIdCount == 1)
-				{
-					WithFilter(SearchFilter.ByField("roleid", roleIds.First()).Mandatory().ExactMatch().NotAnalyzed());
-				}
-				else
-				{
-					WithFilter(SearchFilter.Combined(roleIds.Select(x => SearchFilter.ByField("roleid", x).ExactMatch().NotAnalyzed()).ToArray()));
-				}
+				roleIds.Insert(0, 0);
+				WithFilter(SearchFilter.Combined(roleIds.Select(x => SearchFilter.ByField("roleid", x).ExactMatch().NotAnalyzed()).ToArray()));
 			}
 
 			return this;
@@ -120,7 +112,10 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery HasStoreId(int id)
 		{
-			return WithFilter(SearchFilter.ByField("storeid", id).Mandatory().ExactMatch().NotAnalyzed());
+			return WithFilter(SearchFilter.Combined(
+				SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed(),
+				SearchFilter.ByField("storeid", id).ExactMatch().NotAnalyzed())
+			);
 		}
 
 		public CatalogSearchQuery IsProductType(ProductType type)

@@ -44,9 +44,8 @@ namespace SmartStore.Core.Search
 		/// <summary>
 		/// Get suggestions of similar words
 		/// </summary>
-		/// <param name="numberOfSuggestions">Maximum number of similar words to be returned</param>
 		/// <returns>Suggestions of similar words</returns>
-		string[] GetSuggestions(int numberOfSuggestions);
+		string[] GetSuggestions();
 
 		/// <summary>
 		/// Highlights chosen terms in a text, extracting the most relevant sections

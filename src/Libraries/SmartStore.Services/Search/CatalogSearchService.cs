@@ -85,20 +85,17 @@ namespace SmartStore.Services.Search
 							hits = new PagedList<Product>(new List<Product>(), searchQuery.PageIndex, searchQuery.Take);
 						}
 
-						if (searchQuery.NumberOfSuggestions > 0)
+						try
 						{
-							try
+							using (_chronometer.Step("Get suggestions"))
 							{
-								using (_chronometer.Step("Get suggestions"))
-								{
-									suggestions = searchEngine.GetSuggestions(searchQuery.NumberOfSuggestions);
-								}
+								suggestions = searchEngine.GetSuggestions();
 							}
-							catch (Exception exception)
-							{
-								// suggestions should not break the search
-								_logger.Error(exception);
-							}
+						}
+						catch (Exception exception)
+						{
+							// suggestions should not break the search
+							_logger.Error(exception);
 						}
 
 						return new CatalogSearchResult(searchEngine, hits, searchQuery, suggestions);

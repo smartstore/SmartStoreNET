@@ -56,17 +56,59 @@ $searchbox-border-active-color:     rgba(0,0,0, 0.2);
     min-height: 50px;
     border: 1px solid $searchbox-border-active-color;
     box-shadow: 0 6px 6px 0 rgba(0,0,0, 0.12);
-    background-color: #fff;
+    background-color: $dropdown-bg;
     z-index: $zindex-dropdown + 100;
     border-radius: 0 0 2px 2px;   
 
     &.open {
         display: block;
+    } 
+}
+
+.instasearch-drop-body {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+}
+
+.instasearch-match {
+    font-weight: bold;
+}
+
+.instasearch-group-header {
+    text-transform: uppercase;
+    padding: 0.35rem 20px;
+    //margin: 0;
+    color: $brand-primary;
+
+    &:not(:first-child) {
+        margin-top: 1rem;
     }
-    
-    .instasearch-match {
-        font-weight: bold;
-    }  
+}
+
+.instasearch-hits {
+    @include list-unstyled;
+    margin: 0;
+}
+
+.instasearch-result-block {
+    float: left;
+}
+
+.instasearch-hit {
+    display: block;
+    width: 100%;
+    padding: 0.35rem 20px;
+    clear: both;
+    white-space: normal;
+    text-decoration: none;
+    color: $dropdown-link-color;
+
+    &:focus, &:hover, &.active, &.key-hover {
+        color: $dropdown-link-hover-color;
+        text-decoration: none;
+        background-color: $dropdown-link-hover-bg;
+    }
 }
 
 #instasearch-progress {

@@ -129,7 +129,7 @@ namespace SmartStore.Services.Tests.Search
 			var result = Search(new CatalogSearchQuery(new string[] { "name", "shortdescription" }, "cook"));
 
 			Assert.That(result.Hits.Count, Is.EqualTo(0));
-			Assert.That(result.SpellCheckingTerms.Any(), Is.EqualTo(false));
+			Assert.That(result.SpellCheckerSuggestions.Any(), Is.EqualTo(false));
 		}
 
 		[Test]
@@ -186,10 +186,10 @@ namespace SmartStore.Services.Tests.Search
 
 			InitMocks(products);
 
-			var result = Search(new CatalogSearchQuery(new string[] { "name" }, "Smart").WithSpellChecking(10).Slice(0, 0).HasStoreId(1));
+			var result = Search(new CatalogSearchQuery(new string[] { "name" }, "Smart").CheckSpelling(10).Slice(0, 0).HasStoreId(1));
 
-			Assert.That(result.SpellCheckingTerms.Length, Is.EqualTo(2));
-			Assert.That(result.SpellCheckingTerms[0].IsCaseInsensitiveEqual("Smartphone"));
+			Assert.That(result.SpellCheckerSuggestions.Length, Is.EqualTo(2));
+			Assert.That(result.SpellCheckerSuggestions[0].IsCaseInsensitiveEqual("Smartphone"));
 		}
 
 		#endregion

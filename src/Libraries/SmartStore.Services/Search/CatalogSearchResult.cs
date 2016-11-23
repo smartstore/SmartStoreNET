@@ -10,7 +10,7 @@ namespace SmartStore.Services.Search
 			ISearchEngine engine,
 			IPagedList<Product> hits,
 			CatalogSearchQuery query,
-			string[] spellCheckingTerms)
+			string[] spellCheckerSuggestions)
 		{
 			Guard.NotNull(hits, nameof(hits));
 			Guard.NotNull(query, nameof(query));
@@ -18,7 +18,7 @@ namespace SmartStore.Services.Search
 			Engine = engine;
 			Hits = hits;
 			Query = query;
-			SpellCheckingTerms = spellCheckingTerms ?? new string[0];
+			SpellCheckerSuggestions = spellCheckerSuggestions ?? new string[0];
 		}
 
 		/// <summary>
@@ -40,9 +40,9 @@ namespace SmartStore.Services.Search
 		}
 
 		/// <summary>
-		/// Gets spell checking terms
+		/// Gets spell checking suggestions
 		/// </summary>
-		public string[] SpellCheckingTerms
+		public string[] SpellCheckerSuggestions
 		{
 			get;
 			private set;

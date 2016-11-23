@@ -44,6 +44,8 @@ namespace SmartStore.Core.Search
 			_facetDescriptors = new Dictionary<string, FacetDescriptor>(StringComparer.OrdinalIgnoreCase);
 
 			Take = int.MaxValue;
+
+			SpellCheckerMinQueryLength = 4;
 		}
 
 		// Language
@@ -83,7 +85,8 @@ namespace SmartStore.Core.Search
 			}
 		}
 
-		public int SpellCheckingTerms { get; protected set; }
+		public int SpellCheckerMaxSuggestions { get; protected set; }
+		public int SpellCheckerMinQueryLength { get; protected set; }
 
 		// Sorting
 		public ICollection<SearchSort> Sorting { get; }
@@ -111,11 +114,11 @@ namespace SmartStore.Core.Search
 			return (this as TQuery);
 		}
 
-		public TQuery WithSpellChecking(int numberOfTerms)
+		public TQuery CheckSpelling(int maxSuggestions)
 		{
-			Guard.IsPositive(numberOfTerms, nameof(numberOfTerms));
+			Guard.IsPositive(maxSuggestions, nameof(maxSuggestions));
 
-			SpellCheckingTerms = numberOfTerms;
+			SpellCheckerMaxSuggestions = maxSuggestions;
 
 			return (this as TQuery);
 		}

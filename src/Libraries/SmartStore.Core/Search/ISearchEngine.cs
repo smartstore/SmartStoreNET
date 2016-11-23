@@ -42,10 +42,10 @@ namespace SmartStore.Core.Search
 		IDictionary<string, FacetGroup> GetFacetMap();
 
 		/// <summary>
-		/// Spell checking
+		/// Performs spell checking ("Diy you mean?")
 		/// </summary>
-		/// <returns>Spell checking terms</returns>
-		string[] SpellChecking();
+		/// <returns>Spell checked suggestions</returns>
+		string[] CheckSpelling();
 
 		/// <summary>
 		/// Highlights chosen terms in a text, extracting the most relevant sections

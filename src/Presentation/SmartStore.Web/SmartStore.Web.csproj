@@ -366,7 +366,7 @@
     <Compile Include="Models\Checkout\CheckoutCompletedModel.cs" />
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
     <Compile Include="Models\Common\EntityPickerModel.cs" />
-    <Compile Include="Models\Search\InstantSearchResultModel.cs" />
+    <Compile Include="Models\Search\SearchResultModel.cs" />
     <Compile Include="Models\ShoppingCart\ButtonPaymentMethodModel.cs" />
     <Compile Include="Models\ShoppingCart\OffCanvasCartModel.cs" />
     <Compile Include="Models\Topics\TopicWidgetModel.cs" />

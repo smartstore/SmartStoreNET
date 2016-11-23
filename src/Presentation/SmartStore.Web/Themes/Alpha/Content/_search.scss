@@ -91,12 +91,13 @@ $searchbox-border-active-color:     rgba(0,0,0, 0.2);
     margin: 0;
 }
 
-.instasearch-result-block {
+.instasearch-col {
     float: left;
 }
 
 .instasearch-hit {
     display: block;
+    position: relative;
     width: 100%;
     padding: 0.35rem 20px;
     clear: both;
@@ -109,6 +110,11 @@ $searchbox-border-active-color:     rgba(0,0,0, 0.2);
         text-decoration: none;
         background-color: $dropdown-link-hover-bg;
     }
+}
+
+.instasearch-hit-count {
+    float: right;
+    color: $gray-light;
 }
 
 #instasearch-progress {

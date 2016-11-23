@@ -301,7 +301,6 @@
     <Compile Include="Catalog\ICategoryTemplateService.cs" />
     <Compile Include="Catalog\IProductTemplateService.cs" />
     <Compile Include="Catalog\ProductSearchContext.cs" />
-    <Compile Include="Catalog\ProductsSearchingEvent.cs" />
     <Compile Include="Catalog\ProductTemplateService.cs" />
     <Compile Include="Catalog\ICopyProductService.cs" />
     <Compile Include="Catalog\CopyProductService.cs" />
@@ -497,6 +496,7 @@
     <Compile Include="Search\CatalogSearchService.cs" />
     <Compile Include="Search\ICatalogSearchService.cs" />
     <Compile Include="Search\LinqCatalogSearchService.cs" />
+    <Compile Include="Search\CatalogSearchEvents.cs" />
     <Compile Include="Security\AclService.cs" />
     <Compile Include="Security\EncryptionService.cs" />
     <Compile Include="Security\IAclService.cs" />

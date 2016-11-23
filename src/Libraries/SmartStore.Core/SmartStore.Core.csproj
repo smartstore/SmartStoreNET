@@ -439,6 +439,7 @@
     <Compile Include="Search\SearchQuery.cs" />
     <Compile Include="Search\SearchSettings.cs" />
     <Compile Include="Search\SearchSort.cs" />
+    <Compile Include="Search\SpellCheckerSuggestion.cs" />
     <Compile Include="Security\SmartStorePrincipal.cs" />
     <Compile Include="Themes\DefaultThemeRegistry.cs" />
     <Compile Include="Themes\ThemeFolderData.cs" />

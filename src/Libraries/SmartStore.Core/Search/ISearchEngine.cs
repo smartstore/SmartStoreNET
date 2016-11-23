@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
@@ -45,7 +46,7 @@ namespace SmartStore.Core.Search
 		/// Performs spell checking ("Diy you mean?")
 		/// </summary>
 		/// <returns>Spell checked suggestions</returns>
-		string[] CheckSpelling();
+		SpellCheckerSuggestion[] CheckSpelling();
 
 		/// <summary>
 		/// Highlights chosen terms in a text, extracting the most relevant sections

@@ -89,7 +89,7 @@ namespace SmartStore.Web.Controllers
 				_catalogSettings.ShowProductImagesInSearchAutoComplete,
 				_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage);
 
-			var model = new InstantSearchResultModel
+			var model = new SearchResultModel
 			{
 				SearchResult = result,
 				Term = term,

@@ -1,6 +1,6 @@
 ﻿@using SmartStore.Web.Models.Search
 
-@model InstantSearchResultModel
+@model SearchResultModel
 
 @if (Model.TopProducts.Count == 0)
 {
@@ -16,14 +16,12 @@
 			</a>
 		</li>
 	}
+	@if (Model.TotalProductsCount > Model.TopProducts.Count)
+	{
+		<li>
+			<a class="instasearch-hit" href="@Url.RouteUrl("Search", new { q = Model.Term })">
+				Alle Treffer (@Model.TotalProductsCount Produkte)
+			</a>
+		</li>
+	}
 </ul>
-
-
-@if (Model.TotalProductsCount > Model.TopProducts.Count)
-{
-	<li>
-		<a class="instasearch-hit" href="@Url.RouteUrl("Search", new { q = Model.Term })">
-			Alle Treffer (@Model.TotalProductsCount Produkte)
-		</a>
-	</li>
-}

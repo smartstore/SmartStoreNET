@@ -114,11 +114,12 @@ namespace SmartStore.Core.Search
 			return (this as TQuery);
 		}
 
-		public TQuery CheckSpelling(int maxSuggestions)
+		public TQuery CheckSpelling(int maxSuggestions, int minQueryLength = 4)
 		{
 			Guard.IsPositive(maxSuggestions, nameof(maxSuggestions));
 
 			SpellCheckerMaxSuggestions = maxSuggestions;
+			SpellCheckerMinQueryLength = minQueryLength;
 
 			return (this as TQuery);
 		}

@@ -292,8 +292,6 @@ namespace SmartStore.Services.Catalog
 
             ctx.FilterableSpecificationAttributeOptionIds = new List<int>();
 
-            _services.EventPublisher.Publish(new ProductsSearchingEvent(ctx));
-
 			//search by keyword
             bool searchLocalizedValue = false;
             if (ctx.LanguageId > 0)

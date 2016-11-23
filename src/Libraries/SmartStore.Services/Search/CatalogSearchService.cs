@@ -56,7 +56,7 @@ namespace SmartStore.Services.Search
 					using (_chronometer.Step("Search (" + searchEngine.GetType().Name + ")"))
 					{
 						var totalCount = 0;
-						string[] suggestions = null;
+						string[] spellCheckingTerms = null;
 						IEnumerable<ISearchHit> searchHits;
 						PagedList<Product> hits;
 
@@ -87,18 +87,18 @@ namespace SmartStore.Services.Search
 
 						try
 						{
-							using (_chronometer.Step("Get suggestions"))
+							using (_chronometer.Step("Get spell checks"))
 							{
-								suggestions = searchEngine.GetSuggestions();
+								spellCheckingTerms = searchEngine.SpellChecking();
 							}
 						}
 						catch (Exception exception)
 						{
-							// suggestions should not break the search
+							// spell checking should not break the search
 							_logger.Error(exception);
 						}
 
-						return new CatalogSearchResult(searchEngine, hits, searchQuery, suggestions);
+						return new CatalogSearchResult(searchEngine, hits, searchQuery, spellCheckingTerms);
 					}
 				}
 			}

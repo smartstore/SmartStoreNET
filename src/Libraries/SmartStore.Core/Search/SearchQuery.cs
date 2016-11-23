@@ -83,7 +83,7 @@ namespace SmartStore.Core.Search
 			}
 		}
 
-		public int NumberOfSuggestions { get; protected set; }
+		public int SpellCheckingTerms { get; protected set; }
 
 		// Sorting
 		public ICollection<SearchSort> Sorting { get; }
@@ -111,11 +111,11 @@ namespace SmartStore.Core.Search
 			return (this as TQuery);
 		}
 
-		public TQuery WithSuggestions(int numberOfSuggestions)
+		public TQuery WithSpellChecking(int numberOfTerms)
 		{
-			Guard.IsPositive(numberOfSuggestions, nameof(numberOfSuggestions));
+			Guard.IsPositive(numberOfTerms, nameof(numberOfTerms));
 
-			NumberOfSuggestions = numberOfSuggestions;
+			SpellCheckingTerms = numberOfTerms;
 
 			return (this as TQuery);
 		}

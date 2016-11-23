@@ -26,7 +26,10 @@ namespace SmartStore.Core.Search
 		int Skip { get; }
 		int Take { get; }
 
-		int NumberOfSuggestions { get; }
+		/// <summary>
+		/// Maximum number of terms returned from spell checking
+		/// </summary>
+		int SpellCheckingTerms { get; }
 
 		// Sorting
 		ICollection<SearchSort> Sorting { get; }

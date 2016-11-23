@@ -61,26 +61,6 @@ namespace SmartStore.Web.Controllers
 			return PartialView(model);
 		}
 
-		//[HttpPost]
-		//public ActionResult InstantSearch(string term)
-		//{
-		//	if (string.IsNullOrWhiteSpace(term) || term.Length < _catalogSettings.ProductSearchTermMinimumLength)
-		//		return Content("");
-
-		//	var numberOfSuggestions = (_catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0 ? _catalogSettings.ProductSearchAutoCompleteNumberOfProducts : 10);
-		//	var searchQuery = new CatalogSearchQuery("name", term)
-		//		.WithSuggestions(numberOfSuggestions)
-		//		.Slice(0, 0)
-		//		.HasStoreId(Services.StoreContext.CurrentStore.Id)
-		//		.WithLanguage(Services.WorkContext.WorkingLanguage);
-
-		//	var result = _catalogSearchService.Search(searchQuery);
-
-		//	ViewBag.Term = term;
-
-		//	return PartialView(result.Suggestions);
-		//}
-
 		[HttpPost]
 		public ActionResult InstantSearch(string term)
 		{

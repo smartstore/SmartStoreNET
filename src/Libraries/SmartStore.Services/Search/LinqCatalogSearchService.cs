@@ -515,13 +515,13 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
-		protected virtual string[] GetSuggestions(CatalogSearchQuery searchQuery)
+		protected virtual string[] SpellChecking(CatalogSearchQuery searchQuery)
 		{
 			var tokens = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
 			var names = GetProductQuery(searchQuery)
 				.Select(x => x.Name)
-				.Take(5 * searchQuery.NumberOfSuggestions)
+				.Take(5 * searchQuery.SpellCheckingTerms)
 				.ToList();
 
 			foreach (var name in names)
@@ -543,20 +543,20 @@ namespace SmartStore.Services.Search
 				}
 			}
 
-			var suggestions = tokens
+			var spellCheckingTerms = tokens
 				.OrderByDescending(x => x.Value)
 				.Select(x => x.Key)
-				.Take(searchQuery.NumberOfSuggestions)
+				.Take(searchQuery.SpellCheckingTerms)
 				.ToArray();
 
-			return suggestions;
+			return spellCheckingTerms;
 		}
 
 		#endregion
 
 		public CatalogSearchResult Search(CatalogSearchQuery searchQuery)
 		{
-			string[] suggestions = null;
+			string[] spellCheckingTerms = null;
 			PagedList<Product> hits;
 
 			if (searchQuery.Take > 0)
@@ -568,12 +568,12 @@ namespace SmartStore.Services.Search
 				hits = new PagedList<Product>(new List<Product>(), searchQuery.PageIndex, searchQuery.Take);
 			}
 
-			if (searchQuery.NumberOfSuggestions > 0 && searchQuery.Term.HasValue())
+			if (searchQuery.SpellCheckingTerms > 0 && searchQuery.Term.HasValue())
 			{
-				suggestions = GetSuggestions(searchQuery);
+				spellCheckingTerms = SpellChecking(searchQuery);
 			}
 			
-			return new CatalogSearchResult(null, hits, searchQuery, suggestions);
+			return new CatalogSearchResult(null, hits, searchQuery, spellCheckingTerms);
 		}
 	}
 }

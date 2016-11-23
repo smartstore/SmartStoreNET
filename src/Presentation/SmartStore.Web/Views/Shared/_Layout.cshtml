@@ -26,7 +26,7 @@
                         @Html.Action("ShopBar", "Common", new { area = "" })
                     </div>
                 </div>
-                <div class="megamenu-section m-b-1">
+                <div class="megamenu-section">
                     <nav class='navbar @(GetThemeVariable<bool>("InverseNavbar") ? "navbar-dark bg-inverse" : "navbar-light bg-faded")'>
                         <div class="container megamenu-container">
                             @Html.Action("MegaMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" })
@@ -38,11 +38,11 @@
 
         @Html.Action("JavaScriptDisabledWarning", "Common", new { area = "" })
 
-        <div id="content-wrapper">
+        @Html.Widget("content_before")
 
-            <!-- Terms of service -->
-            <section id="content" class="container drop-shadow lifted">
-                @Html.Widget("content_before")
+        <div id="content-wrapper">
+            <section id="content" class="container drop-shadow lifted m-t-1">
+                
                 @RenderSection("teaser", required: false)
                 <div id="content-body" class="row">
                     @RenderBody()

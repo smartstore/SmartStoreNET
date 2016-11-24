@@ -45,8 +45,8 @@ namespace SmartStore.Core.Search
 		/// <summary>
 		/// Performs spell checking ("Diy you mean?")
 		/// </summary>
-		/// <returns>Spell checked suggestions</returns>
-		SpellCheckerSuggestion[] CheckSpelling();
+		/// <returns>Suggestions/corrections or an empty array</returns>
+		string[] CheckSpelling();
 
 		/// <summary>
 		/// Highlights chosen terms in a text, extracting the most relevant sections

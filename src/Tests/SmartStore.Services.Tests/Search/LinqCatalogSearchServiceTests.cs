@@ -192,7 +192,7 @@ namespace SmartStore.Services.Tests.Search
 			var result = Search(new CatalogSearchQuery(new string[] { "name" }, "Smart").CheckSpelling(10).Slice(0, 0).HasStoreId(1));
 
 			Assert.That(result.SpellCheckerSuggestions.Length, Is.EqualTo(2));
-			Assert.That(result.SpellCheckerSuggestions[0].Term.IsCaseInsensitiveEqual("Smartphone"));
+			Assert.That(result.SpellCheckerSuggestions[0].IsCaseInsensitiveEqual("Smartphone"));
 		}
 
 		#endregion

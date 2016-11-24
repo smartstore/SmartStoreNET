@@ -62,9 +62,8 @@ namespace SmartStore.Web.Models.Search
 		public class HitItem
 		{
 			public string Label { get; set; }
+			public string Tag { get; set; }
 			public string Url { get; set; }
-			public int? HitCount { get; set; }
-			public object Custom { get; set; }
 			public bool NoHighlight { get; set; }
 		}
 

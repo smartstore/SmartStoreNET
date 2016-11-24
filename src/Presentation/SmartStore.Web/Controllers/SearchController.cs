@@ -68,12 +68,9 @@ namespace SmartStore.Web.Controllers
 				return Content("");
 
 			var maxItems = Math.Min(16, _catalogSettings.ProductSearchAutoCompleteNumberOfProducts);
-			var searchFields = new List<string> { "name", "sku", "shortdescription", "tagname", "manufacturer" };
+			var searchFields = new List<string> { "name", "sku", "tagname", "manufacturer" };
 
-			if (_catalogSettings.SearchDescriptions)
-			{
-				searchFields.Add("fulldescription");
-			}
+			// TODO: (mg) Make setting for "sku" search, which affects both Search & InstantSearch
 
 			var searchQuery = new CatalogSearchQuery(searchFields.ToArray(), term)
 				.OriginatesFrom("InstantSearch")
@@ -179,15 +176,24 @@ namespace SmartStore.Web.Controllers
 				}
 				else
 				{
-					var fields = new List<string> { "name", "shortdescription" };
+					var fields = new List<string> { "name", "manufacturer" };
 					if (!_catalogSettings.SuppressSkuSearch)
 					{
 						fields.Add("sku");
 					}
-					if (model.Sid)
+
+					if (_catalogSettings.SearchDescriptions)
 					{
-						fields.Add("tagname");
+						// TODO: (mg) make distinct settings for both SearchInShortDescription & SearchInFullDescription
+						// TODO: (mg) LinqSearch should never search in FullDescription
+						fields.Add("shortdescription");
 						fields.Add("fulldescription");
+					}
+
+					if (true /* TODO: (mg) make setting for "TagSearch" */)
+					{
+						// TODO: (mg) LinqSearch should never search in Tags
+						fields.Add("tagname");
 					}
 
 					var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.Q, true)

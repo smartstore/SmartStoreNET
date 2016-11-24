@@ -60,7 +60,7 @@ namespace SmartStore.Services.Search
 					using (_chronometer.Step("Search (" + searchEngine.GetType().Name + ")"))
 					{
 						var totalCount = 0;
-						SpellCheckerSuggestion[] spellCheckerSuggestions = null;
+						string[] spellCheckerSuggestions = null;
 						IEnumerable<ISearchHit> searchHits;
 						PagedList<Product> hits;
 

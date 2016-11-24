@@ -519,7 +519,7 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
-		protected virtual SpellCheckerSuggestion[] CheckSpelling(CatalogSearchQuery searchQuery)
+		protected virtual string[] CheckSpelling(CatalogSearchQuery searchQuery)
 		{
 			var tokens = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
@@ -549,7 +549,7 @@ namespace SmartStore.Services.Search
 
 			var spellCheckerSuggestions = tokens
 				.OrderByDescending(x => x.Value)
-				.Select(x => new SpellCheckerSuggestion(x.Key, null))
+				.Select(x => x.Key)
 				.Take(searchQuery.SpellCheckerMaxSuggestions)
 				.ToArray();
 
@@ -560,7 +560,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchResult Search(CatalogSearchQuery searchQuery)
 		{
-			SpellCheckerSuggestion[] spellCheckerSuggestions = null;
+			string[] spellCheckerSuggestions = null;
 			PagedList<Product> hits;
 
 			_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
@@ -576,6 +576,7 @@ namespace SmartStore.Services.Search
 
 			if (searchQuery.SpellCheckerMaxSuggestions > 0 && searchQuery.Term.HasValue())
 			{
+				// TODO: (mg) Never check spelling in LinqSearch
 				spellCheckerSuggestions = CheckSpelling(searchQuery);
 			}
 

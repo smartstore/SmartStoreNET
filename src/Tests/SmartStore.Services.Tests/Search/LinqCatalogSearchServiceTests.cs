@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Events;
 using SmartStore.Services.Search;
 
 namespace SmartStore.Services.Tests.Search
@@ -21,6 +22,7 @@ namespace SmartStore.Services.Tests.Search
 		private IRepository<LocalizedProperty> _localizedPropertyRepository;
 		private IRepository<StoreMapping> _storeMappingRepository;
 		private IRepository<AclRecord> _aclRepository;
+		private IEventPublisher _eventPublisher;
 		private LinqCatalogSearchService _linqCatalogSearchService;
 
 		private void InitMocks(List<Product> products)
@@ -66,8 +68,9 @@ namespace SmartStore.Services.Tests.Search
 			_localizedPropertyRepository = MockRepository.GenerateMock<IRepository<LocalizedProperty>>();
 			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
 			_aclRepository = MockRepository.GenerateMock<IRepository<AclRecord>>();
+			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
 
-			_linqCatalogSearchService = new LinqCatalogSearchService(_productRepository, _localizedPropertyRepository, _storeMappingRepository, _aclRepository);
+			_linqCatalogSearchService = new LinqCatalogSearchService(_productRepository, _localizedPropertyRepository, _storeMappingRepository, _aclRepository, _eventPublisher);
 		}
 
 		[Test]
@@ -189,7 +192,7 @@ namespace SmartStore.Services.Tests.Search
 			var result = Search(new CatalogSearchQuery(new string[] { "name" }, "Smart").CheckSpelling(10).Slice(0, 0).HasStoreId(1));
 
 			Assert.That(result.SpellCheckerSuggestions.Length, Is.EqualTo(2));
-			Assert.That(result.SpellCheckerSuggestions[0].IsCaseInsensitiveEqual("Smartphone"));
+			Assert.That(result.SpellCheckerSuggestions[0].Term.IsCaseInsensitiveEqual("Smartphone"));
 		}
 
 		#endregion

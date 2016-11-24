@@ -2011,6 +2011,8 @@
     <Content Include="Views\Common\Logo.cshtml" />
     <Content Include="Themes\Alpha\Content\_search.scss" />
     <Content Include="Views\Search\InstantSearch.cshtml" />
+    <Content Include="Views\Search\InstantSearch.HitGroup.cshtml" />
+    <Content Include="Views\Search\InstantSearch.TopProducts.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

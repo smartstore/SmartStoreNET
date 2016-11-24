@@ -1,0 +1,15 @@
+﻿@using SmartStore.Web.Models.Search
+
+@model SearchResultModel
+
+
+<ul class="instasearch-hits">
+	@foreach (var hit in Model.TopProducts)
+	{
+		<li>
+			<a class="instasearch-hit" href="@Url.RouteUrl("Product", new { SeName = hit.SeName })">
+				@Html.Raw(Model.SearchResult.Highlight(hit.Name, "<span class='instasearch-match'>", "</span>"))
+			</a>
+		</li>
+	}
+</ul>

@@ -58,6 +58,7 @@ namespace SmartStore.Web.Controllers
 				ShowProductImagesInInstantSearch = _catalogSettings.ShowProductImagesInSearchAutoComplete,
 				SearchTermMinimumLength = _catalogSettings.ProductSearchTermMinimumLength
 			};
+
 			return PartialView(model);
 		}
 

@@ -48,8 +48,11 @@ namespace SmartStore.Web.Models.Search
 
 		public class HitGroup : IOrdered
 		{
-			public HitGroup()
+			public HitGroup(SearchResultModel parent)
 			{
+				Guard.NotNull(parent, nameof(parent));
+
+				Parent = parent;
 				Hits = new List<HitItem>();
 			}
 
@@ -57,6 +60,7 @@ namespace SmartStore.Web.Models.Search
 			public string DisplayName { get; set; }
 			public int Ordinal { get; set; }
 			public IList<HitItem> Hits { get; private set; }
+			public SearchResultModel Parent { get; private set; }
 		}
 
 		public class HitItem

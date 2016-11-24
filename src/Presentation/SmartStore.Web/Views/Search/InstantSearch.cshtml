@@ -2,26 +2,23 @@
 
 @model SearchResultModel
 
-@if (Model.TopProducts.Count == 0)
+@{
+	var hitGroups = Model.HitGroups.Where(x => x.Hits.Any()).OrderBy(x => x.Ordinal).ToArray();
+	var hasContent = Model.TopProducts.Count > 0 || hitGroups.Any();
+}
+
+@if (!hasContent)
 {
 	return;
 }
 
-<ul class="instasearch-hits">
-	@foreach (var hit in Model.TopProducts)
-	{
-		<li>
-			<a class="instasearch-hit" href="@Url.RouteUrl("Product", new { SeName = hit.SeName })">
-				@Html.Raw(Model.SearchResult.Highlight(hit.Name, "<span class='instasearch-match'>", "</span>"))
-			</a>
-		</li>
-	}
-	@if (Model.TotalProductsCount > Model.TopProducts.Count)
-	{
-		<li>
-			<a class="instasearch-hit" href="@Url.RouteUrl("Search", new { q = Model.Term })">
-				Alle Treffer (@Model.TotalProductsCount Produkte)
-			</a>
-		</li>
-	}
-</ul>
+@foreach (var group in hitGroups)
+{
+	@Html.Partial("InstantSearch.HitGroup", group)
+}
+
+@if (Model.TopProducts.Count > 0)
+{
+	<h6 class="instasearch-group-header">Treffer</h6>
+	@Html.Partial("InstantSearch.TopProducts", Model)
+}

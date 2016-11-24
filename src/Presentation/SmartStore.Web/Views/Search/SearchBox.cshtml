@@ -29,24 +29,3 @@
 
     @Html.Widget("searchbox")
 }
-
-@*@using (Html.BeginRouteForm("Search", FormMethod.Get, new { @class = "form-search" }))
-{
-	<div class="input-group">
-		<input type="text"
-			   id="instantsearch"
-			   class="form-control"
-			   placeholder="@T("Search.SearchBox.Tooltip")"
-			   data-minlength="@(Model.SearchTermMinimumLength.ToString())"
-			   data-showthumbs="@(Model.ShowProductImagesInInstantSearch.ToString().ToLower())"
-			   data-url="@Url.RouteUrl("InstantSearch")"
-			   @(Model.InstantSearchEnabled ? Html.Raw(" autocomplete=\"off\"") : null) name="q" />
-		<span class="input-group-btn">
-			<button type="submit" class="btn btn-icon btn-primary" title="@T("Search")">
-				<i class="fa fa-search"></i>
-			</button>
-		</span>
-	</div>
-
-	@Html.Widget("searchbox")
-}*@

@@ -13,11 +13,13 @@
 	<input type="text"
 			id="instasearch"
 			class="instasearch-term form-control"
+			name="q"
+			value="@Model.CurrentQuery"
 			placeholder="@T("Search.SearchBox.Tooltip")"
 			data-minlength="@(Model.SearchTermMinimumLength.ToString())"
 			data-showthumbs="@(Model.ShowProductImagesInInstantSearch.ToString().ToLower())"
 			data-url="@Url.RouteUrl("InstantSearch")"
-			@(Model.InstantSearchEnabled ? Html.Raw(" autocomplete=\"off\"") : null) name="q" />
+			@(Model.InstantSearchEnabled ? Html.Raw(" autocomplete=\"off\"") : null) />
 
 	<button type="submit" class="btn btn-primary btn-icon instasearch-button" title="@T("Search")">
 		<i class="fa fa-search instasearch-icon"></i>

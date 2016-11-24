@@ -78,21 +78,29 @@ $searchbox-border-active-color:     rgba(0,0,0, 0.2);
 .instasearch-group-header {
     text-transform: uppercase;
     padding: 0.35rem 20px;
-    //margin: 0;
     color: $brand-primary;
-
-    &:not(:first-child) {
-        margin-top: 1rem;
-    }
 }
 
 .instasearch-hits {
     @include list-unstyled;
     margin: 0;
+    margin-bottom: 1rem;
+
+    &:last-child { margin-bottom: 0; }
+    .instasearch-col:first-child &:last-child {
+        margin-bottom: 1rem;
+    }
 }
 
-.instasearch-col {
-    float: left;
+@include media-breakpoint-up(lg) {
+    .instasearch-row {
+        width: 640px;
+    }
+}
+@include media-breakpoint-up(sm) {
+    .instasearch-col {
+        &:first-child { border-right: 1px solid rgba(0,0,0, 0.1)  }
+    }
 }
 
 .instasearch-hit {
@@ -112,7 +120,7 @@ $searchbox-border-active-color:     rgba(0,0,0, 0.2);
     }
 }
 
-.instasearch-hit-count {
+.instasearch-hit-tag {
     float: right;
     color: $gray-light;
 }

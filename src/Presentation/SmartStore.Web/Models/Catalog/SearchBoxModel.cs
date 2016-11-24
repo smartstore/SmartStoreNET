@@ -7,5 +7,7 @@ namespace SmartStore.Web.Models.Catalog
         public bool InstantSearchEnabled { get; set; }
         public bool ShowProductImagesInInstantSearch { get; set; }
         public int SearchTermMinimumLength { get; set; }
+
+		public string CurrentQuery { get; set; }
     }
 }

@@ -16,6 +16,7 @@
 	<div class="shopbar-col shopbar-col--stretch shopbar-search">
 		@Html.Action("SearchBox", "Search")
 	</div>
+	<div class="shopbar-col shopbar-col--stretch hidden-lg-up"><!-- Fluid spacer --></div>
 
 	<!-- TOOLS -->
 	<div class="shopbar-col shopbar-tools">
@@ -30,7 +31,7 @@
                         <i class="fa fa-heart-o"></i>
                         <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.WishlistItems == 0 ? "hidden-xs-up" : "")' data-bind-to="TotalProducts">@Model.WishlistItems</span>
                     </figure>
-                    <span class="shopbar-button-label hidden-md-down">
+                    <span class="shopbar-button-label hidden-lg-down">
                         <span>@T("Common.Shopbar.WishlistPartOne")</span><br />
                         <span style="font-weight: bold">@T("Common.Shopbar.WishlistPartTwo")</span>
                     </span>
@@ -62,7 +63,7 @@
                         <i class="fa fa-retweet"></i>
                         <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="Count">@Model.CompareItems</span>
                     </figure>
-                    <span class="shopbar-button-label hidden-md-down">
+                    <span class="shopbar-button-label hidden-lg-down">
                         <span>@T("Common.Shopbar.CompareProductsPartOne")</span><br />
                         <span style="font-weight: bold">@T("Common.Shopbar.CompareProductsPartTwo")</span>
                     </span>
@@ -93,7 +94,7 @@
                             @Model.ShoppingCartItems
                         </span>
                     </figure>
-                    <span class="shopbar-button-label hidden-md-down">
+                    <span class="shopbar-button-label hidden-lg-down">
                         <span data-bind-to="SubTotal">@Model.ShoppingCartAmount</span><br />
                         <span style="font-weight: bold">@T("Common.Shopbar.Basket") <i class="fa fa-caret-down"></i></span>
                     </span>

@@ -11,6 +11,7 @@
 .shopbar {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     margin-left:  -0.6rem;
     margin-right:  -0.6rem;
 }
@@ -23,6 +24,15 @@
 .shopbar-col--stretch {
     flex: 1 1 auto;
     padding-right: 0;
+}
+
+@include media-breakpoint-down(md) {
+    .shopbar-search {
+        order: 3;
+        flex: 0 0 100%;
+        margin-top: 1rem;
+        padding-right: 0.6rem;
+    }
 }
 
 

@@ -113,7 +113,7 @@
                 doShrink(false);
                 
                 if (options.responsive) {
-                    EventBroker.subscribe("page.resized", function (data) {
+                	EventBroker.subscribe("page.resized", function (msg, viewport) {
                         reset();
                         doShrink(true);
                     });

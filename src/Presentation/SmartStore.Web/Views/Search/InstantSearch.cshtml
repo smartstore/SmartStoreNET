@@ -5,6 +5,13 @@
 @{
 	var hitGroups = Model.HitGroups.Where(x => x.Hits.Any()).OrderBy(x => x.Ordinal).ToArray();
 	var hasContent = Model.TopProducts.Count > 0 || hitGroups.Any();
+	var isMultiCol = false;
+	if (hasContent)
+	{
+		isMultiCol = 
+			Model.TopProducts.Count > 0 
+			&& (hitGroups.Length > 1 || hitGroups.Sum(x => x.Hits.Count) > 4);
+	}
 }
 
 @if (!hasContent)
@@ -12,13 +19,32 @@
 	return;
 }
 
-@foreach (var group in hitGroups)
+@if (isMultiCol)
 {
-	@Html.Partial("InstantSearch.HitGroup", group)
+	<div class="row no-space instasearch-row">
+		<div class="col-xs-12 col-sm-5 instasearch-col">
+			@foreach (var group in hitGroups)
+			{
+				@Html.Partial("InstantSearch.HitGroup", group)
+			}
+		</div>
+		<div class="col-xs-12 col-sm-7 instasearch-col">
+			<h6 class="instasearch-group-header">Treffer</h6>
+			@Html.Partial("InstantSearch.TopProducts", Model)
+		</div>
+	</div>
+}
+else
+{
+	foreach (var group in hitGroups)
+	{
+		@Html.Partial("InstantSearch.HitGroup", group)
+	}
+
+	if (Model.TopProducts.Count > 0)
+	{
+		<h6 class="instasearch-group-header">Treffer</h6>
+		@Html.Partial("InstantSearch.TopProducts", Model)
+	}
 }
 
-@if (Model.TopProducts.Count > 0)
-{
-	<h6 class="instasearch-group-header">Treffer</h6>
-	@Html.Partial("InstantSearch.TopProducts", Model)
-}

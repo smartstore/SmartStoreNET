@@ -52,11 +52,21 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult SearchBox()
 		{
+			string currentQuery = null;
+
+			var routeData = Request.RequestContext?.RouteData;
+			
+			if (routeData != null  && (routeData.IsRouteEqual("Search", "Search") || routeData.IsRouteEqual("Catalog", "Category")))
+			{
+				currentQuery = Request["q"];
+			}
+
 			var model = new SearchBoxModel
 			{
 				InstantSearchEnabled = _catalogSettings.ProductSearchAutoCompleteEnabled,
 				ShowProductImagesInInstantSearch = _catalogSettings.ShowProductImagesInSearchAutoComplete,
-				SearchTermMinimumLength = _catalogSettings.ProductSearchTermMinimumLength
+				SearchTermMinimumLength = _catalogSettings.ProductSearchTermMinimumLength,
+				CurrentQuery = currentQuery
 			};
 
 			return PartialView(model);

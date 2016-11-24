@@ -1,5 +1,7 @@
 ﻿(function ($, window, document, undefined) {
 
+	var viewport = ResponsiveBootstrapToolkit;
+
     window.displayAjaxLoading = function(display) {
         if ($.throbber === undefined)
             return;
@@ -13,7 +15,11 @@
     }
 
     window.getPageWidth = function() {
-        return parseFloat($("#content").css("width"));
+        return parseFloat($("#page").css("width"));
+    }
+
+    window.getViewport = function () {
+    	return viewport;
     }
 
     var _commonPluginFactories = [
@@ -82,18 +88,15 @@
             }
         }
 
-        // notify subscribers about page/content width change
+        // Notify subscribers about page/content width change
         if (window.EventBroker) {
-            pageWidth = getPageWidth(); // initial width
-            $(window).on("resize", function () {
-                // check if page width has changed
-                var newWidth = getPageWidth();
-                if (newWidth !== pageWidth) {
-                    // ...and publish event
-                    EventBroker.publish("page.resized", { oldWidth: pageWidth, newWidth: newWidth });
-                    pageWidth = newWidth;
-                }
-            });
+        	$(window).resize(
+				viewport.changed(function () {
+					var tier = viewport.current();
+					console.debug("Grid tier changed: " + tier);
+					EventBroker.publish("page.resized", viewport);
+				}, 100)
+			);
         }
 
         // create navbar

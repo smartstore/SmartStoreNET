@@ -139,7 +139,7 @@
 			this.showImage(startAt);
 			
 			if (opts.responsive && !isRefresh) {
-				EventBroker.subscribe("page.resized", function (data) {
+				EventBroker.subscribe("page.resized", function (msg, viewport) {
 				    self.reset();
 				    self.inTransition = false;
 					self.init(true);

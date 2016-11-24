@@ -109,7 +109,7 @@ $.ScrollButton = function(el, buttons, target, options) {
 				el.position(pos);
 				
 				if (opts.responsive) {
-				    EventBroker.subscribe("page.resized", function (data) {
+					EventBroker.subscribe("page.resized", function (msg, viewport) {
 				        el.position(pos);
 				    });
 				}

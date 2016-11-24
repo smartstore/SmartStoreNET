@@ -139,8 +139,7 @@
         $.preload(cols.find("img"), equalize);
 
         if (options.responsive) {
-            EventBroker.subscribe("page.resized", function (data) {
-                //console.log("Must equalize columns");
+            EventBroker.subscribe("page.resized", function (msg, viewport) {
                 reset();
                 equalize(true);
             });

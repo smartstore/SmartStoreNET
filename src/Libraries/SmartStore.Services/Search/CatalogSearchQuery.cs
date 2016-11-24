@@ -110,8 +110,10 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByField("parentid", id).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
-		public CatalogSearchQuery HasStoreId(int id)
+		public override CatalogSearchQuery HasStoreId(int id)
 		{
+			base.HasStoreId(id);
+
 			return WithFilter(SearchFilter.Combined(
 				SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed(),
 				SearchFilter.ByField("storeid", id).ExactMatch().NotAnalyzed())

@@ -40,7 +40,7 @@ namespace SmartStore.Services.Search
 		}
 
 		/// <summary>
-		/// Gets spell checking suggestions
+		/// Gets spell checking suggestions/corrections
 		/// </summary>
 		public SpellCheckerSuggestion[] SpellCheckerSuggestions
 		{

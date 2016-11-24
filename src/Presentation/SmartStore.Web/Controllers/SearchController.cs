@@ -76,6 +76,7 @@ namespace SmartStore.Web.Controllers
 			}
 
 			var searchQuery = new CatalogSearchQuery(searchFields.ToArray(), term)
+				.OriginatesFrom("InstantSearch")
 				.Slice(0, maxItems)
 				.SortBy(ProductSortingEnum.Position)
 				.HasStoreId(Services.StoreContext.CurrentStore.Id)
@@ -104,8 +105,6 @@ namespace SmartStore.Web.Controllers
 		[ValidateInput(false)]
 		public ActionResult Search(SearchModel model, SearchPagingFilteringModel command)
 		{
-			// TODO: // TODO: find this in views
-
 			if (model == null)
 				model = new SearchModel();
 
@@ -192,6 +191,7 @@ namespace SmartStore.Web.Controllers
 					}
 
 					var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.Q, true)
+						.OriginatesFrom("Search")
 						.Slice((command.PageNumber - 1) * command.PageSize, command.PageSize)
 						.HasStoreId(Services.StoreContext.CurrentStore.Id)
 						.WithLanguage(Services.WorkContext.WorkingLanguage)

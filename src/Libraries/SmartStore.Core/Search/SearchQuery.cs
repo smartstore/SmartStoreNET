@@ -48,9 +48,10 @@ namespace SmartStore.Core.Search
 			SpellCheckerMinQueryLength = 4;
 		}
 
-		// Language
+		// Language & Store
 		public int? LanguageId { get; protected set; }
 		public string LanguageSeoCode { get; protected set; }
+		public int? StoreId { get; protected set; }
 
 		// Search term
 		public string[] Fields { get; protected set; }
@@ -65,10 +66,7 @@ namespace SmartStore.Core.Search
 		// Facets
 		public IReadOnlyDictionary<string, FacetDescriptor> FacetDescriptors
 		{
-			get
-			{
-				return _facetDescriptors;
-			}
+			get { return _facetDescriptors; }
 		}
 
 		// Paging
@@ -85,13 +83,26 @@ namespace SmartStore.Core.Search
 			}
 		}
 
-		public int SpellCheckerMaxSuggestions { get; protected set; }
-		public int SpellCheckerMinQueryLength { get; protected set; }
-
 		// Sorting
 		public ICollection<SearchSort> Sorting { get; }
 
+		// Spell checker
+		public int SpellCheckerMaxSuggestions { get; protected set; }
+		public int SpellCheckerMinQueryLength { get; protected set; }
+
+		// Misc
+		public string Origin { get; protected set; }
+
 		#region Fluent builder
+
+		public virtual TQuery HasStoreId(int id)
+		{
+			Guard.IsPositive(id, nameof(id));
+
+			StoreId = id;
+
+			return (this as TQuery);
+		}
 
 		public TQuery WithLanguage(Language language)
 		{
@@ -152,6 +163,15 @@ namespace SmartStore.Core.Search
 			}
 
 			_facetDescriptors.Add(facetDescription.Key, facetDescription);
+
+			return (this as TQuery);
+		}
+
+		public TQuery OriginatesFrom(string origin)
+		{
+			Guard.NotEmpty(origin, nameof(origin));
+
+			Origin = origin;
 
 			return (this as TQuery);
 		}

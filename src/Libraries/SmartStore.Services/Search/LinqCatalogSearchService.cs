@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Events;
 using SmartStore.Core.Search;
 
 namespace SmartStore.Services.Search
@@ -18,17 +19,20 @@ namespace SmartStore.Services.Search
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IRepository<AclRecord> _aclRepository;
+		private readonly IEventPublisher _eventPublisher;
 
 		public LinqCatalogSearchService(
 			IRepository<Product> productRepository,
 			IRepository<LocalizedProperty> localizedPropertyRepository,
 			IRepository<StoreMapping> storeMappingRepository,
-			IRepository<AclRecord> aclRepository)
+			IRepository<AclRecord> aclRepository,
+			IEventPublisher eventPublisher)
 		{
 			_productRepository = productRepository;
 			_localizedPropertyRepository = localizedPropertyRepository;
 			_storeMappingRepository = storeMappingRepository;
 			_aclRepository = aclRepository;
+			_eventPublisher = eventPublisher;
 
 			QuerySettings = DbQuerySettings.Default;
 		}
@@ -559,6 +563,8 @@ namespace SmartStore.Services.Search
 			SpellCheckerSuggestion[] spellCheckerSuggestions = null;
 			PagedList<Product> hits;
 
+			_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
+
 			if (searchQuery.Take > 0)
 			{
 				hits = new PagedList<Product>(GetProductQuery(searchQuery), searchQuery.PageIndex, searchQuery.Take);
@@ -572,8 +578,16 @@ namespace SmartStore.Services.Search
 			{
 				spellCheckerSuggestions = CheckSpelling(searchQuery);
 			}
-			
-			return new CatalogSearchResult(null, hits, searchQuery, spellCheckerSuggestions);
+
+			var result = new CatalogSearchResult(
+				null, 
+				hits, 
+				searchQuery, 
+				spellCheckerSuggestions);
+
+			_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
+
+			return result;
 		}
 	}
 }

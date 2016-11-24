@@ -4,6 +4,7 @@ using System.Linq;
 using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Services.Catalog;
@@ -17,19 +18,22 @@ namespace SmartStore.Services.Search
 		private readonly IIndexManager _indexManager;
 		private readonly Lazy<IProductService> _productService;
 		private readonly IChronometer _chronometer;
+		private readonly IEventPublisher _eventPublisher;
 
 		public CatalogSearchService(
 			IComponentContext ctx,
 			ILogger logger,
 			IIndexManager indexManager,
 			Lazy<IProductService> productService,
-			IChronometer chronometer)
+			IChronometer chronometer,
+			IEventPublisher eventPublisher)
 		{
 			_ctx = ctx;
 			_logger = logger;
 			_indexManager = indexManager;
 			_productService = productService;
 			_chronometer = chronometer;
+			_eventPublisher = eventPublisher;
 		}
 
 		protected virtual CatalogSearchResult SearchFallback(CatalogSearchQuery searchQuery)
@@ -44,10 +48,10 @@ namespace SmartStore.Services.Search
 			Guard.NotNull(searchQuery, nameof(searchQuery));
 			Guard.NotNegative(searchQuery.Take, nameof(searchQuery.Take));
 
-			if (_indexManager.HasAnyProvider())
-			{
-				var provider = _indexManager.GetIndexProvider();
+			var provider = _indexManager.GetIndexProvider();
 
+			if (provider != null)
+			{
 				var indexStore = provider.GetIndexStore("Catalog");
 				if (indexStore.Exists)
 				{
@@ -59,6 +63,8 @@ namespace SmartStore.Services.Search
 						SpellCheckerSuggestion[] spellCheckerSuggestions = null;
 						IEnumerable<ISearchHit> searchHits;
 						PagedList<Product> hits;
+
+						_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
 
 						if (searchQuery.Take > 0)
 						{
@@ -84,7 +90,7 @@ namespace SmartStore.Services.Search
 						{
 							hits = new PagedList<Product>(new List<Product>(), searchQuery.PageIndex, searchQuery.Take);
 						}
-
+						
 						try
 						{
 							using (_chronometer.Step("Spell checking"))
@@ -98,7 +104,15 @@ namespace SmartStore.Services.Search
 							_logger.Error(exception);
 						}
 
-						return new CatalogSearchResult(searchEngine, hits, searchQuery, spellCheckerSuggestions);
+						var result = new CatalogSearchResult(
+							searchEngine, 
+							hits, 
+							searchQuery, 
+							spellCheckerSuggestions);
+
+						_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
+
+						return result;
 					}
 				}
 			}

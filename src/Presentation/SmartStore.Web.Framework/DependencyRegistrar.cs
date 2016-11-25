@@ -594,7 +594,12 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<BundleBuilder>().As<IBundleBuilder>().InstancePerRequest();
 			builder.RegisterType<FileDownloadManager>().InstancePerRequest();
 
+			// Filter provider
 			builder.RegisterFilterProvider();
+
+			// Model binding
+			builder.RegisterModelBinders(foundAssemblies);
+			builder.RegisterModelBinderProvider();
 
 			// global exception handling
 			if (DataSettings.DatabaseIsInstalled())

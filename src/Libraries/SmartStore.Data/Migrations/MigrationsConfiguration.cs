@@ -4,6 +4,9 @@ namespace SmartStore.Data.Migrations
 	using System.Data.Entity;
 	using System.Data.Entity.Migrations;
 	using System.Linq;
+	using Core.Caching;
+	using Core.Domain.Configuration;
+	using Core.Infrastructure;
 	using Setup;
 
 	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
@@ -24,6 +27,22 @@ namespace SmartStore.Data.Migrations
 		{
 			// TODO: (mc) Temp only. Put this in a seeding migration right before release.
 			context.MigrateLocaleResources(MigrateLocaleResources);
+			MigrateSettings(context);
+		}
+
+		public void MigrateSettings(SmartObjectContext context)
+		{
+			// Change ProductSortingEnum.Position > Relevance
+			var settings = context.Set<Setting>().Where(x => x.Name == "CatalogSettings.DefaultSortOrder" && x.Value == "Position").ToList();
+			if (settings.Any())
+			{
+				settings.Each(x => x.Value = "Relevance");
+				EngineContext.Current.Resolve<ICacheManager>().Clear();
+			}
+
+			// [...]
+
+			context.SaveChanges();
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

@@ -18,8 +18,7 @@
     opacity: .4;
 }
 .megamenu-nav i:hover {
-    xfont-size: 64px;
-    opacity: .6;
+    opacity: 0.6;
 } 
 .megamenu-nav i:active {
     opacity: 1;
@@ -150,13 +149,12 @@
 }
 .megamenu-container .nav-link {
     padding: 1rem .5rem;
+
+    &:hover, &.active {
+        background-color: rgba(0,0,0, 0.07);
+    }
 }
-.megamenu-container .nav-item:first-child .nav-link {
-    padding-left: 0;
-}
-.megamenu-container .nav-item:last-child .nav-link {
-    padding-right: 0;
-}
+
 .megamenu ul.nav .nav-item {
     //z-index: 1100;
     position: relative;

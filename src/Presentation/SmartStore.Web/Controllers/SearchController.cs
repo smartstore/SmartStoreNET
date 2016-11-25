@@ -121,7 +121,28 @@ namespace SmartStore.Web.Controllers
 				Term = term,
 				TotalProductsCount = result.Hits.TotalCount
 			};
+
+			// Add product hits
 			model.TopProducts.AddRange(overviewModels);
+
+			// Add spell checker suggestions (if any)
+			if (result.SpellCheckerSuggestions.Length > 0)
+			{
+				var hitGroup = new SearchResultModel.HitGroup(model)
+				{
+					Name = "SpellChecker",
+					DisplayName = T("Search.DidYouMean"),
+					Ordinal = -100
+				};
+
+				hitGroup.Hits.AddRange(result.SpellCheckerSuggestions.Select(x => new SearchResultModel.HitItem
+				{
+					Label = x,
+					Url = Url.RouteUrl("Search", new { q = x })
+				}));
+
+				model.HitGroups.Add(hitGroup);
+			}
 
 			return PartialView(model);
 		}

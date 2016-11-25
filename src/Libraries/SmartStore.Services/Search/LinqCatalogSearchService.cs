@@ -519,48 +519,10 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
-		protected virtual string[] CheckSpelling(CatalogSearchQuery searchQuery)
-		{
-			var tokens = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-
-			var names = GetProductQuery(searchQuery)
-				.Select(x => x.Name)
-				.Take(5 * searchQuery.SpellCheckerMaxSuggestions)
-				.ToList();
-
-			foreach (var name in names)
-			{
-				foreach (var str in name.SplitSafe(" "))
-				{
-					var token = str.Trim();
-					if (token.IndexOf(searchQuery.Term, StringComparison.OrdinalIgnoreCase) >= 0 && !token.IsCaseInsensitiveEqual(searchQuery.Term))
-					{
-						if (tokens.ContainsKey(token))
-						{
-							tokens[token] = tokens[token] + 1;
-						}
-						else
-						{
-							tokens.Add(token, 1);
-						}
-					}
-				}
-			}
-
-			var spellCheckerSuggestions = tokens
-				.OrderByDescending(x => x.Value)
-				.Select(x => x.Key)
-				.Take(searchQuery.SpellCheckerMaxSuggestions)
-				.ToArray();
-
-			return spellCheckerSuggestions;
-		}
-
 		#endregion
 
 		public CatalogSearchResult Search(CatalogSearchQuery searchQuery)
 		{
-			string[] spellCheckerSuggestions = null;
 			PagedList<Product> hits;
 
 			_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
@@ -574,17 +536,11 @@ namespace SmartStore.Services.Search
 				hits = new PagedList<Product>(new List<Product>(), searchQuery.PageIndex, searchQuery.Take);
 			}
 
-			if (searchQuery.SpellCheckerMaxSuggestions > 0 && searchQuery.Term.HasValue())
-			{
-				// TODO: (mg) Never check spelling in LinqSearch
-				spellCheckerSuggestions = CheckSpelling(searchQuery);
-			}
-
 			var result = new CatalogSearchResult(
 				null, 
-				hits, 
-				searchQuery, 
-				spellCheckerSuggestions);
+				hits,
+				searchQuery,
+				null);
 
 			_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
 

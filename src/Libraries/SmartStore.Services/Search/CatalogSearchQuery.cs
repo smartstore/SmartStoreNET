@@ -127,8 +127,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithProductIds(params int[] ids)
 		{
-			ids.Each(x => WithFilter(SearchFilter.ByField("id", x).ExactMatch().NotAnalyzed()));
-			return this;
+			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField("id", x).ExactMatch().NotAnalyzed()).ToArray()));
 		}
 
 		public CatalogSearchQuery WithProductId(int? fromId, int? toId)
@@ -145,8 +144,7 @@ namespace SmartStore.Services.Search
 			else
 				fieldName = "categoryid";
 
-			ids.Each(x => WithFilter(SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()));
-			return this;
+			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()).ToArray()));
 		}
 
 		public CatalogSearchQuery HasAnyCategory(bool value)
@@ -170,8 +168,7 @@ namespace SmartStore.Services.Search
 			else
 				fieldName = "manufacturerid";
 
-			ids.Each(x => WithFilter(SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()));
-			return this;
+			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()).ToArray()));
 		}
 
 		public CatalogSearchQuery HasAnyManufacturer(bool value)
@@ -188,8 +185,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithProductTagIds(params int[] ids)
 		{
-			ids.Each(x => WithFilter(SearchFilter.ByField("tagid", x).ExactMatch().NotAnalyzed()));
-			return this;
+			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField("tagid", x).ExactMatch().NotAnalyzed()).ToArray()));
 		}
 
 		public CatalogSearchQuery WithStockQuantity(int? fromQuantity, int? toQuantity)

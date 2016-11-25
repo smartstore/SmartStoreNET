@@ -116,6 +116,8 @@ namespace SmartStore.Web.Controllers
 			if (model == null)
 				model = new SearchModel();
 
+			var resultModel = new SearchResultModel();
+
 			// 'Continue shopping' URL
 			_genericAttributeService.SaveAttribute(Services.WorkContext.CurrentCustomer,
 				SystemCustomerAttributeNames.LastContinueShoppingPage,
@@ -138,6 +140,7 @@ namespace SmartStore.Web.Controllers
 			});
 
 			model.Q = model.Q.EmptyNull().Trim();
+			resultModel.Term = model.Q;
 
 			// Build AvailableCategories
 			model.AvailableCategories.Add(new SelectListItem { Value = "0", Text = T("Common.All") });
@@ -256,8 +259,8 @@ namespace SmartStore.Web.Controllers
 						}
 					}
 
-					var hits = _catalogSearchService.Search(searchQuery);
-					products = hits.Hits;
+					var searchResult = _catalogSearchService.Search(searchQuery);
+					products = searchResult.Hits;
 
 					model.Products = _catalogHelper.PrepareProductOverviewModels(
 						products,
@@ -265,12 +268,20 @@ namespace SmartStore.Web.Controllers
 						prepareManufacturers: command.ViewMode.IsCaseInsensitiveEqual("list")).ToList();
 
 					model.NoResults = !model.Products.Any();
+
+					resultModel.TotalProductsCount = searchResult.Hits.TotalCount;
+					resultModel.TopProducts.AddRange(model.Products);
+					resultModel.SearchResult = searchResult;
 				}
 			}
 			else
 			{
+				model.Warning = string.Format(T("Search.SearchTermMinimumLengthIsNCharacters"), _catalogSettings.ProductSearchTermMinimumLength);
 				model.Sid = _catalogSettings.SearchDescriptions;
 			}
+
+			// TODO: (mc) Temp only
+			ViewBag.ResultModel = resultModel;
 
 			model.PagingFilteringContext.LoadPagedList(products);
 			return View(model);

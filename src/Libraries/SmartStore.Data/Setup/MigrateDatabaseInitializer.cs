@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using SmartStore.Data.Migrations;
 
 namespace SmartStore.Data.Setup
 {
@@ -66,6 +67,7 @@ namespace SmartStore.Data.Setup
 			}
 
 			var config = CreateConfiguration();
+			
 			var migrator = new DbSeedingMigrator<TContext>(config);
 			var tablesExist = CheckTables(context);
 
@@ -91,6 +93,17 @@ namespace SmartStore.Data.Setup
 			if (appliedCount > 0)
 			{
 				Seed(context);
+			}
+			else
+			{
+				var coreConfig = config as MigrationsConfiguration;
+				if (coreConfig != null && context is SmartObjectContext)
+				{
+					// DB is up-to-date and no migration ran.
+					// Call the main Seed method anyway (on every startup),
+					// we could have locale resources or settings to add/update.
+					coreConfig.SeedDatabase(context as SmartObjectContext);
+				}
 			}
 
 			// not needed anymore
@@ -142,8 +155,6 @@ namespace SmartStore.Data.Setup
 		}
 
 		#endregion
-
-
 	}
 
 }

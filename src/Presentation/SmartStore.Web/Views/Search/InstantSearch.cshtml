@@ -29,7 +29,7 @@
 			}
 		</div>
 		<div class="col-xs-12 col-sm-7 instasearch-col">
-			<h6 class="instasearch-group-header">Treffer</h6>
+			<h6 class="instasearch-group-header">@T("Search.Hits")</h6>
 			@Html.Partial("InstantSearch.TopProducts", Model)
 		</div>
 	</div>
@@ -43,7 +43,7 @@ else
 
 	if (Model.TopProducts.Count > 0)
 	{
-		<h6 class="instasearch-group-header">Treffer</h6>
+		<h6 class="instasearch-group-header">@T("Search.Hits")</h6>
 		@Html.Partial("InstantSearch.TopProducts", Model)
 	}
 }

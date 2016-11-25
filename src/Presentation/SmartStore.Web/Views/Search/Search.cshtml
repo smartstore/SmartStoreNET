@@ -1,10 +1,25 @@
 ﻿@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web.Models.Search;
 @using SmartStore.Web.Framework.UI;
 @model SearchModel
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+	Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 
-    Html.AddTitleParts(T("PageTitle.Search").Text);
+	// TODO: (mc) Temp only
+	var resultModel = (SearchResultModel)ViewBag.ResultModel;
+
+	// TODO: (mc) put this in model
+	int firstIndex = 0;
+	int lastIndex = 0;
+	if (resultModel.TotalProductsCount > 0)
+	{
+		var query = resultModel.SearchResult.Query;
+		firstIndex = Model.PagingFilteringContext.FirstItemIndex;
+		lastIndex = Model.PagingFilteringContext.LastItemIndex;
+	}
+
+	var pageTitle = T("Search.PageTitle", resultModel.Term);
+	Html.AddTitleParts(pageTitle);
 }
 
 @functions{
@@ -17,23 +32,34 @@
 }
 
 <div class="page search-page">
-    <div class="page-title">
-        <h1>@T("Search")</h1>
-    </div>
+	@if (resultModel.Term.HasValue())
+	{
+		<div class="page-title">
+			<h1 class="h3">@pageTitle</h1>
+			@if (resultModel.TotalProductsCount > 0)
+			{
+				<h4 class="text-muted">@T("Search.PagingInfo", "{0}-{1}".FormatInvariant(firstIndex.ToString("N0"), lastIndex.ToString("N0")), Model.PagingFilteringContext.TotalCount.ToString("N0"))</h4>
+			}
+		</div>
+	}
 
     <div class="page-body">
+		@if (Model.Warning.HasValue())
+		{
+			<div class="alert alert-danger">
+				@Model.Warning
+			</div>
+		}
+		else if (resultModel.TotalProductsCount == 0)
+		{
+			<div class="alert alert-warning">
+				@T("Search.NoResultsText")
+			</div>
+		}
+
         @using (Html.BeginRouteForm("Search", FormMethod.Get, new { @class = "inline-form" }))
         {
-            <div class="search-input">
-
-                @if (!String.IsNullOrEmpty(Model.Warning))
-                {
-                    <div class="alert alert-error fade in">
-                        <button class="close" data-dismiss="alert">x</button>
-                        @Model.Warning
-                    </div>
-                }
-
+            <div class="search-input hidden-xl-down">
                 <div class="basic-search">
                     <div class="form-group row">
                         @Html.LabelFor(model => model.Q, new { @class = "col-sm-3 form-control-label required", @for = "Q" })
@@ -120,8 +146,6 @@
 
                 </div>
             </div>
-            
-            <hr />
 
             if (ShowListOptions())
             {
@@ -129,13 +153,6 @@
             }
 
             <div class="search-results">
-                @if (Model.NoResults)
-                {
-                    <span class="result">
-                        @T("Search.NoResultsText")
-                    </span>
-                }
-
                 @if (Model.Products.Count > 0)
                 {
                     if (Model.PagingFilteringContext.ViewMode == "list")
@@ -147,9 +164,10 @@
                                     @Html.Partial("_ProductBoxList", product)
                                 </article>
                             }
-                        </div>        }
-                    else
-                    {
+                        </div>        
+					}
+					else
+					{
                         <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 product-grid">
                             @foreach (var product in Model.Products)
                             {

@@ -1991,7 +1991,6 @@
     <Content Include="Views\Filter\Products.cshtml" />
     <Content Include="Views\Filter\ProductsMultiSelect.cshtml" />
     <Content Include="Views\Home\ContactUs.cshtml" />
-    <Content Include="Views\Home\ContentSlider.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Sitemap.cshtml" />
     <Content Include="Views\Home\StoreClosed.cshtml" />

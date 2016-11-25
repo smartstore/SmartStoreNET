@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Search;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Seo;
+using SmartStore.Services.Search;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Search;
-using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Web.Controllers
 {
@@ -47,7 +46,11 @@ namespace SmartStore.Web.Controllers
 			_manufacturerService = manufacturerService;
 			_genericAttributeService = genericAttributeService;
 			_catalogHelper = catalogHelper;
+
+			QuerySettings = DbQuerySettings.Default;
 		}
+
+		public DbQuerySettings QuerySettings { get; set; }
 
 		[ChildActionOnly]
 		public ActionResult SearchBox()
@@ -79,16 +82,30 @@ namespace SmartStore.Web.Controllers
 				return Content("");
 
 			var maxItems = Math.Min(16, _catalogSettings.ProductSearchAutoCompleteNumberOfProducts);
-			var searchFields = new List<string> { "name", "sku", "tagname", "manufacturer" };
+			var searchFields = new List<string> { "name", "shortdescription", "tagname" };
 
-			// TODO: (mg) Make setting for "sku" search, which affects both Search & InstantSearch
+			if (_catalogSettings.SearchDescriptions)
+			{
+				searchFields.Add("fulldescription");
+			}
+
+			if (!_catalogSettings.SuppressSkuSearch)
+			{
+				searchFields.Add("sku");
+			}
 
 			var searchQuery = new CatalogSearchQuery(searchFields.ToArray(), term)
 				.OriginatesFrom("InstantSearch")
 				.Slice(0, maxItems)
-				.SortBy(ProductSortingEnum.Position)
-				.HasStoreId(Services.StoreContext.CurrentStore.Id)
+				.SortBy(ProductSortingEnum.Relevance)
 				.WithLanguage(Services.WorkContext.WorkingLanguage);
+
+			searchQuery = searchQuery.VisibleOnly(!QuerySettings.IgnoreAcl ? Services.WorkContext.CurrentCustomer : null);
+
+			if (!QuerySettings.IgnoreMultiStore)
+			{
+				searchQuery = searchQuery.HasStoreId(Services.StoreContext.CurrentStore.Id);
+			}
 
 			var result = _catalogSearchService.Search(searchQuery);
 

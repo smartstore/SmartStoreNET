@@ -224,7 +224,7 @@ namespace SmartStore.Web.Controllers
 
 					var productSearchContext = new ProductSearchContext();
 
-					productSearchContext.OrderBy = ProductSortingEnum.Position;
+					productSearchContext.OrderBy = ProductSortingEnum.Relevance;
 					productSearchContext.PageSize = 200;
 					productSearchContext.FilterableSpecificationAttributeOptionIds = filterableSpecificationAttributeOptionIds;
 					productSearchContext.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;

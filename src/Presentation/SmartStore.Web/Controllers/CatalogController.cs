@@ -238,7 +238,7 @@ namespace SmartStore.Web.Controllers
 					ctx.CategoryIds.Add(category.Id);
 				ctx.FeaturedProducts = true;
 				ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
-				ctx.OrderBy = ProductSortingEnum.Position;
+				ctx.OrderBy = ProductSortingEnum.Relevance;
 				ctx.PageSize = int.MaxValue;
 				ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
 				ctx.VisibleIndividuallyOnly = true;
@@ -500,7 +500,7 @@ namespace SmartStore.Web.Controllers
 				ctx.ManufacturerId = manufacturer.Id;
 				ctx.FeaturedProducts = true;
 				ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
-				ctx.OrderBy = ProductSortingEnum.Position;
+				ctx.OrderBy = ProductSortingEnum.Relevance;
 				ctx.PageSize = int.MaxValue;
 				ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
 				ctx.VisibleIndividuallyOnly = true;

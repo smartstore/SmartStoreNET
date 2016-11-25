@@ -682,7 +682,7 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						var associatedSearchContext = new ProductSearchContext
 						{
-							OrderBy = ProductSortingEnum.Position,
+							OrderBy = ProductSortingEnum.Relevance,
 							PageSize = int.MaxValue,
 							StoreId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
 							VisibleIndividuallyOnly = ctx.Projection.OnlyIndividuallyVisibleAssociated,

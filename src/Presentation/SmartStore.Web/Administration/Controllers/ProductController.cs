@@ -925,7 +925,7 @@ namespace SmartStore.Admin.Controllers
 					Keywords = model.SearchProductName,
 					SearchSku = !_catalogSettings.SuppressSkuSearch,
 					LanguageId = _workContext.WorkingLanguage.Id,
-					OrderBy = ProductSortingEnum.Position,
+					OrderBy = ProductSortingEnum.Relevance,
 					PageIndex = command.Page - 1,
 					PageSize = command.PageSize,
 					ShowHidden = true,
@@ -1830,7 +1830,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var searchContext = new ProductSearchContext
 				{
-					OrderBy = ProductSortingEnum.Position,
+					OrderBy = ProductSortingEnum.Relevance,
 					ParentGroupedProductId = productId,
 					PageSize = int.MaxValue,
 					ShowHidden = true

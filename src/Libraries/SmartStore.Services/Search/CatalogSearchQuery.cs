@@ -46,7 +46,7 @@ namespace SmartStore.Services.Search
 				case ProductSortingEnum.PriceDesc:
 					return SortBy(SearchSort.ByDoubleField("price", sort == ProductSortingEnum.PriceDesc));
 
-				case ProductSortingEnum.Position:
+				case ProductSortingEnum.Relevance:
 					return SortBy(SearchSort.ByRelevance());
 
 				default:
@@ -57,13 +57,18 @@ namespace SmartStore.Services.Search
 		/// <summary>
 		/// Only products that are visible in frontend
 		/// </summary>
-		/// <param name="customer">Customer whose customer roles should be checked</param>
+		/// <param name="customer">Customer whose customer roles should be checked, can be <c>null</c></param>
 		/// <returns>Catalog search query</returns>
 		public CatalogSearchQuery VisibleOnly(Customer customer)
 		{
-			var allowedCustomerRoleIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToArray();
+			if (customer != null)
+			{
+				var allowedCustomerRoleIds = customer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToArray();
 
-			return VisibleOnly(allowedCustomerRoleIds);
+				return VisibleOnly(allowedCustomerRoleIds);
+			}
+
+			return VisibleOnly(new int[0]);
 		}
 
 		/// <summary>
@@ -80,11 +85,14 @@ namespace SmartStore.Services.Search
 			WithFilter(SearchFilter.ByRange("availablestart", null, utcNow, false, false).Mandatory().NotAnalyzed());
 			WithFilter(SearchFilter.ByRange("availableend", utcNow, null, false, false).Mandatory().NotAnalyzed());
 
-			var roleIds = (allowedCustomerRoleIds != null ? allowedCustomerRoleIds.Where(x => x != 0).Distinct().ToList() : new List<int>());
-			if (roleIds.Any())
+			if (allowedCustomerRoleIds != null && allowedCustomerRoleIds.Length > 0)
 			{
-				roleIds.Insert(0, 0);
-				WithFilter(SearchFilter.Combined(roleIds.Select(x => SearchFilter.ByField("roleid", x).ExactMatch().NotAnalyzed()).ToArray()));
+				var roleIds = allowedCustomerRoleIds.Where(x => x != 0).Distinct().ToList();
+				if (roleIds.Any())
+				{
+					roleIds.Insert(0, 0);
+					WithFilter(SearchFilter.Combined(roleIds.Select(x => SearchFilter.ByField("roleid", x).ExactMatch().NotAnalyzed()).ToArray()));
+				}
 			}
 
 			return this;

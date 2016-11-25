@@ -622,23 +622,23 @@ namespace SmartStore.Services.Catalog
 						select pGroup.FirstOrDefault();
 
                 //sort products
-                if (ctx.OrderBy == ProductSortingEnum.Position && ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
+                if (ctx.OrderBy == ProductSortingEnum.Relevance && ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
                 {
                     //category position
                     var firstCategoryId = ctx.CategoryIds[0];
                     query = query.OrderBy(p => p.ProductCategories.Where(pc => pc.CategoryId == firstCategoryId).FirstOrDefault().DisplayOrder);
                 }
-                else if (ctx.OrderBy == ProductSortingEnum.Position && ctx.ManufacturerId > 0)
+                else if (ctx.OrderBy == ProductSortingEnum.Relevance && ctx.ManufacturerId > 0)
                 {
                     //manufacturer position
                     query = query.OrderBy(p => p.ProductManufacturers.Where(pm => pm.ManufacturerId == ctx.ManufacturerId).FirstOrDefault().DisplayOrder);
                 }
-				else if (ctx.OrderBy == ProductSortingEnum.Position && ctx.ParentGroupedProductId > 0)
+				else if (ctx.OrderBy == ProductSortingEnum.Relevance && ctx.ParentGroupedProductId > 0)
 				{
 					//parent product specified (sort associated products)
 					query = query.OrderBy(p => p.DisplayOrder);
 				}
-                else if (ctx.OrderBy == ProductSortingEnum.Position)
+                else if (ctx.OrderBy == ProductSortingEnum.Relevance)
                 {
 					//otherwise sort by name
                     query = query.OrderBy(p => p.Name);

@@ -524,7 +524,7 @@ namespace SmartStore.Services.Catalog
 			{
 				var searchContext = new ProductSearchContext
 				{
-					OrderBy = ProductSortingEnum.Position,
+					OrderBy = ProductSortingEnum.Relevance,
 					ParentGroupedProductId = product.Id,
 					PageSize = int.MaxValue,
 					ShowHidden = true

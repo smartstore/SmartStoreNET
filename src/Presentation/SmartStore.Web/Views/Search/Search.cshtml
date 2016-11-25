@@ -18,8 +18,7 @@
 		lastIndex = Model.PagingFilteringContext.LastItemIndex;
 	}
 
-	var pageTitle = T("Search.PageTitle", resultModel.Term);
-	Html.AddTitleParts(pageTitle);
+	Html.AddTitleParts(T("Search.PageTitle", "\"" + resultModel.Term + "\""));
 }
 
 @functions{
@@ -35,7 +34,7 @@
 	@if (resultModel.Term.HasValue())
 	{
 		<div class="page-title">
-			<h1 class="h3">@pageTitle</h1>
+			<h1 class="h3">@T("Search.PageTitle", "<small class='text-danger'>" + resultModel.Term + "</small>")</h1>
 			@if (resultModel.TotalProductsCount > 0)
 			{
 				<h4 class="text-muted">@T("Search.PagingInfo", "{0}-{1}".FormatInvariant(firstIndex.ToString("N0"), lastIndex.ToString("N0")), Model.PagingFilteringContext.TotalCount.ToString("N0"))</h4>

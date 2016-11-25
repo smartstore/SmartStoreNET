@@ -68,7 +68,7 @@ namespace SmartStore.Data.Migrations
 			builder.Delete("Search.ResultFor");
 
 			builder.AddOrUpdate("Search", "Search", "Suchen");
-			builder.AddOrUpdate("Search.PageTitle", "Search result for \"{0}\"", "Suchergebnis für \"{0}\"");
+			builder.AddOrUpdate("Search.PageTitle", "Search result for {0}", "Suchergebnis für {0}");
 			builder.AddOrUpdate("Search.PagingInfo", "{0} of {1}", "{0} von {1}");
 			builder.AddOrUpdate("Search.DidYouMean", "Did you mean?", "Meinten Sie?");
 			builder.AddOrUpdate("Search.Hits", "Hits", "Treffer");

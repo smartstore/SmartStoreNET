@@ -11,7 +11,6 @@ namespace SmartStore
 {
 	public static class HttpExtensions
 	{
-
 		public static bool IsAdminArea(this HttpRequest request)
 		{
 			if (request != null)

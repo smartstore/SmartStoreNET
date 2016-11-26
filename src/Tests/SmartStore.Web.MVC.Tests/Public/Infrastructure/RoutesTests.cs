@@ -78,7 +78,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
             "~/producttag/9/se-name/".ShouldMapTo<CatalogController>(c => c.ProductsByTag(9, null));
             "~/producttag/all/".ShouldMapTo<CatalogController>(c => c.ProductTagsAll());
 
-            "~/search/".ShouldMapTo<SearchController>(c => c.Search(null, null));
+            "~/search/".ShouldMapTo<SearchController>(c => c.Search(null));
         }
 
         [Test]

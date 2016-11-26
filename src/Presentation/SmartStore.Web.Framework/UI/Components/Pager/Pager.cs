@@ -9,10 +9,8 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public enum PagerSize
     {
-        Mini,
         Small,
         Medium,
         Large

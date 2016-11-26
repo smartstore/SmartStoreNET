@@ -2013,6 +2013,7 @@
     <Content Include="Views\Search\InstantSearch.cshtml" />
     <Content Include="Views\Search\InstantSearch.HitGroup.cshtml" />
     <Content Include="Views\Search\InstantSearch.TopProducts.cshtml" />
+    <Content Include="Views\Search\Search2.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

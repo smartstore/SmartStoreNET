@@ -12,6 +12,7 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
+using SmartStore.Services.Search.Modelling;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
@@ -29,19 +30,22 @@ namespace SmartStore.Web.Controllers
 		private readonly IManufacturerService _manufacturerService;
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly CatalogHelper _catalogHelper;
+		private readonly ICatalogSearchQueryFactory _queryFactory;
 
 		public SearchController(
+			ICatalogSearchQueryFactory queryFactory,
+			ICatalogSearchService catalogSearchService,
 			CatalogSettings catalogSettings,
 			MediaSettings mediaSettings,
-			ICatalogSearchService catalogSearchService,
 			ICurrencyService currencyService,
 			IManufacturerService manufacturerService,
 			IGenericAttributeService genericAttributeService,
 			CatalogHelper catalogHelper)
 		{
+			_queryFactory = queryFactory;
+			_catalogSearchService = catalogSearchService;
 			_catalogSettings = catalogSettings;
 			_mediaSettings = mediaSettings;
-			_catalogSearchService = catalogSearchService;
 			_currencyService = currencyService;
 			_manufacturerService = manufacturerService;
 			_genericAttributeService = genericAttributeService;
@@ -55,59 +59,43 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult SearchBox()
 		{
-			string currentQuery = null;
-
-			var routeData = Request.RequestContext?.RouteData;
-			
-			if (routeData != null  && (routeData.IsRouteEqual("Search", "Search") || routeData.IsRouteEqual("Catalog", "Category")))
-			{
-				currentQuery = Request["q"];
-			}
+			var currentTerm = _queryFactory.Current?.Term;
 
 			var model = new SearchBoxModel
 			{
 				InstantSearchEnabled = _catalogSettings.ProductSearchAutoCompleteEnabled,
 				ShowProductImagesInInstantSearch = _catalogSettings.ShowProductImagesInSearchAutoComplete,
 				SearchTermMinimumLength = _catalogSettings.ProductSearchTermMinimumLength,
-				CurrentQuery = currentQuery
+				CurrentQuery = currentTerm
 			};
 
 			return PartialView(model);
 		}
 
 		[HttpPost]
-		public ActionResult InstantSearch(string term)
+		public ActionResult InstantSearch(CatalogSearchQuery query)
 		{
-			if (string.IsNullOrWhiteSpace(term) || term.Length < _catalogSettings.ProductSearchTermMinimumLength)
-				return Content("");
+			if (string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _catalogSettings.ProductSearchTermMinimumLength)
+				return Content(string.Empty);
 
-			var maxItems = Math.Min(16, _catalogSettings.ProductSearchAutoCompleteNumberOfProducts);
+			// Overwrite search fields
 			var searchFields = new List<string> { "name", "shortdescription", "tagname" };
-
 			if (_catalogSettings.SearchDescriptions)
 			{
 				searchFields.Add("fulldescription");
 			}
-
 			if (!_catalogSettings.SuppressSkuSearch)
 			{
 				searchFields.Add("sku");
 			}
 
-			var searchQuery = new CatalogSearchQuery(searchFields.ToArray(), term)
-				.OriginatesFrom("InstantSearch")
-				.Slice(0, maxItems)
-				.SortBy(ProductSortingEnum.Relevance)
-				.WithLanguage(Services.WorkContext.WorkingLanguage);
+			query.Fields = searchFields.ToArray();
 
-			searchQuery = searchQuery.VisibleOnly(!QuerySettings.IgnoreAcl ? Services.WorkContext.CurrentCustomer : null);
+			query
+				.Slice(0, Math.Min(16, _catalogSettings.ProductSearchAutoCompleteNumberOfProducts))
+				.SortBy(ProductSortingEnum.Relevance);
 
-			if (!QuerySettings.IgnoreMultiStore)
-			{
-				searchQuery = searchQuery.HasStoreId(Services.StoreContext.CurrentStore.Id);
-			}
-
-			var result = _catalogSearchService.Search(searchQuery);
+			var result = _catalogSearchService.Search(query);
 
 			var overviewModels = _catalogHelper.PrepareProductOverviewModels(
 				result.Hits, 
@@ -115,10 +103,10 @@ namespace SmartStore.Web.Controllers
 				_catalogSettings.ShowProductImagesInSearchAutoComplete,
 				_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage);
 
-			var model = new SearchResultModel
+			var model = new SearchResultModel(query)
 			{
 				SearchResult = result,
-				Term = term,
+				Term = query.Term,
 				TotalProductsCount = result.Hits.TotalCount
 			};
 
@@ -126,35 +114,57 @@ namespace SmartStore.Web.Controllers
 			model.TopProducts.AddRange(overviewModels);
 
 			// Add spell checker suggestions (if any)
-			if (result.SpellCheckerSuggestions.Length > 0)
-			{
-				var hitGroup = new SearchResultModel.HitGroup(model)
-				{
-					Name = "SpellChecker",
-					DisplayName = T("Search.DidYouMean"),
-					Ordinal = -100
-				};
-
-				hitGroup.Hits.AddRange(result.SpellCheckerSuggestions.Select(x => new SearchResultModel.HitItem
-				{
-					Label = x,
-					Url = Url.RouteUrl("Search", new { q = x })
-				}));
-
-				model.HitGroups.Add(hitGroup);
-			}
+			AddSpellCheckerSuggestionsToModel(result.SpellCheckerSuggestions, model);
 
 			return PartialView(model);
 		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
 		[ValidateInput(false)]
-		public ActionResult Search(SearchModel model, SearchPagingFilteringModel command)
+		public ActionResult Search(CatalogSearchQuery query)
+		{
+			var model = new SearchResultModel(query);
+
+			if (query.Term == null || query.Term.Length < _catalogSettings.ProductSearchTermMinimumLength)
+			{
+				model.Error = T("Search.SearchTermMinimumLengthIsNCharacters", _catalogSettings.ProductSearchTermMinimumLength);
+				return View(model);
+			}
+			
+			// 'Continue shopping' URL
+			_genericAttributeService.SaveAttribute(Services.WorkContext.CurrentCustomer,
+				SystemCustomerAttributeNames.LastContinueShoppingPage,
+				Services.WebHelper.GetThisPageUrl(false),
+				Services.StoreContext.CurrentStore.Id);
+			
+			var result = _catalogSearchService.Search(query);
+
+			var overviewModels = _catalogHelper.PrepareProductOverviewModels(
+				result.Hits,
+				prepareColorAttributes: true,
+				prepareManufacturers: false /* TODO: (mc) ViewModes */).ToList();
+
+			model.SearchResult = result;
+			model.Term = query.Term;
+			model.TotalProductsCount = result.Hits.TotalCount;
+
+			// Add product hits
+			model.TopProducts.AddRange(overviewModels);
+
+			// Add spell checker suggestions (if any)
+			AddSpellCheckerSuggestionsToModel(result.SpellCheckerSuggestions, model);
+
+			return View(model);
+		}
+
+		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+		[ValidateInput(false)]
+		public ActionResult Search2(SearchModel model, SearchPagingFilteringModel command)
 		{
 			if (model == null)
 				model = new SearchModel();
 
-			var resultModel = new SearchResultModel();
+			var resultModel = new SearchResultModel(new CatalogSearchQuery());
 
 			// 'Continue shopping' URL
 			_genericAttributeService.SaveAttribute(Services.WorkContext.CurrentCustomer,
@@ -293,7 +303,7 @@ namespace SmartStore.Web.Controllers
 
 						if (fromPrice.HasValue || toPrice.HasValue)
 						{
-							searchQuery = searchQuery.WithPrice(currency, fromPrice, toPrice);
+							searchQuery = searchQuery.PriceBetween(fromPrice, toPrice, currency);
 						}
 					}
 
@@ -310,6 +320,9 @@ namespace SmartStore.Web.Controllers
 					resultModel.TotalProductsCount = searchResult.Hits.TotalCount;
 					resultModel.TopProducts.AddRange(model.Products);
 					resultModel.SearchResult = searchResult;
+
+					// Add spell checker suggestions (if any)
+					AddSpellCheckerSuggestionsToModel(searchResult.SpellCheckerSuggestions, resultModel);
 				}
 			}
 			else
@@ -323,6 +336,27 @@ namespace SmartStore.Web.Controllers
 
 			model.PagingFilteringContext.LoadPagedList(products);
 			return View(model);
+		}
+
+		private void AddSpellCheckerSuggestionsToModel(string[] suggestions, SearchResultModel model)
+		{
+			if (suggestions.Length == 0)
+				return;
+
+			var hitGroup = new SearchResultModel.HitGroup(model)
+			{
+				Name = "SpellChecker",
+				DisplayName = T("Search.DidYouMean"),
+				Ordinal = -100
+			};
+
+			hitGroup.Hits.AddRange(suggestions.Select(x => new SearchResultModel.HitItem
+			{
+				Label = x,
+				Url = Url.RouteUrl("Search", new { q = x })
+			}));
+
+			model.HitGroups.Add(hitGroup);
 		}
 	}
 }

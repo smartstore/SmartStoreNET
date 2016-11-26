@@ -54,7 +54,7 @@ namespace SmartStore.Core.Search
 		public int? StoreId { get; protected set; }
 
 		// Search term
-		public string[] Fields { get; protected set; }
+		public string[] Fields { get; set; }
 		public string Term { get; protected set; }
 		public bool EscapeTerm { get; protected set; }
 		public bool IsExactMatch { get; protected set; }
@@ -153,7 +153,7 @@ namespace SmartStore.Core.Search
 			return (this as TQuery);
 		}
 
-		public TQuery AddFacetDescriptor(FacetDescriptor facetDescription)
+		public TQuery WithFacet(FacetDescriptor facetDescription)
 		{
 			Guard.NotNull(facetDescription, nameof(facetDescription));
 

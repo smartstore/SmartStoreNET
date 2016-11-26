@@ -201,7 +201,7 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByRange("stockquantity", fromQuantity, toQuantity, fromQuantity.HasValue, toQuantity.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
-		public CatalogSearchQuery WithPrice(Currency currency, decimal? fromPrice, decimal? toPrice)
+		public CatalogSearchQuery PriceBetween(decimal? fromPrice, decimal? toPrice, Currency currency)
 		{
 			Guard.NotNull(currency, nameof(currency));
 
@@ -214,7 +214,7 @@ namespace SmartStore.Services.Search
 				toPrice.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
-		public CatalogSearchQuery WithCreatedUtc(DateTime? fromUtc, DateTime? toUtc)
+		public CatalogSearchQuery CreatedBetween(DateTime? fromUtc, DateTime? toUtc)
 		{
 			return WithFilter(SearchFilter.ByRange("createdon", fromUtc, toUtc, fromUtc.HasValue, toUtc.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}

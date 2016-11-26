@@ -503,9 +503,9 @@ namespace SmartStore.Services.Tests.Search
 
 			var eur = new Currency { CurrencyCode = "EUR" };
 
-			Assert.That(Search(new CatalogSearchQuery().WithPrice(eur, 100M, 200M)).Hits.Count(), Is.EqualTo(1));
-			Assert.That(Search(new CatalogSearchQuery().WithPrice(eur, 100M, null)).Hits.Count(), Is.EqualTo(2));
-			Assert.That(Search(new CatalogSearchQuery().WithPrice(eur, null, 100M)).Hits.Count(), Is.EqualTo(3));
+			Assert.That(Search(new CatalogSearchQuery().PriceBetween(100M, 200M, eur)).Hits.Count(), Is.EqualTo(1));
+			Assert.That(Search(new CatalogSearchQuery().PriceBetween(100M, null, eur)).Hits.Count(), Is.EqualTo(2));
+			Assert.That(Search(new CatalogSearchQuery().PriceBetween(null, 100M, eur)).Hits.Count(), Is.EqualTo(3));
 		}
 
 		[Test]
@@ -523,9 +523,9 @@ namespace SmartStore.Services.Tests.Search
 
 			InitMocks(products);
 
-			Assert.That(Search(new CatalogSearchQuery().WithCreatedUtc(new DateTime(2016, 1, 1), new DateTime(2016, 3, 1))).Hits.Count(), Is.EqualTo(2));
-			Assert.That(Search(new CatalogSearchQuery().WithCreatedUtc(new DateTime(2016, 4, 1), null)).Hits.Count(), Is.EqualTo(3));
-			Assert.That(Search(new CatalogSearchQuery().WithCreatedUtc(null, new DateTime(2016, 7, 1))).Hits.Count(), Is.EqualTo(5));
+			Assert.That(Search(new CatalogSearchQuery().CreatedBetween(new DateTime(2016, 1, 1), new DateTime(2016, 3, 1))).Hits.Count(), Is.EqualTo(2));
+			Assert.That(Search(new CatalogSearchQuery().CreatedBetween(new DateTime(2016, 4, 1), null)).Hits.Count(), Is.EqualTo(3));
+			Assert.That(Search(new CatalogSearchQuery().CreatedBetween(null, new DateTime(2016, 7, 1))).Hits.Count(), Is.EqualTo(5));
 		}
 
 		#endregion

@@ -8,10 +8,17 @@ namespace SmartStore.Web.Models.Search
 {
 	public class SearchResultModel : ModelBase
 	{
-		public SearchResultModel()
+		public SearchResultModel(CatalogSearchQuery query)
 		{
+			Query = query;
 			TopProducts = new List<ProductOverviewModel>();
 			HitGroups = new List<HitGroup>();
+		}
+
+		public CatalogSearchQuery Query
+		{
+			get;
+			private set;
 		}
 
 		public CatalogSearchResult SearchResult
@@ -42,6 +49,12 @@ namespace SmartStore.Web.Models.Search
 		{
 			get;
 			private set;
+		}
+
+		public string Error
+		{
+			get;
+			set;
 		}
 
 		#region Nested classes

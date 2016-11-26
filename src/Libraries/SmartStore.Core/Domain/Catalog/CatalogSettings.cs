@@ -43,7 +43,7 @@ namespace SmartStore.Core.Domain.Catalog
             ShowManufacturersOnHomepage = true;
             ShowManufacturerPictures = false;
 			ShowManufacturerPicturesInProductDetail = true;
-			SearchPageProductsPerPage = 6;
+			SearchPageProductsPerPage = 12;
 			ProductsAlsoPurchasedEnabled = true;
 			ProductsAlsoPurchasedNumber = 6;
 			NumberOfProductTags = 15;

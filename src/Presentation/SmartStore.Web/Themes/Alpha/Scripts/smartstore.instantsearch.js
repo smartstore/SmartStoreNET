@@ -68,7 +68,7 @@
 			$.ajax({
 				dataType: "html",
 				url: url,
-				data: { term: term },
+				data: { q: term },
 				type: 'POST',
 				success: function (html) {
 					if (_.str.isBlank(html)) {

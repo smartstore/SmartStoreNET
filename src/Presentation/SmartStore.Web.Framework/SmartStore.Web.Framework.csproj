@@ -255,7 +255,6 @@
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="Filters\HandleInstallFilter.cs" />
     <Compile Include="Extensions\PostedFileResult.cs" />
-    <Compile Include="Extensions\RouteExtensions.cs" />
     <Compile Include="Extensions\TelerikExtensions.cs" />
     <Compile Include="Localization\ErrorMessageProvider.cs" />
     <Compile Include="Filters\CompressAttribute.cs" />

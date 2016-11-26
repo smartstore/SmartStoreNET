@@ -1,204 +1,71 @@
-﻿@using SmartStore.Web.Models.Catalog;
-@using SmartStore.Web.Models.Search;
+﻿@using SmartStore.Web.Models.Search;
 @using SmartStore.Web.Framework.UI;
-@model SearchModel
+
+@model SearchResultModel
 @{
 	Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 
-	// TODO: (mc) Temp only
-	var resultModel = (SearchResultModel)ViewBag.ResultModel;
-
-	// TODO: (mc) put this in model
-	int firstIndex = 0;
-	int lastIndex = 0;
-	if (resultModel.TotalProductsCount > 0)
+	if (Model.Term.HasValue())
 	{
-		var query = resultModel.SearchResult.Query;
-		firstIndex = Model.PagingFilteringContext.FirstItemIndex;
-		lastIndex = Model.PagingFilteringContext.LastItemIndex;
+		Html.AddTitleParts(T("Search.PageTitle", "\"" + Model.Term + "\""));
+	}
+	else
+	{
+		Html.AddTitleParts(T("Search.Title"));
 	}
 
-	Html.AddTitleParts(T("Search.PageTitle", "\"" + resultModel.Term + "\""));
-}
-
-@functions{
-    private bool ShowListOptions() {
-        return Model.Products.Count > 0 &&
-               (Model.PagingFilteringContext.AllowProductViewModeChanging ||
-               Model.PagingFilteringContext.AllowProductSorting ||
-               Model.PagingFilteringContext.AllowCustomersToSelectPageSize);
-    }
+	int firstItemIndex = 0;
+	int lastItemIndex = 0;
+	if (Model.TotalProductsCount > 0)
+	{
+		firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
+		lastItemIndex = Model.SearchResult.Hits.LastItemIndex;
+	}
 }
 
 <div class="page search-page">
-	@if (resultModel.Term.HasValue())
+	@if (Model.Term.HasValue())
 	{
 		<div class="page-title">
-			<h1 class="h3">@T("Search.PageTitle", "<small class='text-danger'>" + resultModel.Term + "</small>")</h1>
-			@if (resultModel.TotalProductsCount > 0)
+			<h1 class="h3">@T("Search.PageTitle", "<small class='text-danger'>" + Model.Term + "</small>")</h1>
+			@if (Model.TotalProductsCount > 0)
 			{
-				<h4 class="text-muted">@T("Search.PagingInfo", "{0}-{1}".FormatInvariant(firstIndex.ToString("N0"), lastIndex.ToString("N0")), Model.PagingFilteringContext.TotalCount.ToString("N0"))</h4>
+				<h4 class="text-muted h5">@T("Search.PagingInfo", "{0}-{1}".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0")), Model.TotalProductsCount.ToString("N0"))</h4>
 			}
 		</div>
 	}
 
     <div class="page-body">
-		@if (Model.Warning.HasValue())
+		@if (Model.Error.HasValue())
 		{
 			<div class="alert alert-danger">
-				@Model.Warning
+				@Model.Error
 			</div>
 		}
-		else if (resultModel.TotalProductsCount == 0)
+		else if (Model.TotalProductsCount == 0)
 		{
 			<div class="alert alert-warning">
 				@T("Search.NoResultsText")
 			</div>
 		}
 
-        @using (Html.BeginRouteForm("Search", FormMethod.Get, new { @class = "inline-form" }))
-        {
-            <div class="search-input hidden-xl-down">
-                <div class="basic-search">
-                    <div class="form-group row">
-                        @Html.LabelFor(model => model.Q, new { @class = "col-sm-3 form-control-label required", @for = "Q" })
-                        <div class="col-sm-9">
-                            @Html.TextBoxFor(model => model.Q, new { @class = "search-text form-control" })
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <div class="col-sm-9 col-xs-push-3">
-                            <div class="checkbox">
-                                <label>
-                                    @Html.CheckBoxFor(model => model.As)
-                                    @T("Search.AdvancedSearch")
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="adv-search" id="advanced-search-block" style="display: @(Model.As ? "block" : "none")">
-                        @if (Model.AvailableCategories.Count > 0)
-                        {
-                            <div class="form-group row">
-                                @Html.LabelFor(model => model.Cid, new { @class = "col-sm-3 form-control-label", @for = "Q" })
-                                <div class="col-sm-9">
-                                    @Html.DropDownListFor(model => model.Cid, Model.AvailableCategories, new { @class = "noskin", style = "max-width: 100%" })
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <div class="col-sm-9 col-xs-push-3">
-                                    <div class="checkbox">
-                                        <label>
-                                            @Html.CheckBoxFor(model => model.Isc)
-                                            @T("Search.IncludeSubCategories")
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                        @if (Model.AvailableManufacturers.Count > 0)
-                        {
-                            <div class="form-group row">
-                                @Html.LabelFor(model => model.Mid, new { @class = "col-sm-3 form-control-label", @for = "Mid" })
-                                <div class="col-sm-9">
-                                    @Html.DropDownListFor(model => model.Mid, Model.AvailableManufacturers, new { @class = "noskin" })
-                                </div>
-                            </div>
-                        }
-
-                        <div class="form-group row">
-                            <label class="col-sm-3 form-control-label" for="Pf">@T("Search.PriceRange")</label>
-                            <div class="col-sm-3">
-                                @Html.TextBoxFor(model => model.Pf, new { @class = "price-from form-control", placeholder = T("Search.PriceRange.From").Text })
-                            </div>
-                            <div class="col-sm-3">
-                                @Html.TextBoxFor(model => model.Pt, new { @class = "price-to form-control", placeholder = T("Search.PriceRange.To").Text })
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <div class="col-sm-9 col-xs-push-3">
-                                <div class="checkbox">
-                                    <label>
-                                        @Html.CheckBoxFor(model => model.Sid)
-                                        @T("Search.SearchInDescriptions")
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        @Html.Widget("productsearch_page_advanced")
-
-                    </div>
-
-                    <div class="form-group row">
-                        <div class="col-sm-9 col-xs-push-3">
-                            <button type="submit" class="btn btn-primary search-button">
-                                <i class="fa fa-search"></i>
-                                @T("Search")
-                            </button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            if (ShowListOptions())
+        <div class="search-results">
+            @if (Model.TotalProductsCount > 0)
             {
-                @Html.Partial("_ProductListOptions", Model.PagingFilteringContext)
+                <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 product-grid">
+                    @foreach (var product in Model.TopProducts)
+                    {
+                        <article class="card card-block card-shadow text-xs-center">
+                            @Html.Partial("_ProductBox", product)
+                        </article>
+                    }
+                </div>
             }
 
-            <div class="search-results">
-                @if (Model.Products.Count > 0)
-                {
-                    if (Model.PagingFilteringContext.ViewMode == "list")
-                    {
-                        <div class="product-list">
-                            @foreach (var product in Model.Products)
-                            {
-                                <article class="item-box details card p-a-1">
-                                    @Html.Partial("_ProductBoxList", product)
-                                </article>
-                            }
-                        </div>        
-					}
-					else
-					{
-                        <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 product-grid">
-                            @foreach (var product in Model.Products)
-                            {
-                                <article class="card card-block card-shadow text-xs-center">
-                                    @Html.Partial("_ProductBox", product)
-                                </article>
-                            }
-                        </div>
-                    }
-                }
-
-                @Html.SmartStore().Pager(Model.PagingFilteringContext).Name("pagination-bottom").QueryParam("pagenumber", "as", "isc", "sid")
-
-            </div>
-        }
+			@if (Model.TotalProductsCount > 0)
+			{
+				@Html.SmartStore().Pager(Model.SearchResult.Hits).Name("pagination-bottom").QueryParam("i")
+			}
+        </div>
     </div>
 </div>
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        $("#@Html.FieldIdFor(model => model.As)").click(toggleAdvancedSearch);
-        toggleAdvancedSearch();
-
-        $('#@Html.FieldIdFor(model => model.Q)').focus();
-    });
-
-    function toggleAdvancedSearch() {
-        if ($('#@Html.FieldIdFor(model => model.As)').is(':checked')) {
-            $('#advanced-search-block').show();
-        }
-        else {
-            $('#advanced-search-block').hide();
-        }
-    }
-</script>

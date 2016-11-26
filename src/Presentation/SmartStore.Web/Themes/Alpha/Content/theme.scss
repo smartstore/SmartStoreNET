@@ -98,10 +98,11 @@ body {
     background: $body-bg;
 }
 
+// Move all later
+
 #page {
     background: $body-bg;
-    overflow-x: hidden;
-    
+    overflow-x: hidden;    
 }
 
 .page-main {
@@ -112,4 +113,16 @@ body {
 
 .page-title {
     margin-bottom: 1.5rem;
+}
+
+.page-link {
+    text-decoration: none !important;
+}
+
+.shrinked .page-link {
+    background: transparent;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
 }

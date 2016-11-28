@@ -130,10 +130,10 @@ namespace SmartStore.Data.Migrations
 			);
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.InstantSearchEnabled",
-				"Enable instant search",
-				"Instantsuche aktivieren",
-				"Activates the instant search. Search hits and suggestions appear in a dialog when you enter a search term.",
-				"Aktiviert die Instantsuche. Suchtreffer und -Vorschläge werden während der Eingabe des Suchbegriffs in einem Dialog angezeigt.");
+				"Enable Instant Search",
+				"Instant-Suche aktivieren",
+				"Activates Instant Search (Search-As-You-Type). Search hits and suggestions are already displayed before user finishes typing the search term.",
+				"Aktiviert die Instant-Suche (Search-As-You-Type). Suchtreffer und -Vorschläge werden schon während der Eingabe des Suchbegriffs angezeigt.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.ShowProductImagesInInstantSearch",
 				"Show product images",
@@ -144,13 +144,13 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.InstantSearchNumberOfProducts",
 				"Number of products",
 				"Produktanzahl",
-				"Specifies the number of products displayed in the instant search.",
-				"Legt die Anzahl der angezeigten Produkte in der Instantsuche fest.");
+				"Specifies the number of product hits displayed in instant search.",
+				"Legt die Anzahl der angezeigten Produkt-Treffer in der Instantsuche fest.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.InstantSearchTermMinLength",
 				"Minimum search term length",
 				"Minimale Suchbegrifflänge",
-				"Specifies the minimum length of a search term from which to show the result of the instant search.",
+				"Specifies the minimum length of a search term from which to show the result of instant search.",
 				"Legt die minimale Länge eines Suchbegriffs fest, ab dem das Ergebnis der Instantsuche angezeigt wird.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchFields",
@@ -160,10 +160,10 @@ namespace SmartStore.Data.Migrations
 				"Legt zusätzlich zu durchsuchende Felder fest. Der Produktname wird grundsätzlich immer durchsucht.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DefaultProductListPageSize",
-				"Number of products displayed in a product list",
-				"Anzahl der angezeigten Produkte in einer Produktliste.",
-				"Specifies the maximum number of products displayed in a product list.",
-				"Legt die maximale Anzahl der angezeigten Produkte in einer Produktliste fest.");
+				"Number of products displayed per page",
+				"Anzahl pro Seite angezeigter Produkte",
+				"Specifies the number of products displayed per page in a product list.",
+				"Legt die Anzahl der pro Seite angezeigten Produkte in einer Produktliste fest.");
 
 			builder.AddOrUpdate("Admin.Validation.ValueRange",
 				"The value must be between {0} and {1}.",

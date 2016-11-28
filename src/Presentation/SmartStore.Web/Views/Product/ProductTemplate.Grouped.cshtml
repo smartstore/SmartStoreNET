@@ -7,7 +7,7 @@
 @using SmartStore.Web.Framework.Events;
 @using SmartStore.Web.Framework.UI;
 @{
-	Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+	Layout = "_ColumnsOne";
 
 	//title, meta
 	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);

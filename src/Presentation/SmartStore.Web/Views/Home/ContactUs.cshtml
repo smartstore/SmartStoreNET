@@ -1,7 +1,7 @@
 ﻿@model ContactUsModel
 @using SmartStore.Web.Models.Common;
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+    Layout = "_ColumnsTwo";
 
     Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : T("PageTitle.ContactUs").Text);
     Html.AddMetaDescriptionParts(Model.MetaDescription);

@@ -6,7 +6,7 @@
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web;
 @{
-    Layout = "~/Views/Shared/_Root.cshtml";
+    Layout = "_Root";
 
     //title
     Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);

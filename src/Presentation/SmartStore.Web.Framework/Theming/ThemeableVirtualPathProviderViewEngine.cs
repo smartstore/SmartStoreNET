@@ -144,14 +144,25 @@ namespace SmartStore.Web.Framework.Theming
 				if (extraAreaViewLocations != null && extraAreaViewLocations.Length > 0)
 				{
 					var newLocations = areaLocations.ToList();
-					if (isAdminArea)
+					var viewType = ViewType.View;
+
+					if (cacheKeyPrefix == "Partial")
 					{
-						// the admin area cannot fallback to itself. Prepend to list.
-						ExpandLocationFormats(extraAreaViewLocations).Reverse().Each(x => newLocations.Insert(0, x));
+						viewType = ViewType.Partial;
 					}
 					else
 					{
-						newLocations.AddRange(ExpandLocationFormats(extraAreaViewLocations));
+						viewType = ViewType.Layout;
+					}
+
+					if (isAdminArea)
+					{
+						// the admin area cannot fallback to itself. Prepend to list.
+						ExpandLocationFormats(extraAreaViewLocations, viewType).Reverse().Each(x => newLocations.Insert(0, x));
+					}
+					else
+					{
+						newLocations.AddRange(ExpandLocationFormats(extraAreaViewLocations, viewType));
 					}
 
 					areaLocations = newLocations.ToArray();
@@ -318,21 +329,6 @@ namespace SmartStore.Web.Framework.Theming
 			return cacheKey + displayMode + ":";
 		}
 
-        protected virtual IEnumerable<string> ExpandLocationFormats(IEnumerable<string> formats)
-        {
-            // appends razor view file extensions to location formats
-            Guard.NotNull(formats, nameof(formats));
-
-            foreach (var format in formats)
-            {
-                yield return format + ".cshtml";
-                if (EnableVbViews)
-                {
-                    yield return format + ".vbhtml";
-                } 
-            }
-        }
-
 		protected virtual IEnumerable<string> ExpandLocationFormats(IEnumerable<string> formats, ViewType viewType)
 		{
 			// Inserts special location formats for layouts and partials
@@ -343,27 +339,27 @@ namespace SmartStore.Web.Framework.Theming
 			{
 				if (viewType == ViewType.Layout)
 				{
-					yield return format + "Layouts/{0}.cshtml";
+					yield return format.Replace("{0}", "Layouts/{0}.cshtml");
 				}
 				else if (viewType == ViewType.Partial)
 				{
-					yield return format + "Partials/{0}.cshtml";
+					yield return format.Replace("{0}", "Partials/{0}.cshtml");
 				}
 
-				yield return format + "{0}.cshtml";
+				yield return format + ".cshtml";
 
 				if (EnableVbViews)
 				{
 					if (viewType == ViewType.Layout)
 					{
-						yield return format + "Layouts/{0}.vbhtml";
+						yield return format.Replace("{0}", "Layouts/{0}.vbhtml");
 					}
 					else if (viewType == ViewType.Partial)
 					{
-						yield return format + "Partials/{0}.vbhtml";
+						yield return format.Replace("{0}", "Partials/{0}.vbhtml");
 					}
 
-					yield return format + "{0}.vbhtml";
+					yield return format + ".vbhtml";
 				}
 			}
 		}

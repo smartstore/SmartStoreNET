@@ -21,6 +21,7 @@ namespace SmartStore.Web.Framework.Theming
 				return;
 
 			// add extra view location formats to all view results (even the partial ones)
+			// {0} is appended by view engine
 			filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = new string[]
 			{
 				"~/Administration/Views/{1}/{0}",

@@ -2,7 +2,7 @@
 @using SmartStore.Web.Framework.Pdf;
 
 @{
-	Layout = ViewBag.IsPartial == true ? "" : "~/Views/Shared/_Print.cshtml";
+	Layout = ViewBag.IsPartial == true ? "" : "_Print";
 	
 	var company = Model.MerchantCompanyInfo;
 	var bank = Model.MerchantBankAccount;

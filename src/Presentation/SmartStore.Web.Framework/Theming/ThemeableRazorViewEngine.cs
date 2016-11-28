@@ -14,11 +14,10 @@ namespace SmartStore.Web.Framework.Theming
 			var areaBasePaths = areaBasePathsSetting.Split(',').Select(x => x.Trim().EnsureEndsWith("/")).ToArray();
 
 			// 0: view, 1: controller, 2: area
-			// {0} is appended by ExpandLocationFormats()
 			var areaFormats = new[] 
 			{
-				"{2}/Views/{1}/",
-				"{2}/Views/Shared/"
+				"{2}/Views/{1}/{0}",
+				"{2}/Views/Shared/{0}"
 			};
 			var areaLocationFormats = areaBasePaths.SelectMany(x => areaFormats.Select(f => x + f));
 
@@ -27,14 +26,13 @@ namespace SmartStore.Web.Framework.Theming
 			AreaPartialViewLocationFormats = ExpandLocationFormats(areaLocationFormats, ViewType.Partial).ToArray();
 
 			// 0: view, 1: controller, 2: theme
-			// {0} is appended by ExpandLocationFormats()
 			var locationFormats = new[]
             {
-                "~/Themes/{2}/Views/{1}/",
-                "~/Views/{1}/",
-                "~/Themes/{2}/Views/Shared/",
-                "~/Views/Shared/"
-            };
+				"~/Themes/{2}/Views/{1}/{0}",
+				"~/Views/{1}/{0}",
+				"~/Themes/{2}/Views/Shared/{0}",
+				"~/Views/Shared/{0}"
+			};
 
             ViewLocationFormats = ExpandLocationFormats(locationFormats, ViewType.View).ToArray();
             MasterLocationFormats = ExpandLocationFormats(locationFormats, ViewType.Layout).ToArray();

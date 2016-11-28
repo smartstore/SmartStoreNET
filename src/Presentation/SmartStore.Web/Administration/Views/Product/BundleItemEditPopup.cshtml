@@ -3,7 +3,7 @@
 @model ProductBundleItemModel
 
 @{
-    Layout = "~/Administration/Views/Shared/_AdminPopupLayout.cshtml";
+    Layout = "_AdminPopupLayout";
 }
 
 @using (Html.BeginForm(new { btnId = ViewBag.BtnId, formId = ViewBag.FormId }))

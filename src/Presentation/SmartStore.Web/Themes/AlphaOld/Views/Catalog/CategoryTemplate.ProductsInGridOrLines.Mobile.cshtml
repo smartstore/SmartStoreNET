@@ -1,6 +1,6 @@
 ﻿@model CategoryModel
 @{
-    Layout = "~/Views/Shared/_Root.cshtml";
+    Layout = "_Root";
     Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
 }
 @using SmartStore.Core;

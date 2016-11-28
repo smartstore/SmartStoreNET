@@ -136,6 +136,28 @@ namespace SmartStore.Web.Controllers
 			
 			var result = _catalogSearchService.Search(query);
 
+			if (result.Hits.Count == 0 && result.SpellCheckerSuggestions.Any())
+			{
+				// No matches, but spell checker made a suggestion.
+				// We implicitly search again with the first suggested term.
+				var oldSuggestions = result.SpellCheckerSuggestions;
+				var oldTerm = query.Term;
+				query.Term = oldSuggestions[0];
+
+				result = _catalogSearchService.Search(query);
+
+				if (result.Hits.Any())
+				{
+					model.AttemptedTerm = oldTerm;
+					// Restore the original suggestions.
+					result.SpellCheckerSuggestions = oldSuggestions.Where(x => x != query.Term).ToArray();
+				}
+				else
+				{
+					query.Term = oldTerm;
+				}
+			}
+
 			var overviewModels = _catalogHelper.PrepareProductOverviewModels(
 				result.Hits,
 				prepareColorAttributes: true,

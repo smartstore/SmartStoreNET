@@ -27,6 +27,17 @@ namespace SmartStore.Web.Models.Search
 			set;
 		}
 
+		/// <summary>
+		/// Contains the original/misspelled search term, when
+		/// the search did not match any results and the spell checker
+		/// suggested at least one term.
+		/// </summary>
+		public string AttemptedTerm
+		{
+			get;
+			set;
+		}
+
 		public string Term
 		{
 			get;

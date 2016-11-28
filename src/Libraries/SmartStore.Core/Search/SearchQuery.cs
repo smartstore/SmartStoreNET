@@ -55,7 +55,7 @@ namespace SmartStore.Core.Search
 
 		// Search term
 		public string[] Fields { get; set; }
-		public string Term { get; protected set; }
+		public string Term { get; set; }
 		public bool EscapeTerm { get; protected set; }
 		public bool IsExactMatch { get; protected set; }
 		public bool IsFuzzySearch { get; protected set; }

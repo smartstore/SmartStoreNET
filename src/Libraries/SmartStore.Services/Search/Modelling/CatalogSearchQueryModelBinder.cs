@@ -20,7 +20,7 @@ namespace SmartStore.Services.Search.Modelling
 			{
 				return _factory.Current;
 			}
-
+			
 			var modelType = bindingContext.ModelType;
 
 			if (modelType != typeof(CatalogSearchQuery))

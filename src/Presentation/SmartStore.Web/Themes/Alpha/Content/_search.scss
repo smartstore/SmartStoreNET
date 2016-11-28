@@ -1,7 +1,7 @@
 /// <reference path="bs4/scss/bootstrap.scss" />
 
 //
-// InstantSearchBox Styles
+// InstantSearch Box & Drop Styles
 // --------------------------------------------------
 
 $searchbox-border-color:            rgba(0,0,0, 0.12);
@@ -133,4 +133,17 @@ $searchbox-border-active-color:     rgba(0,0,0, 0.2);
     top: 50%;
     margin-top: -10px;
     right: 56px;
+}
+
+
+//
+// Search Page Styles
+// --------------------------------------------------
+
+.search-term {
+    color: $brand-danger;
+}
+
+.search-hitcount {
+    color: $text-muted;
 }

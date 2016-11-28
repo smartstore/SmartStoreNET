@@ -45,7 +45,7 @@ namespace SmartStore.Services.Search
 		public string[] SpellCheckerSuggestions
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public ISearchEngine Engine

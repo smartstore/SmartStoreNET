@@ -21,21 +21,36 @@
 		firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
 		lastItemIndex = Model.SearchResult.Hits.LastItemIndex;
 	}
+
+	var suggestions = Model.SearchResult.SpellCheckerSuggestions;
 }
 
 <div class="page search-page">
-	@if (Model.Term.HasValue())
-	{
-		<div class="page-title">
-			<h1 class="h3">@T("Search.PageTitle", "<small class='text-danger'>" + Model.Term + "</small>")</h1>
-			@if (Model.TotalProductsCount > 0)
+	<div class="page-title">
+		<h1 class="h3">
+			@if (Model.Term.HasValue())
 			{
-				<h4 class="text-muted h5">@T("Search.PagingInfo", "{0}-{1}".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0")), Model.TotalProductsCount.ToString("N0"))</h4>
+				@T("Search.PageTitle", "<small class='search-term'>" + Model.Term + "</small>")
 			}
-		</div>
-	}
+			else
+			{
+				@T("Search.Title")
+			}		
+		</h1>
+		@if (Model.TotalProductsCount > 0)
+		{
+			<h5 class="search-hitcount">@T("Search.PagingInfo", "{0}-{1}".FormatInvariant(firstItemIndex.ToString("N0"), lastItemIndex.ToString("N0")), Model.TotalProductsCount.ToString("N0"))</h5>
+		}
+	</div>
 
     <div class="page-body">
+		@if (Model.AttemptedTerm.HasValue())
+		{
+			<div class="alert alert-warning">
+				@T("Search.TermCorrectedHint", "<strong>\"" + Model.Term + "\"</strong>", "<strong>\"" + Model.AttemptedTerm + "\"</strong>")
+			</div>
+		}
+
 		@if (Model.Error.HasValue())
 		{
 			<div class="alert alert-danger">
@@ -47,6 +62,17 @@
 			<div class="alert alert-warning">
 				@T("Search.NoResultsText")
 			</div>
+		}
+
+		@if (suggestions.Any() && (Model.AttemptedTerm.HasValue() || Model.TotalProductsCount == 0))
+		{
+			<p class="search-suggestions">
+				<strong>@T("Search.DidYouMean")</strong>
+				@{ 
+					var links = String.Join(", ", suggestions.Select(x => "<a href='" + Url.RouteUrl("Search", new { q = x }) + "'>{0}</a>".FormatCurrentUI(x)));
+				}
+				@Html.Raw(links)
+			</p>
 		}
 
         <div class="search-results">

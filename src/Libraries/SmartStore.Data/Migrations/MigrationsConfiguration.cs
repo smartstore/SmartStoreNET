@@ -101,8 +101,8 @@ namespace SmartStore.Data.Migrations
 				"The minimum length for the search term is {0} characters.",
 				"Die Mindestlänge für den Suchbegriff beträgt {0} Zeichen.");
 			builder.AddOrUpdate("Search.TermCorrectedHint",
-				"Displaying results for \"{0}\". Your search for \"{1}\" did not match any results.",
-				"Ergebnisse für \"{0}\" werden angezeigt. Ihre Suche nach \"{1}\" ergab leider keine Treffer.");
+				"Displaying results for {0}. Your search for {1} did not match any results.",
+				"Ergebnisse für {0} werden angezeigt. Ihre Suche nach {1} ergab leider keine Treffer.");
 
 			builder.Delete("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Position");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Relevance", "Relevance", "Relevanz");

@@ -94,6 +94,9 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.Hits", "Hits", "Treffer");
 			builder.AddOrUpdate("Search.NoResultsText", "Your search did not match any products.", "Ihre Suche ergab leider keine Produkttreffer.");
 			builder.AddOrUpdate("Search.NumHits", "{0} Hits", "{0} Treffer");
+			builder.AddOrUpdate("Search.InstantSearch", "Instant Search", "Instantsuche");
+			builder.AddOrUpdate("Search.GlobalFilters", "Global Filters", "Globale Filter");
+			builder.AddOrUpdate("Search.FilterBy", "Filter by", "Filtern nach");
 			builder.AddOrUpdate("Search.SearchTermMinimumLengthIsNCharacters",
 				"The minimum length for the search term is {0} characters.",
 				"Die Mindestlänge für den Suchbegriff beträgt {0} Zeichen.");
@@ -103,6 +106,72 @@ namespace SmartStore.Data.Migrations
 
 			builder.Delete("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Position");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Relevance", "Relevance", "Relevanz");
+
+			builder.Delete(
+				"Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteEnabled",
+				"Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteEnabled.Hint",
+				"Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteNumberOfProducts",
+				"Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteNumberOfProducts.Hint",
+				"Admin.Configuration.Settings.Catalog.SearchPageProductsPerPage",
+				"Admin.Configuration.Settings.Catalog.SearchPageProductsPerPage.Hint",
+				"Admin.Configuration.Settings.Catalog.ProductSearchAllowCustomersToSelectPageSize",
+				"Admin.Configuration.Settings.Catalog.ProductSearchAllowCustomersToSelectPageSize.Hint",
+				"Admin.Configuration.Settings.Catalog.ProductSearchPageSizeOptions",
+				"Admin.Configuration.Settings.Catalog.ProductSearchPageSizeOptions.Hint",
+				"Admin.Configuration.Settings.Catalog.ShowProductImagesInSearchAutoComplete",
+				"Admin.Configuration.Settings.Catalog.ShowProductImagesInSearchAutoComplete.Hint",
+				"Admin.Configuration.Settings.Catalog.SuppressSkuSearch",
+				"Admin.Configuration.Settings.Catalog.SuppressSkuSearch.Hint",
+				"Admin.Configuration.Settings.Catalog.SearchDescriptions",
+				"Admin.Configuration.Settings.Catalog.SearchDescriptions.Hint",
+				"Admin.Configuration.Settings.Catalog.ProductSearchSettings",
+				"Admin.Configuration.Settings.Catalog.ProductsByTagPageSize",
+				"Admin.Configuration.Settings.Catalog.ProductsByTagPageSize.Hint"
+			);
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Search.InstantSearchEnabled",
+				"Enable instant search",
+				"Instantsuche aktivieren",
+				"Activates the instant search. Search hits and suggestions appear in a dialog when you enter a search term.",
+				"Aktiviert die Instantsuche. Suchtreffer und -Vorschläge werden während der Eingabe des Suchbegriffs in einem Dialog angezeigt.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Search.ShowProductImagesInInstantSearch",
+				"Show product images",
+				"Produktbilder anzeigen",
+				"Specifies whether to display product images in instant search.",
+				"Legt fest, ob Produktbilder in der Instantsuche angezeigt werden sollen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Search.InstantSearchNumberOfProducts",
+				"Number of products",
+				"Produktanzahl",
+				"Specifies the number of products displayed in the instant search.",
+				"Legt die Anzahl der angezeigten Produkte in der Instantsuche fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Search.InstantSearchTermMinLength",
+				"Minimum search term length",
+				"Minimale Suchbegrifflänge",
+				"Specifies the minimum length of a search term from which to show the result of the instant search.",
+				"Legt die minimale Länge eines Suchbegriffs fest, ab dem das Ergebnis der Instantsuche angezeigt wird.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchFields",
+				"Search fields",
+				"Suchfelder",
+				"Specifies additional search fields. The product name is always searched.",
+				"Legt zusätzlich zu durchsuchende Felder fest. Der Produktname wird grundsätzlich immer durchsucht.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DefaultProductListPageSize",
+				"Number of products displayed in a product list",
+				"Anzahl der angezeigten Produkte in einer Produktliste.",
+				"Specifies the maximum number of products displayed in a product list.",
+				"Legt die maximale Anzahl der angezeigten Produkte in einer Produktliste fest.");
+
+			builder.AddOrUpdate("Admin.Validation.ValueRange",
+				"The value must be between {0} and {1}.",
+				"Der Wert muss zwischen {0} und {1} liegen.");
+
+			builder.AddOrUpdate("Admin.Validation.ValueGreaterThan",
+				"The value must be greater than {0}.",
+				"Der Wert muss größer als {0} sein.");
 		}
 	}
 }

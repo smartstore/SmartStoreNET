@@ -1,7 +1,6 @@
 ﻿@model CatalogSettingsModel
 @using Telerik.Web.Mvc.UI;
 @{
-	//page title
 	ViewBag.Title = T("Admin.Configuration.Settings.Catalog").Text;
 }
 @using (Html.BeginForm())
@@ -24,10 +23,8 @@
             $("#@Html.FieldIdFor(model => model.RecentlyAddedProductsEnabled)").click(toggleRecentlyAddedProducts);
             $("#@Html.FieldIdFor(model => model.ShowBestsellersOnHomepage)").click(toggleBestsellersOnHomepage);
             $("#@Html.FieldIdFor(model => model.ShowManufacturersOnHomepage)").click(toggleManufacturersOnHomepage);
-            $("#@Html.FieldIdFor(model => model.ProductsAlsoPurchasedEnabled)").click(toggleProductsAlsoPurchasedNumber);
-            $("#@Html.FieldIdFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)").click(toggleTagPageSize);
-            $("#@Html.FieldIdFor(model => model.ProductSearchAllowCustomersToSelectPageSize)").click(toggleSearchPageSize);
-            $("#@Html.FieldIdFor(model => model.ProductSearchAutoCompleteEnabled)").click(toggleProductSearchAutoComplete);
+        	$("#@Html.FieldIdFor(model => model.ProductsAlsoPurchasedEnabled)").click(toggleProductsAlsoPurchasedNumber);
+        	$("#@Html.FieldIdFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)").click(toggleTagPageSize);
             $("#@Html.FieldIdFor(model => model.CompareProductsEnabled)").click(toggleCompareProducts);
         	$("#@Html.FieldIdFor(model => model.EnableHtmlTextCollapser)").click(toggleHtmlTextCollapsedHeight);
 
@@ -42,8 +39,6 @@
             toggleBestsellersOnHomepage();
             toggleProductsAlsoPurchasedNumber();
             toggleTagPageSize();
-            toggleSearchPageSize();
-            toggleProductSearchAutoComplete();
             toggleCompareProducts();
             toggleHtmlTextCollapsedHeight();
             toggleManufacturersOnHomepage();
@@ -114,32 +109,14 @@
             }
         }
 
-        function toggleTagPageSize() {
-            if ($('#@Html.FieldIdFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)').is(':checked')) {
-                $('#pnlTagPageSizeOptions').show();
-            } else {
-                $('#pnlTagPageSizeOptions').hide();
-            }
-        }
-
-        function toggleSearchPageSize() {
-            if ($('#@Html.FieldIdFor(model => model.ProductSearchAllowCustomersToSelectPageSize)').is(':checked')) {
-                $('#pnlSearchPageSizeOptions').show();
-            } else {
-                $('#pnlSearchPageSizeOptions').hide();
-            }
-        }
-
-        function toggleProductSearchAutoComplete() {
-            if ($('#@Html.FieldIdFor(model => model.ProductSearchAutoCompleteEnabled)').is(':checked')) {
-            	$('#pnlProductSearchAutoCompleteNumberOfProducts').show();
-            	$('#pnlShowProductImagesInSearchAutoComplete').show();
-            }
-            else {
-            	$('#pnlProductSearchAutoCompleteNumberOfProducts').hide();
-            	$('#pnlShowProductImagesInSearchAutoComplete').hide();
-            }
-        }
+		function toggleTagPageSize() {
+			if ($('#@Html.FieldIdFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)').is(':checked')) {
+				$('#pnlTagPageSizeOptions').show();
+			}
+			else {
+				$('#pnlTagPageSizeOptions').hide();
+			}
+		}
         
         function toggleCompareProducts() {
             if ($('#@Html.FieldIdFor(model => model.CompareProductsEnabled)').is(':checked')) {
@@ -170,7 +147,6 @@
 		x.Add().Text(T("Admin.Configuration.Settings.Catalog.ProductListSettings").Text).Content(@TabProductListSettings());
 		x.Add().Text(T("Admin.Configuration.Settings.Catalog.ProductDetailSettings").Text).Content(@TabProductDetailSettings());
 		x.Add().Text(T("Admin.Configuration.Settings.Catalog.UserSettings").Text).Content(@TabUserSettings());
-		x.Add().Text(T("Admin.Configuration.Settings.Catalog.ProductSearchSettings").Text).Content(@TabProductSearchSettings());
 	}))
     
 @helper TabMiscSettings()
@@ -541,6 +517,15 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DefaultProductListPageSize)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.DefaultProductListPageSize)
+				@Html.ValidationMessageFor(model => model.DefaultProductListPageSize)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.DefaultPageSizeOptions)
 			</td>
 			<td class="adminData">
@@ -630,15 +615,6 @@
 			<td class="adminData">
 				@Html.SettingEditorFor(model => model.NumberOfProductTags)
 				@Html.ValidationMessageFor(model => model.NumberOfProductTags)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ProductsByTagPageSize)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ProductsByTagPageSize)
-				@Html.ValidationMessageFor(model => model.ProductsByTagPageSize)
 			</td>
 		</tr>
 		<tr>
@@ -890,86 +866,4 @@
         </tr>
     </table>
 }    
-@helper TabProductSearchSettings()
-{
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchPageProductsPerPage)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.SearchPageProductsPerPage)
-                @Html.ValidationMessageFor(model => model.SearchPageProductsPerPage)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ProductSearchAllowCustomersToSelectPageSize)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ProductSearchAllowCustomersToSelectPageSize)
-                @Html.ValidationMessageFor(model => model.ProductSearchAllowCustomersToSelectPageSize)
-            </td>
-        </tr>
-        <tr id="pnlSearchPageSizeOptions">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ProductSearchPageSizeOptions)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ProductSearchPageSizeOptions)
-                @Html.ValidationMessageFor(model => model.ProductSearchPageSizeOptions)
-            </td>
-        </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SuppressSkuSearch)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.SuppressSkuSearch)
-				@Html.ValidationMessageFor(model => model.SuppressSkuSearch)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchDescriptions)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.SearchDescriptions)
-				@Html.ValidationMessageFor(model => model.SearchDescriptions)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminSeparator" colspan="2">
-				<hr />
-			</td>
-		</tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ProductSearchAutoCompleteEnabled)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ProductSearchAutoCompleteEnabled)
-                @Html.ValidationMessageFor(model => model.ProductSearchAutoCompleteEnabled)
-            </td>
-        </tr>
-		<tr id="pnlShowProductImagesInSearchAutoComplete">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ShowProductImagesInSearchAutoComplete)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ShowProductImagesInSearchAutoComplete)
-				@Html.ValidationMessageFor(model => model.ShowProductImagesInSearchAutoComplete)
-			</td>
-		</tr>
-        <tr id="pnlProductSearchAutoCompleteNumberOfProducts">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ProductSearchAutoCompleteNumberOfProducts)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ProductSearchAutoCompleteNumberOfProducts)
-                @Html.ValidationMessageFor(model => model.ProductSearchAutoCompleteNumberOfProducts)
-            </td>
-        </tr>
-    </table>
-} 
 }

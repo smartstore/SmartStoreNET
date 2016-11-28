@@ -35,19 +35,14 @@ namespace SmartStore.Core.Domain.Catalog
             MaxFilterItemsToDisplay = 4;
 			SortFilterResultsByMatches = true;
 			SubCategoryDisplayType = SubCategoryDisplayType.AboveProductList;
-			ProductSearchAutoCompleteEnabled = true;
-			ShowProductImagesInSearchAutoComplete = true;
-			ProductSearchAutoCompleteNumberOfProducts = 10;
-			ProductSearchTermMinimumLength = 3;
 			NumberOfBestsellersOnHomepage = 6;
             ShowManufacturersOnHomepage = true;
             ShowManufacturerPictures = false;
 			ShowManufacturerPicturesInProductDetail = true;
-			SearchPageProductsPerPage = 12;
 			ProductsAlsoPurchasedEnabled = true;
 			ProductsAlsoPurchasedNumber = 6;
 			NumberOfProductTags = 15;
-			ProductsByTagPageSize = 12;
+			DefaultProductListPageSize = 12;
 			UseSmallProductBoxOnHomePage = true;
 			DisplayTierPricesWithDiscounts = true;
 			DefaultPageSizeOptions = "12, 18, 36, 72, 150";
@@ -269,26 +264,6 @@ namespace SmartStore.Core.Domain.Catalog
         public bool CompareProductsEnabled { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether autocomplete is enabled
-        /// </summary>
-        public bool ProductSearchAutoCompleteEnabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to show product images in the auto complete search
-        /// </summary>
-        public bool ShowProductImagesInSearchAutoComplete { get; set; }
-
-        /// <summary>
-        /// Gets or sets a number of products to return when using "autocomplete" feature
-        /// </summary>
-        public int ProductSearchAutoCompleteNumberOfProducts { get; set; }
-
-        /// <summary>
-        /// Gets or sets a minimum search term length
-        /// </summary>
-        public int ProductSearchTermMinimumLength { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether to show bestsellers on home page
         /// </summary>
         public bool ShowBestsellersOnHomepage { get; set; }
@@ -314,7 +289,7 @@ namespace SmartStore.Core.Domain.Catalog
 		public bool ShowManufacturerPicturesInProductDetail { get; set; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to hide maufacturer default pictures
+		/// Gets or sets a value indicating whether to hide manufacturer default pictures
 		/// </summary>
 		public bool HideManufacturerDefaultPictures { get; set; }
 
@@ -327,11 +302,6 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets a value indicating whether to hide product default pictures
 		/// </summary>
 		public bool HideProductDefaultPictures { get; set; }
-
-		/// <summary>
-		/// Gets or sets a number of products per page on search products page
-		/// </summary>
-		public int SearchPageProductsPerPage { get; set; }
 
         /// <summary>
         /// Gets or sets "List of products purchased by other customers who purchased the above" option is enable
@@ -359,9 +329,9 @@ namespace SmartStore.Core.Domain.Catalog
         public int NumberOfProductTags { get; set; }
 
         /// <summary>
-        /// Gets or sets a number of products per page on 'products by tag' page
+        /// Gets or sets a number of products per page on a product list page
         /// </summary>
-        public int ProductsByTagPageSize { get; set; }
+        public int DefaultProductListPageSize { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether customers can select the page size for 'products by tag'
@@ -372,12 +342,6 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the available customer selectable page size options for 'products by tag'
         /// </summary>
         public string ProductsByTagPageSizeOptions { get; set; }
-
-        public int ProductSearchPageSize { get; set; }
-
-        public bool ProductSearchAllowCustomersToSelectPageSize { get; set; }
-
-        public string ProductSearchPageSizeOptions { get; set; }
 		
 		public int DisplayAllImagesNumber { get; set; }
 
@@ -390,13 +354,6 @@ namespace SmartStore.Core.Domain.Catalog
         public bool ShowDefaultQuantityUnit { get; set; }
 
         public bool ShowDiscountSign { get; set; }
-
-		public bool SuppressSkuSearch { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether to search long description
-		/// </summary>
-		public bool SearchDescriptions { get; set; }
 
 		/// <summary>
 		/// Gets or sets the available customer selectable default page size options

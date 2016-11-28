@@ -139,17 +139,12 @@ namespace SmartStore.Services.Search
 						from p in query
 						join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
 						from lp in plp.DefaultIfEmpty()
-						from pt in p.ProductTags.DefaultIfEmpty()
 						where
 						(fields.Contains("name") && p.Name == term) ||
 						(fields.Contains("sku") && p.Sku == term) ||
 						(fields.Contains("shortdescription") && p.ShortDescription == term) ||
-						(fields.Contains("fulldescription") && p.FullDescription == term) ||
-						(fields.Contains("tagname") && pt.Name == term) ||
 						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue == term) ||
-						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue == term) ||
-						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "FullDescription" && lp.LocaleValue == term) ||
-						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "ProductTag" && lp.LocaleKey == "Name" && lp.LocaleValue == term)
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue == term)
 						select p;
 				}
 				else
@@ -158,17 +153,12 @@ namespace SmartStore.Services.Search
 						from p in query
 						join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
 						from lp in plp.DefaultIfEmpty()
-						from pt in p.ProductTags.DefaultIfEmpty()
 						where
 						(fields.Contains("name") && p.Name.Contains(term)) ||
 						(fields.Contains("sku") && p.Sku.Contains(term)) ||
 						(fields.Contains("shortdescription") && p.ShortDescription.Contains(term)) ||
-						(fields.Contains("fulldescription") && p.FullDescription.Contains(term)) ||
-						(fields.Contains("tagname") && pt.Name.Contains(term)) ||
 						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(term)) ||
-						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(term)) ||
-						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "FullDescription" && lp.LocaleValue.Contains(term)) ||
-						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "ProductTag" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(term))
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(term))
 						select p;
 				}
 			}

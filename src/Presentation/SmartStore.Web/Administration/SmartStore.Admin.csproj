@@ -271,6 +271,7 @@
     <Compile Include="Models\Plugins\LicensePluginModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
+    <Compile Include="Models\Settings\SearchSettingsModel.cs" />
     <Compile Include="Models\Settings\DataExchangeSettingsModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordListModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordModel.cs" />
@@ -396,6 +397,7 @@
     <Compile Include="Validators\Polls\PollValidator.cs" />
     <Compile Include="Validators\Settings\GeneralCommonSettingsValidator.cs" />
     <Compile Include="Validators\Settings\OrderSettingsValidator.cs" />
+    <Compile Include="Validators\Settings\SearchSettingValidator.cs" />
     <Compile Include="Validators\Settings\SettingValidator.cs" />
     <Compile Include="Validators\Settings\RewardPointsSettingsValidator.cs" />
     <Compile Include="Validators\Stores\StoreValidator.cs" />
@@ -812,6 +814,7 @@
     <Content Include="Views\Import\ProfileImportResult.cshtml" />
     <Content Include="Views\Setting\DataExchange.cshtml" />
     <Content Include="Views\Export\_ProfileList.cshtml" />
+    <Content Include="Views\Setting\Search.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

@@ -748,7 +748,7 @@ namespace SmartStore.Web.Controllers
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
 			{
 				AllowCustomersToSelectPageSize = _catalogSettings.ProductsByTagAllowCustomersToSelectPageSize,
-				PageSize = _catalogSettings.ProductsByTagPageSize,
+				PageSize = _catalogSettings.DefaultProductListPageSize,
 				PageSizeOptions = _catalogSettings.ProductsByTagPageSizeOptions.IsEmpty()
 					? _catalogSettings.DefaultPageSizeOptions
 					: _catalogSettings.ProductsByTagPageSizeOptions

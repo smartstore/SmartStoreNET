@@ -639,7 +639,6 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<CatalogSettingsModel, CatalogSettings>()
                 .ForMember(dest => dest.PageShareCode, mo => mo.Ignore())
                 .ForMember(dest => dest.DefaultProductRatingValue, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductSearchTermMinimumLength, mo => mo.Ignore())
                 .ForMember(dest => dest.UseSmallProductBoxOnHomePage, mo => mo.Ignore())
                 .ForMember(dest => dest.DefaultCategoryPageSizeOptions, mo => mo.Ignore())
                 .ForMember(dest => dest.DefaultManufacturerPageSizeOptions, mo => mo.Ignore())
@@ -647,7 +646,6 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.DisplayTierPricesWithDiscounts, mo => mo.Ignore())
                 .ForMember(dest => dest.FileUploadMaximumSizeBytes, mo => mo.Ignore())
                 .ForMember(dest => dest.FileUploadAllowedExtensions, mo => mo.Ignore())
-                .ForMember(dest => dest.ProductSearchPageSize, mo => mo.Ignore())
 				.ForMember(dest => dest.MostRecentlyUsedCategoriesMaxSize, mo => mo.Ignore())
 				.ForMember(dest => dest.MostRecentlyUsedManufacturersMaxSize, mo => mo.Ignore());
             Mapper.CreateMap<RewardPointsSettings, RewardPointsSettingsModel>()

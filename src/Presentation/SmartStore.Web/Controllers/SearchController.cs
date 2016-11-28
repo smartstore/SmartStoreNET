@@ -7,6 +7,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Search;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
@@ -25,6 +26,7 @@ namespace SmartStore.Web.Controllers
 	{
 		private readonly CatalogSettings _catalogSettings;
 		private readonly MediaSettings _mediaSettings;
+		private readonly SearchSettings _searchSettings;
 		private readonly ICatalogSearchService _catalogSearchService;
 		private readonly ICurrencyService _currencyService;
 		private readonly IManufacturerService _manufacturerService;
@@ -37,6 +39,7 @@ namespace SmartStore.Web.Controllers
 			ICatalogSearchService catalogSearchService,
 			CatalogSettings catalogSettings,
 			MediaSettings mediaSettings,
+			SearchSettings searchSettings,
 			ICurrencyService currencyService,
 			IManufacturerService manufacturerService,
 			IGenericAttributeService genericAttributeService,
@@ -46,6 +49,7 @@ namespace SmartStore.Web.Controllers
 			_catalogSearchService = catalogSearchService;
 			_catalogSettings = catalogSettings;
 			_mediaSettings = mediaSettings;
+			_searchSettings = searchSettings;
 			_currencyService = currencyService;
 			_manufacturerService = manufacturerService;
 			_genericAttributeService = genericAttributeService;
@@ -63,9 +67,9 @@ namespace SmartStore.Web.Controllers
 
 			var model = new SearchBoxModel
 			{
-				InstantSearchEnabled = _catalogSettings.ProductSearchAutoCompleteEnabled,
-				ShowProductImagesInInstantSearch = _catalogSettings.ShowProductImagesInSearchAutoComplete,
-				SearchTermMinimumLength = _catalogSettings.ProductSearchTermMinimumLength,
+				InstantSearchEnabled = _searchSettings.InstantSearchEnabled,
+				ShowProductImagesInInstantSearch = _searchSettings.ShowProductImagesInInstantSearch,
+				SearchTermMinimumLength = _searchSettings.InstantSearchTermMinLength,
 				CurrentQuery = currentTerm
 			};
 
@@ -75,24 +79,17 @@ namespace SmartStore.Web.Controllers
 		[HttpPost]
 		public ActionResult InstantSearch(CatalogSearchQuery query)
 		{
-			if (string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _catalogSettings.ProductSearchTermMinimumLength)
+			if (string.IsNullOrWhiteSpace(query.Term) || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
 				return Content(string.Empty);
 
 			// Overwrite search fields
-			var searchFields = new List<string> { "name", "shortdescription", "tagname" };
-			if (_catalogSettings.SearchDescriptions)
-			{
-				searchFields.Add("fulldescription");
-			}
-			if (!_catalogSettings.SuppressSkuSearch)
-			{
-				searchFields.Add("sku");
-			}
+			var searchFields = new List<string> { "name" };
+			searchFields.AddRange(_searchSettings.SearchFields);
 
 			query.Fields = searchFields.ToArray();
 
 			query
-				.Slice(0, Math.Min(16, _catalogSettings.ProductSearchAutoCompleteNumberOfProducts))
+				.Slice(0, Math.Min(16, _searchSettings.InstantSearchNumberOfProducts))
 				.SortBy(ProductSortingEnum.Relevance);
 
 			var result = _catalogSearchService.Search(query);
@@ -100,7 +97,7 @@ namespace SmartStore.Web.Controllers
 			var overviewModels = _catalogHelper.PrepareProductOverviewModels(
 				result.Hits, 
 				false, 
-				_catalogSettings.ShowProductImagesInSearchAutoComplete,
+				_searchSettings.ShowProductImagesInInstantSearch,
 				_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage);
 
 			var model = new SearchResultModel(query)
@@ -125,9 +122,9 @@ namespace SmartStore.Web.Controllers
 		{
 			var model = new SearchResultModel(query);
 
-			if (query.Term == null || query.Term.Length < _catalogSettings.ProductSearchTermMinimumLength)
+			if (query.Term == null || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
 			{
-				model.Error = T("Search.SearchTermMinimumLengthIsNCharacters", _catalogSettings.ProductSearchTermMinimumLength);
+				model.Error = T("Search.SearchTermMinimumLengthIsNCharacters", _searchSettings.InstantSearchTermMinLength);
 				return View(model);
 			}
 			
@@ -173,7 +170,7 @@ namespace SmartStore.Web.Controllers
 				Services.StoreContext.CurrentStore.Id);
 
 			if (command.PageSize <= 0)
-				command.PageSize = _catalogSettings.SearchPageProductsPerPage;
+				command.PageSize = _catalogSettings.DefaultProductListPageSize;
 			if (command.PageNumber <= 0)
 				command.PageNumber = 1;
 
@@ -182,9 +179,9 @@ namespace SmartStore.Web.Controllers
 
 			_catalogHelper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
 			{
-				AllowCustomersToSelectPageSize = _catalogSettings.ProductSearchAllowCustomersToSelectPageSize,
-				PageSize = _catalogSettings.SearchPageProductsPerPage,
-				PageSizeOptions = _catalogSettings.ProductSearchPageSizeOptions
+				AllowCustomersToSelectPageSize = _catalogSettings.ProductsByTagAllowCustomersToSelectPageSize,
+				PageSize = _catalogSettings.DefaultProductListPageSize,
+				PageSizeOptions = _catalogSettings.DefaultPageSizeOptions
 			});
 
 			model.Q = model.Q.EmptyNull().Trim();
@@ -232,39 +229,30 @@ namespace SmartStore.Web.Controllers
 			// only search if query string search keyword is set (used to avoid searching or displaying search term min length error message on /search page load)
 			if (Request.Params["Q"] != null)
 			{
-				if (model.Q.Length < _catalogSettings.ProductSearchTermMinimumLength)
+				if (model.Q.Length < _searchSettings.InstantSearchTermMinLength)
 				{
-					model.Warning = string.Format(T("Search.SearchTermMinimumLengthIsNCharacters"), _catalogSettings.ProductSearchTermMinimumLength);
+					model.Warning = string.Format(T("Search.SearchTermMinimumLengthIsNCharacters"), _searchSettings.InstantSearchTermMinLength);
 				}
 				else
 				{
-					var fields = new List<string> { "name", "manufacturer" };
-					if (!_catalogSettings.SuppressSkuSearch)
-					{
-						fields.Add("sku");
-					}
+					var fields = new List<string> { "name" };
+					fields.AddRange(_searchSettings.SearchFields);
 
-					if (_catalogSettings.SearchDescriptions)
-					{
-						// TODO: (mg) make distinct settings for both SearchInShortDescription & SearchInFullDescription
-						// TODO: (mg) LinqSearch should never search in FullDescription
-						fields.Add("shortdescription");
-						fields.Add("fulldescription");
-					}
-
-					if (true /* TODO: (mg) make setting for "TagSearch" */)
-					{
-						// TODO: (mg) LinqSearch should never search in Tags
-						fields.Add("tagname");
-					}
-
-					var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.Q, true)
+					var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.Q)
 						.OriginatesFrom("Search")
 						.Slice((command.PageNumber - 1) * command.PageSize, command.PageSize)
-						.HasStoreId(Services.StoreContext.CurrentStore.Id)
 						.WithLanguage(Services.WorkContext.WorkingLanguage)
 						.VisibleIndividuallyOnly(true)
 						.SortBy((ProductSortingEnum)command.OrderBy);
+
+					// Visibility
+					searchQuery.VisibleOnly(!QuerySettings.IgnoreAcl ? Services.WorkContext.CurrentCustomer : null);
+
+					// Store
+					if (!QuerySettings.IgnoreMultiStore)
+					{
+						searchQuery.HasStoreId(Services.StoreContext.CurrentStore.Id);
+					}
 
 					if (model.As)
 					{
@@ -327,8 +315,8 @@ namespace SmartStore.Web.Controllers
 			}
 			else
 			{
-				model.Warning = string.Format(T("Search.SearchTermMinimumLengthIsNCharacters"), _catalogSettings.ProductSearchTermMinimumLength);
-				model.Sid = _catalogSettings.SearchDescriptions;
+				model.Warning = string.Format(T("Search.SearchTermMinimumLengthIsNCharacters"), _searchSettings.InstantSearchTermMinLength);
+				model.Sid = _searchSettings.SearchFields.Contains("fulldescription");
 			}
 
 			// TODO: (mc) Temp only

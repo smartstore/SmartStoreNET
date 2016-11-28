@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Web;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Search;
 using SmartStore.Services.Directory;
 
 namespace SmartStore.Services.Search.Modelling
@@ -31,17 +31,20 @@ namespace SmartStore.Services.Search.Modelling
 	{
 		private readonly HttpContextBase _httpContext;
 		private readonly CatalogSettings _catalogSettings;
+		private readonly SearchSettings _searchSettings;
 		private readonly ICurrencyService _currencyService;
 		private readonly ICommonServices _services;
 
 		public CatalogSearchQueryFactory(
 			HttpContextBase httpContext,
 			CatalogSettings catalogSettings,
+			SearchSettings searchSettings,
 			ICurrencyService currencyService,
 			ICommonServices services)
 		{
 			_httpContext = httpContext;
 			_catalogSettings = catalogSettings;
+			_searchSettings = searchSettings;
 			_currencyService = currencyService;
 			_services = services;
 
@@ -66,29 +69,13 @@ namespace SmartStore.Services.Search.Modelling
 
 			var term = GetValueFor<string>("q");
 
-			var fields = new List<string> { "name", "manufacturer" };
-			if (!_catalogSettings.SuppressSkuSearch)
-			{
-				fields.Add("sku");
-			}
+			var fields = new List<string> { "name" };
+			fields.AddRange(_searchSettings.SearchFields);
 
-			if (_catalogSettings.SearchDescriptions)
-			{
-				// TODO: (mg) make distinct settings for both SearchInShortDescription & SearchInFullDescription
-				// TODO: (mg) LinqSearch should never search in FullDescription
-				fields.Add("shortdescription");
-				fields.Add("fulldescription");
-			}
-
-			if (true /* TODO: (mg) make setting for "TagSearch" */)
-			{
-				// TODO: (mg) LinqSearch should never search in Tags
-				fields.Add("tagname");
-			}
-
-			var query = new CatalogSearchQuery(fields.ToArray(), term, true)
+			var query = new CatalogSearchQuery(fields.ToArray(), term)
 				.OriginatesFrom(origin)
-				.WithLanguage(_services.WorkContext.WorkingLanguage);
+				.WithLanguage(_services.WorkContext.WorkingLanguage)
+				.VisibleIndividuallyOnly(true);
 
 			// Visibility
 			query.VisibleOnly(!QuerySettings.IgnoreAcl ? _services.WorkContext.CurrentCustomer : null);
@@ -119,9 +106,8 @@ namespace SmartStore.Services.Search.Modelling
 
 			if (size == null)
 			{
-				// TODO: (mg) Unify setting: remove ProductsByTagPageSize (rename to DefaultProductListPageSize)
 				// TODO: (mc) In category pages, get current category default page size
-				size = _catalogSettings.SearchPageProductsPerPage;
+				size = _catalogSettings.DefaultProductListPageSize;
 			}
 
 			query.Slice((index - 1) * size.Value, size.Value);

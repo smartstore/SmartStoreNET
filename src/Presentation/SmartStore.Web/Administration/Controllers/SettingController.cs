@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Settings;
+using SmartStore.Admin.Validators.Settings;
+using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
@@ -22,6 +24,8 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using SmartStore.Core.Search;
+using SmartStore.Core.Search.Filter;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
 using SmartStore.Services.Common;
@@ -1574,6 +1578,108 @@ namespace SmartStore.Admin.Controllers
 			NotifySuccess(T("Admin.Configuration.Updated"));
 
 			return RedirectToAction("DataExchange");
+		}
+
+		public ActionResult Search()
+		{
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+				return AccessDeniedView();
+
+			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var settings = Services.Settings.LoadSetting<SearchSettings>(storeScope);
+
+			var model = new SearchSettingsModel();
+			model.SearchFields = settings.SearchFields;
+			model.InstantSearchEnabled = settings.InstantSearchEnabled;
+			model.InstantSearchNumberOfProducts = settings.InstantSearchNumberOfProducts;
+			model.InstantSearchTermMinLength = settings.InstantSearchTermMinLength;
+			model.ShowProductImagesInInstantSearch = settings.ShowProductImagesInInstantSearch;
+
+			model.GlobalFilters = XmlHelper.Deserialize<List<SearchFilterDescriptor>>(settings.GlobalFilters);
+
+			// set default global filters
+			if (model.GlobalFilters == null || !model.GlobalFilters.Any())
+			{
+				model.GlobalFilters = new List<SearchFilterDescriptor>
+				{
+					new SearchFilterDescriptor { Enabled = true, DisplayOrder = 1, FieldName = "manufacturer" },
+					new SearchFilterDescriptor { Enabled = true, DisplayOrder = 2, FieldName = "rate" },
+					new SearchFilterDescriptor { Enabled = true, DisplayOrder = 3, FieldName = "price" },
+					new SearchFilterDescriptor { Enabled = true, DisplayOrder = 4, FieldName = "availability" }
+				};
+			}
+
+			// set friendly names for global filters
+			foreach (var filter in model.GlobalFilters)
+			{
+				switch (filter.FieldName)
+				{
+					case "manufacturer":
+						filter.FriendlyName = T("Admin.Catalog.Manufacturers");
+						break;
+					case "rate":
+						filter.FriendlyName = T("Admin.Catalog.ProductReviews");
+						break;
+					case "price":
+						filter.FriendlyName = T("Admin.Catalog.Products.Price");
+						break;
+					case "availability":
+						filter.FriendlyName = T("Products.Availability");
+						break;
+				}
+			}
+
+			model.AvailableSearchFields = new List<SelectListItem>
+			{
+				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ShortDescription"), Value = "shortdescription" },
+				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.FullDescription"), Value = "fulldescription" },
+				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ProductTags"), Value = "tagname" },
+				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.Sku"), Value = "sku" },
+				new SelectListItem { Text = T("Admin.Catalog.Manufacturers"), Value = "manufacturer" },
+				new SelectListItem { Text = T("Admin.Catalog.Categories"), Value = "category" }
+			};
+
+			StoreDependingSettings.GetOverrideKeys(settings, model, storeScope, Services.Settings);
+
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult Search(SearchSettingsModel model, FormCollection form)
+		{
+			if (!Services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
+				return AccessDeniedView();
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
+			var settings = Services.Settings.LoadSetting<SearchSettings>(storeScope);
+
+			var validator = new SearchSettingValidator(Services.Localization, x =>
+			{
+				return storeScope == 0 || storeDependingSettingHelper.IsOverrideChecked(settings, x, form);
+			});
+
+			validator.Validate(model, ModelState);
+
+			if (!ModelState.IsValid)
+				return Search();
+
+			ModelState.Clear();
+
+			settings.SearchFields = model.SearchFields;
+			settings.InstantSearchEnabled = model.InstantSearchEnabled;
+			settings.InstantSearchNumberOfProducts = model.InstantSearchNumberOfProducts;
+			settings.InstantSearchTermMinLength = model.InstantSearchTermMinLength;
+			settings.ShowProductImagesInInstantSearch = model.ShowProductImagesInInstantSearch;
+			settings.GlobalFilters = XmlHelper.Serialize(model.GlobalFilters);
+
+			StoreDependingSettings.UpdateSettings(settings, form, storeScope, Services.Settings);
+
+			_customerActivityService.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
+
+			NotifySuccess(T("Admin.Configuration.Updated"));
+
+			return RedirectToAction("Search");
 		}
 
 

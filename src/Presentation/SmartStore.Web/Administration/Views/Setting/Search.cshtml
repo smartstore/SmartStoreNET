@@ -1,0 +1,127 @@
+﻿@model SearchSettingsModel
+@{
+    ViewBag.Title = T("Search.Title").Text;
+}
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+            <i class="fa fa-search"></i>
+            @T("Search.Title")
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+        </div>
+    </div>
+    
+	@Html.Action("StoreScopeConfiguration", "Setting")
+	@Html.ValidationSummary(false)
+
+	<table id="SearchSettingsTable" class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.SearchFields)
+			</td>
+			<td class="adminData">
+				@Html.ListBoxFor(x => x.SearchFields,
+					 new MultiSelectList(Model.AvailableSearchFields, "Value", "Text"),
+					 new { multiple = "multiple", @class = "control-xlarge" })
+				@Html.ValidationMessageFor(x => x.SearchFields)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Search.InstantSearch")</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.InstantSearchEnabled)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.InstantSearchEnabled)
+				@Html.ValidationMessageFor(model => model.InstantSearchEnabled)
+			</td>
+		</tr>
+		<tr class="instant-search-setting">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowProductImagesInInstantSearch)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowProductImagesInInstantSearch)
+				@Html.ValidationMessageFor(model => model.ShowProductImagesInInstantSearch)
+			</td>
+		</tr>
+		<tr class="instant-search-setting">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.InstantSearchNumberOfProducts)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.InstantSearchNumberOfProducts, null, new { small = true })
+				@Html.ValidationMessageFor(model => model.InstantSearchNumberOfProducts)
+			</td>
+		</tr>
+		<tr class="instant-search-setting">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.InstantSearchTermMinLength)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.InstantSearchTermMinLength, null, new { small = true })
+				@Html.ValidationMessageFor(model => model.InstantSearchTermMinLength)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<div class="admin-config-group">
+					<div class="title">@T("Search.GlobalFilters")</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+
+				<table class="table admin-table" style="width: 560px;">
+					<thead>
+						<tr>
+							<th>@T("Search.FilterBy")</th>
+							<th class="ac">@T("Common.Enabled")</th>
+							<th>@T("Common.DisplayOrder")</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var filter in Model.GlobalFilters.OrderByDescending(x => x.Enabled).ThenBy(x => x.DisplayOrder))
+						{
+							var filterIndex = Model.GlobalFilters.IndexOf(filter);
+							<tr>
+								<td>
+									@(filter.FriendlyName ?? filter.FieldName)
+									@Html.HiddenFor(model => model.GlobalFilters[filterIndex].FieldName)
+								</td>
+								<td class="ac">
+									@Html.SettingEditorFor(model => model.GlobalFilters[filterIndex].Enabled)
+								</td>
+								<td>
+									@Html.SettingEditorFor(model => model.GlobalFilters[filterIndex].DisplayOrder, null, new { small = true })
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+
+			</td>
+		</tr>
+	</table>
+}
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		// show/hide instant search settings
+		$('#@(Html.FieldIdFor(x => x.InstantSearchEnabled))').change(function () {
+			$('#SearchSettingsTable').find('.instant-search-setting').toggle($(this).is(':checked'));
+		}).trigger('change');
+
+	});
+</script>

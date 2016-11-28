@@ -1,5 +1,20 @@
-@model System.Double
 @using Telerik.Web.Mvc.UI
+
+@functions{
+	private double? Value
+	{
+		get
+		{
+			double? value = null;
+			if (ViewData.Model != null)
+			{
+				value = Convert.ToDouble(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture);
+			}
+			return value;
+		}
+	}
+}
+
 
 @{
     string additionalClass = string.Empty;
@@ -9,9 +24,10 @@
 }
 
 @(Html.Telerik().NumericTextBox()
-        .Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
-        .Value(Model)
-        .HtmlAttributes(new { @class = additionalClass })
-        .DecimalDigits(4)   //always display 4 digits
+		.Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
+		.EmptyMessage(T("Common.EnterValue"))
+		.Value(Value)
+		.HtmlAttributes(new { @class = additionalClass })
+		.DecimalDigits(4)   //always display 4 digits
 )
 

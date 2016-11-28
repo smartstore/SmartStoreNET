@@ -333,6 +333,41 @@ namespace SmartStore.Web.Framework.Theming
             }
         }
 
+		protected virtual IEnumerable<string> ExpandLocationFormats(IEnumerable<string> formats, ViewType viewType)
+		{
+			// Inserts special location formats for layouts and partials
+			// Appends razor view file extensions to location formats
+			Guard.NotNull(formats, nameof(formats));
+
+			foreach (var format in formats)
+			{
+				if (viewType == ViewType.Layout)
+				{
+					yield return format + "Layouts/{0}.cshtml";
+				}
+				else if (viewType == ViewType.Partial)
+				{
+					yield return format + "Partials/{0}.cshtml";
+				}
+
+				yield return format + "{0}.cshtml";
+
+				if (EnableVbViews)
+				{
+					if (viewType == ViewType.Layout)
+					{
+						yield return format + "Layouts/{0}.vbhtml";
+					}
+					else if (viewType == ViewType.Partial)
+					{
+						yield return format + "Partials/{0}.vbhtml";
+					}
+
+					yield return format + "{0}.vbhtml";
+				}
+			}
+		}
+
 		protected virtual List<ViewLocation> GetViewLocations(string[] viewLocationFormats, string[] areaViewLocationFormats)
 		{
 			List<ViewLocation> allLocations = new List<ViewLocation>();
@@ -373,6 +408,13 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			var theme = EngineContext.Current.Resolve<IThemeContext>().CurrentTheme;
 			return theme.ThemeName;
+		}
+
+		public enum ViewType
+		{
+			View,
+			Layout,
+			Partial
 		}
 	}
 

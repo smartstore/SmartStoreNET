@@ -10,23 +10,23 @@
 
 <div id="content-left" class="col-md-3 hidden-xs-down"> 
     @if (IsSectionDefined("left"))
-    {
+	{
         @RenderSection("left")
-    }
-    else
-    {
+	}
+	else
+	{
         @Html.Widget("left_side_column_before")
 
-        @Html.Action("CategoryNavigation", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" })
+        { Html.RenderAction("CategoryNavigation", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" }); }
         @Html.Widget("left_side_column_after_category_navigation")
 
-        @Html.Action("ManufacturerNavigation", "Catalog", new { currentManufacturerId = this.CurrentManufacturerId, area = "" })
+        { Html.RenderAction("ManufacturerNavigation", "Catalog", new { currentManufacturerId = this.CurrentManufacturerId, area = "" }); }
         @Html.Widget("left_side_column_after_manufacturer_navigation")
-        
-        @Html.Action("RecentlyViewedProductsBlock", "Catalog", new { area = "" })
+
+        { Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
         @Html.Widget("left_side_column_after_recentlyviewed")
 
-        @Html.Action("PollBlock", "Poll", new { systemKeyword = "RightColumnPoll", area = "" })
+        { Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "RightColumnPoll", area = "" }); }
         @Html.Widget("left_side_column_after_poll")
 
         @Html.Widget("left_side_column_after")

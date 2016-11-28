@@ -192,7 +192,8 @@ namespace SmartStore.Web.Framework.UI
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
 			html.AppendCustomHeadParts(parts);
             return MvcHtmlString.Create(pageAssetsBuilder.GenerateCustomHead());
-        }
+		}
+
         #endregion
 
 		#region CanonicalUrlParts

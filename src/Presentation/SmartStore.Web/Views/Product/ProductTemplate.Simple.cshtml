@@ -12,29 +12,29 @@
 
 
 @{
-    Layout = "_ColumnsOne";
+	Layout = "_ColumnsOne";
 
-    //title, meta
-    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
-    Html.AddMetaDescriptionParts(Model.MetaDescription);
-    Html.AddMetaKeywordParts(Model.MetaKeywords);
+	//title, meta
+	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+	Html.AddMetaDescriptionParts(Model.MetaDescription);
+	Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-    Html.AddScriptParts("~/Scripts/public.product-detail.js");
+	Html.AddScriptParts("~/Scripts/public.product-detail.js");
 
-    int pictureSize = EngineContext.Current.Resolve<MediaSettings>().ProductDetailsPictureSize;
+	int pictureSize = EngineContext.Current.Resolve<MediaSettings>().ProductDetailsPictureSize;
 
-    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
-    if (canonicalUrlsEnabled)
-    {
-        var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-        Html.AddCanonicalUrlParts(productUrl);
-    }
+	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+	if (canonicalUrlsEnabled)
+	{
+		var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+		Html.AddCanonicalUrlParts(productUrl);
+	}
 }
 
 <div class="page product-details-page">
 
     <!--product breadcrumb-->
-    @Html.Action("ProductBreadcrumb", "Catalog", new { productId = Model.Id })
+    @{ Html.RenderAction("ProductBreadcrumb", "Catalog", new { productId = Model.Id }); }
 
     <div id="TotalPriceUpdateContainer" class="page-body update-container" data-referto="#ProductAttributes, #AddToCart, #ProductBundleOverview" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
         @Html.Widget("productdetails_top")
@@ -190,9 +190,9 @@
                             }
 
                             <!--product reviews-->
-                            @if (Model.DisplayProductReviews) { 
-                                @Html.Action("ReviewOverview", new { id = Model.Id })
-                            }
+                            @if (Model.DisplayProductReviews) {
+								Html.RenderAction("ReviewOverview", new { id = Model.Id });
+							}
                         
                             <!-- product attributes or bundle items -->
                             @{
@@ -242,9 +242,9 @@
                             <!-- addd to cart -->
                             <div id="AddToCart" class="@(Model.ProductType == ProductType.BundledProduct ? "bundled-product" : "")">
                                 @{
-                                var dataDictAddToCart = new ViewDataDictionary();
-                                dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
-                                @Html.Partial("_AddToCart", Model, dataDictAddToCart)
+									var dataDictAddToCart = new ViewDataDictionary();
+									dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
+									Html.RenderPartial("_AddToCart", Model, dataDictAddToCart);
                                 }
                             </div>
 
@@ -252,39 +252,45 @@
                         <div class="quick-links line">
                             @if (Model.HasSampleDownload)
                             {
-                            <div>
-                                <a href="@Url.Action("Sample", "Download", new { id = Model.Id })">
-                                    <i class="fa fa-download"></i>
-                                    @T("Products.DownloadSample")
-                                </a>
-                            </div>
+								<div>
+									<a href="@Url.Action("Sample", "Download", new { id = Model.Id })">
+										<i class="fa fa-download"></i>
+										@T("Products.DownloadSample")
+									</a>
+								</div>
                             }
-                            @Html.Action("EmailAFriendButton", new { id = Model.Id })
-                            @Html.Action("AskQuestionButton", new { id = Model.Id })
-                            @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
+
+							@{
+								Html.RenderAction("EmailAFriendButton", new { id = Model.Id });
+								Html.RenderAction("AskQuestionButton", new { id = Model.Id });
+								Html.RenderAction("CompareProductsButton", "Catalog", new { productId = Model.Id });
+							}
+
                             @if (!Model.AddToCart.DisableWishlistButton)
                             {
-                            <div>
-                                <a data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
-                                    href="#"
-                                    class="ajax-cart-link" 
-							        rel="nofollow"
-                                    data-form-selector="#product-details-form"
-                                    data-type="wishlist"
-                                    data-action="add">
-                                    <i class="fa fa-fw fa-heart"></i>
-                                    @T("ShoppingCart.AddToWishlist")
-                                </a>
-                            </div>
+								<div>
+									<a data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+										href="#"
+										class="ajax-cart-link" 
+										rel="nofollow"
+										data-form-selector="#product-details-form"
+										data-type="wishlist"
+										data-action="add">
+										<i class="fa fa-fw fa-heart"></i>
+										@T("ShoppingCart.AddToWishlist")
+									</a>
+								</div>
                             }
                         </div>
 
-                        <!-- social share -->
-                        @Html.Action("ShareButton")
+						@{
+							<!-- social share -->
+							Html.RenderAction("ShareButton");
 
-                        <!-- tier prices -->
-                        @Html.Action("ProductTierPrices", new { productId = Model.Id })
-                
+							<!-- tier prices -->
+							Html.RenderAction("ProductTierPrices", new { productId = Model.Id });
+						}
+        
                         </div>
                         
                         @Html.Widget("productdetails_overview_bottom") 

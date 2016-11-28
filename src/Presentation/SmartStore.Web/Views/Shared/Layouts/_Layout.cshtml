@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "_Document";
+	Layout = "_Document";
 }
 
 @Html.Widget("body_start_html_tag_after")
@@ -10,33 +10,44 @@
     <div class="page-main canvas-slidable">
 
         @if (IsSectionDefined("header"))
-        {
+		{
             @RenderSection("header")
-        }
-        else
-        {
+		}
+		else
+		{
             <header>
                 <div class="menubar-section">
                     <div class="container menubar-container">
-                        @Html.Action("Menu", "Common", new { area = "" })
+                        @{ 
+							Html.RenderAction("Menu", "Common", new { area = "" });
+						}
                     </div>
                 </div>
                 <div class="shopbar-section">
                     <div class="container shopbar-container">
-                        @Html.Action("ShopBar", "Common", new { area = "" })
+                        @{ 
+							Html.RenderAction("ShopBar", "Common", new { area = "" });
+						}
                     </div>
                 </div>
                 <div class="megamenu-section">
                     <nav class='navbar @(GetThemeVariable<bool>("InverseNavbar") ? "navbar-dark bg-inverse" : "navbar-light bg-faded")'>
                         <div class="container megamenu-container">
-                            @Html.Action("MegaMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" })
-                        </div>
-                    </nav>
-                </div>
-            </header>
-        }
+                            @{ 
+								Html.RenderAction("MegaMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
+							}
+						</div>
 
-        @Html.Action("JavaScriptDisabledWarning", "Common", new { area = "" })
+					</nav>
+
+				</div>
+
+			</header>
+								}
+
+        @{ 
+			Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" }); 
+		}
 
         @Html.Widget("content_before")
 
@@ -52,22 +63,27 @@
         </div>
 
         @if (IsSectionDefined("footer"))
-        {
+		{
             @RenderSection("footer")
-        }
-        else
-        {
+		}
+		else
+		{
             <div id="footer-wrapper">
                 <footer class="container">
-                    @Html.Action("Footer", "Common", new { area = "" })
-                </footer>
-            </div>
+                    @{ 
+						Html.RenderAction("Footer", "Common", new { area = "" });
+					}
+				</footer>
+
+			</div>
         }
     </div>
 
     <aside id="offcanvas-cart" class="offcanvas offcanvas-push offcanvas-right">
         <div class="offcanvas-content">
-            @Html.Action("OffCanvasCart", "ShoppingCart")
+            @{ 
+				Html.RenderAction("OffCanvasCart", "ShoppingCart");
+            }
         </div>
     </aside>
 

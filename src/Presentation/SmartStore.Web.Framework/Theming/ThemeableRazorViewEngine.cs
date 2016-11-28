@@ -21,7 +21,7 @@ namespace SmartStore.Web.Framework.Theming
 			};
 			var areaLocationFormats = areaBasePaths.SelectMany(x => areaFormats.Select(f => x + f));
 
-			AreaViewLocationFormats = ExpandLocationFormats(areaLocationFormats, ViewType.View).ToArray();
+			AreaViewLocationFormats = ExpandLocationFormats(areaLocationFormats, ViewType.Layout).ToArray();
 			AreaMasterLocationFormats = ExpandLocationFormats(areaLocationFormats, ViewType.Layout).ToArray();
 			AreaPartialViewLocationFormats = ExpandLocationFormats(areaLocationFormats, ViewType.Partial).ToArray();
 
@@ -34,7 +34,7 @@ namespace SmartStore.Web.Framework.Theming
 				"~/Views/Shared/{0}"
 			};
 
-            ViewLocationFormats = ExpandLocationFormats(locationFormats, ViewType.View).ToArray();
+            ViewLocationFormats = ExpandLocationFormats(locationFormats, ViewType.Layout).ToArray();
             MasterLocationFormats = ExpandLocationFormats(locationFormats, ViewType.Layout).ToArray();
 			PartialViewLocationFormats = ExpandLocationFormats(locationFormats, ViewType.Partial).ToArray();
 

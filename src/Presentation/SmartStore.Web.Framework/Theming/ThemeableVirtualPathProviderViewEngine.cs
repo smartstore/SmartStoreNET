@@ -55,12 +55,12 @@ namespace SmartStore.Web.Framework.Theming
 				string viewPath = this.GetPath(controllerContext, ViewLocationFormats, AreaViewLocationFormats, "ViewLocationFormats", viewName, controllerName, theme, "View", useCache, out viewLocationsSearched);
 				string masterPath = this.GetPath(controllerContext, MasterLocationFormats, AreaMasterLocationFormats, "MasterLocationFormats", masterName, controllerName, theme, "Master", useCache, out masterLocationsSearched);
 
-				if (String.IsNullOrEmpty(viewPath) || (String.IsNullOrEmpty(masterPath) && !String.IsNullOrEmpty(masterName)))
+				if (!string.IsNullOrEmpty(viewPath) && (!string.IsNullOrEmpty(masterPath) || string.IsNullOrEmpty(masterName)))
 				{
-					return new ViewEngineResult(viewLocationsSearched.Union(masterLocationsSearched));
+					return new ViewEngineResult(CreateView(controllerContext, viewPath, masterPath), this);
 				}
 
-				return new ViewEngineResult(CreateView(controllerContext, viewPath, masterPath), this);
+				return new ViewEngineResult(viewLocationsSearched.Union(masterLocationsSearched));
 			}
 		}
 

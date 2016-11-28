@@ -9,12 +9,16 @@
 
 	<!-- LOGO -->
 	<div class="shopbar-col shop-logo">
-		@Html.Action("Logo", "Common", new { area = "" })
+		@{ 
+			Html.RenderAction("Logo", "Common", new { area = "" });
+		}
 	</div>
 
 	<!-- SEARCH -->
 	<div class="shopbar-col shopbar-col--stretch shopbar-search">
-		@Html.Action("SearchBox", "Search")
+		@{ 
+			Html.RenderAction("SearchBox", "Search"); 
+		}
 	</div>
 	<div class="shopbar-col shopbar-col--stretch hidden-lg-up"><!-- Fluid spacer --></div>
 

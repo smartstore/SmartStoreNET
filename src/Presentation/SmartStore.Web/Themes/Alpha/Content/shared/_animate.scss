@@ -1,0 +1,32 @@
+﻿// Fade Enter
+$use-fadeIn 			:	true;
+$use-fadeInUp 			:	true;
+$use-fadeInDown 		:	true;
+$use-fadeInLeft 		:	true;
+$use-fadeInRight 		:	true;
+
+
+// Fade Exit
+$use-fadeOut			:   true;
+$use-fadeOutUp			:	true;
+$use-fadeOutDown		:	true;
+$use-fadeOutLeft		:	true;
+$use-fadeOutRight		:	true;
+
+
+// Bounce Enter
+$use-bounceIn			:	true;
+$use-bounceInUp			: 	true;
+$use-bounceInDown 		: 	true;
+$use-bounceInLeft 		: 	true;
+$use-bounceInRight 		: 	true;
+
+
+// Bounce Exit
+$use-bounceOut			:	true;
+$use-bounceOutUp		: 	true;
+$use-bounceOutDown 		: 	true;
+$use-bounceOutLeft 		: 	true;
+$use-bounceOutRight 	: 	true;
+
+@import "../animate/_animate.scss";

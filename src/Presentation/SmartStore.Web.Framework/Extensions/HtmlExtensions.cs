@@ -23,7 +23,6 @@ using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework
 {
-
 	public enum InputEditorType
     {   TextBox,
         Password,

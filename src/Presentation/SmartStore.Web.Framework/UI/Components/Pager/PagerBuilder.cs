@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core;
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public class PagerBuilder : NavigatableComponentBuilder<Pager, PagerBuilder>
     {
 
@@ -123,7 +119,5 @@ namespace SmartStore.Web.Framework.UI
             base.Component.ItemTitleFormatString = value;
             return this;
         }
-
     }
-
 }

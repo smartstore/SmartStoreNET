@@ -90,7 +90,13 @@
 
 			@if (Model.TotalProductsCount > 0)
 			{
-				@Html.SmartStore().Pager(Model.SearchResult.Hits).Name("pagination-bottom").QueryParam("i")
+				Html.SmartStore()
+					.Pager(Model.SearchResult.Hits)
+					.Name("pagination-bottom")
+					.QueryParam("i")
+					.Size(PagerSize.Mini)
+					.MaxPagesToDisplay(4)
+					.Render();
 			}
         </div>
     </div>

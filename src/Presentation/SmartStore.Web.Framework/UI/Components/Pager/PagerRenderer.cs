@@ -211,6 +211,10 @@ namespace SmartStore.Web.Framework.UI
 			{
 				ulAttrs.AppendCssClass("pagination-sm");
 			}
+			else if (pager.Size == PagerSize.Mini)
+			{
+				ulAttrs.AppendCssClass("pagination-xs");
+			}
 
 			writer.AddAttributes(ulAttrs);
 			writer.RenderBeginTag("ul");

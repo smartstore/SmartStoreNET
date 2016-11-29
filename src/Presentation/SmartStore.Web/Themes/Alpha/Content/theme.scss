@@ -112,6 +112,19 @@ body {
     background: $body-bg;
 } 
 
+.pagination-xs {
+    .page-link {
+        line-height: 1.4;
+        font-size: $font-size-xs;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .shrinked .page-link {
+        padding-left: 0.3rem;
+        padding-right: 0.3rem;
+    }
+}
+
 .page-title {
     margin-bottom: 1.5rem;
 }

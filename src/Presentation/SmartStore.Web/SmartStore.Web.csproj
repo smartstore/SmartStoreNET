@@ -2101,6 +2101,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Themes\Alpha\Content\shared\select2\mixins\" />
+    <Folder Include="Views\Shared\Components\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">

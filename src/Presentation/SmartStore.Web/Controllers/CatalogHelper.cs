@@ -1345,6 +1345,15 @@ namespace SmartStore.Web.Controllers
 							#endregion
 						}
 
+						if (priceModel.ShowDiscountSign && priceModel.HasDiscount)
+						{
+							model.Badges.Add(new ProductOverviewModel.ProductBadgeModel
+							{
+								Label = "%",
+								Style = BadgeStyle.Danger
+							});
+						}
+
 						model.ProductPrice = priceModel;
 						model.ProductPrice.CallForPrice = product.CallForPrice;
 
@@ -1482,6 +1491,14 @@ namespace SmartStore.Web.Controllers
 					if (_catalogSettings.LabelAsNewForMaxDays.HasValue)
 					{
 						model.IsNew = ((DateTime.UtcNow - product.CreatedOnUtc).Days <= _catalogSettings.LabelAsNewForMaxDays.Value);
+						if ((DateTime.UtcNow - product.CreatedOnUtc).Days <= _catalogSettings.LabelAsNewForMaxDays.Value)
+						{
+							model.Badges.Add(new ProductOverviewModel.ProductBadgeModel
+							{
+								Label = T("Common.New"),
+								Style = BadgeStyle.Success
+							});
+						}
 					}
 
 					models.Add(model);

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Models.Catalog
 {
@@ -14,6 +15,7 @@ namespace SmartStore.Web.Models.Catalog
             Manufacturers = new List<ManufacturerOverviewModel>();
             PagingFilteringContext = new CatalogPagingFilteringModel();
             ColorAttributes = new List<ColorAttributeModel>();
+			Badges = new List<ProductBadgeModel>();
 			Weight = "";
 			TransportSurcharge = "";
         }
@@ -54,7 +56,7 @@ namespace SmartStore.Web.Models.Catalog
 		/// </summary>
 		public int MinPriceProductId { get; set; }
         public bool CompareEnabled { get; set; }
-        public bool IsNew { get; set; }
+        public bool IsNew { get; set; } // TODO: (mc) Remove later in favor of "Badges"
 		public bool HideBuyButtonInLists { get; set; }
 
         //price
@@ -66,7 +68,16 @@ namespace SmartStore.Web.Models.Catalog
         // color Attributes
         public IList<ColorAttributeModel> ColorAttributes { get; set; }
 
+		public IList<ProductBadgeModel> Badges { get; set; }
+
 		#region Nested Classes
+
+		public partial class ProductBadgeModel : ModelBase
+		{
+			public string Label { get; set; }
+			public BadgeStyle Style { get; set; }
+			public int DisplayOrder { get; set; }
+		}
 
         public partial class ProductPriceModel : ModelBase
         {

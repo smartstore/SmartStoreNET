@@ -172,6 +172,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Validation.ValueGreaterThan",
 				"The value must be greater than {0}.",
 				"Der Wert muss größer als {0} sein.");
+
+			builder.AddOrUpdate("Common.AdditionalShippingSurcharge",
+				"zzgl. <b>{0}</b> zusätzlicher Versandgebühr",
+				"Plus <b>{0}</b> shipping surcharge");
 		}
 	}
 }

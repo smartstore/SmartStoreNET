@@ -16,13 +16,13 @@
 
 	int firstItemIndex = 0;
 	int lastItemIndex = 0;
+	var suggestions = new string[0];
 	if (Model.TotalProductsCount > 0)
 	{
 		firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
 		lastItemIndex = Model.SearchResult.Hits.LastItemIndex;
+		suggestions = Model.SearchResult.SpellCheckerSuggestions;
 	}
-
-	var suggestions = Model.SearchResult.SpellCheckerSuggestions;
 }
 
 <div class="page search-page">
@@ -78,12 +78,14 @@
         <div class="search-results">
             @if (Model.TotalProductsCount > 0)
             {
-                <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 product-grid">
+                <div class="card-deck card-cols-xs-2 card-cols-md-2 card-cols-lg-3 card-cols-xl-4 product-grid no-space artlist">
                     @foreach (var product in Model.TopProducts)
-                    {
-                        <article class="card card-block card-shadow text-xs-center">
+					{
+						Html.RenderPartial("Article.Box", product);
+						<div class="art-rowdiv"></div>
+						@*<article class="card text-xs-center" style="border-color: transparent; margin-bottom: 2.5rem">
                             @Html.Partial("_ProductBox", product)
-                        </article>
+                        </article>*@
                     }
                 </div>
             }
@@ -94,7 +96,7 @@
 					.Pager(Model.SearchResult.Hits)
 					.Name("pagination-bottom")
 					.QueryParam("i")
-					.Size(PagerSize.Mini)
+					.Size(PagerSize.Medium)
 					.MaxPagesToDisplay(4)
 					.Render();
 			}

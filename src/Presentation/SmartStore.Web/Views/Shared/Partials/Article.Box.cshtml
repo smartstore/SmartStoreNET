@@ -1,0 +1,81 @@
+﻿@model ProductOverviewModel
+
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
+	var picture = Model.DefaultPictureModel;
+}
+
+<article class="card art" data-id="@Model.Id">
+	<div class="art-picture-block">
+		@* TODO: (mc) Read max picture size from product list and set height per partial *@
+		@if (picture.Title.HasValue())
+		{
+			<a class="art-picture" href="@artDetailUrl" title="@picture.Title">
+				<img src="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+			</a>
+		}
+	</div>
+
+	@if (Model.Badges.Any())
+	{
+		<div class="art-badges">
+			@foreach (var badge in Model.Badges.OrderBy(x => x.DisplayOrder))
+			{
+				@* TODO: (mc) Move BS4 label/tag class definitions to art-badge.art-badge-[style] (?)  *@
+				<span class="label label-@badge.Style.ToString().ToLowerInvariant() art-badge">@Html.Raw(badge.Label)</span>
+			}
+			<span class="label label-warning art-badge">Neu</span>
+		</div>
+	}
+
+	<div class="art-info-block">
+		<h4 class="art-name">
+			<a href="@artDetailUrl" title="@Model.Name">
+				<span>@Model.Name</span>
+			</a>
+		</h4>
+
+		<div class="art-description" title="@Model.ShortDescription">
+			@* TODO: (mc) Only render description block when merchant wishes so and only when at least one description is specified *@
+			@Html.Raw(Model.ShortDescription)
+		</div>
+
+		@if (Model.ShowDeliveryTimes)
+		{
+			@* TODO: (mc) Put in own partial *@
+			<div class="art-delivery-info">
+				@if (Model.IsShipEnabled && Model.DeliveryTimeName.HasValue() && Model.DeliveryTimeHexValue.HasValue())
+				{
+					var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailablity;
+					<span class="delivery-time" title="@T("Products.DeliveryTime"): @statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
+						<i class="fa fa-circle delivery-time-status"></i>
+						@statusLabel
+					</span>
+				}
+			</div>
+		}
+
+		<div class="art-price-block">
+			<span class="art-price@(Model.ProductPrice.OldPrice.HasValue() ? " art-price--offer" : "")">@Model.ProductPrice.Price</span>
+			@if (Model.ProductPrice.OldPrice.HasValue())
+			{
+				<span class="art-oldprice">@Model.ProductPrice.OldPrice</span>
+			}
+			@if (Model.TransportSurcharge.HasValue())
+			{
+				<div class="art-shipsurcharge">
+					@Html.Raw(Model.TransportSurcharge)
+				</div>
+			}
+			@if (Model.DisplayBasePrice)
+			{
+				<div class="art-pangv" @Html.Attr("title", Model.BasePriceInfo, Model.BasePriceInfo.HasValue())>
+					@Html.Raw(Model.BasePriceInfo ?? "&nbsp;")
+				</div>
+			}
+		</div>
+	</div>
+</article>
+

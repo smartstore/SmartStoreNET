@@ -466,9 +466,13 @@
   <ItemGroup>
     <Content Include="404.html" />
     <Content Include="500.html" />
-    <Content Include="App_Data\Localization\App\de\all.smres.xml" />
+    <Content Include="App_Data\Localization\App\de\all.smres.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="App_Data\Localization\App\de\head.txt" />
-    <Content Include="App_Data\Localization\App\en\all.smres.xml" />
+    <Content Include="App_Data\Localization\App\en\all.smres.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="App_Data\Localization\App\en\head.txt" />
     <Content Include="App_Data\Localization\Installation\installation.de.xml" />
     <Content Include="App_Data\Localization\Installation\installation.en.xml">
@@ -2092,6 +2096,8 @@
     <Content Include="Views\Search\InstantSearch.HitGroup.cshtml" />
     <Content Include="Views\Search\InstantSearch.TopProducts.cshtml" />
     <Content Include="Views\Search\Search2.cshtml" />
+    <Content Include="Themes\Alpha\Content\_artlist.scss" />
+    <Content Include="Views\Shared\Partials\Article.Box.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

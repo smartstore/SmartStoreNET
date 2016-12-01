@@ -57,6 +57,7 @@
 * Filter shows wrong number of products if "Include products from subcategories" is activated
 * Guest user cannot be deleted if he has a private message
 * #1029 Biz-Importer: Imports fixed tax rates as zero percentage
+* #1055 Checkout: Localized shipping method names are not displayed if shipping by total is activated
 
 ## SmartStore.NET 2.6
 

@@ -2097,7 +2097,8 @@
     <Content Include="Views\Search\InstantSearch.TopProducts.cshtml" />
     <Content Include="Views\Search\Search2.cshtml" />
     <Content Include="Themes\Alpha\Content\_artlist.scss" />
-    <Content Include="Views\Shared\Partials\Article.Box.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.Box.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

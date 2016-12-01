@@ -78,16 +78,7 @@
         <div class="search-results">
             @if (Model.TotalProductsCount > 0)
             {
-                <div class="card-deck card-cols-xs-2 card-cols-md-2 card-cols-lg-3 card-cols-xl-4 product-grid no-space artlist">
-                    @foreach (var product in Model.TopProducts)
-					{
-						Html.RenderPartial("Article.Box", product);
-						<div class="art-rowdiv"></div>
-						@*<article class="card text-xs-center" style="border-color: transparent; margin-bottom: 2.5rem">
-                            @Html.Partial("_ProductBox", product)
-                        </article>*@
-                    }
-                </div>
+				Html.RenderPartial("Product.List", Model.TopProducts);
             }
 
 			@if (Model.TotalProductsCount > 0)
@@ -97,7 +88,7 @@
 					.Name("pagination-bottom")
 					.QueryParam("i")
 					.Size(PagerSize.Medium)
-					.MaxPagesToDisplay(4)
+					.MaxPagesToDisplay(8)
 					.Render();
 			}
         </div>

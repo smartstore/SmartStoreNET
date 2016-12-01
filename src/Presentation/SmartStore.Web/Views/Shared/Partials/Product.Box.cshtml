@@ -1,13 +1,28 @@
 ﻿@model ProductOverviewModel
 
+@using System.Globalization;
 @using SmartStore.Web.Models.Catalog;
 
 @{ 
+	// Perf: we use RouteValueDictionary instead of anonymous objects in this view because it's slightly faster
+	// prepare "Add to cart" AJAX link
+	string addToCartUrl = "";
+	if (Model.ProductPrice.ForceRedirectionAfterAddingToCart)
+	{
+		addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "forceredirection", Model.ProductPrice.ForceRedirectionAfterAddingToCart } });
+	}
+	else
+	{
+		addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id } });
+	}
+
+	bool showQuicklinks = !Model.ProductPrice.DisableWishListButton || Model.CompareEnabled;
+
 	var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
 	var picture = Model.DefaultPictureModel;
 }
 
-<article class="card art" data-id="@Model.Id">
+<article class="art" data-id="@Model.Id" data-price="@Model.ProductPrice.PriceValue.ToString("F", CultureInfo.InvariantCulture)">
 	<div class="art-picture-block">
 		@* TODO: (mc) Read max picture size from product list and set height per partial *@
 		@if (picture.Title.HasValue())
@@ -20,6 +35,7 @@
 
 	@if (Model.Badges.Any())
 	{
+		@* TODO: (mc) Let user define one free badge per product in backend *@
 		<div class="art-badges">
 			@foreach (var badge in Model.Badges.OrderBy(x => x.DisplayOrder))
 			{
@@ -31,6 +47,27 @@
 	}
 
 	<div class="art-info-block">
+		@if (Model.ShowReviews)
+		{
+			int ratingPercent = 0;
+			if (Model.TotalReviews != 0)
+			{
+				ratingPercent = ((Model.RatingSum * 100) / Model.TotalReviews) / 5;
+				ratingPercent = 82;
+			}
+
+			string reviewTitle = "";
+			if (Model.TotalReviews > 0)
+			{
+				reviewTitle = Model.TotalReviews + (Model.TotalReviews == 1 ? T("Reviews.Overview.Review") : T("Reviews.Overview.Reviews"));
+			}
+			<div class="art-rating" title="@reviewTitle">
+				<div class="rating">
+					<div style="width: @(ratingPercent)%"></div>
+				</div>
+			</div>
+		}
+
 		<h4 class="art-name">
 			<a href="@artDetailUrl" title="@Model.Name">
 				<span>@Model.Name</span>
@@ -69,12 +106,23 @@
 					@Html.Raw(Model.TransportSurcharge)
 				</div>
 			}
-			@if (Model.DisplayBasePrice)
+			@if (Model.DisplayBasePrice && Model.BasePriceInfo.HasValue())
 			{
 				<div class="art-pangv" @Html.Attr("title", Model.BasePriceInfo, Model.BasePriceInfo.HasValue())>
 					@Html.Raw(Model.BasePriceInfo ?? "&nbsp;")
 				</div>
 			}
+
+			@* TODO: (mc) Optionally display saving (You save: 123 EUR / 12 %). In the badge also.  *@
+		</div>
+	</div>
+
+	<div class="art-buttons-block">
+		<div class="row">
+			<a class="col-xs bg-primary color-white"><i class="fa fa-cart-plus"></i></a>
+			<a class="col-xs"><i class="fa fa-heart-o"></i></a>
+			<a class="col-xs"><i class="fa fa-retweet"></i></a>
+			<a class="col-xs"><i class="fa fa-info"></i></a>
 		</div>
 	</div>
 </article>

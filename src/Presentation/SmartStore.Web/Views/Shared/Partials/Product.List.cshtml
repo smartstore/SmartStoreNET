@@ -1,0 +1,29 @@
+﻿@model IEnumerable<ProductOverviewModel>
+
+@using SmartStore.Utilities;
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	var id = "artlist-" + CommonHelper.GenerateRandomDigitCode(10);
+	var maxPictureSize = Model.Select(x => x.DefaultPictureModel)
+		.Where(x => x != null)
+		.Max(x => x.Size);
+}
+
+@if (maxPictureSize.HasValue)
+{
+	@* TODO: (mc) Let user decide about picture wrapper height OR height to size ratio (e.g. ratio 1.4 > padding-top: 140% > 1.4x higher) *@
+	<style type="text/css">
+		#@id .art-picture { 
+			padding-top: @(maxPictureSize.Value)px;
+			padding-top: 100%;
+		}
+	</style>
+}
+
+<div id="@id" class="artlist artlist-style-grid artlist-4-cols">
+	@foreach (var product in Model)
+	{
+		Html.RenderPartial("Product.Box", product);
+	}
+</div>

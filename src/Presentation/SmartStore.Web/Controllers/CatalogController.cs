@@ -211,6 +211,7 @@ namespace SmartStore.Web.Controllers
 						var pictureModel = new PictureModel
                         {
 							PictureId = x.PictureId.GetValueOrDefault(),
+							Size = pictureSize,
 							FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
 							ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideCategoryDefaultPictures),
                             Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), subCatName),
@@ -406,6 +407,7 @@ namespace SmartStore.Web.Controllers
                         var pictureModel = new PictureModel
                         {
 							PictureId = x.PictureId.GetValueOrDefault(),
+							Size = pictureSize,
 							FullSizeImageUrl = _pictureService.GetPictureUrl(x.PictureId.GetValueOrDefault()),
 							ImageUrl = _pictureService.GetPictureUrl(x.PictureId.GetValueOrDefault(), pictureSize, !_catalogSettings.HideCategoryDefaultPictures),
                             Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), catModel.Name),

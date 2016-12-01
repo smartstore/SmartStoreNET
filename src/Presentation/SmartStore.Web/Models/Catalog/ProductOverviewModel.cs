@@ -81,22 +81,22 @@ namespace SmartStore.Web.Models.Catalog
 
         public partial class ProductPriceModel : ModelBase
         {
-            public string OldPrice { get; set; }
+			public decimal OldPriceValue { get; set; }
+			public string OldPrice { get; set; }
 
-            public string Price { get; set;}
+			public decimal PriceValue { get; set; }
+			public string Price { get; set; }
 
-            public bool HasDiscount { get; set; }
+			public float SavingPercent { get; set; }
 
+			public bool HasDiscount { get; set; }
             public bool ShowDiscountSign { get; set; }
 
             public bool DisableBuyButton { get; set; }
-
             public bool DisableWishListButton { get; set; }
 
             public bool AvailableForPreOrder { get; set; }
-
             public bool ForceRedirectionAfterAddingToCart { get; set; }
-
             public bool CallForPrice { get; set; }
         }
 

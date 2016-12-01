@@ -360,6 +360,7 @@ namespace SmartStore.Web.Controllers
 			var result = new PictureModel
 			{
 				PictureId = picture.Id,
+				Size = pictureSize,
 				ThumbImageUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage),
 				ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
 				FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
@@ -454,6 +455,7 @@ namespace SmartStore.Web.Controllers
 
 				if (!_catalogSettings.HideProductDefaultPictures)
 				{
+					model.DefaultPictureModel.Size = defaultPictureSize;
 					model.DefaultPictureModel.ThumbImageUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage);
 					model.DefaultPictureModel.ImageUrl = _pictureService.GetDefaultPictureUrl(defaultPictureSize);
 					model.DefaultPictureModel.FullSizeImageUrl = _pictureService.GetDefaultPictureUrl();
@@ -1240,23 +1242,31 @@ namespace SmartStore.Web.Controllers
 									{
 										if (contextProduct.CallForPrice)
 										{
+											priceModel.OldPriceValue = 0;
+											priceModel.PriceValue = 0;
 											priceModel.OldPrice = null;
 											priceModel.Price = res["Products.CallForPrice"];
 										}
 										else if (displayPrice.HasValue)
 										{
-											//calculate prices
+											// Calculate prices
 											decimal taxRate = decimal.Zero;
 											decimal oldPriceBase = _taxService.GetProductPrice(contextProduct, contextProduct.OldPrice, out taxRate);
 											decimal finalPriceBase = _taxService.GetProductPrice(contextProduct, displayPrice.Value, out taxRate);
 											finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, currency);
 
+											priceModel.OldPriceValue = 0;
+											priceModel.PriceValue = finalPrice;
 											priceModel.OldPrice = null;
 
 											if (displayFromMessage)
+											{
 												priceModel.Price = String.Format(res["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice));
+											}	
 											else
+											{
 												priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
+											}											
 
 											priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
 										}
@@ -1289,7 +1299,9 @@ namespace SmartStore.Web.Controllers
 							{
 								if (product.CallForPrice)
 								{
-									//call for price
+									// call for price
+									priceModel.OldPriceValue = 0;
+									priceModel.PriceValue = 0;
 									priceModel.OldPrice = null;
 									priceModel.Price = res["Products.CallForPrice"];
 								}
@@ -1323,18 +1335,22 @@ namespace SmartStore.Web.Controllers
 
 									if (displayFromMessage)
 									{
+										priceModel.OldPriceValue = 0;
 										priceModel.OldPrice = null;
 										priceModel.Price = String.Format(res["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice));
 									}
 									else
 									{
+										priceModel.PriceValue = finalPrice;
 										if (priceModel.HasDiscount)
 										{
+											priceModel.OldPriceValue = oldPrice;
 											priceModel.OldPrice = _priceFormatter.FormatPrice(oldPrice);
 											priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
 										}
 										else
 										{
+											priceModel.OldPriceValue = 0;
 											priceModel.OldPrice = null;
 											priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
 										}
@@ -1345,13 +1361,19 @@ namespace SmartStore.Web.Controllers
 							#endregion
 						}
 
-						if (priceModel.ShowDiscountSign && priceModel.HasDiscount)
+						if (priceModel.HasDiscount)
 						{
-							model.Badges.Add(new ProductOverviewModel.ProductBadgeModel
+							priceModel.SavingPercent = (float)((priceModel.OldPriceValue - priceModel.PriceValue) / priceModel.OldPriceValue) * 100;
+
+							if (priceModel.ShowDiscountSign)
 							{
-								Label = "%",
-								Style = BadgeStyle.Danger
-							});
+								// TODO: (mc) Make language resource for saving badge label
+								model.Badges.Add(new ProductOverviewModel.ProductBadgeModel
+								{
+									Label = "- {0} %".FormatCurrentUI(priceModel.SavingPercent.ToString("N0")),
+									Style = BadgeStyle.Danger
+								});
+							}
 						}
 
 						model.ProductPrice = priceModel;
@@ -1406,6 +1428,7 @@ namespace SmartStore.Web.Controllers
 							var picture = product.GetDefaultProductPicture(_pictureService);
 							var pictureModel = new PictureModel
 							{
+								Size = pictureSize,
 								ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
 								FullSizeImageUrl = _pictureService.GetPictureUrl(picture, 0, !_catalogSettings.HideProductDefaultPictures),
 								Title = string.Format(res["Media.Product.ImageLinkTitleFormat"], model.Name),
@@ -1876,8 +1899,9 @@ namespace SmartStore.Web.Controllers
                 var pictureModel = new PictureModel
                 {
                     PictureId = manufacturer.PictureId.GetValueOrDefault(),
-                    //FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault()),
-                    ImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), pictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
+					Size = pictureSize,
+					//FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault()),
+					ImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), pictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
                     Title = string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
                     AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName)
                 };

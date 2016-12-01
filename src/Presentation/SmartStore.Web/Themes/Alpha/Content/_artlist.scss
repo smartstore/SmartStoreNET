@@ -9,86 +9,107 @@ $art-font-size-sm:              $font-size-xs;
 $art-line-height:               1.3;
 $art-price-color:               $body-color;
 $art-price-offer-color:         $brand-danger;
+$art-border-color:              rgba(0,0,0, 0.12);
+$art-btnpanel-color:            #fff;
 
 .artlist {
+    position: relative;
+    @include make-row();
     font-size: $art-font-size;
-    line-height: $art-line-height;
+    line-height: $art-line-height; 
+
+    border-collapse: collapse;
 }
 
 .art {
-    /*margin-left: 0.625rem;
-    margin-left: 0 !important;
-    margin-right: 0 !important;*/
-    margin-bottom: 0;
-    border-color: transparent;
-    //border-right-color: #eee;
+    position: relative;
+    min-height: 1px;
+
+    @include make-col();
+    @include make-col-span(12, $grid-columns);
+    
+    padding-top: $grid-gutter-width / 2; 
+    padding-bottom: $grid-gutter-width / 2;
+    
+    border: 1px solid transparent;
+    border-bottom-color: $art-border-color;   
+
+    margin-top: -1px;
+    margin-left: -1px;
+
+    border-collapse: collapse;
 }
 
-.art-rowdiv {
-    display: none;
-    @include make-col(12);
-    width: 100%;
-    height: 1px;
-    background: #ddd;
-    margin: 1.5rem 0;
+.art:hover {
+    border-color: rgba(0,0,0, 0.2);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+}
 
-    &:last-child {
-        display: block !important;
+.artlist-style-grid {
+    &.artlist::after {
+        // Make continous line after last row
+        position: relative;
+        content: '';
+        width: 100%;
+        height: 1px;
+        background: $art-border-color;
+        bottom: 1px;
+    }
+    
+    .art {
+        // Grid has always 2 cols per row at least, even on xs
+        @include make-col-span(6, $grid-columns);
+    }
+
+    @include media-breakpoint-up(md) {
+        &.artlist-5-cols .art {
+            @include make-col-span(4, $grid-columns);
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+        &.artlist-3-cols .art,
+        &.artlist-4-cols .art {
+            @include make-col-span(4, $grid-columns);
+        }
+        &.artlist-5-cols .art {
+            @include make-col-span(3, $grid-columns);
+        }
+    }
+
+    @include media-breakpoint-up(xl) {
+        &.artlist-4-cols .art {
+            @include make-col-span(3, $grid-columns);
+        }
+        &.artlist-5-cols .art {
+            @include make-col-span(2, 10);
+        }
     }
 }
 
-@include media-breakpoint-between(xs, md) {
-    .art-rowdiv:nth-of-type(2n+0) {
-        display: block;
-    }   
-    .art:nth-of-type(2n+0) {
-        border-right-color: transparent;
-    }  
-}
-@include media-breakpoint-only(lg) {
-    .art-rowdiv:nth-of-type(3n+0) {
-        display: block;
-    } 
-    .art:nth-of-type(3n+0) {
-        border-right-color: transparent;
-    }    
-}
-@include media-breakpoint-only(xl) { 
-    .art-rowdiv:nth-of-type(4n+0) {
-        display: block;
-    } 
-    .art:nth-of-type(4n+0) {
-        border-right-color: transparent;
-    }    
-}
-
 .art-picture-block {
-    height: 125px;
+    position: relative;
     margin-bottom: 0.8rem;
+    overflow: hidden;
 }
 
 .art-picture {
     display: block;
     position: relative;
+    height: 0;
     width: 100%;
-    height: 100%;
-    text-align: center;
+    padding-top: 100%;
     text-decoration: none !important;
 
-    &:before {
-        // centers img vertically
-        content: '';
-        display: inline-block;
-        width: 0;
-        height: 100%;
-        vertical-align: middle;
-        text-decoration: none;
-    }
-
     > img {
+        position: absolute;
         max-width: 100%;
         max-height: 100%;
-        vertical-align: middle;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
     }
 }
 
@@ -115,8 +136,13 @@ $art-price-offer-color:         $brand-danger;
     position: relative;
 }
 
+.art-rating {
+    @include text-truncate();
+    margin-bottom: 0.25rem;
+}
+
 .art-name {
-    box-sizing: padding-box;
+    box-sizing: content-box;
     font-size: $art-font-size;
     font-weight: 600;
     margin-bottom: 0.25rem;
@@ -130,7 +156,7 @@ $art-price-offer-color:         $brand-danger;
 }
 
 .art-description {
-    box-sizing: padding-box;
+    box-sizing: content-box;
     font-size: $art-font-size-sm;
     color: $text-muted;
     margin-bottom: 0.25rem;
@@ -177,3 +203,74 @@ $art-price-offer-color:         $brand-danger;
     padding-top: 0.25rem;
     @include text-truncate();
 }
+
+.art-buttons-block {
+    display: none;
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    height: 50px;
+    bottom: -49px;
+    background: $art-btnpanel-color;
+    border: 1px solid rgba(0,0,0, 0.2);
+    border-top-color: #fff;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    z-index: $zindex-popover;  
+
+    .row {
+        margin: 0;
+    }
+
+    .col-xs {
+        /*padding-left: $grid-gutter-width / 2;
+        padding-right: $grid-gutter-width / 2;*/
+        text-align: center;
+        vertical-align: middle;
+        color: #666;
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 100%;
+        height: 50px;
+        cursor: pointer;
+        display: block;
+
+        .fa {
+            font-size: 1.25rem;
+            padding-top: 14px;
+        }
+
+        &:hover {
+            background: rgba(0,0,0, 0.07);
+        }
+    }
+
+    .art:hover & {
+        display: block;
+    }
+}
+
+
+/*@include media-breakpoint-between(xs, md) {
+    .art-rowdiv:nth-of-type(2n+0) {
+        display: block;
+    }   
+    .art:nth-of-type(2n+0) {
+        border-right-color: transparent;
+    }  
+}
+@include media-breakpoint-only(lg) {
+    .art-rowdiv:nth-of-type(3n+0) {
+        display: block;
+    } 
+    .art:nth-of-type(3n+0) {
+        border-right-color: transparent;
+    }    
+}
+@include media-breakpoint-only(xl) { 
+    .art-rowdiv:nth-of-type(4n+0) {
+        display: block;
+    } 
+    .art:nth-of-type(4n+0) {
+        border-right-color: transparent;
+    }    
+}*/

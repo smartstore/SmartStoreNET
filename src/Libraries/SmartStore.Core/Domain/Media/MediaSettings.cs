@@ -7,7 +7,7 @@ namespace SmartStore.Core.Domain.Media
 		public MediaSettings()
 		{
 			AvatarPictureSize = 85;
-			ProductThumbPictureSize = 100;
+			ProductThumbPictureSize = 250;
 			ProductDetailsPictureSize = 300;
 			ProductThumbPictureSizeOnProductDetailsPage = 70;
 			MessageProductThumbPictureSize = 70;

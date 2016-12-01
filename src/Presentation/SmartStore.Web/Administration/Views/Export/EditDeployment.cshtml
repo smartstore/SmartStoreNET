@@ -21,7 +21,8 @@
 			</button>
 		</div>
 	</div>
-	@Html.Partial("_CreateOrUpdate.Deployment", Model)
+
+    Html.RenderPartial("_CreateOrUpdate.Deployment", Model);
 }
 
 @Html.DeleteConfirmation("DeleteDeployment", "export-deployment-delete")

@@ -4,14 +4,17 @@
 @using SmartStore.Web.Framework.UI;
 @{
     Layout = "_ColumnsTwo";
-
-    //title
+    
     Html.AddTitleParts(T("PageTitle.Blog").Text);
 }
+
 @section left {
-    @Html.Action("BlogMonths", "Blog")
-    @Html.Action("BlogTags", "Blog")
+    @{
+        Html.RenderAction("BlogMonths", "Blog");
+        Html.RenderAction("BlogTags", "Blog");
+    }
 }
+
 <div class="page blog-page">
     <div class="page-title">
         <a href="@Url.RouteUrl("BlogRSS", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("Blog.RSS.Hint")" rel="tooltip">

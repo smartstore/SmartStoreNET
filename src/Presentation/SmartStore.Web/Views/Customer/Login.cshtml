@@ -9,7 +9,7 @@
 
     //title
     Html.AddTitleParts(T("PageTitle.Login").Text);
-    
+
     //register URL with return URL (if specified)
     var registerUrl = Url.RouteUrl("Register");
     if (!String.IsNullOrEmpty(this.Context.Request.QueryString["returnUrl"]))
@@ -24,9 +24,10 @@
         <h1>@T("Account.Login.Welcome")</h1>
     </div>
 
-    @Html.Action("TopicBlock", "Topic", new { systemName = "LoginRegistrationInfo" })
-
-    @Html.Partial("_ExternalAuthentication.AssociateMessage")
+    @{ 
+        Html.RenderAction("TopicBlock", "Topic", new { systemName = "LoginRegistrationInfo" });
+        Html.RenderPartial("_ExternalAuthentication.AssociateMessage");
+    }
 
     <div class="page-body">
         
@@ -148,7 +149,9 @@
                                         </div>
                                     }
 
-                                    <div class="externalauthentication clearfix">@Html.Action("ExternalMethods", "ExternalAuthentication")</div>
+                                    <div class="externalauthentication clearfix">
+                                        @{ Html.RenderAction("ExternalMethods", "ExternalAuthentication"); }
+                                    </div>
                                 </div>
                             </div>
                         </form>

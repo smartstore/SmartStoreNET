@@ -1,9 +1,9 @@
 ﻿@{
-	Layout = "_Document";
+    Layout = "_Document";
 }
 
 @Html.Widget("body_start_html_tag_after")
-@Html.Partial("_Notifications")
+@{ Html.RenderPartial("_Notifications"); }
 <div id="page">
     <div class="canvas-blocker canvas-slidable"></div>
 

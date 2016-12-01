@@ -10,7 +10,7 @@
 }
 
 @section orderProgress{
-    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Address, area = "" })
+    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Address, area = "" }); }
 }
 
 <div class="page shipping-address-page">

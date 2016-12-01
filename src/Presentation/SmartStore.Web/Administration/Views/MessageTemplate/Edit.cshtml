@@ -24,6 +24,7 @@
 			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
-    @Html.Partial("_CreateOrUpdate", Model)
+
+    Html.RenderPartial("_CreateOrUpdate", Model);
 }
 @Html.DeleteConfirmation("message-template-delete")

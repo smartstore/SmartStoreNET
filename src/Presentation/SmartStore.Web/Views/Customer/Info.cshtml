@@ -8,7 +8,7 @@
 }
 @section left
 {
-    @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
+    @{ Html.RenderPartial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary()); }
 }
 <div class="page account-page customer-info-page">
 
@@ -84,7 +84,7 @@
                                 {
                                     <div class="input-group">
                                         @Html.TextBoxFor(model => model.Username, new { @class = "form-control col-sm-11" })
-                                        @Html.Partial("_CheckUsernameAvailability")
+                                        @{ Html.RenderPartial("_CheckUsernameAvailability"); }
                                     </div>
                                 }
                                 else

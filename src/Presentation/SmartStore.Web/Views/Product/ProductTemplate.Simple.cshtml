@@ -64,7 +64,7 @@
                         <!--product pictures-->
                         <div id="pd-gallery-container-outer">
 						    <div id="pd-gallery-container">
-							    @Html.Partial("_PictureGallery", Model.DetailsPictureModel)
+							    @{ Html.RenderPartial("_PictureGallery", Model.DetailsPictureModel); }
 						    </div>
                         </div>
 
@@ -165,7 +165,7 @@
                             <tr valign="top">
                                 <td>&nbsp;</td>
                                 <td>
-                                    @Html.Partial("_BackInStockSubscription", Model)
+                                    @{ Html.RenderPartial("_BackInStockSubscription", Model); }
                                 </td>
                             </tr>
                             }
@@ -185,7 +185,7 @@
                             @if (Model.ProductType == ProductType.BundledProduct)
                             {
 							    <div id="ProductBundleOverview">
-								    @Html.Partial("_BundleItemsAddToCart", Model)
+								    @{ Html.RenderPartial("_BundleItemsAddToCart", Model); }
 							    </div>
                             }
 
@@ -196,33 +196,33 @@
                         
                             <!-- product attributes or bundle items -->
                             @{
-							    if (Model.ProductType == ProductType.BundledProduct)
-							    {
+                                if (Model.ProductType == ProductType.BundledProduct)
+                                {
 								    <div id="ProductBundleItems" class="product-bundle">
 									    @if (Model.RenderBundleTitle())
-									    {
+                                        {
 										    <div class="bundle-title">
 											    <h4>@Model.BundleTitleText</h4>
 										    </div>
-									    }
+                                        }
 									    <div class="bundle-items">										
-										    @Html.Partial("_BundleItems")
+										    @{ Html.RenderPartial("_BundleItems"); }
 									    </div>
 									    @if (Model.BundledItems.Where(x => x.BundleItem.Visible).Count() == 0)
-									    {
+                                        {
 										    <div class="no-bundled-products alert alert-warning" style="margin-top: 10px">
 											    @T("Products.NoBundledItems")
 										    </div>
-									    }
+                                        }
 								    </div>
-							    }
-							    else if (Model.ProductVariantAttributes.ShouldBeRendered())
-							    {
-								    var dataDictAttributes = new ViewDataDictionary();
-								    dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
+                                                }
+                                                else if (Model.ProductVariantAttributes.ShouldBeRendered())
+                                                {
+                                                    var dataDictAttributes = new ViewDataDictionary();
+                                                    dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
 
 								    <div class="product-attributes line">
-									    @Html.Partial("_Attributes", Model.ProductVariantAttributes, dataDictAttributes)                  
+									    @{ Html.RenderPartial("_Attributes", Model.ProductVariantAttributes, dataDictAttributes); }
 								    </div>
 							    }
                             }
@@ -234,7 +234,7 @@
                                 if (Model.GiftCard.IsGiftCard)
                                 {
                                     <div class="giftcard-infos line">
-                                        @Html.Partial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard)
+                                        @{ Html.RenderPartial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard); }
                                     </div>
                                 }
                             }
@@ -333,14 +333,11 @@
                     })
             
 
-                    @Html.Action("RelatedProducts", new { productId = Model.Id })
-
-                    @Html.Action("ProductsAlsoPurchased", new { productId = Model.Id })
-            
-                    <div class="product-tags">
-                        @Html.Action("ProductTags", new { productId = Model.Id })
-                    </div>
-            
+                    @{
+                        Html.RenderAction("RelatedProducts", new { productId = Model.Id });
+                        Html.RenderAction("ProductsAlsoPurchased", new { productId = Model.Id });
+                        Html.RenderAction("ProductTags", new { productId = Model.Id });
+                    }
                 </div>
             </article>
         }

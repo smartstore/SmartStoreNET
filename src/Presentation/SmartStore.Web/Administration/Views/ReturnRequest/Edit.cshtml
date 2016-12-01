@@ -9,25 +9,26 @@
             @T("Admin.ReturnRequests.EditReturnRequestDetails") @Html.ActionLink("(" + T("Admin.ReturnRequests.BackToList") + ")", "List")
         </div>
         <div class="options">
-			@if(Model.CanAccept)
-			{
+			@if (Model.CanAccept)
+            {
 				<button type="button" name="accept" class="btn accept-return-request-button" data-toggle="modal" data-target="#AutoUpdateOrderItemModal">
 					<i class="fa fa-check"></i>&nbsp;@T("Admin.ReturnRequests.Accept")
 				</button>
-			}
+            }
 
-			@if(Model.CanSendEmailToCustomer)
-			{
+			@if (Model.CanSendEmailToCustomer)
+            {
 				<button type="submit" name="notify-customer" value="notify-customer" class="btn"><i class="fa fa-envelope"></i>&nbsp;@T("Admin.ReturnRequests.NotifyCustomer")</button>
-			}
+            }
 
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
             <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
             <button type="submit" name="returnrequest-delete" value="returnrequest-delete" id="returnrequest-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
         </div>
     </div>
-    @Html.Partial("_CreateOrUpdate", Model)
+
+    Html.RenderPartial("_CreateOrUpdate", Model);
 }
 @Html.DeleteConfirmation("returnrequest-delete")
 
-@Html.Partial("~/Administration/Views/Order/_AutoUpdateOrderItem.cshtml", Model.AutoUpdateOrderItem)
+@{ Html.RenderPartial("~/Administration/Views/Order/_AutoUpdateOrderItem.cshtml", Model.AutoUpdateOrderItem); }

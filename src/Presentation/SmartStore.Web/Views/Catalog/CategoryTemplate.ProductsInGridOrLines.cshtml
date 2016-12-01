@@ -118,7 +118,7 @@
                     @foreach (var item in Model.FeaturedProducts)
                     {
                         <article class="item-box product-compact span4 equalized-column" data-equalized-deep="true">
-                            @Html.Partial("_ProductBoxCompact", @item)
+                            @{ Html.RenderPartial("_ProductBoxCompact", @item); }
                         </article>
                     }
                 </div>
@@ -178,7 +178,7 @@
 
         @if (ShowListOptions())
         {
-            @Html.Partial("_ProductListOptions", Model.PagingFilteringContext)
+            { Html.RenderPartial("_ProductListOptions", Model.PagingFilteringContext); }
         }
 
         @*product list*@
@@ -206,7 +206,7 @@
                         @foreach (var product in Model.Products)
                         {
                             <article class="card card-block card-shadow text-xs-center">
-                                @Html.Partial("_ProductBox", product)
+                                @{ Html.RenderPartial("_ProductBox", product); }
                             </article>
                         }
                     </div>

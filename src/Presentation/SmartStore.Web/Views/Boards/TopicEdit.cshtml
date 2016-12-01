@@ -3,6 +3,6 @@
 @{    
     Layout = "_ColumnsOne";
 
-    Html.AddTitleParts(T("Forum.PageTitle.TopicEdit").Text);    
+    Html.AddTitleParts(T("Forum.PageTitle.TopicEdit").Text);
 }
-@Html.Partial("_CreateUpdateTopic", @Model)
+@{ Html.RenderPartial("_CreateUpdateTopic", @Model); }

@@ -36,7 +36,7 @@
 		</thead>
 		<tbody>
 			@foreach (var profile in Model.Profiles)
-			{
+            {
 				<tr data-profile-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
 					<td>
 						<a href="@Url.Action("Edit", new { id = profile.Id })"><strong>@profile.Name</strong></a>
@@ -46,33 +46,33 @@
 					</td>
 					<td>
 						@foreach (var fileName in profile.ExistingFileNames)
-						{
+                        {
 							<ul class="fa-ul">
 								<li>
 									@Html.IconForFileExtension(Path.GetExtension(fileName), "fa-li", false)
 									<a href="@Url.Action("DownloadImportFile", new { id = profile.Id, name = fileName })" download>@fileName</a>
 								</li>
 							</ul>
-						}
+                        }
 					</td>
 					<td id="ProfileImportResult@(profile.Id)">
 						@if (profile.ImportResult != null)
-						{
-							@Html.Partial("ProfileImportResult", profile.ImportResult)
-						}
-						else
-						{
+                        {
+                            Html.RenderPartial("ProfileImportResult", profile.ImportResult);
+                        }
+                        else
+                        {
 							<span class="muted">@("".NaIfEmpty())</span>
-						}
+                        }
 					</td>
 					<td>
 						<div class="last-run-info">
-							@Html.Partial("~/Administration/Views/ScheduleTask/_LastRun.cshtml", profile.TaskModel)
+							@{ Html.RenderPartial("~/Administration/Views/ScheduleTask/_LastRun.cshtml", profile.TaskModel); }
 						</div>
 					</td>
 					<td class="progress-info">
 						<div class="next-run-info">
-							@Html.Partial("~/Administration/Views/ScheduleTask/_NextRun.cshtml", profile.TaskModel)
+							@{ Html.RenderPartial("~/Administration/Views/ScheduleTask/_NextRun.cshtml", profile.TaskModel); }
 						</div>
 						<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
 					</td>

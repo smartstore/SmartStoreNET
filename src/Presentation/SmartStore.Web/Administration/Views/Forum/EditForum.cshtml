@@ -19,6 +19,7 @@
 			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
-    @Html.Partial("_CreateOrUpdateForum", Model)
+
+    Html.RenderPartial("_CreateOrUpdateForum", Model);
 }
 @Html.DeleteConfirmation("DeleteForum", "forum-delete")

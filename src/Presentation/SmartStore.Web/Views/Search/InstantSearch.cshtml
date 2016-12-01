@@ -24,27 +24,28 @@
 	<div class="row no-space instasearch-row">
 		<div class="col-xs-12 col-sm-5 instasearch-col">
 			@foreach (var group in hitGroups)
-			{
-				@Html.Partial("InstantSearch.HitGroup", group)
-			}
+            {
+                Html.RenderPartial("InstantSearch.HitGroup", group);
+            }
 		</div>
 		<div class="col-xs-12 col-sm-7 instasearch-col">
 			<h6 class="instasearch-group-header">@T("Search.Hits")</h6>
-			@Html.Partial("InstantSearch.TopProducts", Model)
+			@{ Html.RenderPartial("InstantSearch.TopProducts", Model); }
 		</div>
 	</div>
 }
 else
 {
-	foreach (var group in hitGroups)
-	{
-		@Html.Partial("InstantSearch.HitGroup", group)
-	}
+    foreach (var group in hitGroups)
+    {
+        Html.RenderPartial("InstantSearch.HitGroup", group);
+    }
 
-	if (Model.TopProducts.Count > 0)
-	{
+    if (Model.TopProducts.Count > 0)
+    {
 		<h6 class="instasearch-group-header">@T("Search.Hits")</h6>
-		@Html.Partial("InstantSearch.TopProducts", Model)
+
+		Html.RenderPartial("InstantSearch.TopProducts", Model);
 	}
 }
 

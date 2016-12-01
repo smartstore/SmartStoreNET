@@ -137,8 +137,9 @@
             }
         }
     </script>
-	
-	@Html.Action("StoreScopeConfiguration", "Setting")
+
+    Html.RenderAction("StoreScopeConfiguration", "Setting"); 
+
     @Html.ValidationSummary(false)
 
     @(Html.SmartStore().TabStrip().Name("catalogsettings-edit").Items(x =>

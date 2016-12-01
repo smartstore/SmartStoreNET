@@ -35,7 +35,7 @@
 			</thead>
 			<tbody>
 				@foreach (var profile in Model.OrderBy(x => x.Name))
-				{
+                {
 					<tr data-profile-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
 						<td class="ac">
 							<img src="@profile.Provider.ThumbnailUrl" alt="@profile.Provider.FriendlyName" class="@(profile.Enabled ? "" : "o40")" />
@@ -51,16 +51,16 @@
 							@Html.IconForFileExtension(profile.Provider.FileExtension, true)
 						</td>
 						<td id="ExportFileCount@(profile.Id)" class="ac">
-							@Html.Partial("ProfileFileCount", profile.FileCount)
+							@{ Html.RenderPartial("ProfileFileCount", profile.FileCount); }
 						</td>
 						<td>
 							<div class="last-run-info">
-								@Html.Partial("~/Administration/Views/ScheduleTask/_LastRun.cshtml", profile.TaskModel)
+								@{ Html.RenderPartial("~/Administration/Views/ScheduleTask/_LastRun.cshtml", profile.TaskModel); }
 							</div>
 						</td>
 						<td class="progress-info">
 							<div class="next-run-info">
-								@Html.Partial("~/Administration/Views/ScheduleTask/_NextRun.cshtml", profile.TaskModel)
+								@{ Html.RenderPartial("~/Administration/Views/ScheduleTask/_NextRun.cshtml", profile.TaskModel); }
 							</div>
 							<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
 						</td>

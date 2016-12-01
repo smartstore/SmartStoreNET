@@ -19,7 +19,7 @@
                 @foreach (var product in Model)
                 {
                     <article class="card card-block card-shadow text-xs-center">
-                        @Html.Partial("_ProductBox", product)
+                        @{ Html.RenderPartial("_ProductBox", product); }
                     </article>
                 }
             </div>

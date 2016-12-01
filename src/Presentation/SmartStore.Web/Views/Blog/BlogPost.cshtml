@@ -12,8 +12,10 @@
 }
 
 @section left {
-    @Html.Action("BlogMonths", "Blog")
-    @Html.Action("BlogTags", "Blog")
+    @{
+        Html.RenderAction("BlogMonths", "Blog");
+        Html.RenderAction("BlogTags", "Blog");
+    }
 }
 
 <article class="page blogpost-page">

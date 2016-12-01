@@ -148,7 +148,7 @@
 
             if (ShowListOptions())
             {
-                @Html.Partial("_ProductListOptions", Model.PagingFilteringContext)
+                Html.RenderPartial("_ProductListOptions", Model.PagingFilteringContext);
             }
 
             <div class="search-results">
@@ -160,7 +160,7 @@
                             @foreach (var product in Model.Products)
                             {
                                 <article class="item-box details card p-a-1">
-                                    @Html.Partial("_ProductBoxList", product)
+                                    @{ Html.RenderPartial("_ProductBoxList", product); }
                                 </article>
                             }
                         </div>        
@@ -171,7 +171,7 @@
                             @foreach (var product in Model.Products)
                             {
                                 <article class="card card-block card-shadow text-xs-center">
-                                    @Html.Partial("_ProductBox", product)
+                                    @{ Html.RenderPartial("_ProductBox", product); }
                                 </article>
                             }
                         </div>

@@ -9,7 +9,7 @@
 }
 
 @section orderProgress{
-    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment })
+    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment }); }
 }
 
 <div class="page payment-method-page">
@@ -77,9 +77,9 @@
 										</div>
 									}
 									@if(!(paymentMethod.FullDescription.HasValue() && !paymentMethod.RequiresInteraction))
-									{
-										@Html.Action(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues)
-									}
+                                    {
+                                        Html.RenderAction(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues);
+                                    }
 								</div>
 							}
                         </div>

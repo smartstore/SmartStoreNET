@@ -14,15 +14,15 @@
 
 <div class="well" style="margin-bottom:8px;">
 	@if (ViewBag.IsEdit)
-	{
+    {
 		<div>
 			@Html.Raw(Html.TableFormattedVariantAttributes(Model.AttributesXml))
 		</div>
-	}
-	else
-	{
+    }
+    else
+    {
 		<div id="ProductVariantAttributeContainer">
-			@Html.Partial("_ProductAttributes", Model.ProductVariantAttributes)
+			@{ Html.RenderPartial("_ProductAttributes", Model.ProductVariantAttributes); }
 		</div>
 	}
 </div>

@@ -1828,7 +1828,7 @@
 
 @helper TabOrderAttributes()
 {
-    @Html.Action("GenericAttributes", "Common", new { entityName = "Order", entityId = Model.Id })
+    @{ Html.RenderAction("GenericAttributes", "Common", new { entityName = "Order", entityId = Model.Id }); }
 }
 
-@Html.Partial("_AutoUpdateOrderItem", Model.AutoUpdateOrderItem)
+Html.RenderPartial("_AutoUpdateOrderItem", Model.AutoUpdateOrderItem);

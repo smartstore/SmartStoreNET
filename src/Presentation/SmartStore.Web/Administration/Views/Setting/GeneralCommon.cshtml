@@ -69,22 +69,24 @@
 		}
 	}
 </script>
-    @Html.Action("StoreScopeConfiguration", "Setting")
+
+    Html.RenderAction("StoreScopeConfiguration", "Setting");
+
     @Html.ValidationSummary(false)
     
     @(Html.SmartStore().TabStrip().Name("generalsettings-edit").Items(x =>
-    {
-        x.Add().Text(T("Common.General").Text).Content(@TabStoreInformationSettings()).Selected(true);
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SEOSettings").Text).Content(@TabSEOSettings());
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SecuritySettings").Text).Content(@TabSecuritySettings());
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.LocalizationSettings").Text).Content(TabLocalizationSettings());
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.PdfSettings").Text).Content(@TabPdfSettings());
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings").Text).Content(@TabCompanyInformationSettings());
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.ContactDataSettings").Text).Content(@TabContactDataSettings()); 
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SocialSettings").Text).Content(@TabSocialSettings());
-        
-        x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.FullTextSettings").Text).Content(@TabFullTextSettings());
-    }))
+     {
+         x.Add().Text(T("Common.General").Text).Content(@TabStoreInformationSettings()).Selected(true);
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SEOSettings").Text).Content(@TabSEOSettings());
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SecuritySettings").Text).Content(@TabSecuritySettings());
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.LocalizationSettings").Text).Content(TabLocalizationSettings());
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.PdfSettings").Text).Content(@TabPdfSettings());
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings").Text).Content(@TabCompanyInformationSettings());
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.ContactDataSettings").Text).Content(@TabContactDataSettings());
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SocialSettings").Text).Content(@TabSocialSettings());
+
+         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.FullTextSettings").Text).Content(@TabFullTextSettings());
+     }))
     
 }
 @helper TabStoreInformationSettings()

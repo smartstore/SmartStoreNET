@@ -8,7 +8,7 @@
     @Html.Raw(@T("Plugins.Widgets.GoogleAnalytics.AdminInstruction"))
 </div>
 
-@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+@{ Html.RenderAction("StoreScopeConfiguration", "Setting", new { area = "Admin" }); }
 
 @using (Html.BeginForm())
 {    

@@ -68,24 +68,24 @@
 			</td>
 		</tr>
 		@if (Model.ScheduleTaskId > 0)
-		{
+        {
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(x => x.ScheduleTaskId)
 				</td>
 				<td class="adminData">
-					@Html.Action("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, reloadPage = true, area = "admin" })
+					@{ Html.RenderAction("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, reloadPage = true, area = "admin" }); }
 				</td>
 			</tr>
 		}
 		@if (Model.ImportResult != null)
-		{
+        {
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(x => x.ImportResult)
 				</td>
 				<td class="adminData">
-					@Html.Partial("ProfileImportResult", Model.ImportResult)
+					@{ Html.RenderPartial("ProfileImportResult", Model.ImportResult); }
 				</td>
 			</tr>
 		}
@@ -196,16 +196,16 @@
 
 @if (Model.CsvConfiguration != null)
 {
-	var viewData = new ViewDataDictionary();
-	viewData.Add("ShowGroupCaption", true);
-	viewData.TemplateInfo.HtmlFieldPrefix = "CsvConfiguration";
-	viewData.ModelState.Merge(ViewData.ModelState);
-	@Html.Partial("CsvConfiguration", Model.CsvConfiguration, viewData)
+    var viewData = new ViewDataDictionary();
+    viewData.Add("ShowGroupCaption", true);
+    viewData.TemplateInfo.HtmlFieldPrefix = "CsvConfiguration";
+    viewData.ModelState.Merge(ViewData.ModelState);
+    Html.RenderPartial("CsvConfiguration", Model.CsvConfiguration, viewData);
 }
 
 @if (Model.ExistingFileNames.Any())
 {
-	@Html.Partial("_ColumnMappings")
+    Html.RenderPartial("_ColumnMappings");
 }
 
 <script type="text/javascript">

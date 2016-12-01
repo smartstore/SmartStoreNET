@@ -21,19 +21,21 @@
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-reports", this.Html, this.Model));
 })
+
 @helper TabBestByOrderTotal()
-    {
-        var dataDictAttributes = new ViewDataDictionary();
-        dataDictAttributes.TemplateInfo.HtmlFieldPrefix = "bestbyordertotal";
-    @Html.Partial("_ReportBestCustomersByOrderTotal", Model.BestCustomersByOrderTotal, dataDictAttributes)
+{
+    var dataDictAttributes = new ViewDataDictionary();
+    dataDictAttributes.TemplateInfo.HtmlFieldPrefix = "bestbyordertotal";
+    Html.RenderPartial("_ReportBestCustomersByOrderTotal", Model.BestCustomersByOrderTotal, dataDictAttributes);
 }
+
 @helper TabBestByNumberOfOrders()
-    {
-        var dataDictAttributes = new ViewDataDictionary();
-        dataDictAttributes.TemplateInfo.HtmlFieldPrefix = "bestbynumberoforders";
-    @Html.Partial("_ReportBestCustomersByNumberOfOrders", Model.BestCustomersByOrderTotal, dataDictAttributes)
+{
+    var dataDictAttributes = new ViewDataDictionary();
+    dataDictAttributes.TemplateInfo.HtmlFieldPrefix = "bestbynumberoforders";
+    Html.RenderPartial("_ReportBestCustomersByNumberOfOrders", Model.BestCustomersByOrderTotal, dataDictAttributes);
 }
 @helper TabRegisteredCustomers()
-    {
-    @Html.Action("ReportRegisteredCustomers")
+{
+    Html.RenderAction("ReportRegisteredCustomers");
 }

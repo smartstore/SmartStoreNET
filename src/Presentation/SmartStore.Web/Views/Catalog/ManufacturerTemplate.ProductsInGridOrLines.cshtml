@@ -55,7 +55,7 @@
                 <div>
                     @(Html.DataList<ProductOverviewModel>(Model.FeaturedProducts, 2,
                     @<div class="item-box">
-                        @Html.Partial("_ProductBox", @item)
+                        @{ Html.RenderPartial("_ProductBox", @item); }
                     </div>
                 ))
                 </div>
@@ -76,7 +76,7 @@
                     <span>@T("Filtering.FilterResults")</span>
                 </div>
                 <div class="filter-item">
-                    @Html.Partial("_FilterPriceBox", Model.PagingFilteringContext.PriceRangeFilter, new ViewDataDictionary())
+                    @{ Html.RenderPartial("_FilterPriceBox", Model.PagingFilteringContext.PriceRangeFilter, new ViewDataDictionary()); }
                 </div>
             </div>
         }
@@ -104,7 +104,7 @@
                         @foreach (var product in Model.Products)
                         {
                             <article class="card card-block card-shadow text-xs-center">
-                                @Html.Partial("_ProductBox", product)
+                                @{ Html.RenderPartial("_ProductBox", product); }
                             </article>
                         }
                     </div>

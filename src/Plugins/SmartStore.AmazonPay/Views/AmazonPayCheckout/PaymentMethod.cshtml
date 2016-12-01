@@ -10,7 +10,7 @@
 }
 
 @section orderProgress{
-    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment, area = "" })
+    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Payment, area = "" }); }
 }
 
 <div class="page payment-method-page">

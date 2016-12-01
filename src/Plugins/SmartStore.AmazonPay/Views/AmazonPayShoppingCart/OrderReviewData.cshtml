@@ -3,14 +3,14 @@
 @model SmartStore.AmazonPay.Models.AmazonPayViewModel
 
 @{
-	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
+    Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
 }
 
 <div class="order-review-data-box">
 	<div class="row-fluid">
 
 		@if (Model.IsShippable)
-		{
+        {
 			<div class="amazon-pay-address-widget span12">
 				<div class="block block-bordered">
 					<div class="block-title">
@@ -22,7 +22,7 @@
 					</div>
 				</div>
 			</div>
-		}
+        }
 		
 		<div class="amazon-pay-wallet-widget span12">
 			<div class="block block-bordered">
@@ -56,4 +56,4 @@
 
 <div class="clear"></div>
 
-@Html.Partial("ScriptingReadWidgets", Model)
+@{ Html.RenderPartial("ScriptingReadWidgets", Model); }

@@ -5,6 +5,6 @@
         @T("Polls.Title")
     </div>
     <div class="block-body listbox card-block">
-        @Html.Partial("_Poll", Model)
+        @{ Html.RenderPartial("_Poll", Model); }
     </div>
 </div>

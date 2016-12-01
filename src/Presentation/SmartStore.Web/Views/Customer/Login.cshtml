@@ -41,7 +41,9 @@
                             <h4>@T("Account.Login.CheckoutAsGuestOrRegister")</h4>
                         </div>
                         <div class="block-body">
-                            <p>@Html.Action("TopicBlock", "Topic", new { systemName = "CheckoutAsGuestOrRegister" })</p>
+                            <p>
+                                @{ Html.RenderAction("TopicBlock", "Topic", new { systemName = "CheckoutAsGuestOrRegister" });}
+                            </p>
                             <div class="buttons">
                                 <a class="btn btn-secondary pull-left checkout-as-guest-button" href="@Url.RouteUrl("Checkout")">
                                     @T("Account.Login.CheckoutAsGuest")

@@ -497,7 +497,7 @@
 
 		if (Model.IsEditable)
 		{
-			@Html.Action("CrossSellProducts", "Product")
+			Html.RenderAction("CrossSellProducts", "Product");
 		}
 	}
 	else

@@ -29,7 +29,7 @@
             else
             {
 				@Html.Widget("admin_navbar_before")
-				@{ Html.RenderAction("Navbar", "Common", new { area = "Admin" }); }
+			    Html.RenderAction("Navbar", "Common", new { area = "Admin" });
 				@Html.Widget("admin_navbar_after")
             }
 

@@ -40,6 +40,7 @@
 * #1028 Debitoor: Company name send as customer name if present
 * #1044 Debitoor: Additional order notes for tax exemption within and outside EU
 * #1048 Add meta tags to contact us page
+* #1062 Web API: Add filter options for user grid on configuration page
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation

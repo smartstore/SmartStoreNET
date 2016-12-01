@@ -9,8 +9,8 @@ $art-font-size-sm:              $font-size-xs;
 $art-line-height:               1.3;
 $art-price-color:               $body-color;
 $art-price-offer-color:         $brand-danger;
+$art-bg-color:                  #fff;
 $art-border-color:              rgba(0,0,0, 0.12);
-$art-btnpanel-color:            #fff;
 
 .artlist {
     position: relative;
@@ -32,7 +32,8 @@ $art-btnpanel-color:            #fff;
     padding-bottom: $grid-gutter-width / 2;
     
     border: 1px solid transparent;
-    border-bottom-color: $art-border-color;   
+    border-bottom-color: $art-border-color;
+    background: $art-bg-color;   
 
     margin-top: -1px;
     margin-left: -1px;
@@ -211,7 +212,7 @@ $art-btnpanel-color:            #fff;
     right: -1px;
     height: 50px;
     bottom: -49px;
-    background: $art-btnpanel-color;
+    background: $art-bg-color;
     border: 1px solid rgba(0,0,0, 0.2);
     border-top-color: #fff;
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);

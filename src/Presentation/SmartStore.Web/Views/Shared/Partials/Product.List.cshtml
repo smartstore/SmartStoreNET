@@ -4,6 +4,8 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{ 
+	Html.AppendScriptParts(true, "~/Themes/Alpha/Scripts/smartstore.articlelist.js");
+
 	var id = "artlist-" + CommonHelper.GenerateRandomDigitCode(10);
 	var maxPictureSize = Model.Select(x => x.DefaultPictureModel)
 		.Where(x => x != null)
@@ -24,6 +26,6 @@
 <div id="@id" class="artlist artlist-style-grid artlist-4-cols">
 	@foreach (var product in Model)
 	{
-		Html.RenderPartial("Product.Box", product);
+		Html.RenderPartial("Product.Item", product);
 	}
 </div>

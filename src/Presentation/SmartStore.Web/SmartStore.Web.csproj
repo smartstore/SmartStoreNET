@@ -1465,6 +1465,7 @@
     <Content Include="Themes\Alpha\Scripts\select2.min.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.column-equalizer.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.common.js" />
+    <Content Include="Themes\Alpha\Scripts\smartstore.articlelist.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.doAjax.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.eventbroker.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.globalize.adapter.js" />
@@ -2097,7 +2098,7 @@
     <Content Include="Views\Search\InstantSearch.TopProducts.cshtml" />
     <Content Include="Views\Search\Search2.cshtml" />
     <Content Include="Themes\Alpha\Content\_artlist.scss" />
-    <Content Include="Views\Shared\Partials\Product.Box.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.Item.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>

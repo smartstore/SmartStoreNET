@@ -109,13 +109,13 @@
 			</td>
 		</tr>
 		@if (Model.ScheduleTaskId > 0)
-        {
+		{
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(x => x.ScheduleTaskId)
 				</td>
 				<td class="adminData">
-					@{ Html.RenderAction("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, area = "admin" }); }
+					@Html.Action("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, area = "admin" })
 				</td>
 			</tr>
 		}
@@ -260,11 +260,10 @@
 		Model.Provider.EntityType == ExportEntityType.NewsLetterSubscription)
 	{
 		<div class="alert alert-info">@Html.Raw(T("Admin.DataExchange.Export.Filter.Note"))</div>
-
-        Html.RenderPartial("_Tab.Filter", Model);
-    }
-    else
-    {
+		@Html.Partial("_Tab.Filter", Model)
+	}
+	else
+	{
 		<div class="alert alert-info">@T("Admin.DataExchange.Export.NoFiltering")</div>
 	}
 }
@@ -274,8 +273,7 @@
 	if (Model.Provider.EntityType == ExportEntityType.Product || Model.Provider.EntityType == ExportEntityType.Order)
 	{
 		<div class="alert alert-info">@Html.Raw(T("Admin.DataExchange.Export.Projection.Note"))</div>
-		
-        Html.RenderPartial("_Tab.Projection", Model);
+		@Html.Partial("_Tab.Projection", Model)
 	}
 	else
 	{
@@ -299,12 +297,12 @@
 				viewData.ModelState.Merge(ViewData.ModelState);
 				@Html.Hidden("CustomProperties[ProviderConfigData].__Type__", Model.Provider.ConfigDataType.AssemblyQualifiedName)
 
-                try
-                {
-                    Html.RenderPartial(Model.Provider.ConfigPartialViewName, Model.Provider.ConfigData, viewData);
-                }
-                catch (Exception exception)
-                {
+				try
+				{
+					@Html.Partial(Model.Provider.ConfigPartialViewName, Model.Provider.ConfigData, viewData)
+				}
+				catch (Exception exception)
+				{
 					<div class="alert alert-error">
 						@T("Admin.Configuration.Plugins.UnknownError")
 					</div>
@@ -323,7 +321,7 @@
 
 @helper TabDeployment()
 {
-    Html.RenderPartial("_Tab.Deployment", Model);
+	@Html.Partial("_Tab.Deployment", Model)
 }
 
 @Html.DeleteConfirmation("export-profile-delete")

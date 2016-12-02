@@ -1,15 +1,16 @@
 namespace SmartStore.Data.Migrations
 {
-	using System;
-	using System.Data.Entity;
-	using System.Data.Entity.Migrations;
-	using System.Linq;
-	using Core.Caching;
-	using Core.Domain.Configuration;
-	using Core.Infrastructure;
-	using Setup;
+    using System;
+    using System.Data.Entity;
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+    using Core.Caching;
+    using Core.Domain.Configuration;
+    using Core.Infrastructure;
+    using Setup;
+    using Core.Domain.Security;
 
-	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
+    public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
 		public MigrationsConfiguration()
 		{
@@ -28,7 +29,15 @@ namespace SmartStore.Data.Migrations
 			// TODO: (mc) Temp only. Put this in a seeding migration right before release.
 			context.MigrateLocaleResources(MigrateLocaleResources);
 			MigrateSettings(context);
-		}
+
+            // remove permission record
+            var permissionRecords = context.Set<PermissionRecord>();
+            var record = permissionRecords.Where(x => x.SystemName.Equals("ManageContentSlider")).FirstOrDefault();
+            if (record != null)
+                permissionRecords.Remove(record);
+
+            context.SaveChanges();
+        }
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
@@ -40,9 +49,13 @@ namespace SmartStore.Data.Migrations
 				EngineContext.Current.Resolve<ICacheManager>().Clear();
 			}
 
-			// [...]
+            context.MigrateSettings(x => {
+                x.DeleteGroup("ContentSlider");
+            });
 
-			context.SaveChanges();
+            // [...]
+            
+            context.SaveChanges();
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
@@ -176,6 +189,11 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.AdditionalShippingSurcharge",
 				"zzgl. <b>{0}</b> zusätzlicher Versandgebühr",
 				"Plus <b>{0}</b> shipping surcharge");
-		}
+
+            builder.DeleteFor("Admin.Configuration.ContentSlider");
+            builder.DeleteFor("Admin.ContentManagement.ContentSlider");
+            builder.DeleteFor("Admin.ContentSlider.Slide");
+            builder.Delete("Admin.Themes.ContentSlider");
+        }
 	}
 }

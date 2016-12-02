@@ -4,7 +4,6 @@ using AutoMapper;
 using SmartStore.Admin.Models.Blogs;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Common;
-using SmartStore.Admin.Models.ContentSlider;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.Directory;
 using SmartStore.Admin.Models.Discounts;
@@ -356,23 +355,6 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Locales, mo => mo.Ignore());
             Mapper.CreateMap<QuantityUnitModel, QuantityUnit>()
 				.ForMember(dest => dest.DisplayLocale, mo => mo.Ignore());
-
-            // ContentSlider slides
-            Mapper.CreateMap<ContentSliderSettings, ContentSliderSettingsModel>()
-                .ForMember(dest => dest.Id, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
-				.ForMember(dest => dest.SearchStoreId, mo => mo.Ignore());
-            Mapper.CreateMap<ContentSliderSettingsModel, ContentSliderSettings>();
-
-			Mapper.CreateMap<ContentSliderSlideSettings, ContentSliderSlideModel>()
-				.ForMember(dest => dest.Id, mo => mo.Ignore())
-				.ForMember(dest => dest.SlideIndex, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore());
-            Mapper.CreateMap<ContentSliderSlideModel, ContentSliderSlideSettings>();
-
-            Mapper.CreateMap<ContentSliderButtonSettings, ContentSliderButtonModel>()
-                .ForMember(dest => dest.Id, mo => mo.Ignore());
-            Mapper.CreateMap<ContentSliderButtonModel, ContentSliderButtonSettings>();
 
             // attribute combinations
             Mapper.CreateMap<ProductVariantAttributeCombination, ProductVariantAttributeCombinationModel>()

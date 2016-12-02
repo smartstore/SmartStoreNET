@@ -5,7 +5,6 @@ using SmartStore.Admin.Models.Cms;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.Directory;
-using SmartStore.Admin.Models.ContentSlider;
 using SmartStore.Admin.Models.Discounts;
 using SmartStore.Admin.Models.ExternalAuthentication;
 using SmartStore.Admin.Models.Forums;
@@ -759,33 +758,6 @@ namespace SmartStore.Admin
         #endregion
 
         #region Settings
-
-        public static ContentSliderSettingsModel ToModel(this ContentSliderSettings  entity)
-        {
-            return Mapper.Map<ContentSliderSettings, ContentSliderSettingsModel>(entity);
-        }
-        public static ContentSliderSettings ToEntity(this ContentSliderSettingsModel model)
-        {
-            return Mapper.Map<ContentSliderSettingsModel, ContentSliderSettings>(model);
-        }
-        public static ContentSliderSettings ToEntity(this ContentSliderSettingsModel model, ContentSliderSettings destination)
-        {
-            return Mapper.Map(model, destination);
-        }
-
-        public static ContentSliderSlideModel ToModel(this ContentSliderSlideSettings entity)
-        {
-            return Mapper.Map<ContentSliderSlideSettings, ContentSliderSlideModel>(entity);
-        }
-        public static ContentSliderSlideSettings ToEntity(this ContentSliderSlideModel model)
-        {
-            return Mapper.Map<ContentSliderSlideModel, ContentSliderSlideSettings>(model);
-        }
-        public static ContentSliderSlideSettings ToEntity(this ContentSliderSlideModel model, ContentSliderSlideSettings destination)
-        {
-            return Mapper.Map(model, destination);
-        }
-
         public static ThemeListModel ToModel(this ThemeSettings entity)
         {
             return Mapper.Map<ThemeSettings, ThemeListModel>(entity);

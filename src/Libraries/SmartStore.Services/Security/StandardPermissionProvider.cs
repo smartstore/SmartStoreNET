@@ -36,7 +36,6 @@ namespace SmartStore.Services.Security
         public static readonly PermissionRecord ManageCurrencies = new PermissionRecord { Name = "Admin area. Manage Currencies", SystemName = "ManageCurrencies", Category = "Configuration" };
         public static readonly PermissionRecord ManageDeliveryTimes = new PermissionRecord { Name = "Admin area. Manage Delivery Times", SystemName = "ManageDeliveryTimes", Category = "Configuration" };
         public static readonly PermissionRecord ManageQuantityUnits = new PermissionRecord { Name = "Admin area. Manage Quantity Units", SystemName = "ManageQuantityUnits", Category = "Configuration" };
-        public static readonly PermissionRecord ManageContentSlider = new PermissionRecord { Name = "Admin area. Manage Content Slider", SystemName = "ManageContentSlider", Category = "Configuration" };
         public static readonly PermissionRecord ManageThemes = new PermissionRecord { Name = "Admin area. Manage Themes", SystemName = "ManageThemes", Category = "Configuration" };
         public static readonly PermissionRecord ManageMeasures = new PermissionRecord { Name = "Admin area. Manage Measures", SystemName = "ManageMeasures", Category = "Configuration" };
         public static readonly PermissionRecord ManageActivityLog = new PermissionRecord { Name = "Admin area. Manage Activity Log", SystemName = "ManageActivityLog", Category = "Configuration" };
@@ -92,7 +91,6 @@ namespace SmartStore.Services.Security
                 ManageShippingSettings,
                 ManageCurrencies,
                 ManageDeliveryTimes, 
-                ManageContentSlider, 
                 ManageThemes, 
                 ManageMeasures,
                 ManageActivityLog,
@@ -152,7 +150,6 @@ namespace SmartStore.Services.Security
                         ManageShippingSettings,
                         ManageCurrencies,
                         ManageDeliveryTimes,
-                        ManageContentSlider,
                         ManageThemes,
                         ManageMeasures,
                         ManageActivityLog,

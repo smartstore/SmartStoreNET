@@ -4206,9 +4206,6 @@ namespace SmartStore.Data.Setup
 
 		public IList<ISettings> Settings()
 		{
-			var seName = GetSeName("slider-bg");
-			var imgContentSliderBg = _ctx.Set<Picture>().Where(x => x.SeoFilename == seName).FirstOrDefault();
-
 			var entities = new List<ISettings>
 			{
 				new PdfSettings
@@ -4296,10 +4293,6 @@ namespace SmartStore.Data.Setup
 				new EmailAccountSettings()
 				{
 					DefaultEmailAccountId = _ctx.Set<EmailAccount>().First().Id
-				},
-				new ContentSliderSettings()
-				{
-					BackgroundPictureId = imgContentSliderBg.Id,
 				},
 				new ThemeSettings()
 				{

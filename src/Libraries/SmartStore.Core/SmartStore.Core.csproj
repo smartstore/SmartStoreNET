@@ -279,7 +279,6 @@
     <Compile Include="Domain\Catalog\ProductBundleItem.cs" />
     <Compile Include="Domain\Catalog\ProductType.cs" />
     <Compile Include="Domain\Catalog\ProductVariantAttributeValueType.cs" />
-    <Compile Include="Domain\Cms\ContentSliderSettings.cs" />
     <Compile Include="Domain\Common\CompanyInformationSettings.cs" />
     <Compile Include="Domain\Common\ContactDataSettings.cs" />
     <Compile Include="Domain\Common\BankConnectionSettings.cs" />

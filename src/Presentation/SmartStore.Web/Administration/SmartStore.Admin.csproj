@@ -275,7 +275,6 @@
     <Compile Include="Models\Settings\DataExchangeSettingsModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordListModel.cs" />
     <Compile Include="Models\UrlRecord\UrlRecordModel.cs" />
-    <Compile Include="Models\Settings\ContentSliderSettingsModel.cs" />
     <Compile Include="Models\Customers\OnlineCustomerModel.cs" />
     <Compile Include="Models\Directory\DeliveryTimeModel.cs" />
     <Compile Include="Models\ExternalAuthentication\AuthenticationMethodModel.cs" />
@@ -380,7 +379,6 @@
     <Compile Include="Validators\Catalog\ManufacturerValidator.cs" />
     <Compile Include="Validators\Common\AddressValidator.cs" />
     <Compile Include="Validators\Common\GenericAttributeValidator.cs" />
-    <Compile Include="Validators\ContentSlider\ContentSliderValidator.cs" />
     <Compile Include="Validators\DataExchange\ExportDeplomentValidator.cs" />
     <Compile Include="Validators\DataExchange\CsvConfigurationValidator.cs" />
     <Compile Include="Validators\DataExchange\ImportProfileValidator.cs" />

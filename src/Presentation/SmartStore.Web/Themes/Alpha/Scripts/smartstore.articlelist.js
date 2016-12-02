@@ -6,11 +6,20 @@
 ; (function ($, window, document, undefined) {
 
 	$('.artlist-style-grid').on('mouseenter', '.art', function (e) {
-		console.log("ENTER", e);
+		var art = $(this);
+		var drop = art.find('.art-drop');
+
+		if (drop.length > 0) {
+			drop.css('bottom', ((drop.outerHeight(true) * -1) + 1) + 'px');
+			art.addClass('active');
+		}
 	});
 
 	$('.artlist-style-grid').on('mouseleave', '.art', function (e) {
-		console.log("LEAVE", e);
+		$(this)
+			.removeClass('active')
+			.find('.art-drop')
+			.css('bottom', 0);
 	});
 
 })(jQuery, window, document);

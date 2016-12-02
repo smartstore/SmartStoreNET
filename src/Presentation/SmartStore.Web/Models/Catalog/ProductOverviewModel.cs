@@ -30,7 +30,9 @@ namespace SmartStore.Web.Models.Catalog
         public string Sku { get; set; }
         public bool ShowWeight { get; set; }
         public string Weight { get; set; }
-        public bool ShowDimensions { get; set; }
+		public bool ShowDescription { get; set; } // TODO: (mc) Put this to parent model
+		public bool ShowBrand { get; set; } // TODO: (mc) Put this to parent model
+		public bool ShowDimensions { get; set; }
         public string Dimensions { get; set; }
         public string DimensionMeasureUnit { get; set; }
         public bool ShowLegalInfo { get; set; }
@@ -51,6 +53,9 @@ namespace SmartStore.Web.Models.Catalog
         public string StockAvailablity { get; set; }
         public bool DisplayBasePrice { get; set; }
         public string BasePriceInfo { get; set; }
+
+		public bool HasMoreOptions { get; set; }
+
 		/// <summary>
 		/// For internal use
 		/// </summary>
@@ -59,16 +64,13 @@ namespace SmartStore.Web.Models.Catalog
         public bool IsNew { get; set; } // TODO: (mc) Remove later in favor of "Badges"
 		public bool HideBuyButtonInLists { get; set; }
 
-        //price
         public ProductPriceModel ProductPrice { get; set; }
-        //picture
         public PictureModel DefaultPictureModel { get; set; }
-        //specification attributes
         public IList<ProductSpecificationModel> SpecificationAttributeModels { get; set; }
-        // color Attributes
         public IList<ColorAttributeModel> ColorAttributes { get; set; }
-
 		public IList<ProductBadgeModel> Badges { get; set; }
+
+		public string[] AvailableOptionNames { get; set; }
 
 		#region Nested Classes
 
@@ -81,7 +83,7 @@ namespace SmartStore.Web.Models.Catalog
 
         public partial class ProductPriceModel : ModelBase
         {
-			public decimal OldPriceValue { get; set; }
+			public decimal? OldPriceValue { get; set; }
 			public string OldPrice { get; set; }
 
 			public decimal PriceValue { get; set; }
@@ -102,7 +104,8 @@ namespace SmartStore.Web.Models.Catalog
 
         public partial class ColorAttributeModel : ModelBase
         {
-            public string Color { get; set; }
+			public string AttributeName { get; set; }
+			public string Color { get; set; }
             public string Alias { get; set; }
             public string FriendlyName { get; set; }
 

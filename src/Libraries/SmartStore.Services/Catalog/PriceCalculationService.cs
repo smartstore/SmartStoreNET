@@ -319,7 +319,10 @@ namespace SmartStore.Services.Catalog
 			return result;
 		}
 
-		public virtual PriceCalculationContext CreatePriceCalculationContext(IEnumerable<Product> products = null, Customer customer = null, int? storeId = null)
+		public virtual PriceCalculationContext CreatePriceCalculationContext(
+			IEnumerable<Product> products = null, 
+			Customer customer = null, 
+			int? storeId = null)
 		{
 			if (customer == null)
 				customer = _services.WorkContext.CurrentCustomer;
@@ -327,6 +330,7 @@ namespace SmartStore.Services.Catalog
 			if (!storeId.HasValue)
 				storeId = _services.StoreContext.CurrentStore.Id;
 
+			// TODO: (mc) refactor because we eager load nav properties in PrepareProductOverviewModel now
 			var context = new PriceCalculationContext(products,
 				x => _productAttributeService.GetProductVariantAttributesByProductIds(x, null),
 				x => _productAttributeService.GetProductVariantAttributeCombinations(x),

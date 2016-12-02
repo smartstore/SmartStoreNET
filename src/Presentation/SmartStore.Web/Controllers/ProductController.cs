@@ -329,7 +329,7 @@ namespace SmartStore.Web.Controllers
 			if (products.Count == 0)
 				return Content("");
 
-			var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize, false, false, false, false, true).ToList();
+			var model = _helper.PrepareProductOverviewModels(products, productThumbPictureSize: productThumbPictureSize, isCompact: true).ToList();
 
 			return PartialView(model);
 		}
@@ -356,7 +356,7 @@ namespace SmartStore.Web.Controllers
 				return Content("");
 
 			// prepare model
-            var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize, false, false, false, false, true).ToList();
+            var model = _helper.PrepareProductOverviewModels(products, productThumbPictureSize: productThumbPictureSize, isCompact: true).ToList();
 
 			return PartialView(model);
 		}

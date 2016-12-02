@@ -556,6 +556,15 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowShortDescriptionInGridStyleLists)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowShortDescriptionInGridStyleLists)
+				@Html.ValidationMessageFor(model => model.ShowShortDescriptionInGridStyleLists)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.ShowDeliveryTimesInProductLists)
 			</td>
 			<td class="adminData">
@@ -565,11 +574,29 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowManufacturerInGridStyleLists)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowManufacturerInGridStyleLists)
+				@Html.ValidationMessageFor(model => model.ShowManufacturerInGridStyleLists)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.ShowBasePriceInProductLists)
 			</td>
 			<td class="adminData">
 				@Html.SettingEditorFor(model => model.ShowBasePriceInProductLists)
 				@Html.ValidationMessageFor(model => model.ShowBasePriceInProductLists)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowProductOptionsInLists)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowProductOptionsInLists)
+				@Html.ValidationMessageFor(model => model.ShowProductOptionsInLists)
 			</td>
 		</tr>
 		<tr>

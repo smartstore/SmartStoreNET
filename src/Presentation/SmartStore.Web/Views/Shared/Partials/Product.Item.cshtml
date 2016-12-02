@@ -4,27 +4,12 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{ 
-	// Perf: we use RouteValueDictionary instead of anonymous objects in this view because it's slightly faster
-	// prepare "Add to cart" AJAX link
-	string addToCartUrl = "";
-	if (Model.ProductPrice.ForceRedirectionAfterAddingToCart)
-	{
-		addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "forceredirection", Model.ProductPrice.ForceRedirectionAfterAddingToCart } });
-	}
-	else
-	{
-		addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id } });
-	}
-
-	bool showQuicklinks = !Model.ProductPrice.DisableWishListButton || Model.CompareEnabled;
-
 	var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
 	var picture = Model.DefaultPictureModel;
 }
 
 <article class="art" data-id="@Model.Id" data-price="@Model.ProductPrice.PriceValue.ToString("F", CultureInfo.InvariantCulture)">
 	<div class="art-picture-block">
-		@* TODO: (mc) Read max picture size from product list and set height per partial *@
 		@if (picture.Title.HasValue())
 		{
 			<a class="art-picture" href="@artDetailUrl" title="@picture.Title">
@@ -67,6 +52,17 @@
 				</div>
 			</div>
 		}
+		
+		@if (Model.ShowBrand)
+		{
+			var manufacturer = Model.Manufacturers != null ? Model.Manufacturers.FirstOrDefault() : null;
+			<div class="art-brand">
+				@if (manufacturer != null)
+				{
+					@manufacturer.Name
+				}	
+			</div>
+		}
 
 		<h4 class="art-name">
 			<a href="@artDetailUrl" title="@Model.Name">
@@ -74,10 +70,13 @@
 			</a>
 		</h4>
 
-		<div class="art-description" title="@Model.ShortDescription">
-			@* TODO: (mc) Only render description block when merchant wishes so and only when at least one description is specified *@
-			@Html.Raw(Model.ShortDescription)
-		</div>
+		@if (Model.ShowDescription /* TODO: (mc) Fetch this from parent model */)
+		{
+			<div class="art-description" title="@Model.ShortDescription">
+				@* TODO: (mc) Only render description block when merchant wishes so and only when at least one description is specified *@
+				@Html.Raw(Model.ShortDescription)
+			</div>
+		}
 
 		@if (Model.ShowDeliveryTimes)
 		{
@@ -113,17 +112,12 @@
 				</div>
 			}
 
-			@* TODO: (mc) Optionally display saving (You save: 123 EUR / 12 %). In the badge also.  *@
+			@* TODO: (mc) Optionally display saving (You save: 123 EUR / 12 %). *@
 		</div>
 	</div>
 
-	<div class="art-buttons-block">
-		<div class="row">
-			<a class="col-xs bg-primary color-white"><i class="fa fa-cart-plus"></i></a>
-			<a class="col-xs"><i class="fa fa-heart-o"></i></a>
-			<a class="col-xs"><i class="fa fa-retweet"></i></a>
-			<a class="col-xs"><i class="fa fa-info"></i></a>
-		</div>
-	</div>
+	@{ 
+		Html.RenderPartial("Product.Item.Drop", Model);
+	}
 </article>
 

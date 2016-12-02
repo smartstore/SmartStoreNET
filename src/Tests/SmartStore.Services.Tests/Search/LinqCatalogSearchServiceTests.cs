@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Services.Catalog;
 using SmartStore.Services.Search;
 
 namespace SmartStore.Services.Tests.Search
@@ -18,6 +19,7 @@ namespace SmartStore.Services.Tests.Search
 	[TestFixture]
 	public class LinqCatalogSearchServiceTests
 	{
+		private IProductService _productService;
 		private IRepository<Product> _productRepository;
 		private IRepository<LocalizedProperty> _localizedPropertyRepository;
 		private IRepository<StoreMapping> _storeMappingRepository;
@@ -29,6 +31,7 @@ namespace SmartStore.Services.Tests.Search
 		{
 			InitMocks(products, new List<LocalizedProperty>());
 		}
+
 		private void InitMocks(List<Product> products, List<LocalizedProperty> localized)
 		{
 			_productRepository.Expect(x => x.Table).Return(products.AsQueryable());
@@ -64,13 +67,20 @@ namespace SmartStore.Services.Tests.Search
 		[SetUp]
 		public virtual void Setup()
 		{
+			_productService = MockRepository.GenerateMock<IProductService>();
 			_productRepository = MockRepository.GenerateMock<IRepository<Product>>();
 			_localizedPropertyRepository = MockRepository.GenerateMock<IRepository<LocalizedProperty>>();
 			_storeMappingRepository = MockRepository.GenerateMock<IRepository<StoreMapping>>();
 			_aclRepository = MockRepository.GenerateMock<IRepository<AclRecord>>();
 			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
 
-			_linqCatalogSearchService = new LinqCatalogSearchService(_productRepository, _localizedPropertyRepository, _storeMappingRepository, _aclRepository, _eventPublisher);
+			_linqCatalogSearchService = new LinqCatalogSearchService(
+				_productService, 
+				_productRepository, 
+				_localizedPropertyRepository, 
+				_storeMappingRepository, 
+				_aclRepository, 
+				_eventPublisher);
 		}
 
 		[Test]

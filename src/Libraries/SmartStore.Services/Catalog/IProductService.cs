@@ -41,8 +41,9 @@ namespace SmartStore.Services.Catalog
         /// Gets products by identifier
         /// </summary>
         /// <param name="productIds">Product identifiers</param>
+		/// <param name="flags">Which navigation properties to eager load</param>
         /// <returns>Products</returns>
-        IList<Product> GetProductsByIds(int[] productIds);
+        IList<Product> GetProductsByIds(int[] productIds, ProductLoadFlags flags = ProductLoadFlags.None);
 
         /// <summary>
         /// Inserts a product
@@ -413,6 +414,24 @@ namespace SmartStore.Services.Catalog
 		Multimap<int, ProductBundleItem> GetBundleItemsByProductIds(int[] productIds, bool showHidden = false);
 
 		#endregion
-
     }
+
+	[Flags]
+	public enum ProductLoadFlags
+	{
+		None = 0,
+		WithCategories = 1 << 0,
+		WithManufacturers = 1 << 1,
+		WithPictures = 1 << 2,
+		WithReviews = 1 << 3,
+		WithSpecificationAttributes = 1 << 4,
+		WithVariantAttributes = 1 << 5,
+		WithAttributeCombinations = 1 << 6,
+		WithTags = 1 << 7,
+		WithTierPrices = 1 << 8,
+		WithDiscounts = 1 << 9,
+		WithBundleItems = 1 << 10,
+		WithDeliveryTime = 1 << 11,
+		Full = WithCategories | WithManufacturers | WithPictures | WithReviews | WithSpecificationAttributes | WithVariantAttributes | WithAttributeCombinations | WithTags | WithTierPrices | WithDiscounts | WithBundleItems | WithDeliveryTime
+	}
 }

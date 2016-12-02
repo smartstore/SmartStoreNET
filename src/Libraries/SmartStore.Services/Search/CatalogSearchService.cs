@@ -36,14 +36,14 @@ namespace SmartStore.Services.Search
 			_eventPublisher = eventPublisher;
 		}
 
-		protected virtual CatalogSearchResult SearchFallback(CatalogSearchQuery searchQuery)
+		protected virtual CatalogSearchResult SearchFallback(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None)
 		{
 			// fallback to linq search
 			var linqCatalogSearchService = _ctx.ResolveNamed<ICatalogSearchService>("linq");
-			return linqCatalogSearchService.Search(searchQuery);
+			return linqCatalogSearchService.Search(searchQuery, loadFlags);
 		}
 
-		public CatalogSearchResult Search(CatalogSearchQuery searchQuery)
+		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None)
 		{
 			Guard.NotNull(searchQuery, nameof(searchQuery));
 			Guard.NotNegative(searchQuery.Take, nameof(searchQuery.Take));
@@ -81,7 +81,7 @@ namespace SmartStore.Services.Search
 							using (_chronometer.Step("Collect from DB"))
 							{
 								var productIds = searchHits.Select(x => x.EntityId).ToArray();
-								var products = _productService.Value.GetProductsByIds(productIds);
+								var products = _productService.Value.GetProductsByIds(productIds, loadFlags);
 
 								hits = new PagedList<Product>(products, searchQuery.PageIndex, searchQuery.Take, totalCount);
 							}

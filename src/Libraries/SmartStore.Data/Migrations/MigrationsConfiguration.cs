@@ -52,10 +52,28 @@ namespace SmartStore.Data.Migrations
             context.MigrateSettings(x => {
                 x.DeleteGroup("ContentSlider");
             });
+			// Change MediaSettings.ProductThumbPictureSize to 250 if smaller
+			settings = context.Set<Setting>().Where(x => x.Name == "MediaSettings.ProductThumbPictureSize").ToList();
+			if (settings.Any())
+			{
+				settings.Each(x =>
+				{
+					var size = x.Value.Convert<int>();
+					if (size < 250)
+					{
+						x.Value = "250";
+					}
+				});
+			}
 
             // [...]
             
             context.SaveChanges();
+
+			context.MigrateSettings(x => 
+			{
+				x.Add<int>("MediaSettings.DefaultThumbnailAspectRatio", 1);
+			});
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
@@ -195,5 +213,26 @@ namespace SmartStore.Data.Migrations
             builder.DeleteFor("Admin.ContentSlider.Slide");
             builder.Delete("Admin.Themes.ContentSlider");
         }
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowShortDescriptionInGridStyleLists",
+				"Show short description in product lists",
+				"Zeige Kurzbeschreibung in Produktlisten",
+				"Specifies whether the product short description should be displayed in product lists",
+				"Legt fest, ob die Produkt-Kurzbeschreibung auch in Produktlisten angezeigt werden sollen");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturerInGridStyleLists",
+				"Show manufacturer in product lists",
+				"Zeige Hersteller in Produktlisten",
+				"Specifies whether the manufacturer name should be displayed in grid style product lists",
+				"Legt fest, ob der Hersteller-Name auch in Rasterstil Produktlisten angezeigt werden sollen");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowProductOptionsInLists",
+				"Show variant names in product lists",
+				"Zeige Variantnamen in Produktlisten",
+				"Specifies whether variant names should be displayed in product lists",
+				"Legt fest, ob Variantnamen in Produktlisten angezeigt werden sollen");
+
+			builder.AddOrUpdate("Products.PlusOption", "Plus Option", "Plus Option");
+			builder.AddOrUpdate("Products.PlusOptions", "Plus Options", "Plus Optionen");
+		}
 	}
 }

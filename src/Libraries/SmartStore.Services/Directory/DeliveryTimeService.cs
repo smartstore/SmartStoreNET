@@ -71,7 +71,7 @@ namespace SmartStore.Services.Directory
             if (deliveryTimeId == 0)
                 return null;
 
-            return  _deliveryTimeRepository.GetById(deliveryTimeId);
+            return  _deliveryTimeRepository.GetByIdCached(deliveryTimeId, "deliverytime-{0}".FormatInvariant(deliveryTimeId));
         }
 
 		public virtual DeliveryTime GetDeliveryTime(Product product)

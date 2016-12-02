@@ -133,8 +133,12 @@ namespace SmartStore.Web.Controllers
 				SystemCustomerAttributeNames.LastContinueShoppingPage,
 				Services.WebHelper.GetThisPageUrl(false),
 				Services.StoreContext.CurrentStore.Id);
+
+			// TODO: (mc) somehow determine viewMode
+			var viewMode = "grid";
 			
-			var result = _catalogSearchService.Search(query);
+			var loadFlags = _catalogHelper.DetermineProductLoadFlagsForLists(viewMode);
+			var result = _catalogSearchService.Search(query, loadFlags);
 
 			if (result.Hits.Count == 0 && result.SpellCheckerSuggestions.Any())
 			{
@@ -144,7 +148,7 @@ namespace SmartStore.Web.Controllers
 				var oldTerm = query.Term;
 				query.Term = oldSuggestions[0];
 
-				result = _catalogSearchService.Search(query);
+				result = _catalogSearchService.Search(query, loadFlags);
 
 				if (result.Hits.Any())
 				{
@@ -160,8 +164,9 @@ namespace SmartStore.Web.Controllers
 
 			var overviewModels = _catalogHelper.PrepareProductOverviewModels(
 				result.Hits,
-				prepareColorAttributes: true,
-				prepareManufacturers: false /* TODO: (mc) ViewModes */).ToList();
+				prepareColorAttributes: _catalogSettings.ShowColorSquaresInLists,
+				prepareVariants: _catalogSettings.ShowProductOptionsInLists,
+				prepareManufacturers: viewMode != "grid" || _catalogSettings.ShowManufacturerInGridStyleLists).ToList();
 
 			model.SearchResult = result;
 			model.Term = query.Term;
@@ -180,6 +185,7 @@ namespace SmartStore.Web.Controllers
 		[ValidateInput(false)]
 		public ActionResult Search2(SearchModel model, SearchPagingFilteringModel command)
 		{
+			// TODO: (mc) Remove later
 			if (model == null)
 				model = new SearchModel();
 

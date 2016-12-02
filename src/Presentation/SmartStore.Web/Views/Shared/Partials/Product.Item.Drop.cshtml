@@ -1,0 +1,127 @@
+﻿@model ProductOverviewModel
+
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Orders;
+
+@{ 
+	var showDrop =
+		!Model.ProductPrice.DisableWishListButton
+		|| Model.CompareEnabled
+		|| (!Model.ProductPrice.DisableBuyButton && !Model.HideBuyButtonInLists)
+		|| Model.ColorAttributes.Any()
+		|| Model.AvailableOptionNames != null;
+
+	if (!showDrop)
+	{
+		return;
+	}
+
+	string addToCartUrl = "";
+	if (Model.ProductPrice.ForceRedirectionAfterAddingToCart)
+	{
+		addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "forceredirection", Model.ProductPrice.ForceRedirectionAfterAddingToCart } });
+	}
+	else
+	{
+		addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id } });
+	}
+
+	var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
+}
+
+<div class="art-drop">
+	@if (Model.ColorAttributes.Any() || Model.AvailableOptionNames != null)
+	{
+		<div class="art-drop-info">
+			@if (Model.ColorAttributes.Any())
+			{
+				<div class="art-color-opts">
+					@foreach (var clr in Model.ColorAttributes)
+					{
+						<a href='@artDetailUrl' class="art-color-opt" style="background-color: @clr.Color" title="@clr.AttributeName @clr.FriendlyName auswählen"></a>
+					}
+				</div>
+			}
+
+			@if (Model.AvailableOptionNames != null)
+			{
+				<div class="art-more-opts">
+					@if (Model.AvailableOptionNames.Length == 1)
+					{
+						<span>@T("Products.PlusOption"):</span>
+						<a href="@artDetailUrl">@Model.AvailableOptionNames[0]</a>
+					}
+					else
+					{
+						<div>@T("Products.PlusOptions"):</div>
+						<a href="@artDetailUrl">@String.Join(", ", Model.AvailableOptionNames).Truncate(50, "...")</a>
+					}
+				</div>
+			}
+		</div>
+	}
+
+	<div class="row art-drop-btn-group">
+		@if (!Model.ProductPrice.DisableBuyButton && !Model.HideBuyButtonInLists)
+		{
+			if (!Model.ProductPrice.CallForPrice)
+			{
+				var title = (Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"));
+
+				<a data-href='@addToCartUrl'
+				   href="#"
+				   class="btn btn-primary btn-icon btn-lg art-drop-btn col-xs ajax-cart-link"
+				   title="@title"
+				   rel="tooltip nofollow"
+				   data-type="cart"
+				   data-action="add">
+					<i class="fa fa-cart-arrow-down"></i>
+				</a>
+			}
+			else
+			{
+				<a href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })" 
+				   class="btn btn-secondary add-to-cart-button" 
+				   rel="tooltip nofollow" 
+				   title="@T("Products.CallForPrice.GoToForm")">
+					<i class="fa fa-envelope"></i>
+				</a>
+			}
+		}
+
+		@if (!Model.ProductPrice.DisableWishListButton)
+		{
+			@* TODO: (mc) refactor data-form-selector="#product-details-form"  *@
+			<a data-href='@Url.Action("AddProduct", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "shoppingCartTypeId", (int)ShoppingCartType.Wishlist } })'
+			   href="#"
+			   class="btn btn-secondary btn-icon btn-lg art-drop-btn col-xs ajax-cart-link" 
+			   title="@T("Categories.Wishlist")"
+			   rel="tooltip nofollow" 
+			   data-form-selector="#product-details-form" 
+			   data-type="wishlist" 
+			   data-action="add">
+				<i class="fa fa-heart-o"></i>
+			</a>
+		}
+
+		@if (Model.CompareEnabled)
+		{
+			<a data-href="@Url.Action("AddProductToCompare", "Catalog", new RouteValueDictionary { { "id", Model.Id } })" 
+			   href="#"
+			   class="btn btn-secondary btn-icon btn-lg art-drop-btn col-xs ajax-cart-link" 
+			   title="@T("Categories.Compare")"  
+			   rel="tooltip nofollow" 
+			   data-type="compare" 
+			   data-action="add">
+				<i class="fa fa-retweet"></i>
+			</a>
+		}
+
+		<a href='@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })' 
+		   class="btn btn-secondary btn-icon btn-lg art-drop-btn col-xs" 
+		   title="@T("Products.Details")">
+			<i class="fa fa-info"></i>
+		</a>
+	</div>
+</div>
+

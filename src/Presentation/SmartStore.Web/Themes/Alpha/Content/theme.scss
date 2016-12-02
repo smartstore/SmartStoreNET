@@ -141,3 +141,32 @@ body {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
 }
+
+
+
+
+
+
+
+//
+// Bootstrap 4 Alpha 1 fixes & surrogates (DELETE later!)
+// ------------------------------------------------------
+
+.col-xs, .col-sm, .col-md, .col-lg, .col-xl {
+    display: block;
+    position: relative;
+    min-height: 1px;
+    width: 100%;
+    padding-left: $grid-gutter-width / 2;
+    padding-right: $grid-gutter-width / 2;
+}
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+    @include media-breakpoint-up($breakpoint) {
+        .col-#{$breakpoint} {  
+            flex-basis: 0;
+            flex-grow: 1;
+            max-width: 100%;
+        }
+    }
+}

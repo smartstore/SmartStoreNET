@@ -52,6 +52,9 @@ namespace SmartStore.Core.Domain.Catalog
 			FileUploadMaximumSizeBytes = 1024 * 200; //200KB
 			ManufacturersBlockItemsToDisplay = 5;
 			DisplayAllImagesNumber = 6;
+			ShowShortDescriptionInGridStyleLists = true;
+			ShowManufacturerInGridStyleLists = true;
+			ShowProductOptionsInLists = true;
 			ShowColorSquaresInLists = true;
 			ShowDiscountSign = true;
 			ShowVariantCombinationPriceAdjustment = true;
@@ -345,7 +348,13 @@ namespace SmartStore.Core.Domain.Catalog
 		
 		public int DisplayAllImagesNumber { get; set; }
 
-        public bool ShowColorSquaresInLists { get; set; }
+		public bool ShowManufacturerInGridStyleLists { get; set; }
+
+		public bool ShowShortDescriptionInGridStyleLists { get; set; }
+
+		public bool ShowProductOptionsInLists { get; set; }
+
+		public bool ShowColorSquaresInLists { get; set; }
 
 		public bool HideBuyButtonInLists { get; set; }
 

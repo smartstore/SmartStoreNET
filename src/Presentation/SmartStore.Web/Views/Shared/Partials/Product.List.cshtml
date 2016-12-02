@@ -1,24 +1,32 @@
 ﻿@model IEnumerable<ProductOverviewModel>
 
+@using SmartStore.Core.Domain.Media;
 @using SmartStore.Utilities;
 @using SmartStore.Web.Models.Catalog;
 
-@{ 
+@{
 	Html.AppendScriptParts(true, "~/Themes/Alpha/Scripts/smartstore.articlelist.js");
 
 	var id = "artlist-" + CommonHelper.GenerateRandomDigitCode(10);
-	var maxPictureSize = Model.Select(x => x.DefaultPictureModel)
-		.Where(x => x != null)
-		.Max(x => x.Size);
+	//var maxPictureSize = Model.Select(x => x.DefaultPictureModel)
+	//	.Where(x => x != null)
+	//	.Max(x => x.Size);
+
+	// TODO: (mc) Fetch this from the (new) parent model or the product category
+	var thumbAspectRatio = EngineContext.Current.Resolve<MediaSettings>().DefaultThumbnailAspectRatio;
+	var paddingTop = string.Empty;
+
+	if (thumbAspectRatio != 1 && thumbAspectRatio > 0.2 && thumbAspectRatio < 2)
+	{
+		paddingTop = (thumbAspectRatio * 100) + "%";
+	}
 }
 
-@if (maxPictureSize.HasValue)
+@if (paddingTop.HasValue())
 {
-	@* TODO: (mc) Let user decide about picture wrapper height OR height to size ratio (e.g. ratio 1.4 > padding-top: 140% > 1.4x higher) *@
 	<style type="text/css">
 		#@id .art-picture { 
-			padding-top: @(maxPictureSize.Value)px;
-			padding-top: 100%;
+			padding-top: @paddingTop;
 		}
 	</style>
 }

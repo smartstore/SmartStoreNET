@@ -146,6 +146,31 @@ namespace SmartStore.Web.Controllers
 
 		public ILogger Logger { get; set; }
 
+		public ProductLoadFlags DetermineProductLoadFlagsForLists(string viewMode = "grid")
+		{
+			// TODO: (mc) viewMode should be an enum
+
+			var flags = ProductLoadFlags.None;
+
+			if (_catalogSettings.ShowColorSquaresInLists || _catalogSettings.ShowProductOptionsInLists)
+			{
+				flags |= ProductLoadFlags.WithVariantAttributes;
+			}
+
+			if (viewMode != "grid" || _catalogSettings.ShowManufacturerInGridStyleLists)
+			{
+				flags |= ProductLoadFlags.WithManufacturers;
+			}
+
+			// TODO: (mc) Must be postprocessed in overview models.
+			//if (_catalogSettings.ShowDeliveryTimesInProductLists)
+			//{
+			//	flags |= ProductLoadFlags.WithDeliveryTime;
+			//}
+
+			return flags;
+		}
+
 		public ProductDetailsModel PrepareProductDetailsPageModel(
 			Product product, 
 			bool isAssociatedProduct = false,
@@ -1115,13 +1140,14 @@ namespace SmartStore.Web.Controllers
 			bool prepareSpecificationAttributes = false,
 			bool forceRedirectionAfterAddingToCart = false, 
 			bool prepareColorAttributes = false,
+			bool prepareVariants = false,
 			bool prepareManufacturers = false,
             bool isCompact = false,
 			bool prepareFullDescription = false,
-			bool isCompareList = false)
+			bool isCompareList = false,
+			string viewMode = "grid")
 		{
-			if (products == null)
-				throw new ArgumentNullException("products");
+			Guard.NotNull(products, nameof(products));
 
 			using (_services.Chronometer.Step("PrepareProductOverviewModels"))
 			{
@@ -1139,14 +1165,14 @@ namespace SmartStore.Web.Controllers
 				var legalInfo = "";
 
 				var res = new Dictionary<string, LocalizedString>(StringComparer.OrdinalIgnoreCase)
-			{
-				{ "Products.CallForPrice", T("Products.CallForPrice") },
-				{ "Products.PriceRangeFrom", T("Products.PriceRangeFrom") },
-				{ "Media.Product.ImageLinkTitleFormat", T("Media.Product.ImageLinkTitleFormat") },
-				{ "Media.Product.ImageAlternateTextFormat", T("Media.Product.ImageAlternateTextFormat") },
-				{ "Products.DimensionsValue", T("Products.DimensionsValue") },
-				{ "Common.AdditionalShippingSurcharge", T("Common.AdditionalShippingSurcharge") }
-			};
+				{
+					{ "Products.CallForPrice", T("Products.CallForPrice") },
+					{ "Products.PriceRangeFrom", T("Products.PriceRangeFrom") },
+					{ "Media.Product.ImageLinkTitleFormat", T("Media.Product.ImageLinkTitleFormat") },
+					{ "Media.Product.ImageAlternateTextFormat", T("Media.Product.ImageAlternateTextFormat") },
+					{ "Products.DimensionsValue", T("Products.DimensionsValue") },
+					{ "Common.AdditionalShippingSurcharge", T("Common.AdditionalShippingSurcharge") }
+				};
 
 				if (_taxSettings.ShowLegalHintsInProductList)
 				{
@@ -1174,9 +1200,15 @@ namespace SmartStore.Web.Controllers
 					{
 						Id = product.Id,
 						Name = product.GetLocalized(x => x.Name).EmptyNull(),
-						ShortDescription = product.GetLocalized(x => x.ShortDescription),
+						ShowDescription = viewMode != "grid" || _catalogSettings.ShowShortDescriptionInGridStyleLists,
+						ShowBrand = viewMode != "grid" || _catalogSettings.ShowManufacturerInGridStyleLists,
 						SeName = product.GetSeName()
 					};
+
+					if (model.ShowDescription)
+					{
+						model.ShortDescription = product.GetLocalized(x => x.ShortDescription);
+					}
 
 					if (prepareFullDescription)
 					{
@@ -1242,7 +1274,7 @@ namespace SmartStore.Web.Controllers
 									{
 										if (contextProduct.CallForPrice)
 										{
-											priceModel.OldPriceValue = 0;
+											priceModel.OldPriceValue = null;
 											priceModel.PriceValue = 0;
 											priceModel.OldPrice = null;
 											priceModel.Price = res["Products.CallForPrice"];
@@ -1255,7 +1287,7 @@ namespace SmartStore.Web.Controllers
 											decimal finalPriceBase = _taxService.GetProductPrice(contextProduct, displayPrice.Value, out taxRate);
 											finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, currency);
 
-											priceModel.OldPriceValue = 0;
+											priceModel.OldPriceValue = null;
 											priceModel.PriceValue = finalPrice;
 											priceModel.OldPrice = null;
 
@@ -1267,6 +1299,11 @@ namespace SmartStore.Web.Controllers
 											{
 												priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
 											}											
+
+											if (oldPriceBase > 0)
+											{
+												priceModel.OldPriceValue = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, currency);
+											}
 
 											priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
 										}
@@ -1300,7 +1337,7 @@ namespace SmartStore.Web.Controllers
 								if (product.CallForPrice)
 								{
 									// call for price
-									priceModel.OldPriceValue = 0;
+									priceModel.OldPriceValue = null;
 									priceModel.PriceValue = 0;
 									priceModel.OldPrice = null;
 									priceModel.Price = res["Products.CallForPrice"];
@@ -1335,7 +1372,7 @@ namespace SmartStore.Web.Controllers
 
 									if (displayFromMessage)
 									{
-										priceModel.OldPriceValue = 0;
+										priceModel.OldPriceValue = null;
 										priceModel.OldPrice = null;
 										priceModel.Price = String.Format(res["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice));
 									}
@@ -1350,7 +1387,7 @@ namespace SmartStore.Web.Controllers
 										}
 										else
 										{
-											priceModel.OldPriceValue = 0;
+											priceModel.OldPriceValue = null;
 											priceModel.OldPrice = null;
 											priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
 										}
@@ -1361,7 +1398,8 @@ namespace SmartStore.Web.Controllers
 							#endregion
 						}
 
-						if (priceModel.HasDiscount)
+						var oldPriceValue = priceModel.OldPriceValue.GetValueOrDefault();
+						if (priceModel.HasDiscount && oldPriceValue > 0 && oldPriceValue > priceModel.PriceValue)
 						{
 							priceModel.SavingPercent = (float)((priceModel.OldPriceValue - priceModel.PriceValue) / priceModel.OldPriceValue) * 100;
 
@@ -1382,30 +1420,49 @@ namespace SmartStore.Web.Controllers
 						#endregion
 					}
 
-					// color squares
-					if (prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists)
+					if ((prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists) || (prepareVariants && _catalogSettings.ShowProductOptionsInLists))
 					{
-						#region Prepare color attributes
+						#region Prepare variants
 
-						var attributes = cargoData.Attributes.Load(contextProduct.Id);
-						var colorAttribute = attributes.FirstOrDefault(x => x.AttributeControlType == AttributeControlType.ColorSquares);
+						var attributes = contextProduct.ProductVariantAttributes; // cargoData.Attributes.Load(contextProduct.Id);
+						string colorAttributeName = null;
 
-						if (colorAttribute != null)
+						// Color squares
+						if (attributes.Any() && prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists)
 						{
-							var colorValues =
-								from a in colorAttribute.ProductVariantAttributeValues.Take(50)
-								where (a.ColorSquaresRgb.HasValue() && !a.ColorSquaresRgb.IsCaseInsensitiveEqual("transparent"))
-								select new ProductOverviewModel.ColorAttributeModel
-								{
-									Color = a.ColorSquaresRgb,
-									Alias = a.Alias,
-									FriendlyName = a.GetLocalized(l => l.Name)
-								};
+							var colorAttribute = attributes.FirstOrDefault(x => x.AttributeControlType == AttributeControlType.ColorSquares);
 
-							if (colorValues.Any())
+							if (colorAttribute != null)
 							{
-								model.ColorAttributes.AddRange(colorValues.Distinct());
+								colorAttributeName = colorAttribute.ProductAttribute.GetLocalized(x => x.Name);
+								var colorValues =
+									from a in colorAttribute.ProductVariantAttributeValues.Take(20)
+									where (a.ColorSquaresRgb.HasValue() && !a.ColorSquaresRgb.IsCaseInsensitiveEqual("transparent"))
+									select new ProductOverviewModel.ColorAttributeModel
+									{
+										AttributeName = colorAttributeName,
+										Color = a.ColorSquaresRgb,
+										Alias = a.Alias,
+										FriendlyName = a.GetLocalized(l => l.Name)
+									};
+
+								if (colorValues.Any())
+								{
+									model.ColorAttributes.AddRange(colorValues.Distinct());
+								}
 							}
+						}
+
+						// Variants
+						if (attributes.Any() && prepareVariants && _catalogSettings.ShowProductOptionsInLists)
+						{
+							var attrNames = attributes.Select(x => x.ProductAttribute.GetLocalized(a => a.Name));
+							if (colorAttributeName.HasValue())
+							{
+								attrNames = attrNames.Where(x => x != colorAttributeName);
+							}
+
+							model.AvailableOptionNames = attrNames.ToArray();
 						}
 
 						#endregion
@@ -1487,7 +1544,8 @@ namespace SmartStore.Web.Controllers
 
 					if (prepareManufacturers)
 					{
-						model.Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), cachedManufacturerModels, false);
+						//model.Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), cachedManufacturerModels, false);
+						model.Manufacturers = PrepareManufacturersOverviewModel(product.ProductManufacturers, cachedManufacturerModels, false);
 					}
 
 					if (finalPrice != decimal.Zero && (_catalogSettings.ShowBasePriceInProductLists || isCompareList))
@@ -1913,7 +1971,20 @@ namespace SmartStore.Web.Controllers
 
 	}
 
-	#region Nested Classes
+	#region Nested types
+
+	[Flags]
+	public enum ProductModelFlags
+	{
+		None = 0,
+		WithPrice = 1 << 0,
+		WithPicture = 1 << 1,
+		WithSpecificationAttributes = 1 << 2,
+		WithColorAttributes = 1 << 3,
+		WithManufacturers = 1 << 4,
+		WithDescription = 1 << 5,
+		Full = WithPrice | WithPicture | WithSpecificationAttributes | WithColorAttributes | WithManufacturers | WithDescription
+	}
 
 	public class PageSizeContext
 	{

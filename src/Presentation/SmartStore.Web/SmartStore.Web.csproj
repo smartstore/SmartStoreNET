@@ -2100,6 +2100,7 @@
     <Content Include="Themes\Alpha\Content\_artlist.scss" />
     <Content Include="Views\Shared\Partials\Product.Item.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.Item.Drop.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

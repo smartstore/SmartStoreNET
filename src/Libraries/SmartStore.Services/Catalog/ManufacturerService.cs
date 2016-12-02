@@ -239,7 +239,7 @@ namespace SmartStore.Services.Catalog
 					{
 						if (!QuerySettings.IgnoreMultiStore)
 						{
-							//Store mapping
+							// Store mapping
 							var currentStoreId = _storeContext.CurrentStore.Id;
 							query = from pm in query
 									join m in _manufacturerRepository.Table on pm.ManufacturerId equals m.Id
@@ -250,7 +250,7 @@ namespace SmartStore.Services.Catalog
 									select pm;
 						}
 
-						//only distinct manufacturers (group by ID)
+						// Only distinct manufacturers (group by ID)
 						query = from pm in query
 								group pm by pm.Id into mGroup
 								orderby mGroup.Key

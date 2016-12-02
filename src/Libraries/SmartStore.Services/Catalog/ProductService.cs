@@ -4,6 +4,7 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Data.Entity;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -223,10 +224,9 @@ namespace SmartStore.Services.Catalog
                 return null;
 
 			return _productRepository.GetByIdCached(productId, "db.product.id-" + productId);
-
 		}
 
-        public virtual IList<Product> GetProductsByIds(int[] productIds)
+        public virtual IList<Product> GetProductsByIds(int[] productIds, ProductLoadFlags flags = ProductLoadFlags.None)
         {
             if (productIds == null || productIds.Length == 0)
                 return new List<Product>();
@@ -234,7 +234,13 @@ namespace SmartStore.Services.Catalog
             var query = from p in _productRepository.Table
                         where productIds.Contains(p.Id)
                         select p;
-            var products = query.ToList();
+
+			if (flags > ProductLoadFlags.None)
+			{
+				query = ApplyLoadFlags(query, flags);
+			}
+
+			var products = query.ToList();
 
 			// sort by passed identifier sequence
 			var sortQuery = from i in productIds
@@ -243,6 +249,72 @@ namespace SmartStore.Services.Catalog
 
 			return sortQuery.ToList();
         }
+
+		private IQueryable<Product> ApplyLoadFlags(IQueryable<Product> query, ProductLoadFlags flags)
+		{
+			if (flags.HasFlag(ProductLoadFlags.WithAttributeCombinations))
+			{
+				query = query.Include(x => x.ProductVariantAttributeCombinations);
+			}
+
+			if (flags.HasFlag(ProductLoadFlags.WithBundleItems))
+			{
+				query = query.Include(x => x.ProductBundleItems.Select(y => y.Product));
+			}
+
+			if (flags.HasFlag(ProductLoadFlags.WithCategories))
+			{
+				query = query.Include(x => x.ProductCategories.Select(y => y.Category));
+			}
+
+			if (flags.HasFlag(ProductLoadFlags.WithDiscounts))
+			{
+				query = query.Include(x => x.AppliedDiscounts);
+			}
+
+			if (flags.HasFlag(ProductLoadFlags.WithManufacturers))
+			{
+				query = query.Include(x => x.ProductManufacturers.Select(y => y.Manufacturer));
+			}
+
+			if (flags.HasFlag(ProductLoadFlags.WithPictures))
+			{
+				query = query.Include(x => x.ProductPictures);
+			}
+
+			if (flags.HasFlag(ProductLoadFlags.WithReviews))
+			{
+				query = query.Include(x => x.ProductReviews);
+			}
+
+			if (flags.HasFlag(ProductLoadFlags.WithSpecificationAttributes))
+			{
+				query = query.Include(x => x.ProductSpecificationAttributes.Select(y => y.SpecificationAttributeOption));
+			}
+
+			if (flags.HasFlag(ProductLoadFlags.WithTags))
+			{
+				query = query.Include(x => x.ProductTags);
+			}
+
+			if (flags.HasFlag(ProductLoadFlags.WithTierPrices))
+			{
+				query = query.Include(x => x.TierPrices);
+			}
+
+			if (flags.HasFlag(ProductLoadFlags.WithVariantAttributes))
+			{
+				query = query.Include(x => x.ProductVariantAttributes.Select(y => y.ProductAttribute));
+				query = query.Include(x => x.ProductVariantAttributes.Select(y => y.ProductVariantAttributeValues));
+			}
+
+			if (flags.HasFlag(ProductLoadFlags.WithDeliveryTime))
+			{
+				query = query.Include(x => x.DeliveryTime);
+			}
+
+			return query;
+		}
 
         public virtual void InsertProduct(Product product)
         {

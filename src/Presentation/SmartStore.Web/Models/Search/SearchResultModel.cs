@@ -11,7 +11,6 @@ namespace SmartStore.Web.Models.Search
 		public SearchResultModel(CatalogSearchQuery query)
 		{
 			Query = query;
-			TopProducts = new List<ProductOverviewModel>();
 			HitGroups = new List<HitGroup>();
 		}
 
@@ -44,10 +43,10 @@ namespace SmartStore.Web.Models.Search
 			set;
 		}
 
-		public IList<ProductOverviewModel> TopProducts
+		public ProductSummaryModel TopProducts
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public int TotalProductsCount

@@ -4,12 +4,12 @@
 
 @{
 	var hitGroups = Model.HitGroups.Where(x => x.Hits.Any()).OrderBy(x => x.Ordinal).ToArray();
-	var hasContent = Model.TopProducts.Count > 0 || hitGroups.Any();
+	var hasContent = Model.TopProducts.Items.Count > 0 || hitGroups.Any();
 	var isMultiCol = false;
 	if (hasContent)
 	{
 		isMultiCol = 
-			Model.TopProducts.Count > 0 
+			Model.TopProducts.Items.Count > 0 
 			&& (hitGroups.Length > 1 || hitGroups.Sum(x => x.Hits.Count) > 4);
 	}
 }
@@ -41,7 +41,7 @@ else
         Html.RenderPartial("InstantSearch.HitGroup", group);
     }
 
-    if (Model.TopProducts.Count > 0)
+    if (Model.TopProducts.Items.Count > 0)
     {
 		<h6 class="instasearch-group-header">@T("Search.Hits")</h6>
 

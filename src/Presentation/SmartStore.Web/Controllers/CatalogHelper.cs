@@ -19,6 +19,7 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -35,7 +36,7 @@ using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Controllers
 {
-	public class CatalogHelper
+	public partial class CatalogHelper
 	{
 		private static object s_lock = new object();
 		
@@ -69,6 +70,7 @@ namespace SmartStore.Web.Controllers
 		private readonly ISettingService _settingService;
 		private readonly Lazy<IMenuPublisher> _menuPublisher;
 		private readonly Lazy<ITopicService> _topicService;
+		private readonly Lazy<IDataExporter> _dataExporter;
 
 		private readonly HttpRequestBase _httpRequest;
 		private readonly UrlHelper _urlHelper;
@@ -103,6 +105,7 @@ namespace SmartStore.Web.Controllers
 			ISettingService settingService,
 			Lazy<IMenuPublisher> _menuPublisher,
 			Lazy<ITopicService> topicService,
+			Lazy<IDataExporter> dataExporter,
 			HttpRequestBase httpRequest,
 			UrlHelper urlHelper)
 		{
@@ -136,6 +139,7 @@ namespace SmartStore.Web.Controllers
 			this._captchaSettings = captchaSettings;
 			this._menuPublisher = _menuPublisher;
 			this._topicService = topicService;
+			this._dataExporter = dataExporter;
 			this._httpRequest = httpRequest;
 			this._urlHelper = urlHelper;
 
@@ -145,31 +149,6 @@ namespace SmartStore.Web.Controllers
 		public Localizer T { get; set; }
 
 		public ILogger Logger { get; set; }
-
-		public ProductLoadFlags DetermineProductLoadFlagsForLists(string viewMode = "grid")
-		{
-			// TODO: (mc) viewMode should be an enum
-
-			var flags = ProductLoadFlags.None;
-
-			if (_catalogSettings.ShowColorSquaresInLists || _catalogSettings.ShowProductOptionsInLists)
-			{
-				flags |= ProductLoadFlags.WithVariantAttributes;
-			}
-
-			if (viewMode != "grid" || _catalogSettings.ShowManufacturerInGridStyleLists)
-			{
-				flags |= ProductLoadFlags.WithManufacturers;
-			}
-
-			// TODO: (mc) Must be postprocessed in overview models.
-			//if (_catalogSettings.ShowDeliveryTimesInProductLists)
-			//{
-			//	flags |= ProductLoadFlags.WithDeliveryTime;
-			//}
-
-			return flags;
-		}
 
 		public ProductDetailsModel PrepareProductDetailsPageModel(
 			Product product, 
@@ -1187,7 +1166,20 @@ namespace SmartStore.Web.Controllers
 					}
 				}
 
-				var cargoData = _priceCalculationService.CreatePriceCalculationContext(products);
+				var cargoData = _dataExporter.Value.CreateProductExportContext(products);
+
+				if ((prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists) || (prepareVariants && _catalogSettings.ShowProductOptionsInLists))
+				{
+					cargoData.Attributes.LoadAll();
+				}
+				
+				if (prepareManufacturers)
+				{
+					cargoData.ProductManufacturers.LoadAll();
+				}
+				
+				// Defer pictures loading 'cause of cache
+				var picturesLoaded = false;
 
 				var models = new List<ProductOverviewModel>();
 
@@ -1424,7 +1416,7 @@ namespace SmartStore.Web.Controllers
 					{
 						#region Prepare variants
 
-						var attributes = contextProduct.ProductVariantAttributes; // cargoData.Attributes.Load(contextProduct.Id);
+						var attributes = cargoData.Attributes.GetOrLoad(contextProduct.Id);
 						string colorAttributeName = null;
 
 						// Color squares
@@ -1468,21 +1460,31 @@ namespace SmartStore.Web.Controllers
 						#endregion
 					}
 
-					// picture
+					// Picture
 					if (preparePictureModel)
 					{
 						#region Prepare product picture
 
-						//If a size has been set in the view, we use it in priority
+						// If a size has been set in the view, we use it in priority
 						int pictureSize = productThumbPictureSize.HasValue ? productThumbPictureSize.Value : _mediaSettings.ProductThumbPictureSize;
 
-						//prepare picture model
-						var defaultProductPictureCacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_DEFAULTPICTURE_MODEL_KEY, product.Id, pictureSize, true,
-							_services.WorkContext.WorkingLanguage.Id, store.Id);
+						// Prepare picture model
+						var defaultProductPictureCacheKey = string.Format(
+							ModelCacheEventConsumer.PRODUCT_DEFAULTPICTURE_MODEL_KEY, 
+							product.Id, 
+							pictureSize, true,
+							_services.WorkContext.WorkingLanguage.Id, 
+							store.Id);
 
 						model.DefaultPictureModel = _services.Cache.Get(defaultProductPictureCacheKey, () =>
 						{
-							var picture = product.GetDefaultProductPicture(_pictureService);
+							if (!picturesLoaded)
+							{
+								cargoData.Pictures.LoadAll();
+							}
+							
+							//var picture = product.GetDefaultProductPicture(_pictureService);
+							var picture = cargoData.Pictures.GetOrLoad(product.Id).FirstOrDefault();
 							var pictureModel = new PictureModel
 							{
 								Size = pictureSize,
@@ -1545,7 +1547,7 @@ namespace SmartStore.Web.Controllers
 					if (prepareManufacturers)
 					{
 						//model.Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), cachedManufacturerModels, false);
-						model.Manufacturers = PrepareManufacturersOverviewModel(product.ProductManufacturers, cachedManufacturerModels, false);
+						model.Manufacturers = PrepareManufacturersOverviewModel(cargoData.ProductManufacturers.GetOrLoad(product.Id), cachedManufacturerModels, false);
 					}
 
 					if (finalPrice != decimal.Zero && (_catalogSettings.ShowBasePriceInProductLists || isCompareList))
@@ -1926,7 +1928,8 @@ namespace SmartStore.Web.Controllers
 
 					};
 
-					if (_catalogSettings.ShowManufacturerPicturesInProductDetail)
+					// TODO: (mc) show picture in list style lists also
+					if (forProductDetailPage && _catalogSettings.ShowManufacturerPicturesInProductDetail)
 					{
 						item.PictureModel = PrepareManufacturerPictureModel(manufacturer, manufacturer.GetLocalized(x => x.Name));
 					}

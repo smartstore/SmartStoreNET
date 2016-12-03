@@ -94,12 +94,6 @@ namespace SmartStore.Web.Controllers
 
 			var result = _catalogSearchService.Search(query);
 
-			var overviewModels = _catalogHelper.PrepareProductOverviewModels(
-				result.Hits, 
-				false, 
-				_searchSettings.ShowProductImagesInInstantSearch,
-				_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage);
-
 			var model = new SearchResultModel(query)
 			{
 				SearchResult = result,
@@ -107,8 +101,16 @@ namespace SmartStore.Web.Controllers
 				TotalProductsCount = result.Hits.TotalCount
 			};
 
+			var summaryModel = _catalogHelper.MapProductSummaryModelForMiniView(result.Hits, x => 
+			{
+				x.MapPrices = false;
+				// TODO: (mc) actually SHOW pictures in InstantSearch (???)
+				x.MapPictures = _searchSettings.ShowProductImagesInInstantSearch;
+				x.ThumbnailSize = _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage;
+			});
+
 			// Add product hits
-			model.TopProducts.AddRange(overviewModels);
+			model.TopProducts = summaryModel;
 
 			// Add spell checker suggestions (if any)
 			AddSpellCheckerSuggestionsToModel(result.SpellCheckerSuggestions, model);
@@ -133,12 +135,8 @@ namespace SmartStore.Web.Controllers
 				SystemCustomerAttributeNames.LastContinueShoppingPage,
 				Services.WebHelper.GetThisPageUrl(false),
 				Services.StoreContext.CurrentStore.Id);
-
-			// TODO: (mc) somehow determine viewMode
-			var viewMode = "grid";
 			
-			var loadFlags = _catalogHelper.DetermineProductLoadFlagsForLists(viewMode);
-			var result = _catalogSearchService.Search(query, loadFlags);
+			var result = _catalogSearchService.Search(query);
 
 			if (result.Hits.Count == 0 && result.SpellCheckerSuggestions.Any())
 			{
@@ -148,7 +146,7 @@ namespace SmartStore.Web.Controllers
 				var oldTerm = query.Term;
 				query.Term = oldSuggestions[0];
 
-				result = _catalogSearchService.Search(query, loadFlags);
+				result = _catalogSearchService.Search(query);
 
 				if (result.Hits.Any())
 				{
@@ -162,18 +160,15 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			var overviewModels = _catalogHelper.PrepareProductOverviewModels(
-				result.Hits,
-				prepareColorAttributes: _catalogSettings.ShowColorSquaresInLists,
-				prepareVariants: _catalogSettings.ShowProductOptionsInLists,
-				prepareManufacturers: viewMode != "grid" || _catalogSettings.ShowManufacturerInGridStyleLists).ToList();
-
 			model.SearchResult = result;
 			model.Term = query.Term;
 			model.TotalProductsCount = result.Hits.TotalCount;
 
+			// TODO: (mc) somehow determine viewmode and call appropriate helper method (Grid or List)
+			var summaryModel = _catalogHelper.MapProductSummaryModelForGridView(result.Hits);
+
 			// Add product hits
-			model.TopProducts.AddRange(overviewModels);
+			model.TopProducts = summaryModel;
 
 			// Add spell checker suggestions (if any)
 			AddSpellCheckerSuggestionsToModel(result.SpellCheckerSuggestions, model);
@@ -333,8 +328,10 @@ namespace SmartStore.Web.Controllers
 
 					model.NoResults = !model.Products.Any();
 
+					var summaryModel = _catalogHelper.MapProductSummaryModelForGridView(products);
+					resultModel.TopProducts = summaryModel;
+
 					resultModel.TotalProductsCount = searchResult.Hits.TotalCount;
-					resultModel.TopProducts.AddRange(model.Products);
 					resultModel.SearchResult = searchResult;
 
 					// Add spell checker suggestions (if any)

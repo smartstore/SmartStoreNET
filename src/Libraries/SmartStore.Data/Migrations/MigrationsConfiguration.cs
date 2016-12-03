@@ -208,11 +208,11 @@ namespace SmartStore.Data.Migrations
 				"zzgl. <b>{0}</b> zusätzlicher Versandgebühr",
 				"Plus <b>{0}</b> shipping surcharge");
 
-            builder.DeleteFor("Admin.Configuration.ContentSlider");
-            builder.DeleteFor("Admin.ContentManagement.ContentSlider");
-            builder.DeleteFor("Admin.ContentSlider.Slide");
-            builder.Delete("Admin.Themes.ContentSlider");
-        }
+			builder.DeleteFor("Admin.Configuration.ContentSlider");
+			builder.DeleteFor("Admin.ContentManagement.ContentSlider");
+			builder.DeleteFor("Admin.ContentSlider.Slide");
+			builder.Delete("Admin.Themes.ContentSlider");
+
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowShortDescriptionInGridStyleLists",
 				"Show short description in product lists",
 				"Zeige Kurzbeschreibung in Produktlisten",
@@ -231,8 +231,8 @@ namespace SmartStore.Data.Migrations
 				"Specifies whether variant names should be displayed in product lists",
 				"Legt fest, ob Variantnamen in Produktlisten angezeigt werden sollen");
 
-			builder.AddOrUpdate("Products.PlusOption", "Plus Option", "Plus Option");
-			builder.AddOrUpdate("Products.PlusOptions", "Plus Options", "Plus Optionen");
+			builder.AddOrUpdate("Products.PlusOption", "Further option", "Weitere Option");
+			builder.AddOrUpdate("Products.PlusOptions", "More options", "Weitere Optionen");
 		}
 	}
 }

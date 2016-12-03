@@ -20,13 +20,8 @@ using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Orders
 {
-	/// <summary>
-	/// Shopping cart service
-	/// </summary>
 	public partial class ShoppingCartService : IShoppingCartService
     {
-        #region Fields
-
         private readonly IRepository<ShoppingCartItem> _sciRepository;
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
@@ -48,31 +43,7 @@ namespace SmartStore.Services.Orders
 		private readonly IDownloadService _downloadService;
 		private readonly CatalogSettings _catalogSettings;
 
-        #endregion
-
-        #region Ctor
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="sciRepository">Shopping cart repository</param>
-        /// <param name="workContext">Work context</param>
-		/// <param name="storeContext">Store context</param>
-        /// <param name="currencyService">Currency service</param>
-        /// <param name="productService">Product settings</param>
-        /// <param name="localizationService">Localization service</param>
-        /// <param name="productAttributeParser">Product attribute parser</param>
-        /// <param name="checkoutAttributeService">Checkout attribute service</param>
-        /// <param name="checkoutAttributeParser">Checkout attribute parser</param>
-        /// <param name="priceFormatter">Price formatter</param>
-        /// <param name="customerService">Customer service</param>
-        /// <param name="shoppingCartSettings">Shopping cart settings</param>
-        /// <param name="eventPublisher">Event publisher</param>
-        /// <param name="permissionService">Permission service</param>
-        /// <param name="aclService">ACL service</param>
-		/// <param name="storeMappingService">Store mapping service</param>
-		/// <param name="genericAttributeService">Generic attribute service</param>
-        public ShoppingCartService(
+		public ShoppingCartService(
 			IRepository<ShoppingCartItem> sciRepository,
 			IWorkContext workContext, 
 			IStoreContext storeContext, 
@@ -118,10 +89,6 @@ namespace SmartStore.Services.Orders
 		}
 
 		public Localizer T { get; set; }
-
-		#endregion
-
-		#region Methods
 
 		/// <summary>
 		/// Delete shopping cart item
@@ -1364,7 +1331,5 @@ namespace SmartStore.Services.Orders
 
 			return addToCartContext.Warnings;
 		}
-
-        #endregion
     }
 }

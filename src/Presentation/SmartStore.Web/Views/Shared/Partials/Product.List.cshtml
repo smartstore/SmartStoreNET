@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ProductOverviewModel>
+﻿@model ProductSummaryModel
 
 @using SmartStore.Core.Domain.Media;
 @using SmartStore.Utilities;
@@ -32,7 +32,7 @@
 }
 
 <div id="@id" class="artlist artlist-style-grid artlist-4-cols">
-	@foreach (var product in Model)
+	@foreach (var product in Model.Items)
 	{
 		Html.RenderPartial("Product.Item", product);
 	}

@@ -243,9 +243,18 @@ namespace SmartStore.Services.Customers
             if (customerId == 0)
                 return null;
             
-            var customer = _customerRepository.GetById(customerId);
-            return customer;
+            // var customer = _customerRepository.GetById(customerId);
+			var customer = IncludeShoppingCart(_customerRepository.Table).SingleOrDefault(x => x.Id == customerId);
+
+			return customer;
         }
+
+		private IQueryable<Customer> IncludeShoppingCart(IQueryable<Customer> query)
+		{
+			return query
+				.Expand(x => x.ShoppingCartItems.Select(y => y.Product))
+				.Expand(x => x.ShoppingCartItems.Select(y => y.BundleItem));
+		}
 
         public virtual IList<Customer> GetCustomersByIds(int[] customerIds)
         {
@@ -277,8 +286,8 @@ namespace SmartStore.Services.Customers
             if (customerGuid == Guid.Empty)
                 return null;
 
-            var query = from c in _customerRepository.Table
-                        where c.CustomerGuid == customerGuid
+            var query = from c in IncludeShoppingCart(_customerRepository.Table)
+						where c.CustomerGuid == customerGuid
                         orderby c.Id
                         select c;
             var customer = query.FirstOrDefault();
@@ -290,8 +299,8 @@ namespace SmartStore.Services.Customers
             if (string.IsNullOrWhiteSpace(email))
                 return null;
 
-            var query = from c in _customerRepository.Table
-                        orderby c.Id
+            var query = from c in IncludeShoppingCart(_customerRepository.Table)
+						orderby c.Id
                         where c.Email == email
                         select c;
             var customer = query.FirstOrDefault();
@@ -316,7 +325,7 @@ namespace SmartStore.Services.Customers
             if (string.IsNullOrWhiteSpace(username))
                 return null;
 
-            var query = from c in _customerRepository.Table
+            var query = from c in IncludeShoppingCart(_customerRepository.Table)
                         orderby c.Id
                         where c.Username == username
                         select c;

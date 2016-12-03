@@ -284,8 +284,8 @@ namespace SmartStore.Services.Catalog
 			Guard.NotNull(productIds, nameof(productIds));
 
 			var query =
-				from pm in _productManufacturerRepository.TableUntracked.Expand(x => x.Manufacturer).Expand(x => x.Manufacturer.Picture)
-				join m in _manufacturerRepository.TableUntracked on pm.ManufacturerId equals m.Id
+				from pm in _productManufacturerRepository.TableUntracked.Expand(x => x.Manufacturer.Picture)
+				//join m in _manufacturerRepository.TableUntracked on pm.ManufacturerId equals m.Id // Eager loading does not work with this join
 				where productIds.Contains(pm.ProductId)
 				select pm;
 

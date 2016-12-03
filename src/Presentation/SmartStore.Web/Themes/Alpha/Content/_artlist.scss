@@ -178,6 +178,12 @@ $art-active-bg-color:           #fff;
     text-overflow: ellipsis;
 }
 
+.art-delivery-info {
+    box-sizing: content-box;
+    min-height: $art-font-size * $art-line-height;
+    @include text-truncate();
+}
+
 .art-price-block {
     position: relative;
     margin-top: 0.5rem;

@@ -7,7 +7,6 @@ using System.Linq.Expressions;
 using System.Data.Entity;
 using SmartStore.Collections;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -183,7 +182,7 @@ namespace SmartStore.Services.Catalog
 
 		#region Products
 
-        public virtual void DeleteProduct(Product product)
+		public virtual void DeleteProduct(Product product)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -302,9 +301,13 @@ namespace SmartStore.Services.Catalog
 				query = query.Include(x => x.TierPrices);
 			}
 
-			if (flags.HasFlag(ProductLoadFlags.WithVariantAttributes))
+			if (flags.HasFlag(ProductLoadFlags.WithAttributes))
 			{
 				query = query.Include(x => x.ProductVariantAttributes.Select(y => y.ProductAttribute));
+			}
+
+			if (flags.HasFlag(ProductLoadFlags.WithAttributeValues))
+			{
 				query = query.Include(x => x.ProductVariantAttributes.Select(y => y.ProductVariantAttributeValues));
 			}
 

@@ -514,18 +514,18 @@ namespace SmartStore.Web.Controllers
 
             if (cart.Count > 0)
             {
-                decimal subtotalBase = decimal.Zero;
-                decimal orderSubTotalDiscountAmountBase = decimal.Zero;
-                Discount orderSubTotalAppliedDiscount = null;
-                decimal subTotalWithoutDiscountBase = decimal.Zero;
-                decimal subTotalWithDiscountBase = decimal.Zero;
+				decimal subtotalBase = decimal.Zero;
+				decimal orderSubTotalDiscountAmountBase = decimal.Zero;
+				Discount orderSubTotalAppliedDiscount = null;
+				decimal subTotalWithoutDiscountBase = decimal.Zero;
+				decimal subTotalWithDiscountBase = decimal.Zero;
 
-                _orderTotalCalculationService.GetShoppingCartSubTotal(cart,
-                    out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount, out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
+				_orderTotalCalculationService.GetShoppingCartSubTotal(cart,
+					out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount, out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
 
-                subtotalBase = subTotalWithoutDiscountBase;
+				subtotalBase = subTotalWithoutDiscountBase;
 				subtotal = _currencyService.Value.ConvertFromPrimaryStoreCurrency(subtotalBase, _services.WorkContext.WorkingCurrency);
-            }
+			}
 
             var model = new ShopBarModel
             {

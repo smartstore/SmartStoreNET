@@ -1,14 +1,16 @@
-﻿@model ProductOverviewModel
+﻿@model ProductSummaryModel.SummaryItem
 
 @using System.Globalization;
 @using SmartStore.Web.Models.Catalog;
 
 @{ 
 	var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
-	var picture = Model.DefaultPictureModel;
+	var list = Model.Parent;
+	var picture = Model.Picture;
+
 }
 
-<article class="art" data-id="@Model.Id" data-price="@Model.ProductPrice.PriceValue.ToString("F", CultureInfo.InvariantCulture)">
+<article class="art" data-id="@Model.Id">
 	<div class="art-picture-block">
 		@if (picture.Title.HasValue())
 		{
@@ -32,7 +34,7 @@
 	}
 
 	<div class="art-info-block">
-		@if (Model.ShowReviews)
+		@if (list.ShowReviews)
 		{
 			int ratingPercent = 0;
 			if (Model.TotalReviews != 0)
@@ -53,13 +55,12 @@
 			</div>
 		}
 		
-		@if (Model.ShowBrand)
+		@if (list.ShowBrand)
 		{
-			var manufacturer = Model.Manufacturers != null ? Model.Manufacturers.FirstOrDefault() : null;
 			<div class="art-brand">
-				@if (manufacturer != null)
+				@if (Model.Manufacturer != null)
 				{
-					@manufacturer.Name
+					@Model.Manufacturer.Name
 				}	
 			</div>
 		}
@@ -70,7 +71,7 @@
 			</a>
 		</h4>
 
-		@if (Model.ShowDescription /* TODO: (mc) Fetch this from parent model */)
+		@if (list.ShowDescription)
 		{
 			<div class="art-description" title="@Model.ShortDescription">
 				@* TODO: (mc) Only render description block when merchant wishes so and only when at least one description is specified *@
@@ -78,11 +79,12 @@
 			</div>
 		}
 
-		@if (Model.ShowDeliveryTimes)
+		@if (list.ShowDeliveryTimes)
 		{
 			@* TODO: (mc) Put in own partial *@
+			@* TODO: (mc) take HideDeliveryTime into account *@
 			<div class="art-delivery-info">
-				@if (Model.IsShipEnabled && Model.DeliveryTimeName.HasValue() && Model.DeliveryTimeHexValue.HasValue())
+				@if (Model.IsShippingEnabled && !Model.HideDeliveryTime)
 				{
 					var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailablity;
 					<span class="delivery-time" title="@T("Products.DeliveryTime"): @statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
@@ -94,10 +96,10 @@
 		}
 
 		<div class="art-price-block">
-			<span class="art-price@(Model.ProductPrice.OldPrice.HasValue() ? " art-price--offer" : "")">@Model.ProductPrice.Price</span>
-			@if (Model.ProductPrice.OldPrice.HasValue())
+			<span class="art-price@(Model.Price.RegularPrice.HasValue() ? " art-price--offer" : "")">@Model.Price.Price</span>
+			@if (Model.Price.RegularPrice.HasValue())
 			{
-				<span class="art-oldprice">@Model.ProductPrice.OldPrice</span>
+				<span class="art-oldprice">@Model.Price.RegularPrice</span>
 			}
 			@if (Model.TransportSurcharge.HasValue())
 			{
@@ -105,7 +107,7 @@
 					@Html.Raw(Model.TransportSurcharge)
 				</div>
 			}
-			@if (Model.DisplayBasePrice && Model.BasePriceInfo.HasValue())
+			@if (list.ShowBasePrice && Model.BasePriceInfo.HasValue())
 			{
 				<div class="art-pangv" @Html.Attr("title", Model.BasePriceInfo, Model.BasePriceInfo.HasValue())>
 					@Html.Raw(Model.BasePriceInfo ?? "&nbsp;")
@@ -117,7 +119,17 @@
 	</div>
 
 	@{ 
-		Html.RenderPartial("Product.Item.Drop", Model);
+		var showDrop =
+			!Model.Price.DisableWishlistButton
+			|| list.CompareEnabled
+			|| (!Model.Price.DisableBuyButton && list.BuyEnabled)
+			|| Model.ColorAttribute != null
+			|| Model.Attributes != null;
+
+		if (showDrop)
+		{
+			Html.RenderPartial("Product.Item.Drop", Model);
+		}
 	}
 </article>
 

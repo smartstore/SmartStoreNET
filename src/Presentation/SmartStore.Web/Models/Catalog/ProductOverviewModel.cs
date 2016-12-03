@@ -54,8 +54,6 @@ namespace SmartStore.Web.Models.Catalog
         public bool DisplayBasePrice { get; set; }
         public string BasePriceInfo { get; set; }
 
-		public bool HasMoreOptions { get; set; }
-
 		/// <summary>
 		/// For internal use
 		/// </summary>

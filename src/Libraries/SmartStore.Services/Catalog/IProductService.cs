@@ -16,13 +16,13 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public partial interface IProductService
     {
-        #region Products
+		#region Products
 
-        /// <summary>
-        /// Delete a product
-        /// </summary>
-        /// <param name="product">Product</param>
-        void DeleteProduct(Product product);
+		/// <summary>
+		/// Delete a product
+		/// </summary>
+		/// <param name="product">Product</param>
+		void DeleteProduct(Product product);
 
         /// <summary>
         /// Gets all products displayed on the home page
@@ -425,13 +425,14 @@ namespace SmartStore.Services.Catalog
 		WithPictures = 1 << 2,
 		WithReviews = 1 << 3,
 		WithSpecificationAttributes = 1 << 4,
-		WithVariantAttributes = 1 << 5,
-		WithAttributeCombinations = 1 << 6,
-		WithTags = 1 << 7,
-		WithTierPrices = 1 << 8,
-		WithDiscounts = 1 << 9,
-		WithBundleItems = 1 << 10,
-		WithDeliveryTime = 1 << 11,
-		Full = WithCategories | WithManufacturers | WithPictures | WithReviews | WithSpecificationAttributes | WithVariantAttributes | WithAttributeCombinations | WithTags | WithTierPrices | WithDiscounts | WithBundleItems | WithDeliveryTime
+		WithAttributes = 1 << 5,
+		WithAttributeValues = 1 << 7,
+		WithAttributeCombinations = 1 << 8,
+		WithTags = 1 << 9,
+		WithTierPrices = 1 << 10,
+		WithDiscounts = 1 << 11,
+		WithBundleItems = 1 << 12,
+		WithDeliveryTime = 1 << 13,
+		Full = WithCategories | WithManufacturers | WithPictures | WithReviews | WithSpecificationAttributes | WithAttributes | WithAttributeValues | WithAttributeCombinations | WithTags | WithTierPrices | WithDiscounts | WithBundleItems | WithDeliveryTime
 	}
 }

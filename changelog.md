@@ -37,8 +37,10 @@
 * (Perf) Lower memory consumption
 * #1008 Export: Add support for description projection to all product exporting providers
 * #1015 Implement Entity Picker in discount requirements
-* #1028 Debitoor: Company name send as customer name if present
-* #1044 Debitoor: Additional order notes for tax exemption within and outside EU
+* Debitoor improvements:
+	* Company name send as customer name if present
+	* Option to append customer email address to invoice address
+	* Additional order notes for tax exemption within and outside EU
 * #1048 Add meta tags to contact us page
 * #1062 Web API: Add filter options for user grid on configuration page
 

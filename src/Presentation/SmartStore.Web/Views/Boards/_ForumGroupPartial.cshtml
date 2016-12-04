@@ -50,7 +50,7 @@
                     @forum.NumPosts
                 </td>
                 <td class="last-post">
-                    @Html.Action("LastPost", new { forumPostId = @forum.LastPostId, showTopic = true })
+                    @{ Html.RenderAction("LastPost", new { forumPostId = @forum.LastPostId, showTopic = true }); }
                 </td>
             </tr>            
         }

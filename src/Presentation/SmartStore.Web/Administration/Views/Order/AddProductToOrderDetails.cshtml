@@ -43,7 +43,7 @@
     </div>
     <div class="clear">
     </div>
-    
+
     if (Model.ProductType == ProductType.SimpleProduct)
     {
         <div>
@@ -101,7 +101,7 @@
 		    <div class="clear"></div>
 
             <div id="ProductAddAttributeContainer">
-                @Html.Partial("_ProductAddAttributes", Model.ProductVariantAttributes)
+                @{ Html.RenderPartial("_ProductAddAttributes", Model.ProductVariantAttributes); }
             </div>
 
             <div class="clear"></div>

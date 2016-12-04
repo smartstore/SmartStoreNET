@@ -5,11 +5,11 @@
 @using SmartStore.Core.Infrastructure.DependencyManagement;
 
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+    Layout = "_ColumnsTwo";
 
     //title
     Html.AddTitleParts(T("PageTitle.Login").Text);
-    
+
     //register URL with return URL (if specified)
     var registerUrl = Url.RouteUrl("Register");
     if (!String.IsNullOrEmpty(this.Context.Request.QueryString["returnUrl"]))
@@ -24,9 +24,10 @@
         <h1>@T("Account.Login.Welcome")</h1>
     </div>
 
-    @Html.Action("TopicBlock", "Topic", new { systemName = "LoginRegistrationInfo" })
-
-    @Html.Partial("_ExternalAuthentication.AssociateMessage")
+    @{ 
+        Html.RenderAction("TopicBlock", "Topic", new { systemName = "LoginRegistrationInfo" });
+        Html.RenderPartial("_ExternalAuthentication.AssociateMessage");
+    }
 
     <div class="page-body">
         
@@ -40,7 +41,9 @@
                             <h4>@T("Account.Login.CheckoutAsGuestOrRegister")</h4>
                         </div>
                         <div class="block-body">
-                            <p>@Html.Action("TopicBlock", "Topic", new { systemName = "CheckoutAsGuestOrRegister" })</p>
+                            <p>
+                                @{ Html.RenderAction("TopicBlock", "Topic", new { systemName = "CheckoutAsGuestOrRegister" });}
+                            </p>
                             <div class="buttons">
                                 <a class="btn btn-secondary pull-left checkout-as-guest-button" href="@Url.RouteUrl("Checkout")">
                                     @T("Account.Login.CheckoutAsGuest")
@@ -148,7 +151,9 @@
                                         </div>
                                     }
 
-                                    <div class="externalauthentication clearfix">@Html.Action("ExternalMethods", "ExternalAuthentication")</div>
+                                    <div class="externalauthentication clearfix">
+                                        @{ Html.RenderAction("ExternalMethods", "ExternalAuthentication"); }
+                                    </div>
                                 </div>
                             </div>
                         </form>

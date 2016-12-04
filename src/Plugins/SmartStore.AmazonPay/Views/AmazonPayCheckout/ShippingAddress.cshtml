@@ -3,14 +3,14 @@
 @model SmartStore.AmazonPay.Models.AmazonPayViewModel
 
 @{
-    Layout = "~/Views/Shared/_Checkout.cshtml";
+    Layout = "_Checkout";
 	
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
 	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
 }
 
 @section orderProgress{
-    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Address, area = "" })
+    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Address, area = "" }); }
 }
 
 <div class="page shipping-address-page">

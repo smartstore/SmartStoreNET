@@ -836,7 +836,7 @@ namespace SmartStore.Admin.Controllers
             {
 				if (defaultPicture != null)
 				{
-					model.PictureThumbnailUrl = Url.Action("Picture", "Media", new { id = defaultPicture.Id, size = _mediaSettings.ProductThumbPictureSize });
+					model.PictureThumbnailUrl = Url.Action("Picture", "Media", new { id = defaultPicture.Id, size = _mediaSettings.CartThumbPictureSize });
 				}
 				else
 				{

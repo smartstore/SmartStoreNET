@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Administration/Views/Shared/_AdminPopupLayout.cshtml";
+    Layout = "_AdminPopupLayout";
 }
 @model ProductVariantAttributeCombinationModel
 @{    
@@ -24,5 +24,6 @@
             </button>
         </div>
     </div>
-    @Html.Partial("_CreateOrUpdateAttributeCombinationPopup", Model)
+
+    Html.RenderPartial("_CreateOrUpdateAttributeCombinationPopup", Model);
 }

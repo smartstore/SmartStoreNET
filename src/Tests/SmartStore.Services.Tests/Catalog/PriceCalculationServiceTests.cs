@@ -59,7 +59,7 @@ namespace SmartStore.Services.Tests.Catalog
 			_httpRequestBase = MockRepository.GenerateMock<HttpRequestBase>();
 			_taxService = MockRepository.GenerateMock<ITaxService>();
 
-            _shoppingCartSettings = new ShoppingCartSettings();
+			_shoppingCartSettings = new ShoppingCartSettings();
             _catalogSettings = new CatalogSettings();
 
 			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _manufacturerService, _productAttributeParser, _productService,

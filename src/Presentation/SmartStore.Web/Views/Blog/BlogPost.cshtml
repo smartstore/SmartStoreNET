@@ -1,7 +1,7 @@
 ﻿@model BlogPostModel
 @using SmartStore.Web.Models.Blogs;
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+    Layout = "_ColumnsTwo";
 
     //title
     Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Title);
@@ -12,8 +12,10 @@
 }
 
 @section left {
-    @Html.Action("BlogMonths", "Blog")
-    @Html.Action("BlogTags", "Blog")
+    @{
+        Html.RenderAction("BlogMonths", "Blog");
+        Html.RenderAction("BlogTags", "Blog");
+    }
 }
 
 <article class="page blogpost-page">

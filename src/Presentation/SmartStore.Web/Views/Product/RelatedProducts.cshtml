@@ -12,7 +12,7 @@
                 @foreach (var item in Model)
                 {
                     <article class="item-box card card-block card-shadow equalized-column" data-equalized-deep="true">
-                        @Html.Partial("_ProductBoxCompact", item)
+                        @{ Html.RenderPartial("_ProductBoxCompact", item); }
                     </article>
                 }
                 </div>

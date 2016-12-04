@@ -1,0 +1,324 @@
+/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
+// Article/Product list & item styles
+// --------------------------------------------------
+
+$art-font-size:                 0.925rem;
+$art-font-size-sm:              $font-size-xs;
+$art-line-height:               1.3;
+$art-price-color:               $body-color;
+$art-price-offer-color:         $brand-danger;
+$art-border-color:              rgba(0,0,0, 0.12);
+$art-active-bg-color:           #fff;
+
+.artlist {
+    position: relative;
+    @include make-row();
+    font-size: $art-font-size;
+    line-height: $art-line-height; 
+    z-index: 3;
+
+    border-collapse: collapse;
+}
+
+.art {
+    position: relative;
+    min-height: 1px;
+
+    @include make-col();
+    @include make-col-span(12, $grid-columns);
+    
+    padding-top: $grid-gutter-width / 2; 
+    padding-bottom: $grid-gutter-width / 2;
+    
+    border: 1px solid transparent;
+    border-bottom-color: $art-border-color;
+    background: transparent;   
+
+    margin-top: -1px;
+    margin-left: -1px;
+
+    border-collapse: collapse;
+    //z-index: 1;
+
+    &.active {
+        background: $art-active-bg-color;
+        border-color: rgba(0,0,0, 0.2);
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.artlist-style-grid {
+    &.artlist::after {
+        // Make continous line after last row
+        position: relative;
+        content: '';
+        width: 100%;
+        height: 1px;
+        background: $art-border-color;
+        bottom: 1px;
+    }
+    
+    .art {
+        // Grid has always 2 cols per row at least, even on xs
+        @include make-col-span(6, $grid-columns);
+    }
+
+    @include media-breakpoint-up(md) {
+        &.artlist-5-cols .art {
+            @include make-col-span(4, $grid-columns);
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+        &.artlist-3-cols .art,
+        &.artlist-4-cols .art {
+            @include make-col-span(4, $grid-columns);
+        }
+        &.artlist-5-cols .art {
+            @include make-col-span(3, $grid-columns);
+        }
+    }
+
+    @include media-breakpoint-up(xl) {
+        &.artlist-4-cols .art {
+            @include make-col-span(3, $grid-columns);
+        }
+        &.artlist-5-cols .art {
+            @include make-col-span(2, 10);
+        }
+    }
+}
+
+.art-picture-block {
+    position: relative;
+    margin-bottom: 0.8rem;
+    overflow: hidden;
+}
+
+.art-picture {
+    display: block;
+    position: relative;
+    height: 0;
+    width: 100%;
+    padding-top: 100%;
+    text-decoration: none !important;
+
+    > img {
+        position: absolute;
+        max-width: 100%;
+        max-height: 100%;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+    }
+}
+
+.art-badges {
+    position: absolute;
+    left: 0;
+    top: 20px;
+}
+
+.art-badge {
+    display: block;
+    float: left;
+    clear: both;
+    position: relative;
+    //text-transform: uppercase;
+    font-weight: normal;
+    font-size: 0.85rem;
+    border-radius: 0 0.85rem 0.85rem 0;
+    padding-right: 0.85rem;
+    margin-bottom: 0.2rem;
+}
+
+.art-info-block {
+    position: relative;
+}
+
+.art-rating {
+    @include text-truncate();
+    margin-bottom: 0.25rem;
+}
+
+.art-brand {
+    font-size: $art-font-size-sm;
+    color: $text-muted;
+    text-transform: uppercase;
+    box-sizing: content-box;
+    min-height: $art-font-size-sm * $art-line-height;
+    @include text-truncate();
+}
+
+.art-name {
+    box-sizing: content-box;
+    font-size: $art-font-size;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    height: ($art-font-size * $art-line-height) * 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    > a {
+        color: $body-color;
+    }
+}
+
+.art-description {
+    box-sizing: content-box;
+    font-size: $art-font-size-sm;
+    color: $text-muted;
+    margin-bottom: 0.25rem;
+    height: ($art-font-size-sm * $art-line-height) * 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.art-delivery-info {
+    box-sizing: content-box;
+    min-height: $art-font-size * $art-line-height;
+    @include text-truncate();
+}
+
+.art-price-block {
+    position: relative;
+    margin-top: 0.5rem;
+}
+
+.art-price {
+    display: inline-block;  
+    font-weight: bold;
+    color: $art-price-color;
+
+    &.art-price--offer {
+        color: $art-price-offer-color;
+    }
+}
+
+.art-oldprice {
+    display: inline-block;
+    font-size: $art-font-size * 0.925;
+    padding-left: 0.25rem;
+    color: $text-muted;
+    text-decoration: line-through;
+}
+
+.art-pangv {
+    font-size: $art-font-size-sm;
+    color: $text-muted;
+    padding-top: 0.25rem;
+    box-sizing: content-box;
+    min-height: $art-font-size-sm * $art-line-height;
+    @include text-truncate();
+}
+
+.art-shipsurcharge {
+    font-size: $art-font-size-sm;
+    color: $brand-danger;
+    padding-top: 0.25rem;
+    @include text-truncate();
+}
+
+.art-drop {
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    bottom: 0;
+    background: $art-active-bg-color;
+    border: 1px solid rgba(0,0,0, 0.2);
+    border-top-color: #fff;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    z-index: -1;  
+
+    .art-drop-btn-group {
+        margin: 0;
+    }
+
+    .art-drop-btn {
+        display: block;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        transition: none;
+        height: 2.75rem;
+        line-height: 2.75rem;
+
+        &.btn-secondary {
+            color: #666;
+        }
+    }
+
+    .art.active & { 
+        opacity: 1;
+        visibility: visible;
+        z-index: $zindex-popover - 1;
+    }
+}
+
+.art-drop-info {
+    padding-left: $grid-gutter-width / 2;
+    padding-right: $grid-gutter-width / 2;
+    margin-bottom: 0.75rem;
+}
+
+.art-color-opts {
+    position: relative;
+    @include clearfix();
+}
+
+.art-color-opt {
+    float: left;
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    margin-right: 2px;
+    margin-bottom: 2px;
+    text-decoration: none;
+
+    &:hover {
+        outline: 1px solid rgba(0,0,0, 0.3);
+    }
+}
+
+.art-more-opts {
+    font-size: $art-font-size-sm;
+    color: $text-muted;
+    
+    > a { font-weight: bold; }  
+}
+
+.art-drop-info > * + * {
+    margin-top: 0.4rem;
+}
+
+
+/*@include media-breakpoint-between(xs, md) {
+    .art-rowdiv:nth-of-type(2n+0) {
+        display: block;
+    }   
+    .art:nth-of-type(2n+0) {
+        border-right-color: transparent;
+    }  
+}
+@include media-breakpoint-only(lg) {
+    .art-rowdiv:nth-of-type(3n+0) {
+        display: block;
+    } 
+    .art:nth-of-type(3n+0) {
+        border-right-color: transparent;
+    }    
+}
+@include media-breakpoint-only(xl) { 
+    .art-rowdiv:nth-of-type(4n+0) {
+        display: block;
+    } 
+    .art:nth-of-type(4n+0) {
+        border-right-color: transparent;
+    }    
+}*/

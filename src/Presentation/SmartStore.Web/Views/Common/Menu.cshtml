@@ -2,24 +2,26 @@
 @using SmartStore.Web.Models.Common;
 
 @{
-    string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
+	string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
 }
 
 @Html.Widget("header_menu_before")
 
 <nav class="menubar">
     <nav class="menubar-group pull-left m-l-0">
-        @Html.Action("LanguageSelector", "Common")
-        @Html.Action("CurrencySelector", "Common")
+        @{ 
+			Html.RenderAction("LanguageSelector", "Common");
+			Html.RenderAction("CurrencySelector", "Common");
+        }
     </nav>
     <nav class="menubar-group">
 
         <a class="menubar-link" href="@Url.RouteUrl("Search")">@T("Search")</a>
 
         @if (Model.HasContactUsPage)
-        {
+		{
             <a class="menubar-link" href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a>
-        }
+		}
 
         <div class="dropdown service-links">
             <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
@@ -28,7 +30,9 @@
             </a>
 
             <div class="dropdown-menu" aria-labelledby="dLabel">
-                @Html.Action("ServiceMenu", "Common", new { area = "" })
+                @{
+					Html.RenderAction("ServiceMenu", "Common", new { area = "" });
+                } 
             </div>
         </div>
 
@@ -93,8 +97,8 @@
             </a>
 
             @if (Model.IsAuthenticated)
-            {
-                @Html.Action("AccountDropdown", "Common")
+			{
+				Html.RenderAction("AccountDropdown", "Common");
             }
         </div>
 

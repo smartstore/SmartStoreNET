@@ -9,7 +9,7 @@
 @using SmartStore.Core.Domain.Seo;
 
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+    Layout = "_ColumnsTwo";
 
     //title
     Html.AddTitleParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
@@ -40,8 +40,9 @@
     <div class="page-body">
         @Html.Widget("productsbytag_top")
 
-        @if (ShowListOptions()) {
-            @Html.Partial("_ProductListOptions", Model.PagingFilteringContext)
+        @if (ShowListOptions())
+        {
+            Html.RenderPartial("_ProductListOptions", Model.PagingFilteringContext);
         }
 
         @Html.Widget("productsbytag_before_product_list")
@@ -67,7 +68,7 @@
                     @foreach (var product in Model.Products)
                     {
                         <article class="card card-block card-shadow text-xs-center">
-                            @Html.Partial("_ProductBox", product)
+                            @{ Html.RenderPartial("_ProductBox", product); }
                         </article>
                     }
                 </div>

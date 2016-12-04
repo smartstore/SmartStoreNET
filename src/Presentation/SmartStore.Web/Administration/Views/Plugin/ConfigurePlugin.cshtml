@@ -22,7 +22,7 @@
 {
 	try
 	{
-		@Html.Action(Model.ConfigurationRoute.Action, Model.ConfigurationRoute.Controller, Model.ConfigurationRoute.RouteValues);
+		Html.RenderAction(Model.ConfigurationRoute.Action, Model.ConfigurationRoute.Controller, Model.ConfigurationRoute.RouteValues);
 	}
 	catch (Exception exception)
 	{

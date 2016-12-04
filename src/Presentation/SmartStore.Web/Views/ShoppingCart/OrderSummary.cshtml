@@ -292,11 +292,11 @@
 
 <div class="order-summary-content">
 	@Html.Widget("order_summary_content_before")
-	@Html.Partial("_OrderReviewData", Model.OrderReviewData)
+	@{ Html.RenderPartial("_OrderReviewData", Model.OrderReviewData); }
    
     @if (Model.DisplayCommentBox && !Model.IsEditable)
     {
-        @Html.Partial("_CommentBox", Model)
+        Html.RenderPartial("_CommentBox", Model);
     }
 
 	@if (!Model.IsEditable && (Model.NewsLetterSubscription != CheckoutNewsLetterSubscription.None || Model.ThirdPartyEmailHandOver != CheckoutThirdPartyEmailHandOver.None))
@@ -347,33 +347,33 @@
 			</div>
 		}
 		@*we add enctype = "multipart/form-data" because "File upload" attribute control type requries it*@
-		using (Html.BeginRouteForm("ShoppingCart", FormMethod.Post, new { enctype = "multipart/form-data" }))
-		{
+    using (Html.BeginRouteForm("ShoppingCart", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
 		<table class="cart table table-order-products">
 			<thead>
 				<tr class="cart-header-row">
 					@if (Model.IsEditable)
-					{
+                    {
 						<th>
 							@T("ShoppingCart.Remove")
 						</th>
-					}
+                    }
 					@if (Model.ShowSku)
-					{
+                    {
 						<th>
 							@T("ShoppingCart.SKU")
 						</th>
-					}
+                    }
 					@if (Model.ShowProductImages)
-					{
+                    {
 						<th class="picture"></th>
-					}
+                    }
 					<th>
 						@T("ShoppingCart.Product(s)")
 					</th>
 
                     @if (Model.DisplayWeight)
-					{
+                    {
                     <th>
                         @T("ShoppingCart.Weight")
                     </th>
@@ -390,27 +390,27 @@
 				</tr>
 			</thead>
 			@{
-				foreach (var item in Model.Items)
-				{
-					if (item.ProductType == ProductType.BundledProduct)
-					{
+                foreach (var item in Model.Items)
+                {
+                    if (item.ProductType == ProductType.BundledProduct)
+                    {
 						<tbody class="product-body product-body-bundle">
 							@SimpleProduct(item)
 							@BundleProducts(item)
 						</tbody>
-					}
-					else
-					{
+                    }
+                    else
+                    {
 						<tbody class="product-body product-body-simple">
 							@SimpleProduct(item)
 						</tbody>
-					}
-				}
+                    }
+                }
 			}
 		</table>
 
-		if (Model.IsEditable)
-		{
+                if (Model.IsEditable)
+                {
 			<div class="common-buttons clearfix">
 				<button type="submit" name="updatecart" value="updatecart" class="btn btn-secondary pull-right update-cart-button">
 					<i class="fa fa-refresh"></i>&nbsp;@T("ShoppingCart.UpdateCart")
@@ -420,8 +420,8 @@
                 </button>
 				<input type="submit" name="startcheckout" value="startcheckout" id="startcheckout" style="display: none;" />
 			</div>
-		}
-        
+                }
+
 		<div class="cart-footer row m-t-3">
 
 			<div class="col-sm-8 order-totals-left">
@@ -432,29 +432,34 @@
                     <div class="row">
                         <!-- Discount Code, Gift Cards, Estimate shipping -->
                         <div class="col-sm-6">
-                            @Html.Partial("_DiscountBox", Model.DiscountBox)
-                            @Html.Partial("_GiftCardBox", Model.GiftCardBox)
+                            @{
+                                Html.RenderPartial("_DiscountBox", Model.DiscountBox);
+                                Html.RenderPartial("_GiftCardBox", Model.GiftCardBox);
+                            }
                             @Html.Widget("order_summary_content_deals")
                         </div>
 
                         <!-- Checkout attributes -->
                         <div class="col-sm-6">
-                            @Html.Partial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary())
-                            @Html.Partial("EstimateShipping", Model.EstimateShipping)
+                            @{
+                                Html.RenderPartial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary());
+                                Html.RenderPartial("EstimateShipping", Model.EstimateShipping);
+                            }
                         </div>
-                    </div>}
+                    </div>
+                                }
 			</div>
 
 			<!-- Totals -->
 			<div class="col-sm-4">
-				@if (Model.IsEditable && !String.IsNullOrEmpty(Model.MinOrderSubtotalWarning)) 
-				{
+				@if (Model.IsEditable && !String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
+                {
 					<div class="alert alert-info" style="margin-top: 0">
 						@Model.MinOrderSubtotalWarning
 					</div>
-				}
+                }
 
-				@Html.Action("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable })
+				@{ Html.RenderAction("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable }); }
 
 				@Html.Widget("order_summary_content_totals_bottom")
 
@@ -478,9 +483,9 @@
 					    <div class="addon-buttons">
 						    @*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
 						    @foreach(var item in Model.ButtonPaymentMethods.Items)
-						    {
-							    @Html.Action(item.ActionName, item.ControllerName, item.RouteValues)
-						    }
+                            {
+                                Html.RenderAction(item.ActionName, item.ControllerName, item.RouteValues);
+                            }
 					    </div>
                     }
 				}
@@ -492,7 +497,7 @@
 
 		if (Model.IsEditable)
 		{
-			@Html.Action("CrossSellProducts", "Product")
+			Html.RenderAction("CrossSellProducts", "Product");
 		}
 	}
 	else

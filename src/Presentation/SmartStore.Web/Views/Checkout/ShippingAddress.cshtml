@@ -3,13 +3,13 @@
 @using SmartStore.Web.Models.Checkout;
 @using SmartStore.Web.Models.Common;
 @{
-    Layout = "~/Views/Shared/_Checkout.cshtml";
+    Layout = "_Checkout";
 
     //title
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
 }
 @section orderProgress{
-    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Address })
+    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Address }); }
 }
 <div class="page shipping-address-page">
     <div class="page-title">
@@ -123,7 +123,7 @@
                                 //Merge ModelState (required for validation)
                                 dataDictAddress.ModelState.Merge(ViewData.ModelState);
                                 dataDictAddress.TemplateInfo.HtmlFieldPrefix = "NewAddress";
-                                @Html.Partial("_CreateOrUpdateAddress", Model.NewAddress, dataDictAddress)              
+                                Html.RenderPartial("_CreateOrUpdateAddress", Model.NewAddress, dataDictAddress);
                             }
                         </div>
                         <div class="buttons">

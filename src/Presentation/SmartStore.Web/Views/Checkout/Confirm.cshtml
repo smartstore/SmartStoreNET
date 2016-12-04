@@ -3,7 +3,7 @@
 @using SmartStore.Web.Models.Checkout;
 @using SmartStore.Web.Models.Common;
 @{
-    Layout = "~/Views/Shared/_Checkout.cshtml";
+    Layout = "_Checkout";
 
     //title
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
@@ -13,7 +13,7 @@
     string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink);
 }
 @section orderProgress{
-    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Confirm })
+    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Confirm }); }
 }
 <div class="page checkout-confirm-page">
     <div class="page-title">
@@ -31,8 +31,8 @@
 			<input type="hidden" id="SubscribeToNewsLetterHidden" name="SubscribeToNewsLetterHidden" />
 			<input type="hidden" id="AcceptThirdPartyEmailHandOverHidden" name="AcceptThirdPartyEmailHandOverHidden" />
 
-			if (Model.TermsOfServiceEnabled)
-			{
+            if (Model.TermsOfServiceEnabled)
+            {
             <div class="terms-of-service alert alert-info">
                 <script type="text/javascript">
                     $(document).ready(function () {
@@ -63,7 +63,7 @@
 
             </div>
             }
-            
+
             <script type="text/javascript">
                 $(document).ready(function () {
                     $('#confirm-order-form').submit(function () {
@@ -71,7 +71,7 @@
                     });
                 });
             </script>
-            
+
             <div class="confirm-order">
                 @if (Model.Warnings.Count > 0)
                 {
@@ -79,9 +79,9 @@
 						<div class="alert alert-error">
 							<ul>
 								@for (int i = 0; i < Model.Warnings.Count; i++)
-								{
+                                {
 									<li>@Html.Raw(Model.Warnings[i])</li>
-								}
+                                }
 							</ul>
 						</div>
 					</p>
@@ -92,7 +92,7 @@
         @Html.Widget("checkout_confirm_before_summary")
 
         <div class="order-summary-body">
-            @Html.Action("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true })
+            @{ Html.RenderAction("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true }); }
         </div>
 
         @if (Model.ShowConfirmOrderLegalHint) 

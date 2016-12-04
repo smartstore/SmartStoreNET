@@ -1,7 +1,7 @@
 ﻿@model ProductReviewsModel
 @using SmartStore.Web.Models.Catalog;
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+    Layout = "_ColumnsTwo";
 
     //title
     Html.AddTitleParts(Model.ProductName);
@@ -94,7 +94,7 @@
                     <div class="product-review-list">
                         @foreach (var review in Model.Items)
                         {
-                            int ratingPercent = review.Rating * 20;                
+                            int ratingPercent = review.Rating * 20;
                             <div class="product-review-item">
 
                                 <div class="review-title">
@@ -121,7 +121,7 @@
                                     @Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(review.ReviewText, false, true, false, false, false, false))
                                 </div>
 
-                                @Html.Partial("_ReviewHelpfulness", review.Helpfulness, new ViewDataDictionary())
+                                @{ Html.RenderPartial("_ReviewHelpfulness", review.Helpfulness, new ViewDataDictionary()); }
                                 @Html.Widget("productreviews_page_inside_review")
                             </div>
                         }

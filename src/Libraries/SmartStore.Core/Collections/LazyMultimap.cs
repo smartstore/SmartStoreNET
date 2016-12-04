@@ -12,8 +12,8 @@ namespace SmartStore.Collections
 	public class LazyMultimap<T> : Multimap<int, T>
 	{
 		private readonly Func<int[], Multimap<int, T>> _load;
-		private readonly List<int> _loaded;			// to avoid database round trips with empty results
-		private List<int> _collect;
+		private readonly HashSet<int> _loaded;			// to avoid database round trips with empty results
+		private HashSet<int> _collect;
 		//private int _roundTripCount;
 
 		/// <summary>
@@ -24,40 +24,9 @@ namespace SmartStore.Collections
 		public LazyMultimap(Func<int[], Multimap<int, T>> load, IEnumerable<int> collect = null)
 		{
 			_load = load;
-			_loaded = new List<int>();
+			_loaded = new HashSet<int>();
 
-			_collect = collect == null ? new List<int>() : new List<int>(collect);
-		}
-
-		protected virtual void Load(IEnumerable<int> keys)
-		{
-			if (keys != null)
-			{
-				var loadKeys = (_collect.Count == 0 ? keys : _collect.Concat(keys))
-					.Distinct()
-					.Except(_loaded)
-					.ToArray();
-
-				_collect.Clear();	// invalidate, do not load again					
-
-				if (loadKeys.Any())
-				{
-					//++_roundTripCount;
-					//Debug.WriteLine("Round trip {0} of {1}: {2}", _roundTripCount, typeof(T).Name, string.Join(",", loadKeys.OrderBy(x => x)));
-
-					var items = _load(loadKeys);
-
-					_loaded.AddRange(loadKeys);
-
-					if (items != null)
-					{
-						foreach (var range in items)
-						{
-							base.AddRange(range.Key, range.Value);
-						}
-					}
-				}
-			}
+			_collect = collect == null ? new HashSet<int>() : new HashSet<int>(collect);
 		}
 
 		/// <summary>
@@ -65,7 +34,7 @@ namespace SmartStore.Collections
 		/// </summary>
 		/// <param name="key">Data key</param>
 		/// <returns>Collection of data</returns>
-		public virtual ICollection<T> Load(int key)
+		public virtual ICollection<T> GetOrLoad(int key)
 		{
 			if (key == 0)
 			{
@@ -85,6 +54,42 @@ namespace SmartStore.Collections
 			return result;
 		}
 
+		public void LoadAll()
+		{
+			Load(_collect);
+		}
+
+		protected virtual void Load(IEnumerable<int> keys)
+		{
+			if (keys == null)
+				return;
+
+			var loadKeys = (_collect.Count == 0 ? keys : _collect.Concat(keys))
+				.Distinct()
+				.Except(_loaded)
+				.ToArray();
+
+			_collect.Clear();	// invalidate, do not load again					
+
+			if (loadKeys.Any())
+			{
+				//++_roundTripCount;
+				//Debug.WriteLine("Round trip {0} of {1}: {2}", _roundTripCount, typeof(T).Name, string.Join(",", loadKeys.OrderBy(x => x)));
+
+				var items = _load(loadKeys);
+
+				_loaded.AddRange(loadKeys);
+
+				if (items != null)
+				{
+					foreach (var range in items)
+					{
+						base.AddRange(range.Key, range.Value);
+					}
+				}
+			}
+		}
+
 		/// <summary>
 		/// Collect keys for combined loading
 		/// </summary>
@@ -94,7 +99,8 @@ namespace SmartStore.Collections
 		{
 			if (keys != null && keys.Any())
 			{
-				_collect = _collect.Union(keys).ToList();
+				//_collect = _collect.Union(keys).ToList();
+				_collect.UnionWith(keys);
 			}
 		}
 

@@ -91,7 +91,7 @@
 		jsRoot + "public.product-filter.js");
 }
 <!DOCTYPE html>
-<html @Html.Partial("LanguageAttributes")>
+<html @{ Html.RenderPartial("LanguageAttributes"); }>
 <head>
     <title>@Html.SmartTitle(true)</title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
@@ -101,12 +101,12 @@
     <meta name="generator" content="SmartStore.NET @SmartStoreVersion.CurrentFullVersion" />
 
     @*This is used so that themes can inject content into the header*@
-    @Html.Partial("Head")
+	@{ Html.RenderPartial("Head"); }
 
 	@Html.SmartMetaRobots()
 	@Html.MetaAcceptLanguage()
-    @Html.Partial("_ClientRes")
-	@Html.Partial("_GoogleFonts")
+	@{ Html.RenderPartial("_ClientRes"); }
+	@{ Html.RenderPartial("_GoogleFonts"); }
 
     @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
     @Html.SmartScripts(this.Url, ResourceLocation.Head)
@@ -115,10 +115,12 @@
 
     @Html.CanonicalUrls()
 	@Html.LinkRels()
-    @Html.Action("RssHeaderLink", "News", new { area = "" })
-    @Html.Action("RssHeaderLink", "Blog", new { area = "" })
+	@{ 
+		Html.RenderAction("RssHeaderLink", "News", new { area = "" });
+		Html.RenderAction("RssHeaderLink", "Blog", new { area = "" });
+	}
     @*Favicon - upload favicon.ico or favicon-[StoreId].ico file either to the root web or your theme directory*@
-    @Html.Action("Favicon", "Common", new { area = "" })
+	@{ Html.RenderAction("Favicon", "Common", new { area = "" }); }
 	@Html.CustomHead()
     <!--Powered by SmartStore.net - http://www.smartstore.com-->
 </head>

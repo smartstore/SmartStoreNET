@@ -3,5 +3,5 @@
 
 @foreach (var eam in Model)
 {
-    @Html.Action(eam.ActionName, eam.ControllerName, eam.RouteValues)
+    Html.RenderAction(eam.ActionName, eam.ControllerName, eam.RouteValues);
 }

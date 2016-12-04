@@ -5,7 +5,7 @@
 @using SmartStore.Core.Themes;
 
 @{
-	ViewBag.Title = T("Admin.Configuration.Themes").Text;
+    ViewBag.Title = T("Admin.Configuration.Themes").Text;
 }
 
 @using (Html.BeginForm())
@@ -34,7 +34,7 @@
 			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
-	
+
 	<div class="multi-store-scope well well-small">
 		<table class="adminContent">
 		<tr>
@@ -47,12 +47,12 @@
 		</tr>
 		</table>
 	</div>
-    
+
     @Html.SmartStore().TabStrip().Name("themes-tab").Items(x =>
-	{
-		x.Add().Text(T("Admin.Configuration.Themes")).Content(ThemesTab()).Selected(true);
-		x.Add().Text(T("Admin.Common.Settings")).Content(ThemeSettingsTab());
-	})
+{
+    x.Add().Text(T("Admin.Configuration.Themes")).Content(ThemesTab()).Selected(true);
+    x.Add().Text(T("Admin.Common.Settings")).Content(ThemeSettingsTab());
+})
 }
 
 @helper ThemesTab()
@@ -228,4 +228,4 @@
     </table> 
 }
 
-@Html.Action("UploadPackage", "Packaging", new { isTheme = true })
+@{ Html.RenderAction("UploadPackage", "Packaging", new { isTheme = true }); }

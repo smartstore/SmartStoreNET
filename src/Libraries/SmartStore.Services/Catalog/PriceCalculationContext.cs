@@ -28,7 +28,7 @@ namespace SmartStore.Services.Catalog
 		private LazyMultimap<TierPrice> _tierPrices;
 		private LazyMultimap<ProductCategory> _productCategories;
 		private LazyMultimap<ProductManufacturer> _productManufacturers;
-		private LazyMultimap<Discount> _appliedDiscounts;
+		private LazyMultimap<Discount> _appliedDiscounts;		
 
 		public PriceCalculationContext(IEnumerable<Product> products,
 			Func<int[], Multimap<int, ProductVariantAttribute>> attributes,

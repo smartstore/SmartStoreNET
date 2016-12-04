@@ -1,13 +1,19 @@
 ﻿@model TopicModel
 @using SmartStore.Web.Models.Topics;
 
+@if (!Model.Body.HasValue())
+{
+    return;
+}
+
 @if (Model.IsPasswordProtected)
 {
     <script type="text/javascript">    
         $(document).ready(function () {
             $('#ph-topic-@Model.Id').hide();            
             $('#ph-password-@Model.Id #password-@Model.Id').select().focus();
-        });    
+        });
+
         function OnAuthenticateSuccess@(Model.Id)(context) {
             if (context.Authenticated)
             {

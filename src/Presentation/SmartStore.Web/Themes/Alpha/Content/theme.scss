@@ -83,6 +83,7 @@ $card-border-color:         rgba(0,0,0, 0.12);*/
 @import "_pages.scss";
 @import "_login.scss";
 @import "_rating.scss";
+@import "_artlist.scss";
 @import "_product.scss";
 @import "_cart.scss";
 @import "_megamenu.scss";
@@ -112,6 +113,19 @@ body {
     background: $body-bg;
 } 
 
+.pagination-xs {
+    .page-link {
+        line-height: 1.4;
+        font-size: $font-size-xs;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .shrinked .page-link {
+        padding-left: 0.3rem;
+        padding-right: 0.3rem;
+    }
+}
+
 .page-title {
     margin-bottom: 1.5rem;
 }
@@ -126,4 +140,33 @@ body {
     border-bottom-color: transparent;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
+}
+
+
+
+
+
+
+
+//
+// Bootstrap 4 Alpha 1 fixes & surrogates (DELETE later!)
+// ------------------------------------------------------
+
+.col-xs, .col-sm, .col-md, .col-lg, .col-xl {
+    display: block;
+    position: relative;
+    min-height: 1px;
+    width: 100%;
+    padding-left: $grid-gutter-width / 2;
+    padding-right: $grid-gutter-width / 2;
+}
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+    @include media-breakpoint-up($breakpoint) {
+        .col-#{$breakpoint} {  
+            flex-basis: 0;
+            flex-grow: 1;
+            max-width: 100%;
+        }
+    }
 }

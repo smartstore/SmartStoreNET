@@ -82,7 +82,7 @@ namespace SmartStore.Services.Catalog
 				if (context == null)
 					appliedDiscounts = product.AppliedDiscounts;
 				else
-					appliedDiscounts = context.AppliedDiscounts.Load(product.Id);
+					appliedDiscounts = context.AppliedDiscounts.GetOrLoad(product.Id);
 
 				if (appliedDiscounts != null)
 				{
@@ -104,7 +104,7 @@ namespace SmartStore.Services.Catalog
 				if (context == null)
 					productCategories = _categoryService.GetProductCategoriesByProductId(product.Id);
 				else
-					productCategories = context.ProductCategories.Load(product.Id);
+					productCategories = context.ProductCategories.GetOrLoad(product.Id);
 
                 if (productCategories != null)
                 {
@@ -136,7 +136,7 @@ namespace SmartStore.Services.Catalog
 				if (context == null)
 					productManufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id);
 				else
-					productManufacturers = context.ProductManufacturers.Load(product.Id);
+					productManufacturers = context.ProductManufacturers.GetOrLoad(product.Id);
 
 				if (productManufacturers != null)
 				{
@@ -187,7 +187,7 @@ namespace SmartStore.Services.Catalog
 			}
 			else
 			{
-				tierPrices = context.TierPrices.Load(product.Id)
+				tierPrices = context.TierPrices.GetOrLoad(product.Id)
 					.RemoveDuplicatedQuantities();
 			}
 
@@ -230,7 +230,7 @@ namespace SmartStore.Services.Catalog
 
 			var selectedAttributes = new NameValueCollection();
 			var selectedAttributeValues = new List<ProductVariantAttributeValue>();
-			var attributes = context.Attributes.Load(product.Id);
+			var attributes = context.Attributes.GetOrLoad(product.Id);
 
 			// 1. fill selectedAttributes with initially selected attributes
 			foreach (var attribute in attributes.Where(x => x.ProductVariantAttributeValues.Count > 0 && x.ShouldHaveValues()))
@@ -282,7 +282,7 @@ namespace SmartStore.Services.Catalog
 				var attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _services.Localization,
 					_downloadService, _catalogSettings, _httpRequestBase, new List<string>(), true, bundleItemId);
 
-				var combinations = context.AttributeCombinations.Load(product.Id);
+				var combinations = context.AttributeCombinations.GetOrLoad(product.Id);
 
 				var selectedCombination = combinations.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
 
@@ -319,7 +319,10 @@ namespace SmartStore.Services.Catalog
 			return result;
 		}
 
-		public virtual PriceCalculationContext CreatePriceCalculationContext(IEnumerable<Product> products = null, Customer customer = null, int? storeId = null)
+		public virtual PriceCalculationContext CreatePriceCalculationContext(
+			IEnumerable<Product> products = null, 
+			Customer customer = null, 
+			int? storeId = null)
 		{
 			if (customer == null)
 				customer = _services.WorkContext.CurrentCustomer;
@@ -519,13 +522,13 @@ namespace SmartStore.Services.Catalog
 
 			if (!displayFromMessage && product.ProductType != ProductType.BundledProduct)
 			{
-				var attributes = context.Attributes.Load(product.Id);
+				var attributes = context.Attributes.GetOrLoad(product.Id);
 				displayFromMessage = attributes.Any(x => x.ProductVariantAttributeValues.Any(y => y.PriceAdjustment != decimal.Zero));
 			}
 
 			if (!displayFromMessage && product.HasTierPrices && !isBundlePerItemPricing)
 			{
-				var tierPrices = context.TierPrices.Load(product.Id)
+				var tierPrices = context.TierPrices.GetOrLoad(product.Id)
 					.RemoveDuplicatedQuantities();
 
 				displayFromMessage = (tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices.First().Quantity <= 1));

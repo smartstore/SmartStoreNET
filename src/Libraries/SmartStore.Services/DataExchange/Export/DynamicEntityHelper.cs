@@ -71,7 +71,7 @@ namespace SmartStore.Services.DataExchange.Export
 				else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription ||
 					ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndDescription)
 				{
-					var productManus = ctx.ProductExportContext.ProductManufacturers.Load(product.Id);
+					var productManus = ctx.ProductExportContext.ProductManufacturers.GetOrLoad(product.Id);
 
 					if (productManus != null && productManus.Any())
 						description = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
@@ -574,12 +574,12 @@ namespace SmartStore.Services.DataExchange.Export
 				pictureSize = ctx.Projection.PictureSize;
 
 			var perfLoadId = (ctx.IsPreview ? 0 : product.Id);  // perf preview (it's a compromise)
-			IEnumerable<ProductPicture> productPictures = ctx.ProductExportContext.ProductPictures.Load(perfLoadId);
-			var productManufacturers = ctx.ProductExportContext.ProductManufacturers.Load(perfLoadId);
-			var productCategories = ctx.ProductExportContext.ProductCategories.Load(product.Id);
-			var productAttributes = ctx.ProductExportContext.Attributes.Load(product.Id);
-			var productTags = ctx.ProductExportContext.ProductTags.Load(product.Id);
-			var specificationAttributes = ctx.ProductExportContext.ProductSpecificationAttributes.Load(product.Id);
+			IEnumerable<ProductPicture> productPictures = ctx.ProductExportContext.ProductPictures.GetOrLoad(perfLoadId);
+			var productManufacturers = ctx.ProductExportContext.ProductManufacturers.GetOrLoad(perfLoadId);
+			var productCategories = ctx.ProductExportContext.ProductCategories.GetOrLoad(product.Id);
+			var productAttributes = ctx.ProductExportContext.Attributes.GetOrLoad(product.Id);
+			var productTags = ctx.ProductExportContext.ProductTags.GetOrLoad(product.Id);
+			var specificationAttributes = ctx.ProductExportContext.SpecificationAttributes.GetOrLoad(product.Id);
 
 			var variantAttributes = (combination != null ? _productAttributeParser.Value.DeserializeProductVariantAttributes(combination.AttributesXml) : null);
 			var variantAttributeValues = (combination != null ? _productAttributeParser.Value.ParseProductVariantAttributeValues(variantAttributes, productAttributes) : null);
@@ -730,7 +730,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (product.HasTierPrices)
 			{
-				var tierPrices = ctx.ProductExportContext.TierPrices.Load(product.Id)
+				var tierPrices = ctx.ProductExportContext.TierPrices.GetOrLoad(product.Id)
 					.RemoveDuplicatedQuantities();
 
 				dynObject.TierPrices = tierPrices
@@ -745,7 +745,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (product.HasDiscountsApplied)
 			{
-				var appliedDiscounts = ctx.ProductExportContext.AppliedDiscounts.Load(product.Id);
+				var appliedDiscounts = ctx.ProductExportContext.AppliedDiscounts.GetOrLoad(product.Id);
 
 				dynObject.AppliedDiscounts = appliedDiscounts
 					.Select(x => ToDynamic(ctx, x))
@@ -771,7 +771,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (product.ProductType == ProductType.BundledProduct)
 			{
-				var bundleItems = ctx.ProductExportContext.ProductBundleItems.Load(perfLoadId);
+				var bundleItems = ctx.ProductExportContext.ProductBundleItems.GetOrLoad(perfLoadId);
 
 				dynObject.ProductBundleItems = bundleItems
 					.Select(x =>
@@ -799,7 +799,7 @@ namespace SmartStore.Services.DataExchange.Export
 			if (ctx.Supports(ExportFeatures.OffersBrandFallback))
 			{
 				string brand = null;
-				var productManus = ctx.ProductExportContext.ProductManufacturers.Load(perfLoadId);
+				var productManus = ctx.ProductExportContext.ProductManufacturers.GetOrLoad(perfLoadId);
 
 				if (productManus != null && productManus.Any())
 					brand = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
@@ -1026,7 +1026,7 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			var result = new List<dynamic>();
 
-			var combinations = ctx.ProductExportContext.AttributeCombinations.Load(product.Id);
+			var combinations = ctx.ProductExportContext.AttributeCombinations.GetOrLoad(product.Id);
 
 			if (!ctx.IsPreview && ctx.Projection.AttributeCombinationAsProduct && combinations.Where(x => x.IsActive).Count() > 0)
 			{
@@ -1076,14 +1076,14 @@ namespace SmartStore.Services.DataExchange.Export
 			if (!ctx.IsPreview)
 			{
 				ctx.OrderExportContext.Addresses.Collect(order.ShippingAddressId.HasValue ? order.ShippingAddressId.Value : 0);
-				ctx.OrderExportContext.Addresses.Load(order.BillingAddressId);
+				ctx.OrderExportContext.Addresses.GetOrLoad(order.BillingAddressId);
 			}
 
 			var perfLoadId = (ctx.IsPreview ? 0 : order.Id);
-			var customers = ctx.OrderExportContext.Customers.Load(order.CustomerId);
-			var rewardPointsHistories = ctx.OrderExportContext.RewardPointsHistories.Load(ctx.IsPreview ? 0 : order.CustomerId);
-			var orderItems = ctx.OrderExportContext.OrderItems.Load(perfLoadId);
-			var shipments = ctx.OrderExportContext.Shipments.Load(perfLoadId);
+			var customers = ctx.OrderExportContext.Customers.GetOrLoad(order.CustomerId);
+			var rewardPointsHistories = ctx.OrderExportContext.RewardPointsHistories.GetOrLoad(ctx.IsPreview ? 0 : order.CustomerId);
+			var orderItems = ctx.OrderExportContext.OrderItems.GetOrLoad(perfLoadId);
+			var shipments = ctx.OrderExportContext.Shipments.GetOrLoad(perfLoadId);
 
 			dynamic dynObject = ToDynamic(ctx, order);
 
@@ -1158,14 +1158,14 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			var result = new List<dynamic>();
 
-			var productManufacturers = ctx.ManufacturerExportContext.ProductManufacturers.Load(manufacturer.Id);
+			var productManufacturers = ctx.ManufacturerExportContext.ProductManufacturers.GetOrLoad(manufacturer.Id);
 
 			dynamic dynObject = ToDynamic(ctx, manufacturer);
 
 			if (!ctx.IsPreview && manufacturer.PictureId.HasValue)
 			{
 				var numberOfPictures = (ctx.Projection.NumberOfPictures ?? int.MaxValue);
-				var pictures = ctx.ManufacturerExportContext.Pictures.Load(manufacturer.PictureId.Value).Take(numberOfPictures);
+				var pictures = ctx.ManufacturerExportContext.Pictures.GetOrLoad(manufacturer.PictureId.Value).Take(numberOfPictures);
 
 				if (pictures.Any())
 					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.Value.ManufacturerThumbPictureSize, _mediaSettings.Value.ManufacturerThumbPictureSize);
@@ -1198,14 +1198,14 @@ namespace SmartStore.Services.DataExchange.Export
 		{
 			var result = new List<dynamic>();
 
-			var productCategories = ctx.CategoryExportContext.ProductCategories.Load(category.Id);
+			var productCategories = ctx.CategoryExportContext.ProductCategories.GetOrLoad(category.Id);
 
 			dynamic dynObject = ToDynamic(ctx, category);
 
 			if (!ctx.IsPreview && category.PictureId.HasValue)
 			{
 				var numberOfPictures = (ctx.Projection.NumberOfPictures ?? int.MaxValue);
-				var pictures = ctx.CategoryExportContext.Pictures.Load(category.PictureId.Value).Take(numberOfPictures);
+				var pictures = ctx.CategoryExportContext.Pictures.GetOrLoad(category.PictureId.Value).Take(numberOfPictures);
 
 				if (pictures.Any())
 					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.Value.CategoryThumbPictureSize, _mediaSettings.Value.CategoryThumbPictureSize);
@@ -1239,7 +1239,7 @@ namespace SmartStore.Services.DataExchange.Export
 			var result = new List<dynamic>();
 
 			var perfLoadId = (ctx.IsPreview ? 0 : customer.Id);
-			var genericAttributes = ctx.CustomerExportContext.GenericAttributes.Load(perfLoadId);
+			var genericAttributes = ctx.CustomerExportContext.GenericAttributes.GetOrLoad(perfLoadId);
 
 			dynamic dynObject = ToDynamic(ctx, customer);
 

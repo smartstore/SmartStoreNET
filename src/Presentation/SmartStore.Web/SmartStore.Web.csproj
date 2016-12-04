@@ -263,6 +263,7 @@
     <Compile Include="Controllers\BoardsController.cs" />
     <Compile Include="Controllers\CatalogController.cs" />
     <Compile Include="Controllers\CatalogHelper.cs" />
+    <Compile Include="Controllers\CatalogHelper.V3.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\BlogController.cs" />
@@ -335,6 +336,7 @@
     <Compile Include="Models\Catalog\CompareProductsModel.cs" />
     <Compile Include="Models\Catalog\NavigationModelBuiltEvent.cs" />
     <Compile Include="Models\Catalog\ProductAskQuestionModel.cs" />
+    <Compile Include="Models\Catalog\ProductSummaryModel.cs" />
     <Compile Include="Models\Catalog\RecentlyAddedProductsModel.cs" />
     <Compile Include="Models\Catalog\PagingFilteringModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerOverviewModel.cs" />
@@ -466,9 +468,13 @@
   <ItemGroup>
     <Content Include="404.html" />
     <Content Include="500.html" />
-    <Content Include="App_Data\Localization\App\de\all.smres.xml" />
+    <Content Include="App_Data\Localization\App\de\all.smres.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="App_Data\Localization\App\de\head.txt" />
-    <Content Include="App_Data\Localization\App\en\all.smres.xml" />
+    <Content Include="App_Data\Localization\App\en\all.smres.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="App_Data\Localization\App\en\head.txt" />
     <Content Include="App_Data\Localization\Installation\installation.de.xml" />
     <Content Include="App_Data\Localization\Installation\installation.en.xml">
@@ -1461,6 +1467,7 @@
     <Content Include="Themes\Alpha\Scripts\select2.min.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.column-equalizer.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.common.js" />
+    <Content Include="Themes\Alpha\Scripts\smartstore.articlelist.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.doAjax.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.eventbroker.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.globalize.adapter.js" />
@@ -1871,25 +1878,25 @@
     <Content Include="Themes\Alpha\Views\Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Views\Shared\_ColumnsOne.cshtml" />
-    <Content Include="Views\Shared\_ColumnsThree.cshtml" />
-    <Content Include="Views\Shared\_ColumnsTwo.cshtml" />
-    <Content Include="Views\Shared\_Document.cshtml" />
-    <Content Include="Views\Shared\ConditionalComments.cshtml" />
+    <Content Include="Views\Shared\Layouts\_ColumnsOne.cshtml" />
+    <Content Include="Views\Shared\Layouts\_ColumnsThree.cshtml" />
+    <Content Include="Views\Shared\Layouts\_ColumnsTwo.cshtml" />
+    <Content Include="Views\Shared\Layouts\_Document.cshtml" />
+    <Content Include="Views\Shared\Partials\ConditionalComments.cshtml" />
     <Content Include="Themes\Alpha\Views\Shared\ConfigureTheme.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\LanguageAttributes.cshtml" />
+    <Content Include="Views\Shared\Partials\LanguageAttributes.cshtml" />
     <Content Include="Views\Shared\LicenseRequired.cshtml" />
     <Content Include="Views\Shared\NotFound.cshtml" />
-    <Content Include="Views\Shared\_Checkout.cshtml" />
-    <Content Include="Views\Shared\_ClientRes.cshtml" />
-    <Content Include="Views\Shared\_CreateOrUpdateAddress.cshtml" />
-    <Content Include="Views\Shared\_Notifications.cshtml" />
-    <Content Include="Views\Shared\_Print.cshtml" />
-    <Content Include="Views\Shared\_ProductBox.cshtml" />
-    <Content Include="Views\Shared\_ProductBoxCompact.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Shared\_Layout.Popup.cshtml" />
+    <Content Include="Views\Shared\Layouts\_Checkout.cshtml" />
+    <Content Include="Views\Shared\Partials\_ClientRes.cshtml" />
+    <Content Include="Views\Shared\Partials\_CreateOrUpdateAddress.cshtml" />
+    <Content Include="Views\Shared\Partials\_Notifications.cshtml" />
+    <Content Include="Views\Shared\Layouts\_Print.cshtml" />
+    <Content Include="Views\Shared\Partials\_ProductBox.cshtml" />
+    <Content Include="Views\Shared\Partials\_ProductBoxCompact.cshtml" />
+    <Content Include="Views\Shared\Layouts\_Layout.cshtml" />
+    <Content Include="Views\Shared\Layouts\_Layout.Popup.cshtml" />
     <Content Include="Views\Blog\BlogMonths.cshtml" />
     <Content Include="Views\Blog\BlogPost.cshtml" />
     <Content Include="Views\Blog\BlogTags.cshtml" />
@@ -1938,7 +1945,7 @@
     <Content Include="Views\Catalog\_FilterPriceBox.cshtml" />
     <Content Include="Views\Catalog\_FilterSpecsBox.cshtml" />
     <Content Include="Views\Catalog\_ProductBoxList.cshtml" />
-    <Content Include="Views\Shared\_ProductListOptions.cshtml" />
+    <Content Include="Views\Shared\Partials\_ProductListOptions.cshtml" />
     <Content Include="Views\Checkout\BillingAddress.cshtml" />
     <Content Include="Views\Checkout\CheckoutProgress.cshtml" />
     <Content Include="Views\Checkout\Completed.cshtml" />
@@ -2070,13 +2077,13 @@
     <Content Include="Views\Topic\TopicWidget.cshtml" />
     <Content Include="Views\Widget\TabWidgets.cshtml" />
     <Content Include="Views\Widget\WidgetsByZone.cshtml" />
-    <Content Include="Views\Shared\_GoogleFonts.cshtml" />
+    <Content Include="Views\Shared\Partials\_GoogleFonts.cshtml" />
     <Content Include="Themes\Alpha\Content\_checkout.scss" />
     <None Include="Themes\Alpha\Content\_footer.scss" />
     <Content Include="Themes\Alpha\Content\_misc.scss" />
     <None Include="Themes\Alpha\Content\_blog.scss" />
     <Content Include="Themes\Alpha\Content\_forum.scss" />
-    <Content Include="Views\Shared\_ProductList.cshtml" />
+    <Content Include="Views\Shared\Partials\_ProductList.cshtml" />
     <Content Include="Themes\Alpha\Content\_product.scss" />
     <None Include="Themes\Alpha\Content\_pages.scss" />
     <Content Include="Themes\Alpha\Content\_rating.scss" />
@@ -2092,6 +2099,10 @@
     <Content Include="Views\Search\InstantSearch.HitGroup.cshtml" />
     <Content Include="Views\Search\InstantSearch.TopProducts.cshtml" />
     <Content Include="Views\Search\Search2.cshtml" />
+    <Content Include="Themes\Alpha\Content\_artlist.scss" />
+    <Content Include="Views\Shared\Partials\Product.Item.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.Item.Drop.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2101,6 +2112,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Themes\Alpha\Content\shared\select2\mixins\" />
+    <Folder Include="Views\Shared\Components\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">
@@ -2134,7 +2146,7 @@
     <Content Include="Themes\AlphaOld\Views\Shared\_ProductBox.cshtml" />
     <Content Include="Themes\AlphaOld\Views\Home\Index.cshtml" />
     <Content Include="Themes\AlphaOld\Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\Head.cshtml" />
+    <Content Include="Views\Shared\Partials\Head.cshtml" />
     <Content Include="Themes\AlphaOld\Views\Shared\_ColumnsOne.cshtml" />
     <Content Include="Themes\AlphaOld\Views\Shared\_ColumnsThree.cshtml" />
     <Content Include="Themes\AlphaOld\Views\Shared\_ColumnsTwo.cshtml" />

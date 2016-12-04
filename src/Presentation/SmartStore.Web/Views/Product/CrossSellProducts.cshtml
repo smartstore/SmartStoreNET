@@ -9,7 +9,7 @@
         <div class="block-body">
             @(Html.DataList<ProductOverviewModel>(Model, 4,
                 @<div class="item-box">
-                    @Html.Partial("_ProductBox", item)
+                    @{ Html.RenderPartial("_ProductBox", item); }
                 </div>
             ))
         </div>

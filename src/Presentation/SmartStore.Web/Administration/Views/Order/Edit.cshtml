@@ -35,9 +35,9 @@
 			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
-    
+
     @Html.ValidationSummary(false)
-    
+
     @Html.SmartStore().TabStrip().Name("order-edit").Items(x =>
 {
     var tabInfo = x.Add().Text(T("Admin.Orders.Info").Text).Content(TabInfo()).Selected(true);
@@ -1831,4 +1831,4 @@
     @Html.Action("GenericAttributes", "Common", new { entityName = "Order", entityId = Model.Id })
 }
 
-@Html.Partial("_AutoUpdateOrderItem", Model.AutoUpdateOrderItem)
+@{ Html.RenderPartial("_AutoUpdateOrderItem", Model.AutoUpdateOrderItem); }

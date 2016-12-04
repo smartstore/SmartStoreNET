@@ -5,7 +5,7 @@
 @model RegisterModel
 @using SmartStore.Web.Models.Customer;
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+    Layout = "_ColumnsTwo";
 
     //title
     Html.AddTitleParts(T("PageTitle.Register").Text);
@@ -20,11 +20,12 @@
         </div>
         <div class="page-body">
             
-            @if (!ViewData.ModelState.IsValid) {
+            @if (!ViewData.ModelState.IsValid)
+            {
                 @Html.ValidationSummary(true)
             }
 
-            @Html.Partial("_ExternalAuthentication.AssociateMessage")
+            @{ Html.RenderPartial("_ExternalAuthentication.AssociateMessage"); }
 
             <fieldset class="form-fields">
                 <legend>@T("Account.YourPersonalDetails")</legend>
@@ -82,7 +83,7 @@
                                 {
                                     <div class="input-append">
                                         @Html.EditorFor(model => model.Username, new { @class = "form-control" })
-                                        @Html.Partial("_CheckUsernameAvailability")
+                                        @{ Html.RenderPartial("_CheckUsernameAvailability"); }
                                     </div>
                                 }
                                 else

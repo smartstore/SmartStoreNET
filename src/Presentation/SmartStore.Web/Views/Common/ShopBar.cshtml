@@ -1,4 +1,5 @@
 ﻿@model ShopBarModel
+
 @using SmartStore.Web.Models.Common;
 
 @{ 
@@ -9,12 +10,16 @@
 
 	<!-- LOGO -->
 	<div class="shopbar-col shop-logo">
-		@Html.Action("Logo", "Common", new { area = "" })
+		@{ 
+			Html.RenderAction("Logo", "Common", new { area = "" });
+		}
 	</div>
 
 	<!-- SEARCH -->
 	<div class="shopbar-col shopbar-col--stretch shopbar-search">
-		@Html.Action("SearchBox", "Search")
+		@{ 
+			Html.RenderAction("SearchBox", "Search"); 
+		}
 	</div>
 	<div class="shopbar-col shopbar-col--stretch hidden-lg-up"><!-- Fluid spacer --></div>
 
@@ -27,10 +32,10 @@
             <div class="shopbar-tool hidden-sm-down" id="shopbar-wishlist" data-target="#wishlist-tab">
                 <a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart", new { isWishlist = true })"
                    data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
-                    <figure class="shopbar-button-icon">
+                    <span class="shopbar-button-icon">
                         <i class="fa fa-heart-o"></i>
                         <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.WishlistItems == 0 ? "hidden-xs-up" : "")' data-bind-to="TotalProducts">@Model.WishlistItems</span>
-                    </figure>
+                    </span>
                     <span class="shopbar-button-label hidden-lg-down">
                         <span>@T("Common.Shopbar.WishlistPartOne")</span><br />
                         <span style="font-weight: bold">@T("Common.Shopbar.WishlistPartTwo")</span>
@@ -42,10 +47,10 @@
             <div class="shopbar-tool hidden-sm-up" id="shopbar-wishlist" data-target="#wishlist-tab">
                 <a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart", new { isWishlist = true })"
                    data-autohide="true" data-placement="right" data-fullscreen="true" data-disablescrolling="true" data-target="#offcanvas-cart">
-                    <figure class="shopbar-button-icon">
+                    <span class="shopbar-button-icon">
                         <i class="fa fa-heart-o"></i>
                         <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.WishlistItems == 0 ? "hidden-xs-up" : "")' data-bind-to="TotalProducts">@Model.WishlistItems</span>
-                    </figure>
+                    </span>
                 </a>
             </div>
         }
@@ -59,10 +64,10 @@
             <div class="shopbar-tool hidden-sm-down" id="shopbar-compare" data-target="#compare-tab">
                 <a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
                    data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
-                    <figure class="shopbar-button-icon">
+                    <span class="shopbar-button-icon">
                         <i class="fa fa-retweet"></i>
                         <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="Count">@Model.CompareItems</span>
-                    </figure>
+                    </span>
                     <span class="shopbar-button-label hidden-lg-down">
                         <span>@T("Common.Shopbar.CompareProductsPartOne")</span><br />
                         <span style="font-weight: bold">@T("Common.Shopbar.CompareProductsPartTwo")</span>
@@ -74,10 +79,10 @@
             <div class="shopbar-tool hidden-sm-up" id="shopbar-compare" data-target="#compare-tab">
                 <a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
                    data-autohide="true" data-placement="right" data-fullscreen="true" data-disablescrolling="true" data-target="#offcanvas-cart">
-                    <figure class="shopbar-button-icon">
+                    <span class="shopbar-button-icon">
                         <i class="fa fa-retweet"></i>
                         <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="Count">@Model.CompareItems</span>
-                    </figure>
+                    </span>
                 </a>
             </div>
         }
@@ -88,12 +93,12 @@
             <div class="shopbar-tool hidden-sm-down" id="shopbar-cart" data-target="#cart-tab">
                 <a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart")"
                         data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
-                    <figure class="shopbar-button-icon">
+                    <span class="shopbar-button-icon">
                         <i class="fa fa-shopping-basket"></i>
                         <span class='label label-pill @(GetThemeVariable<string>("ShopBarLabel"))@(Model.ShoppingCartItems == 0 ? " hidden-xs-up" : "")' data-bind-to="TotalProducts">
                             @Model.ShoppingCartItems
                         </span>
-                    </figure>
+                    </span>
                     <span class="shopbar-button-label hidden-lg-down">
                         <span data-bind-to="SubTotal">@Model.ShoppingCartAmount</span><br />
                         <span style="font-weight: bold">@T("Common.Shopbar.Basket") <i class="fa fa-caret-down"></i></span>
@@ -105,12 +110,12 @@
             <div class="shopbar-tool hidden-sm-up" id="shopbar-cart" data-target="#cart-tab">
                 <a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart")"
                    data-autohide="true" data-placement="right" data-fullscreen="true" data-disablescrolling="true" data-target="#offcanvas-cart">
-                    <figure class="shopbar-button-icon">
+                    <span class="shopbar-button-icon">
                         <i class="fa fa-shopping-basket"></i>
                         <span class='label label-pill @(GetThemeVariable<string>("ShopBarLabel"))@(Model.ShoppingCartItems == 0 ? " hidden-xs-up" : "")' data-bind-to="TotalProducts">
                             @Model.ShoppingCartItems
                         </span>
-                    </figure>
+                    </span>
                 </a>
             </div>
         }

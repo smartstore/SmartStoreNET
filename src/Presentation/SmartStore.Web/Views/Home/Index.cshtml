@@ -1,26 +1,23 @@
 ﻿@using SmartStore.Web.Framework.Theming;
 
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+	Layout = "_ColumnsTwo";
 }
 
 <div class="page home-page">
     <div class="page-body">
         @Html.Widget("home_page_top")
-        @Html.Action("TopicBlock", "Topic", new { systemName = "HomePageText" })
-
-        @Html.Action("HomepageCategories", "Catalog")
-
-        @Html.Action("HomepageProducts", "Catalog")
-
-        @Html.Action("HomepageBestSellers", "Catalog")
-
-        @Html.Action("HomePageNews", "News")
-
-        @Html.Action("HomePagePolls", "Poll")
+		@{
+			Html.RenderAction("TopicBlock", "Topic", new { systemName = "HomePageText" });
+			Html.RenderAction("HomepageCategories", "Catalog");
+			Html.RenderAction("HomepageProducts", "Catalog");
+			Html.RenderAction("HomepageBestSellers", "Catalog");
+			Html.RenderAction("HomePageNews", "News");
+			Html.RenderAction("HomePagePolls", "Poll");
+		}
         @Html.Widget("home_page_bottom")
     </div>
-}
+</div>
 
 @section teaser {
 

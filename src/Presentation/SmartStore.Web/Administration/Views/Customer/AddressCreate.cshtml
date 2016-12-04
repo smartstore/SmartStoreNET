@@ -13,5 +13,6 @@
             <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
-    @Html.Partial("_CreateOrUpdateAddress", Model)
+
+    Html.RenderPartial("_CreateOrUpdateAddress", Model);
 }

@@ -11,7 +11,7 @@
 
 <div class="clear"></div>
 
-@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+@{ Html.RenderAction("StoreScopeConfiguration", "Setting", new { area = "Admin" }); }
 
 @Html.ValidationSummary(false)
 

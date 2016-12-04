@@ -1,15 +1,16 @@
 namespace SmartStore.Data.Migrations
 {
-	using System;
-	using System.Data.Entity;
-	using System.Data.Entity.Migrations;
-	using System.Linq;
-	using Core.Caching;
-	using Core.Domain.Configuration;
-	using Core.Infrastructure;
-	using Setup;
+    using System;
+    using System.Data.Entity;
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+    using Core.Caching;
+    using Core.Domain.Configuration;
+    using Core.Infrastructure;
+    using Setup;
+    using Core.Domain.Security;
 
-	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
+    public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
 		public MigrationsConfiguration()
 		{
@@ -28,7 +29,15 @@ namespace SmartStore.Data.Migrations
 			// TODO: (mc) Temp only. Put this in a seeding migration right before release.
 			context.MigrateLocaleResources(MigrateLocaleResources);
 			MigrateSettings(context);
-		}
+
+            // remove permission record
+            var permissionRecords = context.Set<PermissionRecord>();
+            var record = permissionRecords.Where(x => x.SystemName.Equals("ManageContentSlider")).FirstOrDefault();
+            if (record != null)
+                permissionRecords.Remove(record);
+
+            context.SaveChanges();
+        }
 
 		public void MigrateSettings(SmartObjectContext context)
 		{
@@ -40,9 +49,31 @@ namespace SmartStore.Data.Migrations
 				EngineContext.Current.Resolve<ICacheManager>().Clear();
 			}
 
-			// [...]
+            context.MigrateSettings(x => {
+                x.DeleteGroup("ContentSlider");
+            });
+			// Change MediaSettings.ProductThumbPictureSize to 250 if smaller
+			settings = context.Set<Setting>().Where(x => x.Name == "MediaSettings.ProductThumbPictureSize").ToList();
+			if (settings.Any())
+			{
+				settings.Each(x =>
+				{
+					var size = x.Value.Convert<int>();
+					if (size < 250)
+					{
+						x.Value = "250";
+					}
+				});
+			}
 
-			context.SaveChanges();
+            // [...]
+            
+            context.SaveChanges();
+
+			context.MigrateSettings(x => 
+			{
+				x.Add<int>("MediaSettings.DefaultThumbnailAspectRatio", 1);
+			});
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
@@ -172,6 +203,36 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Validation.ValueGreaterThan",
 				"The value must be greater than {0}.",
 				"Der Wert muss größer als {0} sein.");
+
+			builder.AddOrUpdate("Common.AdditionalShippingSurcharge",
+				"zzgl. <b>{0}</b> zusätzlicher Versandgebühr",
+				"Plus <b>{0}</b> shipping surcharge");
+
+			builder.DeleteFor("Admin.Configuration.ContentSlider");
+			builder.DeleteFor("Admin.ContentManagement.ContentSlider");
+			builder.DeleteFor("Admin.ContentSlider.Slide");
+			builder.Delete("Admin.Themes.ContentSlider");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowShortDescriptionInGridStyleLists",
+				"Show short description in product lists",
+				"Zeige Kurzbeschreibung in Produktlisten",
+				"Specifies whether the product short description should be displayed in product lists",
+				"Legt fest, ob die Produkt-Kurzbeschreibung auch in Produktlisten angezeigt werden sollen");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturerInGridStyleLists",
+				"Show manufacturer in product lists",
+				"Zeige Hersteller in Produktlisten",
+				"Specifies whether the manufacturer name should be displayed in grid style product lists",
+				"Legt fest, ob der Hersteller-Name auch in Rasterstil Produktlisten angezeigt werden sollen");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowProductOptionsInLists",
+				"Show variant names in product lists",
+				"Zeige Variantnamen in Produktlisten",
+				"Specifies whether variant names should be displayed in product lists",
+				"Legt fest, ob Variantnamen in Produktlisten angezeigt werden sollen");
+
+			builder.AddOrUpdate("Products.PlusOption", "Further option", "Weitere Option");
+			builder.AddOrUpdate("Products.PlusOptions", "More options", "Weitere Optionen");
 		}
 	}
 }

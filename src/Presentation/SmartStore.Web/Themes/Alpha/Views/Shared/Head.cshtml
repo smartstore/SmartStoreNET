@@ -1,7 +1,7 @@
 ﻿@using SmartStore.Web.Framework.Theming;
 
 @{
-	Html.AppendCssFileParts(false, "~/Themes/Alpha/Content/theme.scss");
+    Html.AppendCssFileParts(false, "~/Themes/Alpha/Content/theme.scss");
 }
 
-@Html.Partial("ConditionalComments") 
+@{ Html.RenderPartial("ConditionalComments"); }

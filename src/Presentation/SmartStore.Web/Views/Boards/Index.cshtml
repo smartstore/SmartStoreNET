@@ -3,7 +3,7 @@
 @using SmartStore.Services.Helpers;
 @using SmartStore.Web.Models.Boards;
 @{
-    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+    Layout = "_ColumnsOne";
 
     Html.AddTitleParts(T("Forum.PageTitle.Default").Text);
 }
@@ -12,19 +12,17 @@
         <div class="current-time pull-left">
             @Model.CurrentTime.ToString("F")
         </div>
-        @Html.Partial("_SearchBox")
+        @{ Html.RenderPartial("_SearchBox"); }
     </div>
 
     <div>
-        @Html.Action("TopicBlock", "Topic", new { systemName = "ForumWelcomeMessage" })
+        @{ Html.RenderAction("TopicBlock", "Topic", new { systemName = "ForumWelcomeMessage" }); }
     </div>
 
-    
-    
     @foreach (var forumGroup in Model.ForumGroups)
     {
-		Html.RenderPartial("_ForumGroupPartial", forumGroup);
+        Html.RenderPartial("_ForumGroupPartial", forumGroup);
     }
     
-    @Html.Action("ActiveDiscussionsSmall")
+    @{ Html.RenderAction("ActiveDiscussionsSmall"); }
 </div>

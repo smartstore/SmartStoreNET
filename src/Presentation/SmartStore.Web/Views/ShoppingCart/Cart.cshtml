@@ -3,20 +3,17 @@
 @using SmartStore.Web.Models.Checkout
 @using SmartStore.Web.Models.ShoppingCart;
 @{
-    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
-    
+    Layout = "_ColumnsOne";
     Html.AddBodyCssClass("order-summary-page");
-    
-    //title
     Html.AddTitleParts(T("PageTitle.ShoppingCart").Text);
+    Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Cart });
 }
 
-@Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Cart })
 <div class="page shopping-cart-page">
     <div class="page-title">
         <h1>@T("ShoppingCart")</h1>
     </div>
     <div class="page-body">
-        @Html.Partial("OrderSummary", Model)
+        @{ Html.RenderPartial("OrderSummary", Model); }
     </div>
 </div>

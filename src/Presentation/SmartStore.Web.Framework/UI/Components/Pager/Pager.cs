@@ -11,7 +11,8 @@ namespace SmartStore.Web.Framework.UI
 {
     public enum PagerSize
     {
-        Small,
+		Mini,
+		Small,
         Medium,
         Large
     }

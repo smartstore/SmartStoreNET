@@ -1,10 +1,10 @@
 ﻿@using SmartStore.Admin.Models.DataExchange;
 @model List<ExportProfileModel>
 @{
-	ViewBag.Title = T("Common.Export").Text;
+    ViewBag.Title = T("Common.Export").Text;
 
-	var hasUserProfiles = Model.Any(x => !x.IsSystemProfile);
-	var hasSystemProfiles = Model.Any(x => x.IsSystemProfile);
+    var hasUserProfiles = Model.Any(x => !x.IsSystemProfile);
+    var hasSystemProfiles = Model.Any(x => x.IsSystemProfile);
 }
 
 <div class="section-header">
@@ -14,8 +14,10 @@
 </div>
 
 <div id="ExportProfileListContainer">
-	@Html.Partial("_ProfileList", Model.Where(x => !x.IsSystemProfile), new ViewDataDictionary { { "IsSystemProfile", false } })
-	@Html.Partial("_ProfileList", Model.Where(x => x.IsSystemProfile), new ViewDataDictionary { { "IsSystemProfile", true } })
+	@{
+        Html.RenderPartial("_ProfileList", Model.Where(x => !x.IsSystemProfile), new ViewDataDictionary { { "IsSystemProfile", false } });
+        Html.RenderPartial("_ProfileList", Model.Where(x => x.IsSystemProfile), new ViewDataDictionary { { "IsSystemProfile", true } });
+    }
 </div>
 
 <div id="export-profile-dialog" class="modal modal-large hide fade" tabindex="-1" data-profile="@T("Common.Profile")">

@@ -1,6 +1,8 @@
-﻿using FluentValidation;
+﻿using System.IO;
+using FluentValidation;
 using SmartStore.Admin.Models.DataExchange;
 using SmartStore.Services.Localization;
+using SmartStore.Utilities;
 
 namespace SmartStore.Admin.Validators.DataExchange
 {
@@ -13,7 +15,19 @@ namespace SmartStore.Admin.Validators.DataExchange
 				.WithMessage(localization.GetResource("Admin.Validation.Name"));
 
 			RuleFor(x => x.FolderName)
-				.Must(x => x.HasValue() && !x.IsCaseInsensitiveEqual("con"))
+				.Must(x =>
+				{
+					if (x.HasValue() && !x.IsCaseInsensitiveEqual("con") && x.IndexOfAny(Path.GetInvalidPathChars()) == -1)
+					{
+						try
+						{
+							var unused = CommonHelper.MapPath(x);
+							return true;
+						}
+						catch {	}
+					}
+					return false;
+				})
 				.WithMessage(localization.GetResource("Admin.DataExchange.Export.FolderName.Validate"));
 
 			RuleFor(x => x.FileNamePattern)

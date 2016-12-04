@@ -1,14 +1,14 @@
 ﻿@model ContactUsModel
 @using SmartStore.Web.Models.Common;
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+	Layout = "_ColumnsTwo";
 
-    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : T("PageTitle.ContactUs").Text);
-    Html.AddMetaDescriptionParts(Model.MetaDescription);
-    Html.AddMetaKeywordParts(Model.MetaKeywords);
+	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : T("PageTitle.ContactUs").Text);
+	Html.AddMetaDescriptionParts(Model.MetaDescription);
+	Html.AddMetaKeywordParts(Model.MetaKeywords);
 }
 <div class="page contact-page">
-    @Html.Action("TopicBlock", "Topic", new { systemName = "ContactUs" })
+    @{ Html.RenderAction("TopicBlock", "Topic", new { systemName = "ContactUs" }); }
 
     <div class="page-body">
         @Html.Widget("contactus_top")

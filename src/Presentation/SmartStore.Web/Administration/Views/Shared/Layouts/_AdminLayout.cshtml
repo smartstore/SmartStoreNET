@@ -1,54 +1,48 @@
-﻿@using Telerik.Web.Mvc;
-@using SmartStore.Services.Customers;
-@using SmartStore.Web.Framework.UI;
-@using SmartStore.Core;
-@using SmartStore.Services.Localization;
-@using SmartStore.Core.Domain.Localization;
-@using SmartStore;
+﻿@using SmartStore.Web.Framework.UI;
 
 @* Please keep in mind that this layout view is also referenced and used by plugins! *@
 
 @{
-	Layout = "~/Administration/Views/Shared/_AdminRoot.cshtml";	
+    Layout = "_AdminRoot";
 } 
 
 <div id="page">
 	@if (ViewData["warning.panel.message"] != null)
-	{
+    {
 		<div class="warning-panel-message fade in">
             <button type="button" class="close" data-dismiss="alert">×</button>
             @Html.Raw(ViewData["warning.panel.message"])
 		</div>
-	}
+    }
 	
 	@if (IsSectionDefined("header"))
-	{
+    {
 		@RenderSection("header")
-	}
-	else
-	{
+    }
+    else
+    {
 		<header>
 			@if (IsSectionDefined("navbar"))
-			{
+            {
 				@RenderSection("navbar")
-			}
-			else
-			{
+            }
+            else
+            {
 				@Html.Widget("admin_navbar_before")
-				@Html.Action("Navbar", "Common", new { area = "Admin" })
+			    Html.RenderAction("Navbar", "Common", new { area = "Admin" });
 				@Html.Widget("admin_navbar_after")
-			}
+            }
 
 			<div id="breadcrumb">
 				<!-- SiteMapPath here-->
 				@Html.Widget("admin_breadcrumb").ToString().Trim()
 			</div>
 		</header>		
-	}
+    }
 
     @Html.Widget("admin_content_before")
     <div id="content">
-        @Html.Partial("_Notifications")
+        @{ Html.RenderPartial("_Notifications"); }
         <div class="cph">
             @RenderBody()
         </div>

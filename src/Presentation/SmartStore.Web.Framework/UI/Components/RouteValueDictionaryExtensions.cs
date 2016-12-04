@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.Routing;
 
 namespace SmartStore.Web.Framework.UI
-{
-    
+{    
     public static class RouteValueDictionaryExtensions
     {
-
         public static void ApplyTo(this RouteValueDictionary routeValues, INavigatable instance, Action<INavigatable, string, string, RouteValueDictionary> callBack)
         {
             object actionName;
@@ -36,7 +32,5 @@ namespace SmartStore.Web.Framework.UI
             routeValues.Remove("controller");
             values.Merge((IDictionary<string, object>)routeValues);
         }
-
     }
-
 }

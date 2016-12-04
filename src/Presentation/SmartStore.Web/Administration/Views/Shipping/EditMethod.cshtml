@@ -18,6 +18,7 @@
 			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
-    @Html.Partial("_CreateOrUpdateMethod", Model)
+
+    Html.RenderPartial("_CreateOrUpdateMethod", Model);
 }
 @Html.DeleteConfirmation("DeleteMethod", "method-delete")

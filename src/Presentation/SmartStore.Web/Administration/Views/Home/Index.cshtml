@@ -15,27 +15,27 @@
 
 	<div class="row-fluid">
 		<div class="span10">
-			@Html.Action("OrderAverageReport", "Order")
+			@{ Html.RenderAction("OrderAverageReport", "Order"); }
 			<div class="row-fluid">
 				<div class="span6">
-					@Html.Action("BestsellersBriefReportByQuantity", "Order")
+					@{ Html.RenderAction("BestsellersBriefReportByQuantity", "Order"); }
 				</div>
 				<div class="span6">
-					@Html.Action("BestsellersBriefReportByAmount", "Order")
+					@{ Html.RenderAction("BestsellersBriefReportByAmount", "Order"); }
 				</div>
 			</div>
 			<div class="row-fluid">
 				<div class="span6">
-					@Html.Action("ReportRegisteredCustomers", "Customer")
+					@{ Html.RenderAction("ReportRegisteredCustomers", "Customer"); }
 				</div>
 				<div class="span6">
-					@Html.Action("OrderIncompleteReport", "Order")	
+					@{ Html.RenderAction("OrderIncompleteReport", "Order"); }
 				</div>
 			</div>
 		</div>
 
 		<div class="span2">
-			@Html.Action("MarketplaceFeed")
+			@{ Html.RenderAction("MarketplaceFeed"); }
 		</div>
 	</div>
 

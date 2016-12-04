@@ -1,7 +1,7 @@
 ﻿@model CustomerAddressEditModel
 @using SmartStore.Web.Models.Customer;
 @{
-    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+    Layout = "_ColumnsTwo";
 
     //title
     Html.AddTitleParts(T("PageTitle.Account").Text);
@@ -22,7 +22,7 @@
                 //Merge ModelState (required for validation)
                 dataDictAddress.ModelState.Merge(ViewData.ModelState);
                 dataDictAddress.TemplateInfo.HtmlFieldPrefix = "Address";
-                @Html.Partial("_CreateOrUpdateAddress", Model.Address, dataDictAddress)              
+                Html.Partial("_CreateOrUpdateAddress", Model.Address, dataDictAddress);
             }
             
             <div class="form-group row">

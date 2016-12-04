@@ -23,7 +23,6 @@ using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework
 {
-
 	public enum InputEditorType
     {   TextBox,
         Password,
@@ -423,12 +422,10 @@ namespace SmartStore.Web.Framework
 				if (widgets.Any())
 				{
 					var zoneModel = new WidgetZoneModel { Widgets = widgets, WidgetZone = widgetZone, Model = model };
-					var result = helper.Action("WidgetsByZone", "Widget", new { zoneModel = zoneModel, model = model, area = "" });
-					return result;
+					helper.RenderAction("WidgetsByZone", "Widget", new { zoneModel = zoneModel, model = model, area = "" });
 				}
 			}
-
-			return MvcHtmlString.Create("");
+			return MvcHtmlString.Empty;
 		}
 
         public static IHtmlString MetaAcceptLanguage(this HtmlHelper html)

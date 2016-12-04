@@ -19,6 +19,7 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -35,7 +36,7 @@ using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Controllers
 {
-	public class CatalogHelper
+	public partial class CatalogHelper
 	{
 		private static object s_lock = new object();
 		
@@ -69,6 +70,7 @@ namespace SmartStore.Web.Controllers
 		private readonly ISettingService _settingService;
 		private readonly Lazy<IMenuPublisher> _menuPublisher;
 		private readonly Lazy<ITopicService> _topicService;
+		private readonly Lazy<IDataExporter> _dataExporter;
 
 		private readonly HttpRequestBase _httpRequest;
 		private readonly UrlHelper _urlHelper;
@@ -103,6 +105,7 @@ namespace SmartStore.Web.Controllers
 			ISettingService settingService,
 			Lazy<IMenuPublisher> _menuPublisher,
 			Lazy<ITopicService> topicService,
+			Lazy<IDataExporter> dataExporter,
 			HttpRequestBase httpRequest,
 			UrlHelper urlHelper)
 		{
@@ -136,6 +139,7 @@ namespace SmartStore.Web.Controllers
 			this._captchaSettings = captchaSettings;
 			this._menuPublisher = _menuPublisher;
 			this._topicService = topicService;
+			this._dataExporter = dataExporter;
 			this._httpRequest = httpRequest;
 			this._urlHelper = urlHelper;
 
@@ -360,6 +364,7 @@ namespace SmartStore.Web.Controllers
 			var result = new PictureModel
 			{
 				PictureId = picture.Id,
+				Size = pictureSize,
 				ThumbImageUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage),
 				ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
 				FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
@@ -454,6 +459,7 @@ namespace SmartStore.Web.Controllers
 
 				if (!_catalogSettings.HideProductDefaultPictures)
 				{
+					model.DefaultPictureModel.Size = defaultPictureSize;
 					model.DefaultPictureModel.ThumbImageUrl = _pictureService.GetDefaultPictureUrl(_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage);
 					model.DefaultPictureModel.ImageUrl = _pictureService.GetDefaultPictureUrl(defaultPictureSize);
 					model.DefaultPictureModel.FullSizeImageUrl = _pictureService.GetDefaultPictureUrl();
@@ -1113,13 +1119,14 @@ namespace SmartStore.Web.Controllers
 			bool prepareSpecificationAttributes = false,
 			bool forceRedirectionAfterAddingToCart = false, 
 			bool prepareColorAttributes = false,
+			bool prepareVariants = false,
 			bool prepareManufacturers = false,
             bool isCompact = false,
 			bool prepareFullDescription = false,
-			bool isCompareList = false)
+			bool isCompareList = false,
+			string viewMode = "grid")
 		{
-			if (products == null)
-				throw new ArgumentNullException("products");
+			Guard.NotNull(products, nameof(products));
 
 			using (_services.Chronometer.Step("PrepareProductOverviewModels"))
 			{
@@ -1137,14 +1144,14 @@ namespace SmartStore.Web.Controllers
 				var legalInfo = "";
 
 				var res = new Dictionary<string, LocalizedString>(StringComparer.OrdinalIgnoreCase)
-			{
-				{ "Products.CallForPrice", T("Products.CallForPrice") },
-				{ "Products.PriceRangeFrom", T("Products.PriceRangeFrom") },
-				{ "Media.Product.ImageLinkTitleFormat", T("Media.Product.ImageLinkTitleFormat") },
-				{ "Media.Product.ImageAlternateTextFormat", T("Media.Product.ImageAlternateTextFormat") },
-				{ "Products.DimensionsValue", T("Products.DimensionsValue") },
-				{ "Common.AdditionalShippingSurcharge", T("Common.AdditionalShippingSurcharge") }
-			};
+				{
+					{ "Products.CallForPrice", T("Products.CallForPrice") },
+					{ "Products.PriceRangeFrom", T("Products.PriceRangeFrom") },
+					{ "Media.Product.ImageLinkTitleFormat", T("Media.Product.ImageLinkTitleFormat") },
+					{ "Media.Product.ImageAlternateTextFormat", T("Media.Product.ImageAlternateTextFormat") },
+					{ "Products.DimensionsValue", T("Products.DimensionsValue") },
+					{ "Common.AdditionalShippingSurcharge", T("Common.AdditionalShippingSurcharge") }
+				};
 
 				if (_taxSettings.ShowLegalHintsInProductList)
 				{
@@ -1159,7 +1166,20 @@ namespace SmartStore.Web.Controllers
 					}
 				}
 
-				var cargoData = _priceCalculationService.CreatePriceCalculationContext(products);
+				var cargoData = _dataExporter.Value.CreateProductExportContext(products);
+
+				if ((prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists) || (prepareVariants && _catalogSettings.ShowProductOptionsInLists))
+				{
+					cargoData.Attributes.LoadAll();
+				}
+				
+				if (prepareManufacturers)
+				{
+					cargoData.ProductManufacturers.LoadAll();
+				}
+				
+				// Defer pictures loading 'cause of cache
+				var picturesLoaded = false;
 
 				var models = new List<ProductOverviewModel>();
 
@@ -1172,9 +1192,15 @@ namespace SmartStore.Web.Controllers
 					{
 						Id = product.Id,
 						Name = product.GetLocalized(x => x.Name).EmptyNull(),
-						ShortDescription = product.GetLocalized(x => x.ShortDescription),
+						ShowDescription = viewMode != "grid" || _catalogSettings.ShowShortDescriptionInGridStyleLists,
+						ShowBrand = viewMode != "grid" || _catalogSettings.ShowManufacturerInGridStyleLists,
 						SeName = product.GetSeName()
 					};
+
+					if (model.ShowDescription)
+					{
+						model.ShortDescription = product.GetLocalized(x => x.ShortDescription);
+					}
 
 					if (prepareFullDescription)
 					{
@@ -1240,23 +1266,36 @@ namespace SmartStore.Web.Controllers
 									{
 										if (contextProduct.CallForPrice)
 										{
+											priceModel.OldPriceValue = null;
+											priceModel.PriceValue = 0;
 											priceModel.OldPrice = null;
 											priceModel.Price = res["Products.CallForPrice"];
 										}
 										else if (displayPrice.HasValue)
 										{
-											//calculate prices
+											// Calculate prices
 											decimal taxRate = decimal.Zero;
 											decimal oldPriceBase = _taxService.GetProductPrice(contextProduct, contextProduct.OldPrice, out taxRate);
 											decimal finalPriceBase = _taxService.GetProductPrice(contextProduct, displayPrice.Value, out taxRate);
 											finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, currency);
 
+											priceModel.OldPriceValue = null;
+											priceModel.PriceValue = finalPrice;
 											priceModel.OldPrice = null;
 
 											if (displayFromMessage)
+											{
 												priceModel.Price = String.Format(res["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice));
+											}	
 											else
+											{
 												priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
+											}											
+
+											if (oldPriceBase > 0)
+											{
+												priceModel.OldPriceValue = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, currency);
+											}
 
 											priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
 										}
@@ -1289,7 +1328,9 @@ namespace SmartStore.Web.Controllers
 							{
 								if (product.CallForPrice)
 								{
-									//call for price
+									// call for price
+									priceModel.OldPriceValue = null;
+									priceModel.PriceValue = 0;
 									priceModel.OldPrice = null;
 									priceModel.Price = res["Products.CallForPrice"];
 								}
@@ -1323,18 +1364,22 @@ namespace SmartStore.Web.Controllers
 
 									if (displayFromMessage)
 									{
+										priceModel.OldPriceValue = null;
 										priceModel.OldPrice = null;
 										priceModel.Price = String.Format(res["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice));
 									}
 									else
 									{
+										priceModel.PriceValue = finalPrice;
 										if (priceModel.HasDiscount)
 										{
+											priceModel.OldPriceValue = oldPrice;
 											priceModel.OldPrice = _priceFormatter.FormatPrice(oldPrice);
 											priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
 										}
 										else
 										{
+											priceModel.OldPriceValue = null;
 											priceModel.OldPrice = null;
 											priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
 										}
@@ -1345,58 +1390,104 @@ namespace SmartStore.Web.Controllers
 							#endregion
 						}
 
+						var oldPriceValue = priceModel.OldPriceValue.GetValueOrDefault();
+						if (priceModel.HasDiscount && oldPriceValue > 0 && oldPriceValue > priceModel.PriceValue)
+						{
+							priceModel.SavingPercent = (float)((priceModel.OldPriceValue - priceModel.PriceValue) / priceModel.OldPriceValue) * 100;
+
+							if (priceModel.ShowDiscountSign)
+							{
+								// TODO: (mc) Make language resource for saving badge label
+								model.Badges.Add(new ProductOverviewModel.ProductBadgeModel
+								{
+									Label = "- {0} %".FormatCurrentUI(priceModel.SavingPercent.ToString("N0")),
+									Style = BadgeStyle.Danger
+								});
+							}
+						}
+
 						model.ProductPrice = priceModel;
 						model.ProductPrice.CallForPrice = product.CallForPrice;
 
 						#endregion
 					}
 
-					// color squares
-					if (prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists)
+					if ((prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists) || (prepareVariants && _catalogSettings.ShowProductOptionsInLists))
 					{
-						#region Prepare color attributes
+						#region Prepare variants
 
-						var attributes = cargoData.Attributes.Load(contextProduct.Id);
-						var colorAttribute = attributes.FirstOrDefault(x => x.AttributeControlType == AttributeControlType.ColorSquares);
+						var attributes = cargoData.Attributes.GetOrLoad(contextProduct.Id);
+						string colorAttributeName = null;
 
-						if (colorAttribute != null)
+						// Color squares
+						if (attributes.Any() && prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists)
 						{
-							var colorValues =
-								from a in colorAttribute.ProductVariantAttributeValues.Take(50)
-								where (a.ColorSquaresRgb.HasValue() && !a.ColorSquaresRgb.IsCaseInsensitiveEqual("transparent"))
-								select new ProductOverviewModel.ColorAttributeModel
-								{
-									Color = a.ColorSquaresRgb,
-									Alias = a.Alias,
-									FriendlyName = a.GetLocalized(l => l.Name)
-								};
+							var colorAttribute = attributes.FirstOrDefault(x => x.AttributeControlType == AttributeControlType.ColorSquares);
 
-							if (colorValues.Any())
+							if (colorAttribute != null)
 							{
-								model.ColorAttributes.AddRange(colorValues.Distinct());
+								colorAttributeName = colorAttribute.ProductAttribute.GetLocalized(x => x.Name);
+								var colorValues =
+									from a in colorAttribute.ProductVariantAttributeValues.Take(20)
+									where (a.ColorSquaresRgb.HasValue() && !a.ColorSquaresRgb.IsCaseInsensitiveEqual("transparent"))
+									select new ProductOverviewModel.ColorAttributeModel
+									{
+										AttributeName = colorAttributeName,
+										Color = a.ColorSquaresRgb,
+										Alias = a.Alias,
+										FriendlyName = a.GetLocalized(l => l.Name)
+									};
+
+								if (colorValues.Any())
+								{
+									model.ColorAttributes.AddRange(colorValues.Distinct());
+								}
 							}
+						}
+
+						// Variants
+						if (attributes.Any() && prepareVariants && _catalogSettings.ShowProductOptionsInLists)
+						{
+							var attrNames = attributes.Select(x => x.ProductAttribute.GetLocalized(a => a.Name));
+							if (colorAttributeName.HasValue())
+							{
+								attrNames = attrNames.Where(x => x != colorAttributeName);
+							}
+
+							model.AvailableOptionNames = attrNames.ToArray();
 						}
 
 						#endregion
 					}
 
-					// picture
+					// Picture
 					if (preparePictureModel)
 					{
 						#region Prepare product picture
 
-						//If a size has been set in the view, we use it in priority
+						// If a size has been set in the view, we use it in priority
 						int pictureSize = productThumbPictureSize.HasValue ? productThumbPictureSize.Value : _mediaSettings.ProductThumbPictureSize;
 
-						//prepare picture model
-						var defaultProductPictureCacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_DEFAULTPICTURE_MODEL_KEY, product.Id, pictureSize, true,
-							_services.WorkContext.WorkingLanguage.Id, store.Id);
+						// Prepare picture model
+						var defaultProductPictureCacheKey = string.Format(
+							ModelCacheEventConsumer.PRODUCT_DEFAULTPICTURE_MODEL_KEY, 
+							product.Id, 
+							pictureSize, true,
+							_services.WorkContext.WorkingLanguage.Id, 
+							store.Id);
 
 						model.DefaultPictureModel = _services.Cache.Get(defaultProductPictureCacheKey, () =>
 						{
-							var picture = product.GetDefaultProductPicture(_pictureService);
+							if (!picturesLoaded)
+							{
+								cargoData.Pictures.LoadAll();
+							}
+							
+							//var picture = product.GetDefaultProductPicture(_pictureService);
+							var picture = cargoData.Pictures.GetOrLoad(product.Id).FirstOrDefault();
 							var pictureModel = new PictureModel
 							{
+								Size = pictureSize,
 								ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
 								FullSizeImageUrl = _pictureService.GetPictureUrl(picture, 0, !_catalogSettings.HideProductDefaultPictures),
 								Title = string.Format(res["Media.Product.ImageLinkTitleFormat"], model.Name),
@@ -1455,7 +1546,8 @@ namespace SmartStore.Web.Controllers
 
 					if (prepareManufacturers)
 					{
-						model.Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), cachedManufacturerModels, false);
+						//model.Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), cachedManufacturerModels, false);
+						model.Manufacturers = PrepareManufacturersOverviewModel(cargoData.ProductManufacturers.GetOrLoad(product.Id), cachedManufacturerModels, false);
 					}
 
 					if (finalPrice != decimal.Zero && (_catalogSettings.ShowBasePriceInProductLists || isCompareList))
@@ -1482,6 +1574,14 @@ namespace SmartStore.Web.Controllers
 					if (_catalogSettings.LabelAsNewForMaxDays.HasValue)
 					{
 						model.IsNew = ((DateTime.UtcNow - product.CreatedOnUtc).Days <= _catalogSettings.LabelAsNewForMaxDays.Value);
+						if ((DateTime.UtcNow - product.CreatedOnUtc).Days <= _catalogSettings.LabelAsNewForMaxDays.Value)
+						{
+							model.Badges.Add(new ProductOverviewModel.ProductBadgeModel
+							{
+								Label = T("Common.New"),
+								Style = BadgeStyle.Success
+							});
+						}
 					}
 
 					models.Add(model);
@@ -1828,7 +1928,8 @@ namespace SmartStore.Web.Controllers
 
 					};
 
-					if (_catalogSettings.ShowManufacturerPicturesInProductDetail)
+					// TODO: (mc) show picture in list style lists also
+					if (forProductDetailPage && _catalogSettings.ShowManufacturerPicturesInProductDetail)
 					{
 						item.PictureModel = PrepareManufacturerPictureModel(manufacturer, manufacturer.GetLocalized(x => x.Name));
 					}
@@ -1859,8 +1960,9 @@ namespace SmartStore.Web.Controllers
                 var pictureModel = new PictureModel
                 {
                     PictureId = manufacturer.PictureId.GetValueOrDefault(),
-                    //FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault()),
-                    ImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), pictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
+					Size = pictureSize,
+					//FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault()),
+					ImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), pictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
                     Title = string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
                     AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName)
                 };
@@ -1872,7 +1974,20 @@ namespace SmartStore.Web.Controllers
 
 	}
 
-	#region Nested Classes
+	#region Nested types
+
+	[Flags]
+	public enum ProductModelFlags
+	{
+		None = 0,
+		WithPrice = 1 << 0,
+		WithPicture = 1 << 1,
+		WithSpecificationAttributes = 1 << 2,
+		WithColorAttributes = 1 << 3,
+		WithManufacturers = 1 << 4,
+		WithDescription = 1 << 5,
+		Full = WithPrice | WithPicture | WithSpecificationAttributes | WithColorAttributes | WithManufacturers | WithDescription
+	}
 
 	public class PageSizeContext
 	{

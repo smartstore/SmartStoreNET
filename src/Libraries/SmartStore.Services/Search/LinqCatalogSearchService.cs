@@ -10,11 +10,13 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Core.Search;
+using SmartStore.Services.Catalog;
 
 namespace SmartStore.Services.Search
 {
 	public partial class LinqCatalogSearchService : ICatalogSearchService
 	{
+		private readonly IProductService _productService;
 		private readonly IRepository<Product> _productRepository;
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
@@ -22,12 +24,14 @@ namespace SmartStore.Services.Search
 		private readonly IEventPublisher _eventPublisher;
 
 		public LinqCatalogSearchService(
+			IProductService productService,
 			IRepository<Product> productRepository,
 			IRepository<LocalizedProperty> localizedPropertyRepository,
 			IRepository<StoreMapping> storeMappingRepository,
 			IRepository<AclRecord> aclRepository,
 			IEventPublisher eventPublisher)
 		{
+			_productService = productService;
 			_productRepository = productRepository;
 			_localizedPropertyRepository = localizedPropertyRepository;
 			_storeMappingRepository = storeMappingRepository;
@@ -511,7 +515,7 @@ namespace SmartStore.Services.Search
 
 		#endregion
 
-		public CatalogSearchResult Search(CatalogSearchQuery searchQuery)
+		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None)
 		{
 			PagedList<Product> hits;
 
@@ -519,7 +523,15 @@ namespace SmartStore.Services.Search
 
 			if (searchQuery.Take > 0)
 			{
-				hits = new PagedList<Product>(GetProductQuery(searchQuery), searchQuery.PageIndex, searchQuery.Take);
+				var query = GetProductQuery(searchQuery)
+					.Skip(searchQuery.PageIndex * searchQuery.Take)
+					.Take(searchQuery.Take);
+
+				var totalCount = query.Count();
+				var ids = query.Select(x => x.Id).ToArray();
+				var products = _productService.GetProductsByIds(ids, loadFlags);
+
+				hits = new PagedList<Product>(products, searchQuery.PageIndex, searchQuery.Take, totalCount);
 			}
 			else
 			{

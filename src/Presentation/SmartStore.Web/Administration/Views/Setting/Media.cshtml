@@ -30,9 +30,11 @@
             }
         }
     </script>
-	@Html.Action("StoreScopeConfiguration", "Setting")
-	@Html.ValidationSummary(false)
-	
+
+    Html.RenderAction("StoreScopeConfiguration", "Setting");
+
+    @Html.ValidationSummary(false)
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">

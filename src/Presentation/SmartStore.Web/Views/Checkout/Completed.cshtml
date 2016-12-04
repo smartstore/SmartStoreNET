@@ -3,13 +3,13 @@
 @using SmartStore.Web.Models.Checkout;
 @using SmartStore.Web.Models.Common;
 @{
-    Layout = "~/Views/Shared/_Checkout.cshtml";
+    Layout = "_Checkout";
 
     //title
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
 }
 @section orderProgress{
-    @Html.Action("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Complete })
+    @{ Html.RenderAction("CheckoutProgress", "Checkout", new { step = CheckoutProgressStep.Complete }); }
 }
 
 <div class="page checkout-completed-page">

@@ -604,7 +604,7 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.UpdateSettings(catalogSettings, form, storeScope, _services.Settings);
 
-            //activity log
+            // Activity log
             _customerActivityService.InsertActivity("EditSettings", _services.Localization.GetResource("ActivityLog.EditSettings"));
 
             NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));

@@ -7,36 +7,36 @@
 <div class="row product-variant-line update-container" data-url="@Html.Raw(Model.UpdateProductDetailsUrl("associateditem"))">
 	
 	@if (!String.IsNullOrWhiteSpace(Model.DetailsPictureModel.DefaultPictureModel.ImageUrl))
-	{
+    {
 		<div class="col-md-2 variant-picture dynamic-image text-xs-center m-t-1">
 			@if (Model.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue())
-			{
+            {
 				<img alt="@Model.DetailsPictureModel.AlternateText" src="@Model.DetailsPictureModel.DefaultPictureModel.ImageUrl" title="@Model.DetailsPictureModel.DefaultPictureModel.Title" />
-			}
+            }
 		</div>
-	}
+    }
 
 	<div class="col-md-10 variant-data">
 		@if (!String.IsNullOrWhiteSpace(Model.Name))
-		{
+        {
 			<div class="variant-name">
 				@if (Model.VisibleIndividually)
-				{
+                {
 					<a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@T("Products.Details")">@Model.Name</a>
-				}
-				else
-				{
+                }
+                else
+                {
 					@Model.Name
-				}
+                }
 			</div>
-		}
+        }
 
 		@if (!String.IsNullOrWhiteSpace(Model.ShortDescription))
-		{
+        {
 			<div class="variant-description">
 				@Html.Raw(Model.ShortDescription)
 			</div>
-		}
+        }
 	</div>
 </div>
 
@@ -44,7 +44,7 @@
     <div class="col-md-push-2 col-md-6">
         <table>
             @if (Model.ShowSku)
-				{
+            {
                 <tr valign="top" class="attr-sku @(String.IsNullOrWhiteSpace(Model.Sku) ? "hidden-xs-up fade" : "")">
                     <td class="attr-label">
                         <strong>@T("Products.Sku"):</strong>
@@ -53,9 +53,9 @@
                         @Model.Sku
                     </td>
                 </tr>
-				}
+            }
             @if (Model.ShowManufacturerPartNumber)
-				{
+            {
                 <tr valign="top" class="attr-mpn @(String.IsNullOrWhiteSpace(Model.ManufacturerPartNumber) ? "hidden-xs-up fade" : "")">
                     <td class="attr-label">
                         <strong>@T("Products.ManufacturerPartNumber"):</strong>
@@ -64,10 +64,10 @@
                         @Model.ManufacturerPartNumber
                     </td>
                 </tr>
-				}
+            }
 
             @if (Model.ShowGtin)
-				{
+            {
                 <tr valign="top" class="attr-gtin @(String.IsNullOrWhiteSpace(Model.Gtin) ? "hidden-xs-up fade" : "")">
                     <td class="attr-label">
                         <strong>@T("Products.GTIN"):</strong>
@@ -76,18 +76,18 @@
                         @Model.Gtin
                     </td>
                 </tr>
-				}
+            }
 
             @if (Model.ShowWeight)
-				{
+            {
                 <tr valign="top" class="attr-weight @(String.IsNullOrWhiteSpace(Model.Weight) ? "hidden-xs-up fade" : "")">
                     <td class="caption bold">@T("Products.Weight")</td>
                     <td class="value">@Model.Weight</td>
                 </tr>
-				}
+            }
 
             @if (Model.ShowDimensions)
-				{
+            {
                 <tr valign="top" class="attr-length @(String.IsNullOrWhiteSpace(Model.Length) ? "hidden-xs-up fade" : "")">
                     <td class="caption bold">@T("Products.Length")</td>
                     <td class="value">@Model.Length</td>
@@ -100,7 +100,7 @@
                         <td class="caption bold">@T("Products.Height")</td>
                         <td class="value">@Model.Height</td>
                     </tr>
-				}
+            }
 
             <tr valign="top" class="stock attr-stock @(String.IsNullOrWhiteSpace(Model.StockAvailability) ? "hidden-xs-up fade" : "")">
                 <td class="attr-label">
@@ -135,20 +135,20 @@
                 var dataDictAttributes = new ViewDataDictionary();
                 dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
                 <div class="product-attributes">
-                    @Html.Partial("_Attributes", Model.ProductVariantAttributes, dataDictAttributes)
+                    @{ Html.RenderPartial("_Attributes", Model.ProductVariantAttributes, dataDictAttributes); }
                 </div>
             }
 
             @{
                 var dataDictGiftCard = new ViewDataDictionary();
                 dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}_0", Model.Id);
-                @Html.Partial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard)
+                Html.RenderPartial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard);
             }
         </div>}
 
     <div class="@spanClass">
 
-        @Html.Action("ProductTierPrices", new { productId = Model.Id })
+        @{ Html.RenderAction("ProductTierPrices", new { productId = Model.Id }); }
 
         <div class="quick-links">
             @if (Model.HasSampleDownload)
@@ -198,7 +198,7 @@
                 @{
                     var dataDictAddToCart = new ViewDataDictionary();
                     dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
-                    @Html.Partial("_AddToCart", Model, dataDictAddToCart)
+                    Html.RenderPartial("_AddToCart", Model, dataDictAddToCart);
                 }
             </div>
         </div>

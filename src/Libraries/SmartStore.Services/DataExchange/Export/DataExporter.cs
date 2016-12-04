@@ -279,7 +279,7 @@ namespace SmartStore.Services.DataExchange.Export
 			var limit = (ctx.IsPreview ? PageSize : Math.Max(ctx.Request.Profile.Limit, 0));
 			var recordsPerSegment = (ctx.IsPreview ? 0 : Math.Max(ctx.Request.Profile.BatchSize, 0));
 			var totalCount = Math.Max(ctx.Request.Profile.Offset, 0) + ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
-
+			
 			switch (ctx.Request.Provider.Value.EntityType)
 			{
 				case ExportEntityType.Product:
@@ -289,18 +289,7 @@ namespace SmartStore.Services.DataExchange.Export
 						entities =>
 						{
 							// load data behind navigation properties for current queue in one go
-							ctx.ProductExportContext = new ProductExportContext(entities,
-								x => _productAttributeService.Value.GetProductVariantAttributesByProductIds(x, null),
-								x => _productAttributeService.Value.GetProductVariantAttributeCombinations(x),
-								x => _productService.Value.GetTierPricesByProductIds(x, ctx.ContextCustomer, ctx.Store.Id),
-								x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, true),
-								x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),
-								x => _productService.Value.GetProductPicturesByProductIds(x),
-								x => _productService.Value.GetProductTagsByProductIds(x),
-								x => _productService.Value.GetAppliedDiscountsByProductIds(x),
-								x => _productService.Value.GetProductSpecificationAttributesByProductIds(x),
-								x => _productService.Value.GetBundleItemsByProductIds(x, true)
-							);
+							ctx.ProductExportContext = CreateProductExportContext(entities, ctx.ContextCustomer, ctx.Store.Id);
 						},
 						entity => Convert(ctx, entity),
 						offset, PageSize, limit, recordsPerSegment, totalCount
@@ -600,6 +589,34 @@ namespace SmartStore.Services.DataExchange.Export
 		#endregion
 
 		#region Getting data
+
+		public virtual ProductExportContext CreateProductExportContext(
+			IEnumerable<Product> products = null,
+			Customer customer = null,
+			int? storeId = null)
+		{
+			if (customer == null)
+				customer = _services.WorkContext.CurrentCustomer;
+
+			if (!storeId.HasValue)
+				storeId = _services.StoreContext.CurrentStore.Id;
+
+			var context = new ProductExportContext(products,
+				x => _productAttributeService.Value.GetProductVariantAttributesByProductIds(x, null),
+				x => _productAttributeService.Value.GetProductVariantAttributeCombinations(x),
+				x => _productService.Value.GetProductSpecificationAttributesByProductIds(x),
+				x => _productService.Value.GetTierPricesByProductIds(x, customer, storeId.GetValueOrDefault()),
+				x => _categoryService.Value.GetProductCategoriesByProductIds(x, null, true),
+				x => _manufacturerService.Value.GetProductManufacturersByProductIds(x),
+				x => _productService.Value.GetAppliedDiscountsByProductIds(x),
+				x => _pictureService.Value.GetPicturesByProductIds(x),
+				x => _productService.Value.GetProductPicturesByProductIds(x),
+				x => _productService.Value.GetProductTagsByProductIds(x),
+				x => _productService.Value.GetBundleItemsByProductIds(x, true)
+			);
+
+			return context;
+		}
 
 		private IQueryable<Product> GetProductQuery(DataExporterContext ctx, int skip, int take)
 		{

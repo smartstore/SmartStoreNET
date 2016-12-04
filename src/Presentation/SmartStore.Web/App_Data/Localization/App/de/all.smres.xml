@@ -3520,138 +3520,6 @@
                     bevor diese für Unterkategorien und Produkte übernommen werden können. &lt;br /&gt;
                     &lt;b&gt;Vorsicht:&lt;/b&gt; Bitte beachten Sie, &lt;b&gt;dass vorhandene Store-Konfiguration überschrieben bzw. gelöscht werden&lt;/b&gt;.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider">
-		<Value>Content Slider</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.AutoPlay">
-		<Value>Autoplay</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.AutoPlay.Hint">
-		<Value>Legt fest, ob der Content Slider automatisch den nächsten Slide anzeigt.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.AutoPlayDelay">
-		<Value>Autoplay Verzögerung</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.AutoPlayDelay.Hint">
-		<Value>Bestimmt die Verzögerung bevor der nächste Slide angezeigt wird (in Millisekunden)</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Background">
-		<Value>Hintergrundgrafik des Sliders</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Background.Hint">
-		<Value>Bestimmt die Hintergrundgrafik des Sliders.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.BackToList">
-		<Value>Zurück zur Liste</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Button.Published">
-		<Value>Aktiv</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Button.Published.Hint">
-		<Value>legt fest, ob der Button angezeigt werden soll.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Button.Text">
-		<Value>Text</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Button.Text.Hint">
-		<Value>Bestimmt die Beschriftung des Buttons.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Button.Type">
-		<Value>Button-Typ</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Button.Type.Hint">
-		<Value>Bestimmt den Button-Typ.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Button.Url">
-		<Value>Url</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Button.Url.Hint">
-		<Value>Legt eine Url relativ zu Ihrem Shop fest. Diese Url wird beim Drücken des Button aufgerufen.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Button1">
-		<Value>Schaltfläche 1</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Button2">
-		<Value>Schaltfläche 2</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Button3">
-		<Value>Schaltfläche 3</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.EditSlide">
-		<Value>Slide bearbeiten</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.IsActive">
-		<Value>Zeige ContentSlider</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.IsActive.Hint">
-		<Value>Bestimmt ob der ContentSlider auf Ihrer Webseite angezeigt wird.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Added">
-		<Value>Slide wurde erfolgreich hinzugefügt.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.AddNew">
-		<Value>Neuen Slide hinzufügen</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Button1">
-		<Value>Schaltfläche 1</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Button2">
-		<Value>Schaltfläche 2</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Button3">
-		<Value>Schaltfläche 3</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Deleted">
-		<Value>Slide wurde erfolgreich gelöscht.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.DisplayOrder">
-		<Value>Anzeigereihenfolge</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.DisplayOrder.Hint">
-		<Value>Bestimmt die Reihenfolge der Anzeige des Slides.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Language">
-		<Value>Sprache</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Language.Hint">
-		<Value>Bestimmt die aktive Spracheinstellung des Kunden in der der Slide angezeigt wird.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Picture">
-		<Value>Grafik</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Picture.Hint">
-		<Value>Bestimmt die Grafik des Slides.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Published">
-		<Value>Aktiv</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Published.Hint">
-		<Value>Bestimmt ob der Slide aktiv ist.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Text">
-		<Value>Text</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Text.Hint">
-		<Value>Bestimmt den Text des Slides.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Title">
-		<Value>Überschrift</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Title.Hint">
-		<Value>Bestimmt die Überschrift des Slides.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slide.Updated">
-		<Value>Slide wurde erfolgreich aktualisiert</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.SliderHeight">
-		<Value>Höhe des Content Sliders</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.SliderHeight.Hint">
-		<Value>Bestimmt die Höhe des Content Sliders.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.ContentSlider.Slides">
-		<Value>Slides</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Countries">
 		<Value>Länder</Value>
 	</LocaleResource>
@@ -7429,9 +7297,6 @@
 	<LocaleResource Name="Admin.ContentManagement.Blog.Comments.Fields.IPAddress">
 		<Value>IP-Adresse</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.ContentManagement.ContentSlider">
-		<Value>Content Slider</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Forums">
 		<Value>Foren</Value>
 	</LocaleResource>
@@ -8013,15 +7878,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Widgets.ChooseZone.Hint">
 		<Value>Bereich in den das Widget eingebunden werden soll.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentSlider.Slide.ButtonText.Required">
-		<Value>Bitte geben Sie für diesen Button einen Text an.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentSlider.Slide.ButtonUrl.Required">
-		<Value>Bitte geben Sie für diesen Button eine Url an.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.ContentSlider.Slide.Title.Required">
-		<Value>Bitte geben Sie für diesen Slide eine Überschrift an.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.CurrentCarts">
 		<Value>Aktuelle Warenkörbe</Value>
@@ -12321,9 +12177,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Themes.Buttons">
 		<Value>Buttons</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Themes.ContentSlider">
-		<Value>Content Slider</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Themes.Fonts">
 		<Value>Typografie</Value>

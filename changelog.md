@@ -37,9 +37,12 @@
 * (Perf) Lower memory consumption
 * #1008 Export: Add support for description projection to all product exporting providers
 * #1015 Implement Entity Picker in discount requirements
-* #1028 Debitoor: Company name send as customer name if present
-* #1044 Debitoor: Additional order notes for tax exemption within and outside EU
+* Debitoor improvements:
+	* Company name send as customer name if present
+	* Option to append customer email address to invoice address
+	* Additional order notes for tax exemption within and outside EU
 * #1048 Add meta tags to contact us page
+* #1062 Web API: Add filter options for user grid on configuration page
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation
@@ -57,6 +60,7 @@
 * Filter shows wrong number of products if "Include products from subcategories" is activated
 * Guest user cannot be deleted if he has a private message
 * #1029 Biz-Importer: Imports fixed tax rates as zero percentage
+* #1055 Checkout: Localized shipping method names are not displayed if shipping by total is activated
 
 ## SmartStore.NET 2.6
 

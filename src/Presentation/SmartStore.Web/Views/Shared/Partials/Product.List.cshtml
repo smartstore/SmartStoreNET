@@ -1,0 +1,39 @@
+﻿@model ProductSummaryModel
+
+@using SmartStore.Core.Domain.Media;
+@using SmartStore.Utilities;
+@using SmartStore.Web.Models.Catalog;
+
+@{
+	Html.AppendScriptParts(true, "~/Themes/Alpha/Scripts/smartstore.articlelist.js");
+
+	var id = "artlist-" + CommonHelper.GenerateRandomDigitCode(10);
+	//var maxPictureSize = Model.Select(x => x.DefaultPictureModel)
+	//	.Where(x => x != null)
+	//	.Max(x => x.Size);
+
+	// TODO: (mc) Fetch this from the (new) parent model or the product category
+	var thumbAspectRatio = EngineContext.Current.Resolve<MediaSettings>().DefaultThumbnailAspectRatio;
+	var paddingTop = string.Empty;
+
+	if (thumbAspectRatio != 1 && thumbAspectRatio > 0.2 && thumbAspectRatio < 2)
+	{
+		paddingTop = (thumbAspectRatio * 100) + "%";
+	}
+}
+
+@if (paddingTop.HasValue())
+{
+	<style type="text/css">
+		#@id .art-picture { 
+			padding-top: @paddingTop;
+		}
+	</style>
+}
+
+<div id="@id" class="artlist artlist-style-grid artlist-4-cols">
+	@foreach (var product in Model.Items)
+	{
+		Html.RenderPartial("Product.Item", product);
+	}
+</div>

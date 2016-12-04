@@ -5,15 +5,15 @@
 
 @{
     var currentCustomer = this.WorkContext.CurrentCustomer;
-	var currentLanguage = this.WorkContext.WorkingLanguage;
-	var userName = (string)ViewBag.UserName;
-	var stores = (IList<Store>)ViewBag.Stores;
-	string currentLanguageCode = currentLanguage.UniqueSeoCode.EmptyNull().ToLower();
-	string communityUrl = (currentLanguageCode == "de" ? 
-		"http://community.smartstore.com" :
+    var currentLanguage = this.WorkContext.WorkingLanguage;
+    var userName = (string)ViewBag.UserName;
+    var stores = (IList<Store>)ViewBag.Stores;
+    string currentLanguageCode = currentLanguage.UniqueSeoCode.EmptyNull().ToLower();
+    string communityUrl = (currentLanguageCode == "de" ?
+        "http://community.smartstore.com" :
         "http://community.smartstore.com/index.php?/&k=880ea6a14ea49e853634fbdc5015a024&setlanguage=1&cal_id=&langid=1");
     string docsUrl = GenerateHelpUrl("");
-	var checkUpdateResult = ViewBag.CheckUpdateResult as CheckUpdateResult;
+    var checkUpdateResult = ViewBag.CheckUpdateResult as CheckUpdateResult;
 }
 
 <div id="navbar" class="navbar navbar-inverse">
@@ -24,13 +24,13 @@
     </a>
 
     @Html.Widget("admin_menu_before")
-    @Html.Action("Menu", "Common", new { area = "Admin" })
+    @{ Html.RenderAction("Menu", "Common", new { area = "Admin" }); }
     @Html.Widget("admin_menu_before")
 
     <div id="navbar-tools" class="pull-right">
 
 		@if (currentCustomer != null && currentCustomer.IsRegistered())
-		{
+        {
 			<div class="btn-group pull-right">
 				<a id="current-user" class="btn navbar-tool dropdown-toggle" data-toggle="dropdown" title="@userName" href='@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })'>
 					<em class="fa-stack fa-lg">
@@ -53,19 +53,19 @@
 					</li>
 				</ul>
 			</div>
-		}	
+        }	
 
 		<div id="navtool-help" class="btn-group toppad pull-right">
 			<button class="btn dropdown-toggle navbar-tool" title='@T("Admin.Help")' data-toggle="dropdown">
 				<i class="fa fa-fw fa-question-circle"></i>
 				@if (checkUpdateResult != null && checkUpdateResult.UpdateAvailable)
-				{
+                {
 					<span class="reddot" style="top: 5px; right: 7px"></span>
-				}
+                }
 			</button>
 			<ul class="dropdown-menu">
 				@if (checkUpdateResult != null && checkUpdateResult.UpdateAvailable)
-				{
+                {
 					<li>
 						<a href='@Url.Action("CheckUpdate", new { area = "Admin" })'>
 							<i class="fa fa-fw fa-level-up"></i>
@@ -73,7 +73,7 @@
 							<span class="reddot" style="margin-left: 6px"></span>
 						</a>
 					</li>
-				}
+                }
 				<li>
 					<a href="@docsUrl" data-lang="@currentLanguageCode" target="help">
 						<i class="fa fa-fw fa-book"></i>
@@ -96,7 +96,7 @@
 			</ul>
 		</div> 
 
-		@Html.Action("LanguageSelector", "Common", new { area = "Admin" })
+		@{ Html.RenderAction("LanguageSelector", "Common", new { area = "Admin" }); }
 
 		<div class="btn-group toppad pull-right">
 			<button class="btn dropdown-toggle navbar-tool" title='@T("Admin.Common.Actions")' data-toggle="dropdown">

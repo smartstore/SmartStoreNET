@@ -147,11 +147,20 @@ namespace SmartStore.Admin.Models.Settings
 		public PriceDisplayType PriceDisplayType { get; set; }
 		public SelectList AvailablePriceDisplayTypes { get; set; }
 
-        #endregion
+		#endregion
 
-        #region Products
-        
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists")]
+		#region Products
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowShortDescriptionInGridStyleLists")]
+		public bool ShowShortDescriptionInGridStyleLists { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerInGridStyleLists")]
+		public bool ShowManufacturerInGridStyleLists { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductOptionsInLists")]
+		public bool ShowProductOptionsInLists { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductLists")]
         public bool ShowDeliveryTimesInProductLists { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowBasePriceInProductLists")]

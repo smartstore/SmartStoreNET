@@ -55,12 +55,12 @@ namespace SmartStore.Web.Framework.Theming
 				string viewPath = this.GetPath(controllerContext, ViewLocationFormats, AreaViewLocationFormats, "ViewLocationFormats", viewName, controllerName, theme, "View", useCache, out viewLocationsSearched);
 				string masterPath = this.GetPath(controllerContext, MasterLocationFormats, AreaMasterLocationFormats, "MasterLocationFormats", masterName, controllerName, theme, "Master", useCache, out masterLocationsSearched);
 
-				if (String.IsNullOrEmpty(viewPath) || (String.IsNullOrEmpty(masterPath) && !String.IsNullOrEmpty(masterName)))
+				if (!string.IsNullOrEmpty(viewPath) && (!string.IsNullOrEmpty(masterPath) || string.IsNullOrEmpty(masterName)))
 				{
-					return new ViewEngineResult(viewLocationsSearched.Union(masterLocationsSearched));
+					return new ViewEngineResult(CreateView(controllerContext, viewPath, masterPath), this);
 				}
 
-				return new ViewEngineResult(CreateView(controllerContext, viewPath, masterPath), this);
+				return new ViewEngineResult(viewLocationsSearched.Union(masterLocationsSearched));
 			}
 		}
 
@@ -144,14 +144,25 @@ namespace SmartStore.Web.Framework.Theming
 				if (extraAreaViewLocations != null && extraAreaViewLocations.Length > 0)
 				{
 					var newLocations = areaLocations.ToList();
-					if (isAdminArea)
+					var viewType = ViewType.View;
+
+					if (cacheKeyPrefix == "Partial")
 					{
-						// the admin area cannot fallback to itself. Prepend to list.
-						ExpandLocationFormats(extraAreaViewLocations).Reverse().Each(x => newLocations.Insert(0, x));
+						viewType = ViewType.Partial;
 					}
 					else
 					{
-						newLocations.AddRange(ExpandLocationFormats(extraAreaViewLocations));
+						viewType = ViewType.Layout;
+					}
+
+					if (isAdminArea)
+					{
+						// the admin area cannot fallback to itself. Prepend to list.
+						ExpandLocationFormats(extraAreaViewLocations, viewType).Reverse().Each(x => newLocations.Insert(0, x));
+					}
+					else
+					{
+						newLocations.AddRange(ExpandLocationFormats(extraAreaViewLocations, viewType));
 					}
 
 					areaLocations = newLocations.ToArray();
@@ -318,20 +329,37 @@ namespace SmartStore.Web.Framework.Theming
 			return cacheKey + displayMode + ":";
 		}
 
-        protected virtual IEnumerable<string> ExpandLocationFormats(IEnumerable<string> formats)
-        {
-            // appends razor view file extensions to location formats
-            Guard.NotNull(formats, nameof(formats));
+		protected virtual IEnumerable<string> ExpandLocationFormats(IEnumerable<string> formats, ViewType viewType)
+		{
+			// Appends razor view file extensions to location formats
+			Guard.NotNull(formats, nameof(formats));
 
-            foreach (var format in formats)
-            {
-                yield return format + ".cshtml";
-                if (EnableVbViews)
-                {
-                    yield return format + ".vbhtml";
-                } 
-            }
-        }
+			foreach (var format in formats)
+			{
+				yield return format + ".cshtml";
+
+				if (EnableVbViews)
+				{
+					yield return format + ".vbhtml";
+				}
+			}
+
+			if (viewType > ViewType.View)
+			{
+				// Inserts special location formats for layouts and partials
+				var subfolder = viewType == ViewType.Layout ? "Layouts" : "Partials";
+
+				foreach (var format in formats)
+				{
+					yield return format.Replace("{0}", subfolder + "/{0}.cshtml");
+
+					if (EnableVbViews)
+					{
+						yield return format.Replace("{0}", subfolder + "/{0}.vbhtml");
+					}
+				}
+			}
+		}
 
 		protected virtual List<ViewLocation> GetViewLocations(string[] viewLocationFormats, string[] areaViewLocationFormats)
 		{
@@ -373,6 +401,13 @@ namespace SmartStore.Web.Framework.Theming
 		{
 			var theme = EngineContext.Current.Resolve<IThemeContext>().CurrentTheme;
 			return theme.ThemeName;
+		}
+
+		public enum ViewType
+		{
+			View,
+			Layout,
+			Partial
 		}
 	}
 

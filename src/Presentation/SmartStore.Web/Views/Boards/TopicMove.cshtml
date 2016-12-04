@@ -2,7 +2,7 @@
 @using SmartStore.Web.Models.Boards;
 @using SmartStore.Services.Seo;
 @{    
-    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+    Layout = "_ColumnsOne";
 
     Html.AddTitleParts(T("Forum.PageTitle.MoveTopic").Text);
 }
@@ -10,12 +10,14 @@
 {
     @Html.HiddenFor(model => model.Id)
     <div class="page move-forum-topic">
-        @Html.Action("ForumBreadcrumb", new { forumTopicId = Model.Id })
+        
+        @{ Html.RenderAction("ForumBreadcrumb", new { forumTopicId = Model.Id }); }
+
         <div class="title">
             <h2>@T("Forum.MoveTopic")</h2>
         </div>
-        <div class="page-body">
 
+        <div class="page-body">
             <h4 class="m-y-1">@T("Forum.SelectTheForumToMoveTopic")</h4>
 
             <div>
@@ -28,7 +30,6 @@
                     @T("Forum.Cancel")
                 </button>
             </div>
-
         </div>
     </div>
 }

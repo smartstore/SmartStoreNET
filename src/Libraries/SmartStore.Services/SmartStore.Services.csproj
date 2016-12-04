@@ -225,7 +225,7 @@
     <Compile Include="DataExchange\ISyncMappingService.cs" />
     <Compile Include="DataExchange\SyncMappingService.cs" />
     <Compile Include="DataExchange\Export\Internal\OrderExportContext.cs" />
-    <Compile Include="DataExchange\Export\Internal\ProductExportContext.cs" />
+    <Compile Include="DataExchange\Export\ProductExportContext.cs" />
     <Compile Include="DataExchange\Export\ExportExecuteContext.cs" />
     <Compile Include="DataExchange\Export\ExportExtensions.cs" />
     <Compile Include="DataExchange\Export\ExportFeaturesAttribute.cs" />

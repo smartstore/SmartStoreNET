@@ -3,7 +3,7 @@
 
 @model SearchResultModel
 @{
-	Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+	Layout = "_ColumnsTwo";
 
 	if (Model.Term.HasValue())
 	{
@@ -16,13 +16,13 @@
 
 	int firstItemIndex = 0;
 	int lastItemIndex = 0;
+	var suggestions = new string[0];
 	if (Model.TotalProductsCount > 0)
 	{
 		firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
 		lastItemIndex = Model.SearchResult.Hits.LastItemIndex;
+		suggestions = Model.SearchResult.SpellCheckerSuggestions;
 	}
-
-	var suggestions = Model.SearchResult.SpellCheckerSuggestions;
 }
 
 <div class="page search-page">
@@ -78,19 +78,18 @@
         <div class="search-results">
             @if (Model.TotalProductsCount > 0)
             {
-                <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 product-grid">
-                    @foreach (var product in Model.TopProducts)
-                    {
-                        <article class="card card-block card-shadow text-xs-center">
-                            @Html.Partial("_ProductBox", product)
-                        </article>
-                    }
-                </div>
+				Html.RenderPartial("Product.List", Model.TopProducts);
             }
 
 			@if (Model.TotalProductsCount > 0)
 			{
-				@Html.SmartStore().Pager(Model.SearchResult.Hits).Name("pagination-bottom").QueryParam("i")
+				Html.SmartStore()
+					.Pager(Model.SearchResult.Hits)
+					.Name("pagination-bottom")
+					.QueryParam("i")
+					.Size(PagerSize.Medium)
+					.MaxPagesToDisplay(8)
+					.Render();
 			}
         </div>
     </div>

@@ -37,3 +37,14 @@
 		Html.RenderPartial("Product.Item", product);
 	}
 </div>
+
+@if (Model.AllowPagination && Model.Items.Any())
+{
+	//Html.SmartStore()
+	//	.Pager(Model.SearchResult.Hits)
+	//	.Name("pagination-bottom")
+	//	.QueryParam("i")
+	//	.Size(PagerSize.Medium)
+	//	.MaxPagesToDisplay(8)
+	//	.Render();
+}

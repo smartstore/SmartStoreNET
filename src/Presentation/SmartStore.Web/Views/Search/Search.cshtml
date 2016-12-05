@@ -80,17 +80,6 @@
             {
 				Html.RenderPartial("Product.List", Model.TopProducts);
             }
-
-			@if (Model.TotalProductsCount > 0)
-			{
-				Html.SmartStore()
-					.Pager(Model.SearchResult.Hits)
-					.Name("pagination-bottom")
-					.QueryParam("i")
-					.Size(PagerSize.Medium)
-					.MaxPagesToDisplay(8)
-					.Render();
-			}
         </div>
     </div>
 </div>

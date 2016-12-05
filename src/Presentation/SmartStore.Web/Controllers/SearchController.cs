@@ -11,12 +11,10 @@ using SmartStore.Core.Search;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Search;
 using SmartStore.Services.Search.Modelling;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Search;
 
@@ -101,13 +99,13 @@ namespace SmartStore.Web.Controllers
 				TotalProductsCount = result.Hits.TotalCount
 			};
 
-			var summaryModel = _catalogHelper.MapProductSummaryModelForMiniView(result.Hits, x => 
-			{
-				x.MapPrices = false;
-				// TODO: (mc) actually SHOW pictures in InstantSearch (???)
-				x.MapPictures = _searchSettings.ShowProductImagesInInstantSearch;
-				x.ThumbnailSize = _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage;
-			});
+			var mapSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini);
+			mapSettings.MapPrices = false;
+			// TODO: (mc) actually SHOW pictures in InstantSearch (???)
+			mapSettings.MapPictures = _searchSettings.ShowProductImagesInInstantSearch;
+			mapSettings.ThumbnailSize = _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage;
+
+			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mapSettings);
 
 			// Add product hits
 			model.TopProducts = summaryModel;
@@ -165,7 +163,15 @@ namespace SmartStore.Web.Controllers
 			model.TotalProductsCount = result.Hits.TotalCount;
 
 			// TODO: (mc) somehow determine viewmode and call appropriate helper method (Grid or List)
-			var summaryModel = _catalogHelper.MapProductSummaryModelForGridView(result.Hits);
+			var mapSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid);
+			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mapSettings);
+
+			// TODO: (mc) Determine and set
+			summaryModel.ViewMode = summaryModel.ViewMode;
+			summaryModel.AllowViewModeChanging = true;
+			summaryModel.AllowSorting = true;
+			summaryModel.AllowPagination = true;
+			summaryModel.AvailablePageSizes = _catalogSettings.DefaultPageSizeOptions.Convert<List<int>>();
 
 			// Add product hits
 			model.TopProducts = summaryModel;
@@ -173,181 +179,6 @@ namespace SmartStore.Web.Controllers
 			// Add spell checker suggestions (if any)
 			AddSpellCheckerSuggestionsToModel(result.SpellCheckerSuggestions, model);
 
-			return View(model);
-		}
-
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		[ValidateInput(false)]
-		public ActionResult Search2(SearchModel model, SearchPagingFilteringModel command)
-		{
-			// TODO: (mc) Remove later
-			if (model == null)
-				model = new SearchModel();
-
-			var resultModel = new SearchResultModel(new CatalogSearchQuery());
-
-			// 'Continue shopping' URL
-			_genericAttributeService.SaveAttribute(Services.WorkContext.CurrentCustomer,
-				SystemCustomerAttributeNames.LastContinueShoppingPage,
-				Services.WebHelper.GetThisPageUrl(false),
-				Services.StoreContext.CurrentStore.Id);
-
-			if (command.PageSize <= 0)
-				command.PageSize = _catalogSettings.DefaultProductListPageSize;
-			if (command.PageNumber <= 0)
-				command.PageNumber = 1;
-
-			if (command.OrderBy == (int)ProductSortingEnum.Initial)
-				command.OrderBy = (int)_catalogSettings.DefaultSortOrder;
-
-			_catalogHelper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
-			{
-				AllowCustomersToSelectPageSize = _catalogSettings.ProductsByTagAllowCustomersToSelectPageSize,
-				PageSize = _catalogSettings.DefaultProductListPageSize,
-				PageSizeOptions = _catalogSettings.DefaultPageSizeOptions
-			});
-
-			model.Q = model.Q.EmptyNull().Trim();
-			resultModel.Term = model.Q;
-
-			// Build AvailableCategories
-			model.AvailableCategories.Add(new SelectListItem { Value = "0", Text = T("Common.All") });
-
-			var navModel = _catalogHelper.PrepareCategoryNavigationModel(0, 0);
-
-			navModel.Root.Traverse((node) =>
-			{
-				if (node.IsRoot)
-					return;
-
-				var id = node.Value.EntityId;
-				var breadcrumb = node.GetBreadcrumb().Select(x => x.Text).ToArray();
-
-				model.AvailableCategories.Add(new SelectListItem
-				{
-					Value = id.ToString(),
-					Text = String.Join(" > ", breadcrumb),
-					Selected = model.Cid == id
-				});
-			});
-
-			var manufacturers = _manufacturerService.GetAllManufacturers();
-			if (manufacturers.Count > 0)
-			{
-				model.AvailableManufacturers.Add(new SelectListItem { Value = "0", Text = T("Common.All") });
-
-				foreach (var m in manufacturers)
-				{
-					model.AvailableManufacturers.Add(new SelectListItem
-					{
-						Value = m.Id.ToString(),
-						Text = m.GetLocalized(x => x.Name),
-						Selected = model.Mid == m.Id
-					});
-				}
-			}
-
-			IPagedList<Product> products = new PagedList<Product>(new List<Product>(), 0, 1);
-
-			// only search if query string search keyword is set (used to avoid searching or displaying search term min length error message on /search page load)
-			if (Request.Params["Q"] != null)
-			{
-				if (model.Q.Length < _searchSettings.InstantSearchTermMinLength)
-				{
-					model.Warning = string.Format(T("Search.SearchTermMinimumLengthIsNCharacters"), _searchSettings.InstantSearchTermMinLength);
-				}
-				else
-				{
-					var fields = new List<string> { "name" };
-					fields.AddRange(_searchSettings.SearchFields);
-
-					var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.Q)
-						.OriginatesFrom("Search")
-						.Slice((command.PageNumber - 1) * command.PageSize, command.PageSize)
-						.WithLanguage(Services.WorkContext.WorkingLanguage)
-						.VisibleIndividuallyOnly(true)
-						.SortBy((ProductSortingEnum)command.OrderBy);
-
-					// Visibility
-					searchQuery.VisibleOnly(!QuerySettings.IgnoreAcl ? Services.WorkContext.CurrentCustomer : null);
-
-					// Store
-					if (!QuerySettings.IgnoreMultiStore)
-					{
-						searchQuery.HasStoreId(Services.StoreContext.CurrentStore.Id);
-					}
-
-					if (model.As)
-					{
-						if (model.Cid > 0)
-						{
-							var categoryIds = new List<int> { model.Cid };
-							if (model.Isc)
-							{
-								categoryIds.AddRange(_catalogHelper.GetChildCategoryIds(model.Cid));
-							}
-
-							searchQuery = searchQuery.WithCategoryIds(null, categoryIds.ToArray());
-						}
-
-						if (model.Mid > 0)
-						{
-							searchQuery = searchQuery.WithManufacturerIds(null, model.Mid);
-						}
-
-						decimal? fromPrice = null;
-						decimal? toPrice = null;
-						var currency = Services.WorkContext.WorkingCurrency;
-
-						if (model.Pf.HasValue())
-						{
-							var minPrice = decimal.Zero;
-							if (decimal.TryParse(model.Pf, out minPrice))
-								fromPrice = _currencyService.ConvertToPrimaryStoreCurrency(minPrice, currency);
-						}
-						if (model.Pt.HasValue())
-						{
-							var maxPrice = decimal.Zero;
-							if (decimal.TryParse(model.Pt, out maxPrice))
-								toPrice = _currencyService.ConvertToPrimaryStoreCurrency(maxPrice, currency);
-						}
-
-						if (fromPrice.HasValue || toPrice.HasValue)
-						{
-							searchQuery = searchQuery.PriceBetween(fromPrice, toPrice, currency);
-						}
-					}
-
-					var searchResult = _catalogSearchService.Search(searchQuery);
-					products = searchResult.Hits;
-
-					model.Products = _catalogHelper.PrepareProductOverviewModels(
-						products,
-						prepareColorAttributes: true,
-						prepareManufacturers: command.ViewMode.IsCaseInsensitiveEqual("list")).ToList();
-
-					model.NoResults = !model.Products.Any();
-
-					var summaryModel = _catalogHelper.MapProductSummaryModelForGridView(products);
-					resultModel.TopProducts = summaryModel;
-
-					resultModel.TotalProductsCount = searchResult.Hits.TotalCount;
-					resultModel.SearchResult = searchResult;
-
-					// Add spell checker suggestions (if any)
-					AddSpellCheckerSuggestionsToModel(searchResult.SpellCheckerSuggestions, resultModel);
-				}
-			}
-			else
-			{
-				model.Warning = string.Format(T("Search.SearchTermMinimumLengthIsNCharacters"), _searchSettings.InstantSearchTermMinLength);
-				model.Sid = _searchSettings.SearchFields.Contains("fulldescription");
-			}
-
-			// TODO: (mc) Temp only
-			ViewBag.ResultModel = resultModel;
-
-			model.PagingFilteringContext.LoadPagedList(products);
 			return View(model);
 		}
 

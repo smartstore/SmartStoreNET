@@ -3,15 +3,22 @@ using System.Collections.Generic;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Web.Models.Catalog
 {
     public partial class ProductSummaryModel : ModelBase
     {
-		public ProductSummaryModel()
+		public ProductSummaryModel(IPagedList<Product> products)
 		{
+			Guard.NotNull(products, nameof(products));
+
 			Items = new List<SummaryItem>();
+			Products = products;
 		}
+
+		public IPagedList<Product> Products { get; private set; }
 
 		public int? ThumbSize { get; set; }
 		public bool ShowSku { get; set; }
@@ -29,6 +36,12 @@ namespace SmartStore.Web.Models.Catalog
 		public bool WishlistEnabled { get; set; }
 		public bool CompareEnabled { get; set; }
 		public bool ForceRedirectionAfterAddingToCart { get; set; }
+
+		public ProductSummaryViewMode ViewMode { get; set; }
+		public bool AllowPagination { get; set; }
+		public IEnumerable<int> AvailablePageSizes { get; set; }
+		public bool AllowSorting { get; set; }
+		public bool AllowViewModeChanging { get; set; }		
 
 		public IList<SummaryItem> Items { get; set; }
 

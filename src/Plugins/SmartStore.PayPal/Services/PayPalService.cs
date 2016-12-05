@@ -135,14 +135,14 @@ namespace SmartStore.PayPal.Services
 			decimal totalOrderItems = decimal.Zero;
 			var taxTotal = decimal.Zero;
 
-			var shipping = (_orderTotalCalculationService.GetShoppingCartShippingTotal(cart) ?? decimal.Zero);
+			var shipping = Math.Round(_orderTotalCalculationService.GetShoppingCartShippingTotal(cart) ?? decimal.Zero, 2);
 
 			var additionalHandlingFee = _paymentService.GetAdditionalHandlingFee(cart, providerSystemName);
 			var paymentFeeBase = _taxService.GetPaymentMethodAdditionalFee(additionalHandlingFee, customer);
-			var paymentFee = _currencyService.ConvertFromPrimaryStoreCurrency(paymentFeeBase, currency);
+			var paymentFee = Math.Round(_currencyService.ConvertFromPrimaryStoreCurrency(paymentFeeBase, currency), 2);
 
-			var total = (_orderTotalCalculationService.GetShoppingCartTotal(cart, out orderDiscountInclTax, out orderAppliedDiscount, out appliedGiftCards,
-				out redeemedRewardPoints, out redeemedRewardPointsAmount) ?? decimal.Zero);
+			var total = Math.Round(_orderTotalCalculationService.GetShoppingCartTotal(cart, out orderDiscountInclTax, out orderAppliedDiscount, out appliedGiftCards,
+				out redeemedRewardPoints, out redeemedRewardPointsAmount) ?? decimal.Zero, 2);
 
 			// line items
 			foreach (var item in cart)
@@ -162,7 +162,19 @@ namespace SmartStore.PayPal.Services
 					items.Add(line);
 				}
 
-				totalOrderItems += (productPrice * item.Item.Quantity);
+				totalOrderItems += (Math.Round(productPrice, 2) * item.Item.Quantity);
+			}
+
+			if (items != null && paymentFee != decimal.Zero)
+			{
+				var line = new Dictionary<string, object>();
+				line.Add("quantity", "1");
+				line.Add("name", T("Order.PaymentMethodAdditionalFee").Text.Truncate(127));
+				line.Add("price", paymentFee.FormatInvariant());
+				line.Add("currency", currencyCode);
+				items.Add(line);
+
+				totalOrderItems += Math.Round(paymentFee, 2);
 			}
 
 			if (!includingTax)
@@ -173,16 +185,16 @@ namespace SmartStore.PayPal.Services
 				// In a B2C scenario, where taxes are included, no taxes should be submitted to PayPal."
 
 				SortedDictionary<decimal, decimal> taxRates = null;
-				taxTotal = _orderTotalCalculationService.GetTaxTotal(cart, out taxRates);
+				taxTotal = Math.Round(_orderTotalCalculationService.GetTaxTotal(cart, out taxRates), 2);
 
 				amountDetails.Add("tax", taxTotal.FormatInvariant());
 			}
 
-			var itemsPlusMisc = (totalOrderItems + taxTotal + shipping + paymentFee);
+			var itemsPlusMisc = (totalOrderItems + taxTotal + shipping);
 
 			if (total != itemsPlusMisc)
 			{
-				var otherAmount = (total - itemsPlusMisc);
+				var otherAmount = Math.Round(total - itemsPlusMisc, 2);
 				totalOrderItems += otherAmount;
 
 				if (items != null && otherAmount != decimal.Zero)
@@ -201,10 +213,10 @@ namespace SmartStore.PayPal.Services
 			amountDetails.Add("shipping", shipping.FormatInvariant());
 			amountDetails.Add("subtotal", totalOrderItems.FormatInvariant());
 
-			if (paymentFee != decimal.Zero)
-			{
-				amountDetails.Add("handling_fee", paymentFee.FormatInvariant());
-			}
+			//if (paymentFee != decimal.Zero)
+			//{
+			//	amountDetails.Add("handling_fee", paymentFee.FormatInvariant());
+			//}
 
 			amount.Add("total", total.FormatInvariant());
 			amount.Add("currency", currencyCode);
@@ -321,6 +333,12 @@ namespace SmartStore.PayPal.Services
 				if (shortMessage.HasValue())
 				{
 					shortMessage = "PayPal. " + shortMessage;
+
+					if (exception == null && fullMessage.HasValue())
+					{
+						exception = new SmartException(fullMessage);
+					}
+
 					Logger.Log(isWarning ? LogLevel.Warning : LogLevel.Error, exception, shortMessage, null);
 
 					if (notify)

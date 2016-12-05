@@ -82,7 +82,7 @@
     <aside id="offcanvas-cart" class="offcanvas offcanvas-push offcanvas-right">
         <div class="offcanvas-content">
             @{ 
-				Html.RenderAction("OffCanvasCart", "ShoppingCart");
+				Html.RenderAction("OffCanvasCart", "ShoppingCart", new { area = "" });
             }
         </div>
     </aside>

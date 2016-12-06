@@ -232,7 +232,7 @@
 		);
 
 		// html text collapser
-		if ($({}).moreLess) {
+		if ($.fn.moreLess) {
 			$('.more-less').moreLess();
 		}
 		

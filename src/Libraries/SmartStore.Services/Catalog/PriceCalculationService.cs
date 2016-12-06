@@ -336,7 +336,8 @@ namespace SmartStore.Services.Catalog
 				x => _productService.GetTierPricesByProductIds(x, customer, storeId.Value),
 				x => _categoryService.GetProductCategoriesByProductIds(x, true),
 				x => _manufacturerService.GetProductManufacturersByProductIds(x),
-				x => _productService.GetAppliedDiscountsByProductIds(x)
+				x => _productService.GetAppliedDiscountsByProductIds(x),
+				x => _productService.GetBundleItemsByProductIds(x, true)
 			);
 
 			return context;
@@ -476,7 +477,15 @@ namespace SmartStore.Services.Catalog
 			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing)
 			{
 				decimal result = decimal.Zero;
-				var items = bundleItems ?? _productService.GetBundleItems(product.Id);
+
+				var items = bundleItems;
+				if (items == null)
+				{
+					//var bundleEntities = context.ProductBundleItems.GetOrLoad(product.Id).Select(x => new ProductBundleItemData(x));
+					items = context == null 
+						? _productService.GetBundleItems(product.Id) 
+						: context.ProductBundleItems.GetOrLoad(product.Id).Select(x => new ProductBundleItemData(x));
+				}
 
 				foreach (var itemData in items.Where(x => x.IsValid()))
 				{
@@ -487,6 +496,7 @@ namespace SmartStore.Services.Catalog
 
 				return (result < decimal.Zero ? decimal.Zero : result);
 			}
+
 			return GetFinalPrice(product, customer, additionalCharge, includeDiscounts, quantity, bundleItem, context);
 		}
 

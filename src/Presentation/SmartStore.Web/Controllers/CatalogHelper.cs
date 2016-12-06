@@ -24,6 +24,7 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
@@ -71,6 +72,7 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<IMenuPublisher> _menuPublisher;
 		private readonly Lazy<ITopicService> _topicService;
 		private readonly Lazy<IDataExporter> _dataExporter;
+		private readonly ICatalogSearchService _catalogSearchService;
 
 		private readonly HttpRequestBase _httpRequest;
 		private readonly UrlHelper _urlHelper;
@@ -106,6 +108,7 @@ namespace SmartStore.Web.Controllers
 			Lazy<IMenuPublisher> _menuPublisher,
 			Lazy<ITopicService> topicService,
 			Lazy<IDataExporter> dataExporter,
+			ICatalogSearchService catalogSearchService,
 			HttpRequestBase httpRequest,
 			UrlHelper urlHelper)
 		{
@@ -140,6 +143,7 @@ namespace SmartStore.Web.Controllers
 			this._menuPublisher = _menuPublisher;
 			this._topicService = topicService;
 			this._dataExporter = dataExporter;
+			this._catalogSearchService = catalogSearchService;
 			this._httpRequest = httpRequest;
 			this._urlHelper = urlHelper;
 
@@ -1168,19 +1172,6 @@ namespace SmartStore.Web.Controllers
 
 				var cargoData = _dataExporter.Value.CreateProductExportContext(products);
 
-				if ((prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists) || (prepareVariants && _catalogSettings.ShowProductOptionsInLists))
-				{
-					cargoData.Attributes.LoadAll();
-				}
-				
-				if (prepareManufacturers)
-				{
-					cargoData.ProductManufacturers.LoadAll();
-				}
-				
-				// Defer pictures loading 'cause of cache
-				var picturesLoaded = false;
-
 				var models = new List<ProductOverviewModel>();
 
 				foreach (var product in products)
@@ -1478,11 +1469,6 @@ namespace SmartStore.Web.Controllers
 
 						model.DefaultPictureModel = _services.Cache.Get(defaultProductPictureCacheKey, () =>
 						{
-							if (!picturesLoaded)
-							{
-								cargoData.Pictures.LoadAll();
-							}
-							
 							//var picture = product.GetDefaultProductPicture(_pictureService);
 							var picture = cargoData.Pictures.GetOrLoad(product.Id).FirstOrDefault();
 							var pictureModel = new PictureModel
@@ -1546,8 +1532,8 @@ namespace SmartStore.Web.Controllers
 
 					if (prepareManufacturers)
 					{
-						//model.Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), cachedManufacturerModels, false);
-						model.Manufacturers = PrepareManufacturersOverviewModel(cargoData.ProductManufacturers.GetOrLoad(product.Id), cachedManufacturerModels, false);
+						model.Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), cachedManufacturerModels, false);
+						//model.Manufacturers = PrepareManufacturersOverviewModel(cargoData.ProductManufacturers.GetOrLoad(product.Id), cachedManufacturerModels, false);
 					}
 
 					if (finalPrice != decimal.Zero && (_catalogSettings.ShowBasePriceInProductLists || isCompareList))

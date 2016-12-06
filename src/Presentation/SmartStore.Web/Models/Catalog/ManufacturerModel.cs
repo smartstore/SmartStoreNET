@@ -9,9 +9,6 @@ namespace SmartStore.Web.Models.Catalog
         public ManufacturerModel()
         {
             PictureModel = new PictureModel();
-            FeaturedProducts = new List<ProductOverviewModel>();
-            Products = new List<ProductOverviewModel>();
-            PagingFilteringContext = new CatalogPagingFilteringModel();
         }
 
         public string Name { get; set; }
@@ -21,12 +18,8 @@ namespace SmartStore.Web.Models.Catalog
         public string MetaTitle { get; set; }
         public string SeName { get; set; }
 
-
         public PictureModel PictureModel { get; set; }
-
-        public CatalogPagingFilteringModel PagingFilteringContext { get; set; }
-
-        public IList<ProductOverviewModel> FeaturedProducts { get; set; }
-        public IList<ProductOverviewModel> Products { get; set; }
+        public ProductSummaryModel FeaturedProducts { get; set; }
+        public ProductSummaryModel Products { get; set; }
     }
 }

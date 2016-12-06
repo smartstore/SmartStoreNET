@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Collections;
+using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
@@ -25,6 +26,7 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
@@ -41,77 +43,59 @@ namespace SmartStore.Web.Controllers
 	{
 		// TODO: (mc) Merge this later with CatalogHelper.cs
 
-		public ProductSummaryModel MapProductSummaryModelForMiniView(IEnumerable<Product> products, Action<ProductSummaryMappingSettings> fn = null)
+		public ProductSummaryMappingSettings GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode viewMode)
 		{
 			var settings = new ProductSummaryMappingSettings
 			{
-				ViewMode = ProductSummaryViewMode.Mini
+				ViewMode = viewMode,
 			};
 
-			fn?.Invoke(settings);
-
-			return MapProductSummaryModel(products, settings);
-		}
-
-		public ProductSummaryModel MapProductSummaryModelForGridView(IEnumerable<Product> products, Action<ProductSummaryMappingSettings> fn = null)
-		{
-			var settings = new ProductSummaryMappingSettings
+			if (viewMode == ProductSummaryViewMode.Grid)
 			{
-				ViewMode = ProductSummaryViewMode.Grid,
-				MapShortDescription = _catalogSettings.ShowShortDescriptionInGridStyleLists,
-				MapManufacturers = _catalogSettings.ShowManufacturerInGridStyleLists,
-				MapColorAttributes = _catalogSettings.ShowColorSquaresInLists,
-				MapAttributes = _catalogSettings.ShowProductOptionsInLists,
-				MapReviews = _catalogSettings.ShowProductReviewsInProductLists,
-				MapDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists
-			};
-
-			fn?.Invoke(settings);
-
-			return MapProductSummaryModel(products, settings);
-		}
-
-		public ProductSummaryModel MapProductSummaryModelForListView(IEnumerable<Product> products, Action<ProductSummaryMappingSettings> fn = null)
-		{
-			var settings = new ProductSummaryMappingSettings
+				settings.MapShortDescription = _catalogSettings.ShowShortDescriptionInGridStyleLists;
+				settings.MapManufacturers = _catalogSettings.ShowManufacturerInGridStyleLists;
+				settings.MapColorAttributes = _catalogSettings.ShowColorSquaresInLists;
+				settings.MapAttributes = _catalogSettings.ShowProductOptionsInLists;
+				settings.MapReviews = _catalogSettings.ShowProductReviewsInProductLists;
+				settings.MapDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
+			}
+			else if (viewMode == ProductSummaryViewMode.Grid)
 			{
-				ViewMode = ProductSummaryViewMode.List,
-				MapShortDescription = true,
-				MapLegalInfo = _taxSettings.ShowLegalHintsInProductList,
-				MapManufacturers = true,
-				MapColorAttributes = _catalogSettings.ShowColorSquaresInLists,
-				MapAttributes = _catalogSettings.ShowProductOptionsInLists,
-				MapReviews = _catalogSettings.ShowProductReviewsInProductLists,
-				MapDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists,
-				MapDimensions = _catalogSettings.ShowDimensions
-			};
-
-			fn?.Invoke(settings);
-
-			return MapProductSummaryModel(products, settings);
-		}
-
-		public ProductSummaryModel MapProductSummaryModelForCompareView(IEnumerable<Product> products, Action<ProductSummaryMappingSettings> fn = null)
-		{
-			var settings = new ProductSummaryMappingSettings
+				settings.MapShortDescription = true;
+				settings.MapLegalInfo = _taxSettings.ShowLegalHintsInProductList;
+				settings.MapManufacturers = true;
+				settings.MapColorAttributes = _catalogSettings.ShowColorSquaresInLists;
+				settings.MapAttributes = _catalogSettings.ShowProductOptionsInLists;
+				settings.MapReviews = _catalogSettings.ShowProductReviewsInProductLists;
+				settings.MapDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
+			}
+			else if (viewMode == ProductSummaryViewMode.List)
 			{
-				ViewMode = ProductSummaryViewMode.Compare,
-				MapShortDescription = true,
-				MapLegalInfo = _taxSettings.ShowLegalHintsInProductList,
-				MapManufacturers = true,
-				MapAttributes = true,
-				MapSpecificationAttributes = true,
-				MapReviews = _catalogSettings.ShowProductReviewsInProductLists,
-				MapDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists,
-				MapDimensions = _catalogSettings.ShowDimensions
-			};
+				settings.MapShortDescription = true;
+				settings.MapLegalInfo = _taxSettings.ShowLegalHintsInProductList;
+				settings.MapManufacturers = true;
+				settings.MapColorAttributes = _catalogSettings.ShowColorSquaresInLists;
+				settings.MapAttributes = _catalogSettings.ShowProductOptionsInLists;
+				settings.MapReviews = _catalogSettings.ShowProductReviewsInProductLists;
+				settings.MapDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
+				settings.MapDimensions = _catalogSettings.ShowDimensions;
+			}
+			else if (viewMode == ProductSummaryViewMode.Compare)
+			{
+				settings.MapShortDescription = true;
+				settings.MapLegalInfo = _taxSettings.ShowLegalHintsInProductList;
+				settings.MapManufacturers = true;
+				settings.MapAttributes = true;
+				settings.MapSpecificationAttributes = true;
+				settings.MapReviews = _catalogSettings.ShowProductReviewsInProductLists;
+				settings.MapDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
+				settings.MapDimensions = _catalogSettings.ShowDimensions;
+			}
 
-			fn?.Invoke(settings);
-
-			return MapProductSummaryModel(products, settings);
+			return settings;
 		}
 
-		public virtual ProductSummaryModel MapProductSummaryModel(IEnumerable<Product> products, ProductSummaryMappingSettings settings)
+		public virtual ProductSummaryModel MapProductSummaryModel(IPagedList<Product> products, ProductSummaryMappingSettings settings)
 		{
 			Guard.NotNull(products, nameof(products));
 
@@ -181,7 +165,7 @@ namespace SmartStore.Web.Controllers
 					batchContext.SpecificationAttributes.LoadAll();
 				}
 
-				var model = new ProductSummaryModel
+				var model = new ProductSummaryModel(products)
 				{
 					ShowSku = _catalogSettings.ShowProductSku,
 					ShowWeight = _catalogSettings.ShowWeight,
@@ -207,7 +191,6 @@ namespace SmartStore.Web.Controllers
 					Currency = currency,
 					LegalInfo = legalInfo,
 					Model = model,
-					PicturesLoaded = false, // // Defer pictures loading 'cause of cache
 					Resources = res,
 					Settings = settings,
 					Customer = customer,
@@ -336,10 +319,9 @@ namespace SmartStore.Web.Controllers
 
 				item.Picture = _services.Cache.Get(defaultProductPictureCacheKey, () =>
 				{
-					if (!ctx.PicturesLoaded)
+					if (!ctx.BatchContext.Pictures.FullyLoaded)
 					{
 						ctx.BatchContext.Pictures.LoadAll();
-						ctx.PicturesLoaded = true;
 					}
 
 					var picture = ctx.BatchContext.Pictures.GetOrLoad(product.Id).FirstOrDefault();
@@ -449,6 +431,11 @@ namespace SmartStore.Web.Controllers
 
 			var priceModel = new ProductSummaryModel.PriceModel();
 
+			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing && !ctx.BatchContext.ProductBundleItems.FullyLoaded)
+			{
+				ctx.BatchContext.ProductBundleItems.LoadAll();
+			}
+
 			if (product.ProductType == ProductType.GroupedProduct)
 			{
 				#region Grouped product
@@ -457,16 +444,12 @@ namespace SmartStore.Web.Controllers
 				priceModel.DisableWishlistButton = true;
 				priceModel.AvailableForPreOrder = false;
 
-				var searchContext = new ProductSearchContext
-				{
-					OrderBy = ProductSortingEnum.Relevance,
-					StoreId = ctx.Store.Id,
-					ParentGroupedProductId = product.Id,
-					PageSize = int.MaxValue,
-					VisibleIndividuallyOnly = false
-				};
+				var searchQuery = new CatalogSearchQuery()
+					.HasStoreId(ctx.Store.Id)
+					.VisibleIndividuallyOnly(false)
+					.HasParentGroupedProductId(product.Id);
 
-				var associatedProducts = _productService.SearchProducts(searchContext);
+				var associatedProducts = _catalogSearchService.Search(searchQuery).Hits;
 
 				if (associatedProducts.Count > 0)
 				{
@@ -678,7 +661,6 @@ namespace SmartStore.Web.Controllers
 			public Dictionary<int, ManufacturerOverviewModel> CachedManufacturerModels { get; set; }
 			public Dictionary<string, LocalizedString> Resources { get; set; }
 			public string LegalInfo { get; set; }
-			public bool PicturesLoaded { get; set; }
 			public Customer Customer { get; set; }
 			public Store Store { get; set; }
 			public Currency Currency { get; set; }

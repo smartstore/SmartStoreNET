@@ -1879,7 +1879,7 @@ namespace SmartStore.Services.Catalog
 				orderby pbi.DisplayOrder
 				select pbi;
 
-			var map = query
+			var map = query.Expand(x => x.Product)
 				.ToList()
 				.ToMultimap(x => x.BundleProductId, x => x);
 

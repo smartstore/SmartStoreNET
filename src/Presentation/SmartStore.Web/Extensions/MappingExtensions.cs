@@ -15,10 +15,11 @@ namespace SmartStore.Web
 {
     public static class MappingExtensions
     {
-        //category
+        // Category
         public static CategoryModel ToModel(this Category entity)
         {
-            if (entity == null)
+			// TODO: (mc) delete later
+			if (entity == null)
                 return null;
 
             var model = new CategoryModel
@@ -36,8 +37,8 @@ namespace SmartStore.Web
             return model;
         }
 
-        //manufacturer
-        public static ManufacturerModel ToModel(this Manufacturer entity)
+		//manufacturer
+		public static ManufacturerModel ToModel(this Manufacturer entity)
         {
             if (entity == null)
                 return null;

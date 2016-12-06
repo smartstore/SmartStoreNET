@@ -618,12 +618,8 @@ namespace SmartStore.Web.Framework
 			if (!catalogSettings.EnableHtmlTextCollapser)
 				return MvcHtmlString.Create(text);
 
-			string options = "{{\"adjustheight\":{0}}}".FormatWith(
-				catalogSettings.HtmlTextCollapsedHeight
-			);
-
-			string result = "<div class='more-less' data-options='{0}'><div class='more-block'>{1}</div></div>".FormatWith(
-				options, text
+			string result = "<div class='more-less' data-max-height='{0}'><div class='more-block'>{1}</div></div>".FormatWith(
+				catalogSettings.HtmlTextCollapsedHeight, text
 			);
 
 			return MvcHtmlString.Create(result);

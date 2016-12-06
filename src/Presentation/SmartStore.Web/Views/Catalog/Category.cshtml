@@ -1,0 +1,142 @@
+﻿@model CategoryModel3
+
+@{
+	Layout = "_ColumnsTwo";
+	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+	Html.AddMetaDescriptionParts(Model.MetaDescription);
+	Html.AddMetaKeywordParts(Model.MetaKeywords);
+
+	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+	if (canonicalUrlsEnabled) {
+		var categoryUrl = Url.RouteUrl("Category", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+		Html.AddCanonicalUrlParts(categoryUrl);
+	}
+}
+
+@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Core.Domain.Seo;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web.Framework.UI;
+
+@helper SubCategoryList()
+{
+    <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 card-cols-xl-4 category-grid sub-category-grid">
+        @foreach (var item in Model.SubCategories)
+        {
+            <article class="card card-block card-shadow category-item sub-category-item">
+                <h2 class="category-title card-title h6">
+                    <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">@item.Name</a>
+                </h2>
+                <div class="picture">
+                    @if (item.PictureModel.ImageUrl.HasValue())
+                    {
+                        <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">
+                            <img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title" />
+                        </a>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+}
+
+@section teaser {
+    @if (Model.DisplayCategoryBreadcrumb)
+    {
+        <ul id="breadcrumb" class="breadcrumb">
+            <li>
+                <a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")"><i class="fa fa-home"></i></a>
+            </li>
+
+            @for (int i = 0; i < Model.CategoryBreadcrumb.Count; i++)
+            {
+                var menuItem = Model.CategoryBreadcrumb[i];
+                var isLastCategory = menuItem.EntityId == Model.Id;
+                <li>
+                    @if (isLastCategory)
+                    {
+                        @menuItem.Text
+                    }
+                    else
+                    {
+                        <a href="@menuItem.GenerateUrl(this.Url)" title="@menuItem.Text">@menuItem.Text</a>
+                    }
+                </li>
+            }
+        </ul>
+        @Html.Widget("categorydetails_after_breadcrumb")
+    }
+}
+
+<div class="page category-page">
+
+    <div class="page-title">
+        <h1 class="h3">
+			@(Model.FullName.HasValue() ? Model.FullName : Model.Name)
+		</h1>
+    </div>
+
+    <div class="page-body">
+        @Html.Widget("categorydetails_top")
+
+        @* Description *@
+        @if (!String.IsNullOrWhiteSpace(Model.Description))
+        {
+            <div class="category-description">
+                @Html.Raw(Html.CollapsedText(Model.Description))
+            </div>
+        }
+
+        @* Subcategories *@
+        @if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.AboveProductList)
+        {
+            @Html.Widget("categorydetails_before_subcategories")
+            @SubCategoryList()
+        }
+
+        @* Featured products *@
+        @Html.Widget("categorydetails_before_featured_products")
+
+        @if (Model.FeaturedProducts != null && Model.FeaturedProducts.Items.Count > 0)
+        {
+            <div class="featured-product-grid">
+                <div class="section-title">
+                    @T("Products.FeaturedProducts")
+                </div>
+				@{ 
+					Html.RenderPartial("Product.List", Model.FeaturedProducts);
+				}
+            </div>
+		}
+
+        @Html.Widget("categorydetails_after_featured_products")
+
+        @* Product list *@
+        @Html.Widget("categorydetails_before_product_list")
+
+        <div class="product-list-container">
+            @if (Model.Products != null && Model.Products.Items.Count > 0)
+			{
+				Html.RenderPartial("Product.List", Model.Products);
+            }
+        </div>
+
+        @if (Model.BottomDescription.HasValue())
+        {
+            <div class="category-description">
+                @Html.Raw(Html.CollapsedText(Model.BottomDescription))
+            </div>
+        }
+
+        @* Subcategories *@
+        @if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.Bottom)
+        {
+            @Html.Widget("categorydetails_before_subcategories")
+            @SubCategoryList()
+        }
+
+        @Html.Widget("categorydetails_bottom")
+    </div>
+
+</div>

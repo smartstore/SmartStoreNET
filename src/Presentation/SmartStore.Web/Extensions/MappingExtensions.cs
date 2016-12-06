@@ -18,7 +18,8 @@ namespace SmartStore.Web
         //category
         public static CategoryModel ToModel(this Category entity)
         {
-            if (entity == null)
+			// TODO: (mc) delete later
+			if (entity == null)
                 return null;
 
             var model = new CategoryModel
@@ -35,9 +36,28 @@ namespace SmartStore.Web
             };
             return model;
         }
+		public static CategoryModel3 ToModel3(this Category entity)
+		{
+			if (entity == null)
+				return null;
 
-        //manufacturer
-        public static ManufacturerModel ToModel(this Manufacturer entity)
+			var model = new CategoryModel3
+			{
+				Id = entity.Id,
+				Name = entity.GetLocalized(x => x.Name),
+				FullName = entity.GetLocalized(x => x.FullName),
+				Description = entity.GetLocalized(x => x.Description),
+				BottomDescription = entity.GetLocalized(x => x.BottomDescription),
+				MetaKeywords = entity.GetLocalized(x => x.MetaKeywords),
+				MetaDescription = entity.GetLocalized(x => x.MetaDescription),
+				MetaTitle = entity.GetLocalized(x => x.MetaTitle),
+				SeName = entity.GetSeName(),
+			};
+			return model;
+		}
+
+		//manufacturer
+		public static ManufacturerModel ToModel(this Manufacturer entity)
         {
             if (entity == null)
                 return null;

@@ -233,6 +233,9 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Products.PlusOption", "Further option", "Weitere Option");
 			builder.AddOrUpdate("Products.PlusOptions", "More options", "Weitere Optionen");
+
+			builder.AddOrUpdate("Products.Longdesc.More", "Show more", "Mehr anzeigen");
+			builder.AddOrUpdate("Products.Longdesc.Less", "Show less", "Weniger anzeigen");
 		}
 	}
 }

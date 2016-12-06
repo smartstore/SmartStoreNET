@@ -333,6 +333,7 @@
     <Compile Include="Models\Boards\SearchModel.cs" />
     <Compile Include="Models\Boards\TopicMoveModel.cs" />
     <Compile Include="Models\Catalog\BackInStockSubscribeModel.cs" />
+    <Compile Include="Models\Catalog\CategoryModel.V3.cs" />
     <Compile Include="Models\Catalog\CompareProductsModel.cs" />
     <Compile Include="Models\Catalog\NavigationModelBuiltEvent.cs" />
     <Compile Include="Models\Catalog\ProductAskQuestionModel.cs" />
@@ -1922,7 +1923,7 @@
     <Content Include="Views\Boards\_ForumPost.cshtml" />
     <Content Include="Views\Boards\_SearchBox.cshtml" />
     <Content Include="Views\Catalog\CategoryNavigation.cshtml" />
-    <Content Include="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
+    <Content Include="Views\Catalog\Category.cshtml" />
     <Content Include="Views\Catalog\CompareProducts.cshtml" />
     <Content Include="Views\Catalog\CompareProductsButton.cshtml" />
     <Content Include="Views\Catalog\FlyoutCompare.cshtml" />
@@ -2103,6 +2104,7 @@
     <Content Include="Views\Shared\Partials\Product.Item.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.cshtml" />
     <Content Include="Views\Shared\Partials\Product.Item.Drop.cshtml" />
+    <Content Include="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

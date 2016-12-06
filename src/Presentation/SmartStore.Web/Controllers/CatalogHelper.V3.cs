@@ -191,7 +191,6 @@ namespace SmartStore.Web.Controllers
 					Currency = currency,
 					LegalInfo = legalInfo,
 					Model = model,
-					PicturesLoaded = false, // // Defer pictures loading 'cause of cache
 					Resources = res,
 					Settings = settings,
 					Customer = customer,
@@ -320,10 +319,9 @@ namespace SmartStore.Web.Controllers
 
 				item.Picture = _services.Cache.Get(defaultProductPictureCacheKey, () =>
 				{
-					if (!ctx.PicturesLoaded)
+					if (!ctx.BatchContext.Pictures.FullyLoaded)
 					{
 						ctx.BatchContext.Pictures.LoadAll();
-						ctx.PicturesLoaded = true;
 					}
 
 					var picture = ctx.BatchContext.Pictures.GetOrLoad(product.Id).FirstOrDefault();
@@ -433,10 +431,9 @@ namespace SmartStore.Web.Controllers
 
 			var priceModel = new ProductSummaryModel.PriceModel();
 
-			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing && !ctx.BundleItemsLoaded)
+			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing && !ctx.BatchContext.ProductBundleItems.FullyLoaded)
 			{
 				ctx.BatchContext.ProductBundleItems.LoadAll();
-				ctx.BundleItemsLoaded = true;
 			}
 
 			if (product.ProductType == ProductType.GroupedProduct)
@@ -664,8 +661,6 @@ namespace SmartStore.Web.Controllers
 			public Dictionary<int, ManufacturerOverviewModel> CachedManufacturerModels { get; set; }
 			public Dictionary<string, LocalizedString> Resources { get; set; }
 			public string LegalInfo { get; set; }
-			public bool PicturesLoaded { get; set; }
-			public bool BundleItemsLoaded { get; set; }
 			public Customer Customer { get; set; }
 			public Store Store { get; set; }
 			public Currency Currency { get; set; }

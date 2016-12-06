@@ -12,8 +12,9 @@ namespace SmartStore.Collections
 	public class LazyMultimap<T> : Multimap<int, T>
 	{
 		private readonly Func<int[], Multimap<int, T>> _load;
-		private readonly HashSet<int> _loaded;			// to avoid database round trips with empty results
+		private readonly HashSet<int> _loaded;	// to avoid database round trips with empty results
 		private HashSet<int> _collect;
+		private bool _fullyLoaded;
 		//private int _roundTripCount;
 
 		/// <summary>
@@ -27,6 +28,11 @@ namespace SmartStore.Collections
 			_loaded = new HashSet<int>();
 
 			_collect = collect == null ? new HashSet<int>() : new HashSet<int>(collect);
+		}
+
+		public bool FullyLoaded
+		{
+			get { return _fullyLoaded; }
 		}
 
 		/// <summary>
@@ -57,6 +63,7 @@ namespace SmartStore.Collections
 		public void LoadAll()
 		{
 			Load(_collect);
+			_fullyLoaded = true;
 		}
 
 		protected virtual void Load(IEnumerable<int> keys)
@@ -120,6 +127,7 @@ namespace SmartStore.Collections
 		{
 			_loaded.Clear();
 			_collect.Clear();
+			_fullyLoaded = false;
 			//_roundTripCount = 0;
 
 			base.Clear();

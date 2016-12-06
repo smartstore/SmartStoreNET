@@ -239,27 +239,40 @@
         },
 
         moreLess: function () {
-            var moreText = '<button class="btn btn-secondary-outline btn-sm"><i class="fa fa-plus mini-button-icon"></i>' + Res['Products.Longdesc.More'] + '</button>';
-            var lessText = '<button class="btn btn-secondary-outline btn-sm"><i class="fa fa-minus mini-button-icon"></i>' + Res['Products.Longdesc.Less'] + '</button>';
+            return this.each(function () {
+            	var el = $(this);
+            	var inner = el.find('> .more-block');
+            	var actualHeight = inner.length > 0 ? inner.outerHeight(false) : el.outerHeight(false);
+            	var maxHeight = el.data('max-height') || 260;
 
-			return this.each(function () {
-            	var el = $(this),
-          			opt = $.extend({ adjustheight: 260 }, el.data('options'));
+            	if (actualHeight <= maxHeight) {
+            		el.css('max-height', 'none');
+            		return;
+            	}
+            	else {	
+            		el.css('max-height', maxHeight + 'px');
+            		el.addClass('collapsed');
+            	}
 
-            	if (el.height() > opt.adjustheight) {
-            		el.find(".more-block").css('height', opt.adjustheight).css('overflow', 'hidden');
+            	el.on('click', '.btn-text-expander', function (e) {
+            		e.preventDefault();
+            		if ($(this).hasClass('btn-text-expander--expand')) {
+            			el.addClass('expanded').removeClass('collapsed');
+            		}
+            		else {
+            			el.addClass('collapsed').removeClass('expanded');
+            		}
+            		return false;
+            	});
 
-            		el.append('<p class="continued">[&hellip;]</p><a href="#" class="adjust"></a>');
+            	var expander = el.find('.btn-text-expander--expand');
+            	if (expander.length == 0) {
+            		el.append('<a href="#" class="btn-text-expander btn-text-expander--expand"><i class="fa fa fa-angle-double-down"></i>' + Res['Products.Longdesc.More'] + '</a>');
+            	}
 
-            		el.find(".adjust").html(moreText).toggle(function () {
-            			$(this).parents("div:first").find(".more-block").css('height', 'auto').css('overflow', 'visible');
-            			$(this).parents("div:first").find("p.continued").css('display', 'none');
-            			$(this).html(lessText);
-            		}, function () {
-            			$(this).parents("div:first").find(".more-block").css('height', opt.adjustheight).css('overflow', 'hidden');
-            			$(this).parents("div:first").find("p.continued").css('display', 'block');
-            			$(this).html(moreText);
-            		});
+            	var collapser = el.find('.btn-text-expander--collapse');
+            	if (collapser.length == 0) {
+            		el.append('<a href="#" class="btn-text-expander btn-text-expander--collapse"><i class="fa fa fa-angle-double-up"></i>' + Res['Products.Longdesc.Less'] + '</a>');
             	}
             });
         }

@@ -99,13 +99,13 @@ namespace SmartStore.Web.Controllers
 				TotalProductsCount = result.Hits.TotalCount
 			};
 
-			var mapSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini);
-			mapSettings.MapPrices = false;
+			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini);
+			mappingSettings.MapPrices = false;
 			// TODO: (mc) actually SHOW pictures in InstantSearch (???)
-			mapSettings.MapPictures = _searchSettings.ShowProductImagesInInstantSearch;
-			mapSettings.ThumbnailSize = _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage;
+			mappingSettings.MapPictures = _searchSettings.ShowProductImagesInInstantSearch;
+			mappingSettings.ThumbnailSize = _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage;
 
-			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mapSettings);
+			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
 
 			// Add product hits
 			model.TopProducts = summaryModel;
@@ -163,8 +163,8 @@ namespace SmartStore.Web.Controllers
 			model.TotalProductsCount = result.Hits.TotalCount;
 
 			// TODO: (mc) somehow determine viewmode and call appropriate helper method (Grid or List)
-			var mapSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid);
-			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mapSettings);
+			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid);
+			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
 
 			// TODO: (mc) Determine and set
 			summaryModel.ViewMode = summaryModel.ViewMode;

@@ -515,7 +515,7 @@ namespace SmartStore.Services.Search
 
 		#endregion
 
-		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None)
+		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None, bool direct = false)
 		{
 			PagedList<Product> hits;
 

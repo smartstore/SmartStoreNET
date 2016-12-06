@@ -499,7 +499,42 @@ namespace SmartStore.Services.Media
             return pics;
         }
 
-		public virtual Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = 1)
+		//public virtual Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = 1)
+		//{
+		//	Guard.NotNull(productIds, nameof(productIds));
+
+		//	if (maxPicturesPerProduct.HasValue)
+		//	{
+		//		Guard.IsPositive(maxPicturesPerProduct.Value, nameof(maxPicturesPerProduct));
+		//	}
+
+		//	var map = new Multimap<int, Picture>();
+
+		//	if (productIds.Any())
+		//	{
+		//		int take = maxPicturesPerProduct ?? int.MaxValue;
+
+		//		var query = from pp in _productPictureRepository.TableUntracked
+		//					where productIds.Contains(pp.ProductId)
+		//					group pp by pp.ProductId into g
+		//					select new
+		//					{
+		//						ProductId = g.Key,
+		//						Pictures = g.OrderBy(x => x.DisplayOrder).Take(take).Select(x => x.Picture)
+		//					};
+
+		//		var result = query.ToList();
+
+		//		foreach (var ppm in result)
+		//		{
+		//			map.AddRange(ppm.ProductId, ppm.Pictures);
+		//		}
+		//	}
+
+		//	return map;
+		//}
+
+		public virtual Multimap<int, Picture> GetPicturesByProductIds(int[] productIds, int? maxPicturesPerProduct = 1, bool withBlobs = false)
 		{
 			Guard.NotNull(productIds, nameof(productIds));
 
@@ -510,36 +545,53 @@ namespace SmartStore.Services.Media
 
 			var map = new Multimap<int, Picture>();
 
-			if (productIds.Any())
+			if (!productIds.Any())
+				return map;
+
+			int take = maxPicturesPerProduct ?? int.MaxValue;
+
+			var query = from pp in _productPictureRepository.TableUntracked
+						where productIds.Contains(pp.ProductId)
+						group pp by pp.ProductId into g
+						select new
+						{
+							ProductId = g.Key,
+							Pictures = g.OrderBy(x => x.DisplayOrder)
+								.Take(take)
+								.Select(x => new { PictureId = x.PictureId, ProductId = x.ProductId })
+						};
+
+			var groupingResult = query.ToDictionary(x => x.ProductId, x => x.Pictures);
+
+			using (var scope = new DbContextScope(ctx: _pictureRepository.Context, forceNoTracking: true))
 			{
-				int take = maxPicturesPerProduct ?? int.MaxValue;
+				// EF doesn't support eager loading with grouped queries. We must hack a little bit.
+				var pictureIds = groupingResult.SelectMany(x => x.Value).Select(x => x.PictureId).Distinct().ToArray();
+				var pictures = GetPicturesByIds(pictureIds, withBlobs).ToDictionarySafe(x => x.Id);
 
-				var query = from pp in _productPictureRepository.TableUntracked
-							where productIds.Contains(pp.ProductId)
-							group pp by pp.ProductId into g
-							select new
-							{
-								ProductId = g.Key,
-								Pictures = g.OrderBy(x => x.DisplayOrder).Take(take).Select(x => x.Picture)
-							};
-
-				var result = query.ToList();
-
-				foreach (var ppm in result)
+				foreach (var p in groupingResult.SelectMany(x => x.Value))
 				{
-					map.AddRange(ppm.ProductId, ppm.Pictures);
+					if (pictures.ContainsKey(p.PictureId))
+					{
+						map.Add(p.ProductId, pictures[p.PictureId]);
+					}
 				}
 			}
 
 			return map;
 		}
 
-		public virtual IList<Picture> GetPicturesByIds(int[] pictureIds)
+		public virtual IList<Picture> GetPicturesByIds(int[] pictureIds, bool withBlobs = false)
 		{
 			Guard.NotNull(pictureIds, nameof(pictureIds));
 
 			var query = _pictureRepository.Table
 				.Where(x => pictureIds.Contains(x.Id));
+
+			if (withBlobs)
+			{
+				query = query.Include(x => x.MediaStorage);
+			}
 
 			return query.ToList();
 		}

@@ -962,7 +962,7 @@ namespace SmartStore.Admin.Controllers
 
 				var products = _productService.SearchProducts(searchContext);
 
-				var pictureMap = _pictureService.GetPicturesByProductIds(products.Select(x => x.Id).ToArray(), 1);
+				var pictureMap = _pictureService.GetPicturesByProductIds(products.Select(x => x.Id).ToArray(), 1, true);
 
 				gridModel.Data = products.Select(x =>
 				{

@@ -36,21 +36,27 @@ namespace SmartStore.Services.Search
 			_eventPublisher = eventPublisher;
 		}
 
-		protected virtual CatalogSearchResult SearchFallback(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None)
+		/// <summary>
+		/// Bypasses the index provider and directly searches in the database
+		/// </summary>
+		/// <param name="searchQuery"></param>
+		/// <param name="loadFlags"></param>
+		/// <returns></returns>
+		protected virtual CatalogSearchResult SearchDirect(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None)
 		{
 			// fallback to linq search
 			var linqCatalogSearchService = _ctx.ResolveNamed<ICatalogSearchService>("linq");
 			return linqCatalogSearchService.Search(searchQuery, loadFlags);
 		}
 
-		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None)
+		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None, bool direct = false)
 		{
 			Guard.NotNull(searchQuery, nameof(searchQuery));
 			Guard.NotNegative(searchQuery.Take, nameof(searchQuery.Take));
 
 			var provider = _indexManager.GetIndexProvider();
 
-			if (provider != null)
+			if (!direct && provider != null)
 			{
 				var indexStore = provider.GetIndexStore("Catalog");
 				if (indexStore.Exists)
@@ -117,7 +123,7 @@ namespace SmartStore.Services.Search
 				}
 			}
 
-			return SearchFallback(searchQuery);
+			return SearchDirect(searchQuery);
 		}
 	}
 }

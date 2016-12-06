@@ -20,6 +20,19 @@
 	{
 		paddingTop = (thumbAspectRatio * 100) + "%";
 	}
+
+	string paginatorHtml = null;
+	if (Model.AllowPagination && Model.Items.Any())
+	{
+		paginatorHtml = Html.SmartStore()
+			.Pager(Model.Products)
+			.Alignment(PagerAlignment.Right)
+			.Name("pagination")
+			.QueryParam("i")
+			.Size(PagerSize.Mini)
+			.MaxPagesToDisplay(5)
+			.ToString();
+	}
 }
 
 @if (paddingTop.HasValue())
@@ -31,6 +44,13 @@
 	</style>
 }
 
+@if (paginatorHtml.HasValue())
+{
+	<div class="product-paginator">
+		@Html.Raw(paginatorHtml)
+	</div>
+}
+
 <div id="@id" class="artlist artlist-style-grid artlist-4-cols">
 	@foreach (var product in Model.Items)
 	{
@@ -38,13 +58,9 @@
 	}
 </div>
 
-@if (Model.AllowPagination && Model.Items.Any())
+@if (paginatorHtml.HasValue())
 {
-	//Html.SmartStore()
-	//	.Pager(Model.SearchResult.Hits)
-	//	.Name("pagination-bottom")
-	//	.QueryParam("i")
-	//	.Size(PagerSize.Medium)
-	//	.MaxPagesToDisplay(8)
-	//	.Render();
+	<div class="product-paginator">
+		@Html.Raw(paginatorHtml)
+	</div>
 }

@@ -10,10 +10,7 @@ namespace SmartStore.Web.Models.Catalog
     {
         public CategoryModel()
         {
-            PictureModel = new PictureModel();
-            FeaturedProducts = new List<ProductOverviewModel>();
-            Products = new List<ProductOverviewModel>();
-            PagingFilteringContext = new CatalogPagingFilteringModel();
+			PictureModel = new PictureModel();
             SubCategories = new List<SubCategoryModel>();
             CategoryBreadcrumb = new List<MenuItem>();
         }
@@ -29,8 +26,6 @@ namespace SmartStore.Web.Models.Catalog
         
         public PictureModel PictureModel { get; set; }
 
-        public CatalogPagingFilteringModel PagingFilteringContext { get; set; }
-
         public bool DisplayCategoryBreadcrumb { get; set; }
         public IList<MenuItem> CategoryBreadcrumb { get; set; }
 
@@ -39,8 +34,8 @@ namespace SmartStore.Web.Models.Catalog
         
         public IList<SubCategoryModel> SubCategories { get; set; }
 
-        public IList<ProductOverviewModel> FeaturedProducts { get; set; }
-        public IList<ProductOverviewModel> Products { get; set; }
+        public ProductSummaryModel FeaturedProducts { get; set; }
+        public ProductSummaryModel Products { get; set; }
         
 
 		#region Nested Classes
@@ -53,9 +48,7 @@ namespace SmartStore.Web.Models.Catalog
             }
 
             public string Name { get; set; }
-
             public string SeName { get; set; }
-
             public PictureModel PictureModel { get; set; }
         }
 

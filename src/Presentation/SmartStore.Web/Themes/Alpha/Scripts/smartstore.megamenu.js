@@ -16,7 +16,6 @@
             var settings = $.extend(defaults, settings);
 
             return this.each(function () {
-
                 var megamenuContainer = $(this);
                 var megamenu = $(".megamenu", megamenuContainer);
                 var isSimple = megamenu.hasClass("simple");
@@ -44,29 +43,28 @@
                 }
 
                 function tryOpen(link) {
-
-                    // if new link was passed into function clear tryOpen-timeout
+                	// if new link was passed into function clear tryOpen-timeout
                     if (tempLink && link.data("target") != tempLink.data("target")) {
                         clearTimeout(openTimeout);
                     }
 
                     // just open if there are no open menus, else wait and try again as long as there is a menu open
-                    if (navElems.hasClass('active') || $(".dropdown-container").hasClass('open')) {
+                    if (navElems.hasClass('active') || megamenuDropdownContainer.hasClass('open')) {
                         tempLink = link;
-
                         openTimeout = setTimeout(function () { tryOpen(link); }, 50);
-                    } else {
-                        clearTimeout(openTimeout);
+                    }
+                    else {
+                    	clearTimeout(openTimeout);
 
-                        $(link.data("target")).addClass("open");
+                    	$(link.data("target")).addClass("open");
 
-                        if (link.hasClass("dropdown-toggle")) {
-                            link.closest("li").addClass("active");
-                        }
+                    	if (link.hasClass("dropdown-toggle")) {
+                    		link.closest("li").addClass("active");
+                    	}
 
-                        initRotator(link.data("target"));
+                    	initRotator(link.data("target"));
 
-                        zoomContainer.css("z-index", "0");
+                    	zoomContainer.css("z-index", "0");          	
                     }
                 }
 
@@ -79,7 +77,6 @@
                     });
 
                     navElems.on("click", function (e) {
-
                         var link = $(this).find(".nav-link");
                         var opendMenuSelector = $(".nav-item.active .nav-link").data("target");
 
@@ -95,7 +92,6 @@
                     // Handle opening events for desktop workstations
 
                     $(".dropdown-menu", megamenuContainer).on('mouseenter', function (e) {
-
                         clearTimeout(closingTimeout);
                     })
                     .on('mouseleave', function () {
@@ -109,12 +105,13 @@
                         var link = $(this).find(".nav-link");
 
                         // if correct dropdown is already open then don't open it again
-                        var opendMenuSelector = $(".nav-item.active .nav-link").data("target");
+                        var openedMenuSelector = $(".nav-item.active .nav-link").data("target");
 
                         if ($(this).hasClass("nav-item")) {
                             closeNow($(".nav-item.active .nav-link"));
                             
-                        } else if (opendMenuSelector == link.data("target")) {
+                        }
+                        else if (openedMenuSelector == link.data("target")) {
                             clearTimeout(closingTimeout);
                             return;
                         }
@@ -123,7 +120,6 @@
                     })
                     .on("mouseleave", function () {
                         var link = $(this).find(".nav-link");
-
                         closeMenuHandler(link);
                     });
                 }
@@ -152,7 +148,6 @@
                 }
 
                 megamenuContainer.evenIfHidden(function (el) {
-
                     var scrollCorrection = null;
                     var lastVisibleElem = null;
                     var firstVisibleElem = null;

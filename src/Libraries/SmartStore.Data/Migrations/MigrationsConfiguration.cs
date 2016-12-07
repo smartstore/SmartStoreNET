@@ -244,6 +244,8 @@ namespace SmartStore.Data.Migrations
 				"Auswahlmöglichkeiten für Seitengröße",
 				"Comma-separated page size options that a customer can select in product lists.",
 				"Kommagetrennte Liste mit Optionen für Seitengröße, die ein Kunde in Produktlisten wählen kann.");
+
+			builder.AddOrUpdate("Common.ListIsEmpty", "The list is empty.", "Die Liste ist leer.");
 		}
 	}
 }

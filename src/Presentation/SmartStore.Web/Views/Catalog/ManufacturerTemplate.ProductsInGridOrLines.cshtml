@@ -59,6 +59,9 @@
 			}
 		</div>
 
+		@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
+		@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
+
         @Html.Widget("manufacturerdetails_bottom")
     </div>
 </div>

@@ -60,6 +60,9 @@ namespace SmartStore.Data.Migrations
 					case "catalogsettings.recentlyaddedproductsnumber":
 						s.Value = "12";
 						break;
+					case "catalogsettings.recentlyviewedproductsnumber":
+						s.Value = "8";
+						break;
 					case "catalogsettings.numberofbestsellersonhomepage":
 						s.Value = "12";
 						break;

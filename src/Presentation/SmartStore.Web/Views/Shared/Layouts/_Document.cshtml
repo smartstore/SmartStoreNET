@@ -108,6 +108,7 @@
 	@{ Html.RenderPartial("_ClientRes"); }
 	@{ Html.RenderPartial("_GoogleFonts"); }
 
+	@* TOODO: (mc) OC > render assets via child action *@
     @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
     @Html.SmartScripts(this.Url, ResourceLocation.Head)
 
@@ -126,6 +127,8 @@
 </head>
 <body class="@Html.BodyCssClass()"@(Html.BodyId())>
     @RenderBody()
+
+	@* TOODO: (mc) OC > render assets via child action *@
     @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
     @Html.SmartScripts(this.Url, ResourceLocation.Foot)
 </body>

@@ -149,10 +149,10 @@
 }
 .megamenu-container .nav-link {
     padding: 1rem .5rem;
-
-    &:hover, &.active {
-        background-color: rgba(0,0,0, 0.07);
-    }
+}
+.megamenu-container .nav-link:hover,
+.megamenu-container .nav-item.active .nav-link {
+    background-color: rgba(0,0,0, 0.07);
 }
 
 .megamenu ul.nav .nav-item {

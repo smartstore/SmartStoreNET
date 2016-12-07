@@ -132,7 +132,10 @@
         {
             @Html.Widget("categorydetails_before_subcategories")
             @SubCategoryList()
-        }
+		}
+
+		@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
+		@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
 
         @Html.Widget("categorydetails_bottom")
     </div>

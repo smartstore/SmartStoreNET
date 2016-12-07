@@ -1,0 +1,23 @@
+﻿@model ProductSummaryModel
+
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	if (Model.Items.Count == 0)
+	{
+		return;
+	}
+}
+
+<div class="product-grid recently-viewed-product-grid block">
+	<div class="block-title">
+		@T("Products.RecentlyViewedProducts")
+	</div>
+
+	<div class="block-body">
+		@{
+			// TODO: (mc) Render this as carousel/slider
+			Html.RenderPartial("Product.List", Model);
+		}
+	</div>
+</div>

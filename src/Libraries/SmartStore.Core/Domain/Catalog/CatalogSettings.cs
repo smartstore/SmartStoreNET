@@ -26,7 +26,7 @@ namespace SmartStore.Core.Domain.Catalog
 			NotifyStoreOwnerAboutNewProductReviews = true;
 			EmailAFriendEnabled = true;
 			AskQuestionEnabled = true;
-			RecentlyViewedProductsNumber = 6;
+			RecentlyViewedProductsNumber = 8;
 			RecentlyViewedProductsEnabled = true;
 			RecentlyAddedProductsNumber = 12;
 			RecentlyAddedProductsEnabled = true;

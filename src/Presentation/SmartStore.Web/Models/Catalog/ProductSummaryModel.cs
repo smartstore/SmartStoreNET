@@ -10,6 +10,8 @@ namespace SmartStore.Web.Models.Catalog
 {
     public partial class ProductSummaryModel : ModelBase
     {
+		public static ProductSummaryModel Empty = new ProductSummaryModel(new PagedList<Product>(new List<Product>(), 0, int.MaxValue));
+
 		public ProductSummaryModel(IPagedList<Product> products)
 		{
 			Guard.NotNull(products, nameof(products));

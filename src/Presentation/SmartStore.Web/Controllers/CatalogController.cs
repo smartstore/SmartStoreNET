@@ -644,37 +644,46 @@ namespace SmartStore.Web.Controllers
 
 		#region Recently[...]Products
 
-		//recently viewed products
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult RecentlyViewedProducts()
+		public ActionResult RecentlyViewedProducts(CatalogSearchQuery query)
 		{
-			var model = new List<ProductOverviewModel>();
 			if (_catalogSettings.RecentlyViewedProductsEnabled)
 			{
 				var products = _recentlyViewedProductsService.GetRecentlyViewedProducts(_catalogSettings.RecentlyViewedProductsNumber);
-				model.AddRange(_helper.PrepareProductOverviewModels(products));
+				var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.List);
+				var model = _helper.MapProductSummaryModel(products, settings);
+
+				return View(model);
 			}
-			return View(model);
+
+			return View(ProductSummaryModel.Empty);
 		}
 
 		[ChildActionOnly]
-		public ActionResult RecentlyViewedProductsBlock(int? productThumbPictureSize)
+		public ActionResult RecentlyViewedProductsBlock()
 		{
-			var model = new List<ProductOverviewModel>();
-			if (_catalogSettings.RecentlyViewedProductsEnabled)
+			if (!_catalogSettings.RecentlyViewedProductsEnabled)
 			{
-				var products = _recentlyViewedProductsService.GetRecentlyViewedProducts(_catalogSettings.RecentlyViewedProductsNumber);
-				model.AddRange(_helper.PrepareProductOverviewModels(products, false, true, productThumbPictureSize));
+				return Content("");
 			}
+
+			var products = _recentlyViewedProductsService.GetRecentlyViewedProducts(_catalogSettings.RecentlyViewedProductsNumber);
+			if (products.Count == 0)
+			{
+				return Content("");
+			}
+
+			var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini);
+			settings.MapPrices = false;
+
+			var model = _helper.MapProductSummaryModel(products, settings);
+
 			return PartialView(model);
 		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult RecentlyAddedProducts()
+		public ActionResult RecentlyAddedProducts(CatalogSearchQuery query)
 		{
-			//var command = new CatalogPagingFilteringModel();
-			//TryUpdateModel<CatalogPagingFilteringModel>(command);
-
 			var model = new RecentlyAddedProductsModel();
 
 			if (_catalogSettings.RecentlyAddedProductsEnabled)
@@ -699,6 +708,7 @@ namespace SmartStore.Web.Controllers
 				model.Products.AddRange(_helper.PrepareProductOverviewModels(products));
 				//model.PagingFilteringContext.LoadPagedList(products);
 			}
+
 			return View(model);
 		}
 

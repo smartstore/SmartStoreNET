@@ -28,29 +28,28 @@ namespace SmartStore.Core.Domain.Catalog
 			AskQuestionEnabled = true;
 			RecentlyViewedProductsNumber = 6;
 			RecentlyViewedProductsEnabled = true;
-			RecentlyAddedProductsNumber = 10;
+			RecentlyAddedProductsNumber = 12;
 			RecentlyAddedProductsEnabled = true;
 			CompareProductsEnabled = true;
             FilterEnabled = true;
             MaxFilterItemsToDisplay = 4;
 			SortFilterResultsByMatches = true;
 			SubCategoryDisplayType = SubCategoryDisplayType.AboveProductList;
-			NumberOfBestsellersOnHomepage = 6;
+			NumberOfBestsellersOnHomepage = 12;
             ShowManufacturersOnHomepage = true;
             ShowManufacturerPictures = false;
 			ShowManufacturerPicturesInProductDetail = true;
 			ProductsAlsoPurchasedEnabled = true;
-			ProductsAlsoPurchasedNumber = 6;
+			ProductsAlsoPurchasedNumber = 12;
 			NumberOfProductTags = 15;
-			DefaultProductListPageSize = 12;
+			DefaultProductListPageSize = 24;
 			UseSmallProductBoxOnHomePage = true;
 			DisplayTierPricesWithDiscounts = true;
-			DefaultPageSizeOptions = "12, 18, 36, 72, 150";
-			ProductsByTagAllowCustomersToSelectPageSize = true;
-			ProductsByTagPageSizeOptions = "12, 18, 36, 72, 150";
+			DefaultPageSizeOptions = "12,24,36,48,72,120";
+			AllowCustomersToSelectPageSize = true;
 			MaximumBackInStockSubscriptions = 200;
 			FileUploadMaximumSizeBytes = 1024 * 200; //200KB
-			ManufacturersBlockItemsToDisplay = 5;
+			ManufacturersBlockItemsToDisplay = 8;
 			DisplayAllImagesNumber = 6;
 			ShowShortDescriptionInGridStyleLists = true;
 			ShowManufacturerInGridStyleLists = true;
@@ -337,14 +336,9 @@ namespace SmartStore.Core.Domain.Catalog
         public int DefaultProductListPageSize { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether customers can select the page size for 'products by tag'
+        /// Gets or sets a value indicating whether customers can select page size in product listings
         /// </summary>
-        public bool ProductsByTagAllowCustomersToSelectPageSize { get; set; }
-
-        /// <summary>
-        /// Gets or sets the available customer selectable page size options for 'products by tag'
-        /// </summary>
-        public string ProductsByTagPageSizeOptions { get; set; }
+        public bool AllowCustomersToSelectPageSize { get; set; }
 		
 		public int DisplayAllImagesNumber { get; set; }
 
@@ -408,18 +402,6 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether to ignore featured products (side-wide)
         /// </summary>
         public bool IgnoreFeaturedProducts { get; set; }
-
-        /// <summary>
-        /// Gets or set the default value to use for Category page size options (for new Categories)
-        /// </summary>
-        /// <remarks>Obsolete</remarks>
-        public string DefaultCategoryPageSizeOptions { get; set; }
-
-        /// <summary>
-        /// Gets or set the default value to use for Manufacturer page size opitons (for new Manufacturers)
-        /// </summary>
-        /// <remarks>Obsolete</remarks>
-        public string DefaultManufacturerPageSizeOptions { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating maximum number of 'back in stock' subscription

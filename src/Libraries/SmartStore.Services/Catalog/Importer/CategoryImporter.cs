@@ -397,10 +397,9 @@ namespace SmartStore.Services.Catalog.Importer
 				row.SetProperty(context.Result, (x) => x.MetaKeywords);
 				row.SetProperty(context.Result, (x) => x.MetaDescription);
 				row.SetProperty(context.Result, (x) => x.MetaTitle);
-				row.SetProperty(context.Result, (x) => x.PageSize, 12);
-				row.SetProperty(context.Result, (x) => x.AllowCustomersToSelectPageSize, true);
+				row.SetProperty(context.Result, (x) => x.PageSize);
+				row.SetProperty(context.Result, (x) => x.AllowCustomersToSelectPageSize);
 				row.SetProperty(context.Result, (x) => x.PageSizeOptions);
-				row.SetProperty(context.Result, (x) => x.PriceRanges);
 				row.SetProperty(context.Result, (x) => x.ShowOnHomePage);
 				row.SetProperty(context.Result, (x) => x.HasDiscountsApplied);
 				row.SetProperty(context.Result, (x) => x.Published, true);

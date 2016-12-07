@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Routing;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
+using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
 
 namespace SmartStore.Services.Search.Modelling
@@ -23,6 +25,8 @@ namespace SmartStore.Services.Search.Modelling
 		r	-	Min Rating
 		a	-	Stock
 		d	-	Delivery Time
+
+		v	-	View Mode
 		
 		*	-	Specification attributes & variants 
 	*/
@@ -62,9 +66,10 @@ namespace SmartStore.Services.Search.Modelling
 			if (ctx.Request == null)
 				return null;
 
-			var area = ctx.Request.RequestContext.RouteData.GetAreaName();
-			var controller = ctx.Request.RequestContext.RouteData.GetRequiredString("controller");
-			var action = ctx.Request.RequestContext.RouteData.GetRequiredString("action");
+			var routeData = ctx.Request.RequestContext.RouteData;
+			var area = routeData.GetAreaName();
+			var controller = routeData.GetRequiredString("controller");
+			var action = routeData.GetRequiredString("action");
 			string origin = "{0}{1}/{2}".FormatInvariant(area == null ? "" : area + "/", controller, action);
 
 			var term = GetValueFor<string>("q");
@@ -86,31 +91,25 @@ namespace SmartStore.Services.Search.Modelling
 				query.HasStoreId(_services.StoreContext.CurrentStore.Id);
 			}
 
-			ConvertPagingSorting(query);
-			ConvertPrice(query);
-			ConvertCategory(query);
-			ConvertManufacturer(query);
-			ConvertRating(query);
+			ConvertPagingSorting(query, routeData, origin);
+			ConvertPrice(query, routeData, origin);
+			ConvertCategory(query, routeData, origin);
+			ConvertManufacturer(query, routeData, origin);
+			ConvertRating(query, routeData, origin);
 
-			OnConverted(query);
+			OnConverted(query, routeData, origin);
 
 			this.Current = query;
 
 			return query;
 		}
 
-		protected virtual void ConvertPagingSorting(CatalogSearchQuery query)
+		protected virtual void ConvertPagingSorting(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
-			var size = GetValueFor<int?>("s");
 			var index = Math.Max(1, GetValueFor<int?>("i") ?? 1);
+			var size = GetPageSize(query, routeData, origin);
 
-			if (size == null)
-			{
-				// TODO: (mc) In category pages, get current category default page size
-				size = _catalogSettings.DefaultProductListPageSize;
-			}
-
-			query.Slice((index - 1) * size.Value, size.Value);
+			query.Slice((index - 1) * size, size);
 
 			var orderBy = GetValueFor<ProductSortingEnum?>("o");
 			if (orderBy == null || orderBy == ProductSortingEnum.Initial)
@@ -121,17 +120,115 @@ namespace SmartStore.Services.Search.Modelling
 			query.SortBy(orderBy.Value);
 		}
 
-		protected virtual void ConvertCategory(CatalogSearchQuery query)
+		private int GetPageSize(CatalogSearchQuery query, RouteData routeData, string origin)
+		{
+			// Get from form or query
+			var selectedSize = GetValueFor<int?>("s");
+			string entityViewMode = null;
+
+			// Determine entity id if possible
+			IPagingOptions entity = null;
+			int? entityId;
+			if (origin.IsCaseInsensitiveEqual("Catalog/Category"))
+			{
+				entityId = (int?)routeData.Values["categoryId"];
+				if (entityId.HasValue)
+				{
+					entity = _services.Resolve<ICategoryService>().GetCategoryById(entityId.Value) as IPagingOptions;
+					entityViewMode = ((Category)entity)?.DefaultViewMode;
+				}
+			}
+			else if (origin.IsCaseInsensitiveEqual("Catalog/Manufacturer"))
+			{
+				entityId = (int?)routeData.Values["manufacturerId"];
+				if (entityId.HasValue)
+				{
+					entity = _services.Resolve<IManufacturerService>().GetManufacturerById(entityId.Value) as IPagingOptions;
+				}
+			}
+
+			var entitySize = entity?.PageSize;
+
+			var sessionKey = origin;
+			if (entitySize.HasValue)
+			{
+				sessionKey += "/" + entitySize.Value;
+			}
+
+			DetectViewMode(query, sessionKey, entityViewMode);
+
+			sessionKey = "PageSize:" + sessionKey;
+
+			if (selectedSize.HasValue)
+			{
+				// Save the selection in session. We'll fetch this session value
+				// on subsequent requests for this route.
+				_httpContext.Session[sessionKey] = selectedSize.Value;
+				return selectedSize.Value;
+			}
+
+			// Return user size from session
+			var sessionSize = _httpContext.Session[sessionKey].Convert<int?>();
+			if (sessionSize.HasValue)
+			{
+				return sessionSize.Value;
+			}
+
+			// Return default size for entity (IPagingOptions)
+			if (entitySize.HasValue)
+			{
+				return entitySize.Value;
+			}
+
+			// Return default page size
+			return _catalogSettings.DefaultProductListPageSize;
+		}
+
+		private void DetectViewMode(CatalogSearchQuery query, string sessionKey, string entityViewMode = null)
+		{
+			var selectedViewMode = GetValueFor<string>("v");
+
+			sessionKey = "ViewMode:" + sessionKey;
+
+			if (selectedViewMode != null)
+			{
+				// Save the view mode selection in session. We'll fetch this session value
+				// on subsequent requests for this route.
+				_httpContext.Session[sessionKey] = selectedViewMode;
+				query.CustomData["ViewMode"] = selectedViewMode;
+				return;
+			}
+
+			// Set view mode from session
+			var sessionViewMode = _httpContext.Session[sessionKey].Convert<string>();
+			if (sessionViewMode != null)
+			{
+				query.CustomData["ViewMode"] = sessionViewMode;
+				return;
+			}
+
+			// Set default view mode for entity
+			if (entityViewMode != null)
+			{
+				query.CustomData["ViewMode"] = entityViewMode;
+				return;
+			}
+
+			// Set default view mode
+			query.CustomData["ViewMode"] = _catalogSettings.DefaultViewMode;
+		}
+
+		protected virtual void ConvertCategory(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
 			var ids = GetValueFor<List<int>>("c");
 			if (ids != null && ids.Any())
 			{
 				// TODO; (mc) Get deep ids (???) Make a low-level version of CatalogHelper.GetChildCategoryIds()
-				query.WithCategoryIds(null, ids.ToArray());
+				query.WithCategoryIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false, ids.ToArray());
 			}
 		}
 
-		protected virtual void ConvertManufacturer(CatalogSearchQuery query)
+		protected virtual void ConvertManufacturer(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
 			var ids = GetValueFor<List<int>>("m");
 			if (ids != null && ids.Any())
@@ -140,7 +237,7 @@ namespace SmartStore.Services.Search.Modelling
 			}
 		}
 
-		protected virtual void ConvertPrice(CatalogSearchQuery query)
+		protected virtual void ConvertPrice(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
 			var currency = _services.WorkContext.WorkingCurrency;
 			var minPrice = GetValueFor<decimal?>("pf");
@@ -162,19 +259,19 @@ namespace SmartStore.Services.Search.Modelling
 			}
 		}
 
-		protected virtual void ConvertRating(CatalogSearchQuery query)
+		protected virtual void ConvertRating(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
 		}
 
-		protected virtual void ConvertStock(CatalogSearchQuery query)
+		protected virtual void ConvertStock(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
 		}
 
-		protected virtual void ConvertDeliveryTime(CatalogSearchQuery query)
+		protected virtual void ConvertDeliveryTime(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
 		}
 
-		protected virtual void OnConverted(CatalogSearchQuery query)
+		protected virtual void OnConverted(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
 		}
 

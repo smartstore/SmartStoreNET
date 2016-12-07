@@ -292,6 +292,7 @@
     <Compile Include="Extensions\EditorExtensions.cs" />
     <Compile Include="Extensions\MappingExtensions.cs" />
     <Compile Include="Extensions\ProductDetailsExtensions.cs" />
+    <Compile Include="Extensions\QueryExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -344,7 +345,6 @@
     <Compile Include="Models\Catalog\ProductOverviewModel.cs" />
     <Compile Include="Models\Catalog\SearchBoxModel.cs" />
     <Compile Include="Models\Catalog\HomePageBestsellersModel.cs" />
-    <Compile Include="Models\Catalog\HomePageProductsModel.cs" />
     <Compile Include="Models\Catalog\SearchModel.cs" />
     <Compile Include="Models\Catalog\SearchPagingFilteringModel.cs" />
     <Compile Include="Models\Catalog\ProductsByTagModel.cs" />
@@ -2100,9 +2100,10 @@
     <Content Include="Views\Search\InstantSearch.TopProducts.cshtml" />
     <Content Include="Views\Search\Search2.cshtml" />
     <Content Include="Themes\Alpha\Content\_artlist.scss" />
-    <Content Include="Views\Shared\Partials\Product.Item.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.Item.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.cshtml" />
-    <Content Include="Views\Shared\Partials\Product.Item.Drop.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.Item.Drop.cshtml" />
+    <Content Include="Views\Shared\Components\Product.List.Pager.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -2112,7 +2113,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Themes\Alpha\Content\shared\select2\mixins\" />
-    <Folder Include="Views\Shared\Components\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">

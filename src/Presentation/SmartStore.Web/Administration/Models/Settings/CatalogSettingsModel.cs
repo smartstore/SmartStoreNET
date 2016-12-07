@@ -182,12 +182,6 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.NumberOfProductTags")]
         public int NumberOfProductTags { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductsByTagAllowCustomersToSelectPageSize")]
-        public bool ProductsByTagAllowCustomersToSelectPageSize { get; set; }
-
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductsByTagPageSizeOptions")]
-		public string ProductsByTagPageSizeOptions { get; set; }
-
 		#endregion
 
 		#endregion

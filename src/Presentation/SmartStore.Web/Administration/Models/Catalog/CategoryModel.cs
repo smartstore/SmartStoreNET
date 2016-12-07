@@ -19,11 +19,6 @@ namespace SmartStore.Admin.Models.Catalog
     {
         public CategoryModel()
         {
-            if (PageSize < 1)
-            {
-                PageSize = 12;
-            }
-
             Locales = new List<CategoryLocalizedModel>();
             AvailableCategoryTemplates = new List<SelectListItem>();
             AvailableDefaultViewModes = new List<SelectListItem>();
@@ -87,17 +82,13 @@ namespace SmartStore.Admin.Models.Catalog
         public int PictureId { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.PageSize")]
-        public int PageSize { get; set; }
+        public int? PageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.AllowCustomersToSelectPageSize")]
-        public bool AllowCustomersToSelectPageSize { get; set; }
+        public bool? AllowCustomersToSelectPageSize { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.PageSizeOptions")]
         public string PageSizeOptions { get; set; }
-
-        [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.PriceRanges")]
-        [AllowHtml]
-        public string PriceRanges { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.ShowOnHomePage")]
         public bool ShowOnHomePage { get; set; }

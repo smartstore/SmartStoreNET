@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Discounts;
@@ -14,8 +15,8 @@ namespace SmartStore.Core.Domain.Catalog
 	/// Represents a manufacturer
 	/// </summary>
 	[DataContract]
-	public partial class Manufacturer : BaseEntity, IAuditable, ISoftDeletable, ILocalizedEntity, ISlugSupported, IStoreMappingSupported
-    {
+	public partial class Manufacturer : BaseEntity, IAuditable, ISoftDeletable, ILocalizedEntity, ISlugSupported, IStoreMappingSupported, IPagingOptions
+	{
 		private ICollection<Discount> _appliedDiscounts;
 
 		/// <summary>
@@ -70,13 +71,13 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the page size
         /// </summary>
 		[DataMember]
-		public int PageSize { get; set; }
+		public int? PageSize { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether customers can select the page size
         /// </summary>
 		[DataMember]
-		public bool AllowCustomersToSelectPageSize { get; set; }
+		public bool? AllowCustomersToSelectPageSize { get; set; }
 
         /// <summary>
         /// Gets or sets the available customer selectable page size options
@@ -88,6 +89,8 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the available price ranges
         /// </summary>
 		[DataMember]
+		[Obsolete("Price ranges are calculated automatically since version 3")]
+		[StringLength(400)]
 		public string PriceRanges { get; set; }
 
 		/// <summary>

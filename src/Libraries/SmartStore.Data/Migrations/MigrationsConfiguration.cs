@@ -238,6 +238,12 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Products.Longdesc.Less", "Show less", "Weniger anzeigen");
 
 			builder.AddOrUpdate("Products.Tags.ProductsTaggedWith", "Products tagged with {0}", "Produkte markiert mit {0}");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DefaultPageSizeOptions",
+				"Page size options",
+				"Auswahlmöglichkeiten für Seitengröße",
+				"Comma-separated page size options that a customer can select in product lists.",
+				"Kommagetrennte Liste mit Optionen für Seitengröße, die ein Kunde in Produktlisten wählen kann.");
 		}
 	}
 }

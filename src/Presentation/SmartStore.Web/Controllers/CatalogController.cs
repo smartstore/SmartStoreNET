@@ -215,7 +215,6 @@ namespace SmartStore.Web.Controllers
 
 				if (featuredProductsResult != null)
 				{
-					// TODO: (mc) determine settings properly
 					var featuredProductsmappingSettings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid);
 					model.FeaturedProducts = _helper.MapProductSummaryModel(featuredProductsResult.Hits, featuredProductsmappingSettings);
 				}
@@ -233,16 +232,11 @@ namespace SmartStore.Web.Controllers
 
 			var productsResult = _catalogSearchService.Search(query);
 
-			// TODO: (mc) determine settings properly
-			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid);
+			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
 			model.Products = _helper.MapProductSummaryModel(productsResult.Hits, mappingSettings);
 
-			model.Products.AllowPagination = true;
-
-			//// TODO: (mc) Put these commands to model
-			//AllowCustomersToSelectPageSize = category.AllowCustomersToSelectPageSize,
-			//PageSize = category.PageSize,
-			//PageSizeOptions = category.PageSizeOptions
+			// Prepare paging/sorting/mode stuff
+			_helper.MapProductListOptions(model.Products, category, _catalogSettings.DefaultPageSizeOptions);
 
 			// template
 			var templateCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_TEMPLATE_MODEL_KEY, category.CategoryTemplateId);
@@ -412,16 +406,11 @@ namespace SmartStore.Web.Controllers
 
 			var productsResult = _catalogSearchService.Search(query);
 
-			// TODO: (mc) determine settings properly
-			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid);
+			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
 			model.Products = _helper.MapProductSummaryModel(productsResult.Hits, mappingSettings);
 
-			model.Products.AllowPagination = true;
-
-			//// TODO: (mc) Put these commands to model
-			//AllowCustomersToSelectPageSize = manufacturer.AllowCustomersToSelectPageSize,
-			//PageSize = manufacturer.PageSize,
-			//PageSizeOptions = manufacturer.PageSizeOptions
+			// Prepare paging/sorting/mode stuff
+			_helper.MapProductListOptions(model.Products, manufacturer, _catalogSettings.DefaultPageSizeOptions);
 
 			// Template
 			var templateCacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_TEMPLATE_MODEL_KEY, manufacturer.ManufacturerTemplateId);
@@ -542,17 +531,16 @@ namespace SmartStore.Web.Controllers
 		public ActionResult HomepageProducts(int? productThumbPictureSize)
 		{
 			var products = _productService.GetAllProductsDisplayedOnHomePage();
-			//ACL and store mapping
+
+			// ACL and store mapping
 			products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
 
-			var model = new HomePageProductsModel()
-			{
-				UseSmallProductBox = false, //_catalogSettings.UseSmallProductBoxOnHomePage,
-				//Products = PrepareProductOverviewModels(products, 
-				//    !_catalogSettings.UseSmallProductBoxOnHomePage, true, productThumbPictureSize)
-				//    .ToList()
-				Products = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize, prepareColorAttributes: true).ToList()
-			};
+			var viewMode = _catalogSettings.UseSmallProductBoxOnHomePage ? ProductSummaryViewMode.Mini : ProductSummaryViewMode.Grid;
+
+			var settings = _helper.GetBestFitProductSummaryMappingSettings(viewMode);
+			settings.ThumbnailSize = productThumbPictureSize;
+
+			var model = _helper.MapProductSummaryModel(products, settings);
 
 			return PartialView(model);
 		}
@@ -587,7 +575,7 @@ namespace SmartStore.Web.Controllers
 				model.TotalTags = allTags.Count;
 
 				foreach (var tag in tags)
-					model.Tags.Add(new ProductTagModel()
+					model.Tags.Add(new ProductTagModel
 					{
 						Id = tag.Id,
 						Name = tag.GetLocalized(y => y.Name),
@@ -618,21 +606,11 @@ namespace SmartStore.Web.Controllers
 
 			var productsResult = _catalogSearchService.Search(query);
 
-			// TODO: (mc) determine settings properly
-			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid);
+			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
 			model.Products = _helper.MapProductSummaryModel(productsResult.Hits, mappingSettings);
 
-			model.Products.AllowPagination = true;
-
-			//// TODO: (mc) Put these commands to model
-			//_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
-			//{
-			//	AllowCustomersToSelectPageSize = _catalogSettings.ProductsByTagAllowCustomersToSelectPageSize,
-			//	PageSize = _catalogSettings.DefaultProductListPageSize,
-			//	PageSizeOptions = _catalogSettings.ProductsByTagPageSizeOptions.IsEmpty()
-			//		? _catalogSettings.DefaultPageSizeOptions
-			//		: _catalogSettings.ProductsByTagPageSizeOptions
-			//});
+			// Prepare paging/sorting/mode stuff
+			_helper.MapProductListOptions(model.Products, null, _catalogSettings.DefaultPageSizeOptions);
 
 			return View(model);
 		}

@@ -303,11 +303,7 @@ namespace SmartStore.Admin.Controllers
             PrepareTemplatesModel(model);
 			PrepareManufacturerModel(model, null, false);
             
-			//default values
-            model.PageSize = 12;
             model.Published = true;
-
-            model.AllowCustomersToSelectPageSize = true;
             
             return View(model);
         }

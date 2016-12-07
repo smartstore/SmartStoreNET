@@ -6125,9 +6125,6 @@ namespace SmartStore.Data.Setup
 				Name = "Books",
                 Alias = "Books",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "emblem_library.png"), "image/jpeg", GetSeName("Books")),
 				Published = true,
 				DisplayOrder = 1,
@@ -6139,9 +6136,6 @@ namespace SmartStore.Data.Setup
 				Name = "Computers",
                 Alias = "Computers",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_computers.png"), "image/png", GetSeName("Computers")),
 				Published = true,
 				DisplayOrder = 2,
@@ -6153,9 +6147,6 @@ namespace SmartStore.Data.Setup
 				Name = "Gaming",
 				Alias = "Gaming",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming.png"), "image/png", GetSeName("Gaming")),
 				Published = true,
 				DisplayOrder = 3,
@@ -6167,10 +6158,6 @@ namespace SmartStore.Data.Setup
 				Name = "Cell phones",
                 Alias = "Cell phones",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
-
 				//ParentCategoryId = categoryElectronics.Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_cellphone.png"), "image/png", GetSeName("Cell phones")),
 				Published = true,
@@ -6183,9 +6170,6 @@ namespace SmartStore.Data.Setup
 				Name = "Instant music",
                 Alias = "Instant music",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_digitaldownloads.jpg"), "image/jpeg", GetSeName("Digital downloads")),
 				Published = true,
 				DisplayOrder = 6,
@@ -6197,9 +6181,6 @@ namespace SmartStore.Data.Setup
 				Name = "Gift Cards",
                 Alias = "Gift Cards",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_giftcards.png"), "image/png", GetSeName("Gift Cards")),
 				Published = true,
 				DisplayOrder = 12,
@@ -6211,9 +6192,6 @@ namespace SmartStore.Data.Setup
 				Name = "Watches",
                 Alias = "Watches",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_watches.png"), "image/png", GetSeName("Watches")),
 				Published = true,
 				DisplayOrder = 10,
@@ -6248,9 +6226,6 @@ namespace SmartStore.Data.Setup
 				Name = "SPIEGEL-Bestseller",
                 Alias = "SPIEGEL-Bestseller",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000930_spiegel-bestseller.png"), "image/png", GetSeName("SPIEGEL-Bestseller")),
 				Published = true,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Books").First().Id,
@@ -6263,9 +6238,6 @@ namespace SmartStore.Data.Setup
 				Name = "Cook and enjoy",
                 Alias = "Cook and enjoy",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000936_kochen-geniesen.jpeg"), "image/jpeg", GetSeName("Cook and enjoy")),
 				Published = true,
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Books").First().Id,
@@ -6278,12 +6250,8 @@ namespace SmartStore.Data.Setup
 				Name = "Desktops",
                 Alias = "Desktops",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_desktops.png"), "image/png", GetSeName("Desktops")),
-				PriceRanges = "-1000;1000-1200;1200-;",
 				Published = true,
 				DisplayOrder = 1,
 				MetaTitle = "Desktops"
@@ -6294,9 +6262,6 @@ namespace SmartStore.Data.Setup
 				Name = "Notebooks",
                 Alias = "Notebooks",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_notebooks.png"), "image/png", GetSeName("Notebooks")),
 				Published = true,
@@ -6309,9 +6274,6 @@ namespace SmartStore.Data.Setup
 				Name = "Gaming Accessories",
 				Alias = "Gaming Accessories",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming_accessories.png"), "image/png", GetSeName("Gaming Accessories")),
 				Published = true,
@@ -6324,9 +6286,6 @@ namespace SmartStore.Data.Setup
 				Name = "Games",
 				Alias = "Games",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_games.png"), "image/png", GetSeName("Games")),
 				Published = true,
@@ -6364,9 +6323,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Apple",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_apple.png"), "image/png", GetSeName("Apple")),
 				Published = true,
 				DisplayOrder = 1
@@ -6380,9 +6336,6 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Android",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                PageSize = 12,
-                AllowCustomersToSelectPageSize = true,
-                PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-android.png"), "image/png", GetSeName("Android")),
                 Published = true,
                 DisplayOrder = 2
@@ -6396,9 +6349,6 @@ namespace SmartStore.Data.Setup
             {
                 Name = "LG",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                PageSize = 12,
-                AllowCustomersToSelectPageSize = true,
-                PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-lg.png"), "image/png", GetSeName("LG")),
                 Published = true,
                 DisplayOrder = 3
@@ -6412,9 +6362,6 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Dell",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                PageSize = 12,
-                AllowCustomersToSelectPageSize = true,
-                PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-dell.png"), "image/png", GetSeName("Dell")),
                 Published = true,
                 DisplayOrder = 4
@@ -6428,9 +6375,6 @@ namespace SmartStore.Data.Setup
             {
                 Name = "HP",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                PageSize = 12,
-                AllowCustomersToSelectPageSize = true,
-                PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-hp.png"), "image/png", GetSeName("HP")),
                 Published = true,
                 DisplayOrder = 5
@@ -6444,9 +6388,6 @@ namespace SmartStore.Data.Setup
             {
                 Name = "Microsoft",
                 ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-                PageSize = 12,
-                AllowCustomersToSelectPageSize = true,
-                PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-microsoft.png"), "image/png", GetSeName("Microsoft")),
                 Published = true,
                 DisplayOrder = 6
@@ -6460,9 +6401,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Samsung",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-samsung.png"), "image/png", GetSeName("Samsung")),
 				Published = true,
 				DisplayOrder = 7
@@ -6476,9 +6414,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Acer",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "acer-logo.jpg"), "image/pjpeg", GetSeName("Acer")),
 				Published = true,
 				DisplayOrder = 8
@@ -6492,9 +6427,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "TrekStor",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-trekstor.png"), "image/png", GetSeName("TrekStor")),
 				Published = true,
 				DisplayOrder = 9
@@ -6508,9 +6440,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Western Digital",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-westerndigital.png"), "image/png", GetSeName("Western Digital")),
 				Published = true,
 				DisplayOrder = 10
@@ -6524,9 +6453,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "MSI",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-msi.png"), "image/png", GetSeName("MSI")),
 				Published = true,
 				DisplayOrder = 11
@@ -6540,9 +6466,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Canon",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-canon.png"), "image/png", GetSeName("Canon")),
 				Published = true,
 				DisplayOrder = 12
@@ -6556,9 +6479,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Casio",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-casio.png"), "image/png", GetSeName("Casio")),
 				Published = true,
 				DisplayOrder = 13
@@ -6572,9 +6492,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Panasonic",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-panasonic.png"), "image/png", GetSeName("Panasonic")),
 				Published = true,
 				DisplayOrder = 14
@@ -6588,9 +6505,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "BlackBerry",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-blackberry.png"), "image/png", GetSeName("BlackBerry")),
 				Published = true,
 				DisplayOrder = 15
@@ -6604,9 +6518,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "HTC",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-htc.png"), "image/png", GetSeName("HTC")),
 				Published = true,
 				DisplayOrder = 16
@@ -6620,9 +6531,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Festina",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_festina.png"), "image/png", GetSeName("Festina")),
 				Published = true,
 				DisplayOrder = 17
@@ -6636,9 +6544,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Certina",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-certina.png"), "image/png", GetSeName("Certina")),
 				Published = true,
 				DisplayOrder = 18
@@ -6652,9 +6557,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Sony",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_sony.png"), "image/png", GetSeName("Sony")),
 				Published = true,
 				DisplayOrder = 19
@@ -6668,9 +6570,6 @@ namespace SmartStore.Data.Setup
 			{
 				Name = "Ubisoft",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
                 Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_ubisoft.png"), "image/png", GetSeName("Ubisoft")),
 				Published = true,
 				DisplayOrder = 20

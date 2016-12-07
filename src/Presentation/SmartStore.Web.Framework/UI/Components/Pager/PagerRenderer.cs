@@ -269,7 +269,7 @@ namespace SmartStore.Web.Framework.UI
 					if (Component.Style != PagerStyle.Blog)
                     {
                         writer.AddAttribute("rel", "tooltip");
-                        writer.AddAttribute("class", "page-link");
+                        writer.AddAttribute("class", "page-link page-nav");
                     }
                 }
                 else
@@ -307,16 +307,16 @@ namespace SmartStore.Web.Framework.UI
             switch (type)
             {
                 case PagerItemType.FirstPage:
-                    writer.AddAttribute("class", "fa fa-step-backward");
+                    writer.AddAttribute("class", "fa fa-angle-double-left");
                     break;
                 case PagerItemType.PreviousPage:
-					writer.AddAttribute("class", "fa fa-chevron-left");
+					writer.AddAttribute("class", "fa fa-angle-left");
                     break;
                 case PagerItemType.NextPage:
-					writer.AddAttribute("class", "fa fa-chevron-right");
+					writer.AddAttribute("class", "fa fa-angle-right");
                     break;
                 case PagerItemType.LastPage:
-					writer.AddAttribute("class", "fa fa-step-forward");
+					writer.AddAttribute("class", "fa fa-angle-double-right");
                     break;
                 default:
                     writer.WriteEncodedText(item.Text);

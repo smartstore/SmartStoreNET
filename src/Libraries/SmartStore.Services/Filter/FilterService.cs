@@ -210,9 +210,9 @@ namespace SmartStore.Services.Filter
 				Criteria = new List<FilterCriteria>()
 			};
 
-			if (context.ParentCategoryID != 0 && (category = _categoryService.GetCategoryById(context.ParentCategoryID)) != null && category.PriceRanges.HasValue())
+			if (context.ParentCategoryID != 0 && (category = _categoryService.GetCategoryById(context.ParentCategoryID)) != null)
 			{
-				string[] ranges = category.PriceRanges.SplitSafe(";");
+				string[] ranges = new string[] { "-200", "100-500", "500-" };
 
 				foreach (string range in ranges)
 				{

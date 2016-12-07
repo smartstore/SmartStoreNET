@@ -10,8 +10,7 @@ using SmartStore.Services.Media;
 namespace SmartStore.Web
 {
 	public static class ProductDetailsExtensions
-	{
-		
+	{		
 		public static string UpdateProductDetailsUrl(this ProductDetailsModel model, string itemType = null)
 		{
 			var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);

@@ -32,7 +32,6 @@ namespace SmartStore.Data.Tests.Catalog
                                                                           MetaTitle = "Meta title",
                                                                           //PictureId = 3,
                                                                           PageSize = 4,
-                                                                          PriceRanges = "1-3;",
                                                                           Published = true,
                                                                           Deleted = false,
                                                                           DisplayOrder = 5,

@@ -43,6 +43,25 @@ namespace SmartStore.Web.Controllers
 	{
 		// TODO: (mc) Merge this later with CatalogHelper.cs
 
+		public void MapProductListOptions(ProductSummaryModel model, IPagingOptions entity, string defaultPageSizeOptions)
+		{
+			model.AllowSorting = _catalogSettings.AllowProductSorting;
+			model.AllowViewModeChanging = _catalogSettings.AllowProductViewModeChanging;
+			model.AllowPagination = model.Products.TotalPages > 1;
+
+			if (model.AllowPagination && (entity?.AllowCustomersToSelectPageSize ?? _catalogSettings.AllowCustomersToSelectPageSize))
+			{
+				try
+				{
+					model.AvailablePageSizes = (entity?.PageSizeOptions.NullEmpty() ?? defaultPageSizeOptions).Convert<List<int>>();
+				}
+				catch
+				{
+					model.AvailablePageSizes = new int[] { 12, 24, 36, 48, 72, 120 };
+				}
+			}
+		}
+
 		public ProductSummaryMappingSettings GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode viewMode)
 		{
 			var settings = new ProductSummaryMappingSettings
@@ -93,6 +112,13 @@ namespace SmartStore.Web.Controllers
 			}
 
 			return settings;
+		}
+
+		public virtual ProductSummaryModel MapProductSummaryModel(IList<Product> products, ProductSummaryMappingSettings settings)
+		{
+			Guard.NotNull(products, nameof(products));
+
+			return MapProductSummaryModel(new PagedList<Product>(products, 0, int.MaxValue), settings);
 		}
 
 		public virtual ProductSummaryModel MapProductSummaryModel(IPagedList<Product> products, ProductSummaryMappingSettings settings)
@@ -167,6 +193,7 @@ namespace SmartStore.Web.Controllers
 
 				var model = new ProductSummaryModel(products)
 				{
+					ViewMode = settings.ViewMode,
 					ShowSku = _catalogSettings.ShowProductSku,
 					ShowWeight = _catalogSettings.ShowWeight,
 					ShowDimensions = settings.MapDimensions,

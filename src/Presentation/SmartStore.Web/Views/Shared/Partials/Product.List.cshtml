@@ -26,10 +26,11 @@
 	{
 		paginatorHtml = Html.SmartStore()
 			.Pager(Model.Products)
+			.HtmlAttributes(new { @class = "artlist-paginator" })
 			.Alignment(PagerAlignment.Right)
 			.Name("pagination")
 			.QueryParam("i")
-			.Size(PagerSize.Mini)
+			.Size(PagerSize.Medium)
 			.MaxPagesToDisplay(5)
 			.ToString();
 	}
@@ -44,23 +45,21 @@
 	</style>
 }
 
-@if (paginatorHtml.HasValue())
-{
-	<div class="product-paginator">
+<div style="border-bottom: 1px solid #ddd" class="m-b-2">
+	@if (paginatorHtml.HasValue())
+	{
 		@Html.Raw(paginatorHtml)
-	</div>
-}
+	}
+</div>
 
-<div id="@id" class="artlist artlist-style-grid artlist-4-cols">
+<div id="@id" class="artlist artlist-grid artlist-4-cols">
 	@foreach (var product in Model.Items)
 	{
-		Html.RenderPartial("Product.Item", product);
+		Html.RenderPartial("Product.List.Item", product);
 	}
 </div>
 
 @if (paginatorHtml.HasValue())
 {
-	<div class="product-paginator">
-		@Html.Raw(paginatorHtml)
-	</div>
+	@Html.Raw(paginatorHtml)
 }

@@ -15,6 +15,8 @@ $art-active-bg-color:           #fff;
 .artlist {
     position: relative;
     @include make-row();
+    margin-left: 0;
+    margin-right: 0;
     font-size: $art-font-size;
     line-height: $art-line-height; 
     z-index: 3;
@@ -49,7 +51,7 @@ $art-active-bg-color:           #fff;
     }
 }
 
-.artlist-style-grid {
+.artlist-grid {
     &.artlist::after {
         // Make continous line after last row
         position: relative;
@@ -296,7 +298,6 @@ $art-active-bg-color:           #fff;
 .art-drop-info > * + * {
     margin-top: 0.4rem;
 }
-
 
 /*@include media-breakpoint-between(xs, md) {
     .art-rowdiv:nth-of-type(2n+0) {

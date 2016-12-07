@@ -162,16 +162,11 @@ namespace SmartStore.Web.Controllers
 			model.Term = query.Term;
 			model.TotalProductsCount = result.Hits.TotalCount;
 
-			// TODO: (mc) somehow determine viewmode and call appropriate helper method (Grid or List)
-			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid);
+			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
 			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
 
-			// TODO: (mc) Determine and set
-			summaryModel.ViewMode = summaryModel.ViewMode;
-			summaryModel.AllowViewModeChanging = true;
-			summaryModel.AllowSorting = true;
-			summaryModel.AllowPagination = true;
-			summaryModel.AvailablePageSizes = _catalogSettings.DefaultPageSizeOptions.Convert<List<int>>();
+			// Prepare paging/sorting/mode stuff
+			_catalogHelper.MapProductListOptions(summaryModel, null, _catalogSettings.DefaultPageSizeOptions);
 
 			// Add product hits
 			model.TopProducts = summaryModel;

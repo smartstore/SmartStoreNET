@@ -14,10 +14,11 @@ namespace SmartStore.Core.Search
 
 		public abstract IEnumerable<string> EnumerateIndexes();
 
-		public virtual IIndexDocument CreateDocument(int id)
+		public virtual IIndexDocument CreateDocument(int id, string documentType)
 		{
 			Guard.IsPositive(id, nameof(id));
-			return new IndexDocument(id);
+
+			return new IndexDocument(id, documentType);
 		}
 
 		public abstract IIndexStore GetIndexStore(string scope);

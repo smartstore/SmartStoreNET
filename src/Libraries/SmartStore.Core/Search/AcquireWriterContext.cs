@@ -1,4 +1,8 @@
-﻿using SmartStore.Collections;
+﻿using System.Collections.Generic;
+using SmartStore.Collections;
+using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Search
 {
@@ -11,16 +15,18 @@ namespace SmartStore.Core.Search
 
 	public class AcquireWriterContext
 	{
-
 		public AcquireWriterContext(AcquirementReason reason)
 		{
 			Reason = reason;
-			LanguageSeoCodes = new string[0];
-			CurrencyCodes = new string[0];
+			Languages = new List<Language>();
+			Currencies = new List<Currency>();
 			StoreIds = new int[0];
 			StoreMappings = new Multimap<int, int>();
 			CustomerRoleIds = new int[0];
 			CustomerRoleMappings = new Multimap<int, int>();
+			Categories = new Dictionary<int, Category>();
+			Manufacturers = new Dictionary<int, Manufacturer>();
+			CustomProperties = new Dictionary<string, object>();
 		}
 
 		/// <summary>
@@ -29,14 +35,14 @@ namespace SmartStore.Core.Search
 		public AcquirementReason Reason { get; private set; }
 
 		/// <summary>
-		/// SEO codes of languages used for indexing
+		/// All languages
 		/// </summary>
-		public string[] LanguageSeoCodes { get; set; }
+		public IList<Language> Languages { get; set; }
 
 		/// <summary>
 		/// Currency codes used for indexing
 		/// </summary>
-		public string[] CurrencyCodes { get; set; }
+		public IList<Currency> Currencies { get; set; }
 
 		/// <summary>
 		/// Array of all store identifiers
@@ -57,5 +63,20 @@ namespace SmartStore.Core.Search
 		/// Map of product to customer role identifiers if the product is limited to certain customer roles
 		/// </summary>
 		public Multimap<int, int> CustomerRoleMappings { get; set; }
+
+		/// <summary>
+		/// All categories
+		/// </summary>
+		public Dictionary<int, Category> Categories { get; set; }
+
+		/// <summary>
+		/// All manufacturers
+		/// </summary>
+		public Dictionary<int, Manufacturer> Manufacturers { get; set; }
+
+		/// <summary>
+		/// Use this dictionary for any custom data required along indexing
+		/// </summary>
+		public Dictionary<string, object> CustomProperties { get; set; }
 	}
 }

@@ -542,6 +542,8 @@ namespace SmartStore.Services.Search
 				null, 
 				hits,
 				searchQuery,
+				null,
+				null,
 				null);
 
 			_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));

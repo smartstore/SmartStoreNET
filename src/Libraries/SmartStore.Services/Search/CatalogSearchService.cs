@@ -61,6 +61,8 @@ namespace SmartStore.Services.Search
 					{
 						var totalCount = 0;
 						string[] spellCheckerSuggestions = null;
+						Dictionary<int, string> topCategories = null;
+						Dictionary<int, string> topManufacturers = null;
 						IEnumerable<ISearchHit> searchHits;
 						PagedList<Product> hits;
 
@@ -104,11 +106,37 @@ namespace SmartStore.Services.Search
 							_logger.Error(exception);
 						}
 
+						try
+						{
+							using (_chronometer.Step("Top categories"))
+							{
+								topCategories = searchEngine.GetTopCategories();
+							}
+						}
+						catch (Exception exception)
+						{
+							_logger.Error(exception);
+						}
+
+						try
+						{
+							using (_chronometer.Step("Top manufacturers"))
+							{
+								topManufacturers = searchEngine.GetTopManufacturers();
+							}
+						}
+						catch (Exception exception)
+						{
+							_logger.Error(exception);
+						}
+
 						var result = new CatalogSearchResult(
 							searchEngine, 
 							hits, 
 							searchQuery, 
-							spellCheckerSuggestions);
+							spellCheckerSuggestions,
+							topCategories,
+							topManufacturers);
 
 						_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
 

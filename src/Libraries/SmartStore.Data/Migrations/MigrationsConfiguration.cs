@@ -122,6 +122,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.PageTitle", "Search result for {0}", "Suchergebnis für {0}");
 			builder.AddOrUpdate("Search.PagingInfo", "{0} of {1}", "{0} von {1}");
 			builder.AddOrUpdate("Search.DidYouMean", "Did you mean?", "Meinten Sie?");
+			builder.AddOrUpdate("Search.TopCategories", "Categories", "Warengruppen");
+			builder.AddOrUpdate("Search.TopManufacturers", "Brands", "Marken");
 			builder.AddOrUpdate("Search.Hits", "Hits", "Treffer");
 			builder.AddOrUpdate("Search.NoResultsText", "Your search did not match any products.", "Ihre Suche ergab leider keine Produkttreffer.");
 			builder.AddOrUpdate("Search.NumHits", "{0} Hits", "{0} Treffer");

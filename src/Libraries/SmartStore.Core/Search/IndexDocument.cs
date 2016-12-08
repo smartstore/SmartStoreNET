@@ -11,9 +11,19 @@ namespace SmartStore.Core.Search
 		private readonly Multimap<string, IndexField> _fields;
 
 		public IndexDocument(int id)
+			: this(id, null)
+		{
+		}
+
+		public IndexDocument(int id, string documentType)
 		{
 			_fields = new Multimap<string, IndexField>(StringComparer.OrdinalIgnoreCase);
 			_fields.Add("id", new IndexField("id", id).Store());
+
+			if (documentType.HasValue())
+			{
+				_fields.Add("doctype", new IndexField("doctype", documentType).Store());
+			}
 		}
 
 		public int Id
@@ -21,6 +31,18 @@ namespace SmartStore.Core.Search
 			get
 			{
 				return (int)_fields["id"].FirstOrDefault().Value;
+			}
+		}
+
+		public string DocumentType
+		{
+			get
+			{
+				if (_fields.ContainsKey("doctype"))
+				{
+					return (string)_fields["doctype"].FirstOrDefault().Value;
+				}
+				return null;
 			}
 		}
 
@@ -33,6 +55,12 @@ namespace SmartStore.Core.Search
 				// special treatment for id field: allow only one!
 				_fields.RemoveAll("id");
 			}
+
+			if (field.Name.IsCaseInsensitiveEqual("doctype") && _fields.ContainsKey("doctype"))
+			{
+				_fields.RemoveAll("doctype");
+			}
+
 			_fields.Add(field.Name, field);
 		}
 

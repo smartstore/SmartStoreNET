@@ -1,4 +1,5 @@
-﻿using SmartStore.Core;
+﻿using System.Collections.Generic;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
 
@@ -10,7 +11,9 @@ namespace SmartStore.Services.Search
 			ISearchEngine engine,
 			IPagedList<Product> hits,
 			CatalogSearchQuery query,
-			string[] spellCheckerSuggestions)
+			string[] spellCheckerSuggestions,
+			Dictionary<int, string> topCategories,
+			Dictionary<int, string> topManufacturers)
 		{
 			Guard.NotNull(hits, nameof(hits));
 			Guard.NotNull(query, nameof(query));
@@ -19,6 +22,8 @@ namespace SmartStore.Services.Search
 			Hits = hits;
 			Query = query;
 			SpellCheckerSuggestions = spellCheckerSuggestions ?? new string[0];
+			TopCategories = topCategories ?? new Dictionary<int, string>();
+			TopManufacturers = topManufacturers ?? new Dictionary<int, string>();
 		}
 
 		/// <summary>
@@ -46,6 +51,24 @@ namespace SmartStore.Services.Search
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Gets top categories
+		/// </summary>
+		public Dictionary<int, string> TopCategories
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Gets top manufacturers
+		/// </summary>
+		public Dictionary<int, string> TopManufacturers
+		{
+			get;
+			private set;
 		}
 
 		public ISearchEngine Engine

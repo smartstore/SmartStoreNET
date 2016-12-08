@@ -33,7 +33,8 @@ namespace SmartStore.Core.Search
 		/// <summary>
 		/// Gets the total number of indexed documents
 		/// </summary>
-		int DocumentCount { get; }
+		/// <param name="documentType">Type of document, can be <c>null</c> to get number of all documents</param>
+		int GetDocumentCount(string documentType);
 
 		/// <summary>
 		/// Returns every field's name available in the index
@@ -58,14 +59,20 @@ namespace SmartStore.Core.Search
 		/// Adds a set of new documents to the index
 		/// </summary>
 		/// <remarks>
-		/// This method will delete already existing documents before saving them. Entity id is the match key.
+		/// This method will delete already existing documents before saving them
 		/// </remarks>
 		void SaveDocuments(IEnumerable<IIndexDocument> documents);
 
 		/// <summary>
 		/// Removes a set of existing documents from the index
 		/// </summary>
-		void DeleteDocuments(IEnumerable<int> ids);
+		void DeleteDocuments(IEnumerable<IIndexDocument> documents);
+
+		/// <summary>
+		/// Removes a set of existing documents from the index
+		/// </summary>
+		/// <param name="documentType">Type of document</param>
+		void DeleteDocuments(string documentType);
 	}
 
 	public static class IIndexStoreExtensions
@@ -84,9 +91,9 @@ namespace SmartStore.Core.Search
 		/// <summary>
 		/// Removes an existing document from the index
 		/// </summary>
-		public static void DeleteDocument(this IIndexStore store, int id)
+		public static void DeleteDocument(this IIndexStore store, IIndexDocument document)
 		{
-			store.DeleteDocuments(new[] { id });
+			store.DeleteDocuments(new[] { document });
 		}
 	}
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
@@ -47,6 +46,18 @@ namespace SmartStore.Core.Search
 		/// </summary>
 		/// <returns>Suggestions/corrections or an empty array</returns>
 		string[] CheckSpelling();
+
+		/// <summary>
+		/// Search for top categories
+		/// </summary>
+		/// <returns>Top categories</returns>
+		Dictionary<int, string> GetTopCategories();
+
+		/// <summary>
+		/// Search for top manufacturers
+		/// </summary>
+		/// <returns>Top manufacturers</returns>
+		Dictionary<int, string> GetTopManufacturers();
 
 		/// <summary>
 		/// Highlights chosen terms in a text, extracting the most relevant sections

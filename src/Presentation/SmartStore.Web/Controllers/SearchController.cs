@@ -113,6 +113,12 @@ namespace SmartStore.Web.Controllers
 			// Add spell checker suggestions (if any)
 			AddSpellCheckerSuggestionsToModel(result.SpellCheckerSuggestions, model);
 
+			// Add top categories (if any)
+			AddTopCategoriesToModel(result.TopCategories, model);
+
+			// Add top manufacturers (if any)
+			AddTopManufacturersToModel(result.TopManufacturers, model);
+
 			return PartialView(model);
 		}
 
@@ -179,6 +185,12 @@ namespace SmartStore.Web.Controllers
 			// Add spell checker suggestions (if any)
 			AddSpellCheckerSuggestionsToModel(result.SpellCheckerSuggestions, model);
 
+			// Add top categories (if any)
+			AddTopCategoriesToModel(result.TopCategories, model);
+
+			// Add top manufacturers (if any)
+			AddTopManufacturersToModel(result.TopManufacturers, model);
+
 			return View(model);
 		}
 
@@ -199,6 +211,54 @@ namespace SmartStore.Web.Controllers
 				Label = x,
 				Url = Url.RouteUrl("Search", new { q = x })
 			}));
+
+			model.HitGroups.Add(hitGroup);
+		}
+
+		private void AddTopCategoriesToModel(Dictionary<int, string> topCategories, SearchResultModel model)
+		{
+			if (topCategories.Count == 0)
+				return;
+
+			var hitGroup = new SearchResultModel.HitGroup(model)
+			{
+				Name = "TopCategories",
+				DisplayName = T("Search.TopCategories"),
+				Ordinal = -100
+			};
+
+			foreach (var categoryId in topCategories.Keys)
+			{
+				hitGroup.Hits.Add(new SearchResultModel.HitItem
+				{
+					Label = topCategories[categoryId],
+					Url = Url.RouteUrl("Search", new { q = model.Term, c = categoryId })
+				});
+			}
+
+			model.HitGroups.Add(hitGroup);
+		}
+
+		private void AddTopManufacturersToModel(Dictionary<int, string> topManufacturers, SearchResultModel model)
+		{
+			if (topManufacturers.Count == 0)
+				return;
+
+			var hitGroup = new SearchResultModel.HitGroup(model)
+			{
+				Name = "TopManufacturers",
+				DisplayName = T("Search.TopManufacturers"),
+				Ordinal = -100
+			};
+
+			foreach (var manufacturerId in topManufacturers.Keys)
+			{
+				hitGroup.Hits.Add(new SearchResultModel.HitItem
+				{
+					Label = topManufacturers[manufacturerId],
+					Url = Url.RouteUrl("Search", new { q = model.Term, m = manufacturerId })
+				});
+			}
 
 			model.HitGroups.Add(hitGroup);
 		}

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
@@ -8,7 +7,7 @@ using SmartStore.Core.Search;
 
 namespace SmartStore.Services.Search
 {
-	public partial class CatalogSearchQuery : SearchQuery<CatalogSearchQuery>
+	public partial class CatalogSearchQuery : SearchQuery<CatalogSearchQuery>, ICloneable<CatalogSearchQuery>
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CatalogSearchQuery"/> class without a search term being set
@@ -26,6 +25,26 @@ namespace SmartStore.Services.Search
 		public CatalogSearchQuery(string[] fields, string term, bool escape = true, bool isExactMatch = false, bool isFuzzySearch = false)
 			: base(fields, term, escape, isExactMatch, isFuzzySearch)
 		{
+		}
+
+		/// <summary>
+		/// Maximum number of top categories
+		/// </summary>
+		public int MaxTopCategories { get; protected set; }
+
+		/// <summary>
+		/// Maximum number of top manufacturers
+		/// </summary>
+		public int MaxTopManufacturers { get; protected set; }
+
+		public CatalogSearchQuery Clone()
+		{
+			return (CatalogSearchQuery)this.MemberwiseClone();
+		}
+
+		object ICloneable.Clone()
+		{
+			return this.MemberwiseClone();
 		}
 
 		#region Fluent builder
@@ -231,6 +250,24 @@ namespace SmartStore.Services.Search
 			}
 
 			return WithFilter(SearchFilter.ByRange("rate", fromRate, toRate, fromRate.HasValue, toRate.HasValue).Mandatory().ExactMatch().NotAnalyzed());
+		}
+
+		public CatalogSearchQuery WithTopCategories(int maxTopCategories)
+		{
+			Guard.IsPositive(maxTopCategories, nameof(maxTopCategories));
+
+			MaxTopCategories = maxTopCategories;
+
+			return this;
+		}
+
+		public CatalogSearchQuery WithTopManufacturers(int maxTopManufacturers)
+		{
+			Guard.IsPositive(maxTopManufacturers, nameof(maxTopManufacturers));
+
+			MaxTopManufacturers = maxTopManufacturers;
+
+			return this;
 		}
 
 		#endregion

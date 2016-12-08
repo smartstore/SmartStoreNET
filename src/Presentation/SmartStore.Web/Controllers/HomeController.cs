@@ -5,18 +5,16 @@ using System.Net;
 using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Seo;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
+using SmartStore.Services.Search;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
@@ -31,12 +29,12 @@ namespace SmartStore.Web.Controllers
 {
     public partial class HomeController : PublicControllerBase
 	{
-		#region Fields
-
 		private readonly ICommonServices _services;
 		private readonly Lazy<ICategoryService> _categoryService;
 		private readonly Lazy<IProductService> _productService;
 		private readonly Lazy<IManufacturerService> _manufacturerService;
+		private readonly Lazy<ICatalogSearchService> _catalogSearchService;
+		private readonly Lazy<CatalogHelper> _catalogHelper;
 		private readonly Lazy<ITopicService> _topicService;
 		private readonly Lazy<IQueuedEmailService> _queuedEmailService;
 		private readonly Lazy<IEmailAccountService> _emailAccountService;
@@ -46,15 +44,13 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<SeoSettings> _seoSettings;
 		private readonly Lazy<CustomerSettings> _customerSettings;
 
-		#endregion
-
-		#region Constructors
-
 		public HomeController(
 			ICommonServices services,
 			Lazy<ICategoryService> categoryService,
 			Lazy<IProductService> productService,
 			Lazy<IManufacturerService> manufacturerService,
+			Lazy<ICatalogSearchService> catalogSearchService,
+			Lazy<CatalogHelper> catalogHelper,
 			Lazy<ITopicService> topicService,
 			Lazy<IQueuedEmailService> queuedEmailService,
 			Lazy<IEmailAccountService> emailAccountService,
@@ -68,6 +64,8 @@ namespace SmartStore.Web.Controllers
 			this._categoryService = categoryService;
 			this._productService = productService;
 			this._manufacturerService = manufacturerService;
+			this._catalogSearchService = catalogSearchService;
+			this._catalogHelper = catalogHelper;
 			this._topicService = topicService;
 			this._queuedEmailService = queuedEmailService;
 			this._emailAccountService = emailAccountService;
@@ -77,8 +75,7 @@ namespace SmartStore.Web.Controllers
 			this._seoSettings = seoSettings;
             this._customerSettings = customerSettings;
         }
-        
-        #endregion
+
 
         [RequireHttpsByConfigAttribute(SslRequirement.No)]
         public ActionResult Index()
@@ -190,11 +187,13 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult Sitemap()
+		public ActionResult Sitemap(CatalogSearchQuery query)
 		{
 			if (!_commonSettings.Value.SitemapEnabled)
+			{
 				return HttpNotFound();
-
+			}
+				
 			var roleIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 
 			string cacheKey = ModelCacheEventConsumer.SITEMAP_PAGE_MODEL_KEY.FormatInvariant(
@@ -219,27 +218,19 @@ namespace SmartStore.Web.Controllers
 
 				if (_commonSettings.Value.SitemapIncludeProducts)
 				{
-					//limit product to 200 until paging is supported on this page
-					IList<int> filterableSpecificationAttributeOptionIds = null;
+					// Limit product to 200 until paging is supported on this page
+					query = query.Slice(0, 200).SortBy(ProductSortingEnum.Relevance);
+					var searchResult = _catalogSearchService.Value.Search(query);
 
-					var productSearchContext = new ProductSearchContext();
-
-					productSearchContext.OrderBy = ProductSortingEnum.Relevance;
-					productSearchContext.PageSize = 200;
-					productSearchContext.FilterableSpecificationAttributeOptionIds = filterableSpecificationAttributeOptionIds;
-					productSearchContext.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
-					productSearchContext.VisibleIndividuallyOnly = true;
-
-					var products = _productService.Value.SearchProducts(productSearchContext);
-
-					model.Products = products.Select(product => new ProductOverviewModel()
+					var settings = _catalogHelper.Value.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x => 
 					{
-						Id = product.Id,
-						Name = product.GetLocalized(x => x.Name).EmptyNull(),
-						ShortDescription = product.GetLocalized(x => x.ShortDescription),
-						SeName = product.GetSeName(),
-					}).ToList();
+						x.MapPrices = false;
+						x.MapPictures = false;
+					});
+
+					model.Products = _catalogHelper.Value.MapProductSummaryModel(searchResult.Hits, settings);
 				}
+
 				if (_commonSettings.Value.SitemapIncludeTopics)
 				{
 					var topics = _topicService.Value.GetAllTopics(_services.StoreContext.CurrentStore.Id)

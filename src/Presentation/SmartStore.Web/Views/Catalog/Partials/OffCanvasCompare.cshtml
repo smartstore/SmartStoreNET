@@ -1,16 +1,18 @@
-﻿@model CompareProductsModel
+﻿@model ProductSummaryModel
+
 @using SmartStore.Web.Models.Catalog;
 
 <div class="offcanvas-cart-body">
-    <div class="no-items text-muted @(Model.Products.Count > 0 ? "hidden-xs-up" : "")">
+    <div class="no-items text-muted @(Model.Items.Count > 0 ? "hidden-xs-up" : "")">
         @T("Products.Compare.ListIsEmpty")
     </div>
-    @if (Model.Products.Count > 0)
+
+    @if (Model.Items.Count > 0)
     {
         <ul class="items list-unstyled">
-            @for (int i = 0, length = Model.Products.Count; i < length; i++)
+            @for (int i = 0, length = Model.Items.Count; i < length; i++)
             {
-                var item = Model.Products[i];
+                var item = Model.Items[i];
                 string itemClass = "item clearfix";
                 if (i == 0)
                 {
@@ -19,10 +21,10 @@
                 
                 <li class="@itemClass card text-xs-center">
                     <figure class="picture pull-left pull-xs-none">
-						@if (item.DefaultPictureModel.ImageUrl.HasValue())
+						@if (item.Picture != null && item.Picture.ImageUrl.HasValue())
 						{
-							<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@item.DefaultPictureModel.Title">
-								<img alt="@item.DefaultPictureModel.AlternateText" src="@item.DefaultPictureModel.ImageUrl" title="@item.DefaultPictureModel.Title" />
+							<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@item.Picture.Title">
+								<img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
 							</a>
 						}
                     </figure>
@@ -35,7 +37,7 @@
                     </div>
 
                     <div class="price pull-right text-nowrap">
-                        @item.ProductPrice.Price
+                        @item.Price.Price
                     </div>
 
                     <div class="toolbar">
@@ -55,7 +57,7 @@
     }
 </div>
 
-@if (Model.Products.Count > 0)
+@if (Model.Items.Count > 0)
 {
     <div class="buttons clearfix">
         <a class="btn btn-primary pull-left" href="@Url.RouteUrl("CompareProducts")">

@@ -11,7 +11,7 @@ namespace SmartStore.Core.Domain.Common
 			SitemapIncludeCategories = true;
 			SitemapIncludeManufacturers = true;
 			SitemapIncludeTopics = true;
-			SitemapIncludeProducts = true;
+			SitemapIncludeProducts = false;
 			FullTextMode = FulltextSearchMode.ExactMatch;
 			AutoUpdateEnabled = true;
 			EntityPickerPageSize = 48;

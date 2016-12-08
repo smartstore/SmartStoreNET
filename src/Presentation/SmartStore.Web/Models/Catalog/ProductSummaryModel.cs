@@ -26,6 +26,7 @@ namespace SmartStore.Web.Models.Catalog
 		public bool ShowSku { get; set; }
 		public bool ShowWeight { get; set; }
 		public bool ShowDescription { get; set; }
+		public bool ShowFullDescription { get; set; }
 		public bool ShowBrand { get; set; }
 		public bool ShowDimensions { get; set; }
 		public bool ShowLegalInfo { get; set; }

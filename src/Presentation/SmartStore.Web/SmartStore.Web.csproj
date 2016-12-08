@@ -263,7 +263,7 @@
     <Compile Include="Controllers\BoardsController.cs" />
     <Compile Include="Controllers\CatalogController.cs" />
     <Compile Include="Controllers\CatalogHelper.cs" />
-    <Compile Include="Controllers\CatalogHelper.V3.cs" />
+    <Compile Include="Controllers\CatalogHelper.MapProduct.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\BlogController.cs" />
@@ -335,18 +335,11 @@
     <Compile Include="Models\Boards\TopicMoveModel.cs" />
     <Compile Include="Models\Catalog\BackInStockSubscribeModel.cs" />
     <Compile Include="Models\Catalog\CategoryModel.cs" />
-    <Compile Include="Models\Catalog\CompareProductsModel.cs" />
     <Compile Include="Models\Catalog\NavigationModelBuiltEvent.cs" />
     <Compile Include="Models\Catalog\ProductAskQuestionModel.cs" />
     <Compile Include="Models\Catalog\ProductSummaryModel.cs" />
-    <Compile Include="Models\Catalog\RecentlyAddedProductsModel.cs" />
-    <Compile Include="Models\Catalog\PagingFilteringModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerOverviewModel.cs" />
-    <Compile Include="Models\Catalog\ProductOverviewModel.cs" />
     <Compile Include="Models\Catalog\SearchBoxModel.cs" />
-    <Compile Include="Models\Catalog\HomePageBestsellersModel.cs" />
-    <Compile Include="Models\Catalog\SearchModel.cs" />
-    <Compile Include="Models\Catalog\SearchPagingFilteringModel.cs" />
     <Compile Include="Models\Catalog\ProductsByTagModel.cs" />
     <Compile Include="Models\Catalog\PopularProductTagsModel.cs" />
     <Compile Include="Models\Catalog\AddToCompareListModel.cs" />
@@ -378,8 +371,6 @@
     <Compile Include="Models\Common\CompareDropdownModel.cs" />
     <Compile Include="Models\Common\AccountDropdownModel.cs" />
     <Compile Include="Models\Common\ShopLogoModel.cs" />
-    <Compile Include="Models\Common\ShipmentInfoModel.cs" />
-    <Compile Include="Models\Common\PaymentInfoModel.cs" />
     <Compile Include="Models\Common\ShopBarModel.cs" />
     <Compile Include="Models\Common\PagerModel.cs" />
     <Compile Include="Models\Common\StoreThemeModel.cs" />
@@ -425,7 +416,7 @@
     <Compile Include="Models\Common\HeaderLinksModel.cs" />
     <Compile Include="Models\Common\LanguageModel.cs" />
     <Compile Include="Models\Common\StoreThemeSelectorModel.cs" />
-    <Compile Include="Models\Catalog\CatalogPagingFilteringModel.cs" />
+    <Compile Include="Models\Catalog\CatalogPagingFilteringModel.Obsolete.cs" />
     <Compile Include="Models\Media\PictureModel.cs" />
     <Compile Include="Models\Order\ShipmentDetailsModel.cs" />
     <Compile Include="Models\Order\SubmitReturnRequestModel.cs" />
@@ -1767,7 +1758,6 @@
     <Content Include="Views\Common\LanguageSelector.cshtml" />
     <Content Include="Views\Common\List.cshtml" />
     <Content Include="Views\Common\Menu.cshtml" />
-    <Content Include="Views\Common\PaymentInfo.cshtml" />
     <Content Include="Views\Common\PdfReceiptFooter.cshtml" />
     <Content Include="Views\Common\PdfReceiptHeader.cshtml" />
     <Content Include="Views\Common\Settings.cshtml" />
@@ -1895,18 +1885,18 @@
     <Content Include="Themes\Alpha\Content\_cart.scss" />
     <Content Include="Views\ShoppingCart\OffCanvasShoppingCart.cshtml" />
     <Content Include="Views\ShoppingCart\OffCanvasWishlist.cshtml" />
-    <Content Include="Views\ShoppingCart\OffCanvasCompare.cshtml" />
+    <Content Include="Views\Catalog\Partials\OffCanvasCompare.cshtml" />
     <Content Include="Views\Common\Logo.cshtml" />
     <Content Include="Themes\Alpha\Content\_search.scss" />
     <Content Include="Views\Search\InstantSearch.cshtml" />
     <Content Include="Views\Search\InstantSearch.HitGroup.cshtml" />
     <Content Include="Views\Search\InstantSearch.TopProducts.cshtml" />
-    <Content Include="Views\Search\Search2.cshtml" />
     <Content Include="Themes\Alpha\Content\_artlist.scss" />
     <Content Include="Views\Shared\Partials\Product.List.Item.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.Item.Drop.cshtml" />
     <Content Include="Views\Shared\Components\Product.List.Pager.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.Options.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

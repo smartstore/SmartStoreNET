@@ -319,17 +319,21 @@ namespace SmartStore.Web.Controllers
 		{
 			var products = new List<Product>();
 			var relatedProducts = _productService.GetRelatedProductsByProductId1(productId);
-			foreach (var product in _productService.GetProductsByIds(relatedProducts.Select(x => x.ProductId2).ToArray()))
-			{
-				//ensure has ACL permission and appropriate store mapping
-				if (_aclService.Authorize(product) && _storeMappingService.Authorize(product))
-					products.Add(product);
-			}
+
+			// ACL and store mapping
+			products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
 
 			if (products.Count == 0)
+			{
 				return Content("");
+			}
 
-			var model = _helper.PrepareProductOverviewModels(products, productThumbPictureSize: productThumbPictureSize, isCompact: true).ToList();
+			var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x =>
+			{
+				x.ThumbnailSize = productThumbPictureSize;
+			});		
+
+			var model = _helper.MapProductSummaryModel(products, settings);
 
 			return PartialView(model);
 		}
@@ -338,7 +342,9 @@ namespace SmartStore.Web.Controllers
 		public ActionResult ProductsAlsoPurchased(int productId, int? productThumbPictureSize)
 		{
 			if (!_catalogSettings.ProductsAlsoPurchasedEnabled)
+			{
 				return Content("");
+			}				
 
 			// load and cache report
 			var productIds = _services.Cache.Get(string.Format(ModelCacheEventConsumer.PRODUCTS_ALSO_PURCHASED_IDS_KEY, productId, _services.StoreContext.CurrentStore.Id), () => 
@@ -346,17 +352,24 @@ namespace SmartStore.Web.Controllers
 				return _orderReportService.GetAlsoPurchasedProductsIds(_services.StoreContext.CurrentStore.Id, productId, _catalogSettings.ProductsAlsoPurchasedNumber);
 			});
 
-			// load products
+			// Load products
 			var products = _productService.GetProductsByIds(productIds);
 
 			// ACL and store mapping
 			products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
 
 			if (products.Count == 0)
+			{
 				return Content("");
+			}			
 
-			// prepare model
-            var model = _helper.PrepareProductOverviewModels(products, productThumbPictureSize: productThumbPictureSize, isCompact: true).ToList();
+			// Prepare model
+			var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x =>
+			{
+				x.ThumbnailSize = productThumbPictureSize;
+			});
+
+			var model = _helper.MapProductSummaryModel(products, settings);
 
 			return PartialView(model);
 		}
@@ -385,19 +398,29 @@ namespace SmartStore.Web.Controllers
 			var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
 
 			var products = _productService.GetCrosssellProductsByShoppingCart(cart, _shoppingCartSettings.CrossSellsNumber);
+
 			//ACL and store mapping
 			products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
 
+			if (products.Any())
+			{
+				// Cross-sell products are dispalyed on the shopping cart page.
+				// We know that the entire shopping cart page is not refresh
+				// even if "ShoppingCartSettings.DisplayCartAfterAddingProduct" setting  is enabled.
+				// That's why we force page refresh (redirect) in this case
+				var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid, x =>
+				{
+					x.ThumbnailSize = productThumbPictureSize;
+					x.ForceRedirectionAfterAddingToCart = true;
+				});
 
-			//Cross-sell products are dispalyed on the shopping cart page.
-			//We know that the entire shopping cart page is not refresh
-			//even if "ShoppingCartSettings.DisplayCartAfterAddingProduct" setting  is enabled.
-			//That's why we force page refresh (redirect) in this case
-			var model = _helper.PrepareProductOverviewModels(products,
-				productThumbPictureSize: productThumbPictureSize, forceRedirectionAfterAddingToCart: true)
-				.ToList();
+				// TODO: (mc) Display this as carousel/slider
+				var model = _helper.MapProductSummaryModel(products, settings);
 
-			return PartialView(model);
+				return PartialView(model);
+			}
+
+			return PartialView(ProductSummaryModel.Empty);
 		}
 
 		[ActionName("BackInStockSubscribe")]

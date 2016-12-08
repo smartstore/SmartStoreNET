@@ -65,10 +65,10 @@ namespace SmartStore.Services.Search
 
 					using (_chronometer.Step("Search (" + searchEngine.GetType().Name + ")"))
 					{
-						var totalCount = 0;
+						int totalCount = 0;
 						string[] spellCheckerSuggestions = null;
 						IEnumerable<ISearchHit> searchHits;
-						PagedList<Product> hits;
+						Func<IList<Product>> hitsFactory = null;
 
 						_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
 
@@ -87,14 +87,8 @@ namespace SmartStore.Services.Search
 							using (_chronometer.Step("Collect from DB"))
 							{
 								var productIds = searchHits.Select(x => x.EntityId).ToArray();
-								var products = _productService.Value.GetProductsByIds(productIds, loadFlags);
-
-								hits = new PagedList<Product>(products, searchQuery.PageIndex, searchQuery.Take, totalCount);
+								hitsFactory = () => _productService.Value.GetProductsByIds(productIds, loadFlags);
 							}
-						}
-						else
-						{
-							hits = new PagedList<Product>(new List<Product>(), searchQuery.PageIndex, searchQuery.Take);
 						}
 						
 						try
@@ -112,7 +106,8 @@ namespace SmartStore.Services.Search
 
 						var result = new CatalogSearchResult(
 							searchEngine, 
-							hits, 
+							totalCount,
+							hitsFactory, 
 							searchQuery, 
 							spellCheckerSuggestions);
 

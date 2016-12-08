@@ -1,38 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
-using SmartStore.Services;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.Export;
-using SmartStore.Services.Directory;
-using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
-using SmartStore.Services.Tax;
-using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.UI;
-using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
@@ -41,8 +26,6 @@ namespace SmartStore.Web.Controllers
 {
 	public partial class CatalogHelper
 	{
-		// TODO: (mc) Merge this later with CatalogHelper.cs
-
 		public void MapProductListOptions(ProductSummaryModel model, IPagingOptions entity, string defaultPageSizeOptions)
 		{
 			model.AllowSorting = _catalogSettings.AllowProductSorting;
@@ -64,25 +47,22 @@ namespace SmartStore.Web.Controllers
 
 		public ProductSummaryMappingSettings GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode viewMode)
 		{
+			return GetBestFitProductSummaryMappingSettings(viewMode, null);
+		}
+
+		public ProductSummaryMappingSettings GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode viewMode, Action<ProductSummaryMappingSettings> fn)
+		{
 			var settings = new ProductSummaryMappingSettings
 			{
 				ViewMode = viewMode,
+				MapPrices = true,
+				MapPictures = true
 			};
 
 			if (viewMode == ProductSummaryViewMode.Grid)
 			{
 				settings.MapShortDescription = _catalogSettings.ShowShortDescriptionInGridStyleLists;
 				settings.MapManufacturers = _catalogSettings.ShowManufacturerInGridStyleLists;
-				settings.MapColorAttributes = _catalogSettings.ShowColorSquaresInLists;
-				settings.MapAttributes = _catalogSettings.ShowProductOptionsInLists;
-				settings.MapReviews = _catalogSettings.ShowProductReviewsInProductLists;
-				settings.MapDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
-			}
-			else if (viewMode == ProductSummaryViewMode.Grid)
-			{
-				settings.MapShortDescription = true;
-				settings.MapLegalInfo = _taxSettings.ShowLegalHintsInProductList;
-				settings.MapManufacturers = true;
 				settings.MapColorAttributes = _catalogSettings.ShowColorSquaresInLists;
 				settings.MapAttributes = _catalogSettings.ShowProductOptionsInLists;
 				settings.MapReviews = _catalogSettings.ShowProductReviewsInProductLists;
@@ -95,13 +75,15 @@ namespace SmartStore.Web.Controllers
 				settings.MapManufacturers = true;
 				settings.MapColorAttributes = _catalogSettings.ShowColorSquaresInLists;
 				settings.MapAttributes = _catalogSettings.ShowProductOptionsInLists;
+				//settings.MapSpecificationAttributes = true; // TODO: (mc) What about SpecAttrs in List-Mode (?) Option?
 				settings.MapReviews = _catalogSettings.ShowProductReviewsInProductLists;
 				settings.MapDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
 				settings.MapDimensions = _catalogSettings.ShowDimensions;
 			}
 			else if (viewMode == ProductSummaryViewMode.Compare)
 			{
-				settings.MapShortDescription = true;
+				settings.MapShortDescription = _catalogSettings.IncludeShortDescriptionInCompareProducts;
+				settings.MapFullDescription = _catalogSettings.IncludeFullDescriptionInCompareProducts;
 				settings.MapLegalInfo = _taxSettings.ShowLegalHintsInProductList;
 				settings.MapManufacturers = true;
 				settings.MapAttributes = true;
@@ -110,6 +92,8 @@ namespace SmartStore.Web.Controllers
 				settings.MapDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
 				settings.MapDimensions = _catalogSettings.ShowDimensions;
 			}
+
+			fn?.Invoke(settings);
 
 			return settings;
 		}
@@ -199,6 +183,7 @@ namespace SmartStore.Web.Controllers
 					ShowDimensions = settings.MapDimensions,
 					ShowLegalInfo = settings.MapLegalInfo,
 					ShowDescription = settings.MapShortDescription,
+					ShowFullDescription = settings.MapFullDescription,
 					ShowReviews = settings.MapReviews,
 					ShowDeliveryTimes = settings.MapDeliveryTimes,
 					ShowBasePrice = settings.MapPrices && _catalogSettings.ShowBasePriceInProductLists,

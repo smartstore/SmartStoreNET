@@ -1,16 +1,19 @@
 ﻿@model SitemapModel
+
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Models.Topics;
+
 @{
     Layout = "_ColumnsOne";
-
     Html.AddTitleParts(T("PageTitle.Sitemap").Text);
 }
+
 <div class="page sitemap-page">
     <div class="page-title">
-        <h1>@T("Sitemap")</h1>
+        <h1 class="h3">@T("Sitemap")</h1>
     </div>
+
     <div class="page-body">
         @if (Model.Topics.Count > 0)
         {
@@ -24,6 +27,7 @@
                 ))
             </div>
         }
+
         @if (Model.Categories.Count > 0)
         {
             <div class="entity">
@@ -38,6 +42,7 @@
                 ))
             </div>
         }
+
         @if (Model.Manufacturers.Count > 0)
         {
             <div class="entity">
@@ -52,9 +57,11 @@
                 ))
             </div>
         }
-        @if (Model.Products.Count > 0)
+
+		@* TODO: (mc) Render Sitemap products, but not with Html.DataList() (it's obsolete soon) *@
+        @if (Model.Products.Items.Count > 0)
         {
-            <div class="entity">
+            @*<div class="entity">
                 <h2>@T("Sitemap.Products")</h2>
 
                 @(Html.DataList<ProductOverviewModel>(Model.Products, 4,
@@ -64,7 +71,7 @@
                     </div>
                 </div>
             ))
-            </div>
+            </div>*@
         }
     </div>
 </div>

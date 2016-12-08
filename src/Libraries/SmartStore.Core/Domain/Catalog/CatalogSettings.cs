@@ -63,7 +63,9 @@ namespace SmartStore.Core.Domain.Catalog
 			HtmlTextCollapsedHeight = 260;
 			MostRecentlyUsedCategoriesMaxSize = 6;
 			MostRecentlyUsedManufacturersMaxSize = 4;
-        }
+			IncludeShortDescriptionInCompareProducts = true;
+
+		}
 
         /// <summary>
         /// Gets or sets a value indicating whether to display product SKU

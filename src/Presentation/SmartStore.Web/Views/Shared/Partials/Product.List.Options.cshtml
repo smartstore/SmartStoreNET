@@ -1,0 +1,138 @@
+﻿@model ProductSummaryModel
+
+@using SmartStore.Web.Models.Catalog;
+
+@functions
+{
+//public void PreparePagingFilteringModel(PagingFilteringModel model, PagingFilteringModel command, PageSizeContext pageSizeContext)
+//{
+//	// sorting
+//	model.AllowProductSorting = _catalogSettings.AllowProductSorting;
+//	if (model.AllowProductSorting)
+//	{
+//		model.OrderBy = command.OrderBy;
+
+//		foreach (ProductSortingEnum enumValue in Enum.GetValues(typeof(ProductSortingEnum)))
+//		{
+//			if (enumValue == ProductSortingEnum.CreatedOnAsc || enumValue == ProductSortingEnum.Initial)
+//			{
+//				// TODO: (MC) das von uns eingeführte "CreatedOnAsc" schmeiß ich
+//				// jetzt deshalb aus der UI raus, weil wir diese Sortier-Option
+//				// auch ins StoredProc (ProductsLoadAllpaged) reinpacken müssten.
+//				// Ist eigentlich kein Problem, ABER: Wir müssten immer wenn SmartStore
+//				// Änderungen an dieser Proc vornimmt und wir diese Änderungen
+//				// übernehmen müssen auch ständig an unseren Mod denken. Lass ma'!
+//				continue;
+//			}
+
+//			var currentPageUrl = _services.WebHelper.GetThisPageUrl(true);
+//			var sortUrl = _services.WebHelper.ModifyQueryString(currentPageUrl, "orderby=" + ((int)enumValue).ToString(), null);
+
+//			var sortValue = enumValue.GetLocalizedEnum(_localizationService, _services.WorkContext);
+//			model.AvailableSortOptions.Add(new ListOptionItem()
+//			{
+//				Text = sortValue,
+//				Url = sortUrl,
+//				Selected = enumValue == (ProductSortingEnum)command.OrderBy
+//			});
+//		}
+//	}
+
+//	//view mode
+//	model.AllowProductViewModeChanging = _catalogSettings.AllowProductViewModeChanging;
+//	var viewMode = !string.IsNullOrEmpty(command.ViewMode)
+//					? command.ViewMode
+//					: _catalogSettings.DefaultViewMode;
+
+//	model.ViewMode = viewMode;
+
+//	if (model.AllowProductViewModeChanging)
+//	{
+//		var currentPageUrl = _services.WebHelper.GetThisPageUrl(true);
+//		//grid
+//		model.AvailableViewModes.Add(new ListOptionItem()
+//		{
+//			Text = T("Categories.ViewMode.Grid"),
+//			Url = _services.WebHelper.ModifyQueryString(currentPageUrl, "viewmode=grid", null),
+//			Selected = viewMode == "grid",
+//			ExtraData = "grid"
+//		});
+//		//list
+//		model.AvailableViewModes.Add(new ListOptionItem()
+//		{
+//			Text = T("Categories.ViewMode.List"),
+//			Url = _services.WebHelper.ModifyQueryString(currentPageUrl, "viewmode=list", null),
+//			Selected = viewMode == "list",
+//			ExtraData = "list"
+//		});
+//	}
+
+//	//page size
+//	model.AllowCustomersToSelectPageSize = false;
+//	if (pageSizeContext.AllowCustomersToSelectPageSize && pageSizeContext.PageSizeOptions.IsEmpty())
+//	{
+//		pageSizeContext.PageSizeOptions = _catalogSettings.DefaultPageSizeOptions; // "12, 18, 36, 72, 150";
+
+//	}
+//	if (pageSizeContext.AllowCustomersToSelectPageSize && pageSizeContext.PageSizeOptions.HasValue())
+//	{
+//		var pageSizes = pageSizeContext.PageSizeOptions.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+//		if (pageSizes.Any())
+//		{
+//			// get the first page size entry to use as the default (category page load) or if customer enters invalid value via query string
+//			if (command.PageSize <= 0 || !pageSizes.Contains(command.PageSize.ToString()))
+//			{
+//				int temp = 0;
+
+//				if (int.TryParse(pageSizes.FirstOrDefault(), out temp))
+//				{
+//					if (temp > 0)
+//					{
+//						command.PageSize = temp;
+//					}
+//				}
+//			}
+
+//			var currentPageUrl = _services.WebHelper.GetThisPageUrl(true);
+//			var sortUrl = _services.WebHelper.ModifyQueryString(currentPageUrl, "pagesize=__pagesize__", null);
+//			sortUrl = _services.WebHelper.RemoveQueryString(sortUrl, "pagenumber");
+
+//			foreach (var pageSize in pageSizes)
+//			{
+//				int temp = 0;
+//				if (!int.TryParse(pageSize, out temp) || temp <= 0)
+//				{
+//					continue;
+//				}
+
+//				model.PageSizeOptions.Add(new ListOptionItem()
+//				{
+//					Text = pageSize,
+//					Url = sortUrl.Replace("__pagesize__", pageSize),
+//					Selected = pageSize.Equals(command.PageSize.ToString(), StringComparison.InvariantCultureIgnoreCase)
+//				});
+//			}
+
+//			if (model.PageSizeOptions.Any())
+//			{
+//				model.PageSizeOptions = model.PageSizeOptions.OrderBy(x => int.Parse(x.Text)).ToList();
+//				model.AllowCustomersToSelectPageSize = true;
+
+//				if (command.PageSize <= 0)
+//				{
+//					command.PageSize = int.Parse(model.PageSizeOptions.FirstOrDefault().Text);
+//				}
+//			}
+//		}
+//	}
+//	else
+//	{
+//		//customer is not allowed to select a page size
+//		command.PageSize = pageSizeContext.PageSize;
+//	}
+
+//	if (command.PageSize <= 0)
+//		command.PageSize = pageSizeContext.PageSize;
+//}
+}

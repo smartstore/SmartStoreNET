@@ -204,7 +204,7 @@ namespace SmartStore.Web.Controllers
 				if (!hasFeaturedProductsCache.HasValue)
 				{
 					featuredProductsResult = _catalogSearchService.Search(featuredProductsQuery);
-					hasFeaturedProductsCache = featuredProductsResult.HitsTotalCount > 0;
+					hasFeaturedProductsCache = featuredProductsResult.TotalHitsCount > 0;
 					_services.Cache.Put(cacheKey, hasFeaturedProductsCache, TimeSpan.FromHours(6));
 				}
 
@@ -384,7 +384,7 @@ namespace SmartStore.Web.Controllers
 				if (!hasFeaturedProductsCache.HasValue)
 				{
 					featuredProductsResult = _catalogSearchService.Search(featuredProductsQuery);
-					hasFeaturedProductsCache = featuredProductsResult.HitsTotalCount > 0;
+					hasFeaturedProductsCache = featuredProductsResult.TotalHitsCount > 0;
 					_services.Cache.Put(cacheKey, hasFeaturedProductsCache, TimeSpan.FromHours(6));
 				}
 

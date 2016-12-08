@@ -122,8 +122,6 @@ namespace SmartStore.Services.Search.Modelling
 
 		private int GetPageSize(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
-			// Get from form or query
-			var selectedSize = GetValueFor<int?>("s");
 			string entityViewMode = null;
 
 			// Determine entity id if possible
@@ -146,7 +144,7 @@ namespace SmartStore.Services.Search.Modelling
 					entity = _services.Resolve<IManufacturerService>().GetManufacturerById(entityId.Value) as IPagingOptions;
 				}
 			}
-
+			
 			var entitySize = entity?.PageSize;
 
 			var sessionKey = origin;
@@ -157,7 +155,16 @@ namespace SmartStore.Services.Search.Modelling
 
 			DetectViewMode(query, sessionKey, entityViewMode);
 
+			var allowChange = entity.AllowCustomersToSelectPageSize ?? _catalogSettings.AllowCustomersToSelectPageSize;
+			if (!allowChange)
+			{
+				return entitySize ?? _catalogSettings.DefaultProductListPageSize;
+			}
+
 			sessionKey = "PageSize:" + sessionKey;
+
+			// Get from form or query
+			var selectedSize = GetValueFor<int?>("s");
 
 			if (selectedSize.HasValue)
 			{
@@ -186,6 +193,12 @@ namespace SmartStore.Services.Search.Modelling
 
 		private void DetectViewMode(CatalogSearchQuery query, string sessionKey, string entityViewMode = null)
 		{
+			if (!_catalogSettings.AllowProductViewModeChanging)
+			{
+				query.CustomData["ViewMode"] = entityViewMode.NullEmpty() ?? _catalogSettings.DefaultViewMode;
+				return;
+			}
+
 			var selectedViewMode = GetValueFor<string>("v");
 
 			sessionKey = "ViewMode:" + sessionKey;

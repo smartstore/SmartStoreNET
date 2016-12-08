@@ -96,7 +96,7 @@ namespace SmartStore.Web.Controllers
 			{
 				SearchResult = result,
 				Term = query.Term,
-				TotalProductsCount = result.HitsTotalCount
+				TotalProductsCount = result.TotalHitsCount
 			};
 
 			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x => 
@@ -139,7 +139,7 @@ namespace SmartStore.Web.Controllers
 			
 			var result = _catalogSearchService.Search(query);
 
-			if (result.HitsTotalCount == 0 && result.SpellCheckerSuggestions.Any())
+			if (result.TotalHitsCount == 0 && result.SpellCheckerSuggestions.Any())
 			{
 				// No matches, but spell checker made a suggestion.
 				// We implicitly search again with the first suggested term.
@@ -149,7 +149,7 @@ namespace SmartStore.Web.Controllers
 
 				result = _catalogSearchService.Search(query);
 
-				if (result.HitsTotalCount > 0)
+				if (result.TotalHitsCount > 0)
 				{
 					model.AttemptedTerm = oldTerm;
 					// Restore the original suggestions.
@@ -163,7 +163,7 @@ namespace SmartStore.Web.Controllers
 
 			model.SearchResult = result;
 			model.Term = query.Term;
-			model.TotalProductsCount = result.HitsTotalCount;
+			model.TotalProductsCount = result.TotalHitsCount;
 
 			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
 			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);

@@ -4,15 +4,15 @@
 // Responsive Typo
 // ==============================================================
 
-@include media-breakpoint-down(md) {
+/*@include media-breakpoint-down(md) {
     html {
         font-size: 15px;
     }
-}
+}*/
 
 @include media-breakpoint-down(sm) {
     html {
-        font-size: 14px;
+        font-size: 13px;
     }
 }
 

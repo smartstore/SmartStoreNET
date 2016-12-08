@@ -32,7 +32,7 @@ h1, h2, h3, h4, h5, h6,
 }
 .news-date {
     float: right; 
-    font-size: .8rem;
+    font-size: $font-size-sm;
     font-weight: bold;
 }
 .news-item {
@@ -241,10 +241,10 @@ fieldset legend {
 .dropdown {
     display: inline;
     a {
-        font-size: .8rem;
+        font-size: $font-size-sm;
     }
     .label {
-        font-size: .7rem;
+        font-size: $font-size-xs;
     }
 }
 
@@ -304,10 +304,8 @@ fieldset legend {
     margin-bottom: 2rem;
 }
 
-.nav-category a,
-.block-recently-viewed-products a,
 .text-smaller,
 .text-smaller a {
-    font-size: .825rem;
+    font-size: $font-size-sm;
 }
 

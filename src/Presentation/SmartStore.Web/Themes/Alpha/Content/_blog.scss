@@ -62,7 +62,7 @@
 		clear: both;
         border-radius: 3px;
         border: 1px solid #e5e5e5;
-        font-size: .8rem;
+        font-size: $font-size-sm;
         padding: .3rem;
         background-color: #fafafa;
 	}
@@ -88,7 +88,7 @@
 .blogpost-page .blogpost-date {
 	float: right;
 	margin-top: 12px;
-    font-size: .8rem;
+    font-size: $font-size-sm;
     color: #aaa;
 }
 

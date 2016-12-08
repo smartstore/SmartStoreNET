@@ -8,13 +8,13 @@ namespace SmartStore.Services.Search
 {
 	public partial class CatalogSearchResult
 	{
-		private readonly int _hitsTotalCount;
+		private readonly int _totalHitsCount;
 		private readonly Func<IList<Product>> _hitsFactory;
 		private IPagedList<Product> _hits;
 
 		public CatalogSearchResult(
 			ISearchEngine engine,
-			int hitsTotalCount,
+			int totalHitsCount,
 			Func<IList<Product>> hitsFactory,
 			CatalogSearchQuery query,
 			string[] spellCheckerSuggestions)
@@ -26,7 +26,7 @@ namespace SmartStore.Services.Search
 			SpellCheckerSuggestions = spellCheckerSuggestions ?? new string[0];
 
 			_hitsFactory = hitsFactory ?? (() => new List<Product>());
-			_hitsTotalCount = hitsTotalCount;
+			_totalHitsCount = totalHitsCount;
 		}
 
 		/// <summary>
@@ -38,20 +38,20 @@ namespace SmartStore.Services.Search
 			{
 				if (_hits == null)
 				{
-					var products = _hitsTotalCount == 0 
+					var products = _totalHitsCount == 0 
 						? new List<Product>() 
 						: _hitsFactory.Invoke();
 
-					_hits = new PagedList<Product>(products, Query.PageIndex, Query.Take, _hitsTotalCount);
+					_hits = new PagedList<Product>(products, Query.PageIndex, Query.Take, _totalHitsCount);
 				}
 
 				return _hits;
 			}
 		}
 
-		public int HitsTotalCount
+		public int TotalHitsCount
 		{
-			get { return _hitsTotalCount; }
+			get { return _totalHitsCount; }
 		}
 
 		/// <summary>

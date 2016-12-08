@@ -4,8 +4,8 @@
 // Article/Product list & item styles
 // --------------------------------------------------
 
-$art-font-size:                 0.925rem;
-$art-font-size-sm:              $font-size-xs;
+$art-font-size:                 $font-size-base;
+$art-font-size-sm:              0.9rem;
 $art-line-height:               1.3;
 $art-price-color:               $body-color;
 $art-price-offer-color:         $brand-danger;

@@ -80,7 +80,7 @@ namespace SmartStore.Data.Migrations
 						s.Value = "true";
 						break;
 					case "catalogsettings.manufacturersblockitemstodisplay":
-						s.Value = "true";
+						s.Value = "8";
 						break;
 					case "catalogsettings.usesmallproductboxonhomepage":
 						s.Value = "false";

@@ -1896,7 +1896,7 @@
     <Content Include="Views\Shared\Partials\Product.List.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.Item.Drop.cshtml" />
     <Content Include="Views\Shared\Components\Product.List.Pager.cshtml" />
-    <Content Include="Views\Shared\Partials\Product.List.Options.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.Actions.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

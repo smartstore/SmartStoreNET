@@ -20,13 +20,13 @@
         @Html.Widget("account_dropdown_before")
 		<a class="dropdown-item" href="@Url.Action("Info", "Customer")" rel="nofollow">
 			<i class="fa fa-fw fa-user"></i>
-			@T("Account.MyAccount")
+			<span>@T("Account.MyAccount")</span>
 		</a>
         @if (Model.DisplayAdminLink)
         {
             <a class="dropdown-item" href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
                 <i class="fa fa-fw fa-cog"></i> 
-                @T("Account.Administration")
+				<span>@T("Account.Administration")</span>
             </a>
         }
         
@@ -34,10 +34,10 @@
         {
 			<a class="dropdown-item" href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" rel="nofollow">
 				<i class="fa fa-fw fa-envelope"></i>
-				@T("PrivateMessages.Inbox")
+				<span>@T("PrivateMessages.Inbox")</span>
 				@if (Model.UnreadPrivateMessages != "")
 				{
-					<span class="label-pill label-pill-success">@Model.UnreadPrivateMessages</span>
+					<span class="label label-pill label-success">@Model.UnreadPrivateMessages</span>
 				}
 			</a>
 			if (!string.IsNullOrEmpty(Model.AlertMessage))
@@ -56,20 +56,20 @@
         {
             <a class="dropdown-item" href="@Url.RouteUrl("Wishlist")">
                 <i class="fa fa-fw fa-heart"></i>
-                @T("Wishlist") <span class="wishlist-qty label label-pill @(Model.WishlistItems > 0 ? "label-success" : "")">@Model.WishlistItems</span>
+				<span>@T("Wishlist")</span> <span class="wishlist-qty label label-pill @(Model.WishlistItems > 0 ? "label-success" : "")">@Model.WishlistItems</span>
 			</a> 
         }
         @if (Model.ShoppingCartEnabled)
         {
             <a id="topcartlink" class="dropdown-item" href="@Url.RouteUrl("ShoppingCart")">
                 <i class="fa fa-fw fa-shopping-cart"></i>
-                @T("ShoppingCart") <span class="cart-qty label label-pill @(Model.ShoppingCartItems > 0 ? "label-success" : "")" data-bind-to="TotalProducts">@Model.ShoppingCartItems</span>
+				<span>@T("ShoppingCart")</span> <span class="cart-qty label label-pill @(Model.ShoppingCartItems > 0 ? "label-success" : "")" data-bind-to="TotalProducts">@Model.ShoppingCartItems</span>
 			</a>
         }
         <div class="dropdown-divider"></div>
         <a class="dropdown-item" href="@Url.RouteUrl("Logout")" rel="nofollow">
             <i class="fa fa-fw fa-sign-out"></i>
-            @T("Account.Logout")
+			<span>@T("Account.Logout")</span>
 		</a>
 
         @Html.Widget("account_dropdown_after")

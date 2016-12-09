@@ -12,11 +12,72 @@ $art-price-offer-color:         $brand-danger;
 $art-border-color:              rgba(0,0,0, 0.12);
 $art-active-bg-color:           #fff;
 
+
+// Action Bar
+
+.artlist-actions {
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid $art-border-color;
+}
+
+.artlist-action {
+    &:not(:last-child) {
+        margin-right: 0.5rem;
+    }
+
+    label {
+        font-size: $font-size-sm;
+        margin-bottom: 0.35rem;
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+}
+
+.artlist-action-wrapper {
+    position: relative;
+
+    .btn-artlist-action {
+        border-radius: 0;
+        position: relative;
+    }
+
+    .btn-artlist-action em {
+        font-variant: normal;
+        font-style: normal;
+        font-weight: normal;
+        color: $text-muted;
+        font-size: $font-size-xs;
+    }
+
+    select {
+        position: absolute;
+        opacity: 0;
+        left: 0;
+        width: 100%;
+        top: 0;
+        bottom: 0;
+        cursor: pointer;
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .btn-artlist-action {
+        font-weight: normal !important;
+    }
+}
+
+
+// List
+
 .artlist {
     position: relative;
     @include make-row();
     margin-left: 0;
     margin-right: 0;
+    margin-bottom: 1.5rem;
     font-size: $art-font-size;
     line-height: $art-line-height; 
     z-index: 3;

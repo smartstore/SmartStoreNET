@@ -25,7 +25,7 @@
 
         <div class="dropdown service-links">
             <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
-                @T("Menu.ServiceMenu")
+				<span>@T("Menu.ServiceMenu")</span>
                 <i class="fa fa-caret-down"></i>
             </a>
 
@@ -45,7 +45,8 @@
         @if (!Model.DisplayAdminLink && Model.DisplayLoginLink)
         {
             <a class="menubar-link" href="@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })" rel="nofollow">
-                <i class="fa fa-user"></i>&nbsp;&nbsp;@T("Account.Login")
+                <i class="fa fa-user"></i>
+				<span>@T("Account.Login")</span>
             </a>
         }
 
@@ -53,7 +54,7 @@
         {
             <a class="menubar-link" href="@Url.RouteUrl("Logout")" title="@T("Account.ImpersonatedAs.Finish.Hint")" rel="nofollow">
                 <i class="fa fa-sign-out"></i>
-                @Model.CustomerEmailUsername
+				<span>@Model.CustomerEmailUsername</span>
             </a>
         }
     </nav>
@@ -83,16 +84,16 @@
         <div class="dropdown">
             <a class="menubar-link" @(Model.IsAuthenticated ? "data-toggle=dropdown" : "") aria-haspopup="true" aria-expanded="false" href="@accountUrl" rel="nofollow">
 
-                <i class="fa fa-user"></i>&nbsp;&nbsp;
+                <i class="fa fa-user"></i>
 
                 @if (Model.IsAuthenticated)
                 {
-                    @T("Account.MyAccount")
+					<span>@T("Account.MyAccount")</span>
                     <i class="fa fa-caret-down"></i>
                 }
                 else
                 {
-                    @T("Account.Login")
+                    <span>@T("Account.Login")</span>
                 }
             </a>
 
@@ -108,8 +109,8 @@
     {
         <nav class="menubar-group menubar-group--special">
             <a class="menubar-link" href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
-                <i class="fa fa-cog"></i>&nbsp;&nbsp;
-                @T("Account.Administration")
+                <i class="fa fa-cog"></i>
+				<span>@T("Account.Administration")</span>  
             </a>
         </nav>
     }

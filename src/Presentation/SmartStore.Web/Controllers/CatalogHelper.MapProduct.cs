@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
@@ -152,75 +153,81 @@ namespace SmartStore.Web.Controllers
 					}
 				}
 
-				var batchContext = _dataExporter.Value.CreateProductExportContext(products);
-
-				if (settings.MapPrices)
+				using (var scope = new DbContextScope(ctx: _services.DbContext, autoCommit: false))
 				{
-					batchContext.AppliedDiscounts.LoadAll();
-					batchContext.TierPrices.LoadAll();
+					// Run in uncommitting scope, because pictures could be updated (IsNew property) 
+					var batchContext = _dataExporter.Value.CreateProductExportContext(products);
+
+					if (settings.MapPrices)
+					{
+						batchContext.AppliedDiscounts.LoadAll();
+						batchContext.TierPrices.LoadAll();
+					}
+
+					if (settings.MapAttributes || settings.MapColorAttributes)
+					{
+						batchContext.Attributes.LoadAll();
+					}
+
+					if (settings.MapManufacturers)
+					{
+						batchContext.ProductManufacturers.LoadAll();
+					}
+
+					if (settings.MapSpecificationAttributes)
+					{
+						batchContext.SpecificationAttributes.LoadAll();
+					}
+
+					var model = new ProductSummaryModel(products)
+					{
+						ViewMode = settings.ViewMode,
+						ShowSku = _catalogSettings.ShowProductSku,
+						ShowWeight = _catalogSettings.ShowWeight,
+						ShowDimensions = settings.MapDimensions,
+						ShowLegalInfo = settings.MapLegalInfo,
+						ShowDescription = settings.MapShortDescription,
+						ShowFullDescription = settings.MapFullDescription,
+						ShowReviews = settings.MapReviews,
+						ShowDeliveryTimes = settings.MapDeliveryTimes,
+						ShowBasePrice = settings.MapPrices && _catalogSettings.ShowBasePriceInProductLists,
+						ShowBrand = settings.MapManufacturers,
+						ForceRedirectionAfterAddingToCart = settings.ForceRedirectionAfterAddingToCart,
+						CompareEnabled = _catalogSettings.CompareProductsEnabled,
+						BuyEnabled = !_catalogSettings.HideBuyButtonInLists,
+						ThumbSize = settings.ThumbnailSize,
+						ShowDiscountBadge = _catalogSettings.ShowDiscountSign,
+						ShowNewBadge = _catalogSettings.LabelAsNewForMaxDays.HasValue
+					};
+
+					var mapItemContext = new MapProductSummaryItemContext
+					{
+						BatchContext = batchContext,
+						CachedManufacturerModels = cachedManufacturerModels,
+						Currency = currency,
+						LegalInfo = legalInfo,
+						Model = model,
+						Resources = res,
+						Settings = settings,
+						Customer = customer,
+						Store = store,
+						AllowPrices = allowPrices,
+						AllowShoppingCart = sllowShoppingCart,
+						AllowWishlist = allowWishlist,
+						TaxDisplayType = taxDisplayType
+					};
+
+					foreach (var product in products)
+					{
+						MapProductSummaryItem(product, mapItemContext);
+					}
+
+					_services.DisplayControl.AnnounceRange(products);
+
+					scope.Commit();
+
+					return model;
 				}
-
-				if (settings.MapAttributes || settings.MapColorAttributes)
-				{
-					batchContext.Attributes.LoadAll();
-				}
-				
-				if (settings.MapManufacturers)
-				{
-					batchContext.ProductManufacturers.LoadAll();
-				}
-
-				if (settings.MapSpecificationAttributes)
-				{
-					batchContext.SpecificationAttributes.LoadAll();
-				}
-
-				var model = new ProductSummaryModel(products)
-				{
-					ViewMode = settings.ViewMode,
-					ShowSku = _catalogSettings.ShowProductSku,
-					ShowWeight = _catalogSettings.ShowWeight,
-					ShowDimensions = settings.MapDimensions,
-					ShowLegalInfo = settings.MapLegalInfo,
-					ShowDescription = settings.MapShortDescription,
-					ShowFullDescription = settings.MapFullDescription,
-					ShowReviews = settings.MapReviews,
-					ShowDeliveryTimes = settings.MapDeliveryTimes,
-					ShowBasePrice = settings.MapPrices && _catalogSettings.ShowBasePriceInProductLists,
-					ShowBrand = settings.MapManufacturers,
-					ForceRedirectionAfterAddingToCart = settings.ForceRedirectionAfterAddingToCart,
-					CompareEnabled = _catalogSettings.CompareProductsEnabled,
-					BuyEnabled = !_catalogSettings.HideBuyButtonInLists,
-					ThumbSize = settings.ThumbnailSize,
-					ShowDiscountBadge = _catalogSettings.ShowDiscountSign,
-					ShowNewBadge = _catalogSettings.LabelAsNewForMaxDays.HasValue
-				};
-
-				var mapItemContext = new MapProductSummaryItemContext
-				{
-					BatchContext = batchContext,
-					CachedManufacturerModels = cachedManufacturerModels,
-					Currency = currency,
-					LegalInfo = legalInfo,
-					Model = model,
-					Resources = res,
-					Settings = settings,
-					Customer = customer,
-					Store = store,
-					AllowPrices = allowPrices,
-					AllowShoppingCart = sllowShoppingCart,
-					AllowWishlist = allowWishlist,
-					TaxDisplayType = taxDisplayType
-				};
-
-				foreach (var product in products)
-				{
-					MapProductSummaryItem(product, mapItemContext);
-				}
-
-				_services.DisplayControl.AnnounceRange(products);
-
-				return model;
 			}		
 		}
 

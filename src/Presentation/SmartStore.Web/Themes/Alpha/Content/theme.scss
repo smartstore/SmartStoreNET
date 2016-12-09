@@ -185,7 +185,7 @@ body {
 
 
 //
-// Text expander / collapser
+// Text expander / collapser (Move later!)
 // ------------------------------------------------------
 
 .more-less {
@@ -234,6 +234,17 @@ body {
     }
 }
 
+
+// Icon margins (Move later!)
+// ------------------------------------------------------
+
+.btn,
+.menubar-link,
+.nav-link,
+.dropdown-item {
+    > .fa + span { padding-left: 0.4em; }
+    > span + .fa { margin-left: 0.4em; }
+}
 
 
 //

@@ -28,7 +28,7 @@
             if (!Modernizr.touch) {
                 if ($.fn.select2 === undefined || $.fn.selectWrapper === undefined)
                     return;
-                ctx.find("select:not(.noskin), input:hidden[data-select]").selectWrapper();
+                //ctx.find("select:not(.noskin), input:hidden[data-select]").selectWrapper();
             }
         },
         // tooltips
@@ -36,7 +36,7 @@
             if ($.fn.tooltip === undefined)
                 return;
             if (!Modernizr.touch) {
-                ctx.tooltip({ selector: "a[rel=tooltip], .tooltip-toggle" });
+                ctx.tooltip({ selector: "[rel=tooltip], .tooltip-toggle" });
             }
         },
         // column equalizer

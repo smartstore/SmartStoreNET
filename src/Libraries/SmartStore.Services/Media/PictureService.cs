@@ -563,7 +563,7 @@ namespace SmartStore.Services.Media
 
 			var groupingResult = query.ToDictionary(x => x.ProductId, x => x.Pictures);
 
-			using (var scope = new DbContextScope(ctx: _pictureRepository.Context, forceNoTracking: true))
+			using (var scope = new DbContextScope(ctx: _pictureRepository.Context, forceNoTracking: null))
 			{
 				// EF doesn't support eager loading with grouped queries. We must hack a little bit.
 				var pictureIds = groupingResult.SelectMany(x => x.Value).Select(x => x.PictureId).Distinct().ToArray();

@@ -1,6 +1,124 @@
 ﻿@model ProductSummaryModel
 
 @using SmartStore.Web.Models.Catalog;
+@using SmartStore.Services.Search.Modelling;
+
+@{ 
+	var searchQuery = EngineContext.Current.Resolve<ICatalogSearchQueryFactory>().Current;
+}
+
+<div class="artlist-actions clearfix">
+	@if (Model.AllowSorting && searchQuery != null)
+	{
+		var sortMap = new Dictionary<int, string>
+		{
+			{ 1, T("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Relevance") },
+			{ 5, T("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.NameAsc") },
+			{ 6, T("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.NameDesc") },
+			{ 10, T("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.PriceAsc") },
+			{ 11, T("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.PriceDesc") },
+			{ 15, T("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.CreatedOn") }
+		};
+
+		<div class="artlist-action artlist-action--sort pull-xs-left">
+			<div class="form-group">
+				<label for="artlist-action-sort" class="hidden-lg-up">@T("Products.SortBy")</label>
+				<div class="artlist-action-wrapper">
+					<button class="btn btn-secondary x-btn-lg btn-artlist-action">
+						<em class="hidden-md-down">@T("Products.SortBy")</em>
+						<span>Name A-Z</span>
+						<i class="fa fa-caret-down"></i>
+					</button>
+					<select class="form-control noskin" name="artlist-action-sort" id="artlist-action-sort" data-qname="o" title="@T("Products.SortBy"): Relevanz">
+						@foreach (var sort in sortMap)
+						{
+							<option value="@sort.Key">@sort.Value</option>
+						}
+					</select>
+				</div>
+			</div>
+		</div>
+	}
+
+	@if (Model.AvailablePageSizes != null && Model.AvailablePageSizes.Any())
+	{
+		<div class="artlist-action artlist-action--pagesize pull-xs-left">
+			<div class="form-group">
+				<label for="artlist-action-sort" class="hidden-lg-up">@T("Products.PageSize")</label>
+				<div class="artlist-action-wrapper">
+					<button class="btn btn-secondary x-btn-lg btn-artlist-action">
+						<em class="hidden-md-down">@T("Products.PageSize")</em>
+						<span>@Model.Products.PageSize</span>
+						<i class="fa fa-caret-down"></i>
+					</button>
+					<select class="form-control noskin" name="artlist-action-pagesize" id="artlist-action-pagesize" data-qname="s" title="@T("Products.PageSize"): @Model.Products.PageSize">
+						@foreach (var size in Model.AvailablePageSizes)
+						{
+							<option value="@size">@size</option>
+						}
+					</select>
+				</div>
+			</div>
+		</div>
+	}
+
+	@if (Model.AllowViewModeChanging && Model.ViewMode == ProductSummaryViewMode.Grid || Model.ViewMode == ProductSummaryViewMode.List)
+	{
+		<div class="artlist-action artlist-action--viewmode pull-xs-left">
+			<div class="form-group">
+				<label class="hidden-lg-up">&nbsp;</label>
+				<div class="artlist-action artlist-action--viewmode">
+					@if (Model.ViewMode == ProductSummaryViewMode.Grid)
+					{
+						<a href='@ModifyUrl(null, "v=list")' class="btn btn-secondary btn-artlist-action" rel="tooltip" title="@T("Products.SwitchToList")">
+							<i class="fa fa-list"></i>
+						</a>
+					}
+					else
+					{
+						<a href='@ModifyUrl(null, "v=grid")' class="btn btn-secondary btn-artlist-action" rel="tooltip" title="@T("Products.SwitchToGrid")">
+							<i class="fa fa-th"></i>
+						</a>
+					}
+				</div>
+			</div>
+		</div>
+	}
+
+	@if (Model.AllowPagination && Model.Products.TotalCount > 1)
+	{
+		<div class="artlist-action artlist-action--paging pull-xs-right">
+			<div class="form-group">
+				<label class="hidden-lg-up">@T("Admin.Telerik.GridLocalization.Page")</label>
+				<div class="artlist-action-wrapper clearfix">
+					<a href='@ModifyUrl(null, "i=" + (Model.Products.PageNumber - 1))' class="btn btn-warning btn-flat pull-xs-left">
+						<i class="fa fa-chevron-left"></i>
+					</a>
+
+					<div class="artlist-action-wrapper pull-xs-left" style="margin: 0 0.5rem">
+						<button class="btn btn-secondary btn-artlist-action">
+							<em class="hidden-md-down">Seite</em>
+							<span>@Model.Products.PageNumber</span>
+							<em>von</em>
+							<span>@Model.Products.TotalPages</span>
+							<i class="fa fa-caret-down"></i>
+						</button>
+						<select class="form-control noskin" name="artlist-action-pagesize" id="artlist-action-pagesize" data-qname="i" title="@T("Products.PageSize"): @Model.Products.PageSize">
+							@for (var i = 1; i <= Model.Products.TotalPages; i++)
+							{
+								<option value="@i">Seite @i von @Model.Products.TotalPages</option>
+							}
+						</select>
+					</div>
+
+					<a href='@ModifyUrl(null, "i=" + (Model.Products.PageNumber + 1))' class="btn btn-warning btn-flat pull-xs-left">
+						<i class="fa fa-chevron-right"></i>
+					</a>
+				</div>
+			</div>
+		</div>
+	}
+</div>
 
 @functions
 {

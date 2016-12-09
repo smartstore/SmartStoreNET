@@ -19,26 +19,28 @@ $btn-size-sm:           $input-height-sm;*/
 
 
 // General
-// =======
+// --------------------------------------------------
 
 .btn {
     //text-transform: uppercase;
     outline: none !important;
     transition: all 0.12s ease-in-out;
+    box-shadow: none;
+    //transition: none;
+}
+
+.btn-secondary {
+    border-color: rgba(0,0,0,.15) rgba(0,0,0,.15) rgba(0,0,0,.25)
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus, .btn-secondary.focus {
+    background-color: #f2f2f2;
 }
 
 .btn-lg:not(.btn-icon):not(.btn-circle), 
 .btn-group-lg > .btn:not(.btn-icon):not(.btn-circle) {
     font-size: $font-size-base;
-}
-
-
-// Icon margins
-// ============
-
-.btn:not(.btn-icon):not(.btn-circle) {
-    > .fa { margin-left: 0; margin-right: 0.5em; }
-    > .fa.icon-right { margin-left: 0.5em; margin-right: 0; }
 }
 
 

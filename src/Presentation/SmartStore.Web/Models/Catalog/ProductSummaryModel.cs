@@ -91,6 +91,9 @@ namespace SmartStore.Web.Models.Catalog
 			public PriceModel Price { get; set; }
 			public PictureModel Picture { get; set; }
 			public IList<Attribute> Attributes { get; set; }
+			// TODO: (mc) Let the user specify in attribute manager which spec attributes are
+			// important. According to it's importance, show attribute value in grid or list mode.
+			// E.g. perfect for "Energy label" > "EEK A++", or special material (e.g. "Leather") etc.
 			public IList<ProductSpecificationModel> SpecificationAttributes { get; set; }
 			public ColorAttribute ColorAttribute { get; set; }
 			public IList<Badge> Badges { get; set; }

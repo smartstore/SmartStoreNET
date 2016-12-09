@@ -155,7 +155,7 @@ namespace SmartStore.Services.Search.Modelling
 
 			DetectViewMode(query, sessionKey, entityViewMode);
 
-			var allowChange = entity.AllowCustomersToSelectPageSize ?? _catalogSettings.AllowCustomersToSelectPageSize;
+			var allowChange = entity?.AllowCustomersToSelectPageSize ?? _catalogSettings.AllowCustomersToSelectPageSize;
 			if (!allowChange)
 			{
 				return entitySize ?? _catalogSettings.DefaultProductListPageSize;

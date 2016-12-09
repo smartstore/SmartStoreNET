@@ -27,6 +27,7 @@ namespace SmartStore.Web.Framework.Theming
         private IThemeRegistry _themeRegistry;
         private IThemeContext _themeContext;
 		private IMobileDeviceHelper _mobileDeviceHelper;
+		private IWebHelper _webHelper;
 		private ExpandoObject _themeVars;
         private bool? _isHomePage;
 		private bool? _isMobileDevice;
@@ -198,7 +199,7 @@ namespace SmartStore.Web.Framework.Theming
 				_text = EngineContext.Current.Resolve<IText>();
                 _workContext = EngineContext.Current.Resolve<IWorkContext>();
 				_mobileDeviceHelper = EngineContext.Current.Resolve<IMobileDeviceHelper>();
-
+				_webHelper = EngineContext.Current.Resolve<IWebHelper>();
 			}
         }
 
@@ -338,6 +339,26 @@ namespace SmartStore.Web.Framework.Theming
 
             return defaultValue;
         }
+
+		/// <summary>
+		/// Modifies a URL (appends/updates a query string part and optionally removes another query string).
+		/// </summary>
+		/// <param name="url">The URL to modifiy. If <c>null</c>, the current page's URL is resolved.</param>
+		/// <param name="query">The new query string part.</param>
+		/// <param name="removeQueryName">A query string name to remove.</param>
+		/// <returns>The modified URL.</returns>
+		public string ModifyUrl(string url, string query, string removeQueryName = null)
+		{
+			url = url.NullEmpty() ?? _webHelper.GetThisPageUrl(true);
+			var url2 =  _webHelper.ModifyQueryString(url, query, null);
+
+			if (removeQueryName.HasValue())
+			{
+				url2 = _webHelper.RemoveQueryString(url2, removeQueryName);
+			}
+
+			return url2;
+		}
 
 		public string GenerateHelpUrl(string path)
 		{

@@ -5,8 +5,6 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{
-	Html.AppendScriptParts(true, "~/Themes/Alpha/Scripts/smartstore.articlelist.js");
-
 	var id = "artlist-" + CommonHelper.GenerateRandomDigitCode(10);
 	//var maxPictureSize = Model.Select(x => x.DefaultPictureModel)
 	//	.Where(x => x != null)
@@ -34,6 +32,11 @@
 			.MaxPagesToDisplay(5)
 			.ToString();
 	}
+
+	var hasActions = (Model.AllowPagination && Model.Products.TotalPages > 1) 
+		|| Model.AllowSorting 
+		|| Model.AllowViewModeChanging 
+		|| Model.AvailablePageSizes != null;
 }
 
 @if (paddingTop.HasValue())
@@ -45,12 +48,17 @@
 	</style>
 }
 
-<div style="border-bottom: 1px solid #ddd" class="m-b-2">
+@if (hasActions)
+{
+	Html.RenderPartial("Product.List.Actions", Model);
+}
+
+@*<div style="border-bottom: 1px solid #ddd" class="m-b-2">
 	@if (paginatorHtml.HasValue())
 	{
 		@Html.Raw(paginatorHtml)
 	}
-</div>
+</div>*@
 
 <div id="@id" class="artlist artlist-grid artlist-4-cols">
 	@foreach (var product in Model.Items)

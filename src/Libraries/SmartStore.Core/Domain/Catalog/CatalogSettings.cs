@@ -64,7 +64,6 @@ namespace SmartStore.Core.Domain.Catalog
 			MostRecentlyUsedCategoriesMaxSize = 6;
 			MostRecentlyUsedManufacturersMaxSize = 4;
 			IncludeShortDescriptionInCompareProducts = true;
-
 		}
 
         /// <summary>

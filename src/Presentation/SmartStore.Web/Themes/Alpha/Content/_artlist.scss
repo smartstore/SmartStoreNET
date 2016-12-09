@@ -50,6 +50,7 @@ $art-active-bg-color:           #fff;
         font-weight: normal;
         color: $text-muted;
         font-size: $font-size-xs;
+        font-size: inherit;
     }
 
     select {

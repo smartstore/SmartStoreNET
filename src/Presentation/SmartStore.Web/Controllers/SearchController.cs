@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
@@ -215,9 +214,9 @@ namespace SmartStore.Web.Controllers
 			model.HitGroups.Add(hitGroup);
 		}
 
-		private void AddTopCategoriesToModel(Dictionary<int, string> topCategories, SearchResultModel model)
+		private void AddTopCategoriesToModel(IEnumerable<ISearchHit> topCategories, SearchResultModel model)
 		{
-			if (topCategories.Count == 0)
+			if (!topCategories.Any())
 				return;
 
 			var hitGroup = new SearchResultModel.HitGroup(model)
@@ -227,21 +226,22 @@ namespace SmartStore.Web.Controllers
 				Ordinal = -100
 			};
 
-			foreach (var categoryId in topCategories.Keys)
+			foreach (var item in topCategories)
 			{
+				// TODO: localized name
 				hitGroup.Hits.Add(new SearchResultModel.HitItem
 				{
-					Label = topCategories[categoryId],
-					Url = Url.RouteUrl("Search", new { q = model.Term, c = categoryId })
+					Label = item.GetString("name"),
+					Url = Url.RouteUrl("Search", new { q = model.Term, c = item.EntityId })
 				});
 			}
 
 			model.HitGroups.Add(hitGroup);
 		}
 
-		private void AddTopManufacturersToModel(Dictionary<int, string> topManufacturers, SearchResultModel model)
+		private void AddTopManufacturersToModel(IEnumerable<ISearchHit> topManufacturers, SearchResultModel model)
 		{
-			if (topManufacturers.Count == 0)
+			if (!topManufacturers.Any())
 				return;
 
 			var hitGroup = new SearchResultModel.HitGroup(model)
@@ -251,12 +251,13 @@ namespace SmartStore.Web.Controllers
 				Ordinal = -100
 			};
 
-			foreach (var manufacturerId in topManufacturers.Keys)
+			foreach (var item in topManufacturers)
 			{
+				// TODO: localized name
 				hitGroup.Hits.Add(new SearchResultModel.HitItem
 				{
-					Label = topManufacturers[manufacturerId],
-					Url = Url.RouteUrl("Search", new { q = model.Term, m = manufacturerId })
+					Label = item.GetString("name"),
+					Url = Url.RouteUrl("Search", new { q = model.Term, m = item.EntityId })
 				});
 			}
 

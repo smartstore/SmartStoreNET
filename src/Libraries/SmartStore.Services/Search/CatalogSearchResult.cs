@@ -12,8 +12,8 @@ namespace SmartStore.Services.Search
 			IPagedList<Product> hits,
 			CatalogSearchQuery query,
 			string[] spellCheckerSuggestions,
-			Dictionary<int, string> topCategories,
-			Dictionary<int, string> topManufacturers)
+			IEnumerable<ISearchHit> topCategories,
+			IEnumerable<ISearchHit> topManufacturers)
 		{
 			Guard.NotNull(hits, nameof(hits));
 			Guard.NotNull(query, nameof(query));
@@ -22,8 +22,8 @@ namespace SmartStore.Services.Search
 			Hits = hits;
 			Query = query;
 			SpellCheckerSuggestions = spellCheckerSuggestions ?? new string[0];
-			TopCategories = topCategories ?? new Dictionary<int, string>();
-			TopManufacturers = topManufacturers ?? new Dictionary<int, string>();
+			TopCategories = topCategories ?? new List<ISearchHit>();
+			TopManufacturers = topManufacturers ?? new List<ISearchHit>();
 		}
 
 		/// <summary>
@@ -56,7 +56,7 @@ namespace SmartStore.Services.Search
 		/// <summary>
 		/// Gets top categories
 		/// </summary>
-		public Dictionary<int, string> TopCategories
+		public IEnumerable<ISearchHit> TopCategories
 		{
 			get;
 			private set;
@@ -65,7 +65,7 @@ namespace SmartStore.Services.Search
 		/// <summary>
 		/// Gets top manufacturers
 		/// </summary>
-		public Dictionary<int, string> TopManufacturers
+		public IEnumerable<ISearchHit> TopManufacturers
 		{
 			get;
 			private set;

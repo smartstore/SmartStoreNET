@@ -51,13 +51,13 @@ namespace SmartStore.Core.Search
 		/// Search for top categories
 		/// </summary>
 		/// <returns>Top categories</returns>
-		Dictionary<int, string> GetTopCategories();
+		IEnumerable<ISearchHit> GetTopCategories();
 
 		/// <summary>
 		/// Search for top manufacturers
 		/// </summary>
 		/// <returns>Top manufacturers</returns>
-		Dictionary<int, string> GetTopManufacturers();
+		IEnumerable<ISearchHit> GetTopManufacturers();
 
 		/// <summary>
 		/// Highlights chosen terms in a text, extracting the most relevant sections

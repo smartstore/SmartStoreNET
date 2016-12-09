@@ -61,8 +61,8 @@ namespace SmartStore.Services.Search
 					{
 						var totalCount = 0;
 						string[] spellCheckerSuggestions = null;
-						Dictionary<int, string> topCategories = null;
-						Dictionary<int, string> topManufacturers = null;
+						IEnumerable<ISearchHit> topCategories = null;
+						IEnumerable<ISearchHit> topManufacturers = null;
 						IEnumerable<ISearchHit> searchHits;
 						PagedList<Product> hits;
 

@@ -117,6 +117,8 @@ namespace SmartStore.Services.Search.Modelling
 				orderBy = _catalogSettings.DefaultSortOrder;
 			}
 
+			query.CustomData["CurrentSortOrder"] = orderBy.Value;
+
 			query.SortBy(orderBy.Value);
 		}
 

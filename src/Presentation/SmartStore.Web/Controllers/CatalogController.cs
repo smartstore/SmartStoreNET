@@ -236,7 +236,7 @@ namespace SmartStore.Web.Controllers
 			model.Products = _helper.MapProductSummaryModel(productsResult.Hits, mappingSettings);
 
 			// Prepare paging/sorting/mode stuff
-			_helper.MapProductListOptions(model.Products, category, _catalogSettings.DefaultPageSizeOptions);
+			_helper.MapListActions(model.Products, category, _catalogSettings.DefaultPageSizeOptions);
 
 			// template
 			var templateCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_TEMPLATE_MODEL_KEY, category.CategoryTemplateId);
@@ -410,7 +410,7 @@ namespace SmartStore.Web.Controllers
 			model.Products = _helper.MapProductSummaryModel(productsResult.Hits, mappingSettings);
 
 			// Prepare paging/sorting/mode stuff
-			_helper.MapProductListOptions(model.Products, manufacturer, _catalogSettings.DefaultPageSizeOptions);
+			_helper.MapListActions(model.Products, manufacturer, _catalogSettings.DefaultPageSizeOptions);
 
 			// Template
 			var templateCacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_TEMPLATE_MODEL_KEY, manufacturer.ManufacturerTemplateId);
@@ -617,7 +617,7 @@ namespace SmartStore.Web.Controllers
 			model.Products = _helper.MapProductSummaryModel(productsResult.Hits, mappingSettings);
 
 			// Prepare paging/sorting/mode stuff
-			_helper.MapProductListOptions(model.Products, null, _catalogSettings.DefaultPageSizeOptions);
+			_helper.MapListActions(model.Products, null, _catalogSettings.DefaultPageSizeOptions);
 
 			return View(model);
 		}

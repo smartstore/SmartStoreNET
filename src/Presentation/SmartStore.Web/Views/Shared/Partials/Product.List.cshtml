@@ -19,24 +19,17 @@
 		paddingTop = (thumbAspectRatio * 100) + "%";
 	}
 
-	string paginatorHtml = null;
-	if (Model.AllowPagination && Model.Items.Any())
+	string pagerHtml = null;
+	if (Model.PagedList.TotalPages > 1)
 	{
-		paginatorHtml = Html.SmartStore()
-			.Pager(Model.Products)
-			.HtmlAttributes(new { @class = "artlist-paginator" })
-			.Alignment(PagerAlignment.Right)
-			.Name("pagination")
-			.QueryParam("i")
-			.Size(PagerSize.Medium)
-			.MaxPagesToDisplay(5)
-			.ToString();
+		pagerHtml = Html.Partial("Product.List.Pager", Model).ToHtmlString();
 	}
 
-	var hasActions = (Model.AllowPagination && Model.Products.TotalPages > 1) 
-		|| Model.AllowSorting 
-		|| Model.AllowViewModeChanging 
-		|| Model.AvailablePageSizes != null;
+	// TODO: (mc) AllowFiltering (?)
+	var hasActions = Model.PagedList.TotalPages > 1
+		|| Model.AllowSorting
+		|| Model.AllowViewModeChanging
+		|| Model.AllowFiltering;
 }
 
 @if (paddingTop.HasValue())
@@ -50,15 +43,32 @@
 
 @if (hasActions)
 {
-	Html.RenderPartial("Product.List.Actions", Model);
-}
+	<div class="artlist-actions artlist-actions--top clearfix">
+		@if (Model.AllowSorting || Model.AllowFiltering)
+		{
+			<div class="artlist-action-group artlist-action-group--filtersort clearfix">
+				@{ Html.RenderPartial("Product.List.FilterSort", Model); }
+			</div>
+		}
 
-@*<div style="border-bottom: 1px solid #ddd" class="m-b-2">
-	@if (paginatorHtml.HasValue())
-	{
-		@Html.Raw(paginatorHtml)
-	}
-</div>*@
+		@if (pagerHtml.HasValue() || Model.AllowViewModeChanging)
+		{
+			<div class="artlist-action-group artlist-action-group--page clearfix">
+				@* ViewMode *@
+				@if (Model.AllowViewModeChanging && Model.ViewMode == ProductSummaryViewMode.Grid || Model.ViewMode == ProductSummaryViewMode.List)
+				{
+					Html.RenderPartial("Product.List.ViewMode", Model);
+				}
+
+				@* Pager *@
+				@if (pagerHtml.HasValue())
+				{
+					Html.RenderPartial("Product.List.Pager", Model);
+				}
+			</div>
+		}
+	</div>
+}
 
 <div id="@id" class="artlist artlist-grid artlist-4-cols">
 	@foreach (var product in Model.Items)
@@ -67,7 +77,11 @@
 	}
 </div>
 
-@if (paginatorHtml.HasValue())
-{
-	@Html.Raw(paginatorHtml)
+@if (pagerHtml.HasValue())
+{	
+	<div class="artlist-actions artlist-actions--bottom clearfix">
+		<div class="artlist-action-group artlist-action-group--page clearfix">
+			@Html.Raw(pagerHtml)
+		</div>
+	</div>
 }

@@ -1,0 +1,121 @@
+﻿@model ProductSummaryModel
+
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	var pageable = Model.PagedList;
+	if (pageable.TotalPages <= 1)
+	{
+		return;
+	}
+}
+
+@functions
+{
+	private int GetFirstPageIndex(IPageable list)
+	{
+		int maxPagesToDisplay = 100;
+		if ((list.TotalPages < maxPagesToDisplay) ||
+			((list.PageIndex - (maxPagesToDisplay / 2)) < 0))
+		{
+			return 0;
+		}
+		if ((list.PageIndex + (maxPagesToDisplay / 2)) >= list.TotalPages)
+		{
+			return (list.TotalPages - maxPagesToDisplay);
+		}
+		return (list.PageIndex - (maxPagesToDisplay / 2));
+	}
+
+	private int GetLastPageIndex(IPageable list)
+	{
+		int maxPagesToDisplay = 100;
+		int num = maxPagesToDisplay / 2;
+		if ((maxPagesToDisplay % 2) == 0)
+		{
+			num--;
+		}
+		if ((list.TotalPages < maxPagesToDisplay) ||
+			((list.PageIndex + num) >= list.TotalPages))
+		{
+			return (list.TotalPages - 1);
+		}
+		if ((list.PageIndex - (maxPagesToDisplay / 2)) < 0)
+		{
+			return (maxPagesToDisplay - 1);
+		}
+		return (list.PageIndex + num);
+	}
+}
+
+<div class="artlist-action artlist-action--pager pull-xs-right clearfix">
+	@if (pageable.PageNumber > 1)
+	{
+		<a href='@ModifyUrl(null, "i=" + (pageable.PageNumber - 1))' class="btn btn-secondary btn-pager-prev pull-xs-left">
+			<i class="fa fa-chevron-left"></i>
+		</a>
+	}
+
+	<div class="mf-dropdown">
+		<button class="btn btn-secondary btn-artlist-action">
+			<em class="hidden-xs-down">Seite</em>
+			<span>@pageable.PageNumber</span>
+			<em class="hidden-xs-down">von</em>
+			<span class="hidden-xs-down">@pageable.TotalPages</span>
+			<i class="fa fa-caret-down"></i>
+		</button>
+		<select class="artlist-action-select form-control noskin" name="artlist-action-pagesize" id="artlist-action-pagesize" data-qname="i" title="@T("Products.PageSize"): @pageable.PageSize">
+			@{ 
+				int pageCount = pageable.TotalPages;
+				int start = GetFirstPageIndex(pageable) + 1;
+				int end = GetLastPageIndex(pageable) + 1;
+			}
+			@if (start > 3)
+			{
+				<option value="1" @Html.Attr("selected", "selected", 1 == pageable.PageNumber)>Seite 1 von @pageCount</option>
+				<option disabled="disabled">...</option>
+			}
+			@for (var i = start; i <= end; i++)
+			{
+				<option value="@i" @Html.Attr("selected", "selected", i == pageable.PageNumber)>Seite @i von @pageCount</option>
+			}
+			@if (end < (pageCount - 3))
+			{
+				<option disabled="disabled">...</option>
+				<option value="@pageCount" @Html.Attr("selected", "selected", pageCount == pageable.PageNumber)>Seite @pageCount von @pageCount</option>
+			}
+		</select>
+	</div>
+
+	@if (pageable.PageNumber < pageable.TotalPages)
+	{
+		<a href='@ModifyUrl(null, "i=" + (pageable.PageNumber + 1))' class="btn btn-secondary btn-pager-next">
+			<i class="fa fa-chevron-right"></i>
+		</a>
+	}
+</div>
+
+
+@if (Model.AvailablePageSizes != null && Model.AvailablePageSizes.Any())
+{
+	<div class="artlist-action artlist-action--pagesize pull-xs-right">
+		<div class="mf-dropdown">
+			<button class="btn btn-secondary btn-artlist-action">
+				<em>@T("Products.PageSize")</em>
+				<span>@pageable.PageSize</span>
+				<i class="fa fa-caret-down"></i>
+			</button>
+			<select class="artlist-action-select form-control noskin"
+					name="artlist-action-pagesize"
+					id="artlist-action-pagesize"
+					data-qname="s"
+					data-url='@ModifyUrl(null, null, "i")'
+					title="@T("Products.PageSize"): @pageable.PageSize">
+				@foreach (var size in Model.AvailablePageSizes)
+				{
+					<option value="@size" @Html.Attr("selected", "selected", size == pageable.PageSize)>@size</option>
+				}
+			</select>
+		</div>
+	</div>
+}

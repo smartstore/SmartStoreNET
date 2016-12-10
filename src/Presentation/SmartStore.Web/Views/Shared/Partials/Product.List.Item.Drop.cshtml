@@ -64,7 +64,8 @@
 				   href="#"
 				   class="btn btn-primary btn-icon btn-lg art-drop-btn col-xs ajax-cart-link"
 				   title="@title"
-				   rel="tooltip nofollow"
+				   data-toggle="tooltip"
+				   rel="nofollow"
 				   data-type="cart"
 				   data-action="add">
 					<i class="fa fa-cart-arrow-down"></i>
@@ -74,7 +75,8 @@
 			{
 				<a href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })" 
 				   class="btn btn-secondary add-to-cart-button" 
-				   rel="tooltip nofollow" 
+				   data-toggle="tooltip"
+				   rel="nofollow" 
 				   title="@T("Products.CallForPrice.GoToForm")">
 					<i class="fa fa-envelope"></i>
 				</a>
@@ -88,7 +90,8 @@
 			   href="#"
 			   class="btn btn-secondary btn-icon btn-lg art-drop-btn col-xs ajax-cart-link" 
 			   title="@T("Categories.Wishlist")"
-			   rel="tooltip nofollow" 
+			   data-toggle="tooltip" 
+			   rel="nofollow"
 			   data-form-selector="#product-details-form" 
 			   data-type="wishlist" 
 			   data-action="add">
@@ -102,7 +105,8 @@
 			   href="#"
 			   class="btn btn-secondary btn-icon btn-lg art-drop-btn col-xs ajax-cart-link" 
 			   title="@T("Categories.Compare")"  
-			   rel="tooltip nofollow" 
+			   data-toggle="tooltip" 
+			   rel="nofollow"
 			   data-type="compare" 
 			   data-action="add">
 				<i class="fa fa-retweet"></i>

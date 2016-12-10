@@ -8,7 +8,7 @@
     @RenderSection("teaser", required: false)
 }
 
-<div id="content-left" class="col-md-3 hidden-xs-down"> 
+<div id="content-left" class="col-lg-3 hidden-md-down"> 
     @if (IsSectionDefined("left"))
 	{
         @RenderSection("left")
@@ -29,7 +29,7 @@
         @Html.Widget("left_side_column_after")
     }
 </div>
-<div id="content-center" class="col-md-9">
+<div id="content-center" class="col-lg-9">
     @Html.Widget("main_column_before")
     @RenderBody()
     @Html.Widget("main_column_after")

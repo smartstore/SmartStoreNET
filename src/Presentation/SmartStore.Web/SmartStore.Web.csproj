@@ -335,6 +335,7 @@
     <Compile Include="Models\Boards\TopicMoveModel.cs" />
     <Compile Include="Models\Catalog\BackInStockSubscribeModel.cs" />
     <Compile Include="Models\Catalog\CategoryModel.cs" />
+    <Compile Include="Models\Catalog\IListActions.cs" />
     <Compile Include="Models\Catalog\NavigationModelBuiltEvent.cs" />
     <Compile Include="Models\Catalog\ProductAskQuestionModel.cs" />
     <Compile Include="Models\Catalog\ProductSummaryModel.cs" />
@@ -1897,6 +1898,9 @@
     <Content Include="Views\Shared\Partials\Product.List.Item.Drop.cshtml" />
     <Content Include="Views\Shared\Components\Product.List.Pager.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.Actions.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.Pager.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.ViewMode.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.FilterSort.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

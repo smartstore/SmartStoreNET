@@ -16,7 +16,7 @@
 		else
 		{
             <header>
-                <div class="menubar-section">
+                <div class="menubar-section hidden-md-down">
                     <div class="container menubar-container">
                         @{ 
 							Html.RenderAction("Menu", "Common", new { area = "" });
@@ -30,7 +30,7 @@
 						}
                     </div>
                 </div>
-                <div class="megamenu-section">
+                <div class="megamenu-section hidden-md-down">
                     <nav class='navbar @(GetThemeVariable<bool>("InverseNavbar") ? "navbar-dark bg-inverse" : "navbar-light bg-faded")'>
                         <div class="container megamenu-container">
                             @{ 

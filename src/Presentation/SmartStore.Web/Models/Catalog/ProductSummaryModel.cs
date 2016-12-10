@@ -8,7 +8,7 @@ using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Web.Models.Catalog
 {
-    public partial class ProductSummaryModel : ModelBase
+    public partial class ProductSummaryModel : ModelBase, IListActions
     {
 		public static ProductSummaryModel Empty = new ProductSummaryModel(new PagedList<Product>(new List<Product>(), 0, int.MaxValue));
 
@@ -17,10 +17,8 @@ namespace SmartStore.Web.Models.Catalog
 			Guard.NotNull(products, nameof(products));
 
 			Items = new List<SummaryItem>();
-			Products = products;
+			PagedList = products;
 		}
-
-		public IPagedList<Product> Products { get; private set; }
 
 		public int? ThumbSize { get; set; }
 		public bool ShowSku { get; set; }
@@ -40,13 +38,25 @@ namespace SmartStore.Web.Models.Catalog
 		public bool CompareEnabled { get; set; }
 		public bool ForceRedirectionAfterAddingToCart { get; set; }
 
-		public ProductSummaryViewMode ViewMode { get; set; }
-		public bool AllowPagination { get; set; }
-		public IEnumerable<int> AvailablePageSizes { get; set; }
-		public bool AllowSorting { get; set; }
-		public bool AllowViewModeChanging { get; set; }		
-
 		public IList<SummaryItem> Items { get; set; }
+
+		#region IListActions
+
+		public ProductSummaryViewMode ViewMode { get; set; }
+		public bool AllowViewModeChanging { get; set; }
+
+		// TODO: (mc) Implement
+		public bool AllowFiltering { get; set; }
+
+		public bool AllowSorting { get; set; }
+		public int? CurrentSortOrder { get; set; }
+		public string CurrentSortOrderName { get; set; }
+		public IDictionary<int, string> AvailableSortOptions { get; set; }
+
+		public IEnumerable<int> AvailablePageSizes { get; set; }
+		public IPageable PagedList { get; set; }
+
+		#endregion
 
 		public class SummaryItem : EntityModelBase
 		{

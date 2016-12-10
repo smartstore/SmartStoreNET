@@ -36,14 +36,8 @@
             if ($.fn.tooltip === undefined)
                 return;
             if (!Modernizr.touch) {
-                ctx.tooltip({ selector: "[rel=tooltip], .tooltip-toggle" });
+                ctx.tooltip({ selector: '[data-toggle="tooltip"], .tooltip-toggle', container: 'body' });
             }
-        },
-        // column equalizer
-        function (ctx) {
-            if ($.fn.equalizeColumns === undefined)
-                return;
-            ctx.find(".equalized-column").equalizeColumns({ /*deep: true,*/ responsive: true });
         }
     ];
 
@@ -99,17 +93,18 @@
 			);
         }
 
-        // create navbar
+    	// create navbar
+    	// TODO: (mc) away with it (?)
         if ($.fn.navbar)
         {
             $('.navbar ul.nav-smart > li.dropdown').navbar();
         }
 
-        // shrink menu
+    	// shrink menu 
+		// TODO: (mc) away with it! 
         if ($.fn.shrinkMenu) {
             $(".shrink-menu").shrinkMenu({ responsive: true });
         }
-
         
         applyCommonPlugins($("body"));
 

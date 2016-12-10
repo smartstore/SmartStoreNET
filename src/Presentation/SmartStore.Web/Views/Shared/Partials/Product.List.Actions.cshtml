@@ -3,36 +3,22 @@
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Services.Search.Modelling;
 
-@{ 
-	var searchQuery = EngineContext.Current.Resolve<ICatalogSearchQueryFactory>().Current;
-}
-
 <div class="artlist-actions clearfix">
-	@if (Model.AllowSorting && searchQuery != null)
+	@if (Model.AllowSorting)
 	{
-		var sortMap = new Dictionary<int, string>
-		{
-			{ 1, T("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Relevance") },
-			{ 5, T("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.NameAsc") },
-			{ 6, T("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.NameDesc") },
-			{ 10, T("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.PriceAsc") },
-			{ 11, T("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.PriceDesc") },
-			{ 15, T("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.CreatedOn") }
-		};
-
 		<div class="artlist-action artlist-action--sort pull-xs-left">
 			<div class="form-group">
 				<label for="artlist-action-sort" class="hidden-lg-up">@T("Products.SortBy")</label>
-				<div class="artlist-action-wrapper">
-					<button class="btn btn-secondary x-btn-lg btn-artlist-action">
+				<div class="mf-dropdown">
+					<button class="btn btn-secondary btn-artlist-action">
 						<em class="hidden-md-down">@T("Products.SortBy")</em>
-						<span>Name A-Z</span>
+						<span>@Model.CurrentSortOrderName</span>
 						<i class="fa fa-caret-down"></i>
 					</button>
-					<select class="form-control noskin" name="artlist-action-sort" id="artlist-action-sort" data-qname="o" title="@T("Products.SortBy"): Relevanz">
-						@foreach (var sort in sortMap)
+					<select class="artlist-action-select form-control noskin" name="artlist-action-sort" id="artlist-action-sort" data-qname="o" title="@T("Products.SortBy"): @Model.CurrentSortOrderName">
+						@foreach (var sort in Model.AvailableSortOptions)
 						{
-							<option value="@sort.Key">@sort.Value</option>
+							<option value="@sort.Key" @Html.Attr("selected", "selected", sort.Key == Model.CurrentSortOrder)>@sort.Value</option>
 						}
 					</select>
 				</div>
@@ -45,16 +31,21 @@
 		<div class="artlist-action artlist-action--pagesize pull-xs-left">
 			<div class="form-group">
 				<label for="artlist-action-sort" class="hidden-lg-up">@T("Products.PageSize")</label>
-				<div class="artlist-action-wrapper">
+				<div class="mf-dropdown">
 					<button class="btn btn-secondary x-btn-lg btn-artlist-action">
 						<em class="hidden-md-down">@T("Products.PageSize")</em>
-						<span>@Model.Products.PageSize</span>
+						<span>@Model.PagedList.PageSize</span>
 						<i class="fa fa-caret-down"></i>
 					</button>
-					<select class="form-control noskin" name="artlist-action-pagesize" id="artlist-action-pagesize" data-qname="s" title="@T("Products.PageSize"): @Model.Products.PageSize">
+					<select class="artlist-action-select form-control noskin" 
+							name="artlist-action-pagesize" 
+							id="artlist-action-pagesize" 
+							data-qname="s" 
+							data-url='@ModifyUrl(null, null, "i")' 
+							title="@T("Products.PageSize"): @Model.PagedList.PageSize">
 						@foreach (var size in Model.AvailablePageSizes)
 						{
-							<option value="@size">@size</option>
+							<option value="@size" @Html.Attr("selected", "selected", size == Model.PagedList.PageSize)>@size</option>
 						}
 					</select>
 				</div>
@@ -70,13 +61,13 @@
 				<div class="artlist-action artlist-action--viewmode">
 					@if (Model.ViewMode == ProductSummaryViewMode.Grid)
 					{
-						<a href='@ModifyUrl(null, "v=list")' class="btn btn-secondary btn-artlist-action" rel="tooltip" title="@T("Products.SwitchToList")">
+						<a href='@ModifyUrl(null, "v=list")' class="btn btn-secondary btn-artlist-action tooltip-toggle" data-toggle="tooltip" rel="nofollow" title="@T("Products.SwitchToList")">
 							<i class="fa fa-list"></i>
 						</a>
 					}
 					else
 					{
-						<a href='@ModifyUrl(null, "v=grid")' class="btn btn-secondary btn-artlist-action" rel="tooltip" title="@T("Products.SwitchToGrid")">
+						<a href='@ModifyUrl(null, "v=grid")' class="btn btn-secondary btn-artlist-action tooltip-toggle" data-toggle="tooltip" rel="nofollow" title="@T("Products.SwitchToGrid")">
 							<i class="fa fa-th"></i>
 						</a>
 					}
@@ -85,33 +76,33 @@
 		</div>
 	}
 
-	@if (Model.AllowPagination && Model.Products.TotalCount > 1)
+	@if (Model.PagedList.TotalCount > 1)
 	{
 		<div class="artlist-action artlist-action--paging pull-xs-right">
 			<div class="form-group">
 				<label class="hidden-lg-up">@T("Admin.Telerik.GridLocalization.Page")</label>
 				<div class="artlist-action-wrapper clearfix">
-					<a href='@ModifyUrl(null, "i=" + (Model.Products.PageNumber - 1))' class="btn btn-warning btn-flat pull-xs-left">
+					<a href='@ModifyUrl(null, "i=" + (Model.PagedList.PageNumber - 1))' class="btn btn-secondary pull-xs-left">
 						<i class="fa fa-chevron-left"></i>
 					</a>
 
-					<div class="artlist-action-wrapper pull-xs-left hidden-xs-down" style="margin: 0 0.5rem">
+					<div class="mf-dropdown pull-xs-left hidden-xs-down" style="margin: 0 0.5rem">
 						<button class="btn btn-secondary btn-artlist-action">
 							<em class="hidden-md-down">Seite</em>
-							<span>@Model.Products.PageNumber</span>
+							<span>@Model.PagedList.PageNumber</span>
 							<em>von</em>
-							<span>@Model.Products.TotalPages</span>
+							<span>@Model.PagedList.TotalPages</span>
 							<i class="fa fa-caret-down"></i>
 						</button>
-						<select class="form-control noskin" name="artlist-action-pagesize" id="artlist-action-pagesize" data-qname="i" title="@T("Products.PageSize"): @Model.Products.PageSize">
-							@for (var i = 1; i <= Model.Products.TotalPages; i++)
+						<select class="artlist-action-select form-control noskin" name="artlist-action-pagesize" id="artlist-action-pagesize" data-qname="i" title="@T("Products.PageSize"): @Model.PagedList.PageSize">
+							@for (var i = 1; i <= Model.PagedList.TotalPages; i++)
 							{
-								<option value="@i">Seite @i von @Model.Products.TotalPages</option>
+								<option value="@i" @Html.Attr("selected", "selected", i == Model.PagedList.PageNumber)>Seite @i von @Model.PagedList.TotalPages</option>
 							}
 						</select>
 					</div>
 
-					<a href='@ModifyUrl(null, "i=" + (Model.Products.PageNumber + 1))' class="btn btn-warning btn-flat pull-xs-left">
+					<a href='@ModifyUrl(null, "i=" + (Model.PagedList.PageNumber + 1))' class="btn btn-secondary pull-xs-left">
 						<i class="fa fa-chevron-right"></i>
 					</a>
 				</div>
@@ -119,138 +110,3 @@
 		</div>
 	}
 </div>
-
-@functions
-{
-//public void PreparePagingFilteringModel(PagingFilteringModel model, PagingFilteringModel command, PageSizeContext pageSizeContext)
-//{
-//	// sorting
-//	model.AllowProductSorting = _catalogSettings.AllowProductSorting;
-//	if (model.AllowProductSorting)
-//	{
-//		model.OrderBy = command.OrderBy;
-
-//		foreach (ProductSortingEnum enumValue in Enum.GetValues(typeof(ProductSortingEnum)))
-//		{
-//			if (enumValue == ProductSortingEnum.CreatedOnAsc || enumValue == ProductSortingEnum.Initial)
-//			{
-//				// TODO: (MC) das von uns eingeführte "CreatedOnAsc" schmeiß ich
-//				// jetzt deshalb aus der UI raus, weil wir diese Sortier-Option
-//				// auch ins StoredProc (ProductsLoadAllpaged) reinpacken müssten.
-//				// Ist eigentlich kein Problem, ABER: Wir müssten immer wenn SmartStore
-//				// Änderungen an dieser Proc vornimmt und wir diese Änderungen
-//				// übernehmen müssen auch ständig an unseren Mod denken. Lass ma'!
-//				continue;
-//			}
-
-//			var currentPageUrl = _services.WebHelper.GetThisPageUrl(true);
-//			var sortUrl = _services.WebHelper.ModifyQueryString(currentPageUrl, "orderby=" + ((int)enumValue).ToString(), null);
-
-//			var sortValue = enumValue.GetLocalizedEnum(_localizationService, _services.WorkContext);
-//			model.AvailableSortOptions.Add(new ListOptionItem()
-//			{
-//				Text = sortValue,
-//				Url = sortUrl,
-//				Selected = enumValue == (ProductSortingEnum)command.OrderBy
-//			});
-//		}
-//	}
-
-//	//view mode
-//	model.AllowProductViewModeChanging = _catalogSettings.AllowProductViewModeChanging;
-//	var viewMode = !string.IsNullOrEmpty(command.ViewMode)
-//					? command.ViewMode
-//					: _catalogSettings.DefaultViewMode;
-
-//	model.ViewMode = viewMode;
-
-//	if (model.AllowProductViewModeChanging)
-//	{
-//		var currentPageUrl = _services.WebHelper.GetThisPageUrl(true);
-//		//grid
-//		model.AvailableViewModes.Add(new ListOptionItem()
-//		{
-//			Text = T("Categories.ViewMode.Grid"),
-//			Url = _services.WebHelper.ModifyQueryString(currentPageUrl, "viewmode=grid", null),
-//			Selected = viewMode == "grid",
-//			ExtraData = "grid"
-//		});
-//		//list
-//		model.AvailableViewModes.Add(new ListOptionItem()
-//		{
-//			Text = T("Categories.ViewMode.List"),
-//			Url = _services.WebHelper.ModifyQueryString(currentPageUrl, "viewmode=list", null),
-//			Selected = viewMode == "list",
-//			ExtraData = "list"
-//		});
-//	}
-
-//	//page size
-//	model.AllowCustomersToSelectPageSize = false;
-//	if (pageSizeContext.AllowCustomersToSelectPageSize && pageSizeContext.PageSizeOptions.IsEmpty())
-//	{
-//		pageSizeContext.PageSizeOptions = _catalogSettings.DefaultPageSizeOptions; // "12, 18, 36, 72, 150";
-
-//	}
-//	if (pageSizeContext.AllowCustomersToSelectPageSize && pageSizeContext.PageSizeOptions.HasValue())
-//	{
-//		var pageSizes = pageSizeContext.PageSizeOptions.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-//		if (pageSizes.Any())
-//		{
-//			// get the first page size entry to use as the default (category page load) or if customer enters invalid value via query string
-//			if (command.PageSize <= 0 || !pageSizes.Contains(command.PageSize.ToString()))
-//			{
-//				int temp = 0;
-
-//				if (int.TryParse(pageSizes.FirstOrDefault(), out temp))
-//				{
-//					if (temp > 0)
-//					{
-//						command.PageSize = temp;
-//					}
-//				}
-//			}
-
-//			var currentPageUrl = _services.WebHelper.GetThisPageUrl(true);
-//			var sortUrl = _services.WebHelper.ModifyQueryString(currentPageUrl, "pagesize=__pagesize__", null);
-//			sortUrl = _services.WebHelper.RemoveQueryString(sortUrl, "pagenumber");
-
-//			foreach (var pageSize in pageSizes)
-//			{
-//				int temp = 0;
-//				if (!int.TryParse(pageSize, out temp) || temp <= 0)
-//				{
-//					continue;
-//				}
-
-//				model.PageSizeOptions.Add(new ListOptionItem()
-//				{
-//					Text = pageSize,
-//					Url = sortUrl.Replace("__pagesize__", pageSize),
-//					Selected = pageSize.Equals(command.PageSize.ToString(), StringComparison.InvariantCultureIgnoreCase)
-//				});
-//			}
-
-//			if (model.PageSizeOptions.Any())
-//			{
-//				model.PageSizeOptions = model.PageSizeOptions.OrderBy(x => int.Parse(x.Text)).ToList();
-//				model.AllowCustomersToSelectPageSize = true;
-
-//				if (command.PageSize <= 0)
-//				{
-//					command.PageSize = int.Parse(model.PageSizeOptions.FirstOrDefault().Text);
-//				}
-//			}
-//		}
-//	}
-//	else
-//	{
-//		//customer is not allowed to select a page size
-//		command.PageSize = pageSizeContext.PageSize;
-//	}
-
-//	if (command.PageSize <= 0)
-//		command.PageSize = pageSizeContext.PageSize;
-//}
-}

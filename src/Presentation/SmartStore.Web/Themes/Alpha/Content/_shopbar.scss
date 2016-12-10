@@ -41,7 +41,7 @@
 // --------------------------------------------------
 
 .shop-logo {
-    max-width: 16rem;
+    max-width: 11rem;
     max-height: 6rem;
 }
 
@@ -140,8 +140,8 @@
     .shopbar-button-icon {
         margin-bottom: 0;
         > i {
-            font-size: 2rem;
-            line-height: 2rem;
+            font-size: 1.8rem;
+            line-height: 1.8rem;
             color: $body-color;
         }
         > .label {
@@ -386,4 +386,10 @@
 
 #shopbar-flyout-account .shopbar-flyout-inner {
 	padding: 10px 20px;
+}
+
+
+@include media-breakpoint-up(sm) {
+    .shop-logo { max-width: 16rem; }  
+    .shopbar-button .shopbar-button-icon > i { font-size: 2rem; line-height: 2rem; }
 }

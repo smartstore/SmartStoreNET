@@ -24,6 +24,7 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Search;
+using SmartStore.Services.Search.Modelling;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
@@ -72,6 +73,7 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<ITopicService> _topicService;
 		private readonly Lazy<IDataExporter> _dataExporter;
 		private readonly ICatalogSearchService _catalogSearchService;
+		private readonly ICatalogSearchQueryFactory _catalogSearchQueryFactory;
 
 		private readonly HttpRequestBase _httpRequest;
 		private readonly UrlHelper _urlHelper;
@@ -108,6 +110,7 @@ namespace SmartStore.Web.Controllers
 			Lazy<ITopicService> topicService,
 			Lazy<IDataExporter> dataExporter,
 			ICatalogSearchService catalogSearchService,
+			ICatalogSearchQueryFactory catalogSearchQueryFactory,
 			HttpRequestBase httpRequest,
 			UrlHelper urlHelper)
 		{
@@ -143,6 +146,7 @@ namespace SmartStore.Web.Controllers
 			this._topicService = topicService;
 			this._dataExporter = dataExporter;
 			this._catalogSearchService = catalogSearchService;
+			this._catalogSearchQueryFactory = catalogSearchQueryFactory;
 			this._httpRequest = httpRequest;
 			this._urlHelper = urlHelper;
 

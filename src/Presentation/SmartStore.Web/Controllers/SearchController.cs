@@ -169,7 +169,7 @@ namespace SmartStore.Web.Controllers
 			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
 
 			// Prepare paging/sorting/mode stuff
-			_catalogHelper.MapProductListOptions(summaryModel, null, _catalogSettings.DefaultPageSizeOptions);
+			_catalogHelper.MapListActions(summaryModel, null, _catalogSettings.DefaultPageSizeOptions);
 
 			// Add product hits
 			model.TopProducts = summaryModel;

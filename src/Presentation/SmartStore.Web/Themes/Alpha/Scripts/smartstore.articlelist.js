@@ -22,19 +22,14 @@
 			.css('bottom', 0);
 	});
 
-	$('.artlist-actions').on('mouseenter mouseleave mousedown', 'select', function (e) {
-		var btn = $(this).parent().find('.btn-artlist-action');
-		if (e.type == "mouseenter") {
-			btn.addClass('focus');
-		}
-		else if (e.type == "mousedown") {
-			btn.addClass('active').removeClass('focus');
-			_.delay(function () {
-				$('body').one('mousedown', function (e) { btn.removeClass('active'); });
-			}, 50);		
-		}
-		else {
-			btn.removeClass('focus');
-		}
+	$('.artlist-actions').on('change', '.artlist-action-select', function (e) {
+		var select = $(this),
+			qName = select.data('qname'),
+			url = select.data('url'),
+			val = select.val();
+
+		var url = window.modifyUrl(url, qName, val);
+
+		window.setLocation(url);
 	});
 })(jQuery, window, document);

@@ -16,14 +16,13 @@ $art-active-bg-color:           #fff;
 // Action Bar
 
 .artlist-actions {
-    padding-bottom: 1.5rem;
     margin-bottom: 1.5rem;
     border-bottom: 1px solid $art-border-color;
 }
 
 .artlist-action {
     &:not(:last-child) {
-        margin-right: 0.5rem;
+        //margin-right: 0.5rem;
     }
 
     label {
@@ -34,40 +33,42 @@ $art-active-bg-color:           #fff;
     .form-group {
         margin-bottom: 0;
     }
+
+    .btn 
+    { 
+        border-radius: 0; 
+        transition: none; 
+    }
+
+    .mf-dropdown {
+        display: block;
+    }
 }
 
-.artlist-action-wrapper {
-    position: relative;
+.artlist-action-group {
+    padding-bottom: 1.5rem;
+}
 
-    .btn-artlist-action {
-        border-radius: 0;
-        position: relative;
-    }
+.artlist-action-group--page {   
+    > .artlist-action--viewmode, 
+    > .artlist-action--pagesize { margin-right: 1rem; }
+}
 
-    .btn-artlist-action em {
-        font-variant: normal;
-        font-style: normal;
-        font-weight: normal;
-        color: $text-muted;
-        font-size: $font-size-xs;
-        font-size: inherit;
-    }
-
-    select {
-        position: absolute;
-        opacity: 0;
-        left: 0;
-        width: 100%;
-        top: 0;
-        bottom: 0;
-        cursor: pointer;
-    }
+.artlist-action--pager {
+    > * { position: relative; display: block; float: left; }
+    > *:not(:first-child) { margin-left: -1px; }
+    .btn-pager-prev { border-top-left-radius: 3px; border-bottom-left-radius: 3px }   
+    .btn-pager-next { border-top-right-radius: 3px; border-bottom-right-radius: 3px }    
 }
 
 @include media-breakpoint-down(md) {
-    .btn-artlist-action {
-        font-weight: normal !important;
-    }
+    .btn-artlist-action { font-weight: 400 !important; }
+}
+
+@include media-breakpoint-up(lg) {
+    .btn-artlist-action { font-weight: 600; }
+    .artlist-action-group--filtersort { float: left; }
+    .artlist-action-group--page { float: right; }
 }
 
 

@@ -1,7 +1,7 @@
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
 $btn-wide-padding-x:    1.8rem;
-$btn-wide-padding-x-lg: 2rem;
+$btn-wide-padding-x-lg: 2.5rem;
 $btn-wide-padding-x-sm: 1.2rem;
 
 $btn-size:              ($btn-padding-y * 2) + ($font-size-base * $line-height);
@@ -30,17 +30,21 @@ $btn-size-sm:           $input-height-sm;*/
 }
 
 .btn-secondary {
-    border-color: rgba(0,0,0,.15) rgba(0,0,0,.15) rgba(0,0,0,.25)
+    border-color: rgba(0,0,0,.15) rgba(0,0,0,.15) rgba(0,0,0,.25);
 }
 
 .btn-secondary:hover,
 .btn-secondary:focus, .btn-secondary.focus {
     background-color: #f2f2f2;
+    border-color: rgba(0,0,0,.2) rgba(0,0,0,.2) rgba(0,0,0,.3)
 }
 
 .btn-lg:not(.btn-icon):not(.btn-circle), 
 .btn-group-lg > .btn:not(.btn-icon):not(.btn-circle) {
-    font-size: $font-size-base;
+    // make lg button font-size a bit larger (~16px)
+    @if $font-size-root < 16px {
+        font-size: 1.143rem;
+    }   
 }
 
 
@@ -331,5 +335,38 @@ $btn-size-sm:           $input-height-sm;*/
         &.btn-sm {
             padding-right: $btn-wide-padding-x-sm + $btn-size-sm;
         }
+    }
+}
+
+
+// .mf-dropdown (Mobile Friendly dropdown)
+// --------------------------------------------------
+
+.mf-dropdown {
+    display: inline-block;
+    position: relative;
+
+    .btn {
+        border-radius: 0;
+        position: relative;
+    }
+
+    .btn em {
+        font-variant: normal;
+        font-style: normal;
+        font-weight: normal;
+        color: $text-muted;
+        font-size: $font-size-sm;
+        font-size: inherit;
+    }
+
+    select {
+        position: absolute;
+        opacity: 0;
+        left: 0;
+        width: 100%;
+        top: 0;
+        bottom: 0;
+        cursor: pointer;
     }
 }

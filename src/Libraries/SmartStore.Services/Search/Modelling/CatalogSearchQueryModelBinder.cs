@@ -18,6 +18,7 @@ namespace SmartStore.Services.Search.Modelling
 		{
 			if (_factory.Current != null)
 			{
+				// Dont' bind again for current request
 				return _factory.Current;
 			}
 

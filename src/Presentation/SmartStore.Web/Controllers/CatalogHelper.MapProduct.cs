@@ -27,13 +27,38 @@ namespace SmartStore.Web.Controllers
 {
 	public partial class CatalogHelper
 	{
-		public void MapProductListOptions(ProductSummaryModel model, IPagingOptions entity, string defaultPageSizeOptions)
+		public void MapListActions(ProductSummaryModel model, IPagingOptions entity, string defaultPageSizeOptions)
 		{
-			model.AllowSorting = _catalogSettings.AllowProductSorting;
+			var searchQuery = _catalogSearchQueryFactory.Current;
+			
+			// View mode
 			model.AllowViewModeChanging = _catalogSettings.AllowProductViewModeChanging;
-			model.AllowPagination = model.Products.TotalPages > 1;
 
-			if (model.AllowPagination && (entity?.AllowCustomersToSelectPageSize ?? _catalogSettings.AllowCustomersToSelectPageSize))
+			// Sorting
+			model.AllowSorting = _catalogSettings.AllowProductSorting;
+			if (model.AllowSorting)
+			{
+				model.CurrentSortOrder = searchQuery?.CustomData.Get("CurrentSortOrder").Convert<int?>();
+
+				model.AvailableSortOptions = _services.Cache.Get("pres:productlistsortoptions-{0}".FormatInvariant(_services.WorkContext.WorkingLanguage.Id), () => 
+				{
+					var dict = new Dictionary<int, string>();
+					foreach (ProductSortingEnum enumValue in Enum.GetValues(typeof(ProductSortingEnum)))
+					{
+						if (enumValue == ProductSortingEnum.CreatedOnAsc || enumValue == ProductSortingEnum.Initial)
+							continue;
+
+						dict[(int)enumValue] = enumValue.GetLocalizedEnum(_localizationService, _services.WorkContext);
+					}
+
+					return dict;
+				});
+
+				model.CurrentSortOrderName = model.AvailableSortOptions.Get(model.CurrentSortOrder ?? 1) ?? model.AvailableSortOptions.First().Value;
+			}
+			
+			// Pagination
+			if (model.PagedList.TotalPages > 1 && (entity?.AllowCustomersToSelectPageSize ?? _catalogSettings.AllowCustomersToSelectPageSize))
 			{
 				try
 				{

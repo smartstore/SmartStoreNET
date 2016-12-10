@@ -19,9 +19,9 @@ namespace SmartStore.Core.Search
 		/// Creates an empty document
 		/// </summary>
 		/// <param name="id">The primary key of the indexed entity</param>
-		/// <param name="documentType">Identifier of the document type, can be <c>null</c></param>
+		/// <param name="documentType">Identifies the type of a document, can be <c>null</c></param>
 		/// <returns>The document instance</returns>
-		IIndexDocument CreateDocument(int id, string documentType);
+		IIndexDocument CreateDocument(int id, SearchDocumentType? documentType);
 
 		/// <summary>
 		/// Returns a provider specific implementation of the <see cref="IIndexStore"/> interface

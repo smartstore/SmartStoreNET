@@ -8,21 +8,22 @@ namespace SmartStore.Core.Search
 {
 	public class IndexDocument : IIndexDocument
 	{
-		private readonly Multimap<string, IndexField> _fields;
+		protected readonly Multimap<string, IndexField> _fields;
 
 		public IndexDocument(int id)
 			: this(id, null)
 		{
 		}
 
-		public IndexDocument(int id, string documentType)
+		public IndexDocument(int id, SearchDocumentType? documentType)
 		{
 			_fields = new Multimap<string, IndexField>(StringComparer.OrdinalIgnoreCase);
-			_fields.Add("id", new IndexField("id", id).Store());
 
-			if (documentType.HasValue())
+			Add(new IndexField("id", id).Store());
+
+			if (documentType.HasValue)
 			{
-				_fields.Add("doctype", new IndexField("doctype", documentType).Store());
+				Add(new IndexField("doctype", (int)documentType.Value).Store());
 			}
 		}
 
@@ -34,13 +35,13 @@ namespace SmartStore.Core.Search
 			}
 		}
 
-		public string DocumentType
+		public virtual SearchDocumentType? DocumentType
 		{
 			get
 			{
 				if (_fields.ContainsKey("doctype"))
 				{
-					return (string)_fields["doctype"].FirstOrDefault().Value;
+					return (SearchDocumentType)_fields["doctype"].FirstOrDefault().Value;
 				}
 				return null;
 			}
@@ -48,7 +49,7 @@ namespace SmartStore.Core.Search
 
 		public int Count => _fields.TotalValueCount;
 
-		public void Add(IndexField field)
+		public virtual void Add(IndexField field)
 		{
 			if (field.Name.IsCaseInsensitiveEqual("id") && _fields.ContainsKey("id"))
 			{
@@ -93,7 +94,6 @@ namespace SmartStore.Core.Search
 				return Enumerable.Empty<IndexField>();
 			}
 		}
-
 
 		public IEnumerator<IndexField> GetEnumerator()
 		{

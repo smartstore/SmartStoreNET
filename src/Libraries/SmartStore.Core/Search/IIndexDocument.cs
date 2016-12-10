@@ -14,9 +14,9 @@ namespace SmartStore.Core.Search
 		int Id { get; }
 
 		/// <summary>
-		/// String to identify the type of a document, can be <c>null</c>
+		/// Identifies the type of a document, can be <c>null</c>
 		/// </summary>
-		string DocumentType { get; }
+		SearchDocumentType? DocumentType { get; }
 
 		/// <summary>
 		/// The number of fields in this document

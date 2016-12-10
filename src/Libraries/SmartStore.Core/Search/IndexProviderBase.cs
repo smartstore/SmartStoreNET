@@ -14,7 +14,7 @@ namespace SmartStore.Core.Search
 
 		public abstract IEnumerable<string> EnumerateIndexes();
 
-		public virtual IIndexDocument CreateDocument(int id, string documentType)
+		public virtual IIndexDocument CreateDocument(int id, SearchDocumentType? documentType)
 		{
 			Guard.IsPositive(id, nameof(id));
 

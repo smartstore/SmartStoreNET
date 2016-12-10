@@ -437,6 +437,7 @@
     <Compile Include="Search\ISearchQuery.cs" />
     <Compile Include="Search\NullIndexStore.cs" />
     <Compile Include="Search\Filter\SearchFilter.cs" />
+    <Compile Include="Search\SearchDocumentType.cs" />
     <Compile Include="Search\SearchQuery.cs" />
     <Compile Include="Search\SearchSettings.cs" />
     <Compile Include="Search\SearchSort.cs" />

@@ -33,8 +33,8 @@ namespace SmartStore.Core.Search
 		/// <summary>
 		/// Gets the total number of indexed documents
 		/// </summary>
-		/// <param name="documentType">Type of document, can be <c>null</c> to get number of all documents</param>
-		int GetDocumentCount(string documentType);
+		/// <param name="documentType">Type of document, use <c>null</c> to get all documents</param>
+		int GetDocumentCount(SearchDocumentType? documentType);
 
 		/// <summary>
 		/// Returns every field's name available in the index
@@ -72,7 +72,7 @@ namespace SmartStore.Core.Search
 		/// Removes a set of existing documents from the index
 		/// </summary>
 		/// <param name="documentType">Type of document</param>
-		void DeleteDocuments(string documentType);
+		void DeleteDocuments(SearchDocumentType documentType);
 	}
 
 	public static class IIndexStoreExtensions

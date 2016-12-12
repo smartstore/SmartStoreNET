@@ -140,15 +140,15 @@
     .shopbar-button-icon {
         margin-bottom: 0;
         > i {
-            font-size: 1.8rem;
-            line-height: 1.8rem;
+            font-size: 1.6rem;
+            line-height: 1.6rem;
             color: $body-color;
         }
         > .label {
 		    position: absolute; 
 		    right: -3px; 
 		    top: -3px;
-            font-size: 0.65rem; 
+            font-size: 0.625rem; 
 		    /*font-size: 11px;
 		    padding-top: 1px;
 		    padding-bottom: 1px;*/
@@ -391,5 +391,5 @@
 
 @include media-breakpoint-up(sm) {
     .shop-logo { max-width: 16rem; }  
-    .shopbar-button .shopbar-button-icon > i { font-size: 2rem; line-height: 2rem; }
+    .shopbar-button .shopbar-button-icon > i { font-size: 1.75rem; line-height: 1.75rem; }
 }

@@ -5,7 +5,8 @@
 // --------------------------------------------------
 
 $art-font-size:                 $font-size-base;
-$art-font-size-sm:              0.9rem;
+$art-font-size-sm:              $font-size-sm;
+$art-font-size-xs:              $font-size-xs;
 $art-line-height:               1.3;
 $art-price-color:               $body-color;
 $art-price-offer-color:         $brand-danger;

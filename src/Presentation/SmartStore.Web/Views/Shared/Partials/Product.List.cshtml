@@ -6,9 +6,9 @@
 
 @{
 	var id = "artlist-" + CommonHelper.GenerateRandomDigitCode(10);
-	//var maxPictureSize = Model.Select(x => x.DefaultPictureModel)
-	//	.Where(x => x != null)
-	//	.Max(x => x.Size);
+	var maxPictureSize = Model.Items.Select(x => x.Picture)
+		.Where(x => x != null)
+		.Max(x => x.Size);
 
 	// TODO: (mc) Fetch this from the (new) parent model or the product category
 	var thumbAspectRatio = EngineContext.Current.Resolve<MediaSettings>().DefaultThumbnailAspectRatio;
@@ -30,13 +30,34 @@
 		|| Model.AllowSorting
 		|| Model.AllowViewModeChanging
 		|| Model.AllowFiltering;
+
+	var listCssClasses = new List<string> { "artlist" };
+	if (Model.ViewMode == ProductSummaryViewMode.List)
+	{
+		listCssClasses.Add("artlist-lines");
+	}
+	else
+	{
+		listCssClasses.Add("artlist-grid");
+		// TODO: (mc) Fetch col count from settings/model
+		listCssClasses.Add("artlist-4-cols");
+	}
 }
 
-@if (paddingTop.HasValue())
+@if (Model.ViewMode != ProductSummaryViewMode.List && paddingTop.HasValue())
 {
 	<style type="text/css">
 		#@id .art-picture { 
 			padding-top: @paddingTop;
+		}
+	</style>
+}
+
+@if (Model.ViewMode == ProductSummaryViewMode.List && maxPictureSize.HasValue)
+{
+	<style type="text/css">
+		#@id .art-picture-block {
+			width: @("{0}px".FormatInvariant(maxPictureSize.Value));
 		}
 	</style>
 }
@@ -70,7 +91,7 @@
 	</div>
 }
 
-<div id="@id" class="artlist artlist-grid artlist-4-cols">
+<div id="@id" class='@String.Join(" ", listCssClasses)'>
 	@foreach (var product in Model.Items)
 	{
 		Html.RenderPartial("Product.List.Item", product);

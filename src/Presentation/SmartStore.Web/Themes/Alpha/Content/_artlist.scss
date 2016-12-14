@@ -18,7 +18,7 @@ $art-active-bg-color:           #fff;
 
 .artlist-actions {
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid $art-border-color;
+    &.artlist-actions--top { border-bottom: 1px solid $art-border-color; }
 }
 
 .artlist-action {
@@ -104,14 +104,10 @@ $art-active-bg-color:           #fff;
 
 .artlist {
     position: relative;
-    @include make-row();
-    margin-left: 0;
-    margin-right: 0;
     margin-bottom: 1.5rem;
     font-size: $art-font-size;
     line-height: $art-line-height; 
     z-index: 3;
-
     border-collapse: collapse;
 }
 
@@ -126,7 +122,6 @@ $art-active-bg-color:           #fff;
     padding-bottom: $grid-gutter-width / 2;
     
     border: 1px solid transparent;
-    border-bottom-color: $art-border-color;
     background: transparent;   
 
     margin-top: -1px;
@@ -142,7 +137,42 @@ $art-active-bg-color:           #fff;
     }
 }
 
+.artlist-lines {
+    .art {
+        @include make-row();
+        margin-left: 0;
+        margin-right: 0;
+        border-bottom-color: $art-border-color;
+    }
+
+    .art-picture-block {
+        width: 200px;
+        max-width: 15rem;
+    }
+
+    .art-info-block {
+        // TODO: (mc) Get col-xs from BS4 mixin here
+        display: block;
+        position: relative;
+        min-height: 1px;
+        width: 100%;
+        padding-left: $grid-gutter-width / 2;
+        padding-right: $grid-gutter-width / 2;
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 100%;
+    }
+
+    .art-drop {
+        display: none;
+    }
+}
+
 .artlist-grid {
+    @include make-row();
+    margin-left: 0;
+    margin-right: 0;
+
     &.artlist::after {
         // Make continous line after last row
         position: relative;
@@ -156,6 +186,7 @@ $art-active-bg-color:           #fff;
     .art {
         // Grid has always 2 cols per row at least, even on xs
         @include make-col-span(6, $grid-columns);
+        border-bottom-color: $art-border-color;
     }
 
     @include media-breakpoint-up(md) {

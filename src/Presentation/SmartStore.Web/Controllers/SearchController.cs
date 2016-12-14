@@ -67,8 +67,12 @@ namespace SmartStore.Web.Controllers
 				return Content(string.Empty);
 
 			// Overwrite search fields
-			var searchFields = new List<string> { "name" };
-			searchFields.AddRange(_searchSettings.SearchFields);
+			var searchFields = new List<string> { "name", "shortdescription", "tagname" };
+
+			if (_searchSettings.SearchFields.Contains("sku"))
+			{
+				searchFields.Add("sku");
+			}
 
 			query.Fields = searchFields.ToArray();
 

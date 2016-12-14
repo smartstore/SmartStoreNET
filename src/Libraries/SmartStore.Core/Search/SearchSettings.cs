@@ -7,7 +7,7 @@ namespace SmartStore.Core.Search
 	{
 		public SearchSettings()
 		{
-			SearchFields = new List<string>();
+			SearchFields = new List<string> { "shortdescription", "tagname", "manufacturer", "category" };
 			InstantSearchEnabled = true;
 			ShowProductImagesInInstantSearch = true;
 			InstantSearchNumberOfProducts = 10;

@@ -1,4 +1,4 @@
-/// <reference path="../bs4/scss/bootstrap.scss" />
+/// <reference path="../theme.scss" />
 
 $btn-wide-padding-x:    1.8rem;
 $btn-wide-padding-x-lg: 2.5rem;
@@ -48,8 +48,24 @@ $btn-size-sm:           $input-height-sm;*/
 }
 
 
+// btn-grey
+// --------------------------------------------------
+
+$btn-grey-bg: #f2f2f2;
+
+.btn-grey {
+    @include button-variant($btn-secondary-color, $btn-grey-bg, $btn-secondary-border);
+}
+
+.btn-grey:hover,
+.btn-grey:focus, .btn-grey.focus {
+    background-color: darken($btn-grey-bg, 5%) !important;
+    border-color: darken($btn-secondary-border, 6%) !important;
+}
+
+
 // btn-icon, btn-circle
-// ====================
+// --------------------------------------------------
 
 .btn-icon,
 .btn-circle {
@@ -79,7 +95,7 @@ $btn-size-sm:           $input-height-sm;*/
 
 
 // btn-flat
-// ========
+// --------------------------------------------------
 
 .btn-flat {
     color: inherit;
@@ -96,7 +112,7 @@ $btn-size-sm:           $input-height-sm;*/
 
 
 // btn-clear
-// =========
+// --------------------------------------------------
 
 .btn-clear {
     color: rgba(255,255,255, 1);
@@ -118,7 +134,7 @@ $btn-size-sm:           $input-height-sm;*/
 
 
 // btn-labeled
-// ===========
+// --------------------------------------------------
 
 .btn-labeled {
     position: relative;
@@ -132,16 +148,17 @@ $btn-size-sm:           $input-height-sm;*/
         background-color: rgba(0,0,0, .12);
         display: block;
         width: $btn-size;
-        line-height: $btn-size - 0.1rem;
+        line-height: $btn-size;
         text-align: center;
+        > .fa { vertical-align: middle; }
     }
     &.btn-lg {
         padding-left: $btn-padding-x-lg + $btn-size-lg;
-        > b { width: $btn-size-lg; line-height: $btn-size-lg - 0.1rem; }
+        > b { width: $btn-size-lg; line-height: $btn-size-lg; }
     }
     &.btn-sm {
         padding-left: $btn-padding-x-sm + $btn-size-sm;
-        > b { width: $btn-size-sm; line-height: $btn-size-sm - 0.1rem; }
+        > b { width: $btn-size-sm; line-height: $btn-size-sm; }
     }
 
     &.icon-right {
@@ -157,7 +174,7 @@ $btn-size-sm:           $input-height-sm;*/
 
 
 // btn-animate
-// ===========
+// --------------------------------------------------
 
 .btn-animate {
     position: relative;
@@ -262,7 +279,7 @@ $btn-size-sm:           $input-height-sm;*/
 
 
 // btn-to-danger
-// =============
+// --------------------------------------------------
 
 .btn.btn-to-danger {
     transition: none;
@@ -279,7 +296,7 @@ $btn-size-sm:           $input-height-sm;*/
 
 
 // btn-no-border
-// =============
+// --------------------------------------------------
 
 .btn.btn-no-border {
     border-color: transparent !important;
@@ -288,7 +305,7 @@ $btn-size-sm:           $input-height-sm;*/
 
 
 // btn-wide
-// ========
+// --------------------------------------------------
 
 .btn-wide {
     @include btn-padding($btn-wide-padding-x);
@@ -351,13 +368,19 @@ $btn-size-sm:           $input-height-sm;*/
         position: relative;
     }
 
-    .btn em {
-        font-variant: normal;
+    .btn > em {
         font-style: normal;
+        font-variant: normal;
         font-weight: normal;
         color: $text-muted;
         font-size: $font-size-sm;
-        font-size: inherit;
+        font-size: 0.85em; // make it smaller
+    }
+
+    .btn > em > span {
+        font-weight: 600;
+        font-size: 1.166666em; // make it regular again
+        color: $body-color;
     }
 
     select {

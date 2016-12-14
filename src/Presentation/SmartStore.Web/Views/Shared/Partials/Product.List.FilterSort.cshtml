@@ -2,41 +2,34 @@
 
 @using SmartStore.Web.Models.Catalog;
 
-<div class="artlist-action artlist-action--sort hidden-md-down">
-	<div class="mf-dropdown">
-		<button class="btn btn-secondary btn-artlist-action">
-			<em class="hidden-md-down">@T("Products.SortBy")</em>
-			<span>@Model.CurrentSortOrderName</span>
-			<i class="fa fa-caret-down"></i>
-		</button>
-		<select class="artlist-action-select form-control noskin" name="artlist-action-sort" id="artlist-action-sort" data-qname="o" title="@T("Products.SortBy"): @Model.CurrentSortOrderName">
-			@foreach (var sort in Model.AvailableSortOptions)
-			{
-				<option value="@sort.Key" @Html.Attr("selected", "selected", sort.Key == Model.CurrentSortOrder)>@sort.Value</option>
-			}
-		</select>
-	</div>
-</div>
-
-<div class="row no-space hidden-lg-up">
-	<div class="col-xs-6 bg-primary" style="border-right: 1px solid #fff">
+<div class="artlist-filtersort-row">
+	<!-- Filter -->
+	<div class="artlist-filter-col hidden-lg-up">
 		<div class="artlist-action artlist-action--filter">
 			<div class="mf-dropdown">
-				<button class="btn btn-primary btn-no-border icon-right btn-lg btn-block font-weight-normal text-uppercase">
-					Filtern
-					<i class="fa fa-fw fa-caret-down"></i>
+				<button class="btn btn-warning btn-labeled icon-right btn-no-border btn-block">
+					<span>@T("Products.ToFilter")</span>
+					<b><i class="fa fa-fw fa-sliders"></i></b>
 				</button>
 			</div>
 		</div>
 	</div>
-	<div class="col-xs-6 bg-grey-100" style="border-left: 1px solid #fff">
+
+	<!-- Sort -->
+	<div class="artlist-sort-col">
 		<div class="artlist-action artlist-action--sort">
 			<div class="mf-dropdown">
-				<button class="btn btn-secondary btn-flat icon-right btn-lg btn-block font-weight-normal text-uppercase">
-					Sortieren
-					<i class="fa fa-fw fa-caret-down"></i>
+				<button class="btn btn-secondary btn-artlist-action hidden-md-down" title="@T("Products.SortByX", Model.CurrentSortOrderName)">
+					<i class="fa fa-sort hidden-xl-up"></i>
+					<span class="hidden-xl-up">@Model.CurrentSortOrderName</span>
+					<em class="hidden-lg-down">@T("Products.SortByX", "<span>" + Model.CurrentSortOrderName + "</span>")</em>	
+					<i class="fa fa-caret-down"></i>
 				</button>
-				<select class="artlist-action-select form-control noskin" name="artlist-action-sort2" id="artlist-action-sort2" data-qname="o" title="@T("Products.SortBy"): @Model.CurrentSortOrderName">
+				<button class="btn btn-grey btn-no-border btn-labeled icon-right btn-block hidden-lg-up">
+					<span>@T("Products.ToSort")</span>
+					<b><i class="fa fa-fw fa-sort"></i></b>
+				</button>
+				<select class="artlist-action-select form-control noskin" name="artlist-action-sort" id="artlist-action-sort" data-qname="o" title="@T("Products.SortByX", Model.CurrentSortOrderName)">
 					@foreach (var sort in Model.AvailableSortOptions)
 					{
 						<option value="@sort.Key" @Html.Attr("selected", "selected", sort.Key == Model.CurrentSortOrder)>@sort.Value</option>

@@ -51,20 +51,19 @@
 <div class="artlist-action artlist-action--pager pull-xs-right clearfix">
 	@if (pageable.PageNumber > 1)
 	{
-		<a href='@ModifyUrl(null, "i=" + (pageable.PageNumber - 1))' class="btn btn-secondary btn-pager-prev pull-xs-left">
+		<a href='@ModifyUrl(null, "i=" + (pageable.PageNumber - 1))' class="btn btn-secondary btn-pager-prev pull-xs-left" data-toggle="tooltip" title="@T("Pager.PageX", pageable.PageNumber - 1)">
 			<i class="fa fa-chevron-left"></i>
 		</a>
 	}
 
 	<div class="mf-dropdown">
 		<button class="btn btn-secondary btn-artlist-action">
-			<em class="hidden-xs-down">Seite</em>
-			<span>@pageable.PageNumber</span>
-			<em class="hidden-xs-down">von</em>
-			<span class="hidden-xs-down">@pageable.TotalPages</span>
+			<em class="hidden-md-up"><span>@pageable.PageNumber</span>/<span>@pageable.TotalPages</span></em>
+			<em class="hidden-md-up hidden-sm-down">@T("Pager.PageXOfYShort", "<span>" + pageable.PageNumber + "</span>", "<span>" + pageable.TotalPages + "</span>")</em>
+			<em class="hidden-sm-down">@T("Pager.PageXOfY", "<span>" + pageable.PageNumber + "</span>", "<span>" + pageable.TotalPages + "</span>")</em>	
 			<i class="fa fa-caret-down"></i>
 		</button>
-		<select class="artlist-action-select form-control noskin" name="artlist-action-pagesize" id="artlist-action-pagesize" data-qname="i" title="@T("Products.PageSize"): @pageable.PageSize">
+		<select class="artlist-action-select form-control noskin" name="artlist-action-pagesize" id="artlist-action-pagesize" data-qname="i" title="@T("Pager.PageXOfY", pageable.PageNumber, pageable.TotalPages)">
 			@{ 
 				int pageCount = pageable.TotalPages;
 				int start = GetFirstPageIndex(pageable) + 1;
@@ -89,7 +88,7 @@
 
 	@if (pageable.PageNumber < pageable.TotalPages)
 	{
-		<a href='@ModifyUrl(null, "i=" + (pageable.PageNumber + 1))' class="btn btn-secondary btn-pager-next">
+		<a href='@ModifyUrl(null, "i=" + (pageable.PageNumber + 1))' class="btn btn-secondary btn-pager-next" data-toggle="tooltip" title="@T("Pager.PageX", pageable.PageNumber + 1)">
 			<i class="fa fa-chevron-right"></i>
 		</a>
 	}
@@ -101,8 +100,7 @@
 	<div class="artlist-action artlist-action--pagesize pull-xs-right">
 		<div class="mf-dropdown">
 			<button class="btn btn-secondary btn-artlist-action">
-				<em>@T("Products.PageSize")</em>
-				<span>@pageable.PageSize</span>
+				<em>@T("Pager.XPerPage", "<span>" + pageable.PageSize + "</span>")</em>	
 				<i class="fa fa-caret-down"></i>
 			</button>
 			<select class="artlist-action-select form-control noskin"
@@ -110,7 +108,7 @@
 					id="artlist-action-pagesize"
 					data-qname="s"
 					data-url='@ModifyUrl(null, null, "i")'
-					title="@T("Products.PageSize"): @pageable.PageSize">
+					title="@T("Pager.XPerPage", pageable.PageSize)">
 				@foreach (var size in Model.AvailablePageSizes)
 				{
 					<option value="@size" @Html.Attr("selected", "selected", size == pageable.PageSize)>@size</option>

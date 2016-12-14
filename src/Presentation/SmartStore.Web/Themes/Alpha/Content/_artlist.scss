@@ -62,8 +62,35 @@ $art-active-bg-color:           #fff;
     .btn-pager-next { border-top-right-radius: 3px; border-bottom-right-radius: 3px }    
 }
 
+@media (max-width: 360px) {
+    .artlist-actions--top .artlist-action--pagesize .mf-dropdown {
+        // Don't show the top pagesize chooser on too small displays (< 360px, e.g. iPhone 4)
+        display: none !important;
+    }
+}
+
 @include media-breakpoint-down(md) {
-    .btn-artlist-action { font-weight: 400 !important; }
+    .btn-artlist-action,
+    .btn-artlist-action span { font-weight: 400 !important; }
+
+    .artlist-filtersort-row {
+        @include make-row();
+        .btn { 
+            font-size: 1rem; text-align: left; border-radius: $btn-border-radius;
+            > b { background: transparent; } 
+        }
+    }
+
+     .artlist-filter-col, 
+     .artlist-sort-col {
+        @include make-col();
+        @include make-col-span(6, $grid-columns);
+    }
+
+    .artlist-filter-col { padding-right: 0.2rem; }
+    .artlist-sort-col { padding-left: 0.2rem; }
+
+    .artlist-action--xviewmode > .btn { font-size: 1rem; border-color: transparent !important; }
 }
 
 @include media-breakpoint-up(lg) {

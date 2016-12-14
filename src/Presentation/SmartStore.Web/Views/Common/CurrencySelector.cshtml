@@ -35,7 +35,7 @@
             {
                 var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeCurrency", new { customercurrency = curr.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null);
 
-                <a href="@href" class="dropdown-item" title="@curr.Name" data-toggle="tooltip" rel="nofollow">
+                <a href="@href" class="dropdown-item" title="@curr.Name" rel="nofollow">
                     @curr.Name
                 </a>
             }

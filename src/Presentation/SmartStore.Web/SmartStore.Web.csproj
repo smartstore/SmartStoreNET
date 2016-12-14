@@ -1897,7 +1897,6 @@
     <Content Include="Views\Shared\Partials\Product.List.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.Item.Drop.cshtml" />
     <Content Include="Views\Shared\Components\Product.List.Pager.cshtml" />
-    <Content Include="Views\Shared\Partials\Product.List.Actions.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.Pager.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.ViewMode.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.FilterSort.cshtml" />

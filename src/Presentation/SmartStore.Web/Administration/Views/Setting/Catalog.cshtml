@@ -24,7 +24,6 @@
             $("#@Html.FieldIdFor(model => model.ShowBestsellersOnHomepage)").click(toggleBestsellersOnHomepage);
             $("#@Html.FieldIdFor(model => model.ShowManufacturersOnHomepage)").click(toggleManufacturersOnHomepage);
         	$("#@Html.FieldIdFor(model => model.ProductsAlsoPurchasedEnabled)").click(toggleProductsAlsoPurchasedNumber);
-        	$("#@Html.FieldIdFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)").click(toggleTagPageSize);
             $("#@Html.FieldIdFor(model => model.CompareProductsEnabled)").click(toggleCompareProducts);
         	$("#@Html.FieldIdFor(model => model.EnableHtmlTextCollapser)").click(toggleHtmlTextCollapsedHeight);
 
@@ -38,7 +37,6 @@
             toggleRecentlyAddedProducts();
             toggleBestsellersOnHomepage();
             toggleProductsAlsoPurchasedNumber();
-            toggleTagPageSize();
             toggleCompareProducts();
             toggleHtmlTextCollapsedHeight();
             toggleManufacturersOnHomepage();
@@ -108,15 +106,6 @@
                 $('#pnlProductsAlsoPurchasedNumber').hide();
             }
         }
-
-		function toggleTagPageSize() {
-			if ($('#@Html.FieldIdFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)').is(':checked')) {
-				$('#pnlTagPageSizeOptions').show();
-			}
-			else {
-				$('#pnlTagPageSizeOptions').hide();
-			}
-		}
         
         function toggleCompareProducts() {
             if ($('#@Html.FieldIdFor(model => model.CompareProductsEnabled)').is(':checked')) {
@@ -643,24 +632,6 @@
 			<td class="adminData">
 				@Html.SettingEditorFor(model => model.NumberOfProductTags)
 				@Html.ValidationMessageFor(model => model.NumberOfProductTags)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)
-				@Html.ValidationMessageFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)
-			</td>
-		</tr>
-		<tr id="pnlTagPageSizeOptions">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ProductsByTagPageSizeOptions)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ProductsByTagPageSizeOptions)
-				@Html.ValidationMessageFor(model => model.ProductsByTagPageSizeOptions)
 			</td>
 		</tr>
 	</table>

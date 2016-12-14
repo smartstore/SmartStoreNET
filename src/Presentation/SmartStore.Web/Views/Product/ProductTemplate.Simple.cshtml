@@ -10,7 +10,6 @@
 @using SmartStore.Web.Framework.Events;
 @using SmartStore.Web;
 
-
 @{
 	Layout = "_ColumnsOne";
 
@@ -32,7 +31,6 @@
 }
 
 <div class="page product-details-page">
-
     <!--product breadcrumb-->
     @{ Html.RenderAction("ProductBreadcrumb", "Catalog", new { productId = Model.Id }); }
 
@@ -341,6 +339,10 @@
                 </div>
             </article>
         }
+
+		@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
+		@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
+
         @Html.Widget("productdetails_bottom")
     </div>
 </div>

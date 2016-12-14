@@ -4,21 +4,110 @@
 // Article/Product list & item styles
 // --------------------------------------------------
 
-$art-font-size:                 0.925rem;
-$art-font-size-sm:              $font-size-xs;
+$art-font-size:                 $font-size-base;
+$art-font-size-sm:              $font-size-sm;
+$art-font-size-xs:              $font-size-xs;
 $art-line-height:               1.3;
 $art-price-color:               $body-color;
 $art-price-offer-color:         $brand-danger;
 $art-border-color:              rgba(0,0,0, 0.12);
 $art-active-bg-color:           #fff;
 
+
+// Action Bar
+
+.artlist-actions {
+    margin-bottom: 1.5rem;
+    &.artlist-actions--top { border-bottom: 1px solid $art-border-color; }
+}
+
+.artlist-action {
+    &:not(:last-child) {
+        //margin-right: 0.5rem;
+    }
+
+    label {
+        font-size: $font-size-sm;
+        margin-bottom: 0.35rem;
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .btn 
+    { 
+        border-radius: 0; 
+        transition: none; 
+    }
+
+    .mf-dropdown {
+        display: block;
+    }
+}
+
+.artlist-action-group {
+    padding-bottom: 1.5rem;
+}
+
+.artlist-action-group--page {   
+    > .artlist-action--viewmode, 
+    > .artlist-action--pagesize { margin-right: 1rem; }
+}
+
+.artlist-action--pager {
+    > * { position: relative; display: block; float: left; }
+    > *:not(:first-child) { margin-left: -1px; }
+    .btn-pager-prev { border-top-left-radius: 3px; border-bottom-left-radius: 3px }   
+    .btn-pager-next { border-top-right-radius: 3px; border-bottom-right-radius: 3px }    
+}
+
+@media (max-width: 360px) {
+    .artlist-actions--top .artlist-action--pagesize .mf-dropdown {
+        // Don't show the top pagesize chooser on too small displays (< 360px, e.g. iPhone 4)
+        display: none !important;
+    }
+}
+
+@include media-breakpoint-down(md) {
+    .btn-artlist-action,
+    .btn-artlist-action span { font-weight: 400 !important; }
+
+    .artlist-filtersort-row {
+        @include make-row();
+        .btn { 
+            font-size: 1rem; text-align: left; border-radius: $btn-border-radius;
+            > b { background: transparent; } 
+        }
+    }
+
+     .artlist-filter-col, 
+     .artlist-sort-col {
+        @include make-col();
+        @include make-col-span(6, $grid-columns);
+    }
+
+    .artlist-filter-col { padding-right: 0.2rem; }
+    .artlist-sort-col { padding-left: 0.2rem; }
+
+    .artlist-action--xviewmode > .btn { font-size: 1rem; border-color: transparent !important; }
+}
+
+@include media-breakpoint-up(lg) {
+    .btn-artlist-action { font-weight: 600; }
+    .artlist-action-group--filtersort { float: left; }
+    .artlist-action-group--page { float: right; }
+}
+
+
+// List
+
 .artlist {
     position: relative;
-    @include make-row();
+    margin-bottom: 1.5rem;
     font-size: $art-font-size;
     line-height: $art-line-height; 
     z-index: 3;
-
     border-collapse: collapse;
 }
 
@@ -33,7 +122,6 @@ $art-active-bg-color:           #fff;
     padding-bottom: $grid-gutter-width / 2;
     
     border: 1px solid transparent;
-    border-bottom-color: $art-border-color;
     background: transparent;   
 
     margin-top: -1px;
@@ -49,7 +137,42 @@ $art-active-bg-color:           #fff;
     }
 }
 
-.artlist-style-grid {
+.artlist-lines {
+    .art {
+        @include make-row();
+        margin-left: 0;
+        margin-right: 0;
+        border-bottom-color: $art-border-color;
+    }
+
+    .art-picture-block {
+        width: 200px;
+        max-width: 15rem;
+    }
+
+    .art-info-block {
+        // TODO: (mc) Get col-xs from BS4 mixin here
+        display: block;
+        position: relative;
+        min-height: 1px;
+        width: 100%;
+        padding-left: $grid-gutter-width / 2;
+        padding-right: $grid-gutter-width / 2;
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 100%;
+    }
+
+    .art-drop {
+        display: none;
+    }
+}
+
+.artlist-grid {
+    @include make-row();
+    margin-left: 0;
+    margin-right: 0;
+
     &.artlist::after {
         // Make continous line after last row
         position: relative;
@@ -63,6 +186,7 @@ $art-active-bg-color:           #fff;
     .art {
         // Grid has always 2 cols per row at least, even on xs
         @include make-col-span(6, $grid-columns);
+        border-bottom-color: $art-border-color;
     }
 
     @include media-breakpoint-up(md) {
@@ -296,7 +420,6 @@ $art-active-bg-color:           #fff;
 .art-drop-info > * + * {
     margin-top: 0.4rem;
 }
-
 
 /*@include media-breakpoint-between(xs, md) {
     .art-rowdiv:nth-of-type(2n+0) {

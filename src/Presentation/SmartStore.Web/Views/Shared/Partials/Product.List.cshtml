@@ -5,12 +5,10 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{
-	Html.AppendScriptParts(true, "~/Themes/Alpha/Scripts/smartstore.articlelist.js");
-
 	var id = "artlist-" + CommonHelper.GenerateRandomDigitCode(10);
-	//var maxPictureSize = Model.Select(x => x.DefaultPictureModel)
-	//	.Where(x => x != null)
-	//	.Max(x => x.Size);
+	var maxPictureSize = Model.Items.Select(x => x.Picture)
+		.Where(x => x != null)
+		.Max(x => x.Size);
 
 	// TODO: (mc) Fetch this from the (new) parent model or the product category
 	var thumbAspectRatio = EngineContext.Current.Resolve<MediaSettings>().DefaultThumbnailAspectRatio;
@@ -21,21 +19,32 @@
 		paddingTop = (thumbAspectRatio * 100) + "%";
 	}
 
-	string paginatorHtml = null;
-	if (Model.AllowPagination && Model.Items.Any())
+	string pagerHtml = null;
+	if (Model.PagedList.TotalPages > 1)
 	{
-		paginatorHtml = Html.SmartStore()
-			.Pager(Model.Products)
-			.Alignment(PagerAlignment.Right)
-			.Name("pagination")
-			.QueryParam("i")
-			.Size(PagerSize.Mini)
-			.MaxPagesToDisplay(5)
-			.ToString();
+		pagerHtml = Html.Partial("Product.List.Pager", Model).ToHtmlString();
+	}
+
+	// TODO: (mc) AllowFiltering (?)
+	var hasActions = Model.PagedList.TotalPages > 1
+		|| Model.AllowSorting
+		|| Model.AllowViewModeChanging
+		|| Model.AllowFiltering;
+
+	var listCssClasses = new List<string> { "artlist" };
+	if (Model.ViewMode == ProductSummaryViewMode.List)
+	{
+		listCssClasses.Add("artlist-lines");
+	}
+	else
+	{
+		listCssClasses.Add("artlist-grid");
+		// TODO: (mc) Fetch col count from settings/model
+		listCssClasses.Add("artlist-4-cols");
 	}
 }
 
-@if (paddingTop.HasValue())
+@if (Model.ViewMode != ProductSummaryViewMode.List && paddingTop.HasValue())
 {
 	<style type="text/css">
 		#@id .art-picture { 
@@ -44,23 +53,56 @@
 	</style>
 }
 
-@if (paginatorHtml.HasValue())
+@if (Model.ViewMode == ProductSummaryViewMode.List && maxPictureSize.HasValue)
 {
-	<div class="product-paginator">
-		@Html.Raw(paginatorHtml)
+	<style type="text/css">
+		#@id .art-picture-block {
+			width: @("{0}px".FormatInvariant(maxPictureSize.Value));
+		}
+	</style>
+}
+
+@if (hasActions)
+{
+	<div class="artlist-actions artlist-actions--top clearfix">
+		@if (Model.AllowSorting || Model.AllowFiltering)
+		{
+			<div class="artlist-action-group artlist-action-group--filtersort clearfix">
+				@{ Html.RenderPartial("Product.List.FilterSort", Model); }
+			</div>
+		}
+
+		@if (pagerHtml.HasValue() || Model.AllowViewModeChanging)
+		{
+			<div class="artlist-action-group artlist-action-group--page clearfix">
+				@* ViewMode *@
+				@if (Model.AllowViewModeChanging && Model.ViewMode == ProductSummaryViewMode.Grid || Model.ViewMode == ProductSummaryViewMode.List)
+				{
+					Html.RenderPartial("Product.List.ViewMode", Model);
+				}
+
+				@* Pager *@
+				@if (pagerHtml.HasValue())
+				{
+					Html.RenderPartial("Product.List.Pager", Model);
+				}
+			</div>
+		}
 	</div>
 }
 
-<div id="@id" class="artlist artlist-style-grid artlist-4-cols">
+<div id="@id" class='@String.Join(" ", listCssClasses)'>
 	@foreach (var product in Model.Items)
 	{
-		Html.RenderPartial("Product.Item", product);
+		Html.RenderPartial("Product.List.Item", product);
 	}
 </div>
 
-@if (paginatorHtml.HasValue())
-{
-	<div class="product-paginator">
-		@Html.Raw(paginatorHtml)
+@if (pagerHtml.HasValue())
+{	
+	<div class="artlist-actions artlist-actions--bottom clearfix">
+		<div class="artlist-action-group artlist-action-group--page clearfix">
+			@Html.Raw(pagerHtml)
+		</div>
 	</div>
 }

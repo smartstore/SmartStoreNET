@@ -18,9 +18,18 @@ namespace SmartStore.Services.Search.Modelling
 		{
 			if (_factory.Current != null)
 			{
+				// Dont' bind again for current request
 				return _factory.Current;
 			}
-			
+
+			if (controllerContext.IsChildAction)
+			{
+				// Never attempt to bind in child actions. We require the binding to happen
+				// in a parent action. If the child action is part of a request with an already bound
+				// 'CatalogSearchQuery', good for you :-) You'll get an instance, but null otherwise.
+				return _factory.Current;
+			}
+
 			var modelType = bindingContext.ModelType;
 
 			if (modelType != typeof(CatalogSearchQuery))

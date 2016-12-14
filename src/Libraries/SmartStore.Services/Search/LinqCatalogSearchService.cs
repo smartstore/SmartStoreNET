@@ -515,11 +515,12 @@ namespace SmartStore.Services.Search
 
 		#endregion
 
-		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None)
+		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None, bool direct = false)
 		{
-			PagedList<Product> hits;
-
 			_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
+
+			int totalCount = 0;
+			Func<IList<Product>> hitsFactory = null;
 
 			if (searchQuery.Take > 0)
 			{
@@ -527,20 +528,16 @@ namespace SmartStore.Services.Search
 					.Skip(searchQuery.PageIndex * searchQuery.Take)
 					.Take(searchQuery.Take);
 
-				var totalCount = query.Count();
-				var ids = query.Select(x => x.Id).ToArray();
-				var products = _productService.GetProductsByIds(ids, loadFlags);
+				totalCount = query.Count();
 
-				hits = new PagedList<Product>(products, searchQuery.PageIndex, searchQuery.Take, totalCount);
-			}
-			else
-			{
-				hits = new PagedList<Product>(new List<Product>(), searchQuery.PageIndex, searchQuery.Take);
+				var ids = query.Select(x => x.Id).ToArray();
+				hitsFactory = () => _productService.GetProductsByIds(ids, loadFlags);
 			}
 
 			var result = new CatalogSearchResult(
-				null, 
-				hits,
+				null,
+				totalCount,
+				hitsFactory,
 				searchQuery,
 				null,
 				null,

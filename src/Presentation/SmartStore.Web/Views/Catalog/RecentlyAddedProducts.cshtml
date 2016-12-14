@@ -1,10 +1,10 @@
-﻿@model RecentlyAddedProductsModel
+﻿@model ProductSummaryModel
+
 @{
     Layout = "_ColumnsTwo";
-
-    //title
     Html.AddTitleParts(T("PageTitle.RecentlyAddedProducts").Text);
 }
+
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web.Framework.UI;
 
@@ -14,37 +14,19 @@
 			<i class="fa fa-rss text-muted"></i>
 			@T("Products.NewProducts.RSS")
 		</a>
-        <h1>@T("Products.NewProducts")</h1>
+        <h1 class="h3">@T("Products.NewProducts")</h1>
     </div>
 
     <div class="page-body">
-
-        @if (Model.Products.Count > 0)
-        {
-            if (Model.PagingFilteringContext.ViewMode == "list")
-            {
-                @*list mode*@
-                <div class="product-list">
-                    @foreach (var product in Model.Products)
-                    {
-                        <article class="item-box details card p-a-1">
-                            @{ Html.RenderPartial("_ProductBoxList", product); }
-                        </article>
-                    }
-                </div>
-            }
-            else
-            {
-                @*grid mode*@
-                <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 product-grid">
-                    @foreach (var product in Model.Products)
-                    {
-                        <article class="card card-block card-shadow text-xs-center">
-                            @{ Html.RenderPartial("_ProductBox", product); }
-                        </article>
-                    }
-                </div>
-            }
-        }
+		@if (Model.Items.Count > 0)
+		{
+			Html.RenderPartial("Product.List", Model);
+		}
+		else
+		{
+			<div class="alert alert-warning">
+				@T("Common.ListIsEmpty")
+			</div>
+		}
     </div>
 </div>

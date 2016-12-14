@@ -1,10 +1,22 @@
-﻿.megamenu-container {
+﻿$mm-navlink-font-size:                  $font-size-base;
+
+.megamenu-container {
     position: relative;
 }
 .megamenu {
     overflow: hidden;
     position: relative;
 }
+
+.megamenu .nav-link {
+    font-weight: 600;
+    font-size: $mm-navlink-font-size;
+}
+
+.navbar-light .megamenu .navbar-nav .nav-link {
+    color: $body-color;
+}
+
 .megamenu-nav i {
     font-size: 38px;
     transition: all .2s ease-in-out;
@@ -83,7 +95,7 @@
     vertical-align: top;
 }
 .megamenu-container .mega-menu-subitem {
-    font-size: .875rem;
+    font-size: $font-size-sm;
     text-decoration: none;
     display: block;
     color: #999;
@@ -94,10 +106,10 @@
 .megamenu-container .mega-menu-subitem.more-link {
     font-weight: bold;
     color: #464646;
-    font-size: .825rem;
+    font-size: $font-size-sm;
 }
 .megamenu-container .inline-container .mega-menu-subitem {
-    font-size: .8125rem;
+    font-size: $font-size-sm;
     line-height: .875rem;
 }
 .megamenu-container .inline-container .mega-menu-subitem:hover {
@@ -136,7 +148,7 @@
 }
 .megamenu-dropdown-container .below-preview-pic-text {
     margin: 10px;
-    font-size: .875rem;
+    font-size: $font-size-sm;
 }
 .megamenu-dropdown-container .megamenu-html-text {
     overflow: hidden;
@@ -149,10 +161,10 @@
 }
 .megamenu-container .nav-link {
     padding: 1rem .5rem;
-
-    &:hover, &.active {
-        background-color: rgba(0,0,0, 0.07);
-    }
+}
+.megamenu-container .nav-link:hover,
+.megamenu-container .nav-item.active .nav-link {
+    background-color: rgba(0,0,0, 0.07);
 }
 
 .megamenu ul.nav .nav-item {
@@ -163,7 +175,7 @@
     position: absolute;
     right: 3px;
     top: 7px;
-    font-size: 0.7rem;
+    font-size: $font-size-xs;
 }
 /*
 .megamenu .nav-slider {
@@ -328,7 +340,7 @@
 .megamenu-dropdown-container.simple .dropdown-item {
     padding-top: 0.35rem;
     padding-bottom: 0.35rem;
-    font-size: 0.85rem;
+    font-size: $font-size-sm;
 }
 .megamenu-container .simple .nav-item.active:before {
     right: initial;

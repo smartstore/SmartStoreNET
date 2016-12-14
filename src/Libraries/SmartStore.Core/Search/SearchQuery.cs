@@ -30,6 +30,7 @@ namespace SmartStore.Core.Search
 	public class SearchQuery<TQuery> : ISearchQuery where TQuery : class, ISearchQuery
 	{
 		private readonly Dictionary<string, FacetDescriptor> _facetDescriptors;
+		private Dictionary<string, object> _customData;
 
 		protected SearchQuery(string[] fields, string term, bool escape = false, bool isExactMatch = false, bool isFuzzySearch = false)
 		{
@@ -92,6 +93,14 @@ namespace SmartStore.Core.Search
 
 		// Misc
 		public string Origin { get; protected set; }
+
+		public IDictionary<string, object> CustomData
+		{
+			get
+			{
+				return _customData ?? (_customData = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase));
+			}
+		}
 
 		#region Fluent builder
 

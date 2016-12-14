@@ -42,5 +42,6 @@ namespace SmartStore.Core.Search
 
 		// Misc
 		string Origin { get; }
+		IDictionary<string, object> CustomData { get; }
 	}
 }

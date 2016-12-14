@@ -17,7 +17,7 @@
 
 <div class="page blog-page">
     <div class="page-title">
-        <a href="@Url.RouteUrl("BlogRSS", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("Blog.RSS.Hint")" rel="tooltip">
+        <a href="@Url.RouteUrl("BlogRSS", new { languageId = Model.WorkingLanguageId })" class="link-rss" title="@T("Blog.RSS.Hint")" data-toggle="tooltip">
             <i class="fa fa-rss text-muted"></i>
             @T("Blog.RSS")
         </a>
@@ -52,7 +52,7 @@
                             <a class="blogpost-comments@(item.NumberOfComments > 0 ? " vivid" : "")" 
                                 href="@Url.RouteUrl("BlogPost", new { SeName = item.SeName })" 
                                 title="@string.Format(@T("Blog.CommentsLink").Text, item.NumberOfComments)" 
-                                rel="tooltip">
+                                data-toggle="tooltip">
 								<span class="blogpost-comments-icon fa fa-comments"></span>
                                 <span class="blogpost-comments-count">@item.NumberOfComments</span>
                             </a>

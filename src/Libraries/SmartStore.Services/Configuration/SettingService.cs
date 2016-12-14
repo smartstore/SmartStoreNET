@@ -12,6 +12,7 @@ using System.Reflection;
 using SmartStore.ComponentModel;
 using System.Collections;
 using SmartStore.Utilities;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Configuration
 {
@@ -28,7 +29,11 @@ namespace SmartStore.Services.Configuration
             this._cacheManager = cacheManager;
             this._eventPublisher = eventPublisher;
             this._settingRepository = settingRepository;
+
+			Logger = NullLogger.Instance;
         }
+
+		public ILogger Logger { get; set; }
 
 		protected virtual IDictionary<string, CachedSetting> GetAllCachedSettings()
 		{
@@ -272,10 +277,18 @@ namespace SmartStore.Services.Configuration
                 if (converter == null || !converter.CanConvertFrom(typeof(string)))
 					continue;
 
-                object value = converter.ConvertFrom(setting);
+				try
+				{
+					object value = converter.ConvertFrom(setting);
 
-				//set property
-				fastProp.SetValue(settings, value);
+					// Set property
+					fastProp.SetValue(settings, value);
+				}
+				catch (Exception ex)
+				{
+					var msg = "Could not convert setting '{0}' to type '{1}'".FormatInvariant(key, prop.PropertyType.Name);
+					Logger.Error(ex, msg);
+				}
 			}
 
 			return settings;

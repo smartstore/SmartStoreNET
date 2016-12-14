@@ -1,8 +1,7 @@
-﻿@model IList<ProductOverviewModel>
+﻿@model ProductSummaryModel
+
 @{
     Layout = "_ColumnsTwo";
-
-    //title
     Html.AddTitleParts(T("PageTitle.RecentlyViewedProducts").Text);
 }
 
@@ -10,19 +9,19 @@
 
 <div class="page recently-viewed-products-page">
     <div class="page-title">
-        <h1>@T("Products.RecentlyViewedProducts")</h1>
+        <h1 class="h3">@T("Products.RecentlyViewedProducts")</h1>
     </div>
+
     <div class="page-body">
-        @if (Model.Count > 0)
-        {
-            <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 product-grid">
-                @foreach (var product in Model)
-                {
-                    <article class="card card-block card-shadow text-xs-center">
-                        @{ Html.RenderPartial("_ProductBox", product); }
-                    </article>
-                }
-            </div>
-        }
+        @if (Model.Items.Count > 0)
+		{
+			Html.RenderPartial("Product.List", Model);
+		}
+		else
+		{
+			<div class="alert alert-warning">
+				@T("Common.ListIsEmpty")
+			</div>
+		}
     </div>
 </div>

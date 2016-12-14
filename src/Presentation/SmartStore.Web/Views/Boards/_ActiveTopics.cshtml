@@ -19,7 +19,7 @@
 
             @if (Model.ActiveDiscussionsFeedEnabled == true)
             {
-                <a href="@Url.Action("ActiveDiscussionsRSS")" class="link-rss" title="@T("Forum.ActiveDiscussionsRSSLinkTitle")" rel="tooltip">
+                <a href="@Url.Action("ActiveDiscussionsRSS")" class="link-rss" title="@T("Forum.ActiveDiscussionsRSSLinkTitle")" data-toggle="tooltip">
                     <i class="fa fa-rss text-muted"></i>
                     @T("Forum.RSS")
                 </a>

@@ -240,6 +240,31 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Products.Longdesc.Less", "Show less", "Weniger anzeigen");
 
 			builder.AddOrUpdate("Products.Tags.ProductsTaggedWith", "Products tagged with {0}", "Produkte markiert mit {0}");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DefaultPageSizeOptions",
+				"Page size options",
+				"Auswahlmöglichkeiten für Seitengröße",
+				"Comma-separated page size options that a customer can select in product lists.",
+				"Kommagetrennte Liste mit Optionen für Seitengröße, die ein Kunde in Produktlisten wählen kann.");
+
+			builder.AddOrUpdate("Common.ListIsEmpty", "The list is empty.", "Die Liste ist leer.");
+
+			builder.AddOrUpdate("Products.SortByX", "Sort by {0}", "Sortiere nach {0}");
+			builder.AddOrUpdate("Products.SwitchToGrid", "Show", "Zur Rasteransicht wechseln");
+			builder.AddOrUpdate("Products.SwitchToList", "Show", "Zur Listenansicht wechseln");
+			builder.AddOrUpdate("Products.ToFilter", "Filter", "Filtern");
+			builder.AddOrUpdate("Products.ToSort", "Sort", "Sortieren");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.CreatedOn", "Newest Arrivals", "Neu eingetroffen");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Initial", "Position", "Position");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.PriceAsc", "Price: Low to High", "Preis: aufsteigend");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.PriceDesc", "Price: High to Low", "Preis: absteigend");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.ProductSortingEnum.Relevance", "Relevance", "Beste Ergebnisse");
+
+			builder.AddOrUpdate("Pager.PageX", "Page {0}", "Seite {0}");
+			builder.AddOrUpdate("Pager.XPerPage", "{0} per Page", "{0} pro Seite");
+			builder.AddOrUpdate("Pager.PageXOfY", "Page {0} of {1}", "Seite {0} von {1}");
+			builder.AddOrUpdate("Pager.PageXOfYShort", "{0} of {1}", "{0} von {1}");
 		}
 	}
 }

@@ -86,11 +86,14 @@ namespace SmartStore.Web.Controllers
 			{
 				SearchResult = result,
 				Term = query.Term,
-				TotalProductsCount = result.Hits.TotalCount
+				TotalProductsCount = result.TotalHitsCount
 			};
 
-			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini);
-			mappingSettings.MapPrices = false;
+			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x => 
+			{
+				x.MapPrices = false;
+			});
+
 			// TODO: (mc) actually SHOW pictures in InstantSearch (???)
 			mappingSettings.MapPictures = _searchSettings.ShowProductImagesInInstantSearch;
 			mappingSettings.ThumbnailSize = _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage;
@@ -130,7 +133,7 @@ namespace SmartStore.Web.Controllers
 			
 			var result = _catalogSearchService.Search(query);
 
-			if (result.Hits.Count == 0 && result.SpellCheckerSuggestions.Any())
+			if (result.TotalHitsCount == 0 && result.SpellCheckerSuggestions.Any())
 			{
 				// No matches, but spell checker made a suggestion.
 				// We implicitly search again with the first suggested term.
@@ -140,7 +143,7 @@ namespace SmartStore.Web.Controllers
 
 				result = _catalogSearchService.Search(query);
 
-				if (result.Hits.Any())
+				if (result.TotalHitsCount > 0)
 				{
 					model.AttemptedTerm = oldTerm;
 					// Restore the original suggestions.
@@ -154,18 +157,13 @@ namespace SmartStore.Web.Controllers
 
 			model.SearchResult = result;
 			model.Term = query.Term;
-			model.TotalProductsCount = result.Hits.TotalCount;
+			model.TotalProductsCount = result.TotalHitsCount;
 
-			// TODO: (mc) somehow determine viewmode and call appropriate helper method (Grid or List)
-			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid);
+			var mappingSettings = _catalogHelper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
 			var summaryModel = _catalogHelper.MapProductSummaryModel(result.Hits, mappingSettings);
 
-			// TODO: (mc) Determine and set
-			summaryModel.ViewMode = summaryModel.ViewMode;
-			summaryModel.AllowViewModeChanging = true;
-			summaryModel.AllowSorting = true;
-			summaryModel.AllowPagination = true;
-			summaryModel.AvailablePageSizes = _catalogSettings.DefaultPageSizeOptions.Convert<List<int>>();
+			// Prepare paging/sorting/mode stuff
+			_catalogHelper.MapListActions(summaryModel, null, _catalogSettings.DefaultPageSizeOptions);
 
 			// Add product hits
 			model.TopProducts = summaryModel;

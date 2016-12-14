@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
@@ -23,6 +24,7 @@ namespace SmartStore.Core.Caching
 			typeof(Product),
 			typeof(ProductBundleItem),
 			typeof(ProductPicture),
+			typeof(SpecificationAttribute),
 			typeof(ProductSpecificationAttribute),
 			typeof(SpecificationAttributeOption),
 			typeof(ProductVariantAttribute),
@@ -40,9 +42,15 @@ namespace SmartStore.Core.Caching
 		});
 
 		private readonly HashSet<BaseEntity> _entities = new HashSet<BaseEntity>();
+		private readonly Lazy<IRepository<ProductSpecificationAttribute>> _rsProductSpecAttr;
 
 		private bool _isIdle;
 		private bool? _isUncacheableRequest;
+
+		public DisplayControl(Lazy<IRepository<ProductSpecificationAttribute>> rsProductSpecAttr)
+		{
+			_rsProductSpecAttr = rsProductSpecAttr;
+		}
 
 		public IDisposable BeginIdleScope()
 		{
@@ -84,8 +92,6 @@ namespace SmartStore.Core.Caching
 		public virtual IEnumerable<string> GetCacheControlTagsFor(BaseEntity entity)
 		{
 			Guard.NotNull(entity, nameof(entity));
-
-			// TODO: purge all products when: DeliveryTime, QuantityUnit, MeasureWeight change
 
 			if (entity.IsTransientRecord())
 			{
@@ -131,6 +137,21 @@ namespace SmartStore.Core.Caching
 			else if (type == typeof(ProductPicture))
 			{
 				yield return "p" + ((ProductPicture)entity).ProductId;
+			}
+			else if (type == typeof(SpecificationAttribute))
+			{
+				// Determine all affected products (which are assigned to this attribute).
+				var specAttrId = ((SpecificationAttribute)entity).Id;
+				var affectedProductIds = _rsProductSpecAttr.Value.TableUntracked
+					.Where(x => x.SpecificationAttributeOption.SpecificationAttribute.Id == specAttrId)
+					.Select(x => x.ProductId)
+					.Distinct()
+					.ToList();
+
+				foreach (var id in affectedProductIds)
+				{
+					yield return "p" + id;
+				}
 			}
 			else if (type == typeof(ProductSpecificationAttribute))
 			{

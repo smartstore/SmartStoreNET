@@ -1,0 +1,135 @@
+﻿@model ProductSummaryModel.SummaryItem
+
+@using System.Globalization;
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
+	var list = Model.Parent;
+	var picture = Model.Picture;
+
+}
+
+<article class="art" data-id="@Model.Id">
+	<div class="art-picture-block">
+		@if (picture.Title.HasValue())
+		{
+			<a class="art-picture" href="@artDetailUrl" title="@picture.Title">
+				<img src="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+			</a>
+		}
+	</div>
+
+	@if (Model.Badges.Any())
+	{
+		@* TODO: (mc) Let user define one free badge per product in backend *@
+		<div class="art-badges">
+			@foreach (var badge in Model.Badges.OrderBy(x => x.DisplayOrder))
+			{
+				@* TODO: (mc) Move BS4 label/tag class definitions to art-badge.art-badge-[style] (?)  *@
+				<span class="label label-@badge.Style.ToString().ToLowerInvariant() art-badge">@Html.Raw(badge.Label)</span>
+			}
+			<span class="label label-warning art-badge">Neu</span>
+		</div>
+	}
+
+	<div class="art-info-block">
+		@if (list.ShowReviews)
+		{
+			int ratingPercent = 0;
+			if (Model.TotalReviews != 0)
+			{
+				ratingPercent = ((Model.RatingSum * 100) / Model.TotalReviews) / 5;
+				ratingPercent = 82;
+			}
+
+			string reviewTitle = "";
+			if (Model.TotalReviews > 0)
+			{
+				reviewTitle = Model.TotalReviews + (Model.TotalReviews == 1 ? T("Reviews.Overview.Review") : T("Reviews.Overview.Reviews"));
+			}
+			<div class="art-rating" title="@reviewTitle">
+				<div class="rating">
+					<div style="width: @(ratingPercent)%"></div>
+				</div>
+			</div>
+		}
+		
+		@if (list.ShowBrand)
+		{
+			<div class="art-brand">
+				@if (Model.Manufacturer != null)
+				{
+					@Model.Manufacturer.Name
+				}	
+			</div>
+		}
+
+		<h4 class="art-name">
+			<a href="@artDetailUrl" title="@Model.Name">
+				<span>@Model.Name</span>
+			</a>
+		</h4>
+
+		@if (list.ShowDescription)
+		{
+			<div class="art-description" title="@Model.ShortDescription">
+				@* TODO: (mc) Only render description block when merchant wishes so and only when at least one description is specified *@
+				@Html.Raw(Model.ShortDescription)
+			</div>
+		}
+
+		@if (list.ShowDeliveryTimes)
+		{
+			@* TODO: (mc) Put in own partial *@
+			@* TODO: (mc) take HideDeliveryTime into account *@
+			<div class="art-delivery-info">
+				@if (Model.IsShippingEnabled && !Model.HideDeliveryTime)
+				{
+					var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailablity;
+					<span class="delivery-time" title="@T("Products.DeliveryTime"): @statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
+						<i class="fa fa-circle delivery-time-status"></i>
+						@statusLabel
+					</span>
+				}
+			</div>
+		}
+
+		<div class="art-price-block">
+			<span class="art-price@(Model.Price.RegularPrice.HasValue() ? " art-price--offer" : "")">@Model.Price.Price</span>
+			@if (Model.Price.RegularPrice.HasValue())
+			{
+				<span class="art-oldprice">@Model.Price.RegularPrice</span>
+			}
+			@if (Model.TransportSurcharge.HasValue())
+			{
+				<div class="art-shipsurcharge">
+					@Html.Raw(Model.TransportSurcharge)
+				</div>
+			}
+			@if (list.ShowBasePrice && Model.BasePriceInfo.HasValue())
+			{
+				<div class="art-pangv" @Html.Attr("title", Model.BasePriceInfo, Model.BasePriceInfo.HasValue())>
+					@Html.Raw(Model.BasePriceInfo ?? "&nbsp;")
+				</div>
+			}
+
+			@* TODO: (mc) Optionally display saving (You save: 123 EUR / 12 %). *@
+		</div>
+	</div>
+
+	@{ 
+		var showDrop =
+			!Model.Price.DisableWishlistButton
+			|| list.CompareEnabled
+			|| (!Model.Price.DisableBuyButton && list.BuyEnabled)
+			|| Model.ColorAttribute != null
+			|| Model.Attributes != null;
+
+		if (showDrop)
+		{
+			Html.RenderPartial("Product.List.Item.Drop", Model);
+		}
+	}
+</article>
+

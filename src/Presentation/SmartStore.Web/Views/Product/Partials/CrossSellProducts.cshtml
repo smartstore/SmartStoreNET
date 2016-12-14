@@ -1,0 +1,19 @@
+﻿@model ProductSummaryModel
+
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	if (!Model.Items.Any())
+	{
+		return;
+	}
+}
+
+<div class="block product-grid cross-sells">
+    <div class="block-title cross-sells-title">
+        @T("ShoppingCart.CrossSells")
+    </div>
+    <div class="block-body">
+		@{ Html.RenderPartial("Product.List", Model); }
+    </div>
+</div>

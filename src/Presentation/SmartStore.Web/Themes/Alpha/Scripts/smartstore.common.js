@@ -17,6 +17,58 @@
 		var f = window.open(query, "_blank", winprops);
 	}
 
+	window.modifyUrl = function (url, qsName, qsValue) {
+		var search = null;
+
+		if (!url) {
+			url = window.location.protocol + "//" +
+				window.location.host +
+				window.location.pathname;
+		}
+		else {
+			// strip query from url
+			var idx = url.indexOf('?', 0);
+			if (idx > -1) {
+				search = url.substring(idx);
+				url = url.substring(0, idx);
+			}
+		}
+
+		var qs = getQueryStrings(search);
+
+		// Add new params to the querystring dictionary
+		qs[qsName] = qsValue;
+
+		return url + createQueryString(qs);
+
+		// http://stackoverflow.com/questions/2907482
+		// Gets Querystring from window.location and converts all keys to lowercase
+		function getQueryStrings(search) {
+			var assoc = { };
+			var decode = function (s) { return decodeURIComponent(s.replace(/\+/g, " ")); };
+			var queryString = (search || location.search).substring(1);
+			var keyValues = queryString.split('&');
+
+			for (var i in keyValues) {
+				var key = keyValues[i].split('=');
+				if (key.length > 1)
+					assoc[decode(key[0]).toLowerCase()] = decode(key[1]);
+			}
+
+			return assoc;
+		}
+
+		function createQueryString(dict) {
+			var bits = [];
+			for (var key in dict) {
+				if (dict.hasOwnProperty(key) && dict[key]) {
+					bits.push(key + "=" + dict[key]);
+				}
+			}
+			return bits.length > 0 ? "?" + bits.join("&") : "";
+		}
+	}
+
 	window.htmlEncode = function (value) {
 		return $('<div/>').text(value).html();
 	}
@@ -230,6 +282,26 @@
 				}
 			}
 		);
+
+		// .mf-dropdown (mobile friendly dropdown
+		$('body').on('mouseenter mouseleave mousedown change', '.mf-dropdown > select', function (e) {
+			var btn = $(this).parent().find('> .btn');
+			if (e.type == "mouseenter") {
+				btn.addClass('focus');
+			}
+			else if (e.type == "mousedown") {
+				btn.addClass('active').removeClass('focus');
+				_.delay(function () {
+					$('body').one('mousedown touch', function (e) { btn.removeClass('active'); });
+				}, 50);
+			}
+			else if (e.type == "mouseleave") {
+				btn.removeClass('focus');
+			}
+			else if (e.type == "change") {
+				btn.removeClass('focus active');
+			}
+		});
 
 		// html text collapser
 		if ($.fn.moreLess) {

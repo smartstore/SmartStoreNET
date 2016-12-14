@@ -53,5 +53,5 @@ $font-weight-bold:        700;
 }
 
 @mixin smaller() {
-    font-size: .825rem !important;
+    font-size: $font-size-sm !important;
 }

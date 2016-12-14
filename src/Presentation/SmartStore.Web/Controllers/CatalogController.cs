@@ -204,7 +204,7 @@ namespace SmartStore.Web.Controllers
 				if (!hasFeaturedProductsCache.HasValue)
 				{
 					featuredProductsResult = _catalogSearchService.Search(featuredProductsQuery);
-					hasFeaturedProductsCache = featuredProductsResult.Hits.TotalCount > 0;
+					hasFeaturedProductsCache = featuredProductsResult.TotalHitsCount > 0;
 					_services.Cache.Put(cacheKey, hasFeaturedProductsCache, TimeSpan.FromHours(6));
 				}
 
@@ -215,7 +215,6 @@ namespace SmartStore.Web.Controllers
 
 				if (featuredProductsResult != null)
 				{
-					// TODO: (mc) determine settings properly
 					var featuredProductsmappingSettings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid);
 					model.FeaturedProducts = _helper.MapProductSummaryModel(featuredProductsResult.Hits, featuredProductsmappingSettings);
 				}
@@ -233,16 +232,11 @@ namespace SmartStore.Web.Controllers
 
 			var productsResult = _catalogSearchService.Search(query);
 
-			// TODO: (mc) determine settings properly
-			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid);
+			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
 			model.Products = _helper.MapProductSummaryModel(productsResult.Hits, mappingSettings);
 
-			model.Products.AllowPagination = true;
-
-			//// TODO: (mc) Put these commands to model
-			//AllowCustomersToSelectPageSize = category.AllowCustomersToSelectPageSize,
-			//PageSize = category.PageSize,
-			//PageSizeOptions = category.PageSizeOptions
+			// Prepare paging/sorting/mode stuff
+			_helper.MapListActions(model.Products, category, _catalogSettings.DefaultPageSizeOptions);
 
 			// template
 			var templateCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_TEMPLATE_MODEL_KEY, category.CategoryTemplateId);
@@ -390,7 +384,7 @@ namespace SmartStore.Web.Controllers
 				if (!hasFeaturedProductsCache.HasValue)
 				{
 					featuredProductsResult = _catalogSearchService.Search(featuredProductsQuery);
-					hasFeaturedProductsCache = featuredProductsResult.Hits.TotalCount > 0;
+					hasFeaturedProductsCache = featuredProductsResult.TotalHitsCount > 0;
 					_services.Cache.Put(cacheKey, hasFeaturedProductsCache, TimeSpan.FromHours(6));
 				}
 
@@ -412,16 +406,11 @@ namespace SmartStore.Web.Controllers
 
 			var productsResult = _catalogSearchService.Search(query);
 
-			// TODO: (mc) determine settings properly
-			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid);
+			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
 			model.Products = _helper.MapProductSummaryModel(productsResult.Hits, mappingSettings);
 
-			model.Products.AllowPagination = true;
-
-			//// TODO: (mc) Put these commands to model
-			//AllowCustomersToSelectPageSize = manufacturer.AllowCustomersToSelectPageSize,
-			//PageSize = manufacturer.PageSize,
-			//PageSizeOptions = manufacturer.PageSizeOptions
+			// Prepare paging/sorting/mode stuff
+			_helper.MapListActions(model.Products, manufacturer, _catalogSettings.DefaultPageSizeOptions);
 
 			// Template
 			var templateCacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_TEMPLATE_MODEL_KEY, manufacturer.ManufacturerTemplateId);
@@ -514,26 +503,31 @@ namespace SmartStore.Web.Controllers
 		public ActionResult HomepageBestSellers(int? productThumbPictureSize)
 		{
 			if (!_catalogSettings.ShowBestsellersOnHomepage || _catalogSettings.NumberOfBestsellersOnHomepage == 0)
+			{
 				return Content("");
+			}
 
-			// load and cache report
+			// Load report from cache
 			var report = _services.Cache.Get(string.Format(ModelCacheEventConsumer.HOMEPAGE_BESTSELLERS_IDS_KEY, _services.StoreContext.CurrentStore.Id), () => 
 			{
 				return _orderReportService.BestSellersReport(_services.StoreContext.CurrentStore.Id, null, null, null, null, null, 0, _catalogSettings.NumberOfBestsellersOnHomepage);
 			});
 
-			// load products
+			// Load products
 			var products = _productService.GetProductsByIds(report.Select(x => x.ProductId).ToArray());
 
 			// ACL and store mapping
 			products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
 
-			// prepare model
-			var model = new HomePageBestsellersModel
+
+			var viewMode = _catalogSettings.UseSmallProductBoxOnHomePage ? ProductSummaryViewMode.Mini : ProductSummaryViewMode.Grid;
+
+			var settings = _helper.GetBestFitProductSummaryMappingSettings(viewMode, x => 
 			{
-				UseSmallProductBox = _catalogSettings.UseSmallProductBoxOnHomePage,
-				Products = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList()
-			};
+				x.ThumbnailSize = productThumbPictureSize;
+			});
+
+			var model = _helper.MapProductSummaryModel(products, settings);
 
 			return PartialView(model);
 		}
@@ -542,17 +536,18 @@ namespace SmartStore.Web.Controllers
 		public ActionResult HomepageProducts(int? productThumbPictureSize)
 		{
 			var products = _productService.GetAllProductsDisplayedOnHomePage();
-			//ACL and store mapping
+
+			// ACL and store mapping
 			products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
 
-			var model = new HomePageProductsModel()
+			var viewMode = _catalogSettings.UseSmallProductBoxOnHomePage ? ProductSummaryViewMode.Mini : ProductSummaryViewMode.Grid;
+
+			var settings = _helper.GetBestFitProductSummaryMappingSettings(viewMode, x => 
 			{
-				UseSmallProductBox = false, //_catalogSettings.UseSmallProductBoxOnHomePage,
-				//Products = PrepareProductOverviewModels(products, 
-				//    !_catalogSettings.UseSmallProductBoxOnHomePage, true, productThumbPictureSize)
-				//    .ToList()
-				Products = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize, prepareColorAttributes: true).ToList()
-			};
+				x.ThumbnailSize = productThumbPictureSize;
+			});			
+
+			var model = _helper.MapProductSummaryModel(products, settings);
 
 			return PartialView(model);
 		}
@@ -587,7 +582,7 @@ namespace SmartStore.Web.Controllers
 				model.TotalTags = allTags.Count;
 
 				foreach (var tag in tags)
-					model.Tags.Add(new ProductTagModel()
+					model.Tags.Add(new ProductTagModel
 					{
 						Id = tag.Id,
 						Name = tag.GetLocalized(y => y.Name),
@@ -618,21 +613,11 @@ namespace SmartStore.Web.Controllers
 
 			var productsResult = _catalogSearchService.Search(query);
 
-			// TODO: (mc) determine settings properly
-			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid);
+			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
 			model.Products = _helper.MapProductSummaryModel(productsResult.Hits, mappingSettings);
 
-			model.Products.AllowPagination = true;
-
-			//// TODO: (mc) Put these commands to model
-			//_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
-			//{
-			//	AllowCustomersToSelectPageSize = _catalogSettings.ProductsByTagAllowCustomersToSelectPageSize,
-			//	PageSize = _catalogSettings.DefaultProductListPageSize,
-			//	PageSizeOptions = _catalogSettings.ProductsByTagPageSizeOptions.IsEmpty()
-			//		? _catalogSettings.DefaultPageSizeOptions
-			//		: _catalogSettings.ProductsByTagPageSizeOptions
-			//});
+			// Prepare paging/sorting/mode stuff
+			_helper.MapListActions(model.Products, null, _catalogSettings.DefaultPageSizeOptions);
 
 			return View(model);
 		}
@@ -666,67 +651,66 @@ namespace SmartStore.Web.Controllers
 
 		#region Recently[...]Products
 
-		//recently viewed products
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult RecentlyViewedProducts()
+		public ActionResult RecentlyViewedProducts(CatalogSearchQuery query)
 		{
-			var model = new List<ProductOverviewModel>();
-			if (_catalogSettings.RecentlyViewedProductsEnabled)
+			if (!_catalogSettings.RecentlyViewedProductsEnabled || _catalogSettings.RecentlyViewedProductsNumber <= 0)
 			{
-				var products = _recentlyViewedProductsService.GetRecentlyViewedProducts(_catalogSettings.RecentlyViewedProductsNumber);
-				model.AddRange(_helper.PrepareProductOverviewModels(products));
+				return View(ProductSummaryModel.Empty);
 			}
+
+			var products = _recentlyViewedProductsService.GetRecentlyViewedProducts(_catalogSettings.RecentlyViewedProductsNumber);
+			var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.List);
+			var model = _helper.MapProductSummaryModel(products, settings);
+
 			return View(model);
 		}
 
 		[ChildActionOnly]
-		public ActionResult RecentlyViewedProductsBlock(int? productThumbPictureSize)
+		public ActionResult RecentlyViewedProductsBlock()
 		{
-			var model = new List<ProductOverviewModel>();
-			if (_catalogSettings.RecentlyViewedProductsEnabled)
+			if (!_catalogSettings.RecentlyViewedProductsEnabled)
 			{
-				var products = _recentlyViewedProductsService.GetRecentlyViewedProducts(_catalogSettings.RecentlyViewedProductsNumber);
-				model.AddRange(_helper.PrepareProductOverviewModels(products, false, true, productThumbPictureSize));
+				return Content("");
 			}
+
+			var products = _recentlyViewedProductsService.GetRecentlyViewedProducts(_catalogSettings.RecentlyViewedProductsNumber);
+			if (products.Count == 0)
+			{
+				return Content("");
+			}
+
+			var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x => 
+			{
+				x.MapPrices = false;
+			});
+
+			var model = _helper.MapProductSummaryModel(products, settings);
+
 			return PartialView(model);
 		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
-		public ActionResult RecentlyAddedProducts()
+		public ActionResult RecentlyAddedProducts(CatalogSearchQuery query)
 		{
-			//var command = new CatalogPagingFilteringModel();
-			//TryUpdateModel<CatalogPagingFilteringModel>(command);
-
-			var model = new RecentlyAddedProductsModel();
-
-			if (_catalogSettings.RecentlyAddedProductsEnabled)
+			if (!_catalogSettings.RecentlyAddedProductsEnabled || _catalogSettings.RecentlyAddedProductsNumber <= 0)
 			{
-				IList<int> filterableSpecificationAttributeOptionIds = null;
-
-				var ctx = new ProductSearchContext();
-				ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
-				//ctx.OrderBy = (ProductSortingEnum)command.OrderBy;
-				ctx.OrderBy = ProductSortingEnum.CreatedOn;
-				//ctx.PageSize = command.PageSize;
-				ctx.PageSize = _catalogSettings.RecentlyAddedProductsNumber;
-				//ctx.PageIndex = command.PageNumber - 1;
-				ctx.FilterableSpecificationAttributeOptionIds = filterableSpecificationAttributeOptionIds;
-				ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
-				ctx.VisibleIndividuallyOnly = true;
-
-				var products = _productService.SearchProducts(ctx);
-
-				//var products = _productService.SearchProducts(ctx).Take(_catalogSettings.RecentlyAddedProductsNumber).OrderBy((ProductSortingEnum)command.OrderBy);
-
-				model.Products.AddRange(_helper.PrepareProductOverviewModels(products));
-				//model.PagingFilteringContext.LoadPagedList(products);
+				return View(ProductSummaryModel.Empty);
 			}
+
+			query = query.SortBy(ProductSortingEnum.CreatedOn).Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
+			var result = _catalogSearchService.Search(query);
+
+			var settings = _helper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
+			var model = _helper.MapProductSummaryModel(result.Hits, settings);
+
 			return View(model);
 		}
 
 		[Compress]
-		public ActionResult RecentlyAddedProductsRss()
+		public ActionResult RecentlyAddedProductsRss(CatalogSearchQuery query)
 		{
+			// TODO: (mc) find a more prominent place for the "NewProducts" link (may be in main menu?)
 			var protocol = _services.WebHelper.IsCurrentConnectionSecured() ? "https" : "http";
 			var selfLink = Url.RouteUrl("RecentlyAddedProductsRSS", null, protocol);
 			var recentProductsLink = Url.RouteUrl("RecentlyAddedProducts", null, protocol);
@@ -738,23 +722,19 @@ namespace SmartStore.Web.Controllers
 			feed.AddNamespaces(true);
 			feed.Init(selfLink, _services.WorkContext.WorkingLanguage);
 
-			if (!_catalogSettings.RecentlyAddedProductsEnabled)
-				return new RssActionResult { Feed = feed };
-
-			var items = new List<SyndicationItem>();
-			var searchContext = new ProductSearchContext
+			if (!_catalogSettings.RecentlyAddedProductsEnabled || _catalogSettings.RecentlyAddedProductsNumber <= 0)
 			{
-				LanguageId = _services.WorkContext.WorkingLanguage.Id,
-				OrderBy = ProductSortingEnum.CreatedOn,
-				PageSize = _catalogSettings.RecentlyAddedProductsNumber,
-				StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode,
-				VisibleIndividuallyOnly = true
-			};
+				return new RssActionResult { Feed = feed };
+			}
+				
+			var items = new List<SyndicationItem>();
 
-			var products = _productService.SearchProducts(searchContext);
+			query = query.SortBy(ProductSortingEnum.CreatedOn).Slice(0, _catalogSettings.RecentlyAddedProductsNumber);
+			var result = _catalogSearchService.Search(query);
+
 			var storeUrl = _services.StoreContext.CurrentStore.Url;
 
-			foreach (var product in products)
+			foreach (var product in result.Hits)
 			{
 				string productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, "http");
 				if (productUrl.HasValue())
@@ -784,7 +764,7 @@ namespace SmartStore.Web.Controllers
 
 			feed.Items = items;
 
-			_services.DisplayControl.AnnounceRange(products);
+			_services.DisplayControl.AnnounceRange(result.Hits);
 
 			return new RssActionResult { Feed = feed };
 		}
@@ -881,21 +861,34 @@ namespace SmartStore.Web.Controllers
 		public ActionResult CompareProducts()
 		{
 			if (!_catalogSettings.CompareProductsEnabled)
-				return HttpNotFound();
-
-			var model = new CompareProductsModel()
 			{
-				IncludeShortDescriptionInCompareProducts = _catalogSettings.IncludeShortDescriptionInCompareProducts,
-				IncludeFullDescriptionInCompareProducts = _catalogSettings.IncludeFullDescriptionInCompareProducts,
-			};
+				return HttpNotFound();
+			}
 
 			var products = _compareProductsService.GetComparedProducts();
-
-			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, prepareFullDescription: true, isCompareList: true)
-				.ToList()
-				.ForEach(model.Products.Add);
+			var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Compare);
+			var model = _helper.MapProductSummaryModel(products, settings);
 
 			return View(model);
+		}
+
+		public ActionResult OffCanvasCompare()
+		{
+			if (!_catalogSettings.CompareProductsEnabled)
+			{
+				return PartialView(ProductSummaryModel.Empty);
+			}
+
+			var products = _compareProductsService.GetComparedProducts();
+			var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid, x => 
+			{
+				x.MapAttributes = false;
+				x.MapColorAttributes = false;
+				x.MapManufacturers = false;
+			});
+			var model = _helper.MapProductSummaryModel(products, settings);
+
+			return PartialView(model);
 		}
 
 		public ActionResult ClearCompareList()

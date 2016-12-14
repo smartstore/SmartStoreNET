@@ -1,0 +1,123 @@
+﻿@model ProductSummaryModel.SummaryItem
+
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Orders;
+
+@{ 
+	var list = Model.Parent;
+	var price = Model.Price;
+
+	string addToCartUrl = "";
+	if (list.ForceRedirectionAfterAddingToCart)
+	{
+		addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "forceredirection", true } });
+	}
+	else
+	{
+		addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id } });
+	}
+
+	var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
+}
+
+<div class="art-drop">
+	@if (Model.ColorAttribute != null || Model.Attributes.Any())
+	{
+		<div class="art-drop-info">
+			@if (Model.ColorAttribute != null)
+			{
+				<div class="art-color-opts">
+					@foreach (var clr in Model.ColorAttribute.Values)
+					{
+						<a href='@artDetailUrl' class="art-color-opt" style="background-color: @clr.Color" title="@Model.ColorAttribute.Name @clr.FriendlyName auswählen"></a>
+					}
+				</div>
+			}
+
+			@if (Model.Attributes.Any())
+			{
+				<div class="art-more-opts">
+					@if (Model.Attributes.Count == 1)
+					{
+						<span>@T("Products.PlusOption"):</span>
+						<a href="@artDetailUrl">@Model.Attributes[0].Name</a>
+					}
+					else
+					{
+						<div>@T("Products.PlusOptions"):</div>
+						@* TODO: (mc) Append attribute query to url *@
+						<a href="@artDetailUrl">@String.Join(", ", Model.Attributes.Select(x => x.Name)).Truncate(50, "...")</a>
+					}
+				</div>
+			}
+		</div>
+	}
+
+	<div class="row art-drop-btn-group">
+		@if (!price.DisableBuyButton && list.BuyEnabled)
+		{
+			if (!price.CallForPrice)
+			{
+				var title = (price.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"));
+
+				<a data-href='@addToCartUrl'
+				   href="#"
+				   class="btn btn-primary btn-icon btn-lg art-drop-btn col-xs ajax-cart-link"
+				   title="@title"
+				   data-toggle="tooltip"
+				   rel="nofollow"
+				   data-type="cart"
+				   data-action="add">
+					<i class="fa fa-cart-arrow-down"></i>
+				</a>
+			}
+			else
+			{
+				<a href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })" 
+				   class="btn btn-secondary add-to-cart-button" 
+				   data-toggle="tooltip"
+				   rel="nofollow" 
+				   title="@T("Products.CallForPrice.GoToForm")">
+					<i class="fa fa-envelope"></i>
+				</a>
+			}
+		}
+
+		@if (!price.DisableWishlistButton && list.WishlistEnabled)
+		{
+			@* TODO: (mc) refactor data-form-selector="#product-details-form"  *@
+			<a data-href='@Url.Action("AddProduct", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "shoppingCartTypeId", (int)ShoppingCartType.Wishlist } })'
+			   href="#"
+			   class="btn btn-secondary btn-icon btn-lg art-drop-btn col-xs ajax-cart-link" 
+			   title="@T("Categories.Wishlist")"
+			   data-toggle="tooltip" 
+			   rel="nofollow"
+			   data-form-selector="#product-details-form" 
+			   data-type="wishlist" 
+			   data-action="add">
+				<i class="fa fa-heart-o"></i>
+			</a>
+		}
+
+		@if (list.CompareEnabled)
+		{
+			<a data-href="@Url.Action("AddProductToCompare", "Catalog", new RouteValueDictionary { { "id", Model.Id } })" 
+			   href="#"
+			   class="btn btn-secondary btn-icon btn-lg art-drop-btn col-xs ajax-cart-link" 
+			   title="@T("Categories.Compare")"  
+			   data-toggle="tooltip" 
+			   rel="nofollow"
+			   data-type="compare" 
+			   data-action="add">
+				<i class="fa fa-retweet"></i>
+			</a>
+		}
+
+		<a href='@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })' 
+		   class="btn btn-secondary btn-icon btn-lg art-drop-btn col-xs" 
+		   title="@T("Products.Details")">
+			<i class="fa fa-info"></i>
+		</a>
+	</div>
+</div>
+

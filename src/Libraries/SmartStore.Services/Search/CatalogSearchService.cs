@@ -36,21 +36,27 @@ namespace SmartStore.Services.Search
 			_eventPublisher = eventPublisher;
 		}
 
-		protected virtual CatalogSearchResult SearchFallback(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None)
+		/// <summary>
+		/// Bypasses the index provider and directly searches in the database
+		/// </summary>
+		/// <param name="searchQuery"></param>
+		/// <param name="loadFlags"></param>
+		/// <returns></returns>
+		protected virtual CatalogSearchResult SearchDirect(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None)
 		{
 			// fallback to linq search
 			var linqCatalogSearchService = _ctx.ResolveNamed<ICatalogSearchService>("linq");
 			return linqCatalogSearchService.Search(searchQuery, loadFlags);
 		}
 
-		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None)
+		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None, bool direct = false)
 		{
 			Guard.NotNull(searchQuery, nameof(searchQuery));
 			Guard.NotNegative(searchQuery.Take, nameof(searchQuery.Take));
 
 			var provider = _indexManager.GetIndexProvider();
 
-			if (provider != null)
+			if (!direct && provider != null)
 			{
 				var indexStore = provider.GetIndexStore("Catalog");
 				if (indexStore.Exists)
@@ -59,12 +65,12 @@ namespace SmartStore.Services.Search
 
 					using (_chronometer.Step("Search (" + searchEngine.GetType().Name + ")"))
 					{
-						var totalCount = 0;
+						int totalCount = 0;
 						string[] spellCheckerSuggestions = null;
 						IEnumerable<ISearchHit> topCategories = null;
 						IEnumerable<ISearchHit> topManufacturers = null;
 						IEnumerable<ISearchHit> searchHits;
-						PagedList<Product> hits;
+						Func<IList<Product>> hitsFactory = null;
 
 						_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
 
@@ -83,14 +89,8 @@ namespace SmartStore.Services.Search
 							using (_chronometer.Step("Collect from DB"))
 							{
 								var productIds = searchHits.Select(x => x.EntityId).ToArray();
-								var products = _productService.Value.GetProductsByIds(productIds, loadFlags);
-
-								hits = new PagedList<Product>(products, searchQuery.PageIndex, searchQuery.Take, totalCount);
+								hitsFactory = () => _productService.Value.GetProductsByIds(productIds, loadFlags);
 							}
-						}
-						else
-						{
-							hits = new PagedList<Product>(new List<Product>(), searchQuery.PageIndex, searchQuery.Take);
 						}
 						
 						try
@@ -132,7 +132,8 @@ namespace SmartStore.Services.Search
 
 						var result = new CatalogSearchResult(
 							searchEngine, 
-							hits, 
+							totalCount,
+							hitsFactory, 
 							searchQuery, 
 							spellCheckerSuggestions,
 							topCategories,
@@ -145,7 +146,7 @@ namespace SmartStore.Services.Search
 				}
 			}
 
-			return SearchFallback(searchQuery);
+			return SearchDirect(searchQuery);
 		}
 	}
 }

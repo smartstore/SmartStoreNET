@@ -8,22 +8,23 @@ using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Web.Models.Catalog
 {
-    public partial class ProductSummaryModel : ModelBase
+    public partial class ProductSummaryModel : ModelBase, IListActions
     {
+		public static ProductSummaryModel Empty = new ProductSummaryModel(new PagedList<Product>(new List<Product>(), 0, int.MaxValue));
+
 		public ProductSummaryModel(IPagedList<Product> products)
 		{
 			Guard.NotNull(products, nameof(products));
 
 			Items = new List<SummaryItem>();
-			Products = products;
+			PagedList = products;
 		}
-
-		public IPagedList<Product> Products { get; private set; }
 
 		public int? ThumbSize { get; set; }
 		public bool ShowSku { get; set; }
 		public bool ShowWeight { get; set; }
 		public bool ShowDescription { get; set; }
+		public bool ShowFullDescription { get; set; }
 		public bool ShowBrand { get; set; }
 		public bool ShowDimensions { get; set; }
 		public bool ShowLegalInfo { get; set; }
@@ -37,13 +38,25 @@ namespace SmartStore.Web.Models.Catalog
 		public bool CompareEnabled { get; set; }
 		public bool ForceRedirectionAfterAddingToCart { get; set; }
 
-		public ProductSummaryViewMode ViewMode { get; set; }
-		public bool AllowPagination { get; set; }
-		public IEnumerable<int> AvailablePageSizes { get; set; }
-		public bool AllowSorting { get; set; }
-		public bool AllowViewModeChanging { get; set; }		
-
 		public IList<SummaryItem> Items { get; set; }
+
+		#region IListActions
+
+		public ProductSummaryViewMode ViewMode { get; set; }
+		public bool AllowViewModeChanging { get; set; }
+
+		// TODO: (mc) Implement
+		public bool AllowFiltering { get; set; }
+
+		public bool AllowSorting { get; set; }
+		public int? CurrentSortOrder { get; set; }
+		public string CurrentSortOrderName { get; set; }
+		public IDictionary<int, string> AvailableSortOptions { get; set; }
+
+		public IEnumerable<int> AvailablePageSizes { get; set; }
+		public IPageable PagedList { get; set; }
+
+		#endregion
 
 		public class SummaryItem : EntityModelBase
 		{
@@ -88,6 +101,9 @@ namespace SmartStore.Web.Models.Catalog
 			public PriceModel Price { get; set; }
 			public PictureModel Picture { get; set; }
 			public IList<Attribute> Attributes { get; set; }
+			// TODO: (mc) Let the user specify in attribute manager which spec attributes are
+			// important. According to it's importance, show attribute value in grid or list mode.
+			// E.g. perfect for "Energy label" > "EEK A++", or special material (e.g. "Leather") etc.
 			public IList<ProductSpecificationModel> SpecificationAttributes { get; set; }
 			public ColorAttribute ColorAttribute { get; set; }
 			public IList<Badge> Badges { get; set; }

@@ -218,7 +218,6 @@ namespace SmartStore.Data.Tests.Catalog
                             ParentCategoryId = 2,
                             //PictureId = 3,
                             PageSize = 4,
-                            PriceRanges = "1-3;",
                             ShowOnHomePage = false,
                             Published = true,
                             Deleted = false,
@@ -266,14 +265,11 @@ namespace SmartStore.Data.Tests.Catalog
                             MetaTitle = "Meta title",
                             //PictureId = 3,
                             PageSize = 4,
-                            PriceRanges = "1-3;",
                             Published = true,
                             Deleted = false,
                             DisplayOrder = 5,
-                            CreatedOnUtc =
-                                new DateTime(2010, 01, 01),
-                            UpdatedOnUtc =
-                                new DateTime(2010, 01, 02),
+                            CreatedOnUtc = new DateTime(2010, 01, 01),
+                            UpdatedOnUtc = new DateTime(2010, 01, 02),
                         }
                     }
                 );

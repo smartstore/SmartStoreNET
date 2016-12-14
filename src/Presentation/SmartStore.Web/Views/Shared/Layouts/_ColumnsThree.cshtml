@@ -18,19 +18,19 @@
     {
         @Html.Widget("left_side_column_before")
 
-        @{ Html.RenderAction("CategoryNavigation", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" }); }
+        Html.RenderAction("CategoryNavigation", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
         @Html.Widget("left_side_column_after_category_navigation")
 
-        @{ Html.RenderAction("ManufacturerNavigation", "Catalog", new { currentManufacturerId = this.CurrentManufacturerId, area = "" }); }
+        Html.RenderAction("ManufacturerNavigation", "Catalog", new { currentManufacturerId = this.CurrentManufacturerId, area = "" });
         @Html.Widget("left_side_column_after_manufacturer_navigation")
 
-        @{ Html.RenderAction("PopularProductTags", "Catalog", new { area = "" }); }
+        Html.RenderAction("PopularProductTags", "Catalog", new { area = "" });
         @Html.Widget("left_side_column_after_tags")
 
-        @{ Html.RenderAction("InfoBlock", "Common", new { area = "" }); }
+        Html.RenderAction("InfoBlock", "Common", new { area = "" });
         @Html.Widget("left_side_column_after_info")
 
-        @{ Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "LeftColumnPoll", area = "" }); }
+        Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "LeftColumnPoll", area = "" });
         @Html.Widget("left_side_column_after_poll")
 
         @Html.Widget("left_side_column_after")
@@ -53,12 +53,9 @@
     }
     else
     {
-        @Html.Widget("right_side_column_before")
+        @Html.Widget("right_side_column_before")          
 
-        @{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
-        @Html.Widget("right_side_column_after_recentlyviewed")             
-
-        @{ Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "RightColumnPoll", area = "" }); }
+        Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "RightColumnPoll", area = "" });
         @Html.Widget("right_side_column_after_poll")   
 
         @Html.Widget("right_side_column_after")

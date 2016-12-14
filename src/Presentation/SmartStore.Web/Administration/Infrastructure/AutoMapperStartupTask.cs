@@ -622,8 +622,6 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.PageShareCode, mo => mo.Ignore())
                 .ForMember(dest => dest.DefaultProductRatingValue, mo => mo.Ignore())
                 .ForMember(dest => dest.UseSmallProductBoxOnHomePage, mo => mo.Ignore())
-                .ForMember(dest => dest.DefaultCategoryPageSizeOptions, mo => mo.Ignore())
-                .ForMember(dest => dest.DefaultManufacturerPageSizeOptions, mo => mo.Ignore())
                 .ForMember(dest => dest.MaximumBackInStockSubscriptions, mo => mo.Ignore())
                 .ForMember(dest => dest.DisplayTierPricesWithDiscounts, mo => mo.Ignore())
                 .ForMember(dest => dest.FileUploadMaximumSizeBytes, mo => mo.Ignore())

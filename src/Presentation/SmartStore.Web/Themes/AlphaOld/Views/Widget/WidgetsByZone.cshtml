@@ -1,6 +1,0 @@
-﻿@model WidgetZoneModel
-@using SmartStore.Web.Framework.UI;
-
-@foreach (var widget in Model.Widgets) {
-    @Html.Action(widget.ActionName, widget.ControllerName, widget.RouteValues)
-}

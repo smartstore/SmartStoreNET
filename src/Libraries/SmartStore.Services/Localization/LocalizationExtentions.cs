@@ -129,8 +129,7 @@ namespace SmartStore.Services.Localization
         public static string GetLocalizedEnum<T>(this T enumValue, ILocalizationService localizationService, IWorkContext workContext)
             where T : struct
         {
-            if (workContext == null)
-                throw new ArgumentNullException("workContext");
+			Guard.NotNull(workContext, nameof(workContext));
 
             return GetLocalizedEnum<T>(enumValue, localizationService, workContext.WorkingLanguage.Id);
         }
@@ -145,16 +144,16 @@ namespace SmartStore.Services.Localization
         public static string GetLocalizedEnum<T>(this T enumValue, ILocalizationService localizationService, int languageId = 0)
             where T : struct
         {
-            if (localizationService == null)
-                throw new ArgumentNullException("localizationService");
+			Guard.NotNull(localizationService, nameof(localizationService));
 
-            if (!typeof(T).IsEnum) throw new ArgumentException("T must be an enumerated type");
+			if (!typeof(T).IsEnum) throw new ArgumentException("T must be an enumerated type");
 
             //localized value
             string resourceName = string.Format("Enums.{0}.{1}", 
                 typeof(T).ToString(), 
                 //Convert.ToInt32(enumValue)
                 enumValue.ToString());
+
             string result = localizationService.GetResource(resourceName, languageId, false, "", true);
 
             //set default value if required

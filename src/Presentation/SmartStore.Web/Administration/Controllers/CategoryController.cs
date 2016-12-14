@@ -511,15 +511,10 @@ namespace SmartStore.Admin.Controllers
 
             PrepareTemplatesModel(model);
             PrepareCategoryModel(model, null, true);
-
 			PrepareAclModel(model, null, false);
-
 			PrepareStoresMappingModel(model, null, false);
 
-            model.PageSize = 12;
             model.Published = true;
-
-            model.AllowCustomersToSelectPageSize = true;
 
             return View(model);
         }

@@ -2244,23 +2244,6 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        public ActionResult OffCanvasCompare()
-        {
-            var model = new CompareProductsModel
-            {
-                IncludeShortDescriptionInCompareProducts = _catalogSettings.IncludeShortDescriptionInCompareProducts,
-                IncludeFullDescriptionInCompareProducts = _catalogSettings.IncludeFullDescriptionInCompareProducts,
-            };
-
-            var products = _compareProductsService.GetComparedProducts();
-
-            _helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, isCompareList: true)
-                .ToList()
-                .ForEach(model.Products.Add);
-
-            return PartialView(model);
-        }
-
         [HttpPost]
         public ActionResult UpdateOcCartItem(int sciItemId, int newQuantity)
         {

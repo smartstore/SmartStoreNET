@@ -33,7 +33,6 @@ namespace SmartStore.Data.Tests.Catalog
                                                                           ParentCategoryId = 2,
                                                                           //PictureId = 3,
                                                                           PageSize = 4,
-                                                                          PriceRanges = "1-3;",
                                                                           ShowOnHomePage = false,
                                                                           Published = true,
                                                                           Deleted = false,

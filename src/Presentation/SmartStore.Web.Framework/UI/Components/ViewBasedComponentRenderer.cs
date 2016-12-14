@@ -16,7 +16,7 @@ namespace SmartStore.Web.Framework.UI
 		{
 			Guard.NotEmpty(viewName, nameof(viewName));
 
-			_viewName = typeof(TComponent).Name;
+			_viewName = viewName;
 		}
 
 		public override void Render()

@@ -162,8 +162,22 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByRange("id", fromId, toId, fromId.HasValue, toId.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
+		/// <summary>
+		/// Category ids filter
+		/// </summary>
+		/// <param name="featuredOnly">
+		/// A value indicating whether loaded products are marked as featured (relates only to categories and manufacturers). 
+		/// <c>false</c> to load featured products only, <c>true</c> to load unfeatured products only, <c>null</c> to load all products
+		/// </param>
+		/// <param name="ids">The category ids</param>
+		/// <returns>Query</returns>
 		public CatalogSearchQuery WithCategoryIds(bool? featuredOnly, params int[] ids)
 		{
+			if (ids.Length == 0)
+			{
+				return this;
+			}
+
 			string fieldName = null;
 
 			if (featuredOnly.HasValue)

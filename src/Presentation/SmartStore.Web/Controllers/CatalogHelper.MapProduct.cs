@@ -82,7 +82,8 @@ namespace SmartStore.Web.Controllers
 			{
 				ViewMode = viewMode,
 				MapPrices = true,
-				MapPictures = true
+				MapPictures = true,
+				ThumbnailSize = _mediaSettings.ProductThumbPictureSize
 			};
 
 			if (viewMode == ProductSummaryViewMode.Grid)

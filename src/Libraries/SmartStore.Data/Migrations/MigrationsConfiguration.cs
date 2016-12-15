@@ -265,6 +265,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Pager.XPerPage", "{0} per Page", "{0} pro Seite");
 			builder.AddOrUpdate("Pager.PageXOfY", "Page {0} of {1}", "Seite {0} von {1}");
 			builder.AddOrUpdate("Pager.PageXOfYShort", "{0} of {1}", "{0} von {1}");
+
+			builder.AddOrUpdate("Products.Price.OldPrice", "Regular", "Regulär");
 		}
 	}
 }

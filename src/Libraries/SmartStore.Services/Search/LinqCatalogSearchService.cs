@@ -524,11 +524,13 @@ namespace SmartStore.Services.Search
 
 			if (searchQuery.Take > 0)
 			{
-				var query = GetProductQuery(searchQuery)
-					.Skip(searchQuery.PageIndex * searchQuery.Take)
-					.Take(searchQuery.Take);
+				var query = GetProductQuery(searchQuery);
 
 				totalCount = query.Count();
+
+				query = query
+					.Skip(searchQuery.PageIndex * searchQuery.Take)
+					.Take(searchQuery.Take);
 
 				var ids = query.Select(x => x.Id).ToArray();
 				hitsFactory = () => _productService.GetProductsByIds(ids, loadFlags);

@@ -214,7 +214,7 @@ namespace SmartStore.Web.Controllers
 						ShowLegalInfo = settings.MapLegalInfo,
 						ShowDescription = settings.MapShortDescription,
 						ShowFullDescription = settings.MapFullDescription,
-						ShowReviews = settings.MapReviews,
+						ShowRatings = settings.MapReviews,
 						ShowDeliveryTimes = settings.MapDeliveryTimes,
 						ShowBasePrice = settings.MapPrices && _catalogSettings.ShowBasePriceInProductLists,
 						ShowBrand = settings.MapManufacturers,
@@ -653,6 +653,7 @@ namespace SmartStore.Web.Controllers
 			if (priceModel.HasDiscount && regularPriceValue > 0 && regularPriceValue > priceModel.PriceValue)
 			{
 				priceModel.SavingPercent = (float)((priceModel.RegularPriceValue - priceModel.PriceValue) / priceModel.RegularPriceValue) * 100;
+				priceModel.SavingAmount = _priceFormatter.FormatPrice(regularPriceValue - priceModel.PriceValue, true, false);
 
 				if (model.ShowDiscountBadge)
 				{

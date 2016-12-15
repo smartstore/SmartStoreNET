@@ -1900,6 +1900,9 @@
     <Content Include="Views\Shared\Partials\Product.List.Pager.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.ViewMode.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.FilterSort.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.Item.Rating.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.Item.Brand.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.Item.Price.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -137,84 +137,6 @@ $art-active-bg-color:           #fff;
     }
 }
 
-.artlist-lines {
-    .art {
-        @include make-row();
-        margin-left: 0;
-        margin-right: 0;
-        border-bottom-color: $art-border-color;
-    }
-
-    .art-picture-block {
-        width: 200px;
-        max-width: 15rem;
-    }
-
-    .art-info-block {
-        // TODO: (mc) Get col-xs from BS4 mixin here
-        display: block;
-        position: relative;
-        min-height: 1px;
-        width: 100%;
-        padding-left: $grid-gutter-width / 2;
-        padding-right: $grid-gutter-width / 2;
-        flex-basis: 0;
-        flex-grow: 1;
-        max-width: 100%;
-    }
-
-    .art-drop {
-        display: none;
-    }
-}
-
-.artlist-grid {
-    @include make-row();
-    margin-left: 0;
-    margin-right: 0;
-
-    &.artlist::after {
-        // Make continous line after last row
-        position: relative;
-        content: '';
-        width: 100%;
-        height: 1px;
-        background: $art-border-color;
-        bottom: 1px;
-    }
-    
-    .art {
-        // Grid has always 2 cols per row at least, even on xs
-        @include make-col-span(6, $grid-columns);
-        border-bottom-color: $art-border-color;
-    }
-
-    @include media-breakpoint-up(md) {
-        &.artlist-5-cols .art {
-            @include make-col-span(4, $grid-columns);
-        }
-    }
-
-    @include media-breakpoint-up(lg) {
-        &.artlist-3-cols .art,
-        &.artlist-4-cols .art {
-            @include make-col-span(4, $grid-columns);
-        }
-        &.artlist-5-cols .art {
-            @include make-col-span(3, $grid-columns);
-        }
-    }
-
-    @include media-breakpoint-up(xl) {
-        &.artlist-4-cols .art {
-            @include make-col-span(3, $grid-columns);
-        }
-        &.artlist-5-cols .art {
-            @include make-col-span(2, 10);
-        }
-    }
-}
-
 .art-picture-block {
     position: relative;
     margin-bottom: 0.8rem;
@@ -260,6 +182,7 @@ $art-active-bg-color:           #fff;
     margin-bottom: 0.2rem;
 }
 
+.art-data-block,
 .art-info-block {
     position: relative;
 }
@@ -273,9 +196,6 @@ $art-active-bg-color:           #fff;
     font-size: $art-font-size-sm;
     color: $text-muted;
     text-transform: uppercase;
-    box-sizing: content-box;
-    min-height: $art-font-size-sm * $art-line-height;
-    @include text-truncate();
 }
 
 .art-name {
@@ -283,9 +203,6 @@ $art-active-bg-color:           #fff;
     font-size: $art-font-size;
     font-weight: 600;
     margin-bottom: 0.25rem;
-    height: ($art-font-size * $art-line-height) * 2;
-    overflow: hidden;
-    text-overflow: ellipsis;
 
     > a {
         color: $body-color;
@@ -293,19 +210,9 @@ $art-active-bg-color:           #fff;
 }
 
 .art-description {
-    box-sizing: content-box;
     font-size: $art-font-size-sm;
     color: $text-muted;
-    margin-bottom: 0.25rem;
-    height: ($art-font-size-sm * $art-line-height) * 2;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.art-delivery-info {
-    box-sizing: content-box;
-    min-height: $art-font-size * $art-line-height;
-    @include text-truncate();
+    margin-bottom: 0.4rem;
 }
 
 .art-price-block {
@@ -325,7 +232,6 @@ $art-active-bg-color:           #fff;
 
 .art-oldprice {
     display: inline-block;
-    font-size: $art-font-size * 0.925;
     padding-left: 0.25rem;
     color: $text-muted;
     text-decoration: line-through;
@@ -335,16 +241,22 @@ $art-active-bg-color:           #fff;
     font-size: $art-font-size-sm;
     color: $text-muted;
     padding-top: 0.25rem;
-    box-sizing: content-box;
-    min-height: $art-font-size-sm * $art-line-height;
-    @include text-truncate();
 }
 
 .art-shipsurcharge {
     font-size: $art-font-size-sm;
     color: $brand-danger;
-    padding-top: 0.25rem;
+    padding-top: 0.4rem;
     @include text-truncate();
+}
+
+.art-legalinfo {
+    font-size: $art-font-size-xs;
+    color: $text-muted;
+}
+
+.art-info-group {
+    margin-bottom: 0.4rem;
 }
 
 .art-drop {
@@ -419,6 +331,172 @@ $art-active-bg-color:           #fff;
 
 .art-drop-info > * + * {
     margin-top: 0.4rem;
+}
+
+
+// List style
+// ---------------------------------------------
+
+.artlist-lines {
+    .art {
+        @include make-row();
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0;
+        padding-right: 0;
+        border-bottom-color: $art-border-color;
+    }
+
+    .art-data-block {
+        @include make-row();
+        padding-left: $grid-gutter-width / 1.5;
+        padding-right: 0;
+        margin-left: 0;
+        margin-right: 0;
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 100%;
+    }
+
+    .art-picture-block {
+        width: 200px;
+        max-width: 200px;
+    }
+
+    .art-actions-block {
+        width: 220px;
+    }
+
+    .art-actions-block {
+        padding-left: $grid-gutter-width / 1.5;
+    }
+
+    .art-info-block {
+        // TODO: (mc) Get col-xs from BS4 mixin here
+        display: block;
+        position: relative;
+        min-height: 1px;
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 100%;
+    }
+
+    .art-brand,
+    .art-rating {
+        float: left;
+        margin-bottom: 0;
+    }
+
+    .art-name {
+        font-size: 1rem;
+        margin-bottom: 0.5em;
+    }
+
+    .art-brand + .art-rating {
+        float: right !important;
+    }
+
+    .art-price {
+        font-size: 1.6rem;
+        font-weight: 500;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .art-oldprice {
+        //display: block;
+    }
+}
+
+
+// Grid style
+// ---------------------------------------------
+
+.artlist-grid {
+    @include make-row();
+    margin-left: 0;
+    margin-right: 0;
+
+    &.artlist::after {
+        // Make continous line after last row
+        position: relative;
+        content: '';
+        width: 100%;
+        height: 1px;
+        background: $art-border-color;
+        bottom: 1px;
+    }
+    
+    .art {
+        // Grid has always 2 cols per row at least, even on xs
+        @include make-col-span(6, $grid-columns);
+        border-bottom-color: $art-border-color;
+    }
+
+    // Ensure equal height for some elements in grid style lists
+    .art-name,
+    .art-description {
+        // At least 2 lines height for name & description
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .art-name {
+        // At least 2 lines height for name
+        height: ($art-font-size * $art-line-height) * 2;
+    }
+
+    .art-description {
+        // At least 2 lines height for description
+        height: ($art-font-size-sm * $art-line-height) * 2;
+    }
+
+    .art-delivery-info,
+    .art-pangv {
+        // Always 1 line height, even if empty
+        box-sizing: content-box;
+        min-height: $art-font-size * $art-line-height;
+        @include text-truncate();
+    }
+
+    .art-brand,
+    .art-pangv,
+    .art-shipsurcharge,
+    .art-more-opts {
+        // Always 1 small line height, even if empty
+        box-sizing: content-box;
+        min-height: $art-font-size-sm * $art-line-height;
+        @include text-truncate();
+    }
+
+    .art-oldprice {
+        font-size: $art-font-size * 0.925;
+    }
+
+    @include media-breakpoint-up(md) {
+        &.artlist-5-cols .art {
+            @include make-col-span(4, $grid-columns);
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+        &.artlist-3-cols .art,
+        &.artlist-4-cols .art {
+            @include make-col-span(4, $grid-columns);
+        }
+        &.artlist-5-cols .art {
+            @include make-col-span(3, $grid-columns);
+        }
+    }
+
+    @include media-breakpoint-up(xl) {
+        &.artlist-4-cols .art {
+            @include make-col-span(3, $grid-columns);
+        }
+        &.artlist-5-cols .art {
+            @include make-col-span(2, 10);
+        }
+    }
 }
 
 /*@include media-breakpoint-between(xs, md) {

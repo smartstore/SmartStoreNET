@@ -7,6 +7,10 @@
 	var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
 	var list = Model.Parent;
 	var picture = Model.Picture;
+
+	var showButtons = !Model.Price.DisableWishlistButton || list.CompareEnabled || (!Model.Price.DisableBuyButton && list.BuyEnabled);
+	var showVariants = Model.ColorAttribute != null || (Model.Attributes != null && Model.Attributes.Any());
+	var showDrop = showButtons || showVariants;
 }
 
 <article class="art" data-id="@Model.Id">
@@ -69,6 +73,11 @@
 				Html.RenderPartial("Product.List.Item.Price", Model);
 			}
 
+			@if (list.ViewMode == ProductSummaryViewMode.List && showVariants)
+			{
+				Html.RenderPartial("Product.List.Item.Variants", Model);
+			}
+
 			@if (list.ShowLegalInfo)
 			{
 				<div class="art-legalinfo">
@@ -80,34 +89,13 @@
 		@if (list.ViewMode == ProductSummaryViewMode.List)
 		{
 			<div class="art-actions-block">
-				<div class="p-b-1 hidden-xs-up">
-					<div class="art-price fs-h2 font-weight-normal" style="font-weight: 500 !important; line-height: 1; padding-bottom: 0.3rem">
-						129,00 € *
-					</div>
-					<div class="art-shipsurcharge">
-						zzgl. <b>8,99 €</b> Transportzuschlag
-					</div>
-					<div class="art-pangv" title="Inhalt: 20 m (4,76 € * / 1 m)">
-						Inhalt: 20 m (4,76 € * / 1 m)
-					</div>
-				</div>
-
-				@{ Html.RenderPartial("Product.List.Item.Price", Model); }
-
-				<button class="btn btn-primary btn-block text-xs-left m-b-1 m-t-1">
-					<i class="fa fa-fw fa-cart-arrow-down"></i>
-					<span>In den Warenkorb</span>
-				</button>
-				<div class="btn-group" role="group" aria-label="Basic example" style="font-size: 0.6rem">
-					<button class="btn btn-secondary btn-flat btn-sm xbtn-block text-xs-left">
-						<i class="fa fa-fw fa-heart-o"></i>
-						<span>Merken</span>
-					</button>
-					<button class="btn btn-secondary btn-flat btn-sm xbtn-block text-xs-left">
-						<i class="fa fa-fw fa-retweet"></i>
-						<span>Vergleichen</span>
-					</button>
-				</div>
+				@{ 
+					Html.RenderPartial("Product.List.Item.Price", Model);
+					if (showButtons)
+					{
+						Html.RenderPartial("Product.List.Item.Buttons", Model);
+					}
+				}
 			</div>
 		}
 	</div>
@@ -115,16 +103,18 @@
 	@{ 
 		if (list.ViewMode != ProductSummaryViewMode.List)
 		{
-			var showDrop =
-				!Model.Price.DisableWishlistButton
-				|| list.CompareEnabled
-				|| (!Model.Price.DisableBuyButton && list.BuyEnabled)
-				|| Model.ColorAttribute != null
-				|| Model.Attributes != null;
-
 			if (showDrop)
 			{
-				Html.RenderPartial("Product.List.Item.Drop", Model);
+				<div class="art-drop">
+					@if (showVariants) 
+					{
+						Html.RenderPartial("Product.List.Item.Variants", Model);
+					}
+					@if (showButtons)
+					{
+						Html.RenderPartial("Product.List.Item.Buttons", Model);
+					}
+				</div>
 			}
 		}
 	}

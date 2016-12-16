@@ -21,7 +21,9 @@
 }
 
 <div class="art-price-block">
-	<span class="art-price@(Model.Price.RegularPrice.HasValue() ? " art-price--offer" : "")">@Model.Price.Price</span>
+	<span class="art-price@(Model.Price.RegularPrice.HasValue() ? " art-price--offer" : "")@(Model.Price.CallForPrice ? " art-price--call" : "")">
+		@Model.Price.Price
+	</span>
 	@if (Model.Price.RegularPrice.HasValue())
 	{
 		if (list.ViewMode == ProductSummaryViewMode.List)

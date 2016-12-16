@@ -217,7 +217,6 @@ $art-active-bg-color:           #fff;
 
 .art-price-block {
     position: relative;
-    margin-top: 0.5rem;
 }
 
 .art-price {
@@ -272,24 +271,6 @@ $art-active-bg-color:           #fff;
     visibility: hidden;
     z-index: -1;  
 
-    .art-drop-btn-group {
-        margin: 0;
-    }
-
-    .art-drop-btn {
-        display: block;
-        border-radius: 0;
-        border: none;
-        box-shadow: none;
-        transition: none;
-        height: 2.75rem;
-        line-height: 2.75rem;
-
-        &.btn-secondary {
-            color: #666;
-        }
-    }
-
     .art.active & { 
         opacity: 1;
         visibility: visible;
@@ -297,9 +278,25 @@ $art-active-bg-color:           #fff;
     }
 }
 
-.art-drop-info {
-    padding-left: $grid-gutter-width / 2;
-    padding-right: $grid-gutter-width / 2;
+.art-btn-group {
+    margin: 0;
+}
+
+.art-btn {
+    display: block;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    transition: none;
+    height: 2.75rem;
+    line-height: 2.75rem;
+
+    &.btn-secondary {
+        color: #666;
+    }
+}
+
+.art-variant-info {
     margin-bottom: 0.75rem;
 }
 
@@ -329,7 +326,7 @@ $art-active-bg-color:           #fff;
     > a { font-weight: bold; }  
 }
 
-.art-drop-info > * + * {
+.art-variant-info > * + * {
     margin-top: 0.4rem;
 }
 
@@ -365,10 +362,11 @@ $art-active-bg-color:           #fff;
 
     .art-actions-block {
         width: 220px;
+        padding-left: $grid-gutter-width / 1.5;
     }
 
-    .art-actions-block {
-        padding-left: $grid-gutter-width / 1.5;
+    .art-description {
+        margin-bottom: 1rem;
     }
 
     .art-info-block {
@@ -403,8 +401,37 @@ $art-active-bg-color:           #fff;
         margin-bottom: 0.25rem;
     }
 
+    .art-price--call {
+        font-size: 1rem;
+        color: $text-muted;
+        font-weight: 400;
+    }
+
     .art-oldprice {
         //display: block;
+    }
+
+    .art-variant-info {
+        margin-bottom: 1rem;
+    }
+
+    @include media-breakpoint-down(lg) {
+        .art-picture-block { max-width: 180px; }
+        .art-actions-block { width: 200px; }
+    }
+
+    @include media-breakpoint-down(sm) {
+        .art-actions-block { 
+            // Put right hand action block below info block
+            display: block;
+            padding-left: 0;
+            padding-top: 1rem;
+            width: 100%;
+        }
+    }
+
+    @include media-breakpoint-down(xs) {
+        .art-picture-block { max-width: 30%; }
     }
 }
 
@@ -469,13 +496,31 @@ $art-active-bg-color:           #fff;
         @include text-truncate();
     }
 
+    .art-price-block {
+        margin-top: 0.5rem;
+    }
+
     .art-oldprice {
         font-size: $art-font-size * 0.925;
+    }
+
+    .art-variant-info {
+        padding-left: $grid-gutter-width / 2;
+        padding-right: $grid-gutter-width / 2;
+    }
+
+    @include media-breakpoint-up(sm) {
+        &.artlist-6-cols .art {
+            @include make-col-span(4, $grid-columns);
+        }
     }
 
     @include media-breakpoint-up(md) {
         &.artlist-5-cols .art {
             @include make-col-span(4, $grid-columns);
+        }
+        &.artlist-6-cols .art {
+            @include make-col-span(3, $grid-columns);
         }
     }
 
@@ -484,7 +529,8 @@ $art-active-bg-color:           #fff;
         &.artlist-4-cols .art {
             @include make-col-span(4, $grid-columns);
         }
-        &.artlist-5-cols .art {
+        &.artlist-5-cols .art,
+        &.artlist-6-cols .art {
             @include make-col-span(3, $grid-columns);
         }
     }
@@ -495,6 +541,9 @@ $art-active-bg-color:           #fff;
         }
         &.artlist-5-cols .art {
             @include make-col-span(2, 10);
+        }
+        &.artlist-6-cols .art {
+            @include make-col-span(2, $grid-columns);
         }
     }
 }

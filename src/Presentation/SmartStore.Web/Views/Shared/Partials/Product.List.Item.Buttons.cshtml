@@ -38,12 +38,17 @@
 			{
 				<span>@title</span>
 			}
+			else
+			{
+				@* Show "Add to Cart" label on sm-only (enough space!) *@
+				<span class="hidden-md-up hidden-xs-down">@title</span>
+			}
 		</a>
 	}
 	else
 	{
 		<a href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })"
-			class="btn btn-secondary add-to-cart-button @cssClasses"
+			class="btn @(blockStyle ? "btn-secondary" : "btn-grey") add-to-cart-button @cssClasses"
 			data-toggle='@(!blockStyle ? "tooltip" : "")'
 			rel="nofollow"
 			title="@T("Products.CallForPrice.GoToForm")">
@@ -51,6 +56,11 @@
 			@if (blockStyle)
 			{
 				<span>@T("Products.CallForPrice.GoToForm")</span>
+			}
+			else
+			{
+				@* Show "Call for price" label on sm-only (enough space!) *@
+				<span class="hidden-md-up hidden-xs-down">@T("Products.CallForPrice.GoToForm")</span>
 			}
 		</a>
 	}

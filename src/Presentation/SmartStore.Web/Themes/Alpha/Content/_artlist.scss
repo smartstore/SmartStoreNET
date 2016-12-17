@@ -221,7 +221,8 @@ $art-active-bg-color:           #fff;
 
 .art-price {
     display: inline-block;  
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 1rem;
     color: $art-price-color;
 
     &.art-price--offer {
@@ -280,19 +281,20 @@ $art-active-bg-color:           #fff;
 
 .art-btn-group {
     margin: 0;
-}
 
-.art-btn {
-    display: block;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
-    transition: none;
-    height: 2.75rem;
-    line-height: 2.75rem;
+    .art-btn {
+        display: block;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        transition: none;
+        width: auto;
+        height: 2.75rem;
+        line-height: 2.75rem;
 
-    &.btn-secondary {
-        color: #666;
+        &.btn-secondary {
+            color: #666;
+        }
     }
 }
 
@@ -328,6 +330,19 @@ $art-active-bg-color:           #fff;
 
 .art-variant-info > * + * {
     margin-top: 0.4rem;
+}
+
+.art-attrs {
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+    font-size: $art-font-size-sm;
+
+    td { padding: 1px 0; }
+    td:first-child { 
+        padding-right: 0.5rem; 
+        font-weight: 600; 
+        //color: $text-muted;
+    }
 }
 
 
@@ -547,6 +562,42 @@ $art-active-bg-color:           #fff;
         }
     }
 }
+
+
+// Carousel
+// ---------------------------------------------
+
+.artlist-carousel {
+    position: relative;
+    overflow: hidden;
+
+    .touch & {
+        overflow-x: auto !important;
+    }
+
+    .artlist-grid {
+        flex-wrap: nowrap;
+        margin-bottom: 0;
+        transition: margin-left 0.12s ease-in-out;
+    }
+
+    .art {
+        flex-basis: 180px !important;
+        max-width: 180px !important;
+        border-bottom: none;
+    }
+
+    .art-drop {
+        display: none;
+    }
+
+    @include media-breakpoint-only(md) {
+        // Fits better
+        .art { flex-basis: 172px !important; max-width: 172px !important; }
+    }
+}
+
+
 
 /*@include media-breakpoint-between(xs, md) {
     .art-rowdiv:nth-of-type(2n+0) {

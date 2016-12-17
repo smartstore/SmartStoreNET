@@ -267,6 +267,11 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Pager.PageXOfYShort", "{0} of {1}", "{0} von {1}");
 
 			builder.AddOrUpdate("Products.Price.OldPrice", "Regular", "Regulär");
+			builder.AddOrUpdate("Products.Sku", "SKU", "Art.-Nr.");
+
+
+			builder.AddOrUpdate("Tax.LegalInfoShort", "Prices {0}, plus <a href='{1}'>shipping</a>", "Preise {0}, zzgl. <a href='{1}'>Versandkosten</a>");
+			builder.AddOrUpdate("Tax.LegalInfoShort2", "Prices {0}, plus shipping", "Preise {0}, zzgl. Versandkosten");
 		}
 	}
 }

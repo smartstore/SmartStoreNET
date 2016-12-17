@@ -13,6 +13,7 @@ using SmartStore.Core;
 using SmartStore.Services;
 using SmartStore.Services.Customers;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Services.Common;
 
 namespace SmartStore.DevTools.Filters
 {
@@ -21,15 +22,18 @@ namespace SmartStore.DevTools.Filters
 		private readonly ICommonServices _services;
 		private readonly Lazy<IWidgetProvider> _widgetProvider;
 		private readonly ProfilerSettings _profilerSettings;
+		private readonly IMobileDeviceHelper _mobileDeviceHelper;
 
 		public ProfilerFilter(
 			ICommonServices services, 
 			Lazy<IWidgetProvider> widgetProvider, 
-			ProfilerSettings profilerSettings)
+			ProfilerSettings profilerSettings,
+			IMobileDeviceHelper mobileDeviceHelper)
 		{
 			this._services = services;
 			this._widgetProvider = widgetProvider;
 			this._profilerSettings = profilerSettings;
+			this._mobileDeviceHelper = mobileDeviceHelper;
 		}
 
 		public void OnActionExecuting(ActionExecutingContext filterContext)
@@ -118,6 +122,11 @@ namespace SmartStore.DevTools.Filters
 
 		private bool ShouldProfile(HttpContextBase ctx)
 		{
+			if (_mobileDeviceHelper.IsMobileDevice())
+			{
+				return false;
+			}
+
 			if (!_services.WorkContext.CurrentCustomer.IsAdmin())
 			{
 				return ctx.Request.IsLocal;

@@ -5,6 +5,53 @@
 // ==============================================================
 
 .scroll-button {
+    position: absolute;
+    display: none;
+    opacity: 0.4;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+    transition: opacity 0.15s linear;
+
+    &:hover { opacity: 1 !important }
+}
+
+.scroll-button-prev {
+    left: 0;
+    right: auto;
+    .has-prev & { display: block; }
+    .has-prev:hover & { opacity: 0.75; }
+}
+
+.scroll-button-next {
+    right: 0;
+    left: auto;
+    .has-next & { display: block; }
+    .has-next:hover & { opacity: 0.75; }
+}
+
+.scroll-button .btn-scroll {
+    display: block;
+    position: relative;
+    height: 8rem;
+    line-height: 8rem;
+    padding-top: 0;
+    padding-bottom: 0;
+    top: 50%;
+    margin-top: -4rem;
+
+    &.btn-scroll-prev {
+        border-radius: 0 $btn-border-radius-lg $btn-border-radius-lg 0;
+        border-left: none;
+    }
+
+    &.btn-scroll-next {
+        border-radius: $btn-border-radius-lg 0 0 $btn-border-radius-lg;
+        border-right: none;
+    }
+}
+
+/*.scroll-button {
 	position: relative;
 	display: block;
 	outline: 0 !important;
@@ -26,7 +73,7 @@
 	background-position: 0 0;
 	background-repeat: no-repeat;
 	overflow: hidden;
-	-webkit-transform: translateZ(0);
+	transform: translateZ(0);
 }
 .scroll-button.small i {
     font-size: 11px;
@@ -44,4 +91,4 @@
 .scroll-button.sb-dir-right.large {
     border-top-left-radius: $border-radius-sm;
     border-bottom-left-radius: $border-radius-sm;
-}
+}*/

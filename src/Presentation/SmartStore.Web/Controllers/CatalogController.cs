@@ -682,7 +682,7 @@ namespace SmartStore.Web.Controllers
 
 			var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x => 
 			{
-				x.MapPrices = false;
+				x.MapManufacturers = true;
 			});
 
 			var model = _helper.MapProductSummaryModel(products, settings);

@@ -20,46 +20,49 @@
 	</div>
 }
 
-<div class="art-price-block">
-	<span class="art-price@(Model.Price.RegularPrice.HasValue() ? " art-price--offer" : "")@(Model.Price.CallForPrice ? " art-price--call" : "")">
-		@Model.Price.Price
-	</span>
-	@if (Model.Price.RegularPrice.HasValue())
-	{
-		if (list.ViewMode == ProductSummaryViewMode.List)
+@if (list.ShowPrice)
+{
+	<div class="art-price-block">
+		<span class="art-price@(Model.Price.RegularPrice.HasValue() ? " art-price--offer" : "")@(Model.Price.CallForPrice ? " art-price--call" : "")">
+			@Model.Price.Price
+		</span>
+		@if (Model.Price.RegularPrice.HasValue())
 		{
-			<div class="art-info-group">
-				<div>
-					<span>@T("Products.Price.OldPrice"):</span>
-					<span class="art-oldprice">@Model.Price.RegularPrice</span>
+			if (list.ViewMode == ProductSummaryViewMode.List)
+			{
+				<div class="art-info-group">
+					<div>
+						<span>@T("Products.Price.OldPrice"):</span>
+						<span class="art-oldprice">@Model.Price.RegularPrice</span>
+					</div>
+					<div>
+						<span>@T("ShoppingCart.ItemYouSave"):</span>
+						<span>@Model.Price.SavingAmount (@Model.Price.SavingPercent.ToString("N0") %)</span>
+					</div>
 				</div>
-				<div>
-					<span>@T("ShoppingCart.ItemYouSave"):</span>
-					<span>@Model.Price.SavingAmount (@Model.Price.SavingPercent.ToString("N0") %)</span>
-				</div>
+			}
+			else
+			{
+				<span class="art-oldprice">@Model.Price.RegularPrice</span>
+			}
+		}
+
+		@if (list.ShowShippingSurcharge && Model.TransportSurcharge.HasValue())
+		{
+			<div class="art-shipsurcharge">
+				@Html.Raw(Model.TransportSurcharge)
 			</div>
 		}
-		else
+
+		@if (list.ShowBasePrice && Model.BasePriceInfo.HasValue())
 		{
-			<span class="art-oldprice">@Model.Price.RegularPrice</span>
+			<div class="art-pangv" @Html.Attr("title", Model.BasePriceInfo, Model.BasePriceInfo.HasValue())>
+				@Html.Raw(Model.BasePriceInfo ?? "&nbsp;")
+			</div>
 		}
-	}
+	</div>
+}
 
-	@if (Model.TransportSurcharge.HasValue())
-	{
-		<div class="art-shipsurcharge">
-			@Html.Raw(Model.TransportSurcharge)
-		</div>
-	}
-
-	@if (list.ShowBasePrice && Model.BasePriceInfo.HasValue())
-	{
-		<div class="art-pangv" @Html.Attr("title", Model.BasePriceInfo, Model.BasePriceInfo.HasValue())>
-			@Html.Raw(Model.BasePriceInfo ?? "&nbsp;")
-		</div>
-	}
-
-</div>
 
 
 

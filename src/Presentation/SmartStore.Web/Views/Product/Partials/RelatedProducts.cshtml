@@ -9,35 +9,15 @@
 	}
 }
  
-<div class="block related-products">
+<div class="related-products block block-boxed">
     <div class="block-title">
-        <h3>@T("Products.RelatedProducts")</h3>
+        @T("Products.RelatedProducts")
     </div>
     <div class="block-body">
-        <div class="product-list scroll">
-			@* TODO: (mc) Must be carousel/slider *@
-			@{ Html.RenderPartial("Product.List", Model); }
-        </div>
+		<div class="artlist-carousel">
+			@{
+				Html.RenderPartial("Product.List", Model);
+			}
+		</div>
     </div>
 </div>
-    
-<script type="text/javascript">
-    $(function () {
-        $(".related-products .product-list.scroll").productListScroller();
-    });
-</script>
-
-
-@*<div class="product-list scroll">
-	<div class="pl-row row">
-		@foreach (var item in Model.Items)
-		{
-			<article class="item-box card card-block card-shadow equalized-column" data-equalized-deep="true">
-				@{ Html.RenderPartial("_ProductBoxCompact", item); }
-			</article>
-					}
-	</div>
-
-	<a class="sb invisible pl-scroll-prev sb-dir-left disabled" href="#" rel="nofollow"><</a>
-	<a class="sb invisible pl-scroll-next sb-dir-right" href="#" rel="nofollow">></a>
-</div>*@

@@ -290,7 +290,6 @@
                     }
 
                     hammertime.on('panend', function (ev) {
-
                         getCurrentNavigationElements();
                         closeNow($(".nav-item.active .nav-link"));
 
@@ -298,26 +297,27 @@
                         if (ev.direction == Hammer.DIRECTION_RIGHT) {megamenu.addClass("megamenu-blend--next");}
                     });
 
-                    // show scroll buttons when menu items don't fit into screen
-                    $(window).resize(function () {
+                    function onPageResized() {
+                    	updateNavState();
 
-                        updateNavState();
+                    	var liWidth = 0;
+                    	navElems.each(function () { liWidth += $(this).width(); });
 
-                        var liWidth = 0;
-                        navElems.each(function () {
-                            liWidth += $(this).width();
-                        });
+                    	if (liWidth > megamenuContainer.width()) {
+                    		megamenuContainer.addClass("show-scroll-buttons");
+                    	}
+                    	else {
+                    		megamenuContainer.removeClass("show-scroll-buttons");
+                    	}
 
-                        if (liWidth > megamenuContainer.width()) {
-                            megamenuContainer.addClass("show-scroll-buttons");
-                        }
-                        else {
-                            megamenuContainer.removeClass("show-scroll-buttons");
-                        }
+                    	getCurrentNavigationElements();
+                    }
 
-                        getCurrentNavigationElements();
-
-                    }).trigger('resize');
+                	// show scroll buttons when menu items don't fit into screen
+                    EventBroker.subscribe("page.resized", function (msg, viewport) {
+                    	onPageResized();
+                    });
+                    onPageResized();
 
                     function getCurrentNavigationElements() {
                         firstVisibleElem = null;

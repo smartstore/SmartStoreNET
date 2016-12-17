@@ -170,12 +170,12 @@ namespace SmartStore.Web.Controllers
 				{
 					if (_topicService.Value.GetTopicBySystemName("ShippingInfo", store.Id) == null)
 					{
-						legalInfo = T("Tax.LegalInfoFooter2").Text.FormatInvariant(taxInfo);
+						legalInfo = T("Tax.LegalInfoShort2").Text.FormatInvariant(taxInfo);
 					}
 					else
 					{
 						var shippingInfoLink = _urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" });
-						legalInfo = T("Tax.LegalInfoFooter").Text.FormatInvariant(taxInfo, shippingInfoLink);
+						legalInfo = T("Tax.LegalInfoShort").Text.FormatInvariant(taxInfo, shippingInfoLink);
 					}
 				}
 
@@ -216,7 +216,10 @@ namespace SmartStore.Web.Controllers
 						ShowFullDescription = settings.MapFullDescription,
 						ShowRatings = settings.MapReviews,
 						ShowDeliveryTimes = settings.MapDeliveryTimes,
-						ShowBasePrice = settings.MapPrices && _catalogSettings.ShowBasePriceInProductLists,
+						ShowPrice = settings.MapPrices,
+						ShowBasePrice = settings.MapPrices && _catalogSettings.ShowBasePriceInProductLists && settings.ViewMode != ProductSummaryViewMode.Mini,
+						ShowShippingSurcharge = settings.MapPrices && settings.ViewMode != ProductSummaryViewMode.Mini,
+						ShowButtons = settings.ViewMode != ProductSummaryViewMode.Mini,
 						ShowBrand = settings.MapManufacturers,
 						ForceRedirectionAfterAddingToCart = settings.ForceRedirectionAfterAddingToCart,
 						CompareEnabled = _catalogSettings.CompareProductsEnabled,
@@ -402,14 +405,14 @@ namespace SmartStore.Web.Controllers
 			item.Sku = contextProduct.Sku;
 
 			// Measure Dimensions
-			if (model.ShowDimensions)
+			if (model.ShowDimensions && (contextProduct.Width != 0 || contextProduct.Height != 0 || contextProduct.Length != 0))
 			{
 				item.Dimensions = ctx.Resources["Products.DimensionsValue"].Text.FormatCurrent(
 					contextProduct.Width.ToString("F2"),
 					contextProduct.Height.ToString("F2"),
 					contextProduct.Length.ToString("F2")
 				);
-				item.DimensionMeasureUnit = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
+				item.DimensionMeasureUnit = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).SystemKeyword;
 			}
 
 			// Delivery Times

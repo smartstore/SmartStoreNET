@@ -30,7 +30,10 @@ namespace SmartStore.Web.Models.Catalog
 		public bool ShowLegalInfo { get; set; }
 		public bool ShowRatings { get; set; }
 		public bool ShowDeliveryTimes { get; set; }
+		public bool ShowPrice { get; set; }
 		public bool ShowBasePrice { get; set; }
+		public bool ShowShippingSurcharge { get; set; }
+		public bool ShowButtons { get; set; }
 		public bool ShowDiscountBadge { get; set; }
 		public bool ShowNewBadge { get; set; }
 		public bool BuyEnabled { get; set; }

@@ -304,6 +304,7 @@ namespace SmartStore.Services.DataExchange.Export
 						{
 							ctx.OrderExportContext = new OrderExportContext(entities,
 								x => _customerService.GetCustomersByIds(x),
+								x => _genericAttributeService.Value.GetAttributesForEntity(x, "Customer"),
 								x => _customerService.GetRewardPointsHistoriesByCustomerIds(x),
 								x => _addressService.Value.GetAddressByIds(x),
 								x => _orderService.Value.GetOrderItemsByOrderIds(x),

@@ -16,12 +16,14 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		protected List<int> _addressIds;
 
 		private Func<int[], IList<Customer>> _funcCustomers;
+		private Func<int[], Multimap<int, GenericAttribute>> _funcCustomerGenericAttributes;
 		private Func<int[], Multimap<int, RewardPointsHistory>> _funcRewardPointsHistories; 
 		private Func<int[], IList<Address>> _funcAddresses;
 		private Func<int[], Multimap<int, OrderItem>> _funcOrderItems;
 		private Func<int[], Multimap<int, Shipment>> _funcShipments;
 
 		private LazyMultimap<Customer> _customers;
+		private LazyMultimap<GenericAttribute> _customerGenericAttributes;
 		private LazyMultimap<RewardPointsHistory> _rewardPointsHistories; 
 		private LazyMultimap<Address> _addresses;
 		private LazyMultimap<OrderItem> _orderItems;
@@ -29,6 +31,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 
 		public OrderExportContext(IEnumerable<Order> orders,
 			Func<int[], IList<Customer>> customers,
+			Func<int[], Multimap<int, GenericAttribute>> customerGenericAttributes,
 			Func<int[], Multimap<int, RewardPointsHistory>> rewardPointsHistory,
 			Func<int[], IList<Address>> addresses,
 			Func<int[], Multimap<int, OrderItem>> orderItems,
@@ -53,6 +56,7 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 			}
 
 			_funcCustomers = customers;
+			_funcCustomerGenericAttributes = customerGenericAttributes;
 			_funcRewardPointsHistories = rewardPointsHistory;
 			_funcAddresses = addresses;
 			_funcOrderItems = orderItems;
@@ -63,6 +67,8 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 		{
 			if (_customers != null)
 				_customers.Clear();
+			if (_customerGenericAttributes != null)
+				_customerGenericAttributes.Clear();
 			if (_rewardPointsHistories != null)
 				_rewardPointsHistories.Clear();
 			if (_addresses != null)
@@ -86,6 +92,18 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 					_customers = new LazyMultimap<Customer>(keys => _funcCustomers(keys).ToMultimap(x => x.Id, x => x), _customerIds);
 				}
 				return _customers;
+			}
+		}
+
+		public LazyMultimap<GenericAttribute> CustomerGenericAttributes
+		{
+			get
+			{
+				if (_customerGenericAttributes == null)
+				{
+					_customerGenericAttributes = new LazyMultimap<GenericAttribute>(keys => _funcCustomerGenericAttributes(keys), _customerIds);
+				}
+				return _customerGenericAttributes;
 			}
 		}
 

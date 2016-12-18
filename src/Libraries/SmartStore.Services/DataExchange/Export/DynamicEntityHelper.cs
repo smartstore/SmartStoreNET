@@ -31,6 +31,17 @@ namespace SmartStore.Services.DataExchange.Export
 {
 	public partial class DataExporter
 	{
+		private readonly string[] _orderCustomerAttributes = new string[]
+		{
+			SystemCustomerAttributeNames.Gender,
+			SystemCustomerAttributeNames.DateOfBirth,
+			SystemCustomerAttributeNames.VatNumber,
+			SystemCustomerAttributeNames.VatNumberStatusId,
+			SystemCustomerAttributeNames.TimeZoneId,
+			SystemCustomerAttributeNames.CustomerNumber,
+			SystemCustomerAttributeNames.ImpersonatedCustomerId
+		};
+
 		private void PrepareProductDescription(DataExporterContext ctx, dynamic dynObject, Product product)
 		{
 			try
@@ -1081,6 +1092,7 @@ namespace SmartStore.Services.DataExchange.Export
 
 			var perfLoadId = (ctx.IsPreview ? 0 : order.Id);
 			var customers = ctx.OrderExportContext.Customers.GetOrLoad(order.CustomerId);
+			var genericAttributes = ctx.OrderExportContext.CustomerGenericAttributes.GetOrLoad(ctx.IsPreview ? 0 : order.CustomerId);
 			var rewardPointsHistories = ctx.OrderExportContext.RewardPointsHistories.GetOrLoad(ctx.IsPreview ? 0 : order.CustomerId);
 			var orderItems = ctx.OrderExportContext.OrderItems.GetOrLoad(perfLoadId);
 			var shipments = ctx.OrderExportContext.Shipments.GetOrLoad(perfLoadId);
@@ -1093,6 +1105,12 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			dynObject.Customer = ToDynamic(ctx, customers.FirstOrDefault(x => x.Id == order.CustomerId));
+
+			// we do not export all customer generic attributes because otherwise the export file gets too large
+			dynObject.Customer._GenericAttributes = genericAttributes
+				.Where(x => x.Value.HasValue() && _orderCustomerAttributes.Contains(x.Key))
+				.Select(x => ToDynamic(ctx, x))
+				.ToList();
 
 			dynObject.Customer.RewardPointsHistory = rewardPointsHistories
 				.Select(x => ToDynamic(ctx, x))

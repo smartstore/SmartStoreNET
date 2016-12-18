@@ -91,7 +91,7 @@ namespace SmartStore.Services.DataExchange.Export
 				GenericAttribute entity = genericAttribute.Entity;
 
 				_writer.WriteStartElement("GenericAttribute");
-				_writer.Write("Id", entity.ToString());
+				_writer.Write("Id", entity.Id.ToString());
 				_writer.Write("EntityId", entity.EntityId.ToString());
 				_writer.Write("KeyGroup", entity.KeyGroup);
 				_writer.Write("Key", entity.Key);
@@ -115,6 +115,8 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 
 			_writer.Write("Id", entity.Id.ToString());
+			_writer.Write("Salutation", entity.Salutation);
+			_writer.Write("Title", entity.Title);
 			_writer.Write("FirstName", entity.FirstName);
 			_writer.Write("LastName", entity.LastName);
 			_writer.Write("Email", entity.Email);

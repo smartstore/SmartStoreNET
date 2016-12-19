@@ -1895,7 +1895,6 @@
     <Content Include="Themes\Alpha\Content\_artlist.scss" />
     <Content Include="Views\Shared\Partials\Product.List.Item.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.cshtml" />
-    <Content Include="Views\Shared\Partials\Product.List.Item.Drop.cshtml" />
     <Content Include="Views\Shared\Components\Product.List.Pager.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.Pager.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.ViewMode.cshtml" />

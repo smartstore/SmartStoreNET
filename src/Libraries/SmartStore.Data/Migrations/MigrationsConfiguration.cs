@@ -265,6 +265,24 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Pager.XPerPage", "{0} per Page", "{0} pro Seite");
 			builder.AddOrUpdate("Pager.PageXOfY", "Page {0} of {1}", "Seite {0} von {1}");
 			builder.AddOrUpdate("Pager.PageXOfYShort", "{0} of {1}", "{0} von {1}");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Search.SearchMode.ExactMatch", "Is equal to (term)", "Ist gleich (Term)");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Search.SearchMode.StartsWith", "Starts with (prefix)", "Beginnt mit (Prefix)");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Search.SearchMode.Contains", "Contains (wildcard)", "Beinhaltet (Wildcard)");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Search.WildcardSearchNote",
+				"A wildcard search can slow down the search for a large number of products.",
+				"Eine Wildcard-Suche kann bei einer großen Anzahl an Produkten die Suche verlangsamen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchMode",
+				"Search mode",
+				"Suchmodus",
+				"Specifies the search mode Legt den Suchmodus fest. Please keep in mind that the search mode (depending on the product number) can strongly influence the speed of the search. 'Is equal to' is the fastest, 'Contains' the slowest.",
+				"Legt den Suchmodus fest. Bitte beachten Sie, dass der Suchmodus die Geschwindigkeit der Suche (abhängig von der Produktanzahl) beeinflusst. 'Ist gleich' ist am schnellsten, 'Beinhaltet' am langsamsten.");
+
+			builder.AddOrUpdate("Admin.Configuration.DeliveryTimes.CannotDeleteAssignedProducts",
+				"The delivery time cannot be deleted. It has associated products or product variants.",
+				"Die Lieferzeit kann nicht gelöscht werden. Ihr sind Produkte oder Produktvarianten zugeordnet.");
 		}
 	}
 }

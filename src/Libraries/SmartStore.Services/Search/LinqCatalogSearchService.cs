@@ -137,21 +137,21 @@ namespace SmartStore.Services.Search
 
 			if (term.HasValue() && fields != null && fields.Length != 0 && fields.Any(x => x.HasValue()))
 			{
-				if (searchQuery.IsExactMatch)
+				if (searchQuery.Mode == SearchMode.StartsWith)
 				{
 					query =
 						from p in query
 						join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
 						from lp in plp.DefaultIfEmpty()
 						where
-						(fields.Contains("name") && p.Name == term) ||
-						(fields.Contains("sku") && p.Sku == term) ||
-						(fields.Contains("shortdescription") && p.ShortDescription == term) ||
-						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue == term) ||
-						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue == term)
+						(fields.Contains("name") && p.Name.StartsWith(term)) ||
+						(fields.Contains("sku") && p.Sku.StartsWith(term)) ||
+						(fields.Contains("shortdescription") && p.ShortDescription.StartsWith(term)) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.StartsWith(term)) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.StartsWith(term))
 						select p;
 				}
-				else
+				else if (searchQuery.Mode == SearchMode.Contains)
 				{
 					query =
 						from p in query
@@ -163,6 +163,20 @@ namespace SmartStore.Services.Search
 						(fields.Contains("shortdescription") && p.ShortDescription.Contains(term)) ||
 						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(term)) ||
 						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(term))
+						select p;
+				}
+				else
+				{
+					query =
+						from p in query
+						join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
+						from lp in plp.DefaultIfEmpty()
+						where
+						(fields.Contains("name") && p.Name == term) ||
+						(fields.Contains("sku") && p.Sku == term) ||
+						(fields.Contains("shortdescription") && p.ShortDescription == term) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue == term) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue == term)
 						select p;
 				}
 			}

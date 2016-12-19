@@ -16,13 +16,13 @@ namespace SmartStore.Core.Search
 		{
 		}
 
-		public SearchQuery(string field, string term, bool escape = false, bool isExactMatch = false, bool isFuzzySearch = false)
-			: base(field.HasValue() ? new[] { field } : null, term, escape, isExactMatch, isFuzzySearch)
+		public SearchQuery(string field, string term, SearchMode mode = SearchMode.StartsWith, bool escape = false, bool isFuzzySearch = false)
+			: base(field.HasValue() ? new[] { field } : null, term, mode, escape, isFuzzySearch)
 		{
 		}
 
-		public SearchQuery(string[] fields, string term, bool escape = false, bool isExactMatch = false, bool isFuzzySearch = false)
-			: base(fields, term, escape, isExactMatch, isFuzzySearch)
+		public SearchQuery(string[] fields, string term, SearchMode mode = SearchMode.StartsWith, bool escape = false, bool isFuzzySearch = false)
+			: base(fields, term, mode, escape, isFuzzySearch)
 		{
 		}
 	}
@@ -32,12 +32,12 @@ namespace SmartStore.Core.Search
 		private readonly Dictionary<string, FacetDescriptor> _facetDescriptors;
 		private Dictionary<string, object> _customData;
 
-		protected SearchQuery(string[] fields, string term, bool escape = false, bool isExactMatch = false, bool isFuzzySearch = false)
+		protected SearchQuery(string[] fields, string term, SearchMode mode = SearchMode.StartsWith, bool escape = false, bool isFuzzySearch = false)
 		{
 			Fields = fields;
 			Term = term;
+			Mode = mode;
 			EscapeTerm = escape;
-			IsExactMatch = isExactMatch;
 			IsFuzzySearch = isFuzzySearch;
 
 			Filters = new List<ISearchFilter>();
@@ -58,7 +58,7 @@ namespace SmartStore.Core.Search
 		public string[] Fields { get; set; }
 		public string Term { get; set; }
 		public bool EscapeTerm { get; protected set; }
-		public bool IsExactMatch { get; protected set; }
+		public SearchMode Mode { get; protected set; }
 		public bool IsFuzzySearch { get; protected set; }
 
 		// Filtering
@@ -197,7 +197,7 @@ namespace SmartStore.Core.Search
 
 				sb.AppendFormat("'{0}' in {1}", Term, fields);
 
-				var parameters = string.Join(" ", EscapeTerm ? "escape" : "", IsFuzzySearch ? "fuzzy" : (IsExactMatch ? "exact" : "")).TrimSafe();
+				var parameters = string.Join(" ", EscapeTerm ? "escape" : "", IsFuzzySearch ? "fuzzy" : Mode.ToString()).TrimSafe();
 
 				if (parameters.HasValue())
 				{

@@ -13,8 +13,8 @@ namespace SmartStore.Core.Search
 		// Search term
 		string[] Fields { get; }
 		string Term { get; }
+		SearchMode Mode { get; }
 		bool EscapeTerm { get; }
-		bool IsExactMatch { get; }
 		bool IsFuzzySearch { get; }
 
 		// Filtering

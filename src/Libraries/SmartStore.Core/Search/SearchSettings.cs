@@ -7,12 +7,18 @@ namespace SmartStore.Core.Search
 	{
 		public SearchSettings()
 		{
+			SearchMode = SearchMode.StartsWith;
 			SearchFields = new List<string> { "shortdescription", "tagname", "manufacturer", "category" };
 			InstantSearchEnabled = true;
 			ShowProductImagesInInstantSearch = true;
 			InstantSearchNumberOfProducts = 10;
 			InstantSearchTermMinLength = 2;
 		}
+
+		/// <summary>
+		/// Gets or sets the search mode
+		/// </summary>
+		public SearchMode SearchMode { get; set; }
 
 		/// <summary>
 		/// Gets or sets name of fields to be searched. The name field is always searched.

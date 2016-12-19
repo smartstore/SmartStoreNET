@@ -1589,6 +1589,7 @@ namespace SmartStore.Admin.Controllers
 			var settings = Services.Settings.LoadSetting<SearchSettings>(storeScope);
 
 			var model = new SearchSettingsModel();
+			model.SearchMode = settings.SearchMode;
 			model.SearchFields = settings.SearchFields;
 			model.InstantSearchEnabled = settings.InstantSearchEnabled;
 			model.InstantSearchNumberOfProducts = settings.InstantSearchNumberOfProducts;
@@ -1629,6 +1630,8 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
+			model.AvailableSearchModes = settings.SearchMode.ToSelectList().ToList();
+
 			model.AvailableSearchFields = new List<SelectListItem>
 			{
 				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ShortDescription"), Value = "shortdescription" },
@@ -1666,6 +1669,7 @@ namespace SmartStore.Admin.Controllers
 
 			ModelState.Clear();
 
+			settings.SearchMode = model.SearchMode;
 			settings.SearchFields = model.SearchFields;
 			settings.InstantSearchEnabled = model.InstantSearchEnabled;
 			settings.InstantSearchNumberOfProducts = model.InstantSearchNumberOfProducts;

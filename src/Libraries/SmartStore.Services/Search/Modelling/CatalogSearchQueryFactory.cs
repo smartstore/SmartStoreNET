@@ -77,7 +77,7 @@ namespace SmartStore.Services.Search.Modelling
 			var fields = new List<string> { "name" };
 			fields.AddRange(_searchSettings.SearchFields);
 
-			var query = new CatalogSearchQuery(fields.ToArray(), term)
+			var query = new CatalogSearchQuery(fields.ToArray(), term, _searchSettings.SearchMode)
 				.OriginatesFrom(origin)
 				.WithLanguage(_services.WorkContext.WorkingLanguage)
 				.VisibleIndividuallyOnly(true);

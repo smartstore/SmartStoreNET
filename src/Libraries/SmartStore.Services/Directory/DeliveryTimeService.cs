@@ -5,13 +5,14 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Events;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Customers;
 
 namespace SmartStore.Services.Directory
 {
-    public partial class DeliveryTimeService : IDeliveryTimeService
+	public partial class DeliveryTimeService : IDeliveryTimeService
     {
         private readonly IRepository<DeliveryTime> _deliveryTimeRepository;
         private readonly IRepository<Product> _productRepository;
@@ -37,15 +38,19 @@ namespace SmartStore.Services.Directory
             this._productRepository = productRepository;
             this._attributeCombinationRepository = attributeCombinationRepository;
 			this._catalogSettings = catalogSettings;
-        }
 
-        public virtual void DeleteDeliveryTime(DeliveryTime deliveryTime)
+			T = NullLocalizer.Instance;
+		}
+
+		public Localizer T { get; set; }
+
+		public virtual void DeleteDeliveryTime(DeliveryTime deliveryTime)
         {
             if (deliveryTime == null)
                 throw new ArgumentNullException("deliveryTime");
 
             if (this.IsAssociated(deliveryTime.Id))
-                throw new SmartException("The delivery time cannot be deleted. It has associated product variants");
+                throw new SmartException(T("Admin.Configuration.DeliveryTimes.CannotDeleteAssignedProducts"));
 
             _deliveryTimeRepository.Delete(deliveryTime);
 

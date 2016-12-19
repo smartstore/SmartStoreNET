@@ -1,4 +1,5 @@
-﻿@model SearchSettingsModel
+﻿@using SmartStore.Core.Search
+@model SearchSettingsModel
 @{
     ViewBag.Title = T("Search.Title").Text;
 }
@@ -19,6 +20,23 @@
     @Html.ValidationSummary(false)
 
 	<table id="SearchSettingsTable" class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchMode)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.SearchMode)
+				@Html.DropDownListFor(model => model.SearchMode, Model.AvailableSearchModes)
+				@Html.ValidationMessageFor(model => model.SearchMode)
+			</td>
+		</tr>
+		<tr id="WildcardNote" class="hide">
+			<td colspan="2">
+				<div class="alert alert-warning">
+					@T("Admin.Configuration.Settings.Search.WildcardSearchNote")
+				</div>
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.SearchFields)
@@ -118,6 +136,11 @@
 
 <script type="text/javascript">
 	jQuery(document).ready(function () {
+
+		// toggle wildcard note
+		$('#@(Html.FieldIdFor(x => x.SearchMode))').change(function () {
+			$('#WildcardNote').toggle($(this).val() === '@((int)SearchMode.Contains)');
+		}).trigger('change');
 
 		// show/hide instant search settings
 		$('#@(Html.FieldIdFor(x => x.InstantSearchEnabled))').change(function () {

@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Core.Search;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Search;
 
@@ -176,7 +177,7 @@ namespace SmartStore.Services.Tests.Search
 
 			InitMocks(products);
 
-			var result = Search(new CatalogSearchQuery(new string[] { "name", "sku" }, "P-6000-2", isExactMatch: true));
+			var result = Search(new CatalogSearchQuery(new string[] { "name", "sku" }, "P-6000-2", SearchMode.ExactMatch));
 
 			Assert.That(result.Hits.Count, Is.EqualTo(2));
 		}

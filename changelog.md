@@ -43,6 +43,7 @@
 	* Additional order notes for tax exemption within and outside EU
 * #1048 Add meta tags to contact us page
 * #1062 Web API: Add filter options for user grid on configuration page
+* Order XML export includes more customer data like title and salutation
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation
@@ -61,6 +62,7 @@
 * Guest user cannot be deleted if he has a private message
 * #1029 Biz-Importer: Imports fixed tax rates as zero percentage
 * #1055 Checkout: Localized shipping method names are not displayed if shipping by total is activated
+* #1071 NewsLetterSubscription.ActivationUrl not working if the store if SSL secured
 
 ## SmartStore.NET 2.6
 

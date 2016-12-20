@@ -136,13 +136,13 @@
 		   Properties="WebProjectOutputDir=$(StageFolder)\Administration\;
 		   OutDir=$(StageFolder)\Administration\bin\;Configuration=$(Configuration)" />
 
-		<!-- move SmartStore.Admin/bin/ to the root bin/ -->
+		<!-- move SmartStore.Admin/bin/ to root bin/ -->
         <CreateItem Include="$(StageFolder)\Administration\bin\*.dll">
             <Output TaskParameter="Include" ItemName="AdminCompileOutput" />
         </CreateItem>
 		<Copy SourceFiles="@(AdminCompileOutput)" DestinationFolder="$(StageFolder)\bin\" />
 
-		<!-- delete the bin in SmartStore.Admin -->
+		<!-- delete \bin in SmartStore.Admin -->
 		<RemoveDir Directories="$(StageFolder)\Administration\bin\" />
 
 		<!-- delete the packages.config files -->

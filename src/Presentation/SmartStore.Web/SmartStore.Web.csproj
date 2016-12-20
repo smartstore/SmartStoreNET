@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.2.2.0\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props" Condition="Exists('..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x86.2.2.0\build\JavaScriptEngineSwitcher.V8.Native.win-x86.props')" />
   <Import Project="..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x64.2.2.0\build\JavaScriptEngineSwitcher.V8.Native.win-x64.props" Condition="Exists('..\..\packages\JavaScriptEngineSwitcher.V8.Native.win-x64.2.2.0\build\JavaScriptEngineSwitcher.V8.Native.win-x64.props')" />
   <Import Project="..\..\packages\LibSassHost.0.6.1\build\LibSassHost.props" Condition="Exists('..\..\packages\LibSassHost.0.6.1\build\LibSassHost.props')" />
@@ -2106,22 +2106,16 @@
 		Administration\bin\**;
 		App_Data\_Backup\**;
 		App_Data\_temp\**;
-		App_Data\ExportProfiles\**;
-		App_Data\ImportProfiles\**;
+		App_Data\Tenants\**;
 		App_Data\Migrations\**;
-		App_Data\InstalledPlugins.txt;
+		App_Data\Logs\**;
 		App_Data\Licenses.lic;
 		App_Data\Settings.txt;
 		App_Data\SmartStore.Db.sdf;
 		Exchange\**; 
 		Content\Files\ExportImport\**;
 		Content\Images\Thumbs\**;
-		Media\**\*.png;
-		Media\**\*.jpg;
-		Media\**\*.jpeg;
-		Media\**\*.gif;
-		Media\**\*.pdf;
-		Media\**\*.docx;
+		Media\**;
 		Properties\**;
 		Plugins\*\bin\**;				
       </ExcludeFilesFromDeployment>

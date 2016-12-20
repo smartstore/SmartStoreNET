@@ -172,15 +172,21 @@ namespace SmartStore.Services.Search.Modelling
 			{
 				// Save the selection in session. We'll fetch this session value
 				// on subsequent requests for this route.
-				_httpContext.Session[sessionKey] = selectedSize.Value;
+				if (_httpContext.Session != null)
+				{
+					_httpContext.Session[sessionKey] = selectedSize.Value;
+				}
 				return selectedSize.Value;
 			}
 
 			// Return user size from session
-			var sessionSize = _httpContext.Session[sessionKey].Convert<int?>();
-			if (sessionSize.HasValue)
+			if (_httpContext.Session != null)
 			{
-				return sessionSize.Value;
+				var sessionSize = _httpContext.Session[sessionKey].Convert<int?>();
+				if (sessionSize.HasValue)
+				{
+					return sessionSize.Value;
+				}
 			}
 
 			// Return default size for entity (IPagingOptions)
@@ -209,17 +215,23 @@ namespace SmartStore.Services.Search.Modelling
 			{
 				// Save the view mode selection in session. We'll fetch this session value
 				// on subsequent requests for this route.
-				_httpContext.Session[sessionKey] = selectedViewMode;
+				if (_httpContext.Session != null)
+				{
+					_httpContext.Session[sessionKey] = selectedViewMode;
+				}
 				query.CustomData["ViewMode"] = selectedViewMode;
 				return;
 			}
 
 			// Set view mode from session
-			var sessionViewMode = _httpContext.Session[sessionKey].Convert<string>();
-			if (sessionViewMode != null)
+			if (_httpContext.Session != null)
 			{
-				query.CustomData["ViewMode"] = sessionViewMode;
-				return;
+				var sessionViewMode = _httpContext.Session[sessionKey].Convert<string>();
+				if (sessionViewMode != null)
+				{
+					query.CustomData["ViewMode"] = sessionViewMode;
+					return;
+				}
 			}
 
 			// Set default view mode for entity

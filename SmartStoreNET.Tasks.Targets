@@ -19,7 +19,7 @@
 		<MsBuildTasksFolder>$(RootFolder)\buildtasks</MsBuildTasksFolder>
 		<ArtifactsFolder>$(RootFolder)\artifacts</ArtifactsFolder>
 		<SqlCeFolder>$(LibFolder)\sqlce</SqlCeFolder>
-		<V8Folder>$(LibFolder)\ClearScript.V8</V8Folder>
+		<Msvcp140Folder>$(LibFolder)\msvcp140</Msvcp140Folder>
 		<SourceArtifactFolder>$(ArtifactsFolder)\Source</SourceArtifactFolder>
 		<MsDeployArtifactFolder>$(ArtifactsFolder)\MsDeploy</MsDeployArtifactFolder>
 		<GalleryArtifactFolder>$(ArtifactsFolder)\Gallery</GalleryArtifactFolder>
@@ -44,7 +44,7 @@
 		<BuildPlatform Condition="$(BuildPlatform) == ''">x86</BuildPlatform>
 
 		<xVersion>$(BUILD_NUMBER)</xVersion>
-		<Version>2.6.0</Version>
+		<Version>3.0.0</Version>
 		<ZipDirectory>$(StageFolder)</ZipDirectory>
 		<ZipVersionFileSuffix Condition="$(Version) != ''">.$(Version)</ZipVersionFileSuffix>
 		<ZipVersionFileSuffix Condition="$(Version) == ''"></ZipVersionFileSuffix>
@@ -103,9 +103,8 @@
 			<UploadedImages Include="$(WebFolder)\Media\uploaded\**\*" />
 		  	<SqlCe-Native-Binaries-x86 Include="$(SqlCeFolder)\x86\**\*"/>
 		  	<SqlCe-Native-Binaries-amd64 Include="$(SqlCeFolder)\amd64\**\*"/>
-		  	<V8-Libs Include="$(V8Folder)\lib\**\*"/>
-		  	<V8-Native-Binaries-x86 Include="$(V8Folder)\Native\x86\**\*"/>
-		  	<V8-Native-Binaries-amd64 Include="$(V8Folder)\Native\amd64\**\*"/>
+		  	<Msvcp140-Binaries-x86 Include="$(Msvcp140Folder)\x86\**\*"/>
+		  	<Msvcp140-Binaries-amd64 Include="$(Msvcp140Folder)\amd64\**\*"/>
 		</ItemGroup>
 
 		<!-- delete the build folder -->
@@ -157,10 +156,9 @@
 		<Copy SourceFiles="@(SqlCe-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
 		<Copy SourceFiles="@(SqlCe-Native-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
 		
-		<!-- copy ClearScript.V8 Javascript engine files -->
-		<Copy SourceFiles="@(V8-Libs)" DestinationFolder="$(StageFolder)\bin\ClearScript.V8\%(RecursiveDir)" />
-		<Copy SourceFiles="@(V8-Native-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
-		<Copy SourceFiles="@(V8-Native-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
+		<!-- copy Visual C++ runtime files -->
+		<Copy SourceFiles="@(Msvcp140-Binaries-x86)" DestinationFolder="$(StageFolder)\bin\x86\%(RecursiveDir)" />
+		<Copy SourceFiles="@(Msvcp140-Binaries-amd64)" DestinationFolder="$(StageFolder)\bin\amd64\%(RecursiveDir)" />
 
 		<!-- transform config files -->
 		<TransformXml Source="$(TransformInputFile)" Transform="$(TransformFile)" Destination="$(TransformOutputFile)" />
@@ -177,7 +175,19 @@
 		<XmlUpdate XmlFileName="$(TransformOutputFile)" XPath="/configuration/system.web/trace/@enabled" Value="false" />
 		<XmlUpdate XmlFileName="$(TransformOutputFile)" XPath="/configuration/system.web/machineKey/@validationKey" Value="AutoGenerate" />
 		<XmlUpdate XmlFileName="$(TransformOutputFile)" XPath="/configuration/system.web/machineKey/@decryptionKey" Value="AutoGenerate" />
-
+		
+		<!-- remove satellite dll folders gathered from nuget packages -->
+		<CallTarget Targets="Remove-Satellites"/>
+	</Target>
+	
+	<Target Name="Remove-Satellites">
+		<PropertyGroup>
+			<BinDir>$(StageFolder)\bin</BinDir>
+		</PropertyGroup>
+		<ItemGroup>
+			<SatelliteDirs Include="$(BinDir)\da;$(BinDir)\fi;$(BinDir)\ja;$(BinDir)\ko;$(BinDir)\mk;$(BinDir)\nl;$(BinDir)\pt;$(BinDir)\no;$(BinDir)\pl;$(BinDir)\ru-ru;$(BinDir)\sv;$(BinDir)\tr;$(BinDir)\uk;$(BinDir)\zh-CHS;$(BinDir)\zh-Hans;$(BinDir)\zh-Hant" />
+		</ItemGroup>	
+		<RemoveDir Directories="@(SatelliteDirs)" />
 	</Target>
   
 	<Target Name="Package-Zip">

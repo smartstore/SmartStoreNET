@@ -278,13 +278,13 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Enums.SmartStore.Core.Search.SearchMode.Contains", "Contains (wildcard)", "Beinhaltet (Wildcard)");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.WildcardSearchNote",
-				"A wildcard search can slow down the search for a large number of products.",
-				"Eine Wildcard-Suche kann bei einer groﬂen Anzahl an Produkten die Suche verlangsamen.");
+				"The wildcard mode can slow down the search for a large number of products.",
+				"Der Wildcard-Modus kann bei einer groﬂen Anzahl an Produkten die Suche verlangsamen.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.SearchMode",
 				"Search mode",
 				"Suchmodus",
-				"Specifies the search mode Legt den Suchmodus fest. Please keep in mind that the search mode (depending on the product number) can strongly influence the speed of the search. 'Is equal to' is the fastest, 'Contains' the slowest.",
+				"Specifies the search mode. Please keep in mind that the search mode can - depending on catalog size - strongly affect search performance. 'Is equal to' is the fastest, 'Contains' the slowest.",
 				"Legt den Suchmodus fest. Bitte beachten Sie, dass der Suchmodus die Geschwindigkeit der Suche (abh‰ngig von der Produktanzahl) beeinflusst. 'Ist gleich' ist am schnellsten, 'Beinhaltet' am langsamsten.");
 
 			builder.AddOrUpdate("Admin.Configuration.DeliveryTimes.CannotDeleteAssignedProducts",

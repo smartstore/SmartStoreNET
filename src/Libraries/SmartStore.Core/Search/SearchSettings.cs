@@ -7,7 +7,7 @@ namespace SmartStore.Core.Search
 	{
 		public SearchSettings()
 		{
-			SearchMode = SearchMode.StartsWith;
+			SearchMode = SearchMode.Contains;
 			SearchFields = new List<string> { "shortdescription", "tagname", "manufacturer", "category" };
 			InstantSearchEnabled = true;
 			ShowProductImagesInInstantSearch = true;

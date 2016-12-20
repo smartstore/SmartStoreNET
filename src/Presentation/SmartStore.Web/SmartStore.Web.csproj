@@ -1064,7 +1064,7 @@
     <Content Include="Themes\Alpha\Content\animate\animations\zoom-exit\_zoomOutRight.scss" />
     <Content Include="Themes\Alpha\Content\animate\animations\zoom-exit\_zoomOutUp.scss" />
     <Content Include="Themes\Alpha\Content\shared\_animate.scss" />
-    <None Include="Themes\Alpha\Content\_megamenu.scss" />
+    <Content Include="Themes\Alpha\Content\_megamenu.scss" />
     <Content Include="Themes\Alpha\preview.png" />
     <Content Include="Themes\AlphaOld\Content\images\color-overlay.png" />
     <Content Include="Themes\AlphaOld\Content\images\deliv-bg-aero.png" />
@@ -1656,8 +1656,8 @@
     <Content Include="Themes\Alpha\Content\shared\select2\theme\default\_multiple.scss" />
     <Content Include="Themes\Alpha\Content\shared\select2\theme\default\_single.scss" />
     <Content Include="Themes\Alpha\Content\shared\offcanvas.scss" />
-    <None Include="Themes\Alpha\Content\_login.scss" />
-    <None Include="Themes\Alpha\Content\theme.scss">
+    <Content Include="Themes\Alpha\Content\_login.scss" />
+    <Content Include="Themes\Alpha\Content\theme.scss">
       <Compile>True</Compile>
       <Minify>True</Minify>
       <OutputFolder>.\output</OutputFolder>
@@ -1665,7 +1665,7 @@
       <IgnoreErrors>True</IgnoreErrors>
       <CompileStyle>Nested</CompileStyle>
       <DebugInfo>False</DebugInfo>
-    </None>
+    </Content>
     <Content Include="Themes\Alpha\theme.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1873,13 +1873,13 @@
     <Content Include="Views\Widget\WidgetsByZone.cshtml" />
     <Content Include="Views\Shared\Partials\_GoogleFonts.cshtml" />
     <Content Include="Themes\Alpha\Content\_checkout.scss" />
-    <None Include="Themes\Alpha\Content\_footer.scss" />
+    <Content Include="Themes\Alpha\Content\_footer.scss" />
     <Content Include="Themes\Alpha\Content\_misc.scss" />
-    <None Include="Themes\Alpha\Content\_blog.scss" />
+    <Content Include="Themes\Alpha\Content\_blog.scss" />
     <Content Include="Themes\Alpha\Content\_forum.scss" />
     <Content Include="Views\Shared\Partials\_ProductList.cshtml" />
     <Content Include="Themes\Alpha\Content\_product.scss" />
-    <None Include="Themes\Alpha\Content\_pages.scss" />
+    <Content Include="Themes\Alpha\Content\_pages.scss" />
     <Content Include="Themes\Alpha\Content\_rating.scss" />
     <Content Include="Views\Common\ServiceMenu.cshtml" />
     <Content Include="Views\ShoppingCart\OffCanvasCart.cshtml" />
@@ -1895,11 +1895,15 @@
     <Content Include="Themes\Alpha\Content\_artlist.scss" />
     <Content Include="Views\Shared\Partials\Product.List.Item.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.cshtml" />
-    <Content Include="Views\Shared\Partials\Product.List.Item.Drop.cshtml" />
     <Content Include="Views\Shared\Components\Product.List.Pager.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.Pager.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.ViewMode.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.FilterSort.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.Item.Rating.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.Item.Brand.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.Item.Price.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.Item.Buttons.cshtml" />
+    <Content Include="Views\Shared\Partials\Product.List.Item.Variants.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

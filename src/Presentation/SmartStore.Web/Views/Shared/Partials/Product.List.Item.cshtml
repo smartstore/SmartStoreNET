@@ -8,6 +8,10 @@
 	var list = Model.Parent;
 	var picture = Model.Picture;
 
+	var showButtons = list.ShowButtons && (!Model.Price.DisableWishlistButton || list.CompareEnabled || (!Model.Price.DisableBuyButton && list.BuyEnabled));
+	var showVariants = Model.ColorAttribute != null || (Model.Attributes != null && Model.Attributes.Any());
+	var showDrop = showButtons || showVariants;
+	var showAttrs = list.ViewMode == ProductSummaryViewMode.List && (list.ShowSku || list.ShowWeight || list.ShowDimensions);
 }
 
 <article class="art" data-id="@Model.Id">
@@ -33,102 +37,113 @@
 		</div>
 	}
 
-	<div class="art-info-block">
-		@if (list.ShowReviews)
-		{
-			int ratingPercent = 0;
-			if (Model.TotalReviews != 0)
+	<div class="art-data-block">
+		<div class="art-info-block">
+			@if (list.ShowRatings || list.ShowBrand)
 			{
-				ratingPercent = ((Model.RatingSum * 100) / Model.TotalReviews) / 5;
-				ratingPercent = 82;
+				if (list.ViewMode == ProductSummaryViewMode.List)
+				{
+					<div class="art-info-group clearfix">
+						@if (list.ShowBrand) { Html.RenderPartial("Product.List.Item.Brand", Model); }
+						@if (list.ShowRatings) { Html.RenderPartial("Product.List.Item.Rating", Model); }
+					</div>
+				}
+				else
+				{
+					if (list.ShowRatings) { Html.RenderPartial("Product.List.Item.Rating", Model); }
+					if (list.ShowBrand) { Html.RenderPartial("Product.List.Item.Brand", Model); }
+				}
 			}
 
-			string reviewTitle = "";
-			if (Model.TotalReviews > 0)
+			<h3 class="art-name">
+				<a href="@artDetailUrl" title="@Model.Name">
+					<span>@Model.Name</span>
+				</a>
+			</h3>
+
+			@if (list.ShowDescription)
 			{
-				reviewTitle = Model.TotalReviews + (Model.TotalReviews == 1 ? T("Reviews.Overview.Review") : T("Reviews.Overview.Reviews"));
-			}
-			<div class="art-rating" title="@reviewTitle">
-				<div class="rating">
-					<div style="width: @(ratingPercent)%"></div>
+				<div class="art-description" title="@Model.ShortDescription">
+					@* TODO: (mc) Only render description block when merchant wishes so and only when at least one description is specified *@
+					@Html.Raw(Model.ShortDescription.Truncate(160, "..."))
 				</div>
-			</div>
-		}
-		
-		@if (list.ShowBrand)
-		{
-			<div class="art-brand">
-				@if (Model.Manufacturer != null)
-				{
-					@Model.Manufacturer.Name
-				}	
-			</div>
-		}
+			}
 
-		<h4 class="art-name">
-			<a href="@artDetailUrl" title="@Model.Name">
-				<span>@Model.Name</span>
-			</a>
-		</h4>
+			@if (showAttrs)
+			{
+				<table class="art-attrs">
+					@if (list.ShowSku && Model.Sku.HasValue())
+					{
+						<tr>
+							<td>@T("Products.Sku"):</td>
+							<td>@Model.Sku</td>
+						</tr>
+					}
+					@if (list.ShowWeight && Model.Weight.HasValue())
+					{
+						<tr>
+							<td>@T("Products.Weight"):</td>
+							<td>@Model.Weight</td>
+						</tr>
+					}
+					@if (list.ShowDimensions && Model.Dimensions.HasValue())
+					{
+						<tr>
+							<td>@T("Products.Dimensions") (@Model.DimensionMeasureUnit):</td>
+							<td>@Model.Dimensions</td>
+						</tr>
+					}
+				</table>
+			}
 
-		@if (list.ShowDescription)
-		{
-			<div class="art-description" title="@Model.ShortDescription">
-				@* TODO: (mc) Only render description block when merchant wishes so and only when at least one description is specified *@
-				@Html.Raw(Model.ShortDescription)
-			</div>
-		}
+			@if (list.ViewMode != ProductSummaryViewMode.List)
+			{ 
+				Html.RenderPartial("Product.List.Item.Price", Model);
+			}
 
-		@if (list.ShowDeliveryTimes)
+			@if (list.ViewMode == ProductSummaryViewMode.List && showVariants)
+			{
+				Html.RenderPartial("Product.List.Item.Variants", Model);
+			}
+
+			@if (list.ShowLegalInfo)
+			{
+				<div class="art-legalinfo">
+					* @Html.Raw(Model.LegalInfo)
+				</div>
+			}
+		</div>
+
+		@if (list.ViewMode == ProductSummaryViewMode.List)
 		{
-			@* TODO: (mc) Put in own partial *@
-			@* TODO: (mc) take HideDeliveryTime into account *@
-			<div class="art-delivery-info">
-				@if (Model.IsShippingEnabled && !Model.HideDeliveryTime)
-				{
-					var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailablity;
-					<span class="delivery-time" title="@T("Products.DeliveryTime"): @statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
-						<i class="fa fa-circle delivery-time-status"></i>
-						@statusLabel
-					</span>
+			<div class="art-actions-block">
+				@{ 
+					Html.RenderPartial("Product.List.Item.Price", Model);
+					if (showButtons)
+					{
+						Html.RenderPartial("Product.List.Item.Buttons", Model);
+					}
 				}
 			</div>
 		}
-
-		<div class="art-price-block">
-			<span class="art-price@(Model.Price.RegularPrice.HasValue() ? " art-price--offer" : "")">@Model.Price.Price</span>
-			@if (Model.Price.RegularPrice.HasValue())
-			{
-				<span class="art-oldprice">@Model.Price.RegularPrice</span>
-			}
-			@if (Model.TransportSurcharge.HasValue())
-			{
-				<div class="art-shipsurcharge">
-					@Html.Raw(Model.TransportSurcharge)
-				</div>
-			}
-			@if (list.ShowBasePrice && Model.BasePriceInfo.HasValue())
-			{
-				<div class="art-pangv" @Html.Attr("title", Model.BasePriceInfo, Model.BasePriceInfo.HasValue())>
-					@Html.Raw(Model.BasePriceInfo ?? "&nbsp;")
-				</div>
-			}
-
-			@* TODO: (mc) Optionally display saving (You save: 123 EUR / 12 %). *@
-		</div>
 	</div>
 
 	@{ 
-		var showDrop =
-			!Model.Price.DisableWishlistButton
-			|| list.CompareEnabled
-			|| (!Model.Price.DisableBuyButton && list.BuyEnabled)
-			|| Model.ColorAttribute != null
-			|| Model.Attributes != null;
-
-		if (showDrop)
+		if (list.ViewMode != ProductSummaryViewMode.List)
 		{
-			Html.RenderPartial("Product.List.Item.Drop", Model);
+			if (showDrop)
+			{
+				<div class="art-drop">
+					@if (showVariants) 
+					{
+						Html.RenderPartial("Product.List.Item.Variants", Model);
+					}
+					@if (showButtons)
+					{
+						Html.RenderPartial("Product.List.Item.Buttons", Model);
+					}
+				</div>
+			}
 		}
 	}
 </article>

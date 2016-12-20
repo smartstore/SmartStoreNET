@@ -1,0 +1,45 @@
+﻿@model ProductSummaryModel.SummaryItem
+
+@using SmartStore.Web.Models.Catalog;
+
+@{
+	var list = Model.Parent;
+	var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
+}
+
+<div class="art-variant-info">
+	@if (Model.ColorAttribute != null)
+	{
+		<div class="art-color-opts">
+			@foreach (var clr in Model.ColorAttribute.Values)
+			{
+				<a href='@artDetailUrl' class="art-color-opt" style="background-color: @clr.Color" title="@Model.ColorAttribute.Name @clr.FriendlyName auswählen"></a>
+			}
+		</div>
+	}
+
+	@if (Model.Attributes.Any())
+	{
+		<div class="art-more-opts">
+			@if (Model.Attributes.Count == 1)
+			{
+				<span>@T("Products.PlusOption"):</span>
+				<a href="@artDetailUrl">@Model.Attributes[0].Name</a>
+			}
+			else
+			{
+				if (list.ViewMode == ProductSummaryViewMode.List)
+				{
+					<span>@T("Products.PlusOptions"):</span>
+				}
+				else
+				{
+					<div>@T("Products.PlusOptions"):</div>
+				}
+				@* TODO: (mc) Append attribute query to url *@
+				<a href="@artDetailUrl">@String.Join(", ", Model.Attributes.Select(x => x.Name)).Truncate(50, "...")</a>
+			}
+		</div>
+	}
+</div>
+

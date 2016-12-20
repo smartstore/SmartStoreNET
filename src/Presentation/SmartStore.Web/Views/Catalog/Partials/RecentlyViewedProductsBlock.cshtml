@@ -9,15 +9,17 @@
 	}
 }
 
-<div class="product-grid recently-viewed-product-grid block">
+<div class="product-grid recently-viewed-product-grid block block-boxed">
 	<div class="block-title">
 		@T("Products.RecentlyViewedProducts")
 	</div>
-
 	<div class="block-body">
-		@{
-			// TODO: (mc) Render this as carousel/slider
-			Html.RenderPartial("Product.List", Model);
-		}
+		<div class="artlist-carousel">
+			@{
+				// TODO: (mc) Find a generic/smart way to make thumbnails for some mini carousel lists smaller (padding-top: 50% instead of 100% (?))
+				Html.RenderPartial("Product.List", Model);
+			}
+		</div>
 	</div>
 </div>
+

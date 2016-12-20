@@ -1,0 +1,126 @@
+﻿@model ProductSummaryModel.SummaryItem
+
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Orders;
+
+@{ 
+	var list = Model.Parent;
+	var price = Model.Price;
+	var artDetailUrl = Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } });
+}
+
+@helper RenderBuyButton(bool blockStyle) {{
+	var cssClasses = blockStyle ? "btn-block hidden-sm-down" : "btn-icon btn-lg art-btn col-xs hidden-md-up";
+	if (!Model.Price.CallForPrice)
+	{
+		string addToCartUrl = "";
+		if (Model.Parent.ForceRedirectionAfterAddingToCart)
+		{
+			addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "forceredirection", true } });
+		}
+		else
+		{
+			addToCartUrl = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id } });
+		}
+
+		var title = (Model.Price.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"));
+
+		<a data-href='@addToCartUrl'
+			href="#"
+			class="btn btn-primary ajax-cart-link @cssClasses"
+			title="@title"
+			data-toggle='@(!blockStyle ? "tooltip" : "")'
+			rel="nofollow"
+			data-type="cart"
+			data-action="add">
+			<i class="fa fa-cart-arrow-down"></i>
+			@if (blockStyle)
+			{
+				<span>@title</span>
+			}
+			else
+			{
+				@* Show "Add to Cart" label on sm-only (enough space!) *@
+				<span class="hidden-md-up hidden-xs-down">@title</span>
+			}
+		</a>
+	}
+	else
+	{
+		<a href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })"
+			class="btn @(blockStyle ? "btn-secondary" : "btn-grey") add-to-cart-button @cssClasses"
+			data-toggle='@(!blockStyle ? "tooltip" : "")'
+			rel="nofollow"
+			title="@T("Products.CallForPrice.GoToForm")">
+			<i class="fa fa-envelope"></i>
+			@if (blockStyle)
+			{
+				<span>@T("Products.CallForPrice.GoToForm")</span>
+			}
+			else
+			{
+				@* Show "Call for price" label on sm-only (enough space!) *@
+				<span class="hidden-md-up hidden-xs-down">@T("Products.CallForPrice.GoToForm")</span>
+			}
+		</a>
+	}
+}}
+
+@if (list.ViewMode == ProductSummaryViewMode.List && !Model.Price.DisableBuyButton && Model.Parent.BuyEnabled)
+{
+	<div class="m-y-1">
+		@RenderBuyButton(true)
+	</div>
+}
+
+<div class="row art-btn-group">
+	@if (!price.DisableBuyButton && list.BuyEnabled)
+	{
+		@RenderBuyButton(false)
+	}
+
+	@if (!price.DisableWishlistButton && list.WishlistEnabled)
+	{
+		@* TODO: (mc) refactor data-form-selector="#product-details-form"  *@
+		<a data-href='@Url.Action("AddProduct", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "shoppingCartTypeId", (int)ShoppingCartType.Wishlist } })'
+			href="#"
+			class="btn btn-secondary btn-icon btn-lg art-btn col-xs ajax-cart-link" 
+			title="@T("Categories.Wishlist")"
+			data-toggle="tooltip" 
+			rel="nofollow"
+			data-form-selector="#product-details-form" 
+			data-type="wishlist" 
+			data-action="add">
+			<i class="fa fa-heart-o"></i>
+		</a>
+	}
+	else if (list.ViewMode == ProductSummaryViewMode.List)
+	{
+		<span class="art-btn-spacer col-xs"></span>
+	}
+
+	@if (list.CompareEnabled)
+	{
+		<a data-href="@Url.Action("AddProductToCompare", "Catalog", new RouteValueDictionary { { "id", Model.Id } })" 
+			href="#"
+			class="btn btn-secondary btn-icon btn-lg art-btn col-xs ajax-cart-link" 
+			title="@T("Categories.Compare")"  
+			data-toggle="tooltip" 
+			rel="nofollow"
+			data-type="compare" 
+			data-action="add">
+			<i class="fa fa-retweet"></i>
+		</a>
+	}
+	else if (list.ViewMode == ProductSummaryViewMode.List)
+	{
+		<span class="art-btn-spacer col-xs"></span>
+	}
+
+	<a href='@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })' 
+		class="btn btn-secondary btn-icon btn-lg art-btn col-xs" 
+		title="@T("Products.Details")">
+		<i class="fa fa-info"></i>
+	</a>
+</div>
+

@@ -6,9 +6,6 @@
 
 @{
 	var id = "artlist-" + CommonHelper.GenerateRandomDigitCode(10);
-	var maxPictureSize = Model.Items.Select(x => x.Picture)
-		.Where(x => x != null)
-		.Max(x => x.Size);
 
 	// TODO: (mc) Fetch this from the (new) parent model or the product category
 	var thumbAspectRatio = EngineContext.Current.Resolve<MediaSettings>().DefaultThumbnailAspectRatio;
@@ -40,6 +37,7 @@
 	{
 		listCssClasses.Add("artlist-grid");
 		// TODO: (mc) Fetch col count from settings/model
+		// TODO: (mh) make 6-cols layout fit better per CSS (hide some elements etc.)
 		listCssClasses.Add("artlist-4-cols");
 	}
 }
@@ -53,13 +51,20 @@
 	</style>
 }
 
-@if (Model.ViewMode == ProductSummaryViewMode.List && maxPictureSize.HasValue)
+@if (Model.ViewMode == ProductSummaryViewMode.List)
 {
-	<style type="text/css">
+	var maxPictureSize = Model.ThumbSize ?? Model.Items.Select(x => x.Picture)
+		.Where(x => x != null)
+		.Max(x => x.Size);
+
+	if (maxPictureSize.HasValue)
+	{
+		<style type="text/css">
 		#@id .art-picture-block {
 			width: @("{0}px".FormatInvariant(maxPictureSize.Value));
 		}
-	</style>
+		</style>
+	}
 }
 
 @if (hasActions)

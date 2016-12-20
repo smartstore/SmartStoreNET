@@ -31,17 +31,14 @@
                     </div>
                 </div>
                 <div class="megamenu-section hidden-md-down">
-                    <nav class='navbar @(GetThemeVariable<bool>("InverseNavbar") ? "navbar-dark bg-inverse" : "navbar-light bg-faded")'>
+                    <nav class='navbar @(GetThemeVariable<bool>("InverseNavbar") ? "navbar-dark" : "navbar-light")'>
                         <div class="container megamenu-container">
                             @{ 
 								Html.RenderAction("MegaMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
 							}
 						</div>
-
 					</nav>
-
 				</div>
-
 			</header>
 								}
 

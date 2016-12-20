@@ -15954,7 +15954,7 @@
 		<Value>inkl. MwSt.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Tax.LegalInfoFooter">
-		<Value>* Alle Preise {0}, zzgl. &lt;a href="{1}"&gt;Versandkosten&lt;/a&gt;</Value>
+		<Value>* Alle Preise {0}, zzgl. &lt;a href='{1}'&gt;Versandkosten&lt;/a&gt;</Value>
 	</LocaleResource>
 	<LocaleResource Name="Tax.LegalInfoFooter2">
 		<Value>* Alle Preise {0}, zzgl. Versandkosten</Value>

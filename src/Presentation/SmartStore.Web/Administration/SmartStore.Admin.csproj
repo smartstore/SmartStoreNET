@@ -15,7 +15,7 @@
     <AssemblyName>SmartStore.Admin</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>
@@ -1407,18 +1407,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\DeliveryTime\Edit.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ContentSlider\CreateSlide.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ContentSlider\_CreateOrUpdate.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ContentSlider\EditSlide.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ContentSlider\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\AttributeCombinationCreatePopup.cshtml" />

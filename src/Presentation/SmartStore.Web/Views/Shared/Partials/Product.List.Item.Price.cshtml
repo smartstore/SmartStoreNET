@@ -1,0 +1,72 @@
+﻿@model ProductSummaryModel.SummaryItem
+
+@using SmartStore.Web.Models.Catalog;
+
+@{ 
+	var list = Model.Parent;
+}
+
+@if (list.ShowDeliveryTimes)
+{
+	<div class="art-delivery-info">
+		@if (Model.IsShippingEnabled && !Model.HideDeliveryTime)
+		{
+			var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailablity;
+			<span class="delivery-time" title="@T("Products.DeliveryTime"): @statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
+				<i class="fa fa-circle delivery-time-status"></i>
+				@statusLabel
+			</span>
+		}
+	</div>
+}
+
+@if (list.ShowPrice)
+{
+	<div class="art-price-block">
+		<span class="art-price@(Model.Price.RegularPrice.HasValue() ? " art-price--offer" : "")@(Model.Price.CallForPrice ? " art-price--call" : "")">
+			@Model.Price.Price
+		</span>
+		@if (Model.Price.RegularPrice.HasValue())
+		{
+			if (list.ViewMode == ProductSummaryViewMode.List)
+			{
+				<div class="art-info-group">
+					<div>
+						<span>@T("Products.Price.OldPrice"):</span>
+						<span class="art-oldprice">@Model.Price.RegularPrice</span>
+					</div>
+					<div>
+						<span>@T("ShoppingCart.ItemYouSave"):</span>
+						<span>@Model.Price.SavingAmount (@Model.Price.SavingPercent.ToString("N0") %)</span>
+					</div>
+				</div>
+			}
+			else
+			{
+				<span class="art-oldprice">@Model.Price.RegularPrice</span>
+			}
+		}
+
+		@if (list.ShowShippingSurcharge && Model.TransportSurcharge.HasValue())
+		{
+			<div class="art-shipsurcharge">
+				@Html.Raw(Model.TransportSurcharge)
+			</div>
+		}
+
+		@if (list.ShowBasePrice && Model.BasePriceInfo.HasValue())
+		{
+			<div class="art-pangv" @Html.Attr("title", Model.BasePriceInfo, Model.BasePriceInfo.HasValue())>
+				@Html.Raw(Model.BasePriceInfo ?? "&nbsp;")
+			</div>
+		}
+	</div>
+}
+
+
+
+
+
+
+
+

@@ -1,0 +1,14 @@
+﻿@model ProductSummaryModel.SummaryItem
+
+@using SmartStore.Web.Models.Catalog;
+
+<div class="art-brand">
+	@if (Model.Manufacturer != null)
+	{
+		@* TODO: (mc) Show image logo according to user settings *@
+		@Model.Manufacturer.Name
+	}
+</div>
+
+
+

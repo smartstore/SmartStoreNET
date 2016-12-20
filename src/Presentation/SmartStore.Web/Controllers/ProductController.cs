@@ -320,20 +320,26 @@ namespace SmartStore.Web.Controllers
 			var products = new List<Product>();
 			var relatedProducts = _productService.GetRelatedProductsByProductId1(productId);
 
-			// ACL and store mapping
-			products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
+			foreach (var product in _productService.GetProductsByIds(relatedProducts.Select(x => x.ProductId2).ToArray()))
+			{
+				// Ensure has ACL permission and appropriate store mapping
+				if (_aclService.Authorize(product) && _storeMappingService.Authorize(product))
+					products.Add(product);
+			}
 
 			if (products.Count == 0)
 			{
 				return Content("");
 			}
 
-			var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Mini, x =>
+			var settings = _helper.GetBestFitProductSummaryMappingSettings(ProductSummaryViewMode.Grid, x =>
 			{
 				x.ThumbnailSize = productThumbPictureSize;
+				x.MapDeliveryTimes = false;
 			});		
 
 			var model = _helper.MapProductSummaryModel(products, settings);
+			model.ShowBasePrice = false;
 
 			return PartialView(model);
 		}

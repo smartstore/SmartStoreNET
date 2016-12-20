@@ -28,9 +28,12 @@ namespace SmartStore.Web.Models.Catalog
 		public bool ShowBrand { get; set; }
 		public bool ShowDimensions { get; set; }
 		public bool ShowLegalInfo { get; set; }
-		public bool ShowReviews { get; set; }
+		public bool ShowRatings { get; set; }
 		public bool ShowDeliveryTimes { get; set; }
+		public bool ShowPrice { get; set; }
 		public bool ShowBasePrice { get; set; }
+		public bool ShowShippingSurcharge { get; set; }
+		public bool ShowButtons { get; set; }
 		public bool ShowDiscountBadge { get; set; }
 		public bool ShowNewBadge { get; set; }
 		public bool BuyEnabled { get; set; }
@@ -119,6 +122,7 @@ namespace SmartStore.Web.Models.Catalog
 
 			public bool HasDiscount { get; set; }
 			public float SavingPercent { get; set; }
+			public string SavingAmount { get; set; }		
 
 			public bool DisableBuyButton { get; set; }
 			public bool DisableWishlistButton { get; set; }

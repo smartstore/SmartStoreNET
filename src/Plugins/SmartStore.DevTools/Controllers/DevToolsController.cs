@@ -4,6 +4,7 @@ using SmartStore.Services;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.DevTools.Controllers
 {
@@ -74,7 +75,7 @@ namespace SmartStore.DevTools.Controllers
             return new EmptyResult();
         }
 
-		[AdminAuthorize]
+		[AdminAuthorize, AdminThemed]
 		public ActionResult BackendExtension()
 		{
 			var model = new BackendExtensionModel

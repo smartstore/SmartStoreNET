@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
@@ -137,7 +136,21 @@ namespace SmartStore.Services.Search
 
 			if (term.HasValue() && fields != null && fields.Length != 0 && fields.Any(x => x.HasValue()))
 			{
-				if (searchQuery.Mode == SearchMode.StartsWith)
+				if (searchQuery.Mode == SearchMode.ExactMatch)
+				{
+					query =
+						from p in query
+						join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
+						from lp in plp.DefaultIfEmpty()
+						where
+						(fields.Contains("name") && p.Name == term) ||
+						(fields.Contains("sku") && p.Sku == term) ||
+						(fields.Contains("shortdescription") && p.ShortDescription == term) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue == term) ||
+						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue == term)
+						select p;
+				}
+				else if (searchQuery.Mode == SearchMode.StartsWith)
 				{
 					query =
 						from p in query
@@ -151,7 +164,7 @@ namespace SmartStore.Services.Search
 						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.StartsWith(term))
 						select p;
 				}
-				else if (searchQuery.Mode == SearchMode.Contains)
+				else
 				{
 					query =
 						from p in query
@@ -163,20 +176,6 @@ namespace SmartStore.Services.Search
 						(fields.Contains("shortdescription") && p.ShortDescription.Contains(term)) ||
 						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(term)) ||
 						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(term))
-						select p;
-				}
-				else
-				{
-					query =
-						from p in query
-						join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into plp
-						from lp in plp.DefaultIfEmpty()
-						where
-						(fields.Contains("name") && p.Name == term) ||
-						(fields.Contains("sku") && p.Sku == term) ||
-						(fields.Contains("shortdescription") && p.ShortDescription == term) ||
-						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue == term) ||
-						(languageId != 0 && lp.LanguageId == languageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue == term)
 						select p;
 				}
 			}
@@ -524,6 +523,12 @@ namespace SmartStore.Services.Search
 
 			#endregion
 
+			query = 
+				from p in query
+				group p by p.Id	into grp
+				orderby grp.Key
+				select grp.FirstOrDefault();
+
 			return query;
 		}
 
@@ -539,6 +544,7 @@ namespace SmartStore.Services.Search
 			if (searchQuery.Take > 0)
 			{
 				var query = GetProductQuery(searchQuery);
+				System.IO.File.AppendAllText(@"C:\Me\Develop\Team\SmartStoreNet\_work\Plugins\Lucene\dump.txt", query.ToString() + "\r\n");
 
 				totalCount = query.Count();
 

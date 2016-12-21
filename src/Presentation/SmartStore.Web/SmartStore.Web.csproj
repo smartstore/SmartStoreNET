@@ -2100,6 +2100,8 @@
 		**\packages.config;
 		**\*.Debug.config;
 		**\*.Release.config;
+		**\*.PluginDev.config;
+		**\*.EFMigrations.config;
 		**\obj\**;
 		**\bin\*.xml;
 		**\bin\HostRestart\**;
@@ -2117,7 +2119,7 @@
 		Content\Images\Thumbs\**;
 		Media\**;
 		Properties\**;
-		Plugins\*\bin\**;				
+		Plugins\*\bin\**;		
       </ExcludeFilesFromDeployment>
     </PropertyGroup>
   </Target>

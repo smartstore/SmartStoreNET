@@ -526,7 +526,7 @@ $art-active-bg-color:           #fff;
 
     @include media-breakpoint-up(sm) {
         &.artlist-4-cols .art,
-        &.artlist-5-cols .art
+        &.artlist-5-cols .art,
         &.artlist-6-cols .art {
             @include make-col-span(4, $grid-columns);
         }

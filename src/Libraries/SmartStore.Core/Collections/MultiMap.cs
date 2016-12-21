@@ -39,6 +39,11 @@ namespace SmartStore.Collections
         {
         }
 
+		public Multimap(IEqualityComparer<TKey> comparer, Func<IEnumerable<TValue>, ICollection<TValue>> collectionCreator)
+			: this(new Dictionary<TKey, ICollection<TValue>>(comparer ?? EqualityComparer<TKey>.Default), collectionCreator)
+		{
+		}
+
 		internal Multimap(IDictionary<TKey, ICollection<TValue>> dictionary, Func<IEnumerable<TValue>, ICollection<TValue>> collectionCreator)
         {
 			Guard.NotNull(dictionary, nameof(dictionary));

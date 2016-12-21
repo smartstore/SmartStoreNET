@@ -544,7 +544,6 @@ namespace SmartStore.Services.Search
 			if (searchQuery.Take > 0)
 			{
 				var query = GetProductQuery(searchQuery);
-				System.IO.File.AppendAllText(@"C:\Me\Develop\Team\SmartStoreNet\_work\Plugins\Lucene\dump.txt", query.ToString() + "\r\n");
 
 				totalCount = query.Count();
 

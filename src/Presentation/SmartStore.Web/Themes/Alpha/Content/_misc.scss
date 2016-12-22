@@ -74,7 +74,7 @@ h1, h2, h3, h4, h5, h6,
 // Breadcrumb Styles
 // --------------------------------------------------
 #breadcrumb {
-    border: 1px solid #DDDDDD;
+    padding: 0;
     background: none;
 }
 
@@ -240,9 +240,9 @@ fieldset legend {
 // menu
 .dropdown {
     display: inline;
-    a {
+    /*a {
         font-size: $font-size-sm;
-    }
+    }*/
     .label {
         font-size: $font-size-xs;
     }

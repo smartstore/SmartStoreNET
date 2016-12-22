@@ -392,7 +392,11 @@ namespace SmartStore.Web.Controllers
 			// Manufacturers
 			if (settings.MapManufacturers)
 			{
-				item.Manufacturer = PrepareManufacturersOverviewModel(ctx.BatchContext.ProductManufacturers.GetOrLoad(product.Id), ctx.CachedManufacturerModels, false).FirstOrDefault();
+				item.Manufacturer = PrepareManufacturersOverviewModel(
+					ctx.BatchContext.ProductManufacturers.GetOrLoad(product.Id), 
+					ctx.CachedManufacturerModels,
+					settings.ViewMode == ProductSummaryViewMode.List /*_catalogSettings.ShowManufacturerPicturesInProductDetail*/).FirstOrDefault();
+				// TODO: (mc) _catalogSettings.ShowManufacturerPicturesInProductDetail > ShowManufacturerPicturesInProductLists (new setting)
 			}
 
 			// Spec Attributes

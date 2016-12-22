@@ -3,36 +3,37 @@
 @using SmartStore.Web.Models.Catalog;
 @model IList<ManufacturerModel>
 @{
-    Layout = "_ColumnsTwo";
+    Layout = "_ColumnsOne";
 
     Html.AddTitleParts(T("PageTitle.Manufacturers").Text);
+	// TODO: (mc) > (mh) Sort list by name and implement alphabet navbar (A - B - C ...)
 }
 <div class="page manufacturer-list-page">
     <div class="page-title">
-        <h1>@T("Manufacturers.List")</h1>
+        <h1 class="h3">@T("Manufacturers.List")</h1>
     </div>
     <div class="page-body">
-        <div class="card-deck card-cols-sm-1 card-cols-md-2 card-cols-lg-3 manufacturer-grid">
-            @if (Model.Count > 0)
-            {
-
-                foreach (var item in Model)
-                {
-                    <div class="card card-block card-shadow">
-                        <h2 class="card-title">
-                            <a href="@Url.RouteUrl("Manufacturer", new { SeName = item.SeName })" title="@item.PictureModel.Title">@item.Name</a>
-                        </h2>
-                        <div class="picture">
-                            @if (item.PictureModel.ImageUrl.HasValue())
-                            {
-                                <a href="@Url.RouteUrl("Manufacturer", new { SeName = item.SeName })" title="@item.PictureModel.Title">
-                                    <img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title" />
-                                </a>
-                            }
-                        </div>
-                    </div>
-                }
-            }
-        </div>
+		<div class="artlist artlist-grid artlist-6-cols artlist-boxed manufacturer-grid">
+			@foreach (var item in Model)
+			{
+				var picture = item.PictureModel;
+				var url = Url.RouteUrl("Manufacturer", new { SeName = item.SeName });
+				<article class="art" data-id="@item.Id">
+					<div class="art-picture-block">
+						@if (picture != null && picture.ImageUrl.HasValue())
+						{
+							<a class="art-picture" href="@url" title="@picture.Title">
+								<img src="@picture.ImageUrl" alt="@picture.AlternateText" />
+							</a>
+						}
+					</div>
+					<div class="art-genericname">
+						<a href="@url" title="@item.Name">
+							<span>@item.Name</span>
+						</a>
+					</div>
+				</article>
+			}
+		</div>
     </div>
 </div>

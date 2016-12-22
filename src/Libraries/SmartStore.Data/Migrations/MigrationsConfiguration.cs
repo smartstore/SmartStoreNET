@@ -53,7 +53,8 @@ namespace SmartStore.Data.Migrations
                 x.DeleteGroup("ContentSlider");
             });
 			// Change MediaSettings.ProductThumbPictureSize to 250 if smaller
-			settings = context.Set<Setting>().Where(x => x.Name == "MediaSettings.ProductThumbPictureSize").ToList();
+			var keys = new string[] { "MediaSettings.ProductThumbPictureSize", "MediaSettings.CategoryThumbPictureSize", "MediaSettings.ManufacturerThumbPictureSize" };
+			settings = context.Set<Setting>().Where(x => keys.Contains(x.Name)).ToList();
 			if (settings.Any())
 			{
 				settings.Each(x =>
@@ -290,6 +291,9 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.DeliveryTimes.CannotDeleteAssignedProducts",
 				"The delivery time cannot be deleted. It has associated products or product variants.",
 				"Die Lieferzeit kann nicht gelöscht werden. Ihr sind Produkte oder Produktvarianten zugeordnet.");
+
+			builder.AddOrUpdate("Media.Manufacturer.ImageLinkTitleFormat", "All products from {0}", "Alle Produkte von {0}");
+			builder.AddOrUpdate("Manufacturers.List", "All Brands", "Alle Marken");
 		}
 	}
 }

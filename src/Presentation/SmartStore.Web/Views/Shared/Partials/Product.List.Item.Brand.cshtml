@@ -5,8 +5,17 @@
 <div class="art-brand">
 	@if (Model.Manufacturer != null)
 	{
-		@* TODO: (mc) Show image logo according to user settings *@
-		@Model.Manufacturer.Name
+		if (Model.Manufacturer.Picture != null && Model.Parent.ViewMode == ProductSummaryViewMode.List)
+		{
+			var picture = Model.Manufacturer.Picture;
+			<a href="@Url.RouteUrl("Manufacturer", new RouteValueDictionary { { "SeName", Model.Manufacturer.SeName } })" title="@picture.Title">
+				<img src="@picture.ImageUrl" alt="@picture.AlternateText" class="art-brand-picture" />
+			</a>
+		}
+		else
+		{
+			<span>@Model.Manufacturer.Name</span>
+		}
 	}
 </div>
 

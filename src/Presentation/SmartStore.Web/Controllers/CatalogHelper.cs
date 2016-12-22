@@ -183,7 +183,7 @@ namespace SmartStore.Web.Controllers
 					ProductType = product.ProductType,
 					VisibleIndividually = product.VisibleIndividually,
 					//Manufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id),
-					Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), null, true),
+					Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), null, _catalogSettings.ShowManufacturerPicturesInProductDetail),
 					ReviewCount = product.ApprovedTotalReviews,
 					DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
 					//EnableHtmlTextCollapser = Convert.ToBoolean(_settingService.GetSettingByKey<string>("CatalogSettings.EnableHtmlTextCollapser")),
@@ -1296,7 +1296,7 @@ namespace SmartStore.Web.Controllers
 		public List<ManufacturerOverviewModel> PrepareManufacturersOverviewModel(
 			ICollection<ProductManufacturer> manufacturers, 
 			IDictionary<int, ManufacturerOverviewModel> cachedModels = null,
-			bool forProductDetailPage = false)
+			bool withPicture = false)
 		{
 			var model = new List<ManufacturerOverviewModel>();
 
@@ -1321,10 +1321,9 @@ namespace SmartStore.Web.Controllers
 
 					};
 
-					// TODO: (mc) show picture in list style lists also
-					if (forProductDetailPage && _catalogSettings.ShowManufacturerPicturesInProductDetail)
+					if (withPicture)
 					{
-						item.PictureModel = PrepareManufacturerPictureModel(manufacturer, manufacturer.GetLocalized(x => x.Name));
+						item.Picture = PrepareManufacturerPictureModel(manufacturer, manufacturer.GetLocalized(x => x.Name));
 					}
 
 					cachedModels.Add(item.Id, item);

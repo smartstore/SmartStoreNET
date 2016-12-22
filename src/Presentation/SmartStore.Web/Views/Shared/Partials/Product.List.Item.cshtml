@@ -43,7 +43,7 @@
 			{
 				if (list.ViewMode == ProductSummaryViewMode.List)
 				{
-					<div class="art-info-group clearfix">
+					<div class="art-info-group@(list.ShowRatings && list.ShowBrand ? " floating" : "")">
 						@if (list.ShowBrand) { Html.RenderPartial("Product.List.Item.Brand", Model); }
 						@if (list.ShowRatings) { Html.RenderPartial("Product.List.Item.Rating", Model); }
 					</div>

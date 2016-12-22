@@ -1,4 +1,6 @@
-﻿//
+﻿/// <reference path="bs4/scss/bootstrap.scss" />
+
+//
 // Review & Rating Styles
 // --------------------------------------------------
 
@@ -11,8 +13,11 @@
     margin-bottom: 1rem !important;
 }
 
-/* Ratings
-================================================ */
+
+//
+// Ratings
+// --------------------------------------------------
+
 .rating {
 	display: inline-block;
 	height: 16px;
@@ -37,8 +42,11 @@
 	background-image: url('images/star-on-12.png');
 }
 
-/* Reviews
-================================================ */
+
+//
+// Reviews
+// --------------------------------------------------
+
 .product-reviews-page .write-review .inputs,
 .product-reviews-page .write-review .captcha-box { 
     margin-bottom:12px;

@@ -465,8 +465,19 @@ namespace SmartStore.Core.Plugins
 
 		private static void SetPrivateEnvPath()
 		{
-			string dir = Environment.Is64BitProcess ? "amd64" : "x86";
-			string envPath = String.Concat(Environment.GetEnvironmentVariable("PATH"), ";", Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, dir));
+			string envPath = Environment.GetEnvironmentVariable("PATH");
+
+			if (Environment.Is64BitProcess)
+			{
+				envPath = envPath.EnsureEndsWith(";") + Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, "amd64");
+				envPath = envPath.EnsureEndsWith(";") + Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, "x64");
+			}
+			else
+			{
+				envPath = envPath.EnsureEndsWith(";") + Path.Combine(AppDomain.CurrentDomain.RelativeSearchPath, "x86");
+			}
+			
+
 			Environment.SetEnvironmentVariable("PATH", envPath, EnvironmentVariableTarget.Process);
 		}
 

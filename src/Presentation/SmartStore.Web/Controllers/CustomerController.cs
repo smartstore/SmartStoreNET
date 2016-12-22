@@ -469,6 +469,12 @@ namespace SmartStore.Web.Controllers
                     //activity log
                     _customerActivityService.InsertActivity("PublicStore.Login", _localizationService.GetResource("ActivityLog.PublicStore.Login"), customer);
 
+					// confusing when login page redirects to itself
+					if (returnUrl.IsEmpty() || returnUrl.Contains(@"/login?"))
+					{
+						return RedirectToRoute("HomePage");
+					}
+
 					return RedirectToReferrer(returnUrl);
                 }
                 else

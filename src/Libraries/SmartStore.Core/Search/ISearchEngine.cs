@@ -48,18 +48,6 @@ namespace SmartStore.Core.Search
 		string[] CheckSpelling();
 
 		/// <summary>
-		/// Search for top categories
-		/// </summary>
-		/// <returns>Top categories</returns>
-		IEnumerable<ISearchHit> GetTopCategories();
-
-		/// <summary>
-		/// Search for top manufacturers
-		/// </summary>
-		/// <returns>Top manufacturers</returns>
-		IEnumerable<ISearchHit> GetTopManufacturers();
-
-		/// <summary>
 		/// Highlights chosen terms in a text, extracting the most relevant sections
 		/// </summary>
 		/// <param name="input">Text to highlight terms in</param>

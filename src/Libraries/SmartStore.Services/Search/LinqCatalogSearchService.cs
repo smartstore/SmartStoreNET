@@ -547,8 +547,6 @@ namespace SmartStore.Services.Search
 				totalCount,
 				hitsFactory,
 				searchQuery,
-				null,
-				null,
 				null);
 
 			_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));

@@ -27,16 +27,6 @@ namespace SmartStore.Services.Search
 		{
 		}
 
-		/// <summary>
-		/// Maximum number of top categories
-		/// </summary>
-		public int MaxTopCategories { get; protected set; }
-
-		/// <summary>
-		/// Maximum number of top manufacturers
-		/// </summary>
-		public int MaxTopManufacturers { get; protected set; }
-
 		public CatalogSearchQuery Clone()
 		{
 			return (CatalogSearchQuery)this.MemberwiseClone();
@@ -264,24 +254,6 @@ namespace SmartStore.Services.Search
 			}
 
 			return WithFilter(SearchFilter.ByRange("rate", fromRate, toRate, fromRate.HasValue, toRate.HasValue).Mandatory().ExactMatch().NotAnalyzed());
-		}
-
-		public CatalogSearchQuery WithTopCategories(int maxTopCategories)
-		{
-			Guard.IsPositive(maxTopCategories, nameof(maxTopCategories));
-
-			MaxTopCategories = maxTopCategories;
-
-			return this;
-		}
-
-		public CatalogSearchQuery WithTopManufacturers(int maxTopManufacturers)
-		{
-			Guard.IsPositive(maxTopManufacturers, nameof(maxTopManufacturers));
-
-			MaxTopManufacturers = maxTopManufacturers;
-
-			return this;
 		}
 
 		#endregion

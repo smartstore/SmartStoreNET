@@ -106,10 +106,6 @@ namespace SmartStore.Web.Controllers
 			// Add spell checker suggestions (if any)
 			AddSpellCheckerSuggestionsToModel(result.SpellCheckerSuggestions, model);
 
-			// Add top hits (if any)
-			AddTopHitsToModel(result.TopCategories, model, "TopCategories", T("Search.TopCategories"), x => new { q = model.Term, c = x.EntityId });
-			AddTopHitsToModel(result.TopManufacturers, model, "TopManufacturers", T("Search.TopManufacturers"), x => new { q = model.Term, m = x.EntityId });
-
 			return PartialView(model);
 		}
 
@@ -171,10 +167,6 @@ namespace SmartStore.Web.Controllers
 			// Add spell checker suggestions (if any)
 			AddSpellCheckerSuggestionsToModel(result.SpellCheckerSuggestions, model);
 
-			// Add top hits (if any)
-			AddTopHitsToModel(result.TopCategories, model, "TopCategories", T("Search.TopCategories"), x => new { q = model.Term, c = x.EntityId });
-			AddTopHitsToModel(result.TopManufacturers, model, "TopManufacturers", T("Search.TopManufacturers"), x => new { q = model.Term, m = x.EntityId });
-
 			return View(model);
 		}
 
@@ -195,46 +187,6 @@ namespace SmartStore.Web.Controllers
 				Label = x,
 				Url = Url.RouteUrl("Search", new { q = x })
 			}));
-
-			model.HitGroups.Add(hitGroup);
-		}
-
-		private void AddTopHitsToModel(
-			IEnumerable<ISearchHit> hits,
-			SearchResultModel model,
-			string name,
-			string displayName,
-			Func<ISearchHit, object> routeValues)
-		{
-			if (!hits.Any())
-				return;
-
-			var hitGroup = new SearchResultModel.HitGroup(model)
-			{
-				Name = name,
-				DisplayName = displayName,
-				Ordinal = -100
-			};
-
-			foreach (var hit in hits)
-			{
-				string label = null;
-
-				if (model.Query.LanguageSeoCode.HasValue())
-				{
-					label = hit.GetString("name", model.Query.LanguageSeoCode);
-				}
-				if (label.IsEmpty())
-				{
-					label = hit.GetString("name");
-				}
-
-				hitGroup.Hits.Add(new SearchResultModel.HitItem
-				{
-					Label = label,
-					Url = Url.RouteUrl("Search", routeValues(hit))
-				});
-			}
 
 			model.HitGroups.Add(hitGroup);
 		}

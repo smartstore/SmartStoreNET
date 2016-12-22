@@ -17,9 +17,7 @@ namespace SmartStore.Services.Search
 			int totalHitsCount,
 			Func<IList<Product>> hitsFactory,
 			CatalogSearchQuery query,
-			string[] spellCheckerSuggestions,
-			IEnumerable<ISearchHit> topCategories,
-			IEnumerable<ISearchHit> topManufacturers)
+			string[] spellCheckerSuggestions)
 		{
 			Guard.NotNull(query, nameof(query));
 
@@ -29,8 +27,6 @@ namespace SmartStore.Services.Search
 
 			_hitsFactory = hitsFactory ?? (() => new List<Product>());
 			_totalHitsCount = totalHitsCount;
-			TopCategories = topCategories ?? new List<ISearchHit>();
-			TopManufacturers = topManufacturers ?? new List<ISearchHit>();
 		}
 
 		/// <summary>
@@ -74,24 +70,6 @@ namespace SmartStore.Services.Search
 		{
 			get;
 			set;
-		}
-
-		/// <summary>
-		/// Gets top categories
-		/// </summary>
-		public IEnumerable<ISearchHit> TopCategories
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Gets top manufacturers
-		/// </summary>
-		public IEnumerable<ISearchHit> TopManufacturers
-		{
-			get;
-			private set;
 		}
 
 		public ISearchEngine Engine

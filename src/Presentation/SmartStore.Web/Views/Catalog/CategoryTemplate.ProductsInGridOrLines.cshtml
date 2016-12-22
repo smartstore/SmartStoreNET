@@ -87,7 +87,7 @@
         @* Description *@
         @if (!String.IsNullOrWhiteSpace(Model.Description))
         {
-            <div class="category-description">
+            <div class="category-description text-body">
                 @Html.Raw(Html.CollapsedText(Model.Description))
             </div>
         }
@@ -126,7 +126,7 @@
 
         @if (Model.BottomDescription.HasValue())
         {
-            <div class="category-description">
+            <div class="category-description text-body">
                 @Html.Raw(Html.CollapsedText(Model.BottomDescription))
             </div>
         }

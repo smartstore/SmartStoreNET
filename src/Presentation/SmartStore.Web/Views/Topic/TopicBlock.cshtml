@@ -61,7 +61,7 @@
 
 @if (ViewBag.BodyOnly)
 {
-    <div class="topic-html-content-body" id="ph-topic-body-@Model.Id">
+    <div class="topic-html-content-body text-body" id="ph-topic-body-@Model.Id">
         @Html.Raw(Html.CollapsedText(Model.Body))
     </div>
 }
@@ -73,7 +73,7 @@ else {
                 @Model.Title
             </div>
         }
-        <div class="block-body topic-html-content-body">
+        <div class="block-body topic-html-content-body text-body">
             @Html.Raw(Html.CollapsedText(Model.Body))
         </div>
     </div>

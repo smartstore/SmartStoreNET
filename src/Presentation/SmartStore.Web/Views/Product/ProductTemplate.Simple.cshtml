@@ -307,7 +307,7 @@
                         if (!String.IsNullOrWhiteSpace(Model.FullDescription))
                         {
                             x.Add().Text(@T("Products.Details"))
-								    .Content(Html.Raw("<div itemprop='description'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
+								    .Content(Html.Raw("<div itemprop='description' class='text-body'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
                                     .Selected(true);
                         }
 

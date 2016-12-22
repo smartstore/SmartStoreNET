@@ -29,7 +29,7 @@
 		@* Description *@
         @if (!String.IsNullOrWhiteSpace(Model.Description))
         {
-            <div class="manufacturer-description">
+            <div class="manufacturer-description text-body">
                 @Html.Raw(Html.CollapsedText(Model.Description))
             </div>
         }

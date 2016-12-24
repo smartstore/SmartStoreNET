@@ -1065,6 +1065,8 @@
     <Content Include="Themes\Alpha\Content\animate\animations\zoom-exit\_zoomOutRight.scss" />
     <Content Include="Themes\Alpha\Content\animate\animations\zoom-exit\_zoomOutUp.scss" />
     <Content Include="Themes\Alpha\Content\shared\_animate.scss" />
+    <Content Include="Themes\Alpha\Content\slick\slick.js" />
+    <Content Include="Themes\Alpha\Content\slick\slick.min.js" />
     <Content Include="Themes\Alpha\Content\_megamenu.scss" />
     <Content Include="Themes\Alpha\preview.png" />
     <Content Include="Themes\AlphaOld\Content\images\color-overlay.png" />
@@ -1473,7 +1475,6 @@
     <Content Include="Themes\Alpha\Scripts\smartstore.placeholder.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.scrollbutton.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.selectwrapper.js" />
-    <Content Include="Themes\Alpha\Scripts\smartstore.shrinkmenu.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.smartgallery.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.system.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.throbber.js" />
@@ -1905,6 +1906,8 @@
     <Content Include="Views\Shared\Partials\Product.List.Item.Price.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.Item.Buttons.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.Item.Variants.cshtml" />
+    <Content Include="Themes\Alpha\Content\slick\slick.scss" />
+    <Content Include="Themes\Alpha\Content\_slick-theme.scss" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

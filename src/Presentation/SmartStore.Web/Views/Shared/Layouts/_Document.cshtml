@@ -9,6 +9,7 @@
 
 	var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
 
+	var contentRoot = "~/Themes/Alpha/Content/";
 	var cssRoot = "~/Themes/Alpha/Content/css/";
 	var jsRoot = "~/Themes/Alpha/Scripts/";
 	var bootstrapJsRoot = "~/Themes/Alpha/Content/bs4/js/";
@@ -66,12 +67,12 @@
 		jsRoot + "smartstore.viewport.js",
 		jsRoot + "smartstore.placeholder.js",
 		jsRoot + "select2.js",
+		contentRoot + "slick/slick.js",
 		jsRoot + "smartstore.selectwrapper.js",
 		jsRoot + "smartstore.throbber.js",
 		jsRoot + "smartstore.navbar.js",
 		jsRoot + "smartstore.thumbzoomer.js",
 		jsRoot + "smartstore.column-equalizer.js",
-		jsRoot + "smartstore.shrinkmenu.js",
 		jsRoot + "smartstore.scrollbutton.js",
 		jsRoot + "smartstore.keynav.js",
 		jsRoot + "smartstore.articlelist.js",

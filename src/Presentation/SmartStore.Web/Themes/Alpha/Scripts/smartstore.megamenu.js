@@ -311,6 +311,22 @@
                     	}
 
                     	getCurrentNavigationElements();
+
+                    	// ReInit slick
+                    	// TODO: (mc) > (mh) Das ist nur temporär und läuft nicht richtig.
+                    	//		Slick geht bei PageResize kaputt und muss nach dem Öffnen neu initialisert werden (hat mit Sichtbarkeit zu tun).
+						//		Am besten HTML komplett entfernen und beim nächsten Öffnen reinitialisieren.
+                    	// TODO: (mc) > (mh) Rotator komplett weg, wenn 0 Produkte.
+                    	// TODO: (mc) > (mh) Dropdown-MinHeight fehlt, wurde nicht implementiert!
+                    	// TODO: (mc) > (mh) "Maximale Anzahl von Unterwarengruppen pro Warengruppe" zeigt More-Link an, obwohl alles genau passt.
+                    	// TODO: (mc) > (mh) MM-Hintergrundbild lässt sich nicht ausrichten.
+                    	megamenuDropdownContainer.find('.mega-menu-product-rotator > .artlist-grid').each(function(i, el) {
+                    		try {
+                    			$(this).slick('unslick');
+                    			applyCommonPlugins($(this).closest('.rotator-content'));
+                    		}
+							catch (err) { }
+                    	});
                     }
 
                 	// show scroll buttons when menu items don't fit into screen
@@ -369,7 +385,6 @@
                 });
 
                 function initRotator(containerId) {
-
                     var container = $(containerId);
                     var catId = container.data("entity-id");
                     var displayRotator = container.data("display-rotator");
@@ -400,42 +415,8 @@
                                     // add html view
                                     rotatorColumn.find(".rotator-content").html(data);
 
-                                    // init scrolling
-                                    var scrollableProductList = $(".mega-menu-product-rotator.scroll", container);
-                                    var plSlider = $(".pl-slider", container);
-
-                                    scrollableProductList.productListScroller({
-                                        interval: settings.productRotatorInterval,
-                                        cycle: settings.productRotatorCycle,
-                                        duration: settings.productRotatorDuration
-                                    });
-
-                                    // add buttons
-                                    container.find(".sb").scrollButton({
-                                        nearSize: 36,
-                                        farSize: "50%",
-                                        target: $(".pl-slider", container),
-                                        showButtonAlways: true,
-                                        autoPosition: false,
-                                        position: "inside",
-                                        offset: -100,
-                                        handleCorners: true,
-                                        smallIcons: true,
-                                        btnType: "primary",
-                                        opacityOnHover: false
-                                    });
-
-                                    // set article item width (important for mobile devices)
-                                    $(".item-box", rotatorColumn).css({ "min-width": rotatorColumn.width(), "max-width": rotatorColumn.width() });
-
-                                    // and now its hammertime
-                                    var hammertime = new Hammer(scrollableProductList[0]);
-                                    hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 80, pointers: 1 }));
-
-                                    hammertime.on('panend', function (ev) {
-                                        if (ev.direction == Hammer.DIRECTION_LEFT) { plSlider.trigger('next'); }
-                                        if (ev.direction == Hammer.DIRECTION_RIGHT) { plSlider.trigger('prev'); }
-                                    });
+                                	// Init carousel
+                                    applyCommonPlugins(container);
 
                                     if (container.hasClass("open")) {
                                         container.data("display-rotator", false);

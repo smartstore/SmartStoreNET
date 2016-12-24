@@ -282,7 +282,7 @@ $btn-grey-bg: #f2f2f2;
 }
 
 
-// btn-to-danger
+// btn-to-[danger|primary]
 // --------------------------------------------------
 
 .btn.btn-to-danger {
@@ -295,6 +295,19 @@ $btn-grey-bg: #f2f2f2;
     }
     &:focus, &.focus {
         @extend .btn-danger:focus;
+    }
+}
+
+.btn.btn-to-primary {
+    transition: none;
+    &:hover {
+        @extend .btn-primary:hover;
+    }
+    &:active, &.active {
+        @extend .btn-primary:active;
+    }
+    &:focus, &.focus {
+        @extend .btn-primary:focus;
     }
 }
 

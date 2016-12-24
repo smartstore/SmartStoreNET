@@ -38,6 +38,59 @@
             if (!Modernizr.touch) {
                 ctx.tooltip({ selector: '[data-toggle="tooltip"], .tooltip-toggle', container: 'body' });
             }
+        },
+        // slick carousel
+        function (ctx) {
+        	if ($.fn.slick === undefined)
+        		return;
+
+        	ctx.find('.artlist-carousel > .artlist-grid').each(function (i, el) {
+        		var list = $(this);
+
+        		var slickData = list.parent().data('slick');
+        		
+        		if (slickData && list.data('slick') == undefined) {
+        			list.data('slick', slickData);
+        			console.log(list.data('slick'));
+        		}
+
+        		list.slick({
+        			infinite: false,
+        			dots: true,
+        			cssEase: 'ease-in-out',
+        			speed: 300,
+        			useCSS: true,
+        			useTransform: true,
+        			waitForAnimate: true,
+        			prevArrow: '<button type="button" class="btn btn-secondary slick-prev"><i class="fa fa-chevron-left"></i></button>',
+        			nextArrow: '<button type="button" class="btn btn-secondary slick-next"><i class="fa fa-chevron-right"></i></button>',
+        			respondTo: 'slider',
+        			slidesToShow: 6,
+        			slidesToScroll: 6,
+        			responsive: [
+						{
+							breakpoint: 280,
+							settings: { slidesToShow: 1, slidesToScroll: 1 }
+						},
+						{
+							breakpoint: 440,
+							settings: { slidesToShow: 2, slidesToScroll: 2 }
+						},
+						{
+							breakpoint: 640,
+							settings: { slidesToShow: 3, slidesToScroll: 3 }
+						},
+						{
+							breakpoint: 780,
+							settings: { slidesToShow: 4, slidesToScroll: 4 }
+						},
+						{
+							breakpoint: 960,
+							settings: { slidesToShow: 5, slidesToScroll: 5 }
+						},
+        			]
+        		});
+        	});
         }
     ];
 
@@ -91,19 +144,6 @@
 					EventBroker.publish("page.resized", viewport);
 				}, 100)
 			);
-        }
-
-    	// create navbar
-    	// TODO: (mc) away with it (?)
-        if ($.fn.navbar)
-        {
-            $('.navbar ul.nav-smart > li.dropdown').navbar();
-        }
-
-    	// shrink menu 
-		// TODO: (mc) away with it! 
-        if ($.fn.shrinkMenu) {
-            $(".shrink-menu").shrinkMenu({ responsive: true });
         }
         
         applyCommonPlugins($("body"));

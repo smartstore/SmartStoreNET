@@ -128,6 +128,7 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
 
 .art {
     position: relative;
+    //float: none;
     min-height: 1px;
 
     @include make-col();
@@ -618,32 +619,36 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
     position: relative;
     overflow: hidden;
 
-    .touch & {
-        overflow-x: auto !important;
-    }
-
     .artlist-grid {
         flex-wrap: nowrap;
+    }
+
+    .artlist {
         margin-bottom: 0;
-        transition: margin-left 0.12s ease-in-out;
     }
 
     .art {
-        flex-basis: 180px !important;
-        max-width: 180px !important;
         border-bottom: none;
     }
 
     .art-drop {
         display: none;
     }
-
-    @include media-breakpoint-only(md) {
-        // Fits better
-        .art { flex-basis: 172px !important; max-width: 172px !important; }
-    }
 }
 
+.slick-slider {
+    &.artlist-grid {
+        display: block !important;
+        flex: initial !important;
+        flex-wrap: nowrap;
+    }
+
+    .art {
+        display: inline-block !important;
+        max-width: initial !important;
+        //width: 180px; // avoids flickering during initial load
+    }
+}
 
 
 /*@include media-breakpoint-between(xs, md) {

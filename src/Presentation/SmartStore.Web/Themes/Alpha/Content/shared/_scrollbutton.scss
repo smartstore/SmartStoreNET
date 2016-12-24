@@ -1,12 +1,11 @@
 /// <reference path="../bs4/scss/bootstrap.scss" />
 
 // Scroll Button
-// TODOs: px to rem
 // ==============================================================
 
 .scroll-button {
     position: absolute;
-    display: none;
+    //display: none;
     opacity: 0.4;
     top: 0;
     bottom: 0;
@@ -33,12 +32,12 @@
 .scroll-button .btn-scroll {
     display: block;
     position: relative;
-    height: 8rem;
-    line-height: 8rem;
+    height: 6rem;
+    line-height: 6rem;
     padding-top: 0;
     padding-bottom: 0;
     top: 50%;
-    margin-top: -4rem;
+    margin-top: -3rem;
 
     &.btn-scroll-prev {
         border-radius: 0 $btn-border-radius-lg $btn-border-radius-lg 0;
@@ -49,46 +48,8 @@
         border-radius: $btn-border-radius-lg 0 0 $btn-border-radius-lg;
         border-right: none;
     }
-}
 
-/*.scroll-button {
-	position: relative;
-	display: block;
-	outline: 0 !important;
-	overflow: hidden;
-    border-radius: 0;
-    padding-right: 0;
-    padding-left: 0;
+    &:hover, &:focus, &:active {
+        background: $btn-secondary-bg;
+    }
 }
-.scroll-button.disabled {
-	cursor: default !important;
-}
-
-.scroll-button i {
-	position: relative;
-	top: 50%;
-	display: block !important;
-	width: 28px;
-	height: 22px;
-	background-position: 0 0;
-	background-repeat: no-repeat;
-	overflow: hidden;
-	transform: translateZ(0);
-}
-.scroll-button.small i {
-    font-size: 11px;
-    margin: -4px 0 0 -11px;
-}
-.scroll-button.large i {
-    font-size: 20px;
-    margin: -11px 0 0 -11px;
-}
-
-.scroll-button.sb-dir-left.large {
-    border-top-right-radius: $border-radius-sm;
-    border-bottom-right-radius: $border-radius-sm;
-}
-.scroll-button.sb-dir-right.large {
-    border-top-left-radius: $border-radius-sm;
-    border-bottom-left-radius: $border-radius-sm;
-}*/

@@ -110,6 +110,8 @@ $pagination-active-border:      $pagination-border-color;
 @import "shared/select2/core.scss";
 @import "shared/offcanvas.scss";
 @import "shared/_animate.scss";
+@import "slick/slick.scss";
+@import "_slick-theme.scss";
 
 // Main
 @import "_shopbar.scss";

@@ -1637,9 +1637,11 @@ namespace SmartStore.Admin.Controllers
 				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ShortDescription"), Value = "shortdescription" },
 				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.FullDescription"), Value = "fulldescription" },
 				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ProductTags"), Value = "tagname" },
-				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.Sku"), Value = "sku" },
 				new SelectListItem { Text = T("Admin.Catalog.Manufacturers"), Value = "manufacturer" },
-				new SelectListItem { Text = T("Admin.Catalog.Categories"), Value = "category" }
+				new SelectListItem { Text = T("Admin.Catalog.Categories"), Value = "category" },
+				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.Sku"), Value = "sku" },
+				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.GTIN"), Value = "gtin" },
+				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ManufacturerPartNumber"), Value = "mpn" }
 			};
 
 			StoreDependingSettings.GetOverrideKeys(settings, model, storeScope, Services.Settings);

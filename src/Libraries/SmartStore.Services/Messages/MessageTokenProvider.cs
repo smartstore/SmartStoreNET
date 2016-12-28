@@ -877,8 +877,14 @@ namespace SmartStore.Services.Messages
                 tokens.Add(new Token("Order.CreatedOn", order.CreatedOnUtc.ToString("D")));
             }
 
-            // TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-            tokens.Add(new Token("Order.OrderURLForCustomer", string.Format("{0}order/details/{1}", _services.WebHelper.GetStoreLocation(), order.Id), true));
+			var orderDetailUrl = "";
+			if (order.Customer != null && !order.Customer.IsGuest())
+			{
+				// TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
+				orderDetailUrl = string.Format("{0}order/details/{1}", _services.WebHelper.GetStoreLocation(), order.Id);
+			}
+
+            tokens.Add(new Token("Order.OrderURLForCustomer", orderDetailUrl, true));
 
             tokens.Add(new Token("Order.Disclaimer", TopicToHtml("Disclaimer", language.Id), true));
             tokens.Add(new Token("Order.ConditionsOfUse", TopicToHtml("ConditionsOfUse", language.Id), true));

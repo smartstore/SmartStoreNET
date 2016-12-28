@@ -44,6 +44,7 @@
 * #1048 Add meta tags to contact us page
 * #1062 Web API: Add filter options for user grid on configuration page
 * Order XML export includes more customer data like title and salutation
+* #1080 Do not resolve Order.OrderURLForCustomer token for guest customers
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation

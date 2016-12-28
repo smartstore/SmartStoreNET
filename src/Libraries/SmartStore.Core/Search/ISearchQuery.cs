@@ -7,7 +7,7 @@ namespace SmartStore.Core.Search
 	{
 		// Language & STore
 		int? LanguageId { get; }
-		string LanguageSeoCode { get; }
+		string LanguageCulture { get; }
 		int? StoreId { get; }
 
 		// Search term

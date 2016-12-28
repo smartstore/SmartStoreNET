@@ -51,7 +51,7 @@ namespace SmartStore.Core.Search
 
 		// Language & Store
 		public int? LanguageId { get; protected set; }
-		public string LanguageSeoCode { get; protected set; }
+		public string LanguageCulture { get; protected set; }
 		public int? StoreId { get; protected set; }
 
 		// Search term
@@ -116,9 +116,10 @@ namespace SmartStore.Core.Search
 		public TQuery WithLanguage(Language language)
 		{
 			Guard.NotNull(language, nameof(language));
+			Guard.NotEmpty(language.LanguageCulture, nameof(language.LanguageCulture));
 
 			LanguageId = language.Id;
-			LanguageSeoCode = language.UniqueSeoCode.EmptyNull().ToLower();
+			LanguageCulture = language.LanguageCulture;
 
 			return (this as TQuery);
 		}

@@ -64,7 +64,6 @@
 			@if (list.ShowDescription)
 			{
 				<div class="art-description" title="@Model.ShortDescription">
-					@* TODO: (mc) Only render description block when merchant wishes so and only when at least one description is specified *@
 					@Html.Raw(Model.ShortDescription.Truncate(160, "..."))
 				</div>
 			}

@@ -108,7 +108,7 @@ namespace SmartStore.Web.Framework.Theming
                              select new SelectListItem 
                              { 
                                  Value = x, 
-                                 Text = x, // TODO: (MC) Localize
+                                 Text = x, // TODO: (mc) Localize
                                  Selected = x.IsCaseInsensitiveEqual(value) 
                              };
 

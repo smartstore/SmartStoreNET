@@ -46,6 +46,7 @@ namespace SmartStore.Web.Models.Catalog
 		#region IListActions
 
 		public ProductSummaryViewMode ViewMode { get; set; }
+		public GridColumnSpan GridColumnSpan { get; set; }
 		public bool AllowViewModeChanging { get; set; }
 
 		// TODO: (mc) Implement

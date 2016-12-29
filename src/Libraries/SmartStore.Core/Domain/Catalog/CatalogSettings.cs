@@ -10,6 +10,15 @@ namespace SmartStore.Core.Domain.Catalog
 		Bottom = 10
 	}
 
+	public enum GridColumnSpan
+	{
+		Max2Cols = 2,
+		Max3Cols = 3,
+		Max4Cols = 4,
+		Max5Cols = 5,
+		Max6Cols = 6
+	}
+
     public class CatalogSettings : ISettings
     {
         public CatalogSettings()
@@ -53,6 +62,7 @@ namespace SmartStore.Core.Domain.Catalog
 			DisplayAllImagesNumber = 6;
 			ShowShortDescriptionInGridStyleLists = true;
 			ShowManufacturerInGridStyleLists = true;
+			ShowManufacturerLogoInLists = false;
 			ShowProductOptionsInLists = true;
 			ShowColorSquaresInLists = true;
 			ShowDiscountSign = true;
@@ -64,6 +74,7 @@ namespace SmartStore.Core.Domain.Catalog
 			MostRecentlyUsedCategoriesMaxSize = 6;
 			MostRecentlyUsedManufacturersMaxSize = 4;
 			IncludeShortDescriptionInCompareProducts = true;
+			GridStyleListColumnSpan = GridColumnSpan.Max4Cols;
 		}
 
         /// <summary>
@@ -345,6 +356,11 @@ namespace SmartStore.Core.Domain.Catalog
 
 		public bool ShowManufacturerInGridStyleLists { get; set; }
 
+		/// <summary>
+		/// Whether to show brand logo instead of textual name in product lists
+		/// </summary>
+		public bool ShowManufacturerLogoInLists { get; set; }
+
 		public bool ShowShortDescriptionInGridStyleLists { get; set; }
 
 		public bool ShowProductOptionsInLists { get; set; }
@@ -448,5 +464,10 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets how many items to display maximally in the most recently used manufacturer list
 		/// </summary>
 		public int MostRecentlyUsedManufacturersMaxSize { get; set; }
+
+		/// <summary>
+		/// Gets or sets how many columns per row should be displayed at most in grid style lists on largest screen resolution.
+		/// </summary>
+		public GridColumnSpan GridStyleListColumnSpan { get; set; }
     }
 }

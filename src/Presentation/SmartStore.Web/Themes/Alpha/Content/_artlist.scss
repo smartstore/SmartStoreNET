@@ -429,6 +429,7 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
 
     .floating > .art-brand {
         padding-right: 90px; // ratings width + 10px
+        min-height: 20px; // Height of rating widget
     }
 
     .floating > .art-rating {

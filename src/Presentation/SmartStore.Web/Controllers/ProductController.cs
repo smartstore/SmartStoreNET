@@ -405,7 +405,7 @@ namespace SmartStore.Web.Controllers
 
 			var products = _productService.GetCrosssellProductsByShoppingCart(cart, _shoppingCartSettings.CrossSellsNumber);
 
-			//ACL and store mapping
+			// ACL and store mapping
 			products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
 
 			if (products.Any())

@@ -13,7 +13,10 @@
 		<div class="art-color-opts">
 			@foreach (var clr in Model.ColorAttribute.Values)
 			{
-				<a href='@artDetailUrl' class="art-color-opt" style="background-color: @clr.Color" title="@Model.ColorAttribute.Name @clr.FriendlyName auswählen"></a>
+				var qs = "?product_attribute_{0}_{1}_{2}_{3}={4}".FormatInvariant(Model.Id /* ProductId */, 0 /* BundleItemId */, Model.ColorAttribute.Id, clr.Id, clr.Id);
+				@* TODO: (mc) Append attribute query to url *@
+				@* TODO: (mc) > (mg) WTF IS GOING ON HERE!??!!! *@
+				<a href='@(artDetailUrl + qs)' class="art-color-opt" style="background-color: @clr.Color" title='@T("Products.ChooseColorX", Model.ColorAttribute.Name, clr.FriendlyName)'></a>
 			}
 		</div>
 	}
@@ -36,7 +39,7 @@
 				{
 					<div>@T("Products.PlusOptions"):</div>
 				}
-				@* TODO: (mc) Append attribute query to url *@
+
 				<a href="@artDetailUrl">@String.Join(", ", Model.Attributes.Select(x => x.Name)).Truncate(50, "...")</a>
 			}
 		</div>

@@ -603,7 +603,20 @@ namespace SmartStore.Web.Framework
 			object additionalViewData = null)
 		{
 			var checkbox = helper.SettingOverrideCheckbox(expression, parentSelector);
-			var editor = helper.EditorFor(expression, additionalViewData);
+			var editor = helper.EditorFor(expression, additionalViewData);	
+			
+			return MvcHtmlString.Create(checkbox.ToString() + editor.ToString());
+		}
+
+		public static MvcHtmlString EnumSettingEditorFor<TModel, TValue>(
+			this HtmlHelper<TModel> helper,
+			Expression<Func<TModel, TValue>> expression,
+			string parentSelector = null,
+			object htmlAttributes = null,
+			string optionLabel = null) where TValue : struct
+		{
+			var checkbox = helper.SettingOverrideCheckbox(expression, parentSelector);
+			var editor = helper.DropDownListForEnum(expression, htmlAttributes, optionLabel);
 
 			return MvcHtmlString.Create(checkbox.ToString() + editor.ToString());
 		}

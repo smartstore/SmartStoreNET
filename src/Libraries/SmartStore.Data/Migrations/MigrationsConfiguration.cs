@@ -221,10 +221,16 @@ namespace SmartStore.Data.Migrations
 				"Legt fest, ob die Produkt-Kurzbeschreibung auch in Produktlisten angezeigt werden sollen");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturerInGridStyleLists",
-				"Show manufacturer in product lists",
-				"Zeige Hersteller in Produktlisten",
-				"Specifies whether the manufacturer name should be displayed in grid style product lists",
-				"Legt fest, ob der Hersteller-Name auch in Rasterstil Produktlisten angezeigt werden sollen");
+				"Show brand in product lists",
+				"Zeige Hersteller/Marke in Produktlisten",
+				"Specifies whether the brand name should be displayed in grid style product lists",
+				"Legt fest, ob der Markenname auch in Rasterstil Produktlisten angezeigt werden sollen");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturerLogoInLists",
+				"Show brand logo instead of name",
+				"Zeige Marken-Logo statt -Name",
+				"Specifies whether the brand logo should be displayed in line style product lists. Falls back to textual name if no logo has been uploaded.",
+				"Legt fest, ob das Marken-Logo in Produktlisten dargestellt werden soll (nicht anwendbar in Rasteransicht). Wenn kein Logo hochgeladen wurde, wird grundsätzlich der Name angezeigt.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowProductOptionsInLists",
 				"Show variant names in product lists",
@@ -267,6 +273,7 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Products.Price.OldPrice", "Regular", "Regulär");
 			builder.AddOrUpdate("Products.Sku", "SKU", "Art.-Nr.");
+			builder.AddOrUpdate("Products.ChooseColorX", "Choose {0}", "{0} auswählen");
 
 
 			builder.AddOrUpdate("Tax.LegalInfoShort", "Prices {0}, plus <a href='{1}'>shipping</a>", "Preise {0}, zzgl. <a href='{1}'>Versandkosten</a>");
@@ -292,6 +299,18 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Media.Manufacturer.ImageLinkTitleFormat", "All products from {0}", "Alle Produkte von {0}");
 			builder.AddOrUpdate("Manufacturers.List", "All Brands", "Alle Marken");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.GridStyleListColumnSpan",
+				"Products per row in grid style list",
+				"Anzahl Produkte pro Zeile in Rasteransicht",
+				"Sets the responsive behavior of the grid style product list. The wider the screen, the more products are arranged in a row.",
+				"Legt das responsive Verhalten der Produktliste in der Rasteransicht fest. Je breiter der Bildschirm, desto mehr Produkte werden in einer Zeile angeordnet.");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.GridColumnSpan.Max2Cols", "Always 2 (mobile & desktop) -not recommended", "Immer 2 (Mobil & Desktop) - nicht empfohlen");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.GridColumnSpan.Max3Cols", "2 (mobile) to 3 (desktop)", "2 (Mobil) bis 3 (Desktop)");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.GridColumnSpan.Max4Cols", "2 (mobile) to 4 (desktop) - recommended", "2 (Mobil) bis 4 (Desktop) - empfohlen");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.GridColumnSpan.Max5Cols", "2 (mobile) to 5 (desktop)", "2 (Mobil) bis 5 (Desktop)");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.GridColumnSpan.Max6Cols", "2 (mobile) to 6 (desktop)", "2 (Mobil) bis 6 (Desktop)");
 		}
 	}
 }

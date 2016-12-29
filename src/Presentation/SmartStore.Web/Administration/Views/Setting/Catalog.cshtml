@@ -488,6 +488,15 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.GridStyleListColumnSpan)
+			</td>
+			<td class="adminData">
+				@Html.EnumSettingEditorFor(model => model.GridStyleListColumnSpan)
+				@Html.ValidationMessageFor(model => model.GridStyleListColumnSpan)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.DefaultSortOrder)
 			</td>
 			<td class="adminData">
@@ -568,6 +577,15 @@
 			<td class="adminData">
 				@Html.SettingEditorFor(model => model.ShowManufacturerInGridStyleLists)
 				@Html.ValidationMessageFor(model => model.ShowManufacturerInGridStyleLists)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowManufacturerLogoInLists)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowManufacturerLogoInLists)
+				@Html.ValidationMessageFor(model => model.ShowManufacturerLogoInLists)
 			</td>
 		</tr>
 		<tr>

@@ -208,6 +208,7 @@ namespace SmartStore.Web.Controllers
 					var model = new ProductSummaryModel(products)
 					{
 						ViewMode = settings.ViewMode,
+						GridColumnSpan = _catalogSettings.GridStyleListColumnSpan,
 						ShowSku = _catalogSettings.ShowProductSku,
 						ShowWeight = _catalogSettings.ShowWeight,
 						ShowDimensions = settings.MapDimensions,
@@ -255,6 +256,10 @@ namespace SmartStore.Web.Controllers
 					_services.DisplayControl.AnnounceRange(products);
 
 					scope.Commit();
+
+					// don't show stuff without data at all
+					model.ShowDescription = model.ShowDescription && model.Items.Any(x => x.ShortDescription.HasValue());
+					model.ShowBrand = model.ShowBrand && model.Items.Any(x => x.Manufacturer != null);
 
 					return model;
 				}
@@ -310,6 +315,7 @@ namespace SmartStore.Web.Controllers
 							where (a.ColorSquaresRgb.HasValue() && !a.ColorSquaresRgb.IsCaseInsensitiveEqual("transparent"))
 							select new ProductSummaryModel.ColorAttributeValue
 							{
+								Id = a.Id,
 								Color = a.ColorSquaresRgb,
 								Alias = a.Alias,
 								FriendlyName = a.GetLocalized(l => l.Name)
@@ -395,8 +401,7 @@ namespace SmartStore.Web.Controllers
 				item.Manufacturer = PrepareManufacturersOverviewModel(
 					ctx.BatchContext.ProductManufacturers.GetOrLoad(product.Id), 
 					ctx.CachedManufacturerModels,
-					settings.ViewMode == ProductSummaryViewMode.List /*_catalogSettings.ShowManufacturerPicturesInProductDetail*/).FirstOrDefault();
-				// TODO: (mc) _catalogSettings.ShowManufacturerPicturesInProductDetail > ShowManufacturerPicturesInProductLists (new setting)
+					_catalogSettings.ShowManufacturerLogoInLists && settings.ViewMode == ProductSummaryViewMode.List).FirstOrDefault();
 			}
 
 			// Spec Attributes

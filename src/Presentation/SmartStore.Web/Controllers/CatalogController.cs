@@ -303,11 +303,12 @@ namespace SmartStore.Web.Controllers
                 {
                     var catModel = x.ToModel();
 
-                    //prepare picture model
+                    // Prepare picture model
                     int pictureSize = _mediaSettings.CategoryThumbPictureSize;
 					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, x.Id, pictureSize, true, 
 						_services.WorkContext.WorkingLanguage.Id, 
 						_services.StoreContext.CurrentStore.Id);
+
                     catModel.PictureModel = _services.Cache.Get(categoryPictureCacheKey, () =>
                     {
                         var pictureModel = new PictureModel

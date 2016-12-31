@@ -9,7 +9,6 @@ namespace SmartStore.Web.Framework.Localization
 {
     public class LocalizedUrlHelper
     {
-
         public LocalizedUrlHelper(HttpRequestBase httpRequest, bool rawUrl = false) 
             : this(httpRequest.ApplicationPath, rawUrl ? httpRequest.RawUrl : httpRequest.AppRelativeCurrentExecutionFilePath, rawUrl)
         {
@@ -135,6 +134,5 @@ namespace SmartStore.Web.Framework.Localization
             }
             return result;
         }
-
     }
 }

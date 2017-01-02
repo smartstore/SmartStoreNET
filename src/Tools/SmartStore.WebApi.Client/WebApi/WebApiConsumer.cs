@@ -125,6 +125,11 @@ namespace SmartStore.Net.WebApi
 					var id = string.Format("my-file-{0}", ++count);
 					var apiFile = new ApiFileParameter(data, name, MimeMapping.GetMimeMapping(name));
 
+					if (multipartData.ContainsKey("PictureId"))
+					{
+						apiFile.Parameters.Add("PictureId", ((int)multipartData["PictureId"]).ToString());
+					}
+
 					// test pass through of custom parameters
 					apiFile.Parameters.Add("CustomValue1", string.Format("{0:N}", Guid.NewGuid()));
 					apiFile.Parameters.Add("CustomValue2", string.Format("say hello to {0}", id));

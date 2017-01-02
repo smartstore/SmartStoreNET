@@ -99,8 +99,15 @@ namespace SmartStoreNetWebApiClient
 
 			if (radioApi.Checked && txtFile.Text.HasValue())
 			{
+				if (string.Compare(context.HttpMethod, "POST", StringComparison.OrdinalIgnoreCase) != 0)
+				{
+					"Please select POST method for image upload.".Box(MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					return;
+				}
+
 				var id1 = txtIdentfier1.Text.ToInt();
 				var id2 = txtIdentfier2.Text;
+				var pictureId = txtPictureId.Text.ToInt();
 				var keyForId1 = "Id";
 				var keyForId2 = "";
 
@@ -119,6 +126,9 @@ namespace SmartStoreNetWebApiClient
 					// to delete existing import files:
 					//multiPartData.Add("deleteExisting", true);
 				}
+
+				if (pictureId != 0)
+					multiPartData.Add("PictureId", pictureId);
 
 				if (id1 != 0)
 					multiPartData.Add(keyForId1, id1);
@@ -246,6 +256,8 @@ namespace SmartStoreNetWebApiClient
 			txtIdentfier1.Visible = show;
 			lblIdentfier2.Visible = show;
 			txtIdentfier2.Visible = show;
+			txtPictureId.Visible = show;
+			lblPictureId.Visible = show;
 		}
 
 		private void btnFileOpen_Click(object sender, EventArgs e)

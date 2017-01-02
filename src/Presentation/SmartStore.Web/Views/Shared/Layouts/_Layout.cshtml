@@ -8,7 +8,6 @@
     <div class="canvas-blocker canvas-slidable"></div>
 
     <div class="page-main canvas-slidable">
-
         @if (IsSectionDefined("header"))
 		{
             @RenderSection("header")
@@ -50,7 +49,6 @@
 
         <div id="content-wrapper">
             <section id="content" class="container drop-shadow lifted m-t-1">
-                
                 @RenderSection("teaser", required: false)
                 <div id="content-body" class="row">
                     @RenderBody()

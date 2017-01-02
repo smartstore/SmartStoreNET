@@ -5,7 +5,13 @@
 
 @using (Html.BeginForm())
 {
-    <table class="adminContent">
+	<div class="plugin-actions">
+		<button type="submit" name="save" value="save" class="btn btn-primary">
+			<i class="fa fa-check"></i>
+			@T("Admin.Common.Save")
+		</button>
+	</div>
+	<table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.EnableMiniProfilerInPublicStore)
@@ -31,17 +37,6 @@
 			<td class="adminData">
 				@Html.SettingEditorFor(model => model.DisplayMachineName)
 				@Html.ValidationMessageFor(model => model.DisplayMachineName)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-				<button type="submit" name="save" value="save" class="btn btn-primary">
-					<i class="fa fa-check"></i>
-					@T("Admin.Common.Save")
-				</button>
 			</td>
 		</tr>
     </table>

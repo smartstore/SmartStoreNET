@@ -15,11 +15,14 @@
 
 @Html.ValidationSummary(false)
 
-<div class="clear"></div>
-
 @using (Html.BeginForm())
 {
-    <table class="adminContent">
+	<div class="plugin-actions">
+		<button type="submit" name="save" value="save" class="btn btn-primary">
+			<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+		</button>
+	</div>
+	<table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ClientKeyIdentifier)
@@ -36,16 +39,6 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.ClientSecret)
                 @Html.ValidationMessageFor(model => model.ClientSecret)
-            </td>
-        </tr>
-        <tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
-                <button type="submit" name="save" value="save" class="btn btn-primary">
-                    <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
-                </button>
             </td>
         </tr>
     </table>

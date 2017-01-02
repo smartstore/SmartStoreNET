@@ -10,6 +10,12 @@
 
 @{ Html.RenderAction("StoreScopeConfiguration", "Setting", new { area = "Admin" }); }
 
+<div class="plugin-actions">
+	<button type="submit" name="save" value="save" class="btn btn-primary">
+		<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+	</button>
+</div>
+
 @using (Html.BeginForm())
 {    
 <table class="adminContent">
@@ -61,16 +67,6 @@
 			@Html.ValidationMessageFor(model => model.EcommerceDetailScript)
 		</td>
 	</tr>
-    <tr>
-		<td class="adminTitle">
-			&nbsp;
-		</td>
-		<td class="adminData">
-            <button type="submit" name="save" value="save" class="btn btn-primary">
-                <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
-            </button>
-        </td>
-    </tr>
 </table>
 
 }

@@ -56,6 +56,24 @@ var Admin = {
 		});
 	},
 
+	movePluginActionButtons: function() {
+		// Move plugin specific action buttons (like 'Save') to top header section
+		var pluginActions = $('.plugin-config-container .plugin-actions');
+		if (pluginActions) {
+			// Action buttons do exist: prepend them to header
+			pluginActions.detach().prependTo('.section-header .options').on('click', 'button[type=submit]', function (e) {
+				// On SubmitButtonClick, post the form programmatically, as the button is not a child of the form anymore...
+				var form = $('.plugin-config-container form').first();
+				if (form) {
+					// ...but first add a hidden input to the form with button's name and value to mimic button click WITHIN the form.
+					var btn = $(e.srcElement);
+					form.prepend($('<input type="hidden" name="' + btn.attr('name') + '" value="' + btn.attr('value') + '" />'));
+					form.submit();
+				}
+			});
+		}
+	},
+
 	TaskWatcher: (function () {
 		var interval;
 

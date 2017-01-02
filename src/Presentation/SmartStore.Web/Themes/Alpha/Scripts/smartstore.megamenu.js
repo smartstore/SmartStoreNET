@@ -317,7 +317,6 @@
                     	//		Slick geht bei PageResize kaputt und muss nach dem Öffnen neu initialisert werden (hat mit Sichtbarkeit zu tun).
 						//		Am besten HTML komplett entfernen und beim nächsten Öffnen reinitialisieren.
                     	// TODO: (mc) > (mh) Rotator komplett weg, wenn 0 Produkte.
-                    	// TODO: (mc) > (mh) Dropdown-MinHeight fehlt, wurde nicht implementiert!
                     	// TODO: (mc) > (mh) "Maximale Anzahl von Unterwarengruppen pro Warengruppe" zeigt More-Link an, obwohl alles genau passt.
                     	// TODO: (mc) > (mh) MM-Hintergrundbild lässt sich nicht ausrichten.
                     	megamenuDropdownContainer.find('.mega-menu-product-rotator > .artlist-grid').each(function(i, el) {

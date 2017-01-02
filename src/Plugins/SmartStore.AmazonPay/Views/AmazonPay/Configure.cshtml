@@ -27,6 +27,12 @@
 
 @using (Html.BeginForm())
 {
+	<div class="plugin-actions">
+		<button type="submit" name="save" class="btn btn-primary" value="save">
+			<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+		</button>
+	</div>
+
 	<table id="AmazonPayConfigTable" class="adminContent">
 	<tr>
 		<td colspan="2">
@@ -306,15 +312,6 @@
 			</div>
 		</td>
 	</tr>
-
-    <tr>
-        <td class="adminTitle">&nbsp;</td>
-        <td class="adminData">
-            <button type="submit" name="save" class="btn btn-primary" value="save">
-                <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
-            </button>
-        </td>
-    </tr>
 	</table>
 }
 

@@ -42,7 +42,9 @@ namespace SmartStore.Web.Framework.WebApi.Caching
 							AllowEmptyMd5Hash = settings.AllowEmptyMd5Hash,
 							LogUnauthorized = settings.LogUnauthorized,
 							ApiUnavailable = (plugin == null || !plugin.Installed),
-							PluginVersion = (plugin == null ? "1.0" : plugin.Version.ToString())
+							PluginVersion = (plugin == null ? "1.0" : plugin.Version.ToString()),
+							MaxTop = settings.MaxTop,
+							MaxExpansionDepth = settings.MaxExpansionDepth
 						};
 
 						HttpRuntime.Cache.Add(Key, data, null, Cache.NoAbsoluteExpiration, Cache.NoSlidingExpiration, CacheItemPriority.NotRemovable, null);
@@ -61,6 +63,8 @@ namespace SmartStore.Web.Framework.WebApi.Caching
 		public bool AllowEmptyMd5Hash { get; set; }
 		public bool LogUnauthorized { get; set; }
 		public string PluginVersion { get; set; }
+		public int MaxTop { get; set; }
+		public int MaxExpansionDepth { get; set; }
 
 		public string Version
 		{

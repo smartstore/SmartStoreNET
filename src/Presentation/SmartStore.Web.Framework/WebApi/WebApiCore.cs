@@ -5,8 +5,8 @@ namespace SmartStore.Web.Framework.WebApi
 	public static class WebApiGlobal
 	{
 		public static int MaxApiVersion { get { return 1; } }
-		public static int MaxTop { get { return 120; } }
-		public static int MaxExpansionDepth { get { return 8; } }
+		public static int DefaultMaxTop { get { return 120; } }
+		public static int DefaultMaxExpansionDepth { get { return 8; } }
 		public static int DefaultTimePeriodMinutes { get { return 15; } }
 		public static string RouteNameDefaultApi { get { return "WebApi.Default"; } }
 		public static string RouteNameDefaultOdata { get { return "WebApi.OData.Default"; } }

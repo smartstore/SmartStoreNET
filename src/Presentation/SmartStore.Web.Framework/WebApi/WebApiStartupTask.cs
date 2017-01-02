@@ -31,19 +31,13 @@ namespace SmartStore.Web.Framework.WebApi
 			config.Formatters.JsonFormatter.MediaTypeMappings.Add(new QueryStringMapping("format", "json", "application/json"));
 			config.Formatters.XmlFormatter.MediaTypeMappings.Add(new QueryStringMapping("format", "xml", "application/xml"));
 
-			var queryAttribute = new WebApiQueryableAttribute
-			{
-				MaxTop = WebApiGlobal.MaxTop,
-				MaxExpansionDepth = WebApiGlobal.MaxExpansionDepth
-			};
-			config.EnableQuerySupport(queryAttribute);
+			config.EnableQuerySupport(new WebApiQueryableAttribute());
 
 			var corsAttribute = new EnableCorsAttribute("*", "*", "*", WebApiGlobal.Header.CorsExposed);
 			config.EnableCors(corsAttribute);
 
 			config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
 
-			//var configPublisher = EngineContext.Current.Resolve<IWebApiConfigurationPublisher>();
 			var configPublisher = (IWebApiConfigurationPublisher)config.DependencyResolver.GetService(typeof(IWebApiConfigurationPublisher));
 			configPublisher.Configure(configBroadcaster);
 

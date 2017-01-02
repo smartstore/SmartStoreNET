@@ -9,7 +9,6 @@ using System.Web.Http;
 using System.Web.Http.Controllers;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Customers;
@@ -93,7 +92,11 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			return customer;
 		}
 
-		protected virtual HmacResult IsAuthenticated(HttpActionContext actionContext, DateTime now, WebApiControllingCacheData cacheControllingData, out Customer customer)
+		protected virtual HmacResult IsAuthenticated(
+			HttpActionContext actionContext,
+			DateTime now,
+			WebApiControllingCacheData controllingData,
+			out Customer customer)
 		{
 			customer = null;
 
@@ -104,7 +107,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			if (request == null)
 				return HmacResult.FailedForUnknownReason;
 
-			if (cacheControllingData.ApiUnavailable)
+			if (controllingData.ApiUnavailable)
 				return HmacResult.ApiUnavailable;
 
 			if (authorization == null || authorization.Scheme.IsEmpty() || authorization.Parameter.IsEmpty())
@@ -124,7 +127,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			if (!_hmac.ParseTimestamp(headTimestamp, out headDateTime))
 				return HmacResult.InvalidTimestamp;
 
-			int maxMinutes = (cacheControllingData.ValidMinutePeriod <= 0 ? WebApiGlobal.DefaultTimePeriodMinutes : cacheControllingData.ValidMinutePeriod);
+			int maxMinutes = (controllingData.ValidMinutePeriod <= 0 ? WebApiGlobal.DefaultTimePeriodMinutes : controllingData.ValidMinutePeriod);
 
 			if (Math.Abs((headDateTime - now).TotalMinutes) > maxMinutes)
 				return HmacResult.TimestampOutOfPeriod;
@@ -138,7 +141,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			if (!apiUser.Enabled)
 				return HmacResult.UserDisabled;
 
-			if (!cacheControllingData.NoRequestTimestampValidation && apiUser.LastRequest.HasValue && headDateTime <= apiUser.LastRequest.Value)
+			if (!controllingData.NoRequestTimestampValidation && apiUser.LastRequest.HasValue && headDateTime <= apiUser.LastRequest.Value)
 				return HmacResult.TimestampOlderThanLastRequest;
 
 			var context = new WebApiRequestContext
@@ -164,7 +167,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 
 			if (signatureProvider != signatureConsumer)
 			{
-				if (cacheControllingData.AllowEmptyMd5Hash)
+				if (controllingData.AllowEmptyMd5Hash)
 				{
 					messageRepresentation = _hmac.CreateMessageRepresentation(context, null, headTimestamp);
 
@@ -200,13 +203,13 @@ namespace SmartStore.Web.Framework.WebApi.Security
 		public override void OnAuthorization(HttpActionContext actionContext)
 		{
 			var result = HmacResult.FailedForUnknownReason;
-			var cacheControllingData = WebApiCachingControllingData.Data();
+			var controllingData = WebApiCachingControllingData.Data();
 			var now = DateTime.UtcNow;
 			Customer customer = null;
 
 			try
 			{
-				result = IsAuthenticated(actionContext, now, cacheControllingData, out customer);
+				result = IsAuthenticated(actionContext, now, controllingData, out customer);
 			}
 			catch (Exception exc)
 			{
@@ -220,8 +223,8 @@ namespace SmartStore.Web.Framework.WebApi.Security
 
 				var response = HttpContext.Current.Response;
 
-				response.AddHeader(WebApiGlobal.Header.Version, cacheControllingData.Version);
-				response.AddHeader(WebApiGlobal.Header.MaxTop, WebApiGlobal.MaxTop.ToString());
+				response.AddHeader(WebApiGlobal.Header.Version, controllingData.Version);
+				response.AddHeader(WebApiGlobal.Header.MaxTop, controllingData.MaxTop.ToString());
 				response.AddHeader(WebApiGlobal.Header.Date, now.ToString("o"));
 				response.AddHeader(WebApiGlobal.Header.CustomerId, customer.Id.ToString());
 
@@ -238,13 +241,13 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				var scheme = _hmac.GetWwwAuthenticateScheme(authorization != null ? authorization.Scheme : null);
 				headers.WwwAuthenticate.Add(new AuthenticationHeaderValue(scheme));
 
-				headers.Add(WebApiGlobal.Header.Version, cacheControllingData.Version);
-				headers.Add(WebApiGlobal.Header.MaxTop, WebApiGlobal.MaxTop.ToString());
+				headers.Add(WebApiGlobal.Header.Version, controllingData.Version);
+				headers.Add(WebApiGlobal.Header.MaxTop, controllingData.MaxTop.ToString());
 				headers.Add(WebApiGlobal.Header.Date, now.ToString("o"));
 				headers.Add(WebApiGlobal.Header.HmacResultId, ((int)result).ToString());
 				headers.Add(WebApiGlobal.Header.HmacResultDescription, result.ToString());
 
-				if (cacheControllingData.LogUnauthorized)
+				if (controllingData.LogUnauthorized)
 					LogUnauthorized(actionContext, result, customer);
 			}
 		}

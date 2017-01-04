@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
@@ -83,14 +84,14 @@ namespace SmartStore.Services.Search
 		/// </summary>
 		/// <param name="input">Text to highlight terms in</param>
 		/// <returns>Highlighted text fragments </returns>
-		public string Highlight(string input, string preMatch = "<strong>", string postMatch = "</strong>")
+		public string Highlight(string input, string preMatch = "<strong>", string postMatch = "</strong>", bool useSearchEngine = true)
 		{
 			if (Query?.Term == null || input.IsEmpty())
 				return input;
 
 			string hilite = null;
 
-			if (Engine != null)
+			if (useSearchEngine && Engine != null)
 			{
 				try
 				{

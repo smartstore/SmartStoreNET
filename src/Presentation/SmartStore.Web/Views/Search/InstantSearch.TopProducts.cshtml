@@ -8,7 +8,7 @@
 	{
 		<li>
 			<a class="instasearch-hit" href="@Url.RouteUrl("Product", new { SeName = hit.SeName })">
-				@Html.Raw(Model.SearchResult.Highlight(hit.Name, "<span class='instasearch-match'>", "</span>"))
+				@Html.Raw(Model.SearchResult.Highlight(hit.Name, "<span class='instasearch-match'>", "</span>", false))
 			</a>
 		</li>
 	}

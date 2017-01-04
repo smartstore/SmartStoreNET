@@ -12,17 +12,17 @@
 	{
 		<li>
 			<a class="instasearch-hit" href="@hit.Url">
-				@if (hit.Tag.HasValue())
-				{
-					<span class="instasearch-hit-tag">@hit.Tag</span>
-				}
 				@if (hit.NoHighlight)
 				{
 					@hit.Label
 				}
 				else
 				{
-					@Html.Raw(Model.Parent.SearchResult.Highlight(hit.Label, "<span class='instasearch-match'>", "</span>"))
+					@Html.Raw(Model.Parent.SearchResult.Highlight(hit.Label, "<span class='instasearch-match'>", "</span>", false))
+				}
+				@if (hit.Tag.HasValue())
+				{
+					<span class="instasearch-hit-tag">@Html.Raw(hit.Tag)</span>
 				}
 			</a>
 		</li>

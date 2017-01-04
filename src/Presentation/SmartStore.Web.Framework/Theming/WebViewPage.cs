@@ -43,7 +43,9 @@ namespace SmartStore.Web.Framework.Theming
 				{
 					int id = 0;
 					var routeValues = this.Url.RequestContext.RouteData.Values;
-					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") && routeValues["action"].ToString().IsCaseInsensitiveEqual("category"))
+					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") 
+						&& routeValues["action"].ToString().IsCaseInsensitiveEqual("category") 
+						&& routeValues.ContainsKey("categoryId"))
 					{
 						id = Convert.ToInt32(routeValues["categoryId"].ToString());
 					}
@@ -62,7 +64,9 @@ namespace SmartStore.Web.Framework.Theming
 				{
 					var routeValues = this.Url.RequestContext.RouteData.Values;
 					int id = 0;
-					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") && routeValues["action"].ToString().IsCaseInsensitiveEqual("manufacturer"))
+					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") 
+						&& routeValues["action"].ToString().IsCaseInsensitiveEqual("manufacturer")
+						&& routeValues.ContainsKey("manufacturerId"))
 					{
 						id = Convert.ToInt32(routeValues["manufacturerId"].ToString());
 					}
@@ -81,7 +85,9 @@ namespace SmartStore.Web.Framework.Theming
 				{
 					var routeValues = this.Url.RequestContext.RouteData.Values;
 					int id = 0;
-					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("product") && routeValues["action"].ToString().IsCaseInsensitiveEqual("productdetails"))
+					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("product") 
+						&& routeValues["action"].ToString().IsCaseInsensitiveEqual("productdetails")
+						&& routeValues.ContainsKey("productId"))
 					{
 						id = Convert.ToInt32(routeValues["productId"].ToString());
 					}

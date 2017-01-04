@@ -319,3 +319,14 @@ body {
         }
     }
 }
+
+
+//
+// Profiler sucks on small screens
+// ------------------------------------------------------
+
+@include media-breakpoint-down(sm) {
+    .profiler-results {
+        display: none !important;
+    }
+}

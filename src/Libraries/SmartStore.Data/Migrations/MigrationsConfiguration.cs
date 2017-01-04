@@ -129,6 +129,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.InstantSearch", "Instant Search", "Instantsuche");
 			builder.AddOrUpdate("Search.GlobalFilters", "Global Filters", "Globale Filter");
 			builder.AddOrUpdate("Search.FilterBy", "Filter by", "Filtern nach");
+			builder.AddOrUpdate("Search.TermInCategory", "in {0}", "in {0}");
+			builder.AddOrUpdate("Search.TermFromBrand", "from {0}", "von {0}");
 			builder.AddOrUpdate("Search.SearchTermMinimumLengthIsNCharacters",
 				"The minimum length for the search term is {0} characters.",
 				"Die Mindestlänge für den Suchbegriff beträgt {0} Zeichen.");

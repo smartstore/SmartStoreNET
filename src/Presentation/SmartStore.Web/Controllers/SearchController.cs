@@ -189,7 +189,8 @@ namespace SmartStore.Web.Controllers
 			hitGroup.Hits.AddRange(suggestions.Select(x => new SearchResultModel.HitItem
 			{
 				Label = x,
-				Url = Url.RouteUrl("Search", new { q = x })
+				Url = Url.RouteUrl("Search", new { q = x }),
+				NoHighlight = true
 			}));
 
 			model.HitGroups.Add(hitGroup);

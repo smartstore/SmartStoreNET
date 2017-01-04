@@ -6,6 +6,7 @@
 
 $searchbox-border-color:            rgba(0,0,0, 0.12);
 $searchbox-border-active-color:     rgba(0,0,0, 0.2);
+$searchbox-hit-tag-color:           darken($brand-warning, 10%);
 
 .instasearch-form {
     position: relative;
@@ -68,7 +69,7 @@ $searchbox-border-active-color:     rgba(0,0,0, 0.2);
 .instasearch-drop-body {
     margin-top: 1.25rem;
     margin-bottom: 1.25rem;
-    font-size: 0.85rem;
+    //font-size: 0.85rem;
 }
 
 .instasearch-match {
@@ -77,8 +78,11 @@ $searchbox-border-active-color:     rgba(0,0,0, 0.2);
 
 .instasearch-group-header {
     text-transform: uppercase;
-    padding: 0.35rem 20px;
-    color: $brand-primary;
+    margin: 0.35rem 20px 0 20px;
+    padding-bottom: 0.3rem;
+    font-size: 14px;
+    color: #aaa;
+    font-weight: 600; // rem gets too small on mobile
 }
 
 .instasearch-hits {
@@ -92,14 +96,19 @@ $searchbox-border-active-color:     rgba(0,0,0, 0.2);
     }
 }
 
+@include media-breakpoint-up(sm) {
+    .instasearch-col {
+        &:first-child { border-right: 1px solid rgba(0,0,0, 0.1)  }
+    }
+}
 @include media-breakpoint-up(lg) {
     .instasearch-row {
         width: 640px;
     }
 }
-@include media-breakpoint-up(sm) {
-    .instasearch-col {
-        &:first-child { border-right: 1px solid rgba(0,0,0, 0.1)  }
+@include media-breakpoint-up(xl) {
+    .instasearch-row {
+        width: 740px;
     }
 }
 
@@ -112,6 +121,7 @@ $searchbox-border-active-color:     rgba(0,0,0, 0.2);
     white-space: normal;
     text-decoration: none;
     color: $dropdown-link-color;
+    font-size: 14px; // rem gets too small on mobile
 
     &:focus, &:hover, &.active, &.key-hover {
         color: $dropdown-link-hover-color;
@@ -121,8 +131,9 @@ $searchbox-border-active-color:     rgba(0,0,0, 0.2);
 }
 
 .instasearch-hit-tag {
-    float: right;
-    color: $gray-light;
+    color: $searchbox-hit-tag-color;
+    font-size: 13px;
+    padding-left: 0.2rem;
 }
 
 #instasearch-progress {

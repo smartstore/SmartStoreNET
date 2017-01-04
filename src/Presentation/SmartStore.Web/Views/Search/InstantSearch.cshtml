@@ -22,13 +22,13 @@
 @if (isMultiCol)
 {
 	<div class="row no-space instasearch-row">
-		<div class="col-xs-12 col-sm-5 instasearch-col">
+		<div class="col-xs-12 col-sm-6 col-xl-5 instasearch-col">
 			@foreach (var group in hitGroups)
             {
                 Html.RenderPartial("InstantSearch.HitGroup", group);
             }
 		</div>
-		<div class="col-xs-12 col-sm-7 instasearch-col">
+		<div class="col-xs-12 col-sm-6 col-xl-7 instasearch-col">
 			<h6 class="instasearch-group-header">@T("Search.Hits")</h6>
 			@{ Html.RenderPartial("InstantSearch.TopProducts", Model); }
 		</div>

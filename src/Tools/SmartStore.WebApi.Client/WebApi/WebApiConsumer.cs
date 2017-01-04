@@ -109,7 +109,7 @@ namespace SmartStore.Net.WebApi
 			return false;
 		}
 
-		public void AddApiFileParameter(Dictionary<string, object> multipartData, string filePath)
+		public void AddApiFileParameter(Dictionary<string, object> multipartData, string filePath, int pictureId)
 		{
 			var count = 0;
 			var paths = (filePath.Contains(";") ? filePath.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList() : new List<string> { filePath });
@@ -125,9 +125,9 @@ namespace SmartStore.Net.WebApi
 					var id = string.Format("my-file-{0}", ++count);
 					var apiFile = new ApiFileParameter(data, name, MimeMapping.GetMimeMapping(name));
 
-					if (multipartData.ContainsKey("PictureId"))
+					if (pictureId != 0)
 					{
-						apiFile.Parameters.Add("PictureId", ((int)multipartData["PictureId"]).ToString());
+						apiFile.Parameters.Add("PictureId", pictureId.ToString());
 					}
 
 					// test pass through of custom parameters

@@ -127,16 +127,13 @@ namespace SmartStoreNetWebApiClient
 					//multiPartData.Add("deleteExisting", true);
 				}
 
-				if (pictureId != 0)
-					multiPartData.Add("PictureId", pictureId);
-
 				if (id1 != 0)
 					multiPartData.Add(keyForId1, id1);
 
 				if (id2.HasValue())
 					multiPartData.Add(keyForId2, id2);
 
-				apiConsumer.AddApiFileParameter(multiPartData, txtFile.Text);
+				apiConsumer.AddApiFileParameter(multiPartData, txtFile.Text, pictureId);
 			}
 
 			var webRequest = apiConsumer.StartRequest(context, cboContent.Text, multiPartData, out requestContent);

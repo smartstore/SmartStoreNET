@@ -62,6 +62,13 @@ namespace SmartStore.Web.Framework.WebApi
 					return UnmappedGetNavigation(odataPath);
 				}
 			}
+			else if (odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/navigation"))
+			{
+				if (Request.Method == HttpMethod.Delete)
+				{
+					return UnmappedGetNavigation(odataPath);
+				}
+			}
 
 			return base.HandleUnmappedRequest(odataPath);
 		}
@@ -116,7 +123,7 @@ namespace SmartStore.Web.Framework.WebApi
 			if (navigationProperty.IsEmpty())
 				return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.NoNavigationFromPath);
 
-			if (!odataPath.GetNormalizedKey(3, out relatedKey))
+			if (!odataPath.GetNormalizedKey(3, out relatedKey) && Request.Method != HttpMethod.Delete)
 				return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.NoRelatedKeyFromPath);
 
 			var methodName = string.Concat("Navigation", navigationProperty);

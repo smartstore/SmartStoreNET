@@ -131,9 +131,7 @@
 
                     navElems.on(event, function (e) {
                         var navItem = $(this);
-                        //var opendMenu = $(".dropdown-menu", $(".nav-item.active .nav-link").data("target"));
                         var opendMenu = $($(".nav-item.active .nav-link").data("target")).find(".dropdown-menu");
-
                         var offsetLeft = navItem.offset().left - megamenu.offset().left;
 
                         if (offsetLeft < 0) {
@@ -318,7 +316,7 @@
 						//		Am besten HTML komplett entfernen und beim nächsten Öffnen reinitialisieren.
                     	// TODO: (mc) > (mh) Rotator komplett weg, wenn 0 Produkte.
                     	// TODO: (mc) > (mh) "Maximale Anzahl von Unterwarengruppen pro Warengruppe" zeigt More-Link an, obwohl alles genau passt.
-                    	// TODO: (mc) > (mh) MM-Hintergrundbild lässt sich nicht ausrichten.
+
                     	megamenuDropdownContainer.find('.mega-menu-product-rotator > .artlist-grid').each(function(i, el) {
                     		try {
                     			$(this).slick('unslick');
@@ -388,13 +386,19 @@
                     var catId = container.data("entity-id");
                     var displayRotator = container.data("display-rotator");
 
+                    // reinit slick product rotator
+                    container.find('.mega-menu-product-rotator > .artlist-grid').each(function (i, el) {
+                        try {
+                            $(this).slick('unslick');
+                            applyCommonPlugins($(this).closest('.rotator-content'));
+                        }
+                        catch (err) { }
+                    });
+
                     //if ($(".pl-slider", container).length == 0 && catId != null && displayRotator) {
                     if (catId != null && displayRotator) {
 
                         var rotatorColumn = $(".rotator-" + catId);
-
-                        // init throbber
-                        //rotatorColumn.find(".rotator-content").throbber({ white: true, small: true, message: '' });
 
                         // clear content & init throbber
                         rotatorColumn.find(".rotator-content")

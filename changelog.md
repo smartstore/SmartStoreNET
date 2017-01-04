@@ -21,10 +21,15 @@
 * Added option to skip shipping method selection in checkout process when only one shipping method is active
 * Added options to capture salutation and title in addresses and customer info
 * Added projection to control the export of individually visible associated products
-* #1002 Web API: Add support for addresses and customer roles navigation property of customer entity
 * #966 Implement new tax calculation logic for shipping and payment fees (Calculate with rate of highest cart amount)
 * #922 New option whether to include the weight of free shipping products in shipping by weight calculation
 * #724 Allow discounts to be applied to manufacturers
+* Web API:
+	* #1002 Add support for addresses and customer roles navigation property of customer entity
+	* #1062 Add filter options for user grid on configuration page
+	* #1072 Add support for TaxCategory
+	* #1073 Settings for maximum pagesize ($top) and maximum expansion depth ($expand)
+	* #1074 Extend product image upload to allow updating of images
 
 ### Improvements
 * Updated .NET Target Framework from 4.5.1 to 4.5.2
@@ -42,7 +47,6 @@
 	* Option to append customer email address to invoice address
 	* Additional order notes for tax exemption within and outside EU
 * #1048 Add meta tags to contact us page
-* #1062 Web API: Add filter options for user grid on configuration page
 * Order XML export includes more customer data like title and salutation
 * #1080 Do not resolve Order.OrderURLForCustomer token for guest customers
 

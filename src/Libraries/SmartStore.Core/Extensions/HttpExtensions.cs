@@ -10,6 +10,7 @@ using System.Web.Caching;
 using System.Web.Security;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core;
+using System.Web.Mvc;
 
 namespace SmartStore
 {  
@@ -168,6 +169,20 @@ namespace SmartStore
 				cache.Remove(key);
 			}
 		}
-	}
+
+        public static ControllerContext GetMasterControllerContext(this ControllerContext controllerContext)
+        {
+            Guard.NotNull(controllerContext, nameof(controllerContext));
+
+            var ctx = controllerContext;
+
+            while (ctx.ParentActionViewContext != null)
+            {
+                ctx = ctx.ParentActionViewContext;
+            }
+
+            return ctx;
+        }
+    }
 
 }

@@ -31,6 +31,7 @@
 	* #1073 Settings for maximum pagesize ($top) and maximum expansion depth ($expand)
 	* #1074 Extend product image upload to allow updating of images
 	* #1064 Deleting all product categories/manufacturers per product in one go
+	* #1063 Adding product category/manufacturer ignores any other property like DisplayOrder
 
 ### Improvements
 * Updated .NET Target Framework from 4.5.1 to 4.5.2

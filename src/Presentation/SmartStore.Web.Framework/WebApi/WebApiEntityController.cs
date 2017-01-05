@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.OData;
+using System.Web.Http.OData.Formatter;
 using System.Web.Http.OData.Routing;
 using Autofac;
 using SmartStore.ComponentModel;
@@ -512,6 +513,14 @@ namespace SmartStore.Web.Framework.WebApi
 			}
 
 			return entity;
+		}
+
+		protected internal virtual T ReadContent<T>()
+		{
+			var formatters = ODataMediaTypeFormatters.Create()
+				.Select(formatter => formatter.GetPerRequestFormatterInstance(typeof(T), Request, Request.Content.Headers.ContentType));
+
+			return Request.Content.ReadAsAsync<T>(formatters).Result;
 		}
 	}
 }

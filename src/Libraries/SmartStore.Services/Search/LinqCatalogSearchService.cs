@@ -459,6 +459,8 @@ namespace SmartStore.Services.Search
 
 			#endregion
 
+			query = query.GroupBy(x => x.Id).Select(x => x.FirstOrDefault());
+
 			#region Sorting
 
 			foreach (var sort in searchQuery.Sorting)
@@ -509,12 +511,6 @@ namespace SmartStore.Services.Search
 			}
 
 			#endregion
-
-			query = 
-				from p in query
-				group p by p.Id	into grp
-				orderby grp.Key
-				select grp.FirstOrDefault();
 
 			return query;
 		}

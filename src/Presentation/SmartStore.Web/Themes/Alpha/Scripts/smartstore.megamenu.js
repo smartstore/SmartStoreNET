@@ -106,19 +106,30 @@
 
                         // if correct dropdown is already open then don't open it again
                         var openedMenuSelector = $(".nav-item.active .nav-link").data("target");
+                        var isActive = navElems.is(".active");
 
-                        if ($(this).hasClass("nav-item")) {
+                        if ($(this).hasClass("nav-item") && openedMenuSelector != link.data("target")) {
                             closeNow($(".nav-item.active .nav-link"));
-                            
                         }
                         else if (openedMenuSelector == link.data("target")) {
                             clearTimeout(closingTimeout);
                             return;
                         }
 
-                        tryOpen(link);
+                        // if one menu is already open, it means the user is currently using the menu, so either ...
+                        if (isActive) {
+                            // ... open at once 
+                            tryOpen(link);
+                        }
+                        else {
+                            // ... or open delayed
+                            openTimeout = setTimeout(function () { tryOpen(link); }, 300);
+                        }
                     })
                     .on("mouseleave", function () {
+
+                        clearTimeout(openTimeout);
+
                         var link = $(this).find(".nav-link");
                         closeMenuHandler(link);
                     });

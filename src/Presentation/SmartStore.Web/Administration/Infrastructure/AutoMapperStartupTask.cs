@@ -212,6 +212,9 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.Deleted, mo => mo.Ignore())
                 .ForMember(dest => dest.AppliedDiscounts, mo => mo.Ignore())
+#pragma warning disable 612, 618
+				.ForMember(dest => dest.PriceRanges, mo => mo.Ignore())
+#pragma warning restore 612, 618
 				.ForMember(dest => dest.Picture, mo => mo.Ignore());
             //manufacturer
 			Mapper.CreateMap<Manufacturer, ManufacturerModel>()
@@ -231,6 +234,9 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Deleted, mo => mo.Ignore())
 				.ForMember(dest => dest.Picture, mo => mo.Ignore())
 				.ForMember(dest => dest.HasDiscountsApplied, mo => mo.Ignore())
+#pragma warning disable 612, 618
+				.ForMember(dest => dest.PriceRanges, mo => mo.Ignore())
+#pragma warning restore 612, 618
 				.ForMember(dest => dest.AppliedDiscounts, mo => mo.Ignore());
             //products
 			Mapper.CreateMap<Product, ProductModel>()
@@ -627,6 +633,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.FileUploadMaximumSizeBytes, mo => mo.Ignore())
                 .ForMember(dest => dest.FileUploadAllowedExtensions, mo => mo.Ignore())
 				.ForMember(dest => dest.MostRecentlyUsedCategoriesMaxSize, mo => mo.Ignore())
+				.ForMember(dest => dest.AllowCustomersToSelectPageSize, mo => mo.Ignore())
 				.ForMember(dest => dest.MostRecentlyUsedManufacturersMaxSize, mo => mo.Ignore());
             Mapper.CreateMap<RewardPointsSettings, RewardPointsSettingsModel>()
                 .ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
@@ -657,7 +664,8 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<MediaSettingsModel, MediaSettings>()
                 .ForMember(dest => dest.DefaultImageQuality, mo => mo.Ignore())
                 .ForMember(dest => dest.MultipleThumbDirectories, mo => mo.Ignore())
-                .ForMember(dest => dest.VariantValueThumbPictureSize, mo => mo.Ignore());
+				.ForMember(dest => dest.DefaultThumbnailAspectRatio, mo => mo.Ignore())
+				.ForMember(dest => dest.VariantValueThumbPictureSize, mo => mo.Ignore());
 			Mapper.CreateMap<CustomerSettings, CustomerUserSettingsModel.CustomerSettingsModel>()
 				.ForMember(dest => dest.AvailableCustomerNumberMethods, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableCustomerNumberVisibilities, mo => mo.Ignore())

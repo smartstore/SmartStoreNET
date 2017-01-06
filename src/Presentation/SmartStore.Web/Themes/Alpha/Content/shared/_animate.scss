@@ -29,4 +29,22 @@ $use-bounceOutDown 		: 	true;
 $use-bounceOutLeft 		: 	true;
 $use-bounceOutRight 	: 	true;
 
+// Zoom In
+$use-zoomIn 			:	true;
+$use-zoomInDown 		:	true;
+$use-zoomInLeft 		:	true;
+$use-zoomInRight 		:	true;
+$use-zoomInUp 			:	true;
+
+
+// Zoom Out
+$use-zoomOut			:	true;
+$use-zoomOutDown		:	true;
+$use-zoomOutLeft		:	true;
+$use-zoomOutRight		:	true;
+$use-zoomOutUp			:	true;
+
+// Attention Seekers
+$use-tada				:	true;
+
 @import "../animate/_animate.scss";

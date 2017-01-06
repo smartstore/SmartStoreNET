@@ -26,7 +26,6 @@ namespace SmartStore.Web.Models.Catalog
 			IsAvailable = true;
         }
 
-		//picture(s)
 		public ProductDetailsPictureModel DetailsPictureModel
 		{
 			get
@@ -47,6 +46,9 @@ namespace SmartStore.Web.Models.Catalog
         public string SeName { get; set; }
 		public ProductType ProductType { get; set; }
 		public bool VisibleIndividually { get; set; }
+
+		public int PictureSize { get; set; }
+		public bool CanonicalUrlsEnabled { get; set; }
 
 		public bool ShowSku { get; set; }
 		public string Sku { get; set; }

@@ -271,12 +271,12 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult ProductBreadcrumb(int productId)
 		{
+			if (!_catalogSettings.CategoryBreadcrumbEnabled)
+				return Content("");
+
 			var product = _productService.GetProductById(productId);
 			if (product == null)
 				throw new ArgumentException(T("Products.NotFound", productId));
-
-			if (!_catalogSettings.CategoryBreadcrumbEnabled)
-				return Content("");
 
 			var model = new ProductDetailsModel.ProductBreadcrumbModel
 			{

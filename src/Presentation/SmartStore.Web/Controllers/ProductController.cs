@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -33,8 +34,6 @@ namespace SmartStore.Web.Controllers
 {
 	public partial class ProductController : PublicControllerBase
 	{
-		#region Fields
-
 		private readonly ICommonServices _services;
 		private readonly IManufacturerService _manufacturerService;
 		private readonly IProductService _productService;
@@ -56,6 +55,7 @@ namespace SmartStore.Web.Controllers
 		private readonly IAclService _aclService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly MediaSettings _mediaSettings;
+		private readonly SeoSettings _seoSettings;
 		private readonly CatalogSettings _catalogSettings;
 		private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly LocalizationSettings _localizationSettings;
@@ -63,10 +63,6 @@ namespace SmartStore.Web.Controllers
 		private readonly CatalogHelper _helper;
         private readonly IDownloadService _downloadService;
         private readonly ILocalizationService _localizationService;
-
-		#endregion
-
-		#region Constructors
 
 		public ProductController(
 			ICommonServices services,
@@ -89,7 +85,8 @@ namespace SmartStore.Web.Controllers
 			IBackInStockSubscriptionService backInStockSubscriptionService, 
 			IAclService aclService,
 			IStoreMappingService storeMappingService,
-			MediaSettings mediaSettings, 
+			MediaSettings mediaSettings,
+			SeoSettings seoSettings,
 			CatalogSettings catalogSettings,
 			ShoppingCartSettings shoppingCartSettings,
 			LocalizationSettings localizationSettings, 
@@ -119,6 +116,7 @@ namespace SmartStore.Web.Controllers
 			this._aclService = aclService;
 			this._storeMappingService = storeMappingService;
 			this._mediaSettings = mediaSettings;
+			this._seoSettings = seoSettings;
 			this._catalogSettings = catalogSettings;
 			this._shoppingCartSettings = shoppingCartSettings;
 			this._localizationSettings = localizationSettings;
@@ -127,8 +125,6 @@ namespace SmartStore.Web.Controllers
 			this._downloadService = downloadService;
 			this._localizationService = localizationService;
         }
-        
-        #endregion
 
 		#region Products
 
@@ -179,16 +175,20 @@ namespace SmartStore.Web.Controllers
 			else
 				attributesForProductId = product.Id;
 
-			// get selected attributes from query string
+			// Get selected attributes from query string
 			selectedAttributes.GetSelectedAttributes(Request.QueryString, _productAttributeParser.DeserializeQueryData(attributes),	attributesForProductId);
 
-			// prepare the view model
+			// Prepare the view model
 			var model = _helper.PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes, queryData: Request.QueryString);
 
-			//save as recently viewed
+			// Some cargo data
+			model.PictureSize = _mediaSettings.ProductDetailsPictureSize;
+			model.CanonicalUrlsEnabled = _seoSettings.CanonicalUrlsEnabled;
+
+			// Save as recently viewed
 			_recentlyViewedProductsService.AddProductToRecentlyViewedList(product.Id);
 
-			//activity log
+			// Activity log
 			_services.CustomerActivity.InsertActivity("PublicStore.ViewProduct", T("ActivityLog.PublicStore.ViewProduct"), product.Name);
 
 			return View(model.ProductTemplateViewPath, model);

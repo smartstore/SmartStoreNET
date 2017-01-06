@@ -47,13 +47,6 @@
         	ctx.find('.artlist-carousel > .artlist-grid').each(function (i, el) {
         		var list = $(this);
 
-        		var slickData = list.parent().data('slick');
-        		
-        		if (slickData && list.data('slick') == undefined) {
-        			list.data('slick', slickData);
-        			console.log(list.data('slick'));
-        		}
-
         		list.slick({
         			infinite: false,
         			dots: true,
@@ -114,7 +107,7 @@
 
             // intercept window.alert with pnotify
             window.alert = function (message) {
-                if (message == null || message.length <= 0)
+                if (message === null || message.length <= 0)
                     return;
 
                 $.pnotify({
@@ -137,12 +130,16 @@
 
         // Notify subscribers about page/content width change
         if (window.EventBroker) {
+        	var currentGridBreakpoint = viewport.current();
         	$(window).resize(
 				viewport.changed(function () {
 					var tier = viewport.current();
-					console.debug("Grid tier changed: " + tier);
-					EventBroker.publish("page.resized", viewport);
-				}, 100)
+					if (tier !== currentGridBreakpoint) {
+						currentGridBreakpoint = tier;
+						console.debug("Grid tier changed: " + tier);
+						EventBroker.publish("page.resized", viewport);
+					}
+				}, 10)
 			);
         }
         

@@ -947,11 +947,8 @@
     <Content Include="Scripts\smartstore.instantsearch.js" />
     <Content Include="Scripts\smartstore.common.js" />
     <Content Include="Scripts\smartstore.globalize.adapter.js" />
-    <Content Include="Scripts\jquery.backgroundpos.js" />
     <Content Include="Scripts\jquery.elevatezoom.js" />
     <Content Include="Scripts\jquery.menu-aim.js" />
-    <Content Include="Scripts\jquery.sequence.js" />
-    <Content Include="Scripts\jquery.sequence.custom.js" />
     <Content Include="Scripts\smartstore.placeholder.js" />
     <Content Include="Scripts\public.voting.js" />
     <Content Include="Scripts\public.reviews.js" />
@@ -976,6 +973,27 @@
     <Content Include="Themes\Alpha\Content\css\smartstore.smartgallery.css" />
     <Content Include="Themes\Alpha\Content\bs4\js\bootstrap.js" />
     <Content Include="Themes\Alpha\Content\bs4\js\bootstrap.min.js" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\scss\smart-gallery.scss" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\scss\_blueimp-gallery-custom.scss" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\scss\_blueimp-gallery-indicators.scss" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\scss\_blueimp-gallery-video.scss" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\scss\_blueimp-gallery.scss" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\scss\_main.scss" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\img\error.png" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\img\error.svg" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\img\loading.gif" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\img\play-pause.png" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\img\play-pause.svg" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\img\video-play.png" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\img\video-play.svg" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\js\blueimp-gallery-fullscreen.js" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\js\blueimp-gallery-indicator.js" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\js\blueimp-gallery-video.js" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\js\blueimp-gallery-vimeo.js" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\js\blueimp-gallery-youtube.js" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\js\blueimp-gallery.js" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\js\jquery.elevatezoom.js" />
+    <Content Include="Themes\Alpha\Content\smart-gallery\js\smartstore.smart-gallery.js" />
     <Content Include="Themes\Alpha\Content\images\ajax_loader_small.gif" />
     <Content Include="Themes\Alpha\Content\images\color-overlay.png" />
     <Content Include="Themes\Alpha\Content\images\deliv-bg-aero.png" />
@@ -1432,7 +1450,6 @@
     <Content Include="Themes\Alpha\Scripts\jquery.addeasing.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.ba-outside-events.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.ba-outside-events.min.js" />
-    <Content Include="Themes\Alpha\Scripts\jquery.backgroundpos.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.bootstrap-touchspin.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.elevatezoom.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.menu-aim.js" />
@@ -1441,8 +1458,6 @@
     <Content Include="Themes\Alpha\Scripts\jquery.preload.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.requestAnimationFrame.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.scrollTo.js" />
-    <Content Include="Themes\Alpha\Scripts\jquery.sequence.custom.js" />
-    <Content Include="Themes\Alpha\Scripts\jquery.sequence.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.serialScroll.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.sortable.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.transit.js" />
@@ -1453,7 +1468,6 @@
     <Content Include="Themes\Alpha\Scripts\public.common.js" />
     <Content Include="Themes\Alpha\Scripts\public.product-detail.js" />
     <Content Include="Themes\Alpha\Scripts\public.product-filter.js" />
-    <Content Include="Themes\Alpha\Scripts\public.product-list-scroller.js" />
     <Content Include="Themes\Alpha\Scripts\public.reviews.js" />
     <Content Include="Themes\Alpha\Scripts\public.offcanvas-cart.js" />
     <Content Include="Themes\Alpha\Scripts\public.shopbar.js" />
@@ -1682,7 +1696,6 @@
     <Content Include="Views\Shared\Partials\ConditionalComments.cshtml" />
     <Content Include="Themes\Alpha\Views\Shared\ConfigureTheme.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\Partials\LanguageAttributes.cshtml" />
     <Content Include="Views\Shared\LicenseRequired.cshtml" />
     <Content Include="Views\Shared\NotFound.cshtml" />
     <Content Include="Views\Shared\Layouts\_Checkout.cshtml" />
@@ -1690,8 +1703,6 @@
     <Content Include="Views\Shared\Partials\_CreateOrUpdateAddress.cshtml" />
     <Content Include="Views\Shared\Partials\_Notifications.cshtml" />
     <Content Include="Views\Shared\Layouts\_Print.cshtml" />
-    <Content Include="Views\Shared\Partials\_ProductBox.cshtml" />
-    <Content Include="Views\Shared\Partials\_ProductBoxCompact.cshtml" />
     <Content Include="Views\Shared\Layouts\_Layout.cshtml" />
     <Content Include="Views\Shared\Layouts\_Layout.Popup.cshtml" />
     <Content Include="Views\Blog\BlogMonths.cshtml" />
@@ -1741,8 +1752,6 @@
     <Content Include="Views\Search\SearchBox.cshtml" />
     <Content Include="Views\Catalog\Partials\_FilterPriceBox.cshtml" />
     <Content Include="Views\Catalog\Partials\_FilterSpecsBox.cshtml" />
-    <Content Include="Views\Catalog\Partials\_ProductBoxList.cshtml" />
-    <Content Include="Views\Shared\Partials\_ProductListOptions.cshtml" />
     <Content Include="Views\Checkout\BillingAddress.cshtml" />
     <Content Include="Views\Checkout\CheckoutProgress.cshtml" />
     <Content Include="Views\Checkout\Completed.cshtml" />
@@ -1826,7 +1835,7 @@
     <Content Include="Views\Product\Partials\ProductSpecifications.cshtml" />
     <Content Include="Views\Product\Partials\ProductTags.cshtml" />
     <Content Include="Views\Product\ProductTemplate.Grouped.cshtml" />
-    <Content Include="Views\Product\ProductTemplate.Simple.cshtml" />
+    <Content Include="Views\Product\Product.cshtml" />
     <Content Include="Views\Product\Partials\ProductTierPrices.cshtml" />
     <Content Include="Views\Product\Partials\RelatedProducts.cshtml" />
     <Content Include="Views\Product\Partials\ReviewOverview.cshtml" />
@@ -1879,8 +1888,7 @@
     <Content Include="Themes\Alpha\Content\_misc.scss" />
     <Content Include="Themes\Alpha\Content\_blog.scss" />
     <Content Include="Themes\Alpha\Content\_forum.scss" />
-    <Content Include="Views\Shared\Partials\_ProductList.cshtml" />
-    <Content Include="Themes\Alpha\Content\_product.scss" />
+    <Content Include="Themes\Alpha\Content\_product_old.scss" />
     <Content Include="Themes\Alpha\Content\_pages.scss" />
     <Content Include="Themes\Alpha\Content\_rating.scss" />
     <Content Include="Views\Common\ServiceMenu.cshtml" />
@@ -1908,6 +1916,11 @@
     <Content Include="Views\Shared\Partials\Product.List.Item.Variants.cshtml" />
     <Content Include="Themes\Alpha\Content\slick\slick.scss" />
     <Content Include="Themes\Alpha\Content\_slick-theme.scss" />
+    <Content Include="Views\Product\ProductTemplate.Simple.cshtml" />
+    <Content Include="Themes\Alpha\Content\_product.scss" />
+    <Content Include="Views\Product\Partials\Product.Picture.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Info.cshtml" />
+    <Content Include="Views\Product\Partials\Product.SideBar.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

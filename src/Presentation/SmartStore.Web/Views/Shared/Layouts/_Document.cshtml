@@ -76,6 +76,7 @@
 		jsRoot + "smartstore.scrollbutton.js",
 		jsRoot + "smartstore.keynav.js",
 		jsRoot + "smartstore.articlelist.js",
+		jsRoot + "smartstore.product.js",
 		jsRoot + "jquery.pnotify.js",
 		jsRoot + "jquery.bootstrap-touchspin.js",
 		jsRoot + "jquery.scrollTo.js",
@@ -89,11 +90,11 @@
 		jsRoot + "public.ajaxcart.js",
 		//jsRoot + "public.shopbar.js",
 		jsRoot + "public.offcanvas-cart.js",
-		jsRoot + "public.product-list-scroller.js",
+		jsRoot + "public.product-detail-2.js", // TODO: (mc) Remove public.product-detail.js once work is finished
 		jsRoot + "public.product-filter.js");
 }
 <!DOCTYPE html>
-<html @{ Html.RenderPartial("LanguageAttributes"); }>
+<html lang="@this.WorkContext.WorkingLanguage.UniqueSeoCode">
 <head>
     <title>@Html.SmartTitle(true)</title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />

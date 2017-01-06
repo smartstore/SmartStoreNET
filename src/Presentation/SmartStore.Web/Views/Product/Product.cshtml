@@ -1,0 +1,86 @@
+﻿@model ProductDetailsModel
+
+@using SmartStore.Core.Domain.Orders;
+@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Core.Domain.Media;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Events;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web.Framework.UI;
+@using SmartStore.Web.Framework.Events;
+@using SmartStore.Web;
+
+@{
+	Layout = "_ColumnsOne";
+
+	Html.AddTitleParts(Model.MetaTitle.NullEmpty() ?? Model.Name);
+	Html.AddMetaDescriptionParts(Model.MetaDescription);
+	Html.AddMetaKeywordParts(Model.MetaKeywords);
+
+	Html.AddScriptParts("~/Themes/Alpha/Scripts/public.product-detail.js");
+
+	if (Model.CanonicalUrlsEnabled)
+	{
+		var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+		Html.AddCanonicalUrlParts(productUrl);
+	}
+}
+
+<div class="page product-details-page">
+	<!-- Breadcrumb -->
+	@{ Html.RenderAction("ProductBreadcrumb", "Catalog", new { productId = Model.Id }); }
+
+	@Html.Widget("productdetails_top")
+
+	<div id="total-price-update-container" class="page-body update-container" data-referto="#attributes, #add-to-cart, #bundle-overview" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
+		@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
+		{
+			<article class="pd" itemscope itemtype="http://schema.org/Product">
+				<div class="page-title hidden-xl-up" itemprop="name">
+					<h1 class="pd-name">
+						@Model.Name
+					</h1>
+				</div>
+
+				<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
+				<section class="row flex pd-section pd-section-top">
+					<!-- Data: Picture, Description, Attrs etc. -->
+					<div class="col-xs-12 col-sm-7 col-md-8 col-lg-8 col-xl-9 pd-data-col">
+						<div class="row pd-data">
+							<!-- Picture -->
+							<div class="col-sm-12 col-xl-7 m-b-1-lg pd-gallery-col">
+								@{ Html.RenderPartial("Product.Picture", Model.DetailsPictureModel); }
+							</div>
+							<!-- Info -->
+							<div class="col-sm-12 col-xl-5 m-b-1-xs pd-info-col">
+								@{ Html.RenderPartial("Product.Info", Model); }
+							</div>
+						</div>
+					</div>
+					<!-- Sidebar: Price, Buttons etc. -->
+					<aside class="col-xs-12 col-sm-5 col-md-4 col-lg-4 col-xl-3 pd-sidebar-col">
+						@{ Html.RenderPartial("Product.SideBar", Model); }
+					</aside>
+				</section>
+			</article>
+		}
+	</div>
+
+	@Html.Widget("productdetails_bottom")
+
+	@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
+	@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var settings = {
+            galleryStartIndex: @(Model.DetailsPictureModel.GalleryStartIndex),
+            enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)'),
+            zoomType: '@Model.DetailsPictureModel.PictureZoomType' // window, inner, lens
+        };
+
+    	$('#product-details-form').productDetail(settings);
+    });
+</script>
+

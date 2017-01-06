@@ -3,8 +3,6 @@
 @{
 	Html.AddCssFileParts("~/css/image-gallery");
 	Html.AddScriptParts("~/bundles/image-gallery");
-	
-    var zoomEnabled = Model.DefaultPictureZoomEnabled;
 }
 
 <div id="pd-gallery" class="picture pd-gallery">
@@ -28,8 +26,8 @@
                         var picture = Model.PictureModels[i];
                         
                         <li data-picture-id="@picture.PictureId">
-							<a href="@picture.FullSizeImageUrl" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default">
-								<img src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+							<a class="sg-thumb-list-link" href="@picture.FullSizeImageUrl" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default">
+								<img class="sg-thumb-list-img" src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
 							</a>
                         </li>
                     }
@@ -37,8 +35,8 @@
                 else if (Model.DefaultPictureModel.ThumbImageUrl.HasValue())
                 {     
                     <li data-picture-id="@Model.DefaultPictureModel.PictureId">
-						<a href="@Model.DefaultPictureModel.FullSizeImageUrl" data-medium-image="@Model.DefaultPictureModel.ImageUrl" data-gallery="default">
-							<img src="@Model.DefaultPictureModel.ThumbImageUrl" alt="@Model.DefaultPictureModel.AlternateText" title="@Model.DefaultPictureModel.Title" />
+						<a class="sg-thumb-list-link" href="@Model.DefaultPictureModel.FullSizeImageUrl" data-medium-image="@Model.DefaultPictureModel.ImageUrl" data-gallery="default">
+							<img class="sg-thumb-list-img" src="@Model.DefaultPictureModel.ThumbImageUrl" alt="@Model.DefaultPictureModel.AlternateText" title="@Model.DefaultPictureModel.Title" />
 						</a>
                     </li>
                 }

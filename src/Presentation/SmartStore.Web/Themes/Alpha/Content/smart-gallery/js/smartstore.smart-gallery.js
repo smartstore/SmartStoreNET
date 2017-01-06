@@ -7,53 +7,6 @@
 ;(function ($, window, document, undefined) {
     
     var pluginName = 'smartGallery';
-    
-	var defaultEasing = "easeInOutQuad";
-	var animations = {
-		'slide': function (cnt, dir, desc) {
-			var curLeft = parseInt(cnt.css('left'), 10);
-			var oldImageLeft = 0;
-			if (dir === 'left') {
-				oldImageLeft = '-' + this.imageWrapperWidth + 'px';
-				cnt.css('left', this.imageWrapperWidth + 'px');
-			}
-			else {
-				oldImageLeft = this.imageWrapperWidth + 'px';
-				cnt.css('left', '-' + this.imageWrapperWidth + 'px');
-			}
-			if (desc) {
-				desc.css('bottom', '-' + desc[0].offsetHeight + 'px');
-				if (this.inWrapper) {
-					desc.animate({ bottom: 0 }, this.options.animationSpeed * 2);
-				}
-			}
-			if (this.currentDescription) {
-				this.currentDescription.animate({ bottom: '-' + this.currentDescription[0].offsetHeight + 'px' }, this.options.animationSpeed * 2);
-			}
-			return {
-				oldImage: { left: oldImageLeft },
-				newImage: { left: curLeft }
-			};
-		},
-
-		'fade': function (cnt, dir, desc) {
-			cnt.css('opacity', 0);
-			return {
-				oldImage: { opacity: 0 },
-				newImage: { opacity: 1 },
-				easing: 'linear'
-			};
-		},
-
-		'none': function (cnt, dir, desc) {
-			cnt.css('opacity', 0);
-			return {
-				oldImage: { opacity: 0 },
-				newImage: { opacity: 1 },
-				speed: 0
-			};
-		}
-	};
 
 	var defaultZoomOpts = {
 	    zoomType: 'window',
@@ -90,14 +43,13 @@
 		var opts = this.options = $.extend(true, {}, options, meta || {});
 		
 		this.init = function(isRefresh) {
+			var self = this;
 			this.setupElements(); // DO
 			
 			this.imageWrapperWidth = this.imageWrapper.width();
-			this.imageWrapperHeight = opts.height || 300;
+			this.imageWrapperHeight = this.imageWrapperWidth;
 
-			if (this.imageWrapperHeight > 300) {
-				this.imageWrapper.css({ height: this.imageWrapperHeight + 'px' });
-			}
+			//this.imageWrapper.css({ height: this.imageWrapperHeight + 'px' });
 			
 			this.navDisplayWidth = this.nav.width();
 			this.currentIndex = 0;
@@ -143,12 +95,44 @@
 			}
 			
 			this.showImage(startAt);
-			
+
+			// handle pan/swipe
+			var mc = new Hammer(this.imageWrapper[0]);
+			mc.on("swipeleft swiperight panleft panright panend", function (e) {
+				if (e.type === "swipeleft") {
+					self.nextImage();
+				}
+				else if (e.type === "swiperight") {
+					self.prevImage();
+				}
+				//// TODO: (mc) handle panning/releasing properly
+				//// TODO: (mc) cycling must retain direction
+				//else if (e.type === "panleft" || e.type === "panright") {
+				//	self.currentImage
+				//		.css(Modernizr.prefixed('transition'), 'none')
+				//		.css(Modernizr.prefixed('transform'), 'translate3d(' + e.deltaX + 'px, 0, 0)');
+				//}
+				//else if (e.type === "panend") {
+				//	if (e.distance > 150) {
+				//		if (e.deltaX < 0) {
+				//			console.log(e.deltaX);
+				//			self.nextImage();
+				//		}
+				//		else {
+				//			console.log(e.deltaX);
+				//			self.prevImage();
+				//		}		
+				//	}
+
+				//	self.currentImage.removeAttr('style');
+				//}
+			});
+
 			if (opts.responsive && !isRefresh) {
 				EventBroker.subscribe("page.resized", function (msg, viewport) {
-				    self.reset();
-				    self.inTransition = false;
-					self.init(true);
+				    //self.reset();
+				    //self.inTransition = false;
+					//self.init(true);
 			    });
 			}
 		};
@@ -159,7 +143,6 @@
 	}
 	
 	SmartGallery.prototype = {
-
 		imageWrapper: null,
 		nav: null,
 		loader: null,
@@ -171,7 +154,6 @@
 		imageWrapperHeight: 0,
 		currentIndex: 0,
 		currentImage: null,
-		currentDescription: null,
 		navDisplayWidth: 0,
 		navListWidth: 0,
 		noScrollers: false,
@@ -192,7 +174,7 @@
 			this.nav = el.find('.sg-nav').css("opacity", "0");
 			this.thumbsWrapper = this.nav.find('.sg-thumbs');
 			this.preloads = $('<div class="sg-preloads"></div>');
-			this.loader = $('<div class="spinner-container sg-loader"></div>').append(createCircularSpinner(24, false, null, true));
+			this.loader = $('<div class="spinner-container sg-loader"></div>').append(createCircularSpinner(48, false, null, false));
 			this.imageWrapper.append(this.loader);
 			$(document.body).append(this.preloads);
 		},
@@ -570,61 +552,10 @@
 			}
 		},
 
-		/**
-		 * Checks if the image is small enough to fit inside the container
-		 * If it's not, shrink it proportionally
-		 * @returns {number}
-		 */
-		_getContainedImageSize: function (imageWidth, imageHeight) {
-			var ratio = 0;
-			if (imageHeight > this.imageWrapperHeight) {
-				ratio = imageWidth / imageHeight;
-				imageHeight = this.imageWrapperHeight;
-				imageWidth = this.imageWrapperHeight * ratio;
-			};
-			if (imageWidth > this.imageWrapperWidth) {
-				ratio = imageHeight / imageWidth;
-				imageWidth = this.imageWrapperWidth;
-				imageHeight = this.imageWrapperWidth * ratio;
-			};
-			return { width: imageWidth, height: imageHeight };
-		},
-
-		/**
-		 * If the image dimensions are smaller than the wrapper, we position
-		 * it in the middle anyway
-		 */
-		_centerImage: function (imgContainer, imageWidth, imageHeight) {
-			imgContainer.css('top', '0px');
-			var dif = 0;
-			if (imageHeight < this.imageWrapperHeight) {
-				dif = this.imageWrapperHeight - imageHeight;
-				imgContainer.css('top', (dif / 2) + 'px');
-			};
-			imgContainer.css('left', '0px');
-			if (imageWidth < this.imageWrapperWidth) {
-				dif = this.imageWrapperWidth - imageWidth;
-				imgContainer.css('left', (dif / 2) + 'px');
-			};
-		},
-
-		_createDescription: function (image) {
-			var desc = null;
-			if (image.desc.length || image.title.length) {
-				var title = '';
-				if (image.title.length) {
-					title = '<strong class="sg-description-title ellipsis" title="{0}">{0}</strong>'.format(image.title);
-				};
-				desc = '';
-				if (image.desc.length) {
-					desc = '<span>' + image.desc + '</span>';
-				};
-				desc = $('<div class="sg-image-description">' + title + desc + '</div>');
-			};
-			return desc;
-		},
-
 		showImage: function (index, callback) {
+			if (this.initialized && index === this.currentIndex)
+				return;
+
 			if (this.images[index] && !this.inTransition) {
 				var self = this;
 				var image = this.images[index];
@@ -650,76 +581,51 @@
 			var opts = self.options;
 			var thumb = this.nav.find('.sg-thumb' + index);
 
+			var direction = 'right';
+			var inDirection = 'left';
+			if (this.currentIndex < index) {
+				direction = 'left';
+				inDirection = 'right';
+			};		
+
 			var imgContainer = $(document.createElement('div')).addClass('sg-image');
+			if (this.currentImage) {
+				imgContainer.addClass('out-' + inDirection);
+			}
 			var img = $(new Image()).attr('src', image.image);
 			if (image.link) {
-				var link = $('<a href="' + image.link + '" target="_blank"></a>');
+				var link = $('<a class="img-center-container" href="' + image.link + '" target="_blank"></a>');
 				link.append(img).data('gallery', thumb.data('gallery'));
 				imgContainer.append(link);
 			}
 			else {
-				imgContainer.append(img);
+				imgContainer.addClass('img-center-container').append(img);
 			}
 
 			this.imageWrapper.prepend(imgContainer);
 
-			var size = this._getContainedImageSize(image.size.width, image.size.height);
-			img.css('max-height', opts.height);
-			imgContainer.css({ width: size.width + 'px', height: size.height + 'px' });
-			this._centerImage(imgContainer, size.width, size.height);
-
-			if (opts.enableDescription) {
-				var desc = this._createDescription(image, imgContainer);
-				if (desc) {
-					this.imageWrapper.append(desc);
-					var width = this.imageWrapper.width() - parseInt(desc.css('padding-left'), 10) - parseInt(desc.css('padding-right'), 10);
-					desc.css('width', width + 'px');
-					desc.css('bottom', '-' + desc[0].offsetHeight + 'px');
-				};
-			}
-
-			this.highlightThumb(thumb);
-
-			var direction = 'right';
-			if (this.currentIndex < index) {
-				direction = 'left';
-			};
+			this.highlightThumb(thumb); 
 
 			if (this.currentImage) {
-				var animationSpeed = opts.animationSpeed;
-				var easing = defaultEasing;
-				var animation = (animations[opts.animation] || animations['none']).call(this, imgContainer, direction, desc);
-				if (typeof animation.speed !== 'undefined') {
-					animationSpeed = animation.speed;
-				};
-				if (typeof animation.easing !== 'undefined') {
-					easing = animation.easing;
-				};
-
 				var oldImage = this.currentImage;
-				var oldDescription = this.currentDescription;
-				oldImage.animate(animation.oldImage, animationSpeed, easing, function () {
+				oldImage.addClass('out-' + direction).one($.support.transitionEnd, function (e) {
 					var oldZoomImage = oldImage.find("img").data("elevateZoom");
 					if (oldZoomImage) {
 						oldZoomImage.reset();
 					}
 					oldImage.remove();
-					if (oldDescription) oldDescription.remove();
 				});
 
-				imgContainer.animate(animation.newImage, animationSpeed, easing, function () {
+				imgContainer.removeClass('out-' + inDirection).one($.support.transitionEnd, function (e) {
 					self.currentIndex = index;
 					self.currentImage = imgContainer;
-					self.currentDescription = desc;
 					self.inTransition = false;
 					self.fireCallback(callback);
 				});
-
 			}
 			else {
 				this.currentIndex = index;
 				this.currentImage = imgContainer;
-				this.currentDescription = desc;
 				this.inTransition = false;
 				this.fireCallback(callback);
 			};
@@ -876,21 +782,12 @@
 		responsive: true,
 		// 0-based index of image to start with
 		startIndex: 0,
-		// animation type: slide, fade, none
-		animation: "slide",
-		// speed of animation in ms.
-		animationSpeed: 400,
-		// height of image container in px.
-		height: 300,
 		// display the top toolbar
 		displayImage: true,
 		// ...
 		scrollJump: 0,
 		// cycle thru images
 		cycle: true,
-		// show the bottom description panel
-		enableDescription: true,
-		// ...
 		enableKeyboardMove: true,
 		// ...
 		ensureLink: true,

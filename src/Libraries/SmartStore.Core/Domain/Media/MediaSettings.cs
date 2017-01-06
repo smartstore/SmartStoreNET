@@ -10,7 +10,7 @@ namespace SmartStore.Core.Domain.Media
 			ProductThumbPictureSize = 250;
 			CategoryThumbPictureSize = 250;
 			ManufacturerThumbPictureSize = 250;
-			ProductDetailsPictureSize = 300;
+			ProductDetailsPictureSize = 600;
 			ProductThumbPictureSizeOnProductDetailsPage = 70;
 			MessageProductThumbPictureSize = 70;
 			AssociatedProductPictureSize = 125;

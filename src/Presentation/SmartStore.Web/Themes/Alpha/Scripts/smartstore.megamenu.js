@@ -208,7 +208,7 @@
 
                         newMarginLeft = Math.min(0, newMarginLeft);
 
-                        nav.css('margin-left', newMarginLeft + 'px').one("transitionend webkitTransitionEnd", function (e) {
+                        nav.css('margin-left', newMarginLeft + 'px').one($.support.transitionEnd, function (e) {
                             // performs UI update after end of animation (.one(trans...))
                             updateNavState();
                         });

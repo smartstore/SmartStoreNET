@@ -1,16 +1,17 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
-    using System.Data.Entity;
-    using System.Data.Entity.Migrations;
-    using System.Linq;
-    using Core.Caching;
-    using Core.Domain.Configuration;
-    using Core.Infrastructure;
-    using Setup;
-    using Core.Domain.Security;
+	using System;
+	using System.Data.Entity;
+	using System.Data.Entity.Migrations;
+	using System.Linq;
+	using Core.Caching;
+	using Core.Domain.Configuration;
+	using Core.Infrastructure;
+	using Setup;
+	using Core.Domain.Security;
+	using Core.Domain.Catalog;
 
-    public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
+	public sealed class MigrationsConfiguration : DbMigrationsConfiguration<SmartObjectContext>
 	{
 		public MigrationsConfiguration()
 		{
@@ -52,6 +53,7 @@ namespace SmartStore.Data.Migrations
             context.MigrateSettings(x => {
                 x.DeleteGroup("ContentSlider");
             });
+
 			// Change MediaSettings.ProductThumbPictureSize to 250 if smaller
 			var keys = new string[] { "MediaSettings.ProductThumbPictureSize", "MediaSettings.CategoryThumbPictureSize", "MediaSettings.ManufacturerThumbPictureSize" };
 			settings = context.Set<Setting>().Where(x => keys.Contains(x.Name)).ToList();
@@ -66,6 +68,22 @@ namespace SmartStore.Data.Migrations
 					}
 				});
 			}
+
+			// Change MediaSettings.ProductDetailsPictureSize to 600 if smaller
+			var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "MediaSettings.ProductDetailsPictureSize");
+			if (setting != null && setting.Value.Convert<int>() < 600)
+			{
+				setting.Value = "600";
+			}
+
+			// Add new product template
+			// TODO: (mc) refactor depending code to reflect this change (ProductTemplate.Simple/Grouped are obsolete now)
+			context.Set<ProductTemplate>().AddOrUpdate(x => x.ViewPath, new ProductTemplate
+			{
+				Name = "Default Product Template",
+				ViewPath = "Product",
+				DisplayOrder = 10
+			});
 
             // [...]
             

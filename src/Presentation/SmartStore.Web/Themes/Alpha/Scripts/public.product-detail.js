@@ -40,7 +40,7 @@
 
 		    			if (context.hasClass('bundle-item')) {
 		    				// update bundle price too
-		    				$('#TotalPriceUpdateContainer').doAjax({
+		    				$('#total-price-update-container').doAjax({
 		    					data: $('#ProductBundleItems').find(':input').serialize(),
 		    					callbackSuccess: function (response2) {
 		    						self.updateDetailData(response2, $('#AddToCart, #ProductBundleOverview'));
@@ -73,7 +73,7 @@
 		        });
 		    }
 		    else if (data.GalleryStartIndex >= 0) {
-		        if (data.GalleryStartIndex != gallery.currentIndex) {
+		        if (data.GalleryStartIndex !== gallery.currentIndex) {
 		            gallery.showImage(data.GalleryStartIndex);
 		        }
 		    }
@@ -161,7 +161,6 @@
 			var opts = this.options;
 
 			gallery = $('#pd-gallery').smartGallery({
-			    height: opts.galleryHeight,
 				enableDescription: opts.showImageDescription,
 				startIndex: startIndex || 0,
 				zoom: {
@@ -182,9 +181,7 @@
 	$[pluginName].defaults = {
 	    // Width of the gallery, set to false and it will read the CSS width
 	    galleryWidth: null,
-	    // Height of the gallery, set to false and it will read the CSS height
-	    galleryHeight: null,
-        // The max size of the gallery zhumbs
+        // The max size of the gallery thumbs
 	    galleryThumbSize: 50,
         // The 0-based image index to start the gallery with
 	    galleryStartIndex: 0,

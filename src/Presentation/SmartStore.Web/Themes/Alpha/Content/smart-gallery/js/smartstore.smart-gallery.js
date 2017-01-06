@@ -174,7 +174,7 @@
 			this.nav = el.find('.sg-nav').css("opacity", "0");
 			this.thumbsWrapper = this.nav.find('.sg-thumbs');
 			this.preloads = $('<div class="sg-preloads"></div>');
-			this.loader = $('<div class="spinner-container sg-loader"></div>').append(createCircularSpinner(48, false, null, false));
+			this.loader = $('<div class="spinner-container sg-loader"></div>').append(createCircularSpinner(24, false, null, true));
 			this.imageWrapper.append(this.loader);
 			$(document.body).append(this.preloads);
 		},

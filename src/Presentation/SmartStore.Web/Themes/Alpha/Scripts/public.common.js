@@ -130,13 +130,13 @@
 
         // Notify subscribers about page/content width change
         if (window.EventBroker) {
-        	var currentGridBreakpoint = viewport.current();
+        	var currentContentWidth = $('#content').width();
         	$(window).resize(
 				viewport.changed(function () {
-					var tier = viewport.current();
-					if (tier !== currentGridBreakpoint) {
-						currentGridBreakpoint = tier;
-						console.debug("Grid tier changed: " + tier);
+					var contentWidth = $('#content').width();	
+					if (contentWidth !== currentContentWidth) {
+						currentContentWidth = contentWidth;
+						console.debug("Grid tier changed: " + viewport.current());
 						EventBroker.publish("page.resized", viewport);
 					}
 				}, 10)

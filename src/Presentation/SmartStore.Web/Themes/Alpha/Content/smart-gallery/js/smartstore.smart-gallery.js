@@ -41,8 +41,88 @@
 
 		var meta = $.metadata ? $.metadata.get(element) : {};
 		var opts = this.options = $.extend(true, {}, options, meta || {});
+
+		this.init = function () {
+			var self = this;
+
+			var isTouch = Modernizr.touch;
+
+			var options = {
+				infinite: false,
+				lazyLoad: "ondemand",
+				dots: false,
+				arrows: false,
+				cssEase: 'ease-in-out',
+				speed: 250,
+				useCSS: true,
+				useTransform: true,
+				waitForAnimate: true,
+				respondTo: 'slider',
+				slidesToShow: 1,
+				slidesToScroll: 1,
+				initialSlide: opts.startIndex
+			};
+
+			if (!isTouch) {
+				options.asNavFor = ".gal-nav";
+			}
+
+			var gal = $(".gal");
+
+			gal.slick(options);
+
+			gal.height(gal.width());
+			EventBroker.subscribe("page.resized", function (msg, viewport) {
+				gal.height(gal.width());
+				createNav();
+			});
+
+			var nav = $(".gal-nav");
+
+			function createNav() {
+				if (isTouch)
+					return;
+
+				if (nav.hasClass('slick-initialized')) {
+					nav.slick('unslick');
+				}
+
+				nav.slick({
+					infinite: false,
+					vertical: true,
+					dots: false,
+					arrows: true,
+					cssEase: 'ease-in-out',
+					speed: 250,
+					useCSS: true,
+					useTransform: true,
+					waitForAnimate: true,
+					prevArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle x-btn-block slick-prev"><i class="fa fa-angle-up" style="vertical-align: top"></i></button>',
+					nextArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle x-btn-block slick-next"><i class="fa fa-angle-down"></i></button>',
+					respondTo: 'slider',
+					slidesToShow: 6,
+					slidesToScroll: 1,
+					asNavFor: '.gal',
+					focusOnSelect: true,
+					swipe: false
+				});
+			}
+
+			createNav();
+
+			//nav.on('mouseenter', '.gal-item.slick-slide', function(e) {
+			//	var el = $(this);
+			//	if (el.hasClass('slick-current'))
+			//		return;
+
+			//	var toIdx = el.data('slick-index');
+			//	if (_.isNumber(toIdx) && toIdx >= 0) {
+			//		nav.slick('slickGoTo', toIdx);
+			//	}
+			//});
+		};
 		
-		this.init = function(isRefresh) {
+		this.init2 = function(isRefresh) {
 			var self = this;
 			this.setupElements(); // DO
 			
@@ -105,27 +185,6 @@
 				else if (e.type === "swiperight") {
 					self.prevImage();
 				}
-				//// TODO: (mc) handle panning/releasing properly
-				//// TODO: (mc) cycling must retain direction
-				//else if (e.type === "panleft" || e.type === "panright") {
-				//	self.currentImage
-				//		.css(Modernizr.prefixed('transition'), 'none')
-				//		.css(Modernizr.prefixed('transform'), 'translate3d(' + e.deltaX + 'px, 0, 0)');
-				//}
-				//else if (e.type === "panend") {
-				//	if (e.distance > 150) {
-				//		if (e.deltaX < 0) {
-				//			console.log(e.deltaX);
-				//			self.nextImage();
-				//		}
-				//		else {
-				//			console.log(e.deltaX);
-				//			self.prevImage();
-				//		}		
-				//	}
-
-				//	self.currentImage.removeAttr('style');
-				//}
 			});
 
 			if (opts.responsive && !isRefresh) {

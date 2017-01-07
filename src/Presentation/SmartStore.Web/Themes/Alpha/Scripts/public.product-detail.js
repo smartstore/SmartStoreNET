@@ -161,7 +161,6 @@
 			var opts = this.options;
 
 			gallery = $('#pd-gallery').smartGallery({
-				enableDescription: opts.showImageDescription,
 				startIndex: startIndex || 0,
 				zoom: {
 				    enabled: opts.enableZoom,

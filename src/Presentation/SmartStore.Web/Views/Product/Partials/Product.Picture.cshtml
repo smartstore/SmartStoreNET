@@ -5,7 +5,61 @@
 	Html.AddScriptParts("~/bundles/smart-gallery");
 }
 
-<div id="pd-gallery" class="picture pd-gallery">
+<script>
+	$(function () {
+
+	});
+</script>
+
+<div id="pd-gallery-container-outer">
+	<div id="pd-gallery" class="gal-box m-b-1">
+		@if (Model.PictureModels.Count > 1)
+		{
+			<div class="gal-nav-cell hidden-md-down">
+				<div class="gal-nav">
+					@for (int i = 0; i < Model.PictureModels.Count; i++)
+				{
+					var picture = Model.PictureModels[i];
+						<div class="gal-item">
+							<div class="gal-item-link" href="#" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default" data-picture-id="@picture.PictureId">
+								<img class="gal-item-img" src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+							</div>
+						</div>
+				}
+				</div>
+			</div>
+		}
+
+		<div class="gal-cell">
+			<div class="gal">
+				@if (Model.PictureModels.Count > 1)
+			{
+				for (int i = 0; i < Model.PictureModels.Count; i++)
+				{
+					var picture = Model.PictureModels[i];
+						<div class="gal-item">
+							<a class="gal-item-link" href="@picture.FullSizeImageUrl" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default" data-picture-id="@picture.PictureId">
+								@if (i == Model.GalleryStartIndex)
+								{
+									<img class="gal-item-img" src="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+								}
+								else
+								{
+									<img class="gal-item-img" data-lazy="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+								}
+							</a>
+						</div>
+				}
+			}
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+<div id="x-pd-gallery" class="x-pd-gallery hidden-xs-up">
 	<div class="sg-image-wrapper">
 		@if (Model.DefaultPictureModel.ImageUrl.HasValue())
 		{

@@ -131,16 +131,20 @@
         // Notify subscribers about page/content width change
         if (window.EventBroker) {
         	var currentContentWidth = $('#content').width();
-        	$(window).resize(
-				viewport.changed(function () {
-					var contentWidth = $('#content').width();	
-					if (contentWidth !== currentContentWidth) {
-						currentContentWidth = contentWidth;
-						console.debug("Grid tier changed: " + viewport.current());
-						EventBroker.publish("page.resized", viewport);
-					}
-				}, 10)
-			);
+        	$(window).on('resize', function () {
+        		var contentWidth = $('#content').width();
+        		if (contentWidth !== currentContentWidth) {
+        			currentContentWidth = contentWidth;
+        			console.debug("Grid tier changed: " + viewport.current());
+        			EventBroker.publish("page.resized", viewport);
+        		}
+        	});
+
+        	//$(window).resize(
+			//	viewport.changed(function () {
+
+			//	}, 50)
+			//);
         }
         
         applyCommonPlugins($("body"));

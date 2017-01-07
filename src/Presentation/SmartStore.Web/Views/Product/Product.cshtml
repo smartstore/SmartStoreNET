@@ -36,31 +36,40 @@
 		@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
 		{
 			<article class="pd" itemscope itemtype="http://schema.org/Product">
-				<div class="page-title hidden-xl-up" itemprop="name">
+				@*<div class="page-title hidden-lg-up" itemprop="name">
 					<h1 class="pd-name">
 						@Model.Name
 					</h1>
-				</div>
+				</div>*@
 
 				<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
-				<section class="row flex pd-section pd-section-top">
+				<section class="row pd-section pd-section-top">
 					<!-- Data: Picture, Description, Attrs etc. -->
-					<div class="col-xs-12 col-sm-7 col-md-8 col-lg-8 col-xl-9 pd-data-col">
-						<div class="row pd-data">
+					<div class="col-xs-12 col-md-6 col-lg-7 pd-data-col">
+						@{ Html.RenderPartial("Product.Picture", Model.DetailsPictureModel); }
+						<div class="row pd-data hidden-xs-up">
 							<!-- Picture -->
 							<div class="col-sm-12 col-xl-7 m-b-1-lg pd-gallery-col">
-								@{ Html.RenderPartial("Product.Picture", Model.DetailsPictureModel); }
+								
 							</div>
 							<!-- Info -->
 							<div class="col-sm-12 col-xl-5 m-b-1-xs pd-info-col">
-								@{ Html.RenderPartial("Product.Info", Model); }
+								
 							</div>
 						</div>
 					</div>
-					<!-- Sidebar: Price, Buttons etc. -->
-					<aside class="col-xs-12 col-sm-5 col-md-4 col-lg-4 col-xl-3 pd-sidebar-col">
+					<!-- Sidebar: Info, Price, Buttons etc. -->
+					<aside class="col-xs-12 col-md-6 col-lg-5 pd-sidebar-col">
+						@{ Html.RenderPartial("Product.Info", Model); }
 						@{ Html.RenderPartial("Product.SideBar", Model); }
 					</aside>
+				</section>
+
+				<!-- Bottom Content: Full Description, Specification, Review etc. -->
+				<section class="pd-section pd-section-bottom">
+					<div class="col-md-12">
+						@Html.Raw(Model.FullDescription)
+					</div>
 				</section>
 			</article>
 		}

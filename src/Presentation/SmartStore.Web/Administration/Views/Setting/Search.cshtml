@@ -48,6 +48,16 @@
 				@Html.ValidationMessageFor(x => x.SearchFields)
 			</td>
 		</tr>
+		@if (Model.SearchFieldsNote.HasValue())
+		{
+		<tr>
+			<td colspan="2">
+				<div class="alert alert-info">
+					@Html.Raw(Model.SearchFieldsNote)
+				</div>
+			</td>
+		</tr>
+		}
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">

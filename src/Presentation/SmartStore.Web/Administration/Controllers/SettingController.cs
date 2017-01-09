@@ -76,6 +76,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICommonServices _services;
 		private readonly IProviderManager _providerManager;
 		private readonly PluginMediator _pluginMediator;
+		private readonly IPluginFinder _pluginFinder;
 		private readonly IMediaMover _mediaMover;
 
 		private StoreDependingSettingHelper _storeDependingSettings;
@@ -106,29 +107,31 @@ namespace SmartStore.Admin.Controllers
 			ICommonServices services,
 			IProviderManager providerManager,
 			PluginMediator pluginMediator,
+			IPluginFinder pluginFinder,
 			IMediaMover mediaMover)
         {
-            this._countryService = countryService;
-            this._stateProvinceService = stateProvinceService;
-            this._addressService = addressService;
-            this._taxCategoryService = taxCategoryService;
-            this._pictureService = pictureService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._orderService = orderService;
-            this._encryptionService = encryptionService;
-            this._themeRegistry = themeRegistry;
-            this._customerService = customerService;
-            this._customerActivityService = customerActivityService;
-            this._fulltextService = fulltextService;
-            this._maintenanceService = maintenanceService;
-			this._genericAttributeService = genericAttributeService;
-			this._localizedEntityService = localizedEntityService;
-			this._languageService = languageService;
-			this._deliveryTimesService = deliveryTimesService;
-			this._services = services;
-			this._providerManager = providerManager;
-			this._pluginMediator = pluginMediator;
-			this._mediaMover = mediaMover;
+            _countryService = countryService;
+            _stateProvinceService = stateProvinceService;
+            _addressService = addressService;
+            _taxCategoryService = taxCategoryService;
+            _pictureService = pictureService;
+            _dateTimeHelper = dateTimeHelper;
+            _orderService = orderService;
+            _encryptionService = encryptionService;
+            _themeRegistry = themeRegistry;
+            _customerService = customerService;
+            _customerActivityService = customerActivityService;
+            _fulltextService = fulltextService;
+            _maintenanceService = maintenanceService;
+			_genericAttributeService = genericAttributeService;
+			_localizedEntityService = localizedEntityService;
+			_languageService = languageService;
+			_deliveryTimesService = deliveryTimesService;
+			_services = services;
+			_providerManager = providerManager;
+			_pluginMediator = pluginMediator;
+			_pluginFinder = pluginFinder;
+			_mediaMover = mediaMover;
         }
 
 		#endregion
@@ -1587,6 +1590,7 @@ namespace SmartStore.Admin.Controllers
 
 			var storeScope = this.GetActiveStoreScopeConfiguration(Services.StoreService, Services.WorkContext);
 			var settings = Services.Settings.LoadSetting<SearchSettings>(storeScope);
+			var megaSearchDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.MegaSearch");
 
 			var model = new SearchSettingsModel();
 			model.SearchMode = settings.SearchMode;
@@ -1595,6 +1599,11 @@ namespace SmartStore.Admin.Controllers
 			model.InstantSearchNumberOfProducts = settings.InstantSearchNumberOfProducts;
 			model.InstantSearchTermMinLength = settings.InstantSearchTermMinLength;
 			model.ShowProductImagesInInstantSearch = settings.ShowProductImagesInInstantSearch;
+
+			if (megaSearchDescriptor == null)
+			{
+				model.SearchFieldsNote = T("Admin.Configuration.Settings.Search.SearchFieldsNote");
+			}
 
 			model.GlobalFilters = XmlHelper.Deserialize<List<SearchFilterDescriptor>>(settings.GlobalFilters);
 

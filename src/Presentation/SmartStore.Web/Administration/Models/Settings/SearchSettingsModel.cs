@@ -8,6 +8,8 @@ namespace SmartStore.Admin.Models.Settings
 {
 	public partial class SearchSettingsModel
 	{
+		public string SearchFieldsNote { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.SearchMode")]
 		public SearchMode SearchMode { get; set; }
 		public List<SelectListItem> AvailableSearchModes { get; set; }

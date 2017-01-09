@@ -137,7 +137,6 @@ namespace SmartStore.Web.Framework.WebApi
 				this.ProcessEntity(() =>
 				{
 					response = (HttpResponseMessage)methodInfo.Invoke(this, new object[] { key, relatedKey });
-					return null;
 				});
 
 				return response;

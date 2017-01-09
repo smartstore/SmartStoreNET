@@ -10,7 +10,11 @@
 }
 
 @helper RenderBuyButton(bool blockStyle) {{
-	var cssClasses = blockStyle ? "btn-block hidden-sm-down" : "btn-icon btn-lg art-btn col-xs hidden-md-up";
+	var cssClasses = blockStyle ? "btn-block hidden-sm-down" : "btn-icon btn-lg art-btn col-xs";
+	if (!blockStyle && Model.Parent.ViewMode == ProductSummaryViewMode.List)
+	{
+		cssClasses += " hidden-md-up";
+	}
 	if (!Model.Price.CallForPrice)
 	{
 		string addToCartUrl = "";
@@ -66,7 +70,7 @@
 	}
 }}
 
-@if (list.ViewMode == ProductSummaryViewMode.List && !Model.Price.DisableBuyButton && Model.Parent.BuyEnabled)
+@if (list.ViewMode == ProductSummaryViewMode.List && !price.DisableBuyButton && list.BuyEnabled)
 {
 	<div class="m-y-1">
 		@RenderBuyButton(true)

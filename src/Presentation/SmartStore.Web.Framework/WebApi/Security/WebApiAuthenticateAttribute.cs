@@ -7,9 +7,9 @@ using System.Security;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
+using System.Web.Http.Dependencies;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
@@ -39,63 +39,72 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			}
 			return "";
 		}
-		protected virtual bool HasPermission(HttpActionContext actionContext, Customer customer)
-		{
-			bool result = true;
 
-			try
+		protected virtual bool HasPermission(IDependencyScope dependencyScope, Customer customer)
+		{
+			var result = true;
+
+			if (Permission.HasValue())
 			{
-				if (Permission.HasValue())
+				try
 				{
-					var permissionService = EngineContext.Current.Resolve<IPermissionService>();
+					var permissionService = dependencyScope.GetService<IPermissionService>();
 
 					if (permissionService.GetPermissionRecordBySystemName(Permission) != null)
 					{
 						result = permissionService.Authorize(Permission, customer);
 					}
 				}
+				catch { }
 			}
-			catch {	}
 
 			return result;
 		}
-		protected virtual void LogUnauthorized(HttpActionContext actionContext, HmacResult result, Customer customer)
+
+		protected virtual void LogUnauthorized(HttpActionContext actionContext, IDependencyScope dependencyScope, HmacResult result, Customer customer)
 		{
 			try
 			{
-				var logger = EngineContext.Current.Resolve<ILoggerFactory>().GetLogger(this.GetType());
-				var localization = EngineContext.Current.Resolve<ILocalizationService>();
+				var localization = dependencyScope.GetService<ILocalizationService>();
+				var loggerFactory = dependencyScope.GetService<ILoggerFactory>();
+				var logger = loggerFactory.GetLogger(this.GetType());
 
-				string strResult = result.ToString();
-				string description = localization.GetResource("Admin.WebApi.AuthResult." + strResult, 0, false, strResult);
+				var strResult = result.ToString();
+				var description = localization.GetResource("Admin.WebApi.AuthResult." + strResult, 0, false, strResult);
 				
 				logger.Warn(
-					new SecurityException("{0}\r\n{1}".FormatWith(description, actionContext.Request.Headers.ToString())),
-					localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatWith(strResult));
+					new SecurityException("{0}\r\n{1}".FormatInvariant(description, actionContext.Request.Headers.ToString())),
+					localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatInvariant(strResult)
+				);
 			}
-			catch (Exception exc)
+			catch (Exception exception)
 			{
-				exc.Dump();
+				exception.Dump();
 			}
 		}
-		protected virtual Customer GetCustomer(int customerId)
+
+		protected virtual Customer GetCustomer(IDependencyScope dependencyScope, int customerId)
 		{
 			Customer customer = null;
+
 			try
 			{
-				customer = EngineContext.Current.Resolve<ICustomerService>().GetCustomerById(customerId);
+				var customerService = dependencyScope.GetService<ICustomerService>();
+				customer = customerService.GetCustomerById(customerId);
 			}
-			catch (Exception exc)
+			catch (Exception exception)
 			{
-				exc.Dump();
+				exception.Dump();
 			}
+
 			return customer;
 		}
 
 		protected virtual HmacResult IsAuthenticated(
 			HttpActionContext actionContext,
-			DateTime now,
+			IDependencyScope dependencyScope,
 			WebApiControllingCacheData controllingData,
+			DateTime utcNow,
 			out Customer customer)
 		{
 			customer = null;
@@ -129,7 +138,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 
 			int maxMinutes = (controllingData.ValidMinutePeriod <= 0 ? WebApiGlobal.DefaultTimePeriodMinutes : controllingData.ValidMinutePeriod);
 
-			if (Math.Abs((headDateTime - now).TotalMinutes) > maxMinutes)
+			if (Math.Abs((headDateTime - utcNow).TotalMinutes) > maxMinutes)
 				return HmacResult.TimestampOutOfPeriod;
 
 			var cacheUserData = WebApiCachingUserData.Data();
@@ -153,17 +162,17 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				Url = HttpUtility.UrlDecode(request.Url.AbsoluteUri.ToLower())
 			};
 
-			string contentMd5 = CreateContentMd5Hash(actionContext.Request);
+			var contentMd5 = CreateContentMd5Hash(actionContext.Request);
 
 			if (headContentMd5.HasValue() && headContentMd5 != contentMd5)
 				return HmacResult.ContentMd5NotMatching;
 
-			string messageRepresentation = _hmac.CreateMessageRepresentation(context, contentMd5, headTimestamp);
+			var messageRepresentation = _hmac.CreateMessageRepresentation(context, contentMd5, headTimestamp);
 
 			if (string.IsNullOrEmpty(messageRepresentation))
 				return HmacResult.MissingMessageRepresentationParameter;
 
-			string signatureProvider = _hmac.CreateSignature(apiUser.SecretKey, messageRepresentation);
+			var signatureProvider = _hmac.CreateSignature(apiUser.SecretKey, messageRepresentation);
 
 			if (signatureProvider != signatureConsumer)
 			{
@@ -182,14 +191,14 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				}
 			}
 
-			customer = GetCustomer(apiUser.CustomerId);
+			customer = GetCustomer(dependencyScope, apiUser.CustomerId);
 			if (customer == null)
 				return HmacResult.UserUnknown;
 
 			if (!customer.Active || customer.Deleted)
 				return HmacResult.UserIsInactive;
 
-			if (!HasPermission(actionContext, customer))
+			if (!HasPermission(dependencyScope, customer))
 				return HmacResult.UserHasNoPermission;
 
 			//var headers = HttpContext.Current.Response.Headers;
@@ -204,16 +213,17 @@ namespace SmartStore.Web.Framework.WebApi.Security
 		{
 			var result = HmacResult.FailedForUnknownReason;
 			var controllingData = WebApiCachingControllingData.Data();
-			var now = DateTime.UtcNow;
+			var dependencyScope = actionContext.Request.GetDependencyScope();
+			var utcNow = DateTime.UtcNow;
 			Customer customer = null;
 
 			try
 			{
-				result = IsAuthenticated(actionContext, now, controllingData, out customer);
+				result = IsAuthenticated(actionContext, dependencyScope, controllingData, utcNow, out customer);
 			}
-			catch (Exception exc)
+			catch (Exception exception)
 			{
-				exc.Dump();
+				exception.Dump();
 			}
 
 			if (result == HmacResult.Success)
@@ -225,7 +235,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 
 				response.AddHeader(WebApiGlobal.Header.Version, controllingData.Version);
 				response.AddHeader(WebApiGlobal.Header.MaxTop, controllingData.MaxTop.ToString());
-				response.AddHeader(WebApiGlobal.Header.Date, now.ToString("o"));
+				response.AddHeader(WebApiGlobal.Header.Date, utcNow.ToString("o"));
 				response.AddHeader(WebApiGlobal.Header.CustomerId, customer.Id.ToString());
 
 				response.Cache.SetCacheability(HttpCacheability.NoCache);
@@ -243,12 +253,14 @@ namespace SmartStore.Web.Framework.WebApi.Security
 
 				headers.Add(WebApiGlobal.Header.Version, controllingData.Version);
 				headers.Add(WebApiGlobal.Header.MaxTop, controllingData.MaxTop.ToString());
-				headers.Add(WebApiGlobal.Header.Date, now.ToString("o"));
+				headers.Add(WebApiGlobal.Header.Date, utcNow.ToString("o"));
 				headers.Add(WebApiGlobal.Header.HmacResultId, ((int)result).ToString());
 				headers.Add(WebApiGlobal.Header.HmacResultDescription, result.ToString());
 
 				if (controllingData.LogUnauthorized)
-					LogUnauthorized(actionContext, result, customer);
+				{
+					LogUnauthorized(actionContext, dependencyScope, result, customer);
+				}
 			}
 		}
 

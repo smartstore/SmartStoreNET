@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Web.Http;
+using System.Web.Http.Dependencies;
 using System.Web.Http.OData.Routing;
 using SmartStore.Utilities;
 
@@ -119,6 +120,11 @@ namespace SmartStore.Web.Framework.WebApi
 					FileSystemHelper.Delete(file.LocalFileName);
 			}
 			catch { }
+		}
+
+		public static T GetService<T>(this IDependencyScope dependencyScope)
+		{
+			return (T)dependencyScope.GetService(typeof(T));
 		}
 	}
 }

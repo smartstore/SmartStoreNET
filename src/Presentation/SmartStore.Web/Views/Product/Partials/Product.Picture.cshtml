@@ -5,12 +5,6 @@
 	Html.AddScriptParts("~/bundles/smart-gallery");
 }
 
-<script>
-	$(function () {
-
-	});
-</script>
-
 <div id="pd-gallery-container-outer">
 	<div id="pd-gallery" class="gal-box m-b-1">
 		@if (Model.PictureModels.Count > 1)
@@ -18,14 +12,14 @@
 			<div class="gal-nav-cell hidden-md-down">
 				<div class="gal-nav">
 					@for (int i = 0; i < Model.PictureModels.Count; i++)
-				{
-					var picture = Model.PictureModels[i];
+					{
+						var picture = Model.PictureModels[i];
 						<div class="gal-item">
-							<div class="gal-item-link" href="#" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default" data-picture-id="@picture.PictureId">
-								<img class="gal-item-img" src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+							<div class="gal-item-viewport" href="#" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-picture-id="@picture.PictureId">
+								<img class="gal-item-content" src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
 							</div>
 						</div>
-				}
+					}
 				</div>
 			</div>
 		}
@@ -33,24 +27,24 @@
 		<div class="gal-cell">
 			<div class="gal">
 				@if (Model.PictureModels.Count > 1)
-			{
-				for (int i = 0; i < Model.PictureModels.Count; i++)
 				{
-					var picture = Model.PictureModels[i];
+					for (int i = 0; i < Model.PictureModels.Count; i++)
+					{
+						var picture = Model.PictureModels[i];
 						<div class="gal-item">
-							<a class="gal-item-link" href="@picture.FullSizeImageUrl" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default" data-picture-id="@picture.PictureId">
+							<a class="gal-item-viewport" href="@picture.FullSizeImageUrl" data-thumg-image="@picture.ThumbImageUrl" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default" data-picture-id="@picture.PictureId">
 								@if (i == Model.GalleryStartIndex)
 								{
-									<img class="gal-item-img" src="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+									<img class="gal-item-content" src="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
 								}
 								else
 								{
-									<img class="gal-item-img" data-lazy="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+									<img class="gal-item-content" data-lazy="@picture.ImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
 								}
 							</a>
 						</div>
+					}
 				}
-			}
 			</div>
 		</div>
 	</div>
@@ -80,7 +74,7 @@
 						var picture = Model.PictureModels[i];
 
 						<li data-picture-id="@picture.PictureId">
-							<a class="sg-thumb-list-link" href="@picture.FullSizeImageUrl" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default">
+							<a class="sg-thumb-list-link" href="@picture.FullSizeImageUrl" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="x-default">
 								<img class="sg-thumb-list-img" src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
 							</a>
 						</li>
@@ -89,7 +83,7 @@
 				else if (Model.DefaultPictureModel.ThumbImageUrl.HasValue())
 				{
 					<li data-picture-id="@Model.DefaultPictureModel.PictureId">
-						<a class="sg-thumb-list-link" href="@Model.DefaultPictureModel.FullSizeImageUrl" data-medium-image="@Model.DefaultPictureModel.ImageUrl" data-gallery="default">
+						<a class="sg-thumb-list-link" href="@Model.DefaultPictureModel.FullSizeImageUrl" data-medium-image="@Model.DefaultPictureModel.ImageUrl" data-gallery="x-default">
 							<img class="sg-thumb-list-img" src="@Model.DefaultPictureModel.ThumbImageUrl" alt="@Model.DefaultPictureModel.AlternateText" title="@Model.DefaultPictureModel.Title" />
 						</a>
 					</li>

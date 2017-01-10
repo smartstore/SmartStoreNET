@@ -6,13 +6,15 @@
 
 ;(function ($, window, document, undefined) {
     
-    var pluginName = 'smartGallery';
+	var pluginName = 'smartGallery';
+	var isTouch = Modernizr.touch;
 
 	var defaultZoomOpts = {
+		//responsive: true,
 	    zoomType: 'window',
 	    cursor: 'pointer',
 	    easing: true,
-	    easingDuration: 1000,
+	    easingDuration: 400,
 	    borderSize: 1,
 	    borderColour: "#999",
 	    lensFadeIn: 400,
@@ -20,12 +22,12 @@
 
 	    // zoomType 'lens' options
 	    lensShape: "round",
-	    lensSize: 150,
+	    //lensSize: 250,
 	    containLensZoom: false,
 
-	    // zoomType 'window' options
-	    zoomWindowFadeIn: 400,
-	    zoomWindowFadeOut: 400,
+		// zoomType 'window' options
+	    zoomWindowFadeIn: 200,
+	    zoomWindowFadeOut: 200,
 	    zoomTintFadeIn: 400,
 	    zoomTintFadeOut: 400,
 	    zoomWindowOffetx: 10,
@@ -45,70 +47,24 @@
 		this.init = function () {
 			var self = this;
 
-			var isTouch = Modernizr.touch;
-
-			var options = {
-				infinite: false,
-				lazyLoad: "ondemand",
-				dots: false,
-				arrows: false,
-				cssEase: 'ease-in-out',
-				speed: 250,
-				useCSS: true,
-				useTransform: true,
-				waitForAnimate: true,
-				respondTo: 'slider',
-				slidesToShow: 1,
-				slidesToScroll: 1,
-				initialSlide: opts.startIndex
-			};
-
-			if (!isTouch) {
-				options.asNavFor = ".gal-nav";
-			}
-
-			var gal = $(".gal");
-
-			gal.slick(options);
-
-			gal.height(gal.width());
-			EventBroker.subscribe("page.resized", function (msg, viewport) {
-				gal.height(gal.width());
-				createNav();
-			});
-
-			var nav = $(".gal-nav");
-
-			function createNav() {
-				if (isTouch)
-					return;
-
-				if (nav.hasClass('slick-initialized')) {
-					nav.slick('unslick');
+			var startAt = parseInt(opts.startIndex, 10);
+			if (window.location.hash && window.location.hash.indexOf('#sg-image') === 0) {
+				startAt = window.location.hash.replace(/[^0-9]+/g, '');
+				if (_.isNumber(startAt)) {
+					opts.startIndex = startAt;
 				}
-
-				nav.slick({
-					infinite: false,
-					vertical: true,
-					dots: false,
-					arrows: true,
-					cssEase: 'ease-in-out',
-					speed: 250,
-					useCSS: true,
-					useTransform: true,
-					waitForAnimate: true,
-					prevArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle x-btn-block slick-prev"><i class="fa fa-angle-up" style="vertical-align: top"></i></button>',
-					nextArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle x-btn-block slick-next"><i class="fa fa-angle-down"></i></button>',
-					respondTo: 'slider',
-					slidesToShow: 6,
-					slidesToScroll: 1,
-					asNavFor: '.gal',
-					focusOnSelect: true,
-					swipe: false
-				});
 			}
 
-			createNav();
+			this.initNav();
+			this.initGallery();
+
+			if ($.isPlainObject(opts.zoom) && opts.zoom.enabled === true) {
+				this.initZoom();
+			}			
+
+			if ($.isPlainObject(opts.box) && opts.box.enabled) {
+				this.initBox();
+			}
 
 			//nav.on('mouseenter', '.gal-item.slick-slide', function(e) {
 			//	var el = $(this);
@@ -121,6 +77,143 @@
 			//	}
 			//});
 		};
+
+		this.initNav = function () {
+			if (!self.nav) {
+				var nav = el.find('.gal-nav');
+				if (nav.length === 0) {
+					return;
+				}
+
+				self.nav = nav;
+			}
+
+			if (nav.hasClass('slick-initialized')) {
+				nav.slick('unslick');
+			}
+
+			nav.slick({
+				infinite: false,
+				vertical: true,
+				dots: false,
+				arrows: true,
+				cssEase: 'ease-in-out',
+				speed: 250,
+				useCSS: true,
+				useTransform: true,
+				waitForAnimate: true,
+				prevArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle x-btn-block slick-prev"><i class="fa fa-angle-up" style="vertical-align: top"></i></button>',
+				nextArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle x-btn-block slick-next"><i class="fa fa-angle-down"></i></button>',
+				respondTo: 'slider',
+				slidesToShow: 6,
+				slidesToScroll: 6,
+				//asNavFor: '.gal',
+				//focusOnSelect: true,
+				swipe: false,
+				initialSlide: opts.startIndex
+			});
+
+			nav.on('click', '.gal-item', function (e) {
+				// sync selection with gallery
+				e.preventDefault();
+				var toIdx = $(this).data('slick-index');
+				//console.log(toIdx);
+				//nav.slick('slickGoTo', toIdx);
+				nav.find('.slick-current').removeClass('slick-current');
+				$(this).addClass('slick-current');
+
+				var slick = nav.slick('getSlick');
+				slick.currentSlide = toIdx;
+				slick.setSlideClasses(toIdx);
+
+				console.log(slick.currentSlide);
+				return false;
+			});
+		}
+
+		this.initGallery = function () {
+			var gal = el.find(".gal");
+			if (gal.length === 0) {
+				return;
+			}
+
+			self.gallery = gal;
+
+			var options = {
+				infinite: false,
+				lazyLoad: "ondemand",
+				dots: false,
+				arrows: false,
+				cssEase: 'ease-in-out',
+				speed: 250,
+				useCSS: true,
+				useTransform: true,
+				waitForAnimate: true,
+				slidesToShow: 1,
+				slidesToScroll: 1,
+				initialSlide: opts.startIndex
+			};
+
+			if (self.nav) {
+				//options.asNavFor = ".gal-nav";
+			}
+
+			gal.slick(options);
+
+			gal.height(gal.width());
+			EventBroker.subscribe("page.resized", function (msg, viewport) {
+				gal.height(gal.width());
+				self.initNav();
+			});
+
+			self.currentIndex = opts.startIndex;
+			gal.on('afterChange', function (e, slick, currentSlide) {
+				self.currentIndex = currentSlide;
+			});
+		}
+
+		this.initZoom = function () {
+			if (isTouch)
+				return; // no zoom on touch devices
+
+			self.gallery.on('beforeChange', function (e, slick, curIdx, nextIdx) {
+				// destroy zoom
+				var img = self.gallery.find('.gal-item').eq(curIdx).find('img');
+				var zoomObj = img.data("elevateZoom");
+				if (zoomObj) {
+					zoomObj.reset();
+					img.data("elevateZoom", null);
+				}
+			});
+
+			self.gallery.on('afterChange', function (e, slick, idx) {
+				// apply zoom
+				applyZoom(self.gallery.find('.gal-item').eq(idx));
+			});
+
+			function applyZoom(slide) {
+				var href = slide.find('> a').attr('href');
+				var img = slide.find('img');
+
+				if (img.data("elevateZoom"))
+					return;
+
+				img.attr("data-zoom-image", href);
+				var zoomOpts = $.extend({}, defaultZoomOpts, opts.zoom);
+
+				if (!zoomOpts.zoomWindowHeight)
+					zoomOpts.zoomWindowHeight = self.el.height() - 2;
+
+				if (zoomOpts.lensShape === "round" && zoomOpts.zoomType !== "lens")
+					zoomOpts.lensShape = undefined;
+
+				img.elevateZoom(zoomOpts);
+			}
+
+			// Apply on first init
+			var curIndex = self.gallery.slick('slickCurrentSlide');
+			applyZoom(self.gallery.find('.gal-item').eq(curIndex));
+		}
 		
 		this.init2 = function(isRefresh) {
 			var self = this;
@@ -202,8 +295,10 @@
 	}
 	
 	SmartGallery.prototype = {
-		imageWrapper: null,
+		gallery: null,
 		nav: null,
+
+		imageWrapper: null,
 		loader: null,
 		preloads: null,
 		thumbsWrapper: null,
@@ -522,10 +617,10 @@
 				return gov;
 			};
 
-			if (this.options.displayImage) {
+			if (self.gallery) {
 				// Global click handler to open links with data-gallery attribute
 				// in the Gallery lightbox:
-				$(document).on('click', '.sg-image > a', function (e) {
+				self.gallery.on('click', '.gal-item > a', function (e) {
 					e.preventDefault();
 
 					var id = $(this).data('gallery') || 'default',

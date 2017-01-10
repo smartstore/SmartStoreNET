@@ -18,7 +18,7 @@
 	overflow: hidden;
 }
 
-.gal-item-link {
+.gal-item-viewport {
 	position: relative;
 	display: block;
 	width: 100%;
@@ -28,7 +28,7 @@
 	outline: none !important;
 }
 
-.gal-item-img {
+.gal-item-content {
 	position: absolute;
 	display: none;
 	top: 0;
@@ -57,16 +57,18 @@
 	border: 1px solid rgba(0,0,0, 0.12);
 	margin: 4px 0;
 }
-.gal-nav .gal-item.slick-current,
 .gal-nav .gal-item:hover {
-	border-color: rgba(0,0,0, 0.7);
+	border-color: rgba(0,0,0, 0.35);
+}
+.gal-nav .gal-item.slick-current {
+	border-color: rgba(0,0,0, 0.8);
 }
 
 .gal-nav .gal-item {
 	cursor: pointer;
 }
 
-.gal-nav .gal-item-img {
+.gal-nav .gal-item-content {
 	padding: 3px;
 }
 

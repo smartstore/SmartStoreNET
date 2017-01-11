@@ -75,7 +75,10 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideManufacturerDefaultPictures")]
 		public bool HideManufacturerDefaultPictures { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideCategoryDefaultPictures")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SortManufacturersAlphabetically")]
+        public bool SortManufacturersAlphabetically { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideCategoryDefaultPictures")]
 		public bool HideCategoryDefaultPictures { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HideProductDefaultPictures")]

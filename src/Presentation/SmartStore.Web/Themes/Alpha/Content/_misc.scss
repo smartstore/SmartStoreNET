@@ -169,6 +169,23 @@ fieldset legend {
     }
 }
 
+/* All manufacturers
+================================================ */
+.manufacturer-nav {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 2rem;
+}
+.manufacturer-nav .navbar-nav .nav-item {
+    margin: 0 1rem;
+}
+.manufacturer-nav .navbar-nav .nav-link {
+    font-size: 1.25rem;
+}
+.manufacturer-list-title {
+    font-weight: bold;
+    padding-bottom: 0.5rem;
+}
+
 /* recently viewed products
 ================================================ */
 .block-recently-viewed-products li {

@@ -335,6 +335,14 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.GridColumnSpan.Max4Cols", "2 (mobile) to 4 (desktop) - recommended", "2 (Mobil) bis 4 (Desktop) - empfohlen");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.GridColumnSpan.Max5Cols", "2 (mobile) to 5 (desktop)", "2 (Mobil) bis 5 (Desktop)");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.GridColumnSpan.Max6Cols", "2 (mobile) to 6 (desktop)", "2 (Mobil) bis 6 (Desktop)");
-		}
+
+            builder.AddOrUpdate("Catalog.Manufacturerall.Numbers", "#", "#");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.SortManufacturersAlphabetically",
+                "Sort manufacturers alphabetically",
+                "Hersteller alphabetisch sortieren",
+                "Specifies whether manufacturers on the manufacturer overview page will be displayed sorted alphabetically.",
+                "Legt fest ob Hersteller auf der Herstellerübersichtsseite alphabetisch sortiert dargestellt werden.");
+        }
 	}
 }

@@ -1,39 +1,129 @@
 ﻿@using SmartStore.Core;
 @using SmartStore.Core.Infrastructure;
 @using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Catalog;
+
 @model IList<ManufacturerModel>
 @{
     Layout = "_ColumnsOne";
 
     Html.AddTitleParts(T("PageTitle.Manufacturers").Text);
-	// TODO: (mc) > (mh) Sort list by name and implement alphabet navbar (A - B - C ...)
+
+    var alphabeticalList = Model.Where(x => !Char.IsNumber(x.Name[0])).OrderBy(x => x.Name);
+    var numericList = Model.Where(x => Char.IsNumber(x.Name[0])).OrderBy(x => x.Name);
+    var currentLetter = String.Empty;
+    var areaLetter = alphabeticalList.FirstOrDefault().Name.Substring(0, 1).ToUpper();
+    var catalogSettings = EngineContext.Current.Resolve<CatalogSettings>();
 }
+
 <div class="page manufacturer-list-page">
     <div class="page-title">
         <h1 class="h3">@T("Manufacturers.List")</h1>
     </div>
     <div class="page-body">
-		<div class="artlist artlist-grid artlist-6-cols artlist-boxed manufacturer-grid">
-			@foreach (var item in Model)
-			{
-				var picture = item.PictureModel;
-				var url = Url.RouteUrl("Manufacturer", new { SeName = item.SeName });
-				<article class="art" data-id="@item.Id">
-					<div class="art-picture-block">
-						@if (picture != null && picture.ImageUrl.HasValue())
-						{
-							<a class="art-picture img-center-container" href="@url" title="@picture.Title">
-								<img src="@picture.ImageUrl" alt="@picture.AlternateText" />
-							</a>
-						}
-					</div>
-					<div class="art-genericname">
-						<a href="@url" title="@item.Name">
-							<span>@item.Name</span>
-						</a>
-					</div>
-				</article>
-			}
-		</div>
+
+        @if (catalogSettings.SortManufacturersAlphabetically)
+        {
+            <div class="manufacturer-nav clearfix">
+                <ul class="nav navbar-nav">
+                    
+                    @if (numericList.Count() > 0)
+                    {
+                        <li class="nav-item"><a class="nav-link" href="#number">@T("Catalog.ManufacturerAll.Numbers")</a></li>
+                    }
+                    
+                    @foreach (var item in alphabeticalList)
+                    {
+                        currentLetter = item.Name.Substring(0, 1).ToUpper();
+                        if (!currentLetter.Equals(areaLetter))
+                        {
+                            <li class="nav-item"><a class="nav-link" href="#@areaLetter">@areaLetter</a></li>
+                            areaLetter = currentLetter;
+                        }
+                    }
+
+                    @{ 
+                        // reset 
+                        currentLetter = String.Empty;
+                        areaLetter = alphabeticalList.FirstOrDefault().Name.Substring(0, 1).ToUpper();
+                    }
+                </ul>
+            </div>
+
+            if (numericList.Count() > 0)
+            {
+                <h4 id="number" class="manufacturer-list-title">@T("Catalog.ManufacturerAll.Numbers")</h4>
+                <div class="artlist artlist-grid artlist-6-cols artlist-boxed manufacturer-grid">
+                    @foreach (var item in numericList)
+                    {
+                        @RenderManufacturer(item);
+                    }
+                </div>
+            }
+            
+            <h4 id="@areaLetter" class="manufacturer-list-title">@areaLetter</h4>
+
+            <div class="artlist artlist-grid artlist-6-cols artlist-boxed manufacturer-grid">
+                @foreach (var item in alphabeticalList)
+                {
+                    currentLetter = item.Name.Substring(0, 1).ToUpper();
+
+                    if (!currentLetter.Equals(areaLetter))
+                    {
+                        @:</div>
+
+                        <h4 id="@currentLetter" class="manufacturer-list-title">@currentLetter</h4>
+
+                        @:<div class="artlist artlist-grid artlist-6-cols artlist-boxed manufacturer-grid">
+
+                        areaLetter = currentLetter;
+                    }
+
+                    @RenderManufacturer(item);
+                }
+            </div>
+        }
+        else
+        {
+
+		    <div class="artlist artlist-grid artlist-6-cols artlist-boxed manufacturer-grid">
+			    @foreach (var item in Model)
+			    {
+                    @RenderManufacturer(item);
+                }
+		    </div>
+        }
     </div>
 </div>
+
+@helper RenderManufacturer(ManufacturerModel item)
+{
+    var picture = item.PictureModel;
+    var url = Url.RouteUrl("Manufacturer", new { SeName = item.SeName });
+
+    <article class="art" data-id="@item.Id">
+        <div class="art-picture-block">
+            @if (picture != null && picture.ImageUrl.HasValue())
+            {
+                <a class="art-picture img-center-container" href="@url" title="@picture.Title">
+                    <img src="@picture.ImageUrl" alt="@picture.AlternateText" />
+                </a>
+            }
+        </div>
+        <div class="art-genericname">
+            <a href="@url" title="@item.Name">
+                <span>@item.Name</span>
+            </a>
+        </div>
+    </article>
+}
+
+<script type="text/javascript">
+    $(function () {
+        $('.manufacturer-nav .nav-link').click(function (e) {
+            e.preventDefault();
+            $.scrollTo(e.target.getAttribute('href'), 800);
+            return false;
+        });
+    });
+</script>

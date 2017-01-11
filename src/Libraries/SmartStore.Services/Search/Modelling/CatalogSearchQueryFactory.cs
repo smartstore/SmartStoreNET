@@ -96,6 +96,8 @@ namespace SmartStore.Services.Search.Modelling
 			ConvertCategory(query, routeData, origin);
 			ConvertManufacturer(query, routeData, origin);
 			ConvertRating(query, routeData, origin);
+			ConvertStock(query, routeData, origin);
+			ConvertDeliveryTime(query, routeData, origin);
 
 			OnConverted(query, routeData, origin);
 

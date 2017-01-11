@@ -232,8 +232,8 @@ $mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //
     height: 98%;
 } 
 
-.touch .megamenu-section .navbar:hover .megamenu-nav--prev i,
-.touch .megamenu-section .navbar:hover .megamenu-nav--next i,
+.touchevents .megamenu-section .navbar:hover .megamenu-nav--prev i,
+.touchevents .megamenu-section .navbar:hover .megamenu-nav--next i,
 .megamenu .megamenu-nav i {
     // TODO: (mh) adapt $mm-(light|dark)-color
     color: #000;
@@ -307,7 +307,7 @@ $mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //
 
 
 
-.touch .megamenu .nav-slider {
+.touchevents .megamenu .nav-slider {
 	overflow-x: auto !important;
 }
 

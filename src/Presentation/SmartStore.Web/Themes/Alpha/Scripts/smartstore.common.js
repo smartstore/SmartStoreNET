@@ -146,10 +146,6 @@
 			return str;
 		}
 
-		if (!Modernizr.csstransitions) {
-			$.fn.transition = $.fn.animate;
-		}
-
 		// adjust pnotify global defaults
 		if ($.pnotify) {
 			$.extend($.pnotify.defaults, {

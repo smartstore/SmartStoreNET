@@ -85,7 +85,7 @@
 		return undefined;
 	};
     
-    var NATIVE_SUPPORT = Modernizr.input.placeholder;
+    var NATIVE_SUPPORT = true;
     
     $.fn.placeholder = function() {
         return NATIVE_SUPPORT ? this : this.each(function() {

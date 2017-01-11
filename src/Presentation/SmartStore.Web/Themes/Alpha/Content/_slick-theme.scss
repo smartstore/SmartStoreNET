@@ -18,25 +18,35 @@ img.slick-loading {
 // ------------------------------------------------------
 
 .gal-box {
-    .slick-arrow {
+    .slick-arrow,
+    .gal-arrow {
         font-size: 2rem;
     }
     
-    .slick-arrow.slick-disabled {
+    .slick-arrow.slick-disabled,
+    .gal-arrow.gal-disabled {
         opacity: 0.2;
         background: transparent !important;
     }
 
-    .gal-nav {
-        .slick-arrow {
-            line-height: 1;
-            padding: 0;
-        }
+    .gal-nav .gal-arrow {
+        line-height: 1;
+        padding: 0;
     }
 }
 
+.gal .slick-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+
+    &.slick-prev { left: 0; right: auto; }
+    &.slick-next { left: auto; right: 0; }
+}
+
 .artlist-carousel {
-    .no-touch .slick-slider.slick-dotted {
+    .no-touchevents .slick-slider.slick-dotted {
         padding-left: 1rem;
         padding-right: 1rem;
     }
@@ -94,7 +104,7 @@ img.slick-loading {
     }
 }
 
-.touch .slick-arrow {
+.touchevents .slick-arrow {
     display: none !important;
 }
 

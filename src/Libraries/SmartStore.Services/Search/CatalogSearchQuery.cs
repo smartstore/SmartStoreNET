@@ -256,6 +256,11 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByRange("rate", fromRate, toRate, fromRate.HasValue, toRate.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
+		public CatalogSearchQuery WithDeliveryTimeIds(params int[] ids)
+		{
+			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField("deliveryid", x).ExactMatch().NotAnalyzed()).ToArray()));
+		}
+
 		#endregion
 	}
 }

@@ -288,14 +288,31 @@ namespace SmartStore.Services.Search.Modelling
 
 		protected virtual void ConvertRating(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
+			var fromRate = GetValueFor<double?>("r");
+
+			if (fromRate.HasValue)
+			{
+				query.WithRating(fromRate, null);
+			}
 		}
 
 		protected virtual void ConvertStock(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
+			var fromQuantity = GetValueFor<int?>("a");
+
+			if (fromQuantity.HasValue)
+			{
+				query.WithStockQuantity(fromQuantity, null);
+			}
 		}
 
 		protected virtual void ConvertDeliveryTime(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
+			var ids = GetValueFor<List<int>>("d");
+			if (ids != null && ids.Any())
+			{
+				query.WithDeliveryTimeIds(ids.ToArray());
+			}
 		}
 
 		protected virtual void OnConverted(CatalogSearchQuery query, RouteData routeData, string origin)

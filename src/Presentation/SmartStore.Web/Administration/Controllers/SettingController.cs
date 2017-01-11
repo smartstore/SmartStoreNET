@@ -1605,18 +1605,16 @@ namespace SmartStore.Admin.Controllers
 				model.SearchFieldsNote = T("Admin.Configuration.Settings.Search.SearchFieldsNote");
 			}
 
-			model.GlobalFilters = XmlHelper.Deserialize<List<SearchFilterDescriptor>>(settings.GlobalFilters);
+			model.GlobalFilters = XmlHelper.Deserialize<List<SearchFilterDescriptor>>(settings.GlobalFilters) ?? new List<SearchFilterDescriptor>();
 
-			// set default global filters
-			if (model.GlobalFilters == null || !model.GlobalFilters.Any())
+			// add missing global filter
+			var displayOrder = (model.GlobalFilters.Any() ? model.GlobalFilters.Max(x => x.DisplayOrder) : 0);
+			foreach (var fieldName in new string[] { "manufacturer", "rate", "price", "availability", "delivery" })
 			{
-				model.GlobalFilters = new List<SearchFilterDescriptor>
+				if (!model.GlobalFilters.Any(x => x.FieldName == fieldName))
 				{
-					new SearchFilterDescriptor { Enabled = true, DisplayOrder = 1, FieldName = "manufacturer" },
-					new SearchFilterDescriptor { Enabled = true, DisplayOrder = 2, FieldName = "rate" },
-					new SearchFilterDescriptor { Enabled = true, DisplayOrder = 3, FieldName = "price" },
-					new SearchFilterDescriptor { Enabled = true, DisplayOrder = 4, FieldName = "availability" }
-				};
+					model.GlobalFilters.Add(new SearchFilterDescriptor { Enabled = true, DisplayOrder = ++displayOrder, FieldName = fieldName });
+				}
 			}
 
 			// set friendly names for global filters
@@ -1635,6 +1633,9 @@ namespace SmartStore.Admin.Controllers
 						break;
 					case "availability":
 						filter.FriendlyName = T("Products.Availability");
+						break;
+					case "delivery":
+						filter.FriendlyName = T("Admin.Catalog.Products.Fields.DeliveryTime");
 						break;
 				}
 			}

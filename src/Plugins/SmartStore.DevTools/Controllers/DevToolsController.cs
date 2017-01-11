@@ -59,8 +59,7 @@ namespace SmartStore.DevTools.Controllers
 
             return View();
         }
-
-        [AdminAuthorize]
+        
         public ActionResult WidgetZone(string widgetZone)
         {
 			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);

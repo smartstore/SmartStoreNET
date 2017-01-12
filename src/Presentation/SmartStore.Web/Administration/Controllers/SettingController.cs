@@ -1605,41 +1605,6 @@ namespace SmartStore.Admin.Controllers
 				model.SearchFieldsNote = T("Admin.Configuration.Settings.Search.SearchFieldsNote");
 			}
 
-			model.GlobalFilters = XmlHelper.Deserialize<List<SearchFilterDescriptor>>(settings.GlobalFilters) ?? new List<SearchFilterDescriptor>();
-
-			// add missing global filter
-			var displayOrder = (model.GlobalFilters.Any() ? model.GlobalFilters.Max(x => x.DisplayOrder) : 0);
-			foreach (var fieldName in new string[] { "manufacturer", "rate", "price", "availability", "delivery" })
-			{
-				if (!model.GlobalFilters.Any(x => x.FieldName == fieldName))
-				{
-					model.GlobalFilters.Add(new SearchFilterDescriptor { Enabled = true, DisplayOrder = ++displayOrder, FieldName = fieldName });
-				}
-			}
-
-			// set friendly names for global filters
-			foreach (var filter in model.GlobalFilters)
-			{
-				switch (filter.FieldName)
-				{
-					case "manufacturer":
-						filter.FriendlyName = T("Admin.Catalog.Manufacturers");
-						break;
-					case "rate":
-						filter.FriendlyName = T("Admin.Catalog.ProductReviews");
-						break;
-					case "price":
-						filter.FriendlyName = T("Admin.Catalog.Products.Price");
-						break;
-					case "availability":
-						filter.FriendlyName = T("Products.Availability");
-						break;
-					case "delivery":
-						filter.FriendlyName = T("Admin.Catalog.Products.Fields.DeliveryTime");
-						break;
-				}
-			}
-
 			model.AvailableSearchModes = settings.SearchMode.ToSelectList().ToList();
 
 			model.AvailableSearchFields = new List<SelectListItem>
@@ -1653,6 +1618,41 @@ namespace SmartStore.Admin.Controllers
 				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.GTIN"), Value = "gtin" },
 				new SelectListItem { Text = T("Admin.Catalog.Products.Fields.ManufacturerPartNumber"), Value = "mpn" }
 			};
+
+			// global filters
+			Func<GlobalSearchFilterType, string> getFriendlyName = (type) =>
+			{
+				switch (type)
+				{
+					case GlobalSearchFilterType.Manufacturer:
+						return T("Admin.Catalog.Manufacturers");
+					case GlobalSearchFilterType.Price:
+						return T("Admin.Catalog.Products.Price");
+					case GlobalSearchFilterType.ReviewRate:
+						return T("Admin.Catalog.ProductReviews");
+					case GlobalSearchFilterType.Availability:
+						return T("Products.Availability");
+					case GlobalSearchFilterType.DeliveryTime:
+						return T("Admin.Catalog.Products.Fields.DeliveryTime");
+					default:
+						return null;
+				}
+			};
+
+			var storedGlobalFilters = XmlHelper.Deserialize<List<GlobalSearchFilterDescriptor>>(settings.GlobalFilters) ?? new List<GlobalSearchFilterDescriptor>();
+
+			foreach (GlobalSearchFilterType type in Enum.GetValues(typeof(GlobalSearchFilterType)))
+			{
+				var storedFilter = storedGlobalFilters.FirstOrDefault(x => x.Type == type);
+
+				model.GlobalFilters.Add(new GlobalSearchFilterDescriptor
+				{
+					Type = type,
+					Enabled = storedFilter != null ? storedFilter.Enabled : true,
+					DisplayOrder = storedFilter != null ? storedFilter.DisplayOrder : ((int)type + 1),
+					FriendlyName = getFriendlyName(type)
+				});
+			}
 
 			StoreDependingSettings.GetOverrideKeys(settings, model, storeScope, Services.Settings);
 

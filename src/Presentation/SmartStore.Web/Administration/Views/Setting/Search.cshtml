@@ -125,8 +125,8 @@
 							var filterIndex = Model.GlobalFilters.IndexOf(filter);
 							<tr>
 								<td>
-									@(filter.FriendlyName ?? filter.FieldName)
-									@Html.HiddenFor(model => model.GlobalFilters[filterIndex].FieldName)
+									@(filter.FriendlyName ?? filter.Type.ToString())
+									@Html.HiddenFor(model => model.GlobalFilters[filterIndex].Type)
 								</td>
 								<td class="ac">
 									@Html.SettingEditorFor(model => model.GlobalFilters[filterIndex].Enabled)

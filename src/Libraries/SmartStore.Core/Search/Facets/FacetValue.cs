@@ -47,5 +47,11 @@ namespace SmartStore.Core.Search.Facets
 			get;
 			private set;
 		}
+
+		public string FriendlyName
+		{
+			get;
+			set;
+		}
 	}
 }

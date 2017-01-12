@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Search.Facets;
 
@@ -49,9 +50,10 @@ namespace SmartStore.Core.Search
 			SpellCheckerMinQueryLength = 4;
 		}
 
-		// Language & Store
+		// Language, Currency & Store
 		public int? LanguageId { get; protected set; }
 		public string LanguageCulture { get; protected set; }
+		public string CurrencyCode { get; protected set; }
 		public int? StoreId { get; protected set; }
 
 		// Search term
@@ -120,6 +122,16 @@ namespace SmartStore.Core.Search
 
 			LanguageId = language.Id;
 			LanguageCulture = language.LanguageCulture;
+
+			return (this as TQuery);
+		}
+
+		public TQuery WithCurrency(Currency currency)
+		{
+			Guard.NotNull(currency, nameof(currency));
+			Guard.NotEmpty(currency.CurrencyCode, nameof(currency.CurrencyCode));
+
+			CurrencyCode = currency.CurrencyCode;
 
 			return (this as TQuery);
 		}

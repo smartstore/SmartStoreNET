@@ -1,9 +1,12 @@
 namespace SmartStore.Data.Migrations
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Data.Entity.Migrations;
 	using System.Linq;
+	using Core;
 	using Core.Domain.Configuration;
+	using Core.Search.Filter;
 	using Setup;
 
 	public partial class Search : DbMigration, IDataSeeder<SmartObjectContext>
@@ -99,6 +102,21 @@ namespace SmartStore.Data.Migrations
 				}
 
 				builder.Add("SearchSettings.SearchFields", string.Join(",", searchFields));
+
+				// global filters
+				var globalFilters = new List<GlobalSearchFilterDescriptor>();
+
+				foreach (GlobalSearchFilterType type in Enum.GetValues(typeof(GlobalSearchFilterType)))
+				{
+					globalFilters.Add(new GlobalSearchFilterDescriptor
+					{
+						Type = type,
+						Enabled = true,
+						DisplayOrder = (int)type + 1
+					});
+				}
+
+				builder.Add("SearchSettings.GlobalFilters", XmlHelper.Serialize(globalFilters));
 
 				searchSettingNames.Keys.Each(key => builder.Delete("CatalogSettings." + key));
 			});

@@ -33,11 +33,11 @@ namespace SmartStore.Services.Search.Modelling
 
 	public class CatalogSearchQueryFactory : ICatalogSearchQueryFactory
 	{
-		private readonly HttpContextBase _httpContext;
-		private readonly CatalogSettings _catalogSettings;
-		private readonly SearchSettings _searchSettings;
-		private readonly ICurrencyService _currencyService;
-		private readonly ICommonServices _services;
+		protected readonly HttpContextBase _httpContext;
+		protected readonly CatalogSettings _catalogSettings;
+		protected readonly SearchSettings _searchSettings;
+		protected readonly ICurrencyService _currencyService;
+		protected readonly ICommonServices _services;
 
 		public CatalogSearchQueryFactory(
 			HttpContextBase httpContext,
@@ -80,6 +80,7 @@ namespace SmartStore.Services.Search.Modelling
 			var query = new CatalogSearchQuery(fields.ToArray(), term, _searchSettings.SearchMode)
 				.OriginatesFrom(origin)
 				.WithLanguage(_services.WorkContext.WorkingLanguage)
+				.WithCurrency(_services.WorkContext.WorkingCurrency)
 				.VisibleIndividuallyOnly(true);
 
 			// Visibility
@@ -284,7 +285,7 @@ namespace SmartStore.Services.Search.Modelling
 
 			if (minPrice.HasValue || maxPrice.HasValue)
 			{
-				query.PriceBetween(minPrice, maxPrice, currency);
+				query.PriceBetween(minPrice, maxPrice);
 			}
 		}
 

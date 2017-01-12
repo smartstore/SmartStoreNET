@@ -501,13 +501,13 @@ namespace SmartStore.Services.Tests.Search
 
 			var eur = new Currency { CurrencyCode = "EUR" };
 
-			var result = Search(new CatalogSearchQuery().PriceBetween(100M, 200M, eur), products);
+			var result = Search(new CatalogSearchQuery().WithCurrency(eur).PriceBetween(100M, 200M), products);
 			Assert.That(result.Hits.Count(), Is.EqualTo(1));
 
-			result = Search(new CatalogSearchQuery().PriceBetween(100M, null, eur), products);
+			result = Search(new CatalogSearchQuery().WithCurrency(eur).PriceBetween(100M, null), products);
 			Assert.That(result.Hits.Count(), Is.EqualTo(2));
 
-			result = Search(new CatalogSearchQuery().PriceBetween(null, 100M, eur), products);
+			result = Search(new CatalogSearchQuery().WithCurrency(eur).PriceBetween(null, 100M), products);
 			Assert.That(result.Hits.Count(), Is.EqualTo(3));
 		}
 

@@ -199,7 +199,8 @@ namespace SmartStore.Web.Controllers
 					.WithCategoryIds(true, new int[] { categoryId })
 					.VisibleIndividuallyOnly(true)
 					.HasStoreId(_services.StoreContext.CurrentStore.Id)
-					.WithLanguage(_services.WorkContext.WorkingLanguage);
+					.WithLanguage(_services.WorkContext.WorkingLanguage)
+					.WithCurrency(_services.WorkContext.WorkingCurrency);
 
 				if (!hasFeaturedProductsCache.HasValue)
 				{
@@ -373,14 +374,16 @@ namespace SmartStore.Web.Controllers
 			{
 				CatalogSearchResult featuredProductsResult = null;
 
-				string cacheKey = ModelCacheEventConsumer.MANUFACTURER_HAS_FEATURED_PRODUCTS_KEY.FormatInvariant(manufacturerId, string.Join(",", customerRolesIds), _services.StoreContext.CurrentStore.Id);
+				string cacheKey = ModelCacheEventConsumer.MANUFACTURER_HAS_FEATURED_PRODUCTS_KEY.FormatInvariant(
+					manufacturerId, string.Join(",", customerRolesIds), _services.StoreContext.CurrentStore.Id);
 				var hasFeaturedProductsCache = _services.Cache.Get<bool?>(cacheKey);
 
 				var featuredProductsQuery = new CatalogSearchQuery()
 					.WithManufacturerIds(true, new int[] { manufacturerId })
 					.VisibleIndividuallyOnly(true)
 					.HasStoreId(_services.StoreContext.CurrentStore.Id)
-					.WithLanguage(_services.WorkContext.WorkingLanguage);
+					.WithLanguage(_services.WorkContext.WorkingLanguage)
+					.WithCurrency(_services.WorkContext.WorkingCurrency);
 
 				if (!hasFeaturedProductsCache.HasValue)
 				{

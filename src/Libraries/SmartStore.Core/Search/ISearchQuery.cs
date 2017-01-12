@@ -5,9 +5,10 @@ namespace SmartStore.Core.Search
 {
 	public interface ISearchQuery
 	{
-		// Language & STore
+		// Language, Currency & Store
 		int? LanguageId { get; }
 		string LanguageCulture { get; }
+		string CurrencyCode { get; }
 		int? StoreId { get; }
 
 		// Search term

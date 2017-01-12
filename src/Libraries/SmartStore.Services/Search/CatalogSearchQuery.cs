@@ -224,17 +224,18 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.ByRange("stockquantity", fromQuantity, toQuantity, fromQuantity.HasValue, toQuantity.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
-		public CatalogSearchQuery PriceBetween(decimal? fromPrice, decimal? toPrice, Currency currency)
+		public CatalogSearchQuery PriceBetween(decimal? fromPrice, decimal? toPrice)
 		{
-			Guard.NotNull(currency, nameof(currency));
+			Guard.NotEmpty(CurrencyCode, nameof(CurrencyCode));
 
-			var fieldName = "price_c-" + currency.CurrencyCode.EmptyNull().ToLower();
+			var fieldName = "price_c-" + CurrencyCode.EmptyNull().ToLower();
 
 			return WithFilter(SearchFilter.ByRange(fieldName,
 				fromPrice.HasValue ? decimal.ToDouble(fromPrice.Value) : (double?)null,
 				toPrice.HasValue ? decimal.ToDouble(toPrice.Value) : (double?)null,
 				fromPrice.HasValue,
-				toPrice.HasValue).Mandatory().ExactMatch().NotAnalyzed());
+				toPrice.HasValue).Mandatory().ExactMatch().NotAnalyzed()
+			);
 		}
 
 		public CatalogSearchQuery CreatedBetween(DateTime? fromUtc, DateTime? toUtc)

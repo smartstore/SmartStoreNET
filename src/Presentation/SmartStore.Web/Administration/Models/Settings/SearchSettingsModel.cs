@@ -8,6 +8,11 @@ namespace SmartStore.Admin.Models.Settings
 {
 	public partial class SearchSettingsModel
 	{
+		public SearchSettingsModel()
+		{
+			GlobalFilters = new List<GlobalSearchFilterDescriptor>();
+		}
+
 		public string SearchFieldsNote { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.SearchMode")]
@@ -30,6 +35,6 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.InstantSearchTermMinLength")]
 		public int InstantSearchTermMinLength { get; set; }
 
-		public List<SearchFilterDescriptor> GlobalFilters { get; set; }
+		public List<GlobalSearchFilterDescriptor> GlobalFilters { get; set; }
 	}
 }

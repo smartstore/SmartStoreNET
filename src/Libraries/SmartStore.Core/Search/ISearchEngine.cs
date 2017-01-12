@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core.Search.Facets;
-using SmartStore.Core.Search.Filter;
 
 namespace SmartStore.Core.Search
 {
@@ -35,8 +34,6 @@ namespace SmartStore.Core.Search
 		/// </summary>
 		/// <returns>Search hits</returns>
 		IEnumerable<ISearchHit> Search();
-
-		IDictionary<string, FacetDescriptor> CreateFacets(IEnumerable<GlobalSearchFilterDescriptor> filters);
 
 		/// <summary>
 		/// Gets the facet map for drilldown navigation

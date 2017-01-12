@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Settings;
 using SmartStore.Admin.Validators.Settings;
@@ -25,6 +26,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
+using SmartStore.Core.Search.Facets;
 using SmartStore.Core.Search.Filter;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
@@ -1620,37 +1622,39 @@ namespace SmartStore.Admin.Controllers
 			};
 
 			// global filters
-			Func<GlobalSearchFilterType, string> getFriendlyName = (type) =>
+			Func<string, string> getFriendlyName = (key) =>
 			{
-				switch (type)
+				switch (key)
 				{
-					case GlobalSearchFilterType.Manufacturer:
+					case "manufacturer":
 						return T("Admin.Catalog.Manufacturers");
-					case GlobalSearchFilterType.Price:
+					case "price":
 						return T("Admin.Catalog.Products.Price");
-					case GlobalSearchFilterType.ReviewRate:
+					case "rate":
 						return T("Admin.Catalog.ProductReviews");
-					case GlobalSearchFilterType.Availability:
-						return T("Products.Availability");
-					case GlobalSearchFilterType.DeliveryTime:
+					case "deliverytime":
 						return T("Admin.Catalog.Products.Fields.DeliveryTime");
 					default:
 						return null;
 				}
 			};
 
-			var storedGlobalFilters = XmlHelper.Deserialize<List<GlobalSearchFilterDescriptor>>(settings.GlobalFilters) ?? new List<GlobalSearchFilterDescriptor>();
+			var globalFilters = settings.GlobalFilters.HasValue()
+				? JsonConvert.DeserializeObject<List<GlobalSearchFilterDescriptor>>(settings.GlobalFilters)
+				: new List<GlobalSearchFilterDescriptor>();
 
-			foreach (GlobalSearchFilterType type in Enum.GetValues(typeof(GlobalSearchFilterType)))
+			var displayOrder = (globalFilters.Any() ? globalFilters.Max(x => x.DisplayOrder) : 0);
+
+			foreach (var fieldName in new string[] { "manufacturer", "price", "rate", "deliverytime" })
 			{
-				var storedFilter = storedGlobalFilters.FirstOrDefault(x => x.Type == type);
+				var filter = globalFilters.FirstOrDefault(x => x.FieldName.IsCaseInsensitiveEqual(fieldName));
 
 				model.GlobalFilters.Add(new GlobalSearchFilterDescriptor
 				{
-					Type = type,
-					Enabled = storedFilter != null ? storedFilter.Enabled : true,
-					DisplayOrder = storedFilter != null ? storedFilter.DisplayOrder : ((int)type + 1),
-					FriendlyName = getFriendlyName(type)
+					FieldName = fieldName,
+					Disabled = filter != null ? filter.Disabled : false,
+					DisplayOrder = filter != null ? filter.DisplayOrder : ++displayOrder,
+					FriendlyName = getFriendlyName(fieldName)
 				});
 			}
 
@@ -1687,7 +1691,7 @@ namespace SmartStore.Admin.Controllers
 			settings.InstantSearchNumberOfProducts = model.InstantSearchNumberOfProducts;
 			settings.InstantSearchTermMinLength = model.InstantSearchTermMinLength;
 			settings.ShowProductImagesInInstantSearch = model.ShowProductImagesInInstantSearch;
-			settings.GlobalFilters = XmlHelper.Serialize(model.GlobalFilters);
+			settings.GlobalFilters = JsonConvert.SerializeObject(model.GlobalFilters);
 
 			StoreDependingSettings.UpdateSettings(settings, form, storeScope, Services.Settings);
 

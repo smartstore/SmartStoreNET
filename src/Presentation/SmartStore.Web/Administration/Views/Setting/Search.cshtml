@@ -115,21 +115,21 @@
 					<thead>
 						<tr>
 							<th>@T("Search.FilterBy")</th>
-							<th class="ac">@T("Common.Enabled")</th>
+							<th class="ac">@T("Common.Deactivated")</th>
 							<th>@T("Common.DisplayOrder")</th>
 						</tr>
 					</thead>
 					<tbody>
-						@foreach (var filter in Model.GlobalFilters.OrderByDescending(x => x.Enabled).ThenBy(x => x.DisplayOrder))
+						@foreach (var filter in Model.GlobalFilters.OrderByDescending(x => !x.Disabled).ThenBy(x => x.DisplayOrder))
 						{
 							var filterIndex = Model.GlobalFilters.IndexOf(filter);
 							<tr>
 								<td>
-									@(filter.FriendlyName ?? filter.Type.ToString())
-									@Html.HiddenFor(model => model.GlobalFilters[filterIndex].Type)
+									@(filter.FriendlyName ?? filter.FieldName)
+									@Html.HiddenFor(model => model.GlobalFilters[filterIndex].FieldName)
 								</td>
 								<td class="ac">
-									@Html.SettingEditorFor(model => model.GlobalFilters[filterIndex].Enabled)
+									@Html.SettingEditorFor(model => model.GlobalFilters[filterIndex].Disabled)
 								</td>
 								<td>
 									@Html.SettingEditorFor(model => model.GlobalFilters[filterIndex].DisplayOrder, null, new { small = true })

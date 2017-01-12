@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Plugins;
@@ -26,16 +27,18 @@ namespace SmartStore.Services.Media.Storage
 			get { return "MediaStorage.SmartStoreDatabase"; }
 		}
 
+		public Stream OpenRead(MediaItem media)
+		{
+			Guard.NotNull(media, nameof(media));
+
+			return media.Entity?.MediaStorage?.Data?.ToStream();
+		}
+
 		public byte[] Load(MediaItem media)
 		{
 			Guard.NotNull(media, nameof(media));
 
-			if ((media.Entity.MediaStorageId ?? 0) != 0 && media.Entity.MediaStorage != null)
-			{
-				return media.Entity.MediaStorage.Data;
-			}
-
-			return new byte[0];
+			return media.Entity?.MediaStorage?.Data ?? new byte[0];
 		}
 
 		public Task<byte[]> LoadAsync(MediaItem media)

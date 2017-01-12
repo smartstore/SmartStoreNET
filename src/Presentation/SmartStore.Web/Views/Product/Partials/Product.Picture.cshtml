@@ -16,7 +16,7 @@
 						{
 							var picture = Model.PictureModels[i];
 							<div class="gal-item">
-								<a class="gal-item-viewport" href="@picture.FullSizeImageUrl" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default" data-picture-id="@picture.PictureId">
+								<a class="gal-item-viewport" href="@picture.FullSizeImageUrl" data-width="@picture.FullSizeImageWidth" data-height="@picture.FullSizeImageHeight" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default" data-picture-id="@picture.PictureId">
 									<img class="gal-item-content" src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
 								</a>
 							</div>

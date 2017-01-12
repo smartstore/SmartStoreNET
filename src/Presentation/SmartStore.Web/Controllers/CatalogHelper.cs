@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using SmartStore.Collections;
 using SmartStore.Core.Caching;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
@@ -375,6 +376,8 @@ namespace SmartStore.Web.Controllers
 				ThumbImageUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.ProductThumbPictureSizeOnProductDetailsPage),
 				ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
 				FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
+				FullSizeImageWidth = picture.Width,
+				FullSizeImageHeight = picture.Height,
 				Title = model.Name,
 				AlternateText = model.AlternateText
 			};
@@ -407,55 +410,62 @@ namespace SmartStore.Web.Controllers
 			else
 				defaultPictureSize = _mediaSettings.ProductDetailsPictureSize;
 
-			if (pictures.Count > 0)
+			using (var scope = new DbContextScope(_services.DbContext, autoCommit: false))
 			{
-				if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)
-				{
-					// show all images
-					foreach (var picture in pictures)
-					{
-						model.PictureModels.Add(CreatePictureModel(model, picture, _mediaSettings.ProductDetailsPictureSize));
+				// Scope this part: it's quite possible that IPictureService.UpdatePicture()
+				// is called when a picture is new or its size is missing in DB.
 
-						if (defaultPicture == null && combiAssignedImages != null && combiAssignedImages.Contains(picture.Id))
-						{
-							model.GalleryStartIndex = model.PictureModels.Count - 1;
-							defaultPicture = picture;
-						}
-					}
-				}
-				else
+				if (pictures.Count > 0)
 				{
-					// images not belonging to any combination...
-					allCombinationImageIds = allCombinationImageIds ?? new List<int>();
-                    foreach (var picture in pictures.Where(p => !allCombinationImageIds.Contains(p.Id)))
+					if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)
 					{
-						model.PictureModels.Add(CreatePictureModel(model, picture, _mediaSettings.ProductDetailsPictureSize));
-					}
-
-					// plus images belonging to selected combination
-					if (combiAssignedImages != null)
-					{
-						foreach (var picture in pictures.Where(p => combiAssignedImages.Contains(p.Id)))
+						// show all images
+						foreach (var picture in pictures)
 						{
 							model.PictureModels.Add(CreatePictureModel(model, picture, _mediaSettings.ProductDetailsPictureSize));
 
-							if (defaultPicture == null)
+							if (defaultPicture == null && combiAssignedImages != null && combiAssignedImages.Contains(picture.Id))
 							{
 								model.GalleryStartIndex = model.PictureModels.Count - 1;
 								defaultPicture = picture;
 							}
 						}
 					}
+					else
+					{
+						// images not belonging to any combination...
+						allCombinationImageIds = allCombinationImageIds ?? new List<int>();
+						foreach (var picture in pictures.Where(p => !allCombinationImageIds.Contains(p.Id)))
+						{
+							model.PictureModels.Add(CreatePictureModel(model, picture, _mediaSettings.ProductDetailsPictureSize));
+						}
+
+						// plus images belonging to selected combination
+						if (combiAssignedImages != null)
+						{
+							foreach (var picture in pictures.Where(p => combiAssignedImages.Contains(p.Id)))
+							{
+								model.PictureModels.Add(CreatePictureModel(model, picture, _mediaSettings.ProductDetailsPictureSize));
+
+								if (defaultPicture == null)
+								{
+									model.GalleryStartIndex = model.PictureModels.Count - 1;
+									defaultPicture = picture;
+								}
+							}
+						}
+					}
+
+					if (defaultPicture == null)
+					{
+						model.GalleryStartIndex = 0;
+						defaultPicture = pictures.First();
+					}
 				}
 
-				if (defaultPicture == null)
-				{
-					model.GalleryStartIndex = 0;
-					defaultPicture = pictures.First();
-				}
+				scope.Commit();
 			}
 
-			// default picture
 			if (defaultPicture == null)
 			{
 				model.DefaultPictureModel = new PictureModel

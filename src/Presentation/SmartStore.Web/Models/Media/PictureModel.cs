@@ -9,7 +9,9 @@ namespace SmartStore.Web.Models.Media
         public string ThumbImageUrl { get; set; }
         public string ImageUrl { get; set; }
         public string FullSizeImageUrl { get; set; }
-        public string Title { get; set; }
+		public int? FullSizeImageWidth { get; set; }
+		public int? FullSizeImageHeight { get; set; }
+		public string Title { get; set; }
         public string AlternateText { get; set; }
     }
 }

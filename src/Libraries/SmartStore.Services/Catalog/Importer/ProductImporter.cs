@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -551,7 +552,8 @@ namespace SmartStore.Services.Catalog.Importer
 									displayOrder = (currentProductPictures.Any() ? currentProductPictures.Select(x => x.DisplayOrder).Max() : 0);
 								}
 
-								pictureBinary = _pictureService.ValidatePicture(pictureBinary);
+								var size = Size.Empty;
+								pictureBinary = _pictureService.ValidatePicture(pictureBinary, out size);
 								pictureBinary = _pictureService.FindEqualPicture(pictureBinary, currentPictures, out equalPictureId);
 
 								if (pictureBinary != null && pictureBinary.Length > 0)
@@ -560,6 +562,9 @@ namespace SmartStore.Services.Catalog.Importer
 									var newPicture = _pictureService.InsertPicture(pictureBinary, image.MimeType, seoName, true, false, false);
 									if (newPicture != null)
 									{
+										newPicture.Width = size.Width;
+										newPicture.Height = size.Height;
+
 										var mapping = new ProductPicture
 										{
 											ProductId = row.Entity.Id,

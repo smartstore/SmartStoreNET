@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SmartStore.Core.IO;
@@ -29,12 +30,16 @@ namespace SmartStore.Services.Media.Storage
 			return _fileSystem.Combine(media.Path, media.GetFileName());
 		}
 
+		public Stream OpenRead(MediaItem media)
+		{
+			return _fileSystem.GetFile(GetPicturePath(media))?.OpenRead();
+		}
+
 		public byte[] Load(MediaItem media)
 		{
 			Guard.NotNull(media, nameof(media));
 
 			var filePath = GetPicturePath(media);
-
 			return _fileSystem.ReadAllBytes(filePath) ?? new byte[0];
 		}
 
@@ -43,7 +48,6 @@ namespace SmartStore.Services.Media.Storage
 			Guard.NotNull(media, nameof(media));
 
 			var filePath = GetPicturePath(media);
-
 			return (await _fileSystem.ReadAllBytesAsync(filePath)) ?? new byte[0];
 		}
 

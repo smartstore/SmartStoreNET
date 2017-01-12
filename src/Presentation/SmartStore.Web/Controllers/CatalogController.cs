@@ -175,6 +175,8 @@ namespace SmartStore.Web.Controllers
 							PictureId = x.PictureId.GetValueOrDefault(),
 							Size = pictureSize,
 							FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
+							FullSizeImageWidth = picture.Width,
+							FullSizeImageHeight = picture.Height,
 							ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideCategoryDefaultPictures),
                             Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), subCatName),
                             AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), subCatName)

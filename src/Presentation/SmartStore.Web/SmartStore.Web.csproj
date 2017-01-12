@@ -991,7 +991,6 @@
     <Content Include="Themes\Alpha\Content\smart-gallery\js\blueimp-gallery-vimeo.js" />
     <Content Include="Themes\Alpha\Content\smart-gallery\js\blueimp-gallery-youtube.js" />
     <Content Include="Themes\Alpha\Content\smart-gallery\js\blueimp-gallery.js" />
-    <Content Include="Themes\Alpha\Content\smart-gallery\js\jquery.elevatezoom.js" />
     <Content Include="Themes\Alpha\Content\smart-gallery\js\smartstore.smart-gallery.js" />
     <Content Include="Themes\Alpha\Content\images\ajax_loader_small.gif" />
     <Content Include="Themes\Alpha\Content\images\color-overlay.png" />

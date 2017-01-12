@@ -23,9 +23,21 @@ namespace SmartStore.Core.Domain.Media
 		[DataMember]
 		public string MimeType { get; set; }
 
-        /// <summary>
-        /// Gets or sets the SEO friednly filename of the picture
-        /// </summary>
+		/// <summary>
+		/// Gets or sets the picture width
+		/// </summary>
+		[DataMember]
+		public int? Width { get; set; }
+
+		/// <summary>
+		/// Gets or sets the picture height
+		/// </summary>
+		[DataMember]
+		public int? Height { get; set; }
+
+		/// <summary>
+		/// Gets or sets the SEO friednly filename of the picture
+		/// </summary>
 		[DataMember]
 		public string SeoFilename { get; set; }
 

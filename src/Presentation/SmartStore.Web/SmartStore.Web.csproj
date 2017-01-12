@@ -963,7 +963,6 @@
     <Content Include="Themes\Alpha\Content\bs4\js\bootstrap-colorpicker-globalinit.js" />
     <Content Include="Themes\Alpha\Content\bs4\js\bootstrap-colorpicker.js" />
     <Content Include="Themes\Alpha\Content\bs4\js\bootstrap-datetimepicker.js" />
-    <Content Include="Themes\Alpha\Content\bs4\js\bootstrap-typeahead.js" />
     <Content Include="Themes\Alpha\Content\css\font-awesome.css" />
     <Content Include="Themes\Alpha\Content\css\font-awesome.min.css" />
     <Content Include="Themes\Alpha\Content\css\fonts\fontawesome-webfont.svg" />
@@ -1446,19 +1445,16 @@
     <Content Include="Themes\AlphaOld\Content\images\ajax_loader_small.gif" />
     <Content Include="Themes\AlphaOld\Content\images\loading.gif" />
     <Content Include="Themes\AlphaOld\preview.png" />
+    <Content Include="Themes\Alpha\Scripts\Drift.min.js" />
+    <Content Include="Themes\Alpha\Scripts\Drift.js" />
     <Content Include="Themes\Alpha\Scripts\hammer.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.addeasing.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.ba-outside-events.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.ba-outside-events.min.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.bootstrap-touchspin.js" />
-    <Content Include="Themes\Alpha\Scripts\jquery.elevatezoom.js" />
-    <Content Include="Themes\Alpha\Scripts\jquery.menu-aim.js" />
-    <Content Include="Themes\Alpha\Scripts\jquery.mobile-events.min.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.pnotify.js" />
-    <Content Include="Themes\Alpha\Scripts\jquery.preload.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.requestAnimationFrame.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.scrollTo.js" />
-    <Content Include="Themes\Alpha\Scripts\jquery.serialScroll.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.sortable.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.transit.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.validate.unobtrusive.custom.js" />
@@ -1474,7 +1470,6 @@
     <Content Include="Themes\Alpha\Scripts\public.voting.js" />
     <Content Include="Themes\Alpha\Scripts\select2.js" />
     <Content Include="Themes\Alpha\Scripts\select2.min.js" />
-    <Content Include="Themes\Alpha\Scripts\smartstore.column-equalizer.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.common.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.articlelist.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.doAjax.js" />
@@ -1485,9 +1480,6 @@
     <Content Include="Themes\Alpha\Scripts\smartstore.jquery.utils.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.megamenu.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.keynav.js" />
-    <Content Include="Themes\Alpha\Scripts\smartstore.navbar.js" />
-    <Content Include="Themes\Alpha\Scripts\smartstore.placeholder.js" />
-    <Content Include="Themes\Alpha\Scripts\smartstore.scrollbutton.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.selectwrapper.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.smartgallery.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.system.js" />
@@ -1921,6 +1913,7 @@
     <Content Include="Views\Product\Partials\Product.Picture.cshtml" />
     <Content Include="Views\Product\Partials\Product.Info.cshtml" />
     <Content Include="Views\Product\Partials\Product.SideBar.cshtml" />
+    <Content Include="Themes\Alpha\Content\_drift-theme.scss" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

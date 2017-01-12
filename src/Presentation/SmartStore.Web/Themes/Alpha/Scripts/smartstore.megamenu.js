@@ -68,7 +68,7 @@
                     }
                 }
 
-                if ($("html").hasClass("touch")) {
+                if ($("html").hasClass("touchevents")) {
 
                     // Handle opening events for touch devices
 
@@ -138,7 +138,7 @@
                 // correct dropdown position
                 if (isSimple) {
 
-                    var event = $("html").hasClass("touch") ? "click" : "mouseenter";
+                    var event = $("html").hasClass("touchevents") ? "click" : "mouseenter";
 
                     navElems.on(event, function (e) {
                         var navItem = $(this);

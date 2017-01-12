@@ -15,20 +15,18 @@
 	opacity: 0;
 }
 .smartgallery-overlay.in {
-	opacity: 0.3;
+	opacity: 0.7;
 }
 
 
 .blueimp-gallery {
-	left: 40px;
-	right: 40px;
-	top: 40px;
-	bottom: 40px;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
 	background: #fff;
-	border: 1px solid rgba(0,0,0, 0.25);
-	border-radius: 4px;
-	border-top-right-radius: 0;
-	box-shadow: 0px 4px 20px rgba(0,0,0, 0.35);
+	border-radius: 0;
+	box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
 	transform: translate(0, -75px) scale(0.9, 0.9);
 }
 
@@ -73,7 +71,6 @@
 	opacity: 1 !important;
 	padding: 8px 12px;
 	padding-top: 2px;
-	border-bottom-left-radius: 6px;
 	background-color: #c5c5c5;
 	color: #fff;
 	margin: 0;

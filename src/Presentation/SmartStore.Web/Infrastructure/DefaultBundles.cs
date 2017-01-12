@@ -19,7 +19,6 @@ namespace SmartStore.Web.Infrastructure
 				"~/Content/image-gallery/js/blueimp-gallery.js",
 				//"~/Content/image-gallery/js/blueimp-gallery-fullscreen.js",
 				"~/Content/image-gallery/js/blueimp-gallery-indicator.js",
-				"~/Scripts/jquery.elevatezoom.js",
 				"~/Scripts/smartstore.smartgallery.js"));
 
 			bundles.Add(new CustomStyleBundle("~/css/image-gallery").Include(
@@ -36,7 +35,6 @@ namespace SmartStore.Web.Infrastructure
 				"~/Themes/Alpha/Content/smart-gallery/js/blueimp-gallery.js",
 				//"~/Themes/Alpha/Content/smart-gallery/js/blueimp-gallery-fullscreen.js",
 				"~/Themes/Alpha/Content/smart-gallery/js/blueimp-gallery-indicator.js",
-				"~/Themes/Alpha/Content/smart-gallery/js/jquery.elevatezoom.js",
 				"~/Themes/Alpha/Content/smart-gallery/js/smartstore.smart-gallery.js"));
 
 			// TODO: (mc) change pathes once work is finished

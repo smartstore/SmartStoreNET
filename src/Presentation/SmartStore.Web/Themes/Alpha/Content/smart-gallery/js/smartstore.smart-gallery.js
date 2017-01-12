@@ -10,29 +10,59 @@
 	var isTouch = Modernizr.touchevents;
 
 	var defaultZoomOpts = {
-		//responsive: true,
-	    zoomType: 'window',
-	    cursor: 'pointer',
-	    easing: true,
-	    easingDuration: 400,
-	    borderSize: 1,
-	    borderColour: "#999",
-	    lensFadeIn: 400,
-	    lensFadeOut: 400,
-
-	    // zoomType 'lens' options
-	    lensShape: "round",
-	    //lensSize: 250,
-	    containLensZoom: false,
-
-		// zoomType 'window' options
-	    zoomWindowFadeIn: 200,
-	    zoomWindowFadeOut: 200,
-	    zoomTintFadeIn: 400,
-	    zoomTintFadeOut: 400,
-	    zoomWindowOffetx: 10,
-	    zoomWindowWidth: null, // null to calculate
-	    zoomWindowHeight: null // null to calculate
+		// Prefix for generated element class names (e.g. `my-ns` will
+		// result in classes such as `my-ns-pane`. Default `drift-`
+		// prefixed classes will always be added as well.
+		namespace: null,
+		// Whether the ZoomPane should show whitespace when near the edges.
+		showWhitespaceAtEdges: false,
+		// Whether the inline ZoomPane should stay inside
+		// the bounds of its image.
+		containInline: true,
+		// How much to offset the ZoomPane from the
+		// interaction point when inline.
+		inlineOffsetX: 0,
+		inlineOffsetY: 0,
+		// A DOM element to append the inline ZoomPane to.
+		inlineContainer: document.body,
+		// Which trigger attribute to pull the ZoomPane image source from.
+		sourceAttribute: 'data-zoom',
+		// How much to magnify the trigger by in the ZoomPane.
+		// (e.g., `zoomFactor: 3` will result in a 900 px wide ZoomPane image
+		// if the trigger is displayed at 300 px wide)
+		zoomFactor: 3,
+		// A DOM element to append the non-inline ZoomPane to.
+		// Required if `inlinePane !== true`.
+		paneContainer: document.body,
+		// When to switch to an inline ZoomPane. This can be a boolean or
+		// an integer. If `true`, the ZoomPane will always be inline,
+		// if `false`, it will switch to inline when `windowWidth <= inlinePane`
+		inlinePane: 768,
+		// If `true`, touch events will trigger the zoom, like mouse events.
+		handleTouch: true,
+		// If present (and a function), this will be called
+		// whenever the ZoomPane is shown.
+		onShow: null,
+		// If present (and a function), this will be called
+		// whenever the ZoomPane is hidden.
+		onHide: null,
+		// Add base styles to the page. See the "Theming"
+		// section of README.md for more information.
+		injectBaseStyles: true,
+		// An optional number that determines how long to wait before
+		// showing the ZoomPane because of a `mouseenter` event.
+		hoverDelay: 150,
+		// An optional number that determines how long to wait before
+		// showing the ZoomPane because of a `touchstart` event.
+		// It's unlikely that you would want to use this option, since
+		// "tap and hold" is much more intentional than a hover event.
+		touchDelay: 0,
+		// If true, a bounding box will show the area currently being previewed
+		// during mouse hover
+		hoverBoundingBox: true,
+		// If true, a bounding box will show the area currently being previewed
+		// during touch events
+		touchBoundingBox: true
 	};
 	
 	function SmartGallery( element, options ) {
@@ -55,6 +85,8 @@
 				}
 			}
 
+			this.zoomWindowContainer = $('.zoom-window-container');
+
 			this.initNav();
 			this.initGallery();
 
@@ -64,314 +96,9 @@
 
 			if ($.isPlainObject(opts.box) && opts.box.enabled) {
 				this.initBox();
+				this.initModal();
 			}
 		};
-
-		this.initNav2 = function () {
-			if (!self.nav) {
-				var nav = el.find('.gal-nav');
-				if (nav.length === 0) {
-					return;
-				}
-
-				self.nav = nav;
-			}
-
-			if (nav.hasClass('slick-initialized')) {
-				nav.slick('unslick');
-			}
-
-			nav.slick({
-				infinite: false,
-				vertical: true,
-				dots: false,
-				arrows: true,
-				cssEase: 'ease-in-out',
-				speed: 250,
-				useCSS: true,
-				useTransform: true,
-				waitForAnimate: true,
-				prevArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle slick-prev"><i class="fa fa-angle-up" style="vertical-align: top"></i></button>',
-				nextArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle slick-next"><i class="fa fa-angle-down"></i></button>',
-				respondTo: 'slider',
-				slidesToShow: 6,
-				slidesToScroll: 6,
-				//asNavFor: '.gal',
-				focusOnSelect: true,
-				swipe: false,
-				initialSlide: opts.startIndex
-			});
-
-			nav.off('.gal');
-
-			nav.on('mouseenter.gal click.gal', '.gal-item', function (e) {
-				e.preventDefault();
-				var toIdx = $(this).data('slick-index');
-				
-				self.gallery.slick("slickGoTo", toIdx);
-
-				if (e.type === "click") {
-					// TODO ...
-				}
-
-				return false;
-			});
-
-			nav.on('mouseleave.gal', function (e) {
-				// Restore actual selected image
-				var actualIdx = nav.find('.slick-current').data('slick-index');
-				self.gallery.slick("slickGoTo", actualIdx);
-			});
-
-			nav.on('click.gal', '.gal-item', function (e) {
-				// sync selection with gallery
-				e.preventDefault();
-				var toIdx = $(this).data('slick-index');
-				nav.find('.slick-current').removeClass('slick-current');
-				$(this).addClass('slick-current');
-
-				var slick = nav.slick('getSlick');
-				slick.currentSlide = toIdx;
-				slick.setSlideClasses(toIdx);
-
-				return false;
-			});
-		}
-
-		this.initNav = function () {
-			self.nav = (nav = (self.nav || el.find('.gal-nav')));
-			if (nav.length === 0)
-				return;
-
-			var isInitialized = nav.hasClass('gal-initialized');
-
-			nav.off('.gal');
-
-			var list = self.navList = nav.find('.gal-list').first(),
-				track = self.navTrack = list.find('.gal-track').first(),
-				items = list.find('.gal-item'),
-				itemHeight = items.first().outerHeight(true);
-			
-			self.navItemsCount = items.length;
-
-			items.each(function (i, el) {
-				var $el = $(this);
-				$el.attr('data-gal-index', i);
-			});
-
-			if (items.length > opts.thumbsToShow) {
-				if (!isInitialized) {
-					self.navPrevArrow = $('<button type="button" class="btn btn-secondary btn-flat btn-circle gal-arrow gal-prev gal-disabled"><i class="fa fa-angle-up" style="vertical-align: top"></i></button>').prependTo(nav);
-					self.navNextArrow = $('<button type="button" class="btn btn-secondary btn-flat btn-circle gal-arrow gal-next gal-disabled"><i class="fa fa-angle-down"></i></button>').appendTo(nav);
-				}
-
-				list.height(itemHeight * opts.thumbsToShow);
-
-				nav.on('click.gal', '.gal-arrow', function (e) {
-					e.preventDefault();
-					var btn = $(this);
-
-					if (btn.hasClass('gal-disabled')) {
-						return;
-					}
-					else if (btn.hasClass('gal-prev')) {
-						self._slideToPrevNavPage();
-					}
-					else if (btn.hasClass('gal-next')) {
-						self._slideToNextNavPage();
-					}
-
-					return false;
-				});
-			}
-
-			self._selectNavItem(opts.startIndex, isInitialized);
-
-			nav.on('mouseenter.gal click.gal', '.gal-item', function (e) {
-				e.preventDefault();
-
-				if (e.type === "mouseenter") {
-					nav.data("glimpse", true);
-				}
-
-				var toIdx = $(this).data('gal-index');
-				self.gallery.slick("slickGoTo", toIdx);
-
-				if (e.type === "click") {
-					// sync with gallery
-					self._selectNavItem(toIdx, true);
-				}
-
-				return false;
-			})
-			.on('mouseleave.gal', function (e) {
-				// Restore actual selected image
-				var actualIdx = nav.find('.gal-current').data('gal-index');
-				self.gallery.slick("slickGoTo", actualIdx);
-				nav.data("glimpse", false);
-			});
-
-			nav.addClass("gal-initialized");
-		}
-
-		this._selectNavItem = function (idx, sync) {
-			var curItem = self.nav.find('.gal-current');
-			var curIdx = curItem.data('gal-index');
-			if (curIdx === idx)
-				return;
-
-			curItem.removeClass('gal-current');
-			curItem = self.nav.find('[data-gal-index=' + idx + ']');
-			curItem.addClass('gal-current');
-
-			var page = Math.floor(idx / opts.thumbsToShow);
-			self._slideToNavPage(page);
-
-			if (sync) {
-				self.gallery.slick('slickGoTo', idx);
-			}
-		}
-
-		this._slideToPrevNavPage = function () {
-			var curPage = self.nav.data('current-page');
-			self._slideToNavPage(curPage - 1);
-		}
-
-		this._slideToNextNavPage = function () {
-			var curPage = self.nav.data('current-page');
-			self._slideToNavPage(curPage + 1);
-		}
-
-		this._slideToNavPage = function(page) {
-			if (self.nav.data('current-page') !== page) {
-				self.nav.data('current-page', page);
-
-				var hasArrows = self.navPrevArrow && self.navNextArrow;
-
-				if (page === 0 && hasArrows) {
-					self.navPrevArrow.addClass('gal-disabled');
-					self.navNextArrow.removeClass('gal-disabled');
-				}
-				else if (page > 0 && hasArrows) {
-					self.navPrevArrow.removeClass('gal-disabled');
-					var isLastPage = page >= Math.floor(self.navItemsCount / opts.thumbsToShow);
-					self.navNextArrow.toggleClass('gal-disabled', isLastPage);
-				}
-
-				var navListHeight = self.navList.height();
-				var maxOffsetY = (self.navTrack.height() - navListHeight) * -1;
-				var offsetY = navListHeight * page * -1;
-				self.navTrack.css(Modernizr.prefixedCSS('transform'), 'translate3d(0, ' + Math.max(offsetY, maxOffsetY) + 'px, 0)');
-			}
-		}
-
-		this.initGallery = function () {
-			var gal = el.find(".gal");
-			if (gal.length === 0) {
-				return;
-			}
-
-			self.gallery = gal;
-
-			var options = {
-				infinite: false,
-				lazyLoad: "ondemand",
-				dots: true,
-				arrows: false,
-				//prevArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle slick-prev"><i class="fa fa-angle-left"></i></button>',
-				//nextArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle slick-next"><i class="fa fa-angle-right"></i></button>',
-				cssEase: 'ease-in-out',
-				speed: isTouch ? 250 : 0,
-				useCSS: true,
-				useTransform: true,
-				waitForAnimate: true,
-				slidesToShow: 1,
-				slidesToScroll: 1,
-				initialSlide: opts.startIndex
-			};
-
-			self.currentIndex = opts.startIndex;
-
-			gal.slick(options);
-
-			gal.height(gal.width());
-			EventBroker.subscribe("page.resized", function (msg, viewport) {
-				gal.height(gal.width());
-				self.initNav();
-			});
-			
-			gal.on('beforeChange', function (e, slick, curIdx, nextIdx) {
-				if (!self.nav.data('glimpse')) {
-					// Sync with thumb nav
-					self._selectNavItem(nextIdx, false);
-				}
-			});
-
-			gal.on('afterChange', function (e, slick, currentSlide) {
-				self.currentIndex = currentSlide;
-			});
-
-			if (!isTouch) {
-				gal
-					.on('mouseenter.gal', function (e) { gal.slick("slickSetOption", "speed", 250); })
-					.on('mouseleave.gal', function (e) { gal.slick("slickSetOption", "speed", 0); });
-			}
-		}
-
-		this.initZoom = function () {
-			if (isTouch)
-				return; // no zoom on touch devices
-			
-			self.gallery.on('beforeChange', function (e, slick, curIdx, nextIdx) {
-				// destroy zoom
-				if (self.nav.data('glimpse'))
-					return;
-				var img = self.gallery.find('.gal-item').eq(curIdx).find('img');
-				var zoomObj = img.data("elevateZoom");
-				if (zoomObj) {
-					zoomObj.reset();
-					img.data("elevateZoom", null);
-				}
-			});
-
-			self.gallery.on('afterChange', function (e, slick, idx) {
-				// apply zoom
-				if (self.nav.data('glimpse'))
-					return;
-				applyZoom(self.gallery.find('.gal-item').eq(idx));
-			});
-
-			function applyZoom(slide) {
-				var href = slide.find('> a').attr('href');
-				var img = slide.find('img');
-
-				if (img.data("elevateZoom"))
-					return;
-
-				img.attr("data-zoom-image", href);
-				var zoomOpts = $.extend({}, defaultZoomOpts, opts.zoom);
-
-				if (!zoomOpts.zoomWindowWidth)
-					zoomOpts.zoomWindowWidth = $('#content').width() - self.el.width() - (zoomOpts.zoomWindowOffetX || 10);
-
-				if (!zoomOpts.zoomWindowHeight)
-					zoomOpts.zoomWindowHeight = self.el.height() - 2;
-
-				if (!zoomOpts.zoomWindowOffetY)
-					zoomOpts.zoomWindowOffetY = (img.offset().top - self.el.offset().top - 300) * -1;
-
-				console.log(zoomOpts.zoomWindowOffetY);
-
-				if (zoomOpts.lensShape === "round" && zoomOpts.zoomType !== "lens")
-					zoomOpts.lensShape = undefined;
-
-				img.elevateZoom(zoomOpts);
-			}
-
-			// Apply on first init
-			var curIndex = self.gallery.slick('slickCurrentSlide');
-			applyZoom(self.gallery.find('.gal-item').eq(curIndex));
-		}
 		
 		this.init2 = function(isRefresh) {
 			var self = this;
@@ -460,6 +187,8 @@
 		navPrevArrow: null,
 		navNextArrow: null,
 		navItemsCount: 0,
+		zoomWindowContainer: null,
+		modal: null,
 
 		imageWrapper: null,
 		loader: null,
@@ -482,6 +211,402 @@
 		scrollBack: null,
 
 		origHtml: null,
+
+		initGallery: function () {
+			var self = this;
+			var gal = self.el.find(".gal");
+			if (gal.length === 0) {
+				return;
+			}
+
+			self.gallery = gal;
+
+			var options = {
+				infinite: false,
+				lazyLoad: "ondemand",
+				dots: true,
+				arrows: false,
+				//prevArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle slick-prev"><i class="fa fa-angle-left"></i></button>',
+				//nextArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle slick-next"><i class="fa fa-angle-right"></i></button>',
+				cssEase: 'ease-in-out',
+				speed: isTouch ? 250 : 0,
+				useCSS: true,
+				useTransform: true,
+				waitForAnimate: true,
+				slidesToShow: 1,
+				slidesToScroll: 1,
+				initialSlide: self.options.startIndex
+			};
+
+			self.currentIndex = self.options.startIndex;
+
+			gal.slick(options);
+
+			gal.height(gal.width());
+			EventBroker.subscribe("page.resized", function (msg, viewport) {
+				gal.height(gal.width());
+				self.initNav();
+			});
+
+			gal.on('beforeChange', function (e, slick, curIdx, nextIdx) {
+				if (!self.nav.data('glimpse')) {
+					// Sync with thumb nav
+					self._selectNavItem(nextIdx, false);
+				}
+			});
+
+			gal.on('afterChange', function (e, slick, currentSlide) {
+				self.currentIndex = currentSlide;
+			});
+
+			if (!isTouch) {
+				gal
+					.on('mouseenter.gal', function (e) { gal.slick("slickSetOption", "speed", 250); })
+					.on('mouseleave.gal', function (e) { gal.slick("slickSetOption", "speed", 0); });
+			}
+		},
+
+		initNav: function () {
+			var self = this;
+			self.nav = (nav = (self.nav || self.el.find('.gal-nav')));
+			if (nav.length === 0)
+				return;
+
+			var isInitialized = nav.hasClass('gal-initialized');
+
+			nav.off('.gal');
+
+			var list = self.navList = nav.find('.gal-list').first(),
+				track = self.navTrack = list.find('.gal-track').first(),
+				items = list.find('.gal-item'),
+				itemHeight = items.first().outerHeight(true);
+
+			self.navItemsCount = items.length;
+
+			items.each(function (i, el) {
+				var $el = $(this);
+				$el.attr('data-gal-index', i);
+			});
+
+			if (items.length > self.options.thumbsToShow) {
+				if (!isInitialized) {
+					self.navPrevArrow = $('<button type="button" class="btn btn-secondary btn-flat btn-circle gal-arrow gal-prev gal-disabled"><i class="fa fa-angle-up" style="vertical-align: top"></i></button>').prependTo(nav);
+					self.navNextArrow = $('<button type="button" class="btn btn-secondary btn-flat btn-circle gal-arrow gal-next gal-disabled"><i class="fa fa-angle-down"></i></button>').appendTo(nav);
+				}
+
+				list.height(itemHeight * self.options.thumbsToShow);
+
+				nav.on('click.gal', '.gal-arrow', function (e) {
+					e.preventDefault();
+					var btn = $(this);
+
+					if (btn.hasClass('gal-disabled')) {
+						return;
+					}
+					else if (btn.hasClass('gal-prev')) {
+						self._slideToPrevNavPage();
+					}
+					else if (btn.hasClass('gal-next')) {
+						self._slideToNextNavPage();
+					}
+
+					return false;
+				});
+			}
+
+			self._selectNavItem(self.options.startIndex, isInitialized);
+
+			nav.on('mouseenter.gal click.gal', '.gal-item', function (e) {
+				e.preventDefault();
+
+				if (e.type === "mouseenter") {
+					nav.data("glimpse", true);
+				}
+
+				var toIdx = $(this).data('gal-index');
+				self.gallery.slick("slickGoTo", toIdx);
+
+				if (e.type === "click") {
+					// sync with gallery
+					nav.data("glimpse", false);
+					self._selectNavItem(toIdx, true);
+				}
+
+				return false;
+			})
+			.on('mouseleave.gal', function (e) {
+				// Restore actual selected image
+				var actualIdx = nav.find('.gal-current').data('gal-index');
+				self.gallery.slick("slickGoTo", actualIdx);
+				nav.data("glimpse", false);
+			});
+
+			nav.addClass("gal-initialized");
+		},
+
+		_selectNavItem: function (idx, sync) {
+			var self = this;
+			var curItem = self.nav.find('.gal-current');
+			var curIdx = curItem.data('gal-index');
+			if (curIdx === idx)
+				return;
+
+			curItem.removeClass('gal-current');
+			curItem = self.nav.find('[data-gal-index=' + idx + ']');
+			curItem.addClass('gal-current');
+
+			var page = Math.floor(idx / self.options.thumbsToShow);
+			self._slideToNavPage(page);
+
+			if (sync) {
+				self.gallery.slick('slickGoTo', idx);
+			}
+		},
+
+		_slideToPrevNavPage: function () {
+			var curPage = this.nav.data('current-page');
+			this._slideToNavPage(curPage - 1);
+		},
+
+		_slideToNextNavPage: function () {
+			var curPage = this.nav.data('current-page');
+			this._slideToNavPage(curPage + 1);
+		},
+
+		_slideToNavPage: function(page) {
+			if (this.nav.data('current-page') !== page) {
+				this.nav.data('current-page', page);
+
+				var hasArrows = this.navPrevArrow && this.navNextArrow;
+
+				if (page === 0 && hasArrows) {
+					this.navPrevArrow.addClass('gal-disabled');
+					this.navNextArrow.removeClass('gal-disabled');
+				}
+				else if (page > 0 && hasArrows) {
+					this.navPrevArrow.removeClass('gal-disabled');
+					var isLastPage = page >= Math.floor(this.navItemsCount / this.options.thumbsToShow);
+					this.navNextArrow.toggleClass('gal-disabled', isLastPage);
+				}
+
+				var navListHeight = this.navList.height();
+				var maxOffsetY = (this.navTrack.height() - navListHeight) * -1;
+				var offsetY = navListHeight * page * -1;
+				this.navTrack.css(Modernizr.prefixedCSS('transform'), 'translate3d(0, ' + Math.max(offsetY, maxOffsetY) + 'px, 0)');
+			}
+		},
+
+		initZoom: function () {
+			if (isTouch)
+				return; // no zoom on touch devices
+
+			var self = this;
+
+			self.gallery.on('beforeChange', function (e, slick, curIdx, nextIdx) {
+				// destroy zoom
+				if (self.nav.data('glimpse'))
+					return;
+				var img = self.gallery.find('.gal-item').eq(curIdx).find('img');
+				var drift = img.data("drift");
+				if (drift) {
+					drift.disable();
+					img.data("drift", null);
+				}
+			});
+
+			self.gallery.on('afterChange', function (e, slick, idx) {
+				// apply zoom
+				if (self.nav.data('glimpse'))
+					return;
+				applyZoom(self.gallery.find('.gal-item').eq(idx));
+			});
+
+			function applyZoom(slide) {
+				var a = slide.find('> a');
+				var img = slide.find('img');
+
+				if (img.data("drift") || self.zoomWindowContainer.length === 0)
+					return;
+
+				var zoomOpts = $.extend({}, defaultZoomOpts, self.options.zoom, {
+					paneContainer: self.zoomWindowContainer[0],
+					onShow: function () {
+						_.delay(function () {
+							self.zoomWindowContainer.find('.drift-zoom-pane').height(a.outerHeight());
+							console.log(self.zoomWindowContainer.find('.drift-zoom-pane').height());
+						}, 10);
+						
+						// Fix Drift issue: boundingBox parent must be body, NOT image's parent link/viewport
+						drift.trigger.boundingBox.settings.containerEl = document.body;
+					}
+				});
+
+				var drift = new Drift(img[0], zoomOpts);
+				img.data('drift', drift);
+			}
+
+			// Apply on first init
+			var curIndex = self.gallery.slick('slickCurrentSlide');
+			applyZoom(self.gallery.find('.gal-item').eq(curIndex));
+		},
+
+		initModal: function() {
+			var self = this;
+
+			var getModal = function (id) {
+				var modal = $('#' + id);
+				if (modal.length > 0) {
+					return modal;
+				}
+
+				var html =
+					'<div id="' + id + '" class="modal modal-flex gal-modal fade">'
+					+ '<div class="modal-dialog" role="document">'
+					+ '<div class="modal-content">'
+					+ '<div class="modal-body p-a-0">'
+					+ '</div>'
+					+ '</div>'
+					+ '</div>'
+					+ '</div>';
+
+				modal = $(html);
+				modal.appendTo('body');
+
+				var modalBody = modal.find('.modal-body');
+				var links = $('[data-gallery="' + (id === 'image-gallery-default' ? 'default' : id) + '"]');
+				console.log(links.length);
+				var slickHtml = '<div class="gal">';
+				links.each(function (i, el) {
+					var a = $(el);
+					var img = a.find('>img');
+					slickHtml += '<div class="gal-item">';
+					slickHtml += '<img class="x-gal-item-content" src="' + a.attr('href') + '" alt="' + img.attr('alt') + '" />';
+					slickHtml += '</div>';
+				});
+				slickHtml += '</div>';
+
+				var slick = $(slickHtml).appendTo(modalBody);
+				
+				slick.slick({
+					infinite: false,
+					lazyLoad: "ondemand",
+					dots: false,
+					arrows: false,
+					//prevArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle slick-prev"><i class="fa fa-angle-left"></i></button>',
+					//nextArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle slick-next"><i class="fa fa-angle-right"></i></button>',
+					cssEase: 'ease-in-out',
+					speed: 250,
+					useCSS: true,
+					useTransform: true,
+					waitForAnimate: true,
+					slidesToShow: 1,
+					slidesToScroll: 1,
+					initialSlide: self.options.startIndex
+				});
+
+				self.modal = modal;
+
+				//var prevY = null;
+
+				//var onMouseMove = function (e) {
+				//	if (!_.isNumber(prevY)) {
+				//		prevY = e.pageY;
+				//		return;
+				//	}
+
+				//	if (e.pageY - prevY > 25) {
+				//		// moved down by 25px
+				//		modal.find('>.indicator').removeClass('out').data("explicit-move", true);
+				//	}
+				//	else if (prevY - e.pageY > 25) {
+				//		// moved up by 25px
+				//		modal.find('>.indicator').addClass('out');
+				//	}
+
+				//	prevY = e.pageY;
+				//};
+
+				//// trigger mousemove all 100ms
+				//var throttledMouseMove = _.throttle(onMouseMove, 100, { leading: false, trailing: false });
+				//modal.find('> .slides').on('mousemove', throttledMouseMove);
+
+				return modal;
+			};
+
+			if (self.gallery) {
+				// Global click handler to open links with data-gallery attribute
+				// in the Gallery lightbox:
+				self.gallery.on('click', '.gal-item > a', function (e) {
+					e.preventDefault();
+
+					var id = $(this).data('gallery') || 'default',
+						modal = getModal(id === 'default' ? 'image-gallery-default' : id),
+						// Select all links with the same data-gallery attribute:
+						links = $('[data-gallery="' + id + '"]').not($(this));
+
+					modal.modal('show');
+
+					return false;
+				});
+			}
+		},
+
+		initZoomOld: function () {
+			if (isTouch)
+				return; // no zoom on touch devices
+			
+			var self = this;
+
+			self.gallery.on('beforeChange', function (e, slick, curIdx, nextIdx) {
+				// destroy zoom
+				if (self.nav.data('glimpse'))
+					return;
+				var img = self.gallery.find('.gal-item').eq(curIdx).find('img');
+				var zoomObj = img.data("elevateZoom");
+				if (zoomObj) {
+					zoomObj.reset();
+					img.data("elevateZoom", null);
+				}
+			});
+
+			self.gallery.on('afterChange', function (e, slick, idx) {
+				// apply zoom
+				if (self.nav.data('glimpse'))
+					return;
+				applyZoom(self.gallery.find('.gal-item').eq(idx));
+			});
+
+			function applyZoom(slide) {
+				var href = slide.find('> a').attr('href');
+				var img = slide.find('img');
+
+				if (img.data("elevateZoom"))
+					return;
+
+				img.attr("data-zoom-image", href);
+				var zoomOpts = $.extend({}, defaultZoomOpts, self.options.zoom);
+
+				if (!zoomOpts.zoomWindowWidth)
+					zoomOpts.zoomWindowWidth = $('#content').width() - self.el.width() - (zoomOpts.zoomWindowOffetX || 10);
+
+				if (!zoomOpts.zoomWindowHeight)
+					zoomOpts.zoomWindowHeight = self.el.height() - 2;
+
+				if (!zoomOpts.zoomWindowOffetY)
+					zoomOpts.zoomWindowOffetY = (img.offset().top - self.el.offset().top - 300) * -1;
+
+				console.log(zoomOpts.zoomWindowOffetY);
+
+				if (zoomOpts.lensShape === "round" && zoomOpts.zoomType !== "lens")
+					zoomOpts.lensShape = undefined;
+
+				img.elevateZoom(zoomOpts);
+			}
+
+			// Apply on first init
+			var curIndex = self.gallery.slick('slickCurrentSlide');
+			applyZoom(self.gallery.find('.gal-item').eq(curIndex));
+		},
 
 		setupElements: function () {
 			var el = this.el;
@@ -679,6 +804,7 @@
 			var hasScrolled = 0;
 			var thumbsScrollInterval = false;
 
+			return;
 			this.nav.find(".sb").scrollButton({
 				nearSize: "100%",
 				farSize: "100%",
@@ -783,7 +909,7 @@
 			if (self.gallery) {
 				// Global click handler to open links with data-gallery attribute
 				// in the Gallery lightbox:
-				self.gallery.on('click', '.gal-item > a', function (e) {
+				self.el.on('click', '.oldgal', function (e) {
 					e.preventDefault();
 
 					var id = $(this).data('gallery') || 'default',
@@ -1111,9 +1237,8 @@
 		ensureLink: true,
 		// zoom options
 		zoom: {
-			enabled: true,
-			zoomType: "window"
-			/* {...} 'elevatedZoom' options are passed through */
+			enabled: true
+			/* {...} 'Drift' options are passed through */
 		},
 		// full size image box options
 		box: {

@@ -41,6 +41,11 @@ namespace SmartStore.Core.Search
 		/// </summary>
 		int SpellCheckerMinQueryLength { get; }
 
+		/// <summary>
+		/// The maximum number of product hits up to which suggestions are provided
+		/// </summary>
+		int SpellCheckerMaxHitCount { get; }
+
 		// Misc
 		string Origin { get; }
 		IDictionary<string, object> CustomData { get; }

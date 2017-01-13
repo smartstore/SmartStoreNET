@@ -90,21 +90,17 @@ namespace SmartStore.Services.Search
 							}
 						}
 
-						if (totalCount < 4)
+						try
 						{
-							// TODO: (mg) Let merchant specify min hit count, from which suggestions should NOT be presented
-							try
+							using (_chronometer.Step("Spell checking"))
 							{
-								using (_chronometer.Step("Spell checking"))
-								{
-									spellCheckerSuggestions = searchEngine.CheckSpelling();
-								}
+								spellCheckerSuggestions = searchEngine.CheckSpelling();
 							}
-							catch (Exception exception)
-							{
-								// spell checking should not break the search
-								_logger.Error(exception);
-							}
+						}
+						catch (Exception exception)
+						{
+							// spell checking should not break the search
+							_logger.Error(exception);
 						}
 
 						var result = new CatalogSearchResult(

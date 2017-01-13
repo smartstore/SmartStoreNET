@@ -46,7 +46,7 @@ namespace SmartStore.Core.Search
 		public int InstantSearchTermMinLength { get; set; }
 
 		/// <summary>
-		/// XML serialized information about global search filters
+		/// Json serialized information about global search filters
 		/// </summary>
 		public string GlobalFilters { get; set; }
 

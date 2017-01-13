@@ -48,6 +48,7 @@ namespace SmartStore.Core.Search
 			Take = int.MaxValue;
 
 			SpellCheckerMinQueryLength = 4;
+			SpellCheckerMaxHitCount = 3;
 		}
 
 		// Language, Currency & Store
@@ -92,6 +93,7 @@ namespace SmartStore.Core.Search
 		// Spell checker
 		public int SpellCheckerMaxSuggestions { get; protected set; }
 		public int SpellCheckerMinQueryLength { get; protected set; }
+		public int SpellCheckerMaxHitCount { get; protected set; }
 
 		// Misc
 		public string Origin { get; protected set; }
@@ -147,12 +149,15 @@ namespace SmartStore.Core.Search
 			return (this as TQuery);
 		}
 
-		public TQuery CheckSpelling(int maxSuggestions, int minQueryLength = 4)
+		public TQuery CheckSpelling(int maxSuggestions, int minQueryLength = 4, int maxHitCount = 3)
 		{
 			Guard.IsPositive(maxSuggestions, nameof(maxSuggestions));
+			Guard.IsPositive(minQueryLength, nameof(minQueryLength));
+			Guard.IsPositive(maxHitCount, nameof(maxHitCount));
 
 			SpellCheckerMaxSuggestions = maxSuggestions;
 			SpellCheckerMinQueryLength = minQueryLength;
+			SpellCheckerMaxHitCount = maxHitCount;
 
 			return (this as TQuery);
 		}

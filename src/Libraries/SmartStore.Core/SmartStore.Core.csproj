@@ -111,6 +111,7 @@
       <HintPath>..\..\packages\Microsoft.SqlServer.Compact.4.0.8876.1\lib\net40\System.Data.SqlServerCe.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Linq.Dynamic">
       <HintPath>..\..\packages\System.Linq.Dynamic.1.0.0\lib\net40\System.Linq.Dynamic.dll</HintPath>
     </Reference>
@@ -448,6 +449,7 @@
     <Compile Include="Themes\DefaultThemeRegistry.cs" />
     <Compile Include="Themes\ThemeFolderData.cs" />
     <Compile Include="Themes\ThemeTouchedEvent.cs" />
+    <Compile Include="Utilities\ColorHelper.cs" />
     <Compile Include="Utilities\CommonHelper.cs" />
     <Compile Include="Configuration\ISettings.cs" />
     <Compile Include="Domain\Affiliates\Affiliate.cs" />

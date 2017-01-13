@@ -9,6 +9,10 @@
   @RenderSection("teaser", required: false)
 }
 
+@section end {
+	@RenderSection("end", required: false)
+}
+
 <div id="content-left" class="col-md-3">
     @if (IsSectionDefined("left"))
     {

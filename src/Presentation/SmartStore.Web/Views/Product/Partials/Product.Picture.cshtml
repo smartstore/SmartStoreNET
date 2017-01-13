@@ -1,7 +1,6 @@
 ﻿@model ProductDetailsPictureModel
 @using SmartStore.Web.Models.Catalog;
 @{
-	Html.AddCssFileParts("~/css/smart-gallery");
 	Html.AddScriptParts("~/bundles/smart-gallery");
 }
 
@@ -28,7 +27,6 @@
 		</div>
 		<!-- Picture -->
 		<div class="gal-cell">
-			<button type="button" class="btn btn-secondary oldgal">Old Gallery</button>
 			<div class="gal">
 				@if (Model.PictureModels.Count > 0)
 				{
@@ -53,8 +51,6 @@
 		</div>
 	</div>
 </div>
-
-
 
 
 <div id="x-pd-gallery" class="x-pd-gallery hidden-xs-up">

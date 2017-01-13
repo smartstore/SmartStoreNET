@@ -32,14 +32,12 @@ namespace SmartStore.Web.Infrastructure
 			 * TODO: (mc) change pathes once work is finished
 			-----------------------------------------------------*/
 			bundles.Add(new CustomScriptBundle("~/bundles/smart-gallery").Include(
-				"~/Themes/Alpha/Content/smart-gallery/js/blueimp-gallery.js",
-				//"~/Themes/Alpha/Content/smart-gallery/js/blueimp-gallery-fullscreen.js",
-				"~/Themes/Alpha/Content/smart-gallery/js/blueimp-gallery-indicator.js",
-				"~/Themes/Alpha/Content/smart-gallery/js/smartstore.smart-gallery.js"));
-
-			// TODO: (mc) change pathes once work is finished
-			bundles.Add(new CustomStyleBundle("~/css/smart-gallery").Include(
-				"~/Themes/Alpha/Content/smart-gallery/scss/smart-gallery.scss"));
+				//"~/Themes/Alpha/Content/smart-gallery/js/blueimp-gallery.js",
+				//"~/Themes/Alpha/Content/smart-gallery/js/blueimp-gallery-indicator.js",
+				"~/Themes/Alpha/Content/drift/Drift.js",
+				"~/Themes/Alpha/Content/photoswipe/photoswipe.js",
+				"~/Themes/Alpha/Content/photoswipe/photoswipe-ui-default.js",
+				"~/Themes/Alpha/Scripts/smartstore.gallery.js"));
 
 
 			/* File Upload

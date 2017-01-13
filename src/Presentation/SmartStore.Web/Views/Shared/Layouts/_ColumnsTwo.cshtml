@@ -8,6 +8,10 @@
     @RenderSection("teaser", required: false)
 }
 
+@section end {
+	@RenderSection("end", required: false)
+}
+
 <div id="content-left" class="col-lg-3 hidden-md-down"> 
     @if (IsSectionDefined("left"))
 	{

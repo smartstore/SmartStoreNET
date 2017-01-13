@@ -96,7 +96,6 @@
 
 			if ($.isPlainObject(opts.box) && opts.box.enabled) {
 				this.initBox();
-				this.initModal();
 			}
 		};
 		
@@ -239,6 +238,7 @@
 			};
 
 			self.currentIndex = self.options.startIndex;
+			self.currentImage = gal.find('.gal-item').eq(self.options.startIndex).first();
 
 			gal.slick(options);
 
@@ -257,6 +257,7 @@
 
 			gal.on('afterChange', function (e, slick, currentSlide) {
 				self.currentIndex = currentSlide;
+				self.currentImage = gal.find('.gal-item.slick-current img').first();
 			});
 
 			if (!isTouch) {
@@ -433,7 +434,6 @@
 					onShow: function () {
 						_.delay(function () {
 							self.zoomWindowContainer.find('.drift-zoom-pane').height(a.outerHeight());
-							console.log(self.zoomWindowContainer.find('.drift-zoom-pane').height());
 						}, 10);
 						
 						// Fix Drift issue: boundingBox parent must be body, NOT image's parent link/viewport
@@ -448,107 +448,6 @@
 			// Apply on first init
 			var curIndex = self.gallery.slick('slickCurrentSlide');
 			applyZoom(self.gallery.find('.gal-item').eq(curIndex));
-		},
-
-		initModal: function() {
-			var self = this;
-
-			var getModal = function (id) {
-				var modal = $('#' + id);
-				if (modal.length > 0) {
-					return modal;
-				}
-
-				var html =
-					'<div id="' + id + '" class="modal modal-flex gal-modal fade">'
-					+ '<div class="modal-dialog" role="document">'
-					+ '<div class="modal-content">'
-					+ '<div class="modal-body p-a-0">'
-					+ '</div>'
-					+ '</div>'
-					+ '</div>'
-					+ '</div>';
-
-				modal = $(html);
-				modal.appendTo('body');
-
-				var modalBody = modal.find('.modal-body');
-				var links = $('[data-gallery="' + (id === 'image-gallery-default' ? 'default' : id) + '"]');
-				console.log(links.length);
-				var slickHtml = '<div class="gal">';
-				links.each(function (i, el) {
-					var a = $(el);
-					var img = a.find('>img');
-					slickHtml += '<div class="gal-item">';
-					slickHtml += '<img class="x-gal-item-content" src="' + a.attr('href') + '" alt="' + img.attr('alt') + '" />';
-					slickHtml += '</div>';
-				});
-				slickHtml += '</div>';
-
-				var slick = $(slickHtml).appendTo(modalBody);
-				
-				slick.slick({
-					infinite: false,
-					lazyLoad: "ondemand",
-					dots: false,
-					arrows: false,
-					//prevArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle slick-prev"><i class="fa fa-angle-left"></i></button>',
-					//nextArrow: '<button type="button" class="btn btn-secondary btn-flat btn-circle slick-next"><i class="fa fa-angle-right"></i></button>',
-					cssEase: 'ease-in-out',
-					speed: 250,
-					useCSS: true,
-					useTransform: true,
-					waitForAnimate: true,
-					slidesToShow: 1,
-					slidesToScroll: 1,
-					initialSlide: self.options.startIndex
-				});
-
-				self.modal = modal;
-
-				//var prevY = null;
-
-				//var onMouseMove = function (e) {
-				//	if (!_.isNumber(prevY)) {
-				//		prevY = e.pageY;
-				//		return;
-				//	}
-
-				//	if (e.pageY - prevY > 25) {
-				//		// moved down by 25px
-				//		modal.find('>.indicator').removeClass('out').data("explicit-move", true);
-				//	}
-				//	else if (prevY - e.pageY > 25) {
-				//		// moved up by 25px
-				//		modal.find('>.indicator').addClass('out');
-				//	}
-
-				//	prevY = e.pageY;
-				//};
-
-				//// trigger mousemove all 100ms
-				//var throttledMouseMove = _.throttle(onMouseMove, 100, { leading: false, trailing: false });
-				//modal.find('> .slides').on('mousemove', throttledMouseMove);
-
-				return modal;
-			};
-
-			if (self.gallery) {
-				// Global click handler to open links with data-gallery attribute
-				// in the Gallery lightbox:
-				self.gallery.on('click', '.gal-item > a', function (e) {
-					e.preventDefault();
-
-					var id = $(this).data('gallery') || 'default',
-						modal = getModal(id === 'default' ? 'image-gallery-default' : id),
-						// Select all links with the same data-gallery attribute:
-						links = $('[data-gallery="' + id + '"]').not($(this));
-
-					modal.modal('show');
-
-					return false;
-				});
-			}
 		},
 
 		initZoomOld: function () {
@@ -855,6 +754,66 @@
 		initBox: function () {
 			var self = this;
 
+			if (self.gallery && self.nav) {
+				self.gallery.on('click', '.gal-item > a', function (e) {
+					e.preventDefault();
+					
+					var $this = this;
+					var links = self.nav.find('.gal-item > a');
+					var items = [];
+
+					links.each(function (i, el) {
+						var a = $(el);
+						var width = a.data("width");
+						var height = a.data("height");
+						if (width && height) {
+							items.push({
+								src: a.attr('href'),
+								msrc: a.data('medium-image'),
+								w: width,
+								h: height,
+								el: $this
+							});
+						}
+					});
+
+					if (items.length > 0) {
+						var options = {
+							index: self.currentIndex,
+							showHideOpacity: true,
+							captionEl: false,
+							shareEl: false,
+							getThumbBoundsFn: function (index) {
+								// See Options -> getThumbBoundsFn section of documentation for more info
+								var img = self.currentImage[0], // items[index].el.getElementsByTagName('img')[0], // find thumbnail
+									pageYScroll = window.pageYOffset || document.documentElement.scrollTop,
+									rect = img.getBoundingClientRect();
+
+								return { x: rect.left, y: rect.top + pageYScroll, w: rect.width };
+							}
+						};
+
+						var pswpEl = $('#pswp')[0];
+
+						var pswp = new PhotoSwipe(pswpEl, PhotoSwipeUI_Default, items, options);
+						pswp.listen('afterChange', function () {
+							var idx = pswp.getCurrentIndex();
+							if (idx !== self.currentIndex) {
+								self.gallery.slick('slickGoTo', idx);
+							}
+						});
+
+						pswp.init();
+					}
+
+					return false;
+				});
+			}
+		},
+
+		initBoxOld: function () {
+			var self = this;
+
 			var getWidget = function (id) {
 				var widget = $('#' + id);
 				if (widget.length > 0) {
@@ -909,7 +868,7 @@
 			if (self.gallery) {
 				// Global click handler to open links with data-gallery attribute
 				// in the Gallery lightbox:
-				self.el.on('click', '.oldgal', function (e) {
+				self.gallery.on('click', '.gal-item > a', function (e) {
 					e.preventDefault();
 
 					var id = $(this).data('gallery') || 'default',

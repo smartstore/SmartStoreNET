@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
+using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Services.Search
 {
@@ -15,16 +15,18 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchResult(
 			ISearchEngine engine,
+			CatalogSearchQuery query,
 			int totalHitsCount,
 			Func<IList<Product>> hitsFactory,
-			CatalogSearchQuery query,
-			string[] spellCheckerSuggestions)
+			string[] spellCheckerSuggestions,
+			IDictionary<string, FacetGroup> facets)
 		{
 			Guard.NotNull(query, nameof(query));
 
 			Engine = engine;
 			Query = query;
 			SpellCheckerSuggestions = spellCheckerSuggestions ?? new string[0];
+			Facets = facets ?? new Dictionary<string, FacetGroup>();
 
 			_hitsFactory = hitsFactory ?? (() => new List<Product>());
 			_totalHitsCount = totalHitsCount;
@@ -71,6 +73,12 @@ namespace SmartStore.Services.Search
 		{
 			get;
 			set;
+		}
+
+		public IDictionary<string, FacetGroup> Facets
+		{
+			get;
+			private set;
 		}
 
 		public ISearchEngine Engine

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Routing;
+using Newtonsoft.Json;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
+using SmartStore.Core.Search.Facets;
+using SmartStore.Core.Search.Filter;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
 
@@ -38,6 +41,7 @@ namespace SmartStore.Services.Search.Modelling
 		protected readonly SearchSettings _searchSettings;
 		protected readonly ICurrencyService _currencyService;
 		protected readonly ICommonServices _services;
+		protected HashSet<string> _globalFilterFields;
 
 		public CatalogSearchQueryFactory(
 			HttpContextBase httpContext,
@@ -51,6 +55,8 @@ namespace SmartStore.Services.Search.Modelling
 			_searchSettings = searchSettings;
 			_currencyService = currencyService;
 			_services = services;
+
+			_globalFilterFields = new HashSet<string>();
 
 			QuerySettings = DbQuerySettings.Default;
 		}
@@ -70,7 +76,15 @@ namespace SmartStore.Services.Search.Modelling
 			var area = routeData.GetAreaName();
 			var controller = routeData.GetRequiredString("controller");
 			var action = routeData.GetRequiredString("action");
-			string origin = "{0}{1}/{2}".FormatInvariant(area == null ? "" : area + "/", controller, action);
+			var origin = "{0}{1}/{2}".FormatInvariant(area == null ? "" : area + "/", controller, action);
+
+			// TODO: category is always a facet... _globalFilterFields.Add("category");
+			if (!origin.IsCaseInsensitiveEqual("Search/InstantSearch") && _searchSettings.GlobalFilters.HasValue())
+			{
+				var globalFilters = JsonConvert.DeserializeObject<List<GlobalSearchFilterDescriptor>>(_searchSettings.GlobalFilters);
+
+				_globalFilterFields.AddRange(globalFilters.Where(x => !x.Disabled).Select(x => x.FieldName));
+			}
 
 			var term = GetValueFor<string>("q");
 
@@ -248,6 +262,37 @@ namespace SmartStore.Services.Search.Modelling
 			query.CustomData["ViewMode"] = _catalogSettings.DefaultViewMode;
 		}
 
+		protected virtual void AddFacet(
+			CatalogSearchQuery query,
+			string key,
+			bool isMultiSelect,
+			IndexTypeCode typeCode,
+			params object[] selectedValues)
+		{
+			Guard.NotEmpty(key, nameof(key));
+
+			var facet = new FacetDescriptor(key)
+			{
+				IsMultiSelect = isMultiSelect
+			};
+
+			// TODO: from setting
+			//facet.MinHitCount = ;
+			//facet.MaxChoicesCount = ;
+
+			if (selectedValues != null && selectedValues.Any(x => x != null))
+			{
+				var values = selectedValues
+					.Where(x => x != null)
+					.Select(x => new FacetValue(x, typeCode) { IsSelected = true })
+					.ToArray();
+
+				facet.AddValue(values);
+			}
+
+			query.WithFacet(facet);
+		}
+
 		protected virtual void ConvertCategory(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
 			var ids = GetValueFor<List<int>>("c");
@@ -256,6 +301,8 @@ namespace SmartStore.Services.Search.Modelling
 				// TODO; (mc) Get deep ids (???) Make a low-level version of CatalogHelper.GetChildCategoryIds()
 				query.WithCategoryIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false, ids.ToArray());
 			}
+
+			// TODO: is always a facet AddFacet(query, "category", IndexTypeCode.Int32, ids);
 		}
 
 		protected virtual void ConvertManufacturer(CatalogSearchQuery query, RouteData routeData, string origin)
@@ -264,6 +311,13 @@ namespace SmartStore.Services.Search.Modelling
 			if (ids != null && ids.Any())
 			{
 				query.WithManufacturerIds(null, ids.ToArray());
+			}
+
+			AddFacet(query, "manufacturerid", true, IndexTypeCode.Int32, ids);
+
+			if (_globalFilterFields.Contains("manufacturer"))
+			{
+				AddFacet(query, "manufacturerid", true, IndexTypeCode.Int32, ids);
 			}
 		}
 
@@ -287,6 +341,8 @@ namespace SmartStore.Services.Search.Modelling
 			{
 				query.PriceBetween(minPrice, maxPrice);
 			}
+
+			// TODO: AddFacet(query, "price_c-..."...
 		}
 
 		protected virtual void ConvertRating(CatalogSearchQuery query, RouteData routeData, string origin)
@@ -296,6 +352,11 @@ namespace SmartStore.Services.Search.Modelling
 			if (fromRate.HasValue)
 			{
 				query.WithRating(fromRate, null);
+			}
+
+			if (_globalFilterFields.Contains("rate"))
+			{
+				AddFacet(query, "rate", false, IndexTypeCode.Double, fromRate);
 			}
 		}
 
@@ -315,6 +376,11 @@ namespace SmartStore.Services.Search.Modelling
 			if (ids != null && ids.Any())
 			{
 				query.WithDeliveryTimeIds(ids.ToArray());
+			}
+
+			if (_globalFilterFields.Contains("deliverytime"))
+			{
+				AddFacet(query, "deliveryid", true, IndexTypeCode.Int32, ids);
 			}
 		}
 

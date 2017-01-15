@@ -6,6 +6,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
+using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
 
 namespace SmartStore.Services.Search
@@ -68,6 +69,7 @@ namespace SmartStore.Services.Search
 						string[] spellCheckerSuggestions = null;
 						IEnumerable<ISearchHit> searchHits;
 						Func<IList<Product>> hitsFactory = null;
+						IDictionary<string, FacetGroup> facets = null;
 
 						_eventPublisher.Publish(new CatalogSearchingEvent(searchQuery));
 
@@ -88,6 +90,11 @@ namespace SmartStore.Services.Search
 								var productIds = searchHits.Select(x => x.EntityId).ToArray();
 								hitsFactory = () => _productService.Value.GetProductsByIds(productIds, loadFlags);
 							}
+
+							using (_chronometer.Step("Get facets"))
+							{
+								facets = searchEngine.GetFacetMap();
+							}
 						}
 
 						try
@@ -104,11 +111,12 @@ namespace SmartStore.Services.Search
 						}
 
 						var result = new CatalogSearchResult(
-							searchEngine, 
+							searchEngine,
+							searchQuery,
 							totalCount,
 							hitsFactory, 
-							searchQuery, 
-							spellCheckerSuggestions);
+							spellCheckerSuggestions,
+							facets);
 
 						_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
 

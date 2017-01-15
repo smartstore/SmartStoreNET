@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Core.Search;
+using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
 
 namespace SmartStore.Services.Search
@@ -515,6 +516,12 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
+		protected virtual IDictionary<string, FacetGroup> GetFacets()
+		{
+			// TODO
+			return null;
+		}
+
 		#endregion
 
 		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None, bool direct = false)
@@ -523,6 +530,7 @@ namespace SmartStore.Services.Search
 
 			int totalCount = 0;
 			Func<IList<Product>> hitsFactory = null;
+			IDictionary<string, FacetGroup> facets = null;
 
 			if (searchQuery.Take > 0)
 			{
@@ -536,14 +544,17 @@ namespace SmartStore.Services.Search
 
 				var ids = query.Select(x => x.Id).ToArray();
 				hitsFactory = () => _productService.GetProductsByIds(ids, loadFlags);
+
+				facets = GetFacets();
 			}
 
 			var result = new CatalogSearchResult(
 				null,
+				searchQuery,
 				totalCount,
 				hitsFactory,
-				searchQuery,
-				null);
+				null,
+				facets);
 
 			_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
 

@@ -48,7 +48,13 @@ namespace SmartStore.Core.Search.Facets
 			private set;
 		}
 
-		public string FriendlyName
+		public string Label
+		{
+			get;
+			set;
+		}
+
+		public bool IsSelected
 		{
 			get;
 			set;

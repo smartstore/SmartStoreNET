@@ -23,13 +23,13 @@ namespace SmartStore.Core.Search.Facets
 			ValueAsc
 		}
 
-		private readonly List<FacetValue> _selectedValues;
+		private readonly List<FacetValue> _values;
 
 		public FacetDescriptor(string key)
 		{
 			Guard.NotEmpty(key, nameof(key));
 
-			_selectedValues = new List<FacetValue>();
+			_values = new List<FacetValue>();
 			Key = key;
 		}
 
@@ -43,23 +43,23 @@ namespace SmartStore.Core.Search.Facets
 		}
 
 		/// <summary>
-		/// Gets the initially selected values for this facet.
+		/// Gets the values for this facet.
 		/// </summary>
-		public ICollection<FacetValue> SelectedValues
+		public ICollection<FacetValue> Values
 		{
 			get
 			{
-				return _selectedValues;
+				return _values;
 			}
 		}
 
 		/// <summary>
-		/// Adds a selection value.
+		/// Adds a facet value.
 		/// </summary>
-		/// <param name="value">Value to select</param>
-		public FacetDescriptor AddSelectedValue(params FacetValue[] values)
+		/// <param name="value">Facet value</param>
+		public FacetDescriptor AddValue(params FacetValue[] values)
 		{
-			_selectedValues.AddRange(values);
+			_values.AddRange(values);
 			return this;
 		}
 
@@ -99,12 +99,18 @@ namespace SmartStore.Core.Search.Facets
 			set;
 		}
 
+		public bool IsMultiSelect
+		{
+			get;
+			set;
+		}
+
 		public override string ToString()
 		{
 			var sb = new StringBuilder();
 
 			sb.Append("FieldName: ").Append(Key).Append(" ");
-			sb.Append("Values: " + string.Join(",", _selectedValues.Select(x => x.Value.ToString()))).Append(" ");
+			sb.Append("Values: " + string.Join(",", _values.Select(x => x.Value.ToString()))).Append(" ");
 			sb.Append("op: " + Operator.ToString()).Append(" ");
 
 			return sb.ToString();

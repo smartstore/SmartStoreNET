@@ -313,8 +313,6 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithManufacturerIds(null, ids.ToArray());
 			}
 
-			AddFacet(query, "manufacturerid", true, IndexTypeCode.Int32, ids);
-
 			if (_globalFilterFields.Contains("manufacturer"))
 			{
 				AddFacet(query, "manufacturerid", true, IndexTypeCode.Int32, ids);

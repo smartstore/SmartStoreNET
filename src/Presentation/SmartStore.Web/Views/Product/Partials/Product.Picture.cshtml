@@ -10,15 +10,15 @@
 		<div class="gal-nav-cell@(Model.PictureModels.Count <= 1 ? " gal-nav-hidden" : " ")">
 			<div class="gal-nav">
 				<div class="gal-list">
-					<div class="gal-track">
+					<div class="gal-track" itemscope itemtype="http://schema.org/ImageGallery">
 						@for (int i = 0; i < Model.PictureModels.Count; i++)
 						{
 							var picture = Model.PictureModels[i];
-							<div class="gal-item">
-								<a class="gal-item-viewport" href="@picture.FullSizeImageUrl" data-width="@picture.FullSizeImageWidth" data-height="@picture.FullSizeImageHeight" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default" data-picture-id="@picture.PictureId">
+							<figure class="gal-item" itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+								<a class="gal-item-viewport" itemprop="contentUrl" href="@picture.FullSizeImageUrl" data-width="@picture.FullSizeImageWidth" data-height="@picture.FullSizeImageHeight" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default" data-picture-id="@picture.PictureId">
 									<img class="gal-item-content" src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
 								</a>
-							</div>
+							</figure>
 						}
 					</div>
 

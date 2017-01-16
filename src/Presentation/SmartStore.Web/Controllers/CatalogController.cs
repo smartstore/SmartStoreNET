@@ -163,7 +163,7 @@ namespace SmartStore.Web.Controllers
                     };
 
 					_services.DisplayControl.Announce(x);
-					
+
                     // prepare picture model
                     int pictureSize = _mediaSettings.CategoryThumbPictureSize;
 					var categoryPictureCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_PICTURE_MODEL_KEY, x.Id, pictureSize, true, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
@@ -175,8 +175,8 @@ namespace SmartStore.Web.Controllers
 							PictureId = x.PictureId.GetValueOrDefault(),
 							Size = pictureSize,
 							FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
-							FullSizeImageWidth = picture.Width,
-							FullSizeImageHeight = picture.Height,
+							FullSizeImageWidth = picture?.Width,
+							FullSizeImageHeight = picture?.Height,
 							ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideCategoryDefaultPictures),
                             Title = string.Format(T("Media.Category.ImageLinkTitleFormat"), subCatName),
                             AlternateText = string.Format(T("Media.Category.ImageAlternateTextFormat"), subCatName)

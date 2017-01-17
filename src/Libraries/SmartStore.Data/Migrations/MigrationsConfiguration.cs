@@ -343,6 +343,8 @@ namespace SmartStore.Data.Migrations
                 "Hersteller alphabetisch sortieren",
                 "Specifies whether manufacturers on the manufacturer overview page will be displayed sorted alphabetically.",
                 "Legt fest ob Hersteller auf der Herstellerübersichtsseite alphabetisch sortiert dargestellt werden.");
-        }
+
+			builder.AddOrUpdate("Common.NoImageAvail", "No image available", "Bild wird nachgereicht");
+		}
 	}
 }

@@ -65,9 +65,12 @@ $pswp__background-color:            #fff;
     color: inherit;
 
 	&:focus,
-	&:hover,
+	&:hover {
+        background: rgba(0,0,0, 0.08);
+	}
+
     &:active {
-        background: #f2f2f2;
+        background: rgba(0,0,0, 0.12);
 	}
 
 	&:focus,
@@ -280,11 +283,6 @@ $pswp__background-color:            #fff;
 
 .pswp__preloader--active {
 	opacity: 1;
-
-	.pswp__preloader__icn {
-		/* We use .gif in browsers that don't support CSS animation */
-		background: url(#{$pswp__assets-path}preloader.gif) 0 0 no-repeat;
-	}
 }
 
 .pswp--css_animation {
@@ -385,9 +383,7 @@ $pswp__background-color:            #fff;
 }
 
 .pswp__caption,
-.pswp__top-bar,
-.pswp--has_mouse .pswp__button--arrow--left,
-.pswp--has_mouse .pswp__button--arrow--right {
+.pswp__top-bar {
 	-webkit-backface-visibility: hidden; 
 	will-change: opacity;
 	transition: opacity $pswp__controls-transition-duration cubic-bezier(.4,0,.22,1);
@@ -460,6 +456,10 @@ $pswp__background-color:            #fff;
 			background: none;
 		}
 	}
+}
+
+.pswp__container.sliding {
+    transition: transform $pswp__controls-transition-duration cubic-bezier(.4,0,.22,1);
 }
 
 

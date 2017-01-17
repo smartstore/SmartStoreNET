@@ -386,7 +386,8 @@ namespace SmartStore.Web.Controllers
 						ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize, !_catalogSettings.HideProductDefaultPictures),
 						FullSizeImageUrl = _pictureService.GetPictureUrl(picture, 0, !_catalogSettings.HideProductDefaultPictures),
 						Title = string.Format(ctx.Resources["Media.Product.ImageLinkTitleFormat"], item.Name),
-						AlternateText = string.Format(ctx.Resources["Media.Product.ImageAlternateTextFormat"], item.Name)
+						AlternateText = string.Format(ctx.Resources["Media.Product.ImageAlternateTextFormat"], item.Name),
+						PictureId = picture == null ? 0 : picture.Id
 					};
 
 					return pictureModel;

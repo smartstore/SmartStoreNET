@@ -44,6 +44,23 @@
 	max-height: 100%;
 }
 
+.gal .gal-item-viewport.no-picture {
+    .gal-item-content { margin: 0 auto; }
+    &:before {
+        display: block;
+        content: attr(data-content);
+        position: absolute;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        color: $gray-light;
+    }
+}
+
 .gal-nav {
 	//overflow: hidden;
 	max-height: 548px;

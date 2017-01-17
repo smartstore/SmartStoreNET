@@ -710,7 +710,8 @@
     <Content Include="Content\image-gallery\js\blueimp-gallery-vimeo.js" />
     <Content Include="Content\image-gallery\js\blueimp-gallery-youtube.js" />
     <Content Include="Content\image-gallery\js\blueimp-gallery.js" />
-    <Content Include="Content\Images\default-image.jpg" />
+    <Content Include="Content\Images\default-image-alt.png" />
+    <Content Include="Content\Images\default-image.png" />
     <Content Include="Content\Images\grippy.png" />
     <Content Include="Content\Images\sad.png" />
     <Content Include="Content\Images\smartstore.net-200-black.png" />
@@ -974,9 +975,6 @@
     <Content Include="Themes\Alpha\Content\bs4\js\bootstrap.min.js" />
     <None Include="Themes\Alpha\Content\photoswipe\LICENSE" />
     <None Include="Themes\Alpha\Content\drift\LICENSE" />
-    <Content Include="Themes\Alpha\Content\photoswipe\img\default-skin.png" />
-    <Content Include="Themes\Alpha\Content\photoswipe\img\default-skin.svg" />
-    <Content Include="Themes\Alpha\Content\photoswipe\img\preloader.gif" />
     <Content Include="Themes\Alpha\Content\photoswipe\photoswipe-ui-default.js" />
     <Content Include="Themes\Alpha\Content\photoswipe\photoswipe-ui-default.min.js" />
     <Content Include="Themes\Alpha\Content\photoswipe\photoswipe.js" />

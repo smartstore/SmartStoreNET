@@ -78,13 +78,13 @@ namespace SmartStore.Services.Media
 			switch (defaultPictureType)
 			{
 				case PictureType.Entity:
-					defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.jpg");
+					defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.png");
 					break;
 				case PictureType.Avatar:
 					defaultImageFileName = _settingService.GetSettingByKey("Media.Customer.DefaultAvatarImageName", "default-avatar.jpg");
 					break;
 				default:
-					defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.jpg");
+					defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.png");
 					break;
 			}
 

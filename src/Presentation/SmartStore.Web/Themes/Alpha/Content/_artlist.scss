@@ -159,6 +159,20 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
     overflow: hidden;
 }
 
+.art-picture.no-picture {
+    &:before {
+        display: block;
+        content: attr(data-content);
+        position: absolute;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        text-align: center;
+        color: $gray-light;
+    }
+}
+
 .art-badges {
     position: absolute;
     left: 0;

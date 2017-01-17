@@ -64,6 +64,10 @@ $pswp__background-color:            #fff;
     color: #777;
     color: inherit;
 
+    &.pswp-action {
+        // Pull some buttons to bottom
+    }
+
 	&:focus,
 	&:hover {
         background: rgba(0,0,0, 0.08);
@@ -126,12 +130,11 @@ $pswp__background-color:            #fff;
 
 .pswp__button--zoom {
 	display: none;
-	background-position: -88px 0;
+    &:before { content: "\f067"; /* plus */ }
 }
 
 .pswp--zoom-allowed .pswp__button--zoom {
 	display: block;
-    &:before { content: "\f067"; /* plus */ }
 }
 
 .pswp--zoomed-in .pswp__button--zoom:before {
@@ -202,16 +205,22 @@ $pswp__background-color:            #fff;
  */
 
 .pswp__counter {
-	position: absolute;
-	left: 0;
-	top: 0;
-	height: 44px;
+	position: relative;
+    float: left;
+    width: 80px;
+	height: 40px;
 	font-size: inherit;
     font-weight: 600;
 	line-height: 40px;
 	color: rgba(0,0,0, 0.6);
 	//opacity: 0.75;
-	padding: 0 10px;
+    padding-left: 20px;
+}
+
+.pswp__zoom-controls {
+	position: relative;
+    float: left;
+	height: 40px;
 }
 
 
@@ -226,7 +235,7 @@ $pswp__background-color:            #fff;
 	left: 0;
 	bottom: 0;
 	width: 100%;
-	min-height: 44px;
+	min-height: 40px;
 	
 	small {
 		font-size: 11px;
@@ -263,8 +272,8 @@ $pswp__background-color:            #fff;
  */
 
 .pswp__preloader {
-	width: 44px;
-	height: 44px;
+	width: 40px;
+	height: 40px;
 	position: absolute;
 	top: 0;
 	left: 50%;

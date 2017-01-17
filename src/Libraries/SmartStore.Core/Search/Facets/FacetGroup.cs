@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartStore.Core.Search.Facets
 {
@@ -10,15 +8,22 @@ namespace SmartStore.Core.Search.Facets
 	{
 		private readonly Dictionary<string, Facet> _facets;
 
-		public FacetGroup(string key, IEnumerable<Facet> facets)
+		public FacetGroup(FacetDescriptor descriptor, IEnumerable<Facet> facets)
 		{
-			Guard.NotNull(key, nameof(key));
+			Guard.NotNull(descriptor, nameof(descriptor));
+			Guard.NotNull(descriptor.Key, nameof(descriptor.Key));
 			Guard.NotNull(facets, nameof(facets));
 
-			Key = key;
+			Key = descriptor.Key;
+			IsMultiSelect = descriptor.IsMultiSelect;
 
 			_facets = new Dictionary<string, Facet>(StringComparer.OrdinalIgnoreCase);
-			facets.Each(x =>
+
+			var orderedFacets = descriptor.OrderBy == FacetDescriptor.Sorting.HitsDesc
+				? facets.OrderByDescending(x => x.HitCount)
+				: facets.OrderBy(x => x.Key);
+
+			orderedFacets.Each(x =>
 			{
 				x.FacetGroup = this;
 				_facets.Add(x.Key, x);
@@ -26,6 +31,12 @@ namespace SmartStore.Core.Search.Facets
 		}
 
 		public string Key
+		{
+			get;
+			private set;
+		}
+
+		public bool IsMultiSelect
 		{
 			get;
 			private set;

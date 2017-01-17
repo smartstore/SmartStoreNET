@@ -78,7 +78,6 @@ namespace SmartStore.Services.Search.Modelling
 			var action = routeData.GetRequiredString("action");
 			var origin = "{0}{1}/{2}".FormatInvariant(area == null ? "" : area + "/", controller, action);
 
-			// TODO: category is always a facet... _globalFilterFields.Add("category");
 			if (!origin.IsCaseInsensitiveEqual("Search/InstantSearch") && _searchSettings.GlobalFilters.HasValue())
 			{
 				var globalFilters = JsonConvert.DeserializeObject<List<GlobalSearchFilterDescriptor>>(_searchSettings.GlobalFilters);
@@ -262,37 +261,6 @@ namespace SmartStore.Services.Search.Modelling
 			query.CustomData["ViewMode"] = _catalogSettings.DefaultViewMode;
 		}
 
-		protected virtual void AddFacet(
-			CatalogSearchQuery query,
-			string key,
-			bool isMultiSelect,
-			IndexTypeCode typeCode,
-			params object[] selectedValues)
-		{
-			Guard.NotEmpty(key, nameof(key));
-
-			var facet = new FacetDescriptor(key)
-			{
-				IsMultiSelect = isMultiSelect
-			};
-
-			// TODO: from setting
-			//facet.MinHitCount = ;
-			//facet.MaxChoicesCount = ;
-
-			if (selectedValues != null && selectedValues.Any(x => x != null))
-			{
-				var values = selectedValues
-					.Where(x => x != null)
-					.Select(x => new FacetValue(x, typeCode) { IsSelected = true })
-					.ToArray();
-
-				facet.AddValue(values);
-			}
-
-			query.WithFacet(facet);
-		}
-
 		protected virtual void ConvertCategory(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
 			var ids = GetValueFor<List<int>>("c");
@@ -313,9 +281,20 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithManufacturerIds(null, ids.ToArray());
 			}
 
-			if (_globalFilterFields.Contains("manufacturer"))
+			if (_globalFilterFields.Contains("manufacturerid"))
 			{
-				AddFacet(query, "manufacturerid", true, IndexTypeCode.Int32, ids);
+				var facet = new FacetDescriptor("manufacturerid")
+				{
+					IsMultiSelect = true
+				};
+
+				if (ids != null && ids.Any())
+				{
+					ids.Select(x => new FacetValue(x) { IsSelected = true })
+						.Each(x => facet.AddValue(x));
+				}
+
+				query.WithFacet(facet);
 			}
 		}
 
@@ -354,7 +333,14 @@ namespace SmartStore.Services.Search.Modelling
 
 			if (_globalFilterFields.Contains("rate"))
 			{
-				AddFacet(query, "rate", false, IndexTypeCode.Double, fromRate);
+				var facet = new FacetDescriptor("rate");
+
+				if (fromRate.HasValue)
+				{
+					facet.AddValue(new FacetValue(fromRate.Value) { IsSelected = true });
+				}
+
+				query.WithFacet(facet);
 			}
 		}
 
@@ -376,9 +362,20 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithDeliveryTimeIds(ids.ToArray());
 			}
 
-			if (_globalFilterFields.Contains("deliverytime"))
+			if (_globalFilterFields.Contains("deliveryid"))
 			{
-				AddFacet(query, "deliveryid", true, IndexTypeCode.Int32, ids);
+				var facet = new FacetDescriptor("deliveryid")
+				{
+					IsMultiSelect = true
+				};
+
+				if (ids != null && ids.Any())
+				{
+					ids.Select(x => new FacetValue(x) { IsSelected = true })
+						.Each(x => facet.AddValue(x));
+				}
+
+				query.WithFacet(facet);
 			}
 		}
 

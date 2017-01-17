@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Settings;
 using SmartStore.Admin.Validators.Settings;
-using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
@@ -26,7 +25,6 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
-using SmartStore.Core.Search.Facets;
 using SmartStore.Core.Search.Filter;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
@@ -1626,13 +1624,13 @@ namespace SmartStore.Admin.Controllers
 			{
 				switch (key)
 				{
-					case "manufacturer":
+					case "manufacturerid":
 						return T("Admin.Catalog.Manufacturers");
 					case "price":
 						return T("Admin.Catalog.Products.Price");
 					case "rate":
 						return T("Admin.Catalog.ProductReviews");
-					case "deliverytime":
+					case "deliveryid":
 						return T("Admin.Catalog.Products.Fields.DeliveryTime");
 					default:
 						return null;
@@ -1645,7 +1643,7 @@ namespace SmartStore.Admin.Controllers
 
 			var displayOrder = (globalFilters.Any() ? globalFilters.Max(x => x.DisplayOrder) : 0);
 
-			foreach (var fieldName in new string[] { "manufacturer", "price", "rate", "deliverytime" })
+			foreach (var fieldName in new string[] { "manufacturerid", "price", "rate", "deliveryid" })
 			{
 				var filter = globalFilters.FirstOrDefault(x => x.FieldName.IsCaseInsensitiveEqual(fieldName));
 

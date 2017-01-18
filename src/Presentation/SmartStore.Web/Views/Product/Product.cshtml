@@ -36,8 +36,8 @@
 		@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
 		{
 			<article class="pd" itemscope itemtype="http://schema.org/Product">
-				@*<div class="page-title hidden-lg-up" itemprop="name">
-					<h1 class="pd-name">
+				@*<div class="page-title hidden-lg-up">
+					<h1 class="pd-name" itemprop="name">
 						@Model.Name
 					</h1>
 				</div>*@
@@ -47,21 +47,11 @@
 					<!-- Data: Picture, Description, Attrs etc. -->
 					<div class="col-xs-12 col-md-6 col-lg-7 pd-data-col">
 						@{ Html.RenderPartial("Product.Picture", Model.DetailsPictureModel); }
-						<div class="row pd-data hidden-xs-up">
-							<!-- Picture -->
-							<div class="col-sm-12 col-xl-7 m-b-1-lg pd-gallery-col">
-								
-							</div>
-							<!-- Info -->
-							<div class="col-sm-12 col-xl-5 m-b-1-xs pd-info-col">
-								
-							</div>
-						</div>
 					</div>
 					<!-- Sidebar: Info, Price, Buttons etc. -->
-					<aside class="col-xs-12 col-md-6 col-lg-5 pd-sidebar-col zoom-window-container">
+					<aside class="col-xs-12 col-md-6 col-lg-5 pd-info-col zoom-window-container">
 						@{ Html.RenderPartial("Product.Info", Model); }
-						@{ Html.RenderPartial("Product.SideBar", Model); }
+						@{ Html.RenderPartial("Product.Offer", Model); }
 					</aside>
 				</section>
 

@@ -14,22 +14,6 @@
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
-    
-    <script>
-        $(function () {
-            $("#@Html.FieldIdFor(model => model.DefaultPictureZoomEnabled)").click(togglePictureZoomType);
-            togglePictureZoomType();
-        });
-
-        function togglePictureZoomType() {
-            if ($('#@Html.FieldIdFor(model => model.DefaultPictureZoomEnabled)').is(':checked')) {
-                $('#pnlPictureZoomType').show();
-            }
-            else {
-                $('#pnlPictureZoomType').hide();
-            }
-        }
-    </script>
 
     Html.RenderAction("StoreScopeConfiguration", "Setting");
 
@@ -88,16 +72,6 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.DefaultPictureZoomEnabled)
                 @Html.ValidationMessageFor(model => model.DefaultPictureZoomEnabled)
-            </td>
-        </tr>
-        <tr id="pnlPictureZoomType">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PictureZoomType)
-            </td>
-            <td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.PictureZoomType)
-                @Html.DropDownListFor(model => model.PictureZoomType, Model.AvailablePictureZoomTypes)
-                @Html.ValidationMessageFor(model => model.PictureZoomType)
             </td>
         </tr>
         <tr>

@@ -1899,12 +1899,14 @@
     <Content Include="Themes\Alpha\Content\_product.scss" />
     <Content Include="Views\Product\Partials\Product.Picture.cshtml" />
     <Content Include="Views\Product\Partials\Product.Info.cshtml" />
-    <Content Include="Views\Product\Partials\Product.SideBar.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Offer.cshtml" />
     <Content Include="Themes\Alpha\Content\_drift-theme.scss" />
     <Content Include="Themes\Alpha\Content\_photoswipe-theme.scss" />
     <Content Include="Themes\Alpha\Content\photoswipe\photoswipe.scss" />
     <Content Include="Themes\Alpha\Content\photoswipe\_main-settings.scss" />
     <Content Include="Themes\Alpha\Content\_gallery.scss" />
+    <Content Include="Views\Product\Partials\Product.Offer.Price.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Offer.Actions.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

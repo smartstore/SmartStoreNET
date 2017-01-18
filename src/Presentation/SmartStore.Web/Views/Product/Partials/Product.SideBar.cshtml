@@ -1,14 +1,81 @@
 ﻿@model ProductDetailsModel
 
+@using System.Globalization;
 @using SmartStore.Web.Models.Catalog;
 
 @{
+	var priceModel = Model.ProductPrice;
 
+	var currentPrice = priceModel.PriceWithDiscount.NullEmpty() ?? priceModel.Price;
+	var currentPriceValue = priceModel.PriceWithDiscountValue > 0 ? priceModel.PriceWithDiscountValue : priceModel.PriceValue;
+	var currentPriceLabel = priceModel.NoteWithDiscount;
+
+	var oldPrice1 = priceModel.OldPrice;
+	var oldPrice1Label = T("Products.Price.OldPrice").Text;
+
+	var oldPrice2 = priceModel.PriceWithDiscount.HasValue() ? priceModel.Price : "";
+	var oldPrice2Label = priceModel.NoteWithoutDiscount;
+
+	var youSave = "";
 }
 
-<div class="pd-sidebar p-t-4">
+<div class="pd-sidebar">
+	<div class="pd-price-block" itemscope itemtype="http://schema.org/Offer">
+		<div class="m-b-2 hidden-xs-up">
+			<div>PriceWithDiscount: @priceModel.NoteWithDiscount @priceModel.PriceWithDiscount</div>
+			<div>OldPrice: @priceModel.OldPrice</div>
+			<div>Price: @priceModel.NoteWithoutDiscount @priceModel.Price</div>
+		</div>
+		
+		<div class="pd-group clearfix">
+			<div class="pull-xs-left">
+				<div class="pd-price-label">@currentPriceLabel</div>
+				<div itemprop="price" content="@currentPriceValue.ToString("F", CultureInfo.InvariantCulture)"
+					 class="pd-price@(priceModel.OldPrice.HasValue() ? " pd-price--offer" : "")@(priceModel.CallForPrice ? " pd-price--call" : "")">
+					@Html.Raw(currentPrice)
+				</div>
+			</div>
+			<div class="pull-xs-left m-l-1">
+				<div class="pd-price-label">@oldPrice2Label</div>
+				<div class="pd-price" style="text-decoration: line-through; color: #999; x-font-weight: 400">
+					@Html.Raw(oldPrice2)
+				</div>
+			</div>
+
+			@*@if (oldPrice2.HasValue())
+			{
+				if (oldPrice2Label.HasValue())
+				{
+					<span>@Html.Raw(oldPrice2Label):</span>
+				}
+				<span class="pd-oldprice">@Html.Raw(oldPrice2)</span>
+			}*@
+		</div>
+
+		@if (oldPrice1.HasValue() || youSave.HasValue())
+		{
+			<div class="pd-group">
+				@if (oldPrice1.HasValue())
+				{
+					<div>
+						@if (oldPrice1Label.HasValue())
+						{
+							<span>@Html.Raw(oldPrice1Label):</span>
+						}
+						<span class="pd-oldprice">@Html.Raw(oldPrice1)</span>
+					</div>
+				}
+				<div>
+					<span>@T("ShoppingCart.ItemYouSave"):</span>
+					<span>99,00 EUR (19 %)</span>
+				</div>
+			</div>
+		}
+		<meta itemprop="priceCurrency" content="@WorkContext.WorkingCurrency.CurrencyCode" />
+	</div>
+
 	<button type="button" class="btn btn-primary btn-lg btn-block">
-		<i class="fa fa-shopping-cart"></i>
+		<i class="fa fa-cart-arrow-down"></i>
 		<span>In den Warenkorb</span>
 	</button>
 </div>

@@ -1,6 +1,9 @@
 /// <reference path="bs4/scss/bootstrap.scss" />
 
-$pd-sidebar-bg:             $gray-lightest;
+$pd-sidebar-bg:                 $gray-lightest;
+$pd-price-color:                $body-color;
+$pd-price-offer-color:          $brand-danger;
+$pd-line-height:                1.3;
 
 //
 // Article Detail Styles
@@ -22,6 +25,10 @@ $pd-sidebar-bg:             $gray-lightest;
     display: block !important;
 }
 
+.pd-group {
+    margin-bottom: 0.25rem;
+}
+
 .pd-name {
     font-size: 1.8rem;
 }
@@ -31,9 +38,14 @@ $pd-sidebar-bg:             $gray-lightest;
     font-weight: 600;
 }
 
+.pd-info .page-title {
+    margin-bottom: 0;
+}
+
 .pd-sidebar {
     background: $pd-sidebar-bg;
     padding: $grid-gutter-width / 2;
+    line-height: $pd-line-height;
 }
 
 .pd-description {
@@ -60,4 +72,38 @@ $pd-sidebar-bg:             $gray-lightest;
         bottom: 0;
         margin: auto;
     }
+}
+
+// Prices
+// =====================================================
+
+.pd-price-block {
+    margin-bottom: 1rem;
+}
+
+.pd-price {
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: $pd-price-color;
+
+    &.pd-price--offer {
+        color: $pd-price-offer-color;
+    }
+    &.pd-price--call {
+        font-size: 1rem;
+        color: $text-muted;
+        font-weight: 400;
+    }
+}
+
+.pd-price-label {
+    line-height: 1;
+    font-weight: 600;
+}
+
+.pd-oldprice {
+    display: inline-block;
+    padding-left: 0.25rem;
+    color: $text-muted;
+    text-decoration: line-through;
 }

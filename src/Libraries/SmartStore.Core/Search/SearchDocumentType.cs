@@ -4,6 +4,7 @@
 	{
 		Product = 0,
 		Category,
-		Manufacturer
+		Manufacturer,
+		DeliveryTime
 	}
 }

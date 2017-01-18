@@ -28,7 +28,7 @@
 		public long HitCount
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public FacetGroup FacetGroup

@@ -78,11 +78,18 @@ namespace SmartStore.Services.Search.Modelling
 			var action = routeData.GetRequiredString("action");
 			var origin = "{0}{1}/{2}".FormatInvariant(area == null ? "" : area + "/", controller, action);
 
-			if (!origin.IsCaseInsensitiveEqual("Search/InstantSearch") && _searchSettings.GlobalFilters.HasValue())
+			if (!origin.IsCaseInsensitiveEqual("Search/InstantSearch"))
 			{
-				var globalFilters = JsonConvert.DeserializeObject<List<GlobalSearchFilterDescriptor>>(_searchSettings.GlobalFilters);
+				if (_searchSettings.GlobalFilters.HasValue())
+				{
+					var globalFilters = JsonConvert.DeserializeObject<List<GlobalSearchFilterDescriptor>>(_searchSettings.GlobalFilters);
 
-				_globalFilterFields.AddRange(globalFilters.Where(x => !x.Disabled).Select(x => x.FieldName));
+					_globalFilterFields.AddRange(globalFilters.Where(x => !x.Disabled).Select(x => x.FieldName));
+				}
+				else
+				{
+					_globalFilterFields.AddRange(new string[] { "manufacturerid", "price", "rate", "deliveryid" });
+				}
 			}
 
 			var term = GetValueFor<string>("q");
@@ -334,10 +341,15 @@ namespace SmartStore.Services.Search.Modelling
 			if (_globalFilterFields.Contains("rate"))
 			{
 				var facet = new FacetDescriptor("rate");
+				facet.OrderBy = FacetDescriptor.Sorting.ValueAsc;
 
-				if (fromRate.HasValue)
+				for (double rate = 1.0; rate <= 5.0; ++rate)
 				{
-					facet.AddValue(new FacetValue(fromRate.Value) { IsSelected = true });
+					facet.AddValue(new FacetValue(rate)
+					{
+						Label = Math.Truncate(rate).ToString(),
+						IsSelected = (fromRate == rate)
+					});
 				}
 
 				query.WithFacet(facet);

@@ -24,8 +24,9 @@ namespace SmartStore.Core.Search
 			StoreMappings = new Multimap<int, int>();
 			CustomerRoleIds = new int[0];
 			CustomerRoleMappings = new Multimap<int, int>();
-			Categories = new Dictionary<int, Category>();
+			DeliveryTimes = new Dictionary<int, DeliveryTime>();
 			Manufacturers = new Dictionary<int, Manufacturer>();
+			Categories = new Dictionary<int, Category>();
 			CustomProperties = new Dictionary<string, object>();
 		}
 
@@ -65,14 +66,19 @@ namespace SmartStore.Core.Search
 		public Multimap<int, int> CustomerRoleMappings { get; set; }
 
 		/// <summary>
+		/// All manufacturers
+		/// </summary>
+		public Dictionary<int, Manufacturer> Manufacturers { get; set; }
+
+		/// <summary>
 		/// All categories
 		/// </summary>
 		public Dictionary<int, Category> Categories { get; set; }
 
 		/// <summary>
-		/// All manufacturers
+		/// All delivery times
 		/// </summary>
-		public Dictionary<int, Manufacturer> Manufacturers { get; set; }
+		public Dictionary<int, DeliveryTime> DeliveryTimes { get; set; }
 
 		/// <summary>
 		/// Use this dictionary for any custom data required along indexing

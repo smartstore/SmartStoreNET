@@ -5,6 +5,8 @@ $pd-price-color:                $body-color;
 $pd-price-offer-color:          $brand-danger;
 $pd-line-height:                1.3;
 
+$pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
+
 //
 // Article Detail Styles
 // --------------------------------------------------
@@ -12,7 +14,7 @@ $pd-line-height:                1.3;
 .pd-section,
 .pd-picture-block,
 .pd-info,
-.pd-sidebar {
+.pd-offer {
     position: relative;
 }
 
@@ -26,32 +28,17 @@ $pd-line-height:                1.3;
 }
 
 .pd-group {
-    margin-bottom: 0.25rem;
-}
-
-.pd-name {
-    font-size: 1.8rem;
-}
-
-.pd-name-sm {
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.pd-info .page-title {
-    margin-bottom: 0;
-}
-
-.pd-offer {
-    background: $pd-offer-bg;
-    padding: $grid-gutter-width / 2;
-    line-height: $pd-line-height;
+    margin-bottom: 0.5rem;
 }
 
 .pd-description {
     color: $text-muted;
     line-height: 1.3;
 }
+
+
+// Picture
+// =====================================================
 
 .pd-picture {
     display: block;
@@ -74,11 +61,78 @@ $pd-line-height:                1.3;
     }
 }
 
+
+// Info
+// =====================================================
+
+.pd-info {
+    margin-bottom: 0.5rem;
+}
+
+.pd-name {
+    font-size: 1.8rem;
+}
+
+.pd-name-sm {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.pd-info .page-title {
+    margin-bottom: 0;
+}
+
+.pd-offer {
+    background: $pd-offer-bg;
+    padding: $grid-gutter-width / 2;
+    line-height: $pd-line-height;
+}
+
+.pd-brand {
+    color: inherit !important;
+    text-decoration: none !important;
+    font-weight: 600;
+}
+
+.pd-brand-picture {
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+    max-height: 32px;
+}
+
+.pd-attrs {
+    margin-bottom: 1rem;
+    td { 
+        padding: 0.2rem 0; 
+        vertical-align: middle; 
+        line-height: $pd-line-height;
+    }
+    td:first-child { 
+        padding-right: 1rem; 
+        font-weight: 700; 
+    }
+}
+
+
 // Prices
 // =====================================================
 
 .pd-offer-price {
     margin-bottom: 1rem;
+}
+
+.pd-price-block {
+    float: left;
+}
+
+.pd-price-block + .pd-price-block {
+    margin-left: 1rem;
+    .pd-price {
+        text-decoration: line-through;
+        color: $pd-offer-muted-color;
+        font-weight: 400;
+    }
 }
 
 .pd-price {
@@ -106,4 +160,17 @@ $pd-line-height:                1.3;
     padding-left: 0.25rem;
     color: $text-muted;
     text-decoration: line-through;
+}
+
+.pd-saving-percent {
+    font-weight: 600;
+    color: $brand-danger;
+}
+
+.pd-callforprice {
+    font-size: 1.2rem;
+}
+
+.pd-legalinfo {
+    color: $pd-offer-muted-color;
 }

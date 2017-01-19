@@ -349,6 +349,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Products.Bundle.PriceWithoutDiscount.Note", "Instead of", "Statt");
 			builder.AddOrUpdate("Products.Bundle.PriceWithDiscount.Note", "As bundle only", "Im Set nur");
 			builder.AddOrUpdate("Products.Price", "Preis", "Preis");
+			builder.AddOrUpdate("Products.ManufacturerPartNumber", "MPN", "MPN");
 		}
 	}
 }

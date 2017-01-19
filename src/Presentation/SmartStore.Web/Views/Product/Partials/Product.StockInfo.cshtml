@@ -1,0 +1,48 @@
+﻿@model ProductDetailsModel
+
+@using SmartStore.Web.Models.Catalog;
+
+@{
+	var showAttrs = (Model.DisplayDeliveryTime && Model.IsShipEnabled)
+		|| Model.StockAvailability.HasValue()
+		|| Model.DisplayBackInStockSubscription;
+
+	if (!showAttrs)
+	{
+		return;
+	}
+}
+
+<table class="pd-attrs">
+	@if (Model.DisplayDeliveryTime && Model.IsShipEnabled)
+	{
+		var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailability;
+		<tr class="pd-attr-delivery-info">
+			<td>@T("Products.DeliveryTime")</td>
+			<td>
+				<span class="delivery-time" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
+					<i class="fa fa-circle delivery-time-status"></i>
+					@statusLabel
+				</span>
+			</td>
+		</tr>
+	}
+
+	@if (Model.StockAvailability.HasValue())
+	{
+		<tr class="pd-attr-stock">
+			<td>@T("Products.Availability"):</td>
+			<td>@Model.StockAvailability</td>
+		</tr>
+	}
+
+	@if (true || Model.DisplayBackInStockSubscription)
+	{
+		<tr class="pd-attr-stocksub">
+			<td>&nbsp;</td>
+			<td>@{ Html.RenderPartial("_BackInStockSubscription", Model); }</td>
+		</tr>
+	}
+</table>
+
+

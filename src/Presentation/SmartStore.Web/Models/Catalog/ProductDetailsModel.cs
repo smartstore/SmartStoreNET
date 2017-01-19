@@ -31,7 +31,9 @@ namespace SmartStore.Web.Models.Catalog
 			get
 			{
 				if (_detailsPictureModel == null)
+				{
 					_detailsPictureModel = new ProductDetailsPictureModel();
+				}	
 				return _detailsPictureModel;
 			}
 		}
@@ -155,6 +157,7 @@ namespace SmartStore.Web.Models.Catalog
 		public partial class ProductPriceModel : ModelBase
 		{
 			public string OldPrice { get; set; }
+			public decimal OldPriceValue { get; set; }
 
 			public string Price { get; set; }
 			public string PriceWithDiscount { get; set; }
@@ -162,8 +165,10 @@ namespace SmartStore.Web.Models.Catalog
 			public decimal PriceValue { get; set; }
 			public decimal PriceWithDiscountValue { get; set; }
 
-			public bool CustomerEntersPrice { get; set; }
+			public float SavingPercent { get; set; }
+			public string SavingAmount { get; set; }
 
+			public bool CustomerEntersPrice { get; set; }
 			public bool CallForPrice { get; set; }
 
 			public int ProductId { get; set; }

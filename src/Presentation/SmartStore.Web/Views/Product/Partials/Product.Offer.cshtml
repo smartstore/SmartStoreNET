@@ -1,10 +1,18 @@
 ﻿@model ProductDetailsModel
 
-@using System.Globalization;
 @using SmartStore.Web.Models.Catalog;
 
+@{ 
+
+}
+
 <div class="pd-offer">
-	@{ Html.RenderPartial("Product.Offer.Price", Model); }
+	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
+	{
+		Html.RenderPartial("Product.Offer.Price", Model);
+	}
+
+	@{ Html.RenderPartial("Product.StockInfo", Model); }
 
 	<button type="button" class="btn btn-primary btn-lg btn-block">
 		<i class="fa fa-cart-arrow-down"></i>

@@ -12,7 +12,7 @@
 		@if (Model.IsShippingEnabled && !Model.HideDeliveryTime)
 		{
 			var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailablity;
-			<span class="delivery-time" title="@T("Products.DeliveryTime"): @statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
+			<span class="delivery-time" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
 				<i class="fa fa-circle delivery-time-status"></i>
 				@statusLabel
 			</span>

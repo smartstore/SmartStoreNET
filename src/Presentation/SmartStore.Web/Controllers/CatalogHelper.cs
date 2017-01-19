@@ -828,7 +828,7 @@ namespace SmartStore.Web.Controllers
 				}
             }
 
-			var dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
+			var dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).SystemKeyword;
 
 			model.WeightValue = product.Weight;
 			if (!isBundle)
@@ -844,7 +844,7 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			model.Weight = (model.WeightValue > 0) ? "{0} {1}".FormatCurrent(model.WeightValue.ToString("F2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name) : "";
+			model.Weight = (model.WeightValue > 0) ? "{0} {1}".FormatCurrent(model.WeightValue.ToString("F2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).SystemKeyword) : "";
 			model.Height = (product.Height > 0) ? "{0} {1}".FormatCurrent(product.Height.ToString("F2"), dimension) : "";
 			model.Length = (product.Length > 0) ? "{0} {1}".FormatCurrent(product.Length.ToString("F2"), dimension) : "";
 			model.Width = (product.Width > 0) ? "{0} {1}".FormatCurrent(product.Width.ToString("F2"), dimension) : "";
@@ -956,12 +956,17 @@ namespace SmartStore.Web.Controllers
 						if (productBundleItem == null || isBundleItemPricing)
 						{
 							if (finalPriceWithoutDiscountBase != oldPriceBase && oldPriceBase > decimal.Zero)
+							{
+								model.ProductPrice.OldPriceValue = oldPrice;
 								model.ProductPrice.OldPrice = _priceFormatter.FormatPrice(oldPrice);
+							}		
 
 							model.ProductPrice.Price = _priceFormatter.FormatPrice(finalPriceWithoutDiscount);
 
 							if (finalPriceWithoutDiscountBase != finalPriceWithDiscountBase)
+							{
 								model.ProductPrice.PriceWithDiscount = _priceFormatter.FormatPrice(finalPriceWithDiscount);
+							}	
 						}
 
 						model.ProductPrice.PriceValue = finalPriceWithoutDiscount;
@@ -995,6 +1000,16 @@ namespace SmartStore.Web.Controllers
                                 _priceCalculationService,
                                 currency, 
                                 (product.Price - finalPriceWithDiscount) * (-1));
+						}
+
+						// Calculate saving
+						var regularPriceValue = Math.Max(finalPriceWithoutDiscount, oldPrice);
+						var currentPriceValue = finalPriceWithDiscount;
+
+						if (regularPriceValue > 0 && regularPriceValue > currentPriceValue)
+						{
+							model.ProductPrice.SavingPercent = (float)((regularPriceValue - currentPriceValue) / regularPriceValue) * 100;
+							model.ProductPrice.SavingAmount = _priceFormatter.FormatPrice(regularPriceValue - currentPriceValue, true, false);
 						}
 					}
 				}

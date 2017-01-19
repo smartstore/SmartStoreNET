@@ -24,6 +24,16 @@
 		var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
 		Html.AddCanonicalUrlParts(productUrl);
 	}
+
+	/* TODO: (mc)
+	 * - CustomerEnteredPrice
+	 * - Better weight format (12.000 g, NOT 12000,00 Gramm)
+	 * - Better format for dimensions (width, height, length)
+	 * - Better format for StockAvailability
+	 * - Badges
+	 * - Better layout for stock info
+	 * - GTIN: user must specifiy the GTIN type on product level (gtin12, gtin13 etc.). See https://schema.org/Offer
+	 */
 }
 
 <div class="page product-details-page">
@@ -36,12 +46,6 @@
 		@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
 		{
 			<article class="pd" itemscope itemtype="http://schema.org/Product">
-				@*<div class="page-title hidden-lg-up">
-					<h1 class="pd-name" itemprop="name">
-						@Model.Name
-					</h1>
-				</div>*@
-
 				<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
 				<section class="row pd-section pd-section-top">
 					<!-- Data: Picture, Description, Attrs etc. -->

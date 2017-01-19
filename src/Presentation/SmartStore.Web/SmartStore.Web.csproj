@@ -1907,6 +1907,8 @@
     <Content Include="Themes\Alpha\Content\_gallery.scss" />
     <Content Include="Views\Product\Partials\Product.Offer.Price.cshtml" />
     <Content Include="Views\Product\Partials\Product.Offer.Actions.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Attrs.cshtml" />
+    <Content Include="Views\Product\Partials\Product.StockInfo.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

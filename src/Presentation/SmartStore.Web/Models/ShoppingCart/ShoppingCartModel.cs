@@ -188,13 +188,15 @@ namespace SmartStore.Web.Models.ShoppingCart
             public bool Display { get; set; }
             public string Message { get; set; }
             public string CurrentCode { get; set; }
-        }
+			public bool IsWarning { get; set; }
+		}
 
         public partial class GiftCardBoxModel : ModelBase
         {
             public bool Display { get; set; }
             public string Message { get; set; }
-        }
+			public bool IsWarning { get; set; }
+		}
 
         public partial class OrderReviewDataModel : ModelBase
         {

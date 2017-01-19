@@ -813,8 +813,8 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Order.CustomerEmail", order.BillingAddress.Email));
 
             tokens.Add(new Token("Order.BillingFullSalutation", string.Format("{0}{1}", 
-                order.BillingAddress.Salutation,
-                !String.IsNullOrEmpty(order.BillingAddress.Title) ? " " + order.BillingAddress.Title : "")));
+                order.BillingAddress.Salutation.EmptyNull(),
+                order.BillingAddress.Title.HasValue() ? " " + order.BillingAddress.Title : "")));
 
             tokens.Add(new Token("Order.BillingSalutation", order.BillingAddress.Salutation));
             tokens.Add(new Token("Order.BillingTitle", order.BillingAddress.Title));
@@ -832,9 +832,17 @@ namespace SmartStore.Services.Messages
 			tokens.Add(new Token("Order.BillingCountry", order.BillingAddress.Country != null ? order.BillingAddress.Country.GetLocalized(x => x.Name) : ""));
 
             tokens.Add(new Token("Order.ShippingMethod", order.ShippingMethod));
-            tokens.Add(new Token("Order.ShippingFullSalutation", string.Format("{0}{1}",
-                order.ShippingAddress.Salutation,
-                !String.IsNullOrEmpty(order.ShippingAddress.Title) ? " " + order.ShippingAddress.Title : "")));
+
+			if (order.ShippingAddress != null)
+			{
+				tokens.Add(new Token("Order.ShippingFullSalutation", string.Format("{0}{1}",
+					order.ShippingAddress.Salutation.EmptyNull(),
+					order.ShippingAddress.Title.HasValue() ? " " + order.ShippingAddress.Title : "")));
+			}
+			else
+			{
+				tokens.Add(new Token("Order.ShippingFullSalutation", ""));
+			}
 
             tokens.Add(new Token("Order.ShippingSalutation", order.ShippingAddress != null ? order.ShippingAddress.Salutation : ""));
             tokens.Add(new Token("Order.ShippingTitle", order.ShippingAddress != null ? order.ShippingAddress.Title : ""));

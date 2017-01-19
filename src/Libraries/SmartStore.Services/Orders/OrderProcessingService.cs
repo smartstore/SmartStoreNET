@@ -1180,9 +1180,11 @@ namespace SmartStore.Services.Orders
 								_productService.AdjustInventory(sc, true);
                             }
 
-                            //clear shopping cart
-                            if (!processPaymentRequest.IsMultiOrder)
-                                cart.ToList().ForEach(sci => _shoppingCartService.DeleteShoppingCartItem(sci.Item, false));
+							//clear shopping cart
+							if (!processPaymentRequest.IsMultiOrder)
+							{
+								cart.ToList().ForEach(sci => _shoppingCartService.DeleteShoppingCartItem(sci.Item, false));
+							}
                         }
                         else
                         {

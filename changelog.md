@@ -70,6 +70,7 @@
 * #1029 Biz-Importer: Imports fixed tax rates as zero percentage
 * #1055 Checkout: Localized shipping method names are not displayed if shipping by total is activated
 * #1071 NewsLetterSubscription.ActivationUrl not working if the store if SSL secured
+* #1086 Gift cards can be earned in one store and applied in another
 
 ## SmartStore.NET 2.6
 

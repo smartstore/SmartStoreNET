@@ -1824,25 +1824,32 @@ namespace SmartStore.Web.Controllers
             ParseAndSaveCheckoutAttributes(cart, form);
 
             var model = new ShoppingCartModel();
-            if (!String.IsNullOrWhiteSpace(discountcouponcode))
-            {
-                var discount = _discountService.GetDiscountByCouponCode(discountcouponcode);
-                bool isDiscountValid = discount != null && 
-                    discount.RequiresCouponCode &&
-                    _discountService.IsDiscountValid(discount, _workContext.CurrentCustomer, discountcouponcode);
-                if (isDiscountValid)
-                {
-					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
-						 SystemCustomerAttributeNames.DiscountCouponCode, discountcouponcode);
-                    model.DiscountBox.Message = _localizationService.GetResource("ShoppingCart.DiscountCouponCode.Applied");
-                }
-                else
-                {
-                    model.DiscountBox.Message = _localizationService.GetResource("ShoppingCart.DiscountCouponCode.WrongDiscount");
-                }
-            }
-            else
-                model.DiscountBox.Message = _localizationService.GetResource("ShoppingCart.DiscountCouponCode.WrongDiscount");
+			model.DiscountBox.IsWarning = true;
+
+			if (!String.IsNullOrWhiteSpace(discountcouponcode))
+			{
+				var discount = _discountService.GetDiscountByCouponCode(discountcouponcode);
+				var isDiscountValid = 
+					discount != null &&
+					discount.RequiresCouponCode &&
+					_discountService.IsDiscountValid(discount, _workContext.CurrentCustomer, discountcouponcode);
+
+				if (isDiscountValid)
+				{
+					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.DiscountCouponCode, discountcouponcode);
+
+					model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.Applied");
+					model.DiscountBox.IsWarning = false;
+				}
+				else
+				{
+					model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.WrongDiscount");
+				}
+			}
+			else
+			{
+				model.DiscountBox.Message = T("ShoppingCart.DiscountCouponCode.WrongDiscount");
+			}
 
             PrepareShoppingCartModel(model, cart);
             return View(model);
@@ -1859,26 +1866,37 @@ namespace SmartStore.Web.Controllers
             ParseAndSaveCheckoutAttributes(cart, form);
 
             var model = new ShoppingCartModel();
-            if (!cart.IsRecurring())
-            {
-                if (!String.IsNullOrWhiteSpace(giftcardcouponcode))
-                {
-                    var giftCard = _giftCardService.GetAllGiftCards(null, null, null, null, giftcardcouponcode).FirstOrDefault();
-                    bool isGiftCardValid = giftCard != null && giftCard.IsGiftCardValid();
-                    if (isGiftCardValid)
-                    {
-                        _workContext.CurrentCustomer.ApplyGiftCardCouponCode(giftcardcouponcode);
-                        _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                        model.GiftCardBox.Message = _localizationService.GetResource("ShoppingCart.GiftCardCouponCode.Applied");
-                    }
-                    else
-                        model.GiftCardBox.Message = _localizationService.GetResource("ShoppingCart.GiftCardCouponCode.WrongGiftCard");
-                }
-                else
-                    model.GiftCardBox.Message = _localizationService.GetResource("ShoppingCart.GiftCardCouponCode.WrongGiftCard");
-            }
-            else
-                model.GiftCardBox.Message = _localizationService.GetResource("ShoppingCart.GiftCardCouponCode.DontWorkWithAutoshipProducts");
+			model.GiftCardBox.IsWarning = true;
+
+			if (!cart.IsRecurring())
+			{
+				if (!String.IsNullOrWhiteSpace(giftcardcouponcode))
+				{
+					var giftCard = _giftCardService.GetAllGiftCards(null, null, null, null, giftcardcouponcode).FirstOrDefault();
+					var isGiftCardValid = giftCard != null && giftCard.IsGiftCardValid(_storeContext.CurrentStore.Id);
+
+					if (isGiftCardValid)
+					{
+						_workContext.CurrentCustomer.ApplyGiftCardCouponCode(giftcardcouponcode);
+						_customerService.UpdateCustomer(_workContext.CurrentCustomer);
+
+						model.GiftCardBox.Message = T("ShoppingCart.GiftCardCouponCode.Applied");
+						model.GiftCardBox.IsWarning = false;
+					}
+					else
+					{
+						model.GiftCardBox.Message = T("ShoppingCart.GiftCardCouponCode.WrongGiftCard");
+					}
+				}
+				else
+				{
+					model.GiftCardBox.Message = T("ShoppingCart.GiftCardCouponCode.WrongGiftCard");
+				}
+			}
+			else
+			{
+				model.GiftCardBox.Message = T("ShoppingCart.GiftCardCouponCode.DontWorkWithAutoshipProducts");
+			}
 
             PrepareShoppingCartModel(model, cart);
             return View(model);

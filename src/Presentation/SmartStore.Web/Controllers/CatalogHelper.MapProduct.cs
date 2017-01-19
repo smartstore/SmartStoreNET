@@ -418,9 +418,9 @@ namespace SmartStore.Web.Controllers
 			if (model.ShowDimensions && (contextProduct.Width != 0 || contextProduct.Height != 0 || contextProduct.Length != 0))
 			{
 				item.Dimensions = ctx.Resources["Products.DimensionsValue"].Text.FormatCurrent(
-					contextProduct.Width.ToString("F2"),
-					contextProduct.Height.ToString("F2"),
-					contextProduct.Length.ToString("F2")
+					contextProduct.Width.ToString("N2"),
+					contextProduct.Height.ToString("N2"),
+					contextProduct.Length.ToString("N2")
 				);
 				item.DimensionMeasureUnit = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).SystemKeyword;
 			}

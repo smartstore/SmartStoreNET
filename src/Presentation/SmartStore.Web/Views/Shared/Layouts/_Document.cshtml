@@ -1,8 +1,6 @@
 ﻿@using SmartStore.Core;
 @using SmartStore.Core.Infrastructure;
-@using SmartStore.Core.Infrastructure.DependencyManagement;
 @using SmartStore.Services.Localization;
-@using SmartStore.Core.Domain.Localization;
 
 @{
 	var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
@@ -86,7 +84,7 @@
 <!DOCTYPE html>
 <html lang="@this.WorkContext.WorkingLanguage.UniqueSeoCode">
 <head>
-    <title>@Html.SmartTitle(true)</title>
+    <title itemprop="name">@Html.SmartTitle(true)</title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="@(Html.SmartMetaDescription())" />

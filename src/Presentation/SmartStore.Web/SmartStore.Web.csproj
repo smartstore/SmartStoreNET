@@ -944,6 +944,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr.js" />
     <Content Include="Scripts\public.product-detail.mobile.js" />
+    <Content Include="Themes\Alpha\Scripts\smartstore.responsiveNav.js" />
     <Content Include="Scripts\smartstore.entityPicker.js" />
     <Content Include="Scripts\smartstore.instantsearch.js" />
     <Content Include="Scripts\smartstore.common.js" />
@@ -1909,6 +1910,10 @@
     <Content Include="Views\Product\Partials\Product.Offer.Actions.cshtml" />
     <Content Include="Views\Product\Partials\Product.Attrs.cshtml" />
     <Content Include="Views\Product\Partials\Product.StockInfo.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Reviews.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Specs.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Tabs.cshtml" />
+    <Content Include="Themes\Alpha\Content\shared\_nav.scss" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -147,7 +147,7 @@
 
 				   if (reviews.HasValue() && Model.DisplayProductReviews)
 				   {
-					   x.Add().Text(@T("Reviews.ExistingReviews"))
+					   x.Add().Text(@T("Reviews"))
 							   .Content(reviews)
 							   .Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
 							   .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));

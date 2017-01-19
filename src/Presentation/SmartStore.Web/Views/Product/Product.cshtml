@@ -27,7 +27,6 @@
 
 	/* TODO: (mc)
 	 * - CustomerEnteredPrice
-	 * - Better weight format (12.000 g, NOT 12000,00 Gramm)
 	 * - Better format for dimensions (width, height, length)
 	 * - Better format for StockAvailability
 	 * - Badges
@@ -63,9 +62,8 @@
 
 				<!-- Bottom Content: Full Description, Specification, Review etc. -->
 				<section class="pd-section pd-section-bottom">
-					<div class="col-md-12">
-						@Html.Raw(Model.FullDescription)
-					</div>
+					<!-- Tabs -->
+					@{ Html.RenderPartial("Product.Tabs", Model); }
 				</section>
 			</article>
 		}

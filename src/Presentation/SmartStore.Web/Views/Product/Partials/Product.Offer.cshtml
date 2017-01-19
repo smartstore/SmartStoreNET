@@ -6,6 +6,10 @@
 
 }
 
+@section end {
+	@RenderSection("end", required: false)
+}
+
 <div class="pd-offer">
 	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
 	{

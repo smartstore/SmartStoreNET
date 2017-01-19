@@ -103,6 +103,7 @@ $pagination-active-border:      $pagination-border-color;
 @import 'shared/_typo.scss';
 @import 'shared/_buttons.scss';
 @import 'shared/_forms.scss';
+@import 'shared/_nav.scss';
 @import 'shared/_accordion.scss';
 @import "shared/_modal-flex.scss";
 @import "shared/_throbber.scss";
@@ -115,10 +116,7 @@ $pagination-active-border:      $pagination-border-color;
 @import "shared/offcanvas.scss";
 @import "shared/_animate.scss";
 @import "photoswipe/photoswipe.scss";
-@import "_photoswipe-theme.scss";
 @import "slick/slick.scss";
-@import "_slick-theme.scss";
-@import "_drift-theme.scss";
 
 // Main
 @import "_shopbar.scss";
@@ -137,6 +135,10 @@ $pagination-active-border:      $pagination-border-color;
 @import "_gallery.scss";
 @import "_cart.scss";
 @import "_megamenu.scss";
+
+@import "_photoswipe-theme.scss";
+@import "_slick-theme.scss";
+@import "_drift-theme.scss";
 
 // Custom imports from plugins
 @import '~/.app/moduleimports.scss';

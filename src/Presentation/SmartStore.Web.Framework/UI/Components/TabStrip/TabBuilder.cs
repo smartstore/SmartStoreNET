@@ -2,10 +2,8 @@
 
 namespace SmartStore.Web.Framework.UI
 {
-
     public class TabBuilder : NavigationItemtWithContentBuilder<Tab, TabBuilder>
     {
-
         public TabBuilder(Tab item, HtmlHelper htmlHelper)
             : base(item, htmlHelper)
         {
@@ -22,8 +20,5 @@ namespace SmartStore.Web.Framework.UI
             this.Item.Pull = value;
             return this;
         }
-
-
     }
-
 }

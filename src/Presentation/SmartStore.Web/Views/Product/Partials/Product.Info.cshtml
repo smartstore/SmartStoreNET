@@ -7,6 +7,10 @@
 	var brand = Model.Manufacturers.FirstOrDefault();
 }
 
+@section end {
+	@RenderSection("end", required: false)
+}
+
 <div class="pd-info">
 	<div class="pd-group">
 		<!-- Brand -->

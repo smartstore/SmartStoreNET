@@ -66,6 +66,12 @@ namespace SmartStore.Web.Framework.UI
 				tab.HtmlAttributes.Add("data-ajax-oncomplete", tab.OnAjaxComplete);
 			}
 
+			if (tab.IsResponsive)
+			{
+				tab.HtmlAttributes.AppendCssClass("nav-responsive");
+				tab.HtmlAttributes.Add("data-breakpoint", tab.Breakpoint);
+			}
+
 			writer.AddAttributes(tab.HtmlAttributes);
 
 			writer.RenderBeginTag("div"); // root div
@@ -75,7 +81,21 @@ namespace SmartStore.Web.Framework.UI
 
 				// Tabs
 				var ulAttrs = new Dictionary<string, object>();
-				ulAttrs.AppendCssClass("nav nav-{0}".FormatInvariant(tab.Style.ToString().ToLower()));
+				ulAttrs.AppendCssClass("nav");
+
+				if (tab.Style == TabsStyle.Tabs)
+				{
+					ulAttrs.AppendCssClass("nav-tabs");
+				}
+				else if (tab.Style == TabsStyle.Pills)
+				{
+					ulAttrs.AppendCssClass("nav-pills");
+				}
+				else if (tab.Style == TabsStyle.Material)
+				{
+					ulAttrs.AppendCssClass("nav-tabs nav-tabs-line");
+				}
+
 				if (tab.Stacked)
 				{
 					ulAttrs.AppendCssClass("nav-stacked");
@@ -211,13 +231,28 @@ namespace SmartStore.Web.Framework.UI
             
             writer.AddAttribute("class", "tab-content");
             writer.RenderBeginTag("div");
+
+			// Tab content header
+			if (tab.IsResponsive && tab.TabContentHeaderContent != null)
+			{
+				//writer.WriteLine(item.Content.ToHtmlString());
+				writer.AddAttribute("class", "tab-content-header");
+				writer.RenderBeginTag("div");
+				{
+					writer.WriteLine(tab.TabContentHeaderContent.ToHtmlString());
+				}
+				writer.RenderEndTag(); // div.tab-content-header
+			}
+
+			// All tab items
             int i = 1;
             foreach (var item in tab.Items)
             {
                 this.RenderItemContent(writer, item, i);
                 i++;
             }
-            writer.RenderEndTag(); // div
+
+            writer.RenderEndTag(); // div.tab-content
         }
 
         protected virtual string RenderItemLink(HtmlTextWriter writer, Tab item, int index)
@@ -227,16 +262,10 @@ namespace SmartStore.Web.Framework.UI
 
             // <li [class="active [hide]"]><a href="#{id}" data-toggle="tab">{text}</a></li>
             item.HtmlAttributes.AppendCssClass("nav-item");
-            if (item.Selected)
+
+			if (!item.Selected && !item.Visible)
 			{
-                item.HtmlAttributes.AppendCssClass("active");   
-            }
-            else
-			{
-				if (!item.Visible)
-				{
-					item.HtmlAttributes.AppendCssClass("hide");
-				}
+				item.HtmlAttributes.AppendCssClass("hide");
 			}
 
 			if (item.Pull == TabPull.Right)

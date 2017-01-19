@@ -1,0 +1,60 @@
+﻿@model ProductDetailsModel
+
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Core.Events;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web.Framework.UI;
+@using SmartStore.Web.Framework.Events;
+
+@{
+
+}
+
+@Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Style(TabsStyle.Material).Responsive(true, "<md").Items(x =>
+{
+	var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
+
+	if (Model.FullDescription.HasValue())
+	{
+		x.Add().Text(@T("Products.Details"))
+				.Content(Html.Raw("<div itemprop='description' class='text-body'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
+				.Selected(true);
+	}
+
+	if (specificationAttributes.HasValue())
+	{
+		x.Add().Text(@T("Products.Specs"))
+				.Content(specificationAttributes)
+				.Selected(String.IsNullOrWhiteSpace(Model.FullDescription));
+	}
+
+	if (Model.DisplayProductReviews)
+	{
+		var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
+		if (reviews.HasValue())
+		{
+			x.Add().Text(@T("Reviews"))
+					.Content(reviews)
+					.Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
+					.Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
+		}
+	}
+
+	// Generate an event
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
+}).TabContentHeaderContent(TabContentHeader())
+
+@helper TabContentHeader() {{
+	<a href="javascript:void()" class="btn btn-secondary btn-flat btn-lg offcanvas-closer">
+		<i class="fa fa-chevron-left"></i>
+		<span>@T("Common.Close")</span>
+	</a>
+}}
+
+<script>
+	$(function () {
+		$('.nav-responsive').responsiveNav();
+	});
+</script>
+
+

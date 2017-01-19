@@ -106,7 +106,7 @@ namespace SmartStore.Core.Search
 
 		public override string ToString()
 		{
-			return Name + ": " + Value.ToString();
+			return Name + ": " + Value.ToString().NaIfEmpty();
 		}
 	}
 

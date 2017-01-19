@@ -118,6 +118,7 @@ namespace SmartStore.Web.Controllers
 		public ActionResult Search(CatalogSearchQuery query)
 		{
 			var model = new SearchResultModel(query);
+			CatalogSearchResult result = null;
 
 			if (query.Term == null || query.Term.Length < _searchSettings.InstantSearchTermMinLength)
 			{
@@ -130,8 +131,16 @@ namespace SmartStore.Web.Controllers
 				SystemCustomerAttributeNames.LastContinueShoppingPage,
 				Services.WebHelper.GetThisPageUrl(false),
 				Services.StoreContext.CurrentStore.Id);
-			
-			var result = _catalogSearchService.Search(query);
+
+			try
+			{
+				result = _catalogSearchService.Search(query);
+			}
+			catch (Exception exception)
+			{
+				model.Error = exception.ToString();
+				result = new CatalogSearchResult(null, query, 0, () => new List<Product>(), null, null);
+			}
 
 			if (result.TotalHitsCount == 0 && result.SpellCheckerSuggestions.Any())
 			{

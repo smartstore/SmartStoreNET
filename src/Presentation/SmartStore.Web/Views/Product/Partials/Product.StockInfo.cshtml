@@ -13,37 +13,31 @@
 	}
 }
 
-<table class="pd-attrs">
+<div class="pd-group pd-delivery-info">
+	@if (Model.StockAvailability.HasValue())
+	{
+		<div class="pd-stock p-b-05">
+			@Model.StockAvailability
+		</div>
+	}
 	@if (Model.DisplayDeliveryTime && Model.IsShipEnabled)
 	{
 		var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailability;
-		<tr class="pd-attr-delivery-info">
-			<td>@T("Products.DeliveryTime")</td>
-			<td>
-				<span class="delivery-time" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
-					<i class="fa fa-circle delivery-time-status"></i>
-					@statusLabel
-				</span>
-			</td>
-		</tr>
+		<div>
+			<span class="p-r-05">@T("Products.DeliveryTime")</span>
+			<span class="delivery-time" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color:" + Model.DeliveryTimeHexValue, Model.DisplayDeliveryTimeAccordingToStock)>
+				<i class="fa fa-circle delivery-time-status"></i>
+				@statusLabel
+			</span>
+		</div>
 	}
-
-	@if (Model.StockAvailability.HasValue())
-	{
-		<tr class="pd-attr-stock">
-			<td>@T("Products.Availability"):</td>
-			<td>@Model.StockAvailability</td>
-		</tr>
-	}
-
 	@if (Model.DisplayBackInStockSubscription)
 	{
-		<tr class="pd-attr-stocksub">
-			<td>&nbsp;</td>
-			<td>@{ Html.RenderPartial("_BackInStockSubscription", Model); }</td>
-		</tr>
+		<div class="pd-attr-stocksub">
+			<span>@{ Html.RenderPartial("_BackInStockSubscription", Model); }</span>
+		</div>
 	}
-</table>
+</div>
 
 
 @if (Model.DisplayBackInStockSubscription && Model.IsCurrentCustomerRegistered)

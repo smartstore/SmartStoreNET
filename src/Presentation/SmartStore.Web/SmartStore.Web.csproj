@@ -944,6 +944,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr.js" />
     <Content Include="Scripts\public.product-detail.mobile.js" />
+    <Content Include="Themes\Alpha\Scripts\jquery.hammer.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.responsiveNav.js" />
     <Content Include="Scripts\smartstore.entityPicker.js" />
     <Content Include="Scripts\smartstore.instantsearch.js" />

@@ -149,7 +149,12 @@ namespace SmartStore.Web.Framework.UI
 					}
 				}
 
-				writer.RenderEndTag(); // div.tabbable    
+				writer.RenderEndTag(); // div.tabbable
+				
+				if (tab.IsResponsive && tab.TabContentHeaderContent != null)
+				{
+					writer.WriteLine(@"<script>$(function() {{ $('#{0}').responsiveNav(); }})</script>".FormatInvariant(tab.Id));
+				}    
 			}
 		}
 
@@ -367,6 +372,16 @@ namespace SmartStore.Web.Framework.UI
 					{
 						writer.WriteEncodedText(item.Text);
 					}
+
+					// nav link short summary for collapsed state
+					if (this.Component.IsResponsive && item.Summary.HasValue())
+					{
+						writer.AddAttribute("class", "nav-link-summary");
+						writer.RenderBeginTag("span");
+						writer.WriteEncodedText(item.Summary);
+						writer.RenderEndTag();
+					}
+
 					writer.RenderEndTag(); // a
 				}
 				writer.RenderEndTag(); // li

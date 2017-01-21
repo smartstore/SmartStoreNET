@@ -279,7 +279,7 @@
 			}
 		);
 
-		// .mf-dropdown (mobile friendly dropdown
+		// .mf-dropdown (mobile friendly dropdown)
 		$('body').on('mouseenter mouseleave mousedown change', '.mf-dropdown > select', function (e) {
 			var btn = $(this).parent().find('> .btn');
 			if (e.type == "mouseenter") {
@@ -296,6 +296,7 @@
 			}
 			else if (e.type == "change") {
 				btn.removeClass('focus active');
+				btn.find('.mf-dropdown-value').text($(this).val());
 			}
 		});
 
@@ -305,6 +306,7 @@
 		}
 		
 		// fixes bootstrap 2 bug: non functional links on mobile devices
+		// TODO: (mc) delete this later
 	    // https://github.com/twbs/bootstrap/issues/4550
 		$('body').on('touchstart.dropdown', '.dropdown-menu a', function (e) { e.stopPropagation(); });
     });

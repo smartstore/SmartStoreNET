@@ -119,7 +119,9 @@
     <!--Powered by SmartStore.net - http://www.smartstore.com-->
 </head>
 <body class="@Html.BodyCssClass()"@(Html.BodyId())>
-    @RenderBody()
+    @RenderBody()	
+
+	@{ Html.RenderTail(); }
 
 	@* TOODO: (mc) OC > render assets via child action *@
     @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)

@@ -7,10 +7,6 @@
     @RenderSection("teaser", required: false)
 }
 
-@section end {
-	@RenderSection("end", required: false)
-}
-
 <div id="content-center" class="col-md-12">
     @Html.Widget("main_column_before")
     @RenderBody()

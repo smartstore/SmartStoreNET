@@ -1915,6 +1915,7 @@
     <Content Include="Views\Product\Partials\Product.Specs.cshtml" />
     <Content Include="Views\Product\Partials\Product.Tabs.cshtml" />
     <Content Include="Themes\Alpha\Content\shared\_nav.scss" />
+    <Content Include="Views\Product\Partials\Product.ReviewSummary.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

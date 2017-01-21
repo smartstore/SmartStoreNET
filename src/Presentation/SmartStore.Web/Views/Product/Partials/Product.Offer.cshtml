@@ -6,10 +6,6 @@
 
 }
 
-@section end {
-	@RenderSection("end", required: false)
-}
-
 <div class="pd-offer">
 	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
 	{
@@ -17,9 +13,5 @@
 	}
 
 	@{ Html.RenderPartial("Product.StockInfo", Model); }
-
-	<button type="button" class="btn btn-primary btn-lg btn-block">
-		<i class="fa fa-cart-arrow-down"></i>
-		<span>In den Warenkorb</span>
-	</button>
+	@{ Html.RenderPartial("Product.Offer.Actions", Model); }
 </div>

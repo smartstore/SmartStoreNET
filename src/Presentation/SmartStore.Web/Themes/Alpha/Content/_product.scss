@@ -28,7 +28,8 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 }
 
 .pd-group {
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    > * { margin-bottom: 0.125rem; }
 }
 
 .pd-description {
@@ -65,10 +66,6 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 // Info
 // =====================================================
 
-.pd-info {
-    margin-bottom: 0.5rem;
-}
-
 .pd-name {
     font-size: 1.8rem;
 }
@@ -102,7 +99,6 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 }
 
 .pd-attrs {
-    margin-bottom: 1rem;
     td { 
         padding: 0.2rem 0; 
         vertical-align: middle; 
@@ -111,6 +107,43 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
     td:first-child { 
         padding-right: 1rem; 
         font-weight: 700; 
+    }
+}
+
+.pd-stock {
+    &.pd-instock {
+        color: darken($brand-success, 10%);
+    }
+    &.pd-outofstock {
+        font-weight: bold;
+        color: $brand-danger;
+    } 
+}
+
+.pd-deliverytime .delivery-time { 
+    vertical-align: top; 
+    padding-left: 0.25rem;
+} 
+
+
+// Reviews
+// =====================================================
+
+.pd-review-summary {
+    line-height: $pd-line-height;
+    > * { display: inline-block; }
+    .pd-rating-box .rating {
+        vertical-align: sub;
+    }
+    .pd-review-link {
+        position: relative;
+        font-weight: 600;
+        &:before {
+            content: '|';
+            display: inline-block;
+            padding: 0 0.5rem;
+            color: $text-muted;
+        }
     }
 }
 
@@ -172,5 +205,6 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 }
 
 .pd-legalinfo {
+    font-size: $font-size-sm;
     color: $pd-offer-muted-color;
 }

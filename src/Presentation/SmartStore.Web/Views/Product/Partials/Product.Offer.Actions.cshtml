@@ -1,11 +1,74 @@
 ﻿@model ProductDetailsModel
 
 @using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Orders;
+@using System.Globalization;
 
 @{
-
+	var addModel = Model.AddToCart;
+	var showBuyAction = Model.IsAvailable && !Model.AddToCart.DisableBuyButton;
 }
 
 <div class="pd-offer-actions">
-
+	@if (showBuyAction)
+	{
+		if (Model.ProductPrice.CallForPrice)
+		{
+			<a class="btn btn-secondary btn-block add-to-cart-button" rel="nofollow" href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })">
+				<i class="fa fa-envelope"></i>
+				<span>@T("Products.CallForPrice.GoToForm")</span>
+			</a>
+		}
+		else
+		{
+			<div class="row">
+				<div class="col-xs-5 col-sm-4 x-col-md-5 p-r-0">
+					@for (var i = 0; i <= 100; i++)
+					{
+						addModel.AllowedQuantities.Add(new SelectListItem { Text = "{0} {1}".FormatCurrent(i, Model.QuantityUnitName), Value = i.ToString() });
+					}
+					@if (addModel.AllowedQuantities.Count > 0)
+					{
+						<div class="mf-dropdown" style="display: block">
+							<button class="btn btn-secondary btn-labeled icon-right btn-block" title="TBD">
+								<span class="mf-dropdown-value">@addModel.EnteredQuantity</span>
+								<b style="background: transparent; border-left: 1px solid #ddd"><i class="fa fa-caret-down"></i></b>
+							</button>
+							@Html.DropDownListFor(model => Model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown form-control noskin" })
+						</div>
+					}
+					else
+					{
+						@Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input form-control x-form-control-lg", style = "x-height:100%; text-align: center" })
+						<script>
+                        $(function () {
+                            //TODO NewAlpha: implement step in admin product detail
+                            $(".qty-input").TouchSpin({
+                                min: @addModel.MinOrderAmount,
+                                max: @addModel.MaxOrderAmount,
+                                step: 1,
+                                buttondown_class: 'btn btn-secondary btn-flat',
+                                buttonup_class: 'btn btn-secondary btn-flat',
+                                buttondown_txt: '<i class="fa fa-minus"></i>',
+                                buttonup_txt: '<i class="fa fa-plus"></i>',
+                            });
+                        });
+						</script>
+					}
+				</div>
+				<div class="col-xs-7 col-sm-8 x-col-md-7 p-l-05">
+					<a class="btn btn-primary x-btn-lg btn-block add-to-cart-button ajax-cart-link"
+					   href="#"
+					   rel="nofollow"
+					   data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.AddToCart.ProductId, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })'
+					   data-form-selector="#product-details-form"
+					   data-type="cart"
+					   data-action="add">
+						<i class="fa fa-cart-arrow-down"></i>
+						<span>@(Model.AddToCart.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))</span>
+					</a>
+				</div>
+			</div>
+		}
+	}
 </div>

@@ -14,7 +14,7 @@
     var OffCanvas = function (element, options) {
         var self = this;
 
-        this.el = $(element);
+        var el = this.el = $(element);
         this.options = $.extend({}, OffCanvas.DEFAULTS, options);
         this.canvas = $(this.options.canvas || '.wrapper');
         this.state = null;
@@ -32,19 +32,23 @@
             delete this.options.disablescrolling;
         }
 
-        $(window).resize(
-            viewport.changed(function () {
-                if (viewport.is('>xl')) self.hide(); // TBD: was >md
-            }, 100)
-        );
+        EventBroker.subscribe("page.resized", function (msg, viewport) {
+        	if (viewport.is('>sm')) self.hide();
+        });
 
         if (this.options.autohide) {
-            $(document).on('click touchstart', $.proxy(this.autohide, this));
+            $(document).on('click', $.proxy(this.autohide, this));
         }  
 
         if (this.options.toggle) {
             this.toggle();
         }
+
+    	// Close on swipe
+        var swipeEvent = el.hasClass('offcanvas-right') ? 'swiperight' : 'swipeleft';
+        el.children().first().hammer({}).on(swipeEvent, function (e) {
+        	self.hide();
+        });
     }
 
 
@@ -85,10 +89,10 @@
             body.addClass('canvas-noscroll');
         }
 
-        var swipeEvent = this.options.placement == 'right' ? 'swiperight' : 'swipeleft';
-        body.one(swipeEvent, function (e) {
-            self.hide();
-        });
+        //var swipeEvent = this.options.placement == 'right' ? 'swiperight' : 'swipeleft';
+        //body.one(swipeEvent, function (e) {
+        //    self.hide();
+        //});
 
         body.one("click", ".offcanvas-closer", function (e) {
             self.hide();
@@ -137,7 +141,7 @@
     }
 
     OffCanvas.prototype.autohide = function (e) {
-        if ($(e.target).closest(this.el).length === 0 || viewport.is('>xl')) // TBD: was >md
+        if ($(e.target).closest(this.el).length === 0)
             this.hide();
     }
 

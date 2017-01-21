@@ -39,24 +39,6 @@ h1, h2, h3, h4, h5, h6,
     margin-bottom: 2rem;
 }
 
-// delivery times
-// TODO: (mc) Remove this later
-.delivery-time {
-	padding-bottom: 5px;
-	@include smaller();
-	.delivery-time-label {
-		padding-right: 4px;
-		font-weight: bold;
-	}
-	.delivery-time-color {
-		height: 8px;
-		width: 32px;
-		display: inline-block;
-        border: 1px solid rgba(0,0,0, .25);
-        background-image: url('images/deliv-bg-aero.png');
-	}
-}
-
 .delivery-time {
     display: inline-block;
     color: $brand-danger;

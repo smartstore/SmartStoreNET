@@ -234,20 +234,21 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[ChildActionOnly]
-		public ActionResult ReviewOverview(int id)
+		public ActionResult ReviewSummary(int id /* productId */)
 		{
 			var product = _productService.GetProductById(id);
 			if (product == null)
 				throw new ArgumentException(T("Products.NotFound", id));
 
-			var model = new ProductReviewOverviewModel()
+			var model = new ProductReviewOverviewModel
 			{
 				ProductId = product.Id,
 				RatingSum = product.ApprovedRatingSum,
 				TotalReviews = product.ApprovedTotalReviews,
 				AllowCustomerReviews = product.AllowCustomerReviews
 			};
-			return PartialView(model);
+
+			return PartialView("Product.ReviewSummary", model);
 		}
 
 		[ChildActionOnly]

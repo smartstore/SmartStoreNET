@@ -8,6 +8,10 @@
     margin: 1rem 0;
 }
 
+.nav-link-summary {
+    display: none;
+}
+
 
 // Material Tabs
 // ==============================================================
@@ -26,7 +30,7 @@
     }
 
     .nav-link {
-        font-size: 1rem;
+        font-size: $font-size-lg;
         text-transform: uppercase;
         position: relative;
         border-width: 0;
@@ -97,6 +101,7 @@
 
 .offcanvas .tab-pane {
     padding: 1.5rem;
+    //transition: none;
 }
 
 .offcanvas .tab-content-header ~ .tab-pane {
@@ -127,6 +132,13 @@
             // Place the border on the list items and negative margin up for better styling
             margin-bottom: -$list-group-border-width;
             @include transition(background-color 0.12s linear);
+
+            .nav-link-summary {
+                display: block;
+                font-weight: 400;
+                line-height: 1.5;
+                font-size: $font-size-base;
+            }
 
             &:hover, &:focus {
                 color: $list-group-link-hover-color;

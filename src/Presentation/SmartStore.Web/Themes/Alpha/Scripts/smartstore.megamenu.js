@@ -13,7 +13,7 @@
                 productRotatorAjaxUrl: ""
             };
 
-            var settings = $.extend(defaults, settings);
+            settings = $.extend(defaults, settings);
 
             return this.each(function () {
                 var megamenuContainer = $(this);
@@ -278,12 +278,11 @@
                     }
 
                     //oh, oh, oh, oh, can't touch this ;-/
-                    var hammertime = new Hammer($(".megamenu")[0]);
+                    var hammertime = new Hammer(megamenu[0]);
                     hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
 
                     if (isSimple) {
                         hammertime.on('panstart', function (ev) {
-
                             closeNow($(".nav-item.active .nav-link"));
 
                             /*

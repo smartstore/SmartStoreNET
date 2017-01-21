@@ -352,6 +352,11 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Products.ManufacturerPartNumber", "MPN", "MPN");
 			builder.AddOrUpdate("Products.Details", "Description", "Beschreibung");
 			builder.AddOrUpdate("Products.Specs", "Features", "Merkmale");
+			builder.AddOrUpdate("Products.Availability.InStockWithQuantity", "{0} in stock", "{0} am Lager");
+			builder.AddOrUpdate("Products.Availability.InStock", "In stock", "Vorrätig");
+			builder.AddOrUpdate("Products.Availability.OutOfStock", "Out of stock", "Vergriffen");
+
+			builder.AddOrUpdate("Reviews.Overview.First", "Be the first to review this item", "Geben Sie die erste Bewertung ab");
 		}
 	}
 }

@@ -73,7 +73,7 @@
                                 @Html.Raw(Model.ShortDescription)
                             </div>
 
-                            @{ Html.RenderAction("ReviewOverview", new { id = Model.Id }); }
+                            @{ Html.RenderAction("ReviewSummary", new { id = Model.Id }); }
 
 						    @if (Model.Manufacturers != null && Model.Manufacturers.Any(x => x.Picture != null && x.Picture.ImageUrl.HasValue()))
 							{

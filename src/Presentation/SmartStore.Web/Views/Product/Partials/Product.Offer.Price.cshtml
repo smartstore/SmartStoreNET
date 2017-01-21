@@ -35,39 +35,39 @@
 	{
 		<!-- Current price -->
 		<div class="pd-group clearfix">
-			<div class="pd-price-block">
-				<meta itemprop="priceCurrency" content="@WorkContext.WorkingCurrency.CurrencyCode" />
-				@if (blocksHaveLabel)
-				{
-					<div class="pd-price-label">@currentPriceLabel</div>
-				}
-				<div class="pd-price@(priceModel.OldPrice.HasValue() ? " pd-price--offer" : "")@(priceModel.CallForPrice ? " pd-price--call" : "")">
-					@if (!priceModel.CallForPrice)
-					{
-						<meta itemprop="price" content="@currentPriceValue.ToString("F", CultureInfo.InvariantCulture)" />
-					}
-					@Html.Raw(currentPrice)
-				</div>
-			</div>
-			@if (oldPrice2.HasValue())
-			{
+			<div class="clearfix">
 				<div class="pd-price-block">
+					<meta itemprop="priceCurrency" content="@WorkContext.WorkingCurrency.CurrencyCode" />
 					@if (blocksHaveLabel)
-					{
-						<div class="pd-price-label">@oldPrice2Label</div>
-					}
-					<div class="pd-price">
-						@Html.Raw(oldPrice2)
+				{
+						<div class="pd-price-label">@currentPriceLabel</div>
+				}
+					<div class="pd-price@(priceModel.OldPrice.HasValue() ? " pd-price--offer" : "")@(priceModel.CallForPrice ? " pd-price--call" : "")">
+						@if (!priceModel.CallForPrice)
+						{
+							<meta itemprop="price" content="@currentPriceValue.ToString("F", CultureInfo.InvariantCulture)" />
+						}
+						@Html.Raw(currentPrice)
 					</div>
 				</div>
-			}
-		</div>
+				@if (oldPrice2.HasValue())
+				{
+					<div class="pd-price-block">
+						@if (blocksHaveLabel)
+					{
+							<div class="pd-price-label">@oldPrice2Label</div>
+					}
+						<div class="pd-price">
+							@Html.Raw(oldPrice2)
+						</div>
+					</div>
+				}
+			</div>
 
-		<!-- Regular price -->
-		if (oldPrice1.HasValue() || priceModel.SavingAmount.HasValue())
-		{
-			<div class="pd-group">
-				@if (oldPrice1.HasValue())
+			<!-- Regular price -->
+			@if (oldPrice1.HasValue() || priceModel.SavingAmount.HasValue())
+			{
+				if (oldPrice1.HasValue())
 				{
 					<div class="pd-oldprice-line">
 						@if (oldPrice1Label.HasValue())
@@ -77,15 +77,15 @@
 						<span class="pd-oldprice">@Html.Raw(oldPrice1)</span>
 					</div>
 				}
-				@if (priceModel.SavingAmount.HasValue())
+				if (priceModel.SavingAmount.HasValue())
 				{
 					<div class="pd-oldprice-line">
 						<span>@T("ShoppingCart.ItemYouSave"):</span>
 						<span>@priceModel.SavingAmount (<span class="pd-saving-percent">@priceModel.SavingPercent.ToString("N0") %</span>)</span>
 					</div>
 				}
-			</div>
-		}
+			}
+		</div>
 
 		<!-- Pangv & legal info -->
 		if (Model.IsBasePriceEnabled || Model.ShowLegalInfo)

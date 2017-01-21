@@ -6,17 +6,15 @@
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Web.Framework.Events;
 
-@{
-
-}
-
 @Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Style(TabsStyle.Material).Responsive(true, "<md").Items(x =>
 {
 	var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
 
 	if (Model.FullDescription.HasValue())
 	{
+		var summary = Model.FullDescription.RemoveHtml().Truncate(300, "...");
 		x.Add().Text(@T("Products.Details"))
+				.Summary(summary)
 				.Content(Html.Raw("<div itemprop='description' class='text-body'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
 				.Selected(true);
 	}
@@ -35,7 +33,7 @@
 		{
 			x.Add().Text(@T("Reviews"))
 					.Content(reviews)
-					.Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
+					.Badge(Model.ReviewCount.ToString(), Model.ReviewCount > 0 ? BadgeStyle.Warning: BadgeStyle.Default, true)
 					.Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
 		}
 	}
@@ -51,10 +49,5 @@
 	</a>
 }}
 
-<script>
-	$(function () {
-		$('.nav-responsive').responsiveNav();
-	});
-</script>
 
 

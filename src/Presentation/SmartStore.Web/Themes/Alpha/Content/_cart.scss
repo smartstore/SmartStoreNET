@@ -1,7 +1,10 @@
+/// <reference path="bs4/scss/bootstrap.scss" />
+
 /* BEGIN: flex-box */
 #offcanvas-cart .tab-pane {
     margin-top: 0 !important;
     margin-bottom: 0 !important;   
+    padding: 0;
     flex-direction: column;
     display: flex !important;
     position: absolute;
@@ -76,49 +79,8 @@
     }
 
     .nav-link {
-        text-transform: uppercase;
         position: relative;
-        border-width: 0;
         background-color: transparent;
-        color: #b2b2b2;
-     
-        &:hover {
-            color: inherit;
-        }
-
-        &.active { 
-            font-weight: 600;
-            color: inherit; 
-        }
-
-        &.disabled {
-            opacity: 0.4;
-        }
-    }
-
-    .nav-link:not(.disabled):before {
-        position: absolute;
-        content: '';
-        bottom: 0;
-        left: 50%;
-        right: 50%;
-        height: 2px;
-        background: #aaa;
-     
-    }
-
-    .nav-link:hover:before {
-        left: 0;
-        right: 0;
-    }
-
-    .nav-link.active:before,
-    .nav-link.active:focus:before,
-    .nav-item.open .nav-link:before,
-    .nav-item.open .nav-link:focus:before { 
-        left: 0;
-        right: 0;
-        background: $clr-orange-700;
     }
 }
 /* END: tabs */
@@ -133,7 +95,6 @@
     position: relative;
     height: 100px;
     .nav-tabs {
-        font-size: 1.1em;
         position: absolute;
         bottom: 0;
         max-width: 100%;

@@ -139,7 +139,13 @@ namespace SmartStore.Web.Framework.UI
             return (this as TBuilder);
         }
 
-        public TBuilder Badge(string value, BadgeStyle style = BadgeStyle.Default, bool condition = true)
+		public TBuilder Summary(string value)
+		{
+			this.Item.Summary = value;
+			return (this as TBuilder);
+		}
+
+		public TBuilder Badge(string value, BadgeStyle style = BadgeStyle.Default, bool condition = true)
         {
             if (condition)
             {

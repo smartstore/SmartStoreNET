@@ -7,48 +7,47 @@
 	var brand = Model.Manufacturers.FirstOrDefault();
 }
 
-@section end {
-	@RenderSection("end", required: false)
-}
-
-<div class="pd-info">
-	<div class="pd-group">
-		<!-- Brand -->
-		@if (brand != null)
-		{
-			<div class="pd-brand-block">
-				<a class="pd-brand" href="@Url.RouteUrl("Manufacturer", new { SeName = brand.SeName })">
-					@if (brand.Picture != null && brand.Picture.ImageUrl.HasValue())
-					{
-						<img class="pd-brand-picture" src="@brand.Picture.ImageUrl" alt="@brand.Picture.AlternateText" title="@brand.Picture.Title" />
-					}
-					else
-					{
-						<span>@brand.Name</span>
-					}
-				</a>
-				<meta itemprop="brand" content="@brand.Name">
-			</div>
-		}
-
-		<!-- Title -->
-		<div class="page-title">
-			<h1 class="pd-name pd-name-sm" itemprop="name">
-				@Model.Name
-			</h1>
+<div class="pd-info pd-group">
+	<!-- Brand -->
+	@if (brand != null)
+	{
+		<div class="pd-brand-block">
+			<a class="pd-brand" href="@Url.RouteUrl("Manufacturer", new { SeName = brand.SeName })">
+				@if (brand.Picture != null && brand.Picture.ImageUrl.HasValue())
+				{
+					<img class="pd-brand-picture" src="@brand.Picture.ImageUrl" alt="@brand.Picture.AlternateText" title="@brand.Picture.Title" />
+				}
+				else
+				{
+					<span>@brand.Name</span>
+				}
+			</a>
+			<meta itemprop="brand" content="@brand.Name">
 		</div>
+	}
 
-		<!-- Short description -->
-		@if (Model.ShortDescription.HasValue())
-		{
-			<div class="pd-description">
-				@Html.Raw(Model.ShortDescription)
-			</div>
-		}
+	<!-- Title -->
+	<div class="page-title">
+		<h1 class="pd-name pd-name-sm" itemprop="name">
+			@Model.Name
+		</h1>
 	</div>
 
-	<!-- Product attributes (SKU, EAN, Weight etc.) -->
-	@{ Html.RenderPartial("Product.Attrs", Model); }
+	<!-- Short description -->
+	@if (Model.ShortDescription.HasValue())
+	{
+		<div class="pd-description">
+			@Html.Raw(Model.ShortDescription)
+		</div>
+	}
 </div>
+
+<!-- Review Overview -->
+@if (Model.DisplayProductReviews)
+{
+	Html.RenderAction("ReviewSummary", new { id = Model.Id });
+}
+
+
 
 

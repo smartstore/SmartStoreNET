@@ -24,7 +24,7 @@
 			if (el.data('offcanvas')) return;
 
 			// create offcanvas wrapper
-			var offcanvas = $('<aside class="offcanvas offcanvas-push offcanvas-right offcanvas-fullscreen"><div class="offcanvas-content"></div></aside>').appendTo('body');
+			var offcanvas = $('<aside class="offcanvas xoffcanvas-push offcanvas-right offcanvas-fullscreen"><div class="offcanvas-content"></div></aside>').appendTo('body');
 
 			// handle .offcanvas-closer click
 			offcanvas.on('click', '.offcanvas-closer', function (e) {
@@ -64,7 +64,6 @@
 
 		function toggleOffCanvas() {
 			var breakpoint = el.data('breakpoint') || '<lg';
-			console.log(viewport.current());
 			if (viewport.is(breakpoint)) {
 				collapseNav();
 			}

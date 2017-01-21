@@ -1,13 +1,7 @@
 ﻿@model ProductDetailsModel
 
-@using SmartStore.Core.Domain.Orders;
-@using SmartStore.Core.Domain.Catalog;
-@using SmartStore.Core.Domain.Media;
-@using SmartStore.Core.Infrastructure;
-@using SmartStore.Core.Events;
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web.Framework.UI;
-@using SmartStore.Web.Framework.Events;
 @using SmartStore.Web;
 
 @{
@@ -27,13 +21,11 @@
 
 	/* TODO: (mc)
 	 * - CustomerEnteredPrice
-	 * - Better format for dimensions (width, height, length)
-	 * - Better format for StockAvailability
 	 * - Badges
-	 * - Better layout for stock info
 	 * - GTIN: user must specifiy the GTIN type on product level (gtin12, gtin13 etc.). See https://schema.org/Offer
 	 * - Reviews
 	 * - Reviews Microdata
+	 * - FIXME (mg) > no (discount) badges shown in products lists (with bundled products & PricePerBundleItems ON)
 	 */
 }
 
@@ -56,6 +48,9 @@
 					<!-- Sidebar: Info, Price, Buttons etc. -->
 					<aside class="col-xs-12 col-md-6 col-lg-5 pd-info-col zoom-window-container">
 						@{ Html.RenderPartial("Product.Info", Model); }
+						<!-- Product attributes (SKU, EAN, Weight etc.) -->
+						@{ Html.RenderPartial("Product.Attrs", Model); }
+						<!-- Offer box -->
 						@{ Html.RenderPartial("Product.Offer", Model); }
 					</aside>
 				</section>
@@ -86,45 +81,4 @@
     	$('#product-details-form').productDetail(settings);
     });
 </script>
-
-@section end {
-	<!-- Root element of PhotoSwipe -->
-	<div id="pswp" class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-		<div class="pswp__bg"></div>
-		<div class="pswp__scroll-wrap">
-			<div class="pswp__container">
-				<div class="pswp__item"></div>
-				<div class="pswp__item"></div>
-				<div class="pswp__item"></div>
-			</div>
-			<div class="pswp__ui pswp__ui--hidden">
-				<div class="pswp__top-bar clearfix">
-					<div class="pswp__counter"></div>
-					<div class="pswp__zoom-controls">
-						<button class="pswp__button pswp-action pswp__button--zoom" title="Zoom in/out"></button>
-						<button class="pswp__button pswp-action pswp__button--fs" title="Toggle fullscreen"></button>
-					</div>
-					<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-					<!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
-					<!-- element will get class pswp__preloader--active when preloader is running -->
-					<div class="pswp__preloader">
-						<div class="pswp__preloader__icn">
-							<div class="pswp__preloader__cut">
-								<div class="pswp__preloader__donut"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-				@*<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-					<div class="pswp__share-tooltip"></div>
-				</div>*@
-				<button class="pswp__button pswp-arrow pswp__button--arrow--left" title="Previous (arrow left)"></button>
-				<button class="pswp__button pswp-arrow pswp__button--arrow--right" title="Next (arrow right)"></button>
-				<div class="pswp__caption">
-					<div class="pswp__caption__center"></div>
-				</div>
-			</div>
-		</div>
-	</div>
-}
 

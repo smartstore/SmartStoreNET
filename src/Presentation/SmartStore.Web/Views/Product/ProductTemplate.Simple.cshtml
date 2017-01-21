@@ -188,7 +188,7 @@
 
                             <!--product reviews-->
                             @if (Model.DisplayProductReviews) {
-								Html.RenderAction("ReviewOverview", new { id = Model.Id });
+								Html.RenderAction("ReviewSummary", new { id = Model.Id });
 							}
                         
                             <!-- product attributes or bundle items -->

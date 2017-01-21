@@ -211,12 +211,6 @@ namespace SmartStore.Services.Catalog
             return stockMessage;
         }
 
-        /// <summary>
-        /// Formats the stock availability/quantity message
-        /// </summary>
-        /// <param name="product">Product</param>
-        /// <param name="localizationService">Localization service</param>
-        /// <returns>The stock message</returns>
         public static bool DisplayDeliveryTimeAccordingToStock(this Product product, CatalogSettings catalogSettings)
         {
 			Guard.NotNull(product, nameof(product));

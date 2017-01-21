@@ -39,7 +39,9 @@ namespace SmartStore.Web.Framework.UI
 
         public string Text { get; set; }
 
-        public string BadgeText { get; set; }
+		public string Summary { get; set; }
+
+		public string BadgeText { get; set; }
 
         public BadgeStyle BadgeStyle { get; set; }
 

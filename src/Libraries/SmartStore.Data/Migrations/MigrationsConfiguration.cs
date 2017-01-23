@@ -145,7 +145,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.NoResultsText", "Your search did not match any products.", "Ihre Suche ergab leider keine Produkttreffer.");
 			builder.AddOrUpdate("Search.NumHits", "{0} Hits", "{0} Treffer");
 			builder.AddOrUpdate("Search.InstantSearch", "Instant Search", "Instantsuche");
-			builder.AddOrUpdate("Search.GlobalFilters", "Global Filters", "Globale Filter");
+			builder.AddOrUpdate("Search.ResultFiltering", "Result filtering", "Ergebnisfilterung");
 			builder.AddOrUpdate("Search.FilterBy", "Filter by", "Filtern nach");
 			builder.AddOrUpdate("Search.TermInCategory", "in {0}", "in {0}");
 			builder.AddOrUpdate("Search.TermFromBrand", "from {0}", "von {0}");
@@ -348,7 +348,7 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Products.Bundle.PriceWithoutDiscount.Note", "Instead of", "Statt");
 			builder.AddOrUpdate("Products.Bundle.PriceWithDiscount.Note", "As bundle only", "Im Set nur");
-			builder.AddOrUpdate("Products.Price", "Preis", "Preis");
+			builder.AddOrUpdate("Products.Price", "Price", "Preis");
 			builder.AddOrUpdate("Products.ManufacturerPartNumber", "MPN", "MPN");
 			builder.AddOrUpdate("Products.Details", "Description", "Beschreibung");
 			builder.AddOrUpdate("Products.Specs", "Features", "Merkmale");
@@ -357,6 +357,32 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Products.Availability.OutOfStock", "Out of stock", "Vergriffen");
 
 			builder.AddOrUpdate("Reviews.Overview.First", "Be the first to review this item", "Geben Sie die erste Bewertung ab");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Search.FilterMinHitCount",
+				"Minimum hit count for filters",
+				"Minimale Trefferanzahl für Filter",
+				"Specifies the minimum number of search hits from which to show a filter.",
+				"Legt die minimale Anzahl an Suchtreffern fest, ab dem ein Filter angezeigt wird.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Search.FilterMaxChoicesCount",
+				"Maximum number of filters",
+				"Maximale Anzahl an Filtern",
+				"Specifies the maximum number of filters per group.",
+				"Legt die maximale Anzahl an Filtern pro Gruppe fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Search.FilterOrderBy",
+				"Sort filters",
+				"Filter sortieren",
+				"Specifies the sorting of filters.",
+				"Legt die Sortierung von Filtern fest.");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetDescriptor.Sorting.HitsDesc",
+				"Hit count: highest first",
+				"Trefferanzahl: Höchste zuerst");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetDescriptor.Sorting.ValueAsc",
+				"Name: A to Z",
+				"Name: A bis Z");
 		}
 	}
 }

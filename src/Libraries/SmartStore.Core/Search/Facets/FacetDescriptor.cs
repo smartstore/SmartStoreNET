@@ -116,4 +116,20 @@ namespace SmartStore.Core.Search.Facets
 			return sb.ToString();
 		}
 	}
+
+
+	public static class FacetDescriptorExtensions
+	{
+		public static IOrderedEnumerable<Facet> OrderBy(this IEnumerable<Facet> source, FacetDescriptor.Sorting sorting)
+		{
+			Guard.NotNull(source, nameof(source));
+
+			if (sorting == FacetDescriptor.Sorting.HitsDesc)
+			{
+				return source.OrderByDescending(x => x.HitCount);
+			}
+
+			return source.OrderBy(x => x.Label);
+		}
+	}
 }

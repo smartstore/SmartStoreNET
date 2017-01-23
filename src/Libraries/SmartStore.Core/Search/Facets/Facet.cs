@@ -1,8 +1,10 @@
-﻿namespace SmartStore.Core.Search.Facets
+﻿using System.Collections.Generic;
+
+namespace SmartStore.Core.Search.Facets
 {
 	public class Facet
 	{
-		public Facet(string key, FacetValue value, long hitCount)
+		public Facet(string key, FacetValue value)
 		{
 			Guard.NotEmpty(key, nameof(key));
 			Guard.NotNull(value, nameof(value));
@@ -10,7 +12,7 @@
 
 			Key = key;
 			Value = value;
-			HitCount = hitCount;
+			Children = new List<Facet>();
 		}
 
 		public string Key
@@ -19,10 +21,30 @@
 			private set;
 		}
 
+		public string Label
+		{
+			get;
+			set;
+		}
+
 		public FacetValue Value
 		{
 			get;
 			private set;
+		}
+
+		public bool IsChoice
+		{
+			get
+			{
+				if (HitCount == 0)
+				{
+					// let the user the choice to unselect a filter
+					return Value.IsSelected;
+				}
+
+				return true;
+			}
 		}
 
 		public long HitCount
@@ -35,6 +57,18 @@
 		{
 			get;
 			internal set;
+		}
+
+		public int ParentId
+		{
+			get;
+			set;
+		}
+
+		public IList<Facet> Children
+		{
+			get;
+			set;
 		}
 	}
 }

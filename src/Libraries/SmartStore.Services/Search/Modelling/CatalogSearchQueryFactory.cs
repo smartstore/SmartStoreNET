@@ -80,6 +80,8 @@ namespace SmartStore.Services.Search.Modelling
 
 			if (!origin.IsCaseInsensitiveEqual("Search/InstantSearch"))
 			{
+				_globalFilterFields.Add("categoryid");
+
 				if (_searchSettings.GlobalFilters.HasValue())
 				{
 					var globalFilters = JsonConvert.DeserializeObject<List<GlobalSearchFilterDescriptor>>(_searchSettings.GlobalFilters);
@@ -268,6 +270,29 @@ namespace SmartStore.Services.Search.Modelling
 			query.CustomData["ViewMode"] = _catalogSettings.DefaultViewMode;
 		}
 
+		protected virtual void AddFacet(CatalogSearchQuery query, string fieldName, bool isMultiSelect, Action<FacetDescriptor> addValues)
+		{
+			if (!_globalFilterFields.Contains(fieldName))
+				return;
+			
+			var facet = new FacetDescriptor(fieldName);
+			facet.IsMultiSelect = isMultiSelect;
+
+			if (fieldName == "rate")
+			{
+				facet.OrderBy = FacetDescriptor.Sorting.ValueAsc;
+			}
+			else
+			{
+				facet.MinHitCount = _searchSettings.FilterMinHitCount;
+				facet.MaxChoicesCount = _searchSettings.FilterMaxChoicesCount;
+				facet.OrderBy = _searchSettings.FilterOrderBy;
+			}
+
+			addValues(facet);
+			query.WithFacet(facet);
+		}
+
 		protected virtual void ConvertCategory(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
 			var ids = GetValueFor<List<int>>("c");
@@ -277,7 +302,14 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithCategoryIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false, ids.ToArray());
 			}
 
-			// TODO: is always a facet AddFacet(query, "category", IndexTypeCode.Int32, ids);
+			AddFacet(query, "categoryid", true, descriptor =>
+			{
+				if (ids != null && ids.Any())
+				{
+					ids.Select(x => new FacetValue(x) { IsSelected = true })
+						.Each(x => descriptor.AddValue(x));
+				}
+			});
 		}
 
 		protected virtual void ConvertManufacturer(CatalogSearchQuery query, RouteData routeData, string origin)
@@ -288,21 +320,14 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithManufacturerIds(null, ids.ToArray());
 			}
 
-			if (_globalFilterFields.Contains("manufacturerid"))
+			AddFacet(query, "manufacturerid", true, descriptor =>
 			{
-				var facet = new FacetDescriptor("manufacturerid")
-				{
-					IsMultiSelect = true
-				};
-
 				if (ids != null && ids.Any())
 				{
 					ids.Select(x => new FacetValue(x) { IsSelected = true })
-						.Each(x => facet.AddValue(x));
+						.Each(x => descriptor.AddValue(x));
 				}
-
-				query.WithFacet(facet);
-			}
+			});
 		}
 
 		protected virtual void ConvertPrice(CatalogSearchQuery query, RouteData routeData, string origin)
@@ -338,22 +363,13 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithRating(fromRate, null);
 			}
 
-			if (_globalFilterFields.Contains("rate"))
+			AddFacet(query, "rate", false, descriptor =>
 			{
-				var facet = new FacetDescriptor("rate");
-				facet.OrderBy = FacetDescriptor.Sorting.ValueAsc;
-
-				for (double rate = 1.0; rate <= 5.0; ++rate)
+				if (fromRate.HasValue)
 				{
-					facet.AddValue(new FacetValue(rate)
-					{
-						Label = Math.Truncate(rate).ToString(),
-						IsSelected = (fromRate == rate)
-					});
+					descriptor.AddValue(new FacetValue(fromRate.Value) { IsSelected = true });
 				}
-
-				query.WithFacet(facet);
-			}
+			});
 		}
 
 		protected virtual void ConvertStock(CatalogSearchQuery query, RouteData routeData, string origin)
@@ -374,21 +390,14 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithDeliveryTimeIds(ids.ToArray());
 			}
 
-			if (_globalFilterFields.Contains("deliveryid"))
+			AddFacet(query, "deliveryid", true, descriptor =>
 			{
-				var facet = new FacetDescriptor("deliveryid")
-				{
-					IsMultiSelect = true
-				};
-
 				if (ids != null && ids.Any())
 				{
 					ids.Select(x => new FacetValue(x) { IsSelected = true })
-						.Each(x => facet.AddValue(x));
+						.Each(x => descriptor.AddValue(x));
 				}
-
-				query.WithFacet(facet);
-			}
+			});
 		}
 
 		protected virtual void OnConverted(CatalogSearchQuery query, RouteData routeData, string origin)

@@ -32,6 +32,8 @@ namespace SmartStore.Core.Search.Facets
 
 		public FacetValue(object value, IndexTypeCode typeCode)
 		{
+			Guard.NotNull(value, nameof(value));
+
 			Value = value;
 			TypeCode = typeCode;
 		}
@@ -46,12 +48,6 @@ namespace SmartStore.Core.Search.Facets
 		{
 			get;
 			private set;
-		}
-
-		public string Label
-		{
-			get;
-			set;
 		}
 
 		public bool IsSelected

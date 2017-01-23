@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core.Configuration;
+using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
 {
@@ -13,6 +14,9 @@ namespace SmartStore.Core.Search
 			ShowProductImagesInInstantSearch = true;
 			InstantSearchNumberOfProducts = 10;
 			InstantSearchTermMinLength = 2;
+			FilterMinHitCount = 1;
+			FilterMaxChoicesCount = 20;
+			FilterOrderBy = FacetDescriptor.Sorting.HitsDesc;
 		}
 
 		/// <summary>
@@ -31,7 +35,7 @@ namespace SmartStore.Core.Search
 		public bool InstantSearchEnabled { get; set; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether to show product images in instant-search rwesult
+		/// Gets or sets a value indicating whether to show product images in instant-search result
 		/// </summary>
 		public bool ShowProductImagesInInstantSearch { get; set; }
 
@@ -50,6 +54,20 @@ namespace SmartStore.Core.Search
 		/// </summary>
 		public string GlobalFilters { get; set; }
 
+		/// <summary>
+		/// Gets or sets the minimum hit count for a filter value. Values with a lower hit count are not displayed.
+		/// </summary>
+		public int FilterMinHitCount { get; set; }
+
+		/// <summary>
+		/// Gets or sets the maximum number of filter values to be displayed.
+		/// </summary>
+		public int FilterMaxChoicesCount { get; set; }
+
+		/// <summary>
+		/// Gets or sets the filter value order
+		/// </summary>
+		public FacetDescriptor.Sorting FilterOrderBy { get; set; }
 
 		// TBD: what about area specific searchin setting (product, blog, etc.)
 	}

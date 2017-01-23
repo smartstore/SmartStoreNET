@@ -25,6 +25,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Search;
+using SmartStore.Core.Search.Facets;
 using SmartStore.Core.Search.Filter;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
@@ -1599,6 +1600,9 @@ namespace SmartStore.Admin.Controllers
 			model.InstantSearchNumberOfProducts = settings.InstantSearchNumberOfProducts;
 			model.InstantSearchTermMinLength = settings.InstantSearchTermMinLength;
 			model.ShowProductImagesInInstantSearch = settings.ShowProductImagesInInstantSearch;
+			model.FilterMinHitCount = settings.FilterMinHitCount;
+			model.FilterMaxChoicesCount = settings.FilterMaxChoicesCount;
+			model.FilterOrderBy = settings.FilterOrderBy;
 
 			if (megaSearchDescriptor == null)
 			{
@@ -1606,6 +1610,20 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			model.AvailableSearchModes = settings.SearchMode.ToSelectList().ToList();
+
+			model.AvailableFilterOrders = new List<SelectListItem>
+			{
+				new SelectListItem
+				{
+					Text = T("Enums.SmartStore.Core.Search.Facets.FacetDescriptor.Sorting.HitsDesc"),
+					Value = ((int)FacetDescriptor.Sorting.HitsDesc).ToString()
+				},
+				new SelectListItem
+				{
+					Text = T("Enums.SmartStore.Core.Search.Facets.FacetDescriptor.Sorting.ValueAsc"),
+					Value = ((int)FacetDescriptor.Sorting.ValueAsc).ToString()
+				}
+			};
 
 			model.AvailableSearchFields = new List<SelectListItem>
 			{
@@ -1690,6 +1708,9 @@ namespace SmartStore.Admin.Controllers
 			settings.InstantSearchTermMinLength = model.InstantSearchTermMinLength;
 			settings.ShowProductImagesInInstantSearch = model.ShowProductImagesInInstantSearch;
 			settings.GlobalFilters = JsonConvert.SerializeObject(model.GlobalFilters);
+			settings.FilterMinHitCount = model.FilterMinHitCount;
+			settings.FilterMaxChoicesCount = model.FilterMaxChoicesCount;
+			settings.FilterOrderBy = model.FilterOrderBy;
 
 			StoreDependingSettings.UpdateSettings(settings, form, storeScope, Services.Settings);
 

@@ -104,7 +104,7 @@
 		<tr>
 			<td colspan="2">
 				<div class="admin-config-group">
-					<div class="title">@T("Search.GlobalFilters")</div>
+					<div class="title">@T("Search.ResultFiltering")</div>
 				</div>
 			</td>
 		</tr>
@@ -139,6 +139,34 @@
 					</tbody>
 				</table>
 
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.FilterMinHitCount)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.FilterMinHitCount, null, new { small = true })
+				@Html.ValidationMessageFor(model => model.FilterMinHitCount)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.FilterMaxChoicesCount)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.FilterMaxChoicesCount, null, new { small = true })
+				@Html.ValidationMessageFor(model => model.FilterMaxChoicesCount)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.FilterOrderBy)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => Model.FilterOrderBy)
+				@Html.DropDownListFor(model => model.FilterOrderBy, Model.AvailableFilterOrders)
+				@Html.ValidationMessageFor(model => model.FilterOrderBy)
 			</td>
 		</tr>
 	</table>

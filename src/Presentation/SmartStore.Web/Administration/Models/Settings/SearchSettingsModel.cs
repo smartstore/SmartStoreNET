@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Search;
+using SmartStore.Core.Search.Facets;
 using SmartStore.Core.Search.Filter;
 using SmartStore.Web.Framework;
 
@@ -36,5 +37,15 @@ namespace SmartStore.Admin.Models.Settings
 		public int InstantSearchTermMinLength { get; set; }
 
 		public List<GlobalSearchFilterDescriptor> GlobalFilters { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.FilterMinHitCount")]
+		public int FilterMinHitCount { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.FilterMaxChoicesCount")]
+		public int FilterMaxChoicesCount { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.FilterOrderBy")]
+		public FacetDescriptor.Sorting FilterOrderBy { get; set; }
+		public List<SelectListItem> AvailableFilterOrders { get; set; }
 	}
 }

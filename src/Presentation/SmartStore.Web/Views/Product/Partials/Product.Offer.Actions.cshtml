@@ -30,9 +30,9 @@
 					@if (addModel.AllowedQuantities.Count > 0)
 					{
 						<div class="mf-dropdown" style="display: block">
-							<button class="btn btn-secondary btn-labeled icon-right btn-block" title="TBD">
+							<button class="btn btn-warning btn-labeled icon-right btn-block" title="TBD">
 								<span class="mf-dropdown-value">@addModel.EnteredQuantity</span>
-								<b style="background: transparent; border-left: 1px solid #ddd"><i class="fa fa-caret-down"></i></b>
+								<b><i class="fa fa-caret-down"></i></b>
 							</button>
 							@Html.DropDownListFor(model => Model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown form-control noskin" })
 						</div>

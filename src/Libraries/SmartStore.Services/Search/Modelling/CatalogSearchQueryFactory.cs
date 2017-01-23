@@ -80,7 +80,7 @@ namespace SmartStore.Services.Search.Modelling
 
 			if (!origin.IsCaseInsensitiveEqual("Search/InstantSearch"))
 			{
-				_globalFilterFields.Add("categoryid");
+				_globalFilterFields.Add(_catalogSettings.IncludeFeaturedProductsInNormalLists ? "categoryid" : "notfeaturedcategoryid");
 
 				if (_searchSettings.GlobalFilters.HasValue())
 				{
@@ -302,7 +302,9 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithCategoryIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false, ids.ToArray());
 			}
 
-			AddFacet(query, "categoryid", true, descriptor =>
+			var fieldName = (_catalogSettings.IncludeFeaturedProductsInNormalLists ? "categoryid" : "notfeaturedcategoryid");
+
+			AddFacet(query, fieldName, true, descriptor =>
 			{
 				if (ids != null && ids.Any())
 				{

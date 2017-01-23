@@ -336,6 +336,7 @@
     <Compile Include="Models\Boards\TopicMoveModel.cs" />
     <Compile Include="Models\Catalog\BackInStockSubscribeModel.cs" />
     <Compile Include="Models\Catalog\CategoryModel.cs" />
+    <Compile Include="Models\Catalog\IQuantityInput.cs" />
     <Compile Include="Models\Catalog\IListActions.cs" />
     <Compile Include="Models\Catalog\NavigationModelBuiltEvent.cs" />
     <Compile Include="Models\Catalog\ProductAskQuestionModel.cs" />
@@ -944,6 +945,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr.js" />
     <Content Include="Scripts\public.product-detail.mobile.js" />
+    <None Include="Themes\Alpha\Content\shared\_touchspin.scss" />
     <Content Include="Themes\Alpha\Scripts\jquery.hammer.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.responsiveNav.js" />
     <Content Include="Scripts\smartstore.entityPicker.js" />
@@ -969,7 +971,6 @@
     <Content Include="Themes\Alpha\Content\css\font-awesome.css" />
     <Content Include="Themes\Alpha\Content\css\font-awesome.min.css" />
     <Content Include="Themes\Alpha\Content\css\fonts\fontawesome-webfont.svg" />
-    <Content Include="Themes\Alpha\Content\css\jquery.bootstrap-touchspin.css" />
     <Content Include="Themes\Alpha\Content\css\jquery.pnotify.default.css" />
     <Content Include="Themes\Alpha\Content\css\jquery.pnotify.default.icons.css" />
     <Content Include="Themes\Alpha\Content\css\smartstore.smartgallery.css" />
@@ -1652,7 +1653,7 @@
     <Content Include="Themes\Alpha\Content\shared\select2\theme\default\layout.scss" />
     <Content Include="Themes\Alpha\Content\shared\select2\theme\default\_multiple.scss" />
     <Content Include="Themes\Alpha\Content\shared\select2\theme\default\_single.scss" />
-    <Content Include="Themes\Alpha\Content\shared\offcanvas.scss" />
+    <Content Include="Themes\Alpha\Content\shared\_offcanvas.scss" />
     <Content Include="Themes\Alpha\Content\_login.scss" />
     <Content Include="Themes\Alpha\Content\theme.scss">
       <Compile>True</Compile>
@@ -1916,6 +1917,7 @@
     <Content Include="Views\Product\Partials\Product.Tabs.cshtml" />
     <Content Include="Themes\Alpha\Content\shared\_nav.scss" />
     <Content Include="Views\Product\Partials\Product.ReviewSummary.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\QtyInput.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

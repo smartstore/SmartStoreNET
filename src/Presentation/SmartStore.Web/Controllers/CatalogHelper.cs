@@ -1031,9 +1031,10 @@ namespace SmartStore.Web.Controllers
 
             model.AddToCart.MinOrderAmount = product.OrderMinimumQuantity;
             model.AddToCart.MaxOrderAmount = product.OrderMaximumQuantity;
+			model.AddToCart.QuantityUnitName = model.QuantityUnitName; // TODO: (mc) remove 'QuantityUnitName' from parent model later
 
-            //'add to cart', 'add to wishlist' buttons
-            model.AddToCart.DisableBuyButton = product.DisableBuyButton || !_services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
+			//'add to cart', 'add to wishlist' buttons
+			model.AddToCart.DisableBuyButton = product.DisableBuyButton || !_services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
 			model.AddToCart.DisableWishlistButton = product.DisableWishlistButton || !_services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
 			if (!displayPrices)
 			{

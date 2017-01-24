@@ -146,26 +146,31 @@
 			return str;
 		}
 
-		// adjust pnotify global defaults
-		if ($.pnotify) {
-			$.extend($.pnotify.defaults, {
-				history: false,
-				animate_speed: "normal",
-				shadow: true,
-				width: "400px",
-				icon: true
+		// Adjust initPNotify global defaults
+		if (typeof PNotify !== 'undefined') {
+			PNotify.prototype.options = $.extend(PNotify.prototype.options, {
+				styling: "fontawesome",
+				stack: { "dir1": "down", "dir2": "left", "push": "bottom", "firstpos1": 80, "spacing1": 25, "spacing2": 25, "context": $("body") },
+				addclass: 'stack-topright',
+				//stack: { "dir1": "up", "dir2": "right", "firstpos1": 100, "spacing1": 20 }, // SMNET style
+				//addclass: 'stack-bottomcenter x-ui-pnotify-dark', // SMNET style
+				width: "450px",
+				mobile: { swipe_dismiss: true, styling: true },
+				//animation: 'none',
+				animate: { animate: true, in_class: "fadeInDown", out_class: "fadeOutRight" }
 			});
 		}
 
-		// global notification subscriber
-		if (window.EventBroker && window._ && $.pnotify) {
+		// Global notification subscriber
+		if (window.EventBroker && window._ && typeof PNotify !== 'undefined') {
 			//var stack_bottomright = { "dir1": "up", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };
 			var stack_bottomcenter = { "dir1": "up", "dir2": "right", "firstpos1": 100, "firstpos2": 10 };
 			EventBroker.subscribe("message", function (message, data) {
 				var opts = _.isString(data) ? { text: data } : data;
-				opts.stack = stack_bottomcenter;
-				opts.addclass = "stack-bottomcenter";
-				$.pnotify(opts);
+				//opts.stack = stack_bottomcenter;
+				//opts.addclass = "stack-bottomcenter";
+				//$.pnotify(opts);
+				new PNotify(opts);
 			});
 		}
 

@@ -1,0 +1,108 @@
+/// <reference path="_mixins.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
+/// <reference path="../pnotify/css/pnotify.css" />
+/// <reference path="../pnotify/css/pnotify.buttons.css" />
+/// <reference path="../pnotify/css/pnotify.mobile.css" />
+/// <reference path="../pnotify/css/pnotify.history.css" />
+
+
+/* PNOTIFY
+------------------------------------*/
+
+.ui-pnotify-container {
+    padding-left: 70px !important;
+    //background: #fff !important;
+    position: relative;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175) !important;
+
+    &.alert { border-color: rgba(0,0,0, 0.12) !important }
+}
+
+.ui-pnotify-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 50px;
+    color: #fff;
+    @include border-left-radius($border-radius);
+
+    .alert-info &       { background-color: $brand-info !important; @include bubble('right', 'center', 8, $brand-info, $brand-info); }
+    .alert-success &    { background-color: $brand-success !important; @include bubble('right', 'center', 8, $brand-success, $brand-success); }
+    .alert-warning &    { background-color: $brand-warning !important; @include bubble('right', 'center', 8, $brand-warning, $brand-warning); }
+    .alert-danger &     { background-color: $brand-danger !important; @include bubble('right', 'center', 8, $brand-danger, $brand-danger); }
+
+    > span {
+        position: absolute;
+        width: 50px;
+        text-align: center;
+        font-size: 1.25em;
+        line-height: 1.2em;
+        top: 50%;
+        margin-top: -0.6em;
+    }
+}
+
+.ui-pnotify-text {
+    font-size: $font-size-lg;
+    line-height: 1.5;
+}
+
+@include media-breakpoint-down(sm) {
+    .ui-pnotify-icon {
+        @include border-left-radius(0);
+    }
+}
+
+.ui-pnotify-closer, 
+.ui-pnotify-sticker {
+    width: 16px;
+    opacity: .35;
+	margin: 0;
+	padding-left: 2px;
+	position: relative;
+	top: -5px;
+	left: 5px;
+}
+
+.ui-pnotify-closer:hover, 
+.ui-pnotify-sticker:hover {
+    opacity: .75;
+}
+
+@media (min-width: 481px) {
+    .ui-pnotify.stack-topcenter,
+    .ui-pnotify.stack-bottomcenter {
+	    left: 50%;
+	    margin-left: -225px;
+    }
+
+    .ui-pnotify.stack-bottomcenter {
+	    top: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .ui-pnotify-mobile-able.ui-pnotify {
+        font-size: inherit !important;
+    }
+}
+
+
+/* DARK VARIANT
+------------------------------------*/
+
+.ui-pnotify-dark .ui-pnotify-container {
+    background: #fff !important;
+    color: #fff !important;
+    box-shadow: none !important; 
+
+    &.alert-info       { background-color: $brand-info !important }
+    &.alert-success    { background-color: $brand-success !important }
+    &.alert-warning    { background-color: $brand-warning !important }
+    &.alert-danger     { background-color: $brand-danger !important }
+}
+
+.ui-pnotify-dark .ui-pnotify-icon {
+    background-color: rgba(0,0,0, 0.175) !important;
+}

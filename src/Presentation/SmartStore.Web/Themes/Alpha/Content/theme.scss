@@ -104,6 +104,7 @@ $pagination-active-border:      $pagination-border-color;
 @import "bs4/scss/bootstrap.scss"; 
 
 // Global
+@import 'shared/_mixins.scss'; 
 @import 'shared/_colors.scss'; 
 @import 'shared/_typo.scss';
 @import 'shared/_buttons.scss';
@@ -117,10 +118,11 @@ $pagination-active-border:      $pagination-border-color;
 @import "shared/_star-rating.scss";
 @import "shared/_sortable-grip.scss";
 @import "shared/_utils.scss";
-@import "shared/select2/core.scss";
+@import "select2/scss/core.scss";
 @import "shared/_offcanvas.scss";
 @import "shared/_animate.scss";
 @import "shared/_touchspin.scss";
+@import "shared/_pnotify.scss";
 @import "photoswipe/photoswipe.scss";
 @import "slick/slick.scss";
 

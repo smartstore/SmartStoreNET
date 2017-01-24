@@ -101,33 +101,6 @@
     // on document ready
     // TODO: reorganize > public.globalinit.js
     $(function () {
-
-        // adjust pnotify global defaults
-        if ($.pnotify) {
-
-            // intercept window.alert with pnotify
-            window.alert = function (message) {
-                if (message === null || message.length <= 0)
-                    return;
-
-                $.pnotify({
-                    title: window.Res["Common.Notification"],
-                    text: message,
-                    type: "info",
-                    animate_speed: 'fast',
-                    closer_hover: false,
-                    stack: false,
-                    before_open: function (pnotify) {
-                        // Position this notice in the center of the screen.
-                        pnotify.css({
-                            "top": ($(window).height() / 2) - (pnotify.height() / 2),
-                            "left": ($(window).width() / 2) - (pnotify.width() / 2)
-                        });
-                    }
-                });
-            }
-        }
-
         // Notify subscribers about page/content width change
         if (window.EventBroker) {
         	var currentContentWidth = $('#content').width();
@@ -139,12 +112,6 @@
         			EventBroker.publish("page.resized", viewport);
         		}
         	});
-
-        	//$(window).resize(
-			//	viewport.changed(function () {
-
-			//	}, 50)
-			//);
         }
         
         applyCommonPlugins($("body"));

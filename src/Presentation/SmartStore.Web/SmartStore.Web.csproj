@@ -945,7 +945,16 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr.js" />
     <Content Include="Scripts\public.product-detail.mobile.js" />
+    <Content Include="Themes\Alpha\Content\shared\_pnotify.scss" />
+    <Content Include="Themes\Alpha\Content\shared\_mixins.scss" />
     <None Include="Themes\Alpha\Content\shared\_touchspin.scss" />
+    <Content Include="Themes\Alpha\Content\pnotify\css\pnotify.buttons.css" />
+    <Content Include="Themes\Alpha\Content\pnotify\css\pnotify.css" />
+    <Content Include="Themes\Alpha\Content\pnotify\css\pnotify.mobile.css" />
+    <Content Include="Themes\Alpha\Content\pnotify\js\pnotify.animate.js" />
+    <Content Include="Themes\Alpha\Content\pnotify\js\pnotify.buttons.js" />
+    <Content Include="Themes\Alpha\Content\pnotify\js\pnotify.js" />
+    <Content Include="Themes\Alpha\Content\pnotify\js\pnotify.mobile.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.hammer.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.responsiveNav.js" />
     <Content Include="Scripts\smartstore.entityPicker.js" />
@@ -971,8 +980,6 @@
     <Content Include="Themes\Alpha\Content\css\font-awesome.css" />
     <Content Include="Themes\Alpha\Content\css\font-awesome.min.css" />
     <Content Include="Themes\Alpha\Content\css\fonts\fontawesome-webfont.svg" />
-    <Content Include="Themes\Alpha\Content\css\jquery.pnotify.default.css" />
-    <Content Include="Themes\Alpha\Content\css\jquery.pnotify.default.icons.css" />
     <Content Include="Themes\Alpha\Content\css\smartstore.smartgallery.css" />
     <Content Include="Themes\Alpha\Content\bs4\js\bootstrap.js" />
     <Content Include="Themes\Alpha\Content\bs4\js\bootstrap.min.js" />
@@ -1441,7 +1448,6 @@
     <Content Include="Themes\Alpha\Scripts\jquery.ba-outside-events.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.ba-outside-events.min.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.bootstrap-touchspin.js" />
-    <Content Include="Themes\Alpha\Scripts\jquery.pnotify.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.requestAnimationFrame.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.scrollTo.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.sortable.js" />
@@ -1457,8 +1463,8 @@
     <Content Include="Themes\Alpha\Scripts\public.offcanvas-cart.js" />
     <Content Include="Themes\Alpha\Scripts\public.shopbar.js" />
     <Content Include="Themes\Alpha\Scripts\public.voting.js" />
-    <Content Include="Themes\Alpha\Scripts\select2.js" />
-    <Content Include="Themes\Alpha\Scripts\select2.min.js" />
+    <Content Include="Themes\Alpha\Content\select2\js\select2.js" />
+    <Content Include="Themes\Alpha\Content\select2\js\select2.min.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.common.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.articlelist.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.doAjax.js" />
@@ -1642,17 +1648,17 @@
     <Content Include="Themes\Alpha\Content\shared\_star-rating.scss" />
     <Content Include="Themes\Alpha\Content\shared\_sortable-grip.scss" />
     <Content Include="Themes\Alpha\Content\_shopbar.scss" />
-    <Content Include="Themes\Alpha\Content\shared\select2\core.scss" />
-    <Content Include="Themes\Alpha\Content\shared\select2\_dropdown.scss" />
-    <Content Include="Themes\Alpha\Content\shared\select2\_multiple.scss" />
-    <Content Include="Themes\Alpha\Content\shared\select2\_single.scss" />
-    <Content Include="Themes\Alpha\Content\shared\select2\theme\classic\layout.scss" />
-    <Content Include="Themes\Alpha\Content\shared\select2\theme\classic\_defaults.scss" />
-    <Content Include="Themes\Alpha\Content\shared\select2\theme\classic\_multiple.scss" />
-    <Content Include="Themes\Alpha\Content\shared\select2\theme\classic\_single.scss" />
-    <Content Include="Themes\Alpha\Content\shared\select2\theme\default\layout.scss" />
-    <Content Include="Themes\Alpha\Content\shared\select2\theme\default\_multiple.scss" />
-    <Content Include="Themes\Alpha\Content\shared\select2\theme\default\_single.scss" />
+    <Content Include="Themes\Alpha\Content\select2\scss\core.scss" />
+    <Content Include="Themes\Alpha\Content\select2\scss\_dropdown.scss" />
+    <Content Include="Themes\Alpha\Content\select2\scss\_multiple.scss" />
+    <Content Include="Themes\Alpha\Content\select2\scss\_single.scss" />
+    <Content Include="Themes\Alpha\Content\select2\scss\theme\classic\layout.scss" />
+    <Content Include="Themes\Alpha\Content\select2\scss\theme\classic\_defaults.scss" />
+    <Content Include="Themes\Alpha\Content\select2\scss\theme\classic\_multiple.scss" />
+    <Content Include="Themes\Alpha\Content\select2\scss\theme\classic\_single.scss" />
+    <Content Include="Themes\Alpha\Content\select2\scss\theme\default\layout.scss" />
+    <Content Include="Themes\Alpha\Content\select2\scss\theme\default\_multiple.scss" />
+    <Content Include="Themes\Alpha\Content\select2\scss\theme\default\_single.scss" />
     <Content Include="Themes\Alpha\Content\shared\_offcanvas.scss" />
     <Content Include="Themes\Alpha\Content\_login.scss" />
     <Content Include="Themes\Alpha\Content\theme.scss">
@@ -1926,7 +1932,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Themes\Alpha\Content\shared\select2\mixins\" />
+    <Folder Include="Themes\Alpha\Content\select2\scss\mixins\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">

@@ -1,0 +1,65 @@
+/// <reference path="../bs4/scss/bootstrap.scss" />
+
+// Mixins
+// ========================================================================
+
+@mixin bubble($direction: "left", $alignment: "near", $size: 10, $backgroundColor: #fff, $borderColor: $card-border-color) {
+ 
+    //defaults for direction = left
+    $elemAlignment: "right";
+    $firstBorder: "top";
+    $secondBorder: "bottom";
+
+    @if $direction == "right" {
+        $elemAlignment: "left";
+    } @else if $direction == "top" {
+        $elemAlignment: "bottom";
+        $firstBorder: "left";
+        $secondBorder: "right";
+    } @else if $direction == "bottom" {
+        $elemAlignment: "top";
+        $firstBorder: "left";
+        $secondBorder: "right";
+    }
+
+    &:before, &:after {
+        content: '' !important;
+        display: inline-block;
+        position: absolute;
+    }
+
+    &:before {
+        border-#{$firstBorder}: #{$size}px solid transparent;
+        border-#{$secondBorder}: #{$size}px solid transparent;
+        border-#{$elemAlignment}: #{$size}px solid $borderColor;
+        //border-#{$elemAlignment}-color: rgba(0, 0, 0, 0.2);
+        #{$direction}: -#{$size}px;
+
+        @if $alignment == "near" {
+            #{$firstBorder}: 24px;
+        } @else if $alignment == "center" {
+            #{$firstBorder}: 50%;
+            margin-#{$firstBorder}: -#{$size + 1}px;
+        } @else if $alignment == "far" {
+            #{$secondBorder}: 24px;
+        }
+    }
+
+    &:after {
+        border-#{$firstBorder}: #{$size - 1}px solid transparent;
+        border-#{$secondBorder}: #{$size - 1}px solid transparent;
+        border-#{$elemAlignment}: #{$size - 1}px solid $backgroundColor;
+        #{$direction}: -#{$size - 1}px;
+
+        @if $alignment == "near" {
+            #{$firstBorder}: 25px;
+        } @else if $alignment == "center" {
+            #{$firstBorder}: 50%;
+            margin-#{$firstBorder}: -#{$size}px;
+        } @else if $alignment == "far" {
+            #{$secondBorder}: 25px;
+        }
+    }
+}
+
+

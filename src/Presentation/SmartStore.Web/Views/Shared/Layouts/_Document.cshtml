@@ -15,8 +15,9 @@
 	// add css assets
 	Html.AppendCssFileParts(
 		cssRoot + "font-awesome.css",
-		cssRoot + "jquery.pnotify.default.css",
-		cssRoot + "jquery.pnotify.default.icons.css");
+		contentRoot + "pnotify/css/pnotify.css",
+		contentRoot + "pnotify/css/pnotify.mobile..css",
+		contentRoot + "pnotify/css/pnotify.buttons.css");
 
 	Html.AppendScriptParts(ResourceLocation.Head,
 		"~/Scripts/modernizr.js",
@@ -57,7 +58,7 @@
 		bootstrapJsRoot + "bootstrap-datetimepicker.js",
 		// Shared UI
 		jsRoot + "smartstore.viewport.js",
-		jsRoot + "select2.js",
+		contentRoot + "select2/js/select2.js",
 		contentRoot + "slick/slick.js",
 		jsRoot + "smartstore.selectwrapper.js",
 		jsRoot + "smartstore.throbber.js",
@@ -66,7 +67,10 @@
 		jsRoot + "smartstore.keynav.js",
 		jsRoot + "smartstore.articlelist.js",
 		jsRoot + "smartstore.product.js",
-		jsRoot + "jquery.pnotify.js",
+		contentRoot + "pnotify/js/pnotify.js",
+		contentRoot + "pnotify/js/pnotify.mobile.js",
+		contentRoot + "pnotify/js/pnotify.buttons.js",
+		contentRoot + "pnotify/js/pnotify.animate.js",
 		jsRoot + "jquery.bootstrap-touchspin.js",
 		jsRoot + "jquery.scrollTo.js",
 		jsRoot + "smartstore.globalize.adapter.js",

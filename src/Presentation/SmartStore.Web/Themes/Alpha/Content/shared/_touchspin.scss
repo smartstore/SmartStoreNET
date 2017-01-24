@@ -8,6 +8,8 @@ $touchspin-btn-width:                1.6rem;
 
 // Added by SMNET 
 .bootstrap-touchspin {
+    display: inline-flex;
+
     .form-control {
         text-align: center;
         font-weight: bold;

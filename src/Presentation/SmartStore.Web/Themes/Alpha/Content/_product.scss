@@ -126,6 +126,20 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 } 
 
 
+// Specification attributes
+// =====================================================
+
+.pd-specs-table tr:first-child td {
+    border-top-width: 0;
+}
+
+.pd-spec-name {
+    font-weight: bold;
+    width: 20%;
+}
+
+
+
 // Reviews
 // =====================================================
 

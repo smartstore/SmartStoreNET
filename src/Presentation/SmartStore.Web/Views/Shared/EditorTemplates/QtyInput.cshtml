@@ -6,6 +6,7 @@
 @{
 	var large = ViewData["large"].Convert<bool>();
 	var inputStyle = "spinner"; // TODO: (mc) > (mh) finalize dropdown later in v3.1+
+	// TODO: (mc) > (mh) Use this editor template in Cart, Wishlist etc.
 }
 
 <div class="qty-input@(Model.QuantityUnitName.HasValue() ? " has-postfix" : "")">
@@ -14,7 +15,7 @@
 		@Html.TextBoxFor(model => model.EnteredQuantity, new { @class = "form-control" + (large ? " form-control-lg" : "") })
 		<script>
 			$(function () {
-				//TODO NewAlpha: implement step in admin product detail
+				// TODO: (mc) > (mh) Implement "Step" in admin product detail
 				$('#@Html.IdFor(model => model.EnteredQuantity)').TouchSpin({
 					min: @Model.MinOrderAmount,
 					max: @Model.MaxOrderAmount,

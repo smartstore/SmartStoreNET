@@ -36,11 +36,11 @@
 
 	@Html.Widget("productdetails_top")
 
-	<div id="total-price-update-container" class="page-body update-container" data-referto="#attributes, #add-to-cart, #bundle-overview" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
-		@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
-		{
-			<article class="pd" itemscope itemtype="http://schema.org/Product">
-				<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
+	<article class="pd page-body" itemscope itemtype="http://schema.org/Product">
+		<div id="total-price-update-container" class="update-container" data-referto="#attributes, #add-to-cart, #bundle-overview" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
+			@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
+			{
+			<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
 				<section class="row pd-section pd-section-top">
 					<!-- Data: Picture, Description, Attrs etc. -->
 					<div class="col-xs-12 col-md-6 col-lg-7 pd-data-col">
@@ -55,15 +55,15 @@
 						@{ Html.RenderPartial("Product.Offer", Model); }
 					</aside>
 				</section>
+							}
+		</div>
 
-				<!-- Bottom Content: Full Description, Specification, Review etc. -->
-				<section class="pd-section pd-section-bottom">
-					<!-- Tabs -->
-					@{ Html.RenderPartial("Product.Tabs", Model); }
-				</section>
-			</article>
-		}
-	</div>
+		<!-- Bottom Content: Full Description, Specification, Review etc. -->
+		<section class="pd-section pd-section-bottom">
+			<!-- Tabs -->
+			@{ Html.RenderPartial("Product.Tabs", Model); }
+		</section>
+	</article>
 
 	@Html.Widget("productdetails_bottom")
 
@@ -71,7 +71,7 @@
 	@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
 </div>
 
-<script type="text/javascript">
+<script>
     $(function () {
         var settings = {
             galleryStartIndex: @(Model.DetailsPictureModel.GalleryStartIndex),

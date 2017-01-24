@@ -22,27 +22,10 @@
 		else
 		{
 			<div class="row">
-				<div class="col-xs-4 col-sm-4 x-col-md-5 p-r-0">
-					@for (var i = 0; i <= 100; i++)
-					{
-						//addModel.AllowedQuantities.Add(new SelectListItem { Text = "{0} {1}".FormatCurrent(i, Model.QuantityUnitName), Value = i.ToString() });
-					}
-					@if (addModel.AllowedQuantities.Count > 0)
-					{
-						<div class="mf-dropdown" style="display: block">
-							<button class="btn btn-warning btn-labeled icon-right btn-block" title="TBD">
-								<span class="mf-dropdown-value">@addModel.EnteredQuantity</span>
-								<b><i class="fa fa-caret-down"></i></b>
-							</button>
-							@Html.DropDownListFor(model => Model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown form-control noskin" })
-						</div>
-					}
-					else
-					{
-						@Html.EditorFor(model => model.AddToCart, "QtyInput", new { large = true })
-					}
+				<div class="col-xs-4 p-r-0">
+					@Html.EditorFor(model => model.AddToCart, "QtyInput", new { large = true })
 				</div>
-				<div class="col-xs-8 col-sm-8 x-col-md-7 p-l-05">
+				<div class="col-xs-8 p-l-05">
 					<a class="btn btn-primary btn-lg btn-block add-to-cart-button ajax-cart-link"
 					   href="#"
 					   rel="nofollow"

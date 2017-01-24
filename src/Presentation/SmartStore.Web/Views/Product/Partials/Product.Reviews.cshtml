@@ -1,7 +1,17 @@
 ﻿@model ProductReviewsModel
 @using SmartStore.Web.Models.Catalog;
 
-@if (Model.Items.Count > 0)
+@{ 
+
+}
+
+@if (Model.Items.Count == 0)
+{
+	<a class="btn btn-secondary" href="@Url.Action("Reviews", new { id = Model.ProductId })">
+		@T("Reviews.Overview.First")
+	</a>
+}
+else
 {
 	<div class="product-review-list">
 
@@ -36,10 +46,6 @@
 				@{ Html.RenderPartial("_ReviewHelpfulness", review.Helpfulness, new ViewDataDictionary()); }
 				@Html.Widget("productreviews_page_inside_review")
 			</div>
-					}
+		}
 	</div>
-					}
-					else
-					{
-						<a href="@Url.Action("Reviews", new { id = Model.ProductId })">@T("Reviews.Overview.First")</a>
-					}
+}

@@ -256,14 +256,18 @@ namespace SmartStore.Web.Controllers
 		{
 			var product = _productService.GetProductById(productId);
 			if (product == null)
+			{
 				throw new ArgumentException(T("Products.NotFound", productId));
+			}			
 
 			var model = _helper.PrepareProductSpecificationModel(product);
 
 			if (model.Count == 0)
+			{
 				return Content("");
+			}		
 
-			return PartialView(model);
+			return PartialView("Product.Specs", model);
 		}
 
 		[ChildActionOnly]
@@ -271,12 +275,14 @@ namespace SmartStore.Web.Controllers
 		{
 			var product = _productService.GetProductById(productId);
 			if (product == null || !product.AllowCustomerReviews)
+			{
 				return Content("");
-
+			}
+				
 			var model = new ProductReviewsModel();
 			_helper.PrepareProductReviewsModel(model, product);
 
-			return PartialView(model);
+			return PartialView("Product.Reviews", model);
 		}
 
 		[ChildActionOnly]

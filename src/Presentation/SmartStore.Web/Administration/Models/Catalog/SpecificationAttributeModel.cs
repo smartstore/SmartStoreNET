@@ -20,7 +20,10 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string Name { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.DisplayOrder")]
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.Alias")]
+		public string Alias { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.DisplayOrder")]
         public int DisplayOrder {get;set;}
 
         public IList<SpecificationAttributeLocalizedModel> Locales { get; set; }
@@ -36,5 +39,8 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
-    }
+
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.Alias")]
+		public string Alias { get; set; }
+	}
 }

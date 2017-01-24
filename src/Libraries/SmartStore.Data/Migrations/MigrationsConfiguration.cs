@@ -384,6 +384,18 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Enums.SmartStore.Core.Search.Facets.FacetDescriptor.Sorting.ValueAsc",
 				"Name: A to Z",
 				"Name: A bis Z");
+
+			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.Alias",
+				"Alias",
+				"Alias",
+				"An optional reference name for internal use.",
+				"Ein optionaler Referenzwert für interne Zwecke.");
+
+			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias",
+				"Alias",
+				"Alias",
+				"An optional reference name for internal use.",
+				"Ein optionaler Referenzwert für interne Zwecke.");
 		}
 	}
 }

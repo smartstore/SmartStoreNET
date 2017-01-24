@@ -447,6 +447,10 @@
     <Compile Include="Migrations\201701121659419_PictureSize.Designer.cs">
       <DependentUpon>201701121659419_PictureSize.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201701240959492_SpecificationAttributeAlias.cs" />
+    <Compile Include="Migrations\201701240959492_SpecificationAttributeAlias.Designer.cs">
+      <DependentUpon>201701240959492_SpecificationAttributeAlias.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -819,6 +823,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201701121659419_PictureSize.resx">
       <DependentUpon>201701121659419_PictureSize.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701240959492_SpecificationAttributeAlias.resx">
+      <DependentUpon>201701240959492_SpecificationAttributeAlias.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

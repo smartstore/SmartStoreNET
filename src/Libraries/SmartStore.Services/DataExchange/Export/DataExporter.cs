@@ -384,7 +384,9 @@ namespace SmartStore.Services.DataExchange.Export
 		private bool CallProvider(DataExporterContext ctx, string streamId, string method, string path)
 		{
 			if (method != "Execute" && method != "OnExecuted")
-				throw new SmartException("Unknown export method {0}.".FormatInvariant(method.NaIfEmpty()));
+			{
+				throw new SmartException($"Unknown export method {method.NaIfEmpty()}.");
+			}
 
 			try
 			{
@@ -413,7 +415,7 @@ namespace SmartStore.Services.DataExchange.Export
 						using (_rwLock.GetWriteLock())
 						using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
 						{
-							ctx.Log.Info("Creating file {0}.".FormatInvariant(path));
+							ctx.Log.Info($"Creating file {path}.");
 							ctx.ExecuteContext.DataStream.CopyTo(fileStream);
 						}
 					}
@@ -422,7 +424,7 @@ namespace SmartStore.Services.DataExchange.Export
 			catch (Exception exception)
 			{
 				ctx.ExecuteContext.Abort = DataExchangeAbortion.Hard;
-				ctx.Log.ErrorFormat(exception, "The provider failed at the {0} method.", method);
+				ctx.Log.ErrorFormat(exception, $"The provider failed at the {method.NaIfEmpty()} method.");
 				ctx.Result.LastError = exception.ToString();
 			}
 			finally

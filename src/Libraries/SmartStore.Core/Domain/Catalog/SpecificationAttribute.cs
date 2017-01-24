@@ -18,9 +18,15 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public string Name { get; set; }
 
-        /// <summary>
-        /// Gets or sets the display order
-        /// </summary>
+		/// <summary>
+		/// Gets or sets the specification attribute alias
+		/// </summary>
+		[DataMember]
+		public string Alias { get; set; }
+
+		/// <summary>
+		/// Gets or sets the display order
+		/// </summary>
 		[DataMember]
 		public int DisplayOrder { get; set; }
 

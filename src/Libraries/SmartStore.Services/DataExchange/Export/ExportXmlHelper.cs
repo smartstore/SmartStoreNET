@@ -775,12 +775,14 @@ namespace SmartStore.Services.DataExchange.Export
 					_writer.Write("SpecificationAttributeId", entitySao.SpecificationAttributeId.ToString());
 					_writer.Write("DisplayOrder", entitySao.DisplayOrder.ToString());
 					_writer.Write("Name", (string)option.Name);
+					_writer.Write("Alias", (string)option.Alias);
 
 					WriteLocalized(option);
 
 					_writer.WriteStartElement("SpecificationAttribute");
 					_writer.Write("Id", entitySa.Id.ToString());
 					_writer.Write("Name", (string)option.SpecificationAttribute.Name);
+					_writer.Write("Alias", (string)option.SpecificationAttribute.Alias);
 					_writer.Write("DisplayOrder", entitySa.DisplayOrder.ToString());
 
 					WriteLocalized(option.SpecificationAttribute);

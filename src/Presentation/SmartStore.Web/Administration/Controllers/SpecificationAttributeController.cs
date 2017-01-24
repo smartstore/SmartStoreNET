@@ -60,7 +60,8 @@ namespace SmartStore.Admin.Controllers
             foreach (var localized in model.Locales)
             {
                 _localizedEntityService.SaveLocalizedValue(specificationAttribute, x => x.Name, localized.Name, localized.LanguageId);
-            }
+				_localizedEntityService.SaveLocalizedValue(specificationAttribute, x => x.Alias, localized.Alias, localized.LanguageId);
+			}
         }
 
         [NonAction]
@@ -69,19 +70,22 @@ namespace SmartStore.Admin.Controllers
             foreach (var localized in model.Locales)
             {
                 _localizedEntityService.SaveLocalizedValue(specificationAttributeOption, x => x.Name, localized.Name, localized.LanguageId);
-            }
+				_localizedEntityService.SaveLocalizedValue(specificationAttributeOption, x => x.Alias, localized.Alias, localized.LanguageId);
+			}
         }
 
 		private void AddMultipleOptionNames(SpecificationAttributeOptionModel model)
 		{
 			var values = model.Name.SplitSafe(";");
-			int order = model.DisplayOrder;
+			var alias = model.Alias.SplitSafe(";");
+			var order = model.DisplayOrder;
 
 			for (int i = 0; i < values.Length; ++i)
 			{
-				var sao = new SpecificationAttributeOption()
+				var sao = new SpecificationAttributeOption
 				{
-					Name = values[i].Trim(),
+					Name = values.SafeGet(i).Trim(),
+					Alias = alias.SafeGet(i).Trim(),
 					DisplayOrder = order++,
 					SpecificationAttributeId = model.SpecificationAttributeId
 				};
@@ -91,9 +95,20 @@ namespace SmartStore.Admin.Controllers
 				foreach (var localized in model.Locales.Where(l => l.Name.HasValue()))
 				{
 					var localizedValues = localized.Name.SplitSafe(";");
-					string value = (i < localizedValues.Length ? localizedValues[i].Trim() : sao.Name);
+					var value = (i < localizedValues.Length ? localizedValues[i].Trim() : sao.Name);
 
 					_localizedEntityService.SaveLocalizedValue(sao, x => x.Name, value, localized.LanguageId);
+				}
+
+				foreach (var localized in model.Locales.Where(l => l.Alias.HasValue()))
+				{
+					var localizedAlias = localized.Alias.SplitSafe(";");
+					var value = localizedAlias.SafeGet(i).Trim();
+
+					if (value.HasValue())
+					{
+						_localizedEntityService.SaveLocalizedValue(sao, x => x.Alias, value, localized.LanguageId);
+					}
 				}
 			}
 		}
@@ -197,11 +212,12 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var model = specificationAttribute.ToModel();
-            //locales
+
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = specificationAttribute.GetLocalized(x => x.Name, languageId, false, false);
-            });
+				locale.Alias = specificationAttribute.GetLocalized(x => x.Alias, languageId, false, false);
+			});
 
             return View(model);
         }
@@ -262,10 +278,9 @@ namespace SmartStore.Admin.Controllers
 			if (selectedIds != null && selectedIds.Count > 0)
 			{
 				var attributes = _specificationAttributeService.GetSpecificationAttributesByIds(selectedIds.ToArray()).ToList();
-				string deletedNames = string.Join(", ", attributes.Select(x => x.Name));
+				var deletedNames = string.Join(", ", attributes.Select(x => x.Name));
 
-				foreach (var attribute in attributes)
-					_specificationAttributeService.DeleteSpecificationAttribute(attribute);
+				attributes.Each(x => _specificationAttributeService.DeleteSpecificationAttribute(x));
 
 				_customerActivityService.InsertActivity("DeleteSpecAttribute", _localizationService.GetResource("ActivityLog.DeleteSpecAttribute"), deletedNames);
 			}
@@ -373,11 +388,12 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var model = sao.ToModel();
-            //locales
+
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = sao.GetLocalized(x => x.Name, languageId, false, false);
-            });
+				locale.Alias = sao.GetLocalized(x => x.Alias, languageId, false, false);
+			});
 
             return View(model);
         }
@@ -430,13 +446,15 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             // This action method gets called via an ajax request
-            if (String.IsNullOrEmpty(attributeId))
+            if (string.IsNullOrEmpty(attributeId))
                 throw new ArgumentNullException("attributeId");
 
             var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(Convert.ToInt32(attributeId));
-            var result = (from o in options
-                          select new { id = o.Id, name = o.Name, text = o.Name }).ToList();
-            return Json(result, JsonRequestBehavior.AllowGet);
+            var result = 
+				from o in options
+				select new { id = o.Id, name = o.Name, text = o.Name };
+
+            return Json(result.ToList(), JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

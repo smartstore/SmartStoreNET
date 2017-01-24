@@ -1000,10 +1000,16 @@ namespace SmartStore.Services.DataExchange.Export
 			dynAttribute.Name = option.SpecificationAttribute.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
 			dynAttribute._Localized = GetLocalized(ctx, option.SpecificationAttribute, x => x.Name);
 
+			dynAttribute.Alias = option.SpecificationAttribute.GetLocalized(x => x.Alias, ctx.Projection.LanguageId ?? 0, true, false);
+			dynAttribute._Localized = GetLocalized(ctx, option.SpecificationAttribute, x => x.Alias);
+
 			dynamic dynOption = new DynamicEntity(option);
 
 			dynOption.Name = option.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
 			dynOption._Localized = GetLocalized(ctx, option, x => x.Name);
+
+			dynOption.Alias = option.GetLocalized(x => x.Alias, ctx.Projection.LanguageId ?? 0, true, false);
+			dynOption._Localized = GetLocalized(ctx, option, x => x.Alias);
 
 			dynOption.SpecificationAttribute = dynAttribute;
 

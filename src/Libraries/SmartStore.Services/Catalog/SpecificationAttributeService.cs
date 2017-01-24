@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Events;
@@ -10,10 +8,10 @@ using SmartStore.Data.Caching;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Specification attribute service
-    /// </summary>
-    public partial class SpecificationAttributeService : ISpecificationAttributeService
+	/// <summary>
+	/// Specification attribute service
+	/// </summary>
+	public partial class SpecificationAttributeService : ISpecificationAttributeService
     {
         
         private readonly IRepository<SpecificationAttribute> _specificationAttributeRepository;
@@ -74,9 +72,7 @@ namespace SmartStore.Services.Catalog
 
 			// (delete localized properties of options)
 			var options = GetSpecificationAttributeOptionsBySpecificationAttribute(specificationAttribute.Id);
-			foreach (var itm in options) {
-				DeleteSpecificationAttributeOption(itm);
-			}
+			options.Each(x => DeleteSpecificationAttributeOption(x));
 
             _specificationAttributeRepository.Delete(specificationAttribute);
 

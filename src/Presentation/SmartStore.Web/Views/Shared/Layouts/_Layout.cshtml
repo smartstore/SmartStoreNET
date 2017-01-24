@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "_Document";
+	Layout = "_Document";
 }
 
 @Html.Widget("body_start_html_tag_after")
@@ -39,17 +39,19 @@
 					</nav>
 				</div>
 			</header>
-								}
+		}
 
         @{ 
-			Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" }); 
+			Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
 		}
 
         @Html.Widget("content_before")
 
         <div id="content-wrapper">
-            <section id="content" class="container drop-shadow lifted m-t-1">
+            <section id="content" class="container m-t-1">
                 @RenderSection("teaser", required: false)
+				@{ Html.RenderZone("teaser"); }
+				@Html.Widget("after_teaser")
                 <div id="content-body" class="row">
                     @RenderBody()
                     @Html.Widget("content_after")
@@ -69,19 +71,11 @@
 						Html.RenderAction("Footer", "Common", new { area = "" });
 					}
 				</footer>
-
 			</div>
-        }
+		}
+
+		@{ Html.RenderZone("page-end"); }
     </div>
-
-    <aside id="offcanvas-cart" class="offcanvas offcanvas-push offcanvas-right">
-        <div class="offcanvas-content">
-            @{ 
-				Html.RenderAction("OffCanvasCart", "ShoppingCart", new { area = "" });
-            }
-        </div>
-    </aside>
-
 </div>
 @Html.Widget("body_end_html_tag_before")
 

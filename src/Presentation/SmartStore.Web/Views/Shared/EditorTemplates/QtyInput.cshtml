@@ -5,25 +5,11 @@
 
 @{
 	var large = ViewData["large"].Convert<bool>();
+	var inputStyle = "spinner"; // TODO: (mc) > (mh) finalize dropdown later in v3.1+
 }
 
 <div class="qty-input@(Model.QuantityUnitName.HasValue() ? " has-postfix" : "")">
-	@for (var i = 0; i <= 100; i++)
-	{
-		//Model.AllowedQuantities.Add(new SelectListItem { Text = "{0} {1}".FormatCurrent(i, Model.QuantityUnitName), Value = i.ToString() });
-	}
-	@if (Model.AllowedQuantities != null && Model.AllowedQuantities.Count > 0)
-	{
-		// TODO: (mc) > (mh) finalize dropdown qty input
-		<div class="mf-dropdown" style="display: block">
-			<button class="btn btn-warning btn-labeled icon-right btn-block@(large ? " btn-lg" : "")" title="TBD">
-				<span class="mf-dropdown-value">@Model.EnteredQuantity</span>
-				<b><i class="fa fa-caret-down"></i></b>
-			</button>
-			@Html.DropDownListFor(model => Model.EnteredQuantity, Model.AllowedQuantities, new { @class = "form-control qty-dropdown noskin" })
-		</div>
-	}
-	else
+	@if (inputStyle == "spinner")
 	{
 		@Html.TextBoxFor(model => model.EnteredQuantity, new { @class = "form-control" + (large ? " form-control-lg" : "") })
 		<script>
@@ -41,5 +27,23 @@
 				});
 			});
 		</script>
+	}
+	else
+	{
+		/*for (var i = 0; i <= 100; i++)
+		{
+			Model.AllowedQuantities.Add(new SelectListItem { Text = "{0} {1}".FormatCurrent(i, Model.QuantityUnitName), Value = i.ToString() });
+		}*/
+		if (Model.AllowedQuantities != null && Model.AllowedQuantities.Count > 0)
+		{
+			// TODO: (mc) > (mh) finalize dropdown qty input
+			<div class="mf-dropdown" style="display: block">
+				<button class="btn btn-warning btn-labeled icon-right btn-block@(large ? " btn-lg" : "")" title="TBD">
+					<span class="mf-dropdown-value">@Model.EnteredQuantity</span>
+					<b><i class="fa fa-caret-down"></i></b>
+				</button>
+				@Html.DropDownListFor(model => Model.EnteredQuantity, Model.AllowedQuantities, new { @class = "form-control qty-dropdown noskin" })
+			</div>
+		}
 	}
 </div>

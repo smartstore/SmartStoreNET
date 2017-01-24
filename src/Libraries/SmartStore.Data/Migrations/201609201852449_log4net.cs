@@ -12,7 +12,7 @@ namespace SmartStore.Data.Migrations
 		public override void Up()
         {
 			// Custom START
-			if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
+			if (DataSettings.Current.IsSqlServer)
 			{
 				//DropIndex("dbo.Log", "IX_Log_ContentHash");
 				Sql("IF EXISTS (SELECT * FROM sys.indexes WHERE name='IX_Log_ContentHash' AND object_id = OBJECT_ID('[dbo].[Log]')) DROP INDEX [IX_Log_ContentHash] ON [dbo].[Log];");

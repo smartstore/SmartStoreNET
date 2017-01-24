@@ -65,7 +65,7 @@
 
 @if (Model.DisplayBackInStockSubscription && Model.IsCurrentCustomerRegistered)
 {
-	using (Html.BeginTailSnippet())
+	using (Html.BeginZoneContent("end"))
 	{
 		<div id="backinstock-subscription-modal" class="modal fade" tabindex="-1">
 			<div class="modal-dialog" role="document">
@@ -81,5 +81,3 @@
 		</div>
 	}
 }
-
-

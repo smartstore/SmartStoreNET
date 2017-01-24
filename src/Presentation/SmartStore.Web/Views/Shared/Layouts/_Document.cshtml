@@ -115,12 +115,13 @@
     @*Favicon - upload favicon.ico or favicon-[StoreId].ico file either to the root web or your theme directory*@
 	@{ Html.RenderAction("Favicon", "Common", new { area = "" }); }
 	@Html.CustomHead()
+	@{ Html.RenderZone("head"); }
     <!--Powered by SmartStore.net - http://www.smartstore.com-->
 </head>
 <body class="@Html.BodyCssClass()"@(Html.BodyId())>
+	@{ Html.RenderZone("start"); }
     @RenderBody()	
-
-	@{ Html.RenderTail(); }
+	@{ Html.RenderZone("end"); }
 
 	@* TOODO: (mc) OC > render assets via child action *@
     @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)

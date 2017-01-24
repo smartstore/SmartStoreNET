@@ -121,3 +121,12 @@
         }
     </div>
 </div>
+
+@using (Html.BeginZoneContent("end", key: "offcanvas-cart"))
+{
+	<aside id="offcanvas-cart" class="offcanvas offcanvas-push offcanvas-right">
+		<div class="offcanvas-content">
+			@Html.Action("OffCanvasCart", "ShoppingCart", new { area = "" })
+		</div>
+	</aside>
+}

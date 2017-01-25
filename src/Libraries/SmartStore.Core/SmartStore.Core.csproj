@@ -167,6 +167,7 @@
     <Compile Include="Caching\IRequestCache.cs" />
     <Compile Include="Caching\OutputCache\IDisplayControl.cs" />
     <Compile Include="Caching\OutputCache\IOutputCacheInvalidationObserver.cs" />
+    <Compile Include="Caching\OutputCache\ICacheableRouteRegistrar.cs" />
     <Compile Include="Caching\OutputCache\IOutputCacheProvider.cs" />
     <Compile Include="Caching\MemorySet.cs" />
     <Compile Include="Caching\OutputCache\NullOutputCacheProvider.cs" />

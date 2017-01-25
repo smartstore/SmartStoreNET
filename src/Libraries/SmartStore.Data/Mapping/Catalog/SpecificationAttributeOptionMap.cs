@@ -10,7 +10,7 @@ namespace SmartStore.Data.Mapping.Catalog
             this.ToTable("SpecificationAttributeOption");
             this.HasKey(sao => sao.Id);
             this.Property(sao => sao.Name).IsRequired();
-			this.Property(sao => sao.Alias).HasMaxLength(100);
+			this.Property(sao => sao.Alias).HasMaxLength(30);
 
 			this.HasRequired(sao => sao.SpecificationAttribute)
                 .WithMany(sa => sa.SpecificationAttributeOptions)

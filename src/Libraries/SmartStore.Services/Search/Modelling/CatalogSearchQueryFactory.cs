@@ -270,23 +270,24 @@ namespace SmartStore.Services.Search.Modelling
 			query.CustomData["ViewMode"] = _catalogSettings.DefaultViewMode;
 		}
 
-		protected virtual void AddFacet(CatalogSearchQuery query, string fieldName, bool isMultiSelect, Action<FacetDescriptor> addValues)
+		protected virtual void AddFacet(
+			CatalogSearchQuery query,
+			string fieldName,
+			bool isMultiSelect,
+			FacetSorting sorting,
+			Action<FacetDescriptor> addValues)
 		{
 			if (!_globalFilterFields.Contains(fieldName))
 				return;
 			
 			var facet = new FacetDescriptor(fieldName);
 			facet.IsMultiSelect = isMultiSelect;
+			facet.OrderBy = sorting;
 
-			if (fieldName == "rate")
-			{
-				facet.OrderBy = FacetDescriptor.Sorting.ValueAsc;
-			}
-			else
+			if (fieldName != "rate")
 			{
 				facet.MinHitCount = _searchSettings.FilterMinHitCount;
 				facet.MaxChoicesCount = _searchSettings.FilterMaxChoicesCount;
-				facet.OrderBy = _searchSettings.FilterOrderBy;
 			}
 
 			addValues(facet);
@@ -304,7 +305,7 @@ namespace SmartStore.Services.Search.Modelling
 
 			var fieldName = (_catalogSettings.IncludeFeaturedProductsInNormalLists ? "categoryid" : "notfeaturedcategoryid");
 
-			AddFacet(query, fieldName, true, descriptor =>
+			AddFacet(query, fieldName, true, FacetSorting.HitsDesc, descriptor =>
 			{
 				if (ids != null && ids.Any())
 				{
@@ -322,7 +323,7 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithManufacturerIds(null, ids.ToArray());
 			}
 
-			AddFacet(query, "manufacturerid", true, descriptor =>
+			AddFacet(query, "manufacturerid", true, FacetSorting.ValueAsc, descriptor =>
 			{
 				if (ids != null && ids.Any())
 				{
@@ -365,7 +366,7 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithRating(fromRate, null);
 			}
 
-			AddFacet(query, "rate", false, descriptor =>
+			AddFacet(query, "rate", false, FacetSorting.ValueAsc, descriptor =>
 			{
 				if (fromRate.HasValue)
 				{
@@ -392,7 +393,7 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithDeliveryTimeIds(ids.ToArray());
 			}
 
-			AddFacet(query, "deliveryid", true, descriptor =>
+			AddFacet(query, "deliveryid", true, FacetSorting.DisplayOrder, descriptor =>
 			{
 				if (ids != null && ids.Any())
 				{

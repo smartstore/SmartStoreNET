@@ -1602,28 +1602,13 @@ namespace SmartStore.Admin.Controllers
 			model.ShowProductImagesInInstantSearch = settings.ShowProductImagesInInstantSearch;
 			model.FilterMinHitCount = settings.FilterMinHitCount;
 			model.FilterMaxChoicesCount = settings.FilterMaxChoicesCount;
-			model.FilterOrderBy = settings.FilterOrderBy;
-
+			
 			if (megaSearchDescriptor == null)
 			{
 				model.SearchFieldsNote = T("Admin.Configuration.Settings.Search.SearchFieldsNote");
 			}
 
 			model.AvailableSearchModes = settings.SearchMode.ToSelectList().ToList();
-
-			model.AvailableFilterOrders = new List<SelectListItem>
-			{
-				new SelectListItem
-				{
-					Text = T("Enums.SmartStore.Core.Search.Facets.FacetDescriptor.Sorting.HitsDesc"),
-					Value = ((int)FacetDescriptor.Sorting.HitsDesc).ToString()
-				},
-				new SelectListItem
-				{
-					Text = T("Enums.SmartStore.Core.Search.Facets.FacetDescriptor.Sorting.ValueAsc"),
-					Value = ((int)FacetDescriptor.Sorting.ValueAsc).ToString()
-				}
-			};
 
 			model.AvailableSearchFields = new List<SelectListItem>
 			{
@@ -1710,7 +1695,6 @@ namespace SmartStore.Admin.Controllers
 			settings.GlobalFilters = JsonConvert.SerializeObject(model.GlobalFilters);
 			settings.FilterMinHitCount = model.FilterMinHitCount;
 			settings.FilterMaxChoicesCount = model.FilterMaxChoicesCount;
-			settings.FilterOrderBy = model.FilterOrderBy;
 
 			StoreDependingSettings.UpdateSettings(settings, form, storeScope, Services.Settings);
 

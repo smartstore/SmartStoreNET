@@ -43,9 +43,5 @@ namespace SmartStore.Admin.Models.Settings
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.FilterMaxChoicesCount")]
 		public int FilterMaxChoicesCount { get; set; }
-
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Search.FilterOrderBy")]
-		public FacetDescriptor.Sorting FilterOrderBy { get; set; }
-		public List<SelectListItem> AvailableFilterOrders { get; set; }
 	}
 }

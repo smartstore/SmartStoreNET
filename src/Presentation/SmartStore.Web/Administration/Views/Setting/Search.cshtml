@@ -159,16 +159,6 @@
 				@Html.ValidationMessageFor(model => model.FilterMaxChoicesCount)
 			</td>
 		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.FilterOrderBy)
-			</td>
-			<td class="adminData">
-				@Html.SettingOverrideCheckbox(model => Model.FilterOrderBy)
-				@Html.DropDownListFor(model => model.FilterOrderBy, Model.AvailableFilterOrders)
-				@Html.ValidationMessageFor(model => model.FilterOrderBy)
-			</td>
-		</tr>
 	</table>
 }
 

@@ -17,12 +17,6 @@ namespace SmartStore.Core.Search.Facets
 			Or
 		}
 
-		public enum Sorting
-		{
-			HitsDesc,
-			ValueAsc
-		}
-
 		private readonly List<FacetValue> _values;
 
 		public FacetDescriptor(string key)
@@ -93,7 +87,7 @@ namespace SmartStore.Core.Search.Facets
 		/// <summary>
 		/// Gets or sets the result choices sort order.
 		/// </summary>
-		public Sorting OrderBy
+		public FacetSorting OrderBy
 		{
 			get;
 			set;
@@ -118,13 +112,21 @@ namespace SmartStore.Core.Search.Facets
 	}
 
 
+	public enum FacetSorting
+	{
+		HitsDesc,
+		ValueAsc,
+		DisplayOrder
+	}
+
+
 	public static class FacetDescriptorExtensions
 	{
-		public static IOrderedEnumerable<Facet> OrderBy(this IEnumerable<Facet> source, FacetDescriptor.Sorting sorting)
+		public static IOrderedEnumerable<Facet> OrderBy(this IEnumerable<Facet> source, FacetSorting sorting)
 		{
 			Guard.NotNull(source, nameof(source));
 
-			if (sorting == FacetDescriptor.Sorting.HitsDesc)
+			if (sorting == FacetSorting.HitsDesc)
 			{
 				return source.OrderByDescending(x => x.HitCount);
 			}

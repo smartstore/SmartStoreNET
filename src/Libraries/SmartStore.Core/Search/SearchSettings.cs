@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core.Configuration;
-using SmartStore.Core.Search.Facets;
 
 namespace SmartStore.Core.Search
 {
@@ -16,7 +15,6 @@ namespace SmartStore.Core.Search
 			InstantSearchTermMinLength = 2;
 			FilterMinHitCount = 1;
 			FilterMaxChoicesCount = 20;
-			FilterOrderBy = FacetDescriptor.Sorting.HitsDesc;
 		}
 
 		/// <summary>
@@ -63,11 +61,6 @@ namespace SmartStore.Core.Search
 		/// Gets or sets the maximum number of filter values to be displayed.
 		/// </summary>
 		public int FilterMaxChoicesCount { get; set; }
-
-		/// <summary>
-		/// Gets or sets the filter value order
-		/// </summary>
-		public FacetDescriptor.Sorting FilterOrderBy { get; set; }
 
 		// TBD: what about area specific searchin setting (product, blog, etc.)
 	}

@@ -7,12 +7,14 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.SpecificationAttributeOption", "Alias", c => c.String(maxLength: 100));
-            AddColumn("dbo.SpecificationAttribute", "Alias", c => c.String(maxLength: 100));
+            AddColumn("dbo.SpecificationAttributeOption", "Alias", c => c.String(maxLength: 30));
+            AddColumn("dbo.SpecificationAttribute", "Alias", c => c.String(maxLength: 30));
+            AddColumn("dbo.SpecificationAttribute", "FacetSorting", c => c.Int(nullable: false));
         }
         
         public override void Down()
         {
+            DropColumn("dbo.SpecificationAttribute", "FacetSorting");
             DropColumn("dbo.SpecificationAttribute", "Alias");
             DropColumn("dbo.SpecificationAttributeOption", "Alias");
         }

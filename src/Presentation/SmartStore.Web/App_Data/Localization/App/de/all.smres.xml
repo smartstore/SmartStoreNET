@@ -1810,7 +1810,7 @@
 		<Value>Produkte</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Acl">
-		<Value>Zugriffbeschränkung</Value>
+		<Value>Zugriffsbeschränkung</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Added">
 		<Value>Das Produkt wurde erfolgreich hinzugefügt</Value>
@@ -6941,7 +6941,7 @@
 		<Value>HOST Werte</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.Hosts.Hint">
-		<Value>Kommagetrennte Liste mit möglichen HTTP_POTS Werten (z.B. "mein-shop.com,www.mein-shop.de"). Diese Einstellung wird nur in einer Multi-Shop Umgebung benötigt, um den aktuellen Shop zu ermitteln.</Value>
+		<Value>Kommagetrennte Liste mit möglichen HTTP_HOST Werten (z.B. "mein-shop.com,www.mein-shop.de"). Diese Einstellung wird nur in einer Multi-Shop Umgebung benötigt, um den aktuellen Shop zu ermitteln.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.HtmlBodyId">
 		<Value>ID des HTML-Body</Value>
@@ -7214,7 +7214,7 @@
 		<Value>Kommentare</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.CreatedOn">
-		<Value>Eerstellt am</Value>
+		<Value>Erstellt am</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Blog.BlogPosts.Fields.EndDate">
 		<Value>Enddatum</Value>

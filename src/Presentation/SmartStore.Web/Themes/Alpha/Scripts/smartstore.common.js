@@ -167,9 +167,6 @@
 			var stack_bottomcenter = { "dir1": "up", "dir2": "right", "firstpos1": 100, "firstpos2": 10 };
 			EventBroker.subscribe("message", function (message, data) {
 				var opts = _.isString(data) ? { text: data } : data;
-				//opts.stack = stack_bottomcenter;
-				//opts.addclass = "stack-bottomcenter";
-				//$.pnotify(opts);
 				new PNotify(opts);
 			});
 		}

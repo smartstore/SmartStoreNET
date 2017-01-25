@@ -47,6 +47,69 @@
 // Reviews
 // --------------------------------------------------
 
+.review-list, 
+.review-item,
+.review-title {
+    position: relative;
+}
+
+.review-item {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(0,0,0, 0.12);
+
+    &:last-child { border-width: 0; }
+}
+
+.review-title {
+
+    .rating {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    h4 {
+        position: relative;
+        margin: 0;
+        padding-left: 90px;
+        font-size: inherit;
+        font-weight: 600;
+    }
+}
+
+.review-meta {
+    font-size: 0.8125em;
+    .review-meta-label { font-weight: bold; }
+    .review-meta-value + .review-meta-label { padding-left: 0.5rem; }
+}
+
+.review-text {
+    line-height: 1.4;
+    margin-top: 1rem;
+}
+
+.review-vote {
+    font-size: 0.8125em;
+    color: $text-muted;
+
+    .review-vote-label { padding-right: 0.5rem; }
+    .review-vote-count { font-weight: bold; }
+
+    .review-vote-link {
+	    text-decoration: none;
+	    margin-right: 0.3rem;
+	    padding: 0 0.3rem;
+	    &.review-vote-link-yes { color: $brand-success; }
+	    &.review-vote-link-yes:hover { background: $brand-success; color: #fff }
+	    &.review-vote-link-no { color: $brand-danger; }
+	    &.review-vote-link-no:hover { background: $brand-danger; color: #fff }
+
+        .fa { font-size: $font-size-lg; }
+    }   
+}
+
+
 .product-reviews-page .write-review .inputs,
 .product-reviews-page .write-review .captcha-box { 
     margin-bottom:12px;
@@ -66,23 +129,4 @@
 .product-review-item .review-text,
 .product-review-vote {
 	margin-top: 12px;
-}
-.product-review-vote {
-    font-size: $font-size-sm;
-}
-.product-review-vote .vote {
-	text-decoration: none;
-	margin-right: 2px;
-	padding: 0 2px;
-	&.vote-yes { color: $clr-green }
-	&.vote-yes:hover { background: $clr-green; color: #fff }
-	&.vote-no { color: $clr-red }
-	&.vote-no:hover { background: $clr-red-700; color: #fff }
-}
-.product-review-vote .vote-count {
-	font-weight: bold;
-}
-.product-review-vote .fa-thumbs-up,
-.product-review-vote .fa-thumbs-down {
-	font-size: 16px;
 }

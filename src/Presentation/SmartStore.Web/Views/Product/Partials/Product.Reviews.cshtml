@@ -1,49 +1,67 @@
 ﻿@model ProductReviewsModel
+
 @using SmartStore.Web.Models.Catalog;
 
-@{ 
-
+@{
+	Html.AddScriptParts("~/Themes/Alpha/Scripts/public.reviews.js");
+	// TODO: (mc) > (mh) Implement review sorting
+	// TODO: (mc) Implement review AJAX paging
 }
 
 @if (Model.Items.Count == 0)
 {
-	<a class="btn btn-secondary" href="@Url.Action("Reviews", new { id = Model.ProductId })">
-		@T("Reviews.Overview.First")
+	<a class="btn btn-warning" href="@Url.Action("Reviews", new { id = Model.ProductId })">
+		<span>@T("Reviews.Overview.First")</span>
 	</a>
 }
 else
 {
-	<div class="product-review-list">
-
+	<div class="review-list text-body">
 		@foreach (var review in Model.Items)
 		{
 			int ratingPercent = review.Rating * 20;
-			<div class="product-review-item">
-
+			var helpfulness = review.Helpfulness;
+			<div class="review-item">
 				<div class="review-title">
 					<div class="rating">
 						<div style="width: @(ratingPercent)%"></div>
 					</div>
-					<strong>@review.Title</strong>,
-					<span class="text-muted"><small>@review.WrittenOnStr</small></span>
+					<h4>@review.Title</h4>
 				</div>
 
-				<div class="review-author text-muted">
-					<strong>@T("Reviews.From"):</strong>
+				<div class="review-meta">
+					<span class="review-meta-label">@T("Reviews.From"):</span>
 					@if (review.AllowViewingProfiles)
 					{
-						<a href="@Url.RouteUrl("CustomerProfile", new { id = review.CustomerId })" rel="nofollow">@(review.CustomerName)</a>
+						<a class="review-meta-value" href="@Url.RouteUrl("CustomerProfile", new { id = review.CustomerId })" rel="nofollow">@(review.CustomerName)</a>
 					}
 					else
 					{
-						@review.CustomerName
+						<span class="review-meta-value">@review.CustomerName</span>
 					}
+
+					<span class="review-meta-label">@T("Common.Date"):</span>
+					<span class="review-meta-value">@review.WrittenOnStr</span>
 				</div>
 
-				<div class="review-text">
+				<p class="review-text">
 					@Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(review.ReviewText, false, true, false, false, false, false))
+				</p>
+
+				<div class="review-vote" data-review-id="@(helpfulness.ProductReviewId)" data-href='@(Url.Action("SetReviewHelpfulness"))'>
+					@*@{ Html.RenderPartial("_ReviewHelpfulness", review.Helpfulness, new ViewDataDictionary()); }*@
+
+					<span class="review-vote-label">@T("Reviews.Helpfulness.WasHelpful?")</span>
+					<a class="review-vote-link review-vote-link-yes" href="#" title="@T("Common.Yes")" data-toggle="tooltip" rel="nofollow">
+						<i class="fa fa-thumbs-up"></i>
+						<span class="review-vote-count" data-bind-to="TotalYes"><strong style="font-size:12px">@(helpfulness.HelpfulYesTotal)</strong></span>
+					</a>
+					<a class="review-vote-link review-vote-link-no" href="#" title="@T("Common.No")" data-toggle="tooltip" rel="nofollow">
+						<i class="fa fa-thumbs-down"></i>
+						<span class="review-vote-count" data-bind-to="TotalNo"><strong style="font-size:12px">@(helpfulness.HelpfulNoTotal)</strong></span>
+					</a>
 				</div>
-				@{ Html.RenderPartial("_ReviewHelpfulness", review.Helpfulness, new ViewDataDictionary()); }
+				
 				@Html.Widget("productreviews_page_inside_review")
 			</div>
 		}

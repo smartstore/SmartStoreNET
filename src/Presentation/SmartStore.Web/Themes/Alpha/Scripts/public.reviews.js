@@ -4,11 +4,11 @@
 
 $(function () {
 
-    $(".product-review-item").on("click", ".vote", function (e) {
+	$(".review-list").on("click", ".review-vote-link", function (e) {
         var el = $(this);
         var reviewId = el.parent().data("review-id");
         var href = el.parent().data("href");
-        var isNo = el.hasClass("vote-no");
+        var isNo = el.hasClass("review-vote-link-no");
 
         setProductReviewHelpfulness(reviewId, isNo ? 'false' : 'true');
 

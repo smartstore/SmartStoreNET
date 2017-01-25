@@ -359,7 +359,7 @@ namespace SmartStore.Web.Controllers
 						HelpfulYesTotal = pr.HelpfulYesTotal,
 						HelpfulNoTotal = pr.HelpfulNoTotal,
 					},
-					WrittenOnStr = _dateTimeHelper.ConvertToUserTime(pr.CreatedOnUtc, DateTimeKind.Utc).ToString("g"),
+					WrittenOnStr = _dateTimeHelper.ConvertToUserTime(pr.CreatedOnUtc, DateTimeKind.Utc).ToString("D"),
 				});
 			}
 

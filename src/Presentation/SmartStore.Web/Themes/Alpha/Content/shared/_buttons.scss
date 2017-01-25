@@ -136,6 +136,23 @@ $btn-grey-bg: #f2f2f2;
     }
 }
 
+.btn-clear-dark {
+    color: rgba(0, 0, 0, 0.6);
+    background: transparent;
+    border-color: rgba(0, 0, 0, 0.3);
+    box-shadow: none !important;
+
+    &:hover {
+        color: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.08);
+    }
+    &:focus, &.focus, &:active, &.active {
+        color: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.15);
+    }
+}
+
+
 
 // btn-labeled
 // --------------------------------------------------

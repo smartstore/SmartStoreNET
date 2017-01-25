@@ -5,6 +5,8 @@
 		Product = 0,
 		Category,
 		Manufacturer,
-		DeliveryTime
+		DeliveryTime,
+		Attribute,
+		AttributeValue
 	}
 }

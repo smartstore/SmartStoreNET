@@ -414,6 +414,31 @@ namespace SmartStore.Web.Framework
 
 		public static MvcHtmlString Widget(this HtmlHelper helper, string widgetZone, object model)
 		{ 
+			var routeValues = GetWidgetsByZoneRouteValues(helper, widgetZone, model);
+			if (routeValues != null)
+			{
+				return helper.Action("WidgetsByZone", "Widget", routeValues);
+			}
+
+			return MvcHtmlString.Empty;
+		}
+
+		public static void RenderWidget(this HtmlHelper helper, string widgetZone)
+		{
+			helper.RenderWidget(widgetZone, null);
+		}
+
+		public static void RenderWidget(this HtmlHelper helper, string widgetZone, object model)
+		{
+			var routeValues = GetWidgetsByZoneRouteValues(helper, widgetZone, model);
+			if (routeValues != null)
+			{
+				helper.RenderAction("WidgetsByZone", "Widget", routeValues);
+			}
+		}
+
+		private static object GetWidgetsByZoneRouteValues(HtmlHelper helper, string widgetZone, object model)
+		{
 			if (widgetZone.HasValue())
 			{
 				model = model ?? helper.ViewData.Model;
@@ -422,13 +447,14 @@ namespace SmartStore.Web.Framework
 				if (widgets.Any())
 				{
 					var zoneModel = new WidgetZoneModel { Widgets = widgets, WidgetZone = widgetZone, Model = model };
-					helper.RenderAction("WidgetsByZone", "Widget", new { zoneModel = zoneModel, model = model, area = "" });
+					return new { zoneModel = zoneModel, model = model, area = "" };
 				}
 			}
-			return MvcHtmlString.Empty;
+
+			return null;
 		}
 
-        public static IHtmlString MetaAcceptLanguage(this HtmlHelper html)
+		public static IHtmlString MetaAcceptLanguage(this HtmlHelper html)
         {
             var acceptLang = HttpUtility.HtmlAttributeEncode(Thread.CurrentThread.CurrentUICulture.ToString());
             return new HtmlString(string.Format("<meta name=\"accept-language\" content=\"{0}\"/>", acceptLang));

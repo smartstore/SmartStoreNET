@@ -7,7 +7,7 @@
 
 <div class="page home-page">
     <div class="page-body">
-        @Html.Widget("home_page_top")
+        @{ Html.RenderWidget("home_page_top"); }
 		@{
 			Html.RenderAction("TopicBlock", "Topic", new { systemName = "HomePageText" });
 			Html.RenderAction("HomepageCategories", "Catalog");

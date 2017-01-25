@@ -608,7 +608,7 @@ namespace SmartStore.PayPal.Services
 						var rawResponse = reader.ReadToEnd();
 						if (rawResponse.HasValue())
 						{
-							if (webResponse.ContentType.IsCaseInsensitiveEqual("application/json"))
+							try
 							{
 								if (rawResponse.StartsWith("["))
 									result.Json = JArray.Parse(rawResponse);
@@ -632,9 +632,10 @@ namespace SmartStore.PayPal.Services
 									}
 								}
 							}
-							else if (!result.Success)
-							{							
-								result.ErrorMessage = rawResponse;
+							catch
+							{
+								if (!result.Success)
+									result.ErrorMessage = rawResponse;
 							}
 						}
 					}

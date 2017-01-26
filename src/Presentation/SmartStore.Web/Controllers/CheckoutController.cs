@@ -623,7 +623,13 @@ namespace SmartStore.Web.Controllers
                     shippingOptions.FirstOrDefault(), 
                     _storeContext.CurrentStore.Id);
 
-                return RedirectToAction("PaymentMethod");
+				var referrer = Services.WebHelper.GetUrlReferrer();
+				if (referrer.EndsWith("/PaymentMethod") || referrer.EndsWith("/Confirm"))
+				{
+					return RedirectToAction("ShippingAddress");
+				}
+
+				return RedirectToAction("PaymentMethod");
             }
 
             //model
@@ -723,6 +729,12 @@ namespace SmartStore.Web.Controllers
 					_storeContext.CurrentStore.Id);
 
 				_httpContext.GetCheckoutState().IsPaymentSelectionSkipped = true;
+
+				var referrer = Services.WebHelper.GetUrlReferrer();
+				if (referrer.EndsWith("/Confirm"))
+				{
+					return RedirectToAction("ShippingMethod");
+				}
 
 				return RedirectToAction("Confirm");
             }

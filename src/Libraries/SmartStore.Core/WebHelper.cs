@@ -46,14 +46,14 @@ namespace SmartStore.Core
 
         public virtual string GetUrlReferrer()
         {
-            string referrerUrl = string.Empty;
+            string referrerUrl = null;
 
             if (_httpContext != null &&
                 _httpContext.Request != null &&
                 _httpContext.Request.UrlReferrer != null)
                 referrerUrl = _httpContext.Request.UrlReferrer.ToString();
 
-            return referrerUrl;
+            return referrerUrl.EmptyNull();
         }
 
         public virtual string GetCurrentIpAddress()

@@ -26,12 +26,12 @@ namespace SmartStore.Services.Search.Modelling
 		c	-	Categories
 		m	-	Manufacturers
 		r	-	Min Rating
-		a	-	Stock
+		sq	-	Stock Quantity
 		d	-	Delivery Time
-
+		a	-	Specification Attribute Values
 		v	-	View Mode
 		
-		*	-	Specification attributes & variants 
+		*	-	Variants 
 	*/
 
 	public class CatalogSearchQueryFactory : ICatalogSearchQueryFactory
@@ -41,7 +41,8 @@ namespace SmartStore.Services.Search.Modelling
 		protected readonly SearchSettings _searchSettings;
 		protected readonly ICurrencyService _currencyService;
 		protected readonly ICommonServices _services;
-		protected HashSet<string> _globalFilterFields;
+		// field name to display order
+		protected Dictionary<string, int> _globalFilters;
 
 		public CatalogSearchQueryFactory(
 			HttpContextBase httpContext,
@@ -56,7 +57,7 @@ namespace SmartStore.Services.Search.Modelling
 			_currencyService = currencyService;
 			_services = services;
 
-			_globalFilterFields = new HashSet<string>();
+			_globalFilters = new Dictionary<string, int>();
 
 			QuerySettings = DbQuerySettings.Default;
 		}
@@ -80,17 +81,20 @@ namespace SmartStore.Services.Search.Modelling
 
 			if (!origin.IsCaseInsensitiveEqual("Search/InstantSearch"))
 			{
-				_globalFilterFields.Add(_catalogSettings.IncludeFeaturedProductsInNormalLists ? "categoryid" : "notfeaturedcategoryid");
+				_globalFilters.Add(_catalogSettings.IncludeFeaturedProductsInNormalLists ? "categoryid" : "notfeaturedcategoryid", 0);
 
 				if (_searchSettings.GlobalFilters.HasValue())
 				{
 					var globalFilters = JsonConvert.DeserializeObject<List<GlobalSearchFilterDescriptor>>(_searchSettings.GlobalFilters);
 
-					_globalFilterFields.AddRange(globalFilters.Where(x => !x.Disabled).Select(x => x.FieldName));
+					globalFilters.Where(x => !x.Disabled).Each(x =>	_globalFilters.Add(x.FieldName, x.DisplayOrder));
 				}
 				else
-				{
-					_globalFilterFields.AddRange(new string[] { "manufacturerid", "price", "rate", "deliveryid" });
+				{				
+					_globalFilters.Add("manufacturerid", 1);
+					_globalFilters.Add("price", 2);
+					_globalFilters.Add("rate", 3);
+					_globalFilters.Add("deliveryid", 4);
 				}
 			}
 
@@ -270,18 +274,20 @@ namespace SmartStore.Services.Search.Modelling
 			query.CustomData["ViewMode"] = _catalogSettings.DefaultViewMode;
 		}
 
-		protected virtual void AddFacet(
+		private void AddFacet(
 			CatalogSearchQuery query,
 			string fieldName,
 			bool isMultiSelect,
 			FacetSorting sorting,
 			Action<FacetDescriptor> addValues)
 		{
-			if (!_globalFilterFields.Contains(fieldName))
+			if (!_globalFilters.ContainsKey(fieldName))
 				return;
 			
 			var facet = new FacetDescriptor(fieldName);
+			facet.Label = _services.Localization.GetResource(FacetDescriptor.GetLabelResourceKey(fieldName));
 			facet.IsMultiSelect = isMultiSelect;
+			facet.DisplayOrder = _globalFilters[fieldName];
 			facet.OrderBy = sorting;
 
 			if (fieldName != "rate")
@@ -377,7 +383,7 @@ namespace SmartStore.Services.Search.Modelling
 
 		protected virtual void ConvertStock(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
-			var fromQuantity = GetValueFor<int?>("a");
+			var fromQuantity = GetValueFor<int?>("sq");
 
 			if (fromQuantity.HasValue)
 			{

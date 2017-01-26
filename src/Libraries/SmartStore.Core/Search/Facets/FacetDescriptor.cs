@@ -11,11 +11,11 @@ namespace SmartStore.Core.Search.Facets
 	[Serializable]
 	public class FacetDescriptor
 	{
-		public enum ValueOperator
-		{
-			And,
-			Or
-		}
+		//public enum ValueOperator
+		//{
+		//	And,
+		//	Or
+		//}
 
 		private readonly List<FacetValue> _values;
 
@@ -28,12 +28,49 @@ namespace SmartStore.Core.Search.Facets
 		}
 
 		/// <summary>
+		/// Gets the string resource key for a facet field name
+		/// </summary>
+		/// <param name="fieldName">Field name</param>
+		/// <returns>Resource key</returns>
+		public static string GetLabelResourceKey(string fieldName)
+		{
+			switch (fieldName)
+			{
+				case "categoryid":
+				case "featuredcategoryid":
+				case "notfeaturedcategoryid":
+					return "Search.Facet.Category";
+				case "manufacturerid":
+				case "featuredmanufacturerid":
+				case "notfeaturedmanufacturerid":
+					return "Search.Facet.Manufacturer";
+				case "price":
+					return "Search.Facet.Price";
+				case "rate":
+					return "Search.Facet.Rating";
+				case "deliveryid":
+					return "Search.Facet.DeliveryTime";
+				default:
+					return null;
+			}
+		}
+
+		/// <summary>
 		/// Gets the key / field name.
 		/// </summary>
 		public string Key
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Gets or sets the label.
+		/// </summary>
+		public string Label
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -60,7 +97,16 @@ namespace SmartStore.Core.Search.Facets
 		/// <summary>
 		/// Gets or sets the boolean value operator.
 		/// </summary>
-		public ValueOperator Operator
+		//public ValueOperator Operator
+		//{
+		//	get;
+		//	set;
+		//}
+
+		/// <summary>
+		/// Gets or sets whether selection of multiple values is allowed.
+		/// </summary>
+		public bool IsMultiSelect
 		{
 			get;
 			set;
@@ -93,7 +139,10 @@ namespace SmartStore.Core.Search.Facets
 			set;
 		}
 
-		public bool IsMultiSelect
+		/// <summary>
+		/// Gets or sets the display order.
+		/// </summary>
+		public int DisplayOrder
 		{
 			get;
 			set;
@@ -105,7 +154,6 @@ namespace SmartStore.Core.Search.Facets
 
 			sb.Append("FieldName: ").Append(Key).Append(" ");
 			sb.Append("Values: " + string.Join(",", _values.Select(x => x.Value.ToString()))).Append(" ");
-			sb.Append("op: " + Operator.ToString()).Append(" ");
 
 			return sb.ToString();
 		}
@@ -126,12 +174,15 @@ namespace SmartStore.Core.Search.Facets
 		{
 			Guard.NotNull(source, nameof(source));
 
-			if (sorting == FacetSorting.HitsDesc)
+			switch (sorting)
 			{
-				return source.OrderByDescending(x => x.HitCount);
+				case FacetSorting.ValueAsc:
+					return source.OrderBy(x => x.Label);
+				case FacetSorting.DisplayOrder:
+					return source.OrderBy(x => x.DisplayOrder);
+				default:
+					return source.OrderByDescending(x => x.HitCount);
 			}
-
-			return source.OrderBy(x => x.Label);
 		}
 	}
 }

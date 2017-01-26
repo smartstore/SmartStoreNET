@@ -72,6 +72,15 @@
                 @Html.ValidationMessageFor(model => model.DisplayOrder)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.FacetSorting)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.FacetSorting, Model.AvailableFacetSortings)
+				@Html.ValidationMessageFor(model => model.DisplayOrder)
+			</td>
+		</tr>
     </table>
     }
 @helper TabOptions()

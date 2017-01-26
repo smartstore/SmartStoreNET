@@ -1623,23 +1623,6 @@ namespace SmartStore.Admin.Controllers
 			};
 
 			// global filters
-			Func<string, string> getFriendlyName = (key) =>
-			{
-				switch (key)
-				{
-					case "manufacturerid":
-						return T("Admin.Catalog.Manufacturers");
-					case "price":
-						return T("Admin.Catalog.Products.Price");
-					case "rate":
-						return T("Admin.Catalog.ProductReviews");
-					case "deliveryid":
-						return T("Admin.Catalog.Products.Fields.DeliveryTime");
-					default:
-						return null;
-				}
-			};
-
 			var globalFilters = settings.GlobalFilters.HasValue()
 				? JsonConvert.DeserializeObject<List<GlobalSearchFilterDescriptor>>(settings.GlobalFilters)
 				: new List<GlobalSearchFilterDescriptor>();
@@ -1655,7 +1638,7 @@ namespace SmartStore.Admin.Controllers
 					FieldName = fieldName,
 					Disabled = filter != null ? filter.Disabled : false,
 					DisplayOrder = filter != null ? filter.DisplayOrder : ++displayOrder,
-					FriendlyName = getFriendlyName(fieldName)
+					FriendlyName = T(FacetDescriptor.GetLabelResourceKey(fieldName))
 				});
 			}
 

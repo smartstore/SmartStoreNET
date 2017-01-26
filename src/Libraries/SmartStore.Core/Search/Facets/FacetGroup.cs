@@ -7,13 +7,20 @@ namespace SmartStore.Core.Search.Facets
 	{
 		private readonly Dictionary<string, Facet> _facets;
 
-		public FacetGroup(string key, bool isMultiSelect, IEnumerable<Facet> facets)
+		public FacetGroup(
+			string key,
+			string label,
+			bool isMultiSelect,
+			int displayOrder,
+			IEnumerable<Facet> facets)
 		{
 			Guard.NotNull(key, nameof(key));
 			Guard.NotNull(facets, nameof(facets));
 
 			Key = key;
-			IsMultiSelect = IsMultiSelect;
+			Label = label;
+			IsMultiSelect = isMultiSelect;
+			DisplayOrder = displayOrder;
 
 			_facets = new Dictionary<string, Facet>(StringComparer.OrdinalIgnoreCase);
 
@@ -33,7 +40,19 @@ namespace SmartStore.Core.Search.Facets
 			private set;
 		}
 
+		public string Label
+		{
+			get;
+			private set;
+		}
+
 		public bool IsMultiSelect
+		{
+			get;
+			private set;
+		}
+
+		public int DisplayOrder
 		{
 			get;
 			private set;

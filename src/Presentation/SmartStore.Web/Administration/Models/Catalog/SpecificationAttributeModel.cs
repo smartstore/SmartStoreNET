@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Catalog;
+using SmartStore.Core.Search.Facets;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
@@ -24,9 +25,13 @@ namespace SmartStore.Admin.Models.Catalog
 		public string Alias { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.DisplayOrder")]
-        public int DisplayOrder {get;set;}
+        public int DisplayOrder { get;set; }
 
-        public IList<SpecificationAttributeLocalizedModel> Locales { get; set; }
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetSorting")]
+		public FacetSorting FacetSorting { get; set; }
+		public List<SelectListItem> AvailableFacetSortings { get; set; }
+
+		public IList<SpecificationAttributeLocalizedModel> Locales { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.OptionsCount")]
 		public int OptionCount { get; set; }

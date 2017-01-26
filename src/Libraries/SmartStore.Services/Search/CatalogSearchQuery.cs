@@ -178,6 +178,7 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()).ToArray()));
 		}
 
+		/// <remarks>Includes only published categories</remarks>
 		public CatalogSearchQuery HasAnyCategory(bool value)
 		{
 			if (value)
@@ -202,6 +203,7 @@ namespace SmartStore.Services.Search
 			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField(fieldName, x).ExactMatch().NotAnalyzed()).ToArray()));
 		}
 
+		/// <remarks>Includes only published manufacturers</remarks>
 		public CatalogSearchQuery HasAnyManufacturer(bool value)
 		{
 			if (value)

@@ -65,6 +65,12 @@ namespace SmartStore.Core.Search.Facets
 			set;
 		}
 
+		public int DisplayOrder
+		{
+			get;
+			set;
+		}
+
 		public IList<Facet> Children
 		{
 			get;

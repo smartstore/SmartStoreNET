@@ -212,8 +212,9 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var model = specificationAttribute.ToModel();
+			model.AvailableFacetSortings = specificationAttribute.FacetSorting.ToSelectList().ToList();
 
-            AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = specificationAttribute.GetLocalized(x => x.Name, languageId, false, false);
 				locale.Alias = specificationAttribute.GetLocalized(x => x.Alias, languageId, false, false);

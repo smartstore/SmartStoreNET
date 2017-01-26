@@ -280,7 +280,7 @@ namespace SmartStore.Web.Controllers
 			}
 				
 			var model = new ProductReviewsModel();
-			_helper.PrepareProductReviewsModel(model, product);
+			_helper.PrepareProductReviewsModel(model, product, 10);
 
 			return PartialView("Product.Reviews", model);
 		}
@@ -722,24 +722,29 @@ namespace SmartStore.Web.Controllers
 
 			var model = new ProductReviewsModel();
 			_helper.PrepareProductReviewsModel(model, product);
-			//only registered users can leave reviews
+
+			// only registered users can leave reviews
 			if (_services.WorkContext.CurrentCustomer.IsGuest() && !_catalogSettings.AllowAnonymousUsersToReviewProduct)
+			{
 				ModelState.AddModelError("", T("Reviews.OnlyRegisteredUsersCanWriteReviews"));
-			//default value
-			model.AddProductReview.Rating = _catalogSettings.DefaultProductRatingValue;
+			}
+				
+			// default value
+			model.Rating = _catalogSettings.DefaultProductRatingValue;
 			return View(model);
 		}
 
 		[HttpPost, ActionName("Reviews")]
 		[FormValueRequired("add-review")]
 		[CaptchaValidator]
+		[ValidateAntiForgeryToken]
 		public ActionResult ReviewsAdd(int id, ProductReviewsModel model, bool captchaValid)
 		{
 			var product = _productService.GetProductById(id);
 			if (product == null || product.Deleted || !product.Published || !product.AllowCustomerReviews)
 				return HttpNotFound();
 
-			//validate CAPTCHA
+			// validate CAPTCHA
 			if (_captchaSettings.Enabled && _captchaSettings.ShowOnProductReviewPage && !captchaValid)
 			{
 				ModelState.AddModelError("", T("Common.WrongCaptcha"));
@@ -753,7 +758,7 @@ namespace SmartStore.Web.Controllers
 			if (ModelState.IsValid)
 			{
 				//save review
-				int rating = model.AddProductReview.Rating;
+				int rating = model.Rating;
 				if (rating < 1 || rating > 5)
 					rating = _catalogSettings.DefaultProductRatingValue;
 
@@ -765,8 +770,8 @@ namespace SmartStore.Web.Controllers
 					ProductId = product.Id,
 					CustomerId = customer.Id,
 					IpAddress = _services.WebHelper.GetCurrentIpAddress(),
-					Title = model.AddProductReview.Title,
-					ReviewText = model.AddProductReview.ReviewText,
+					Title = model.Title,
+					ReviewText = model.ReviewText,
 					Rating = rating,
 					HelpfulYesTotal = 0,
 					HelpfulNoTotal = 0,
@@ -774,33 +779,33 @@ namespace SmartStore.Web.Controllers
 				};
 				_customerContentService.InsertCustomerContent(productReview);
 
-				//update product totals
+				// update product totals
 				_productService.UpdateProductReviewTotals(product);
 
-				//notify store owner
+				// notify store owner
 				if (_catalogSettings.NotifyStoreOwnerAboutNewProductReviews)
 					_workflowMessageService.SendProductReviewNotificationMessage(productReview, _localizationSettings.DefaultAdminLanguageId);
 
-				//activity log
+				// activity log
 				_services.CustomerActivity.InsertActivity("PublicStore.AddProductReview", T("ActivityLog.PublicStore.AddProductReview"), product.Name);
 
 				if (isApproved)
 					_customerService.RewardPointsForProductReview(customer, product, true);
 
 				_helper.PrepareProductReviewsModel(model, product);
-				model.AddProductReview.Title = null;
-				model.AddProductReview.ReviewText = null;
+				model.Title = null;
+				model.ReviewText = null;
 
-				model.AddProductReview.SuccessfullyAdded = true;
+				model.SuccessfullyAdded = true;
 				if (!isApproved)
-					model.AddProductReview.Result = T("Reviews.SeeAfterApproving");
+					model.Result = T("Reviews.SeeAfterApproving");
 				else
-					model.AddProductReview.Result = T("Reviews.SuccessfullyAdded");
+					model.Result = T("Reviews.SuccessfullyAdded");
 
 				return View(model);
 			}
 
-			//If we got this far, something failed, redisplay form
+			// If we got this far, something failed, redisplay form
 			_helper.PrepareProductReviewsModel(model, product);
 			return View(model);
 		}

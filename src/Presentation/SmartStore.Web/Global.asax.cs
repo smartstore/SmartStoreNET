@@ -86,14 +86,14 @@ namespace SmartStore.Web
 
 			if (installed)
 			{
-				// remove all view engines
+				// Remove all view engines
 				ViewEngines.Engines.Clear();
 			}
 
-			// initialize engine context
+			// Initialize engine context
 			EngineContext.Initialize(false);
 
-			// model binders
+			// Model binders
 			ModelBinders.Binders.DefaultBinder = new SmartModelBinder();
 
 			// Add some functionality on top of the default ModelMetadataProvider
@@ -102,9 +102,11 @@ namespace SmartStore.Web
 			// Register MVC areas
 			AreaRegistration.RegisterAllAreas();
 
-			// fluent validation
-			DataAnnotationsModelValidatorProvider.AddImplicitRequiredAttributeForValueTypes = false;
-			ModelValidatorProviders.Providers.Add(new FluentValidationModelValidatorProvider(new SmartValidatorFactory()));
+			// Fluent validation
+			FluentValidationModelValidatorProvider.Configure(x =>
+			{
+				x.ValidatorFactory = new SmartValidatorFactory();
+			});
 
 			// Routes
 			RegisterRoutes(RouteTable.Routes, installed);

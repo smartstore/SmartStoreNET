@@ -4,6 +4,14 @@
 // TODOs: px to rem, mobile
 // ==============================================================
 
+.star-rating {
+    display: inline-block;
+}
+
+.star-rating > label {
+    margin: 0;
+}
+
 .star-rating:not(:checked) > input {
 	position: absolute;
 	top: -9999px;

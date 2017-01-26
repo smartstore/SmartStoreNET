@@ -376,3 +376,29 @@ body {
         margin: auto;
     }
 }
+
+
+//
+// Validation
+// ------------------------------------------------------
+
+.validation-summary-errors > ul {
+    margin: 0;
+}
+
+.input-validation-error {
+    border-color: $brand-danger !important;
+    &:after {
+        display: block;
+        position: absolute;
+        color: $brand-danger;
+        font-family: FontAwesome;
+        content: '\f071'; // exclamation-triangle
+    }
+}
+
+.field-validation-error {
+    display: block;
+    color: $state-danger-text;
+    margin-top: 0.25rem;
+}

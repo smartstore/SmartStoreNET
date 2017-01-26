@@ -358,6 +358,13 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Products.Availability.OutOfStock", "Out of stock", "Vergriffen");
 
 			builder.AddOrUpdate("Reviews.Overview.First", "Be the first to review this item", "Geben Sie die erste Bewertung ab");
+			builder.AddOrUpdate("Reviews.Overview.AddNew", "Write a review", "Bewertung schreiben");
+			builder.AddOrUpdate("Reviews.Overview.ReadAll", "Read all reviews", "Alle Bewertungen lesen");
+			builder.AddOrUpdate("Reviews.Empty", "There are no reviews yet", "Es liegen keine Bewertungen vor");
+			builder.AddOrUpdate("Reviews.Fields.Rating", "Your rating?", "Ihre Bewertung?");
+			builder.AddOrUpdate("Reviews.Fields.Title", "Headline for your review", "Titel Ihrer Bewertung");
+			builder.AddOrUpdate("Reviews.Fields.ReviewText", "Your opinion on the product", "Ihre Meinung zum Produkt");
+			builder.AddOrUpdate("Reviews.SubmitButton", "Submit review", "Bewertung absenden");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Search.FilterMinHitCount",
 				"Minimum hit count for filters",

@@ -28,19 +28,35 @@
 
 	if (Model.DisplayProductReviews)
 	{
-		var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
-		if (reviews.HasValue())
-		{
-			x.Add().Text(@T("Reviews"))
-					.Content(reviews)
-					.Badge(Model.ReviewCount.ToString(), Model.ReviewCount > 0 ? BadgeStyle.Warning: BadgeStyle.Default, true)
-					.Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
-		}
+		x.Add().Text(@T("Reviews"))
+				.Content(TabReviews())
+				.Badge(Model.ReviewCount.ToString(), Model.ReviewCount > 0 ? BadgeStyle.Warning: BadgeStyle.Default, true)
+				.Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
 	}
 
 	// Generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
 }).TabContentHeaderContent(TabContentHeader())
+
+@helper TabReviews() {{
+	var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
+	<p class="m-b-2">
+		@if (reviews.HasValue())
+		{
+			<a class="btn btn-warning" href="@Url.Action("Reviews", new { id = Model.Id })">
+				<span>@T("Reviews.Overview.AddNew")</span>
+			</a>
+		}
+		else
+		{
+			<a class="btn btn-warning" href="@Url.Action("Reviews", new { id = Model.Id })">
+				<span>@T("Reviews.Overview.First")</span>
+			</a>
+		}
+	</p>
+
+	@Html.Raw(reviews);
+}}
 
 @helper TabContentHeader() {{
 	<a href="javascript:void()" class="btn btn-secondary btn-flat btn-lg offcanvas-closer">

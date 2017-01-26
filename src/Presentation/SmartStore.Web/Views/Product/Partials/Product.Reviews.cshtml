@@ -4,24 +4,21 @@
 
 @{
 	Html.AddScriptParts("~/Themes/Alpha/Scripts/public.reviews.js");
-	// TODO: (mc) > (mh) Implement review sorting
-	// TODO: (mc) Implement review AJAX paging
 }
 
 @if (Model.Items.Count == 0)
 {
-	<a class="btn btn-warning" href="@Url.Action("Reviews", new { id = Model.ProductId })">
-		<span>@T("Reviews.Overview.First")</span>
-	</a>
+	<p class="text-muted">@T("Reviews.Empty")</p>
 }
 else
 {
-	<div class="review-list text-body">
-		@foreach (var review in Model.Items)
+	<div class="review-list text-body" id="review-list">
+		@for (var i = 0; i < Model.Items.Count; i++)
 		{
+			var review = Model.Items[i];
 			int ratingPercent = review.Rating * 20;
 			var helpfulness = review.Helpfulness;
-			<div class="review-item">
+			<div class="review-item" id="review-item-@(i + 1)">
 				<div class="review-title">
 					<div class="rating">
 						<div style="width: @(ratingPercent)%"></div>
@@ -62,8 +59,17 @@ else
 					</a>
 				</div>
 				
-				@Html.Widget("productreviews_page_inside_review")
+				@{ Html.RenderWidget("productreviews_page_inside_review"); }
 			</div>
 		}
 	</div>
+
+	if (Model.TotalReviewsCount > Model.Items.Count)
+	{
+		<div class="text-xs-center">
+			<a class="btn btn-secondary" href="@Url.Action("Reviews", new { id = Model.ProductId })#review-item-11">
+				<span>@T("Reviews.Overview.ReadAll")</span>
+			</a>
+		</div>
+	}
 }

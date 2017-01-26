@@ -62,6 +62,7 @@
 }
 
 .review-title {
+    margin-bottom: 0.2rem;
 
     .rating {
         position: absolute;
@@ -110,23 +111,11 @@
 }
 
 
-.product-reviews-page .write-review .inputs,
-.product-reviews-page .write-review .captcha-box { 
-    margin-bottom:12px;
-}
-.product-reviews-page .write-review .review-title { width:350px; }
-.product-reviews-page .write-review .review-text{ width:350px; height:150px; }
-.product-reviews-page .write-review .review-rating{ display:inline-block; }
-.product-reviews-page .write-review .review-rating input{ vertical-align:bottom; }
-.product-reviews-page .write-review .buttons{ text-align:left; }
+//
+// Write review form
+// --------------------------------------------------
 
-.product-review-item {
-	padding: 12px 0;
-}
-.product-review-item .review-title .rating {
-	margin-right: 8px;
-}
-.product-review-item .review-text,
-.product-review-vote {
-	margin-top: 12px;
+.write-review {
+    background-color: $gray-lightest;
+    padding: 2rem;
 }

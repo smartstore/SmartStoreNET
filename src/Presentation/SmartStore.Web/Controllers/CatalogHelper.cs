@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Collections;
@@ -329,42 +330,47 @@ namespace SmartStore.Web.Controllers
 			}
 		}
 
-		public void PrepareProductReviewsModel(ProductReviewsModel model, Product product)
+		public void PrepareProductReviewsModel(ProductReviewsModel model, Product product, int take = int.MaxValue)
 		{
-			if (product == null)
-				throw new ArgumentNullException("product");
-
-			if (model == null)
-				throw new ArgumentNullException("model");
+			Guard.NotNull(product, nameof(product));
+			Guard.NotNull(model, nameof(model));
 
 			model.ProductId = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
 
-			var productReviews = product.ProductReviews.Where(pr => pr.IsApproved).OrderBy(pr => pr.CreatedOnUtc);
-			foreach (var pr in productReviews)
+			var query = _services.DbContext.QueryForCollection<Product, ProductReview>(product, x => x.ProductReviews)
+				.Where(pr => pr.IsApproved)
+				.OrderByDescending(pr => pr.CreatedOnUtc);
+
+			int totalCount = query.Count();
+			model.TotalReviewsCount = totalCount;
+
+			var reviews = query.Take(take).ToList();
+
+			foreach (var review in reviews)
 			{
-				model.Items.Add(new ProductReviewModel()
+				model.Items.Add(new ProductReviewModel
 				{
-					Id = pr.Id,
-					CustomerId = pr.CustomerId,
-					CustomerName = pr.Customer.FormatUserName(),
-					AllowViewingProfiles = _customerSettings.AllowViewingProfiles && pr.Customer != null && !pr.Customer.IsGuest(),
-					Title = pr.Title,
-					ReviewText = pr.ReviewText,
-					Rating = pr.Rating,
-					Helpfulness = new ProductReviewHelpfulnessModel()
+					Id = review.Id,
+					CustomerId = review.CustomerId,
+					CustomerName = review.Customer.FormatUserName(),
+					AllowViewingProfiles = _customerSettings.AllowViewingProfiles && review.Customer != null && !review.Customer.IsGuest(),
+					Title = review.Title,
+					ReviewText = review.ReviewText,
+					Rating = review.Rating,
+					Helpfulness = new ProductReviewHelpfulnessModel
 					{
-						ProductReviewId = pr.Id,
-						HelpfulYesTotal = pr.HelpfulYesTotal,
-						HelpfulNoTotal = pr.HelpfulNoTotal,
+						ProductReviewId = review.Id,
+						HelpfulYesTotal = review.HelpfulYesTotal,
+						HelpfulNoTotal = review.HelpfulNoTotal,
 					},
-					WrittenOnStr = _dateTimeHelper.ConvertToUserTime(pr.CreatedOnUtc, DateTimeKind.Utc).ToString("D"),
+					WrittenOnStr = _dateTimeHelper.ConvertToUserTime(review.CreatedOnUtc, DateTimeKind.Utc).ToString("D"),
 				});
 			}
 
-			model.AddProductReview.CanCurrentCustomerLeaveReview = _catalogSettings.AllowAnonymousUsersToReviewProduct || !_services.WorkContext.CurrentCustomer.IsGuest();
-			model.AddProductReview.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnProductReviewPage;
+			model.CanCurrentCustomerLeaveReview = _catalogSettings.AllowAnonymousUsersToReviewProduct || !_services.WorkContext.CurrentCustomer.IsGuest();
+			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnProductReviewPage;
 		}
 
 		private PictureModel CreatePictureModel(ProductDetailsPictureModel model, Picture picture, int pictureSize)

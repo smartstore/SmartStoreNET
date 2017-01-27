@@ -9,11 +9,11 @@
 /* PNOTIFY
 ------------------------------------*/
 
-.ui-pnotify-container {
+.alert.ui-pnotify-container {
     padding-left: 70px !important;
     //background: #fff !important;
-    position: relative;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175) !important;
+    border-width: 1px;
 
     &.alert { border-color: rgba(0,0,0, 0.12) !important }
 }
@@ -23,23 +23,24 @@
     left: 0;
     top: 0;
     bottom: 0;
-    width: 50px;
+    width: 3rem;
     color: #fff;
-    @include border-left-radius($border-radius);
+    z-index: 10;
 
-    .alert-info &       { background-color: $brand-info !important; @include bubble('right', 'center', 8, $brand-info, $brand-info); }
-    .alert-success &    { background-color: $brand-success !important; @include bubble('right', 'center', 8, $brand-success, $brand-success); }
-    .alert-warning &    { background-color: $brand-warning !important; @include bubble('right', 'center', 8, $brand-warning, $brand-warning); }
-    .alert-danger &     { background-color: $brand-danger !important; @include bubble('right', 'center', 8, $brand-danger, $brand-danger); }
+    .alert-info &       { @include bubble('right', 'center', 8, $brand-info, $brand-info); }
+    .alert-success &    { @include bubble('right', 'center', 8, $brand-success, $brand-success); }
+    .alert-warning &    { @include bubble('right', 'center', 8, $brand-warning, $brand-warning); }
+    .alert-danger &     { @include bubble('right', 'center', 8, $brand-danger, $brand-danger); }
 
     > span {
         position: absolute;
-        width: 50px;
+        left: 0;
+        width: 100%;
         text-align: center;
         font-size: 1.25em;
         line-height: 1.2em;
         top: 50%;
-        margin-top: -0.6em;
+        transform: translateY(-50%);
     }
 }
 

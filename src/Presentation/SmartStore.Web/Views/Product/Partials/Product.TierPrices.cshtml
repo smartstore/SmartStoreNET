@@ -1,0 +1,54 @@
+﻿@model IList<ProductDetailsModel.TierPriceModel>
+
+@using SmartStore.Web.Models.Catalog;
+
+@{
+	var i = 0;
+	var displayTierPrices = false;
+	if (Model.Count > 0 && !(Model.Count == 1 && Model[0].Quantity <= 1))
+	{
+		// When there is just one tier (with  qty 1), there are no actual savings in the list.
+		displayTierPrices = true;
+	}
+
+	if (!displayTierPrices)
+	{
+		return;
+	}
+}
+
+<div class="pd-tierprices pd-group">
+	<h6 class="fw-600 m-b-05">
+		@T("Products.TierPrices")
+	</h6>
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+            <thead>
+                <tr>
+					<th>
+						@T("Products.TierPrices.Quantity")
+					</th>
+					@foreach (var tierPrice in Model.Take(200))
+					{
+						<th class="pd-tierprice-qty text-xs-center">    
+							@(tierPrice.Quantity)+
+						</th>
+					}
+				</tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>
+						@T("Products.TierPrices.Price")
+                    </th>
+                    @foreach (var tierPrice in Model.Take(200))
+                    {
+						<td class="pd-tierprice-price text-nowrap text-xs-center">
+							@tierPrice.Price
+						</td>
+                    }
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

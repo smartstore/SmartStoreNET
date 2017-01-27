@@ -350,6 +350,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Products.Bundle.PriceWithoutDiscount.Note", "Instead of", "Statt");
 			builder.AddOrUpdate("Products.Bundle.PriceWithDiscount.Note", "As bundle only", "Im Set nur");
 			builder.AddOrUpdate("Products.Price", "Price", "Preis");
+			builder.AddOrUpdate("Products.TierPrices", "Block pricing", "Staffelpreise");
 			builder.AddOrUpdate("Products.ManufacturerPartNumber", "MPN", "MPN");
 			builder.AddOrUpdate("Products.Details", "Description", "Beschreibung");
 			builder.AddOrUpdate("Products.Specs", "Features", "Merkmale");

@@ -27,19 +27,18 @@
                 <button type="button" class="close" data-dismiss="alert">×</button>
                 @Model.Result
             </div>
-        }
-        else
-        {
-            <div class="write-review m-b-2" id="review-form">
+		}
+		else
+		{
+			if (!ViewData.ModelState.IsValid)
+			{
+				@Html.ValidationSummary("", new { @class = "alert alert-danger m-b-0" })
+			}
+			<div class="write-review m-b-2" id="review-form">
                 <h4 class="hidden-xs-up">@T("Reviews.Overview.AddNew")</h4>
                 @using (Html.BeginForm())
 				{
 					@Html.AntiForgeryToken()
-					if (!ViewData.ModelState.IsValid)
-					{
-						@Html.ValidationSummary("", new { @class = "alert alert-danger" })
-					}
-
                     <div class="form-group row">
                         @Html.LabelFor(model => model.Rating, new { @class = "form-control-label col-md-3" })
                         <div class="col-md-9 star-rating-parent">
@@ -94,7 +93,7 @@
         {
             <div class="block">
                 <div class="block-title">
-                    <h4>@T("Reviews.ExistingReviews") <small class="text-muted">(@Model.Items.Count)</small></h4>
+                    <h3>@T("Reviews.ExistingReviews") <small class="text-muted">(@Model.Items.Count)</small></h3>
                 </div>
                 <div class="block-body p-t-2">
 					@{ Html.RenderPartial("Product.Reviews", Model); }

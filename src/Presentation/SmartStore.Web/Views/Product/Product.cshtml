@@ -55,13 +55,19 @@
 						@{ Html.RenderPartial("Product.Offer", Model); }
 					</aside>
 				</section>
-							}
+			}
 		</div>
 
 		<!-- Bottom Content: Full Description, Specification, Review etc. -->
 		<section class="pd-section pd-section-bottom">
 			<!-- Tabs -->
 			@{ Html.RenderPartial("Product.Tabs", Model); }
+			<!-- Tags -->
+			@{ Html.RenderAction("ProductTags", new { productId = Model.Id }); }
+			<!-- Related products -->
+			@{ Html.RenderAction("RelatedProducts", new { productId = Model.Id }); }
+			<!-- Products also purchased -->
+			@{ Html.RenderAction("ProductsAlsoPurchased", new { productId = Model.Id }); }
 		</section>
 	</article>
 

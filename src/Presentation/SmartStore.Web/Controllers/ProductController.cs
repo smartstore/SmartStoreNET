@@ -289,15 +289,23 @@ namespace SmartStore.Web.Controllers
 		public ActionResult ProductTierPrices(int productId)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices))
-				return Content(""); //hide prices
+			{
+				return Content("");
+			}	
 
 			var product = _productService.GetProductById(productId);
 			if (product == null)
+			{
 				throw new ArgumentException(T("Products.NotFound", productId));
+			}
+				
 
 			if (!product.HasTierPrices)
-				return Content(""); //no tier prices
-
+			{
+				// No tier prices
+				return Content(""); 
+			}
+				
 			var model = product.TierPrices
 				.OrderBy(x => x.Quantity)
 				.FilterByStore(_services.StoreContext.CurrentStore.Id)
@@ -306,7 +314,7 @@ namespace SmartStore.Web.Controllers
 				.RemoveDuplicatedQuantities()
 				.Select(tierPrice =>
 				{
-					var m = new ProductDetailsModel.TierPriceModel()
+					var m = new ProductDetailsModel.TierPriceModel
 					{
 						Quantity = tierPrice.Quantity,
 					};
@@ -318,7 +326,7 @@ namespace SmartStore.Web.Controllers
 				})
 				.ToList();
 
-			return PartialView(model);
+			return PartialView("Product.TierPrices", model);
 		}
 
 		[ChildActionOnly]
@@ -348,7 +356,7 @@ namespace SmartStore.Web.Controllers
 			var model = _helper.MapProductSummaryModel(products, settings);
 			model.ShowBasePrice = false;
 
-			return PartialView(model);
+			return PartialView("Product.RelatedProducts", model);
 		}
 
 		[ChildActionOnly]
@@ -384,7 +392,7 @@ namespace SmartStore.Web.Controllers
 
 			var model = _helper.MapProductSummaryModel(products, settings);
 
-			return PartialView(model);
+			return PartialView("Product.AlsoPurchased", model);
 		}
 
 		[ChildActionOnly]
@@ -681,17 +689,19 @@ namespace SmartStore.Web.Controllers
 		{
 			var product = _productService.GetProductById(productId);
 			if (product == null)
+			{
 				throw new ArgumentException(T("Products.NotFound", productId));
+			}				
 
 			var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCTTAG_BY_PRODUCT_MODEL_KEY, product.Id, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
 			var cacheModel = _services.Cache.Get(cacheKey, () =>
 			{
 				var model = product.ProductTags
-					//filter by store
+					// Filter by store
 					.Where(x => _productTagService.GetProductCount(x.Id, _services.StoreContext.CurrentStore.Id) > 0)
 					.Select(x =>
 					{
-						var ptModel = new ProductTagModel()
+						var ptModel = new ProductTagModel
 						{
 							Id = x.Id,
 							Name = x.GetLocalized(y => y.Name),
@@ -704,7 +714,7 @@ namespace SmartStore.Web.Controllers
 				return model;
 			});
 
-			return PartialView(cacheModel);
+			return PartialView("Product.Tags", cacheModel);
 		}
 
 		#endregion

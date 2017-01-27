@@ -340,6 +340,8 @@ namespace SmartStore.Web.Controllers
 			model.ProductSeName = product.GetSeName();
 
 			var query = _services.DbContext.QueryForCollection<Product, ProductReview>(product, x => x.ProductReviews)
+				.Expand(x => x.Customer.CustomerRoles)
+				.Expand(x => x.Customer.CustomerContent)
 				.Where(pr => pr.IsApproved)
 				.OrderByDescending(pr => pr.CreatedOnUtc);
 

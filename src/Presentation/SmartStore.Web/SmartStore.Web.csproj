@@ -947,6 +947,7 @@
     <Content Include="Scripts\public.product-detail.mobile.js" />
     <Content Include="Themes\Alpha\Content\shared\_pnotify.scss" />
     <Content Include="Themes\Alpha\Content\shared\_mixins.scss" />
+    <Content Include="Themes\Alpha\Content\shared\_select2.scss" />
     <None Include="Themes\Alpha\Content\shared\_touchspin.scss" />
     <Content Include="Themes\Alpha\Content\pnotify\css\pnotify.buttons.css" />
     <Content Include="Themes\Alpha\Content\pnotify\css\pnotify.css" />
@@ -1819,13 +1820,13 @@
     <Content Include="Views\Product\Partials\EmailAFriendButton.cshtml" />
     <Content Include="Views\Product\Partials\ProductDetailReviews.cshtml" />
     <Content Include="Views\Product\Partials\ProductManufacturers.cshtml" />
-    <Content Include="Views\Product\Partials\ProductsAlsoPurchased.cshtml" />
+    <Content Include="Views\Product\Partials\Product.AlsoPurchased.cshtml" />
     <Content Include="Views\Product\Partials\ProductSpecifications.cshtml" />
-    <Content Include="Views\Product\Partials\ProductTags.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Tags.cshtml" />
     <Content Include="Views\Product\ProductTemplate.Grouped.cshtml" />
     <Content Include="Views\Product\Product.cshtml" />
-    <Content Include="Views\Product\Partials\ProductTierPrices.cshtml" />
-    <Content Include="Views\Product\Partials\RelatedProducts.cshtml" />
+    <Content Include="Views\Product\Partials\Product.TierPrices.cshtml" />
+    <Content Include="Views\Product\Partials\Product.RelatedProducts.cshtml" />
     <Content Include="Views\Product\Partials\ReviewOverview.cshtml" />
     <Content Include="Views\Product\Reviews.cshtml" />
     <Content Include="Views\Product\Partials\ShareButton.cshtml" />
@@ -1838,7 +1839,6 @@
     <Content Include="Views\Product\Partials\_PictureGallery.cshtml" />
     <Content Include="Views\Product\Partials\_ProductTemplate.Grouped.AssociatedProduct.cshtml" />
     <Content Include="Views\Product\Partials\_ReviewHelpfulness.cshtml" />
-    <Content Include="Views\Product\Partials\_SKU_Man_Stock.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Profile\Info.cshtml" />
     <Content Include="Views\Profile\Posts.cshtml" />
@@ -1924,6 +1924,7 @@
     <Content Include="Themes\Alpha\Content\shared\_nav.scss" />
     <Content Include="Views\Product\Partials\Product.ReviewSummary.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\QtyInput.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Variants.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

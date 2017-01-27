@@ -96,6 +96,8 @@ $pagination-active-color:       $pagination-color;
 $pagination-active-bg:          transparent;
 $pagination-active-border:      $pagination-border-color;
 
+$alert-border-radius:           0;
+
 
 // Pre Bootstrap
 @import "shared/_spacers.scss"; 
@@ -119,6 +121,7 @@ $pagination-active-border:      $pagination-border-color;
 @import "shared/_sortable-grip.scss";
 @import "shared/_utils.scss";
 @import "select2/scss/core.scss";
+@import "shared/_select2.scss";
 @import "shared/_offcanvas.scss";
 @import "shared/_animate.scss";
 @import "shared/_touchspin.scss";
@@ -194,8 +197,13 @@ body {
     .block-title {
         font-size: $font-size-h3;
         line-height: 1.3;
-        padding: 0.5rem 0;
         border-bottom: 1px dotted rgba(0,0,0, 0.2);
+
+        > * {
+            // Most probably a heading tag
+            margin: 0;
+            padding: 0.5em 0;
+        }
     }
 
     &.block-boxed {
@@ -386,19 +394,66 @@ body {
     margin: 0;
 }
 
-.input-validation-error {
-    border-color: $brand-danger !important;
-    &:after {
-        display: block;
-        position: absolute;
-        color: $brand-danger;
-        font-family: FontAwesome;
-        content: '\f071'; // exclamation-triangle
-    }
-}
-
 .field-validation-error {
     display: block;
     color: $state-danger-text;
     margin-top: 0.25rem;
+}
+
+
+
+//
+// Alerts
+// ------------------------------------------------------
+
+.alert {
+    position: relative;
+    padding-left: 4rem;
+    line-height: 1.5;
+    border-width: 0;
+
+    &:before {
+        display: block; 
+        position: absolute;
+        content: ' ';
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3rem;
+        z-index: 1;
+    }
+    &.alert-danger:before    { background-color: $brand-danger; }
+    &.alert-info:before      { background-color: $brand-info; }
+    &.alert-success:before   { background-color: $brand-success; }
+    &.alert-warning:before   { background-color: $brand-warning; }
+
+    &:after {
+        display: block; 
+        position: absolute;
+        color: #fff;
+        font-family: FontAwesome;
+        left: 0;
+        top: 50%;
+        font-size: 1.25em;
+        width: 3rem;
+        text-align: center;
+        transform: translateY(-50%);
+        z-index: 2;
+    }
+    &.alert-danger:after   { content: "\f071"; } // exclamation-triangle
+    &.alert-info:after     { content: "\f06a"; } // info
+    &.alert-success:after  { content: "\f00c"; } // check
+    &.alert-warning:after  { content: "\f06a"; } // exclamation-circle
+}
+
+.alert > ul {
+    padding-left: 1.2rem;
+}
+
+.alert > *:first-child {
+	margin-top: 0;
+}
+
+.alert > *:last-child {
+	margin-bottom: 0;
 }

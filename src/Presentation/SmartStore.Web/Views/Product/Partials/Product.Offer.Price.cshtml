@@ -87,6 +87,9 @@
 			}
 		</div>
 
+		<!-- Tier prices -->
+		Html.RenderAction("ProductTierPrices", new { productId = Model.Id });
+
 		<!-- Pangv & legal info -->
 		if (Model.IsBasePriceEnabled || Model.ShowLegalInfo)
 		{

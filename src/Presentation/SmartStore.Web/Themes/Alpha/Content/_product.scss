@@ -37,6 +37,10 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
     line-height: 1.3;
 }
 
+.pd-tabs {
+    margin-bottom: 1rem;
+}
+
 
 // Picture
 // =====================================================
@@ -221,4 +225,44 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 .pd-legalinfo {
     font-size: $font-size-sm;
     color: $pd-offer-muted-color;
+}
+
+
+// Tier prices
+// =====================================================
+
+.pd-tierprices {
+    .table {
+        background-color: #fff;
+        margin-bottom: 0;
+        font-size: $font-size-sm;
+
+        th, td { padding-left: 0.5rem; padding-right: 0.5rem; }
+        th { font-weight: 600; }
+        .pd-tierprice-qty { font-weight: bold }
+    }
+}
+
+
+// Tags
+// =====================================================
+
+.pd-tag {
+    text-decoration: none !important;
+    display: inline-block;
+    padding: 0.5rem;
+    margin: 0 0.2rem 0.4rem 0;
+    font-weight: 600;
+    color: $body-color;
+    font-size: $font-size-base;
+    line-height: 1;
+    background-color: $gray-lightest;
+    border: 1px solid rgba(0,0,0, 0.15);
+    border-radius: 2px;
+}
+
+.pd-tag-count {
+    color: $text-muted;
+    font-weight: 400;
+    padding-left: 0.25rem;
 }

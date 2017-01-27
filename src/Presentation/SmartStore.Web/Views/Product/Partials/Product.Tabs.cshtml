@@ -6,7 +6,7 @@
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Web.Framework.Events;
 
-@Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Style(TabsStyle.Material).Responsive(true, "<md").Items(x =>
+@Html.SmartStore().TabStrip().Name("pd-tabs").HtmlAttributes(new { @class = "pd-tabs" }).SmartTabSelection(false).Style(TabsStyle.Material).Responsive(true, "<md").Items(x =>
 {
 	var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
 

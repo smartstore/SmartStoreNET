@@ -11,11 +11,11 @@
 	return;
 }
 
-<div class="block @(Model.IsBordered ? "block-bordered" : "") topic-widget topic-widget-@Model.SystemName">
+<div class="block @(Model.IsBordered ? "block-boxed" : "") topic-widget topic-widget-@Model.SystemName">
     @if (Model.ShowTitle) {
-        @Html.Raw("<" + Model.TitleTag + " class=\"block-title\">")
-            @Html.Raw(Model.Title)
-        @Html.Raw("</" + Model.TitleTag + ">")
+		<div class="block-title">
+			@Html.Raw("<" + Model.TitleTag + ">" + Model.Title + "</" + Model.TitleTag + ">")
+		</div>
     }
     <div class="block-body">
         @Html.Raw(Html.CollapsedText(Model.Html))

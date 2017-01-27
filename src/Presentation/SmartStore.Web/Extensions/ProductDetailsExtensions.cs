@@ -59,7 +59,7 @@ namespace SmartStore.Web
 			string result = "";
 
 			if (model.PriceAdjustment.HasValue())
-				result = " [{0}]".FormatWith(model.PriceAdjustment);
+				result = " ({0})".FormatWith(model.PriceAdjustment);
 
 			if (model.QuantityInfo > 1)
 				return " × {1}".FormatWith(result, model.QuantityInfo) + result;
@@ -83,15 +83,7 @@ namespace SmartStore.Web
 
 		public static bool ShouldBeRendered(this IEnumerable<ProductDetailsModel.ProductVariantAttributeModel> variantAttributes)
 		{
-			if (variantAttributes != null)
-			{
-				foreach (var item in variantAttributes)
-				{
-					if (item.ShouldBeRendered())
-						return true;
-				}
-			}
-			return false;
+			return variantAttributes?.FirstOrDefault(x => x.ShouldBeRendered()) != null;
 		}
 	}
 }

@@ -73,7 +73,7 @@
 						imageUrl = option.data('imageurl');
 
             		if (imageUrl) {
-            			return '<img class="attribute-value-image" src="' + imageUrl + '" />' + item.text;
+            			return $('<span><img class="attribute-value-image m-r-05" src="' + imageUrl + '" />' + item.text + '</span>');
             		}
             	}
             	catch (e) { }
@@ -87,8 +87,9 @@
                 placeholder: placeholder,
                 minimumResultsForSearch: _.isNumber(minResultsForSearch) ? minResultsForSearch : 8,
                 minimumInputLength: _.isNumber(minInputLength) ? minInputLength : 0,
-                formatResult: renderSelectItem,
-                formatSelection: renderSelectItem
+                templateResult: renderSelectItem,
+                templateSelection: renderSelectItem,
+				theme: 'bootstrap'
             };
 
             if (url) {

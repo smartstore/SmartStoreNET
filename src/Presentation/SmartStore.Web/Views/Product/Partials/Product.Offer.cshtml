@@ -1,6 +1,8 @@
 ﻿@model ProductDetailsModel
 
 @using SmartStore.Web.Models.Catalog;
+@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Web;
 
 @{ 
 
@@ -12,6 +14,20 @@
 		Html.RenderPartial("Product.Offer.Price", Model);
 	}
 
-	@{ Html.RenderPartial("Product.StockInfo", Model); }
-	@{ Html.RenderPartial("Product.Offer.Actions", Model); }
+	@{ 
+		Html.RenderPartial("Product.StockInfo", Model); 
+	}
+
+	@if (Model.ProductType != ProductType.BundledProduct && Model.ProductVariantAttributes.ShouldBeRendered())
+	{
+		var dataDictVariants = new ViewDataDictionary();
+		dataDictVariants.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
+		Html.RenderPartial("Product.Variants", Model.ProductVariantAttributes, dataDictVariants);
+	}
+
+	@{ 
+		var dataDictAddToCart = new ViewDataDictionary();
+		dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
+		Html.RenderPartial("Product.Offer.Actions", Model, dataDictAddToCart);
+	}
 </div>

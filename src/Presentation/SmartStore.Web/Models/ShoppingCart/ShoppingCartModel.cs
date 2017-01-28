@@ -150,7 +150,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public string Name { get; set; }
 
-            public string DefaultValue { get; set; }
+            public string TextValue { get; set; }
 
             public string TextPrompt { get; set; }
 

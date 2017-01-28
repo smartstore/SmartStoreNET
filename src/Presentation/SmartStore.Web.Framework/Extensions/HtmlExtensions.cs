@@ -262,12 +262,21 @@ namespace SmartStore.Web.Framework
             int? beginYear = null, int? endYear = null,
             int? selectedDay = null, int? selectedMonth = null, int? selectedYear = null, bool localizeLabels = true, bool disabled = false)
         {
-            var daysList = new TagBuilder("select");
-            daysList.MergeAttribute("style", "width: 70px");
+			var row = new TagBuilder("div");
+			row.AddCssClass("row no-space");
+
+			var daysCol = new TagBuilder("div");
+			daysCol.AddCssClass("col-xs p-r-05");
+
+			var monthsCol = new TagBuilder("div");
+			monthsCol.AddCssClass("col-xs p-r-05");
+
+			var yearsCol = new TagBuilder("div");
+			yearsCol.AddCssClass("col-xs");
+
+			var daysList = new TagBuilder("select");
             var monthsList = new TagBuilder("select");
-			monthsList.MergeAttribute("style", "width: 130px");
             var yearsList = new TagBuilder("select");
-			yearsList.MergeAttribute("style", "width: 90px");
 
             daysList.Attributes.Add("data-native-menu", "false");
             monthsList.Attributes.Add("data-native-menu", "false");
@@ -277,9 +286,9 @@ namespace SmartStore.Web.Framework
             monthsList.Attributes.Add("name", monthName);
             yearsList.Attributes.Add("name", yearName);
             
-            daysList.Attributes.Add("class", "date-part");
-            monthsList.Attributes.Add("class", "date-part");
-            yearsList.Attributes.Add("class", "date-part");
+            daysList.Attributes.Add("class", "date-part form-control noskin");
+            monthsList.Attributes.Add("class", "date-part form-control noskin");
+            yearsList.Attributes.Add("class", "date-part form-control noskin");
 
 			daysList.Attributes.Add("data-select-min-results-for-search", "100");
 			monthsList.Attributes.Add("data-select-min-results-for-search", "100");
@@ -342,7 +351,13 @@ namespace SmartStore.Web.Framework
             monthsList.InnerHtml = months.ToString();
             yearsList.InnerHtml = years.ToString();
 
-            return MvcHtmlString.Create(string.Concat(daysList, monthsList, yearsList));
+			daysCol.InnerHtml = daysList.ToString();
+			monthsCol.InnerHtml = monthsList.ToString();
+			yearsCol.InnerHtml = yearsList.ToString();
+
+			row.InnerHtml = string.Concat(daysCol, monthsCol, yearsCol);
+
+			return MvcHtmlString.Create(row.ToString());
         }
 
         #region DropDownList Extensions

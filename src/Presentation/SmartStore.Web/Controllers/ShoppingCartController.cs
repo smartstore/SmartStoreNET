@@ -791,7 +791,7 @@ namespace SmartStore.Web.Controllers
 							{
 								var enteredText = _checkoutAttributeParser.ParseValues(selectedCheckoutAttributes, attribute.Id);
 								if (enteredText.Count > 0)
-									caModel.DefaultValue = enteredText[0];
+									caModel.TextValue = enteredText[0];
 							}
 						}
 						break;

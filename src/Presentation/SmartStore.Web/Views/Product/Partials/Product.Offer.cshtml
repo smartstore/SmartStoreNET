@@ -8,7 +8,7 @@
 
 }
 
-<div class="pd-offer">
+<div class="pd-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
 	{
 		Html.RenderPartial("Product.Offer.Price", Model);

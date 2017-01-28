@@ -37,6 +37,7 @@
 			decimal ratingValue = ratingPercent / (decimal)20;
 			<meta itemprop="ratingValue" content='@ratingValue.ToString("0.0", new CultureInfo("en-US"))' />
 			<meta itemprop="reviewCount" content='@Model.TotalReviews' />
+			<meta itemprop="ratingCount" content='@Model.TotalReviews' />
 		}
 		else
 		{

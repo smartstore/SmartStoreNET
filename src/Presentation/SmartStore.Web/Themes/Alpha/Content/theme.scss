@@ -67,6 +67,8 @@ $btn-padding-y-lg:              0.8725rem; // 0.75rem
 $input-padding-y:               $btn-padding-y;
 $input-padding-y-sm:            $btn-padding-y-sm;
 $input-padding-y-lg:            $btn-padding-y-lg;
+$input-box-shadow:              none;
+$input-box-shadow-focus:        none;
 
 
 /*$dropdown-border-color:     #ddd;
@@ -457,3 +459,149 @@ body {
 .alert > *:last-child {
 	margin-bottom: 0;
 }
+
+
+
+//
+// Choice-Styles (Variants etc.)
+// ------------------------------------------------------
+
+.choice {
+    margin-bottom: 1rem;
+}
+
+.form-control-label.required,
+.choice-label.required {
+	color: inherit;
+	font-weight: bold;
+	&:after { content: ' *' }
+}
+
+.choice-item-img,
+.choice-item-color {
+    display: inline-block;
+    text-decoration: none !important;
+    margin-right: 0.25rem;
+    overflow: hidden;
+}
+
+.choice-item-img {
+    max-width: 20px;
+    max-height: 1em;
+
+    > img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+.choice-item-color {
+    width: 1em;
+    height: 1em;
+    padding: 0;
+}
+
+.choice-description {
+    color: $text-muted;
+    font-size: $font-size-sm;
+    margin-bottom: 0.5rem;
+    > *:first-child { margin-top: 0; }
+    > *:last-child { margin-bottom: 0; }
+}
+
+.choice-box-group {
+    $choice-box-padding: 0.1rem;
+    $choice-box-size: 2.8rem;
+
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+    position: relative;
+    margin: 0 ($choice-box-padding * -1);
+
+	.choice-box {
+        position: relative;
+        display: inline-block;
+        padding: 0;
+        margin: $choice-box-padding;
+        margin-bottom: $choice-box-padding * 2;
+	}
+
+    .choice-box-label {
+        margin: 0;
+    }
+
+	.choice-box-content {
+        position: relative;
+		display: block;
+        cursor: pointer;
+        //outline: 3px solid transparent;
+        //transition: outline-color 0.1s linear;
+	}
+
+	.choice-box-element {
+        display: inline-block;
+        border: 1px solid rgba(0,0,0, .3);
+        background-color: #fff;
+        transition: border-color 0.1s linear;
+
+        height: $choice-box-size;
+        line-height: $choice-box-size;
+        min-width: $choice-box-size;
+        vertical-align: middle;
+        text-align: center;
+        overflow: hidden;
+
+        font-weight: 600;
+
+        &:hover { border-color: rgba(0,0,0, 0.7); }
+
+        .choice-box-img {
+            display: block;
+            position: relative;
+            max-width: calc(#{$choice-box-size} - 4px);
+            max-height: calc(100% - 4px);
+            margin: auto;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .choice-box-text {
+            padding: 0 0.4rem;
+        }
+	}
+
+	.selected .choice-box-content {
+        //outline-color: rgba(0,0,0, 0.15);
+
+        &:after {
+            position: absolute;
+            z-index: 1;
+            display: block;
+            right: 1px;
+            bottom: 1px;
+            background-color: rgba(#fff, 1);
+            border-top-left-radius: 3px;
+
+            width: 1rem;
+            height: 1rem;
+            line-height: 1rem;
+            text-align: center;
+            vertical-align: middle;
+
+            font-family: FontAwesome;
+            content: "\f00c"; // check
+            color: $brand-warning;
+            font-size: 10px;
+        }
+	}
+
+    .selected .choice-box-element {
+        border-color: rgba(0,0,0, 0.7);
+    }
+
+	.choice-box-radio {
+		display: none !important;
+	}
+}
+

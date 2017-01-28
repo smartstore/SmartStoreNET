@@ -1653,13 +1653,6 @@
     <Content Include="Themes\Alpha\Content\select2\scss\_dropdown.scss" />
     <Content Include="Themes\Alpha\Content\select2\scss\_multiple.scss" />
     <Content Include="Themes\Alpha\Content\select2\scss\_single.scss" />
-    <Content Include="Themes\Alpha\Content\select2\scss\theme\classic\layout.scss" />
-    <Content Include="Themes\Alpha\Content\select2\scss\theme\classic\_defaults.scss" />
-    <Content Include="Themes\Alpha\Content\select2\scss\theme\classic\_multiple.scss" />
-    <Content Include="Themes\Alpha\Content\select2\scss\theme\classic\_single.scss" />
-    <Content Include="Themes\Alpha\Content\select2\scss\theme\default\layout.scss" />
-    <Content Include="Themes\Alpha\Content\select2\scss\theme\default\_multiple.scss" />
-    <Content Include="Themes\Alpha\Content\select2\scss\theme\default\_single.scss" />
     <Content Include="Themes\Alpha\Content\shared\_offcanvas.scss" />
     <Content Include="Themes\Alpha\Content\_login.scss" />
     <Content Include="Themes\Alpha\Content\theme.scss">
@@ -1925,6 +1918,15 @@
     <Content Include="Views\Product\Partials\Product.ReviewSummary.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\QtyInput.cshtml" />
     <Content Include="Views\Product\Partials\Product.Variants.cshtml" />
+    <Content Include="Views\Shared\ChoiceTemplates\Choice.Dropdown.cshtml" />
+    <Content Include="Views\Shared\ChoiceTemplates\Choice.cshtml" />
+    <Content Include="Views\Shared\ChoiceTemplates\Choice.CheckRadio.cshtml" />
+    <Content Include="Views\Shared\ChoiceTemplates\Choice.Radio.cshtml" />
+    <Content Include="Views\Shared\ChoiceTemplates\Choice.TextBox.cshtml" />
+    <Content Include="Views\Shared\ChoiceTemplates\Choice.TextArea.cshtml" />
+    <Content Include="Views\Shared\ChoiceTemplates\Choice.Date.cshtml" />
+    <Content Include="Views\Shared\ChoiceTemplates\Choice.FileUpload.cshtml" />
+    <Content Include="Views\Shared\ChoiceTemplates\Choice.Box.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -1932,9 +1934,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Themes\Alpha\Content\select2\scss\mixins\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">
       <Project>{6bda8332-939f-45b7-a25e-7a797260ae59}</Project>

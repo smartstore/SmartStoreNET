@@ -70,10 +70,14 @@
             function renderSelectItem(item) {
             	try {
             		var option = $(item.element),
-						imageUrl = option.data('imageurl');
+						imageUrl = option.data('imageurl'),
+            			color = option.data('color');
 
             		if (imageUrl) {
-            			return $('<span><img class="attribute-value-image m-r-05" src="' + imageUrl + '" />' + item.text + '</span>');
+            			return $('<span><img class="choice-item-img" src="' + imageUrl + '" />' + item.text + '</span>');
+            		}
+            		else if (color) {
+            			return $('<span><span class="choice-item-color" style="background-color: ' + color + '"></span>' + item.text + '</span>');
             		}
             	}
             	catch (e) { }
@@ -82,7 +86,8 @@
             }
 
             var opts = {
-                width: 'resolve',
+            	width: 'style', // 'resolve',
+            	dropdownAutoWidth: false,
                 allowClear: !!(placeholder), // assuming that a placeholder indicates nullability
                 placeholder: placeholder,
                 minimumResultsForSearch: _.isNumber(minResultsForSearch) ? minResultsForSearch : 8,

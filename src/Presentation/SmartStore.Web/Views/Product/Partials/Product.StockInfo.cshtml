@@ -18,6 +18,7 @@
 }
 
 <div class="pd-group pd-stock-info">
+	<meta itemprop="availability" content="http://schema.org/@(Model.IsAvailable ? "InStock" : "OutOfStock")" />
 	@if (displayStock)
 	{
 		<div class="pd-stock @(Model.IsAvailable ? "pd-instock" : "pd-outofstock")">@Model.StockAvailability</div>

@@ -76,6 +76,13 @@ namespace SmartStore.Data.Migrations
 				setting.Value = "600";
 			}
 
+			// Change MediaSettings.VariantValueThumbPictureSize to 70 if smaller
+			setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "MediaSettings.VariantValueThumbPictureSize");
+			if (setting != null && setting.Value.Convert<int>() < 70)
+			{
+				setting.Value = "70";
+			}
+
 			// Add new product template
 			// TODO: (mc) refactor depending code to reflect this change (ProductTemplate.Simple/Grouped are obsolete now)
 			context.Set<ProductTemplate>().AddOrUpdate(x => x.ViewPath, new ProductTemplate
@@ -414,6 +421,15 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.Facet.Price", "Price", "Preis");
 			builder.AddOrUpdate("Search.Facet.Rating", "Rating", "Bewertung");
 			builder.AddOrUpdate("Search.Facet.DeliveryTime", "Delivery Time", "Lieferzeit");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.ViewLink",
+				"Edit Options (Total: {0})",
+				"Optionen bearbeiten (Anzahl: {0})");
+			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.EditAttributeDetails",
+				"Options for attribute '{0}'. Product: {1}",
+				"Optionen für Attribut '{0}'. Produkt: {1}");
+			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values", "Options", "Optionen");
+			builder.AddOrUpdate("Admin.Catalog.Attributes.CheckoutAttributes.Values", "Options", "Optionen");
 		}
 	}
 }

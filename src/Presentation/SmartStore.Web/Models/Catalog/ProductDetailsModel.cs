@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Web.Framework.UI.Choices;
 using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Models.Catalog
@@ -213,77 +214,36 @@ namespace SmartStore.Web.Models.Catalog
 			public int Quantity { get; set; }
 		}
 
-		public partial class ProductVariantAttributeModel : EntityModelBase
+		public partial class ProductVariantAttributeModel : ChoiceModel
 		{
-			public ProductVariantAttributeModel()
-			{
-				AllowedFileExtensions = new List<string>();
-				Values = new List<ProductVariantAttributeValueModel>();
-			}
-
 			public int ProductId { get; set; }
 			public int BundleItemId { get; set; }
-
 			public int ProductAttributeId { get; set; }
 
-			public string Alias { get; set; }
-
-			public string Name { get; set; }
-
-			public string Description { get; set; }
-
-			public string TextPrompt { get; set; }
-
-			public bool IsRequired { get; set; }
-
-			public bool IsDisabled { get; set; }
-
-			/// <summary>
-			/// Selected value for textboxes
-			/// </summary>
-			public string TextValue { get; set; }
-			/// <summary>
-			/// Selected day value for datepicker
-			/// </summary>
-			public int? SelectedDay { get; set; }
-			/// <summary>
-			/// Selected month value for datepicker
-			/// </summary>
-			public int? SelectedMonth { get; set; }
-			/// <summary>
-			/// Selected year value for datepicker
-			/// </summary>
-			public int? SelectedYear { get; set; }
-			/// <summary>
-			/// Begin year for datepicker
-			/// </summary>
-			public int? BeginYear { get; set; }
-			/// <summary>
-			/// End year for datepicker
-			/// </summary>
-			public int? EndYear { get; set; }
-			/// <summary>
-			/// Allowed file extensions for customer uploaded files
-			/// </summary>
-			public IList<string> AllowedFileExtensions { get; set; }
-
-			public AttributeControlType AttributeControlType { get; set; }
-
-			public IList<ProductVariantAttributeValueModel> Values { get; set; }
-
+			public override string BuildControlId()
+			{
+				return string.Format("product_attribute_{0}_{1}_{2}_{3}", ProductId, BundleItemId, ProductAttributeId, Id);
+			}
 		}
 
-		public partial class ProductVariantAttributeValueModel : EntityModelBase
+		public partial class ProductVariantAttributeValueModel : ChoiceItemModel
 		{
-			public string Name { get; set; }
-            public string SeName { get; set; }
-			public string Alias { get; set; }
-			public string ColorSquaresRgb { get; set; }
-			public string PriceAdjustment { get; set; }
-			public decimal PriceAdjustmentValue { get; set; }
-			public int QuantityInfo { get; set; }
-			public bool IsPreSelected { get; set; }
-			public string ImageUrl { get; set; }
+			public override string GetItemLabel()
+			{
+				var label = Name;
+
+				if (QuantityInfo > 1)
+				{
+					label = "{0} x {1}".FormatCurrentUI(QuantityInfo, label);
+				}
+
+				if (PriceAdjustment.HasValue())
+				{
+					label += " ({0})".FormatWith(PriceAdjustment);
+				}
+
+				return label;
+			}
 		}
 
 		public partial class ProductBundleItemModel : EntityModelBase

@@ -102,19 +102,15 @@ fieldset.content-group > legend {
 // Checkbox & Radio tweaks
 // ==============================================================
 
-.radio label, .checkbox label, 
-.radio-inline, .checkbox-inline {
-    padding-left: 1.5rem;
-}
-
 .radio input[type="radio"], .radio-inline input[type="radio"], 
 .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
-    margin-top: 0.5rem;
-    margin-left: -1.5rem;
+    /*margin-top: 0.5rem;
+    margin-left: -1.5rem;*/
+    margin-right: 0.25rem;
 }
 
-.radio-inline + .radio-inline, 
+/*.radio-inline + .radio-inline, 
 .checkbox-inline + .checkbox-inline {
     margin-left: 1.75rem;
-}
+}*/
 

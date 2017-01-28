@@ -46,7 +46,7 @@
                                     <option value="0">@T("Common.PleaseSelect")</option>   }
                                 @foreach (var pvaValue in attribute.Values)
                                 {
-                                    <option value="@pvaValue.Id" @Html.Attr("selected", "selected", pvaValue.IsPreSelected) @Html.Attr("data-imageurl", pvaValue.ImageUrl, pvaValue.ImageUrl.HasValue())>@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</option>
+                                    <option value="@pvaValue.Id" @Html.Attr("selected", "selected", pvaValue.IsPreSelected) @Html.Attr("data-imageurl", pvaValue.ImageUrl, pvaValue.ImageUrl.HasValue())>@(pvaValue.Name)</option>
                                 }
                             </select>
                         }
@@ -76,9 +76,6 @@
                                     <label for="@(controlId)_@(pvaValue.Id)" class="@inputType @(pvaValue.ImageUrl.HasValue() ? "image-has-value" : "")">
                                         <input id="@(controlId)_@(pvaValue.Id)" type="@inputType" name="@(controlId)" value="@pvaValue.Id" @Html.Attr("checked", "checked", pvaValue.IsPreSelected) @(Html.Raw(disabled)) />
                                         @(pvaValue.Name)
-                                        <span class="text-nowrap">
-                                            @(pvaValue.GetAttributeValueInfo())
-                                        </span>
                                     </label>
                                 </div>
                             }
@@ -199,12 +196,12 @@
                             {
                                     <li @(pvaValue.IsPreSelected ? @Html.Raw(" class=\"selected-value\"") : null)>
                                         <label for="@(controlId)_@(pvaValue.Id)">
-                                            <span class="color-container tooltip-toggle" title="@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())">
+                                            <span class="color-container tooltip-toggle" title="@pvaValue.Name">
                                                 <span class="color" style="background-color:@(pvaValue.ColorSquaresRgb);">&nbsp;</span>
                                             </span>
                                             <input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" @Html.Attr("checked", "checked", pvaValue.IsPreSelected) @Html.Raw(disabled) />
                                             @*uncomment below to display attribute value name*@
-                                            @*<span class="name">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</span>*@
+                                            @*<span class="name">@pvaValue.Name</span>*@
                                         </label>
                                     </li>
                                 }

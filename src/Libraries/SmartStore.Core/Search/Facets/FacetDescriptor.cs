@@ -5,6 +5,13 @@ using System.Text;
 
 namespace SmartStore.Core.Search.Facets
 {
+	public enum FacetSorting
+	{
+		HitsDesc,
+		ValueAsc,
+		DisplayOrder
+	}
+
 	/// <summary>
 	/// A filter and its selection to be applied, e.g. Color=Red.
 	/// </summary>
@@ -156,33 +163,6 @@ namespace SmartStore.Core.Search.Facets
 			sb.Append("Values: " + string.Join(",", _values.Select(x => x.Value.ToString()))).Append(" ");
 
 			return sb.ToString();
-		}
-	}
-
-
-	public enum FacetSorting
-	{
-		HitsDesc,
-		ValueAsc,
-		DisplayOrder
-	}
-
-
-	public static class FacetDescriptorExtensions
-	{
-		public static IOrderedEnumerable<Facet> OrderBy(this IEnumerable<Facet> source, FacetSorting sorting)
-		{
-			Guard.NotNull(source, nameof(source));
-
-			switch (sorting)
-			{
-				case FacetSorting.ValueAsc:
-					return source.OrderBy(x => x.Label);
-				case FacetSorting.DisplayOrder:
-					return source.OrderBy(x => x.DisplayOrder);
-				default:
-					return source.OrderByDescending(x => x.HitCount);
-			}
 		}
 	}
 }

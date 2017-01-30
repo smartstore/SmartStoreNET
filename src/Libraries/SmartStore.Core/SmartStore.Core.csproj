@@ -420,6 +420,7 @@
     <Compile Include="Search\AcquireWriterContext.cs" />
     <Compile Include="Search\DefaultIndexManager.cs" />
     <Compile Include="Search\Facets\Facet.cs" />
+    <Compile Include="Search\Facets\FacetExtensions.cs" />
     <Compile Include="Search\Facets\FacetGroup.cs" />
     <Compile Include="Search\Facets\FacetDescriptor.cs" />
     <Compile Include="Search\Facets\FacetValue.cs" />

@@ -4,11 +4,15 @@ namespace SmartStore.Core.Search.Facets
 {
 	public class Facet
 	{
+		public Facet(FacetValue value)
+			: this(value.GetStringValue(), value)
+		{
+		}
+
 		public Facet(string key, FacetValue value)
 		{
 			Guard.NotEmpty(key, nameof(key));
 			Guard.NotNull(value, nameof(value));
-			Guard.NotNull(value.Value, nameof(value.Value));
 
 			Key = key;
 			Value = value;

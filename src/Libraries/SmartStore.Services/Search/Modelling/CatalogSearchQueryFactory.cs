@@ -283,9 +283,9 @@ namespace SmartStore.Services.Search.Modelling
 		{
 			if (!_globalFilters.ContainsKey(fieldName))
 				return;
-			
+
 			var facet = new FacetDescriptor(fieldName);
-			facet.Label = _services.Localization.GetResource(FacetDescriptor.GetLabelResourceKey(fieldName));
+			facet.Label = _services.Localization.GetResource(FacetDescriptor.GetLabelResourceKey(fieldName) ?? fieldName);
 			facet.IsMultiSelect = isMultiSelect;
 			facet.DisplayOrder = _globalFilters[fieldName];
 			facet.OrderBy = sorting;
@@ -355,12 +355,33 @@ namespace SmartStore.Services.Search.Modelling
 				maxPrice = _currencyService.ConvertToPrimaryStoreCurrency(maxPrice.Value, currency);
 			}
 
+			if (minPrice.HasValue && maxPrice.HasValue && minPrice > maxPrice)
+			{
+				var tmp = minPrice;
+				minPrice = maxPrice;
+				maxPrice = tmp;
+			}
+
 			if (minPrice.HasValue || maxPrice.HasValue)
 			{
 				query.PriceBetween(minPrice, maxPrice);
 			}
 
-			// TODO: AddFacet(query, "price_c-..."...
+			AddFacet(query, "price", false, FacetSorting.DisplayOrder, descriptor =>
+			{
+				if (minPrice.HasValue || maxPrice.HasValue)
+				{
+					descriptor.AddValue(new FacetValue(
+						minPrice.HasValue ? decimal.ToDouble(minPrice.Value) : (double?)null,
+						maxPrice.HasValue ? decimal.ToDouble(maxPrice.Value) : (double?)null,
+						IndexTypeCode.Double,
+						minPrice.HasValue,
+						maxPrice.HasValue)
+					{
+						IsSelected = true
+					});
+				}
+			});
 		}
 
 		protected virtual void ConvertRating(CatalogSearchQuery query, RouteData routeData, string origin)
@@ -372,7 +393,7 @@ namespace SmartStore.Services.Search.Modelling
 				query.WithRating(fromRate, null);
 			}
 
-			AddFacet(query, "rate", false, FacetSorting.ValueAsc, descriptor =>
+			AddFacet(query, "rate", false, FacetSorting.DisplayOrder, descriptor =>
 			{
 				if (fromRate.HasValue)
 				{

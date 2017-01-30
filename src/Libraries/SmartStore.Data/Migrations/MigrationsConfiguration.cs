@@ -430,6 +430,8 @@ namespace SmartStore.Data.Migrations
 				"Optionen für Attribut '{0}'. Produkt: {1}");
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values", "Options", "Optionen");
 			builder.AddOrUpdate("Admin.Catalog.Attributes.CheckoutAttributes.Values", "Options", "Optionen");
+
+			builder.AddOrUpdate("Search.Facet.PriceLabelTemplate", "up to {0}", "bis {0}");
 		}
 	}
 }

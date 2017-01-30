@@ -26,10 +26,16 @@ namespace SmartStore.Core.Search.Facets
 
 			facets.Each(x =>
 			{
-				if (!_facets.ContainsKey(x.Key))
+				x.FacetGroup = this;
+				x.Children.Each(y => y.FacetGroup = this);
+
+				try
 				{
-					x.FacetGroup = this;
 					_facets.Add(x.Key, x);
+				}
+				catch (Exception exception)
+				{
+					exception.Dump();
 				}
 			});
 		}

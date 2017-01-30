@@ -134,6 +134,9 @@
       <LocaleResource Name="IpnOrderNotFound">
         <Value>PayPal IPN. Bestellung konnte nicht gefunden werden.</Value>
       </LocaleResource>
+      <LocaleResource Name="IpnIrregular">
+        <Value>Ungültige PayPal IPN. Der Wert von Feld '{0}' fehlt.</Value>
+      </LocaleResource>
       <LocaleResource Name="IpnFailed">
         <Value>PayPal IPN. Benachrichtigung konnte nicht abgerufen werden.</Value>
       </LocaleResource>

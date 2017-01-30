@@ -236,7 +236,10 @@ namespace SmartStore.PayPal.Controllers
 							}
 							else
 							{
-								Logger.Error(new SmartException(sb.ToString()), T("Plugins.Payments.PayPal.IpnOrderNotFound"));
+								if (rp_invoice_id.IsEmpty())
+									Logger.Warn(new SmartException(sb.ToString()), T("Plugins.Payments.PayPal.IpnIrregular", "rp_invoice_id"));
+								else
+									Logger.Error(new SmartException(sb.ToString()), T("Plugins.Payments.PayPal.IpnOrderNotFound"));
 							}
 						}
 						#endregion
@@ -306,7 +309,10 @@ namespace SmartStore.PayPal.Controllers
 							}
 							else
 							{
-								Logger.Error(new SmartException(sb.ToString()), T("Plugins.Payments.PayPal.IpnOrderNotFound"));
+								if (orderNumber.IsEmpty())
+									Logger.Warn(new SmartException(sb.ToString()), T("Plugins.Payments.PayPal.IpnIrregular", "custom"));
+								else
+									Logger.Error(new SmartException(sb.ToString()), T("Plugins.Payments.PayPal.IpnOrderNotFound"));
 							}
 						}
 						#endregion

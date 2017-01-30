@@ -337,7 +337,7 @@ $mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //
 
 
 @include media-breakpoint-down(md) {
-    .picture-container {
+    .megamenu-dropdown-container .picture-container {
         display: none;
     }
 }

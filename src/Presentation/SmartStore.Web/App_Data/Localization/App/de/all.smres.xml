@@ -6260,7 +6260,7 @@
 		<Value>Geschenkgutschein ist eingelöst, wenn Auftragsstatus...</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.GiftCards_Activated.Hint">
-		<Value>Bestimmt den benötigten Auftragsstatus einer Bestellung, die Geschenkgutscheine enthält, mit dem die Gutscheine automatisch aktiv sind. Zur Auswahl stehen folgende Auftrags-Stati: unerledigt, wird bearbeitet, komplett, abgebrochen.</Value>
+		<Value>Legt den Auftragsstatus einer Bestellung fest, bei dem in der Bestellung enthaltene Geschenkgutscheine automatisch aktiviert werden. Zur Auswahl stehen folgende Auftrags-Stati: unerledigt, wird bearbeitet, komplett, abgebrochen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.GiftCards_Activated.Pending">
 		<Value>Der Auftragsstatus konnte nicht auf "in Bearbeitung" gesetzt werden</Value>

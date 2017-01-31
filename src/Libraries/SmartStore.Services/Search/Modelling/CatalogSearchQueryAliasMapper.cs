@@ -89,17 +89,55 @@ namespace SmartStore.Services.Search.Modelling
 			}
 		}
 
-		public SearchQueryAliasMapping GetAttributeByAlias(string attributeAlias, string valueAlias)
+		public SearchQueryAliasMapping GetAttributeByAlias(string attributeAlias, string optionAlias)
 		{
-			if (attributeAlias.HasValue() && valueAlias.HasValue())
+			if (attributeAlias.HasValue() && optionAlias.HasValue())
 			{
 				SearchQueryAliasMapping mapping;
 
-				if (AttributeMappings.TryGetValue(new AliasMappingKey(attributeAlias, valueAlias), out mapping))
+				if (AttributeMappings.TryGetValue(new AliasMappingKey(attributeAlias, optionAlias), out mapping))
 					return mapping;
 			}
 
 			return null;
+		}
+
+		public bool AddAttribute(string attributeAlias, string optionAlias, SearchQueryAliasMapping mapping)
+		{
+			Guard.NotNull(mapping, nameof(mapping));
+
+			if (attributeAlias.HasValue() && optionAlias.HasValue())
+			{
+				AttributeMappings.AddOrUpdate(new AliasMappingKey(attributeAlias, optionAlias), mapping, (k, v) =>
+				{
+					v.CopyFrom(mapping);
+					return v;
+				});
+
+				return true;
+			}
+
+			return false;
+		}
+
+		public bool RemoveAttribute(string attributeAlias, string optionAlias)
+		{
+			if (attributeAlias.HasValue() && optionAlias.HasValue())
+			{
+				SearchQueryAliasMapping unused;
+				return AttributeMappings.TryRemove(new AliasMappingKey(attributeAlias, optionAlias), out unused);
+			}
+
+			return false;
+		}
+
+		public void RemoveAllAttributes()
+		{
+			if (_attributeMappings != null)
+			{
+				_attributeMappings.Clear();
+				_attributeMappings = null;
+			}
 		}
 	}
 

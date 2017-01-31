@@ -241,6 +241,7 @@
     <Compile Include="Events\DefaultMessageBus.cs" />
     <Compile Include="Events\IMessageBroker.cs" />
     <Compile Include="Events\IMessageBus.cs" />
+    <Compile Include="Hooks\SearchQueryAliasHook.cs" />
     <Compile Include="Hooks\SlugSupportedHook.cs" />
     <Compile Include="Hooks\AuditableHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityHook.cs" />

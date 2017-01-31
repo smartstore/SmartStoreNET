@@ -12,5 +12,11 @@
 
 		public int FieldId { get; private set; }
 		public int ValueId { get; private set; }
+
+		public void CopyFrom(SearchQueryAliasMapping other)
+		{
+			FieldId = other.FieldId;
+			ValueId = other.ValueId;
+		}
 	}
 }

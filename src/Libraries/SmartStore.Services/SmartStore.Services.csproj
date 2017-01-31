@@ -496,14 +496,17 @@
     <Compile Include="Hooks\AclEntityHook.cs" />
     <Compile Include="ScopedServiceBase.cs" />
     <Compile Include="Search\CatalogSearchQuery.cs" />
+    <Compile Include="Search\Modelling\CatalogSearchQueryAliasMapper.cs" />
     <Compile Include="Search\Modelling\CatalogSearchQueryFactory.cs" />
     <Compile Include="Search\CatalogSearchResult.cs" />
     <Compile Include="Search\CatalogSearchService.cs" />
     <Compile Include="Search\Modelling\CatalogSearchQueryModelBinder.cs" />
+    <Compile Include="Search\Modelling\ICatalogSearchQueryAliasMapper.cs" />
     <Compile Include="Search\Modelling\ICatalogSearchQueryFactory.cs" />
     <Compile Include="Search\ICatalogSearchService.cs" />
     <Compile Include="Search\LinqCatalogSearchService.cs" />
     <Compile Include="Search\CatalogSearchEvents.cs" />
+    <Compile Include="Search\Modelling\SearchQueryAliasMapping.cs" />
     <Compile Include="Security\AclService.cs" />
     <Compile Include="Security\EncryptionService.cs" />
     <Compile Include="Security\IAclService.cs" />

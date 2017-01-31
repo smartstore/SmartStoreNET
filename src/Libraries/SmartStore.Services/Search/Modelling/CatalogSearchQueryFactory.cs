@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
 using System.Web.Routing;
 using Newtonsoft.Json;
+using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Search;
@@ -36,6 +38,7 @@ namespace SmartStore.Services.Search.Modelling
 
 	public class CatalogSearchQueryFactory : ICatalogSearchQueryFactory
 	{
+		protected static readonly string[] _tokens = new string[] { "q", "i", "s", "o", "pf", "pt", "c", "m", "r", "sq", "d", "a", "v" };
 		protected readonly HttpContextBase _httpContext;
 		protected readonly CatalogSettings _catalogSettings;
 		protected readonly SearchSettings _searchSettings;
@@ -43,6 +46,7 @@ namespace SmartStore.Services.Search.Modelling
 		protected readonly ICommonServices _services;
 		// field name to display order
 		protected Dictionary<string, int> _globalFilters;
+		private Multimap<string, string> _aliases;
 
 		public CatalogSearchQueryFactory(
 			HttpContextBase httpContext,
@@ -449,6 +453,35 @@ namespace SmartStore.Services.Search.Modelling
 			}
 
 			return default(T);
+		}
+
+		protected Multimap<string, string> Aliases
+		{
+			get
+			{
+				if (_aliases == null)
+				{
+					_aliases = new Multimap<string, string>();
+
+					if (_httpContext.Request != null)
+					{
+						var form = _httpContext.Request.Form;
+						var query = _httpContext.Request.QueryString;
+
+						if (form != null)
+						{
+							form.AllKeys.Where(x => !_tokens.Contains(x)).Each(key => _aliases.AddRange(key, form[key].SplitSafe(",")));
+						}
+
+						if (query != null)
+						{
+							query.AllKeys.Where(x => !_tokens.Contains(x)).Each(key => _aliases.AddRange(key, query[key].SplitSafe(",")));
+						}
+					}
+				}
+
+				return _aliases;
+			}
 		}
 	}
 }

@@ -8,9 +8,11 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Directory;
 
 namespace SmartStore.Services.Search
 {
@@ -18,30 +20,51 @@ namespace SmartStore.Services.Search
 	{
 		private readonly IProductService _productService;
 		private readonly IRepository<Product> _productRepository;
+		private readonly IRepository<ProductManufacturer> _productManufacturerRepository;
+		private readonly IRepository<ProductCategory> _productCategoryRepository;
+		private readonly IRepository<Manufacturer> _manufacturerRepository;
+		private readonly IRepository<Category> _categoryRepository;
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IRepository<AclRecord> _aclRepository;
 		private readonly IEventPublisher _eventPublisher;
+		private readonly ICommonServices _services;
+		private readonly IDeliveryTimeService _deliveryTimeService;
 
 		public LinqCatalogSearchService(
 			IProductService productService,
 			IRepository<Product> productRepository,
+			IRepository<ProductManufacturer> productManufacturerRepository,
+			IRepository<ProductCategory> productCategoryRepository,
+			IRepository<Manufacturer> manufacturerRepository,	
+			IRepository<Category> categoryRepository,
 			IRepository<LocalizedProperty> localizedPropertyRepository,
 			IRepository<StoreMapping> storeMappingRepository,
 			IRepository<AclRecord> aclRepository,
-			IEventPublisher eventPublisher)
+			IEventPublisher eventPublisher,
+			ICommonServices services,
+			IDeliveryTimeService deliveryTimeService)
 		{
 			_productService = productService;
 			_productRepository = productRepository;
+			_productManufacturerRepository = productManufacturerRepository;
+			_productCategoryRepository = productCategoryRepository;
+			_manufacturerRepository = manufacturerRepository;
+			_categoryRepository = categoryRepository;
 			_localizedPropertyRepository = localizedPropertyRepository;
 			_storeMappingRepository = storeMappingRepository;
 			_aclRepository = aclRepository;
 			_eventPublisher = eventPublisher;
+			_services = services;
+			_deliveryTimeService = deliveryTimeService;
 
 			QuerySettings = DbQuerySettings.Default;
+			Logger = NullLogger.Instance;
 		}
 
 		public DbQuerySettings QuerySettings { get; set; }
+
+		public ILogger Logger { get; set; }
 
 		#region Utilities
 
@@ -122,18 +145,25 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
-		protected virtual IQueryable<Product> GetProductQuery(CatalogSearchQuery searchQuery)
+		private Facet CreateFacet(FacetDescriptor descriptor, object value, IndexTypeCode typeCode, string label, int displayOrder)
 		{
-			var ordered = false;
-			var utcNow = DateTime.UtcNow;
+			var newValue = new FacetValue(value, typeCode)
+			{
+				IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(value))
+			};
+
+			return new Facet(newValue)
+			{
+				Label = label,
+				DisplayOrder = displayOrder
+			};
+		}
+
+		protected virtual IQueryable<Product> ApplySearchTerm(IQueryable<Product> query, CatalogSearchQuery searchQuery)
+		{
 			var term = searchQuery.Term;
 			var fields = searchQuery.Fields;
 			var languageId = searchQuery.LanguageId ?? 0;
-
-			var query = _productRepository.Table
-				.Where(x => !x.Deleted);
-
-			#region Search Term
 
 			if (term.HasValue() && fields != null && fields.Length != 0 && fields.Any(x => x.HasValue()))
 			{
@@ -168,7 +198,17 @@ namespace SmartStore.Services.Search
 				}
 			}
 
-			#endregion
+			return query;
+		}
+
+		protected virtual IQueryable<Product> GetProductQuery(CatalogSearchQuery searchQuery)
+		{
+			var ordered = false;
+			var utcNow = DateTime.UtcNow;
+
+			var query = _productRepository.Table.Where(x => !x.Deleted);
+
+			query = ApplySearchTerm(query, searchQuery);
 
 			#region Filters
 
@@ -516,10 +556,261 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
-		protected virtual IDictionary<string, FacetGroup> GetFacets()
+		protected virtual IDictionary<string, FacetGroup> GetFacets(CatalogSearchQuery searchQuery)
 		{
-			// TODO
-			return null;
+			var result = new Dictionary<string, FacetGroup>();
+			var languageId = searchQuery.LanguageId ?? _services.WorkContext.WorkingLanguage.Id;
+
+			foreach (var key in searchQuery.FacetDescriptors.Keys)
+			{
+				var descriptor = searchQuery.FacetDescriptors[key];
+				var facets = new List<Facet>();
+
+				if (key == "categoryid" || key == "featuredcategoryid" || key == "notfeaturedcategoryid")
+				{
+					#region categories
+
+					// order by product count
+					var categoryQuery =
+						from c in _categoryRepository.TableUntracked
+						where !c.Deleted && c.Published
+						join pc in _productCategoryRepository.TableUntracked on c.Id equals pc.CategoryId into pcm
+						from pc in pcm.DefaultIfEmpty()
+						group c by c.Id into grp
+						orderby grp.Count() descending
+						select new
+						{
+							Id = grp.FirstOrDefault().Id,
+							Name = grp.FirstOrDefault().Name,
+							DisplayOrder = grp.FirstOrDefault().DisplayOrder
+						};
+
+					if (descriptor.MaxChoicesCount > 0)
+					{
+						categoryQuery = categoryQuery.Take(descriptor.MaxChoicesCount);
+					}
+
+					var categories = categoryQuery.ToList();
+
+					var nameQuery = _localizedPropertyRepository.TableUntracked
+						.Where(x => x.LocaleKeyGroup == "Category" && x.LocaleKey == "Name" && x.LanguageId == languageId);
+
+					var names = nameQuery.ToList().ToDictionarySafe(x => x.EntityId, x => x.LocaleValue);
+
+					foreach (var category in categories)
+					{
+						string label = null;
+						names.TryGetValue(category.Id, out label);
+
+						facets.Add(CreateFacet(descriptor, category.Id, IndexTypeCode.Int32, label.HasValue() ? label : category.Name, category.DisplayOrder));
+					}
+
+					#endregion
+				}
+				else if (key == "manufacturerid")
+				{
+					#region manufacturers
+
+					// order by product count
+					var manufacturerQuery =
+						from m in _manufacturerRepository.TableUntracked
+						where !m.Deleted && m.Published
+						join pm in _productManufacturerRepository.TableUntracked on m.Id equals pm.ManufacturerId into pmm
+						from pm in pmm.DefaultIfEmpty()
+						group m by m.Id into grp
+						orderby grp.Count() descending
+						select new
+						{
+							Id = grp.FirstOrDefault().Id,
+							Name = grp.FirstOrDefault().Name,
+							DisplayOrder = grp.FirstOrDefault().DisplayOrder
+						};
+
+					if (descriptor.MaxChoicesCount > 0)
+					{
+						manufacturerQuery = manufacturerQuery.Take(descriptor.MaxChoicesCount);
+					}
+
+					var manufacturers = manufacturerQuery.ToList();
+
+					var nameQuery = _localizedPropertyRepository.TableUntracked
+						.Where(x => x.LocaleKeyGroup == "Manufacturer" && x.LocaleKey == "Name" && x.LanguageId == languageId);
+
+					var names = nameQuery.ToList().ToDictionarySafe(x => x.EntityId, x => x.LocaleValue);
+
+					foreach (var manu in manufacturers)
+					{
+						string label = null;
+						names.TryGetValue(manu.Id, out label);
+
+						facets.Add(CreateFacet(descriptor, manu.Id, IndexTypeCode.Int32, label.HasValue() ? label : manu.Name, manu.DisplayOrder));
+					}
+
+					#endregion
+				}
+				else if (key == "rate")
+				{
+					#region ratings
+
+					var count = 0;
+					for (double rate = 1.0; rate <= 5.0; ++rate)
+					{
+						facets.Add(CreateFacet(descriptor, rate, IndexTypeCode.Double, rate.ToString(), ++count));
+					}
+
+					#endregion
+				}
+				else if (key == "deliveryid")
+				{
+					#region delivery times
+
+					var deliveryTimes = _deliveryTimeService.GetAllDeliveryTimes();
+
+					var nameQuery = _localizedPropertyRepository.TableUntracked
+						.Where(x => x.LocaleKeyGroup == "DeliveryTime" && x.LocaleKey == "Name" && x.LanguageId == languageId);
+
+					var names = nameQuery.ToList().ToDictionarySafe(x => x.EntityId, x => x.LocaleValue);
+
+					foreach (var deliveryTime in deliveryTimes)
+					{
+						string label = null;
+						names.TryGetValue(deliveryTime.Id, out label);
+
+						facets.Add(CreateFacet(descriptor, deliveryTime.Id, IndexTypeCode.Int32, label.HasValue() ? label : deliveryTime.Name, deliveryTime.DisplayOrder));
+					}
+
+					#endregion
+				}
+				else if (key == "price")
+				{
+					#region prices
+
+					// provide 'up to' price suggestions
+					List<double> existingPrices = null;
+
+					try
+					{
+						var productQuery = ApplySearchTerm(_productRepository.TableUntracked.Where(x => !x.Deleted), searchQuery);
+						existingPrices = productQuery
+							.Select(x => (double)Decimal.Round(x.Price))
+							.Where(x => x != 0.0)
+							.Distinct()
+							.ToList();
+					}
+					catch (Exception exception)
+					{
+						Logger.Error(exception);
+					}
+
+					if (existingPrices != null && existingPrices.Any())
+					{
+						var count = 0;
+						var maxPrice = existingPrices.Max();
+
+						for (double price = GetNextMaxPrice(0.0);
+							price < double.MaxValue;
+							price = GetNextMaxPrice(price))
+						{
+							if ((descriptor.MaxChoicesCount > 0 && count >= descriptor.MaxChoicesCount) || price > maxPrice)
+								break;
+
+							if (!existingPrices.Any(x => x < price))
+								continue;
+
+							var newValue = new FacetValue(null, price, IndexTypeCode.Double, false, true)
+							{
+								IsSelected = descriptor.Values.Any(x => x.IsSelected && x.UpperValue != null && (double)x.UpperValue == price)
+							};
+							var newFacet = new Facet(newValue)
+							{
+								Label = price.ToString(),
+								DisplayOrder = ++count
+							};
+
+							facets.Add(newFacet);
+						}
+					}
+
+					// remove too granular price ranges
+					if (facets.Count > 3 && facets.Any(x => x.Value.UpperValue != null && (double)x.Value.UpperValue == 25.0))
+					{
+						facets.RemoveFacet(5.0, true);
+						facets.RemoveFacet(10.0, true);
+					}
+
+					// add facet for individual price filter
+					if (descriptor.Values.Any() && !facets.Any(x => x.Value.IsSelected))
+					{
+						var individualPrice = descriptor.Values.First();
+
+						// check if price facet already exists otherwise insert it
+						var priceExists = (!individualPrice.IncludesLower && individualPrice.IncludesUpper && facets.Any(x => x.Value.Equals(individualPrice)));
+						if (!priceExists)
+						{
+							facets.Insert(0, new Facet(new FacetValue(individualPrice)));
+						}
+					}
+
+					#endregion
+				}
+
+				if (!facets.Any())
+					continue;
+
+				//facets.Each(x => $"{key} {x.Value.ToString()}".Dump());
+
+				result.Add(key, new FacetGroup(
+					key,
+					descriptor.Label,
+					descriptor.IsMultiSelect,
+					descriptor.DisplayOrder,
+					facets.OrderBy(descriptor.OrderBy)));
+			}
+			
+			return result;
+		}
+
+		protected static double GetNextMaxPrice(double price)
+		{
+			if (price < 10)
+				return price + 5;
+			if (price < 25)
+				return price + 15;
+			if (price < 200)
+				return price + 25;
+			if (price < 500)
+				return price + 50;
+			if (price < 1000)
+				return price + 100;
+			if (price < 2000)
+				return price + 250;
+			if (price < 5000)
+				return price + 500;
+			if (price < 10000)
+				return price + 1000;
+			if (price < 20000)
+				return price + 2500;
+			if (price < 50000)
+				return price + 5000;
+			if (price < 100000)
+				return price + 10000;
+			if (price < 200000)
+				return price + 25000;
+			if (price < 500000)
+				return price + 50000;
+			if (price < 1000000)
+				return price + 100000;
+			if (price < 2000000)
+				return price + 250000;
+			if (price < 5000000)
+				return price + 500000;
+			if (price < 10000000)
+				return price + 1000000;
+			if (price < 20000000)
+				return price + 2500000;
+			if (price < 50000000)
+				return price + 5000000;
+			return double.MaxValue;
 		}
 
 		#endregion
@@ -545,7 +836,10 @@ namespace SmartStore.Services.Search
 				var ids = query.Select(x => x.Id).ToArray();
 				hitsFactory = () => _productService.GetProductsByIds(ids, loadFlags);
 
-				facets = GetFacets();
+				if (totalCount > 0 && searchQuery.FacetDescriptors.Any())
+				{
+					facets = GetFacets(searchQuery);
+				}
 			}
 
 			var result = new CatalogSearchResult(

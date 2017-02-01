@@ -27,6 +27,31 @@ namespace SmartStore.Core.Search.Facets
 		}
 
 		/// <summary>
+		/// Removes a facet
+		/// </summary>
+		/// <param name="facets">List of facets</param>
+		/// <param name="value">Facet value</param>
+		/// <param name="upperValue">Whether to compare the upper value</param>
+		public static void RemoveFacet(this IList<Facet> facets, object value, bool upperValue)
+		{
+			Facet facet = null;
+
+			if (upperValue)
+			{
+				facet = facets.FirstOrDefault(x => x.Value.UpperValue != null && x.Value.UpperValue.Equals(value));
+			}
+			else
+			{
+				facet = facets.FirstOrDefault(x => x.Value.Value != null && x.Value.Value.Equals(value));
+			}
+
+			if (facet != null)
+			{
+				facets.Remove(facet);
+			}
+		}
+
+		/// <summary>
 		/// Get the facet value as a string
 		/// </summary>
 		/// <param name="value">Facet value</param>

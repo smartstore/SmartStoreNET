@@ -2297,7 +2297,7 @@
 		<Value>Ist Abo</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsRecurring.Hint">
-		<Value>Legt fest, ob das Produkt wiederkehrend ist.</Value>
+		<Value>Legt fest, ob das Produkt ein Abonnement ist.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsShipEnabled">
 		<Value>Versand erforderlich</Value>
@@ -14394,7 +14394,7 @@
 		<Value>Für die wiederkehrende Zahlung existiert kein Ausgangsauftrag.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Order.NoRecurringProducts">
-		<Value>Keine wiederkehrenden Produkte.</Value>
+		<Value>Keine Abonnements.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Order.Notes">
 		<Value>Notizen</Value>

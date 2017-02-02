@@ -4,7 +4,43 @@
 		window.location.href = url;
 	}
 
-	window.OpenWindow = function (query, w, h, scroll) {
+	window.OpenPopup = function (url, fluid) {
+		var modal = $('#modal-popup-shared');
+
+		if (modal.length === 0) {
+			// TODO: (mc) Update to BS4 modal html later
+			var html =
+				'<div id="modal-popup-shared" class="modal modal-flex {0} fade" tabindex="-1" style="border-radius: 0">'.format(!!(fluid) ? 'modal-fluid' : 'modal-xlarge')
+					+ '<div class="modal-body" style="padding: 0">'
+						+ '<iframe class="modal-flex-fill-area" frameborder="0" src="' + url + '" />'
+					+ '</div>'
+					+ '<div class="modal-footer">'
+						+ '<button type="button" class="btn btn-secondary btn-default" data-dismiss="modal">' + window.Res['Common.Close'] + '</button>'
+					+ '</div>'
+				+ '</div>';
+
+			modal = $(html).appendTo('body').on('hidden.bs.modal', function (e) {
+				//modal.remove();
+			});
+		}
+		else {
+			var iframe = modal.find('> .modal-body > iframe');
+			if (url.toLowerCase() != iframe.attr('src').toLowerCase()) {
+				iframe.attr('src', url);
+			}
+		}
+
+		modal.modal('show');
+	}
+
+	window.ClosePopup = function () {
+		var modal = $('#modal-popup-shared');
+		if (modal.length > 0) {
+			modal.modal('hide');
+		}
+	}
+
+	window.OpenWindow = function (url, w, h, scroll) {
 		var l = (screen.width - w) / 2;
 		var t = (screen.height - h) / 2;
 
@@ -14,7 +50,7 @@
 
 		winprops = 'resizable=0, height=' + h + ',width=' + w + ',top=' + t + ',left=' + l + 'w';
 		if (scroll) winprops += ',scrollbars=1';
-		var f = window.open(query, "_blank", winprops);
+		var f = window.open(url, "_blank", winprops);
 	}
 
 	window.htmlEncode = function (value) {

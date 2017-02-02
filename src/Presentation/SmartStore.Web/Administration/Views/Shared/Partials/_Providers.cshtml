@@ -128,7 +128,7 @@
 	$(function () {
 		$('.module-list').on('click', '.module-edit', function (e) {
 			e.preventDefault();
-			OpenWindow($(this).attr("href"), 800, 250, true);
+			OpenPopup($(this).attr("href"));
 			return false;
 		});
 

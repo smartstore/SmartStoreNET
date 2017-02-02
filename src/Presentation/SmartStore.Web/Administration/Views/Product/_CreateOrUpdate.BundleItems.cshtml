@@ -127,7 +127,7 @@
                             .Centered();
                         columns.Bound(x => x.Id)
                             .Centered()
-                            .ClientTemplate("<button onclick=\"" + "OpenWindow('" + @Url.Content("~/Admin/Product/BundleItemEditPopup/") + "<#= Id #>?btnId=btnRefreshBundleItems&formId=product-form', 1000, 600, true); return false;\" class='btn'>" + @T("Admin.Common.Edit").Text + "</button>")
+                            .ClientTemplate("<button onclick=\"" + "OpenPopup('" + @Url.Content("~/Admin/Product/BundleItemEditPopup/") + "<#= Id #>?btnId=btnRefreshBundleItems&formId=product-form'); return false;\" class='btn'>" + @T("Admin.Common.Edit").Text + "</button>")
                             .Title("");
                         columns.Command(commands =>
                         {

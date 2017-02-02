@@ -8,15 +8,6 @@
 @Html.HiddenFor(model => model.ProductVariantAttributeId)
 
 <script type="text/javascript">
-	@if (ViewBag.RefreshPage == true)
-	{
-		<text>
-		try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
-		catch (e){}
-		window.close();
-		</text>
-	}
-
 	$(document).ready(function () {
 
 		$('#@Html.FieldIdFor(model => model.ValueTypeId)').change(function () {

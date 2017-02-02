@@ -436,14 +436,11 @@
 
 		// edit plugin
 		$('#plugins-form').on('click', '.plugin-edit', function (e) {
-			OpenWindow(
+			OpenPopup(
                 '{0}?systemName={1}&btnId=btnRefresh&formId=plugins-form'.format(
                     '@Url.Content("~/Admin/Plugin/EditPopup")',
                     $(this).data("systemname")
-                ),
-                1000,
-                480,
-                true
+                )
             );
             return false;
         });

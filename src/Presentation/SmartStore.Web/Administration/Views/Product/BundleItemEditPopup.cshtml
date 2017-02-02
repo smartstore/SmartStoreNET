@@ -41,20 +41,6 @@
 				);
 			}).trigger('change');
 		});
-
-		@if (ViewBag.RefreshPage)
-		{
-			<text>
-            try {window.opener.document.forms['@(ViewBag.FormId)'].@(ViewBag.BtnId).click();}
-			catch (e){}
-			</text>
-		}
-		@if (ViewBag.RefreshPage && ViewBag.CloseWindow)
-		{
-			<text>
-			window.close();
-			</text>
-		}
 	</script>
     	
 	@Html.SmartStore().TabStrip().Name("bundleitem-edit").Items(x =>

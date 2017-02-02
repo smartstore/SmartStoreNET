@@ -2,14 +2,7 @@
 @using Telerik.Web.Mvc.UI;
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-@if (ViewBag.RefreshPage == true)
-{
-    <script type="text/javascript">
-        try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
-        catch (e){} 
-        window.close();
-    </script>
-}
+
 @(Html.LocalizedEditor<ProductTagModel, ProductTagLocalizedModel>("producttag-localized",
 @<table class="adminContent">
     <tr>

@@ -108,7 +108,7 @@
 								columns.Bound(x => x.Id)
 									.Width(120)
 									.Centered()
-									.ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/SpecificationAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=specificationattribute-form', 800, 400, true); return false;\" class='btn' />")
+									.ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenPopup('" + @Url.Content("~/Admin/SpecificationAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=specificationattribute-form'); return false;\" class='btn' />")
 									.Title(T("Admin.Common.Edit").Text);
 								columns.Command(commands =>
 								{
@@ -126,7 +126,7 @@
                 <tr>
                     <td width="100%">
                         <button type="submit" id="btnAddNewOption" name="btnAddNewOption" class="btn btn-below"
-							   onclick="javascript:OpenWindow('@(Url.Action("OptionCreatePopup", "SpecificationAttribute", new { specificationAttributeId = Model.Id, btnId = "btnRefresh", formId = "specificationattribute-form" }))', 800, 400, true); return false;">
+							   onclick="javascript:OpenPopup('@(Url.Action("OptionCreatePopup", "SpecificationAttribute", new { specificationAttributeId = Model.Id, btnId = "btnRefresh", formId = "specificationattribute-form" }))'); return false;">
 							<i class="fa fa-plus"></i>&nbsp;@T("Admin.Catalog.Attributes.SpecificationAttributes.Options.AddNew")
 						</button>
                         <input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />

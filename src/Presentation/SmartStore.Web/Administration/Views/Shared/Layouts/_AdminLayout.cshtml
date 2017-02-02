@@ -6,6 +6,24 @@
     Layout = "_AdminRoot";
 } 
 
+@if (ViewBag.RefreshPage == true)
+{
+	<script>
+		try {
+			window.parent.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();
+		}
+		catch (e) {
+			try { window.parent.document.getElementById('@(ViewBag.btnId)').click(); }
+			catch (e2) { }
+		}
+
+		@if (!(ViewBag.CloseWindow == false))
+		{
+			<text>window.parent.ClosePopup();</text>
+		}	
+	</script>
+}
+
 <div id="page">
 	@if (ViewData["warning.panel.message"] != null)
     {

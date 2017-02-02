@@ -17,15 +17,6 @@
     </div>
     
     @Html.ValidationSummary(false)
-    
-    if (ViewBag.RefreshPage == true)
-    {
-    <script type="text/javascript">
-        try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
-        catch (e){} 
-        window.close();
-    </script>
-    }
 
     <p>
         <b>@string.Format(T("Admin.Orders.Fields.PartialRefund.OrderInfo").Text, Model.Id)</b>

@@ -3,15 +3,6 @@
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)@*otherwise we get a model state error*@
 
-@if (ViewBag.RefreshPage == true)
-{
-    <script type="text/javascript">
-    try {window.opener.document.forms['@(ViewBag.formId)'].@(ViewBag.btnId).click();}
-    catch (e){} 
-    window.close();
-    </script>
-}
-
 <div class="well" style="margin-bottom:8px;">
 	@if (ViewBag.IsEdit)
     {

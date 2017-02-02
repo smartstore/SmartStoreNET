@@ -40,6 +40,7 @@ using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -713,6 +714,7 @@ namespace SmartStore.Admin.Controllers
 						ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService),
 						ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint,
                         Sku = orderItem.Product.Sku,
+                        Gtin = orderItem.Product.Gtin,
                         AttributeInfo = orderItem.AttributeDescription,
                         ItemWeight = orderItem.ItemWeight.HasValue ? string.Format("{0:F2} [{1}]", orderItem.ItemWeight, baseWeightIn) : "",
                         ItemDimensions = string.Format("{0:F2} x {1:F2} x {2:F2} [{3}]", orderItem.Product.Length, orderItem.Product.Width, orderItem.Product.Height, baseDimensionIn),
@@ -2104,6 +2106,7 @@ namespace SmartStore.Admin.Controllers
 					ProductTypeName = orderItem.Product.GetProductTypeLabel(_localizationService),
 					ProductTypeLabelHint = orderItem.Product.ProductTypeLabelHint,
                     Sku = orderItem.Product.Sku,
+                    Gtin = orderItem.Product.Gtin,
                     AttributeInfo = orderItem.AttributeDescription,
                     ItemWeight = orderItem.ItemWeight.HasValue ? string.Format("{0:F2} [{1}]", orderItem.ItemWeight, baseWeightIn) : "",
                     ItemDimensions = string.Format("{0:F2} x {1:F2} x {2:F2} [{3}]", orderItem.Product.Length, orderItem.Product.Width, orderItem.Product.Height, baseDimensionIn),
@@ -2263,7 +2266,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("ShipmentDetails", new { id = shipment.Id });
             }
         }
-
+        
 		public ActionResult PdfPackagingSlips(bool all, string selectedIds = null)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
@@ -2319,7 +2322,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				Size = pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
 				Margins = new PdfPageMargins { Top = 35, Bottom = 35 },
-				Page = new PdfViewContent("ShipmentDetails.Print", model, this.ControllerContext),
+				Page = new PdfViewContent("~/Administration/Views/Order/ShipmentDetails.Print.cshtml", model, this.ControllerContext),
 				Header = new PdfRouteContent("PdfReceiptHeader", "Common", routeValues, this.ControllerContext),
 				Footer = new PdfRouteContent("PdfReceiptFooter", "Common", routeValues, this.ControllerContext)
 			};

@@ -14,7 +14,7 @@
         <div class="options">
             @if (Model.DisplayPdfPackagingSlip)
             {
-                <a href="@Url.Action("PdfPackagingSlips", new { all = false, selectedIds = Model.Id.ToString() })" class="btn">
+                <a href="@Url.Action("PdfPackagingSlips", new { all = false, selectedIds = Model.Id.ToString(), area = "Admin" })" class="btn">
 					<i class="fa fa-print"></i>
 					@T("Admin.Orders.Shipments.PrintPackagingSlip")
 				</a>

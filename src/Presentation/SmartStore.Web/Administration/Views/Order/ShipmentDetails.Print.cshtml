@@ -5,10 +5,7 @@
 @using SmartStore.Services.Localization;
 @using SmartStore.Core.Html;
 @{
-
     Layout = "_Print";
-
-    //title
     Html.AddTitleParts(T("Admin.Orders.Shipments.ViewDetails").Text);
 
     var pdfMode = ViewBag.PdfMode == true;
@@ -31,9 +28,10 @@
     {
         var company = shipment.MerchantCompanyInfo;
         var address = shipment.ShippingAddress;
+        var showGtin = shipment.Items.Any(x => !String.IsNullOrEmpty(x.Gtin));
 
         var colWidths = new int[] { 50, 20, 10 };
-    
+
         <div class="document">
             @Html.Widget("shipmentdetails_top")
             <!-- Address & Info -->
@@ -122,6 +120,10 @@
                     <tr>
                         <th class="text-left" style="width: @(colWidths[0])%">@T("PDFPackagingSlip.ProductName")</th>
                         <th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.SKU")</th>
+                        @if (showGtin)
+                        {
+                            <th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.Gtin")</th>
+                        }
                         <th class="text-left" style="width: @(colWidths[2])%">@T("PDFPackagingSlip.QTY")</th>
                         <th class="text-right" style="width: @(colWidths[1])%">@T("PDFPackagingSlip.Weight")</th>
                     </tr>
@@ -130,7 +132,7 @@
                     @for (int i = 0; i < shipment.Items.Count; i++)
                     {
                         var item = shipment.Items[i];
-                        @ShipmentLine(item)
+                        @ShipmentLine(item, showGtin)
                     }
                 </tbody>
             </table>
@@ -139,7 +141,7 @@
     }
 </div>
 
-@helper ShipmentLine(ShipmentModel.ShipmentItemModel item)
+@helper ShipmentLine(ShipmentModel.ShipmentItemModel item, bool showGtin)
 {
     <tr>
         <td class="text-left">
@@ -151,12 +153,18 @@
                     @Html.Raw(item.AttributeInfo)
                 </div>
             }
-
         </td>
-
+        
         <td class="text-left">
             @item.Sku
         </td>
+        
+        @if (showGtin)
+        {
+            <td class="text-left">
+                @item.Gtin
+            </td>
+        }
         <td class="text-left">
             @item.QuantityInThisShipment
         </td>

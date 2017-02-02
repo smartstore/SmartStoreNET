@@ -61,7 +61,7 @@ namespace SmartStore.Services.Hooks
 				var attribute = (SpecificationAttribute)entity;
 				var oldAlias = entry.Entry.Property("Alias").OriginalValue as string;
 
-				if (!attribute.Alias.IsCaseInsensitiveEqual(oldAlias))
+				if (!attribute.Alias.IsCaseInsensitiveEqual(oldAlias) || entry.InitialState == EntityState.Deleted)
 				{
 					// remove all cached data. update results in too many changes.
 					_catalogSearchQueryAliasMapper.Value.RemoveAllAttributes();
@@ -72,7 +72,7 @@ namespace SmartStore.Services.Hooks
 				var option = (SpecificationAttributeOption)entity;
 				var oldAlias = entry.Entry.Property("Alias").OriginalValue as string;
 
-				if (!option.Alias.IsCaseInsensitiveEqual(oldAlias))
+				if (!option.Alias.IsCaseInsensitiveEqual(oldAlias) || entry.InitialState == EntityState.Deleted)
 				{
 					var attribute = _specificationAttributeService.Value.GetSpecificationAttributeById(option.SpecificationAttributeId);
 					if (attribute != null)
@@ -98,7 +98,7 @@ namespace SmartStore.Services.Hooks
 				{
 					var oldAlias = entry.Entry.Property("LocaleValue").OriginalValue as string;
 
-					if (!property.LocaleValue.IsCaseInsensitiveEqual(oldAlias))
+					if (!property.LocaleValue.IsCaseInsensitiveEqual(oldAlias) || entry.InitialState == EntityState.Deleted)
 					{
 						// remove all cached data. update results in too many changes.
 						_catalogSearchQueryAliasMapper.Value.RemoveAllAttributes();
@@ -108,7 +108,7 @@ namespace SmartStore.Services.Hooks
 				{
 					var oldAlias = entry.Entry.Property("LocaleValue").OriginalValue as string;
 
-					if (!property.LocaleValue.IsCaseInsensitiveEqual(oldAlias))
+					if (!property.LocaleValue.IsCaseInsensitiveEqual(oldAlias) || entry.InitialState == EntityState.Deleted)
 					{
 						var option = _specificationAttributeService.Value.GetSpecificationAttributeOptionById(property.EntityId);
 						if (option != null)

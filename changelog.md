@@ -24,6 +24,7 @@
 * #966 Implement new tax calculation logic for shipping and payment fees (Calculate with rate of highest cart amount)
 * #922 New option whether to include the weight of free shipping products in shipping by weight calculation
 * #724 Allow discounts to be applied to manufacturers
+* Option to display manufacturers sorted in alphabetical order 
 * Web API:
 	* #1002 Add support for addresses and customer roles navigation property of customer entity
 	* #1062 Add filter options for user grid on configuration page
@@ -51,6 +52,7 @@
 * #1048 Add meta tags to contact us page
 * Order XML export includes more customer data like title and salutation
 * #1080 Do not resolve Order.OrderURLForCustomer token for guest customers
+* #1051 Display EAN in PDF packaging slip
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation

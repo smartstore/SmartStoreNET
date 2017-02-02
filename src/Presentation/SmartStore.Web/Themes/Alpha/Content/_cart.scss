@@ -215,3 +215,19 @@
 #offcanvas-cart .buttons {
 	padding: 20px 20px 12px 20px;
 }
+
+// checkout attributes
+.order-summary-content .selected-checkout-attributes,
+.order-details .checkout-attributes {
+	.attr-caption {
+		font-weight: bold;
+		padding-right: 10px;
+		&:after {
+			content: ': ' 
+		}
+	}
+	.attr-value {
+		text-align: left;
+	}
+}
+

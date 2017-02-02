@@ -432,6 +432,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Catalog.Attributes.CheckoutAttributes.Values", "Options", "Optionen");
 
 			builder.AddOrUpdate("Search.Facet.PriceLabelTemplate", "up to {0}", "bis {0}");
+
+			builder.AddOrUpdate("Common.CopyToClipboard.Failed", "Failed to copy.", "Kopieren ist fehlgeschlagen.");
 		}
 	}
 }

@@ -69,7 +69,7 @@ else
 
 			var succeeded = window.copyTextToClipboard(url);
 
-			self.attr('data-original-title', succeeded ? '@T("Common.CopyToClipboard.Succeeded")' : '@T("Common.CopyToClipboard.Failded")')
+			self.attr('data-original-title', succeeded ? '@T("Common.CopyToClipboard.Succeeded")' : '@T("Common.CopyToClipboard.Failed")')
 				.tooltip('show');
 
 			setTimeout(function () {

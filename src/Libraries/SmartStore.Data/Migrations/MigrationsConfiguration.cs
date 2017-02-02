@@ -43,7 +43,7 @@ namespace SmartStore.Data.Migrations
 		public void MigrateSettings(SmartObjectContext context)
 		{
 			// Change ProductSortingEnum.Position > Relevance
-			var settings = context.Set<Setting>().Where(x => x.Name == "CatalogSettings.DefaultSortOrder" && x.Value == "Position").ToList();
+			var settings = context.Set<Setting>().Where(x => x.Name == "CatalogSettings.DefaultSortOrder" && x.Value.StartsWith("Position")).ToList();
 			if (settings.Any())
 			{
 				settings.Each(x => x.Value = "Relevance");

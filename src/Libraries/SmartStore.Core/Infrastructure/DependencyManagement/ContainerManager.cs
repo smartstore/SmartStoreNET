@@ -7,6 +7,7 @@ using Autofac;
 using Autofac.Builder;
 using SmartStore.ComponentModel;
 using SmartStore.Core.Caching;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Core.Infrastructure.DependencyManagement
 {
@@ -120,8 +121,9 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 				instances = instances2;
 				return true;
 			}
-			catch
+			catch (Exception ex)
 			{
+				_container.Resolve<ILoggerFactory>().GetLogger(this.GetType()).Error(ex);
 				return false;
 			}
 		}

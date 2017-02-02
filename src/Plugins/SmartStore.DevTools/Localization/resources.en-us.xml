@@ -1,0 +1,20 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="EnableMiniProfilerInPublicStore">
+    <Value>Enable Mini-Profiler in public store</Value>
+  </LocaleResource>
+  <LocaleResource Name="EnableMiniProfilerInPublicStore.Hint">
+    <Value>Activates the Mini-Profiler for the Frontend. With its help you can analyse requests of a page, including database requests. The display of the profiler is limited to administrators.</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayWidgetZones">
+    <Value>Display widget zones</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayWidgetZones.Hint">
+    <Value>Injects tooltips into every widget zone, which includes the name of the current widget zone. The display of these tooltips is limited to admintrators.</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayMachineName">
+    <Value>Display machine name</Value>
+  </LocaleResource>
+  <LocaleResource Name="DisplayMachineName.Hint">
+    <Value>Displays the current machine name below the footer. With this function you can determine the current machine within a distributed application.</Value>
+  </LocaleResource>
+</Language>

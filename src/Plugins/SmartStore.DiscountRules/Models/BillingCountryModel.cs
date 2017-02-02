@@ -10,6 +10,7 @@ namespace SmartStore.DiscountRules.Models
         {
 			AvailableCountries = new List<SelectListItem>();
         }
+
 		[SmartResourceDisplayName("Plugins.DiscountRules.BillingCountry.Fields.Country")]
 		public int CountryId { get; set; }
 		public IList<SelectListItem> AvailableCountries { get; set; }

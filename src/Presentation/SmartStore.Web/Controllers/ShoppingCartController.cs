@@ -1167,36 +1167,7 @@ namespace SmartStore.Web.Controllers
 
                     case AttributeControlType.FileUpload:
                         {
-                            var postedFile = this.Request.Files[controlId].ToPostedFileResult();
-                            if (postedFile != null && postedFile.FileName.HasValue())
-                            {
-                                int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
-                                if (postedFile.Size > fileMaxSize)
-                                {
-                                    //TODO display warning
-                                    //warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024)));
-                                }
-                                else
-                                {
-                                    //save an uploaded file
-                                    var download = new Download
-                                    {
-                                        DownloadGuid = Guid.NewGuid(),
-                                        UseDownloadUrl = false,
-                                        DownloadUrl = "",
-                                        ContentType = postedFile.ContentType,
-                                        Filename = postedFile.FileTitle,
-                                        Extension = postedFile.FileExtension,
-                                        IsNew = true,
-										UpdatedOnUtc = DateTime.UtcNow
-									};
-
-                                    _downloadService.InsertDownload(download, postedFile.Buffer);
-
-                                    //save attribute
-                                    selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, download.DownloadGuid.ToString());
-                                }
-                            }
+                            selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, form[controlId]);
                         }
                         break;
 
@@ -1209,6 +1180,54 @@ namespace SmartStore.Web.Controllers
 			_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.CheckoutAttributes, selectedAttributes);
         }
 
+        [HttpPost]
+        public ActionResult UploadFileCheckoutAttribute(string controlId)
+        {
+            var postedFile = this.Request.Files["file"].ToPostedFileResult();
+            if (postedFile != null && postedFile.FileName.HasValue())
+            {
+                int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
+                if (postedFile.Size > fileMaxSize)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = string.Format(_localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024))
+                    });
+                }
+                else
+                {
+                    //save an uploaded file
+                    var download = new Download
+                    {
+                        DownloadGuid = Guid.NewGuid(),
+                        UseDownloadUrl = false,
+                        DownloadUrl = "",
+                        ContentType = postedFile.ContentType,
+                        Filename = postedFile.FileTitle,
+                        Extension = postedFile.FileExtension,
+                        IsNew = true,
+                        UpdatedOnUtc = DateTime.UtcNow
+                    };
+
+                    _downloadService.InsertDownload(download, postedFile.Buffer);
+
+                    return Json(new
+                    {
+                        success = true,
+                        message = _localizationService.GetResource("ShoppingCart.FileUploaded"),
+                        downloadGuid = download.DownloadGuid,
+                    });
+                }
+            }
+
+            return Json(new
+            {
+                success = false,
+                downloadGuid = Guid.Empty
+            });
+        }
+        
 		private string GetProductUrlWithAttributes(OrganizedShoppingCartItem cartItem, string productSeName)
 		{
 			var attributeQueryData = new List<List<int>>();

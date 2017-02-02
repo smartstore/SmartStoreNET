@@ -780,7 +780,7 @@ namespace SmartStore.Web.Controllers
 			model.Gtin = product.Gtin;
 			model.HasSampleDownload = product.IsDownload && product.HasSampleDownload;
 			model.IsCurrentCustomerRegistered = customer.IsRegistered();
-			model.IsBasePriceEnabled = product.BasePriceEnabled;
+			model.IsBasePriceEnabled = product.BasePriceEnabled && !(isBundle && product.BundlePerItemPricing);
             model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, currency);
 			model.ShowLegalInfo = _taxSettings.ShowLegalHintsInProductDetails;
 			model.BundleTitleText = product.GetLocalized(x => x.BundleTitleText);

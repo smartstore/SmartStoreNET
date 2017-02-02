@@ -200,7 +200,7 @@
             </td>
         </tr>
         <!-- PAnGV -->
-        <tr>
+        <tr class="base-price">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.BasePriceEnabled)
             </td>
@@ -209,7 +209,7 @@
                 @Html.ValidationMessageFor(model => model.BasePriceEnabled)
             </td>
         </tr>
-        <tr id="pnlBasePriceBaseAmount">
+        <tr id="pnlBasePriceBaseAmount" class="base-price">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.BasePriceBaseAmount)
             </td>
@@ -218,7 +218,7 @@
                 @Html.DropDownListFor(model => model.BasePriceMeasureUnit, Model.AvailableMeasureUnits, new { @class = "autowidth", style = "width:100px" })
             </td>
         </tr>
-        <tr id="pnlBasePriceAmount">
+        <tr id="pnlBasePriceAmount" class="base-price">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.BasePriceAmount)
             </td>
@@ -227,7 +227,7 @@
                 <span id="BasePriceAmountInfo" class="muted">@*@T("Admin.Catalog.Products.Fields.BasePriceInfo")*@</span>
             </td>
         </tr>
-        <tr id="pnlBasePriceAmountHint">
+        <tr id="pnlBasePriceAmountHint" class="base-price">
             <td class="adminTitle">
                 &nbsp;
             </td>

@@ -160,6 +160,7 @@
 		$(document).on('change', '#@Html.FieldIdFor(model => model.BundlePerItemPricing)', function () {
 			var isChecked = $(this).is(':checked');
 			$('#TierPriceContainer').toggle(!isChecked);
+			$('#group-prices').find('.base-price').toggle(!isChecked);
 			$('a[href=#tab-discounts]').parent().toggle(!isChecked);
         });
 

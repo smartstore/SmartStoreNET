@@ -99,11 +99,9 @@ namespace SmartStore.Services.Tests.Orders
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames = new List<string>();
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add("FixedRateTestShippingRateComputationMethod");
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
-            _logger = new NullLogger();
 
             _shippingService = new ShippingService(
                 _shippingMethodRepository,
-                _logger,
                 _productAttributeParser,
 				_productService,
                 _checkoutAttributeParser,

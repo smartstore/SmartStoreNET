@@ -11,12 +11,14 @@
 <div class="pd-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
 	{
-		Html.RenderPartial("Product.Offer.Price", Model);
+		<div class="pd-offer-price-container" data-partial="Price">
+			@{ Html.RenderPartial("Product.Offer.Price", Model); }
+		</div>
 	}
 
-	@{ 
-		Html.RenderPartial("Product.StockInfo", Model); 
-	}
+	<div class="pd-stock-info-container" data-partial="Stock">
+		@{ Html.RenderPartial("Product.StockInfo", Model); }
+	</div>
 
 	@if (Model.ProductType != ProductType.BundledProduct && Model.ProductVariantAttributes.ShouldBeRendered())
 	{

@@ -13,6 +13,7 @@ namespace SmartStore.Web
 	{		
 		public static string UpdateProductDetailsUrl(this ProductDetailsModel model, string itemType = null)
 		{
+			// TODO: (mc) Remove
 			var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
 
 			string url = urlHelper.Action("UpdateProductDetails", "Product", new

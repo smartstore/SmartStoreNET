@@ -11,7 +11,7 @@
 	Html.AddMetaDescriptionParts(Model.MetaDescription);
 	Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-	Html.AddScriptParts("~/Themes/Alpha/Scripts/public.product-detail.js");
+	Html.AddScriptParts("~/Themes/Alpha/Scripts/public.product.js");
 
 	if (Model.CanonicalUrlsEnabled)
 	{
@@ -19,13 +19,18 @@
 		Html.AddCanonicalUrlParts(productUrl);
 	}
 
+	string updateUrl = Url.Action("UpdateProductDetails3", "Product", new
+	{
+		productId = Model.Id,
+		bundleItemId = Model.BundleItem.Id,
+		itemType = (string)null // TODO: (mc) WTF!?
+	});
+
 	/* TODO: (mc)
 	 * - CustomerEnteredPrice
 	 * - Badges
 	 * - GTIN: user must specifiy the GTIN type on product level (gtin12, gtin13 etc.). See https://schema.org/Offer
-	 * - Reviews
-	 * - Reviews Microdata
-	 * - Qty input: make settings (Whether to display, Dropdown, Spinner)
+	 * - Qty input: make settings (Whether to display)
 	 * - FIXME (mg) > no (discount) badges shown in products lists (with bundled products & PricePerBundleItems ON)
 	 */
 }
@@ -37,20 +42,24 @@
 	@Html.Widget("productdetails_top")
 
 	<article class="pd page-body" itemscope itemtype="http://schema.org/Product">
-		<div id="total-price-update-container" class="update-container" data-referto="#attributes, #add-to-cart, #bundle-overview" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
+		<div id="total-price-update-container" class="update-container" data-url="@updateUrl">
 			@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
 			{
 			<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
 				<section class="row pd-section pd-section-top">
-					<!-- Data: Picture, Description, Attrs etc. -->
+					<!-- Picture -->
 					<div class="col-xs-12 col-md-6 col-lg-7 pd-data-col">
-						@{ Html.RenderPartial("Product.Picture", Model.DetailsPictureModel); }
+						<div id="pd-gallery-container">
+							@{ Html.RenderPartial("Product.Picture", Model.DetailsPictureModel); }
+						</div>
 					</div>
 					<!-- Sidebar: Info, Price, Buttons etc. -->
 					<aside class="col-xs-12 col-md-6 col-lg-5 pd-info-col zoom-window-container">
 						@{ Html.RenderPartial("Product.Info", Model); }
 						<!-- Product attributes (SKU, EAN, Weight etc.) -->
-						@{ Html.RenderPartial("Product.Attrs", Model); }
+						<div class="pd-attrs-container" data-partial="Attrs">
+							@{ Html.RenderPartial("Product.Attrs", Model); }
+						</div>
 						<!-- Offer box -->
 						@{ Html.RenderPartial("Product.Offer", Model); }
 					</aside>
@@ -81,8 +90,7 @@
     $(function () {
         var settings = {
             galleryStartIndex: @(Model.DetailsPictureModel.GalleryStartIndex),
-            enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)'),
-            zoomType: '@Model.DetailsPictureModel.PictureZoomType' // window, inner, lens
+            enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)')
         };
 
     	$('#product-details-form').productDetail(settings);

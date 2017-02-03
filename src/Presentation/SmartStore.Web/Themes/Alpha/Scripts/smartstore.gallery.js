@@ -558,10 +558,9 @@
 	
 	$.fn[pluginName] = function (options) {
 		return this.each(function () {
-			if (!$.data(this, 'plugin_' + pluginName)) {
+			if (!$.data(this, pluginName)) {
 				options = $.extend(true, {}, $[pluginName].defaults, options);
-
-				$.data(this, 'plugin_' + pluginName, new SmartGallery(this, options));
+				$.data(this, pluginName, new SmartGallery(this, options));
 			}
 		});
 	};

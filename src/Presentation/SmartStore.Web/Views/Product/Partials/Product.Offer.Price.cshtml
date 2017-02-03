@@ -4,6 +4,11 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{
+	if (Model.AddToCart.DisableBuyButton && Model.AddToCart.DisableWishlistButton)
+	{
+		return;
+	}
+
 	var priceModel = Model.ProductPrice;
 
 	var currentPrice = priceModel.PriceWithDiscount.NullEmpty() ?? priceModel.Price;
@@ -26,7 +31,7 @@
 	var blocksHaveLabel = currentPriceLabel.HasValue() && oldPrice2Label.HasValue();
 }
 
-<div class="pd-offer-price">
+<div class="pd-offer-price" data-partial="Price">
 	@if (priceModel.CallForPrice)
 	{
 		<h4 class="pd-price pd-callforprice">@T("Products.CallForPrice")</h4>

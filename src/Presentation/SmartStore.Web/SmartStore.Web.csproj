@@ -957,6 +957,7 @@
     <Content Include="Themes\Alpha\Content\pnotify\js\pnotify.js" />
     <Content Include="Themes\Alpha\Content\pnotify\js\pnotify.mobile.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.hammer.js" />
+    <Content Include="Themes\Alpha\Scripts\public.product.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.responsiveNav.js" />
     <Content Include="Scripts\smartstore.entityPicker.js" />
     <Content Include="Scripts\smartstore.instantsearch.js" />

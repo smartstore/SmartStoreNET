@@ -1,11 +1,13 @@
 ﻿@model ProductDetailsPictureModel
+
 @using SmartStore.Web.Models.Catalog;
+
 @{
 	Html.AddScriptParts("~/bundles/smart-gallery");
 	var defaultPicture = Model.DefaultPictureModel;
 }
 
-<div id="pd-gallery-container-outer">
+<div id="pd-gallery-container-inner">
 	<div id="pd-gallery" class="gal-box m-b-1">
 		<!-- Thumbnail navigation -->
 		<div class="gal-nav-cell@(Model.PictureModels.Count <= 1 ? " gal-nav-hidden" : " ")">

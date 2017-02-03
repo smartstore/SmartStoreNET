@@ -141,7 +141,7 @@ namespace SmartStore.Data
 
 		private void IgnoreMergedData(IEnumerable<DbEntityEntry> entries, bool ignore)
 		{
-			foreach (var entry in entries.OfType<IMergedData>())
+			foreach (var entry in entries.Select(x => x.Entity).OfType<IMergedData>())
 			{
 				entry.MergedDataIgnore = ignore;
 			}

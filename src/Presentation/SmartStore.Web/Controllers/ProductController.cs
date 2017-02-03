@@ -524,6 +524,108 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[HttpPost]
+		public ActionResult UpdateProductDetails3(int productId, string itemType, int bundleItemId, FormCollection form)
+		{
+			// TODO: (mc) Remove action "UpdateProductDetails" later
+
+			int quantity = 1;
+			int galleryStartIndex = -1;
+			string galleryHtml = null;
+			string dynamicThumbUrl = null;
+			bool isAssociated = itemType.IsCaseInsensitiveEqual("associateditem");
+			var pictureModel = new ProductDetailsPictureModel();
+			var m = new ProductDetailsModel();
+			var product = _productService.GetProductById(productId);
+			var bItem = _productService.GetBundleItemById(bundleItemId);
+			IList<ProductBundleItemData> bundleItems = null;
+			ProductBundleItemData bundleItem = (bItem == null ? null : new ProductBundleItemData(bItem));
+
+			var warnings = new List<string>();
+			var attributes = _productAttributeService.GetProductVariantAttributesByProductId(productId);
+
+			string attributeXml = form.CreateSelectedAttributesXml(productId, attributes, _productAttributeParser,
+				_localizationService, _downloadService, _catalogSettings, this.Request, warnings, true);
+
+			var areAllAttributesForCombinationSelected = _shoppingCartService.AreAllAttributesForCombinationSelected(attributeXml, product);
+
+			// quantity required for tier prices
+			string quantityKey = form.AllKeys.FirstOrDefault(k => k.EndsWith("EnteredQuantity"));
+			if (quantityKey.HasValue())
+				int.TryParse(form[quantityKey], out quantity);
+
+			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing)
+			{
+				bundleItems = _productService.GetBundleItems(product.Id);
+				if (form.Count > 0)
+				{
+					// may add elements to form if they are preselected by bundle item filter
+					foreach (var itemData in bundleItems)
+					{
+						var unused = _helper.PrepareProductDetailsPageModel(itemData.Item.Product, false, itemData, null, form);
+					}
+				}
+			}
+
+			// get merged model data
+			_helper.PrepareProductDetailModel(m, product, isAssociated, bundleItem, bundleItems, form, quantity);
+
+			if (bundleItem != null) // update bundle item thumbnail
+			{
+				if (!bundleItem.Item.HideThumbnail)
+				{
+					var picture = m.GetAssignedPicture(_pictureService, null, bundleItem.Item.ProductId);
+					dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.BundledProductPictureSize, false);
+				}
+			}
+			else if (isAssociated) // update associated product thumbnail
+			{
+				var picture = m.GetAssignedPicture(_pictureService, null, productId);
+				dynamicThumbUrl = _pictureService.GetPictureUrl(picture, _mediaSettings.AssociatedProductPictureSize, false);
+			}
+			else if (product.ProductType != ProductType.BundledProduct)     // update image gallery
+			{
+				var pictures = _pictureService.GetPicturesByProductId(productId);
+
+				if (pictures.Count <= _catalogSettings.DisplayAllImagesNumber)  // all pictures rendered... only index is required
+				{
+					var picture = m.GetAssignedPicture(_pictureService, pictures);
+					galleryStartIndex = (picture == null ? 0 : pictures.IndexOf(picture));
+				}
+				else
+				{
+					var allCombinationPictureIds = _productAttributeService.GetAllProductVariantAttributeCombinationPictureIds(product.Id);
+
+					_helper.PrepareProductDetailsPictureModel(
+						pictureModel,
+						pictures,
+						product.GetLocalized(x => x.Name),
+						allCombinationPictureIds,
+						false,
+						bundleItem,
+						m.SelectedCombination);
+
+					galleryStartIndex = pictureModel.GalleryStartIndex;
+					galleryHtml = this.RenderPartialViewToString("Product.Picture", pictureModel);
+				}
+			}
+
+			object data = new
+			{
+				Partials = new
+				{
+					Attrs = this.RenderPartialViewToString("Product.Attrs", m),
+					Price = this.RenderPartialViewToString("Product.Offer.Price", m),
+					Stock = this.RenderPartialViewToString("Product.StockInfo", m)
+				},
+				DynamicThumblUrl = dynamicThumbUrl,
+				GalleryStartIndex = galleryStartIndex,
+				GalleryHtml = galleryHtml
+			};
+
+			return new JsonResult { Data = data };
+		}
+
+		[HttpPost]
 		public ActionResult UpdateProductDetails(int productId, string itemType, int bundleItemId, FormCollection form)
 		{
 			int quantity = 1;

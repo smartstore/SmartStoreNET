@@ -7,6 +7,60 @@
 
 <table class="adminContent">
 	<tr>
+		<td colspan="2">
+			<div class="admin-config-group">
+				<div class="head">@T("Plugins.Feed.Froogle.GeneralSettings")</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.ExportShipping)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.ExportShipping)
+			@Html.ValidationMessageFor(m => m.ExportShipping)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.SpecialPrice)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.SpecialPrice)
+			@Html.ValidationMessageFor(m => m.SpecialPrice)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.ExportBasePrice)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.ExportBasePrice)
+			@Html.ValidationMessageFor(m => m.ExportBasePrice)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.AdditionalImages)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.AdditionalImages)
+			@Html.ValidationMessageFor(m => m.AdditionalImages)
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<div class="admin-config-group">
+				<div class="title">@T("Plugins.Feed.Froogle.DefaultValueSettings")</div>
+				<div class="alert alert-info">
+					<button type="button" class="close" data-dismiss="alert">&#215;</button>
+					@T("Plugins.Feed.Froogle.DefaultValueSettingsNote")
+				</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
 		<td class="adminTitle">
 			@Html.SmartLabelFor(m => m.DefaultGoogleCategory)
 		</td>
@@ -122,42 +176,6 @@
 		<td class="adminData">
 			@Html.EditorFor(m => m.Pattern)
 			@Html.ValidationMessageFor(m => m.Pattern)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(m => m.AdditionalImages)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(m => m.AdditionalImages)
-			@Html.ValidationMessageFor(m => m.AdditionalImages)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(m => m.SpecialPrice)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(m => m.SpecialPrice)
-			@Html.ValidationMessageFor(m => m.SpecialPrice)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(m => m.ExportShipping)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(m => m.ExportShipping)
-			@Html.ValidationMessageFor(m => m.ExportShipping)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(m => m.ExportBasePrice)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(m => m.ExportBasePrice)
-			@Html.ValidationMessageFor(m => m.ExportBasePrice)
 		</td>
 	</tr>
 </table>

@@ -22,6 +22,15 @@
 </ul>]]>
 		</Value>
 	</LocaleResource>
+  <LocaleResource Name="GeneralSettings">
+    <Value>General settings</Value>
+  </LocaleResource>
+  <LocaleResource Name="DefaultValueSettings">
+    <Value>Default values</Value>
+  </LocaleResource>
+  <LocaleResource Name="DefaultValueSettingsNote">
+    <Value>Default values will be exported if the information does not exist or is not available for a particular product. For a particular product, these values can be edited in the plugin configuration and the product edit page.</Value>
+  </LocaleResource>
 	<LocaleResource Name="MissingDefaultCategory">
 		<Value>Default Google category is not set</Value>
 	</LocaleResource>

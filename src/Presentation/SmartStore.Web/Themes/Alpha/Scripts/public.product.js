@@ -14,12 +14,10 @@
 		var opts = this.options = $.extend(true, {}, options, meta || {});
 		
 		this.init = function() {
-			
 			var opts = this.options;
 			
 		    this.createGallery(opts.galleryStartIndex);
 			
-		    $('#pd-gallery-container-outer').throbber({ white: false, small: false, show: false });
 
 			// Update product data and gallery
 		    $(el).find(':input').change(function (e) {

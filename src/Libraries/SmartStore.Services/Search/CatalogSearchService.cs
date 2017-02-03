@@ -91,16 +91,19 @@ namespace SmartStore.Services.Search
 								hitsFactory = () => _productService.Value.GetProductsByIds(productIds, loadFlags);
 							}
 
-							try
+							if (searchQuery.Origin != "Search/InstantSearch")
 							{
-								using (_chronometer.Step("Get facets"))
+								try
 								{
-									facets = searchEngine.GetFacetMap();
+									using (_chronometer.Step("Get facets"))
+									{
+										facets = searchEngine.GetFacetMap();
+									}
 								}
-							}
-							catch (Exception exception)
-							{
-								_logger.Error(exception);
+								catch (Exception exception)
+								{
+									_logger.Error(exception);
+								}
 							}
 						}
 

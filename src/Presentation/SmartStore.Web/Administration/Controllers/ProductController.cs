@@ -3027,7 +3027,7 @@ namespace SmartStore.Admin.Controllers
 					{
 						Id = x.Id,
 						ProductVariantAttributeId = x.ProductVariantAttributeId,
-						Name = x.ProductVariantAttribute.AttributeControlType != AttributeControlType.ColorSquares ? x.Name : string.Format("{0} - {1}", x.Name, x.ColorSquaresRgb),
+						Name = x.ColorSquaresRgb.IsEmpty() ? x.Name : string.Format("{0} - {1}", x.Name, x.ColorSquaresRgb),
 						Alias = x.Alias,
 						ColorSquaresRgb = x.ColorSquaresRgb,
 						PriceAdjustment = x.PriceAdjustment,
@@ -3038,7 +3038,7 @@ namespace SmartStore.Admin.Controllers
 						DisplayOrder = x.DisplayOrder,
 						ValueTypeId = x.ValueTypeId,
 						TypeName = x.ValueType.GetLocalizedEnum(_localizationService, _workContext),
-						TypeNameClass = (x.ValueType == ProductVariantAttributeValueType.ProductLinkage ? "fa fa-link mr8" : "hide"),
+						TypeNameClass = (x.ValueType == ProductVariantAttributeValueType.ProductLinkage ? "fa fa-link mr8" : "hide hidden-xs-up"),
 						LinkedProductId = x.LinkedProductId,
 						Quantity = x.Quantity
 					};
@@ -3084,8 +3084,8 @@ namespace SmartStore.Admin.Controllers
 			{
 				ProductId = pva.ProductId,
 				ProductVariantAttributeId = productAttributeAttributeId,
-				DisplayColorSquaresRgb = pva.AttributeControlType == AttributeControlType.ColorSquares,
-				ColorSquaresRgb = "#000000",
+				DisplayColorSquaresRgb = pva.IsListTypeAttribute(),
+				ColorSquaresRgb = "",
 				Quantity = 1
 			};
 
@@ -3106,16 +3106,16 @@ namespace SmartStore.Admin.Controllers
 
 			if (pva.AttributeControlType == AttributeControlType.ColorSquares)
 			{
-				//ensure valid color is chosen/entered
-				if (String.IsNullOrEmpty(model.ColorSquaresRgb))
-					ModelState.AddModelError("", "Color is required");
-				try
+				if (model.ColorSquaresRgb.HasValue())
 				{
-					var color = System.Drawing.ColorTranslator.FromHtml(model.ColorSquaresRgb);
-				}
-				catch (Exception exc)
-				{
-					ModelState.AddModelError("", exc.Message);
+					try
+					{
+						var color = System.Drawing.ColorTranslator.FromHtml(model.ColorSquaresRgb);
+					}
+					catch (Exception exc)
+					{
+						ModelState.AddModelError("", exc.Message);
+					}
 				}
 			}
 
@@ -3167,14 +3167,14 @@ namespace SmartStore.Admin.Controllers
 				Name = pvav.Name,
 				Alias = pvav.Alias,
 				ColorSquaresRgb = pvav.ColorSquaresRgb,
-				DisplayColorSquaresRgb = pvav.ProductVariantAttribute.AttributeControlType == AttributeControlType.ColorSquares,
+				DisplayColorSquaresRgb = pvav.ProductVariantAttribute.IsListTypeAttribute(),
 				PriceAdjustment = pvav.PriceAdjustment,
 				WeightAdjustment = pvav.WeightAdjustment,
 				IsPreSelected = pvav.IsPreSelected,
 				DisplayOrder = pvav.DisplayOrder,
 				ValueTypeId = pvav.ValueTypeId,
 				TypeName = pvav.ValueType.GetLocalizedEnum(_localizationService, _workContext),
-				TypeNameClass = (pvav.ValueType == ProductVariantAttributeValueType.ProductLinkage ? "fa fa-link mr8" : "hide"),
+				TypeNameClass = (pvav.ValueType == ProductVariantAttributeValueType.ProductLinkage ? "fa fa-link mr8" : "hide hidden-xs-up"),
 				LinkedProductId = pvav.LinkedProductId,
 				Quantity = pvav.Quantity
 			};
@@ -3209,16 +3209,16 @@ namespace SmartStore.Admin.Controllers
 
 			if (pvav.ProductVariantAttribute.AttributeControlType == AttributeControlType.ColorSquares)
 			{
-				//ensure valid color is chosen/entered
-				if (String.IsNullOrEmpty(model.ColorSquaresRgb))
-					ModelState.AddModelError("", "Color is required");
-				try
+				if (model.ColorSquaresRgb.HasValue())
 				{
-					var color = System.Drawing.ColorTranslator.FromHtml(model.ColorSquaresRgb);
-				}
-				catch (Exception exc)
-				{
-					ModelState.AddModelError("", exc.Message);
+					try
+					{
+						var color = System.Drawing.ColorTranslator.FromHtml(model.ColorSquaresRgb);
+					}
+					catch (Exception exc)
+					{
+						ModelState.AddModelError("", exc.Message);
+					}
 				}
 			}
 

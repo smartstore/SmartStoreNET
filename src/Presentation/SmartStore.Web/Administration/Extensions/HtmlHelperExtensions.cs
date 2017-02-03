@@ -11,8 +11,7 @@ using SmartStore.Web.Framework.Plugins;
 namespace SmartStore.Admin.Extensions
 {
 	public static class HtmlHelperExtensions
-	{
-		
+	{	
 		public static string VariantAttributeValueName<T>(this HtmlHelper<T> helper)
 		{
 			string result =

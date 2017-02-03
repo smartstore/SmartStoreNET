@@ -67,6 +67,20 @@ namespace SmartStore.Core.Domain.Catalog
             }
         }
 
+		public bool IsListTypeAttribute()
+		{
+			switch (AttributeControlType)
+			{
+				case AttributeControlType.Checkboxes:
+				case AttributeControlType.ColorSquares:
+				case AttributeControlType.DropdownList:
+				case AttributeControlType.RadioList:
+					return true;
+				default:
+					return false;
+			}
+		}
+
         /// <summary>
         /// Gets the product attribute
         /// </summary>

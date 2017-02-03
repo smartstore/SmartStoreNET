@@ -109,7 +109,7 @@ namespace SmartStore.Web.Models.Catalog
 			// important. According to it's importance, show attribute value in grid or list mode.
 			// E.g. perfect for "Energy label" > "EEK A++", or special material (e.g. "Leather") etc.
 			public IList<ProductSpecificationModel> SpecificationAttributes { get; set; }
-			public ColorAttribute ColorAttribute { get; set; }
+			public IList<ColorAttributeValue> ColorAttributes { get; set; }
 			public IList<Badge> Badges { get; set; }
 		}
 
@@ -148,6 +148,9 @@ namespace SmartStore.Web.Models.Catalog
 
 		public class ColorAttributeValue
 		{
+			public int AttributeId { get; set; }
+			public string AttributeName { get; set; }
+
 			public int Id { get; set; }
 			public string Color { get; set; }
 			public string Alias { get; set; }
@@ -169,6 +172,7 @@ namespace SmartStore.Web.Models.Catalog
 						equals = this.Color.IsCaseInsensitiveEqual(o2.Color);
 					}
 				}
+
 				return equals;
 			}
 		}

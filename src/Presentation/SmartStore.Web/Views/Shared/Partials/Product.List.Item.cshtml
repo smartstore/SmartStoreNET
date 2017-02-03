@@ -9,7 +9,7 @@
 	var picture = Model.Picture;
 
 	var showButtons = list.ShowButtons && (!Model.Price.DisableWishlistButton || list.CompareEnabled || (!Model.Price.DisableBuyButton && list.BuyEnabled));
-	var showVariants = Model.ColorAttribute != null || (Model.Attributes != null && Model.Attributes.Any());
+	var showVariants = (Model.ColorAttributes != null && Model.ColorAttributes.Any()) || (Model.Attributes != null && Model.Attributes.Any());
 	var showDrop = showButtons || showVariants;
 	var showAttrs = list.ViewMode == ProductSummaryViewMode.List && (list.ShowSku || list.ShowWeight || list.ShowDimensions);
 }

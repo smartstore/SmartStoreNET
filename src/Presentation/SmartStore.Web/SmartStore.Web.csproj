@@ -498,7 +498,9 @@
     <Content Include="Content\2012.2.607\Telerik\treeview-line.png" />
     <Content Include="Content\2012.2.607\Telerik\treeview-nodes-rtl.png" />
     <Content Include="Content\2012.2.607\Telerik\treeview-nodes.png" />
+    <Content Include="Content\bootstrap\custom\images\alpha-horizontal.png" />
     <Content Include="Content\bootstrap\custom\images\alpha.png" />
+    <Content Include="Content\bootstrap\custom\images\hue-horizontal.png" />
     <Content Include="Content\bootstrap\custom\images\hue.png" />
     <Content Include="Content\bootstrap\custom\images\saturation.png" />
     <Content Include="Content\bootstrap\js\custom\bootstrap-colorpicker.js" />

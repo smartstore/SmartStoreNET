@@ -3104,21 +3104,6 @@ namespace SmartStore.Admin.Controllers
 			if (pva == null)
 				return RedirectToAction("List", "Product");
 
-			if (pva.AttributeControlType == AttributeControlType.ColorSquares)
-			{
-				if (model.ColorSquaresRgb.HasValue())
-				{
-					try
-					{
-						var color = System.Drawing.ColorTranslator.FromHtml(model.ColorSquaresRgb);
-					}
-					catch (Exception exc)
-					{
-						ModelState.AddModelError("", exc.Message);
-					}
-				}
-			}
-
 			if (ModelState.IsValid)
 			{
 				var pvav = new ProductVariantAttributeValue
@@ -3206,21 +3191,6 @@ namespace SmartStore.Admin.Controllers
 			var pvav = _productAttributeService.GetProductVariantAttributeValueById(model.Id);
 			if (pvav == null)
 				return RedirectToAction("List", "Product");
-
-			if (pvav.ProductVariantAttribute.AttributeControlType == AttributeControlType.ColorSquares)
-			{
-				if (model.ColorSquaresRgb.HasValue())
-				{
-					try
-					{
-						var color = System.Drawing.ColorTranslator.FromHtml(model.ColorSquaresRgb);
-					}
-					catch (Exception exc)
-					{
-						ModelState.AddModelError("", exc.Message);
-					}
-				}
-			}
 
 			if (ModelState.IsValid)
 			{

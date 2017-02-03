@@ -556,17 +556,18 @@ namespace SmartStore.Web.Framework
 
         public static MvcHtmlString ColorBox(this HtmlHelper html, string name, string color, string defaultColor)
         {
-            var sb = new StringBuilder();
+			// TODO: (mc) SASS-enable ColorPicker and make it a global component
+			var sb = new StringBuilder();
 
 			defaultColor = defaultColor.EmptyNull();
 			var isDefault = color.IsCaseInsensitiveEqual(defaultColor);
 
-            sb.AppendFormat("<span class='input-append color sm-colorbox' data-color='{0}' data-color-format='hex'>", color);
+            sb.Append("<div class='input-append input-group colorpicker-component sm-colorbox'>");
 
-            sb.AppendFormat(html.TextBox(name, isDefault ? "" : color, new { @class = "span2 colorval", placeholder = defaultColor }).ToHtmlString());
-            sb.AppendFormat("<span class='add-on'><i style='background-color:{0}; border:1px solid #bbb'></i></span>", color);
+            sb.AppendFormat(html.TextBox(name, isDefault ? "" : color, new { @class = "form-control", placeholder = defaultColor }).ToHtmlString());
+            sb.AppendFormat("<span class='input-group-addon add-on'><i class='thecolor' style='{0}'></i></span>", defaultColor.HasValue() ? "background-color: " + defaultColor : "");
 
-            sb.Append("</span>");
+            sb.Append("</div>");
 
             var bootstrapJsRoot = "~/Content/bootstrap/js/";
             html.AppendScriptParts(false,

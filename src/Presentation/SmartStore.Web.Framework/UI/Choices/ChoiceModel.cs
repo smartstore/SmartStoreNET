@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework.Modelling;
 
@@ -74,6 +75,11 @@ namespace SmartStore.Web.Framework.UI.Choices
 				return Description;
 			}
 
+			return null;
+		}
+
+		public virtual string GetFileUploadUrl(UrlHelper url)
+		{
 			return null;
 		}
 	}

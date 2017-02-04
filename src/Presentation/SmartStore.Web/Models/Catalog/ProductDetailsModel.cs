@@ -224,6 +224,11 @@ namespace SmartStore.Web.Models.Catalog
 			{
 				return string.Format("product_attribute_{0}_{1}_{2}_{3}", ProductId, BundleItemId, ProductAttributeId, Id);
 			}
+
+			public override string GetFileUploadUrl(UrlHelper url)
+			{
+				return url.Action("UploadFileProductAttribute", "ShoppingCart", new { productId = this.ProductId, productAttributeId = this.ProductAttributeId });
+			}
 		}
 
 		public partial class ProductVariantAttributeValueModel : ChoiceItemModel

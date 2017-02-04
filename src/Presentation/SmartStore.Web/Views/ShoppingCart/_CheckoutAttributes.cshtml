@@ -1,164 +1,17 @@
 ﻿@model IList<ShoppingCartModel.CheckoutAttributeModel>
-@using SmartStore.Core.Domain.Catalog;
+
 @using SmartStore.Web.Models.ShoppingCart;
 
 @{
-    var storeUrl = EngineContext.Current.Resolve<IWebHelper>().GetStoreLocation(false);
+	if (Model.Count == 0)
+	{
+		return;
+	}
 }
 
-@if (Model.Count > 0)
-{   
-    <div class="checkout-attributes card card-block">
-
-        <div class="form-vertical">
-            @foreach (var attribute in Model)
-            {
-                string controlId = string.Format("checkout_attribute_{0}", attribute.Id);
-                string textPrompt = !string.IsNullOrEmpty(attribute.TextPrompt) ? attribute.TextPrompt : attribute.Name;
-                <div class="control-group">
-                    <label for="@controlId" class='control-label@(attribute.IsRequired ? " required" : "")'>@textPrompt</label>
-                    <div class="controls">
-                        @switch (attribute.AttributeControlType)
-                        {
-                            case AttributeControlType.DropdownList:
-                                {
-                                    <select name="@(controlId)" id="@(controlId)">
-								        @if (!attribute.IsRequired)
-								        {
-									        <option>@T("Common.Unspecified")</option>
-								        }
-								        else if (attribute.Values.Count > 0 && !attribute.Values.Any(x => x.IsPreSelected))
-								        {
-									        <option>@T("Common.PleaseSelect")</option>
-								        }
-                                        @foreach (var caValue in attribute.Values)
-                                        {
-                                            <option selected="@caValue.IsPreSelected" value="@caValue.Id">@caValue.Name
-                                                @(!String.IsNullOrEmpty(caValue.PriceAdjustment) ? " (" + caValue.PriceAdjustment + ")" : null)
-                                            </option>
-                                        }
-                                    </select>
-                                }
-                                break;
-                            case AttributeControlType.RadioList:
-                            case AttributeControlType.Checkboxes:
-                                {
-                                    foreach (var caValue in attribute.Values)
-                                    {
-                                        <label for="@(controlId)_@(caValue.Id)" class="@(attribute.AttributeControlType ==  AttributeControlType.RadioList ? "radio" : "checkbox")">
-                                            <input id="@(controlId)_@(caValue.Id)" type="@(attribute.AttributeControlType ==  AttributeControlType.RadioList ? "radio" : "checkbox")" name="@(controlId)" value="@caValue.Id" checked="@caValue.IsPreSelected" />
-                                                @caValue.Name @(!String.IsNullOrEmpty(caValue.PriceAdjustment) ? " [" + caValue.PriceAdjustment + "]" : null)
-                                        </label>
-                                    }
-                                }
-                                break;
-                            case AttributeControlType.TextBox:
-                                {
-                                    <input name="@(controlId)" type="text" class="form-control" id="@(controlId)" value="@attribute.TextValue" />
-                                }
-                                break;
-                            case AttributeControlType.MultilineTextbox:
-                                {
-                                    <textarea id="@(controlId)" class="form-control" name="@(controlId)">@attribute.TextValue</textarea>
-                                }
-                                break;
-                            case AttributeControlType.Datepicker:
-                                {
-                                    @Html.DatePickerDropDowns(controlId + "_day", controlId + "_month", controlId + "_year", DateTime.Now.Year, DateTime.Now.Year + 1, attribute.SelectedDay, attribute.SelectedMonth, attribute.SelectedYear)
-                                }
-                                break;
-                            case AttributeControlType.FileUpload:
-                                {
-                                    Html.AddScriptParts("~/bundles/fileupload");
-                                    Html.AddCssFileParts("~/css/fileupload");
-
-                                    var random = CommonHelper.GenerateRandomInteger();
-                                    var clientId = "upload" + CommonHelper.GenerateRandomInteger();
-
-                                    <div id="@clientId" class="fileupload">
-
-                                        <input id="@(controlId)" name="@(controlId)" type="hidden" class="hidden" />
-
-                                        <input type="file" style="display:none" />
-
-                                        <button class="btn remove" @Html.Attr("style", "display:none", true)>
-                                            <i class="fa fa-trash-o"></i>
-                                            @T("Common.Remove")
-                                        </button>
-
-                                        <span class="btn btn-primary fileinput-button">
-                                            <i class="fa fa-upload"></i>
-                                            <span>@T("Common.Fileuploader.Upload")</span>
-                                            <input id="fileupload-@random" type="file" name="file" />
-                                        </span>
-
-                                        <button class="btn btn-warning cancel">
-                                            <i class="fa fa-times"></i>
-                                            <span>@T("Common.Fileuploader.Cancel")</span>
-                                        </button>
-
-                                        <!-- The global progress information -->
-                                        <div class="fileupload-progress fade" style="width: 200px">
-                                            <!-- The global progress bar -->
-                                            <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                                                <div class="bar" style="width:0%;"></div>
-                                            </div>
-                                            <!-- The extended global progress information -->
-                                            <div class="progress-extended">&nbsp;</div>
-                                        </div>
-
-                                        <div class="uploaded-file hide">
-                                        </div>
-
-                                    </div>
-
-                                    <script type="text/javascript">
-                                        $(function () {
-
-                                            var el = $('#@clientId'),
-                                                elHidden = el.find('.hidden'),
-                                                elRemove = el.find('.remove'),
-                                                elFile = el.find('.uploaded-file');
-
-                                            $('#@clientId').fileupload({
-                                                url: '@Html.Raw(Url.Action("UploadFileCheckoutAttribute", "ShoppingCart", new { controlId = controlId }))',
-                                                dataType: 'json',
-                                                done: function (e, data) {
-                                                    var result = data.result;
-                                                    elHidden.val(result.downloadGuid);
-
-                                                    var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + result.downloadGuid;
-                                                    var fileName = data.files[0].name;
-                                                    var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
-
-                                                    elFile.html(fileLink).removeClass("hide");
-
-                                                    if (result.message) {
-                                                        displayNotification(result.message, "success");
-                                                    }
-                                                    elRemove.show();
-                                                },
-                                                error: function (jqXHR, textStatus, errorThrown) {
-                                                    if (errorThrown === 'abort') {
-                                                        displayNotification('File Upload has been canceled', "error");
-                                                    }
-                                                }
-                                            });
-
-                                            elRemove.click(function (e) {
-                                                elFile.html("").addClass("hide");
-                                                elHidden.val(0);
-                                                $(this).hide();
-                                                e.preventDefault();
-                                            });
-                                        });
-                                    </script>
-                                }
-                                break;
-                        }
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-}
+<div class="checkout-attributes card card-block">
+	@foreach (var attribute in Model)
+	{
+		Html.RenderPartial("ChoiceTemplates/Choice", attribute);
+	}
+</div>

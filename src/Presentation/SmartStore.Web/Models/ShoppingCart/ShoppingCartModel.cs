@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Web.Framework.UI.Choices;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
 
@@ -141,47 +143,33 @@ namespace SmartStore.Web.Models.ShoppingCart
 			public bool HideThumbnail { get; set; }
 		}
 
-        public partial class CheckoutAttributeModel : EntityModelBase
+        public partial class CheckoutAttributeModel : ChoiceModel
         {
-            public CheckoutAttributeModel()
-            {
-                Values = new List<CheckoutAttributeValueModel>();
-            }
+			public override string BuildControlId()
+			{
+				return "checkout_attribute_" + this.Id;
+			}
 
-            public string Name { get; set; }
+			public override string GetFileUploadUrl(UrlHelper url)
+			{
+				return url.Action("UploadFileCheckoutAttribute", "ShoppingCart", new { controlId = BuildControlId() });
+			}
+		}
 
-            public string TextValue { get; set; }
-
-            public string TextPrompt { get; set; }
-
-            public bool IsRequired { get; set; }
-
-            /// <summary>
-            /// Selected day value for datepicker
-            /// </summary>
-            public int? SelectedDay { get; set; }
-            /// <summary>
-            /// Selected month value for datepicker
-            /// </summary>
-            public int? SelectedMonth { get; set; }
-            /// <summary>
-            /// Selected year value for datepicker
-            /// </summary>
-            public int? SelectedYear { get; set; }
-
-            public AttributeControlType AttributeControlType { get; set; }
-
-            public IList<CheckoutAttributeValueModel> Values { get; set; }
-        }
-
-        public partial class CheckoutAttributeValueModel : EntityModelBase
+        public partial class CheckoutAttributeValueModel : ChoiceItemModel
         {
-            public string Name { get; set; }
+			public override string GetItemLabel()
+			{
+				var label = Name;
 
-            public string PriceAdjustment { get; set; }
+				if (PriceAdjustment.HasValue())
+				{
+					label += " ({0})".FormatWith(PriceAdjustment);
+				}
 
-            public bool IsPreSelected { get; set; }
-        }
+				return label;
+			}
+		}
 
         public partial class DiscountBoxModel: ModelBase
         {

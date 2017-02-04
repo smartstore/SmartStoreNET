@@ -6,13 +6,6 @@
 @{ 
 	// TODO: (mc) Update fileupload stuff to BS4
 
-	// TODO: (mc) WTF?!!
-	var model = Model as ProductDetailsModel.ProductVariantAttributeModel;
-	if (model == null)
-	{
-		return;
-	}
-
 	Html.AddScriptParts("~/bundles/fileupload");
 	Html.AddCssFileParts("~/css/fileupload");
 
@@ -69,7 +62,7 @@
             elFile = el.find('.uploaded-file');
 
         $('#@clientId').fileupload({
-            url: '@Html.Raw(Url.Action("UploadFileProductAttribute", "ShoppingCart", new { productId = model.ProductId, productAttributeId = model.ProductAttributeId }))',
+            url: '@Html.Raw(Model.GetFileUploadUrl(Url))',
             dataType: 'json',
             acceptFileTypes: new RegExp('@(allowedFileExtensions)', 'i'),
             done: function (e, data) {

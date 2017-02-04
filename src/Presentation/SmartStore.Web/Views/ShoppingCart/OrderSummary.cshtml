@@ -118,7 +118,7 @@
 			}
 			@if (item.Warnings.Count > 0)
 			{
-				<div class="alert alert-error">
+				<div class="alert alert-danger">
 					@for (int i = 0; i < item.Warnings.Count; i++)
 					{
 						<p>@item.Warnings[i]</p>
@@ -257,7 +257,7 @@
 							}
 							@if (item.Warnings.Count > 0)
 							{
-								<div class="alert alert-error">
+								<div class="alert alert-danger">
 									@foreach (var warning in item.Warnings)
 									{
 										<p>@warning</p>
@@ -339,7 +339,7 @@
 	{
 		if (Model.Warnings.Count > 0)
 		{
-			<div class="alert alert-error">
+			<div class="alert alert-danger">
 				@for (int i = 0; i < Model.Warnings.Count; i++)
 				{
 					<p>@Model.Warnings[i]</p>

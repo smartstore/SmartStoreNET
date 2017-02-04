@@ -25,9 +25,7 @@
 		}
 		else {
 			var iframe = modal.find('> .modal-body > iframe');
-			if (url.toLowerCase() != iframe.attr('src').toLowerCase()) {
-				iframe.attr('src', url);
-			}
+			iframe.attr('src', url);
 		}
 
 		modal.modal('show');

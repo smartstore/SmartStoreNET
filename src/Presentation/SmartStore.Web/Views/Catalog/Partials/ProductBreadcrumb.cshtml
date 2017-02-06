@@ -2,17 +2,18 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{ 
-	// TODO: (mc) Upgrade breadcrumb to BS4 (nav > a)
-	// TODO: (mc) Implement shared breadcrumb widget (for category, product, search etc.)
+// TODO: (mc) Upgrade breadcrumb to BS4 (nav > a)
+// TODO: (mc) Implement shared breadcrumb widget (for category, product, search etc.)
 }
 
 <ol id="breadcrumb" class="breadcrumb">
-    @Html.Widget("productbreadcrumb_before")
+    @{ Html.RenderWidget("productbreadcrumb_before"); }
     <li class="breadcrumb-item">
         <a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")" itemprop="url">
             <i class="fa fa-home"></i>
         </a>
     </li>
+
     @for (int i = 0; i < Model.CategoryBreadcrumb.Count; i++)
     {
         var menuItem = Model.CategoryBreadcrumb[i];
@@ -27,9 +28,10 @@
     @*uncomment to enable clickable link
 	<li class="breadcrumb-item">
 		<a href="@Url.RouteUrl("Product", new { productId = Model.ProductId, SeName = Model.ProductSeName })">@Model.ProductName</a>
-		@Html.Widget("productbreadcrumb_after")
 	</li>
 	*@
 
     <li class="breadcrumb-item active">@Model.ProductName</li>
+
+    @{ Html.RenderWidget("productbreadcrumb_after"); };
 </ol>

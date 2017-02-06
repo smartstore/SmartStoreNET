@@ -18,7 +18,7 @@
 			@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
 			Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" });
 		}
-        @Html.Widget("home_page_bottom")
+        @{ Html.RenderWidget("home_page_bottom"); }
     </div>
 </div>
 

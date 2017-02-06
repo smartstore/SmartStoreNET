@@ -24,7 +24,7 @@
     
     <div class="page-body checkout-data">
         <div class="order-completed">
-            @Html.Widget("checkout_completed_top")
+            @{ Html.RenderWidget("checkout_completed_top"); }
             <div class="body">
                 <p>
                     @T("Checkout.OrderNumber"): 
@@ -41,7 +41,7 @@
                     @T("Checkout.Continue")
                 </a>
             </p>
-            @Html.Widget("checkout_completed_bottom")
+            @{ Html.RenderWidget("checkout_completed_bottom"); }
         </div>
     </div>
 </div>

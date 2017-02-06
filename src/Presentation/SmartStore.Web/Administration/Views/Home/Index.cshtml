@@ -11,7 +11,7 @@
 </div>
 
 <div class="dashboard">
-	@Html.Widget("admin_dashboard_top")
+	@{ Html.RenderWidget("admin_dashboard_top"); }
 
 	<div class="row-fluid">
 		<div class="span10">
@@ -39,6 +39,6 @@
 		</div>
 	</div>
 
-	@Html.Widget("admin_dashboard_bottom")
+	@{ Html.RenderWidget("admin_dashboard_bottom"); }
 </div>
 

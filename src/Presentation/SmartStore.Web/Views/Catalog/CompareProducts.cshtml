@@ -42,7 +42,7 @@
                     @T("Products.Compare.Clear")
                 </a>
             </div>
-            
+
             <table class="compare-products-table table table-bordered table-striped table-hover x-table-condensed">
                 <thead>
                     <tr>
@@ -54,13 +54,13 @@
                             <td style="width: @columnWidth; vertical-align: bottom;" class="ac">
                                 <div>
 									@if (product.Picture != null && product.Picture.ImageUrl.HasValue())
-									{
+                                    {
 										<p>
 											<a href="@Url.RouteUrl("Product", new { SeName = product.SeName })">
 												<img alt="@product.Picture.AlternateText" src="@product.Picture.ImageUrl" title="@product.Picture.Title" />
 											</a>
 										</p>
-									}
+                                    }
                                     <p>
                                         <a class="btn btn-sm btn-danger remove-button" href='@Url.Action("RemoveProductFromCompare", new { id = product.Id })' rel="nofollow">
                                             @T("Common.Remove")
@@ -94,11 +94,11 @@
 									@product.Price.Price
 								</div>
 								@if (product.BasePriceInfo.HasValue())
-								{
+                                {
 									<div class="base-price text-muted">
 										@product.BasePriceInfo
 									</div>
-								}
+                                }
                             </td>
                         }
                     </tr>
@@ -126,7 +126,7 @@
                             {
                                 var foundProductSpec = product.SpecificationAttributes.Where(psa => psa.SpecificationAttributeId == specificationAttribute.SpecificationAttributeId).FirstOrDefault();
                                 var specValue = foundProductSpec != null ? foundProductSpec.SpecificationAttributeOption : "";
-                                                                
+
                                 <td style="width: @columnWidth;" class="a-center">
                                     @if (!String.IsNullOrEmpty(specValue))
                                     {
@@ -154,7 +154,8 @@
                             }
                         </tr>
                     }
-                    @Html.Widget("compareproducts_row")
+
+                    @{ Html.RenderWidget("compareproducts_row"); }
                 </tbody>
             </table>
         }

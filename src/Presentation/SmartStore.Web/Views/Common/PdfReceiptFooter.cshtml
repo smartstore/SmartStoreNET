@@ -2,12 +2,12 @@
 @using SmartStore.Web.Framework.Pdf;
 
 @{
-	Layout = ViewBag.IsPartial == true ? "" : "_Print";
-	
-	var company = Model.MerchantCompanyInfo;
-	var bank = Model.MerchantBankAccount;
-	var contact = Model.MerchantContactData;
-	
+    Layout = ViewBag.IsPartial == true ? "" : "_Print";
+
+    var company = Model.MerchantCompanyInfo;
+    var bank = Model.MerchantBankAccount;
+    var contact = Model.MerchantContactData;
+
 }
 
 @functions {
@@ -19,7 +19,9 @@
 }
 
 <footer>
-	@Html.Widget("invoice_footer_before")
+	
+    @{ Html.RenderWidget("invoice_footer_before"); }
+
 	<table class="text-muted text-smallest">
 		<tr>
 			<td style="width: 33%;">
@@ -94,6 +96,8 @@
 			</td>
 		</tr>
 	</table>
-	@Html.Widget("invoice_footer_after")
+
+	@{ Html.RenderWidget("invoice_footer_after"); }
+
 </footer>
 

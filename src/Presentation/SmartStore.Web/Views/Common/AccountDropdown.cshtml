@@ -17,11 +17,14 @@
 @if (Model.IsAuthenticated)
 {
     <div class="dropdown-menu dropdown-menu-right shopbar-flyout-container">
-        @Html.Widget("account_dropdown_before")
+        
+        @{ Html.RenderWidget("account_dropdown_before"); }
+
 		<a class="dropdown-item" href="@Url.Action("Info", "Customer")" rel="nofollow">
 			<i class="fa fa-fw fa-user"></i>
 			<span>@T("Account.MyAccount")</span>
 		</a>
+
         @if (Model.DisplayAdminLink)
         {
             <a class="dropdown-item" href="@Url.Content("~/admin")" target="_admin" rel="nofollow">
@@ -72,6 +75,7 @@
 			<span>@T("Account.Logout")</span>
 		</a>
 
-        @Html.Widget("account_dropdown_after")
+        @{ Html.RenderWidget("account_dropdown_after"); }
+
     </div>
 }

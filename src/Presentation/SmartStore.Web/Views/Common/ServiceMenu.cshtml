@@ -1,9 +1,9 @@
 ﻿@model InfoBlockModel
 @using SmartStore.Web.Models.Common;
 
-@Html.Widget("servicemenu_before")
+@{ Html.RenderWidget("servicemenu_before"); }
 
-@if (Model.TopicPageUrls.ContainsKey("aboutus"))
+@if(Model.TopicPageUrls.ContainsKey("aboutus"))
 {
 	<a href="@Model.TopicPageUrls["aboutus"]" class="dropdown-item">@T("AboutUs")</a>
 }
@@ -36,4 +36,4 @@
 	<a href="@Model.TopicPageUrls["conditionsofuse"]" class="dropdown-item">@T("ConditionsOfUse")</a>
 }
 
-@Html.Widget("servicemenu_after")
+@{ Html.RenderWidget("servicemenu_after"); }

@@ -33,8 +33,10 @@
                 <div class="review-text">
                     @Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(review.ReviewText, false, true, false, false, false, false))
                 </div>
+                
                 @{ Html.RenderPartial("_ReviewHelpfulness", review.Helpfulness, new ViewDataDictionary()); }
-                @Html.Widget("productreviews_page_inside_review")
+
+                @{ Html.RenderWidget("productreviews_page_inside_review"); }
             </div>
         }
     </div>

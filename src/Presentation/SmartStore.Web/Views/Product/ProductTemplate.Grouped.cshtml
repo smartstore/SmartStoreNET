@@ -7,23 +7,23 @@
 @using SmartStore.Web.Framework.Events;
 @using SmartStore.Web.Framework.UI;
 @{
-	Layout = "_ColumnsOne";
+    Layout = "_ColumnsOne";
 
-	//title, meta
-	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
-	Html.AddMetaDescriptionParts(Model.MetaDescription);
-	Html.AddMetaKeywordParts(Model.MetaKeywords);
+    //title, meta
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-	Html.AddScriptParts("~/Scripts/public.product-detail.js");
+    Html.AddScriptParts("~/Scripts/public.product-detail.js");
 
-	int pictureSize = EngineContext.Current.Resolve<MediaSettings>().ProductDetailsPictureSize;
+    int pictureSize = EngineContext.Current.Resolve<MediaSettings>().ProductDetailsPictureSize;
 
-	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
-	if (canonicalUrlsEnabled)
-	{
-		var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-		Html.AddCanonicalUrlParts(productUrl);
-	}
+    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+    if (canonicalUrlsEnabled)
+    {
+        var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+        Html.AddCanonicalUrlParts(productUrl);
+    }
 }
 
 <div class="page product-details-page">
@@ -32,32 +32,36 @@
     @{ Html.RenderAction("ProductBreadcrumb", "Catalog", new { productId = Model.Id }); }
 
     <div class="page-body">
-        @Html.Widget("productdetails_top")
+        
+        @{ Html.RenderWidget("productdetails_top"); }
+
         @using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
-		{
+        {
             <article itemscope itemtype="http://schema.org/Product">
                 <div class="row top-content">
                     <div class="product-image m-t-3 col-xs-12 col-md-6">
                     
-                        @Html.Widget("productdetails_before_pictures")
+                        @{ Html.RenderWidget("productdetails_before_pictures"); }
+                        
                         <!--product pictures-->
 					    <div id="pd-gallery-container">
 						    @{ Html.RenderPartial("_PictureGallery", Model.DetailsPictureModel); }
 					    </div>
-                        @Html.Widget("productdetails_after_pictures")
-                    
+
+                        @{ Html.RenderWidget("productdetails_after_pictures"); }
+
                     </div>
                     <div class="product-data col-xs-12 col-md-6">
                     
                         @if (Model.DisplayAdminLink)
-						{
+                        {
                             <div class="clearfix">
                                 <a class="btn btn-secondary btn-sm btn-edit-product pull-right" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
                                     <i class="fa fa-pencil-square-o"></i>
                                     @T("Common.Catalog.EditProduct")
                                 </a>
                             </div>
-						}
+                        }
 
                         <div class="page-title alpha">
                             <h1 class="product-name" itemprop="name">
@@ -67,7 +71,7 @@
 
                         <div id="details-cnt">
 
-                            @Html.Widget("productdetails_overview_top")
+                            @{ Html.RenderWidget("productdetails_overview_top"); }
 
                             <div class="short-description line alpha">
                                 @Html.Raw(Model.ShortDescription)
@@ -76,10 +80,10 @@
                             @{ Html.RenderAction("ReviewSummary", new { id = Model.Id }); }
 
 						    @if (Model.Manufacturers != null && Model.Manufacturers.Any(x => x.Picture != null && x.Picture.ImageUrl.HasValue()))
-							{
+                            {
 							    <div class="manufacturer-pics">
 								    @foreach (var manufacturer in Model.Manufacturers.Where(x => x.Picture != null && x.Picture.ImageUrl.HasValue()))
-									{
+                                    {
 									    <div class="manufacturer-item">
 										    <div class="picture">
 											    <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" title="@manufacturer.Picture.Title">
@@ -87,21 +91,21 @@
 											    </a>
 										    </div>
 									    </div>
-									}
+                                    }
 							    </div>
-							}
+                            }
 
                             <div class="quick-links line">
                                 @{
-									Html.RenderAction("EmailAFriendButton", new { id = Model.Id });
-									Html.RenderAction("AskQuestionButton", new { id = Model.Id });
-									Html.RenderAction("CompareProductsButton", "Catalog", new { productId = Model.Id });
+                                    Html.RenderAction("EmailAFriendButton", new { id = Model.Id });
+                                    Html.RenderAction("AskQuestionButton", new { id = Model.Id });
+                                    Html.RenderAction("CompareProductsButton", "Catalog", new { productId = Model.Id });
                                 }
                             </div>
 
                             @{ Html.RenderAction("ShareButton"); }
 
-                            @Html.Widget("productdetails_overview_bottom")
+                            @{ Html.RenderWidget("productdetails_overview_bottom"); }
                         </div>
                     </div>
                 </div>
@@ -110,52 +114,52 @@
                     <!-- associated products -->
                     <div class="product-variant-list">
                         @foreach (var product in Model.AssociatedProducts)
-						{
-							var dataDictProduct = new ViewDataDictionary();
-							dataDictProduct.TemplateInfo.HtmlFieldPrefix = string.Format("product_{0}", product.Id);
-							Html.RenderPartial("_ProductTemplate.Grouped.AssociatedProduct", product, dataDictProduct);
-						}
+                        {
+                            var dataDictProduct = new ViewDataDictionary();
+                            dataDictProduct.TemplateInfo.HtmlFieldPrefix = string.Format("product_{0}", product.Id);
+                            Html.RenderPartial("_ProductTemplate.Grouped.AssociatedProduct", product, dataDictProduct);
+                        }
                         @if (Model.AssociatedProducts.Count == 0)
-						{
+                        {
                             <div class="no-associated-products alert alert-warning" style="margin-top: 10px">
                                 @T("Products.NoAssociatedProducts")
                             </div>
-						}
+                        }
                     </div>
                 </div>
 
                 <div class="bottom-content">
                     <!-- tabs -->
                     @Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Items(x =>
-			   {
-				   var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
-				   var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
+                    {
+                        var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
+                        var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
 
-				   if (!String.IsNullOrWhiteSpace(Model.FullDescription))
-				   {
-					   x.Add().Text(@T("Products.Details"))
-							   .Content(Html.Raw("<div itemprop='description' class='text-body'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
-							   .Selected(true);
-				   }
+                        if (!String.IsNullOrWhiteSpace(Model.FullDescription))
+                        {
+                            x.Add().Text(@T("Products.Details"))
+                                    .Content(Html.Raw("<div itemprop='description' class='text-body'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
+                                    .Selected(true);
+                        }
 
-				   if (!String.IsNullOrWhiteSpace(specificationAttributes))
-				   {
-					   x.Add().Text(@T("Products.Specs"))
-							   .Content(specificationAttributes)
-							   .Selected(String.IsNullOrWhiteSpace(Model.FullDescription));
-				   }
+                        if (!String.IsNullOrWhiteSpace(specificationAttributes))
+                        {
+                            x.Add().Text(@T("Products.Specs"))
+                                    .Content(specificationAttributes)
+                                    .Selected(String.IsNullOrWhiteSpace(Model.FullDescription));
+                        }
 
-				   if (reviews.HasValue() && Model.DisplayProductReviews)
-				   {
-					   x.Add().Text(@T("Reviews"))
-							   .Content(reviews)
-							   .Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
-							   .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
-				   }
+                        if (reviews.HasValue() && Model.DisplayProductReviews)
+                        {
+                            x.Add().Text(@T("Reviews"))
+                                    .Content(reviews)
+                                    .Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
+                                    .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
+                        }
 
-				   //generate an event
-				   EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
-			   })
+                        //generate an event
+                        EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
+                    })
 
                     @{ Html.RenderAction("RelatedProducts", new { productId = Model.Id }); }
 
@@ -166,12 +170,12 @@
             
                 </div>
             </article>
-							}
+        }
 
 		@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
 		@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
 
-        @Html.Widget("productdetails_bottom")
+        @{ Html.RenderWidget("productdetails_bottom"); }
     </div>
 </div>
 

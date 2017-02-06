@@ -1,13 +1,13 @@
 ﻿@{
-    
+
     Layout = "_Document";
     Html.AddBodyCssClass("popup");
 }
 
 <div id="popup-content">
-    @Html.Widget("body_start_html_tag_after")
+    @{ Html.RenderWidget("body_start_html_tag_after"); }
     @RenderBody()
-    @Html.Widget("body_end_html_tag_before")
+    @{ Html.RenderWidget("body_end_html_tag_before"); }
 </div>
 
 

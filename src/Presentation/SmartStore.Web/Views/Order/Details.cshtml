@@ -112,17 +112,19 @@
                 @T("Order.Print")
             </a>
             @if (Model.DisplayPdfInvoice)
-			{
+            {
 				<a href="@Url.Action("print", new { id = Model.Id, pdf = true })" class="btn pdf-order-button" rel="nofollow">
 					<i class="fa fa-file-pdf-o"></i>
 					@T("Order.GetPDFInvoice")
 				</a>
-			}
+            }
         </div>
     </div>
 
     <div class="page-body">
-        @Html.Widget("orderdetails_page_top")
+        
+        @{ Html.RenderWidget("orderdetails_page_top"); }
+
         <div class="row">
             <div class="col-sm-9">
                 <dl class="dl-horizontal row">
@@ -141,8 +143,8 @@
             </div>
         </div>
 
-        @Html.Widget("orderdetails_page_overview")
-        
+        @{ Html.RenderWidget("orderdetails_page_overview"); }
+
         <hr />
        
         <div class="order-details-box row">
@@ -158,7 +160,7 @@
                     @T("Order.Email"): @Model.BillingAddress.Email
                 </div>
                 @if (Model.BillingAddress.PhoneEnabled)
-                {   
+                {
                     <div class="phone">
                         @T("Order.Phone"): @Model.BillingAddress.PhoneNumber
                     </div>
@@ -238,17 +240,17 @@
                     </p>
 
                     @*Completing payment support (for redirection payment methods)*@
-				    if (Model.CanRePostProcessPayment)
-				    {
+                if (Model.CanRePostProcessPayment)
+                {
                         <div class="repost">
                             @using (Html.BeginForm())
-					        {
+                            {
                                 <input type="submit" name="repost-payment" value="@T("Order.CompletePayment")" class="btn btn-primary re-order-button btn-above" />
                                 <div class="hint text-muted">@T("Order.CompletePayment.Hint")</div>
-					        }
+                            }
                         </div>
-				    }
-			    }
+                    }
+                }
 
                 @if (Model.DisplayPurchaseOrderNumber)
                 {
@@ -346,7 +348,8 @@
             }
         </div>
 
-        @Html.Widget("orderdetails_page_beforeproducts")
+        @{ Html.RenderWidget("orderdetails_page_beforeproducts"); }
+
         @if (Model.Items.Count > 0)
         {
             <div class="section-title m-t-2 m-b-1">
@@ -426,7 +429,9 @@
 
             </div>
                         }
-        @Html.Widget("orderdetails_page_afterproducts")
+
+        @{ Html.RenderWidget("orderdetails_page_afterproducts"); }
+
         <div class="row">
             <div class="total-info col-md-4 col-md-push-8 m-t-1">
                 <table class="cart-total table">
@@ -584,7 +589,7 @@
             </div>
         </div>
 
-        @Html.Widget("orderdetails_page_aftertotal")
+        @{ Html.RenderWidget("orderdetails_page_aftertotal"); }
 
         @if (Model.Shipments.Count > 0)
         {
@@ -688,6 +693,7 @@
             </div>
         }
 
-        @Html.Widget("orderdetails_page_bottom")
+        @{ Html.RenderWidget("orderdetails_page_bottom"); }
+
     </div>
 </div>

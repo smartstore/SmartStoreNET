@@ -1,31 +1,31 @@
 ﻿@{
-	Layout = "_Document";
+    Layout = "_Document";
 }
 
-@Html.Widget("body_start_html_tag_after")
+@{ Html.RenderWidget("body_start_html_tag_after"); }
 @{ Html.RenderPartial("_Notifications"); }
 <div id="page">
     <div class="canvas-blocker canvas-slidable"></div>
 
     <div class="page-main canvas-slidable">
         @if (IsSectionDefined("header"))
-		{
+        {
             @RenderSection("header")
-		}
-		else
-		{
+        }
+        else
+        {
             <header>
                 <div class="menubar-section hidden-md-down">
                     <div class="container menubar-container">
                         @{ 
-							Html.RenderAction("Menu", "Common", new { area = "" });
+                            Html.RenderAction("Menu", "Common", new { area = "" });
 						}
                     </div>
                 </div>
                 <div class="shopbar-section">
                     <div class="container shopbar-container">
                         @{ 
-							Html.RenderAction("ShopBar", "Common", new { area = "" });
+                            Html.RenderAction("ShopBar", "Common", new { area = "" });
 						}
                     </div>
                 </div>
@@ -33,50 +33,51 @@
                     <nav class='navbar @(GetThemeVariable<bool>("InverseNavbar") ? "navbar-dark" : "navbar-light")'>
                         <div class="container megamenu-container">
                             @{ 
-								Html.RenderAction("MegaMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
+                                Html.RenderAction("MegaMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
 							}
 						</div>
 					</nav>
 				</div>
 			</header>
-		}
+                                }
 
         @{ 
-			Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
+            Html.RenderAction("JavaScriptDisabledWarning", "Common", new { area = "" });
 		}
 
-        @Html.Widget("content_before")
+        @{ Html.RenderWidget("content_before"); }
 
         <div id="content-wrapper">
             <section id="content" class="container m-t-1">
                 @RenderSection("teaser", required: false)
 				@{ Html.RenderZone("teaser"); }
-				@Html.Widget("after_teaser")
+				@{ Html.RenderWidget("after_teaser"); }
                 <div id="content-body" class="row">
                     @RenderBody()
-                    @Html.Widget("content_after")
+                    @{ Html.RenderWidget("content_after"); }
                 </div>
             </section>
         </div>
 
         @if (IsSectionDefined("footer"))
-		{
+        {
             @RenderSection("footer")
-		}
-		else
-		{
+        }
+        else
+        {
             <div id="footer-wrapper">
                 <footer class="container">
                     @{ 
-						Html.RenderAction("Footer", "Common", new { area = "" });
+                        Html.RenderAction("Footer", "Common", new { area = "" });
 					}
 				</footer>
 			</div>
-		}
+                        }
 
 		@{ Html.RenderZone("page-end"); }
     </div>
 </div>
-@Html.Widget("body_end_html_tag_before")
+
+@{ Html.RenderWidget("body_end_html_tag_before"); }
 
 

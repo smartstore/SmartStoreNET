@@ -6,7 +6,7 @@
 @{
     var progresses = new List<dynamic> {
         // Cart
-        new { 
+        new {
             Step = CheckoutProgressStep.Cart,
             ClassName = "step-cart",
             Label =  T("Checkout.Progress.Cart").Text,
@@ -15,7 +15,7 @@
             Href = Url.RouteUrl("ShoppingCart")
         },
         // Address
-        new { 
+        new {
             Step = CheckoutProgressStep.Address,
             ClassName = "step-address",
             Label =  T("Checkout.Progress.Address").Text,
@@ -24,7 +24,7 @@
             Href = Url.Action("BillingAddress")
         },
         // Shipping
-        new { 
+        new {
             Step = CheckoutProgressStep.Shipping,
             ClassName = "step-shipping",
             Label =  T("Checkout.Progress.Shipping").Text,
@@ -33,7 +33,7 @@
             Href = Url.Action("ShippingMethod")
         },
         // Payment
-        new { 
+        new {
             Step = CheckoutProgressStep.Payment,
             ClassName = "step-payment",
             Label =  T("Checkout.Progress.Payment").Text,
@@ -42,7 +42,7 @@
             Href = Url.Action("PaymentMethod")
         },
         // Confirm
-        new { 
+        new {
             Step = CheckoutProgressStep.Confirm,
             ClassName = "step-confirm",
             Label =  T("Checkout.Progress.Confirm").Text,
@@ -51,7 +51,7 @@
             Href = Url.Action("Confirm")
         },
         // Complete
-        new { 
+        new {
             Step = CheckoutProgressStep.Complete,
             ClassName = "step-complete",
             Label =  T("Checkout.Progress.Complete").Text,
@@ -91,7 +91,9 @@
 
 <nav class="order-progress hidden-sm-up">
     <ul>
-        @Html.Widget("checkout_progress_before")
+        
+        @{ Html.RenderWidget("checkout_progress_before"); }
+
         <li>
             <a @(Model.CheckoutProgressStep == CheckoutProgressStep.Cart ? @Html.Raw(" class=\"active-step\"") : @Html.Raw(" class=\"inactive-step\"")) @(Model.CheckoutProgressStep != CheckoutProgressStep.Complete ? @Html.Raw(string.Format(" href=\"{0}\"", Url.RouteUrl("ShoppingCart"))) : null)>
                 <span class="order-progress-label">@T("Checkout.Progress.Cart")</span>
@@ -122,6 +124,6 @@
                 <span class="order-progress-label">@T("Checkout.Progress.Complete")</span>
             </a>
         </li>
-        @Html.Widget("checkout_progress_after")
+        @{ Html.RenderWidget("checkout_progress_after"); }
     </ul>
 </nav>

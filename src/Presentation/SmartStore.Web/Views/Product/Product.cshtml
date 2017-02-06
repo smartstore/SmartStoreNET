@@ -5,46 +5,46 @@
 @using SmartStore.Web;
 
 @{
-	Layout = "_ColumnsOne";
+    Layout = "_ColumnsOne";
 
-	Html.AddTitleParts(Model.MetaTitle.NullEmpty() ?? Model.Name);
-	Html.AddMetaDescriptionParts(Model.MetaDescription);
-	Html.AddMetaKeywordParts(Model.MetaKeywords);
+    Html.AddTitleParts(Model.MetaTitle.NullEmpty() ?? Model.Name);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-	Html.AddScriptParts("~/Themes/Alpha/Scripts/public.product.js");
+    Html.AddScriptParts("~/Themes/Alpha/Scripts/public.product.js");
 
-	if (Model.CanonicalUrlsEnabled)
-	{
-		var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-		Html.AddCanonicalUrlParts(productUrl);
-	}
+    if (Model.CanonicalUrlsEnabled)
+    {
+        var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+        Html.AddCanonicalUrlParts(productUrl);
+    }
 
-	string updateUrl = Url.Action("UpdateProductDetails3", "Product", new
-	{
-		productId = Model.Id,
-		bundleItemId = Model.BundleItem.Id,
-		itemType = (string)null // TODO: (mc) WTF!?
-	});
+    string updateUrl = Url.Action("UpdateProductDetails3", "Product", new
+    {
+        productId = Model.Id,
+        bundleItemId = Model.BundleItem.Id,
+        itemType = (string)null // TODO: (mc) WTF!?
+    });
 
-	/* TODO: (mc)
-	 * - CustomerEnteredPrice
-	 * - Badges
-	 * - GTIN: user must specifiy the GTIN type on product level (gtin12, gtin13 etc.). See https://schema.org/Offer
-	 * - Qty input: make settings (Whether to display)
-	 * - FIXME (mg) > no (discount) badges shown in products lists (with bundled products & PricePerBundleItems ON)
-	 */
+    /* TODO: (mc)
+     * - CustomerEnteredPrice
+     * - Badges
+     * - GTIN: user must specifiy the GTIN type on product level (gtin12, gtin13 etc.). See https://schema.org/Offer
+     * - Qty input: make settings (Whether to display)
+     * - FIXME (mg) > no (discount) badges shown in products lists (with bundled products & PricePerBundleItems ON)
+     */
 }
 
 <div class="page product-details-page">
 	<!-- Breadcrumb -->
 	@{ Html.RenderAction("ProductBreadcrumb", "Catalog", new { productId = Model.Id }); }
 
-	@Html.Widget("productdetails_top")
+	@{ Html.RenderWidget("productdetails_top"); }
 
 	<article class="pd page-body" itemscope itemtype="http://schema.org/Product">
 		<div id="total-price-update-container" class="update-container" data-url="@updateUrl">
 			@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
-			{
+            {
 			<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
 				<section class="row pd-section pd-section-top">
 					<!-- Picture -->
@@ -64,7 +64,7 @@
 						@{ Html.RenderPartial("Product.Offer", Model); }
 					</aside>
 				</section>
-			}
+                            }
 		</div>
 
 		<!-- Bottom Content: Full Description, Specification, Review etc. -->
@@ -80,7 +80,7 @@
 		</section>
 	</article>
 
-	@Html.Widget("productdetails_bottom")
+	@{ Html.RenderWidget("productdetails_bottom"); }
 
 	@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
 	@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }

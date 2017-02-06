@@ -33,7 +33,8 @@
         var colWidths = new int[] { 50, 20, 10 };
 
         <div class="document">
-            @Html.Widget("shipmentdetails_top")
+            @{ Html.RenderWidget("shipmentdetails_top"); }
+
             <!-- Address & Info -->
             <div class="clearfix">
                 <div class="order-address margin-top-40 pull-left">
@@ -78,7 +79,7 @@
                     </div>
                 </div>
 
-                @Html.Widget("shipmentdetails_orderinfo_top")
+                @{ Html.RenderWidget("shipmentdetails_orderinfo_top"); }
 
                 <div class="order-info text-small pull-right">
                     <table>
@@ -107,12 +108,14 @@
                         </tr>
                     </table>
 
-                    @Html.Widget("shipmentdetails_orderinfotable_after")
+                    @{ Html.RenderWidget("shipmentdetails_orderinfotable_after"); }
+
                 </div>
-                @Html.Widget("shipmentdetails_orderinfo_bottom")
+                @{ Html.RenderWidget("shipmentdetails_orderinfo_bottom"); }
             </div>
 
-            @Html.Widget("shipmentdetails_lines_before")
+            @{ Html.RenderWidget("shipmentdetails_lines_before"); }
+
             <h3 style="margin-top: 100px">@T("PDFPackagingSlip.ProductListHeadline")</h3>
 
             <table class="table order-summary">

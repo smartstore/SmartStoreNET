@@ -14,14 +14,14 @@
     //title
     Html.AddTitleParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
     Html.AddMetaDescriptionParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
-    
+
     //canonical URL
-	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
-	if (canonicalUrlsEnabled)
-	{
+    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+    if (canonicalUrlsEnabled)
+    {
         var byTagUrl = Url.RouteUrl("ProductsByTag", new { productTagId = Model.Id, SeName = Model.TagName }, this.Request.Url.Scheme);
         Html.AddCanonicalUrlParts(byTagUrl);
-	}
+    }
 }
 
 <div class="page product-tag-page">
@@ -30,18 +30,18 @@
     </div>
 
     <div class="page-body">
-        @Html.Widget("productsbytag_top")
+        @{ Html.RenderWidget("productsbytag_top"); }
 
 		<div class="product-list-container">
 			@if (Model.Products != null && Model.Products.Items.Count > 0)
-			{
-				Html.RenderPartial("Product.List", Model.Products);
-			}
+            {
+                Html.RenderPartial("Product.List", Model.Products);
+            }
 		</div>
 
 		@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
 		@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
 
-        @Html.Widget("productsbytag_bottom")
+        @{ Html.RenderWidget("productsbytag_bottom"); }
     </div>
 </div>

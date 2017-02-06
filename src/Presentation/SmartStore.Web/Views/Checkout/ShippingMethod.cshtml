@@ -17,7 +17,8 @@
     <div class="page-body checkout-data">
         @using (Html.BeginForm())
         {
-            @Html.Widget("checkout_shipping_method_top")
+            Html.RenderWidget("checkout_shipping_method_top");
+
             <div class="opt-list shipping-options">
                 @if (Model.Warnings.Count == 0)
                 {
@@ -90,8 +91,8 @@
                     <i class="fa fa-caret-right"></i>
                 </button>
             </div>
-			
-            @Html.Widget("checkout_shipping_method_bottom")
+
+            Html.RenderWidget("checkout_shipping_method_bottom");
         }
     </div>
 </div>

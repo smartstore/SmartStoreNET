@@ -16,7 +16,9 @@
         <h1>@T("Checkout.ShippingAddress")</h1>
     </div>
     <div class="page-body checkout-data">
-        @Html.Widget("checkout_shipping_address_top")
+        
+        @{ Html.RenderWidget("checkout_shipping_address_top"); }
+
         @if (Model.ExistingAddresses.Count > 0)
         {
             <div class="block">
@@ -106,8 +108,9 @@
                 </div>
             </div>
         }
-        @Html.Widget("checkout_shipping_address_middle")
-        
+
+        @{ Html.RenderWidget("checkout_shipping_address_middle"); }
+
         <div class="block">
             <div class="block-title fs-h4 m-b-1 m-t-2">
                 @(Model.ExistingAddresses.Count > 0 ? T("Checkout.OrEnterNewAddress") : T("Checkout.EnterShippingAddress"))
@@ -144,6 +147,7 @@
                 </div>
             </div>
         </div>
-        @Html.Widget("checkout_shipping_address_bottom")
+
+        @{ Html.RenderWidget("checkout_shipping_address_bottom"); }
     </div>
 </div>

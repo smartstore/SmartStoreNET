@@ -8,7 +8,7 @@
 }
 
 <div id="content-center" class="col-md-12">
-    @Html.Widget("main_column_before")
+    @{ Html.RenderWidget("main_column_before"); }
     @RenderBody()
-    @Html.Widget("main_column_after")
+    @{ Html.RenderWidget("main_column_after"); }
 </div>

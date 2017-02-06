@@ -24,7 +24,7 @@
     </div>
 
     <div class="page-body">
-        @Html.Widget("manufacturerdetails_top")
+        @{ Html.RenderWidget("manufacturerdetails_top"); }
         
 		@* Description *@
         @if (!String.IsNullOrWhiteSpace(Model.Description))
@@ -33,35 +33,35 @@
                 @Html.Raw(Html.CollapsedText(Model.Description))
             </div>
         }
-        
+
 		@* Featured products *@
         @if (Model.FeaturedProducts != null && Model.FeaturedProducts.Items.Count > 0)
         {
-            @Html.Widget("manufacturerdetails_before_featured_products")
+            Html.RenderWidget("manufacturerdetails_before_featured_products");
 
 			<div class="featured-product-grid">
 				<div class="section-title">
 					@T("Products.FeaturedProducts")
 				</div>
 				@{
-					Html.RenderPartial("Product.List", Model.FeaturedProducts);
+                    Html.RenderPartial("Product.List", Model.FeaturedProducts);
 				}
 			</div>
-		}
+                    }
 
 		@* Product list *@
-		@Html.Widget("categorydetails_before_product_list")
+		@{ Html.RenderWidget("categorydetails_before_product_list"); }
 
 		<div class="product-list-container">
 			@if (Model.Products != null && Model.Products.Items.Count > 0)
-			{
-				Html.RenderPartial("Product.List", Model.Products);
-			}
+            {
+                Html.RenderPartial("Product.List", Model.Products);
+            }
 		</div>
 
 		@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
 		@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
 
-        @Html.Widget("manufacturerdetails_bottom")
+        @{ Html.RenderWidget("manufacturerdetails_bottom"); }
     </div>
 </div>

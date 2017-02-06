@@ -11,23 +11,23 @@
 @using SmartStore.Web;
 
 @{
-	Layout = "_ColumnsOne";
+    Layout = "_ColumnsOne";
 
-	//title, meta
-	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
-	Html.AddMetaDescriptionParts(Model.MetaDescription);
-	Html.AddMetaKeywordParts(Model.MetaKeywords);
+    //title, meta
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-	Html.AddScriptParts("~/Scripts/public.product-detail.js");
+    Html.AddScriptParts("~/Scripts/public.product-detail.js");
 
-	int pictureSize = EngineContext.Current.Resolve<MediaSettings>().ProductDetailsPictureSize;
+    int pictureSize = EngineContext.Current.Resolve<MediaSettings>().ProductDetailsPictureSize;
 
-	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
-	if (canonicalUrlsEnabled)
-	{
-		var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-		Html.AddCanonicalUrlParts(productUrl);
-	}
+    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+    if (canonicalUrlsEnabled)
+    {
+        var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+        Html.AddCanonicalUrlParts(productUrl);
+    }
 }
 
 <div class="page product-details-page">
@@ -35,7 +35,9 @@
     @{ Html.RenderAction("ProductBreadcrumb", "Catalog", new { productId = Model.Id }); }
 
     <div id="TotalPriceUpdateContainer" class="page-body update-container" data-referto="#ProductAttributes, #AddToCart, #ProductBundleOverview" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
-        @Html.Widget("productdetails_top")
+        
+        @{ Html.RenderWidget("productdetails_top"); }
+
         @using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
         {
             <article itemscope itemtype="http://schema.org/Product">
@@ -58,7 +60,8 @@
                 <div class="row top-content">
 
                     <div class="product-image col-md-6">
-                        @Html.Widget("productdetails_before_pictures")
+                        @{ Html.RenderWidget("productdetails_before_pictures"); }
+
                         <!--product pictures-->
                         <div id="pd-gallery-container-outer">
 						    <div id="pd-gallery-container">
@@ -66,18 +69,18 @@
 						    </div>
                         </div>
 
-                        @Html.Widget("productdetails_after_pictures")
+                        @{ Html.RenderWidget("productdetails_after_pictures"); }
 
                         <div class="manufacturer-pics manufacturer-pics-container">
 							@foreach (var manufacturer in Model.Manufacturers.Where(x => x.Picture != null && x.Picture.ImageUrl.HasValue()))
-							{
+                            {
 								<div class="manufacturer-item">
 									<div class="picture">
 										<a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" title="@manufacturer.Picture.Title">
 											<img alt="@manufacturer.Picture.AlternateText" src="@manufacturer.Picture.ImageUrl" title="@manufacturer.Picture.Title" /></a>
 									</div>
 								</div>
-							}
+                            }
                         </div>
 
                         <!-- attributes -->
@@ -165,13 +168,13 @@
                                     @{ Html.RenderPartial("_BackInStockSubscription", Model); }
                                 </td>
                             </tr>
-                            }
+                                        }
                         </table>
                     </div>
 
                     <div class="product-data col-md-6">
                        
-                        @Html.Widget("productdetails_overview_top")
+                        @{ Html.RenderWidget("productdetails_overview_top"); }
 
                         <div id="details-cnt">
 
@@ -184,12 +187,12 @@
 							    <div id="ProductBundleOverview">
 								    @{ Html.RenderPartial("_BundleItemsAddToCart", Model); }
 							    </div>
-                            }
+                                        }
 
                             <!--product reviews-->
                             @if (Model.DisplayProductReviews) {
-								Html.RenderAction("ReviewSummary", new { id = Model.Id });
-							}
+                                Html.RenderAction("ReviewSummary", new { id = Model.Id });
+                            }
                         
                             <!-- product attributes or bundle items -->
                             @{
@@ -221,7 +224,7 @@
 								    <div class="product-attributes line">
 									    @{ Html.RenderPartial("_Attributes", Model.ProductVariantAttributes, dataDictAttributes); }
 								    </div>
-							    }
+                                            }
                             }
                     
                             <!-- giftcard infos -->                    
@@ -233,15 +236,15 @@
                                     <div class="giftcard-infos line">
                                         @{ Html.RenderPartial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard); }
                                     </div>
-                                }
+                                            }
                             }
                     
                             <!-- addd to cart -->
                             <div id="AddToCart" class="@(Model.ProductType == ProductType.BundledProduct ? "bundled-product" : "")">
                                 @{
-									var dataDictAddToCart = new ViewDataDictionary();
-									dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
-									Html.RenderPartial("_AddToCart", Model, dataDictAddToCart);
+                                    var dataDictAddToCart = new ViewDataDictionary();
+                                    dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
+                                    Html.RenderPartial("_AddToCart", Model, dataDictAddToCart);
                                 }
                             </div>
 
@@ -258,9 +261,9 @@
                             }
 
 							@{
-								Html.RenderAction("EmailAFriendButton", new { id = Model.Id });
-								Html.RenderAction("AskQuestionButton", new { id = Model.Id });
-								Html.RenderAction("CompareProductsButton", "Catalog", new { productId = Model.Id });
+                                Html.RenderAction("EmailAFriendButton", new { id = Model.Id });
+                                Html.RenderAction("AskQuestionButton", new { id = Model.Id });
+                                Html.RenderAction("CompareProductsButton", "Catalog", new { productId = Model.Id });
 							}
 
                             @if (!Model.AddToCart.DisableWishlistButton)
@@ -282,15 +285,15 @@
 
 						@{
 							<!-- social share -->
-							Html.RenderAction("ShareButton");
+                            Html.RenderAction("ShareButton");
 
 							<!-- tier prices -->
-							Html.RenderAction("ProductTierPrices", new { productId = Model.Id });
+                            Html.RenderAction("ProductTierPrices", new { productId = Model.Id });
 						}
         
                         </div>
                         
-                        @Html.Widget("productdetails_overview_bottom") 
+                        @{ Html.RenderWidget("productdetails_overview_bottom"); }
                     </div>
             
                 </div>
@@ -299,35 +302,35 @@
 
                     <!-- tabs -->
                     @Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Items(x =>
-                    {
-                        var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
-                        var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
+               {
+                   var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
+                   var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
 
-                        if (!String.IsNullOrWhiteSpace(Model.FullDescription))
-                        {
-                            x.Add().Text(@T("Products.Details"))
-								    .Content(Html.Raw("<div itemprop='description' class='text-body'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
-                                    .Selected(true);
-                        }
+                   if (!String.IsNullOrWhiteSpace(Model.FullDescription))
+                   {
+                       x.Add().Text(@T("Products.Details"))
+                               .Content(Html.Raw("<div itemprop='description' class='text-body'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
+                               .Selected(true);
+                   }
 
-                        if (!String.IsNullOrWhiteSpace(specificationAttributes))
-                        {
-                            x.Add().Text(@T("Products.Specs"))
-                                    .Content(specificationAttributes)
-                                    .Selected(String.IsNullOrWhiteSpace(Model.FullDescription));
-                        }
+                   if (!String.IsNullOrWhiteSpace(specificationAttributes))
+                   {
+                       x.Add().Text(@T("Products.Specs"))
+                               .Content(specificationAttributes)
+                               .Selected(String.IsNullOrWhiteSpace(Model.FullDescription));
+                   }
 
-                        if (reviews.HasValue() && Model.DisplayProductReviews)
-                        {
-                            x.Add().Text(@T("Reviews"))
-                                    .Content(reviews)
-                                    .Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
-                                    .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
-                        }
+                   if (reviews.HasValue() && Model.DisplayProductReviews)
+                   {
+                       x.Add().Text(@T("Reviews"))
+                               .Content(reviews)
+                               .Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
+                               .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
+                   }
 
-                        //generate an event
-                        EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
-                    })
+                   //generate an event
+                   EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
+               })
             
 
                     @{
@@ -337,12 +340,12 @@
                     }
                 </div>
             </article>
-        }
+                        }
 
 		@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
 		@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
 
-        @Html.Widget("productdetails_bottom")
+        @{ Html.RenderWidget("productdetails_bottom"); }
     </div>
 </div>
 

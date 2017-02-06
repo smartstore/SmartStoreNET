@@ -8,7 +8,7 @@
     Html.AddMetaDescriptionParts(Model.MetaDescription);
     Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-	string avatarSpanning = (Model.AllowCustomersToUploadAvatars ? "padding-left: {0}px; min-height: {0}px;".FormatWith(Model.AvatarPictureSize + 30) : "");
+    string avatarSpanning = (Model.AllowCustomersToUploadAvatars ? "padding-left: {0}px; min-height: {0}px;".FormatWith(Model.AvatarPictureSize + 30) : "");
 }
 
 <article class="page news-item-page">
@@ -24,14 +24,16 @@
     </div>
 
     <div class="news-body">
-        @Html.Widget("newsitem_page_before_body")
+        
+        @{ Html.RenderWidget("newsitem_page_before_body"); }
+
         <div class="news-content clearfix">
             @Html.Raw(Model.Full)
         </div>
 
 		<div class="clear"></div>
 
-        @Html.Widget("newsitem_page_before_comments")
+        @{ Html.RenderWidget("newsitem_page_before_comments"); }
 
         @if (Model.AllowComments)
         {
@@ -112,13 +114,16 @@
                                     @Html.Raw(SmartStore.Core.Html.HtmlUtils.FormatText(comment.CommentText, false, true, false, false, false, false))
                                 </div>
                             </div>
-                            @Html.Widget("newsitem_page_inside_comment")
+
+                            @{ Html.RenderWidget("newsitem_page_inside_comment"); }
+
                         </div>
                     }
                     </div>
-            </div>
+                </div>
             }
         }
-        @Html.Widget("newsitem_page_after_comments")
+
+        @{ Html.RenderWidget("newsitem_page_after_comments"); }
     </div>
 </article>

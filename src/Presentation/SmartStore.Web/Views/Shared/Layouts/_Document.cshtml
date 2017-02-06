@@ -3,88 +3,88 @@
 @using SmartStore.Services.Localization;
 
 @{
-	var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
+    var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
 
-	var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
+    var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
 
-	var contentRoot = "~/Themes/Alpha/Content/";
-	var cssRoot = "~/Themes/Alpha/Content/css/";
-	var jsRoot = "~/Themes/Alpha/Scripts/";
-	var bootstrapJsRoot = "~/Themes/Alpha/Content/bs4/js/";
+    var contentRoot = "~/Themes/Alpha/Content/";
+    var cssRoot = "~/Themes/Alpha/Content/css/";
+    var jsRoot = "~/Themes/Alpha/Scripts/";
+    var bootstrapJsRoot = "~/Themes/Alpha/Content/bs4/js/";
 
-	// add css assets
-	Html.AppendCssFileParts(
-		cssRoot + "font-awesome.css",
-		contentRoot + "pnotify/css/pnotify.css",
-		contentRoot + "pnotify/css/pnotify.mobile..css",
-		contentRoot + "pnotify/css/pnotify.buttons.css");
+    // add css assets
+    Html.AppendCssFileParts(
+        cssRoot + "font-awesome.css",
+        contentRoot + "pnotify/css/pnotify.css",
+        contentRoot + "pnotify/css/pnotify.mobile..css",
+        contentRoot + "pnotify/css/pnotify.buttons.css");
 
-	Html.AppendScriptParts(ResourceLocation.Head,
-		"~/Scripts/modernizr.js",
-		"~/Scripts/jquery-2.1.1.js",
-		"~/Scripts/jquery-migrate-1.2.1.js",
-		"~/Scripts/globalize/globalize.js");
+    Html.AppendScriptParts(ResourceLocation.Head,
+        "~/Scripts/modernizr.js",
+        "~/Scripts/jquery-2.1.1.js",
+        "~/Scripts/jquery-migrate-1.2.1.js",
+        "~/Scripts/globalize/globalize.js");
 
-	Html.AddScriptParts(ResourceLocation.Head, true,
-		"~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()));
+    Html.AddScriptParts(ResourceLocation.Head, true,
+        "~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()));
 
-	Html.AppendScriptParts(ResourceLocation.Foot,
-		// jQuery UI Core
-		"~/Scripts/jquery-ui/effect.js",
-		"~/Scripts/jquery-ui/effect-transfer.js",
-		"~/Scripts/jquery-ui/effect-shake.js",
-		"~/Scripts/jquery-ui/position.js",
-		// jQuery Validation
-		"~/Scripts/jquery.unobtrusive-ajax.js",
-		"~/Scripts/jquery.validate.js",
-		"~/Scripts/jquery.validate.unobtrusive.js",
-		jsRoot + "jquery.validate.unobtrusive.custom.js",
-		// SmartStore system
-		jsRoot + "smartstore.system.js",
-		"~/Scripts/underscore.js",
-		"~/Scripts/underscore.string.js",
-		"~/Scripts/underscore.mixins.js",
-		jsRoot + "smartstore.jquery.utils.js",
-		jsRoot + "jquery.ba-outside-events.js",
-		jsRoot + "jquery.transit.js",
-		jsRoot + "smartstore.doAjax.js",
-		jsRoot + "jquery.addeasing.js",
-		jsRoot + "smartstore.eventbroker.js",
-		jsRoot + "smartstore.hacks.js",
-		jsRoot + "smartstore.common.js",
-		// Bootstrap
-		jsRoot + "tether.js",
-		bootstrapJsRoot + "bootstrap.js",
-		bootstrapJsRoot + "bootstrap-datetimepicker.js",
-		// Shared UI
-		jsRoot + "smartstore.viewport.js",
-		contentRoot + "select2/js/select2.js",
-		contentRoot + "slick/slick.js",
-		jsRoot + "smartstore.selectwrapper.js",
-		jsRoot + "smartstore.throbber.js",
-		jsRoot + "smartstore.thumbzoomer.js",
-		jsRoot + "smartstore.responsiveNav.js",
-		jsRoot + "smartstore.keynav.js",
-		jsRoot + "smartstore.articlelist.js",
-		jsRoot + "smartstore.product.js",
-		contentRoot + "pnotify/js/pnotify.js",
-		contentRoot + "pnotify/js/pnotify.mobile.js",
-		contentRoot + "pnotify/js/pnotify.buttons.js",
-		contentRoot + "pnotify/js/pnotify.animate.js",
-		jsRoot + "jquery.bootstrap-touchspin.js",
-		jsRoot + "jquery.scrollTo.js",
-		jsRoot + "smartstore.globalize.adapter.js",
-		jsRoot + "offcanvas.js",
-		jsRoot + "hammer.js",
-		jsRoot + "jquery.hammer.js",
+    Html.AppendScriptParts(ResourceLocation.Foot,
+        // jQuery UI Core
+        "~/Scripts/jquery-ui/effect.js",
+        "~/Scripts/jquery-ui/effect-transfer.js",
+        "~/Scripts/jquery-ui/effect-shake.js",
+        "~/Scripts/jquery-ui/position.js",
+        // jQuery Validation
+        "~/Scripts/jquery.unobtrusive-ajax.js",
+        "~/Scripts/jquery.validate.js",
+        "~/Scripts/jquery.validate.unobtrusive.js",
+        jsRoot + "jquery.validate.unobtrusive.custom.js",
+        // SmartStore system
+        jsRoot + "smartstore.system.js",
+        "~/Scripts/underscore.js",
+        "~/Scripts/underscore.string.js",
+        "~/Scripts/underscore.mixins.js",
+        jsRoot + "smartstore.jquery.utils.js",
+        jsRoot + "jquery.ba-outside-events.js",
+        jsRoot + "jquery.transit.js",
+        jsRoot + "smartstore.doAjax.js",
+        jsRoot + "jquery.addeasing.js",
+        jsRoot + "smartstore.eventbroker.js",
+        jsRoot + "smartstore.hacks.js",
+        jsRoot + "smartstore.common.js",
+        // Bootstrap
+        jsRoot + "tether.js",
+        bootstrapJsRoot + "bootstrap.js",
+        bootstrapJsRoot + "bootstrap-datetimepicker.js",
+        // Shared UI
+        jsRoot + "smartstore.viewport.js",
+        contentRoot + "select2/js/select2.js",
+        contentRoot + "slick/slick.js",
+        jsRoot + "smartstore.selectwrapper.js",
+        jsRoot + "smartstore.throbber.js",
+        jsRoot + "smartstore.thumbzoomer.js",
+        jsRoot + "smartstore.responsiveNav.js",
+        jsRoot + "smartstore.keynav.js",
+        jsRoot + "smartstore.articlelist.js",
+        jsRoot + "smartstore.product.js",
+        contentRoot + "pnotify/js/pnotify.js",
+        contentRoot + "pnotify/js/pnotify.mobile.js",
+        contentRoot + "pnotify/js/pnotify.buttons.js",
+        contentRoot + "pnotify/js/pnotify.animate.js",
+        jsRoot + "jquery.bootstrap-touchspin.js",
+        jsRoot + "jquery.scrollTo.js",
+        jsRoot + "smartstore.globalize.adapter.js",
+        jsRoot + "offcanvas.js",
+        jsRoot + "hammer.js",
+        jsRoot + "jquery.hammer.js",
 
-		// Shop
-		jsRoot + "public.common.js",
-		jsRoot + "public.ajaxcart.js",
-		//jsRoot + "public.shopbar.js",
-		jsRoot + "public.offcanvas-cart.js",
-		jsRoot + "public.product-detail-2.js", // TODO: (mc) Remove public.product-detail.js once work is finished
-		jsRoot + "public.product-filter.js");
+        // Shop
+        jsRoot + "public.common.js",
+        jsRoot + "public.ajaxcart.js",
+        //jsRoot + "public.shopbar.js",
+        jsRoot + "public.offcanvas-cart.js",
+        jsRoot + "public.product-detail-2.js", // TODO: (mc) Remove public.product-detail.js once work is finished
+        jsRoot + "public.product-filter.js");
 }
 <!DOCTYPE html>
 <html lang="@this.WorkContext.WorkingLanguage.UniqueSeoCode">
@@ -108,7 +108,7 @@
     @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
     @Html.SmartScripts(this.Url, ResourceLocation.Head)
 
-    @Html.Widget("head_html_tag")
+    @{ Html.RenderWidget("head_html_tag"); }
 
     @Html.CanonicalUrls()
 	@Html.LinkRels()

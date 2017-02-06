@@ -22,7 +22,8 @@
     <div class="page-body checkout-data">
         @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "confirm-order-form" }))
         {
-            @Html.Widget("checkout_confirm_top")
+            Html.RenderWidget("checkout_confirm_top");
+
             <div class="page-intro">
                 @Html.Raw(@T("Checkout.ConfirmHint"))
             </div>
@@ -89,7 +90,7 @@
             </div>  
         }
         
-        @Html.Widget("checkout_confirm_before_summary")
+        Html.RenderWidget("checkout_confirm_before_summary");
 
         <div class="order-summary-body">
             @{ Html.RenderAction("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true }); }
@@ -200,6 +201,6 @@
             </div>
         </div>
 
-		@Html.Widget("checkout_confirm_bottom")
+		@{ Html.RenderWidget("checkout_confirm_bottom"); }
     </div>
 </div>

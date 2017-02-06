@@ -20,8 +20,9 @@
     </div>
 
     <div class="page-body">
-        @Html.Widget("productreviews_page_top")
-        @if (Model.SuccessfullyAdded && Model.Result.HasValue())
+        @{ Html.RenderWidget("productreviews_page_top"); }
+
+        @if(Model.SuccessfullyAdded && Model.Result.HasValue())
         {
             <div class="alert alert-success">
                 <button type="button" class="close" data-dismiss="alert">×</button>
@@ -99,8 +100,9 @@
 					@{ Html.RenderPartial("Product.Reviews", Model); }
                 </div>
             </div>
-            
         }
-        @Html.Widget("productreviews_page_bottom")
+
+        @{ Html.RenderWidget("productreviews_page_bottom"); }
+
     </div>
 </div>

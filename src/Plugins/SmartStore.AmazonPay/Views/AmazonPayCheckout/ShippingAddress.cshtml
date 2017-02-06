@@ -4,9 +4,9 @@
 
 @{
     Layout = "_Checkout";
-	
+
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
-	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
+    Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
 }
 
 @section orderProgress{
@@ -19,18 +19,18 @@
     </div>
 
     <div class="page-body checkout-data">
-		@Html.Widget("checkout_shipping_address_top")
+		@{ Html.RenderWidget("checkout_shipping_address_top"); }
 
 		@if (Model.Warning.HasValue())
-		{
+        {
 			<div class="alert alert-info">@Model.Warning</div>
-		}
+        }
 
 		<div class="amazon-pay-widget clearfix">
 			<div id="@Model.GetWidgetId"></div>
 		</div>
 
-		@Html.Widget("checkout_shipping_address_middle")
+		@{ Html.RenderWidget("checkout_shipping_address_middle"); }
 
 		<div class="block clearfix">
 			<div class="block-body">
@@ -46,7 +46,7 @@
 			</div>
 		</div>
 
-		@Html.Widget("checkout_shipping_address_bottom")
+		@{ Html.RenderWidget("checkout_shipping_address_bottom"); }
 	</div>
 </div>
 

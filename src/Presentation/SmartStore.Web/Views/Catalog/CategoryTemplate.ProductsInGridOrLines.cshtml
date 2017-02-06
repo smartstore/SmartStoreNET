@@ -1,16 +1,17 @@
 ﻿@model CategoryModel
 
 @{
-	Layout = "_ColumnsTwo";
-	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
-	Html.AddMetaDescriptionParts(Model.MetaDescription);
-	Html.AddMetaKeywordParts(Model.MetaKeywords);
+    Layout = "_ColumnsTwo";
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
-	if (canonicalUrlsEnabled) {
-		var categoryUrl = Url.RouteUrl("Category", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-		Html.AddCanonicalUrlParts(categoryUrl);
-	}
+    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+    if (canonicalUrlsEnabled)
+    {
+        var categoryUrl = Url.RouteUrl("Category", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+        Html.AddCanonicalUrlParts(categoryUrl);
+    }
 }
 
 @using SmartStore.Core.Domain.Catalog;
@@ -47,30 +48,30 @@
 
 @if (Model.DisplayCategoryBreadcrumb)
 {
-	using (Html.BeginZoneContent("teaser", injectMode: ZoneInjectMode.Prepend))
-	{
+    using (Html.BeginZoneContent("teaser", injectMode: ZoneInjectMode.Prepend))
+    {
 		<ul id="breadcrumb" class="breadcrumb">
 			<li>
 				<a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")"><i class="fa fa-home"></i></a>
 			</li>
 
 			@for (int i = 0; i < Model.CategoryBreadcrumb.Count; i++)
-			{
-				var menuItem = Model.CategoryBreadcrumb[i];
-				var isLastCategory = menuItem.EntityId == Model.Id;
+            {
+                var menuItem = Model.CategoryBreadcrumb[i];
+                var isLastCategory = menuItem.EntityId == Model.Id;
 				<li>
 					@if (isLastCategory)
-					{
+                    {
 						@menuItem.Text
-					}
-					else
-					{
+                    }
+                    else
+                    {
 						<a href="@menuItem.GenerateUrl(this.Url)" title="@menuItem.Text">@menuItem.Text</a>
-					}
+                    }
 				</li>
-			}
+            }
 		</ul>
-	}
+    }
 }
 
 <div class="page category-page">
@@ -82,7 +83,7 @@
     </div>
 
     <div class="page-body">
-        @Html.Widget("categorydetails_top")
+        @{ Html.RenderWidget("categorydetails_top");}
 
         @* Description *@
         @if (!String.IsNullOrWhiteSpace(Model.Description))
@@ -95,32 +96,32 @@
         @* Subcategories *@
         @if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.AboveProductList)
         {
-            @Html.Widget("categorydetails_before_subcategories")
+            Html.RenderWidget("categorydetails_before_subcategories");
             @SubCategoryList()
         }
 
         @* Featured products *@
         @if (Model.FeaturedProducts != null && Model.FeaturedProducts.Items.Count > 0)
         {
-            @Html.Widget("categorydetails_before_featured_products")
+            Html.RenderWidget("categorydetails_before_featured_products");
 
 			<div class="featured-product-grid">
                 <div class="section-title">
                     @T("Products.FeaturedProducts")
                 </div>
 				@{ 
-					Html.RenderPartial("Product.List", Model.FeaturedProducts);
+                    Html.RenderPartial("Product.List", Model.FeaturedProducts);
 				}
             </div>
-		}
+                    }
 
         @* Product list *@
-        @Html.Widget("categorydetails_before_product_list")
+        @{ Html.RenderWidget("categorydetails_before_product_list"); }
 
         <div class="product-list-container">
             @if (Model.Products != null && Model.Products.Items.Count > 0)
-			{
-				Html.RenderPartial("Product.List", Model.Products);
+            {
+                Html.RenderPartial("Product.List", Model.Products);
             }
         </div>
 
@@ -134,14 +135,13 @@
         @* Subcategories *@
         @if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.Bottom)
         {
-            @Html.Widget("categorydetails_before_subcategories")
+            Html.RenderWidget("categorydetails_before_subcategories");
             @SubCategoryList()
-		}
+        }
 
 		@* TODO: (mc) find more intelligent way of rendering RecentlyViewedProductsBlock globally *@
 		@{ Html.RenderAction("RecentlyViewedProductsBlock", "Catalog", new { area = "" }); }
 
-        @Html.Widget("categorydetails_bottom")
+        @{ Html.RenderWidget("categorydetails_bottom"); }
     </div>
-
 </div>

@@ -2,10 +2,10 @@
 @using SmartStore.Web.Models.Common;
 
 @{
-	string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
+    string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
 }
 
-@Html.Widget("header_menu_before")
+@{ Html.RenderWidget("header_menu_before"); }
 
 <nav class="menubar">
     <nav class="menubar-group pull-left m-l-0">
@@ -116,11 +116,11 @@
     }
 </nav>
 
-@Html.Widget("header_menu_after")
+@{ Html.RenderWidget("header_menu_after"); }
 
 
 @*<ul class="list-inline pull-left">
-    @Html.Widget("header_menu_before")
+    @{ Html.RenderWidget("header_menu_before"); }
 
     @if (Model.IsCustomerImpersonated)
     {

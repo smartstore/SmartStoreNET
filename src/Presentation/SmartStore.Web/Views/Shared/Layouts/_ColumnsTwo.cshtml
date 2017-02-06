@@ -1,7 +1,7 @@
 ﻿@{
-	Layout = "_Layout";
-	Html.AddBodyCssClass("lyt-cols-2");
-	string[] spanWidths = GetThemeVariable<string>("GridSettings", "5/14/5").Split('/');
+    Layout = "_Layout";
+    Html.AddBodyCssClass("lyt-cols-2");
+    string[] spanWidths = GetThemeVariable<string>("GridSettings", "5/14/5").Split('/');
 }
 
 @section teaser {
@@ -10,27 +10,27 @@
 
 <div id="content-left" class="col-lg-3 hidden-md-down"> 
     @if (IsSectionDefined("left"))
-	{
+    {
         @RenderSection("left")
-	}
-	else
-	{
-        @Html.Widget("left_side_column_before")
+    }
+    else
+    {
+        Html.RenderWidget("left_side_column_before");
 
         Html.RenderAction("CategoryNavigation", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" });
-        @Html.Widget("left_side_column_after_category_navigation")
+        Html.RenderWidget("left_side_column_after_category_navigation");
 
         Html.RenderAction("ManufacturerNavigation", "Catalog", new { currentManufacturerId = this.CurrentManufacturerId, area = "" });
-        @Html.Widget("left_side_column_after_manufacturer_navigation")
+        Html.RenderWidget("left_side_column_after_manufacturer_navigation");
 
         Html.RenderAction("PollBlock", "Poll", new { systemKeyword = "RightColumnPoll", area = "" });
-        @Html.Widget("left_side_column_after_poll")
+        Html.RenderWidget("left_side_column_after_poll");
 
-        @Html.Widget("left_side_column_after")
+        Html.RenderWidget("left_side_column_after");
     }
 </div>
 <div id="content-center" class="col-lg-9">
-    @Html.Widget("main_column_before")
+    @{ Html.RenderWidget("main_column_before"); }
     @RenderBody()
-    @Html.Widget("main_column_after")
+    @{ Html.RenderWidget("main_column_after"); }
 </div>

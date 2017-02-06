@@ -16,7 +16,7 @@
         <h1>@T("Checkout.BillingAddress")</h1>
     </div>
     <div class="page-body checkout-data">
-        @Html.Widget("checkout_billing_address_top")
+        @{ Html.RenderWidget("checkout_billing_address_top"); }
 
         @if (Model.ExistingAddresses.Count > 0)
         {
@@ -111,7 +111,7 @@
             </div>
         }
 
-        @Html.Widget("checkout_billing_address_middle")
+        @{ Html.RenderWidget("checkout_billing_address_middle"); }
 
         <div class="block">
             <div class="block-title fs-h4 m-b-1 m-t-2">
@@ -148,6 +148,6 @@
                 </div>
              </div>
         </div>
-        @Html.Widget("checkout_billing_address_bottom")
+        @{ Html.RenderWidget("checkout_billing_address_bottom"); }
     </div>
 </div>

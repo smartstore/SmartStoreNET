@@ -7862,7 +7862,7 @@
 		<Value>Widget Zone</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetZone.Hint">
-		<Value>Ein oder mehrere Widget Zonen, in denen der Content dargestellt werden soll. Hinweis: ein Theme definiert deutlich mehr Zonen als hier angeboten. Suchen Sie die View-Dateien nach "@Html.Widget(...)" ab, um alle verfügbaren Zonen-Namen zu ermitteln.</Value>
+		<Value>Ein oder mehrere Widget Zonen, in denen der Content dargestellt werden soll. Hinweis: ein Theme definiert deutlich mehr Zonen als hier angeboten. Schalten Sie im Plugin Devloper Tools die Option Widget-Zonen anzeigen ein um alle Widget-Zonen direkt anzuzeigen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Info">
 		<Value>Seiten-Informationen</Value>

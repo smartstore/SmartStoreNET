@@ -2,31 +2,31 @@
 @using SmartStore.Web.Models.Common;
 
 @{ 
-	var socialLinks = new List<Tuple<string, string>>();
-	if (Model.FacebookLink.HasValue())
-	{
-		socialLinks.Add(new Tuple<string, string>(Model.FacebookLink, "facebook"));
-	}
+    var socialLinks = new List<Tuple<string, string>>();
+    if (Model.FacebookLink.HasValue())
+    {
+        socialLinks.Add(new Tuple<string, string>(Model.FacebookLink, "facebook"));
+    }
 
-	if (Model.GooglePlusLink.HasValue())
-	{
-		socialLinks.Add(new Tuple<string, string>(Model.GooglePlusLink, "google-plus"));
-	}
+    if (Model.GooglePlusLink.HasValue())
+    {
+        socialLinks.Add(new Tuple<string, string>(Model.GooglePlusLink, "google-plus"));
+    }
 
-	if (Model.TwitterLink.HasValue())
-	{
-		socialLinks.Add(new Tuple<string, string>(Model.TwitterLink, "twitter"));
-	}
+    if (Model.TwitterLink.HasValue())
+    {
+        socialLinks.Add(new Tuple<string, string>(Model.TwitterLink, "twitter"));
+    }
 
-	if (Model.PinterestLink.HasValue())
-	{
-		socialLinks.Add(new Tuple<string, string>(Model.PinterestLink, "pinterest"));
-	}
+    if (Model.PinterestLink.HasValue())
+    {
+        socialLinks.Add(new Tuple<string, string>(Model.PinterestLink, "pinterest"));
+    }
 
-	if (Model.YoutubeLink.HasValue())
-	{
-		socialLinks.Add(new Tuple<string, string>(Model.YoutubeLink, "youtube"));
-	}
+    if (Model.YoutubeLink.HasValue())
+    {
+        socialLinks.Add(new Tuple<string, string>(Model.YoutubeLink, "youtube"));
+    }
 }
 
 @if (Model.ShowSocialLinks && socialLinks.Any())
@@ -35,11 +35,11 @@
 		<div class="col-xs-12">
 			<div class="footer-social text-xs-center">
 				@foreach (var link in socialLinks)
-				{
+                {
 					<a href="@link.Item1" target="_blank" class="btn btn-secondary btn-circle btn-lg btn-social btn-social-@link.Item2">
 						<i class="fa fa-@link.Item2"></i>
 					</a>
-				}
+                }
 			</div>
 		</div>
 	</div>
@@ -48,16 +48,16 @@
 <div class="row footer-main">
     <div class="col-md-3">
         @if (Model.ShowThemeSelector)
-		{
+        {
 			<div class="theme-selector hidden-sm-down">
 				<h4>@T("Footer.Themes")</h4>
 				<div class="content">
 					@{ 
-						Html.RenderAction("StoreThemeSelector", "Common");
+                        Html.RenderAction("StoreThemeSelector", "Common");
 					}
 				</div>
 			</div>
-        }
+                        }
     </div>
 
     <div class="col-md-3 col-xs-6">
@@ -65,21 +65,21 @@
             <h4>@T("Footer.Service")</h4>
             <ul class="list-unstyled">
 				@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
-				{
+                {
 					<li><a href="@Model.TopicPageUrls["shippinginfo"]">@T("ShippingReturns")</a></li>
-				}
+                }
 				@if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
-				{
+                {
 					<li><a href="@Model.TopicPageUrls["privacyinfo"]">@T("PrivacyNotice")</a></li>
-				}
+                }
 				@if (Model.TopicPageUrls.ContainsKey("conditionsofuse"))
-				{
+                {
 					<li><a href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
-				}
+                }
 				@if (Model.TopicPageUrls.ContainsKey("paymentinfo"))
-				{
+                {
 					<li><a href="@Model.TopicPageUrls["paymentinfo"]">@T("Paymentinfo")</a></li>
-				}
+                }
             </ul>
         </nav>
     </div>
@@ -89,30 +89,30 @@
 			<h4>@T("Footer.Company")</h4>
 			<ul class="list-unstyled">
 				@if (Model.TopicPageUrls.ContainsKey("contactus"))
-				{
+                {
 					<li><a href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
-				}
+                }
 				@if (Model.TopicPageUrls.ContainsKey("aboutus"))
-				{
+                {
 					<li><a href="@Model.TopicPageUrls["aboutus"]">@T("AboutUs")</a></li>
-				}
+                }
 				@if (Model.TopicPageUrls.ContainsKey("imprint"))
-				{
+                {
 					<li><a href="@Model.TopicPageUrls["imprint"]">@T("Imprint")</a></li>
-				}
+                }
 				@if (Model.TopicPageUrls.ContainsKey("disclaimer"))
-				{
+                {
 					<li><a href="@Model.TopicPageUrls["disclaimer"]">@T("Disclaimer")</a></li>
-				}
+                }
 
 				@if (Model.BlogEnabled)
-				{
+                {
 					<li><a href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>
-				}
+                }
 				@if (Model.ForumEnabled)
-				{
+                {
 					<li><a href="@Url.RouteUrl("Boards")">@T("Forum.Forums")</a></li>
-				}
+                }
 			</ul>
 		</nav>
 
@@ -127,7 +127,7 @@
                 <div id="newsletter-subscribe-block">
 
 					<div class="input-group m-b-05">
-						@Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email", @class="form-control", placeholder = T("Newsletter.Email") })
+						@Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email", @class = "form-control", placeholder = T("Newsletter.Email") })
 						<span class="input-group-btn">
 							<button id="newsletter-subscribe-button" class="btn btn-icon btn-success" title="@T("Newsletter.Button")">
 								<i class="fa fa-envelope"></i>
@@ -154,7 +154,7 @@
 
 </div>
 
-@Html.Widget("footer")
+@{ Html.RenderWidget("footer"); }
 
 <div class="footer-disclaimer container text-muted">
     <div class="row">

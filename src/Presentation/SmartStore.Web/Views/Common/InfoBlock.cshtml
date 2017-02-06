@@ -6,10 +6,13 @@
     </div>
     <div class="block-body listbox card-block">
         <ul class="list-unstyled">
-            @Html.Widget("infoblock_before")
 
-			@if (Model.TopicPageUrls.ContainsKey("contactus"))
-			{
+            @{ Html.RenderWidget("infoblock_before"); }
+
+
+            @if(Model.TopicPageUrls.ContainsKey("contactus"))
+
+            {
 				<li><a href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
 			}
 			@if (Model.TopicPageUrls.ContainsKey("aboutus"))
@@ -53,7 +56,8 @@
 				<li><a href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
 			}
 
-            @Html.Widget("infoblock_after")
+            @{ Html.RenderWidget("infoblock_after"); }
+
         </ul>
     </div>
 </div>

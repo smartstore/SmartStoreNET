@@ -28,18 +28,18 @@
                 {
                     itemClass += " omega";
                 }
-                
+
                 <li class="@itemClass card text-xs-center">
 
                     @if (Model.ShowProductImages)
                     {
                         <figure class="picture pull-left pull-xs-none">
-							@if(item.Picture.ImageUrl.HasValue())
-							{
+							@if (item.Picture.ImageUrl.HasValue())
+                            {
 								<a href="@item.ProductUrl" title="@item.Picture.Title">
 									<img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
                                 </a>
-							}
+                            }
                         </figure>
                     }
 
@@ -67,17 +67,17 @@
 
                         <div class="mb-bundle-pictures">
                             @for (int j = 0, bundlelength = item.BundleItems.Count; j < bundlelength; j++)
-							{
-								var bundleItem = item.BundleItems[j];
+                            {
+                                var bundleItem = item.BundleItems[j];
 
-								if (bundleItem.PictureUrl.HasValue())
-								{
+                                if (bundleItem.PictureUrl.HasValue())
+                                {
 									<a href="@bundleItem.ProductUrl" title="@bundleItem.ProductName">
 										<img alt="@bundleItem.ProductName" src="@bundleItem.PictureUrl" title="@bundleItem.ProductName" /></a>
-								}
+                                }
 
-								if (bundlelength != (j + 1))
-								{
+                                if (bundlelength != (j + 1))
+                                {
                                     <i class="fa fa-plus"></i>
                                 }
                             }        
@@ -113,7 +113,7 @@
             }
         </ul>
     }
-	@Html.Widget("mini_shopping_cart_bottom")
+	@{ Html.RenderWidget("mini_shopping_cart_bottom"); }
 </div>
 
 <div class="summary clearfix">

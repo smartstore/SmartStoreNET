@@ -8072,7 +8072,7 @@
 		<Value>Widget zone</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetZone.Hint">
-		<Value>One or more widget zones in which the widget should be rendered. Note: a theme defines clearly more zones as offered here. Search the view files for "@Html.Widget(...)" to locate all zones and determine their corresponding names.</Value>
+		<Value>One or more widget zones in which the widget should be rendered. Note: a theme defines clearly more zones as offered here. Turn on the option Display Widget Zones in the Developer Tools plugin to display all widget zones directly.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Info">
 		<Value>Info</Value>

@@ -23,10 +23,12 @@
         <img src="~/Administration/Content/images/smnet.png" alt="smartstore.NET" />
     </a>
 
-    @Html.Widget("admin_menu_before")
-    @{ Html.RenderAction("Menu", "Common", new { area = "Admin" }); }
-    @Html.Widget("admin_menu_before")
-
+    @{ 
+        Html.RenderWidget("admin_menu_before");
+        Html.RenderAction("Menu", "Common", new { area = "Admin" });
+        Html.RenderWidget("admin_menu_before");
+    }
+    
     <div id="navbar-tools" class="pull-right">
 
 		@if (currentCustomer != null && currentCustomer.IsRegistered())

@@ -17,7 +17,7 @@
 		<h1>@T("Checkout.SelectPaymentMethod")</h1>
 	</div>
 	<div class="page-body checkout-data" style="padding-bottom: 20px;">
-		@Html.Widget("checkout_payment_method_top")
+		@{ Html.RenderWidget("checkout_payment_method_top"); }
 
 		@if (Model.ErrorMessage.HasValue())
 		{
@@ -64,6 +64,6 @@
 			</button>
 		</div>
 
-		@Html.Widget("checkout_payment_method_bottom")
+		@{ Html.RenderWidget("checkout_payment_method_bottom"); }
 	</div>
 </div>

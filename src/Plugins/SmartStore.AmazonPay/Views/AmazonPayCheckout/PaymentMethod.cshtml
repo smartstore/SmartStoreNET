@@ -4,9 +4,9 @@
 
 @{
     Layout = "_Checkout";
-	
+
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
-	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
+    Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
 }
 
 @section orderProgress{
@@ -19,19 +19,19 @@
     </div>
 
     <div class="page-body checkout-data">
-		@Html.Widget("checkout_payment_method_top")
+		@{ Html.RenderWidget("checkout_payment_method_top"); }
 
 		@using (Html.BeginForm("PaymentMethod", "AmazonPayCheckout", new { area = Model.SystemName }, FormMethod.Post))
-		{
-			if (Model.DisplayRewardPoints)
-			{
+        {
+            if (Model.DisplayRewardPoints)
+            {
 				<div class="alert alert-info">
 					<label class="checkbox">
 						@Html.EditorFor(model => model.UseRewardPoints)
 						@Html.Raw(string.Format(T("Checkout.UseRewardPoints").Text, "<strong>" + Model.RewardPointsBalance + "</strong>", "<strong>" + Model.RewardPointsAmount + "</strong>"))
 					</label>
 				</div>
-			}
+            }
 
 			<div class="amazon-pay-widget clearfix">
 				<div id="@Model.GetWidgetId"></div>
@@ -51,7 +51,7 @@
 				</div>
 			</div>
 
-			@Html.Widget("checkout_payment_method_bottom")
+			Html.RenderWidget("checkout_payment_method_bottom"); 
 		}
 	</div>
 </div>

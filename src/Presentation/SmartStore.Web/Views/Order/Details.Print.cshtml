@@ -37,14 +37,15 @@
 
 <div class="container">
 	@foreach (var order in Model)
-	{
-		var colWidths = order.ShowSku ? new int[] { 45, 20, 5, 15, 15 } : new int[] { 65, 0, 5, 15, 15 };
+    {
+        var colWidths = order.ShowSku ? new int[] { 45, 20, 5, 15, 15 } : new int[] { 65, 0, 5, 15, 15 };
 
-		var company = order.MerchantCompanyInfo;
-		var address = order.BillingAddress;
-		
+        var company = order.MerchantCompanyInfo;
+        var address = order.BillingAddress;
+
 		<div class="document">
-			@Html.Widget("invoice_top", order)
+
+			@{ Html.RenderWidget("invoice_top", order); }
 
 			<!-- Address & Info -->
 			<div class="clearfix" style="margin-bottom: 100px">
@@ -52,34 +53,34 @@
 					<div>
 						<span class="header text-smallest">
 							@{
-								var city = JoinValues(new string[] { company.ZipCode, company.City }).ToString();
-								var country = JoinValues(new string[] { company.CountryName, company.StateName }, ", ").ToString();
+                                var city = JoinValues(new string[] { company.ZipCode, company.City }).ToString();
+                                var country = JoinValues(new string[] { company.CountryName, company.StateName }, ", ").ToString();
 							}
 							@JoinValues(new string[] { company.CompanyName, company.Street, company.Street2, city, country }, " &middot; ")
 						</span>
 					</div>
 					<div class="margin-top-10">
 						@if (address.CompanyEnabled && address.Company.HasValue())
-						{
+                        {
 							<div>@address.Company</div>
-						}
+                        }
 						<div>@JoinValues(new string[] { address.FirstName, address.LastName })</div>
 						@if (address.StreetAddressEnabled && address.Address1.HasValue())
-						{
+                        {
 							<div>@address.Address1</div>
-						}
+                        }
 						@if (address.StreetAddress2Enabled && address.Address2.HasValue())
-						{
+                        {
 							<div>@address.Address2</div>
-						}
+                        }
 						@if (address.ZipPostalCodeEnabled || address.CityEnabled)
-						{
+                        {
 							<div>@JoinValues(new string[] { address.ZipPostalCode, address.City })</div>
-						}
+                        }
 						@if (address.StateProvinceEnabled || address.CountryEnabled)
-						{
+                        {
 							<div>@JoinValues(new string[] { address.CountryName, address.StateProvinceName }, ", ")</div>
-						}
+                        }
 					</div>
 				</div>
 
@@ -104,14 +105,17 @@
 							<td class="value">@order.ShippingMethod</td>
 						</tr>
 					</table>
-					@Html.Widget("invoice_orderinfotable_after", order)
+
+					@{ Html.RenderWidget("invoice_orderinfotable_after", order); }
+
 				</div>
 
-				@Html.Widget("invoice_orderinfo_bottom", order)
+				@{ Html.RenderWidget("invoice_orderinfo_bottom", order); }
 			</div>
 			
 			<!-- Order lines -->
-			@Html.Widget("invoice_lines_before", order)
+            @{ Html.RenderWidget("invoice_lines_before", order); }
+
 			<h3>@T("PDFInvoice.Product(s)")</h3>
 
 			<table class="table order-summary">
@@ -119,38 +123,40 @@
 					<tr>
 						<th style="width: @(colWidths[0])%">@T("PDFInvoice.ProductName")</th>
 						@if (order.ShowSku)
-						{
+                        {
 							<th style="width: @(colWidths[1])%">@T("PDFInvoice.SKU")</th>
-						}
+                        }
 						<th class="text-center" style="width: @(colWidths[2])%">@T("PDFInvoice.ProductQuantity")</th>
 						<th class="text-right" style="width: @(colWidths[3])%">@T("PDFInvoice.ProductPrice")</th>
 						<th class="text-right" style="width: @(colWidths[4])%">@T("PDFInvoice.ProductTotal")</th>
 					</tr>
 				</thead>
 				@for (int i = 0; i < order.Items.Count; i++)
-				{
-					var item = order.Items[i];
+                {
+                    var item = order.Items[i];
 					<tbody>
 						@OrderLine(item, order.ShowSku)
 						@if (item.ProductType == ProductType.BundledProduct)
-						{
+                        {
 							@BundleItems(item, order.ShowSku)
-						}
+                        }
 					</tbody>
-				}
+                }
 			</table>
 
 			<!-- Checkout attributes -->
-			@Html.Widget("invoice_checkoutattributes_before", order)
+            @{ Html.RenderWidget("invoice_checkoutattributes_before", order); }
+
 			@if (order.CheckoutAttributeInfo.HasValue())
-			{
+            {
 				<div class="checkout-attributes margin-bottom-30">
 					@Html.Raw(order.CheckoutAttributeInfo)
 				</div>
-			}
+            }
 
 			<!-- Order totals -->
-			@Html.Widget("invoice_ordertotals_before", order)
+			@{ Html.RenderWidget("invoice_ordertotals_before", order); }
+
 			<div class="order-totals clearfix">
 				<div class="pull-right" style="width: 40%; page-break-inside: avoid">
 					<table class="table order-totals">
@@ -159,67 +165,67 @@
 							<td class="value">@order.OrderSubtotal</td>
 						</tr>
 						@if (order.OrderSubTotalDiscount.HasValue())
-						{
+                        {
 							<tr>
 								<td class="label">@T("Order.SubTotalDiscount"):</td>
 								<td class="value">@order.OrderSubTotalDiscount</td>
 							</tr>
-						}
+                        }
 						@if (order.IsShippable)
-						{
+                        {
 							<tr>
 								<td class="label">@T("Order.Shipping"):</td>
 								<td class="value">@order.OrderShipping</td>
 							</tr>
-						}
+                        }
 						@if (order.PaymentMethodAdditionalFee.HasValue())
-						{
+                        {
 							<tr>
 								<td class="label">@T("Order.PaymentMethodAdditionalFee"):</td>
 								<td class="value">@order.PaymentMethodAdditionalFee</td>
 							</tr>
-						}
+                        }
 						@if (order.DisplayTaxRates && order.TaxRates.Count > 0)
-						{
-							foreach (var taxRate in order.TaxRates)
-							{
+                        {
+                            foreach (var taxRate in order.TaxRates)
+                            {
 								<tr>
 									<td class="label">@taxRate.Label:</td>
 									<td class="value">@taxRate.Value</td>
 								</tr>
-							}
-						}
+                            }
+                        }
 						@if (order.DisplayTax)
-						{
+                        {
 							<tr>
 								<td class="label">@T("Order.Tax"):</td>
 								<td class="value text-right">@order.Tax</td>
 							</tr>
-						}
+                        }
 						@if (order.OrderTotalDiscount.HasValue())
-						{
+                        {
 							<tr>
 								<td class="label">@T("Order.TotalDiscount"):</td>
 								<td class="value">@order.OrderTotalDiscount</td>
 							</tr>
-						}
+                        }
 						@if (order.GiftCards.Count > 0)
-						{
-							foreach (var gc in order.GiftCards)
-							{
+                        {
+                            foreach (var gc in order.GiftCards)
+                            {
 								<tr>
 									<td class="label">@Html.Raw(string.Format(T("Order.GiftCardInfo").Text, gc.CouponCode)):</td>
 									<td class="value">@gc.Amount</td>
 								</tr>
-							}
-						}
+                            }
+                        }
 						@if (order.RedeemedRewardPoints > 0)
-						{
+                        {
 							<tr>
 								<td class="label">@string.Format(T("Order.RewardPoints").Text, order.RedeemedRewardPoints):</td>
 								<td class="value">@order.RedeemedRewardPointsAmount</td>
 							</tr>
-						}
+                        }
 						<tr>
 							<td class="label">@T("Order.OrderTotal"):</td>
 							<td class="value"><strong>@order.OrderTotal</strong></td>
@@ -229,11 +235,12 @@
 			</div>
 
 			<!-- Order notes -->
-			@Html.Widget("invoice_ordernotes_before", order)
+			@{ Html.RenderWidget("invoice_ordernotes_before", order); }
+
 			@if (order.RenderOrderNotes && order.OrderNotes.Count > 0)
-			{
+            {
 				<h3>@T("PDFInvoice.OrderNotes")</h3>
-				
+
 				<div class="order-notes margin-top-10">
 					<table class="table">
 						<thead>
@@ -248,7 +255,7 @@
 						</thead>
 						<tbody>
 							@foreach (var note in order.OrderNotes)
-							{
+                            {
 								<tr>
 									<td>
 										@note.CreatedOn.ToString()
@@ -257,13 +264,13 @@
 										@Html.Raw(note.Note)
 									</td>
 								</tr>
-							}
+                            }
 						</tbody>
 					</table>
 				</div>
-			}
+            }
 			
-			@Html.Widget("invoice_bottom", order)
+			@{ Html.RenderWidget("invoice_bottom", order); }
 		</div>
 	}
 </div>

@@ -46,19 +46,19 @@
             }
             else
             {
-				@Html.Widget("admin_navbar_before")
-			    Html.RenderAction("Navbar", "Common", new { area = "Admin" });
-				@Html.Widget("admin_navbar_after")
+                Html.RenderWidget("admin_navbar_before");
+                Html.RenderAction("Navbar", "Common", new { area = "Admin" });
+                Html.RenderWidget("admin_navbar_after");
             }
 
 			<div id="breadcrumb">
 				<!-- SiteMapPath here-->
-				@Html.Widget("admin_breadcrumb").ToString().Trim()
+				@{ Html.RenderWidget("admin_breadcrumb"); }
 			</div>
 		</header>		
     }
 
-    @Html.Widget("admin_content_before")
+    @{ Html.RenderWidget("admin_content_before"); }
     <div id="content">
         @{ Html.RenderPartial("_Notifications"); }
         <div class="cph">
@@ -70,7 +70,7 @@
 			<div class="bar"></div>
 		</div>
     </div>
-    @Html.Widget("admin_content_after")
+    @{ Html.RenderWidget("admin_content_after"); }
 
 </div>
 

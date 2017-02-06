@@ -25,7 +25,6 @@ namespace SmartStore.Services.Shipping
 		private static IList<Type> _shippingMethodFilterTypes = null;
 
 		private readonly IRepository<ShippingMethod> _shippingMethodRepository;
-        private readonly ILogger _logger;
         private readonly IProductAttributeParser _productAttributeParser;
 		private readonly IProductService _productService;
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
@@ -63,9 +62,11 @@ namespace SmartStore.Services.Shipping
 			this._typeFinder = typeFinder;
 
 			T = NullLocalizer.Instance;
+			Logger = NullLogger.Instance;
 		}
 
 		public Localizer T { get; set; }
+		public ILogger Logger { get; set; }
 
 		#region Shipping rate computation methods
 
@@ -375,7 +376,7 @@ namespace SmartStore.Services.Shipping
                     foreach (string error in getShippingOptionResponse.Errors)
                     {
                         result.AddError(error);
-						_logger.Warn(string.Concat(srcm.Metadata.FriendlyName, ": ", error));
+						Logger.Warn(string.Concat(srcm.Metadata.FriendlyName, ": ", error));
                     }
                 }
             }

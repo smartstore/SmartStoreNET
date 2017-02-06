@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Services.Catalog;
@@ -9,154 +10,126 @@ namespace SmartStore.Services.Search.Modelling
 {
 	public class CatalogSearchQueryAliasMapper : ICatalogSearchQueryAliasMapper
 	{
-		private readonly static object _lock = new object();
-		private static ConcurrentDictionary<AliasMappingKey, SearchQueryAliasMapping> _attributeMappings;
+		private const string ALL_MAPPINGS_KEY = "search.alias.mappings.all";
 
+		private readonly ICacheManager _cacheManager;
 		private readonly ISpecificationAttributeService _specificationAttributeService;
 		private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
 
 		public CatalogSearchQueryAliasMapper(
+			ICacheManager cacheManager,
 			ISpecificationAttributeService specificationAttributeService,
 			IRepository<LocalizedProperty> localizedPropertyRepository)
 		{
+			_cacheManager = cacheManager;
 			_specificationAttributeService = specificationAttributeService;
 			_localizedPropertyRepository = localizedPropertyRepository;
 		}
 
-		private ConcurrentDictionary<AliasMappingKey, SearchQueryAliasMapping> AttributeMappings
+		protected string CreateAttributeKey(int languageId, string attributeAlias)
 		{
-			get
+			return $"attr.{languageId}.{attributeAlias}";
+		}
+
+		protected string CreateOptionKey(int languageId, int attributeId, string optionAlias)
+		{
+			return $"attr.option.{languageId}.{attributeId}.{optionAlias}";
+		}
+
+		protected virtual IDictionary<string, int> GetAllCachedMappings()
+		{
+			return _cacheManager.Get(ALL_MAPPINGS_KEY, () =>
 			{
-				if (_attributeMappings == null)
+				var dictionary = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+				var attributes = _specificationAttributeService.GetSpecificationAttributes()
+					.Expand(x => x.SpecificationAttributeOptions)
+					.ToList();
+
+				var attrinutId = 0;
+				var optionIds = attributes.SelectMany(x => x.SpecificationAttributeOptions).ToDictionary(x => x.Id, x => x.SpecificationAttributeId);
+
+				var locAttributes = _localizedPropertyRepository.TableUntracked
+					.Where(x => x.LocaleKeyGroup == "SpecificationAttribute" && x.LocaleKey == "Alias" && x.LocaleValue != null && x.LocaleValue != string.Empty)
+					.ToList();
+
+				var locOptions = _localizedPropertyRepository.TableUntracked
+					.Where(x => x.LocaleKeyGroup == "SpecificationAttributeOption" && x.LocaleKey == "Alias" && x.LocaleValue != null && x.LocaleValue != string.Empty)
+					.ToList();
+
+				foreach (var attribute in attributes)
 				{
-					lock (_lock)
+					if (attribute.Alias.HasValue())
 					{
-						if (_attributeMappings == null)
-						{
-							_attributeMappings = new ConcurrentDictionary<AliasMappingKey, SearchQueryAliasMapping>();
+						dictionary[CreateAttributeKey(0, attribute.Alias)] = attribute.Id;
+					}
 
-							var attributes = _specificationAttributeService.GetSpecificationAttributes()
-								.Expand(x => x.SpecificationAttributeOptions)
-								.ToList();
-
-							var locAttributes = _localizedPropertyRepository.TableUntracked
-								.Where(x => x.LocaleKeyGroup == "SpecificationAttribute" && x.LocaleKey == "Alias")
-								.ToList()
-								.ToMultimap(x => x.EntityId, x => x);
-
-							var locValues = _localizedPropertyRepository.TableUntracked
-								.Where(x => x.LocaleKeyGroup == "SpecificationAttributeOption" && x.LocaleKey == "Alias")
-								.ToList()
-								.ToMultimap(x => x.EntityId, x => x);
-
-
-							foreach (var attribute in attributes)
-							{
-								foreach (var value in attribute.SpecificationAttributeOptions)
-								{
-									SearchQueryAliasMapping mapping = null;
-
-									if (attribute.Alias.HasValue() && value.Alias.HasValue())
-									{
-										mapping = new SearchQueryAliasMapping(attribute.Id, value.Id);
-
-										_attributeMappings.TryAdd(new AliasMappingKey(attribute.Alias, value.Alias), mapping);
-									}
-
-									if (locAttributes.ContainsKey(attribute.Id) && locValues.ContainsKey(value.Id))
-									{
-										foreach (var locAttribute in locAttributes[attribute.Id])
-										{
-											var locValue = locValues[value.Id].FirstOrDefault(x => x.LanguageId == locAttribute.LanguageId);
-
-											if (locValue != null && locAttribute.LocaleValue.HasValue() && locValue.LocaleValue.HasValue())
-											{
-												if (mapping == null)
-													mapping = new SearchQueryAliasMapping(attribute.Id, value.Id);
-
-												_attributeMappings.TryAdd(new AliasMappingKey(locAttribute.LocaleValue, locValue.LocaleValue), mapping);
-											}
-										}
-									}
-								}
-							}
-
-						}
+					foreach (var option in attribute.SpecificationAttributeOptions.Where(x => x.Alias.HasValue()))
+					{
+						dictionary[CreateOptionKey(0, attribute.Id, option.Alias)] = option.Id;
 					}
 				}
 
-				return _attributeMappings;
-			}
-		}
-
-		public SearchQueryAliasMapping GetAttributeByAlias(string attributeAlias, string optionAlias)
-		{
-			if (attributeAlias.HasValue() && optionAlias.HasValue())
-			{
-				SearchQueryAliasMapping mapping;
-
-				if (AttributeMappings.TryGetValue(new AliasMappingKey(attributeAlias, optionAlias), out mapping))
-					return mapping;
-			}
-
-			return null;
-		}
-
-		public bool AddAttribute(string attributeAlias, string optionAlias, SearchQueryAliasMapping mapping)
-		{
-			Guard.NotNull(mapping, nameof(mapping));
-
-			if (attributeAlias.HasValue() && optionAlias.HasValue())
-			{
-				AttributeMappings.AddOrUpdate(new AliasMappingKey(attributeAlias, optionAlias), mapping, (k, v) =>
+				foreach (var locAttribute in locAttributes)
 				{
-					v.CopyFrom(mapping);
-					return v;
-				});
+					dictionary[CreateAttributeKey(locAttribute.LanguageId, locAttribute.LocaleValue)] = locAttribute.EntityId;
+				}
 
-				return true;
-			}
+				foreach (var locOption in locOptions)
+				{
+					if (optionIds.TryGetValue(locOption.EntityId, out attrinutId))
+					{
+						dictionary[CreateOptionKey(locOption.LanguageId, attrinutId, locOption.LocaleValue)] = locOption.EntityId;
+					}
+				}
 
-			return false;
+				return dictionary;
+			});
 		}
 
-		public bool RemoveAttribute(string attributeAlias, string optionAlias)
+		public void ClearCache()
 		{
-			if (attributeAlias.HasValue() && optionAlias.HasValue())
+			_cacheManager.RemoveByPattern(ALL_MAPPINGS_KEY);
+		}
+
+		public int GetAttributeIdByAlias(string attributeAlias, int languageId = 0)
+		{
+			var result = 0;
+
+			if (attributeAlias.HasValue())
 			{
-				SearchQueryAliasMapping unused;
-				return AttributeMappings.TryRemove(new AliasMappingKey(attributeAlias, optionAlias), out unused);
+				var mappings = GetAllCachedMappings();
+
+				if (!mappings.TryGetValue(CreateAttributeKey(languageId, attributeAlias), out result))
+				{
+					if (languageId != 0)
+					{
+						mappings.TryGetValue(CreateAttributeKey(0, attributeAlias), out result);
+					}
+				}
 			}
 
-			return false;
+			return result;
 		}
 
-		public void RemoveAllAttributes()
+		public int GetOptionIdByAlias(string optionAlias, int attributeId, int languageId = 0)
 		{
-			if (_attributeMappings != null)
+			var result = 0;
+
+			if (optionAlias.HasValue() && attributeId != 0)
 			{
-				_attributeMappings.Clear();
-				_attributeMappings = null;
+				var mappings = GetAllCachedMappings();
+
+				if (!mappings.TryGetValue(CreateOptionKey(languageId, attributeId, optionAlias), out result))
+				{
+					if (languageId != 0)
+					{
+						mappings.TryGetValue(CreateOptionKey(0, attributeId, optionAlias), out result);
+					}
+				}
 			}
-		}
-	}
 
-
-	internal class AliasMappingKey : Tuple<string, string>
-	{
-		public AliasMappingKey(string fieldAlias, string valueAlias)
-			: base(fieldAlias.EmptyNull().ToLowerInvariant(), valueAlias.EmptyNull().ToLowerInvariant())
-		{
-		}
-
-		public string FieldAlias
-		{
-			get { return Item1; }
-		}
-
-		public string ValueAlias
-		{
-			get { return Item2; }
+			return result;
 		}
 	}
 }

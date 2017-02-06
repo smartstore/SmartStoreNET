@@ -437,6 +437,11 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("PDFPackagingSlip.Gtin", "EAN", "Gtin");
 
-        }
+			builder.AddOrUpdate("Common.Error.AliasAlreadyExists",
+				"An alias \"{0}\" already exists. Please use a different value.",
+				"Ein Alias \"{0}\" existiert bereits. Bitte verwenden Sie einen anderen Wert.");
+
+
+		}
     }
 }

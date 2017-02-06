@@ -507,7 +507,6 @@
     <Compile Include="Search\ICatalogSearchService.cs" />
     <Compile Include="Search\LinqCatalogSearchService.cs" />
     <Compile Include="Search\CatalogSearchEvents.cs" />
-    <Compile Include="Search\Modelling\SearchQueryAliasMapping.cs" />
     <Compile Include="Security\AclService.cs" />
     <Compile Include="Security\EncryptionService.cs" />
     <Compile Include="Security\IAclService.cs" />

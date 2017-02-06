@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using SmartStore.Core;
-using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Services.Catalog;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Search.Modelling;
 
 namespace SmartStore.Services.Hooks
@@ -14,8 +11,6 @@ namespace SmartStore.Services.Hooks
 	public class SearchQueryAliasHook : DbSaveHook<BaseEntity>
 	{
 		private readonly Lazy<ICatalogSearchQueryAliasMapper> _catalogSearchQueryAliasMapper;
-		private readonly Lazy<ISpecificationAttributeService> _specificationAttributeService;
-		private readonly Lazy<ILocalizedEntityService> _localizedEntityService;
 
 		private static readonly HashSet<Type> _candidateTypes = new HashSet<Type>(new Type[]
 		{
@@ -24,14 +19,9 @@ namespace SmartStore.Services.Hooks
 			typeof(LocalizedProperty)
 		});
 
-		public SearchQueryAliasHook(
-			Lazy<ICatalogSearchQueryAliasMapper> catalogSearchQueryAliasMapper,
-			Lazy<ISpecificationAttributeService> specificationAttributeService,
-			Lazy<ILocalizedEntityService> localizedEntityService)
+		public SearchQueryAliasHook(Lazy<ICatalogSearchQueryAliasMapper> catalogSearchQueryAliasMapper)
 		{
 			_catalogSearchQueryAliasMapper = catalogSearchQueryAliasMapper;
-			_specificationAttributeService = specificationAttributeService;
-			_localizedEntityService = localizedEntityService;
 		}
 
 		protected override void OnDeleting(BaseEntity entity, HookedEntity entry)
@@ -58,78 +48,32 @@ namespace SmartStore.Services.Hooks
 
 			if (type == typeof(SpecificationAttribute))
 			{
-				var attribute = (SpecificationAttribute)entity;
-				var oldAlias = entry.Entry.Property("Alias").OriginalValue as string;
-
-				if (!attribute.Alias.IsCaseInsensitiveEqual(oldAlias) || entry.InitialState == EntityState.Deleted)
+				if (entry.IsModified("Alias"))
 				{
-					// remove all cached data. update results in too many changes.
-					_catalogSearchQueryAliasMapper.Value.RemoveAllAttributes();
+					_catalogSearchQueryAliasMapper.Value.ClearCache();
 				}
 			}
 			else if (type == typeof(SpecificationAttributeOption))
 			{
-				var option = (SpecificationAttributeOption)entity;
-				var oldAlias = entry.Entry.Property("Alias").OriginalValue as string;
-
-				if (!option.Alias.IsCaseInsensitiveEqual(oldAlias) || entry.InitialState == EntityState.Deleted)
+				if (entry.IsModified("Alias"))
 				{
-					var attribute = _specificationAttributeService.Value.GetSpecificationAttributeById(option.SpecificationAttributeId);
-					if (attribute != null)
-					{
-						// try to remove old alias mapping
-						_catalogSearchQueryAliasMapper.Value.RemoveAttribute(attribute.Alias, oldAlias);
-
-						// add new mapping
-						if (entry.InitialState != EntityState.Deleted)
-						{
-							_catalogSearchQueryAliasMapper.Value.AddAttribute(attribute.Alias, option.Alias, new SearchQueryAliasMapping(attribute.Id, option.Id));
-						}
-					}
+					_catalogSearchQueryAliasMapper.Value.ClearCache();
 				}
 			}
 			else if (type == typeof(LocalizedProperty))
 			{
-				var property = (LocalizedProperty)entity;
-				if (!property.LocaleKey.IsCaseInsensitiveEqual("Alias"))
-					return;
+				// note: not fired when SpecificationAttribute or SpecificationAttributeOption deleted.
+				// not necessary anyway because cache cleared by above code.
+				var localizedProp = (LocalizedProperty)entity;
 
-				if (property.LocaleKeyGroup.IsCaseInsensitiveEqual("SpecificationAttribute"))
+				if (localizedProp.LocaleKey.IsCaseInsensitiveEqual("Alias") &&
+					(localizedProp.LocaleKeyGroup.IsCaseInsensitiveEqual("SpecificationAttribute") || localizedProp.LocaleKeyGroup.IsCaseInsensitiveEqual("SpecificationAttributeOption")))
 				{
-					var oldAlias = entry.Entry.Property("LocaleValue").OriginalValue as string;
-
-					if (!property.LocaleValue.IsCaseInsensitiveEqual(oldAlias) || entry.InitialState == EntityState.Deleted)
+					if (entry.IsModified("LocaleValue"))
 					{
-						// remove all cached data. update results in too many changes.
-						_catalogSearchQueryAliasMapper.Value.RemoveAllAttributes();
+						_catalogSearchQueryAliasMapper.Value.ClearCache();
 					}
 				}
-				else if (property.LocaleKeyGroup.IsCaseInsensitiveEqual("SpecificationAttributeOption"))
-				{
-					var oldAlias = entry.Entry.Property("LocaleValue").OriginalValue as string;
-
-					if (!property.LocaleValue.IsCaseInsensitiveEqual(oldAlias) || entry.InitialState == EntityState.Deleted)
-					{
-						var option = _specificationAttributeService.Value.GetSpecificationAttributeOptionById(property.EntityId);
-						if (option != null)
-						{
-							var attributeAlias = _localizedEntityService.Value.GetLocalizedValue(property.LanguageId, option.SpecificationAttributeId, "SpecificationAttribute", "Alias");
-							if (attributeAlias.HasValue())
-							{
-								// try to remove old alias mapping
-								_catalogSearchQueryAliasMapper.Value.RemoveAttribute(attributeAlias, oldAlias);
-
-								// add new mapping
-								if (entry.InitialState != EntityState.Deleted)
-								{
-									_catalogSearchQueryAliasMapper.Value.AddAttribute(attributeAlias, property.LocaleValue, 
-										new SearchQueryAliasMapping(option.SpecificationAttributeId, property.EntityId));
-								}
-							}
-						}
-					}
-				}
-
 			}
 		}
 	}

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.Entity.Infrastructure;
+﻿using System.Data.Entity.Infrastructure;
 
 namespace SmartStore.Core.Data.Hooks
 {
@@ -58,6 +57,41 @@ namespace SmartStore.Core.Data.Hooks
 			{
 				return InitialState != State;
 			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether a property has been modified.
+		/// </summary>
+		/// <param name="propertyName">Name of the property</param>
+		public bool IsModified(string propertyName)
+		{
+			Guard.NotEmpty(propertyName, nameof(propertyName));
+
+			var result = false;
+
+			if (State != EntityState.Detached)
+			{
+				var prop = Entry.Property(propertyName);
+				if (prop != null)
+				{
+					switch (State)
+					{
+						case EntityState.Added:
+							// OriginalValues cannot be used for entities in the Added state.
+							result = prop.CurrentValue != null;
+							break;
+						case EntityState.Deleted:
+							// CurrentValues cannot be used for entities in the Deleted state.
+							result = prop.OriginalValue != null;
+							break;
+						default:
+							result = prop.CurrentValue != null && !prop.CurrentValue.Equals(prop.OriginalValue);
+							break;
+					}
+				}
+			}
+
+			return result;
 		}
 	}
 }

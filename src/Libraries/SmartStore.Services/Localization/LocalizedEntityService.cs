@@ -7,13 +7,14 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Services.Localization
 {
-    /// <summary>
-    /// Provides information about localizable entities
-    /// </summary>
-    public partial class LocalizedEntityService : ScopedServiceBase, ILocalizedEntityService
+	/// <summary>
+	/// Provides information about localizable entities
+	/// </summary>
+	public partial class LocalizedEntityService : ScopedServiceBase, ILocalizedEntityService
     {
 		/// <summary>
 		/// 0 = segment (keygroup.key.idrange), 1 = language id
@@ -31,7 +32,11 @@ namespace SmartStore.Services.Localization
         {
             _cacheManager = cacheManager;
             _localizedPropertyRepository = localizedPropertyRepository;
-        }
+
+			T = NullLocalizer.Instance;
+		}
+
+		public Localizer T { get; set; }
 
 		protected override void OnClearCache()
 		{
@@ -155,9 +160,37 @@ namespace SmartStore.Services.Localization
 			return query.FirstOrDefault();
 		}
 
+		protected virtual void Validate(LocalizedProperty property)
+		{
+			Validate(property.LocaleKeyGroup, property.LocaleKey, property.LocaleValue, property.LanguageId, property);
+		}
+		protected virtual void Validate(
+			string keyGroup,
+			string key,
+			string value,
+			int languageId,
+			LocalizedProperty existingProperty)
+		{
+			if (value.IsEmpty())
+				return;
+
+			if (key == "Alias" && (keyGroup == "SpecificationAttribute" || keyGroup == "SpecificationAttributeOption"))
+			{
+				var existingAlias = _localizedPropertyRepository.TableUntracked
+					.FirstOrDefault(x => x.LocaleKey == key && x.LocaleKeyGroup == keyGroup && x.LanguageId == languageId && x.LocaleValue == value);
+
+				if (existingAlias != null && !(existingProperty != null && existingProperty.EntityId == existingAlias.EntityId))
+				{
+					throw new SmartException(T("Common.Error.AliasAlreadyExists", value));
+				}
+			}
+		}
+
 		public virtual void InsertLocalizedProperty(LocalizedProperty property)
         {
 			Guard.NotNull(property, nameof(property));
+
+			Validate(property);
 
 			try
 			{
@@ -174,6 +207,8 @@ namespace SmartStore.Services.Localization
         public virtual void UpdateLocalizedProperty(LocalizedProperty property)
         {
 			Guard.NotNull(property, nameof(property));
+
+			Validate(property);
 
 			try
 			{
@@ -233,29 +268,26 @@ namespace SmartStore.Services.Localization
             var member = keySelector.Body as MemberExpression;
             if (member == null)
             {
-                throw new ArgumentException(string.Format(
-                    "Expression '{0}' refers to a method, not a property.",
-                    keySelector));
+                throw new ArgumentException($"Expression '{keySelector}' refers to a method, not a property.");
             }
 
             var propInfo = member.Member as PropertyInfo;
             if (propInfo == null)
             {
-                throw new ArgumentException(string.Format(
-                       "Expression '{0}' refers to a field, not a property.",
-                       keySelector));
+                throw new ArgumentException($"Expression '{keySelector}' refers to a field, not a property.");
             }
 
-            string localeKeyGroup = typeof(T).Name;
-            string localeKey = propInfo.Name;
+            var keyGroup = typeof(T).Name;
+            var key = propInfo.Name;
+			var valueStr = localeValue.Convert<string>();
+			var prop = GetLocalizedProperty(languageId, entity.Id, keyGroup, key);
 
-			var prop = GetLocalizedProperty(languageId, entity.Id, localeKeyGroup, localeKey);
-
-            string localeValueStr = localeValue.Convert<string>();
+			// do entity specific validation
+			Validate(keyGroup, key, valueStr, languageId, prop);
 
             if (prop != null)
             {
-                if (localeValueStr.IsEmpty())
+                if (valueStr.IsEmpty())
                 {
                     // delete
                     DeleteLocalizedProperty(prop);
@@ -263,25 +295,25 @@ namespace SmartStore.Services.Localization
                 else
                 {
                     // update
-					if (prop.LocaleValue != localeValueStr)
+					if (prop.LocaleValue != valueStr)
 					{
-						prop.LocaleValue = localeValueStr;
+						prop.LocaleValue = valueStr;
 						UpdateLocalizedProperty(prop);
 					}
                 }
             }
             else
             {
-                if (localeValueStr.HasValue())
+                if (valueStr.HasValue())
                 {
                     // insert
                     prop = new LocalizedProperty
                     {
                         EntityId = entity.Id,
                         LanguageId = languageId,
-                        LocaleKey = localeKey,
-                        LocaleKeyGroup = localeKeyGroup,
-                        LocaleValue = localeValueStr
+                        LocaleKey = key,
+                        LocaleKeyGroup = keyGroup,
+                        LocaleValue = valueStr
                     };
                     InsertLocalizedProperty(prop);
                 }

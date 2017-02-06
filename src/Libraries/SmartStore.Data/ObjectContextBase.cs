@@ -282,7 +282,9 @@ namespace SmartStore.Data
 
 		private static bool PropIsModified(DbPropertyEntry prop)
 		{
+			// TODO: "CurrentValues cannot be used for entities in the Deleted state."
 			var cur = prop.CurrentValue;
+			// TODO: "OriginalValues cannot be used for entities in the Added state."
 			var orig = prop.OriginalValue;
 
 			if (cur == null && orig == null)

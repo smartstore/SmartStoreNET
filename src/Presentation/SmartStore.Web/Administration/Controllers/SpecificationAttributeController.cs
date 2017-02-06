@@ -74,7 +74,7 @@ namespace SmartStore.Admin.Controllers
 			}
         }
 
-		private void AddMultipleOptionNames(SpecificationAttributeOptionModel model)
+		private bool AddMultipleOptionNames(SpecificationAttributeOptionModel model)
 		{
 			var values = model.Name.SplitSafe(";");
 			var alias = model.Alias.SplitSafe(";");
@@ -90,27 +90,37 @@ namespace SmartStore.Admin.Controllers
 					SpecificationAttributeId = model.SpecificationAttributeId
 				};
 
-				_specificationAttributeService.InsertSpecificationAttributeOption(sao);
-
-				foreach (var localized in model.Locales.Where(l => l.Name.HasValue()))
+				try
 				{
-					var localizedValues = localized.Name.SplitSafe(";");
-					var value = (i < localizedValues.Length ? localizedValues[i].Trim() : sao.Name);
+					_specificationAttributeService.InsertSpecificationAttributeOption(sao);
 
-					_localizedEntityService.SaveLocalizedValue(sao, x => x.Name, value, localized.LanguageId);
-				}
-
-				foreach (var localized in model.Locales.Where(l => l.Alias.HasValue()))
-				{
-					var localizedAlias = localized.Alias.SplitSafe(";");
-					var value = localizedAlias.SafeGet(i).Trim();
-
-					if (value.HasValue())
+					foreach (var localized in model.Locales.Where(l => l.Name.HasValue()))
 					{
-						_localizedEntityService.SaveLocalizedValue(sao, x => x.Alias, value, localized.LanguageId);
+						var localizedValues = localized.Name.SplitSafe(";");
+						var value = (i < localizedValues.Length ? localizedValues[i].Trim() : sao.Name);
+
+						_localizedEntityService.SaveLocalizedValue(sao, x => x.Name, value, localized.LanguageId);
+					}
+
+					foreach (var localized in model.Locales.Where(l => l.Alias.HasValue()))
+					{
+						var localizedAlias = localized.Alias.SplitSafe(";");
+						var value = localizedAlias.SafeGet(i).Trim();
+
+						if (value.HasValue())
+						{
+							_localizedEntityService.SaveLocalizedValue(sao, x => x.Alias, value, localized.LanguageId);
+						}
 					}
 				}
+				catch (Exception exception)
+				{
+					ModelState.AddModelError("", exception.Message);
+					return false;
+				}
 			}
+
+			return true;
 		}
 
         #endregion
@@ -174,8 +184,10 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new SpecificationAttributeModel();
-            //locales
-            AddLocales(_languageService, model.Locales);
+			model.AvailableFacetSortings = model.FacetSorting.ToSelectList().ToList();
+
+			AddLocales(_languageService, model.Locales);
+
             return View(model);
         }
 
@@ -188,8 +200,18 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var specificationAttribute = model.ToEntity();
-                _specificationAttributeService.InsertSpecificationAttribute(specificationAttribute);
-                UpdateAttributeLocales(specificationAttribute, model);
+
+				try
+				{
+					_specificationAttributeService.InsertSpecificationAttribute(specificationAttribute);
+
+					UpdateAttributeLocales(specificationAttribute, model);
+				}
+				catch (Exception exception)
+				{
+					ModelState.AddModelError("", exception.Message);
+					return Create();
+				}
 
                 //activity log
                 _customerActivityService.InsertActivity("AddNewSpecAttribute", _localizationService.GetResource("ActivityLog.AddNewSpecAttribute"), specificationAttribute.Name);
@@ -236,9 +258,18 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 specificationAttribute = model.ToEntity(specificationAttribute);
-                _specificationAttributeService.UpdateSpecificationAttribute(specificationAttribute);
 
-                UpdateAttributeLocales(specificationAttribute, model);
+				try
+				{
+					_specificationAttributeService.UpdateSpecificationAttribute(specificationAttribute);
+
+					UpdateAttributeLocales(specificationAttribute, model);
+				}
+				catch (Exception exception)
+				{
+					ModelState.AddModelError("", exception.Message);
+					return Edit(specificationAttribute.Id);
+				}
 
                 //activity log
                 _customerActivityService.InsertActivity("EditSpecAttribute", _localizationService.GetResource("ActivityLog.EditSpecAttribute"), specificationAttribute.Name);
@@ -359,14 +390,24 @@ namespace SmartStore.Admin.Controllers
             {
 				if (model.Multiple)
 				{
-					AddMultipleOptionNames(model);
+					if (!AddMultipleOptionNames(model))
+						return OptionCreatePopup(model.SpecificationAttributeId);
 				}
 				else
 				{
 					var sao = model.ToEntity();
 
-					_specificationAttributeService.InsertSpecificationAttributeOption(sao);
-					UpdateOptionLocales(sao, model);
+					try
+					{
+						_specificationAttributeService.InsertSpecificationAttributeOption(sao);
+
+						UpdateOptionLocales(sao, model);
+					}
+					catch (Exception exception)
+					{
+						ModelState.AddModelError("", exception.Message);
+						return OptionCreatePopup(model.SpecificationAttributeId);
+					}
 				}
 
                 ViewBag.RefreshPage = true;
@@ -412,9 +453,18 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 sao = model.ToEntity(sao);
-                _specificationAttributeService.UpdateSpecificationAttributeOption(sao);
 
-                UpdateOptionLocales(sao, model);
+				try
+				{
+					_specificationAttributeService.UpdateSpecificationAttributeOption(sao);
+
+					UpdateOptionLocales(sao, model);
+				}
+				catch (Exception exception)
+				{
+					ModelState.AddModelError("", exception.Message);
+					return OptionEditPopup(sao.Id);
+				}
 
                 ViewBag.RefreshPage = true;
                 ViewBag.btnId = btnId;

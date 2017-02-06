@@ -30,7 +30,6 @@ namespace SmartStore.Services.Search.Modelling
 		r	-	Min Rating
 		sq	-	Stock Quantity
 		d	-	Delivery Time
-		a	-	Specification Attribute Values
 		v	-	View Mode
 		
 		*	-	Variants 
@@ -38,7 +37,7 @@ namespace SmartStore.Services.Search.Modelling
 
 	public class CatalogSearchQueryFactory : ICatalogSearchQueryFactory
 	{
-		protected static readonly string[] _tokens = new string[] { "q", "i", "s", "o", "pf", "pt", "c", "m", "r", "sq", "d", "a", "v" };
+		protected static readonly string[] _tokens = new string[] { "q", "i", "s", "o", "pf", "pt", "c", "m", "r", "sq", "d", "v" };
 		protected readonly HttpContextBase _httpContext;
 		protected readonly CatalogSettings _catalogSettings;
 		protected readonly SearchSettings _searchSettings;

@@ -149,12 +149,14 @@
         height: 44px;
         right: 0;
         left: 0;
-        text-align: right;    
-        .bootstrap-touchspin {
-            top: -3px;
-        }
+        text-align: right;
         .qty-input {
-            width: 3rem;
+            display: inline-block;
+            width: 5.75rem;
+        }
+        .ajax-cart-link,
+        .remove  {
+            vertical-align: initial;
         }
     }
 

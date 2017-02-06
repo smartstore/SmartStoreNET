@@ -139,27 +139,32 @@
 		</td>
 		<td class="text-nowrap" style="width:170px">
 			@if (Model.IsEditable)
-			{
-				if (item.AllowedQuantities.Count > 0)
-				{
-				<select name="itemquantity@(item.Id)" class="qty-dropdown noskin">
-					@foreach (var qty in item.AllowedQuantities)
-					{
-						<option selected="@qty.Selected" value="@qty.Value">@qty.Value</option>
-					}
-				</select>
-				}
-				else
-				{
-                    <input id="qty-input-@(item.Id)" name="itemquantity@(item.Id)" type="text" value="@(item.Quantity)" class="qty-input text-xs-right form-control" />   
-
+            {
+                if (item.AllowedQuantities.Count > 0)
+                {
+                    <select name="itemquantity@(item.Id)" class="qty-dropdown noskin">
+                        @foreach (var qty in item.AllowedQuantities)
+                        {
+                            <option selected="@qty.Selected" value="@qty.Value">@qty.Value</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    <div class="qty-input">
+                        <input id="qty-input-@(item.Id)" name="itemquantity@(item.Id)" type="text" value="@(item.Quantity)" class="form-control" />   
+                    </div>
                     <script type="text/javascript">
                         $(function () {
-                            //TODO NewAlpha: implement step in admin product detail
                             $("#qty-input-@(item.Id)").TouchSpin({
                                 min: @item.MinOrderAmount,
                                 max: @item.MaxOrderAmount,
-                                step: 1
+                                step: 1,
+                                postfix: "@item.QuantityUnit",
+                                buttondown_class: 'btn btn-secondary',
+                                buttonup_class: 'btn btn-secondary',
+                                buttondown_txt: '<i class="fa fa-minus"></i>',
+                                buttonup_txt: '<i class="fa fa-plus"></i>'
                             });
                         });
                     </script>
@@ -169,7 +174,6 @@
             {
 				<span>@item.Quantity</span>
 			}
-            <span class="measure-unit">@item.QuantityUnit</span>
 		</td>
 		<td class="text-nowrap omega">
 			<span class="product-subtotal">@item.SubTotal</span>

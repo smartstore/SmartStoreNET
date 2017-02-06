@@ -110,7 +110,7 @@ var ShopBar = (function($) {
 
         initQtyControls: function(parentSelector) {
             
-            $(parentSelector + " .qty-input").each(function () {
+            $(parentSelector + " .qty-input .form-control").each(function () {
 
                 var qtyControl = $(this);
 
@@ -118,8 +118,10 @@ var ShopBar = (function($) {
                     min: qtyControl.data("min-qty"),   
                     max: qtyControl.data("max-qty"),
                     step: qtyControl.data("min-step"),
-                    buttondown_class: "btn btn-sm btn-secondary",
-                    buttonup_class: "btn btn-sm btn-secondary"
+                    buttondown_class: 'btn btn-secondary',
+                    buttonup_class: 'btn btn-secondary',
+                    buttondown_txt: '<i class="fa fa-minus"></i>',
+                    buttonup_txt: '<i class="fa fa-plus"></i>',
                 }).change(function (e) {
 
                     var currentValue = this.value;

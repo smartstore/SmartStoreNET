@@ -2,11 +2,9 @@
 
 @using SmartStore.Web.Models.Catalog;
 
-
 @{
 	var large = ViewData["large"].Convert<bool>();
 	var inputStyle = "spinner"; // TODO: (mc) > (mh) finalize dropdown later in v3.1+
-	// TODO: (mc) > (mh) Use this editor template in Cart, Wishlist etc.
 }
 
 <div class="qty-input@(Model.QuantityUnitName.HasValue() ? " has-postfix" : "")">

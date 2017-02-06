@@ -58,9 +58,10 @@
                 </div>
 
                 <div class="toolbar">
-
-                    <input class="qty-input input-sm" value="@item.Quantity" data-update-url="@(Url.Action("UpdateOcCartItem", "ShoppingCart"))"
-                           data-sci-id="@item.Id" data-min-qty="1" data-max-qty="1000" data-qty-step="1" data-type="wishlist" />
+                    <div class="qty-input">
+                        <input class="form-control input-sm" type="text" value="@item.Quantity" data-update-url="@(Url.Action("UpdateOcCartItem", "ShoppingCart"))"
+                               data-sci-id="@item.Id" data-min-qty="1" data-max-qty="1000" data-qty-step="1" data-type="wishlist" />
+                    </div>
 
                     @if (Model.ShowItemsFromWishlistToCartButton)
                     {

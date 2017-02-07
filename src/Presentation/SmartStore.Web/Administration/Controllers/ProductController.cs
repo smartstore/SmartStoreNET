@@ -724,18 +724,19 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-			// delivery times
-			var deliveryTimes = _deliveryTimesService.GetAllDeliveryTimes();
+            // delivery times
+            var defaultDeliveryTime = _deliveryTimesService.GetDefaultDeliveryTime();
+            var deliveryTimes = _deliveryTimesService.GetAllDeliveryTimes();
 			foreach (var dt in deliveryTimes)
 			{
 				model.AvailableDeliveryTimes.Add(new SelectListItem
 				{
 					Text = dt.Name,
 					Value = dt.Id.ToString(),
-					Selected = product != null && !setPredefinedValues && dt.Id == product.DeliveryTimeId.GetValueOrDefault()
-				});
+					Selected = product != null && !setPredefinedValues || dt.Id == defaultDeliveryTime.Id
+                });
 			}
-
+            
             // quantity units
             var quantityUnits = _quantityUnitService.GetAllQuantityUnits();
             foreach (var mu in quantityUnits)
@@ -1067,7 +1068,7 @@ namespace SmartStore.Admin.Controllers
             {
 				var product = new Product();
 
-				MapModelToProduct(model, product, form);
+                MapModelToProduct(model, product, form);
 
 				product.StockQuantity = 10000;
 				product.OrderMinimumQuantity = 1;
@@ -1077,8 +1078,8 @@ namespace SmartStore.Admin.Controllers
 				product.Published = true;
 				product.VisibleIndividually = true;
 				product.MaximumCustomerEnteredPrice = 1000;
-
-				if (product.ProductType == ProductType.BundledProduct)
+                
+                if (product.ProductType == ProductType.BundledProduct)
 				{
 					product.BundleTitleText = _localizationService.GetResource("Products.Bundle.BundleIncludes");
 				}

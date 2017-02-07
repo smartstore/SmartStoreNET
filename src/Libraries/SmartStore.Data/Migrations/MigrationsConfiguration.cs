@@ -441,7 +441,17 @@ namespace SmartStore.Data.Migrations
 				"An alias \"{0}\" already exists. Please use a different value.",
 				"Ein Alias \"{0}\" existiert bereits. Bitte verwenden Sie einen anderen Wert.");
 
+            builder.AddOrUpdate("Admin.Configuration.DeliveryTimes.Fields.IsDefault", 
+                "Is default",
+                "Ist Standard",
+                "Specifies the default delivery time.",
+                "Bestimmt die Standard-Lieferzeit");
 
-		}
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowDefaultDeliveryTime",
+                "Show default delivery time",
+                "Zeige Standard-Lieferzeit",
+                "Specifies whether to show the default delivery time if there is none assigned to a product.",
+                "Bestimmt ob die Standard-Lieferzeit für ein Produkt angezeigt wird, wenn dem Produkt keine Lieferzeit zugewiesen wurde.");
+        }
     }
 }

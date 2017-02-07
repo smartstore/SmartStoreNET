@@ -352,6 +352,15 @@
                 @Html.ValidationMessageFor(model => model.ShowDefaultQuantityUnit)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowDefaultDeliveryTime)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowDefaultDeliveryTime)
+                @Html.ValidationMessageFor(model => model.ShowDefaultDeliveryTime)
+            </td>
+        </tr>
     </table>
 }
         

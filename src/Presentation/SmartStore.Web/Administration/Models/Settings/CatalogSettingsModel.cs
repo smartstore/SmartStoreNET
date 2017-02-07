@@ -63,6 +63,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDefaultQuantityUnit")]
         public bool ShowDefaultQuantityUnit { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDefaultDeliveryTime")]
+        public bool ShowDefaultDeliveryTime { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage")]
         public bool ShowManufacturersOnHomepage { get; set; }
 

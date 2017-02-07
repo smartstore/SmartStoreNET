@@ -74,8 +74,17 @@ namespace SmartStore.Services.Directory
         public virtual DeliveryTime GetDeliveryTimeById(int deliveryTimeId)
         {
             if (deliveryTimeId == 0)
-                return null;
-
+            {
+                if (_catalogSettings.ShowDefaultDeliveryTime)
+                {
+                    return GetDefaultDeliveryTime();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            
             return  _deliveryTimeRepository.GetByIdCached(deliveryTimeId, "deliverytime-{0}".FormatInvariant(deliveryTimeId));
         }
 
@@ -120,6 +129,28 @@ namespace SmartStore.Services.Directory
 
             //event notification
             _eventPublisher.EntityUpdated(deliveryTime);
+        }
+
+        public virtual void SetToDefault(DeliveryTime deliveryTime)
+        {
+            if (deliveryTime == null)
+                throw new ArgumentNullException("deliveryTime");
+
+            var deliveryTimes = GetAllDeliveryTimes();
+
+            foreach(var time in deliveryTimes)
+            {
+                time.IsDefault = time.Equals(deliveryTime) ? true : false;
+                _deliveryTimeRepository.Update(time);
+            }
+            
+            //event notification
+            _eventPublisher.EntityUpdated(deliveryTime);
+        }
+        
+        public virtual DeliveryTime GetDefaultDeliveryTime()
+        {
+            return _deliveryTimeRepository.Table.Where(x => x.IsDefault == true).FirstOrDefault();
         }
     }
 }

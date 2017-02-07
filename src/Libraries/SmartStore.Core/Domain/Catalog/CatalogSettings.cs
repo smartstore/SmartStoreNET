@@ -378,6 +378,8 @@ namespace SmartStore.Core.Domain.Catalog
 
         public bool ShowDefaultQuantityUnit { get; set; }
 
+        public bool ShowDefaultDeliveryTime { get; set; }
+
         public bool ShowDiscountSign { get; set; }
 
 		/// <summary>

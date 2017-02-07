@@ -64,9 +64,7 @@ CKEDITOR.editorConfig = function( config ) {
     config.qtCellSpacing = '0'; // Cell spacing of the inserted table (default: '1')
 
     config.removePlugins = 'placeholder';
-
-    config.contentsCss = "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css";
-		
+	
 	config.codemirror = {
 	    // Set this to the theme you wish to use (codemirror themes)
 	    theme: 'eclipse',

@@ -63,35 +63,22 @@ namespace SmartStore.Core.Data.Hooks
 		/// Gets a value indicating whether a property has been modified.
 		/// </summary>
 		/// <param name="propertyName">Name of the property</param>
-		public bool IsModified(string propertyName)
+		public bool IsPropertyModified(string propertyName)
 		{
 			Guard.NotEmpty(propertyName, nameof(propertyName));
 
-			var result = false;
-
-			if (State != EntityState.Detached)
+			if (State == EntityState.Modified)
 			{
 				var prop = Entry.Property(propertyName);
-				if (prop != null)
+				if (prop == null)
 				{
-					switch (State)
-					{
-						case EntityState.Added:
-							// OriginalValues cannot be used for entities in the Added state.
-							result = prop.CurrentValue != null;
-							break;
-						case EntityState.Deleted:
-							// CurrentValues cannot be used for entities in the Deleted state.
-							result = prop.OriginalValue != null;
-							break;
-						default:
-							result = prop.CurrentValue != null && !prop.CurrentValue.Equals(prop.OriginalValue);
-							break;
-					}
+					throw new SmartException($"An entity property '{propertyName}' does not exist.");
 				}
+
+				return prop.CurrentValue != null && !prop.CurrentValue.Equals(prop.OriginalValue);
 			}
 
-			return result;
+			return false;
 		}
 	}
 }

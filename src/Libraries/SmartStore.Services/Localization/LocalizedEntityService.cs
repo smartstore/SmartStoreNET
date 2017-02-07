@@ -7,7 +7,6 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Localization;
 
 namespace SmartStore.Services.Localization
 {
@@ -32,11 +31,7 @@ namespace SmartStore.Services.Localization
         {
             _cacheManager = cacheManager;
             _localizedPropertyRepository = localizedPropertyRepository;
-
-			T = NullLocalizer.Instance;
 		}
-
-		public Localizer T { get; set; }
 
 		protected override void OnClearCache()
 		{
@@ -160,44 +155,16 @@ namespace SmartStore.Services.Localization
 			return query.FirstOrDefault();
 		}
 
-		protected virtual void Validate(LocalizedProperty property)
-		{
-			Validate(property.LocaleKeyGroup, property.LocaleKey, property.LocaleValue, property.LanguageId, property);
-		}
-		protected virtual void Validate(
-			string keyGroup,
-			string key,
-			string value,
-			int languageId,
-			LocalizedProperty existingProperty)
-		{
-			if (value.IsEmpty())
-				return;
-
-			if (key == "Alias" && (keyGroup == "SpecificationAttribute" || keyGroup == "SpecificationAttributeOption"))
-			{
-				var existingAlias = _localizedPropertyRepository.TableUntracked
-					.FirstOrDefault(x => x.LocaleKey == key && x.LocaleKeyGroup == keyGroup && x.LanguageId == languageId && x.LocaleValue == value);
-
-				if (existingAlias != null && !(existingProperty != null && existingProperty.EntityId == existingAlias.EntityId))
-				{
-					throw new SmartException(T("Common.Error.AliasAlreadyExists", value));
-				}
-			}
-		}
-
 		public virtual void InsertLocalizedProperty(LocalizedProperty property)
         {
 			Guard.NotNull(property, nameof(property));
 
-			Validate(property);
+			// db
+			_localizedPropertyRepository.Insert(property);
+			HasChanges = true;
 
 			try
 			{
-				// db
-				_localizedPropertyRepository.Insert(property);
-				HasChanges = true;
-
 				// cache
 				ClearCachedPropertySegment(property.LocaleKeyGroup, property.LocaleKey, property.EntityId, property.LanguageId);
 			}
@@ -208,14 +175,12 @@ namespace SmartStore.Services.Localization
         {
 			Guard.NotNull(property, nameof(property));
 
-			Validate(property);
+			// db
+			_localizedPropertyRepository.Update(property);
+			HasChanges = true;
 
 			try
 			{
-				// db
-				_localizedPropertyRepository.Update(property);
-				HasChanges = true;
-
 				// cache
 				ClearCachedPropertySegment(property.LocaleKeyGroup, property.LocaleKey, property.EntityId, property.LanguageId);
 			}
@@ -230,12 +195,12 @@ namespace SmartStore.Services.Localization
 			{
 				// cache
 				ClearCachedPropertySegment(property.LocaleKeyGroup, property.LocaleKey, property.EntityId, property.LanguageId);
-
-				// db
-				_localizedPropertyRepository.Delete(property);
-				HasChanges = true;
 			}
 			catch { }
+
+			// db
+			_localizedPropertyRepository.Delete(property);
+			HasChanges = true;
 		}
 
 		public virtual LocalizedProperty GetLocalizedPropertyById(int localizedPropertyId)
@@ -281,9 +246,6 @@ namespace SmartStore.Services.Localization
             var key = propInfo.Name;
 			var valueStr = localeValue.Convert<string>();
 			var prop = GetLocalizedProperty(languageId, entity.Id, keyGroup, key);
-
-			// do entity specific validation
-			Validate(keyGroup, key, valueStr, languageId, prop);
 
             if (prop != null)
             {

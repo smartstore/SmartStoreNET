@@ -53,6 +53,8 @@
 * Order XML export includes more customer data like title and salutation
 * #1080 Do not resolve Order.OrderURLForCustomer token for guest customers
 * #1051 Display EAN in PDF packaging slip
+* #806 Can't create a user in the admin section without "Manage Customer Roles" permission 
+* #491 Implement option to determine default delivery time
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation

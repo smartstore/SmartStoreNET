@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Media;
+using SmartStore.Web.Models.Catalog;
+using System.Web.Mvc;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
@@ -25,12 +27,13 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         #region Nested Classes
 
-        public partial class ShoppingCartItemModel : EntityModelBase
+        public partial class ShoppingCartItemModel : EntityModelBase, IQuantityInput
         {
             public ShoppingCartItemModel()
             {
                 Picture = new PictureModel();
                 BundleItems = new List<ShoppingCartItemBundleItem>();
+                AllowedQuantities = new List<SelectListItem>();
             }
 
             public int ProductId { get; set; }
@@ -43,7 +46,15 @@ namespace SmartStore.Web.Models.ShoppingCart
 
 			public string ProductUrl { get; set; }
 
-            public int Quantity { get; set; }
+            public int EnteredQuantity { get; set; }
+
+            public string QuantityUnitName { get; set; }
+
+            public List<SelectListItem> AllowedQuantities { get; set; }
+
+            public int MinOrderAmount { get; set; }
+
+            public int MaxOrderAmount { get; set; }
 
             public string UnitPrice { get; set; }
 

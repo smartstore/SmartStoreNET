@@ -86,8 +86,8 @@
 
                     <div class="toolbar">
                         <div class="qty-input">
-                            <input class="input-sm form-control" type="text" value="@item.Quantity" data-update-url="@(Url.Action("UpdateOcCartItem", "ShoppingCart"))"
-                                   data-sci-id="@item.Id" data-min-qty="1" data-max-qty="1000" data-qty-step="1" data-type="cart" />
+                            <input class="input-sm form-control" type="text" value="@item.EnteredQuantity" data-update-url="@(Url.Action("UpdateOcCartItem", "ShoppingCart"))"
+                                   data-sci-id="@item.Id" data-min="@(item.MinOrderAmount)" data-max="@(item.MaxOrderAmount)" data-postfix="@(item.QuantityUnitName)" data-step="1" data-type="cart" />
                         </div>
                         
                         <a class="btn btn-danger btn-sm btn-icon remove ajax-cart-link"

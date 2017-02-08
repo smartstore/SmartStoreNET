@@ -77,6 +77,7 @@
 		<td class="text-nowrap" style="width:170px">
 			@if (Model.IsEditable)
             {
+                
                 if (item.AllowedQuantities.Count > 0)
                 {
                     <select name="itemquantity@(item.Id)" class="qty-dropdown noskin">
@@ -89,10 +90,11 @@
                 else
                 {
                     <div class="qty-input">
-				        <input id="itemquantity@(item.Id)" name="itemquantity@(item.Id)" type="text" value="@(item.Quantity)" class="form-control" />
+				        <input id="itemquantity@(item.Id)" name="itemquantity@(item.Id)" type="text" value="@(item.EnteredQuantity)" class="form-control"
+                               data-min="@(item.MinOrderAmount)" data-max="@(item.MaxOrderAmount)" data-postfix="@(item.QuantityUnitName)" data_step="1" />
                     </div>
 
-                    <script type="text/javascript">
+                    @*<script type="text/javascript">
                         $(function () {
                             $("#itemquantity@(item.Id)").TouchSpin({
                                 min: @item.MinOrderAmount,
@@ -104,12 +106,12 @@
                                 buttonup_txt: '<i class="fa fa-plus"></i>'
                             });
                         });
-                    </script>
+                    </script>*@
                 }
             }
             else
             {
-                <span>@item.Quantity</span>
+                <span>@item.EnteredQuantity</span>
             }
 		</td>
 		<td class="text-nowrap text-success omega">
@@ -168,10 +170,10 @@
 								{
 									@item.ProductName
 								}
-								@if (item.Quantity > 1 && item.BundlePerItemShoppingCart)
+								@if (item.EnteredQuantity > 1 && item.BundlePerItemShoppingCart)
 								{
 									<text>
-										&#215;&nbsp;@item.Quantity
+										&#215;&nbsp;@item.EnteredQuantity
 									</text>
 								}
 							</div>

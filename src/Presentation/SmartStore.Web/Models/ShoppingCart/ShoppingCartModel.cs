@@ -7,6 +7,7 @@ using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI.Choices;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Media;
+using SmartStore.Web.Models.Catalog;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
@@ -66,7 +67,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 
 		#region Nested Classes
 
-		public partial class ShoppingCartItemModel : EntityModelBase
+		public partial class ShoppingCartItemModel : EntityModelBase, IQuantityInput
         {
             public ShoppingCartItemModel()
             {
@@ -98,7 +99,10 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public string Discount { get; set; }
 
-            public int Quantity { get; set; }
+            public int EnteredQuantity { get; set; }
+
+            public string QuantityUnitName { get; set; }
+
             public List<SelectListItem> AllowedQuantities { get; set; }
 
             public int MinOrderAmount { get; set; }
@@ -114,8 +118,6 @@ namespace SmartStore.Web.Models.ShoppingCart
             public decimal Weight { get; set; }
 
             public bool IsShipEnabled { get; set; }
-
-            public string QuantityUnit { get; set; }
 
             public string DeliveryTimeName { get; set; }
             

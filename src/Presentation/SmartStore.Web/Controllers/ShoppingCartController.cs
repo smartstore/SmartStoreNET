@@ -250,8 +250,10 @@ namespace SmartStore.Web.Controllers
 				ProductName = product.GetLocalized(x => x.Name),
 				ProductSeName = product.GetSeName(),
 				VisibleIndividually = product.VisibleIndividually,
-				Quantity = item.Quantity,
-				IsShipEnabled = product.IsShipEnabled,
+				EnteredQuantity = item.Quantity,
+                MinOrderAmount = product.OrderMinimumQuantity,
+                MaxOrderAmount = product.OrderMaximumQuantity,
+                IsShipEnabled = product.IsShipEnabled,
 				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
 				BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, _workContext.WorkingCurrency),
@@ -259,11 +261,9 @@ namespace SmartStore.Web.Controllers
 				IsDownload = product.IsDownload,
 				HasUserAgreement = product.HasUserAgreement,
 				IsEsd = product.IsEsd,
-                MinOrderAmount = product.OrderMinimumQuantity,
-                MaxOrderAmount = product.OrderMaximumQuantity
 			};
 
-			model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);
+            model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);
 
 			if (item.BundleItem != null)
 			{
@@ -316,14 +316,13 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-            //if show measure Unit
-            if (product.QuantityUnitId != null)
-            { 
-                var quantityUnit = _quantityUnitService.GetQuantityUnitById(product.QuantityUnitId);
-                if(quantityUnit != null)
-                    model.QuantityUnit = quantityUnit.GetLocalized(x => x.Name);
+            // quantity unit
+            var quantityUnit = _quantityUnitService.GetQuantityUnitById(product.QuantityUnitId);
+            if(quantityUnit != null)
+            {
+                model.QuantityUnitName = quantityUnit.GetLocalized(x => x.Name);
             }
-
+            
 			//allowed quantities
 			var allowedQuantities = product.ParseAllowedQuatities();
 			foreach (var qty in allowedQuantities)
@@ -453,12 +452,12 @@ namespace SmartStore.Web.Controllers
 				ProductId = product.Id,
 				ProductName = product.GetLocalized(x => x.Name),
 				ProductSeName = product.GetSeName(),
-				Quantity = item.Quantity,
-				ShortDesc = product.GetLocalized(x => x.ShortDescription),
-				ProductType = product.ProductType,
-				VisibleIndividually = product.VisibleIndividually,
+                EnteredQuantity = item.Quantity,
                 MinOrderAmount = product.OrderMinimumQuantity,
-                MaxOrderAmount = product.OrderMaximumQuantity
+                MaxOrderAmount = product.OrderMaximumQuantity,
+                ShortDesc = product.GetLocalized(x => x.ShortDescription),
+				ProductType = product.ProductType,
+				VisibleIndividually = product.VisibleIndividually
             };
 
 			model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);
@@ -508,8 +507,15 @@ namespace SmartStore.Web.Controllers
 				});
 			}
 
-			//recurring info
-			if (product.IsRecurring)
+            // quantity unit
+            var quantityUnit = _quantityUnitService.GetQuantityUnitById(product.QuantityUnitId);
+            if (quantityUnit != null)
+            {
+                model.QuantityUnitName = quantityUnit.GetLocalized(x => x.Name);
+            }
+
+            //recurring info
+            if (product.IsRecurring)
 			{
 				model.RecurringInfo = string.Format(_localizationService.GetResource("ShoppingCart.RecurringPeriod"), 
 					product.RecurringCycleLength, product.RecurringCyclePeriod.GetLocalizedEnum(_localizationService, _workContext));
@@ -1023,7 +1029,9 @@ namespace SmartStore.Web.Controllers
 						ProductName = product.GetLocalized(x => x.Name),
                         ShortDesc = product.GetLocalized(x => x.ShortDescription),
                         ProductSeName = product.GetSeName(),
-                        Quantity = item.Quantity,
+                        EnteredQuantity = item.Quantity,
+                        MaxOrderAmount = item.Product.OrderMaximumQuantity,
+                        MinOrderAmount = item.Product.OrderMinimumQuantity,
                         AttributeInfo = _productAttributeFormatter.FormatAttributes(
                             product, 
                             item.AttributesXml, 
@@ -1034,7 +1042,13 @@ namespace SmartStore.Web.Controllers
                             allowHyperlinks: false)
                     };
 
-					cartItemModel.ProductUrl = GetProductUrlWithAttributes(sci, cartItemModel.ProductSeName);
+                    var quantityUnit = _quantityUnitService.GetQuantityUnit(product);
+                    if (quantityUnit != null)
+                    {
+                        cartItemModel.QuantityUnitName = quantityUnit.GetLocalized(x => x.Name);
+                    }
+
+                    cartItemModel.ProductUrl = GetProductUrlWithAttributes(sci, cartItemModel.ProductSeName);
 
 					if (sci.ChildItems != null && _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
 					{

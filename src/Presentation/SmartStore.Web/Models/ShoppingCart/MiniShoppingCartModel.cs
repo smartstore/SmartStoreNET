@@ -3,6 +3,7 @@ using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.Catalog;
 using System.Web.Mvc;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
@@ -55,6 +56,10 @@ namespace SmartStore.Web.Models.ShoppingCart
             public int MinOrderAmount { get; set; }
 
             public int MaxOrderAmount { get; set; }
+
+            public int QuantityStep { get; set; }
+
+            public QuantityControlType QuantiyControlType { get; set; }
 
             public string UnitPrice { get; set; }
 

@@ -152,8 +152,8 @@
                 else
                 {
                     <div class="qty-input">
-                        <input id="qty-input-@(item.Id)" name="itemquantity@(item.Id)" type="text" value="@(item.EnteredQuantity)" class="form-control"
-                               data-min="@(item.MinOrderAmount)" data-max="@(item.MaxOrderAmount)" data-postfix="@(item.QuantityUnitName)" data_step="1" />   
+                        <input id="qty-input-@(item.Id)" name="itemquantity@(item.Id)" type="text" value="@item.EnteredQuantity" class="form-control"
+                               data-min="@item.MinOrderAmount" data-max="@item.MaxOrderAmount" data-postfix="@item.QuantityUnitName" data-step="@item.QuantityStep" />   
                     </div>
                 }
             }

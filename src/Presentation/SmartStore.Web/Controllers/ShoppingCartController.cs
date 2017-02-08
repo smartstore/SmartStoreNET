@@ -253,6 +253,7 @@ namespace SmartStore.Web.Controllers
 				EnteredQuantity = item.Quantity,
                 MinOrderAmount = product.OrderMinimumQuantity,
                 MaxOrderAmount = product.OrderMaximumQuantity,
+                QuantityStep = product.QuantityStep > 0 ? product.QuantityStep : 1,
                 IsShipEnabled = product.IsShipEnabled,
 				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
@@ -455,6 +456,7 @@ namespace SmartStore.Web.Controllers
                 EnteredQuantity = item.Quantity,
                 MinOrderAmount = product.OrderMinimumQuantity,
                 MaxOrderAmount = product.OrderMaximumQuantity,
+                QuantityStep = product.QuantityStep > 0 ? product.QuantityStep : 1,
                 ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
 				VisibleIndividually = product.VisibleIndividually
@@ -1030,8 +1032,9 @@ namespace SmartStore.Web.Controllers
                         ShortDesc = product.GetLocalized(x => x.ShortDescription),
                         ProductSeName = product.GetSeName(),
                         EnteredQuantity = item.Quantity,
-                        MaxOrderAmount = item.Product.OrderMaximumQuantity,
-                        MinOrderAmount = item.Product.OrderMinimumQuantity,
+                        MaxOrderAmount = product.OrderMaximumQuantity,
+                        MinOrderAmount = product.OrderMinimumQuantity,
+                        QuantityStep = product.QuantityStep > 0 ? product.QuantityStep : 1,
                         AttributeInfo = _productAttributeFormatter.FormatAttributes(
                             product, 
                             item.AttributesXml, 
@@ -1406,7 +1409,7 @@ namespace SmartStore.Web.Controllers
 
             #region Quantity
 
-			int quantity = 1;
+			int quantity = product.OrderMinimumQuantity;
 			string key1 = "addtocart_{0}.EnteredQuantity".FormatWith(productId);
 			string key2 = "addtocart_{0}.AddToCart.EnteredQuantity".FormatWith(productId);
 

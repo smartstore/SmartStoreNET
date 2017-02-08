@@ -102,18 +102,6 @@
         }
     }
 
-    function toggleCustomerEntersPrice() {
-        var src = $('#@Html.FieldIdFor(model => model.CustomerEntersPrice)');
-        if (src.is(':checked')) {
-            $('#pnlMinimumCustomerEnteredPrice').show();
-            $('#pnlMaximumCustomerEnteredPrice').show();
-        }
-        else {
-            $('#pnlMinimumCustomerEnteredPrice').hide();
-            $('#pnlMaximumCustomerEnteredPrice').hide();
-        }
-    }
-
     function toggleDownloadableProduct() {
         if ($('#@Html.FieldIdFor(model => model.IsDownload)').is(':checked')) {
 

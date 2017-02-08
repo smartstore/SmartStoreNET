@@ -468,10 +468,28 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public int OrderMaximumQuantity { get; set; }
 
-		/// <summary>
-		/// Gets or sets the comma seperated list of allowed quantities. null or empty if any quantity is allowed
-		/// </summary>
-		[DataMember]
+        /// <summary>
+        /// Gets or sets the quantity step
+        /// </summary>
+        [DataMember]
+        public int QuantityStep { get; set; }
+
+        /// <summary>
+        /// Gets or sets the quantity control type
+        /// </summary>
+        [DataMember]
+        public QuantityControlType QuantiyControlType { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value to specify whether or not to hide the quantity input control
+        /// </summary>
+        [DataMember]
+        public bool HideQuantityControl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the comma seperated list of allowed quantities. null or empty if any quantity is allowed
+        /// </summary>
+        [DataMember]
 		public string AllowedQuantities { get; set; }
 
 		/// <summary>

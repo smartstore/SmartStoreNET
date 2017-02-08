@@ -149,8 +149,11 @@ namespace SmartStore.Web.Models.Catalog
             public int MinOrderAmount { get; set; }
             public int MaxOrderAmount { get; set; }
 			public string QuantityUnitName { get; set; }
-
-			public bool DisableBuyButton { get; set; }
+            public int QuantityStep { get; set; }
+            public bool HideQuantityControl { get; set; }
+            public QuantityControlType QuantiyControlType { get; set; }
+            
+            public bool DisableBuyButton { get; set; }
 			public bool DisableWishlistButton { get; set; }
 			public List<SelectListItem> AllowedQuantities { get; set; }
 			public bool AvailableForPreOrder { get; set; }

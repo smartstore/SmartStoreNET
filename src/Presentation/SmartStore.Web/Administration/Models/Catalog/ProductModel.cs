@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Admin.Models.Catalog
 {
@@ -233,7 +234,19 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.OrderMaximumQuantity")]
 		public int OrderMaximumQuantity { get; set; }
 
-		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AllowedQuantities")]
+
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.QuantityStep")]
+        public int QuantityStep { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.QuantiyControlType")]
+        public QuantityControlType QuantiyControlType { get; set; }
+        
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.HideQuantityControl")]
+        public bool HideQuantityControl { get; set; }
+
+
+
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.AllowedQuantities")]
 		public string AllowedQuantities { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.DisableBuyButton")]

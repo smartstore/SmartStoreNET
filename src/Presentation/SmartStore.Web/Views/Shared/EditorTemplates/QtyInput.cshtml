@@ -3,8 +3,10 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{
-	var large = ViewData["large"].Convert<bool>();
-	var inputStyle = "spinner"; // TODO: (mc) > (mh) finalize dropdown later in v3.1+
+    var large = ViewData["large"].Convert<bool>();
+    // TODO: (mc) > (mh) finalize dropdown later in v3.1+
+    var inputStyle = "spinner";
+    //var inputStyle = Model.QuantiyControlType;
 }
 
 <div class="qty-input@(Model.QuantityUnitName.HasValue() ? " has-postfix" : "")">
@@ -15,7 +17,7 @@
            data_min = Model.MinOrderAmount,
            data_max = Model.MaxOrderAmount,
            data_postfix = Model.QuantityUnitName,
-           data_step = 1
+           data_step = Model.QuantityStep
        })
 	}
 	else

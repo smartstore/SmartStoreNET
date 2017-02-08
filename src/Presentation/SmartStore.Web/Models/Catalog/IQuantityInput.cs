@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartStore.Core.Domain.Catalog;
+using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 
@@ -9,7 +10,9 @@ namespace SmartStore.Web.Models.Catalog
 		int EnteredQuantity { get; }
 		int MinOrderAmount { get; }
 		int MaxOrderAmount { get; }
-		string QuantityUnitName { get; }
+        int QuantityStep { get; }
+        string QuantityUnitName { get; }
 		List<SelectListItem> AllowedQuantities { get; }
-	}
+        QuantityControlType QuantiyControlType { get; }
+    }
 }

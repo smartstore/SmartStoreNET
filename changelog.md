@@ -54,7 +54,9 @@
 * #1080 Do not resolve Order.OrderURLForCustomer token for guest customers
 * #1051 Display EAN in PDF packaging slip
 * #806 Can't create a user in the admin section without "Manage Customer Roles" permission 
-* #491 Implement option to determine default delivery time
+* #491 Implemented option to determine a default delivery time
+* #1078 Implemented options for "Add to Cart" quantity input field on product level. Quantity control can now be hidden and can be configured to be increased and decreased in steps.
+
 
 ### Bugfixes
 * Currency wasn't displayed at shipping estimation
@@ -75,6 +77,7 @@
 * #1055 Checkout: Localized shipping method names are not displayed if shipping by total is activated
 * #1071 NewsLetterSubscription.ActivationUrl not working if the store if SSL secured
 * #1086 Gift cards can be earned in one store and applied in another
+* Whishlist: Products with minimum order amount greater then 1 can be added to the whishlist without any warning
 
 ## SmartStore.NET 2.6
 

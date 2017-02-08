@@ -345,9 +345,11 @@ namespace SmartStore.Admin.Controllers
 			p.AllowBackInStockSubscriptions = m.AllowBackInStockSubscriptions;
 			p.OrderMinimumQuantity = m.OrderMinimumQuantity;
 			p.OrderMaximumQuantity = m.OrderMaximumQuantity;
+            p.QuantityStep = m.QuantityStep;
+            p.HideQuantityControl = m.HideQuantityControl;
 
-			// back in stock notifications
-			if (p.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
+            // back in stock notifications
+            if (p.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
 				p.BackorderMode == BackorderMode.NoBackorders &&
 				p.AllowBackInStockSubscriptions &&
 				p.StockQuantity > 0 &&
@@ -819,8 +821,10 @@ namespace SmartStore.Admin.Controllers
 				model.NotifyAdminForQuantityBelow = 1;
 				model.OrderMinimumQuantity = 1;
 				model.OrderMaximumQuantity = 10000;
+                model.QuantityStep = 1;
+                model.HideQuantityControl = true;
 
-				model.UnlimitedDownloads = true;
+                model.UnlimitedDownloads = true;
 				model.IsShipEnabled = true;
 				model.AllowCustomerReviews = true;
 				model.Published = true;

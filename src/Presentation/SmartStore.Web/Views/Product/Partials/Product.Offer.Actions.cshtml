@@ -22,10 +22,14 @@
 		else
 		{
 			<div class="row">
-				<div class="col-xs-4 p-r-0">
-					@Html.EditorFor(model => model.AddToCart, "QtyInput", new { large = true })
-				</div>
-				<div class="col-xs-8 p-l-05">
+                @if(!Model.AddToCart.HideQuantityControl)
+                { 
+				    <div class="col-xs-4 p-r-0">
+					    @Html.EditorFor(model => model.AddToCart, "QtyInput", new { large = true })
+				    </div>
+                }
+
+				<div class="@( !Model.AddToCart.HideQuantityControl ? "col-xs-8 p-l-05" : "col-xs-12" )">
 					<a class="btn btn-primary btn-lg btn-block add-to-cart-button ajax-cart-link"
 					   href="#"
 					   rel="nofollow"

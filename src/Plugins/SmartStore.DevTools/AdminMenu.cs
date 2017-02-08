@@ -23,6 +23,21 @@ namespace SmartStore.DevTools
 			//	.ToItem();
 
 			//pluginsNode.Append(backendExtensionItem);
+
+			// uncomment to add a sub-menu (see plugin sub-menu)
+			//var subMenu = new MenuItem().ToBuilder()
+			//	.Text("Sub Menu")
+			//	.Action("BackendExtension", "DevTools", new { area = "SmartStore.DevTools" })
+			//	.ToItem();
+
+			//var subMenuNode = pluginsNode.Append(subMenu);
+
+			//var subMenuItem = new MenuItem().ToBuilder()
+			//	.Text("Sub Menu Item 1")
+			//	.Action("BackendExtension", "DevTools", new { area = "SmartStore.DevTools" })
+			//	.ToItem();
+
+			//subMenuNode.Append(subMenuItem);
 		}
 	}
 }

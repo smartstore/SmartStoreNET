@@ -28,6 +28,7 @@ namespace SmartStore.Web
 
 		public static bool RenderBundleTitle(this ProductDetailsModel model)
 		{
+			// TODO: (mc) Remove
 			return model.BundleTitleText.HasValue() && model.BundledItems.Where(x => x.BundleItem.Visible).Count() > 0;
 		}
 

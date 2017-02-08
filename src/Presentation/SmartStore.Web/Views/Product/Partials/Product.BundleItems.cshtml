@@ -1,0 +1,118 @@
+﻿@model ProductDetailsModel
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web;
+
+@{ 
+	var items = Model.BundledItems.Where(x => x.BundleItem.Visible).ToList();
+	var renderBundleTitle = items.Any() && Model.BundleTitleText.HasValue();
+}
+
+@if (items.Count == 0)
+{
+	<div class="alert alert-warning">
+		@T("Products.NoBundledItems")
+	</div>
+
+	return;
+}
+
+@if (renderBundleTitle)
+{
+	<div class="card-block">
+		<h4 class="h5 pd-bundle-title">@Model.BundleTitleText</h4>
+	</div>	
+}
+
+<div class="pd-bundle-items">
+	@foreach (var item in items)
+	{
+		string updateUrl = Url.Action("UpdateProductDetails3", "Product", new
+		{
+			productId = item.Id,
+			bundleItemId = item.BundleItem.Id,
+			itemType = "bundleitem"
+		});
+
+		var displayAttrs = item.AttributeInfo.HasValue();
+		var displayPrice = item.ProductPrice.Price.HasValue() || item.ProductPrice.PriceWithDiscount.HasValue();
+		var displayStock = item.StockAvailability.HasValue();
+
+		<div class="pd-bundle-item card-block update-container" data-url="@updateUrl">
+			<div class="pd-bundle-item-top row no-space">
+				@if (item.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
+				{
+					<div class="pd-bundle-item-image col-xs dynamic-image" style="min-width: @(item.ThumbDimensions)px; max-width: @(item.ThumbDimensions)px;">
+						<img src="@item.DetailsPictureModel.DefaultPictureModel.ImageUrl"
+							 class="img-fluid" 
+							 alt="@item.DetailsPictureModel.AlternateText" 
+							 title="@item.DetailsPictureModel.DefaultPictureModel.Title" />
+					</div>
+				}
+				<div class="pd-bundle-item-body col-xs p-l-1">
+					<div class="pd-bundle-item-name">
+						@if (item.BundleItem.Quantity > 1)
+						{
+							<span>@(item.BundleItem.Quantity)&nbsp;&#215;</span>
+						}
+						@if (item.VisibleIndividually)
+						{
+							<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">@item.Name</a>
+						}
+						else
+						{
+							<span>@item.Name</span>
+						}
+					</div>
+
+					@if (item.ShortDescription.HasValue())
+					{
+						var shortDescription = item.ShortDescription.Truncate(120, "...");
+						<div class="pd-bundle-item-description" @Html.Attr("title", item.ShortDescription, item.ShortDescription != shortDescription)>
+							@Html.Raw(shortDescription)
+						</div>
+					}
+
+					@if (displayAttrs || displayPrice || displayStock)
+					{
+						<div class="pd-bundle-item-offer p-t-1">
+							@if (displayAttrs)
+							{
+								<div class="pd-bundle-item-attribute-info">
+									@Html.Raw(item.AttributeInfo)
+								</div>
+							}
+							@if (displayPrice)
+							{
+								<div class="pd-offer-price-container" data-xpartial="Price">
+									@{ Html.RenderPartial("Product.Offer.Price", item); }
+								</div>
+							}
+							@if (displayStock)
+							{
+								<div class="pd-stock-info-container" data-xpartial="Stock">
+									@{ Html.RenderPartial("Product.StockInfo", item); }
+								</div>
+							}
+						</div>
+					}
+				</div>
+			</div>
+
+			@if (item.ProductVariantAttributes.ShouldBeRendered())
+			{
+				<div class="pd-bundle-item-variants@(item.BundleItem.IsBundleItemPricing ? "" : " hidden-xs-up") p-t-1">
+					@{ Html.RenderPartial("Product.Variants", item.ProductVariantAttributes, new ViewDataDictionary()); }
+				</div>
+			}
+
+			@if (item.GiftCard.IsGiftCard)
+			{
+				var dataDictBundleItemGiftCard = new ViewDataDictionary();
+				dataDictBundleItemGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}_{1}", item.Id, item.BundleItem.Id);
+				<div class="pd-bundle-item-giftcard p-t-1">
+					@Html.Partial("Product.GiftCard", item.GiftCard, dataDictBundleItemGiftCard)
+				</div>
+			}
+		</div>
+	}
+</div>

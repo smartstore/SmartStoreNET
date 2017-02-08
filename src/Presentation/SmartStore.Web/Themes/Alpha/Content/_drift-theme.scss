@@ -45,7 +45,7 @@
     /* This is required because of a bug that causes border-radius to not
     work with child elements in certain cases. */
     transform: translate3d(0, 0, 0);
-    z-index: 1;
+    z-index: 100;
 }
 
 .drift-zoom-pane.drift-opening {

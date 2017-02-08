@@ -293,6 +293,9 @@ namespace SmartStore.Web.Controllers
 
 						var bundledProductModel = PrepareProductDetailsPageModel(item.Product, false, itemData, null, bundleItemAttributes);
 
+						bundledProductModel.ShowLegalInfo = false;
+						bundledProductModel.DisplayDeliveryTime = false;
+
 						bundledProductModel.BundleItem.Id = item.Id;
 						bundledProductModel.BundleItem.Quantity = item.Quantity;
 						bundledProductModel.BundleItem.HideThumbnail = item.HideThumbnail;
@@ -715,8 +718,14 @@ namespace SmartStore.Web.Controllers
 
 					if (isBundlePricing)
 					{
-						model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, attributeXml, customer,
-							renderPrices: false, renderGiftCardAttributes: false, allowHyperlinks: false);
+						model.AttributeInfo = _productAttributeFormatter.FormatAttributes(
+							product, 
+							attributeXml, 
+							customer,
+							serapator: ", ",
+							renderPrices: false, 
+							renderGiftCardAttributes: false, 
+							allowHyperlinks: false);
 					}
 
 					model.SelectedCombination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributeXml);

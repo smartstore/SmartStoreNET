@@ -355,10 +355,7 @@ namespace SmartStore.Web.Framework.UI
 
 						// label
 						temp = "m-l-05 label";
-						if (item.BadgeStyle != BadgeStyle.Default)
-						{
-							temp += " label-" + item.BadgeStyle.ToString().ToLower();
-						}
+						temp += " label-" + item.BadgeStyle.ToString().ToLower();
 						if (base.Component.Position == TabsPosition.Left)
 						{
 							temp += " pull-right"; // looks nicer 

@@ -215,16 +215,16 @@
 										    </div>
                                         }
 								    </div>
-                                                }
-                                                else if (Model.ProductVariantAttributes.ShouldBeRendered())
-                                                {
-                                                    var dataDictAttributes = new ViewDataDictionary();
-                                                    dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
+								}
+								else if (Model.ProductVariantAttributes.ShouldBeRendered())
+								{
+									var dataDictAttributes = new ViewDataDictionary();
+									dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
 
 								    <div class="product-attributes line">
 									    @{ Html.RenderPartial("_Attributes", Model.ProductVariantAttributes, dataDictAttributes); }
 								    </div>
-                                            }
+                                 }
                             }
                     
                             <!-- giftcard infos -->                    
@@ -236,7 +236,7 @@
                                     <div class="giftcard-infos line">
                                         @{ Html.RenderPartial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard); }
                                     </div>
-                                            }
+                                }
                             }
                     
                             <!-- addd to cart -->

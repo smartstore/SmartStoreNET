@@ -1930,6 +1930,8 @@
     <Content Include="Views\Shared\ChoiceTemplates\Choice.Date.cshtml" />
     <Content Include="Views\Shared\ChoiceTemplates\Choice.FileUpload.cshtml" />
     <Content Include="Views\Shared\ChoiceTemplates\Choice.Box.cshtml" />
+    <Content Include="Views\Product\Partials\Product.GiftCard.cshtml" />
+    <Content Include="Views\Product\Partials\Product.BundleItems.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

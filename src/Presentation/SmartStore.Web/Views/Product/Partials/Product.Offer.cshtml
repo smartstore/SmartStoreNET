@@ -20,6 +20,13 @@
 		@{ Html.RenderPartial("Product.StockInfo", Model); }
 	</div>
 
+	@if (Model.GiftCard.IsGiftCard)
+	{
+		var dataDictGiftCard = new ViewDataDictionary();
+		dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}_0", Model.Id);
+		Html.RenderPartial("Product.GiftCard", Model.GiftCard, dataDictGiftCard);
+	}
+
 	@if (Model.ProductType != ProductType.BundledProduct && Model.ProductVariantAttributes.ShouldBeRendered())
 	{
 		var dataDictVariants = new ViewDataDictionary();

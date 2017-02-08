@@ -7,7 +7,7 @@
 	var attributes = Model.Where(x => x.ShouldBeRendered()).ToList();
 }
 
-<div class="pd-variants attributes pd-group">
+<div class="pd-variants">
 	@foreach (var attribute in attributes)
 	{
 		Html.RenderPartial("ChoiceTemplates/Choice", attribute);

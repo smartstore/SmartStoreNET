@@ -5,7 +5,7 @@
 
 $font-weight-light:       300;
 $font-weight-normal:      400;
-$font-weight-medium:      500;
+$font-weight-medium:      600;
 $font-weight-bold:        700;
 
 @each $weight, $var in (unset, 100, 200, 300, 400, 500, 600, 700, 800, 900) {

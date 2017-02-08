@@ -191,6 +191,9 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
     font-weight: 500;
     color: $pd-price-color;
 
+    &.pd-price-sm {
+        font-size: 1.5rem;
+    }
     &.pd-price--offer {
         color: $pd-price-offer-color;
     }
@@ -265,4 +268,54 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
     color: $text-muted;
     font-weight: 400;
     padding-left: 0.25rem;
+}
+
+
+// Bundles
+// =====================================================
+
+.pd-bundle-title {
+    margin-bottom: 0;
+}
+
+.pd-bundle-item {
+    border-top: 1px solid $list-group-border-color;
+    .form-group:last-child { margin-bottom: 0; }
+}
+
+.pd-bundle-item-name {
+    font-weight: 600;
+    > a { color: $body-color; }
+}
+
+.pd-bundle-item-description {
+    @extend .pd-description;
+}
+
+.pd-bundle-item-offer {
+    line-height: $pd-line-height;
+
+    > * + * { margin-top: 0.5rem; }
+}
+
+
+// Variants
+// =====================================================
+
+.pd-variants:not(:last-child) {
+    margin-bottom: 1.5rem;
+}
+
+
+// Misc
+// =====================================================
+
+.btn-edit-product {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    background-color: rgba(#fff, 0.5);
+
+    .pd-section-top:hover & { display: inline-block; }
 }

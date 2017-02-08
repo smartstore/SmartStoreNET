@@ -35,10 +35,10 @@
 		    		callbackSuccess: function (response) {
 		    			self.updateDetailData(response, ctx);
 
-		    			if (ctx.hasClass('bundle-item')) {
+		    			if (ctx.hasClass('pd-bundle-item')) {
 		    				// update bundle price too
 		    				$('#total-price-update-container').doAjax({
-		    					data: $('#ProductBundleItems').find(':input').serialize(),
+		    					data: $('.pd-bundle-items').find(':input').serialize(),
 		    					callbackSuccess: function (response2) {
 		    						self.updateDetailData(response2, $('#AddToCart, #ProductBundleOverview'));
 		    					}
@@ -74,9 +74,11 @@
 				var partial = $el.data('partial');
 				if (partial) {
 					// ...fetch the updated html from the corresponding AJAX result object's properties
-					var updatedHtml = data.Partials[partial] || "";
-					// ...and update the inner html
-					$el.html($(updatedHtml.trim()));
+					if (data.Partials.hasOwnProperty(partial)) {
+						var updatedHtml = data.Partials[partial] || "";
+						// ...and update the inner html
+						$el.html($(updatedHtml.trim()));
+					}
 				}
 			});
 		     

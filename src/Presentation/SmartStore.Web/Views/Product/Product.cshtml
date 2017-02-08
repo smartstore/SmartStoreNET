@@ -1,5 +1,6 @@
 ﻿@model ProductDetailsModel
 
+@using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Web;
@@ -55,16 +56,35 @@
 					</div>
 					<!-- Sidebar: Info, Price, Buttons etc. -->
 					<aside class="col-xs-12 col-md-6 col-lg-5 pd-info-col zoom-window-container">
+						<!-- Title/Brand/ReviewSummary -->
 						@{ Html.RenderPartial("Product.Info", Model); }
+
+						<!-- Bundle Items -->
+						@if (Model.ProductType == ProductType.BundledProduct)
+						{
+							<div class="pd-bundle-container pd-group card card-shadow">
+								@{ Html.RenderPartial("Product.BundleItems", Model); }
+							</div>
+						}
+
 						<!-- Product attributes (SKU, EAN, Weight etc.) -->
 						<div class="pd-attrs-container" data-partial="Attrs">
 							@{ Html.RenderPartial("Product.Attrs", Model); }
 						</div>
+
 						<!-- Offer box -->
 						@{ Html.RenderPartial("Product.Offer", Model); }
+
+						@if (Model.DisplayAdminLink)
+						{
+							<a class="btn btn-secondary btn-flat btn-edit-product" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
+								<i class="fa fa-gear"></i>
+								<span>@T("Common.Catalog.EditProduct")</span>
+							</a>
+						}
 					</aside>
 				</section>
-                            }
+			}
 		</div>
 
 		<!-- Bottom Content: Full Description, Specification, Review etc. -->

@@ -65,7 +65,7 @@ namespace SmartStore.Services.Orders
 				if (!orderItem.Product.IsShipEnabled)
 					continue;
 
-				var totalNumberOfNotYetShippedItems = orderItem.GetNotShippedItemsCount();
+				var totalNumberOfNotYetShippedItems = orderItem.GetNotDispatchedItemsCount();
 				if (totalNumberOfNotYetShippedItems <= 0)
 					continue;
 
@@ -91,7 +91,7 @@ namespace SmartStore.Services.Orders
 				if (!orderItem.Product.IsShipEnabled)
 					continue;
 
-				var totalNumberOfShippedItems = orderItem.GetShippedItemsCount();
+				var totalNumberOfShippedItems = orderItem.GetDispatchedItemsCount();
 				var totalNumberOfDeliveredItems = orderItem.GetDeliveredItemsCount();
 				if (totalNumberOfShippedItems <= totalNumberOfDeliveredItems)
 					continue;
@@ -180,7 +180,7 @@ namespace SmartStore.Services.Orders
 		/// </summary>
 		/// <param name="orderItem">Order item</param>
 		/// <returns>Total number of already shipped items</returns>
-		public static int GetShippedItemsCount(this OrderItem orderItem)
+		public static int GetDispatchedItemsCount(this OrderItem orderItem)
 		{
 			if (orderItem == null)
 				throw new ArgumentNullException("orderItem");
@@ -207,11 +207,42 @@ namespace SmartStore.Services.Orders
 		}
 
 		/// <summary>
+		/// Gets the total number of already delivered items
+		/// </summary>
+		/// <param name="orderItem">Order item</param>
+		/// <returns>Total number of already delivered items</returns>
+		public static int GetDeliveredItemsCount(this OrderItem orderItem)
+		{
+			if (orderItem == null)
+				throw new ArgumentNullException("orderItem");
+
+			var result = 0;
+			var shipments = orderItem.Order.Shipments.ToList();
+			for (int i = 0; i < shipments.Count; i++)
+			{
+				var shipment = shipments[i];
+				if (!shipment.DeliveryDateUtc.HasValue)
+					//not delivered yet
+					continue;
+
+				var si = shipment.ShipmentItems
+					.Where(x => x.OrderItemId == orderItem.Id)
+					.FirstOrDefault();
+				if (si != null)
+				{
+					result += si.Quantity;
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Gets the total number of not yet shipped items (but added to shipments)
 		/// </summary>
 		/// <param name="orderItem">Order item</param>
 		/// <returns>Total number of not yet shipped items (but added to shipments)</returns>
-		public static int GetNotShippedItemsCount(this OrderItem orderItem)
+		public static int GetNotDispatchedItemsCount(this OrderItem orderItem)
         {
             if (orderItem == null)
 				throw new ArgumentNullException("orderItem");
@@ -223,37 +254,6 @@ namespace SmartStore.Services.Orders
                 var shipment = shipments[i];
                 if (shipment.ShippedDateUtc.HasValue)
                     //already shipped
-                    continue;
-
-                var si = shipment.ShipmentItems
-                    .Where(x => x.OrderItemId == orderItem.Id)
-                    .FirstOrDefault();
-                if (si != null)
-                {
-                    result += si.Quantity;
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Gets the total number of already delivered items
-        /// </summary>
-        /// <param name="orderItem">Order item</param>
-        /// <returns>Total number of already delivered items</returns>
-        public static int GetDeliveredItemsCount(this OrderItem orderItem)
-        {
-            if (orderItem == null)
-				throw new ArgumentNullException("orderItem");
-
-            var result = 0;
-            var shipments = orderItem.Order.Shipments.ToList();
-            for (int i = 0; i < shipments.Count; i++)
-            {
-                var shipment = shipments[i];
-                if (!shipment.DeliveryDateUtc.HasValue)
-                    //not delivered yet
                     continue;
 
                 var si = shipment.ShipmentItems

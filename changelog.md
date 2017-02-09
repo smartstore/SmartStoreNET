@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 3.0
 
@@ -35,6 +35,8 @@
 	* #1064 Deleting all product categories/manufacturers per product in one go
 	* #1063 Adding product category/manufacturer ignores any other property like DisplayOrder
 	* Added endpoint "Infos" for order and order item entity for additional information like aggregated data.
+* Added setting to specify whether the product manufacturer should be displayed in product detail
+
 
 ### Improvements
 * Updated .NET Target Framework from 4.5.1 to 4.5.2

@@ -47,7 +47,8 @@ namespace SmartStore.Core.Domain.Catalog
 			NumberOfBestsellersOnHomepage = 12;
             ShowManufacturersOnHomepage = true;
             ShowManufacturerPictures = false;
-			ShowManufacturerPicturesInProductDetail = true;
+            ShowManufacturerInProductDetail = true;
+            ShowManufacturerPicturesInProductDetail = true;
 			ProductsAlsoPurchasedEnabled = true;
 			ProductsAlsoPurchasedNumber = 12;
 			NumberOfProductTags = 15;
@@ -70,6 +71,7 @@ namespace SmartStore.Core.Domain.Catalog
 			ShowLinkedAttributeValueImage = true;
 			EnableDynamicPriceUpdate = true;
             ShowProductReviewsInProductDetail = true;
+            EnableHtmlTextCollapser = true;
 			HtmlTextCollapsedHeight = 260;
 			MostRecentlyUsedCategoriesMaxSize = 6;
 			MostRecentlyUsedManufacturersMaxSize = 4;
@@ -297,10 +299,15 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public bool ShowManufacturerPictures { get; set; }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether to hide manufacturer pictures in product detail
+        /// <summary>
+		/// Gets or sets a value indicating whether to display manufacturer detail links in product detail pages
 		/// </summary>
-		public bool ShowManufacturerPicturesInProductDetail { get; set; }
+		public bool ShowManufacturerInProductDetail { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to display pictures or textual links to manufacturer pages in product detail pages
+        /// </summary>
+        public bool ShowManufacturerPicturesInProductDetail { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether to hide manufacturer default pictures

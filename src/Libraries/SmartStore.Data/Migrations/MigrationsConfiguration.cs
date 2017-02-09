@@ -461,6 +461,25 @@ namespace SmartStore.Data.Migrations
                 "Zeige Standard-Lieferzeit",
                 "Specifies whether to show the default delivery time if there is none assigned to a product.",
                 "Bestimmt ob die Standard-Lieferzeit für ein Produkt angezeigt wird, wenn dem Produkt keine Lieferzeit zugewiesen wurde.");
+            
+            builder.AddOrUpdate("Admin.Catalog.Products.Fields.QuantityStep",
+                "Quantity step",
+                "Schrittweite",
+                "Specifies the incremental respectively decremental step on usage of +/-. Orderable quantities are limited to a multiple of this value.",
+                "Bestimmt den Wert, um den die Bestellmenge erhöht bzw. vermindert wird, wenn ein Kunde die +/- Steuerelemente benutzt. Die Bestellmenge ist auf ein Vielfaches dieses Wertes beschränkt.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Fields.QuantiyControlType",
+                "Control type",
+                "Steuerelement",
+                "Specifies the control type to enter the quantity.",
+                "Bestimmt das Steuerelement für die Angabe der Bestellmenge.");
+
+            builder.AddOrUpdate("Admin.Catalog.Products.Fields.HideQuantityControl",
+                "Hide quantity control on product pages",
+                "Angabe der Bestellmenge auf Produktseiten nicht anbieten",
+                "Specifies whether to hide the quantity control on product pages.",
+                "Bestimmt ob eine Element zur Angabe der Bestellmenge auf Produktdetailseiten dargestellt wird.");
+
         }
     }
 }

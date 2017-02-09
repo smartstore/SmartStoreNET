@@ -233,8 +233,7 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.OrderMaximumQuantity")]
 		public int OrderMaximumQuantity { get; set; }
-
-
+        
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.QuantityStep")]
         public int QuantityStep { get; set; }
 
@@ -243,9 +242,7 @@ namespace SmartStore.Admin.Models.Catalog
         
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.HideQuantityControl")]
         public bool HideQuantityControl { get; set; }
-
-
-
+        
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.AllowedQuantities")]
 		public string AllowedQuantities { get; set; }
 

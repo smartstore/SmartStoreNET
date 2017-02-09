@@ -1927,7 +1927,9 @@
     <Content Include="Views\Shared\ChoiceTemplates\Choice.FileUpload.cshtml" />
     <Content Include="Views\Shared\ChoiceTemplates\Choice.Box.cshtml" />
     <Content Include="Views\Product\Partials\Product.GiftCard.cshtml" />
-    <Content Include="Views\Product\Partials\Product.BundleItems.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Bundle.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Bundle.Price.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Bundle.Items.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

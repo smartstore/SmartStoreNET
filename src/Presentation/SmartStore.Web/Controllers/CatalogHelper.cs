@@ -536,6 +536,7 @@ namespace SmartStore.Web.Controllers
 
 			var variantAttributes = (isBundle ? new List<ProductVariantAttribute>() : _productAttributeService.GetProductVariantAttributesByProductId(product.Id));
 
+			model.IsBundlePart = product.ProductType != ProductType.BundledProduct && productBundleItem != null;
 			model.ProductPrice.DynamicPriceUpdate = _catalogSettings.EnableDynamicPriceUpdate;
 			model.ProductPrice.BundleItemShowBasePrice = _catalogSettings.BundleItemShowBasePrice;
 
@@ -791,7 +792,7 @@ namespace SmartStore.Web.Controllers
 			model.IsCurrentCustomerRegistered = customer.IsRegistered();
 			model.IsBasePriceEnabled = product.BasePriceEnabled && !(isBundle && product.BundlePerItemPricing);
             model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, currency);
-			model.ShowLegalInfo = _taxSettings.ShowLegalHintsInProductDetails;
+			model.ShowLegalInfo = !model.IsBundlePart && _taxSettings.ShowLegalHintsInProductDetails;
 			model.BundleTitleText = product.GetLocalized(x => x.BundleTitleText);
 			model.BundlePerItemPricing = product.BundlePerItemPricing;
 			model.BundlePerItemShipping = product.BundlePerItemShipping;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Dynamic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -609,14 +610,30 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			object data = new
+			object partials = null;
+			
+			if (m.IsBundlePart)
 			{
-				Partials = new
+				partials = new
+				{
+					BundleItemPrice = this.RenderPartialViewToString("Product.Offer.Price", m),
+					BundleItemStock = this.RenderPartialViewToString("Product.StockInfo", m)
+				};
+			}
+			else
+			{
+				partials = new
 				{
 					Attrs = this.RenderPartialViewToString("Product.Attrs", m),
 					Price = this.RenderPartialViewToString("Product.Offer.Price", m),
-					Stock = this.RenderPartialViewToString("Product.StockInfo", m)
-				},
+					Stock = this.RenderPartialViewToString("Product.StockInfo", m),
+					BundlePrice = product.ProductType == ProductType.BundledProduct ? this.RenderPartialViewToString("Product.Bundle.Price", m) : (string)null
+				};
+			}
+
+			object data = new
+			{
+				Partials = partials,
 				DynamicThumblUrl = dynamicThumbUrl,
 				GalleryStartIndex = galleryStartIndex,
 				GalleryHtml = galleryHtml

@@ -113,6 +113,7 @@ namespace SmartStore.Web.Models.Catalog
 
 		public IList<ProductDetailsModel> BundledItems { get; set; }
 		public ProductBundleItemModel BundleItem { get; set; }
+		public bool IsBundlePart { get; set; }
 
 		#region Nested Classes
 

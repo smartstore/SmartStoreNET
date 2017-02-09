@@ -43,7 +43,7 @@
 	@{ Html.RenderWidget("productdetails_top"); }
 
 	<article class="pd page-body" itemscope itemtype="http://schema.org/Product">
-		<div id="total-price-update-container" class="update-container" data-url="@updateUrl">
+		<div id="main-update-container" class="update-container" data-url="@updateUrl">
 			@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
             {
 			<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
@@ -63,7 +63,7 @@
 						@if (Model.ProductType == ProductType.BundledProduct)
 						{
 							<div class="pd-bundle-container pd-group card card-shadow">
-								@{ Html.RenderPartial("Product.BundleItems", Model); }
+								@{ Html.RenderPartial("Product.Bundle", Model); }
 							</div>
 						}
 

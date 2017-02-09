@@ -1,30 +1,11 @@
-﻿@model ProductDetailsModel
+﻿@model IList<ProductDetailsModel>
+
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web;
 
-@{ 
-	var items = Model.BundledItems.Where(x => x.BundleItem.Visible).ToList();
-	var renderBundleTitle = items.Any() && Model.BundleTitleText.HasValue();
-}
-
-@if (items.Count == 0)
-{
-	<div class="alert alert-warning">
-		@T("Products.NoBundledItems")
-	</div>
-
-	return;
-}
-
-@if (renderBundleTitle)
-{
-	<div class="card-block">
-		<h4 class="h5 pd-bundle-title">@Model.BundleTitleText</h4>
-	</div>	
-}
 
 <div class="pd-bundle-items">
-	@foreach (var item in items)
+	@foreach (var item in Model)
 	{
 		string updateUrl = Url.Action("UpdateProductDetails3", "Product", new
 		{
@@ -41,7 +22,7 @@
 			<div class="pd-bundle-item-top row no-space">
 				@if (item.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
 				{
-					<div class="pd-bundle-item-image col-xs dynamic-image" style="min-width: @(item.ThumbDimensions)px; max-width: @(item.ThumbDimensions)px;">
+					<div class="pd-bundle-item-image col-xs pd-dyn-thumb" style="min-width: @(item.ThumbDimensions)px; max-width: @(item.ThumbDimensions)px;">
 						<img src="@item.DetailsPictureModel.DefaultPictureModel.ImageUrl"
 							 class="img-fluid" 
 							 alt="@item.DetailsPictureModel.AlternateText" 
@@ -83,13 +64,13 @@
 							}
 							@if (displayPrice)
 							{
-								<div class="pd-offer-price-container" data-xpartial="Price">
+								<div class="pd-offer-price-container" data-partial="BundleItemPrice">
 									@{ Html.RenderPartial("Product.Offer.Price", item); }
 								</div>
 							}
 							@if (displayStock)
 							{
-								<div class="pd-stock-info-container" data-xpartial="Stock">
+								<div class="pd-stock-info-container" data-partial="BundleItemStock">
 									@{ Html.RenderPartial("Product.StockInfo", item); }
 								</div>
 							}

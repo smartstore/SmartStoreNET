@@ -28,8 +28,6 @@
 		    		ctx = el;
 		    	}
 
-		    	console.log(ctx.find(':input').serialize());
-
 		    	ctx.doAjax({
 		    		data: ctx.find(':input').serialize(),
 		    		callbackSuccess: function (response) {
@@ -37,10 +35,10 @@
 
 		    			if (ctx.hasClass('pd-bundle-item')) {
 		    				// update bundle price too
-		    				$('#total-price-update-container').doAjax({
+		    				$('#main-update-container').doAjax({
 		    					data: $('.pd-bundle-items').find(':input').serialize(),
 		    					callbackSuccess: function (response2) {
-		    						self.updateDetailData(response2, $('#AddToCart, #ProductBundleOverview'));
+		    						self.updateDetailData(response2, $('#main-update-container'));
 		    					}
 		    				});
 		    			}
@@ -83,8 +81,7 @@
 			});
 		     
 			if (data.DynamicThumblUrl && data.DynamicThumblUrl.length > 0) {
-				// TODO: (mc) What about this strange thing here?
-		    	$(ctx).find('.dynamic-image img').attr('src', data.DynamicThumblUrl);
+		    	$(ctx).find('.pd-dyn-thumb').attr('src', data.DynamicThumblUrl);
 		    }
 		};
 		

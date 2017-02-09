@@ -274,10 +274,6 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 // Bundles
 // =====================================================
 
-.pd-bundle-title {
-    margin-bottom: 0;
-}
-
 .pd-bundle-item {
     border-top: 1px solid $list-group-border-color;
     .form-group:last-child { margin-bottom: 0; }
@@ -296,6 +292,47 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
     line-height: $pd-line-height;
 
     > * + * { margin-top: 0.5rem; }
+}
+
+.pd-bundle-price-offer {
+    font-weight: 600;
+    font-size: $font-size-lg;
+}
+
+.pd-bundle-price-regular {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.pd-bundle-summary {
+    display: inline-flex; 
+    flex-direction: row; 
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pd-bundle-summary-item {
+    position: relative;
+    line-height: $pd-line-height;
+    padding: 0.2rem;
+    &:after {
+        display: inline-block;
+        font-family: FontAwesome;
+        content: "\f067"; // plus
+        padding: 0 0.2rem;
+    }
+    &:last-child:after {
+        display: none;
+        content: '';
+    }
+}
+
+.pd-bundle-summary-item-qty {
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 80%;
 }
 
 

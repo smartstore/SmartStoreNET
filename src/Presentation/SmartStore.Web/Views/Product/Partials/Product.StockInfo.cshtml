@@ -4,17 +4,17 @@
 @using SmartStore.Core.Domain.Catalog;
 
 @{
+	var isBundleItem = Model.IsBundlePart;
+
 	var displayStock = Model.StockAvailability.HasValue();
 	// Never show delivery time when product is out of stock AND stock is displayed
-	var displayDeliveryTime = (Model.DisplayDeliveryTime && Model.IsShipEnabled) && (!displayStock || (displayStock && Model.IsAvailable));
+	var displayDeliveryTime = !isBundleItem && (Model.DisplayDeliveryTime && Model.IsShipEnabled) && (!displayStock || (displayStock && Model.IsAvailable));
 
 	var showAttrs = displayDeliveryTime || displayStock || Model.DisplayBackInStockSubscription;
 	if (!showAttrs)
 	{
 		return;
 	}
-
-	var isBundleItem = Model.BundleItem.Id > 0 && Model.ProductType != ProductType.BundledProduct;
 
 	var statusLabel = Model.DisplayDeliveryTimeAccordingToStock ? Model.DeliveryTimeName : Model.StockAvailability;
 	var statusColor = Model.DisplayDeliveryTimeAccordingToStock && !displayStock ? Model.DeliveryTimeHexValue : "";

@@ -10,7 +10,7 @@
 		return;
 	}
 
-	var isBundleItem = Model.BundleItem.Id > 0 && Model.ProductType != ProductType.BundledProduct;
+	var isBundleItem = Model.IsBundlePart;
 	var priceModel = Model.ProductPrice;
 
 	var currentPrice = priceModel.PriceWithDiscount.NullEmpty() ?? priceModel.Price;
@@ -35,7 +35,7 @@
 	var blocksHaveLabel = currentPriceLabel.HasValue() && oldPrice2Label.HasValue();
 }
 
-<div class="pd-offer-price" data-partial="Price">
+<div class="pd-offer-price">
 	@if (priceModel.CallForPrice)
 	{
 		<h4 class="pd-price pd-callforprice">@T("Products.CallForPrice")</h4>
@@ -106,7 +106,7 @@
 		}
 
 		<!-- Pangv & legal info -->
-		if (basePriceEnabled || Model.ShowLegalInfo)
+		if ((basePriceEnabled && Model.BasePriceInfo.HasValue()) || (Model.ShowLegalInfo && Model.LegalInfo.HasValue()))
 		{
 			<div class="pd-group">
 				@if (basePriceEnabled && Model.BasePriceInfo.HasValue())

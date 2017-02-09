@@ -1,0 +1,66 @@
+﻿@model ProductDetailsModel
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web;
+
+@{ 
+	var items = Model.BundledItems.Where(x => x.BundleItem.Visible).ToList();
+	var renderBundleTitle = items.Any() && Model.BundleTitleText.HasValue();
+}
+
+@if (items.Count == 0)
+{
+	<div class="alert alert-warning">
+		@T("Products.NoBundledItems")
+	</div>
+
+	return;
+}
+
+<div class="card-block">
+	@if (renderBundleTitle)
+	{
+		<h4 class="h5 pd-bundle-title">@Model.BundleTitleText</h4>
+	}
+
+	<ul class="pd-bundle-summary list-unstyled m-b-1">
+		@for (int i = 0; i < items.Count; i++)
+		{
+			var item = items[i];
+			<li class="pd-bundle-summary-item">
+				@if (item.VisibleIndividually)
+				{
+					if (item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl.HasValue())
+					{
+						<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">
+							<img alt="@item.Name" src="@item.DetailsPictureModel.DefaultPictureModel.ThumbImageUrl" title="@item.Name" />
+						</a>@* img and a in same line cause of hover underlines *@
+					}
+					else
+					{
+						<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">@item.Name</a>
+					}
+					if (item.BundleItem.Quantity > 1)
+					{
+						<span class="pd-bundle-summary-item-qty label label-success">@(item.BundleItem.Quantity)&#215;</span>
+					}
+				}
+				else
+				{
+					if (item.BundleItem.Quantity > 1)
+					{
+						<strong>@(item.BundleItem.Quantity)&#215;</strong>
+					}
+					<span>@item.Name</span>
+				}
+			</li>
+		}
+	</ul>
+
+	<div class="pd-bundle-price-container" data-partial="BundlePrice">
+		@{ Html.RenderPartial("Product.Bundle.Price", Model); }
+	</div>
+</div>	
+
+@{ 
+	Html.RenderPartial("Product.Bundle.Items", items);
+}

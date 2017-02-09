@@ -17,6 +17,7 @@ namespace SmartStore.Core.Search.Facets
 			Key = key;
 			Value = value;
 			Children = new List<Facet>();
+			IsChoice = true;
 		}
 
 		public string Key
@@ -37,18 +38,13 @@ namespace SmartStore.Core.Search.Facets
 			private set;
 		}
 
+		/// <summary>
+		/// Gets or sets whether the facet can be selected
+		/// </summary>
 		public bool IsChoice
 		{
-			get
-			{
-				if (HitCount == 0)
-				{
-					// let the user the choice to unselect a filter
-					return Value.IsSelected;
-				}
-
-				return true;
-			}
+			get;
+			set;
 		}
 
 		public long HitCount

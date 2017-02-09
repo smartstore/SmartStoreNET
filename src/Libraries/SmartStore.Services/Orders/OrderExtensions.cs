@@ -3,11 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Html;
 
 namespace SmartStore.Services.Orders
 {
 	public static class OrderExtensions
     {
+		private static int AggregateQuantity(IEnumerable<Shipment> shipments, OrderItem orderItem)
+		{
+			var result = 0;
+
+			foreach (var shipment in shipments)
+			{
+				var item = shipment.ShipmentItems.FirstOrDefault(x => x.OrderItemId == orderItem.Id);
+				if (item != null)
+				{
+					result += item.Quantity;
+				}
+			}
+
+			return result;
+		}
+
         /// <summary>
         /// Formats the order note text
         /// </summary>
@@ -15,17 +33,12 @@ namespace SmartStore.Services.Orders
         /// <returns>Formatted text</returns>
         public static string FormatOrderNoteText(this OrderNote orderNote)
         {
-            if (orderNote == null)
-                throw new ArgumentNullException("orderNote");
+			Guard.NotNull(orderNote, nameof(orderNote));
 
-            string text = orderNote.Note;
-
-            if (String.IsNullOrEmpty(text))
+            if (orderNote.Note.IsEmpty())
                 return string.Empty;
 
-            text = SmartStore.Core.Html.HtmlUtils.FormatText(text, false, true, true, false, false, false);
-
-            return text;
+            return HtmlUtils.FormatText(orderNote.Note, false, true, true, false, false, false);
         }
 
 		public static List<ProductBundleItemOrderData> GetBundleData(this OrderItem orderItem)
@@ -56,20 +69,15 @@ namespace SmartStore.Services.Orders
 		/// <returns>A value indicating whether an order has items to ship</returns>
 		public static bool HasItemsToShip(this Order order)
 		{
-			if (order == null)
-				throw new ArgumentNullException("order");
+			Guard.NotNull(order, nameof(order));
 
-			foreach (var orderItem in order.OrderItems)
+			foreach (var orderItem in order.OrderItems.Where(x => x.Product.IsShipEnabled))
 			{
-				//we can ship only shippable products
-				if (!orderItem.Product.IsShipEnabled)
+				var notDispatchedItems = orderItem.GetNotDispatchedItemsCount();
+				if (notDispatchedItems <= 0)
 					continue;
 
-				var totalNumberOfNotYetShippedItems = orderItem.GetNotDispatchedItemsCount();
-				if (totalNumberOfNotYetShippedItems <= 0)
-					continue;
-
-				//yes, we have at least one item to ship
+				// yes, we have at least one item to ship
 				return true;
 			}
 			return false;
@@ -82,21 +90,17 @@ namespace SmartStore.Services.Orders
 		/// <returns>A value indicating whether an order has items to deliver</returns>
 		public static bool HasItemsToDeliver(this Order order)
 		{
-			if (order == null)
-				throw new ArgumentNullException("order");
+			Guard.NotNull(order, nameof(order));
 
-			foreach (var orderItem in order.OrderItems)
+			foreach (var orderItem in order.OrderItems.Where(x => x.Product.IsShipEnabled))
 			{
-				//we can ship only shippable products
-				if (!orderItem.Product.IsShipEnabled)
+				var dispatchedItems = orderItem.GetDispatchedItemsCount();
+				var deliveredItems = orderItem.GetDeliveredItemsCount();
+
+				if (dispatchedItems <= deliveredItems)
 					continue;
 
-				var totalNumberOfShippedItems = orderItem.GetDispatchedItemsCount();
-				var totalNumberOfDeliveredItems = orderItem.GetDeliveredItemsCount();
-				if (totalNumberOfShippedItems <= totalNumberOfDeliveredItems)
-					continue;
-
-				//yes, we have at least one item to deliver
+				// yes, we have at least one item to deliver
 				return true;
 			}
 			return false;
@@ -109,20 +113,15 @@ namespace SmartStore.Services.Orders
 		/// <returns>A value indicating whether an order has items to be added to a shipment</returns>
 		public static bool CanAddItemsToShipment(this Order order)
 		{
-			if (order == null)
-				throw new ArgumentNullException("order");
+			Guard.NotNull(order, nameof(order));
 
-			foreach (var orderItem in order.OrderItems)
+			foreach (var orderItem in order.OrderItems.Where(x => x.Product.IsShipEnabled))
 			{
-				//we can ship only shippable products
-				if (!orderItem.Product.IsShipEnabled)
+				var canBeAddedToShipment = orderItem.GetItemsCanBeAddedToShipmentCount();
+				if (canBeAddedToShipment <= 0)
 					continue;
 
-				var totalNumberOfItemsCanBeAddedToShipment = orderItem.GetItemsCanBeAddedToShipmentCount();
-				if (totalNumberOfItemsCanBeAddedToShipment <= 0)
-					continue;
-
-				//yes, we have at least one item to create a new shipment
+				// yes, we have at least one item to create a new shipment
 				return true;
 			}
 			return false;
@@ -136,17 +135,11 @@ namespace SmartStore.Services.Orders
 		/// <returns>Total number of items which can be added to new shipments</returns>
 		public static int GetItemsCanBeAddedToShipmentCount(this OrderItem orderItem)
 		{
-			if (orderItem == null)
-				throw new ArgumentNullException("orderItem");
+			Guard.NotNull(orderItem, nameof(orderItem));
 
-			var totalInShipments = orderItem.GetShipmentItemsCount();
+			var itemsCount = orderItem.GetShipmentItemsCount();
 
-			var qtyOrdered = orderItem.Quantity;
-			var qtyCanBeAddedToShipmentTotal = qtyOrdered - totalInShipments;
-			if (qtyCanBeAddedToShipmentTotal < 0)
-				qtyCanBeAddedToShipmentTotal = 0;
-
-			return qtyCanBeAddedToShipmentTotal;
+			return Math.Max(orderItem.Quantity - itemsCount, 0);
 		}
 
 		/// <summary>
@@ -156,55 +149,37 @@ namespace SmartStore.Services.Orders
 		/// <returns>Total number of items in all shipmentss</returns>
 		public static int GetShipmentItemsCount(this OrderItem orderItem)
         {
-            if (orderItem == null)
-				throw new ArgumentNullException("orderItem");
+			Guard.NotNull(orderItem, nameof(orderItem));
 
-            var totalInShipments = 0;
             var shipments = orderItem.Order.Shipments.ToList();
-            for (int i = 0; i < shipments.Count; i++)
-            {
-                var shipment = shipments[i];
-                var si = shipment.ShipmentItems
-                    .Where(x => x.OrderItemId == orderItem.Id)
-                    .FirstOrDefault();
-                if (si != null)
-                {
-                    totalInShipments += si.Quantity;
-                }
-            }
-            return totalInShipments;
+			return AggregateQuantity(shipments, orderItem);
         }
 
 		/// <summary>
-		/// Gets the total number of already shipped items
+		/// Gets the total number of dispatched items
 		/// </summary>
 		/// <param name="orderItem">Order item</param>
-		/// <returns>Total number of already shipped items</returns>
+		/// <returns>Total number of dispatched items</returns>
 		public static int GetDispatchedItemsCount(this OrderItem orderItem)
 		{
-			if (orderItem == null)
-				throw new ArgumentNullException("orderItem");
+			Guard.NotNull(orderItem, nameof(orderItem));
 
-			var result = 0;
 			var shipments = orderItem.Order.Shipments.ToList();
-			for (int i = 0; i < shipments.Count; i++)
-			{
-				var shipment = shipments[i];
-				if (!shipment.ShippedDateUtc.HasValue)
-					//not shipped yet
-					continue;
-
-				var si = shipment.ShipmentItems
-					.Where(x => x.OrderItemId == orderItem.Id)
-					.FirstOrDefault();
-				if (si != null)
-				{
-					result += si.Quantity;
-				}
-			}
-
-			return result;
+			return AggregateQuantity(shipments.Where(x => x.ShippedDateUtc.HasValue), orderItem);
 		}
+
+		/// <summary>
+		/// Gets the total number of not dispatched items
+		/// </summary>
+		/// <param name="orderItem">Order item</param>
+		/// <returns>Total number of not dispatched items</returns>
+		public static int GetNotDispatchedItemsCount(this OrderItem orderItem)
+        {
+			Guard.NotNull(orderItem, nameof(orderItem));
+
+            var shipments = orderItem.Order.Shipments.ToList();
+			return AggregateQuantity(shipments.Where(x => !x.ShippedDateUtc.HasValue), orderItem);
+        }
 
 		/// <summary>
 		/// Gets the total number of already delivered items
@@ -213,59 +188,23 @@ namespace SmartStore.Services.Orders
 		/// <returns>Total number of already delivered items</returns>
 		public static int GetDeliveredItemsCount(this OrderItem orderItem)
 		{
-			if (orderItem == null)
-				throw new ArgumentNullException("orderItem");
+			Guard.NotNull(orderItem, nameof(orderItem));
 
-			var result = 0;
 			var shipments = orderItem.Order.Shipments.ToList();
-			for (int i = 0; i < shipments.Count; i++)
-			{
-				var shipment = shipments[i];
-				if (!shipment.DeliveryDateUtc.HasValue)
-					//not delivered yet
-					continue;
-
-				var si = shipment.ShipmentItems
-					.Where(x => x.OrderItemId == orderItem.Id)
-					.FirstOrDefault();
-				if (si != null)
-				{
-					result += si.Quantity;
-				}
-			}
-
-			return result;
+			return AggregateQuantity(shipments.Where(x => x.DeliveryDateUtc.HasValue), orderItem);
 		}
 
 		/// <summary>
-		/// Gets the total number of not yet shipped items (but added to shipments)
+		/// Gets the total number of not delivered items
 		/// </summary>
 		/// <param name="orderItem">Order item</param>
-		/// <returns>Total number of not yet shipped items (but added to shipments)</returns>
-		public static int GetNotDispatchedItemsCount(this OrderItem orderItem)
-        {
-            if (orderItem == null)
-				throw new ArgumentNullException("orderItem");
+		/// <returns>Total number of already delivered items</returns>
+		public static int GetNotDeliveredItemsCount(this OrderItem orderItem)
+		{
+			Guard.NotNull(orderItem, nameof(orderItem));
 
-            var result = 0;
-            var shipments = orderItem.Order.Shipments.ToList();
-            for (int i = 0; i < shipments.Count; i++)
-            {
-                var shipment = shipments[i];
-                if (shipment.ShippedDateUtc.HasValue)
-                    //already shipped
-                    continue;
-
-                var si = shipment.ShipmentItems
-                    .Where(x => x.OrderItemId == orderItem.Id)
-                    .FirstOrDefault();
-                if (si != null)
-                {
-                    result += si.Quantity;
-                }
-            }
-
-            return result;
-        }
+			var shipments = orderItem.Order.Shipments.ToList();
+			return AggregateQuantity(shipments.Where(x => !x.DeliveryDateUtc.HasValue), orderItem);
+		}
 	}
 }

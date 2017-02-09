@@ -9,9 +9,11 @@ namespace SmartStore.Admin.Validators.Catalog
         public ProductValidator(ILocalizationService localizationService)
         {
             RuleFor(x => x.Name).NotEmpty().WithMessage(localizationService.GetResource("Admin.Catalog.Products.Fields.Name.Required"));
+            RuleFor(x => x.OrderMinimumQuantity).GreaterThan(0).WithMessage(localizationService.GetResource("Admin.Validation.ValueGreaterZero"));
+            RuleFor(x => x.OrderMaximumQuantity).GreaterThan(0).WithMessage(localizationService.GetResource("Admin.Validation.ValueGreaterZero"));
 
-			// validate PAnGV
-			When(x => x.BasePriceEnabled, () =>
+            // validate PAnGV
+            When(x => x.BasePriceEnabled, () =>
 			{
 				RuleFor(x => x.BasePriceMeasureUnit).NotEmpty().WithMessage(localizationService.GetResource("Admin.Catalog.Products.Fields.BasePriceMeasureUnit.Required"));
 				RuleFor(x => x.BasePriceBaseAmount)

@@ -4,6 +4,7 @@
 
 @{
     var large = ViewData["large"].Convert<bool>();
+    var itemId = ViewData["itemId"].Convert<string>();
     // TODO: (mc) > (mh) finalize dropdown later in v3.1+
     var inputStyle = "spinner";
     //var inputStyle = Model.QuantiyControlType;
@@ -14,6 +15,7 @@
 	{
 		@Html.TextBoxFor(model => model.EnteredQuantity, new {
            @class = "form-control" + (large ? " form-control-lg" : ""),
+           id = itemId, Name = itemId,
            data_min = Model.MinOrderAmount,
            data_max = Model.MaxOrderAmount,
            data_postfix = Model.QuantityUnitName,

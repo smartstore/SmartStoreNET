@@ -479,7 +479,12 @@ namespace SmartStore.Data.Migrations
                 "Angabe der Bestellmenge auf Produktseiten nicht anbieten",
                 "Specifies whether to hide the quantity control on product pages.",
                 "Bestimmt ob eine Element zur Angabe der Bestellmenge auf Produktdetailseiten dargestellt wird.");
-
+            
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturerInProductDetail",
+                "Display manufacturer",
+                "Hersteller anzeigen.",
+                "Specifies whether the product manufacturer will be displayed on product detail pages.",
+                "Bestimmt ob der Hersteller eines Produktes auf Produktdetailseiten angezeigt wird.");
         }
     }
 }

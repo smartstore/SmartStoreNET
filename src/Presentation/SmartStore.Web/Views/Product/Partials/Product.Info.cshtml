@@ -3,8 +3,7 @@
 @using SmartStore.Web.Models.Catalog;
 
 @{
-	// TODO: (mc) > (mh) make setting > whether brand should be displayed att all in pd
-	var brand = Model.Manufacturers.FirstOrDefault();
+	var brand = Model.Manufacturers == null ? null : Model.Manufacturers.FirstOrDefault();
 }
 
 <div class="pd-info pd-group">

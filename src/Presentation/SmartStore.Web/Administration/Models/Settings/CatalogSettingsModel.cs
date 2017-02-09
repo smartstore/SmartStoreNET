@@ -252,10 +252,13 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DisplayAllImagesNumber")]
         public int DisplayAllImagesNumber { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerPicturesInProductDetail")]
-		public bool ShowManufacturerPicturesInProductDetail { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerInProductDetail")]
+        public bool ShowManufacturerInProductDetail { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail")]
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerPicturesInProductDetail")]
+		public bool ShowManufacturerPicturesInProductDetail { get; set; }
+        
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail")]
         public bool ShowDeliveryTimesInProductDetail { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DeliveryTimeIdForEmptyStock")]

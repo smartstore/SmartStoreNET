@@ -5,7 +5,7 @@
         @if (Model.AvatarEnabled && !String.IsNullOrEmpty(Model.AvatarUrl))
         {
             <div class="avatar">
-                <img src="@(Model.AvatarUrl)" class="avatar-img img-polaroid" alt="Avatar" />
+                <img src="@(Model.AvatarUrl)" class="avatar-img img-thumbnail" alt="Avatar" />
             </div>         
         }
         @if (Model.LocationEnabled)

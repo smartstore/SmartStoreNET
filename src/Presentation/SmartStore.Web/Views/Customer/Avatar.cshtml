@@ -42,7 +42,7 @@
 
             @if (!String.IsNullOrEmpty(Model.AvatarUrl))
             {
-                <img src="@(Model.AvatarUrl + "?" + random)" class="img-polaroid" alt="avatar" />
+                <img src="@(Model.AvatarUrl + "?" + random)" class="img-thumbnail" alt="avatar" />
             }
             
             <button class="btn remove" @Html.Attr("style", "display:none", String.IsNullOrEmpty(Model.AvatarUrl))>

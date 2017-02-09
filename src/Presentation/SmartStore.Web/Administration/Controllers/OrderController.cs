@@ -41,6 +41,7 @@ using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 using SmartStore.Web.Framework.Theming;
+using SmartStore.Utilities;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -458,10 +459,23 @@ namespace SmartStore.Admin.Controllers
                 model.ShippingAddress.FaxRequired = _addressSettings.FaxRequired;
 
                 model.ShippingMethod = order.ShippingMethod;
+				model.CanAddNewShipments = order.CanAddItemsToShipment();
 
-                model.ShippingAddressGoogleMapsUrl = string.Format("http://maps.google.com/maps?f=q&hl=en&ie=UTF8&oe=UTF8&geocode=&q={0}", Server.UrlEncode(order.ShippingAddress.Address1 + " " + order.ShippingAddress.ZipPostalCode + " " + order.ShippingAddress.City + " " + (order.ShippingAddress.Country != null ? order.ShippingAddress.Country.Name : "")));
-                model.CanAddNewShipments = order.HasItemsToAddToShipment();
-            }
+				var googleAddressQuery = string.Concat(
+					order.ShippingAddress.Address1,
+					" ",
+					order.ShippingAddress.ZipPostalCode,
+					" ",
+					order.ShippingAddress.City,
+					" ",
+					order.ShippingAddress.Country != null ? order.ShippingAddress.Country.Name : "");
+
+				var googleMapsUrl = CommonHelper.GetAppSetting<string>("g:MapsUrl");
+
+				model.ShippingAddressGoogleMapsUrl = googleMapsUrl.FormatInvariant(
+					Services.WorkContext.WorkingLanguage.UniqueSeoCode.EmptyNull().ToLower(),
+					Server.UrlEncode(googleAddressQuery));
+			}
 
             #endregion
 
@@ -700,9 +714,9 @@ namespace SmartStore.Admin.Controllers
 
                     //quantities
                     var qtyInThisShipment = shipmentItem.Quantity;
-                    var maxQtyToAdd = orderItem.GetTotalNumberOfItemsCanBeAddedToShipment();
+                    var maxQtyToAdd = orderItem.GetItemsCanBeAddedToShipmentCount();
                     var qtyOrdered = orderItem.Quantity;
-                    var qtyInAllShipments = orderItem.GetTotalNumberOfItemsInAllShipment();
+                    var qtyInAllShipments = orderItem.GetShipmentItemsCount();
 
                     orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
                     var shipmentItemModel = new ShipmentModel.ShipmentItemModel()
@@ -2089,9 +2103,9 @@ namespace SmartStore.Admin.Controllers
 
                 //quantities
                 var qtyInThisShipment = 0;
-                var maxQtyToAdd = orderItem.GetTotalNumberOfItemsCanBeAddedToShipment();
+                var maxQtyToAdd = orderItem.GetItemsCanBeAddedToShipmentCount();
                 var qtyOrdered = orderItem.Quantity;
-                var qtyInAllShipments = orderItem.GetTotalNumberOfItemsInAllShipment();
+                var qtyInAllShipments = orderItem.GetShipmentItemsCount();
 
                 //ensure that this product can be added to a shipment
                 if (maxQtyToAdd <= 0)

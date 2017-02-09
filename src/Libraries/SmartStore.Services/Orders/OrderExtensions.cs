@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Orders
 {
-    public static class OrderExtensions
+	public static class OrderExtensions
     {
         /// <summary>
         /// Formats the order note text
@@ -29,12 +28,133 @@ namespace SmartStore.Services.Orders
             return text;
         }
 
-        /// <summary>
-        /// Gets a total number of items in all shipments
-        /// </summary>
-        /// <param name="orderItem">Order item</param>
-        /// <returns>Total number of items in all shipmentss</returns>
-        public static int GetTotalNumberOfItemsInAllShipment(this OrderItem orderItem)
+		public static List<ProductBundleItemOrderData> GetBundleData(this OrderItem orderItem)
+		{
+			if (orderItem != null && orderItem.BundleData.HasValue())
+			{
+				var data = orderItem.BundleData.Convert<List<ProductBundleItemOrderData>>();
+				return data;
+			}
+			return new List<ProductBundleItemOrderData>();
+		}
+
+		public static void SetBundleData(this OrderItem orderItem, List<ProductBundleItemOrderData> bundleData)
+		{
+			string rawData = null;
+
+			if (bundleData != null && bundleData.Count > 0)
+				rawData = bundleData.Convert<string>();
+
+			orderItem.BundleData = rawData;
+		}
+
+
+		/// <summary>
+		/// Gets a value indicating whether an order has items to ship
+		/// </summary>
+		/// <param name="order">Order</param>
+		/// <returns>A value indicating whether an order has items to ship</returns>
+		public static bool HasItemsToShip(this Order order)
+		{
+			if (order == null)
+				throw new ArgumentNullException("order");
+
+			foreach (var orderItem in order.OrderItems)
+			{
+				//we can ship only shippable products
+				if (!orderItem.Product.IsShipEnabled)
+					continue;
+
+				var totalNumberOfNotYetShippedItems = orderItem.GetNotShippedItemsCount();
+				if (totalNumberOfNotYetShippedItems <= 0)
+					continue;
+
+				//yes, we have at least one item to ship
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether an order has items to deliver
+		/// </summary>
+		/// <param name="order">Order</param>
+		/// <returns>A value indicating whether an order has items to deliver</returns>
+		public static bool HasItemsToDeliver(this Order order)
+		{
+			if (order == null)
+				throw new ArgumentNullException("order");
+
+			foreach (var orderItem in order.OrderItems)
+			{
+				//we can ship only shippable products
+				if (!orderItem.Product.IsShipEnabled)
+					continue;
+
+				var totalNumberOfShippedItems = orderItem.GetShippedItemsCount();
+				var totalNumberOfDeliveredItems = orderItem.GetDeliveredItemsCount();
+				if (totalNumberOfShippedItems <= totalNumberOfDeliveredItems)
+					continue;
+
+				//yes, we have at least one item to deliver
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether an order has items to be added to a shipment
+		/// </summary>
+		/// <param name="order">Order</param>
+		/// <returns>A value indicating whether an order has items to be added to a shipment</returns>
+		public static bool CanAddItemsToShipment(this Order order)
+		{
+			if (order == null)
+				throw new ArgumentNullException("order");
+
+			foreach (var orderItem in order.OrderItems)
+			{
+				//we can ship only shippable products
+				if (!orderItem.Product.IsShipEnabled)
+					continue;
+
+				var totalNumberOfItemsCanBeAddedToShipment = orderItem.GetItemsCanBeAddedToShipmentCount();
+				if (totalNumberOfItemsCanBeAddedToShipment <= 0)
+					continue;
+
+				//yes, we have at least one item to create a new shipment
+				return true;
+			}
+			return false;
+		}
+
+
+		/// <summary>
+		/// Gets the total number of items which can be added to new shipments
+		/// </summary>
+		/// <param name="orderItem">Order item</param>
+		/// <returns>Total number of items which can be added to new shipments</returns>
+		public static int GetItemsCanBeAddedToShipmentCount(this OrderItem orderItem)
+		{
+			if (orderItem == null)
+				throw new ArgumentNullException("orderItem");
+
+			var totalInShipments = orderItem.GetShipmentItemsCount();
+
+			var qtyOrdered = orderItem.Quantity;
+			var qtyCanBeAddedToShipmentTotal = qtyOrdered - totalInShipments;
+			if (qtyCanBeAddedToShipmentTotal < 0)
+				qtyCanBeAddedToShipmentTotal = 0;
+
+			return qtyCanBeAddedToShipmentTotal;
+		}
+
+		/// <summary>
+		/// Gets the total number of items in all shipments
+		/// </summary>
+		/// <param name="orderItem">Order item</param>
+		/// <returns>Total number of items in all shipmentss</returns>
+		public static int GetShipmentItemsCount(this OrderItem orderItem)
         {
             if (orderItem == null)
 				throw new ArgumentNullException("orderItem");
@@ -55,32 +175,43 @@ namespace SmartStore.Services.Orders
             return totalInShipments;
         }
 
-        /// <summary>
-        /// Gets a total number of already items which can be added to new shipments
-        /// </summary>
-        /// <param name="orderItem">Order item</param>
-        /// <returns>Total number of already delivered items which can be added to new shipments</returns>
-        public static int GetTotalNumberOfItemsCanBeAddedToShipment(this OrderItem orderItem)
-        {
-            if (orderItem == null)
-                throw new ArgumentNullException("orderItem");
+		/// <summary>
+		/// Gets the total number of already shipped items
+		/// </summary>
+		/// <param name="orderItem">Order item</param>
+		/// <returns>Total number of already shipped items</returns>
+		public static int GetShippedItemsCount(this OrderItem orderItem)
+		{
+			if (orderItem == null)
+				throw new ArgumentNullException("orderItem");
 
-            var totalInShipments = orderItem.GetTotalNumberOfItemsInAllShipment();
+			var result = 0;
+			var shipments = orderItem.Order.Shipments.ToList();
+			for (int i = 0; i < shipments.Count; i++)
+			{
+				var shipment = shipments[i];
+				if (!shipment.ShippedDateUtc.HasValue)
+					//not shipped yet
+					continue;
 
-            var qtyOrdered = orderItem.Quantity;
-            var qtyCanBeAddedToShipmentTotal = qtyOrdered - totalInShipments;
-            if (qtyCanBeAddedToShipmentTotal < 0)
-                qtyCanBeAddedToShipmentTotal = 0;
+				var si = shipment.ShipmentItems
+					.Where(x => x.OrderItemId == orderItem.Id)
+					.FirstOrDefault();
+				if (si != null)
+				{
+					result += si.Quantity;
+				}
+			}
 
-            return qtyCanBeAddedToShipmentTotal;
-        }
+			return result;
+		}
 
-        /// <summary>
-        /// Gets a total number of not yet shipped items (but added to shipments)
-        /// </summary>
-        /// <param name="orderItem">Order item</param>
-        /// <returns>Total number of not yet shipped items (but added to shipments)</returns>
-        public static int GetTotalNumberOfNotYetShippedItems(this OrderItem orderItem)
+		/// <summary>
+		/// Gets the total number of not yet shipped items (but added to shipments)
+		/// </summary>
+		/// <param name="orderItem">Order item</param>
+		/// <returns>Total number of not yet shipped items (but added to shipments)</returns>
+		public static int GetNotShippedItemsCount(this OrderItem orderItem)
         {
             if (orderItem == null)
 				throw new ArgumentNullException("orderItem");
@@ -107,42 +238,11 @@ namespace SmartStore.Services.Orders
         }
 
         /// <summary>
-        /// Gets a total number of already shipped items
-        /// </summary>
-        /// <param name="orderItem">Order item</param>
-        /// <returns>Total number of already shipped items</returns>
-        public static int GetTotalNumberOfShippedItems(this OrderItem orderItem)
-        {
-            if (orderItem == null)
-				throw new ArgumentNullException("orderItem");
-
-            var result = 0;
-            var shipments = orderItem.Order.Shipments.ToList();
-            for (int i = 0; i < shipments.Count; i++)
-            {
-                var shipment = shipments[i];
-                if (!shipment.ShippedDateUtc.HasValue)
-                    //not shipped yet
-                    continue;
-
-                var si = shipment.ShipmentItems
-                    .Where(x => x.OrderItemId == orderItem.Id)
-                    .FirstOrDefault();
-                if (si != null)
-                {
-                    result += si.Quantity;
-                }
-            }
-            
-            return result;
-        }
-
-        /// <summary>
-        /// Gets a total number of already delivered items
+        /// Gets the total number of already delivered items
         /// </summary>
         /// <param name="orderItem">Order item</param>
         /// <returns>Total number of already delivered items</returns>
-        public static int GetTotalNumberOfDeliveredItems(this OrderItem orderItem)
+        public static int GetDeliveredItemsCount(this OrderItem orderItem)
         {
             if (orderItem == null)
 				throw new ArgumentNullException("orderItem");
@@ -167,102 +267,5 @@ namespace SmartStore.Services.Orders
 
             return result;
         }
-
-		public static List<ProductBundleItemOrderData> GetBundleData(this OrderItem orderItem)
-		{
-			if (orderItem != null && orderItem.BundleData.HasValue())
-			{
-				var data = orderItem.BundleData.Convert<List<ProductBundleItemOrderData>>();
-				return data;
-			}
-			return new List<ProductBundleItemOrderData>();
-		}
-
-		public static void SetBundleData(this OrderItem orderItem, List<ProductBundleItemOrderData> bundleData)
-		{
-			string rawData = null;
-
-			if (bundleData != null && bundleData.Count > 0)
-				rawData = bundleData.Convert<string>();
-
-			orderItem.BundleData = rawData;
-		}
-
-        /// <summary>
-        /// Gets a value indicating whether an order has items to be added to a shipment
-        /// </summary>
-        /// <param name="order">Order</param>
-        /// <returns>A value indicating whether an order has items to be added to a shipment</returns>
-        public static bool HasItemsToAddToShipment(this Order order)
-        {
-            if (order == null)
-                throw new ArgumentNullException("order");
-
-            foreach (var orderItem in order.OrderItems)
-            {
-                //we can ship only shippable products
-                if (!orderItem.Product.IsShipEnabled)
-                    continue;
-
-                var totalNumberOfItemsCanBeAddedToShipment = orderItem.GetTotalNumberOfItemsCanBeAddedToShipment();
-                if (totalNumberOfItemsCanBeAddedToShipment <= 0)
-                    continue;
-
-                //yes, we have at least one item to create a new shipment
-                return true;
-            }
-            return false;
-        }
-        /// <summary>
-        /// Gets a value indicating whether an order has items to ship
-        /// </summary>
-        /// <param name="order">Order</param>
-        /// <returns>A value indicating whether an order has items to ship</returns>
-        public static bool HasItemsToShip(this Order order)
-        {
-            if (order == null)
-                throw new ArgumentNullException("order");
-
-            foreach (var orderItem in order.OrderItems)
-            {
-                //we can ship only shippable products
-                if (!orderItem.Product.IsShipEnabled)
-                    continue;
-
-                var totalNumberOfNotYetShippedItems = orderItem.GetTotalNumberOfNotYetShippedItems();
-                if (totalNumberOfNotYetShippedItems <= 0)
-                    continue;
-
-                //yes, we have at least one item to ship
-                return true;
-            }
-            return false;
-        }
-        /// <summary>
-        /// Gets a value indicating whether an order has items to deliver
-        /// </summary>
-        /// <param name="order">Order</param>
-        /// <returns>A value indicating whether an order has items to deliver</returns>
-        public static bool HasItemsToDeliver(this Order order)
-        {
-            if (order == null)
-                throw new ArgumentNullException("order");
-
-            foreach (var orderItem in order.OrderItems)
-            {
-                //we can ship only shippable products
-                if (!orderItem.Product.IsShipEnabled)
-                    continue;
-
-                var totalNumberOfShippedItems = orderItem.GetTotalNumberOfShippedItems();
-                var totalNumberOfDeliveredItems = orderItem.GetTotalNumberOfDeliveredItems();
-                if (totalNumberOfShippedItems <= totalNumberOfDeliveredItems)
-                    continue;
-
-                //yes, we have at least one item to deliver
-                return true;
-            }
-            return false;
-        }
-    }
+	}
 }

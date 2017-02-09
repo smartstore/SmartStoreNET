@@ -1651,7 +1651,7 @@ namespace SmartStore.Services.Orders
             _shipmentService.UpdateShipment(shipment);
 
             //check whether we have more items to ship
-            if (order.HasItemsToAddToShipment() || order.HasItemsToShip())
+            if (order.CanAddItemsToShipment() || order.HasItemsToShip())
                 order.ShippingStatusId = (int)ShippingStatus.PartiallyShipped;
             else
                 order.ShippingStatusId = (int)ShippingStatus.Shipped;
@@ -1694,7 +1694,7 @@ namespace SmartStore.Services.Orders
             shipment.DeliveryDateUtc = DateTime.UtcNow;
             _shipmentService.UpdateShipment(shipment);
 
-			if (!order.HasItemsToAddToShipment() && !order.HasItemsToShip() && !order.HasItemsToDeliver())
+			if (!order.CanAddItemsToShipment() && !order.HasItemsToShip() && !order.HasItemsToDeliver())
 			{
 				order.ShippingStatusId = (int)ShippingStatus.Delivered;
 			}
@@ -2572,7 +2572,7 @@ namespace SmartStore.Services.Orders
 					continue;
 
 				//ensure that this product can be shipped (have at least one item to ship)
-				var maxQtyToAdd = orderItem.GetTotalNumberOfItemsCanBeAddedToShipment();
+				var maxQtyToAdd = orderItem.GetItemsCanBeAddedToShipmentCount();
 				if (maxQtyToAdd <= 0)
 					continue;
 

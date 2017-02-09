@@ -71,6 +71,7 @@ namespace SmartStore.Core.Domain.Catalog
 			ShowLinkedAttributeValueImage = true;
 			EnableDynamicPriceUpdate = true;
             ShowProductReviewsInProductDetail = true;
+            EnableHtmlTextCollapser = true;
 			HtmlTextCollapsedHeight = 260;
 			MostRecentlyUsedCategoriesMaxSize = 6;
 			MostRecentlyUsedManufacturersMaxSize = 4;

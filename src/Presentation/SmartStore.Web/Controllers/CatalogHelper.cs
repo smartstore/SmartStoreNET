@@ -187,8 +187,6 @@ namespace SmartStore.Web.Controllers
 					Manufacturers = _catalogSettings.ShowManufacturerInProductDetail ? PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id), null, _catalogSettings.ShowManufacturerPicturesInProductDetail) : null,
 					ReviewCount = product.ApprovedTotalReviews,
 					DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
-					//EnableHtmlTextCollapser = Convert.ToBoolean(_settingService.GetSettingByKey<string>("CatalogSettings.EnableHtmlTextCollapser")),
-					//HtmlTextCollapsedHeight = Convert.ToString(_settingService.GetSettingByKey<string>("CatalogSettings.HtmlTextCollapsedHeight")),
 					ShowSku = _catalogSettings.ShowProductSku,
 					Sku = product.Sku,
 					ShowManufacturerPartNumber = _catalogSettings.ShowManufacturerPartNumber,

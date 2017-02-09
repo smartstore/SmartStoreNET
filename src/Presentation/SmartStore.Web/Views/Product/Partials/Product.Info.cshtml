@@ -13,7 +13,7 @@
 	{
 		<div class="pd-brand-block">
 			<a class="pd-brand" href="@Url.RouteUrl("Manufacturer", new { SeName = brand.SeName })">
-				@if (brand.Picture != null && brand.Picture.ImageUrl.HasValue())
+				@if (brand.Picture != null && brand.Picture.ImageUrl.HasValue() && brand.Picture.PictureId != 0)
 				{
 					<img class="pd-brand-picture" src="@brand.Picture.ImageUrl" alt="@brand.Picture.AlternateText" title="@brand.Picture.Title" />
 				}

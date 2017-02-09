@@ -474,10 +474,6 @@ namespace SmartStore.Services.Media
 				using (var stream = _storageProvider.Value.OpenRead(picture.ToMedia()))
 				{
 					var size = GetPictureSize(stream, true);
-					if (size.IsEmpty)
-					{
-						var msg = true;
-					}
 					picture.Width = size.Width;
 					picture.Height = size.Height;
 					picture.UpdatedOnUtc = DateTime.UtcNow;

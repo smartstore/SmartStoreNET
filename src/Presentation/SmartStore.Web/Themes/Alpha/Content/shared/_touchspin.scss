@@ -7,6 +7,11 @@
 $touchspin-btn-width:                1.6rem;
 
 // Added by SMNET 
+
+.qty-input {
+    vertical-align: top;
+}
+
 .bootstrap-touchspin {
     display: inline-flex;
 
@@ -27,6 +32,11 @@ $touchspin-btn-width:                1.6rem;
             $offset: ($input-padding-y-lg / 2);
             padding-top: $input-padding-y-lg - $offset;
             padding-bottom: $input-padding-y-lg + $offset;
+        }
+
+        .has-postfix &.form-control-sm {
+            padding-top: 0;
+            padding-bottom: $input-padding-y-sm * 2;
         }
     }
 
@@ -81,6 +91,10 @@ $touchspin-btn-width:                1.6rem;
 
     .form-control-lg ~ .bootstrap-touchspin-postfix {
         padding-bottom: 0.75rem;
+    }
+
+    .form-control-sm ~ .bootstrap-touchspin-postfix {
+        padding-bottom: 0.2rem;
     }
 }
 

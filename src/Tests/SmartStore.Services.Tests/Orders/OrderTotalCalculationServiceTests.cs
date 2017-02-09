@@ -53,7 +53,6 @@ namespace SmartStore.Services.Tests.Orders
         IOrderTotalCalculationService _orderTotalCalcService;
         IAddressService _addressService;
         ShippingSettings _shippingSettings;
-        ILogger _logger;
         IRepository<ShippingMethod> _shippingMethodRepository;
         ShoppingCartSettings _shoppingCartSettings;
         CatalogSettings _catalogSettings;

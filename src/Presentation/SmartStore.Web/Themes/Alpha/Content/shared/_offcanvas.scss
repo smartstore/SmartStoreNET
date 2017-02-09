@@ -1,15 +1,15 @@
 ﻿/// <reference path="../common/common.scss" />
-/// <reference path="../bootstrap/bootstrap.scss" />
+/// <reference path="../bs4/scss/bootstrap.scss" />
 
+$offcanvas-width:                   320px;
+$offcanvas-width-lg:                570px;
+$offcanvas-easing:                  ease-out;
+$offcanvas-duration:                0.3s;
+$offcanvas-offset:                  0.3;
+$offcanvas-offset-p:                $offcanvas-offset * 100%;
+$offcanvas-offset-p-neg:            ($offcanvas-offset * 100) * -1%;
 
-$offcanvas-width: 570px;
-$offcanvas-easing: ease;
-$offcanvas-duration: 0.4s;
-$offcanvas-offset: 0.5;
-$offcanvas-offset-p: $offcanvas-offset * 100%;
-$offcanvas-offset-p-neg: ($offcanvas-offset * 100) * -1%;
-
-$offcanvas-menu-bg: $clr-blue-grey-900;
+$offcanvas-menu-bg: $gray-lightest; // $clr-blue-grey-900;
 
 
 /* PARENT CANVAS
@@ -27,19 +27,17 @@ $offcanvas-menu-bg: $clr-blue-grey-900;
     body.canvas-slid &{
     }
     */
-    body.canvas-sliding-left & {
-        transform: translate3d($offcanvas-width * -1, 0, 0);
-    }
-    body.canvas-sliding-left.canvas-fullscreen & { 
-        transform: translate3d(-100%, 0, 0);
-    }
-    body.canvas-sliding-right & {
-        transform: translate3d($offcanvas-width, 0, 0);
-    }
-    body.canvas-sliding-right.canvas-fullscreen & {
-        transform: translate3d(100%, 0, 0);
-    }
+    .canvas-sliding-left &                          { transform: translate3d($offcanvas-width * -1, 0, 0); }
+    .canvas-sliding-left.canvas-lg &                { transform: translate3d($offcanvas-width-lg * -1, 0, 0); }
+    .canvas-sliding-left.canvas-fullscreen &        { transform: translate3d(-100%, 0, 0); }
 
+    .canvas-sliding-right &                         { transform: translate3d($offcanvas-width, 0, 0); }
+    .canvas-sliding-right.canvas-lg &               { transform: translate3d($offcanvas-width-lg, 0, 0); }
+    .canvas-sliding-right.canvas-fullscreen &       { transform: translate3d(100%, 0, 0); }
+
+    .canvas-sliding-left.canvas-overlay &           { transform: translate3d(-15%, 0, 0); }
+
+    .canvas-fullscreen &                            { box-shadow: none !important; }
 }
 
 body.canvas-noscroll {
@@ -123,7 +121,7 @@ body.canvas-noscroll {
 
 body.canvas-blocking .canvas-blocker {
     z-index: $zindex-navbar-fixed+1 !important;
-    opacity: 0.75;
+    opacity: 0.3;
     transition: opacity $offcanvas-duration $offcanvas-easing,
                 transform $offcanvas-duration $offcanvas-easing,
                 z-index 0s 0s !important;
@@ -158,6 +156,10 @@ body.canvas-blocking .canvas-blocker {
         transform: translate3d($offcanvas-offset-p, 0, 0);
     }
 
+    &.offcanvas-lg {
+        width: $offcanvas-width-lg;
+    }
+
     &.offcanvas-fullscreen {
         width: 100%;
     }
@@ -167,13 +169,30 @@ body.canvas-blocking .canvas-blocker {
         transition: transform $offcanvas-duration $offcanvas-easing;
         transform: translate3d(0, 0, 0) !important;
     }
-}
 
-.offcanvas.offcanvas-push {
-    transform: translate3d(-100%, 0, 0);
+    &.offcanvas-push,
+    &.offcanvas-overlay {
+        transform: translate3d(-100%, 0, 0);
 
-    &.offcanvas-right {
-        transform: translate3d(100%, 0, 0);
+        &.offcanvas-right {
+            transform: translate3d(100%, 0, 0);
+        }
+    }
+
+    &.offcanvas-overlay {
+        z-index: 99999;
+    }
+
+    &.offcanvas-shadow {
+        box-shadow: 0 0 24px rgba(#000, 0.3);
+    }
+
+    @media (max-width: $offcanvas-width) {
+        &.offcanvas { width: 100% !important; }
+    }
+
+    @media (max-width: $offcanvas-width-lg) {
+        &.offcanvas-lg { width: 100%; }
     }
 }
 
@@ -191,7 +210,7 @@ body.canvas-blocking .canvas-blocker {
 
 #offcanvas-nav {
     background-color: $offcanvas-menu-bg;
-    color: #fff;
+    color: $body-color;
 }
 
 .ocm-panels {
@@ -251,7 +270,7 @@ body.canvas-blocking .canvas-blocker {
     position: relative;
     padding: 0.8rem 3rem 0.8rem 1.5rem;
     text-transform: uppercase;
-    color: $clr-blue-grey-300;
+    color: $body-color; // $clr-blue-grey-300;
     text-decoration: none !important;
     transition: color 0.15s ease;
     border-right: 3px solid transparent;
@@ -265,7 +284,7 @@ body.canvas-blocking .canvas-blocker {
         color: #fff;
     }
     &.active {
-        border-right-color: $clr-orange;
+        border-right-color: $brand-warning;
     }
 
     &.has-children:after {

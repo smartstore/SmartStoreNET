@@ -27,6 +27,10 @@
             this.el.addClass('offcanvas-fullscreen');
         }
 
+        if (this.options.lg) {
+        	this.el.addClass('offcanvas-lg');
+        }
+
         if (this.options.disablescrolling) {
             this.options.disableScrolling = this.options.disablescrolling;
             delete this.options.disablescrolling;
@@ -60,6 +64,7 @@
         toggle: true,
         placement: 'left',
         fullscreen: false,
+		overlay: false,
         autohide: true,
         disableScrolling: false,
         blocker: true
@@ -89,6 +94,10 @@
             body.addClass('canvas-noscroll');
         }
 
+        if (this.options.overlay) {
+        	body.addClass('canvas-overlay');
+        }
+
         //var swipeEvent = this.options.placement == 'right' ? 'swiperight' : 'swipeleft';
         //body.one(swipeEvent, function (e) {
         //    self.hide();
@@ -101,6 +110,7 @@
         body.addClass('canvas-sliding');
         body.addClass('canvas-sliding-'
             + (this.options.placement == 'right' ? 'left' : 'right')
+			+ (this.options.lg ? ' canvas-lg' : '')
             + (this.options.fullscreen ? ' canvas-fullscreen' : ''));
 
         this.el.addClass("on").one("transitionend webkitTransitionEnd", function (e) {
@@ -124,7 +134,7 @@
         self.state = 'slide-out';
 
         body.addClass('canvas-sliding-out');
-        body.removeClass('canvas-blocking canvas-noscroll canvas-slid canvas-sliding canvas-sliding-left canvas-sliding-right canvas-fullscreen');
+        body.removeClass('canvas-blocking canvas-noscroll canvas-slid canvas-sliding canvas-sliding-left canvas-sliding-right canvas-lg canvas-fullscreen canvas-overlay');
 
         this.el.removeClass("on").one("transitionend webkitTransitionEnd", function (e) {
             if (self.state != 'slide-out') return;

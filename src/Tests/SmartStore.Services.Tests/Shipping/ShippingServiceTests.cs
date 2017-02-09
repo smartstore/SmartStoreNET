@@ -22,7 +22,6 @@ namespace SmartStore.Services.Tests.Shipping
     public class ShippingServiceTests : ServiceTest
     {
         IRepository<ShippingMethod> _shippingMethodRepository;
-        ILogger _logger;
         IProductAttributeParser _productAttributeParser;
 		IProductService _productService;
         ICheckoutAttributeParser _checkoutAttributeParser;

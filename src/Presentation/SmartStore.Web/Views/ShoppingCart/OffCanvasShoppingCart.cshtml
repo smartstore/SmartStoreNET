@@ -85,8 +85,8 @@
                     }
 
                     <div class="toolbar">
-                        <div class="qty-input">
-                            <input class="input-sm form-control" type="text" value="@item.EnteredQuantity" 
+                        <div class="qty-input@(item.QuantityUnitName.HasValue() ? " has-postfix" : "")">
+                            <input class="form-control form-control-sm input-sm" type="text" value="@item.EnteredQuantity" 
                                    data-update-url="@(Url.Action("UpdateOcCartItem", "ShoppingCart"))" data-type="cart" data-sci-id="@item.Id"
                                    data-min="@item.MinOrderAmount" data-max="@item.MaxOrderAmount" data-postfix="@item.QuantityUnitName" data-step="@item.QuantityStep" />
                         </div>

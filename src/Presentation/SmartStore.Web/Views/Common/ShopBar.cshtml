@@ -28,28 +28,16 @@
 
 		@if (Model.WishlistEnabled)
         {
-            //Tablet & Desktop >sm
-            <div class="shopbar-tool hidden-sm-down" id="shopbar-wishlist" data-target="#wishlist-tab">
+            <div class="shopbar-tool" id="shopbar-wishlist" data-target="#wishlist-tab">
                 <a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart", new { isWishlist = true })"
                    data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
                     <span class="shopbar-button-icon">
                         <i class="fa fa-heart-o"></i>
                         <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.WishlistItems == 0 ? "hidden-xs-up" : "")' data-bind-to="TotalProducts">@Model.WishlistItems</span>
                     </span>
-                    <span class="shopbar-button-label hidden-lg-down">
+                    <span class="shopbar-button-label hidden-sm-down">
                         <span>@T("Common.Shopbar.WishlistPartOne")</span><br />
                         <span style="font-weight: bold">@T("Common.Shopbar.WishlistPartTwo")</span>
-                    </span>
-                </a>
-            </div>
-
-            //Handy
-            <div class="shopbar-tool hidden-sm-up" id="shopbar-wishlist" data-target="#wishlist-tab">
-                <a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart", new { isWishlist = true })"
-                   data-autohide="true" data-placement="right" data-fullscreen="true" data-disablescrolling="true" data-target="#offcanvas-cart">
-                    <span class="shopbar-button-icon">
-                        <i class="fa fa-heart-o"></i>
-                        <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.WishlistItems == 0 ? "hidden-xs-up" : "")' data-bind-to="TotalProducts">@Model.WishlistItems</span>
                     </span>
                 </a>
             </div>
@@ -60,28 +48,16 @@
 
 		@if (Model.CompareProductsEnabled)
         {
-            //Tablet & Desktop >sm
-            <div class="shopbar-tool hidden-sm-down" id="shopbar-compare" data-target="#compare-tab">
+            <div class="shopbar-tool x-hidden-sm-down" id="shopbar-compare" data-target="#compare-tab">
                 <a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
                    data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
                     <span class="shopbar-button-icon">
                         <i class="fa fa-retweet"></i>
                         <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="Count">@Model.CompareItems</span>
                     </span>
-                    <span class="shopbar-button-label hidden-lg-down">
+                    <span class="shopbar-button-label hidden-sm-down">
                         <span>@T("Common.Shopbar.CompareProductsPartOne")</span><br />
                         <span style="font-weight: bold">@T("Common.Shopbar.CompareProductsPartTwo")</span>
-                    </span>
-                </a>
-            </div>
-
-            //Handy
-            <div class="shopbar-tool hidden-sm-up" id="shopbar-compare" data-target="#compare-tab">
-                <a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
-                   data-autohide="true" data-placement="right" data-fullscreen="true" data-disablescrolling="true" data-target="#offcanvas-cart">
-                    <span class="shopbar-button-icon">
-                        <i class="fa fa-retweet"></i>
-                        <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="Count">@Model.CompareItems</span>
                     </span>
                 </a>
             </div>
@@ -89,8 +65,7 @@
 
 		@if (Model.ShoppingCartEnabled)
         {
-            //Tablet & Desktop >sm
-            <div class="shopbar-tool hidden-sm-down" id="shopbar-cart" data-target="#cart-tab">
+            <div class="shopbar-tool x-hidden-sm-down" id="shopbar-cart" data-target="#cart-tab">
                 <a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart")"
                         data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
                     <span class="shopbar-button-icon">
@@ -99,22 +74,9 @@
                             @Model.ShoppingCartItems
                         </span>
                     </span>
-                    <span class="shopbar-button-label hidden-lg-down">
+                    <span class="shopbar-button-label hidden-sm-down">
                         <span data-bind-to="SubTotal">@Model.ShoppingCartAmount</span><br />
                         <span style="font-weight: bold">@T("Common.Shopbar.Basket") <i class="fa fa-caret-down"></i></span>
-                    </span>
-                </a>
-            </div>
-
-            //Handy
-            <div class="shopbar-tool hidden-sm-up" id="shopbar-cart" data-target="#cart-tab">
-                <a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart")"
-                   data-autohide="true" data-placement="right" data-fullscreen="true" data-disablescrolling="true" data-target="#offcanvas-cart">
-                    <span class="shopbar-button-icon">
-                        <i class="fa fa-shopping-basket"></i>
-                        <span class='label label-pill @(GetThemeVariable<string>("ShopBarLabel"))@(Model.ShoppingCartItems == 0 ? " hidden-xs-up" : "")' data-bind-to="TotalProducts">
-                            @Model.ShoppingCartItems
-                        </span>
                     </span>
                 </a>
             </div>
@@ -124,7 +86,7 @@
 
 @using (Html.BeginZoneContent("end", key: "offcanvas-cart"))
 {
-	<aside id="offcanvas-cart" class="offcanvas offcanvas-push offcanvas-right">
+	<aside id="offcanvas-cart" class="offcanvas offcanvas-lg offcanvas-overlay offcanvas-right offcanvas-shadow" data-lg="true" data-blocker="true" data-overlay="true">
 		<div class="offcanvas-content">
 			@Html.Action("OffCanvasCart", "ShoppingCart", new { area = "" })
 		</div>

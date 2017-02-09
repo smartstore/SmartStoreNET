@@ -24,7 +24,8 @@
 * #966 Implement new tax calculation logic for shipping and payment fees (Calculate with rate of highest cart amount)
 * #922 New option whether to include the weight of free shipping products in shipping by weight calculation
 * #724 Allow discounts to be applied to manufacturers
-* Option to display manufacturers sorted in alphabetical order 
+* Option to display manufacturers sorted in alphabetical order
+* #1093 New product properties required for selling abroad
 * Web API:
 	* #1002 Add support for addresses and customer roles navigation property of customer entity
 	* #1062 Add filter options for user grid on configuration page

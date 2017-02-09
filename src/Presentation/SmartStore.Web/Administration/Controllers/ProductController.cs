@@ -91,6 +91,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IEventPublisher _eventPublisher;
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICommonServices _services;
+		private readonly ICountryService _countryService;
 		private readonly SeoSettings _seoSettings;
 		private readonly MediaSettings _mediaSettings;
 		private readonly SearchSettings _searchSettings;
@@ -140,6 +141,7 @@ namespace SmartStore.Admin.Controllers
 			IEventPublisher eventPublisher,
 			IGenericAttributeService genericAttributeService,
             ICommonServices services,
+			ICountryService countryService,
 			SeoSettings seoSettings,
 			MediaSettings mediaSettings,
 			SearchSettings searchSettings)
@@ -184,6 +186,7 @@ namespace SmartStore.Admin.Controllers
 			this._eventPublisher = eventPublisher;
 			this._genericAttributeService = genericAttributeService;
             this._services = services;
+			this._countryService = countryService;
 			this._seoSettings = seoSettings;
 			this._mediaSettings = mediaSettings;
 			this._searchSettings = searchSettings;
@@ -253,9 +256,11 @@ namespace SmartStore.Admin.Controllers
 			p.IsEsd = m.IsEsd;
 			p.IsTaxExempt = m.IsTaxExempt;
 			p.TaxCategoryId = m.TaxCategoryId;
+			p.CustomsTariffNumber = m.CustomsTariffNumber;
+			p.CountryOfOriginId = m.CountryOfOriginId == 0 ? (int?)null : m.CountryOfOriginId;
 
 			p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
-			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
+			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();			
 		}
 
 		[NonAction]
@@ -810,6 +815,10 @@ namespace SmartStore.Admin.Controllers
 					Selected = ((int)inventoryMethod == model.ManageInventoryMethodId)
 				});
 			}
+
+			model.AvailableCountries = _countryService.GetAllCountries(true)
+				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString(), Selected = x.Id == product.CountryOfOriginId })
+				.ToList();
 
 			if (setPredefinedValues)
 			{

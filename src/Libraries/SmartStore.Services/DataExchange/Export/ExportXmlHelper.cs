@@ -211,6 +211,38 @@ namespace SmartStore.Services.DataExchange.Export
 			}
 		}
 
+		public void WriteCountry(dynamic country, string node)
+		{
+			if (country == null)
+				return;
+
+			Country entity = country.Entity;
+
+			if (node.HasValue())
+			{
+				_writer.WriteStartElement(node);
+			}
+
+			_writer.Write("Id", entity.Id.ToString());
+			_writer.Write("Name", entity.Name);
+			_writer.Write("AllowsBilling", entity.AllowsBilling.ToString());
+			_writer.Write("AllowsShipping", entity.AllowsShipping.ToString());
+			_writer.Write("TwoLetterIsoCode", entity.TwoLetterIsoCode);
+			_writer.Write("ThreeLetterIsoCode", entity.ThreeLetterIsoCode);
+			_writer.Write("NumericIsoCode", entity.NumericIsoCode.ToString());
+			_writer.Write("SubjectToVat", entity.SubjectToVat.ToString());
+			_writer.Write("Published", entity.Published.ToString());
+			_writer.Write("DisplayOrder", entity.DisplayOrder.ToString());
+			_writer.Write("LimitedToStores", entity.LimitedToStores.ToString());
+
+			WriteLocalized(country);
+
+			if (node.HasValue())
+			{
+				_writer.WriteEndElement();
+			}
+		}
+
 		public void WriteRewardPointsHistory(dynamic rewardPoints, string node)
 		{
 			if (rewardPoints == null)
@@ -531,12 +563,15 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("BundlePerItemShoppingCart", entity.BundlePerItemShoppingCart.ToString());
 			_writer.Write("LowestAttributeCombinationPrice", lowestAttributeCombinationPrice.HasValue ? lowestAttributeCombinationPrice.Value.ToString(_culture) : "");
 			_writer.Write("IsEsd", entity.IsEsd.ToString());
+			_writer.Write("CustomsTariffNumber", entity.CustomsTariffNumber);
 
 			WriteLocalized(product);
 
 			WriteDeliveryTime(product.DeliveryTime, "DeliveryTime");
 
 			WriteQuantityUnit(product.QuantityUnit, "QuantityUnit");
+
+			WriteCountry(product.CountryOfOrigin, "CountryOfOrigin");
 
 			if (product.AppliedDiscounts != null)
 			{

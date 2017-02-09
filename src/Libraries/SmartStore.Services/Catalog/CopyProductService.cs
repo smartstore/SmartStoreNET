@@ -229,7 +229,9 @@ namespace SmartStore.Services.Catalog
 				BundleTitleText = product.BundleTitleText,
 				BundlePerItemShipping = product.BundlePerItemShipping,
 				BundlePerItemPricing = product.BundlePerItemPricing,
-				BundlePerItemShoppingCart = product.BundlePerItemShoppingCart
+				BundlePerItemShoppingCart = product.BundlePerItemShoppingCart,
+				CustomsTariffNumber = product.CustomsTariffNumber,
+				CountryOfOriginId = product.CountryOfOriginId
             };
 
             _productService.InsertProduct(productCopy);

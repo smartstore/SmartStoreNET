@@ -746,6 +746,23 @@ namespace SmartStore.Core.Domain.Catalog
         [DataMember]
         public virtual QuantityUnit QuantityUnit { get; set; }
 
+		/// <summary>
+		/// Gets or sets the customs tariff number
+		/// </summary>
+		[DataMember]
+		public string CustomsTariffNumber { get; set; }
+
+		/// <summary>
+		/// Gets or sets the country of origin identifier
+		/// </summary>
+		[DataMember]
+		public int? CountryOfOriginId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the country of origin
+		/// </summary>
+		[DataMember]
+		public virtual Country CountryOfOrigin { get; set; }
 
 		/// <summary>
 		/// Gets or sets if base price quotation (PAnGV) is enabled

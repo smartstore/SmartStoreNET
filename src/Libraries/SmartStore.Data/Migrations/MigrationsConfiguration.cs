@@ -480,6 +480,18 @@ namespace SmartStore.Data.Migrations
                 "Specifies whether to hide the quantity control on product pages.",
                 "Bestimmt ob eine Element zur Angabe der Bestellmenge auf Produktdetailseiten dargestellt wird.");
 
-        }
+			builder.AddOrUpdate("Admin.Catalog.Products.Fields.CustomsTariffNumber",
+				"Customs Tariff Number",
+				"Zolltarifnummer",
+				"Specifies the customs tariff number of the product.",
+				"Legt die Zolltarifnummer des Produktes fest.");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.Fields.CountryOfOriginId",
+				"Country of Origin",
+				"Herkunftsland",
+				"Specifies the country of origin of the product.",
+				"Legt das Herkunftsland des Produktes fest.");
+
+		}
     }
 }

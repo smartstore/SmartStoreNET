@@ -404,6 +404,8 @@ namespace SmartStore.Services.Catalog.Importer
 				// With new entities, "LimitedToStores" is an implicit field, meaning
 				// it has to be set to true by code if it's absent but "StoreIds" exists.
 				row.SetProperty(context.Result, (x) => x.LimitedToStores, !row.GetDataValue<List<int>>("StoreIds").IsNullOrEmpty());
+				row.SetProperty(context.Result, (x) => x.CustomsTariffNumber);
+				row.SetProperty(context.Result, (x) => x.CountryOfOriginId);
 
 				string tvp;
 				if (row.TryGetDataValue("ProductTemplateViewPath", out tvp, row.IsTransient))

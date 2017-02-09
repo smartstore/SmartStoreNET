@@ -666,6 +666,14 @@ namespace SmartStore.Services.DataExchange.Export
 			ToDeliveryTime(ctx, dynObject, product.DeliveryTimeId);
 			ToQuantityUnit(ctx, dynObject, product.QuantityUnitId);
 
+			if (ctx.Countries != null)
+			{
+				if (product.CountryOfOriginId.HasValue && ctx.Countries.ContainsKey(product.CountryOfOriginId.Value))
+					dynObject.CountryOfOrigin = ToDynamic(ctx, ctx.Countries[product.CountryOfOriginId.Value]);
+				else
+					dynObject.CountryOfOrigin = null;
+			}
+
 			dynObject.ProductPictures = productPictures
 				.OrderBy(x => x.DisplayOrder)
 				.Select(x =>

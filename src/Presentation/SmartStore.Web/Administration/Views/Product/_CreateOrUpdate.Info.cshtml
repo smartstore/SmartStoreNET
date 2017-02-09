@@ -353,6 +353,24 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CustomsTariffNumber)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.CustomsTariffNumber)
+				@Html.ValidationMessageFor(model => model.CustomsTariffNumber)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CountryOfOriginId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => model.CountryOfOriginId, Model.AvailableCountries, T("Common.Unspecified"))
+				@Html.ValidationMessageFor(model => model.CountryOfOriginId)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.AdminComment)
 			</td>
 			<td class="adminData">

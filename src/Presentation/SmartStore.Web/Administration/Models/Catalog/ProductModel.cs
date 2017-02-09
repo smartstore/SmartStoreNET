@@ -32,7 +32,8 @@ namespace SmartStore.Admin.Models.Catalog
 			AddPictureModel = new ProductPictureModel();
 			AddSpecificationAttributeModel = new AddProductSpecificationAttributeModel();
 			AvailableManageInventoryMethods = new List<SelectListItem>();
-        }
+			AvailableCountries = new List<SelectListItem>();
+		}
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ID")]
 		public override int Id { get; set; }
@@ -119,7 +120,14 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.GTIN")]
 		[AllowHtml]
-		public virtual string Gtin { get; set; }
+		public string Gtin { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.CustomsTariffNumber")]
+		public string CustomsTariffNumber { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.CountryOfOriginId")]
+		public int? CountryOfOriginId { get; set; }
+		public IList<SelectListItem> AvailableCountries { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsGiftCard")]
 		public bool IsGiftCard { get; set; }

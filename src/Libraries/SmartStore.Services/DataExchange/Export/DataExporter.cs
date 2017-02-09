@@ -1246,7 +1246,8 @@ namespace SmartStore.Services.DataExchange.Export
 							ctx.Categories = allCategories.ToDictionary(x => x.Id);
 						}
 
-						if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Order)
+						if (ctx.Request.Provider.Value.EntityType == ExportEntityType.Product ||
+							ctx.Request.Provider.Value.EntityType == ExportEntityType.Order)
 						{
 							ctx.Countries = _countryService.Value.GetAllCountries(true).ToDictionary(x => x.Id, x => x);
 						}

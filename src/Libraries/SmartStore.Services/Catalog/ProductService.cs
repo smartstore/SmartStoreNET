@@ -190,6 +190,7 @@ namespace SmartStore.Services.Catalog
             product.Deleted = true;
 			product.DeliveryTimeId = null;
 			product.QuantityUnitId = null;
+			product.CountryOfOriginId = null;
 
             UpdateProduct(product);
 

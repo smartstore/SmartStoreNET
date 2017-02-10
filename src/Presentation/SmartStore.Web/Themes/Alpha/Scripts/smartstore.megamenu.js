@@ -1,7 +1,4 @@
 ﻿(function ($) {
-    // Depends on:
-    // bootstrap 4
-    // jquery.scrollTo.js
 
     $.fn.extend({
         megaMenu: function (settings) {
@@ -142,7 +139,7 @@
 
                     navElems.on(event, function (e) {
                         var navItem = $(this);
-                        var opendMenu = $($(".nav-item.active .nav-link").data("target")).find(".dropdown-menu");
+                        var opendMenu = $(navItem.find(".nav-link").data("target")).find(".dropdown-menu");
                         var offsetLeft = navItem.offset().left - megamenu.offset().left;
 
                         if (offsetLeft < 0) {
@@ -151,7 +148,7 @@
                         else if (offsetLeft + opendMenu.width() > megamenu.width()) {
                             offsetLeft = megamenu.width() - opendMenu.width();
                         }
-
+                        
                         opendMenu.css("left", offsetLeft);
                     });
                 }

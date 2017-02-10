@@ -1651,7 +1651,7 @@ namespace SmartStore.Services.Orders
             _shipmentService.UpdateShipment(shipment);
 
             //check whether we have more items to ship
-            if (order.CanAddItemsToShipment() || order.HasItemsToShip())
+            if (order.CanAddItemsToShipment() || order.HasItemsToDispatch())
                 order.ShippingStatusId = (int)ShippingStatus.PartiallyShipped;
             else
                 order.ShippingStatusId = (int)ShippingStatus.Shipped;
@@ -1694,7 +1694,7 @@ namespace SmartStore.Services.Orders
             shipment.DeliveryDateUtc = DateTime.UtcNow;
             _shipmentService.UpdateShipment(shipment);
 
-			if (!order.CanAddItemsToShipment() && !order.HasItemsToShip() && !order.HasItemsToDeliver())
+			if (!order.CanAddItemsToShipment() && !order.HasItemsToDispatch() && !order.HasItemsToDeliver())
 			{
 				order.ShippingStatusId = (int)ShippingStatus.Delivered;
 			}

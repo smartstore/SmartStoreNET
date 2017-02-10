@@ -63,11 +63,11 @@ namespace SmartStore.Services.Orders
 
 
 		/// <summary>
-		/// Gets a value indicating whether an order has items to ship
+		/// Gets a value indicating whether an order has items to dispatch
 		/// </summary>
 		/// <param name="order">Order</param>
-		/// <returns>A value indicating whether an order has items to ship</returns>
-		public static bool HasItemsToShip(this Order order)
+		/// <returns>A value indicating whether an order has items to dispatch</returns>
+		public static bool HasItemsToDispatch(this Order order)
 		{
 			Guard.NotNull(order, nameof(order));
 

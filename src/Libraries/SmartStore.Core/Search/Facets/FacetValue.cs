@@ -104,6 +104,18 @@ namespace SmartStore.Core.Search.Facets
 			set;
 		}
 
+		#region Metadata
+
+		public string Name { get; set; }
+
+		public int ParentId { get; set; }
+
+		public int DisplayOrder { get; set; }
+
+		public FacetSorting? Sorting { get; set; }
+
+		#endregion
+
 		public override int GetHashCode()
 		{
 			return Value.GetHashCode();

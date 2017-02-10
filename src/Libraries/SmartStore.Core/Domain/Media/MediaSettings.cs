@@ -13,7 +13,7 @@ namespace SmartStore.Core.Domain.Media
 			ProductDetailsPictureSize = 600;
 			ProductThumbPictureSizeOnProductDetailsPage = 70;
 			MessageProductThumbPictureSize = 70;
-			AssociatedProductPictureSize = 125;
+			AssociatedProductPictureSize = 600;
 			BundledProductPictureSize = 70;
 			CartThumbPictureSize = 80;
 			CartThumbBundleItemPictureSize = 32;

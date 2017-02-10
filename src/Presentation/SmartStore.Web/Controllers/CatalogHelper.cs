@@ -196,7 +196,8 @@ namespace SmartStore.Web.Controllers
 					Gtin = product.Gtin,
 					StockAvailability = product.FormatStockMessage(_localizationService),
 					HasSampleDownload = product.IsDownload && product.HasSampleDownload,
-					IsCurrentCustomerRegistered = _services.WorkContext.CurrentCustomer.IsRegistered()
+					IsCurrentCustomerRegistered = _services.WorkContext.CurrentCustomer.IsRegistered(),
+					IsAssociatedProduct = isAssociatedProduct
 				};
 
 				// get gift card values from query string

@@ -1831,7 +1831,7 @@
     <Content Include="Views\Product\Partials\_BundleItemsAddToCart.cshtml" />
     <Content Include="Views\Product\Partials\_GiftCardInfo.cshtml" />
     <Content Include="Views\Product\Partials\_PictureGallery.cshtml" />
-    <Content Include="Views\Product\Partials\_ProductTemplate.Grouped.AssociatedProduct.cshtml" />
+    <Content Include="Views\Product\Partials\Product.AssociatedProduct.cshtml" />
     <Content Include="Views\Product\Partials\_ReviewHelpfulness.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Profile\Info.cshtml" />
@@ -1930,6 +1930,7 @@
     <Content Include="Views\Product\Partials\Product.Bundle.cshtml" />
     <Content Include="Views\Product\Partials\Product.Bundle.Price.cshtml" />
     <Content Include="Views\Product\Partials\Product.Bundle.Items.cshtml" />
+    <Content Include="Views\Product\Partials\_ProductTemplate.Grouped.AssociatedProduct.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

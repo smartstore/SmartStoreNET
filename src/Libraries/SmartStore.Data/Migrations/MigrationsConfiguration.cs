@@ -79,7 +79,7 @@ namespace SmartStore.Data.Migrations
 			}
 
 			// Change MediaSettings.ProductDetailsPictureSize to 600 if smaller
-			var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "MediaSettings.ProductDetailsPictureSize");
+			var setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "MediaSettings.ProductDetailsPictureSize" || x.Name == "MediaSettings.AssociatedProductPictureSize");
 			if (setting != null && setting.Value.Convert<int>() < 600)
 			{
 				setting.Value = "600";

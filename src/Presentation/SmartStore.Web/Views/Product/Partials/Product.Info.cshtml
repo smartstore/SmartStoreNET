@@ -28,7 +28,14 @@
 	<!-- Title -->
 	<div class="page-title">
 		<h1 class="pd-name pd-name-sm" itemprop="name">
-			@Model.Name
+			@if (Model.IsAssociatedProduct && Model.VisibleIndividually)
+			{
+				<a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@T("Products.Details")">@Model.Name</a>
+			}
+			else
+			{
+				@Model.Name
+			}	
 		</h1>
 	</div>
 
@@ -42,7 +49,7 @@
 </div>
 
 <!-- Review Overview -->
-@if (Model.DisplayProductReviews)
+@if (!Model.IsAssociatedProduct && Model.DisplayProductReviews)
 {
 	Html.RenderAction("ReviewSummary", new { id = Model.Id });
 }

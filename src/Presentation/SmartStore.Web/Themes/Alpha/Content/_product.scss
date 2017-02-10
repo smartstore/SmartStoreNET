@@ -336,11 +336,19 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 }
 
 
-// Variants
+// Variants & Associated products
 // =====================================================
 
 .pd-variants:not(:last-child) {
     margin-bottom: 1.5rem;
+}
+
+.pd-variant {
+    position: relative;
+    padding: 0.5rem 0;
+    //border-top: 1px solid rgba(#000, 0.15);
+
+    .pd-name { font-size: 1rem !important }
 }
 
 

@@ -6,34 +6,37 @@
 @using SmartStore.Web;
 
 @{
-    Layout = "_ColumnsOne";
+	Layout = "_ColumnsOne";
 
-    Html.AddTitleParts(Model.MetaTitle.NullEmpty() ?? Model.Name);
-    Html.AddMetaDescriptionParts(Model.MetaDescription);
-    Html.AddMetaKeywordParts(Model.MetaKeywords);
+	Html.AddTitleParts(Model.MetaTitle.NullEmpty() ?? Model.Name);
+	Html.AddMetaDescriptionParts(Model.MetaDescription);
+	Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-    Html.AddScriptParts("~/Themes/Alpha/Scripts/public.product.js");
+	Html.AddScriptParts("~/Themes/Alpha/Scripts/public.product.js");
 
-    if (Model.CanonicalUrlsEnabled)
-    {
-        var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-        Html.AddCanonicalUrlParts(productUrl);
-    }
+	if (Model.CanonicalUrlsEnabled)
+	{
+		var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+		Html.AddCanonicalUrlParts(productUrl);
+	}
 
-    string updateUrl = Url.Action("UpdateProductDetails3", "Product", new
-    {
-        productId = Model.Id,
-        bundleItemId = Model.BundleItem.Id,
-        itemType = (string)null // TODO: (mc) WTF!?
-    });
+	string updateUrl = Url.Action("UpdateProductDetails3", "Product", new
+	{
+		productId = Model.Id,
+		bundleItemId = Model.BundleItem.Id,
+		itemType = (string)null // TODO: (mc) WTF!?
+	});
 
-    /* TODO: (mc)
-     * - CustomerEnteredPrice
-     * - Badges
-     * - GTIN: user must specifiy the GTIN type on product level (gtin12, gtin13 etc.). See https://schema.org/Offer
-     * - Qty input: make settings (Whether to display)
-     * - FIXME (mg) > no (discount) badges shown in products lists (with bundled products & PricePerBundleItems ON)
-     */
+	/* TODO: (mc)
+	 * - CustomerEnteredPrice
+	 * - HasSampleDownload
+	 * - AddToWishlist
+	 * - ActionButtons
+	 * - Badges
+	 * - GTIN: user must specifiy the GTIN type on product level (gtin12, gtin13 etc.). See https://schema.org/Offer
+	 * - Qty input: make settings (Whether to display)
+	 * - FIXME (mg) > no (discount) badges shown in products lists (with bundled products & PricePerBundleItems ON)
+	 */
 }
 
 <div class="page product-details-page">
@@ -42,8 +45,8 @@
 
 	@{ Html.RenderWidget("productdetails_top"); }
 
-	<article class="pd page-body" itemscope itemtype="http://schema.org/Product">
-		<div id="main-update-container" class="update-container" data-url="@updateUrl">
+	<article class="pd page-body">
+		<div id="main-update-container" class="update-container" data-url="@updateUrl" itemscope itemtype="http://schema.org/Product">
 			@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
             {
 			<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
@@ -67,13 +70,16 @@
 							</div>
 						}
 
-						<!-- Product attributes (SKU, EAN, Weight etc.) -->
-						<div class="pd-attrs-container" data-partial="Attrs">
-							@{ Html.RenderPartial("Product.Attrs", Model); }
-						</div>
+						@if (Model.ProductType != ProductType.GroupedProduct)
+						{
+							<!-- Product attributes (SKU, EAN, Weight etc.) -->
+							<div class="pd-attrs-container" data-partial="Attrs">
+								@{ Html.RenderPartial("Product.Attrs", Model); }
+							</div>
 
-						<!-- Offer box -->
-						@{ Html.RenderPartial("Product.Offer", Model); }
+							<!-- Offer box -->
+							Html.RenderPartial("Product.Offer", Model);
+						}
 
 						@if (Model.DisplayAdminLink)
 						{
@@ -86,6 +92,27 @@
 				</section>
 			}
 		</div>
+
+		@if (Model.ProductType == ProductType.GroupedProduct)
+		{
+			<section class="pd-section pd-section-variants">
+				@if (Model.AssociatedProducts.Count == 0)
+				{
+					<div class="pd-no-associated-products alert alert-warning">
+						@T("Products.NoAssociatedProducts")
+					</div>
+				}
+				else
+				{
+					foreach (var product in Model.AssociatedProducts)
+					{
+						var dataDictProduct = new ViewDataDictionary();
+						dataDictProduct.TemplateInfo.HtmlFieldPrefix = string.Format("product_{0}", product.Id);
+						Html.RenderPartial("Product.AssociatedProduct", product, dataDictProduct);
+					}
+				}
+			</section>
+		}
 
 		<!-- Bottom Content: Full Description, Specification, Review etc. -->
 		<section class="pd-section pd-section-bottom">

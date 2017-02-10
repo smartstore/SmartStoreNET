@@ -85,8 +85,7 @@ namespace SmartStore.Services.Orders
 		/// <param name="product">Product</param>
         /// <param name="selectedAttributes">Selected attributes</param>
         /// <returns>Warnings</returns>
-        IList<string> GetShoppingCartItemGiftCardWarnings(ShoppingCartType shoppingCartType,
-            Product product, string selectedAttributes);
+        IList<string> GetShoppingCartItemGiftCardWarnings(ShoppingCartType shoppingCartType, Product product, string selectedAttributes);
 
 		/// <summary>
 		/// Validates bundle items
@@ -131,8 +130,7 @@ namespace SmartStore.Services.Orders
         /// <param name="checkoutAttributes">Checkout attributes</param>
         /// <param name="validateCheckoutAttributes">A value indicating whether to validate checkout attributes</param>
         /// <returns>Warnings</returns>
-		IList<string> GetShoppingCartWarnings(IList<OrganizedShoppingCartItem> shoppingCart,
-            string checkoutAttributes, bool validateCheckoutAttributes);
+		IList<string> GetShoppingCartWarnings(IList<OrganizedShoppingCartItem> shoppingCart, string checkoutAttributes, bool validateCheckoutAttributes);
 
         /// <summary>
         /// Finds a shopping cart item in the cart
@@ -193,8 +191,7 @@ namespace SmartStore.Services.Orders
         /// <param name="newQuantity">New shopping cart item quantity</param>
         /// <param name="resetCheckoutData">A value indicating whether to reset checkout data</param>
         /// <returns>Warnings</returns>
-        IList<string> UpdateShoppingCartItem(Customer customer, int shoppingCartItemId,
-            int newQuantity, bool resetCheckoutData);
+        IList<string> UpdateShoppingCartItem(Customer customer, int shoppingCartItemId, int newQuantity, bool resetCheckoutData);
 
         /// <summary>
         /// Migrate shopping cart
@@ -213,5 +210,29 @@ namespace SmartStore.Services.Orders
 		/// <param name="addRequiredProductsIfEnabled">Add required products if enabled</param>
 		/// <returns>List with add-to-cart warnings.</returns>
 		IList<string> Copy(OrganizedShoppingCartItem sci, Customer customer, ShoppingCartType cartType, int storeId, bool addRequiredProductsIfEnabled);
+
+        /// <summary>
+		/// Gets the subtotal of cart items for the current user
+		/// </summary>
+        /// <returns>unformatted subtotal of cart items for the current user</returns>
+        decimal GetCurrentCartSubTotal();
+
+        /// <summary>
+		/// Gets the subtotal of cart items for the current user
+		/// </summary>
+        /// <returns>unformatted subtotal of cart items for the current user</returns>
+        decimal GetCurrentCartSubTotal(IList<OrganizedShoppingCartItem> cart);
+
+        /// <summary>
+		/// Gets the formatted subtotal of cart items for the current user
+		/// </summary>
+        /// <returns>Formatted subtotal of cart items for the current user</returns>
+        string GetFormattedCurrentCartSubTotal();
+        
+        /// <summary>
+        /// Gets the formatted subtotal of cart items for the current user
+        /// </summary>
+        /// <returns>Formatted subtotal of cart items for the current user</returns>
+        string GetFormattedCurrentCartSubTotal(IList<OrganizedShoppingCartItem> cart);
     }
 }

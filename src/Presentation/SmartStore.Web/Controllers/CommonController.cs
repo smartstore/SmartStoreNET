@@ -86,6 +86,7 @@ namespace SmartStore.Web.Controllers
 		private readonly Lazy<IManufacturerService> _manufacturerService;
 		private readonly Lazy<ICategoryService> _categoryService;
 		private readonly Lazy<IProductService> _productService;
+        private readonly Lazy<IShoppingCartService> _shoppingCartService;
 
         public CommonController(
 			ICommonServices services,
@@ -121,7 +122,8 @@ namespace SmartStore.Web.Controllers
 			Lazy<IPictureService> pictureService,
 			Lazy<IManufacturerService> manufacturerService,
 			Lazy<ICategoryService> categoryService,
-			Lazy<IProductService> productService)
+			Lazy<IProductService> productService,
+            Lazy<IShoppingCartService> shoppingCartService)
         {
 			this._services = services;
 			this._topicService = topicService;
@@ -158,6 +160,7 @@ namespace SmartStore.Web.Controllers
 			this._manufacturerService = manufacturerService;
 			this._categoryService = categoryService;
 			this._productService = productService;
+            this._shoppingCartService = shoppingCartService;
         }
 
         #region Utilities
@@ -508,25 +511,9 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
-            //subtotal
-			decimal subtotal = 0;
 			var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
-
-            if (cart.Count > 0)
-            {
-				decimal subtotalBase = decimal.Zero;
-				decimal orderSubTotalDiscountAmountBase = decimal.Zero;
-				Discount orderSubTotalAppliedDiscount = null;
-				decimal subTotalWithoutDiscountBase = decimal.Zero;
-				decimal subTotalWithDiscountBase = decimal.Zero;
-
-				_orderTotalCalculationService.GetShoppingCartSubTotal(cart,
-					out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount, out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
-
-				subtotalBase = subTotalWithoutDiscountBase;
-				subtotal = _currencyService.Value.ConvertFromPrimaryStoreCurrency(subtotalBase, _services.WorkContext.WorkingCurrency);
-			}
-
+            decimal subtotal = _shoppingCartService.Value.GetCurrentCartSubTotal(cart);
+            
             var model = new ShopBarModel
             {
                 IsAuthenticated = isRegistered,

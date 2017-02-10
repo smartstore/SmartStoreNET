@@ -989,19 +989,7 @@ namespace SmartStore.Web.Controllers
 
             if (cart.Count > 0)
             {
-                //subtotal
-                decimal subtotalBase = decimal.Zero;
-                decimal orderSubTotalDiscountAmountBase = decimal.Zero;
-                Discount orderSubTotalAppliedDiscount = null;
-                decimal subTotalWithoutDiscountBase = decimal.Zero;
-                decimal subTotalWithDiscountBase = decimal.Zero;
-
-                _orderTotalCalculationService.GetShoppingCartSubTotal(cart,
-                    out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount, out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
-
-                subtotalBase = subTotalWithoutDiscountBase;
-                decimal subtotal = _currencyService.ConvertFromPrimaryStoreCurrency(subtotalBase, _workContext.WorkingCurrency);
-                model.SubTotal = _priceFormatter.FormatPrice(subtotal);
+                model.SubTotal = _shoppingCartService.GetFormattedCurrentCartSubTotal(cart);
 
                 //a customer should visit the shopping cart page before going to checkout if:
                 //1. "terms of services" are enabled (OBSOLETE now)
@@ -2306,10 +2294,11 @@ namespace SmartStore.Web.Controllers
 
             var warnings = new List<string>();
             warnings.AddRange(_shoppingCartService.UpdateShoppingCartItem(_workContext.CurrentCustomer, sciItemId, newQuantity, false));
-
+            
             return Json(new
             {
                 success = warnings.Count > 0 ? false : true,
+                SubTotal = _shoppingCartService.GetFormattedCurrentCartSubTotal(),
                 message = warnings
             });
         }
@@ -2326,29 +2315,12 @@ namespace SmartStore.Web.Controllers
 				});
 			}
 
-            decimal subtotal = 0;
             var cart = _workContext.CurrentCustomer.GetCartItems(isWishlist ? ShoppingCartType.Wishlist : ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-			if (cart.Count > 0)
-            {
-                //subtotal
-                decimal subtotalBase = decimal.Zero;
-                decimal orderSubTotalDiscountAmountBase = decimal.Zero;
-                Discount orderSubTotalAppliedDiscount = null;
-                decimal subTotalWithoutDiscountBase = decimal.Zero;
-                decimal subTotalWithDiscountBase = decimal.Zero;
-
-                _orderTotalCalculationService.GetShoppingCartSubTotal(cart,
-                    out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount, out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
-
-                subtotalBase = subTotalWithoutDiscountBase;
-                subtotal = _currencyService.ConvertFromPrimaryStoreCurrency(subtotalBase, _workContext.WorkingCurrency);
-            }
 
             return Json(new
 			{ 
                 TotalProducts = cart.GetTotalProducts(),
-                SubTotal = _priceFormatter.FormatPrice(subtotal)
+                SubTotal = _shoppingCartService.GetFormattedCurrentCartSubTotal(cart)
             }, JsonRequestBehavior.AllowGet);
         }
 

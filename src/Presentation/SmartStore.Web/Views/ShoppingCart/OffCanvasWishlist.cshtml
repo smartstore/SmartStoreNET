@@ -10,6 +10,7 @@
     <div class="no-items text-muted @(Model.Items.Count > 0 ? "hidden-xs-up" : "")">
         @T("Wishlist.CartIsEmpty")
     </div>
+
     @if (Model.Items.Count > 0)
     {
         <ul class="items list-unstyled">
@@ -26,7 +27,7 @@
                     itemClass += " alpha";
                 }
 
-            <li class="@itemClass text-xs-center" data-transfer-src="true">
+            <li class="@itemClass card text-xs-center">
                 @if (Model.ShowProductImages)
                 {
                     <figure class="picture pull-left pull-xs-none">

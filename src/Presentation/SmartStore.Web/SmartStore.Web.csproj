@@ -1463,7 +1463,6 @@
     <Content Include="Themes\Alpha\Scripts\public.product-filter.js" />
     <Content Include="Themes\Alpha\Scripts\public.reviews.js" />
     <Content Include="Themes\Alpha\Scripts\public.offcanvas-cart.js" />
-    <Content Include="Themes\Alpha\Scripts\public.shopbar.js" />
     <Content Include="Themes\Alpha\Scripts\public.voting.js" />
     <Content Include="Themes\Alpha\Content\select2\js\select2.js" />
     <Content Include="Themes\Alpha\Content\select2\js\select2.min.js" />

@@ -36,7 +36,8 @@
 					   data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.AddToCart.ProductId, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })'
 					   data-form-selector="#product-details-form"
 					   data-type="cart"
-					   data-action="add">
+					   data-action="add"
+					   data-toggle="offcanvas" data-target="#offcanvas-cart">
 						<i class="fa fa-cart-arrow-down"></i>
 						<span>@(Model.AddToCart.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))</span>
 					</a>

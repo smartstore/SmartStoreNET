@@ -4,16 +4,15 @@ $(function () {
 
     var shopBar = $(".shopbar");
 
-    shopBar.find(".shopbar-button").on("click", function ()
-    {
-        var el = $(this);
+    shopBar.find(".shopbar-button").on("click", function () {
+    	var el = $(this);
         var tool = el.parent();
 
-        // open corresponding tab
+        // Open corresponding tab
         $('.nav-tabs a' + tool.data("target")).tab('show');
     });
 
-    // register for tab change event 
+    // Register for tab change event 
     $('#offcanvas-cart a[data-toggle="tab"]').on('shown.bs.tab', function (e)
     {
         var tool = $(e.target);
@@ -52,6 +51,8 @@ var ShopBar = (function($) {
     }
 
     EventBroker.subscribe("ajaxcart.item.adding", function (msg, data) {
+    	return;
+
         // show transfer effect
         var tool = buttons[data.type];
 
@@ -80,6 +81,7 @@ var ShopBar = (function($) {
         ShopBar.loadHtml(tool);
 
         ShopBar.loadSummary(data.type, true /*fade*/, function (resultData) { });
+        ShopBar.showCart();
 
         notify(data.response);
     });
@@ -113,7 +115,6 @@ var ShopBar = (function($) {
         },
 
         initQtyControls: function(parentSelector) {
-            
             $(parentSelector + " .qty-input .form-control").each(function () {
 
                 var qtyControl = $(this);
@@ -151,6 +152,10 @@ var ShopBar = (function($) {
                     });
                 });
             });
+        },
+
+        showCart: function() {
+        	console.log(offcanvasCart);
         },
 
         loadSummary: function (type, fade, fn /* successCallBack */) {

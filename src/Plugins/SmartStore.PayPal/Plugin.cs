@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
@@ -21,7 +22,11 @@ namespace SmartStore.PayPal
 			_settingService = settingService;
 			_localizationService = localizationService;
 			_payPalService = payPalService;
+
+			Logger = NullLogger.Instance;
 		}
+
+		public ILogger Logger { get; set; }
 
 		public static string SystemName
 		{
@@ -54,12 +59,12 @@ namespace SmartStore.PayPal
 						result = _payPalService.Value.DeleteWebhook(settings, session);
 
 					if (!result.Success)
-						_payPalService.Value.LogError(null, result.ErrorMessage);
+						Logger.Log(LogLevel.Error, null, result.ErrorMessage, null);
 				}
 			}
 			catch (Exception exception)
 			{
-				_payPalService.Value.LogError(exception);
+				Logger.Log(LogLevel.Error, exception, null, null);
 			}
 
             _settingService.DeleteSetting<PayPalExpressPaymentSettings>();

@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Web.Mvc;
 using SmartStore.Core.Configuration;
+using SmartStore.Core.Logging;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework.Controllers;
@@ -165,7 +166,7 @@ namespace SmartStore.PayPal.Controllers
 			}
 			catch (Exception exception)
 			{
-				PayPalService.LogError(exception, isWarning: true);
+				Logger.Log(LogLevel.Warning, exception, null, null);
 			}
 
 			return new HttpStatusCodeResult(result);

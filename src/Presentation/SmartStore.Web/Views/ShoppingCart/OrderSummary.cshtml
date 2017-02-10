@@ -140,7 +140,7 @@
 		<td class="text-nowrap" style="width:170px">
 			@if (Model.IsEditable)
             {
-                @Html.EditorFor(x => item, "QtyInput", new { itemId = "itemquantity{0}".FormatWith(item.Id) })
+                @Html.EditorFor(x => item, "QtyInput", new { htmlAttributes = new { id = "itemquantity{0}".FormatWith(item.Id), Name = "itemquantity{0}".FormatWith(item.Id) } })
             }
             else
             {

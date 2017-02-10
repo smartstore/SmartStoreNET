@@ -4,32 +4,32 @@
 
 @{
     var large = ViewData["large"].Convert<bool>();
-    var itemId = ViewData["itemId"].Convert<string>();
+    //var itemId = ViewData["itemId"].Convert<string>();
     // TODO: (mc) > (mh) finalize dropdown later in v3.1+
     var inputStyle = "spinner";
     //var inputStyle = Model.QuantiyControlType;
+
+    var attrs = new RouteValueDictionary(ViewData["htmlAttributes"] ?? new object());
+    attrs["class"] = "form-control" + (large ? " form-control-lg" : "");
+    attrs["data-min"] = Model.MinOrderAmount;
+    attrs["data-max"] = Model.MaxOrderAmount;
+    attrs["data-postfix"] = Model.QuantityUnitName;
+    attrs["data-step"] = Model.QuantityStep;
 }
 
 <div class="qty-input@(Model.QuantityUnitName.HasValue() ? " has-postfix" : "")">
 	@if (inputStyle == "spinner")
-	{
-		@Html.TextBoxFor(model => model.EnteredQuantity, new {
-           @class = "form-control" + (large ? " form-control-lg" : ""),
-           id = itemId, Name = itemId,
-           data_min = Model.MinOrderAmount,
-           data_max = Model.MaxOrderAmount,
-           data_postfix = Model.QuantityUnitName,
-           data_step = Model.QuantityStep
-       })
-	}
-	else
-	{
-		/*for (var i = 0; i <= 100; i++)
-		{
-			Model.AllowedQuantities.Add(new SelectListItem { Text = "{0} {1}".FormatCurrent(i, Model.QuantityUnitName), Value = i.ToString() });
-		}*/
-		if (Model.AllowedQuantities != null && Model.AllowedQuantities.Count > 0)
-		{
+    {
+        @Html.TextBoxFor(model => model.EnteredQuantity, attrs)
+    }
+    else
+    {
+        /*for (var i = 0; i <= 100; i++)
+        {
+            Model.AllowedQuantities.Add(new SelectListItem { Text = "{0} {1}".FormatCurrent(i, Model.QuantityUnitName), Value = i.ToString() });
+        }*/
+        if (Model.AllowedQuantities != null && Model.AllowedQuantities.Count > 0)
+        {
 			<div class="mf-dropdown" style="display: block">
 				<button class="btn btn-warning btn-labeled icon-right btn-block@(large ? " btn-lg" : "")" title="TBD">
 					<span class="mf-dropdown-value">@Model.EnteredQuantity</span>

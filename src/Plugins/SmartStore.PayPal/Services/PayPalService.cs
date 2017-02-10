@@ -608,9 +608,10 @@ namespace SmartStore.PayPal.Services
 			{
 				if (webResponse != null)
 				{
+					string rawResponse = null;
 					using (var reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
 					{
-						var rawResponse = reader.ReadToEnd();
+						rawResponse = reader.ReadToEnd();
 						if (rawResponse.HasValue())
 						{
 							try
@@ -650,7 +651,21 @@ namespace SmartStore.PayPal.Services
 						if (result.ErrorMessage.IsEmpty())
 							result.ErrorMessage = webResponse.StatusDescription;
 
-						LogError(null, result.ErrorMessage, string.Concat(data.NaIfEmpty(), "\r\n\r\n", result.Json == null ? "" : result.Json.ToString()), false);
+						var sb = new StringBuilder();
+						sb.AppendLine(data.NaIfEmpty());
+						sb.AppendLine();
+						webResponse.Headers.AllKeys.Each(x => sb.AppendLine($"{x}: {webResponse.Headers[x]}"));
+						sb.AppendLine();
+						if (result.Json != null)
+						{
+							sb.AppendLine(result.Json.ToString());
+						}
+						else if (rawResponse.HasValue())
+						{
+							sb.AppendLine(rawResponse);
+						}
+
+						LogError(null, result.ErrorMessage, sb.ToString(), false);
 					}
 				}
 			}

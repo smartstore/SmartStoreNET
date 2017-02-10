@@ -3,6 +3,8 @@
 ##Paypal 2.6.0.6
 ###Bugfixes
 * PayPal PLUS: Skip payment if cart total is zero.
+###Improvements
+* PayPal PLUS: Log more information in case of a request failure
 
 ##Paypal 2.6.0.5
 ###Bugfixes

@@ -110,7 +110,7 @@
 
 .offcanvas-cart-body .items .item {
 	position: relative; 
-	padding: 8px 20px 52px 20px;
+	padding: 8px 0 52px 5px;
     margin: 20px;
 
 	&.more { 
@@ -138,6 +138,7 @@
 
     .toolbar {
         border-top: 1px solid #e5e5e5;
+        border-bottom: 1px solid #e5e5e5;
         background: #fafafa;
         padding: .2em;
         position: absolute;
@@ -163,7 +164,6 @@
 		margin-right: 4px;	
         width: 100px;
         img {
-            width: 80px;
             max-width: 80px;
             max-height: 120px; 
         }
@@ -195,7 +195,6 @@
 	}
 	
 	.price {
-		width: 64px;
         text-align: right;
         font-weight: 600;
 	}

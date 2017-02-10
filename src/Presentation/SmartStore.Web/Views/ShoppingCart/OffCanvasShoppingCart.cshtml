@@ -29,7 +29,7 @@
                     itemClass += " omega";
                 }
 
-                <li class="@itemClass card text-xs-center">
+                <li class="@itemClass text-xs-center">
 
                     @if (Model.ShowProductImages)
                     {
@@ -122,7 +122,7 @@
     <div class="pull-left">
         @T("ShoppingCart.Totals.SubTotal"):
     </div>
-    <div class="price pull-right">
+    <div class="price sub-total pull-right">
         @Model.SubTotal
     </div>
 </div>

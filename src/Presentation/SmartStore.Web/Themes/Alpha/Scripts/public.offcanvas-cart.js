@@ -69,11 +69,15 @@ var ShopBar = (function($) {
 
     EventBroker.subscribe("ajaxcart.item.added", function (msg, data) {
 
-        var tool = buttons[data.type];
-        var badge = $("span.label", tool);
+        var tool = tools[data.type];
+        var button = buttons[data.type];
+        var badge = $("span.label", button);
+
         if (badge.hasClass("hidden-xs-up")) {
             badge.removeClass("hidden-xs-up");
         }
+
+        ShopBar.loadHtml(tool);
 
         ShopBar.loadSummary(data.type, true /*fade*/, function (resultData) { });
 
@@ -125,7 +129,7 @@ var ShopBar = (function($) {
                 }).change(function (e) {
 
                     var currentValue = this.value;
-                                        
+                    
                     $.ajax({
                         cache: false,
                         type: "POST",
@@ -135,6 +139,7 @@ var ShopBar = (function($) {
                             if(data.success == true) {
                                 var type = qtyControl.data("type");
                                 ShopBar.loadSummary(type, true, function (data) { });
+                                $("#offcanvas-cart .summary .sub-total").html(data.SubTotal);
                             }
                             else {
                                 $(data.message).each(function (index, value) {
@@ -177,10 +182,9 @@ var ShopBar = (function($) {
         loadHtml: function (type, fn /* completeCallback */) {
 
             var tool = _.isString(type) ? tools[type] : type;
-            if (!tool) return;
+            if (!tool || tool.data("url") == undefined) return;
 
             var cnt = $(".tab-content " + tool.attr("href"), offcanvasCart);
-
             tool.removeClass("loaded").addClass("loading");
 
             $.ajax({

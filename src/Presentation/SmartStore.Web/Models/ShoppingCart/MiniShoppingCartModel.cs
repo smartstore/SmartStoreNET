@@ -4,6 +4,7 @@ using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.Catalog;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
+using System;
 
 namespace SmartStore.Web.Models.ShoppingCart
 {
@@ -68,6 +69,8 @@ namespace SmartStore.Web.Models.ShoppingCart
             public PictureModel Picture { get; set; }
 
             public IList<ShoppingCartItemBundleItem> BundleItems { get; set; }
+
+			public DateTime CreatedOnUtc { get; set; }
 
         }
 

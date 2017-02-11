@@ -262,6 +262,7 @@ namespace SmartStore.Web.Controllers
 				IsDownload = product.IsDownload,
 				HasUserAgreement = product.HasUserAgreement,
 				IsEsd = product.IsEsd,
+				CreatedOnUtc = item.UpdatedOnUtc
 			};
 
             model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);
@@ -459,8 +460,9 @@ namespace SmartStore.Web.Controllers
                 QuantityStep = product.QuantityStep > 0 ? product.QuantityStep : 1,
                 ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
-				VisibleIndividually = product.VisibleIndividually
-            };
+				VisibleIndividually = product.VisibleIndividually,
+				CreatedOnUtc = item.UpdatedOnUtc
+			};
 
 			model.ProductUrl = GetProductUrlWithAttributes(sci, model.ProductSeName);
 
@@ -1023,6 +1025,7 @@ namespace SmartStore.Web.Controllers
                         MaxOrderAmount = product.OrderMaximumQuantity,
                         MinOrderAmount = product.OrderMinimumQuantity,
                         QuantityStep = product.QuantityStep > 0 ? product.QuantityStep : 1,
+						CreatedOnUtc = item.UpdatedOnUtc,
                         AttributeInfo = _productAttributeFormatter.FormatAttributes(
                             product, 
                             item.AttributesXml, 
@@ -1456,8 +1459,7 @@ namespace SmartStore.Web.Controllers
                         {
                             return Json(new
                             {
-                                success = true,
-                                message = string.Format(_localizationService.GetResource("Products.ProductHasBeenAddedToTheWishlist.Link"), Url.RouteUrl("Wishlist")),
+                                success = true
                             });
                         }
                     }
@@ -1479,8 +1481,7 @@ namespace SmartStore.Web.Controllers
                         {
                             return Json(new
                             {
-                                success = true,
-                                message = string.Format(_localizationService.GetResource("Products.ProductHasBeenAddedToTheCart.Link"), Url.RouteUrl("ShoppingCart"))
+                                success = true
                             });
                         }
                     }

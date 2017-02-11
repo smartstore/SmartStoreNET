@@ -64,7 +64,7 @@ namespace SmartStore.Data.Migrations
             });
 
 			// Change MediaSettings.ProductThumbPictureSize to 250 if smaller
-			var keys = new string[] { "MediaSettings.ProductThumbPictureSize", "MediaSettings.CategoryThumbPictureSize", "MediaSettings.ManufacturerThumbPictureSize" };
+			var keys = new string[] { "MediaSettings.ProductThumbPictureSize", "MediaSettings.CategoryThumbPictureSize", "MediaSettings.ManufacturerThumbPictureSize", "MediaSettings.CartThumbPictureSize", "MediaSettings.MiniCartThumbPictureSize" };
 			settings = context.Set<Setting>().Where(x => keys.Contains(x.Name)).ToList();
 			if (settings.Any())
 			{
@@ -497,6 +497,28 @@ namespace SmartStore.Data.Migrations
 				"Specifies the country of origin of the product.",
 				"Legt das Herkunftsland des Produktes fest.");
 
+			builder.Delete(
+				"Products.ProductHasBeenAddedToTheWishlist", 
+				"Products.ProductHasBeenAddedToTheWishlist.Link",
+				"Products.ProductHasBeenAddedToTheCart",
+				"Products.ProductHasBeenAddedToTheCart.Link");
+
+			builder.AddOrUpdate("ShoppingCart.AddToWishlist", "Add to wishlist", "Auf die Wunschliste");
+			builder.AddOrUpdate("ShoppingCart.Mini.AddedItemToCart", "The product {0} has been successfully added to your cart", "Das Produkt {0} wurde erfolgreich in den Warenkorb gelegt");
+			builder.AddOrUpdate("ShoppingCart.Mini.AddedItemToWishlist", "The product {0} has been added to your wishlist", "Das Produkt {0} wurde erfolgreich auf ihrer Wunschliste vermerkt");
+			builder.AddOrUpdate("ShoppingCart.Mini.AddedItemToCompare", "The product {0} has been successfully added to your compare list", "Das Produkt {0} wurde der Vergleichsliste erfolgreich hinzugefügt");
+			builder.AddOrUpdate("ShoppingCart.Mini.EmptyCart.Title", "Shopping cart empty", "Warenkorb ist leer");
+			builder.AddOrUpdate("ShoppingCart.Mini.EmptyWishlist.Title", "Wishlist empty", "Wunschliste ist leer");
+			builder.AddOrUpdate("ShoppingCart.Mini.EmptyCompare.Title", "Compare list empty", "Vergleichsliste ist leer");
+			builder.AddOrUpdate("ShoppingCart.Mini.EmptyCart.Info",
+				"You have not added any product to your cart yet. Use the <i class='{0}'></i> icon to add a product to your cart.", 
+				"Sie haben noch keine Produkte in ihren Warenkorb gelegt.<br /> Benutzen Sie das <i class='{0}'></i> Symbol, um ein Produkt in den Warenkorb zu legen.");
+			builder.AddOrUpdate("ShoppingCart.Mini.EmptyWishlist.Info",
+				"You have not added any product to your wishlist yet. Use the <i class='{0}'></i> icon to add a product to your wishlist.",
+				"Sie haben noch keine Produkte auf ihrer Wunschliste vermerkt.<br /> Benutzen Sie das <i class='{0}'></i> Symbol, um ein Produkt in ihrer Wunschliste zu vermerken.");
+			builder.AddOrUpdate("ShoppingCart.Mini.EmptyCompare.Info",
+				"You have not added any product to your compare list yet. Use the <i class='{0}'></i> icon to add a product to your compare list.",
+				"Sie haben noch keine Produkte in ihrer Vergleichsliste.<br /> Benutzen Sie das <i class='{0}'></i> Symbol, um ein Produkt in die Vergleichsliste aufzunehmen.");
 		}
     }
 }

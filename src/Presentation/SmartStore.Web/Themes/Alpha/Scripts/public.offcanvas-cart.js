@@ -1,7 +1,6 @@
 ﻿;
 
 $(function () {
-
     var shopBar = $(".shopbar");
 
     shopBar.find(".shopbar-button").on("click", function () {
@@ -13,16 +12,13 @@ $(function () {
     });
 
     // Register for tab change event 
-    $('#offcanvas-cart a[data-toggle="tab"]').on('shown.bs.tab', function (e)
-    {
+    $('#offcanvas-cart a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var tool = $(e.target);
-        var cnt = $("#offcanvas-cart .tab-content " + tool.attr("href"));
 
         if (!tool.hasClass("loaded") && !tool.hasClass("loading")) {
-
-            cnt.throbber({ white: true, small: true, message: '' });
+        	ShopBar.showThrobber();
             ShopBar.loadHtml(tool, function () {
-                cnt.data("throbber").hide();
+            	ShopBar.hideThrobber();
             });
         }
     });
@@ -51,50 +47,37 @@ var ShopBar = (function($) {
     }
 
     EventBroker.subscribe("ajaxcart.item.adding", function (msg, data) {
-    	return;
-
-        // show transfer effect
-        var tool = buttons[data.type];
-
-        if (data.src) {
-            // "guess" the closest transferrable element
-            var transferSrc = $(data.src).closest(".item-box, [data-transfer-src]");
-            if (!transferSrc.length) {
-                // ... couldn't find any? then take the src itself (could be a bit small though)
-                transferSrc = data.src.parent() || data.src;
-            }
-
-            transferSrc.stop(true, true).effect("transfer", { to: tool.find(".shopbar-button-icon"), easing: "easeOutQuad", className: "transfer" }, 800, function () { });
-        }
+    	var tool = tools[data.type];
+    	ShopBar.showThrobber();
     });
 
     EventBroker.subscribe("ajaxcart.item.added", function (msg, data) {
-
         var tool = tools[data.type];
         var button = buttons[data.type];
         var badge = $("span.label", button);
-
+        
         if (badge.hasClass("hidden-xs-up")) {
             badge.removeClass("hidden-xs-up");
         }
 
-        ShopBar.loadHtml(tool);
+        ShopBar.loadHtml(tool, function () {
+        	ShopBar.hideThrobber();
+        });
 
         ShopBar.loadSummary(data.type, true /*fade*/, function (resultData) { });
-        ShopBar.showCart();
+        ShopBar.toggleCart(data.type);
+    });
 
-        notify(data.response);
+    EventBroker.subscribe("ajaxcart.item.removing", function (msg, data) {
+    	var tool = tools[data.type];
+    	ShopBar.showThrobber();
     });
 
     EventBroker.subscribe("ajaxcart.item.removed", function (msg, data) {
-
-        var tool = tools[data.type];
-        var tabId = tool.attr("href");
-        var cnt = $(".tab-content " + tabId, offcanvasCart);
-        cnt.throbber({ white: true, small: true, message: '' });
-
+    	var tool = tools[data.type];
+        
         ShopBar.loadHtml(tool, function () {
-            cnt.data("throbber").hide();
+        	ShopBar.hideThrobber();
         });
 
         ShopBar.loadSummary(data.type, true /*fade*/, function (resultData) { });
@@ -113,6 +96,22 @@ var ShopBar = (function($) {
         init: function(opts) {
             // [...]
         },
+
+        showThrobber: function () {
+        	var cnt = $(".tab-content", offcanvasCart);
+        	var throbber = cnt.data('throbber');
+        	if (!throbber) {
+        		cnt.throbber({ white: true, small: true, message: '', show: false });
+        	}
+        	else {
+        		throbber.show();
+        	}
+		},
+
+        hideThrobber: function() {
+        	var cnt = $(".tab-content", offcanvasCart);
+        	_.delay(function () { cnt.data("throbber").hide(); }, 100);
+		},
 
         initQtyControls: function(parentSelector) {
             $(parentSelector + " .qty-input .form-control").each(function () {
@@ -140,7 +139,7 @@ var ShopBar = (function($) {
                             if(data.success == true) {
                                 var type = qtyControl.data("type");
                                 ShopBar.loadSummary(type, true, function (data) { });
-                                $("#offcanvas-cart .summary .sub-total").html(data.SubTotal);
+                                $("#offcanvas-cart .offcanvas-cart-summary .sub-total").html(data.SubTotal);
                             }
                             else {
                                 $(data.message).each(function (index, value) {
@@ -154,8 +153,8 @@ var ShopBar = (function($) {
             });
         },
 
-        showCart: function() {
-        	console.log(offcanvasCart);
+        toggleCart: function (tab) {
+        	buttons[tab].find(".shopbar-button").trigger('click');
         },
 
         loadSummary: function (type, fade, fn /* successCallBack */) {
@@ -185,7 +184,6 @@ var ShopBar = (function($) {
         },
 
         loadHtml: function (type, fn /* completeCallback */) {
-
             var tool = _.isString(type) ? tools[type] : type;
             if (!tool || tool.data("url") == undefined) return;
 
@@ -198,9 +196,9 @@ var ShopBar = (function($) {
                 url: tool.data("url"),
                 success: function (data) {
                     cnt.find('.offcanvas-cart-body').remove();
-                    cnt.find('.summary').remove();
-                    cnt.find('.buttons').remove();
-                    cnt.append(data);
+                    cnt.find('.offcanvas-cart-summary').remove();
+                    cnt.find('.offcanvas-cart-buttons').remove();
+                    cnt.prepend(data);
                 },
                 complete: function (jqXHR, textStatus) {
                     tool.removeClass("loading").addClass("loaded");

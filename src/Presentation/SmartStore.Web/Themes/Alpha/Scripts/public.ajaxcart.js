@@ -34,7 +34,7 @@ var AjaxCart = (function ($, window, document, undefined) {
             type: el.data("type") || "cart", // or "wishlist" or "compare",
             action: el.data("action") || "add", // or "remove" or "addfromwishlist"
             href: el.data("href") || el.attr("href"),
-            data: undefined // wird weiter unten
+            data: undefined // handled further below
         };
 
         if (el.data("form-selector")) {
@@ -93,7 +93,7 @@ var AjaxCart = (function ($, window, document, undefined) {
                 type: 'POST',
 
                 success: function (response) {
-                    if (response.redirect) {
+                	if (response.redirect) {
                         // when the controller sets the "redirect"
                         // property (either to cart, product page etc.), 
                         // it's mandatory to do so and useless to do ajax stuff.

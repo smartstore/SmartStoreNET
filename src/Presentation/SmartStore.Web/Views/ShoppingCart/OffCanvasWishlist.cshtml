@@ -7,13 +7,37 @@
 }
 
 <div class="offcanvas-cart-body">
-    <div class="no-items text-muted @(Model.Items.Count > 0 ? "hidden-xs-up" : "")">
-        @T("Wishlist.CartIsEmpty")
-    </div>
+	@if (Model.Items.Count == 0) 
+	{
+		<div class="no-items">
+			<h4 class="no-item-title">
+				@T("ShoppingCart.Mini.EmptyWishlist.Title")
+			</h4>
+			<p class="no-item-icon">
+				<i class="fa fa-heart-o fa-4x"></i>
+			</p>
+			<p class="no-item-info text-muted">
+				@T("ShoppingCart.Mini.EmptyWishlist.Info", "fa fa-lg fa-heart-o")
+			</p>
+		</div>
+	}
 
     @if (Model.Items.Count > 0)
-    {
-        <ul class="items list-unstyled">
+	{
+		// Items added in the last 2 seconds are considered to be current
+		var currentItem = Model.Items.FirstOrDefault(x => x.CreatedOnUtc >= DateTime.UtcNow.AddSeconds(-2));
+
+		if (currentItem != null)
+		{
+			<div class="alert alert-success alert-dismissible fade in" role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				@Html.Raw(T("ShoppingCart.Mini.AddedItemToWishlist", "<strong>" + currentItem.ProductName.Truncate(50, "...") + "</strong>").Text)
+			</div>
+		}
+
+		<ul class="items list-unstyled">
             @for (int i = 0, length = Model.Items.Count; i < length; i++)
             {
                 var item = Model.Items[i];
@@ -106,7 +130,7 @@
 
 @if (Model.Items.Count > 0)
 {
-    <div class="buttons clearfix">
+    <div class="offcanvas-cart-buttons clearfix">
         <a class="btn btn-primary pull-left" href="@Url.RouteUrl("Wishlist")">
             @T("Wishlist.Mini.ViewWishlist")
         </a>

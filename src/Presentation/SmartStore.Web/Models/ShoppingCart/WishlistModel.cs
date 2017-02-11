@@ -101,6 +101,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 			public bool BundlePerItemShoppingCart { get; set; }
 			public BundleItemModel BundleItem { get; set; }
 			public IList<ShoppingCartItemModel> ChildItems { get; set; }
+
+			public DateTime CreatedOnUtc { get; set; }
         }
 
 		public partial class BundleItemModel : EntityModelBase

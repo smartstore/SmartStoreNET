@@ -47,7 +47,7 @@
 
 	<article class="pd page-body">
 		<div id="main-update-container" class="update-container" data-url="@updateUrl" itemscope itemtype="http://schema.org/Product">
-			@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
+			@using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "pd-form" }))
             {
 			<!-- Top Content: Picture, Description, Attrs, Variants, Bundle Items, Price etc. -->
 				<section class="row pd-section pd-section-top">
@@ -140,7 +140,7 @@
             enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)')
         };
 
-    	$('#product-details-form').productDetail(settings);
+    	$('#pd-form').productDetail(settings);
     });
 </script>
 

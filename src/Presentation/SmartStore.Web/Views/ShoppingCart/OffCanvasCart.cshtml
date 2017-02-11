@@ -10,7 +10,7 @@
     </div>
 
     <ul class="nav nav-tabs nav-tabs-line" role="tablist">
-        @if (Model.ShoppingCartEnabled)
+        @if (Model.ShoppingCartEnabled) 
         {
             <li class="nav-item">
                 <a id="cart-tab" class="nav-link text-xs-center" data-toggle="tab" href="#occ-cart" role="tab" data-url="@Url.Action("OffCanvasShoppingCart", "ShoppingCart")">
@@ -27,7 +27,7 @@
             <li class="nav-item">
                 <a id="wishlist-tab" class="nav-link text-xs-center" data-toggle="tab" href="#occ-wishlist" role="tab" data-url="@Url.Action("OffCanvasWishlist", "ShoppingCart")">
                     <i class="fa fa-heart-o hidden-md-up"></i>
-                    <span class="title hidden-sm-down">@T("PageTitle.Wishlist")</span>
+                    <span class="title hidden-sm-down">@T("Wishlist")</span>
                     <span class="label label-pill label-warning" data-bind-to="TotalProducts">@Model.WishlistItems</span>
                 </a>
             </li>
@@ -38,7 +38,7 @@
             <li class="nav-item">
                 <a id="compare-tab" class="nav-link text-xs-center" data-toggle="tab" href="#occ-compare" role="tab" data-url="@Url.Action("OffCanvasCompare", "Catalog")">
                     <i class="fa fa-retweet hidden-md-up"></i>
-                    <span class="title hidden-sm-down">@T("Products.Compare.Title")</span>
+                    <span class="title hidden-sm-down">@T("Common.Shopbar.Compare")</span>
                     <span class="label label-pill label-warning" data-bind-to="Count">@Model.CompareItems</span>
                 </a>
             </li>
@@ -54,11 +54,11 @@
 
     @if (Model.WishlistEnabled)
     {
-        <div class="tab-pane fade in" id="occ-wishlist" role="tabpanel"></div>
+        <div class="tab-pane fade" id="occ-wishlist" role="tabpanel"></div>
     }
 
     @if (Model.CompareProductsEnabled)
     {
-        <div class="tab-pane fade in" id="occ-compare" role="tabpanel"></div>
+        <div class="tab-pane fade" id="occ-compare" role="tabpanel"></div>
     }
 </div>

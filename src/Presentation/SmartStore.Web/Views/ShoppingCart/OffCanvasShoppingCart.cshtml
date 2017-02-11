@@ -1,4 +1,5 @@
 ﻿@model MiniShoppingCartModel
+
 @using SmartStore.Web.Models.ShoppingCart;
 @{
     int descMaxLength = Model.ShowProductImages ? 120 : 140;
@@ -6,12 +7,122 @@
 }
 
 <div class="offcanvas-cart-body">
-    <div class="no-items text-muted@(Model.TotalProducts > 0 ? " hidden-xs-up" : "")">
-        @T("ShoppingCart.Mini.NoItems")
-    </div>
+	@if (Model.TotalProducts == 0)
+	{
+		<div class="no-items">
+			<h4 class="no-item-title">
+				@T("ShoppingCart.Mini.EmptyCart.Title")
+			</h4>
+			<p class="no-item-icon">
+				<i class="fa fa-shopping-basket fa-4x"></i>
+			</p>
+			<p class="no-item-info text-muted">
+				@T("ShoppingCart.Mini.EmptyCart.Info", "fa fa-lg fa-cart-arrow-down")
+			</p>
+		</div>
+	}
+
     @if (Model.TotalProducts > 0)
-    {
-        <ul class="items list-unstyled">
+	{
+		// Items added in the last 2 seconds are considered to be current
+		var currentItem = Model.Items.FirstOrDefault(x => x.CreatedOnUtc >= DateTime.UtcNow.AddSeconds(-2));
+
+		if (currentItem != null)
+		{
+			<div class="alert alert-success alert-dismissible fade in" role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				@Html.Raw(T("ShoppingCart.Mini.AddedItemToCart", "<strong>" + currentItem.ProductName.Truncate(50, "...") + "</strong>").Text)
+			</div>
+		}
+
+		<div class="offcanvas-cart-items">
+			@foreach (var item in Model.Items)
+			{
+				<div class="offcanvas-cart-item">
+					<div class="row">
+						@if (Model.ShowProductImages)
+						{
+							<div class="col-xs hidden-xs-down" style="max-width: 100px">
+								@if (item.Picture.ImageUrl.HasValue())
+								{
+									<a class="img-center-container" href="@item.ProductUrl" title="@item.Picture.Title">
+										<img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
+									</a>
+								}
+							</div>
+						}
+
+						<div class="col-xs">
+							<a class="name fw-600" href="@item.ProductUrl" title="@item.ProductName">@item.ProductName</a>
+							<div class="short-desc text-muted">
+								@Html.Raw(item.ShortDesc.Truncate(descMaxLength, "..."))
+							</div>
+
+							@if (item.AttributeInfo.HasValue())
+							{
+								<br />
+								<span class="attributes text-muted" title="@item.AttributeInfo">
+									@Html.Raw(item.AttributeInfo.Truncate(attrMaxLength, "..."))
+								</span>
+							}
+
+							@if (item.BundleItems.Count > 0)
+							{
+								<div class="clearfix"></div>
+
+								<div class="mb-bundle-pictures">
+									@for (int j = 0, bundlelength = item.BundleItems.Count; j < bundlelength; j++)
+									{
+										var bundleItem = item.BundleItems[j];
+
+										if (bundleItem.PictureUrl.HasValue())
+										{
+											<a href="@bundleItem.ProductUrl" title="@bundleItem.ProductName">
+												<img alt="@bundleItem.ProductName" src="@bundleItem.PictureUrl" title="@bundleItem.ProductName" />
+											</a>
+										}
+
+										if (bundlelength != (j + 1))
+										{
+											<i class="fa fa-plus"></i>
+										}
+									}
+								</div>
+							}
+
+							<div class="toolbar m-t-1">
+								<span class="fs-h4 fw-600" style="line-height: 37px; display: inline-block; vertical-align: middle">
+									@item.UnitPrice
+								</span>
+								<a class="btn btn-danger btn-sm x-btn-icon remove ajax-cart-link pull-xs-right"
+								   href="#"
+								   rel="nofollow"
+								   data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id })'
+								   data-name="@item.ProductName"
+								   data-type="cart"
+								   data-action="remove"
+								   title='@T("Common.Remove")'>
+									<i class="fa fa-trash-o"></i>
+								</a>
+								<div class="pull-xs-right p-r-05 qty-input@(item.QuantityUnitName.HasValue() ? " has-postfix" : "")" style="display: inline-block; width: 6rem">
+									<input class="form-control form-control-sm input-sm" type="text" value="@item.EnteredQuantity"
+										   data-update-url="@(Url.Action("UpdateOcCartItem", "ShoppingCart"))" data-type="cart" data-sci-id="@item.Id"
+										   data-min="@item.MinOrderAmount" data-max="@item.MaxOrderAmount" data-postfix="@item.QuantityUnitName" data-step="@item.QuantityStep" />
+								</div>
+							</div>
+						</div>
+
+						<div class="col-xs-4 col-sm-3 hidden-xs-up text-xs-right">
+							<div><strong>@item.UnitPrice</strong></div>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+
+		<ul class="items list-unstyled hidden-xs-up">
             @for (int i = 0, length = Model.Items.Count; i < length; i++)
             {
                 var item = Model.Items[i];
@@ -114,20 +225,23 @@
                 </li>
             }
         </ul>
-    }
+	}
 	@{ Html.RenderWidget("mini_shopping_cart_bottom"); }
 </div>
 
-<div class="summary clearfix">
-    <div class="pull-left">
-        @T("ShoppingCart.Totals.SubTotal"):
-    </div>
-    <div class="price sub-total pull-right">
-        @Model.SubTotal
-    </div>
-</div>
+@if (Model.TotalProducts > 0)
+{
+	<div class="offcanvas-cart-summary">
+		<div class="pull-left">
+			@T("ShoppingCart.Totals.SubTotal"):
+		</div>
+		<div class="price sub-total pull-right">
+			@Model.SubTotal
+		</div>
+	</div>
+}
 
-<div class="buttons clearfix">
+<div class="offcanvas-cart-buttons">
     @if (Model.DisplayShoppingCartButton)
             {
         <a class="btn btn-primary pull-left" href="@Url.RouteUrl("ShoppingCart")">

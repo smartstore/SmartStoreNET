@@ -22,9 +22,9 @@ namespace SmartStore.Web.Framework
 
 		public WebStoreContext(IStoreService storeService, IWebHelper webHelper, HttpContextBase httpContext)
 		{
-			this._storeService = storeService;
-			this._webHelper = webHelper;
-			this._httpContext = httpContext;
+			_storeService = storeService;
+			_webHelper = webHelper;
+			_httpContext = httpContext;
 		}
 
 		public void SetRequestStore(int? storeId)

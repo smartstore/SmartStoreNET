@@ -1102,7 +1102,7 @@ namespace SmartStore.Web.Framework
 				{
 					int currentStoreId = 0;
 					IStoreContext storeContext;
-					if (c.TryResolve<IStoreContext>(out storeContext))
+					if (c.TryResolve(out storeContext))
 					{
 						//currentStoreId = storeContext.CurrentStoreIdIfMultiStoreMode;
 						currentStoreId = storeContext.CurrentStore.Id;

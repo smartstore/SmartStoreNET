@@ -43,6 +43,7 @@ namespace SmartStore.Services.Configuration
 				var query = from s in _settingRepository.TableUntracked
 							orderby s.Name, s.StoreId
 							select s;
+
 				var settings = query.ToList();
 				var dictionary = new Dictionary<string, CachedSetting>(StringComparer.OrdinalIgnoreCase);
 				foreach (var s in settings)
@@ -59,6 +60,7 @@ namespace SmartStore.Services.Configuration
 
 					dictionary[settingKey] = cachedSetting;
 				}
+
 				return dictionary;
 			});
 		}

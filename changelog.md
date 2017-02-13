@@ -60,6 +60,7 @@
 * #806 Can't create a user in the admin section without "Manage Customer Roles" permission 
 * #491 Implemented option to determine a default delivery time
 * #1078 Implemented options for "Add to Cart" quantity input field on product level. Quantity control can now be hidden and can be configured to be increased and decreased in steps.
+* #696 Added textual resources for meta title and description for blog per month and by tag pages and enriched them with corresponding month plus year respectivly tag name
 
 
 ### Bugfixes

@@ -2,10 +2,23 @@
 @using SmartStore.Web;
 @using SmartStore.Web.Models.Blogs;
 @using SmartStore.Web.Framework.UI;
+@using System.Globalization;
+
 @{
     Layout = "_ColumnsTwo";
+    
+    var parsedMonth = Model.PagingFilteringContext.GetParsedMonth();
 
-    Html.AddTitleParts(T("PageTitle.Blog").Text);
+    Html.AddTitleParts(
+        parsedMonth != null ?
+        T("PageTitle.Blog.Month").Text.FormatWith(parsedMonth.Value.ToString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year) :
+        T("PageTitle.Blog.Tag").Text.FormatWith(Model.PagingFilteringContext.Tag)
+    );
+    Html.AddMetaDescriptionParts(
+        parsedMonth != null ?
+        T("Metadesc.Blog.Month").Text.FormatWith(parsedMonth.Value.ToString("MMMM", CultureInfo.InvariantCulture) + " " + parsedMonth.Value.Year) :
+        T("Metadesc.Blog.Tag").Text.FormatWith(Model.PagingFilteringContext.Tag)
+    );
 }
 
 @section left {

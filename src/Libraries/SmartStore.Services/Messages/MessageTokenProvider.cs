@@ -1000,10 +1000,11 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Customer.FullName", customer.GetFullName()));
 			tokens.Add(new Token("Customer.VatNumber", customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber)));
 			tokens.Add(new Token("Customer.VatNumberStatus", ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId)).ToString()));
-
+            tokens.Add(new Token("Customer.CustomerNumber", customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber)));
+            
             //note: we do not use SEO friendly URLS because we can get errors caused by having .(dot) in the URL (from the emauk address)
             //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-			string passwordRecoveryUrl = string.Format("{0}customer/passwordrecoveryconfirm?token={1}&email={2}", _services.WebHelper.GetStoreLocation(), 
+            string passwordRecoveryUrl = string.Format("{0}customer/passwordrecoveryconfirm?token={1}&email={2}", _services.WebHelper.GetStoreLocation(), 
 				customer.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), HttpUtility.UrlEncode(customer.Email));
 
 			string accountActivationUrl = string.Format("{0}customer/activation?token={1}&email={2}", _services.WebHelper.GetStoreLocation(), 
@@ -1258,7 +1259,8 @@ namespace SmartStore.Services.Messages
                 "%Customer.Username%", 
                 "%Customer.FullName%", 
                 "%Customer.VatNumber%",
-                "%Customer.VatNumberStatus%", 
+                "%Customer.VatNumberStatus%",
+                "%Customer.CustomerNumber%",
                 "%Customer.PasswordRecoveryURL%", 
                 "%Customer.AccountActivationURL%", 
                 "%Wishlist.URLForCustomer%", 

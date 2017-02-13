@@ -106,7 +106,7 @@ namespace SmartStore.Core.Search.Facets
 
 		#region Metadata
 
-		public string Name { get; set; }
+		public string Label { get; set; }
 
 		public int ParentId { get; set; }
 

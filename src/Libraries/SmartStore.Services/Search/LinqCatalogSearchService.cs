@@ -764,7 +764,7 @@ namespace SmartStore.Services.Search
 					descriptor.Label,
 					descriptor.IsMultiSelect,
 					descriptor.DisplayOrder,
-					facets.OrderBy(descriptor.OrderBy)));
+					facets.OrderBy(descriptor)));
 			}
 			
 			return result;

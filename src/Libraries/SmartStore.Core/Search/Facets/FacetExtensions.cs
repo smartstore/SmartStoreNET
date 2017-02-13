@@ -9,20 +9,36 @@ namespace SmartStore.Core.Search.Facets
 		/// Orders a facet sequence
 		/// </summary>
 		/// <param name="source">Facets</param>
+		/// <param name="descriptor">Facet descriptor</param>
+		/// <returns>Ordered facets</returns>
+		public static IOrderedEnumerable<Facet> OrderBy(this IEnumerable<Facet> source, FacetDescriptor descriptor)
+		{
+			Guard.NotNull(descriptor, nameof(descriptor));
+
+			return source.OrderBy(descriptor.OrderBy, descriptor.Key);
+		}
+
+		/// <summary>
+		/// Orders a facet sequence
+		/// </summary>
+		/// <param name="source">Facets</param>
 		/// <param name="sorting">Type of sorting</param>
 		/// <returns>Ordered facets</returns>
-		public static IOrderedEnumerable<Facet> OrderBy(this IEnumerable<Facet> source, FacetSorting sorting)
+		public static IOrderedEnumerable<Facet> OrderBy(this IEnumerable<Facet> source, FacetSorting sorting, string key = null)
 		{
 			Guard.NotNull(source, nameof(source));
 
 			switch (sorting)
 			{
 				case FacetSorting.ValueAsc:
-					return source.OrderBy(x => x.Label);
+					return source.OrderByDescending(x => x.Value.IsSelected).ThenBy(x => x.Label);
 				case FacetSorting.DisplayOrder:
-					return source.OrderBy(x => x.DisplayOrder);
+					if (key.IsCaseInsensitiveEqual("price"))
+						return source.OrderBy(x => x.DisplayOrder);
+
+					return source.OrderByDescending(x => x.Value.IsSelected).ThenBy(x => x.DisplayOrder);
 				default:
-					return source.OrderByDescending(x => x.HitCount);
+					return source.OrderByDescending(x => x.Value.IsSelected).ThenByDescending(x => x.HitCount);
 			}
 		}
 

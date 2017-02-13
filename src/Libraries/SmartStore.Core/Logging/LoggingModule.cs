@@ -104,9 +104,22 @@ namespace SmartStore.Core.Logging
 			// return an ILogger in response to Resolve<ILogger>(componentTypeParameter)
 			var loggerFactory = context.Resolve<ILoggerFactory>();
 
+			Type containingType = null;
+
 			if (parameters != null && parameters.Any())
 			{
-				var containingType = parameters.TypedAs<Type>();
+				if (parameters.Any(x => x is TypedParameter))
+				{
+					containingType = parameters.TypedAs<Type>();
+				}
+				else if (parameters.Any(x => x is NamedParameter))
+				{
+					containingType = parameters.Named<Type>("Autofac.AutowiringPropertyInjector.InstanceType");
+				}			
+			}
+
+			if (containingType != null)
+			{
 				return loggerFactory.GetLogger(containingType);
 			}
 			else

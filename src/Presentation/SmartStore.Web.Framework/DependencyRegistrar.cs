@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using Autofac;
 using Autofac.Builder;
@@ -52,6 +53,7 @@ using SmartStore.Services.Events;
 using SmartStore.Services.Filter;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
+using SmartStore.Services.Hooks;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
@@ -397,12 +399,19 @@ namespace SmartStore.Web.Framework
 				}
 
 				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString))
-					.PropertiesAutowired(PropertyWiringOptions.None)
+					//.PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
+					.PropertiesAutowired((pi, obj) => 
+					{
+						// Prevent Autofac circularity exception & never trigger hooks during tooling or tests
+						return typeof(IDbHookHandler).IsAssignableFrom(pi.PropertyType) && HostingEnvironment.IsHosted;
+					})
 					.InstancePerRequest();
 			}
 			else
 			{
-				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString)).InstancePerRequest();
+				builder.Register<IDbContext>(c => new SmartObjectContext(DataSettings.Current.DataConnectionString))
+					.PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
+					.InstancePerRequest();
 			}
 
 			builder.Register<Func<string, IDbContext>>(c =>

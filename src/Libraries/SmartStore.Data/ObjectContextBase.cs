@@ -12,6 +12,7 @@ using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Events;
 
 namespace SmartStore.Data
@@ -38,6 +39,7 @@ namespace SmartStore.Data
 			this.HooksEnabled = true;
 			this.AutoCommitEnabled = true;
             this.Alias = null;
+			this.DbHookHandler = NullDbHookHandler.Instance;
 
 			if (DataSettings.DatabaseIsInstalled())
 			{

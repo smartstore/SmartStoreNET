@@ -3,11 +3,12 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Filters;
+using System.Web.Http.OData;
 using SmartStore.Web.Framework.WebApi.Caching;
 
 namespace SmartStore.Web.Framework.WebApi.OData
 {
-	public class WebApiQueryableAttribute : QueryableAttribute
+	public class WebApiQueryableAttribute : EnableQueryAttribute
 	{
 		public bool PagingOptional { get; set; }
 

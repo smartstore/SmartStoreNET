@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.OData;
+using System.Web.Http.OData.Extensions;
 using System.Web.Http.OData.Formatter;
 using System.Web.Http.OData.Routing;
 using Autofac;
@@ -349,7 +350,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 			try
 			{
-				var entityUrl = Url.ODataLink(
+				var entityUrl = Url.CreateODataLink(
 					new EntitySetPathSegment(entity.GetType().Name.EnsureEndsWith("s")),
 					new KeyValuePathSegment(entity.Id.ToString())
 				);

@@ -32,21 +32,8 @@ namespace SmartStore.Data
 
 		public IDbHookHandler DbHookHandler
 		{
-			get
-			{
-				if (_dbHookHandler == null)
-				{
-					_dbHookHandler = HostingEnvironment.IsHosted
-						? EngineContext.Current.Resolve<IDbHookHandler>()
-						: NullDbHookHandler.Instance; // never trigger hooks during tooling or tests
-				}
-
-				return _dbHookHandler;
-			}
-			set
-			{
-				_dbHookHandler = value;
-			}
+			get;
+			set;
 		}
 
 		public override int SaveChanges()

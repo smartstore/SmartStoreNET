@@ -68,7 +68,7 @@
             var itemUrl = GetNodeLink(node);
             var itemState = node.GetNodePathState(Model.Path);
 
-			<li class='@(GetCssClassForNode(node, itemState))'>
+			<li class='@(GetCssClassForNode(node, itemState))' id="main-nav-item-@node.Value.EntityId" data-entity-id="@node.Value.EntityId">
 				@if (node.HasChildren)
                 {
 					<a href="@itemUrl" class="nav-link dropdown-toggle" aria-haspopup="true" aria-expanded="false" data-target="#dropdown-menu-@node.Value.EntityId">
@@ -123,7 +123,10 @@
 		var itemUrl = GetNodeLink(node);
 		var itemState = node.GetNodePathState(Model.Path);
 		
-        <a class='dropdown-item@((itemState & NodePathState.Selected) == NodePathState.Selected ? " selected" : "")' href="@itemUrl">@item.Text</a>
+        <a class='dropdown-item@((itemState & NodePathState.Selected) == NodePathState.Selected ? " selected" : "")' 
+           href="@itemUrl" id="dropdown-item-@node.Value.EntityId" data-entity-id="@node.Value.EntityId">
+            @item.Text
+        </a>
     }
     
     if (isRoot)

@@ -143,7 +143,8 @@
 </table>
 ))
 
-@Html.HiddenFor(model => model.DisplayColorSquaresRgb)
+@Html.HiddenFor(model => model.IsListTypeAttribute)
+
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
@@ -154,8 +155,18 @@
             @Html.ValidationMessageFor(model => model.Alias)
         </td>
     </tr>
-    @if (Model.DisplayColorSquaresRgb)
+
+    @if (Model.IsListTypeAttribute)
     {
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.PictureId)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.PictureId, new { transientUpload = true })
+            @Html.ValidationMessageFor(model => model.PictureId)
+        </td>
+    </tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.ColorSquaresRgb)

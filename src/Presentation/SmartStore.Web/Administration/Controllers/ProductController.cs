@@ -3044,6 +3044,7 @@ namespace SmartStore.Admin.Controllers
 						Name = x.ColorSquaresRgb.IsEmpty() ? x.Name : string.Format("{0} - {1}", x.Name, x.ColorSquaresRgb),
 						Alias = x.Alias,
 						ColorSquaresRgb = x.ColorSquaresRgb,
+                        PictureId = x.PictureId,
 						PriceAdjustment = x.PriceAdjustment,
 						PriceAdjustmentString = (x.ValueType == ProductVariantAttributeValueType.Simple ? x.PriceAdjustment.ToString("G29") : ""),
 						WeightAdjustment = x.WeightAdjustment,
@@ -3098,7 +3099,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				ProductId = pva.ProductId,
 				ProductVariantAttributeId = productAttributeAttributeId,
-				DisplayColorSquaresRgb = pva.IsListTypeAttribute(),
+				IsListTypeAttribute = pva.IsListTypeAttribute(),
 				ColorSquaresRgb = "",
 				Quantity = 1
 			};
@@ -3126,6 +3127,7 @@ namespace SmartStore.Admin.Controllers
 					Name = model.Name,
 					Alias = model.Alias,
 					ColorSquaresRgb = model.ColorSquaresRgb,
+                    PictureId = model.PictureId,
 					PriceAdjustment = model.PriceAdjustment,
 					WeightAdjustment = model.WeightAdjustment,
 					IsPreSelected = model.IsPreSelected,
@@ -3166,7 +3168,8 @@ namespace SmartStore.Admin.Controllers
 				Name = pvav.Name,
 				Alias = pvav.Alias,
 				ColorSquaresRgb = pvav.ColorSquaresRgb,
-				DisplayColorSquaresRgb = pvav.ProductVariantAttribute.IsListTypeAttribute(),
+                PictureId = pvav.PictureId,
+				IsListTypeAttribute = pvav.ProductVariantAttribute.IsListTypeAttribute(),
 				PriceAdjustment = pvav.PriceAdjustment,
 				WeightAdjustment = pvav.WeightAdjustment,
 				IsPreSelected = pvav.IsPreSelected,
@@ -3211,6 +3214,7 @@ namespace SmartStore.Admin.Controllers
 				pvav.Name = model.Name;
 				pvav.Alias = model.Alias;
 				pvav.ColorSquaresRgb = model.ColorSquaresRgb;
+                pvav.PictureId = model.PictureId;
 				pvav.PriceAdjustment = model.PriceAdjustment;
 				pvav.WeightAdjustment = model.WeightAdjustment;
 				pvav.IsPreSelected = model.IsPreSelected;

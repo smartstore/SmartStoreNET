@@ -659,9 +659,13 @@ namespace SmartStore.Admin.Models.Catalog
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.ColorSquaresRgb")]
 			[AllowHtml, UIHint("Color")]
 			public string ColorSquaresRgb { get; set; }
-			public bool DisplayColorSquaresRgb { get; set; }
+			public bool IsListTypeAttribute { get; set; }
 
-			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.PriceAdjustment")]
+            [UIHint("Picture")]
+            [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Picture")]
+            public int PictureId { get; set; }
+            
+            [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.PriceAdjustment")]
 			public decimal PriceAdjustment { get; set; }
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.PriceAdjustment")]
 			public string PriceAdjustmentString { get; set; }

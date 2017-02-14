@@ -36,6 +36,7 @@
 	* #1063 Adding product category/manufacturer ignores any other property like DisplayOrder
 	* Added endpoint "Infos" for order and order item entity for additional information like aggregated data.
 * Added setting to specify whether the product manufacturer should be displayed in product detail
+* #271 Implemented support for attribute images/icons
 
 
 ### Improvements

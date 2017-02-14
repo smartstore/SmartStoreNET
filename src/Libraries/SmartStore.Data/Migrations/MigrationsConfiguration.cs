@@ -525,6 +525,13 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Metadesc.Blog.Month", "Blog entries in {0}", "Blog Einträge des Monats {0}");
             builder.AddOrUpdate("Metadesc.Blog.Tag", "Blog entries for the tag {0}", "Blog-Einträge für das Stichwort {0}");
 
+            builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Picture",
+                "Picture",
+                "Bild",
+                "Choose a picture which will be displayed as the selector for the attribute.",
+                "Wählen Sie ein Bild, welches als Auswahlelement für das Attribut angezeigt werden soll.");
+
+            
         }
     }
 }

@@ -2702,7 +2702,7 @@
 		<Value>Bild</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Pictures.Fields.Picture.Hint">
-		<Value>Wählen Sie ein Bild für den Upload. Falls die tatsächlichen Bildabmessungen die Voreinstellungen überschreiten, wird das Bild automatisch skaliert werden.</Value>
+		<Value>Wählen Sie ein Bild für den Upload. Falls die tatsächlichen Bildabmessungen die Voreinstellungen überschreiten, wird das Bild automatisch skaliert.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Pictures.SaveBeforeEdit">
 		<Value>Sie müssen das Produkt speichern, bevor Sie Bilder hochladen können.</Value>

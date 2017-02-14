@@ -660,6 +660,10 @@ namespace SmartStore.Web.Controllers
 							if (linkagePicture != null)
 								pvaValueModel.ImageUrl = _pictureService.GetPictureUrl(linkagePicture, _mediaSettings.VariantValueThumbPictureSize, false);
 						}
+                        else if (pvaValue.PictureId != 0)
+                        {
+                            pvaValueModel.ImageUrl = _pictureService.GetPictureUrl(pvaValue.PictureId, _mediaSettings.VariantValueThumbPictureSize, false);
+                        }
 
 						pvaModel.Values.Add(pvaValueModel);
 					}

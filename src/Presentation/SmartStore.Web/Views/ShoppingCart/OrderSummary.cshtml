@@ -52,7 +52,7 @@
 			<td class="productpicture text-nowrap">
 				@if (item.Picture.ImageUrl.HasValue())
 				{
-					<img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" style="max-width:@(Model.MediaDimensions)px;max-height:@(Model.MediaDimensions)px"/>
+					<img alt="@item.Picture.AlternateText" src="@item.Picture.ImageUrl" title="@item.Picture.Title" />
 				}
 			</td>
 		}
@@ -75,10 +75,12 @@
 
 			@if (Model.DisplayDeliveryTime && item.IsShipEnabled && (!String.IsNullOrEmpty(item.DeliveryTimeName) && !String.IsNullOrEmpty(item.DeliveryTimeHexValue)))
 			{
-				<div class="delivery-time">
+				<div class="os-deliverytime">
 					<span class="delivery-time-label">@T("Products.DeliveryTime")</span>
-					<span class="delivery-time-color" style="background-color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName"></span>
-					<span class="delivery-time-value">@item.DeliveryTimeName</span>
+					<span class="delivery-time" style="color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName">
+                        <i class="fa fa-circle delivery-time-status"></i>
+                        @item.DeliveryTimeName
+                    </span>
 				</div>
 			}
 

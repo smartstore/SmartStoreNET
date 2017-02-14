@@ -527,7 +527,8 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("AllowBackInStockSubscriptions", entity.AllowBackInStockSubscriptions.ToString());
 			_writer.Write("OrderMinimumQuantity", entity.OrderMinimumQuantity.ToString());
 			_writer.Write("OrderMaximumQuantity", entity.OrderMaximumQuantity.ToString());
-			_writer.Write("AllowedQuantities", entity.AllowedQuantities);
+            _writer.Write("HideQuantityControl", entity.HideQuantityControl.ToString());
+            _writer.Write("AllowedQuantities", entity.AllowedQuantities);
 			_writer.Write("DisableBuyButton", entity.DisableBuyButton.ToString());
 			_writer.Write("DisableWishlistButton", entity.DisableWishlistButton.ToString());
 			_writer.Write("AvailableForPreOrder", entity.AvailableForPreOrder.ToString());

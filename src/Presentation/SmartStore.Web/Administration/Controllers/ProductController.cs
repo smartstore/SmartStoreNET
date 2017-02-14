@@ -736,11 +736,21 @@ namespace SmartStore.Admin.Controllers
             var deliveryTimes = _deliveryTimesService.GetAllDeliveryTimes();
 			foreach (var dt in deliveryTimes)
 			{
+				var isSelected = false;
+				if (setPredefinedValues)
+				{
+					isSelected = (defaultDeliveryTime != null && dt.Id == defaultDeliveryTime.Id);
+				}
+				else
+				{
+					isSelected = (product != null && dt.Id == product.DeliveryTimeId.GetValueOrDefault());
+				}
+
 				model.AvailableDeliveryTimes.Add(new SelectListItem
 				{
 					Text = dt.Name,
 					Value = dt.Id.ToString(),
-					Selected = product != null && !setPredefinedValues || dt.Id == defaultDeliveryTime.Id
+					Selected = isSelected
                 });
 			}
             
@@ -817,7 +827,12 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			model.AvailableCountries = _countryService.GetAllCountries(true)
-				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString(), Selected = x.Id == product.CountryOfOriginId })
+				.Select(x => new SelectListItem
+				{
+					Text = x.Name,
+					Value = x.Id.ToString(),
+					Selected = product != null && x.Id == product.CountryOfOriginId
+				})
 				.ToList();
 
 			if (setPredefinedValues)

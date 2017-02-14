@@ -75,8 +75,8 @@
 
 			@if (Model.DisplayDeliveryTime && item.IsShipEnabled && (!String.IsNullOrEmpty(item.DeliveryTimeName) && !String.IsNullOrEmpty(item.DeliveryTimeHexValue)))
 			{
-				<div class="os-deliverytime">
-					<span class="delivery-time-label">@T("Products.DeliveryTime")</span>
+				<div class="deliverytime-group">
+					<span>@T("Products.DeliveryTime")</span>
 					<span class="delivery-time" style="color:@item.DeliveryTimeHexValue" title="@item.DeliveryTimeName">
                         <i class="fa fa-circle delivery-time-status"></i>
                         @item.DeliveryTimeName

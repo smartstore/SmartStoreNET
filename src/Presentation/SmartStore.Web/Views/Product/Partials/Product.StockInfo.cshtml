@@ -33,7 +33,7 @@
 
 	@if (displayDeliveryTime)
 	{
-		<div class="pd-deliverytime">
+		<div class="deliverytime-group">
 			<span>@T("Products.DeliveryTime")</span>
 			<span class="delivery-time" title="@T("Products.DeliveryTime") @statusLabel" @Html.Attr("style", "color: " + statusColor, statusColor.HasValue())>
 				@if (!displayStock)

@@ -39,6 +39,10 @@ h1, h2, h3, h4, h5, h6,
     margin-bottom: 2rem;
 }
 
+.deliverytime-group .delivery-time { 
+    vertical-align: top; 
+    padding-left: 0.25rem;
+} 
 .delivery-time {
     display: inline-block;
     color: $brand-danger;

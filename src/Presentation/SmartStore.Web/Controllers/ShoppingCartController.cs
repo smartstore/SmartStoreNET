@@ -987,7 +987,6 @@ namespace SmartStore.Web.Controllers
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
             model.TotalProducts = cart.GetTotalProducts();
-            model.IgnoredProductsCount = Math.Max(0, cart.Count - _shoppingCartSettings.MiniShoppingCartProductNumber);
 
             if (cart.Count > 0)
             {
@@ -1007,9 +1006,7 @@ namespace SmartStore.Web.Controllers
                 model.DisplayCheckoutButton = checkoutAttributes.Count == 0 && minOrderSubtotalAmountOk;
 
                 //products. sort descending (recently added products)
-                foreach (var sci in cart
-                    .Take(_shoppingCartSettings.MiniShoppingCartProductNumber)
-                    .ToList())
+                foreach (var sci in cart.ToList())
                 {
 					var item = sci.Item;
 					var product = sci.Item.Product;
@@ -2259,10 +2256,7 @@ namespace SmartStore.Web.Controllers
             var model = new WishlistModel();
 
             PrepareWishlistModel(model, cart, true);
-
-            // TODO: MiniWishlistModel analog zu MiniCart implementieren
-            model.Items = model.Items.Take(_shoppingCartSettings.MiniShoppingCartProductNumber).ToList();
-
+            
             // reformat AttributeInfo: this is bad! Put this in PrepareMiniWishlistModel later.
             model.Items.Each(x =>
             {
@@ -2280,8 +2274,7 @@ namespace SmartStore.Web.Controllers
                         allowHyperlinks: false);
                 }
             });
-
-            model.IgnoredProductsCount = Math.Max(0, cart.Count - _shoppingCartSettings.MiniShoppingCartProductNumber);
+            
             model.ThumbSize = _mediaSettings.MiniCartThumbPictureSize;
 
             return PartialView(model);

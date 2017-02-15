@@ -6691,12 +6691,6 @@
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartEnabled.Hint">
 		<Value>Check the box to enable mini-shopping cart.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartProductNumber">
-		<Value>Mini-shopping cart product number</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartProductNumber.Hint">
-		<Value>Specify the maximum number of products which can be displayed in the mini-shopping cart block.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.MoveItemsFromWishlistToCart">
 		<Value>Move items from wishlist to cart</Value>
 	</LocaleResource>

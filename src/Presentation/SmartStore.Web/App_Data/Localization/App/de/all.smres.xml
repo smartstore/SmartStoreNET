@@ -6529,12 +6529,6 @@
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartEnabled.Hint">
 		<Value>Aktiviert den Mini-Warenkorb.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartProductNumber">
-		<Value>Maximale Anzahl angezeigter Produkte im Mini-Warenkorb</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartProductNumber.Hint">
-		<Value>Legt die maximale Anzahl an Produkten im Mini-Warenkorb fest.</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.MoveItemsFromWishlistToCart">
 		<Value>Artikel aus der Wunschliste in den Warenkorb verschieben</Value>
 	</LocaleResource>

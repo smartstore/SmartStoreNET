@@ -114,15 +114,7 @@
                     </a>
                 </div>
             </li>
-            }
-            @if (Model.IgnoredProductsCount > 0)
-            {
-                string resId = "ShoppingCart.Mini.More.{0}".FormatInvariant(Model.IgnoredProductsCount == 1 ? "Singular" : "Plural");
-                <li class="item more">
-                    <a class="name" href="@Url.RouteUrl("Wishlist", new { customerGuid = Model.CustomerGuid })">
-                        @(T(resId).ToString().FormatInvariant(Model.IgnoredProductsCount))...
-                    </a>
-                </li>
+
             }
         </ul>
     }

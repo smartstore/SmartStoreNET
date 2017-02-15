@@ -108,6 +108,7 @@ namespace SmartStore.Data.Migrations
 			context.MigrateSettings(x => 
 			{
 				x.Add<int>("MediaSettings.DefaultThumbnailAspectRatio", 1);
+                x.Delete("ShoppingCartSettings.MiniShoppingCartProductNumber");
 			});
 		}
 
@@ -531,7 +532,12 @@ namespace SmartStore.Data.Migrations
                 "Choose a picture which will be displayed as the selector for the attribute.",
                 "Wählen Sie ein Bild, welches als Auswahlelement für das Attribut angezeigt werden soll.");
 
-            
+            builder.Delete(
+                "Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartProductNumber",
+                "Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartProductNumber.Hint");
+
+
+
         }
     }
 }

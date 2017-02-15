@@ -24,9 +24,7 @@ namespace SmartStore.Web.Models.ShoppingCart
         public bool AnonymousCheckoutAllowed { get; set; }
         public bool ShowProductImages { get; set; }
         public int ThumbSize { get; set; }
-        public int IgnoredProductsCount { get; set; }
-
-
+        
         #region Nested Classes
 
         public partial class ShoppingCartItemModel : EntityModelBase, IQuantityInput

@@ -35,7 +35,6 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         public int ThumbSize { get; set; }
 		public int BundleThumbSize { get; set; }
-        public int IgnoredProductsCount { get; set; }
 		public bool DisplayShortDesc { get; set; }
 		public bool ShowProductBundleImages { get; set; }
 		public bool ShowItemsFromWishlistToCartButton { get; set; }

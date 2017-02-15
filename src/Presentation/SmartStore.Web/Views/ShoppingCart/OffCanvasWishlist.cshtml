@@ -1,5 +1,6 @@
 ﻿@model WishlistModel
 @using SmartStore.Web.Models.ShoppingCart;
+@using SmartStore.Core.Domain.Orders;
 
 @{
     int descMaxLength = Model.ShowProductImages ? 120 : 140;
@@ -112,7 +113,7 @@
                                 <a class="btn btn-secondary btn-sm btn-icon ajax-cart-link" title='@T("ShoppingCart.AddToCart")'
                                     href="#"
                                     rel="nofollow"
-                                    data-href="@Url.Action("AddOneItemtoCartFromWishlist", "ShoppingCart", new { cartItemId = item.Id })"
+                                    data-href="@Url.Action("MoveItemBetweenCartAndWishlist", "ShoppingCart", new { cartItemId = item.Id, cartType = ShoppingCartType.Wishlist })"
                                     data-name="@item.ProductName"
                                     data-type="cart"
                                     data-action="addfromwishlist">

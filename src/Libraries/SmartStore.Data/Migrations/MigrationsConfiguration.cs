@@ -536,8 +536,7 @@ namespace SmartStore.Data.Migrations
                 "Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartProductNumber",
                 "Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartProductNumber.Hint");
 
-
-
+            builder.AddOrUpdate("ShoppingCart.AddToWishlist", "Add to wishlist", "In die Wunschliste verschieben");
         }
     }
 }

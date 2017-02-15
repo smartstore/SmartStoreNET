@@ -2633,8 +2633,8 @@ namespace SmartStore.Web.Controllers
 
         // ajax
         [HttpPost]
-        [ActionName("AddOneItemtoCartFromWishlist")]
-        public ActionResult AddOneItemtoCartFromWishlistAjax(int cartItemId)
+        [ActionName("MoveItemBetweenCartAndWishlist")]
+        public ActionResult MoveItemBetweenCartAndWishlistAjax(int cartItemId, ShoppingCartType cartType)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart) || !_permissionService.Authorize(StandardPermissionProvider.EnableWishlist))
             {
@@ -2646,17 +2646,18 @@ namespace SmartStore.Web.Controllers
             }
 
             var customer = _workContext.CurrentCustomer;
-			var wishlist = customer.GetCartItems(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
+			var items = customer.GetCartItems(cartType, _storeContext.CurrentStore.Id);
 
-            var sci = wishlist.Where(x => x.Item.Id == cartItemId).FirstOrDefault();
+            var sci = items.Where(x => x.Item.Id == cartItemId).FirstOrDefault();
 
 			if (sci != null)
 			{
-				var warnings = _shoppingCartService.Copy(sci, customer, ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id, true);
+				var warnings = _shoppingCartService.Copy(sci, customer, 
+                    cartType == ShoppingCartType.Wishlist ? ShoppingCartType.ShoppingCart : ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id, true);
 
 				if (_shoppingCartSettings.MoveItemsFromWishlistToCart && warnings.Count == 0) //no warnings ( already in the cart)
 				{
-					//let's remove the item from wishlist
+					//let's remove the item from origin
 					_shoppingCartService.DeleteShoppingCartItem(sci.Item);
 				}
 

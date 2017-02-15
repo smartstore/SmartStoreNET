@@ -372,6 +372,12 @@ h4, h5, h6, .h4, .h5, .h6 {
     }
 }
 
+.d-flex             { display: flex !important; }
+.flex-nowrap        { flex-wrap: nowrap !important; }
+.flex-wrap          { flex-wrap: wrap !important; }
+.flex-row           { flex-direction: row !important; }
+.flex-column        { flex-direction: column !important; }
+
 
 //
 // Profiler sucks on small screens

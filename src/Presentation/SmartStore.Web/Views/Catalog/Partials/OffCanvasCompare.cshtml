@@ -70,13 +70,19 @@
 @if (Model.Items.Count > 0)
 {
     <div class="offcanvas-cart-footer">
-        <a class="btn btn-clear btn-action pull-left" href="@Url.RouteUrl("CompareProducts")">
-            <i class="fa fa-check"></i>
-            <span>@T("Products.Compare.List")</span>
-        </a>
-        <a class="btn btn-clear btn-action pull-right ajax-cart-link" href="#" data-href="@Url.Action("ClearCompareList")" rel="nofollow" data-type="compare" data-action="remove">
-            <i class="fa fa-trash"></i>
-            <span>@T("Products.Compare.Clear")</span>
-        </a>
+		<div class="row flex-nowrap">
+			<div class="col-xs p-r-05">
+				<a class="btn btn-clear btn-block btn-action" href="@Url.RouteUrl("CompareProducts")">
+					<i class="fa fa-check"></i>
+					<span>@T("Products.Compare.List")</span>
+				</a>
+			</div>
+			<div class="col-xs p-l-05">
+				<a class="btn btn-clear btn-block btn-action ajax-cart-link" href="#" data-href="@Url.Action("ClearCompareList")" rel="nofollow" data-type="compare" data-action="remove">
+					<i class="fa fa-trash"></i>
+					<span>@T("Products.Compare.Clear")</span>
+				</a>
+			</div>
+		</div>
     </div>
 }

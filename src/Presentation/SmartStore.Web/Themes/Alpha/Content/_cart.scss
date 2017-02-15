@@ -118,6 +118,17 @@
 	.qty-input .form-control {
 		border-color: transparent;
 	}
+    .mb-bundle-pictures {
+        a, .fa {
+            padding-right: 3px;
+        }
+        .fa {
+            font-size: 0.625rem;
+        }
+        a:hover {
+            text-decoration: none;
+        }
+    }
 }
 
 .offcanvas-cart-footer {
@@ -241,6 +252,9 @@
     .mb-bundle-pictures {
         clear: both;
         margin-top: 20px;
+        a:hover {
+            text-decoration: none;
+        }
     }
 
 	.data {

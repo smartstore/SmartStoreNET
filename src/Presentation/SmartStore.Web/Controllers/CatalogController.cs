@@ -863,7 +863,7 @@ namespace SmartStore.Web.Controllers
 			});
 		}
 
-		[RequireHttpsByConfigAttribute(SslRequirement.No)]
+        [RequireHttpsByConfigAttribute(SslRequirement.No)]
 		public ActionResult CompareProducts()
 		{
 			if (!_catalogSettings.CompareProductsEnabled)
@@ -907,7 +907,21 @@ namespace SmartStore.Web.Controllers
 			return RedirectToRoute("CompareProducts");
 		}
 
-		[ChildActionOnly]
+        // ajax
+        [HttpPost]
+        [ActionName("ClearCompareList")]
+        public ActionResult ClearCompareListAjax()
+        {
+            _compareProductsService.ClearCompareProducts();
+
+            return Json(new
+            {
+                success = true,
+                message = T("CompareList.ListWasCleared")
+            });
+        }
+        
+        [ChildActionOnly]
 		public ActionResult CompareProductsButton(int productId)
 		{
 			if (!_catalogSettings.CompareProductsEnabled)

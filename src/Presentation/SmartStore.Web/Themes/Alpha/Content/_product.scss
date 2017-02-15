@@ -309,6 +309,9 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
     position: relative;
     line-height: $pd-line-height;
     padding: 0.2rem;
+    a:hover {
+        text-decoration: none;
+    }
     &:after {
         display: inline-block;
         font-family: FontAwesome;

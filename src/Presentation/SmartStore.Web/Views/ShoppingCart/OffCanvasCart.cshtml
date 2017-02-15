@@ -9,13 +9,12 @@
         </button>
     </div>
 
-    <ul class="nav nav-tabs nav-tabs-line row no-space" role="tablist">
+    <ul class="nav nav-tabs nav-tabs-line row no-space flex-nowrap" role="tablist">
         @if (Model.ShoppingCartEnabled) 
         {
-            <li class="nav-item col-xs-4">
-                <a id="cart-tab" class="nav-link text-xs-center" data-toggle="tab" href="#occ-cart" role="tab" data-url="@Url.Action("OffCanvasShoppingCart", "ShoppingCart")">
-                    <i class="fa fa-shopping-basket hidden-md-up"></i>
-                    <span class="title hidden-sm-down">@T("PageTitle.ShoppingCart")</span>
+            <li class="nav-item col-xs">
+                <a id="cart-tab" class="nav-link" data-toggle="tab" href="#occ-cart" role="tab" data-url="@Url.Action("OffCanvasShoppingCart", "ShoppingCart")">
+                    <span class="title">@T("PageTitle.ShoppingCart")</span>
                     <span class="label label-pill label-warning" data-bind-to="TotalProducts" style="@(Model.ShoppingCartItems > 0 ? "" : "display:none")">@Model.ShoppingCartItems</span>
                 </a>
             </li>
@@ -23,10 +22,9 @@
 
         @if (Model.WishlistEnabled)
         {
-            <li class="nav-item col-xs-4">
-                <a id="wishlist-tab" class="nav-link text-xs-center" data-toggle="tab" href="#occ-wishlist" role="tab" data-url="@Url.Action("OffCanvasWishlist", "ShoppingCart")">
-                    <i class="fa fa-heart-o hidden-md-up"></i>
-                    <span class="title hidden-sm-down">@T("Wishlist")</span>
+            <li class="nav-item col-xs">
+                <a id="wishlist-tab" class="nav-link" data-toggle="tab" href="#occ-wishlist" role="tab" data-url="@Url.Action("OffCanvasWishlist", "ShoppingCart")">
+                    <span class="title">@T("Wishlist")</span>
                     <span class="label label-pill label-warning" data-bind-to="TotalProducts" style="@(Model.WishlistItems > 0 ? "" : "display:none")">@Model.WishlistItems</span>
                 </a>
             </li>
@@ -34,10 +32,9 @@
 
         @if (Model.CompareProductsEnabled)
         {
-            <li class="nav-item col-xs-4">
-                <a id="compare-tab" class="nav-link text-xs-center" data-toggle="tab" href="#occ-compare" role="tab" data-url="@Url.Action("OffCanvasCompare", "Catalog")">
-                    <i class="fa fa-retweet hidden-md-up"></i>
-                    <span class="title hidden-sm-down">@T("Common.Shopbar.Compare")</span>
+            <li class="nav-item col-xs">
+                <a id="compare-tab" class="nav-link" data-toggle="tab" href="#occ-compare" role="tab" data-url="@Url.Action("OffCanvasCompare", "Catalog")">
+                    <span class="title">@T("Common.Shopbar.Compare")</span>
                     <span class="label label-pill label-warning" data-bind-to="TotalProducts" style="@(Model.CompareItems > 0 ? "" : "display:none")">@Model.CompareItems</span>
                 </a>
             </li>

@@ -7,7 +7,7 @@
     .tab-content {
         position: absolute;
         left: 0;
-        top: 100px;
+        top: 6rem;
         right: 0;
         bottom: 0;
     }
@@ -36,41 +36,30 @@
 .offcanvas-cart-header {
     position: relative;
     background: #f7f7f7;
-    height: 100px;
+    height: 6rem;
 
     .nav-tabs {
         display: flex;
         flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
     }
 
     .nav-item {
         display: block;
         flex-wrap: nowrap;
+        white-space: nowrap;
 
         .nav-link {
             background: transparent !important;
             max-width: 100%;
         }
 
-        span.title {
-            display: inline-block;
-            max-width: 90%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: inline-block;
-            line-height: 1.6rem;
-        }
-
-        span.label {
-            vertical-align: super;
-            @include media-breakpoint-down(sm) {
-                margin-left: -1.5rem;
-                vertical-align: top;
+        @media (max-width: 480px) {
+            .nav-link {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
             }
-        }
-        i {
-            font-size: 2.5rem;
         }
     }
 }

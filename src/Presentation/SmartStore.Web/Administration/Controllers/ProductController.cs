@@ -3151,11 +3151,12 @@ namespace SmartStore.Admin.Controllers
 					LinkedProductId = model.LinkedProductId,
 					Quantity = model.Quantity
 				};
-
+                
 				_productAttributeService.InsertProductVariantAttributeValue(pvav);
 				UpdateLocales(pvav, model);
+                MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
 
-				ViewBag.RefreshPage = true;
+                ViewBag.RefreshPage = true;
 				ViewBag.btnId = btnId;
 				ViewBag.formId = formId;
 				return View(model);
@@ -3244,7 +3245,9 @@ namespace SmartStore.Admin.Controllers
 
 				_productAttributeService.UpdateProductVariantAttributeValue(pvav);
 
-				UpdateLocales(pvav, model);
+                MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
+
+                UpdateLocales(pvav, model);
 
 				ViewBag.RefreshPage = true;
 				ViewBag.btnId = btnId;

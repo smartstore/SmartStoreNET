@@ -1,53 +1,9 @@
 /// <reference path="bs4/scss/bootstrap.scss" />
+
+// OffCanvas Cart
+// =================================
+
 #offcanvas-cart {
-    .offcanvas-cart-header {
-        position: relative;
-        background: #f7f7f7;
-        height: 100px;
-
-        .nav-tabs {
-            display: flex;
-            flex-direction: row;
-        }
-
-        .nav-item {
-            display: block;
-            flex-basis: 0;
-            flex-grow: 1;
-            flex-wrap: nowrap;
-            width: 100%;
-            max-width: 100%;
-            min-height: 1px;
-            //white-space: nowrap;
-
-            .nav-link {
-                background: transparent !important;
-                max-width: 100%;
-            }
-
-            span.title {
-                display: inline-block;
-                max-width: 90%;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                display: inline-block;
-                line-height: 1.6rem;
-            }
-
-            span.label {
-                vertical-align: super;
-                @include media-breakpoint-down(sm) {
-                    margin-left: -1.5rem;
-                    vertical-align: top;
-                }
-            }
-            i {
-                font-size: 2.5rem;
-            }
-        }
-    }
-
     .tab-content {
         position: absolute;
         left: 0;
@@ -71,22 +27,72 @@
         > * { width: 100%; z-index: 1; }
     }
 
-    .offcanvas-cart-body {
-        position: relative;
-        flex-grow: 1;
-        overflow-y: auto;
-        overflow-x: hidden;
-	    min-height: 100px;
-        line-height: 1.5;
-    }
-
-    .offcanvas-cart-buttons {
-        padding: 1rem;
+    .price {
+        white-space: nowrap;
+        font-weight: 600;
     }
 }
 
-.offcanvas-cart-items {
-    padding: 0.5rem 0;
+.offcanvas-cart-header {
+    position: relative;
+    background: #f7f7f7;
+    height: 100px;
+
+    .nav-tabs {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .nav-item {
+        display: block;
+        flex-wrap: nowrap;
+
+        .nav-link {
+            background: transparent !important;
+            max-width: 100%;
+        }
+
+        span.title {
+            display: inline-block;
+            max-width: 90%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            line-height: 1.6rem;
+        }
+
+        span.label {
+            vertical-align: super;
+            @include media-breakpoint-down(sm) {
+                margin-left: -1.5rem;
+                vertical-align: top;
+            }
+        }
+        i {
+            font-size: 2.5rem;
+        }
+    }
+}
+
+.offcanvas-cart-body {
+    position: relative;
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+	min-height: 100px;
+    line-height: 1.5;
+
+    .no-items {
+	    margin: 2rem 1rem;
+	    text-align: center;
+
+        .no-item-title, .no-item-icon { margin-bottom: 1rem; }
+
+        .no-item-title  { font-size: $font-size-h2; font-weight: 400; }
+        .no-item-icon   { color: rgba(0,0,0, 0.15); }
+        .no-item-info   { color: $text-muted; .fa { color: $body-color; } }
+    }
 }
 
 .offcanvas-cart-item {
@@ -95,19 +101,81 @@
 
     &:last-child { border-width: 0; }
 
+    .col-alpha {
+        width: 120px;
+        max-width: 120px;
+    }
+
+    .col-data > * {
+        //display: block;
+        margin-bottom: 0.5rem;
+    }
+
     .name { color: $body-color; }
+
+    .unit-price { font-size: 1.25rem; line-height: 1.8; }
+
+	.qty-input .form-control {
+		border-color: transparent;
+	}
 }
 
-.offcanvas-cart-body .no-items {
-	margin: 2rem 1rem;
-	text-align: center;
-
-    .no-item-title, .no-item-icon { margin-bottom: 1rem; }
-
-    .no-item-title  { font-size: $font-size-h2; font-weight: 400; }
-    .no-item-icon   { color: rgba(0,0,0, 0.15); }
-    .no-item-info   { color: $text-muted; .fa { color: $body-color; } }
+.offcanvas-cart-footer {
+    background-color: $brand-success;
+    color: #fff;
+    padding: 1rem;
 }
+
+.offcanvas-cart-footer-row {
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+    line-height: 1.1;
+
+    .sub-total-caption {
+        text-transform: uppercase; 
+        font-size: 0.8rem; 
+    }
+
+    .sub-total {
+        font-size: 1.5rem;
+    }
+
+    @media (max-width: 480px) {
+        .btn-action { display: block; }
+        .btn-action + .btn-action { margin-top: 0.5rem; }
+    }
+}
+
+
+
+// Full Cart
+// =================================
+
+.order-summary-content .selected-checkout-attributes,
+.order-details .checkout-attributes {
+	.attr-caption {
+		font-weight: bold;
+		padding-right: 10px;
+		&:after {
+			content: ': ' 
+		}
+	}
+	.attr-value {
+		text-align: left;
+	}
+}
+
+.table-order-products .productpicture,
+.table-order-products .remove,
+.table-order-products .addtocart {
+    text-align: center;
+}
+
+
+
+// LEGACY (Remove)
+// =================================
 
 .offcanvas-cart-body .items .item {
 	position: relative; 
@@ -200,37 +268,6 @@
         font-weight: 600;
 	}
 }
-
-#offcanvas-cart .offcanvas-cart-summary {
-    padding: 12px 20px;
-	background: #f5f5f5; 
-	border-top: 1px solid #c2c2c2;
-	border-bottom: 1px solid #d2d2d2; 
-	font-weight: bold; 
-	box-shadow: inset 0px 5px 20px -9px rgba(0,0,0, .25); 	
-}
-
-// checkout attributes
-.order-summary-content .selected-checkout-attributes,
-.order-details .checkout-attributes {
-	.attr-caption {
-		font-weight: bold;
-		padding-right: 10px;
-		&:after {
-			content: ': ' 
-		}
-	}
-	.attr-value {
-		text-align: left;
-	}
-}
-
-.table-order-products .productpicture,
-.table-order-products .remove,
-.table-order-products .addtocart {
-    text-align: center;
-}
-
 .table-order-products .productpicture img {
 	max-width: 70px;
 }

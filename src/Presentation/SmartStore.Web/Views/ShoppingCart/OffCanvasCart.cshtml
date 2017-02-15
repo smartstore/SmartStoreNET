@@ -9,10 +9,10 @@
         </button>
     </div>
 
-    <ul class="nav nav-tabs nav-tabs-line" role="tablist">
+    <ul class="nav nav-tabs nav-tabs-line row no-space" role="tablist">
         @if (Model.ShoppingCartEnabled) 
         {
-            <li class="nav-item">
+            <li class="nav-item col-xs-4">
                 <a id="cart-tab" class="nav-link text-xs-center" data-toggle="tab" href="#occ-cart" role="tab" data-url="@Url.Action("OffCanvasShoppingCart", "ShoppingCart")">
                     <i class="fa fa-shopping-basket hidden-md-up"></i>
                     <span class="title hidden-sm-down">@T("PageTitle.ShoppingCart")</span>
@@ -24,7 +24,7 @@
 
         @if (Model.WishlistEnabled)
         {
-            <li class="nav-item">
+            <li class="nav-item col-xs-4">
                 <a id="wishlist-tab" class="nav-link text-xs-center" data-toggle="tab" href="#occ-wishlist" role="tab" data-url="@Url.Action("OffCanvasWishlist", "ShoppingCart")">
                     <i class="fa fa-heart-o hidden-md-up"></i>
                     <span class="title hidden-sm-down">@T("Wishlist")</span>
@@ -35,7 +35,7 @@
 
         @if (Model.CompareProductsEnabled)
         {
-            <li class="nav-item">
+            <li class="nav-item col-xs-4">
                 <a id="compare-tab" class="nav-link text-xs-center" data-toggle="tab" href="#occ-compare" role="tab" data-url="@Url.Action("OffCanvasCompare", "Catalog")">
                     <i class="fa fa-retweet hidden-md-up"></i>
                     <span class="title hidden-sm-down">@T("Common.Shopbar.Compare")</span>

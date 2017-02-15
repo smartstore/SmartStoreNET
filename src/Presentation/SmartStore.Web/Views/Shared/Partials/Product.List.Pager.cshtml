@@ -95,7 +95,7 @@
 </div>
 
 
-@if (Model.AvailablePageSizes != null && Model.AvailablePageSizes.Any())
+@if (Model.AvailablePageSizes != null && Model.AvailablePageSizes.Count() > 1)
 {
 	<div class="artlist-action artlist-action--pagesize pull-xs-right">
 		<div class="mf-dropdown">

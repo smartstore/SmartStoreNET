@@ -136,7 +136,7 @@
                 childrenOnly: false,
                 includeSelf: false,
                 showFalsy: false,
-                fade: false
+                animate: false
             };
             var opts = $.extend(defaults, options);
 
@@ -152,11 +152,12 @@
                     var val = data[elem.data("bind-to")];
                     if (val !== undefined) {
 
-                        if (opts.fade) {
-                            elem.fadeOut(400, function () {
-                                elem.html(val);
-                                elem.fadeIn(400);
-                            });
+                    	if (opts.animate) {
+                        	elem.html(val)
+								.addClass('data-binding')
+								.one('animationend webkitAnimationEnd', function (e) {
+									elem.removeClass('data-binding');
+								});
                         }
                         else {
                             elem.html(val);

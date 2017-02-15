@@ -948,7 +948,7 @@
     <Content Include="Themes\Alpha\Content\shared\_pnotify.scss" />
     <Content Include="Themes\Alpha\Content\shared\_mixins.scss" />
     <Content Include="Themes\Alpha\Content\shared\_select2.scss" />
-    <None Include="Themes\Alpha\Content\shared\_touchspin.scss" />
+    <Content Include="Themes\Alpha\Content\shared\_touchspin.scss" />
     <Content Include="Themes\Alpha\Content\pnotify\css\pnotify.buttons.css" />
     <Content Include="Themes\Alpha\Content\pnotify\css\pnotify.css" />
     <Content Include="Themes\Alpha\Content\pnotify\css\pnotify.mobile.css" />

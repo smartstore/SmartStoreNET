@@ -22,6 +22,29 @@ $(function () {
             });
         }
     });
+
+	// React to touchspin change
+    $('#offcanvas-cart').on('change', '.qty-input .form-control', function (e) {
+    	var el = $(this);
+    	$.ajax({
+    		cache: false,
+    		type: "POST",
+    		url: el.data("update-url"),
+    		data: { "sciItemId": el.data("sci-id"), "newQuantity": el.val() },
+    		success: function (data) {
+    			if (data.success == true) {
+    				var type = el.data("type");
+    				ShopBar.loadSummary(type, true);
+    				el.closest('.tab-pane').find('.sub-total').html(data.SubTotal);
+    			}
+    			else {
+    				$(data.message).each(function (index, value) {
+    					displayNotification(value, "error", false);
+    				});
+    			}
+    		}
+    	});
+    });
 }); 
 
 var ShopBar = (function($) {
@@ -114,41 +137,16 @@ var ShopBar = (function($) {
 		},
 
         initQtyControls: function(parentSelector) {
-            $(parentSelector + " .qty-input .form-control").each(function () {
-
-                var qtyControl = $(this);
-
-                qtyControl.TouchSpin({
-                    min: qtyControl.data("min-qty"),   
-                    max: qtyControl.data("max-qty"),
-                    step: qtyControl.data("min-step"),
+            $(parentSelector + " .qty-input .form-control").each(function (e) {
+                var el = $(this);
+                el.TouchSpin({
+                	min: el.data("min-qty"),
+                	max: el.data("max-qty"),
+                	step: el.data("min-step"),
                     buttondown_class: 'btn btn-secondary',
                     buttonup_class: 'btn btn-secondary',
                     buttondown_txt: '<i class="fa fa-minus"></i>',
                     buttonup_txt: '<i class="fa fa-plus"></i>',
-                }).change(function (e) {
-
-                    var currentValue = this.value;
-                    
-                    $.ajax({
-                        cache: false,
-                        type: "POST",
-                        url: qtyControl.data("update-url"),
-                        data: { "sciItemId": qtyControl.data("sci-id"), "newQuantity": currentValue },
-                        success: function (data) {
-                            if(data.success == true) {
-                                var type = qtyControl.data("type");
-                                ShopBar.loadSummary(type, true, function (data) { });
-                                $("#offcanvas-cart .offcanvas-cart-summary .sub-total").html(data.SubTotal);
-                            }
-                            else {
-                                $(data.message).each(function (index, value) {
-                                    displayNotification(value, "error", false);
-                                });
-                            }
-                        },
-                        complete: function (jqXHR, textStatus) { }
-                    });
                 });
             });
         },
@@ -157,7 +155,7 @@ var ShopBar = (function($) {
         	buttons[tab].find(".shopbar-button").trigger('click');
         },
 
-        loadSummary: function (type, fade, fn /* successCallBack */) {
+        loadSummary: function (type, animate, fn /* successCallBack */) {
             var tool = _.isString(type) ? buttons[type] : type;
             if (!tool) return;
 
@@ -170,9 +168,9 @@ var ShopBar = (function($) {
                     url: button.data("summary-href"),
                     success: function (data) {
 
-                        tools[type].bindData(data, { fade: fade });
+                    	tools[type].bindData(data, { animate: animate });
 
-                        button.bindData(data, { fade: fade });
+                    	button.bindData(data, { animate: animate });
 
                         if (_.isFunction(fn)) {
                             fn.call(this, data);
@@ -196,13 +194,11 @@ var ShopBar = (function($) {
                 url: tool.data("url"),
                 success: function (data) {
                     cnt.find('.offcanvas-cart-body').remove();
-                    cnt.find('.offcanvas-cart-summary').remove();
-                    cnt.find('.offcanvas-cart-buttons').remove();
+                    cnt.find('.offcanvas-cart-footer').remove();
                     cnt.prepend(data);
                 },
                 complete: function (jqXHR, textStatus) {
                     tool.removeClass("loading").addClass("loaded");
-
                     ShopBar.initQtyControls(tool.attr("href"));
 
                     if (_.isFunction(fn)) {

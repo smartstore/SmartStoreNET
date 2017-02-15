@@ -16,8 +16,7 @@
                 <a id="cart-tab" class="nav-link text-xs-center" data-toggle="tab" href="#occ-cart" role="tab" data-url="@Url.Action("OffCanvasShoppingCart", "ShoppingCart")">
                     <i class="fa fa-shopping-basket hidden-md-up"></i>
                     <span class="title hidden-sm-down">@T("PageTitle.ShoppingCart")</span>
-                    <span class="label label-pill label-warning" data-bind-to="TotalProducts">@Model.ShoppingCartItems</span>
-
+                    <span class="label label-pill label-warning" data-bind-to="TotalProducts" style="@(Model.ShoppingCartItems > 0 ? "" : "display:none")">@Model.ShoppingCartItems</span>
                 </a>
             </li>
         }
@@ -28,7 +27,7 @@
                 <a id="wishlist-tab" class="nav-link text-xs-center" data-toggle="tab" href="#occ-wishlist" role="tab" data-url="@Url.Action("OffCanvasWishlist", "ShoppingCart")">
                     <i class="fa fa-heart-o hidden-md-up"></i>
                     <span class="title hidden-sm-down">@T("Wishlist")</span>
-                    <span class="label label-pill label-warning" data-bind-to="TotalProducts">@Model.WishlistItems</span>
+                    <span class="label label-pill label-warning" data-bind-to="TotalProducts" style="@(Model.WishlistItems > 0 ? "" : "display:none")">@Model.WishlistItems</span>
                 </a>
             </li>
         }
@@ -39,7 +38,7 @@
                 <a id="compare-tab" class="nav-link text-xs-center" data-toggle="tab" href="#occ-compare" role="tab" data-url="@Url.Action("OffCanvasCompare", "Catalog")">
                     <i class="fa fa-retweet hidden-md-up"></i>
                     <span class="title hidden-sm-down">@T("Common.Shopbar.Compare")</span>
-                    <span class="label label-pill label-warning" data-bind-to="Count">@Model.CompareItems</span>
+                    <span class="label label-pill label-warning" data-bind-to="TotalProducts" style="@(Model.CompareItems > 0 ? "" : "display:none")">@Model.CompareItems</span>
                 </a>
             </li>
         }

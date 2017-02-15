@@ -53,7 +53,7 @@
                    data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
                     <span class="shopbar-button-icon">
                         <i class="fa fa-retweet"></i>
-                        <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="Count">@Model.CompareItems</span>
+                        <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="CompareSummary">@Model.CompareItems</span>
                     </span>
                     <span class="shopbar-button-label hidden-sm-down">
                         <span>@T("Common.Shopbar.CompareProductsPartOne")</span><br />

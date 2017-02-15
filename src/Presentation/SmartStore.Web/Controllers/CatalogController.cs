@@ -939,7 +939,7 @@ namespace SmartStore.Web.Controllers
 		{
 			return Json(new
 			{
-				Count = _compareProductsService.GetComparedProducts().Count
+                TotalProducts = _compareProductsService.GetComparedProducts().Count
 			},
 			JsonRequestBehavior.AllowGet);
 		}

@@ -1,5 +1,22 @@
 /// <reference path="bs4/scss/bootstrap.scss" />
 
+// General
+// =================================
+
+.label-cart-amount {
+    font-weight: 400;
+    font-size: 9px;
+    width: 18px;
+    height: 18px;
+    line-height: 16px;
+    padding: 0;
+
+    position: absolute;
+    right: -5px;
+    top: -9px;
+}
+
+
 // OffCanvas Cart
 // =================================
 
@@ -53,6 +70,13 @@
         .nav-link {
             background: transparent !important;
             max-width: 100%;
+
+            .label {
+                position: relative;
+                right: 0;
+                top: 0;
+                vertical-align: super;
+            }
         }
 
         @media (max-width: 480px) {
@@ -146,7 +170,6 @@
         .btn-action + .btn-action { margin-top: 0.5rem; }
     }
 }
-
 
 
 // Full Cart

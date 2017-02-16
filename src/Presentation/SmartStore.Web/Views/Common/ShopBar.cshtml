@@ -4,6 +4,7 @@
 
 @{ 
 	string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
+	var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
 }
 
 <div class="shopbar">
@@ -33,7 +34,7 @@
                    data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
                     <span class="shopbar-button-icon">
                         <i class="fa fa-heart-o"></i>
-                        <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.WishlistItems == 0 ? "hidden-xs-up" : "")' data-bind-to="TotalProducts">@Model.WishlistItems</span>
+                        <span class='label label-pill label-cart-amount label-@labelStyle @(Model.WishlistItems == 0 ? "hidden-xs-up" : "")' data-bind-to="TotalProducts">@Model.WishlistItems</span>
                     </span>
                     <span class="shopbar-button-label hidden-sm-down">
                         <span>@T("Common.Shopbar.WishlistPartOne")</span><br />
@@ -53,7 +54,7 @@
                    data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
                     <span class="shopbar-button-icon">
                         <i class="fa fa-retweet"></i>
-                        <span class='label @(GetThemeVariable<string>("ShopBarLabel")) @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="CompareSummary">@Model.CompareItems</span>
+                        <span class='label label-pill label-cart-amount label-@labelStyle @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="CompareSummary">@Model.CompareItems</span>
                     </span>
                     <span class="shopbar-button-label hidden-sm-down">
                         <span>@T("Common.Shopbar.CompareProductsPartOne")</span><br />
@@ -70,7 +71,7 @@
                         data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
                     <span class="shopbar-button-icon">
                         <i class="fa fa-shopping-basket"></i>
-                        <span class='label label-pill @(GetThemeVariable<string>("ShopBarLabel"))@(Model.ShoppingCartItems == 0 ? " hidden-xs-up" : "")' data-bind-to="TotalProducts">
+                        <span class='label label-pill label-cart-amount label-@(labelStyle)@(Model.ShoppingCartItems == 0 ? " hidden-xs-up" : "")' data-bind-to="TotalProducts">
                             @Model.ShoppingCartItems
                         </span>
                     </span>

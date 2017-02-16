@@ -53,9 +53,13 @@ $border-radius:                 3px;
 $border-radius-lg:              4px; 
 $border-radius-sm:              2px;
 
-$btn-border-radius:             2px !default;
-$btn-border-radius-lg:          3px !default;
-$btn-border-radius-sm:          2px !default;
+$btn-border-radius:             2px;
+$btn-border-radius-lg:          3px;
+$btn-border-radius-sm:          2px;
+
+$input-border-radius:           $btn-border-radius;
+$input-border-radius-lg:        $btn-border-radius-lg;
+$input-border-radius-sm:        $btn-border-radius-sm;
 
 $btn-font-weight:               600;
 $btn-padding-x:                 1rem; // 1rem

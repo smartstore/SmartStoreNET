@@ -10,6 +10,11 @@ $touchspin-btn-width:                1.6rem;
 
 .qty-input {
     vertical-align: top;
+
+    // Restore lost radius due to specificity
+    .form-control       { border-radius: $input-border-radius !important }
+    .form-control-lg    { border-radius: $input-border-radius-lg !important }
+    .form-control-sm    { border-radius: $input-border-radius-sm !important }
 }
 
 .bootstrap-touchspin {

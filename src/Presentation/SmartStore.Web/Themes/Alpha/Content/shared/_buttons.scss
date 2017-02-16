@@ -5,7 +5,7 @@ $btn-wide-padding-x-lg: 2.5rem;
 $btn-wide-padding-x-sm: 1.2rem;
 
 $btn-size:              ($btn-padding-y * 2) + ($font-size-base * $line-height);
-$btn-size-lg:           ($btn-padding-y-lg * 2) + ($font-size-base * $line-height-lg);
+$btn-size-lg:           ($btn-padding-y-lg * 2) + ($font-size-lg * $line-height-lg);
 $btn-size-sm:           ($btn-padding-y-sm * 2) + ($font-size-sm * $line-height-sm);
 
 /*$btn-size:              $input-height;
@@ -90,6 +90,13 @@ $btn-grey-bg: #f2f2f2;
         width: $btn-size-sm;
         height: $btn-size-sm;
         line-height: $btn-size-sm;
+    }
+
+    // Move caret to bottom right corner
+    &.dropdown-toggle:after {
+        position: absolute;
+        right: 0;
+        bottom: 0.5em;
     }
 }
 

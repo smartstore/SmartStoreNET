@@ -48,6 +48,7 @@
 * Updated Elmar shop info XML from version 1.1 to 2.0
 * (Perf) Application start faster by ~20%
 * (Perf) Lower memory consumption
+* (Perf) #1098 Reduce number of created guest accounts (more reliable bot detection)
 * #1008 Export: Add support for description projection to all product exporting providers
 * #1015 Implement Entity Picker in discount requirements
 * Debitoor improvements:

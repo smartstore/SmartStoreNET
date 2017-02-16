@@ -127,38 +127,16 @@ namespace SmartStore.Web.Framework
 
                 Customer customer = null;
 
-				// check whether request is made by a background task
-				// in this case return built-in customer record for background task
-                if (_httpContext == null || _httpContext.IsFakeContext())
-                {
-                    customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.BackgroundTask);
-                }
-
-                // check whether request is made by a search engine
-                // in this case return built-in customer record for search engines 
-                if (customer == null || customer.Deleted || !customer.Active)
-                {
-					if (_userAgent.IsBot)
-					{
-						customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.SearchEngine);
-					}
-                }
-
-				// check whether request is made by the PDF converter
-				// in this case return built-in customer record for the converter
-				if (customer == null || customer.Deleted || !customer.Active)
+				// Is system account?
+				if (TryGetSystemAccount(out customer))
 				{
-					if (_userAgent.IsPdfConverter)
-					{
-						customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.PdfConverter);
-					}
+					// Get out quickly. Bots tend to overstress the shop.
+					_cachedCustomer = customer;
+					return customer;
 				}
 
-                // registered user?
-                if (customer == null || customer.Deleted || !customer.Active)
-                {
-                    customer = _authenticationService.GetAuthenticatedCustomer();
-                }
+                // Registered user?
+                customer = _authenticationService.GetAuthenticatedCustomer();
 
                 // impersonate user if required (currently used for 'phone order' support)
                 if (customer != null && !customer.Deleted && customer.Active)
@@ -217,6 +195,37 @@ namespace SmartStore.Web.Framework
                 _cachedCustomer = value;
             }
         }
+
+		protected bool TryGetSystemAccount(out Customer customer)
+		{
+			// Never check whether customer is deleted/inactive in this method.
+			// System accounts should neither be deletable nor activatable, they are mandatory.
+
+			customer = null;
+
+			// check whether request is made by a background task
+			// in this case return built-in customer record for background task
+			if (_httpContext == null || _httpContext.IsFakeContext())
+			{
+				customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.BackgroundTask);
+			}
+
+			// check whether request is made by a search engine
+			// in this case return built-in customer record for search engines 
+			if (customer == null && _userAgent.IsBot)
+			{
+				customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.SearchEngine);
+			}
+
+			// check whether request is made by the PDF converter
+			// in this case return built-in customer record for the converter
+			if (customer == null && _userAgent.IsPdfConverter)
+			{
+				customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.PdfConverter);
+			}
+
+			return customer != null;
+		}
 
         /// <summary>
         /// Gets or sets the original customer (in case the current one is impersonated)

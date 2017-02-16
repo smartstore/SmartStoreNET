@@ -25,11 +25,9 @@
     var _commonPluginFactories = [
         // select2
         function (ctx) {
-        	if (!Modernizr.touchevents) {
-                if ($.fn.select2 === undefined || $.fn.selectWrapper === undefined)
-                    return;
-                ctx.find("select:not(.noskin), input:hidden[data-select]").selectWrapper();
-            }
+            if ($.fn.select2 === undefined || $.fn.selectWrapper === undefined)
+            	return;
+            ctx.find("select:not(.noskin), input:hidden[data-select]").selectWrapper();
         },
         // tooltips
         function (ctx) {

@@ -88,7 +88,16 @@ var ShopBar = (function($) {
         });
 
         ShopBar.loadSummary(data.type, true /*fade*/, function (resultData) { });
-        ShopBar.toggleCart(data.type);
+
+        var action = data.action;
+
+        if (action == "addfromwishlist" || action == "addfromcart") 
+        {
+            $('.nav-tabs ' + (action == "addfromcart" ? "#wishlist-tab" : "#cart-tab")).tab('show');
+        }
+        else {
+            ShopBar.toggleCart(data.type);
+        }
     });
 
     EventBroker.subscribe("ajaxcart.item.removing", function (msg, data) {

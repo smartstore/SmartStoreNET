@@ -1004,7 +1004,7 @@ namespace SmartStore.Web.Controllers
                 }
                 bool minOrderSubtotalAmountOk = _orderProcessingService.ValidateMinOrderSubtotalAmount(cart);
                 model.DisplayCheckoutButton = checkoutAttributes.Count == 0 && minOrderSubtotalAmountOk;
-
+                
                 //products. sort descending (recently added products)
                 foreach (var sci in cart.ToList())
                 {
@@ -1033,12 +1033,7 @@ namespace SmartStore.Web.Controllers
                             allowHyperlinks: false)
                     };
 
-                    var quantityUnit = _quantityUnitService.GetQuantityUnit(product);
-                    if (quantityUnit != null)
-                    {
-                        cartItemModel.QuantityUnitName = quantityUnit.GetLocalized(x => x.Name);
-                    }
-
+                    cartItemModel.QuantityUnitName = String.Empty;
                     cartItemModel.ProductUrl = GetProductUrlWithAttributes(sci, cartItemModel.ProductSeName);
 
 					if (sci.ChildItems != null && _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
@@ -2260,7 +2255,11 @@ namespace SmartStore.Web.Controllers
             // reformat AttributeInfo: this is bad! Put this in PrepareMiniWishlistModel later.
             model.Items.Each(x =>
             {
+                // don't display QuantityUnitName in OffCanvasWishlist
+                x.QuantityUnitName = String.Empty;
+                
                 var sci = cart.Where(c => c.Item.Id == x.Id).FirstOrDefault();
+                
                 if (sci != null)
                 {
                     x.AttributeInfo = _productAttributeFormatter.FormatAttributes(

@@ -18,13 +18,13 @@ namespace SmartStore.Web.Models.ShoppingCart
         public IList<ShoppingCartItemModel> Items { get; set; }
         public int TotalProducts { get; set; }
         public string SubTotal { get; set; }
-        public bool DisplayShoppingCartButton { get; set; }
+        public bool DisplayShoppingCartButton { get; set; }     // TODO: get rid of this property
         public bool DisplayCheckoutButton { get; set; }
         public bool CurrentCustomerIsGuest { get; set; }
         public bool AnonymousCheckoutAllowed { get; set; }
         public bool ShowProductImages { get; set; }
         public int ThumbSize { get; set; }
-        
+
         #region Nested Classes
 
         public partial class ShoppingCartItemModel : EntityModelBase, IQuantityInput
@@ -45,10 +45,10 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string ProductSeName { get; set; }
 
 			public string ProductUrl { get; set; }
-
+            
             public int EnteredQuantity { get; set; }
 
-            public string QuantityUnitName { get; set; }
+            public string QuantityUnitName { get; set; }        // TODO: get rid of this property, won't be displayed anyway
 
             public List<SelectListItem> AllowedQuantities { get; set; }
 

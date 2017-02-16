@@ -1715,7 +1715,6 @@
     <Content Include="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
     <Content Include="Views\Catalog\CompareProducts.cshtml" />
     <Content Include="Views\Catalog\Partials\CompareProductsButton.cshtml" />
-    <Content Include="Views\Catalog\Partials\FlyoutCompare.cshtml" />
     <Content Include="Views\Catalog\Partials\HomepageBestSellers.cshtml" />
     <Content Include="Views\Catalog\Partials\HomepageCategories.cshtml" />
     <Content Include="Views\Catalog\Partials\HomepageProducts.cshtml" />

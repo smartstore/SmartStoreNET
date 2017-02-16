@@ -68,17 +68,17 @@
                                 </div>
                             }
 
-                            @*@if (item.BundleItem..Count > 0)
+                            @if (item.ChildItems.Count > 0)
                             {
                                 <div class="mb-bundle-pictures m-t-1">
-                                    @for (int j = 0, bundlelength = item.BundleItems.Count; j < bundlelength; j++)
+                                    @for (int j = 0, bundlelength = item.ChildItems.Count; j < bundlelength; j++)
                                     {
-                                        var bundleItem = item.BundleItems[j];
+                                        var bundleItem = item.ChildItems[j];
 
-                                        if (bundleItem.PictureUrl.HasValue())
+                                        if (bundleItem.Picture.ImageUrl.HasValue())
                                         {
                                             <a href="@bundleItem.ProductUrl" title="@bundleItem.ProductName">
-                                                <img alt="@bundleItem.ProductName" src="@bundleItem.PictureUrl" title="@bundleItem.ProductName" />
+                                                <img alt="@bundleItem.ProductName" src="@bundleItem.Picture.ImageUrl" title="@bundleItem.ProductName" />
                                             </a>
                                         }
 
@@ -88,7 +88,7 @@
                                         }
                                     }
                                 </div>
-                            }*@
+                            }
                         </div>
                     </div>
 

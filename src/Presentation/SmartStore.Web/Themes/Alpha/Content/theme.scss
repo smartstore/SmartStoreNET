@@ -277,6 +277,18 @@ h4, h5, h6, .h4, .h5, .h6 {
     border: 1px solid #fff;
 }
 
+a.pretty-link {
+    color: $body-color;
+    text-decoration: none;
+    font-weight: 600;
+
+    > i { padding-right: 1.2rem; }
+    > span {
+        color: #aaa;
+        &:hover, &:active { color: inherit; }
+    }
+}
+
 
 
 //

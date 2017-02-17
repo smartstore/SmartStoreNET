@@ -1817,7 +1817,7 @@
     <Content Include="Views\Product\Partials\Product.RelatedProducts.cshtml" />
     <Content Include="Views\Product\Partials\ReviewOverview.cshtml" />
     <Content Include="Views\Product\Reviews.cshtml" />
-    <Content Include="Views\Product\Partials\ShareButton.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Share.cshtml" />
     <Content Include="Views\Product\Partials\_AddToCart.cshtml" />
     <Content Include="Views\Product\Partials\_Attributes.cshtml" />
     <Content Include="Views\Product\Partials\_BackInStockSubscription.cshtml" />

@@ -1,0 +1,12 @@
+﻿@model string
+
+@{ 
+	if (!Model.HasValue())
+	{
+		return;
+	}
+}
+
+<div class="pd-share m-t-1 d-flex justify-content-center">
+    @Html.Raw(Model)
+</div>

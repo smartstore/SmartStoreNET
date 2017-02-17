@@ -30,11 +30,8 @@
 	/* TODO: (mc)
 	 * - CustomerEnteredPrice
 	 * - HasSampleDownload
-	 * - AddToWishlist
-	 * - ActionButtons
 	 * - Badges
 	 * - GTIN: user must specifiy the GTIN type on product level (gtin12, gtin13 etc.). See https://schema.org/Offer
-	 * - Qty input: make settings (Whether to display)
 	 * - FIXME (mg) > no (discount) badges shown in products lists (with bundled products & PricePerBundleItems ON)
 	 */
 }
@@ -80,6 +77,9 @@
 							<!-- Offer box -->
 							Html.RenderPartial("Product.Offer", Model);
 						}
+
+						<!-- social share -->
+						@{ Html.RenderAction("ShareButton"); }
 
 						@if (Model.DisplayAdminLink)
 						{

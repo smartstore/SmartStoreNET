@@ -384,6 +384,12 @@ h4, h5, h6, .h4, .h5, .h6 {
 .flex-row           { flex-direction: row !important; }
 .flex-column        { flex-direction: column !important; }
 
+.justify-content-start      { justify-content: flex-start; }
+.justify-content-center     { justify-content: center; }
+.justify-content-around     { justify-content: space-around; }
+.justify-content-between    { justify-content: space-between; }
+.justify-content-end        { justify-content: flex-end; }
+
 
 //
 // Some Flex utils

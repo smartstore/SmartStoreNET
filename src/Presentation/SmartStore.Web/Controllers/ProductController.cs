@@ -399,7 +399,7 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult ShareButton()
 		{
-			if (_catalogSettings.ShowShareButton && !String.IsNullOrEmpty(_catalogSettings.PageShareCode))
+			if (_catalogSettings.ShowShareButton && _catalogSettings.PageShareCode.HasValue())
 			{
 				var shareCode = _catalogSettings.PageShareCode;
 				if (_services.WebHelper.IsCurrentConnectionSecured())
@@ -408,7 +408,7 @@ namespace SmartStore.Web.Controllers
 					shareCode = shareCode.Replace("http://", "https://");
 				}
 
-				return PartialView("ShareButton", shareCode);
+				return PartialView("Product.Share", shareCode);
 			}
 
 			return Content("");

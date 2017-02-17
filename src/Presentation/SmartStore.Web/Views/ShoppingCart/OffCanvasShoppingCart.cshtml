@@ -165,7 +165,7 @@
 		<div class="offcanvas-cart-footer-col text-xs-right">
 
 			@if (Model.DisplayCheckoutButton)
-			{
+            {
 				<a class="btn btn-success btn-flat btn-flat-light btn-action" href="@Url.RouteUrl("ShoppingCart")">
 					@T("ShoppingCart.Mini.ViewCart")
 				</a>
@@ -180,16 +180,25 @@
 					<i class="fa fa-check"></i>
 					<span>@T("ShoppingCart.Mini.ViewCart")</span>
 				</a>
-			}
+            }
 		</div>
 	</div>
 </div>
 
-<div class="offcanvas-cart-footer-row offcanvas-cart-payment-buttonbar">
-    <div class="offcanvas-cart-payment-label fw-700">
-        @T("ShoppingCart.PaymentButtonBar.Or")
+
+@{
+    var test = Html.Widget("offcanvas_cart_summary").ToHtmlString();
+    if (!test.HasValue())
+    {
+        return;
+    }
+}
+    <div class="offcanvas-cart-payment-buttonbar">
+        <div class="offcanvas-cart-payment-label fw-700">
+            @T("ShoppingCart.PaymentButtonBar.Or")
+        </div>
+        <div class="offcanvas-cart-footer-col offcanvas-cart-payment-buttons text-xs-right">
+            @Html.Raw(test)
+        </div>
     </div>
-    <div class="offcanvas-cart-footer-col offcanvas-cart-payment-buttons text-xs-right">
-        @{ Html.RenderWidget("offcanvas_cart_summary"); }
-    </div>
-</div>
+

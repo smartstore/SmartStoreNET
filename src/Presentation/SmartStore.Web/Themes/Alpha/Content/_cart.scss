@@ -52,7 +52,7 @@
 
 .offcanvas-cart-header {
     position: relative;
-    background: #f7f7f7;
+    background: $gray-lightest;
     height: 6rem;
 
     .nav-tabs {
@@ -172,8 +172,11 @@
 }
 
 .offcanvas-cart-payment-buttonbar {
-    background:#f7f7f7; 
+    background: $gray-lightest; 
     padding: 0.5rem 1rem 0 0;
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
 
     .offcanvas-cart-payment-label {
         padding: 0 0 .5rem 1rem;

@@ -18,7 +18,6 @@ namespace SmartStore.Web.Models.ShoppingCart
         public IList<ShoppingCartItemModel> Items { get; set; }
         public int TotalProducts { get; set; }
         public string SubTotal { get; set; }
-        public bool DisplayShoppingCartButton { get; set; }     // TODO: get rid of this property
         public bool DisplayCheckoutButton { get; set; }
         public bool CurrentCustomerIsGuest { get; set; }
         public bool AnonymousCheckoutAllowed { get; set; }

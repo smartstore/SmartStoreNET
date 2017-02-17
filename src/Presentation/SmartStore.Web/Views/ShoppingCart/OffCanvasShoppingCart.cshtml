@@ -6,6 +6,16 @@
 @{
     int descMaxLength = Model.ShowProductImages ? 100 : 140;
     int attrMaxLength = Model.ShowProductImages ? 50 : 70;
+
+    var checkoutUrl = "";
+    if (Model.AnonymousCheckoutAllowed && Model.CurrentCustomerIsGuest)
+    {
+        checkoutUrl = Url.Action("Login", "Customer", new { checkoutAsGuest = true, returnUrl = Url.RouteUrl("ShoppingCart") });
+    }
+    else
+    {
+        checkoutUrl = Url.RouteUrl("Checkout");
+    }
 }
 
 <div class="offcanvas-cart-body">
@@ -154,37 +164,21 @@
 		</div>
 		<div class="offcanvas-cart-footer-col text-xs-right">
 
-			@if (Model.DisplayShoppingCartButton)
-			{
-				if (Model.DisplayCheckoutButton)
-				{
-					<a class="btn btn-success btn-flat btn-flat-light btn-action" href="@Url.RouteUrl("ShoppingCart")">
-						@T("ShoppingCart.Mini.ViewCart")
-					</a>
-				}
-				else
-				{
-					<a class="btn btn-clear btn-action" href="@Url.RouteUrl("ShoppingCart")">
-						<i class="fa fa-check"></i>
-						<span>@T("ShoppingCart.Mini.ViewCart")</span>
-					</a>
-				}
-			}
-
 			@if (Model.DisplayCheckoutButton)
 			{
-				var checkoutUrl = "";
-				if (Model.AnonymousCheckoutAllowed && Model.CurrentCustomerIsGuest)
-				{
-					checkoutUrl = Url.Action("Login", "Customer", new { checkoutAsGuest = true, returnUrl = Url.RouteUrl("ShoppingCart") });
-				}
-				else
-				{
-					checkoutUrl = Url.RouteUrl("Checkout");
-				}
-				<a class="btn btn-clear btn-action" href="@checkoutUrl">
+				<a class="btn btn-success btn-flat btn-flat-light btn-action" href="@Url.RouteUrl("ShoppingCart")">
+					@T("ShoppingCart.Mini.ViewCart")
+				</a>
+                <a class="btn btn-clear btn-action" href="@checkoutUrl">
+                    <i class="fa fa-check"></i>
+                    <span>@T("Checkout.Button")</span>
+                </a>
+            }
+            else
+            {
+				<a class="btn btn-clear btn-action" href="@Url.RouteUrl("ShoppingCart")">
 					<i class="fa fa-check"></i>
-					<span>@T("Checkout.Button")</span>
+					<span>@T("ShoppingCart.Mini.ViewCart")</span>
 				</a>
 			}
 		</div>

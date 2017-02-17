@@ -978,8 +978,6 @@ namespace SmartStore.Web.Controllers
             {
                 ShowProductImages = _shoppingCartSettings.ShowProductImagesInMiniShoppingCart,
                 ThumbSize = _mediaSettings.MiniCartThumbPictureSize,
-                //let's always display it
-                DisplayShoppingCartButton = true,
                 CurrentCustomerIsGuest = _workContext.CurrentCustomer.IsGuest(),
                 AnonymousCheckoutAllowed = _orderSettings.AnonymousCheckoutAllowed,
             };

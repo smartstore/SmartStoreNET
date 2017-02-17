@@ -1456,7 +1456,6 @@
     <Content Include="Themes\Alpha\Scripts\jquery.validate.unobtrusive.custom.js" />
     <Content Include="Themes\Alpha\Scripts\offcanvas.js" />
     <Content Include="Themes\Alpha\Scripts\prettify.js" />
-    <Content Include="Themes\Alpha\Scripts\public.ajaxcart.js" />
     <Content Include="Themes\Alpha\Scripts\public.common.js" />
     <Content Include="Themes\Alpha\Scripts\public.product-detail.js" />
     <Content Include="Themes\Alpha\Scripts\public.product-filter.js" />

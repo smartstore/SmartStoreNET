@@ -119,6 +119,7 @@ namespace SmartStore.Web.Models.Catalog
 		public bool CompareEnabled { get; set; }
 		public bool TellAFriendEnabled { get; set; }
 		public bool AskQuestionEnabled { get; set; }
+		public string ProductShareCode { get; set; }
 
 		#region Nested Classes
 

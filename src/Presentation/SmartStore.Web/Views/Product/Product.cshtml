@@ -79,7 +79,12 @@
 						}
 
 						<!-- social share -->
-						@{ Html.RenderAction("ShareButton"); }
+						@if (Model.ProductShareCode.HasValue())
+						{
+							<div class="pd-share d-flex justify-content-@(Model.ProductType == ProductType.GroupedProduct ? "start m-t-3" : "center m-t-1")">
+								@Html.Raw(Model.ProductShareCode)
+							</div>
+						}
 
 						@if (Model.DisplayAdminLink)
 						{

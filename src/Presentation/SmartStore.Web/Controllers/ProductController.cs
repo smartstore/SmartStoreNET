@@ -397,24 +397,6 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[ChildActionOnly]
-		public ActionResult ShareButton()
-		{
-			if (_catalogSettings.ShowShareButton && _catalogSettings.PageShareCode.HasValue())
-			{
-				var shareCode = _catalogSettings.PageShareCode;
-				if (_services.WebHelper.IsCurrentConnectionSecured())
-				{
-					//need to change the addthis link to be https linked when the page is, so that the page doesnt ask about mixed mode when viewed in https...
-					shareCode = shareCode.Replace("http://", "https://");
-				}
-
-				return PartialView("Product.Share", shareCode);
-			}
-
-			return Content("");
-		}
-
-		[ChildActionOnly]
 		public ActionResult CrossSellProducts(int? productThumbPictureSize)
 		{
 			var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);

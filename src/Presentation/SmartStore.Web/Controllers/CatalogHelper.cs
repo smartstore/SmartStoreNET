@@ -202,6 +202,19 @@ namespace SmartStore.Web.Controllers
 					AskQuestionEnabled = _catalogSettings.AskQuestionEnabled && (product.VisibleIndividually || !isAssociatedProduct)
 				};
 
+				// Social share code
+				if (_catalogSettings.ShowShareButton && _catalogSettings.PageShareCode.HasValue())
+				{
+					var shareCode = _catalogSettings.PageShareCode;
+					if (_services.WebHelper.IsCurrentConnectionSecured())
+					{
+						//need to change the addthis link to be https linked when the page is, so that the page doesnt ask about mixed mode when viewed in https...
+						shareCode = shareCode.Replace("http://", "https://");
+					}
+
+					model.ProductShareCode = shareCode;
+				}
+
 				// get gift card values from query string
 				if (queryData != null && queryData.Count > 0)
 				{

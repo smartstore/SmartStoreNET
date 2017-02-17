@@ -191,11 +191,11 @@
 	</div>
 </div>
 
-<div class="offcanvas-cart-footer-row" style="background:#f7f7f7; padding: .5rem 1rem;">
-    <div class="m-r-05 fw-700">
-        Oder
+<div class="offcanvas-cart-footer-row offcanvas-cart-payment-buttonbar">
+    <div class="offcanvas-cart-payment-label fw-700">
+        @T("ShoppingCart.PaymentButtonBar.Or")
     </div>
-    <div class="offcanvas-cart-footer-col text-xs-right" style="align-items: flex-end;flex-direction: row;justify-content: space-around;flex-wrap: wrap;">
+    <div class="offcanvas-cart-footer-col offcanvas-cart-payment-buttons text-xs-right">
         @{ Html.RenderWidget("offcanvas_cart_summary"); }
     </div>
 </div>

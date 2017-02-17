@@ -1,7 +1,7 @@
 ﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
 
-<span id="@Model.GetWidgetId" class="text-xs-right">
-	<img src="@Model.ButtonUrl" style="cursor: pointer" />
+<span id="@Model.GetWidgetId">
+	<img src="@Model.ButtonUrl" />
 </span>
 
 @{ Html.RenderPartial("ScriptingLoginButton", Model); }

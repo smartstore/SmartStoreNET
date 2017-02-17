@@ -545,6 +545,7 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("ShoppingCart.MoveToWishlist", "Move to wishlist", "In die Wunschliste verschieben");
             builder.AddOrUpdate("Products.Compare.CompareNow", "Compare now", "Jetzt vergleichen");
+            builder.AddOrUpdate("ShoppingCart.PaymentButtonBar.Or", "Or", "Oder");
             
         }
     }

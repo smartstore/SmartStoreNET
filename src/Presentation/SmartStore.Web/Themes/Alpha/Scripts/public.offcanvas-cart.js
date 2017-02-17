@@ -204,6 +204,7 @@ var ShopBar = (function($) {
                 success: function (data) {
                     cnt.find('.offcanvas-cart-body').remove();
                     cnt.find('.offcanvas-cart-footer').remove();
+                    cnt.find('.offcanvas-cart-payment-buttonbar').remove();
                     cnt.prepend(data);
                 },
                 complete: function (jqXHR, textStatus) {

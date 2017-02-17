@@ -171,6 +171,26 @@
     }
 }
 
+.offcanvas-cart-payment-buttonbar {
+    background:#f7f7f7; 
+    padding: 0.5rem 1rem 0 0;
+
+    .offcanvas-cart-payment-label {
+        padding: 0 0 .5rem 1rem;
+    }
+
+    .offcanvas-cart-payment-buttons {
+        align-items: flex-end;
+        flex-direction: row;
+        justify-content: space-around;
+        flex-wrap: wrap;
+
+        img {
+            cursor: pointer;
+            padding: 0 0 0.5rem 0.5rem;
+        }
+    }
+}
 
 // Full Cart
 // =================================

@@ -920,20 +920,6 @@ namespace SmartStore.Web.Controllers
                 message = T("CompareList.ListWasCleared")
             });
         }
-        
-        [ChildActionOnly]
-		public ActionResult CompareProductsButton(int productId)
-		{
-			if (!_catalogSettings.CompareProductsEnabled)
-				return Content("");
-
-			var model = new AddToCompareListModel()
-			{
-				ProductId = productId
-			};
-
-			return PartialView("CompareProductsButton", model);
-		}
 
 		public ActionResult CompareSummary()
 		{

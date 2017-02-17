@@ -116,9 +116,13 @@ namespace SmartStore.Web.Models.Catalog
 		public ProductBundleItemModel BundleItem { get; set; }
 		public bool IsBundlePart { get; set; }
 
+		public bool CompareEnabled { get; set; }
+		public bool TellAFriendEnabled { get; set; }
+		public bool AskQuestionEnabled { get; set; }
+
 		#region Nested Classes
 
-        public partial class ProductBreadcrumbModel : ModelBase
+		public partial class ProductBreadcrumbModel : ModelBase
         {
             public ProductBreadcrumbModel()
             {

@@ -1013,19 +1013,6 @@ namespace SmartStore.Web.Controllers
 
 		#region Ask product question
 
-		[ChildActionOnly]
-		public ActionResult AskQuestionButton(int id)
-		{
-			if (!_catalogSettings.AskQuestionEnabled)
-				return Content("");
-			var model = new ProductAskQuestionModel()
-			{
-				Id = id
-			};
-
-			return PartialView(model);
-		}
-
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
 		public ActionResult AskQuestion(int id)
 		{
@@ -1098,19 +1085,6 @@ namespace SmartStore.Web.Controllers
 
 
 		#region Email a friend
-
-		[ChildActionOnly]
-		public ActionResult EmailAFriendButton(int id)
-		{
-			if (!_catalogSettings.EmailAFriendEnabled)
-				return Content("");
-			var model = new ProductEmailAFriendModel()
-			{
-				ProductId = id
-			};
-
-			return PartialView(model);
-		}
 
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
 		public ActionResult EmailAFriend(int id)

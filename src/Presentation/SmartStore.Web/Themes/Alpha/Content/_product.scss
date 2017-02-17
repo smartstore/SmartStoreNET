@@ -83,12 +83,6 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
     margin-bottom: 0;
 }
 
-.pd-offer {
-    background: $pd-offer-bg;
-    padding: $grid-gutter-width / 2;
-    line-height: $pd-line-height;
-}
-
 .pd-brand {
     color: inherit !important;
     text-decoration: none !important;
@@ -156,6 +150,35 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
             padding: 0 0.5rem;
             color: $text-muted;
         }
+    }
+}
+
+
+// Offer Box
+// =====================================================
+
+.pd-offer {
+    background: $pd-offer-bg;
+    padding: $grid-gutter-width / 2;
+    line-height: $pd-line-height;
+    width: 100%;
+}
+
+.row.pd-offer-actions {
+    margin-left: -0.2rem;
+    margin-right: -0.2rem;
+    margin-top: auto;
+
+    > * {
+        padding-left: 0.2rem;
+        padding-right: 0.2rem;
+    }
+
+    .pd-offer-action-qty { max-width: 120px; min-width: 90px; }
+
+    // hide elements when container is too small
+    @media (max-width: 400px), (min-width: 768px) and (max-width: 1199px) {
+        .pd-offer-action-qty { display: none !important; }
     }
 }
 
@@ -343,9 +366,14 @@ $pd-offer-muted-color:          mix($body-color, $pd-offer-bg, 40%);
 .pd-variant {
     position: relative;
     padding: 0.5rem 0;
-    //border-top: 1px solid rgba(#000, 0.15);
 
     .pd-name { font-size: 1rem !important }
+
+    // Associated product's offer box should stretch vertically
+    .pd-offer {
+        display: flex;
+        flex-direction: column;
+    }
 }
 
 

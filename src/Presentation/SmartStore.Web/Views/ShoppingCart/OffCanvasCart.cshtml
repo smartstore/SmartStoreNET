@@ -2,6 +2,10 @@
 
 @using SmartStore.Web.Models.ShoppingCart;
 
+@{ 
+	var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
+}
+
 <div class="offcanvas-cart-header">
     <div class="text-xs-right">
         <button class="btn btn-secondary btn-flat btn-to-danger btn-lg btn-icon offcanvas-closer fs-h2" style="border-radius: 0">
@@ -15,7 +19,7 @@
             <li class="nav-item col-xs">
                 <a id="cart-tab" class="nav-link" data-toggle="tab" href="#occ-cart" role="tab" data-url="@Url.Action("OffCanvasShoppingCart", "ShoppingCart")">
                     <span class="title">@T("PageTitle.ShoppingCart")</span>
-                    <span class="label label-pill label-warning" data-bind-to="TotalProducts" style="@(Model.ShoppingCartItems > 0 ? "" : "display:none")">@Model.ShoppingCartItems</span>
+                    <span class="label label-pill label-cart-amount label-@labelStyle" data-bind-to="TotalProducts" style="@(Model.ShoppingCartItems > 0 ? "" : "display:none")">@Model.ShoppingCartItems</span>
                 </a>
             </li>
         }
@@ -25,7 +29,7 @@
             <li class="nav-item col-xs">
                 <a id="wishlist-tab" class="nav-link" data-toggle="tab" href="#occ-wishlist" role="tab" data-url="@Url.Action("OffCanvasWishlist", "ShoppingCart")">
                     <span class="title">@T("Wishlist")</span>
-                    <span class="label label-pill label-warning" data-bind-to="TotalProducts" style="@(Model.WishlistItems > 0 ? "" : "display:none")">@Model.WishlistItems</span>
+                    <span class="label label-pill label-cart-amount label-@labelStyle" data-bind-to="TotalProducts" style="@(Model.WishlistItems > 0 ? "" : "display:none")">@Model.WishlistItems</span>
                 </a>
             </li>
         }
@@ -35,7 +39,7 @@
             <li class="nav-item col-xs">
                 <a id="compare-tab" class="nav-link" data-toggle="tab" href="#occ-compare" role="tab" data-url="@Url.Action("OffCanvasCompare", "Catalog")">
                     <span class="title">@T("Common.Shopbar.Compare")</span>
-                    <span class="label label-pill label-warning" data-bind-to="TotalProducts" style="@(Model.CompareItems > 0 ? "" : "display:none")">@Model.CompareItems</span>
+                    <span class="label label-pill label-cart-amount label-@labelStyle" data-bind-to="TotalProducts" style="@(Model.CompareItems > 0 ? "" : "display:none")">@Model.CompareItems</span>
                 </a>
             </li>
         }

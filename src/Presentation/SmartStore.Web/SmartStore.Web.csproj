@@ -345,7 +345,6 @@
     <Compile Include="Models\Catalog\SearchBoxModel.cs" />
     <Compile Include="Models\Catalog\ProductsByTagModel.cs" />
     <Compile Include="Models\Catalog\PopularProductTagsModel.cs" />
-    <Compile Include="Models\Catalog\AddToCompareListModel.cs" />
     <Compile Include="Models\Catalog\ProductTagModel.cs" />
     <Compile Include="Models\Catalog\ProductEmailAFriendModel.cs" />
     <Compile Include="Models\Catalog\ProductSpecificationModel.cs" />
@@ -1714,7 +1713,6 @@
     <Content Include="Views\Catalog\Partials\CategoryNavigation.cshtml" />
     <Content Include="Views\Catalog\CategoryTemplate.ProductsInGridOrLines.cshtml" />
     <Content Include="Views\Catalog\CompareProducts.cshtml" />
-    <Content Include="Views\Catalog\Partials\CompareProductsButton.cshtml" />
     <Content Include="Views\Catalog\Partials\HomepageBestSellers.cshtml" />
     <Content Include="Views\Catalog\Partials\HomepageCategories.cshtml" />
     <Content Include="Views\Catalog\Partials\HomepageProducts.cshtml" />
@@ -1805,11 +1803,9 @@
     <Content Include="Views\PrivateMessages\SentItems.cshtml" />
     <Content Include="Views\PrivateMessages\View.cshtml" />
     <Content Include="Views\Product\AskQuestion.cshtml" />
-    <Content Include="Views\Product\Partials\AskQuestionButton.cshtml" />
     <Content Include="Views\Product\BackInStockSubscribePopup.cshtml" />
     <Content Include="Views\Product\Partials\CrossSellProducts.cshtml" />
     <Content Include="Views\Product\EmailAFriend.cshtml" />
-    <Content Include="Views\Product\Partials\EmailAFriendButton.cshtml" />
     <Content Include="Views\Product\Partials\ProductDetailReviews.cshtml" />
     <Content Include="Views\Product\Partials\ProductManufacturers.cshtml" />
     <Content Include="Views\Product\Partials\Product.AlsoPurchased.cshtml" />
@@ -1929,6 +1925,7 @@
     <Content Include="Views\Product\Partials\Product.Bundle.Price.cshtml" />
     <Content Include="Views\Product\Partials\Product.Bundle.Items.cshtml" />
     <Content Include="Views\Product\Partials\_ProductTemplate.Grouped.AssociatedProduct.cshtml" />
+    <Content Include="Views\Product\Partials\Product.Offer.Actions.Misc.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

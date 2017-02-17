@@ -167,8 +167,7 @@ namespace SmartStore.Web.Controllers
 			NameValueCollection selectedAttributes = null,
 			NameValueCollection queryData = null)
 		{
-			if (product == null)
-				throw new ArgumentNullException("product");
+			Guard.NotNull(product, nameof(product));
 
 			using (_services.Chronometer.Step("PrepareProductDetailsPageModel"))
 			{
@@ -197,7 +196,10 @@ namespace SmartStore.Web.Controllers
 					StockAvailability = product.FormatStockMessage(_localizationService),
 					HasSampleDownload = product.IsDownload && product.HasSampleDownload,
 					IsCurrentCustomerRegistered = _services.WorkContext.CurrentCustomer.IsRegistered(),
-					IsAssociatedProduct = isAssociatedProduct
+					IsAssociatedProduct = isAssociatedProduct,
+					CompareEnabled = _catalogSettings.CompareProductsEnabled && (product.VisibleIndividually || !isAssociatedProduct),
+					TellAFriendEnabled = _catalogSettings.EmailAFriendEnabled && (product.VisibleIndividually || !isAssociatedProduct),
+					AskQuestionEnabled = _catalogSettings.AskQuestionEnabled && (product.VisibleIndividually || !isAssociatedProduct)
 				};
 
 				// get gift card values from query string
@@ -1058,7 +1060,11 @@ namespace SmartStore.Web.Controllers
 
             //'add to cart', 'add to wishlist' buttons
             model.AddToCart.DisableBuyButton = product.DisableBuyButton || !_services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
-			model.AddToCart.DisableWishlistButton = product.DisableWishlistButton || !_services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
+			model.AddToCart.DisableWishlistButton = product.DisableWishlistButton 
+				|| !_services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist)
+				|| product.ProductType == ProductType.GroupedProduct
+				|| (product.ParentGroupedProductId > 0 && !product.VisibleIndividually);
+
 			if (!displayPrices)
 			{
 				model.AddToCart.DisableBuyButton = true;

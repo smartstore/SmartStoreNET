@@ -260,12 +260,6 @@
 								</div>
                             }
 
-							@{
-                                Html.RenderAction("EmailAFriendButton", new { id = Model.Id });
-                                Html.RenderAction("AskQuestionButton", new { id = Model.Id });
-                                Html.RenderAction("CompareProductsButton", "Catalog", new { productId = Model.Id });
-							}
-
                             @if (!Model.AddToCart.DisableWishlistButton)
                             {
 								<div>

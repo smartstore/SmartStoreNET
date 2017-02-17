@@ -34,7 +34,7 @@
             </li>
         }
 
-        @if (Model.CompareProductsEnabled)
+        @if (Model.CompareProductsEnabled) 
         {
             <li class="nav-item col-xs">
                 <a id="compare-tab" class="nav-link" data-toggle="tab" href="#occ-compare" role="tab" data-url="@Url.Action("OffCanvasCompare", "Catalog")">
@@ -49,7 +49,7 @@
 <div class="tab-content">
     @if (Model.ShoppingCartEnabled)
     {
-        <div class="tab-pane fade in" id="occ-cart" role="tabpanel"></div>
+        <div class="tab-pane fade" id="occ-cart" role="tabpanel"></div>
     }
 
     @if (Model.WishlistEnabled)

@@ -1,7 +1,9 @@
 ﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
 
-<span id="@Model.GetWidgetId">
-	<img src="@Model.ButtonUrl" />
-</span>
+<div class="external-checkout-button">
+	<span id="@Model.GetWidgetId">
+		<img src="@Model.ButtonUrl" />
+	</span>
 
-@{ Html.RenderPartial("ScriptingLoginButton", Model); }
+	@{ Html.RenderPartial("ScriptingLoginButton", Model); }
+</div>

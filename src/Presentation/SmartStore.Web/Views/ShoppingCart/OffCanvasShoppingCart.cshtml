@@ -183,22 +183,18 @@
             }
 		</div>
 	</div>
+
+	@{
+		var summaryHtml = Html.Widget("offcanvas_cart_summary").ToHtmlString();
+	}
+
+	@if (summaryHtml.HasValue())
+	{
+		<div class="offcanvas-cart-external-checkout">
+			<div class="d-flex justify-content-center align-items-center flex-wrap">
+				@Html.Raw(summaryHtml)
+			</div>
+		</div>
+	}
 </div>
-
-
-@{
-    var test = Html.Widget("offcanvas_cart_summary").ToHtmlString();
-    if (!test.HasValue())
-    {
-        return;
-    }
-}
-    <div class="offcanvas-cart-payment-buttonbar">
-        <div class="offcanvas-cart-payment-label fw-700">
-            @T("ShoppingCart.PaymentButtonBar.Or")
-        </div>
-        <div class="offcanvas-cart-footer-col offcanvas-cart-payment-buttons text-xs-right">
-            @Html.Raw(test)
-        </div>
-    </div>
 

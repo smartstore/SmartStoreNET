@@ -1,6 +1,9 @@
 ﻿@model SmartStore.PayPal.Models.PayPalExpressPaymentInfoModel
-	
-<a href="@Url.Action("SubmitButton", "PayPalExpress", new { area = "SmartStore.PayPal" })">
-	@*<img src="@Model.SubmitButtonImageUrl" style="cursor: pointer;" />*@
-    <img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/checkout-logo-small-de.png")" />
-</a>
+
+<div class="external-checkout-button">
+	<a href="@Url.Action("SubmitButton", "PayPalExpress", new { area = "SmartStore.PayPal" })">
+		@*<img src="@Model.SubmitButtonImageUrl" style="cursor: pointer;" />*@
+		<img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/checkout-logo-small-de.png")" />
+	</a>
+</div>
+

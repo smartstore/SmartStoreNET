@@ -359,6 +359,14 @@ h4, h5, h6, .h4, .h5, .h6 {
 // Bootstrap 4 Alpha 1 fixes & surrogates (DELETE later!)
 // ------------------------------------------------------
 
+.ml-auto    { margin-left: auto !important }
+.mr-auto    { margin-right: auto !important }
+.mt-auto    { margin-top: auto !important }
+.mb-auto    { margin-bottom: auto !important }
+.m-auto     { margin: auto !important }
+.mx-auto    { margin-left: auto !important; margin-right: auto !important }
+.my-auto    { margin-top: auto !important; margin-bottom: auto !important }
+
 .col-xs, .col-sm, .col-md, .col-lg, .col-xl {
     display: block;
     position: relative;
@@ -389,6 +397,12 @@ h4, h5, h6, .h4, .h5, .h6 {
 .justify-content-around     { justify-content: space-around; }
 .justify-content-between    { justify-content: space-between; }
 .justify-content-end        { justify-content: flex-end; }
+
+.align-items-start          { align-items: flex-start; }
+.align-items-end            { align-items: flex-end; }
+.align-items-center         { align-items: center; }
+.align-items-baseline       { align-items: baseline; }
+.align-items-stretch        { align-items: stretch; }
 
 
 //

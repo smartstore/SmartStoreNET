@@ -288,7 +288,7 @@ var ShopBar = (function($) {
         	throbber.show();
 		},
 
-        hideThrobber: function() {
+        hideThrobber: function () {      	
         	var cnt = $(".tab-content", offcanvasCart);
         	_.delay(function () { cnt.data("throbber").hide(); }, 100);
 		},
@@ -352,7 +352,7 @@ var ShopBar = (function($) {
                 success: function (data) {
                     cnt.find('.offcanvas-cart-body').remove();
                     cnt.find('.offcanvas-cart-footer').remove();
-                    cnt.find('.offcanvas-cart-payment-buttonbar').remove();
+                    cnt.find('.offcanvas-cart-external-checkout').remove();
                     cnt.prepend(data);
                 },
                 complete: function (jqXHR, textStatus) {

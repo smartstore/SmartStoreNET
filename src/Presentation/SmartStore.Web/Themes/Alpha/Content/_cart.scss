@@ -24,7 +24,7 @@
     .tab-content {
         position: absolute;
         left: 0;
-        top: 6rem;
+        top: 6.1rem;
         right: 0;
         bottom: 0;
     }
@@ -53,7 +53,7 @@
 .offcanvas-cart-header {
     position: relative;
     background: $gray-lightest;
-    height: 6rem;
+    height: 6.2rem;
 
     .nav-tabs {
         display: flex;
@@ -144,17 +144,15 @@
     }
 }
 
-.offcanvas-cart-footer {
-    background-color: $brand-success;
-    color: #fff;
-    padding: 1rem;
-}
-
 .offcanvas-cart-footer-row {
     display: flex; 
     justify-content: space-between;
     align-items: center;
     line-height: 1.1;
+
+    background-color: $brand-success;
+    color: #fff;
+    padding: 1rem;
 
     .sub-total-caption {
         text-transform: uppercase; 
@@ -171,26 +169,23 @@
     }
 }
 
-.offcanvas-cart-payment-buttonbar {
-    background: $gray-lightest; 
-    padding: 0.5rem 1rem 0 0;
-    display: flex; 
-    justify-content: space-between;
-    align-items: center;
+.offcanvas-cart-external-checkout {
+    background: #fff; 
+    padding: 0.5rem 1rem;
 
-    .offcanvas-cart-payment-label {
-        padding: 0 0 .5rem 1rem;
-    }
-
-    .offcanvas-cart-payment-buttons {
-        align-items: flex-end;
-        flex-direction: row;
-        justify-content: space-around;
-        flex-wrap: wrap;
+    .external-checkout-button {
+        margin: 2px 4px;
+        height: 40px;
+        display: flex;
+        align-items: center;
 
         img {
-            cursor: pointer;
-            padding: 0 0 0.5rem 0.5rem;
+            max-height: 40px;
+            max-width: 150px;
+
+            @include media-breakpoint-up(sm) {
+                max-width: 170px;
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ namespace SmartStore.Core.Search.Facets
 	public class Facet
 	{
 		public Facet(FacetValue value)
-			: this(value.GetStringValue(), value)
+			: this(value.ToString(), value)
 		{
 		}
 
@@ -24,12 +24,6 @@ namespace SmartStore.Core.Search.Facets
 		{
 			get;
 			private set;
-		}
-
-		public string Label
-		{
-			get;
-			set;
 		}
 
 		public FacetValue Value
@@ -57,18 +51,6 @@ namespace SmartStore.Core.Search.Facets
 		{
 			get;
 			internal set;
-		}
-
-		public int ParentId
-		{
-			get;
-			set;
-		}
-
-		public int DisplayOrder
-		{
-			get;
-			set;
 		}
 
 		public IList<Facet> Children

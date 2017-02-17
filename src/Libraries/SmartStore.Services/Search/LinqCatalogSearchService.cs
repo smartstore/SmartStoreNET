@@ -149,14 +149,12 @@ namespace SmartStore.Services.Search
 		{
 			var newValue = new FacetValue(value, typeCode)
 			{
-				IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(value))
-			};
-
-			return new Facet(newValue)
-			{
+				IsSelected = descriptor.Values.Any(x => x.IsSelected && x.Value.Equals(value)),
 				Label = label,
 				DisplayOrder = displayOrder
 			};
+
+			return new Facet(newValue);
 		}
 
 		protected virtual IQueryable<Product> ApplySearchTerm(IQueryable<Product> query, CatalogSearchQuery searchQuery)
@@ -719,15 +717,12 @@ namespace SmartStore.Services.Search
 
 							var newValue = new FacetValue(null, price, IndexTypeCode.Double, false, true)
 							{
-								IsSelected = descriptor.Values.Any(x => x.IsSelected && x.UpperValue != null && (double)x.UpperValue == price)
-							};
-							var newFacet = new Facet(newValue)
-							{
+								IsSelected = descriptor.Values.Any(x => x.IsSelected && x.UpperValue != null && (double)x.UpperValue == price),
 								Label = price.ToString(),
 								DisplayOrder = ++count
 							};
 
-							facets.Add(newFacet);
+							facets.Add(new Facet(newValue));
 						}
 					}
 

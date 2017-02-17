@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Search.Facets
 {
@@ -60,6 +61,10 @@ namespace SmartStore.Core.Search.Facets
 			IncludesUpper = value.IncludesUpper;
 			IsRange = value.IsRange;
 			IsSelected = value.IsSelected;
+			Label = value.Label;
+			ParentId = value.ParentId;
+			DisplayOrder = value.DisplayOrder;
+			Sorting = value.Sorting;
 		}
 
 		public object Value
@@ -118,7 +123,25 @@ namespace SmartStore.Core.Search.Facets
 
 		public override int GetHashCode()
 		{
-			return Value.GetHashCode();
+			if (Value != null && UpperValue != null)
+			{
+				var combiner = HashCodeCombiner
+					.Start()
+					.Add(Value.GetHashCode())
+					.Add(UpperValue.GetHashCode());
+
+				return combiner.CombinedHash;
+			}
+			else if (UpperValue != null)
+			{
+				return UpperValue.GetHashCode();
+			}
+			else if (Value != null)
+			{
+				return Value.GetHashCode();
+			}
+
+			return 0;
 		}
 
 		public bool Equals(FacetValue other)
@@ -152,7 +175,32 @@ namespace SmartStore.Core.Search.Facets
 
 		public override string ToString()
 		{
-			return this.GetStringValue();
+			var result = string.Empty;
+			var valueString = Value != null ? Value.ToString().EmptyNull() : string.Empty;
+
+			if (IsRange)
+			{
+				var upperValueString = UpperValue != null ? UpperValue.ToString().EmptyNull() : string.Empty;
+
+				if (IncludesLower && IncludesUpper)
+				{
+					result = $"[{valueString} - {upperValueString}]";
+				}
+				else if (IncludesUpper)
+				{
+					result = upperValueString;
+				}
+				else
+				{
+					result = valueString;
+				}
+			}
+			else
+			{
+				result = valueString;
+			}
+
+			return result;
 		}
 	}
 }

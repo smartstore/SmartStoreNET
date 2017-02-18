@@ -123,7 +123,7 @@
 						<!-- social share -->
 						@if (Model.ProductShareCode.HasValue())
 						{
-							<div class="pd-share d-flex justify-content-@(Model.ProductType == ProductType.GroupedProduct ? "start m-t-3" : "center m-t-1")">
+							<div class="pd-share d-flex justify-content-@(Model.ProductType == ProductType.GroupedProduct ? "start m-t-2" : "center m-t-1")">
 								@Html.Raw(Model.ProductShareCode)
 							</div>
 						}

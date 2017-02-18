@@ -5,6 +5,7 @@
 			return;
 
 		var drop = $('#instasearch-drop'),
+			logo = $('.shop-logo'),
 			dropBody = drop.find('.instasearch-drop-body'),
 			minLength = box.data("minlength"),
 			url = box.data("url"),
@@ -20,9 +21,7 @@
 		});
 
 		box.on('focus', function (e) {
-			if (!_.str.isBlank(dropBody.text())) {
-				openDrop();
-			}
+			expandBox();
 		});
 
 		box.on('keydown', function (e) {
@@ -34,10 +33,34 @@
 			}
 		});
 
+		box.on('keyup', function (e) {
+			if (e.which == 27 /* ESC */) {
+				closeDrop();
+			}
+		});
+
 		$(document).on('click', function (e) {
 			// Close drop on outside click
+			shrinkBox();
 			closeDrop();
 		});
+
+		function expandBox() {
+			var logoWidth = logo.width();
+			$('body').addClass('search-focused');
+			logo.css('margin-left', (logoWidth * -1) + 'px');
+
+			if (!_.str.isBlank(dropBody.text())) {
+				logo.one('transitionend webkitTransitionEnd', function (e) {
+					openDrop();
+				});
+			}
+		}
+
+		function shrinkBox() {
+			$('body').removeClass('search-focused');
+			logo.css('margin-left', '');
+		}
 
 		function openDrop() {
 			if (!drop.hasClass('open')) {

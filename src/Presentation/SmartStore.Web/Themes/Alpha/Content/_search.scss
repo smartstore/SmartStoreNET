@@ -44,7 +44,7 @@ $searchbox-hit-tag-color:           darken($brand-warning, 10%);
 
 .instasearch-icon {
     position: relative;
-    top: -0.1rem;
+    top: 0.12rem;
 }
 
 #instasearch-drop {
@@ -103,7 +103,7 @@ $searchbox-hit-tag-color:           darken($brand-warning, 10%);
 }
 @include media-breakpoint-up(lg) {
     .instasearch-row {
-        width: 640px;
+        width: 740px;
     }
 }
 @include media-breakpoint-up(xl) {

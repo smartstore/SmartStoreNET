@@ -436,6 +436,17 @@ a.pretty-link {
 }
 
 
+//
+// LinearIcons utils (ensure crisp icons with 20/40...px)
+// ------------------------------------------------------
+
+.lnr        { font-size: 20px; display: inline-block; }
+.lnr-2x     { font-size: 40px; }
+.lnr-3x     { font-size: 60px; }
+.lnr-4x     { font-size: 80px; }
+.lnr-5x     { font-size: 100px; }
+
+
 // Imaging
 // ------------------------------------------------------
 

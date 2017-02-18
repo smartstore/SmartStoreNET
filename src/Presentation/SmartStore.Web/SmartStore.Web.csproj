@@ -666,6 +666,7 @@
     <Content Include="Content\editors\summernote\summernote.css" />
     <Content Include="Content\editors\summernote\summernote.js" />
     <Content Include="Content\editors\summernote\summernote.min.js" />
+    <Content Include="Themes\Alpha\Content\css\fonts\Linearicons-Free.svg" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="App_GlobalResources\MvcLocalization.de.resx">
@@ -829,6 +830,10 @@
     <Content Include="Content\bootstrap\custom\spinner.less" />
     <Content Include="Config\ConnectionStrings.config" />
     <Content Include="Config\SessionState.config" />
+    <Content Include="Themes\Alpha\Content\css\fonts\Linearicons-Free.eot" />
+    <Content Include="Themes\Alpha\Content\css\fonts\Linearicons-Free.ttf" />
+    <Content Include="Themes\Alpha\Content\css\fonts\Linearicons-Free.woff" />
+    <Content Include="Themes\Alpha\Content\css\fonts\Linearicons-Free.woff2" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-AE.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.ar-BH.js" />
@@ -944,6 +949,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr.js" />
     <Content Include="Scripts\public.product-detail.mobile.js" />
+    <Content Include="Themes\Alpha\Content\css\linearicons.css" />
     <Content Include="Themes\Alpha\Content\shared\_pnotify.scss" />
     <Content Include="Themes\Alpha\Content\shared\_mixins.scss" />
     <Content Include="Themes\Alpha\Content\shared\_select2.scss" />
@@ -1737,23 +1743,23 @@
     <Content Include="Views\Checkout\PaymentMethod.cshtml" />
     <Content Include="Views\Checkout\ShippingAddress.cshtml" />
     <Content Include="Views\Checkout\ShippingMethod.cshtml" />
-    <Content Include="Views\Common\AccountDropdown.cshtml" />
-    <Content Include="Views\Common\CurrencySelector.cshtml" />
-    <Content Include="Views\Common\EntityPicker.cshtml" />
-    <Content Include="Views\Common\EntityPickerList.cshtml" />
-    <Content Include="Views\Common\Favicon.cshtml" />
-    <Content Include="Views\Common\Footer.cshtml" />
-    <Content Include="Views\Common\InfoBlock.cshtml" />
-    <Content Include="Views\Common\JavaScriptDisabledWarning.cshtml" />
-    <Content Include="Views\Common\LanguageSelector.cshtml" />
+    <Content Include="Views\Common\Partials\AccountDropdown.cshtml" />
+    <Content Include="Views\Common\Partials\CurrencySelector.cshtml" />
+    <Content Include="Views\Common\Partials\EntityPicker.cshtml" />
+    <Content Include="Views\Common\Partials\EntityPickerList.cshtml" />
+    <Content Include="Views\Common\Partials\Favicon.cshtml" />
+    <Content Include="Views\Common\Partials\Footer.cshtml" />
+    <Content Include="Views\Common\Partials\InfoBlock.cshtml" />
+    <Content Include="Views\Common\Partials\JavaScriptDisabledWarning.cshtml" />
+    <Content Include="Views\Common\Partials\LanguageSelector.cshtml" />
     <Content Include="Views\Common\List.cshtml" />
-    <Content Include="Views\Common\Menu.cshtml" />
+    <Content Include="Views\Common\Partials\Menu.cshtml" />
     <Content Include="Views\Common\PdfReceiptFooter.cshtml" />
     <Content Include="Views\Common\PdfReceiptHeader.cshtml" />
     <Content Include="Views\Common\Settings.cshtml" />
-    <Content Include="Views\Common\ShopBar.cshtml" />
-    <Content Include="Views\Common\StoreThemeSelector.cshtml" />
-    <Content Include="Views\Common\TaxTypeSelector.cshtml" />
+    <Content Include="Views\Common\Partials\ShopBar.cshtml" />
+    <Content Include="Views\Common\Partials\StoreThemeSelector.cshtml" />
+    <Content Include="Views\Common\Partials\TaxTypeSelector.cshtml" />
     <Content Include="Views\Customer\AccountActivation.cshtml" />
     <Content Include="Views\Customer\AddressAdd.cshtml" />
     <Content Include="Views\Customer\AddressEdit.cshtml" />
@@ -1863,13 +1869,13 @@
     <Content Include="Themes\Alpha\Content\_product_old.scss" />
     <Content Include="Themes\Alpha\Content\_pages.scss" />
     <Content Include="Themes\Alpha\Content\_rating.scss" />
-    <Content Include="Views\Common\ServiceMenu.cshtml" />
+    <Content Include="Views\Common\Partials\ServiceMenu.cshtml" />
     <Content Include="Views\ShoppingCart\OffCanvasCart.cshtml" />
     <Content Include="Themes\Alpha\Content\_cart.scss" />
     <Content Include="Views\ShoppingCart\OffCanvasShoppingCart.cshtml" />
     <Content Include="Views\ShoppingCart\OffCanvasWishlist.cshtml" />
     <Content Include="Views\Catalog\Partials\OffCanvasCompare.cshtml" />
-    <Content Include="Views\Common\Logo.cshtml" />
+    <Content Include="Views\Common\Partials\Logo.cshtml" />
     <Content Include="Themes\Alpha\Content\_search.scss" />
     <Content Include="Views\Search\InstantSearch.cshtml" />
     <Content Include="Views\Search\InstantSearch.HitGroup.cshtml" />
@@ -1924,6 +1930,7 @@
     <Content Include="Views\Product\Partials\Product.Bundle.Items.cshtml" />
     <Content Include="Views\Product\Partials\_ProductTemplate.Grouped.AssociatedProduct.cshtml" />
     <Content Include="Views\Product\Partials\Product.Offer.Actions.Misc.cshtml" />
+    <Content Include="Views\Common\Partials\ShopBar.Tools.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

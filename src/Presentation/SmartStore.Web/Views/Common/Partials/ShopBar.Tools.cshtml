@@ -1,0 +1,96 @@
+﻿@model ShopBarModel
+
+@using SmartStore.Web.Models.Common;
+
+@{ 
+	var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
+	var useFa = false;
+}
+
+<div class="shopbar-col shopbar-tools">
+	<!-- Hamburger Menu -->
+	<div class="shopbar-tool hidden-lg-up" id="shopbar-menu">
+		<a class="shopbar-button" href="#">
+			<span class="shopbar-button-icon">
+				<i class="@(useFa ? "fa fa-bars" : "lnr lnr-menu")"></i>
+			</span>
+			<span class="shopbar-button-label-sm">
+				Menü
+			</span>
+		</a>
+	</div>
+
+	<!-- User -->
+	<div class="shopbar-tool hidden-lg-up" id="shopbar-user">
+		<a class="shopbar-button" href="#">
+			<span class="shopbar-button-icon">
+				<i class="@(useFa ? "fa fa-user" : "lnr lnr-user")"></i>
+			</span>
+			<span class="shopbar-button-label-sm">
+				Anmelden
+			</span>
+		</a>
+	</div>
+
+	@if (Model.WishlistEnabled)
+	{
+		<div class="shopbar-tool" id="shopbar-wishlist" data-target="#wishlist-tab">
+			<a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart", new { isWishlist = true })"
+				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
+				<span class="shopbar-button-icon">
+					<i class="@(useFa ? "fa fa-heart-o" : "lnr lnr-heart")"></i>
+					<span class='label label-pill label-cart-amount label-@labelStyle @(Model.WishlistItems == 0 ? "hidden-xs-up" : "")' data-bind-to="TotalProducts">@Model.WishlistItems</span>
+				</span>
+				<span class="shopbar-button-label">
+					<span>@T("Common.Shopbar.WishlistPartOne")</span><br />
+					<span style="font-weight: bold; color: #333">@T("Common.Shopbar.WishlistPartTwo")</span>
+				</span>
+				<span class="shopbar-button-label-sm">
+					Wunschliste
+				</span>
+			</a>
+		</div>
+	}
+
+	@if (Model.CompareProductsEnabled)
+	{
+		<div class="shopbar-tool" id="shopbar-compare" data-target="#compare-tab">
+			<a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
+				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
+				<span class="shopbar-button-icon">
+					<i class="@(useFa ? "fa fa-retweet" : "lnr lnr-sync")"></i>
+					<span class='label label-pill label-cart-amount label-@labelStyle @(Model.CompareItems == 0 ? "hidden-xs-up" : "")' data-bind-to="CompareSummary">@Model.CompareItems</span>
+				</span>
+				<span class="shopbar-button-label">
+					<span>@T("Common.Shopbar.CompareProductsPartOne")</span><br />
+					<span style="font-weight: bold; color: #333">@T("Common.Shopbar.CompareProductsPartTwo")</span>
+				</span>
+				<span class="shopbar-button-label-sm">
+					Vergleichen
+				</span>
+			</a>
+		</div>
+	}
+
+	@if (Model.ShoppingCartEnabled)
+	{
+		<div class="shopbar-tool" id="shopbar-cart" data-target="#cart-tab">
+			<a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart")"
+			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
+				<span class="shopbar-button-icon">
+					<i class="@(useFa ? "fa fa-shopping-basket" : "lnr lnr-cart")"></i>
+					<span class='label label-pill label-cart-amount label-@(labelStyle)@(Model.ShoppingCartItems == 0 ? " hidden-xs-up" : "")' data-bind-to="TotalProducts">
+						@Model.ShoppingCartItems
+					</span>
+				</span>
+				<span class="shopbar-button-label">
+					<span data-bind-to="SubTotal">@Model.ShoppingCartAmount</span><br />
+					<span style="font-weight: bold; color: #333">@T("Common.Shopbar.Basket")</span>
+				</span>
+				<span class="shopbar-button-label-sm">
+					Warenkorb
+				</span>
+			</a>
+		</div>
+	}
+</div>

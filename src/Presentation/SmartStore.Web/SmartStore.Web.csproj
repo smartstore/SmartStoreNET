@@ -1129,7 +1129,6 @@
     <Content Include="Content\bootstrap\js\bootstrap-transition.js" />
     <Content Include="Content\bootstrap\js\bootstrap-typeahead.js" />
     <Content Include="Content\bootstrap\custom\images\loading.gif" />
-    <Content Include="Content\fileupload\fileupload.css" />
     <Content Include="Content\fileupload\images\loading.gif" />
     <Content Include="Content\fileupload\images\progressbar.gif" />
     <Content Include="Content\fileupload\jquery.fileupload-fp.js" />

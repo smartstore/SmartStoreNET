@@ -2333,23 +2333,43 @@ namespace SmartStore.Admin.Controllers
 
         #region Product specification attributes
 
-        public ActionResult ProductSpecificationAttributeAdd(int specificationAttributeOptionId, 
-            bool allowFiltering, bool showOnProductPage, int displayOrder, int productId)
+        public ActionResult ProductSpecificationAttributeAdd(
+			int specificationAttributeOptionId,
+			bool allowFiltering,
+			bool showOnProductPage,
+			int displayOrder,
+			int productId)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+			var success = false;
+			var message = string.Empty;
 
-            var psa = new ProductSpecificationAttribute()
-            {
-                SpecificationAttributeOptionId = specificationAttributeOptionId,
-                ProductId = productId,
-                AllowFiltering = allowFiltering,
-                ShowOnProductPage = showOnProductPage,
-                DisplayOrder = displayOrder,
-            };
-            _specificationAttributeService.InsertProductSpecificationAttribute(psa);
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var psa = new ProductSpecificationAttribute
+				{
+					SpecificationAttributeOptionId = specificationAttributeOptionId,
+					ProductId = productId,
+					AllowFiltering = allowFiltering,
+					ShowOnProductPage = showOnProductPage,
+					DisplayOrder = displayOrder,
+				};
 
-            return Json(new { Result = true }, JsonRequestBehavior.AllowGet);
+				try
+				{
+					_specificationAttributeService.InsertProductSpecificationAttribute(psa);
+					success = true;
+				}
+				catch (Exception exception)
+				{
+					message = exception.Message;
+				}
+			}
+			else
+			{
+				NotifyAccessDenied();
+			}
+
+			return Json(new { success = success, message = message });
         }
         
         [HttpPost, GridAction(EnableCustomBinding = true)]
@@ -2422,6 +2442,7 @@ namespace SmartStore.Admin.Controllers
 				psa.AllowFiltering = model.AllowFiltering;
 				psa.ShowOnProductPage = model.ShowOnProductPage;
 				psa.DisplayOrder = model.DisplayOrder;
+
 				_specificationAttributeService.UpdateProductSpecificationAttribute(psa);
 			}
 

@@ -244,6 +244,14 @@ namespace SmartStore.Services.Catalog
             if (productSpecificationAttribute == null)
                 throw new ArgumentNullException("productSpecificationAttribute");
 
+			var existingAttribute = _productSpecificationAttributeRepository.TableUntracked.FirstOrDefault(
+				x => x.ProductId == productSpecificationAttribute.ProductId && x.SpecificationAttributeOptionId == productSpecificationAttribute.SpecificationAttributeOptionId);
+
+			if (existingAttribute != null)
+			{
+				throw new SmartException(T("Common.Error.OptionAlreadyExists", existingAttribute.SpecificationAttributeOption?.Name.NaIfEmpty()));
+			}
+
             _productSpecificationAttributeRepository.Insert(productSpecificationAttribute);
 
             //event notification
@@ -255,7 +263,15 @@ namespace SmartStore.Services.Catalog
             if (productSpecificationAttribute == null)
                 throw new ArgumentNullException("productSpecificationAttribute");
 
-            _productSpecificationAttributeRepository.Update(productSpecificationAttribute);
+			var existingAttribute = _productSpecificationAttributeRepository.TableUntracked.FirstOrDefault(
+				x => x.ProductId == productSpecificationAttribute.ProductId && x.SpecificationAttributeOptionId == productSpecificationAttribute.SpecificationAttributeOptionId);
+
+			if (existingAttribute != null && existingAttribute.Id != productSpecificationAttribute.Id)
+			{
+				throw new SmartException(T("Common.Error.OptionAlreadyExists", existingAttribute.SpecificationAttributeOption?.Name.NaIfEmpty()));
+			}
+
+			_productSpecificationAttributeRepository.Update(productSpecificationAttribute);
 
             //event notification
             _eventPublisher.EntityUpdated(productSpecificationAttribute);

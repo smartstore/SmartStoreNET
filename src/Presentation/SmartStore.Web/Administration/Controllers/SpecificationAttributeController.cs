@@ -511,21 +511,33 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult SetAttributeValue(string pk, string value, string name, FormCollection form)
         {
-            try
-            {
-                //name is the entity id of product specification attribute mapping
-                var specificationAttribute = _specificationAttributeService.GetProductSpecificationAttributeById(Convert.ToInt32(name));
-                specificationAttribute.SpecificationAttributeOptionId = Convert.ToInt32(value);
-                _specificationAttributeService.UpdateProductSpecificationAttribute(specificationAttribute);
-                Response.StatusCode = 200;
+			var success = false;
+			var message = string.Empty;
 
-                // we give back the name to xeditable to overwrite the grid data in success event when a grid element got updated
-                return Json(new { name = specificationAttribute.SpecificationAttributeOption.Name });
-            }
-            catch (Exception ex)
-            {
-                return new HttpStatusCodeResult(501, ex.Message);
-            }
+			// name is the entity id of product specification attribute mapping
+			var attribute = _specificationAttributeService.GetProductSpecificationAttributeById(Convert.ToInt32(name));
+
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				try
+				{
+					attribute.SpecificationAttributeOptionId = Convert.ToInt32(value);
+
+					_specificationAttributeService.UpdateProductSpecificationAttribute(attribute);
+					success = true;
+				}
+				catch (Exception exception)
+				{
+					message = exception.Message;
+				}
+			}
+			else
+			{
+				NotifyAccessDenied();
+			}
+
+			// we give back the name to xeditable to overwrite the grid data in success event when a grid element got updated
+			return Json(new { success = success, message = message, name = attribute.SpecificationAttributeOption?.Name });
         }
 
         #endregion

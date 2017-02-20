@@ -546,7 +546,11 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("ShoppingCart.MoveToWishlist", "Move to wishlist", "In die Wunschliste verschieben");
             builder.AddOrUpdate("Products.Compare.CompareNow", "Compare now", "Jetzt vergleichen");
             builder.AddOrUpdate("ShoppingCart.PaymentButtonBar.Or", "Or", "Oder");
-            
-        }
-    }
+
+			builder.AddOrUpdate("Common.Error.OptionAlreadyExists",
+				"The option \"{0}\" already exists.",
+				"Die Option \"{0}\" existiert bereits.");
+
+		}
+	}
 }

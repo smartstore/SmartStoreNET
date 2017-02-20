@@ -67,38 +67,21 @@ namespace SmartStore.PayPal.Controllers
 
 		private string GetCheckoutButtonUrl(PayPalExpressPaymentSettings settings)
 		{
-			const string expressCheckoutButton = "https://www.paypalobjects.com/{0}/i/btn/btn_xpressCheckout.gif";
+			var expressCheckoutButton = "~/Plugins/SmartStore.PayPal/Content/checkout-button-default.png";
+            var cultureString = Services.WorkContext.WorkingLanguage.LanguageCulture;
 
-			HttpWebResponse response = null;
-			var culture = Services.WorkContext.WorkingLanguage.LanguageCulture;
+            if (cultureString.StartsWith("en-"))
+            {
+                expressCheckoutButton = "~/Plugins/SmartStore.PayPal/Content/checkout-button-en.png";
+            }
+            else if (cultureString.StartsWith("de-"))
+            {
+                expressCheckoutButton = "~/Plugins/SmartStore.PayPal/Content/checkout-button-de.png";
+            }
 
-			if (settings.SecurityProtocol.HasValue)
-			{
-				ServicePointManager.SecurityProtocol = settings.SecurityProtocol.Value;
-			}
+            return expressCheckoutButton;
 
-			var buttonUrl = expressCheckoutButton.FormatInvariant(culture.Replace("-", "_"));
-			var request = (HttpWebRequest)WebRequest.Create(buttonUrl);
-			request.Method = "HEAD";
-
-			try
-			{
-				response = (HttpWebResponse)request.GetResponse();
-				return buttonUrl;
-			}
-			catch (WebException)
-			{
-				/* A WebException will be thrown if the status of the response is not `200 OK` */
-				return expressCheckoutButton.FormatInvariant("en_US");
-			}
-			finally
-			{
-				if (response != null)
-				{
-					response.Close();
-				}
-			}
-		}
+        }
 
 		[AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure()

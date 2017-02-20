@@ -96,7 +96,7 @@
         });
 
         elRemove.click(function (e) {
-            img.attr('src', '@pictureService.GetDefaultPictureUrl()');
+            img.attr('src', '@pictureService.GetDefaultPictureUrl(100)');
             elHidden.val(0);
             $(this).hide();
             e.preventDefault();

@@ -2,10 +2,12 @@
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
@@ -24,22 +26,28 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPermissionService _permissionService;
+		private readonly AdminAreaSettings _adminAreaSettings;
 
-        #endregion Fields
+		#endregion Fields
 
-        #region Constructors
+		#region Constructors
 
-        public ProductAttributeController(IProductAttributeService productAttributeService,
-            ILanguageService languageService, ILocalizedEntityService localizedEntityService,
-            ILocalizationService localizationService, ICustomerActivityService customerActivityService,
-            IPermissionService permissionService)
+		public ProductAttributeController(
+			IProductAttributeService productAttributeService,
+            ILanguageService languageService,
+			ILocalizedEntityService localizedEntityService,
+            ILocalizationService localizationService,
+			ICustomerActivityService customerActivityService,
+            IPermissionService permissionService,
+			AdminAreaSettings adminAreaSettings)
         {
-            this._productAttributeService = productAttributeService;
-            this._languageService = languageService;
-            this._localizedEntityService = localizedEntityService;
-            this._localizationService = localizationService;
-            this._customerActivityService = customerActivityService;
-            this._permissionService = permissionService;
+            _productAttributeService = productAttributeService;
+            _languageService = languageService;
+            _localizedEntityService = localizedEntityService;
+            _localizationService = localizationService;
+            _customerActivityService = customerActivityService;
+            _permissionService = permissionService;
+			_adminAreaSettings = adminAreaSettings;
         }
 
         #endregion
@@ -70,14 +78,9 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            var productAttributes = _productAttributeService.GetAllProductAttributes();
-            var gridModel = new GridModel<ProductAttributeModel>
-            {
-                Data = productAttributes.Select(x => x.ToModel()),
-                Total = productAttributes.Count()
-            };
+			ViewData["GridPageSize"] = _adminAreaSettings.GridPageSize;
 
-            return View(gridModel);
+            return View();
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
@@ -89,8 +92,13 @@ namespace SmartStore.Admin.Controllers
 			{
 				var productAttributes = _productAttributeService.GetAllProductAttributes();
 
-				gridModel.Data = productAttributes.Select(x => x.ToModel());
-				gridModel.Total = productAttributes.Count();
+				var data = productAttributes
+					.ForCommand(command)
+					.Select(x => x.ToModel())
+					.ToList();
+
+				gridModel.Data = data.PagedForCommand(command);
+				gridModel.Total = data.Count;
 			}
 			else
 			{

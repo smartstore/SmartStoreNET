@@ -8,7 +8,7 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Catalog
 {
-    [Validator(typeof(ProductAttributeValidator))]
+	[Validator(typeof(ProductAttributeValidator))]
     public class ProductAttributeModel : EntityModelBase, ILocalizedModel<ProductAttributeLocalizedModel>
     {
         public ProductAttributeModel()
@@ -26,10 +26,14 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Description")]
         [AllowHtml]
         public string Description {get;set;}
-        
 
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.AllowFiltering")]
+		public bool AllowFiltering { get; set; }
 
-        public IList<ProductAttributeLocalizedModel> Locales { get; set; }
+		[SmartResourceDisplayName("Common.DisplayOrder")]
+		public int DisplayOrder { get; set; }
+
+		public IList<ProductAttributeLocalizedModel> Locales { get; set; }
 
     }
 
@@ -37,7 +41,10 @@ namespace SmartStore.Admin.Models.Catalog
     {
         public int LanguageId { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Name")]
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias")]
+		public string Alias { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.ProductAttributes.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
 

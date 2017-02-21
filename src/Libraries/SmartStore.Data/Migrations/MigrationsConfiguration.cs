@@ -551,6 +551,11 @@ namespace SmartStore.Data.Migrations
 				"The option \"{0}\" already exists.",
 				"Die Option \"{0}\" existiert bereits.");
 
+			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.AllowFiltering",
+				"Allow filtering",
+				"Filtern zulassen",
+				"Specifies whether search results can be filtered by this attribute.",
+				"Legt fest, ob Suchergebnisse nach diesem Attribut gefiltert werden können.");
 		}
 	}
 }

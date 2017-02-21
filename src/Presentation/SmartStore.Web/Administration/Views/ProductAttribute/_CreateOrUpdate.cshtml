@@ -1,9 +1,26 @@
-﻿@model ProductAttributeModel
-
-@using Telerik.Web.Mvc.UI;
+﻿@using Telerik.Web.Mvc.UI;
+@model ProductAttributeModel
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
+
+@if (Model.Id != 0)
+{
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Id)
+			</td>
+			<td class="adminData">
+				@Html.DisplayFor(model => model.Id)
+				@Html.ValidationMessageFor(model => model.Id)
+			</td>
+		</tr>
+	</table>
+
+	<p></p>
+}
+
 @(Html.LocalizedEditor<ProductAttributeModel, ProductAttributeLocalizedModel>("productattribute-localized",
     @<table class="adminContent">
         <tr>
@@ -13,6 +30,15 @@
             <td class="adminData">
                 @Html.EditorFor(model => Model.Locales[item].Name)
                 @Html.ValidationMessageFor(model => model.Locales[item].Name)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].Alias)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => Model.Locales[item].Alias)
+                @Html.ValidationMessageFor(model => model.Locales[item].Alias)
             </td>
         </tr>
         <tr>
@@ -43,6 +69,15 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Alias)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Alias)
+                @Html.ValidationMessageFor(model => model.Alias)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Description)
             </td>
             <td class="adminData">
@@ -54,13 +89,22 @@
 ))
 
 <table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Alias)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.Alias)
-            @Html.ValidationMessageFor(model => model.Alias)
-        </td>
-    </tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.DisplayOrder)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.DisplayOrder)
+			@Html.ValidationMessageFor(model => model.DisplayOrder)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.AllowFiltering)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.AllowFiltering)
+			@Html.ValidationMessageFor(model => model.AllowFiltering)
+		</td>
+	</tr>
 </table>

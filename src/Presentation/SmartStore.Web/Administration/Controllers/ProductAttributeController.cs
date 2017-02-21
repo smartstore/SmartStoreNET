@@ -2,9 +2,9 @@
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
@@ -13,7 +13,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public class ProductAttributeController : AdminControllerBase
     {
         #region Fields
@@ -46,29 +46,20 @@ namespace SmartStore.Admin.Controllers
         
         #region Utilities
 
-        [NonAction]
-        public void UpdateLocales(ProductAttribute productAttribute, ProductAttributeModel model)
+        private void UpdateLocales(ProductAttribute productAttribute, ProductAttributeModel model)
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(productAttribute,
-                                                               x => x.Name,
-                                                               localized.Name,
-                                                               localized.LanguageId);
-
-                _localizedEntityService.SaveLocalizedValue(productAttribute,
-                                                           x => x.Description,
-                                                           localized.Description,
-                                                           localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(productAttribute, x => x.Name, localized.Name, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(productAttribute, x => x.Alias, localized.Alias, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(productAttribute, x => x.Description, localized.Description, localized.LanguageId);
             }
         }
-
 
         #endregion
         
         #region Methods
 
-        //list
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -85,6 +76,7 @@ namespace SmartStore.Admin.Controllers
                 Data = productAttributes.Select(x => x.ToModel()),
                 Total = productAttributes.Count()
             };
+
             return View(gridModel);
         }
 
@@ -119,6 +111,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new ProductAttributeModel();
+			model.AllowFiltering = true;
 
             AddLocales(_languageService, model.Locales);
             return View(model);
@@ -136,18 +129,17 @@ namespace SmartStore.Admin.Controllers
                 _productAttributeService.InsertProductAttribute(productAttribute);
                 UpdateLocales(productAttribute, model);
 
-                //activity log
+                // activity log
                 _customerActivityService.InsertActivity("AddNewProductAttribute", _localizationService.GetResource("ActivityLog.AddNewProductAttribute"), productAttribute.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Attributes.ProductAttributes.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = productAttribute.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
-        //edit
         public ActionResult Edit(int id)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -155,15 +147,15 @@ namespace SmartStore.Admin.Controllers
 
             var productAttribute = _productAttributeService.GetProductAttributeById(id);
             if (productAttribute == null)
-                //No product attribute found with the specified id
                 return RedirectToAction("List");
 
             var model = productAttribute.ToModel();
-            //locales
+
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = productAttribute.GetLocalized(x => x.Name, languageId, false, false);
-                locale.Description = productAttribute.GetLocalized(x => x.Description, languageId, false, false);
+				locale.Alias = productAttribute.GetLocalized(x => x.Alias, languageId, false, false);
+				locale.Description = productAttribute.GetLocalized(x => x.Description, languageId, false, false);
             });
 
             return View(model);
@@ -177,7 +169,6 @@ namespace SmartStore.Admin.Controllers
 
             var productAttribute = _productAttributeService.GetProductAttributeById(model.Id);
             if (productAttribute == null)
-                //No product attribute found with the specified id
                 return RedirectToAction("List");
             
             if (ModelState.IsValid)
@@ -187,18 +178,17 @@ namespace SmartStore.Admin.Controllers
 
                 UpdateLocales(productAttribute, model);
 
-                //activity log
+                // activity log
                 _customerActivityService.InsertActivity("EditProductAttribute", _localizationService.GetResource("ActivityLog.EditProductAttribute"), productAttribute.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Attributes.ProductAttributes.Updated"));
                 return continueEditing ? RedirectToAction("Edit", productAttribute.Id) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
-        //delete
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -207,7 +197,6 @@ namespace SmartStore.Admin.Controllers
 
             var productAttribute = _productAttributeService.GetProductAttributeById(id);
             if (productAttribute == null)
-                //No product attribute found with the specified id
                 return RedirectToAction("List");
 
             _productAttributeService.DeleteProductAttribute(productAttribute);

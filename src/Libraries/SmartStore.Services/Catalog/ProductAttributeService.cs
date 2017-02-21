@@ -90,7 +90,7 @@ namespace SmartStore.Services.Catalog
         public virtual IList<ProductAttribute> GetAllProductAttributes()
         {
 			var query = from pa in _productAttributeRepository.Table
-						orderby pa.Name
+						orderby pa.DisplayOrder, pa.Name
 						select pa;
 			var productAttributes = query.ToListCached("db.prodattrs.all");
 			return productAttributes;

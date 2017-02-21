@@ -27,5 +27,17 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
 		[DataMember]
 		public string Description { get; set; }
-    }
+
+		/// <summary>
+		/// Gets or sets whether the attribute can be filtered
+		/// </summary>
+		[DataMember]
+		public bool AllowFiltering { get; set; }
+
+		/// <summary>
+		/// Gets or sets the display order
+		/// </summary>
+		[DataMember]
+		public int DisplayOrder { get; set; }
+	}
 }

@@ -6,6 +6,17 @@
 @{
 	var miscActions = new Dictionary<string, RouteValueDictionary>();
 
+	if (Model.HasSampleDownload)
+	{
+		miscActions["sample"] = new RouteValueDictionary(new
+		{
+			title = T("Products.DownloadSample").Text,
+			icon = "fa fa-download",
+			@class = "action-download-sample",
+			href = Url.Action("Sample", "Download", new { id = Model.Id })
+		});
+	}
+
 	if (!Model.AddToCart.DisableWishlistButton)
 	{
 		miscActions["wishlist"] = new RouteValueDictionary(new

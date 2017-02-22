@@ -15,7 +15,7 @@ namespace SmartStore.Core.Search.Facets
 		{
 			Guard.NotNull(descriptor, nameof(descriptor));
 
-			return source.OrderBy(descriptor.OrderBy, descriptor.Key);
+			return source.OrderBy(descriptor.OrderBy, descriptor.IsMultiSelect);
 		}
 
 		/// <summary>
@@ -23,28 +23,31 @@ namespace SmartStore.Core.Search.Facets
 		/// </summary>
 		/// <param name="source">Facets</param>
 		/// <param name="sorting">Type of sorting</param>
+		/// <param name="selectedFirst">Whether to display selected facets first</param>
 		/// <returns>Ordered facets</returns>
-		public static IOrderedEnumerable<Facet> OrderBy(this IEnumerable<Facet> source, FacetSorting sorting, string key = null)
+		public static IOrderedEnumerable<Facet> OrderBy(this IEnumerable<Facet> source, FacetSorting sorting, bool selectedFirst = true)
 		{
 			Guard.NotNull(source, nameof(source));
 
 			switch (sorting)
 			{
 				case FacetSorting.ValueAsc:
-					{
+					if (selectedFirst)
 						return source.OrderByDescending(x => x.Value.IsSelected).ThenBy(x => x.Value.Label);
-					}
-				case FacetSorting.DisplayOrder:
-					{
-						if (key.IsCaseInsensitiveEqual("price"))
-							return source.OrderBy(x => x.Value.DisplayOrder);
+					else
+						return source.OrderBy(x => x.Value.Label);
 
+				case FacetSorting.DisplayOrder:
+					if (selectedFirst)
 						return source.OrderByDescending(x => x.Value.IsSelected).ThenBy(x => x.Value.DisplayOrder);
-					}
+					else
+						return source.OrderBy(x => x.Value.DisplayOrder);						
+
 				default:
-					{
+					if (selectedFirst)
 						return source.OrderByDescending(x => x.Value.IsSelected).ThenByDescending(x => x.HitCount);
-					}
+					else
+						return source.OrderByDescending(x => x.HitCount);
 			}
 		}
 

@@ -81,11 +81,6 @@ namespace SmartStore.Core.Search
 		public Dictionary<int, DeliveryTime> DeliveryTimes { get; set; }
 
 		/// <summary>
-		/// All specification attributes
-		/// </summary>
-		public Dictionary<int, SpecificationAttribute> SpecificationAttributes { get; set; }
-
-		/// <summary>
 		/// Use this dictionary for any custom data required along indexing
 		/// </summary>
 		public Dictionary<string, object> CustomProperties { get; set; }

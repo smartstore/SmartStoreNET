@@ -68,9 +68,10 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	return {
 
 	    initMenu: function () {
+	        //var offcanvasMenu = $('<aside id="offcanvas-menu" class="offcanvas x-offcanvas-lg offcanvas-overlay offcanvas-shadow" data-overlay="true" data-noscroll="true" data-blocker="true"><div class="offcanvas-content"></div></aside>')
+            //    .appendTo('body');
 
-	        var offcanvasMenu = $('<aside id="offcanvas-menu" class="offcanvas x-offcanvas-lg offcanvas-overlay offcanvas-shadow" data-overlay="true" data-noscroll="true" data-blocker="true"><div class="offcanvas-content"></div></aside>')
-                .appendTo('body');
+	        var offcanvasMenu = $('#offcanvas-menu');
 
 	        var menuContent = $(".menubar-section .menubar");
 	        menuContent.clone().appendTo(offcanvasMenu.children().first());
@@ -89,9 +90,9 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
 	        offcanvasMenu.children().first().append("<div id='offcanvas-menu-catalog'><ul class='navbar-nav'></ul></div>");
 
-	        $("#shopbar-menu").click(function () {
-	            offcanvasMenu.offcanvas('show');
-	        });
+	        //$("#shopbar-menu").click(function () {
+	        //    offcanvasMenu.offcanvas('show');
+	        //});
 
 	        //selectedMenuItemId = categories.data("selected-menu-item");
 	        selectedMenuItemId = $(".megamenu .navbar-nav").data("selected-menu-item");

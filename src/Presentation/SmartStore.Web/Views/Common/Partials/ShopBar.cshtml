@@ -24,12 +24,3 @@
 		@{ Html.RenderPartial("ShopBar.Tools", Model); }
 	</div>
 </div>
-
-@using (Html.BeginZoneContent("end", key: "offcanvas-cart"))
-{
-	<aside id="offcanvas-cart" class="offcanvas offcanvas-lg offcanvas-overlay offcanvas-right offcanvas-shadow" data-lg="true" data-blocker="true" data-overlay="true">
-		<div class="offcanvas-content">
-			@Html.Action("OffCanvasCart", "ShoppingCart", new { area = "" })
-		</div>
-	</aside>
-}

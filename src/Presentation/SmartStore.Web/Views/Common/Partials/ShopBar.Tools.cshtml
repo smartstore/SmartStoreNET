@@ -10,7 +10,7 @@
 <div class="shopbar-col shopbar-tools">
 	<!-- Hamburger Menu -->
 	<div class="shopbar-tool hidden-lg-up" id="shopbar-menu">
-		<a class="shopbar-button" href="#">
+		<a class="shopbar-button" href="#" data-toggle="offcanvas" data-autohide="true" data-placement="left" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-menu">
 			<span class="shopbar-button-icon">
 				<i class="@(useFa ? "fa fa-bars" : "lnr lnr-menu")"></i>
 			</span>
@@ -35,7 +35,7 @@
 	@if (Model.WishlistEnabled)
 	{
 		<div class="shopbar-tool" id="shopbar-wishlist" data-target="#wishlist-tab">
-			<a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart", new { isWishlist = true })"
+			<a class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart", new { isWishlist = true })"
 				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="@(useFa ? "fa fa-heart-o" : "lnr lnr-heart")"></i>
@@ -55,7 +55,7 @@
 	@if (Model.CompareProductsEnabled)
 	{
 		<div class="shopbar-tool" id="shopbar-compare" data-target="#compare-tab">
-			<a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
+			<a class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("CompareSummary", "Catalog")"
 				data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="@(useFa ? "fa fa-retweet" : "lnr lnr-sync")"></i>
@@ -75,7 +75,7 @@
 	@if (Model.ShoppingCartEnabled)
 	{
 		<div class="shopbar-tool" id="shopbar-cart" data-target="#cart-tab">
-			<a class="navbar-toggler shopbar-button" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart")"
+			<a class="shopbar-button navbar-toggler" data-toggle="offcanvas" data-summary-href="@Url.Action("ShoppingCartSummary", "ShoppingCart")"
 			   data-autohide="true" data-placement="right" data-fullscreen="false" data-disablescrolling="true" data-target="#offcanvas-cart">
 				<span class="shopbar-button-icon">
 					<i class="@(useFa ? "fa fa-shopping-basket" : "lnr lnr-cart")"></i>
@@ -94,3 +94,21 @@
 		</div>
 	}
 </div>
+
+@using (Html.BeginZoneContent("end", key: "offcanvas-menu"))
+{
+	<aside id="offcanvas-menu" class="offcanvas offcanvas-overlay offcanvas-left offcanvas-shadow" data-blocker="true" data-overlay="true" data-placement="left">
+		<div class="offcanvas-content">
+			<!-- AJAX -->
+		</div>
+	</aside>
+}
+
+@using (Html.BeginZoneContent("end", key: "offcanvas-cart"))
+{
+	<aside id="offcanvas-cart" class="offcanvas offcanvas-lg offcanvas-overlay offcanvas-right offcanvas-shadow" data-lg="true" data-blocker="true" data-overlay="true">
+		<div class="offcanvas-content">
+			@Html.Action("OffCanvasCart", "ShoppingCart", new { area = "" })
+		</div>
+	</aside>
+}

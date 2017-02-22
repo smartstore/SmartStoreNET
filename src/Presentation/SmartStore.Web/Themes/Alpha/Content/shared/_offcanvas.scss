@@ -36,6 +36,7 @@ $offcanvas-menu-bg: $gray-lightest; // $clr-blue-grey-900;
     .canvas-sliding-right.canvas-fullscreen &       { transform: translate3d(100%, 0, 0); }
 
     .canvas-sliding-left.canvas-overlay &           { transform: translate3d(-15%, 0, 0); }
+    .canvas-sliding-right.canvas-overlay &          { transform: translate3d(15%, 0, 0); }
 
     .canvas-fullscreen &                            { box-shadow: none !important; }
 }

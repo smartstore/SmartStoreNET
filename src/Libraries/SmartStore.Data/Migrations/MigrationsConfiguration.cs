@@ -556,6 +556,8 @@ namespace SmartStore.Data.Migrations
 				"Filtern zulassen",
 				"Specifies whether search results can be filtered by this attribute.",
 				"Legt fest, ob Suchergebnisse nach diesem Attribut gefiltert werden können.");
+
+			builder.AddOrUpdate("Common.Menu", "Menu", "Menü");
 		}
 	}
 }

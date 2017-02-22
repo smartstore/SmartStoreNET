@@ -59,7 +59,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	            $("#offcanvas-menu-catalog").html(response);
 	        },
 	        error: function (jqXHR, textStatus, errorThrown) {
-	            console.log(errorThrown);
+	        	console.log(errorThrown);
 	        },
 	        complete: function () { }
 	    });

@@ -3,6 +3,7 @@
 @using SmartStore.Web.Models.Common;
 
 @{ 
+	string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
 	var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
 	var useFa = false;
 }
@@ -15,19 +16,19 @@
 				<i class="@(useFa ? "fa fa-bars" : "lnr lnr-menu")"></i>
 			</span>
 			<span class="shopbar-button-label-sm">
-				Menü
+				@T("Common.Menu")
 			</span>
 		</a>
 	</div>
 
 	<!-- User -->
 	<div class="shopbar-tool hidden-lg-up" id="shopbar-user">
-		<a class="shopbar-button" href="#">
+		<a class="shopbar-button" href="@accountUrl">
 			<span class="shopbar-button-icon">
 				<i class="@(useFa ? "fa fa-user" : "lnr lnr-user")"></i>
 			</span>
 			<span class="shopbar-button-label-sm">
-				Anmelden
+				@T(Model.IsAuthenticated ? "Account.MyAccount" : "Account.Login")
 			</span>
 		</a>
 	</div>
@@ -46,7 +47,7 @@
 					<span style="font-weight: bold; color: #333">@T("Common.Shopbar.WishlistPartTwo")</span>
 				</span>
 				<span class="shopbar-button-label-sm">
-					Wunschliste
+					@T("Wishlist")
 				</span>
 			</a>
 		</div>
@@ -66,7 +67,7 @@
 					<span style="font-weight: bold; color: #333">@T("Common.Shopbar.CompareProductsPartTwo")</span>
 				</span>
 				<span class="shopbar-button-label-sm">
-					Vergleichen
+					@T("Common.Shopbar.Compare")
 				</span>
 			</a>
 		</div>
@@ -88,7 +89,7 @@
 					<span style="font-weight: bold; color: #333">@T("Common.Shopbar.Basket")</span>
 				</span>
 				<span class="shopbar-button-label-sm">
-					Warenkorb
+					@T("Common.Shopbar.Basket")
 				</span>
 			</a>
 		</div>

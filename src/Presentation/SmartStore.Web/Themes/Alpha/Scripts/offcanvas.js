@@ -184,11 +184,14 @@
         var options = data ? 'toggle' : self.data();
 
         e.stopPropagation();
+        e.preventDefault();
 
         if (data)
             data.toggle();
         else
-            $canvas.offcanvas(options);
+        	$canvas.offcanvas(options);
+
+        return false;
     })
 
 })(jQuery, window, document);

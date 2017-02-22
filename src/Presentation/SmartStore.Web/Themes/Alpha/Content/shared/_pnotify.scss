@@ -47,6 +47,14 @@
 .ui-pnotify-text {
     font-size: $font-size-lg;
     line-height: 1.5;
+    max-height: 250px;
+    overflow-y: auto;
+
+    > br {
+        display: block;
+        line-height: 2px;
+        content: '';
+    }
 }
 
 @include media-breakpoint-down(sm) {
@@ -85,7 +93,23 @@
 
 @media (max-width: 480px) {
     .ui-pnotify-mobile-able.ui-pnotify {
+        
+    }
+    .ui-pnotify-mobile-able {
+        margin-top: -80px;
         font-size: inherit !important;
+    }
+    .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able {
+        margin-top: -85px;
+    }
+    .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able {
+        margin-top: -90px;
+    }
+    .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able {
+        margin-top: -95px;
+    }
+    .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able ~ .ui-pnotify-mobile-able {
+        margin-top: -100px;
     }
 }
 

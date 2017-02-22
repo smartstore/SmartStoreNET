@@ -48,10 +48,30 @@
             this.toggle();
         }
 
-    	// Close on swipe
-        var swipeEvent = el.hasClass('offcanvas-right') ? 'swiperight' : 'swipeleft';
-        el.children().first().hammer({}).on(swipeEvent, function (e) {
-        	self.hide();
+    	// Close on pan[left|right]
+        var onRight = el.hasClass('offcanvas-right'),
+			canPan = el.hasClass('offcanvas-overlay');
+
+        el.children().first().hammer({}).on('panstart panend panleft panright', function (e) {
+        	var delta = onRight
+				? Math.max(0, e.gesture.deltaX)
+				: Math.min(0, e.gesture.deltaX);
+
+        	if (e.type.toLowerCase() === 'panstart') {
+        		el.css('transition', 'none');
+        	}
+        	else if (e.type.toLowerCase() === 'panend') {
+        		el.css('transform', '').css('transition', '');
+        		if (Math.abs(delta) >= 100) {
+        			self.hide();
+        		}
+        	}
+        	else {
+        		// panleft or panright
+        		if (canPan) {
+        			el.css('transform', 'translate3d(' + delta + 'px, 0, 0)');
+        		}
+        	}
         });
     }
 

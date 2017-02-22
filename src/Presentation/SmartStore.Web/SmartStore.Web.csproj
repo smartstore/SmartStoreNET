@@ -342,6 +342,7 @@
     <Compile Include="Models\Catalog\ProductAskQuestionModel.cs" />
     <Compile Include="Models\Catalog\ProductSummaryModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerOverviewModel.cs" />
+    <Compile Include="Models\Catalog\AjaxCategoryModel.cs" />
     <Compile Include="Models\Catalog\SearchBoxModel.cs" />
     <Compile Include="Models\Catalog\ProductsByTagModel.cs" />
     <Compile Include="Models\Catalog\PopularProductTagsModel.cs" />
@@ -962,6 +963,7 @@
     <Content Include="Themes\Alpha\Content\pnotify\js\pnotify.js" />
     <Content Include="Themes\Alpha\Content\pnotify\js\pnotify.mobile.js" />
     <Content Include="Themes\Alpha\Scripts\jquery.hammer.js" />
+    <Content Include="Themes\Alpha\Scripts\public.offcanvas-menu.js" />
     <Content Include="Themes\Alpha\Scripts\public.product.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.responsiveNav.js" />
     <Content Include="Scripts\smartstore.entityPicker.js" />
@@ -1930,6 +1932,8 @@
     <Content Include="Views\Product\Partials\_ProductTemplate.Grouped.AssociatedProduct.cshtml" />
     <Content Include="Views\Product\Partials\Product.Offer.Actions.Misc.cshtml" />
     <Content Include="Views\Common\Partials\ShopBar.Tools.cshtml" />
+    <Content Include="Themes\Alpha\Content\_menu.scss" />
+    <Content Include="Views\Catalog\ChildCategories.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,0 +1,88 @@
+﻿/// <reference path="bs4/scss/bootstrap.scss" />
+
+$ocm-border-color:                      rgba(#000, 0.15);
+
+#offcanvas-menu {
+    .menubar {
+        text-align: left;
+        border-bottom: 1px solid $ocm-border-color;
+    }
+    .menubar-group {
+        display: block;
+        white-space: nowrap;
+    }
+    .language-selector,
+    .currency-selector {
+        border-bottom: 1px solid $ocm-border-color;
+        width: 50%;
+        display: inline-block;
+    }
+
+    .navbar-nav .nav-item {
+        display: block;
+        font-size: 1rem;
+    }
+
+    .navbar-nav .nav-item {
+        margin: 0.2rem 1.6rem;
+        float: none;
+        border-bottom: 1px solid $ocm-border-color;
+        
+        .nav-link {
+            display: inline-block;
+            color: $body-color;
+        }
+    }
+
+    .subcat-container {
+        .category-info {
+            padding-left: 1.6rem;    
+        }
+        .navbar-nav .nav-item {
+            .nav-link {
+                padding-left: 0.625rem;    
+                padding-right: 2rem;    
+            }
+            .fa {
+                color: $body-color;
+            }
+            .fa-chevron-right {
+                position: absolute;
+                right: 1rem;
+                top: .925rem;
+            }
+            .fa-chevron-left {
+                margin-right: .2rem;
+            }
+        }
+        .navbar-nav { 
+
+        }
+    }
+
+
+    .navbar-nav .back-to-parent-cat {
+        padding-left: 0;
+    }
+
+    .navbar-nav .go-to-current-cat {
+        font-weight: bold;
+    }
+
+    .button-bar {
+        background: $gray-lightest;
+        padding: 1rem 1.6rem;    
+        span {
+            margin-right: 1rem;
+        }
+    }
+    .category-info {
+        .category-name {
+            font-size: 1.5rem;
+            padding-top: 1rem;
+        }
+        .category-desc {
+            font-size: 0.925rem;
+        }
+    }
+}

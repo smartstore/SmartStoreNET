@@ -7,6 +7,8 @@
 		Manufacturer,
 		DeliveryTime,
 		Attribute,
-		AttributeValue
+		AttributeValue,
+		Variant,
+		VariantValue
 	}
 }

@@ -119,6 +119,10 @@ namespace SmartStore.Core.Search.Facets
 
 		public FacetSorting? Sorting { get; set; }
 
+		public string PictureUrl { get; set; }
+
+		public string ColorSquaresRgb { get; set; }
+
 		#endregion
 
 		public override int GetHashCode()

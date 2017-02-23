@@ -97,7 +97,7 @@ namespace SmartStore.Core.Search.Facets
 			private set;
 		}
 
-		public bool IsRange
+		public bool IsRange 
 		{
 			get;
 			private set;
@@ -121,7 +121,7 @@ namespace SmartStore.Core.Search.Facets
 
 		public string PictureUrl { get; set; }
 
-		public string ColorSquaresRgb { get; set; }
+		public string Color { get; set; }
 
 		#endregion
 

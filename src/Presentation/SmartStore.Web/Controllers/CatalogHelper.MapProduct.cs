@@ -58,7 +58,7 @@ namespace SmartStore.Web.Controllers
 			}
 			
 			// Pagination
-			if (model.PagedList.TotalPages > 1 && (entity?.AllowCustomersToSelectPageSize ?? _catalogSettings.AllowCustomersToSelectPageSize))
+			if (entity?.AllowCustomersToSelectPageSize ?? _catalogSettings.AllowCustomersToSelectPageSize)
 			{
 				try
 				{

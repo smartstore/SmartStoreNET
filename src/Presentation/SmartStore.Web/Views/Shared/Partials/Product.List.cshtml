@@ -17,10 +17,7 @@
 	}
 
 	string pagerHtml = null;
-	if (Model.PagedList.TotalPages > 1)
-	{
-		pagerHtml = Html.Partial("Product.List.Pager", Model).ToHtmlString();
-	}
+	pagerHtml = Html.Partial("Product.List.Pager", Model).ToHtmlString();
 
 	// TODO: (mc) AllowFiltering (?)
 	var hasActions = Model.PagedList.TotalPages > 1
@@ -69,17 +66,17 @@
 
 @if (hasActions)
 {
-	<div class="artlist-actions artlist-actions--top clearfix">
+	<div class="artlist-actions artlist-actions--top d-flex flex-wrap">
 		@if (Model.AllowSorting || Model.AllowFiltering)
 		{
-			<div class="artlist-action-group artlist-action-group--filtersort clearfix">
+			<div class="artlist-action-group artlist-action-group--filtersort">
 				@{ Html.RenderPartial("Product.List.FilterSort", Model); }
 			</div>
 		}
 
 		@if (pagerHtml.HasValue() || Model.AllowViewModeChanging)
 		{
-			<div class="artlist-action-group artlist-action-group--page clearfix">
+			<div class="artlist-action-group artlist-action-group--page">
 				@* ViewMode *@
 				@if (Model.AllowViewModeChanging && Model.ViewMode == ProductSummaryViewMode.Grid || Model.ViewMode == ProductSummaryViewMode.List)
 				{
@@ -89,7 +86,7 @@
 				@* Pager *@
 				@if (pagerHtml.HasValue())
 				{
-					Html.RenderPartial("Product.List.Pager", Model);
+					@Html.Raw(pagerHtml)
 				}
 			</div>
 		}
@@ -103,10 +100,10 @@
 	}
 </div>
 
-@if (pagerHtml.HasValue())
+@if (Model.PagedList.TotalPages > 1 && pagerHtml.HasValue())
 {	
-	<div class="artlist-actions artlist-actions--bottom clearfix">
-		<div class="artlist-action-group artlist-action-group--page clearfix">
+	<div class="artlist-actions artlist-actions--bottom">
+		<div class="artlist-action-group artlist-action-group--page">
 			@Html.Raw(pagerHtml)
 		</div>
 	</div>

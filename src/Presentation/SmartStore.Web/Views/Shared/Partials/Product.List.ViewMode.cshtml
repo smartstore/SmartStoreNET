@@ -2,19 +2,17 @@
 
 @using SmartStore.Web.Models.Catalog;
 
-<div class="artlist-action artlist-action--viewmode pull-xs-left">
-	<div class="artlist-action artlist-action--viewmode">
-		@if (Model.ViewMode == ProductSummaryViewMode.Grid)
-		{
-			<a href='@ModifyUrl(null, "v=list")' class="btn btn-secondary btn-artlist-action tooltip-toggle" data-toggle="tooltip" rel="nofollow" title="@T("Products.SwitchToList")">
-				<i class="fa fa-list"></i>
-			</a>
-		}
-		else
-		{
-			<a href='@ModifyUrl(null, "v=grid")' class="btn btn-secondary btn-artlist-action tooltip-toggle" data-toggle="tooltip" rel="nofollow" title="@T("Products.SwitchToGrid")">
-				<i class="fa fa-th"></i>
-			</a>
-		}
-	</div>
+<div class="artlist-action artlist-action--viewmode">
+	@if (Model.ViewMode == ProductSummaryViewMode.Grid)
+	{
+		<a href='@ModifyUrl(null, "v=list")' class="btn btn-secondary btn-artlist-action tooltip-toggle" data-toggle="tooltip" rel="nofollow" title="@T("Products.SwitchToList")">
+			<i class="fa fa-list"></i>
+		</a>
+	}
+	else
+	{
+		<a href='@ModifyUrl(null, "v=grid")' class="btn btn-secondary btn-artlist-action tooltip-toggle" data-toggle="tooltip" rel="nofollow" title="@T("Products.SwitchToGrid")">
+			<i class="fa fa-th"></i>
+		</a>
+	}
 </div>

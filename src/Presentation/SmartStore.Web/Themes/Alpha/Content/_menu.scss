@@ -19,26 +19,24 @@ $ocm-border-color:                      rgba(#000, 0.15);
     }
 
     .navbar-nav .nav-item {
-        display: block;
-        font-size: 1rem;
-    }
-
-    .navbar-nav .nav-item {
         margin: 0.2rem 1.6rem;
         float: none;
         border-bottom: 1px solid $ocm-border-color;
-        
+        display: block;
+        font-size: 1rem;
+
         .nav-link {
             display: inline-block;
             color: $body-color;
         }
     }
 
-    .subcat-container {
+    .category-container {
         .category-info {
             padding-left: 1.6rem;    
         }
         .navbar-nav .nav-item {
+            
             .nav-link {
                 padding-left: 0.625rem;    
                 padding-right: 2rem;    
@@ -59,7 +57,6 @@ $ocm-border-color:                      rgba(#000, 0.15);
 
         }
     }
-
 
     .navbar-nav .back-to-parent-cat {
         padding-left: 0;
@@ -85,4 +82,26 @@ $ocm-border-color:                      rgba(#000, 0.15);
             font-size: 0.925rem;
         }
     }
+}
+
+
+// animation 
+#offcanvas-menu-catalog {
+    position: relative;
+}
+.category-container {
+    transition: margin-left 0.12s ease-in-out;
+}
+.category-container-slide-in {
+    position: absolute;
+    top: 0;
+    transition-delay: 0.3s;
+}
+.category-container-slide-in--from-left {
+    left: 1024px;   // TODO: Find out why i need this :-/
+    transition: left 0.3s ease-in-out;
+}
+.category-container-slide-in--from-right {
+    right: 1024px;   // TODO: Find out why i need this :-/
+    transition: right 0.3s ease-in-out;
 }

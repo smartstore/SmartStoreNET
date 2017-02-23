@@ -6,28 +6,13 @@
     Layout = "";
 }
 
-<div class="subcat-container">
+<div class="category-container">
 
-    @if (Model.Id != 0)
-    {
-        <div class="button-bar">
-            <a class="back-to-home m-r-05" href="@Url.RouteUrl("HomePage")">
-                <i class="fa fa-home"></i>
-                Home
-            </a>
-            <a class="close-offcanvas-menu offcanvas-closer">
-                <i class="fa fa-times"></i>
-                Schließen
-            </a>
+    <div class="category-info">
+        <div class="category-name">
+            @(Model.Id != 0 ? Model.Name : T("Warengruppen").Text)
         </div>
-
-
-        <div class="category-info">
-            <div class="category-name">
-                @Model.Name
-            </div>
-        </div>
-    }
+    </div>
 
     <ul class="nav navbar-nav">
 

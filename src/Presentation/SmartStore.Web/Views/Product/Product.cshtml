@@ -137,29 +137,29 @@
 						}
 					</aside>
 				</section>
+
+				if (Model.ProductType == ProductType.GroupedProduct)
+				{
+					<section class="pd-section pd-section-variants">
+						@if (Model.AssociatedProducts.Count == 0)
+						{
+							<div class="pd-no-associated-products alert alert-warning">
+								@T("Products.NoAssociatedProducts")
+							</div>
+						}
+						else
+						{
+							foreach (var product in Model.AssociatedProducts)
+							{
+								var dataDictProduct = new ViewDataDictionary();
+								dataDictProduct.TemplateInfo.HtmlFieldPrefix = string.Format("product_{0}", product.Id);
+								Html.RenderPartial("Product.AssociatedProduct", product, dataDictProduct);
+							}
+						}
+					</section>
+				}
 			}
 		</div>
-
-		@if (Model.ProductType == ProductType.GroupedProduct)
-		{
-			<section class="pd-section pd-section-variants">
-				@if (Model.AssociatedProducts.Count == 0)
-				{
-					<div class="pd-no-associated-products alert alert-warning">
-						@T("Products.NoAssociatedProducts")
-					</div>
-				}
-				else
-				{
-					foreach (var product in Model.AssociatedProducts)
-					{
-						var dataDictProduct = new ViewDataDictionary();
-						dataDictProduct.TemplateInfo.HtmlFieldPrefix = string.Format("product_{0}", product.Id);
-						Html.RenderPartial("Product.AssociatedProduct", product, dataDictProduct);
-					}
-				}
-			</section>
-		}
 
 		<!-- Bottom Content: Full Description, Specification, Review etc. -->
 		<section class="pd-section pd-section-bottom">

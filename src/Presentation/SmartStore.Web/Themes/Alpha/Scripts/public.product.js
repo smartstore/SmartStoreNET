@@ -18,7 +18,6 @@
 			
 		    this.createGallery(opts.galleryStartIndex);
 			
-
 			// Update product data and gallery
 		    $(el).find(':input').change(function (e) {
 		    	var ctx = $(this).closest('.update-container');
@@ -42,7 +41,6 @@
 		    					}
 		    				});
 		    			}
-
 		    		}
 		    	});
 		    });

@@ -197,9 +197,9 @@ namespace SmartStore.Web.Controllers
 					HasSampleDownload = product.IsDownload && product.HasSampleDownload,
 					IsCurrentCustomerRegistered = _services.WorkContext.CurrentCustomer.IsRegistered(),
 					IsAssociatedProduct = isAssociatedProduct,
-					CompareEnabled = _catalogSettings.CompareProductsEnabled && (product.VisibleIndividually || !isAssociatedProduct),
-					TellAFriendEnabled = _catalogSettings.EmailAFriendEnabled && (product.VisibleIndividually || !isAssociatedProduct),
-					AskQuestionEnabled = _catalogSettings.AskQuestionEnabled && (product.VisibleIndividually || !isAssociatedProduct)
+					CompareEnabled = !isAssociatedProduct && _catalogSettings.CompareProductsEnabled,
+					TellAFriendEnabled = !isAssociatedProduct && _catalogSettings.EmailAFriendEnabled,
+					AskQuestionEnabled = !isAssociatedProduct && _catalogSettings.AskQuestionEnabled
 				};
 
 				// Social share code
@@ -1075,8 +1075,7 @@ namespace SmartStore.Web.Controllers
             model.AddToCart.DisableBuyButton = product.DisableBuyButton || !_services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
 			model.AddToCart.DisableWishlistButton = product.DisableWishlistButton 
 				|| !_services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist)
-				|| product.ProductType == ProductType.GroupedProduct
-				|| (product.ParentGroupedProductId > 0 && !product.VisibleIndividually);
+				|| product.ProductType == ProductType.GroupedProduct;
 
 			if (!displayPrices)
 			{

@@ -22,9 +22,9 @@
 			<div class="pd-bundle-item-top row no-space">
 				@if (item.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
 				{
-					<div class="pd-bundle-item-image col-xs pd-dyn-thumb" style="min-width: @(item.ThumbDimensions)px; max-width: @(item.ThumbDimensions)px;">
+					<div class="pd-bundle-item-image col-xs" style="min-width: @(item.ThumbDimensions)px; max-width: @(item.ThumbDimensions)px;">
 						<img src="@item.DetailsPictureModel.DefaultPictureModel.ImageUrl"
-							 class="img-fluid" 
+							 class="img-fluid pd-dyn-thumb" 
 							 alt="@item.DetailsPictureModel.AlternateText" 
 							 title="@item.DetailsPictureModel.DefaultPictureModel.Title" />
 					</div>

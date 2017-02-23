@@ -18,7 +18,8 @@
 		<div class="pd-variant-picture img-center-container">
 			@if (Model.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue())
 			{
-				<img src="@Model.DetailsPictureModel.DefaultPictureModel.ImageUrl"
+				<img class="pd-dyn-thumb" 
+					 src="@Model.DetailsPictureModel.DefaultPictureModel.ImageUrl"
 					 alt="@Model.DetailsPictureModel.AlternateText"
 					 title="@Model.DetailsPictureModel.DefaultPictureModel.Title" />
 			}

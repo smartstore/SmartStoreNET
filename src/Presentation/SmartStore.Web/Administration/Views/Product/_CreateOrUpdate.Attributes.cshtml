@@ -118,7 +118,7 @@
                 <script type="text/javascript">
                     $(document).ready(function () {
                         $('.add-new-combination').on('click', function (e) {
-                        	OpenPopup('@(Url.Action("AttributeCombinationCreatePopup", "Product", new { productId = Model.Id }))&btnId=btnRefreshCombinations&formId=product-form');
+                        	openPopup('@(Url.Action("AttributeCombinationCreatePopup", "Product", new { productId = Model.Id }))&btnId=btnRefreshCombinations&formId=product-form');
                             return false;
                         });
 
@@ -159,7 +159,7 @@
 					.Columns(columns =>
 					{
 						columns.Bound(x => x.AttributesXml)
-							.ClientTemplate("<a href=\"#\" onclick=\"" + "OpenPopup('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form'); return false;\"><#= AttributesXml #></a><br /><span style=\"color: red\"><#= Warnings #></span>")
+							.ClientTemplate("<a href=\"#\" onclick=\"" + "openPopup('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form'); return false;\"><#= AttributesXml #></a><br /><span style=\"color: red\"><#= Warnings #></span>")
 							.Width(460)
 							.Encoded(false)
 							.ReadOnly();
@@ -188,7 +188,7 @@
 						//columns.Bound(x => x.Id)
 						//    .Width(90)
 						//    .Centered()
-						//    .ClientTemplate("<button onclick=\"" + "OpenPopup('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form'); return false;\" class='btn'>" + @T("Admin.Common.Edit").Text + "</button>")
+						//    .ClientTemplate("<button onclick=\"" + "openPopup('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form'); return false;\" class='btn'>" + @T("Admin.Common.Edit").Text + "</button>")
 						//    .Title("");
 						columns.Command(commands =>
 						{

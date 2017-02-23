@@ -12,7 +12,7 @@
         <div class="options">
 			@{ Html.RenderWidget("admin_button_toolbar_before"); }
 
-            <button type="button" onclick="OpenWindow('@Url.RouteUrl("Manufacturer", new { SeName = Model.SeName })', true); return false;" class="btn">
+            <button type="button" onclick="openWindow('@Url.RouteUrl("Manufacturer", new { SeName = Model.SeName })', true); return false;" class="btn">
 				<i class="fa fa-eye"></i>
 				@T("Admin.Common.Preview")
             </button>

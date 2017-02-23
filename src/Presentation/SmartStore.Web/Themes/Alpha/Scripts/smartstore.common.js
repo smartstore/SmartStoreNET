@@ -4,7 +4,7 @@
 		window.location.href = url;
 	}
 
-	window.OpenPopup = function (url, fluid) {
+	window.openPopup = function (url, fluid) {
 		var modal = $('#modal-popup-shared');
 
 		if (modal.length === 0) {
@@ -31,14 +31,14 @@
 		modal.modal('show');
 	}
 
-	window.ClosePopup = function () {
+	window.closePopup = function () {
 		var modal = $('#modal-popup-shared');
 		if (modal.length > 0) {
 			modal.modal('hide');
 		}
 	}
 
-	window.OpenWindow = function (url, w, h, scroll) {
+	window.openWindow = function (url, w, h, scroll) {
 		var l = (screen.width - w) / 2;
 		var t = (screen.height - h) / 2;
 

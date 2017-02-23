@@ -51,7 +51,7 @@
 			logo.css('margin-left', (logoWidth * -1) + 'px');
 
 			if (!_.str.isBlank(dropBody.text())) {
-				logo.one('transitionend webkitTransitionEnd', function (e) {
+				logo.one(Prefixer.event.transitionEnd, function (e) {
 					openDrop();
 				});
 			}

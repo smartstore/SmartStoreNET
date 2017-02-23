@@ -105,6 +105,11 @@ body.canvas-blocking .canvas-blocker {
     right: auto;
     transform: translate3d($offcanvas-offset-p-neg, 0, 0);
 
+    * {
+        // Fixes Chrome 55+ pan/swipe bug
+        touch-action: pan-y;
+    }
+
     &.offcanvas-right {
         left: auto !important;
         right: 0;
@@ -161,11 +166,6 @@ body.canvas-blocking .canvas-blocker {
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
-
-    * {
-        // Fixes Chrome 55+ pan/swipe bug
-        touch-action: pan-y;
-    }
 }
 
 

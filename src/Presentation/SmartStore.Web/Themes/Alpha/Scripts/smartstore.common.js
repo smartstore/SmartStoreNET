@@ -138,6 +138,49 @@
 		}
 	}
 
+	window.Prefixer = (function () {
+		var TransitionEndEvent = {
+			WebkitTransition: 'webkitTransitionEnd',
+			MozTransition: 'transitionend',
+			OTransition: 'oTransitionEnd otransitionend',
+			transition: 'transitionend'
+		};
+
+		var AnimationEndEvent = {
+			WebkitAnimation: 'webkitAnimationEnd',
+			MozAnimation: 'animationend',
+			OAnimation: 'webkitAnimationEnd oAnimationEnd',
+			animation: 'animationend'
+		};
+
+		var cssProps = {},
+			cssValues = {},
+			domProps = {};
+
+		function prefixCss(prop) {
+			return cssProps[prop] || (cssProps[prop] = Modernizr.prefixedCSS(prop));
+		}
+		
+		function prefixCssValue(prop, value) {
+			var key = prop + '.' + value;
+			return cssValues[key] || (cssValues[key] = Modernizr.prefixedCSSValue(prop, value));
+		}
+
+		function prefixDom(prop) {
+			return domProps[prop] || (domProps[prop] = Modernizr.prefixed(prop));
+		}
+
+		return {
+			css: prefixCss,
+			cssValue: prefixCssValue,
+			dom: prefixDom,
+			event: {
+				transitionEnd: TransitionEndEvent[prefixDom('transition')],
+				animationEnd: AnimationEndEvent[prefixDom('animation')]
+			}
+		}
+	})();
+
 	window.createCircularSpinner = function (size, active, strokeWidth, boxed, white) {
 	    var spinner = $('<div class="spinner"></div>');
 	    if (active) spinner.addClass('active');

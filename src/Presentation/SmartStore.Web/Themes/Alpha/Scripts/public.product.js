@@ -21,7 +21,7 @@
 			// Update product data and gallery
 		    $(el).find(':input').change(function (e) {
 		    	var ctx = $(this).closest('.update-container');
-
+				
 		    	if (ctx.length == 0) {
 		    		// associated or bundled item
 		    		ctx = el;

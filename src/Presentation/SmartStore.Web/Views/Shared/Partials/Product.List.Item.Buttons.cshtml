@@ -42,9 +42,8 @@
 			{
 				<span>@title</span>
 			}
-			else
+			else if (Model.Parent.ViewMode == ProductSummaryViewMode.List)
 			{
-				@* Show "Add to Cart" label on sm-only (enough space!) *@
 				<span class="hidden-md-up hidden-xs-down">@title</span>
 			}
 		</a>

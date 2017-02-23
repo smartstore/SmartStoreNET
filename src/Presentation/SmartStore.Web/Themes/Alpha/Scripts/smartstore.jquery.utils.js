@@ -155,7 +155,7 @@
                     	if (opts.animate) {
                         	elem.html(val)
 								.addClass('data-binding')
-								.one('animationend webkitAnimationEnd', function (e) {
+								.one(Prefixer.event.animationEnd, function (e) {
 									elem.removeClass('data-binding');
 								});
                         }

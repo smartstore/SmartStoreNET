@@ -494,7 +494,7 @@
 						var pswp = new PhotoSwipe(pswpEl, PhotoSwipeUI_Default, items, options);
 
 						pswp.listen('afterChange', function () {
-							pswpContainer.one('transitionend webkitTransitionEnd', function (e) {
+							pswpContainer.one(Prefixer.event.transitionEnd, function (e) {
 								pswpContainer.removeClass('sliding');
 							});
 							var idx = pswp.getCurrentIndex();

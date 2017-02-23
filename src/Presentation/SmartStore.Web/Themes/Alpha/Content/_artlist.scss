@@ -232,6 +232,7 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
 
 .art-price-block {
     position: relative;
+    margin-top: 0.5rem;
 }
 
 .art-price {
@@ -541,9 +542,9 @@ $art-active-border-color:       rgba(0,0,0, 0.2);
         @include text-truncate();
     }
 
-    .art-price-block {
+    /*.art-price-block {
         margin-top: 0.5rem;
-    }
+    }*/
 
     .art-oldprice {
         font-size: $art-font-size * 0.925;

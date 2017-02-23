@@ -52,16 +52,16 @@
         var onRight = el.hasClass('offcanvas-right'),
 			canPan = el.hasClass('offcanvas-overlay');
 
-        el.children().first().hammer({}).on('panstart panend panleft panright', function (e) {
+        el.hammer({}).on('panstart panend panleft panright', function (e) {
         	var delta = onRight
 				? Math.max(0, e.gesture.deltaX)
 				: Math.min(0, e.gesture.deltaX);
 
         	if (e.type.toLowerCase() === 'panstart') {
-        		el.css('transition', 'none');
+        		el.css(Prefixer.css('transition'), 'none');
         	}
         	else if (e.type.toLowerCase() === 'panend') {
-        		el.css('transform', '').css('transition', '');
+        		el.css(Prefixer.css('transform'), '').css(Prefixer.css('transition'), '');
         		if (Math.abs(delta) >= 100) {
         			self.hide();
         		}
@@ -69,7 +69,7 @@
         	else {
         		// panleft or panright
         		if (canPan) {
-        			el.css('transform', 'translate3d(' + delta + 'px, 0, 0)');
+        			el.css(Prefixer.css('transform'), 'translate3d(' + delta + 'px, 0, 0)');
         		}
         	}
         });
@@ -118,11 +118,6 @@
         	body.addClass('canvas-overlay');
         }
 
-        //var swipeEvent = this.options.placement == 'right' ? 'swiperight' : 'swipeleft';
-        //body.one(swipeEvent, function (e) {
-        //    self.hide();
-        //});
-
         body.one("click", ".offcanvas-closer", function (e) {
             self.hide();
         });
@@ -133,7 +128,7 @@
 			+ (this.options.lg ? ' canvas-lg' : '')
             + (this.options.fullscreen ? ' canvas-fullscreen' : ''));
 
-        this.el.addClass("on").one("transitionend webkitTransitionEnd", function (e) {
+        this.el.addClass("on").one(Prefixer.event.transitionEnd, function (e) {
             if (self.state != 'slide-in') return;
             body.addClass('canvas-slid');
             self.state = 'slid';
@@ -156,7 +151,7 @@
         body.addClass('canvas-sliding-out');
         body.removeClass('canvas-blocking canvas-noscroll canvas-slid canvas-sliding canvas-sliding-left canvas-sliding-right canvas-lg canvas-fullscreen canvas-overlay');
 
-        this.el.removeClass("on").one("transitionend webkitTransitionEnd", function (e) {
+        this.el.removeClass("on").one(Prefixer.event.transitionEnd, function (e) {
             if (self.state != 'slide-out') return;
 
             body.removeClass('canvas-sliding-out');

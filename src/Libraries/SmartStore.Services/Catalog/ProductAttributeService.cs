@@ -314,6 +314,14 @@ namespace SmartStore.Services.Catalog
             if (productVariantAttributeValue == null)
                 throw new ArgumentNullException("productVariantAttributeValue");
 
+			var existingValue = _productVariantAttributeValueRepository.TableUntracked.FirstOrDefault(
+				x => x.ProductVariantAttributeId == productVariantAttributeValue.ProductVariantAttributeId && x.Name == productVariantAttributeValue.Name);
+
+			if (existingValue != null)
+			{
+				throw new SmartException(T("Common.Error.OptionAlreadyExists", existingValue.Name.NaIfEmpty()));
+			}
+
 			var alias = SeoExtensions.GetSeName(productVariantAttributeValue.Alias);
 			if (alias.HasValue() && _productVariantAttributeValueRepository.TableUntracked.Any(x => x.Alias == alias))
 			{
@@ -334,6 +342,14 @@ namespace SmartStore.Services.Catalog
         {
             if (productVariantAttributeValue == null)
                 throw new ArgumentNullException("productVariantAttributeValue");
+
+			var existingValue = _productVariantAttributeValueRepository.TableUntracked.FirstOrDefault(
+				x => x.ProductVariantAttributeId == productVariantAttributeValue.ProductVariantAttributeId && x.Name == productVariantAttributeValue.Name);
+
+			if (existingValue != null && existingValue.Id != productVariantAttributeValue.Id)
+			{
+				throw new SmartException(T("Common.Error.OptionAlreadyExists", existingValue.Name.NaIfEmpty()));
+			}
 
 			var alias = SeoExtensions.GetSeName(productVariantAttributeValue.Alias);
 			if (alias.HasValue() && _productVariantAttributeValueRepository.TableUntracked.Any(x => x.Alias == alias && x.Id != productVariantAttributeValue.Id))

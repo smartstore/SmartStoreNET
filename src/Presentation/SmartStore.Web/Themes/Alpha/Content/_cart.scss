@@ -55,6 +55,10 @@
     background: $gray-lightest;
     height: 6.2rem;
 
+    .offcanvas-closer {
+        border-radius: 0;
+    }
+
     .nav-tabs {
         display: flex;
         flex-direction: row;

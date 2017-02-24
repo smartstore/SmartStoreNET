@@ -140,9 +140,11 @@
 @if (Model.Items.Count > 0)
 {
     <div class="offcanvas-cart-footer">
-        <a class="btn btn-clear btn-block btn-action" href="@Url.RouteUrl("Wishlist")">
-            <i class="fa fa-check"></i>
-            <span>@T("Wishlist.Mini.ViewWishlist")</span>
-        </a>
+        <div class="offcanvas-cart-footer-row">
+            <a class="btn btn-clear btn-block btn-action" href="@Url.RouteUrl("Wishlist")">
+                <i class="fa fa-check"></i>
+                <span>@T("Wishlist.Mini.ViewWishlist")</span>
+            </a>
+        </div>
     </div>
 }

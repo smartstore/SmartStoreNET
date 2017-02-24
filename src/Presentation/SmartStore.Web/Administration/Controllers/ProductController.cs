@@ -531,6 +531,7 @@ namespace SmartStore.Admin.Controllers
 			foreach (var localized in model.Locales)
 			{
 				_localizedEntityService.SaveLocalizedValue(pvav, x => x.Name, localized.Name, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(pvav, x => x.Alias, localized.Alias, localized.LanguageId);
 			}
 		}
 
@@ -3047,7 +3048,7 @@ namespace SmartStore.Admin.Controllers
 			if (product == null)
 				throw new ArgumentException(T("Products.NotFound", pva.ProductId));
 
-			var model = new ProductModel.ProductVariantAttributeValueListModel()
+			var model = new ProductModel.ProductVariantAttributeValueListModel
 			{
 				ProductName = product.Name,
 				ProductId = pva.ProductId,
@@ -3122,19 +3123,19 @@ namespace SmartStore.Admin.Controllers
 			};
 		}
 
-		public ActionResult ProductAttributeValueCreatePopup(int productAttributeAttributeId)
+		public ActionResult ProductAttributeValueCreatePopup(int productVariantAttributeId)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			var pva = _productAttributeService.GetProductVariantAttributeById(productAttributeAttributeId);
+			var pva = _productAttributeService.GetProductVariantAttributeById(productVariantAttributeId);
 			if (pva == null)
-				throw new ArgumentException(T("Products.Variants.NotFound", productAttributeAttributeId));
+				throw new ArgumentException(T("Products.Variants.NotFound", productVariantAttributeId));
 
 			var model = new ProductModel.ProductVariantAttributeValueModel
 			{
 				ProductId = pva.ProductId,
-				ProductVariantAttributeId = productAttributeAttributeId,
+				ProductVariantAttributeId = productVariantAttributeId,
 				IsListTypeAttribute = pva.IsListTypeAttribute(),
 				ColorSquaresRgb = "",
 				Quantity = 1
@@ -3172,10 +3173,20 @@ namespace SmartStore.Admin.Controllers
 					LinkedProductId = model.LinkedProductId,
 					Quantity = model.Quantity
 				};
-                
-				_productAttributeService.InsertProductVariantAttributeValue(pvav);
-				UpdateLocales(pvav, model);
-                MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
+
+				try
+				{
+					_productAttributeService.InsertProductVariantAttributeValue(pvav);
+
+					UpdateLocales(pvav, model);
+				}
+				catch (Exception exception)
+				{
+					ModelState.AddModelError("", exception.Message);
+					return ProductAttributeValueCreatePopup(model.ProductVariantAttributeId);
+				}
+
+				MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
 
                 ViewBag.RefreshPage = true;
 				ViewBag.btnId = btnId;
@@ -3231,6 +3242,7 @@ namespace SmartStore.Admin.Controllers
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
 			{
 				locale.Name = pvav.GetLocalized(x => x.Name, languageId, false, false);
+				locale.Alias = pvav.GetLocalized(x => x.Alias, languageId, false, false);
 			});
 
 			return View(model);
@@ -3264,11 +3276,19 @@ namespace SmartStore.Admin.Controllers
 				else
 					pvav.LinkedProductId = model.LinkedProductId;
 
-				_productAttributeService.UpdateProductVariantAttributeValue(pvav);
+				try
+				{
+					_productAttributeService.UpdateProductVariantAttributeValue(pvav);
 
-                MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
+					UpdateLocales(pvav, model);
+				}
+				catch (Exception exception)
+				{
+					ModelState.AddModelError("", exception.Message);
+					return ProductAttributeValueEditPopup(pvav.Id);
+				}
 
-                UpdateLocales(pvav, model);
+				MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
 
 				ViewBag.RefreshPage = true;
 				ViewBag.btnId = btnId;

@@ -705,6 +705,9 @@ namespace SmartStore.Admin.Models.Catalog
 		{
 			public int LanguageId { get; set; }
 
+			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Alias")]
+			public string Alias { get; set; }
+
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Name")]
 			[AllowHtml]
 			public string Name { get; set; }

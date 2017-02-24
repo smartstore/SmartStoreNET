@@ -9,6 +9,8 @@ using SmartStore.Core.Events;
 using SmartStore.Services.Media;
 using SmartStore.Core;
 using SmartStore.Data.Caching;
+using SmartStore.Services.Seo;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Services.Catalog
 {
@@ -44,9 +46,11 @@ namespace SmartStore.Services.Catalog
 			_productBundleItemAttributeFilterRepository = productBundleItemAttributeFilterRepository;
             _eventPublisher = eventPublisher;
 			_pictureService = pictureService;
-        }
 
-		#region Utilities
+			T = NullLocalizer.Instance;
+		}
+
+		public Localizer T { get; set; }
 
 		private IList<ProductVariantAttribute> GetSwitchedLoadedAttributeMappings(ICollection<int> productVariantAttributeIds)
 		{
@@ -68,8 +72,6 @@ namespace SmartStore.Services.Catalog
 
 			return new List<ProductVariantAttribute>();
 		}
-
-		#endregion
 
 		#region Product attributes
 
@@ -109,7 +111,15 @@ namespace SmartStore.Services.Catalog
             if (productAttribute == null)
                 throw new ArgumentNullException("productAttribute");
 
-            _productAttributeRepository.Insert(productAttribute);
+			var alias = SeoExtensions.GetSeName(productAttribute.Alias);
+			if (alias.HasValue() && _productAttributeRepository.TableUntracked.Any(x => x.Alias == alias))
+			{
+				throw new SmartException(T("Common.Error.AliasAlreadyExists", alias));
+			}
+
+			productAttribute.Alias = alias;
+
+			_productAttributeRepository.Insert(productAttribute);
             
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 
@@ -122,7 +132,15 @@ namespace SmartStore.Services.Catalog
             if (productAttribute == null)
                 throw new ArgumentNullException("productAttribute");
 
-            _productAttributeRepository.Update(productAttribute);
+			var alias = SeoExtensions.GetSeName(productAttribute.Alias);
+			if (alias.HasValue() && _productAttributeRepository.TableUntracked.Any(x => x.Alias == alias && x.Id != productAttribute.Id))
+			{
+				throw new SmartException(T("Common.Error.AliasAlreadyExists", alias));
+			}
+
+			productAttribute.Alias = alias;
+
+			_productAttributeRepository.Update(productAttribute);
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 
@@ -296,7 +314,15 @@ namespace SmartStore.Services.Catalog
             if (productVariantAttributeValue == null)
                 throw new ArgumentNullException("productVariantAttributeValue");
 
-            _productVariantAttributeValueRepository.Insert(productVariantAttributeValue);
+			var alias = SeoExtensions.GetSeName(productVariantAttributeValue.Alias);
+			if (alias.HasValue() && _productVariantAttributeValueRepository.TableUntracked.Any(x => x.Alias == alias))
+			{
+				throw new SmartException(T("Common.Error.AliasAlreadyExists", alias));
+			}
+
+			productVariantAttributeValue.Alias = alias;
+
+			_productVariantAttributeValueRepository.Insert(productVariantAttributeValue);
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 
@@ -309,7 +335,15 @@ namespace SmartStore.Services.Catalog
             if (productVariantAttributeValue == null)
                 throw new ArgumentNullException("productVariantAttributeValue");
 
-            _productVariantAttributeValueRepository.Update(productVariantAttributeValue);
+			var alias = SeoExtensions.GetSeName(productVariantAttributeValue.Alias);
+			if (alias.HasValue() && _productVariantAttributeValueRepository.TableUntracked.Any(x => x.Alias == alias && x.Id != productVariantAttributeValue.Id))
+			{
+				throw new SmartException(T("Common.Error.AliasAlreadyExists", alias));
+			}
+
+			productVariantAttributeValue.Alias = alias;
+
+			_productVariantAttributeValueRepository.Update(productVariantAttributeValue);
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 

@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Localization;
 using SmartStore.Services.Search.Modelling;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Hooks
 {
@@ -19,9 +20,11 @@ namespace SmartStore.Services.Hooks
 
 		private static readonly HashSet<Type> _candidateTypes = new HashSet<Type>(new Type[]
 		{
+			typeof(LocalizedProperty),
 			typeof(SpecificationAttribute),
 			typeof(SpecificationAttributeOption),
-			typeof(LocalizedProperty)
+			typeof(ProductAttribute),
+			typeof(ProductVariantAttributeValue)
 		});
 
 		public SearchQueryAliasHook(
@@ -98,18 +101,18 @@ namespace SmartStore.Services.Hooks
 			if (!_candidateTypes.Contains(type))
 				return;
 
-			if (type == typeof(SpecificationAttribute))
+			if (type == typeof(SpecificationAttribute) || type == typeof(SpecificationAttributeOption))
 			{
 				if (IsPropertyModified(entry, "Alias"))
 				{
-					_catalogSearchQueryAliasMapper.Value.ClearCache();
+					_catalogSearchQueryAliasMapper.Value.ClearAttributeCache();
 				}
 			}
-			else if (type == typeof(SpecificationAttributeOption))
+			else if (type == typeof(ProductAttribute) || type == typeof(ProductVariantAttributeValue))
 			{
 				if (IsPropertyModified(entry, "Alias"))
 				{
-					_catalogSearchQueryAliasMapper.Value.ClearCache();
+					_catalogSearchQueryAliasMapper.Value.ClearVariantCache();
 				}
 			}
 			else if (type == typeof(LocalizedProperty))
@@ -117,36 +120,45 @@ namespace SmartStore.Services.Hooks
 				// note: not fired when SpecificationAttribute or SpecificationAttributeOption deleted.
 				// not necessary anyway because cache cleared by above code.
 				var prop = (LocalizedProperty)entity;
+				if (!prop.LocaleKey.IsCaseInsensitiveEqual("Alias"))
+					return;
 
-				if (prop.LocaleKey.IsCaseInsensitiveEqual("Alias") &&
-					(prop.LocaleKeyGroup.IsCaseInsensitiveEqual("SpecificationAttribute") || prop.LocaleKeyGroup.IsCaseInsensitiveEqual("SpecificationAttributeOption")))
+				var isAttribute = prop.LocaleKeyGroup.IsCaseInsensitiveEqual("SpecificationAttribute") || prop.LocaleKeyGroup.IsCaseInsensitiveEqual("SpecificationAttributeOption");
+				var isVariant = prop.LocaleKeyGroup.IsCaseInsensitiveEqual("ProductAttribute") || prop.LocaleKeyGroup.IsCaseInsensitiveEqual("ProductVariantAttributeValue");
+
+				if (!isAttribute && !isVariant)
+					return;
+
+				if (IsPropertyModified(entry, "LocaleValue"))
 				{
-					if (IsPropertyModified(entry, "LocaleValue"))
-					{
-						_catalogSearchQueryAliasMapper.Value.ClearCache();
-					}
+					if (isAttribute)
+						_catalogSearchQueryAliasMapper.Value.ClearAttributeCache();
+					else if (isVariant)
+						_catalogSearchQueryAliasMapper.Value.ClearVariantCache();
+				}
 
-					// check duplicates
-					if (entry.InitialState == EntityState.Added || entry.InitialState == EntityState.Modified)
-					{
-						var existingAlias = _localizedPropertyRepository.Value.TableUntracked
-							.FirstOrDefault(x => x.LocaleKey == "Alias" && x.LocaleKeyGroup == prop.LocaleKeyGroup && x.LanguageId == prop.LanguageId && x.LocaleValue == prop.LocaleValue);
+				// check duplicates
+				if (entry.InitialState == EntityState.Added || entry.InitialState == EntityState.Modified)
+				{
+					prop.LocaleValue = SeoExtensions.GetSeName(prop.LocaleValue);
 
-						// duplicate found
-						if (existingAlias != null && existingAlias.Id != prop.Id)
+					var existingAlias = _localizedPropertyRepository.Value.TableUntracked
+						.FirstOrDefault(x => x.LocaleKey == "Alias" && x.LocaleKeyGroup == prop.LocaleKeyGroup && x.LanguageId == prop.LanguageId && x.LocaleValue == prop.LocaleValue);
+
+					// duplicate found
+					if (existingAlias != null && existingAlias.Id != prop.Id)
+					{
+						// throw exception in OnBeforeSaveCompleted
+						_duplicateAlias = string.Copy(prop.LocaleValue);
+
+						// revert changes
+						if (entry.Entry.State == System.Data.Entity.EntityState.Modified)
 						{
-							// throw exception in OnBeforeSaveCompleted
-							_duplicateAlias = string.Copy(prop.LocaleValue);
-
-							// revert changes
-							if (entry.Entry.State == System.Data.Entity.EntityState.Modified)
-							{
-								entry.Entry.State = System.Data.Entity.EntityState.Unchanged;
-							}
-							else if (entry.Entry.State == System.Data.Entity.EntityState.Added)
-							{
-								entry.Entry.State = System.Data.Entity.EntityState.Detached;
-							}
+							entry.Entry.State = System.Data.Entity.EntityState.Unchanged;
+						}
+						else if (entry.Entry.State == System.Data.Entity.EntityState.Added)
+						{
+							entry.Entry.State = System.Data.Entity.EntityState.Detached;
 						}
 					}
 				}

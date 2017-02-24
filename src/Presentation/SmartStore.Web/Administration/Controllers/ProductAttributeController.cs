@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core.Domain.Catalog;
@@ -134,11 +135,21 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var productAttribute = model.ToEntity();
-                _productAttributeService.InsertProductAttribute(productAttribute);
-                UpdateLocales(productAttribute, model);
 
-                // activity log
-                _customerActivityService.InsertActivity("AddNewProductAttribute", _localizationService.GetResource("ActivityLog.AddNewProductAttribute"), productAttribute.Name);
+				try
+				{
+					_productAttributeService.InsertProductAttribute(productAttribute);
+
+					UpdateLocales(productAttribute, model);
+				}
+				catch (Exception exception)
+				{
+					ModelState.AddModelError("", exception.Message);
+					return Create();
+				}
+
+				// activity log
+				_customerActivityService.InsertActivity("AddNewProductAttribute", _localizationService.GetResource("ActivityLog.AddNewProductAttribute"), productAttribute.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Attributes.ProductAttributes.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = productAttribute.Id }) : RedirectToAction("List");
@@ -182,12 +193,21 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 productAttribute = model.ToEntity(productAttribute);
-                _productAttributeService.UpdateProductAttribute(productAttribute);
 
-                UpdateLocales(productAttribute, model);
+				try
+				{
+					_productAttributeService.UpdateProductAttribute(productAttribute);
 
-                // activity log
-                _customerActivityService.InsertActivity("EditProductAttribute", _localizationService.GetResource("ActivityLog.EditProductAttribute"), productAttribute.Name);
+					UpdateLocales(productAttribute, model);
+				}
+				catch (Exception exception)
+				{
+					ModelState.AddModelError("", exception.Message);
+					return Edit(productAttribute.Id);
+				}
+
+				// activity log
+				_customerActivityService.InsertActivity("EditProductAttribute", _localizationService.GetResource("ActivityLog.EditProductAttribute"), productAttribute.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Attributes.ProductAttributes.Updated"));
                 return continueEditing ? RedirectToAction("Edit", productAttribute.Id) : RedirectToAction("List");

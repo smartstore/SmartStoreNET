@@ -252,7 +252,15 @@ namespace SmartStore.Services.Catalog
             if (productVariantAttribute == null)
                 throw new ArgumentNullException("productVariantAttribute");
 
-            _productVariantAttributeRepository.Insert(productVariantAttribute);
+			var existingAttribute = _productVariantAttributeRepository.TableUntracked.Expand(x => x.ProductAttribute).FirstOrDefault(
+				x => x.ProductId == productVariantAttribute.ProductId && x.ProductAttributeId == productVariantAttribute.ProductAttributeId);
+
+			if (existingAttribute != null)
+			{
+				throw new SmartException(T("Common.Error.OptionAlreadyExists", existingAttribute.ProductAttribute.Name.NaIfEmpty()));
+			}
+
+			_productVariantAttributeRepository.Insert(productVariantAttribute);
             
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 
@@ -265,7 +273,15 @@ namespace SmartStore.Services.Catalog
             if (productVariantAttribute == null)
                 throw new ArgumentNullException("productVariantAttribute");
 
-            _productVariantAttributeRepository.Update(productVariantAttribute);
+			var existingAttribute = _productVariantAttributeRepository.TableUntracked.Expand(x => x.ProductAttribute).FirstOrDefault(
+				x => x.ProductId == productVariantAttribute.ProductId && x.ProductAttributeId == productVariantAttribute.ProductAttributeId);
+
+			if (existingAttribute != null && existingAttribute.Id != productVariantAttribute.Id)
+			{
+				throw new SmartException(T("Common.Error.OptionAlreadyExists", existingAttribute.ProductAttribute.Name.NaIfEmpty()));
+			}
+
+			_productVariantAttributeRepository.Update(productVariantAttribute);
 
             _requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 

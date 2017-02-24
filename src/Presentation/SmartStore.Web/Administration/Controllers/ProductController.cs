@@ -2969,7 +2969,18 @@ namespace SmartStore.Admin.Controllers
 					DisplayOrder = model.DisplayOrder1
 				};
 
-				_productAttributeService.InsertProductVariantAttribute(pva);
+				try
+				{
+					_productAttributeService.InsertProductVariantAttribute(pva);
+				}
+				catch (Exception exception)
+				{
+					Services.Notifier.Error(exception.Message);
+				}
+			}
+			else
+			{
+				NotifyAccessDenied();
 			}
 
 			return ProductVariantAttributeList(command, model.ProductId);
@@ -2990,7 +3001,18 @@ namespace SmartStore.Admin.Controllers
 				pva.AttributeControlTypeId = Int32.Parse(model.AttributeControlType);
 				pva.DisplayOrder = model.DisplayOrder1;
 
-				_productAttributeService.UpdateProductVariantAttribute(pva);
+				try
+				{
+					_productAttributeService.UpdateProductVariantAttribute(pva);
+				}
+				catch (Exception exception)
+				{
+					Services.Notifier.Error(exception.Message);
+				}
+			}
+			else
+			{
+				NotifyAccessDenied();
 			}
 
 			return ProductVariantAttributeList(command, pva.ProductId);

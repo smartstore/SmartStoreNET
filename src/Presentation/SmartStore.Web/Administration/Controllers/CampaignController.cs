@@ -13,6 +13,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
+using SmartStore.Collections;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -50,13 +51,13 @@ namespace SmartStore.Admin.Controllers
 			this._storeService = storeService;
 			this._storeMappingService = storeMappingService;
 		}
-
-		private void PrepareCampaignModel(CampaignModel model, Campaign campaign, bool excludeProperties)
+      
+        private void PrepareCampaignModel(CampaignModel model, Campaign campaign, bool excludeProperties)
 		{
 			model.AvailableStores = _storeService.GetAllStores().Select(s => s.ToModel()).ToList();
-			model.AllowedTokens = string.Join(", ", _messageTokenProvider.GetListOfCampaignAllowedTokens());
-
-			if (!excludeProperties)
+            model.TokensTree = _messageTokenProvider.GetTreeOfCampaignAllowedTokens();
+            
+            if (!excludeProperties)
 			{
 				if (campaign != null)
 					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(campaign);

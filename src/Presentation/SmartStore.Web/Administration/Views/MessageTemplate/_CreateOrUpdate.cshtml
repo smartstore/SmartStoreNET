@@ -1,9 +1,6 @@
 ﻿@model MessageTemplateModel
 
-@using SmartStore.Collections;
-@using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Framework.UI;
-@using Telerik.Web.Mvc.UI;
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
@@ -17,47 +14,6 @@
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "template-edit", this.Html, this.Model));
 })
 
-@helper TokenSelector(TreeNode<string> root) 
-{
-    if (root.HasChildren)
-    {
-        <div class="btn-group message-token-selector">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                @T("Admin.Common.ChooseToken")
-                <span class="caret"></span>
-            </a>
-            @TokenList(root)
-        </div>       
-    }
-}
-
-@helper TokenList(TreeNode<string> node)
-{
-    <ul class="dropdown-menu">
-        @foreach (var child in node.Children) 
-        {
-            if (child.IsLeaf)
-            {
-                List<string> tokens = new List<string>();
-                var curNode = child;
-                while (!curNode.IsRoot)
-                {
-                    tokens.Insert(0, curNode.Value);
-                    curNode = curNode.Parent;
-                }
-                <li><a tabindex="-1" href="#" class="message-token" @Html.Attr("data-token", String.Join(".", tokens), tokens.Count > 0)>@child.Value</a></li>
-            }
-            else
-            {
-                <li class="dropdown-submenu">
-                    <a tabindex="-1" href="#" class="message-token">@child.Value</a>
-                    @TokenList(child)
-                </li>
-            }
-        }
-    </ul>
-}
-
 @helper TabInfo()
 {  
     <table class="adminContent" style="margin-bottom: 8px">
@@ -66,7 +22,7 @@
                 @Html.SmartLabelFor(model => model.TokensTree)
             </td>
             <td class="adminData">
-                @TokenSelector(Model.TokensTree)
+                @Html.EditorFor(model => model.TokensTree, "TokenSelector")
             </td>
         </tr>
         <tr>
@@ -242,25 +198,10 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
-            $('.message-token-selector').on('click', '.message-token', function (e) {
-                e.preventDefault();
-
-                var el = $(this);
-                var token = el.data("token");
-
-                if (!token)
-                    return false;
-               
-                CKEDITOR.instances.Body.insertHtml('%{0}%'.format(token));
-                
-                return false;
-            });         
-
             $("#@Html.FieldIdFor(model => model.LimitedToStores)").click(toggleStoreMapping);
 
             toggleStoreMapping();
         });
-
 
         function toggleStoreMapping() {
             if ($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked')) {

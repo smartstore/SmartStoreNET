@@ -34,6 +34,7 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
+using SmartStore.Collections;
 
 namespace SmartStore.Services.Messages
 {
@@ -1316,6 +1317,48 @@ namespace SmartStore.Services.Messages
                 
             };
             return allowedTokens.ToArray();
+        }
+
+        public virtual TreeNode<string> GetTreeOfCampaignAllowedTokens()
+        {
+            var tokensTree = new TreeNode<string>("_ROOT_");
+            FillTokensTree(tokensTree, GetListOfCampaignAllowedTokens());
+            return tokensTree;
+        }
+
+        public virtual TreeNode<string> GetTreeOfAllowedTokens()
+        {
+            var tokensTree = new TreeNode<string>("_ROOT_");
+            FillTokensTree(tokensTree, GetListOfAllowedTokens());
+            return tokensTree;
+        }
+        
+        private void FillTokensTree(TreeNode<string> root, string[] tokens)
+        {
+            root.Clear();
+
+            for (int i = 0; i < tokens.Length; i++)
+            {
+                // remove '%'
+                string token = tokens[i].Trim('%');
+                // split 'Order.ID' to [ Order, ID ] parts
+                var parts = token.Split('.');
+
+                var node = root;
+                // iterate parts
+                foreach (var part in parts)
+                {
+                    var found = node.SelectNode(x => x.Value == part);
+                    if (found == null)
+                    {
+                        node = node.Append(part);
+                    }
+                    else
+                    {
+                        node = found;
+                    }
+                }
+            }
         }
 
         #endregion

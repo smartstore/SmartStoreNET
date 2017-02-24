@@ -64,6 +64,7 @@
 * #1078 Implemented options for "Add to Cart" quantity input field on product level. Quantity control can now be hidden and can be configured to be increased and decreased in steps.
 * #696 Added textual resources for meta title and description for blog per month and by tag pages and enriched them with corresponding month plus year respectivly tag name
 * #1025 Added token for customer number to MessageTokenProvider 
+* #1016 Implemented choosing of MessageTokens for newsletter campaigns with dropdown menu
 
 
 ### Bugfixes

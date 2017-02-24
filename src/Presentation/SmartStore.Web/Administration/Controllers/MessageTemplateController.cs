@@ -55,36 +55,6 @@ namespace SmartStore.Admin.Controllers
             this._emailAccountSettings = emailAccountSettings;
         }
 
-        private void FillTokensTree(TreeNode<string> root, string[] tokens)
-        {
-            root.Clear();
-
-            //Array.Sort(tokens);
-
-            for (int i = 0; i < tokens.Length; i++)
-            {
-                // remove '%' from '%Order.ID%''
-                string token = tokens[i].Trim('%');
-                // split 'Order.ID' to [ Order, ID ] parts
-                var parts = token.Split('.');
-
-                var node = root;
-                // iterate parts
-                foreach (var part in parts)
-                {
-                    var found = node.SelectNode(x => x.Value == part);
-                    if (found == null)
-                    {
-                        node = node.Append(part);
-                    }
-                    else
-                    {
-                        node = found;
-                    }
-                }
-            }
-        }
-
         #endregion
         
         #region Utilities
@@ -192,11 +162,10 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var model = messageTemplate.ToModel();
-
-            FillTokensTree(model.TokensTree, _messageTokenProvider.GetListOfAllowedTokens());
+            model.TokensTree = _messageTokenProvider.GetTreeOfAllowedTokens();
 
             // available email accounts
-			foreach (var ea in _emailAccountService.GetAllEmailAccounts())
+            foreach (var ea in _emailAccountService.GetAllEmailAccounts())
 			{
 				model.AvailableEmailAccounts.Add(ea.ToModel());
 			}
@@ -251,12 +220,11 @@ namespace SmartStore.Admin.Controllers
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Updated"));
                 return continueEditing ? RedirectToAction("Edit", messageTemplate.Id) : RedirectToAction("List");
             }
-
-
-            //If we got this far, something failed, redisplay form
-            FillTokensTree(model.TokensTree, _messageTokenProvider.GetListOfAllowedTokens());
             
-			//available email accounts
+            //If we got this far, something failed, redisplay form
+            model.TokensTree = _messageTokenProvider.GetTreeOfAllowedTokens();
+
+            //available email accounts
             foreach (var ea in _emailAccountService.GetAllEmailAccounts())
                 model.AvailableEmailAccounts.Add(ea.ToModel());
 			

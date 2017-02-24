@@ -20,7 +20,6 @@ namespace SmartStore.Admin.Models.Messages
             Locales = new List<MessageTemplateLocalizedModel>();
             AvailableEmailAccounts = new List<EmailAccountModel>();
 			AvailableStores = new List<StoreModel>();
-            TokensTree = new TreeNode<string>("_ROOT_");
         }
 
         [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.AllowedTokens")]

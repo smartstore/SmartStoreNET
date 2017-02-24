@@ -813,6 +813,7 @@
     <Content Include="Views\Setting\DataExchange.cshtml" />
     <Content Include="Views\Export\_ProfileList.cshtml" />
     <Content Include="Views\Setting\Search.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\TokenSelector.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

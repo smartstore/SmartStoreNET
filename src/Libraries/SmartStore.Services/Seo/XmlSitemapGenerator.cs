@@ -422,19 +422,20 @@ namespace SmartStore.Services.Seo
 
 		protected virtual IEnumerable<XmlSitemapNode> GetProductNodes(string protocol)
 		{
+			var nodes = new List<XmlSitemapNode>();
+
 			var ctx = new ProductSearchContext
 			{
-				OrderBy = ProductSortingEnum.CreatedOn,
-				PageSize = 1000,
 				StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode,
 				VisibleIndividuallyOnly = true
 			};
 
-			var nodes = new List<XmlSitemapNode>();
+			var query = _productService.PrepareProductSearchQuery(ctx);
+			query = query.OrderByDescending(p => p.CreatedOnUtc);
 
-			for (ctx.PageIndex = 0; ctx.PageIndex < 9999999; ++ctx.PageIndex)
+			for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
 			{
-				var products = _productService.SearchProducts(ctx);
+				var products = new PagedList<Product>(query, pageIndex, 1000);
 
 				nodes.AddRange(products.Select(x =>
 				{
@@ -447,7 +448,6 @@ namespace SmartStore.Services.Seo
 					};
 
 					// TODO: add hreflang links if LangCount is > 1 and PrependSeoCode is true
-
 					return node;
 				}));
 

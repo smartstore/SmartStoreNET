@@ -57,11 +57,6 @@ namespace SmartStore.Data.Migrations
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.ScheduleTask", t => t.SchedulingTaskId)
                 .Index(t => t.SchedulingTaskId);
-
-			if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
-			{
-				this.SqlFileOrResource("LatestProductLoadAllPaged.sql");
-			}
         }
         
         public override void Down()

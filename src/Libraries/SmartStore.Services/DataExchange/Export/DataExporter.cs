@@ -629,7 +629,6 @@ namespace SmartStore.Services.DataExchange.Export
 			{
 				var searchContext = new ProductSearchContext
 				{
-					OrderBy = ProductSortingEnum.CreatedOn,
 					ProductIds = ctx.Request.EntitiesToExport,
 					StoreId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
 					VisibleIndividuallyOnly = true,
@@ -702,14 +701,15 @@ namespace SmartStore.Services.DataExchange.Export
 					{
 						var associatedSearchContext = new ProductSearchContext
 						{
-							OrderBy = ProductSortingEnum.Relevance,
-							PageSize = int.MaxValue,
 							StoreId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
 							VisibleIndividuallyOnly = ctx.Projection.OnlyIndividuallyVisibleAssociated,
 							ParentGroupedProductId = product.Id
 						};
 
-						foreach (var associatedProduct in _productService.Value.SearchProducts(associatedSearchContext))
+						var query = _productService.Value.PrepareProductSearchQuery(associatedSearchContext);
+						var associatedProducts = query.OrderBy(p => p.DisplayOrder).ToList();
+
+						foreach (var associatedProduct in associatedProducts)
 						{
 							if (!ctx.EntityIdsPerSegment.Contains(associatedProduct.Id))
 							{

@@ -958,9 +958,6 @@ namespace SmartStore.Admin.Controllers
 					Keywords = model.SearchProductName,
 					SearchSku = _searchSettings.SearchFields.Contains("sku"),
 					LanguageId = _workContext.WorkingLanguage.Id,
-					OrderBy = ProductSortingEnum.Relevance,
-					PageIndex = command.Page - 1,
-					PageSize = command.PageSize,
 					ShowHidden = true,
 					ProductType = (model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null),
 					WithoutCategories = model.SearchWithoutCategories,
@@ -970,27 +967,48 @@ namespace SmartStore.Admin.Controllers
 				};
 
 				if (model.SearchCategoryId > 0)
+				{
 					searchContext.CategoryIds.Add(model.SearchCategoryId);
+				}
 
+				var query = _productService.PrepareProductSearchQuery(searchContext);
+
+				// order
 				if (command.SortDescriptors != null && command.SortDescriptors.Count > 0)
 				{
 					var sort = command.SortDescriptors.First();
 					if (sort.Member == "Name")
 					{
-						searchContext.OrderBy = (sort.SortDirection == ListSortDirection.Ascending ? ProductSortingEnum.NameAsc : ProductSortingEnum.NameDesc);
+						if (sort.SortDirection == ListSortDirection.Ascending)
+							query = query.OrderBy(x => x.Name);
+						else
+							query = query.OrderByDescending(x => x.Name);
 					}
 					else if (sort.Member == "Price")
 					{
-						searchContext.OrderBy = (sort.SortDirection == ListSortDirection.Ascending ? ProductSortingEnum.PriceAsc : ProductSortingEnum.PriceDesc);
+						if (sort.SortDirection == ListSortDirection.Ascending)
+							query = query.OrderBy(x => x.Price);
+						else
+							query = query.OrderByDescending(x => x.Price);
 					}
 					else if (sort.Member == "CreatedOn")
 					{
-						searchContext.OrderBy = (sort.SortDirection == ListSortDirection.Ascending ? ProductSortingEnum.CreatedOnAsc : ProductSortingEnum.CreatedOn);
+						if (sort.SortDirection == ListSortDirection.Ascending)
+							query = query.OrderBy(x => x.CreatedOnUtc);
+						else
+							query = query.OrderByDescending(x => x.CreatedOnUtc);
+					}
+					else
+					{
+						query = query.OrderBy(x => x.Name);
 					}
 				}
+				else
+				{
+					query = query.OrderBy(x => x.Name);
+				}
 
-				var products = _productService.SearchProducts(searchContext);
-
+				var products = new PagedList<Product>(query, command.Page - 1, command.PageSize);
 				var pictureMap = _pictureService.GetPicturesByProductIds(products.Select(x => x.Id).ToArray(), 1, true);
 
 				gridModel.Data = products.Select(x =>
@@ -1862,30 +1880,29 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var searchContext = new ProductSearchContext
+				var associatedSearchContext = new ProductSearchContext
 				{
-					OrderBy = ProductSortingEnum.Relevance,
 					ParentGroupedProductId = productId,
-					PageSize = int.MaxValue,
 					ShowHidden = true
 				};
 
-				var associatedProducts = _productService.SearchProducts(searchContext);
-				var associatedProductsModel = associatedProducts
-					.Select(x =>
+				var query = _productService.PrepareProductSearchQuery(associatedSearchContext);
+				var associatedProducts = query.OrderBy(p => p.DisplayOrder).ToList();
+
+				var associatedProductsModel = associatedProducts.Select(x =>
+				{
+					return new ProductModel.AssociatedProductModel
 					{
-						return new ProductModel.AssociatedProductModel
-						{
-							Id = x.Id,
-							ProductName = x.Name,
-							ProductTypeName = x.GetProductTypeLabel(_localizationService),
-							ProductTypeLabelHint = x.ProductTypeLabelHint,
-							DisplayOrder = x.DisplayOrder,
-							Sku = x.Sku,
-							Published = x.Published
-						};
-					})
-					.ToList();
+						Id = x.Id,
+						ProductName = x.Name,
+						ProductTypeName = x.GetProductTypeLabel(_localizationService),
+						ProductTypeLabelHint = x.ProductTypeLabelHint,
+						DisplayOrder = x.DisplayOrder,
+						Sku = x.Sku,
+						Published = x.Published
+					};
+				})
+				.ToList();
 
 				model.Data = associatedProductsModel;
 				model.Total = associatedProductsModel.Count;
@@ -1940,7 +1957,6 @@ namespace SmartStore.Admin.Controllers
 				var searchContext = new ProductSearchContext
 				{
 					ParentGroupedProductId = productId,
-					PageSize = 1,
 					ShowHidden = true
 				};
 
@@ -2672,16 +2688,17 @@ namespace SmartStore.Admin.Controllers
 					ManufacturerId = model.SearchManufacturerId,
 					Keywords = model.SearchProductName,
 					SearchSku = _searchSettings.SearchFields.Contains("sku"),
-					PageIndex = command.Page - 1,
-					PageSize = command.PageSize,
 					ShowHidden = true,
 					ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
 				};
 
 				if (model.SearchCategoryId > 0)
+				{
 					searchContext.CategoryIds.Add(model.SearchCategoryId);
+				}
 
-				var products = _productService.SearchProducts(searchContext);
+				var query = _productService.PrepareProductSearchQuery(searchContext);
+				var products = new PagedList<Product>(query.OrderBy(x => x.Name), command.Page - 1, command.PageSize);
 
 				gridModel.Data = products.Select(x =>
 				{

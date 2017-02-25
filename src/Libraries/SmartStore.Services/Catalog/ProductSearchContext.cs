@@ -5,14 +5,12 @@ using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Catalog
 {
-    public class ProductSearchContext
+	public class ProductSearchContext
     {
         public ProductSearchContext()
         {
             CategoryIds = new List<int>();
             FilteredSpecs = new List<int>();
-            FilterableSpecificationAttributeOptionIds = new List<int>();
-            PageSize = 12;
         }
 
 		/// <summary>
@@ -44,7 +42,6 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// A value indicating whether ALL given <see cref="CategoryIds"/> must be assigned to the resulting products (default is ANY)
         /// </summary>
-        /// <remarks>Only works in LINQ mode at the moment</remarks>
         public bool MatchAllcategories { get; set; }
 
 		/// <summary>
@@ -62,10 +59,11 @@ namespace SmartStore.Services.Catalog
 		/// </summary>
 		public bool? WithoutManufacturers { get; set; }
 
-        /// <summary>
-        /// A value indicating whether loaded products are marked as featured (relates only to categories and manufacturers). 0 to load featured products only, 1 to load not featured products only, null to load all products
-        /// </summary>
-        public bool? FeaturedProducts { get; set; }
+		/// <summary>
+		/// A value indicating whether loaded products are marked as featured (relates only to categories and manufacturers).
+		/// 0 to load featured products only, 1 to load not featured products only, <c>null</c> to load all products.
+		/// </summary>
+		public bool? FeaturedProducts { get; set; }
 
         /// <summary>
         /// Minimum price; null to load all records
@@ -106,31 +104,6 @@ namespace SmartStore.Services.Catalog
         /// Filtered product specification identifiers
         /// </summary>
         public IList<int> FilteredSpecs { get; set; }
-
-        /// <summary>
-        /// Order by
-        /// </summary>
-        public ProductSortingEnum OrderBy { get; set; }
-
-        /// <summary>
-        /// Page index
-        /// </summary>
-        public int PageIndex { get; set; }
-
-        /// <summary>
-        /// Page size
-        /// </summary>
-        public int PageSize { get; set; }
-
-        /// <summary>
-        /// A value indicating whether we should load the specification attribute option identifiers applied to loaded products (all pages)
-        /// </summary>
-        public bool LoadFilterableSpecificationAttributeOptionIds { get; set; }
-
-        /// <summary>
-        /// The specification attribute option identifiers applied to loaded products (all pages)
-        /// </summary>
-        public IList<int> FilterableSpecificationAttributeOptionIds { get; set; }
 
         /// <summary>
         /// A value indicating whether to show hidden records

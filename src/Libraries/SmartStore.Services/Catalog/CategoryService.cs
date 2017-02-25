@@ -17,10 +17,10 @@ using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Category service
-    /// </summary>
-    public partial class CategoryService : ICategoryService
+	/// <summary>
+	/// Category service
+	/// </summary>
+	public partial class CategoryService : ICategoryService
     {
         private const string CATEGORIES_BY_PARENT_CATEGORY_ID_KEY = "SmartStore.category.byparent-{0}-{1}-{2}-{3}";
 		private const string PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY = "SmartStore.productcategory.allbycategoryid-{0}-{1}-{2}-{3}-{4}-{5}";
@@ -97,22 +97,28 @@ namespace SmartStore.Services.Catalog
             }
 		}
 
-        public virtual void InheritAclIntoChildren(int categoryId, 
+        public virtual void InheritAclIntoChildren(
+			int categoryId, 
             bool touchProductsWithMultipleCategories = false,
             bool touchExistingAcls = false,
             bool categoriesOnly = false)
         {
-
             var category = GetCategoryById(categoryId);
             var subcategories = GetAllCategoriesByParentCategoryId(categoryId, true);
-            var context = new ProductSearchContext { PageSize = int.MaxValue, ShowHidden = true };
-            context.CategoryIds.AddRange(subcategories.Select(x => x.Id));
-            context.CategoryIds.Add(categoryId);
-            var products = _productService.SearchProducts(context);
-            var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-            var categoryCustomerRoles = _aclService.GetCustomerRoleIdsWithAccess(category);
+			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+			var categoryCustomerRoles = _aclService.GetCustomerRoleIdsWithAccess(category);
 
-            using (var scope = new DbContextScope(ctx: _aclRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+			var searchContext = new ProductSearchContext
+			{
+				ShowHidden = true
+			};
+            searchContext.CategoryIds.AddRange(subcategories.Select(x => x.Id));
+            searchContext.CategoryIds.Add(categoryId);
+
+			var query = _productService.PrepareProductSearchQuery(searchContext);
+			var products = query.OrderBy(p => p.Id).ToList();
+
+			using (var scope = new DbContextScope(ctx: _aclRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
             {
                 _aclRepository.AutoCommitEnabled = false;
 
@@ -182,21 +188,26 @@ namespace SmartStore.Services.Catalog
             }
         }
 
-        public virtual void InheritStoresIntoChildren(int categoryId, 
+        public virtual void InheritStoresIntoChildren(
+			int categoryId, 
             bool touchProductsWithMultipleCategories = false,
             bool touchExistingAcls = false,
             bool categoriesOnly = false)
         {
-
             var category = GetCategoryById(categoryId);
             var subcategories = GetAllCategoriesByParentCategoryId(categoryId, true);
-            var context = new ProductSearchContext { PageSize = int.MaxValue , ShowHidden = true };
-            context.CategoryIds.AddRange(subcategories.Select(x => x.Id));
-            context.CategoryIds.Add(categoryId);
-            var products = _productService.SearchProducts(context);
+			var allStores = _storeService.GetAllStores();
+			var categoryStoreMappings = _storeMappingService.GetStoresIdsWithAccess(category);
 
-            var allStores = _storeService.GetAllStores();
-            var categoryStoreMappings = _storeMappingService.GetStoresIdsWithAccess(category);
+			var searchContext = new ProductSearchContext
+			{
+				ShowHidden = true
+			};
+            searchContext.CategoryIds.AddRange(subcategories.Select(x => x.Id));
+            searchContext.CategoryIds.Add(categoryId);
+
+			var query = _productService.PrepareProductSearchQuery(searchContext);
+			var products = query.OrderBy(p => p.Id).ToList();
 
             using (var scope = new DbContextScope(ctx: _storeMappingRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
             {

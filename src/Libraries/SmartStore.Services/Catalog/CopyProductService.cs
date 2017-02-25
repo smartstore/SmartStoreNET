@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
@@ -525,20 +526,19 @@ namespace SmartStore.Services.Catalog
 			// associated products
 			if (copyAssociatedProducts && product.ProductType != ProductType.BundledProduct)
 			{
-				var searchContext = new ProductSearchContext
+				var copyOf = _localizationService.GetResource("Admin.Common.CopyOf");
+				var associatedSearchContext = new ProductSearchContext
 				{
-					OrderBy = ProductSortingEnum.Relevance,
 					ParentGroupedProductId = product.Id,
-					PageSize = int.MaxValue,
 					ShowHidden = true
 				};
 
-				string copyOf = _localizationService.GetResource("Admin.Common.CopyOf");
-				var associatedProducts = _productService.SearchProducts(searchContext);
+				var query = _productService.PrepareProductSearchQuery(associatedSearchContext);
+				var associatedProducts = query.OrderBy(p => p.DisplayOrder).ToList();
 
 				foreach (var associatedProduct in associatedProducts)
 				{
-					var associatedProductCopy = CopyProduct(associatedProduct, string.Format("{0} {1}", copyOf, associatedProduct.Name), isPublished, copyImages, false);
+					var associatedProductCopy = CopyProduct(associatedProduct, $"{copyOf} {associatedProduct.Name}", isPublished, copyImages, false);
 					associatedProductCopy.ParentGroupedProductId = productCopy.Id;
 
 					_productService.UpdateProduct(productCopy);

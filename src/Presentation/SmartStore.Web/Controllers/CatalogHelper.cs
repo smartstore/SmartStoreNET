@@ -267,16 +267,12 @@ namespace SmartStore.Web.Controllers
 				if (product.ProductType == ProductType.GroupedProduct && !isAssociatedProduct)
 				{
 					// associated products
-					var searchContext = new ProductSearchContext
-					{
-						OrderBy = ProductSortingEnum.Relevance,
-						StoreId = _services.StoreContext.CurrentStore.Id,
-						ParentGroupedProductId = product.Id,
-						PageSize = int.MaxValue,
-						VisibleIndividuallyOnly = false
-					};
+					var searchQuery = new CatalogSearchQuery()
+						.HasStoreId(_services.StoreContext.CurrentStore.Id)
+						.VisibleIndividuallyOnly(false)
+						.HasParentGroupedProductId(product.Id);
 
-					var associatedProducts = _productService.SearchProducts(searchContext);
+					var associatedProducts = _catalogSearchService.Search(searchQuery).Hits;
 
 					foreach (var associatedProduct in associatedProducts)
 					{

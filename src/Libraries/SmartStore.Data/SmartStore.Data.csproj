@@ -878,9 +878,6 @@
     <EmbeddedResource Include="Sql\StoredProcedures.Inverse.sql" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sql\LatestProductLoadAllPaged.sql" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Caching\Creadits.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

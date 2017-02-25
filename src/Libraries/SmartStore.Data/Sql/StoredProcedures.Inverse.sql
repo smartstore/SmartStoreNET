@@ -1,6 +1,4 @@
-﻿DROP PROCEDURE [dbo].[ProductLoadAllPaged]
-GO
-
+﻿
 DROP PROCEDURE [dbo].[ProductTagCountLoadAll]
 GO
 

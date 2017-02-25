@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using SmartStore.Collections;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
@@ -11,10 +10,10 @@ using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Product service
-    /// </summary>
-    public partial interface IProductService
+	/// <summary>
+	/// Product service
+	/// </summary>
+	public partial interface IProductService
     {
 		#region Products
 
@@ -62,18 +61,16 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         int CountProducts(ProductSearchContext productSearchContext);
 
-        /// <summary>
-        /// Search products
-        /// </summary>
-        IPagedList<Product> SearchProducts(ProductSearchContext productSearchContext);
-
 		/// <summary>
 		/// Builds a product query based on the options in ProductSearchContext parameter.
 		/// </summary>
 		/// <param name="ctx">Parameters to build the query.</param>
 		/// <param name="allowedCustomerRolesIds">Customer role ids (ACL).</param>
 		/// <param name="searchLocalizedValue">Whether to search localized values.</param>
-		IQueryable<Product> PrepareProductSearchQuery(ProductSearchContext ctx, IEnumerable<int> allowedCustomerRolesIds = null, bool searchLocalizedValue = false);
+		IQueryable<Product> PrepareProductSearchQuery(
+			ProductSearchContext ctx,
+			IEnumerable<int> allowedCustomerRolesIds = null,
+			bool searchLocalizedValue = false);
 
 		/// <summary>
 		/// Builds a product query based on the options in ProductSearchContext parameter.
@@ -82,7 +79,11 @@ namespace SmartStore.Services.Catalog
 		/// <param name="selector">Data projector</param>
 		/// <param name="allowedCustomerRolesIds">Customer role ids (ACL).</param>
 		/// <param name="searchLocalizedValue">Whether to search localized values.</param>
-		IQueryable<TResult> PrepareProductSearchQuery<TResult>(ProductSearchContext ctx, Expression<Func<Product, TResult>> selector, IEnumerable<int> allowedCustomerRolesIds = null, bool searchLocalizedValue = false);
+		IQueryable<TResult> PrepareProductSearchQuery<TResult>(
+			ProductSearchContext ctx,
+			Expression<Func<Product, TResult>> selector,
+			IEnumerable<int> allowedCustomerRolesIds = null,
+			bool searchLocalizedValue = false);
 
         /// <summary>
         /// Update product review totals

@@ -1703,13 +1703,12 @@ namespace SmartStore.Admin.Controllers
 					CategoryIds = new List<int> { model.SearchCategoryId },
 					ManufacturerId = model.SearchManufacturerId,
 					Keywords = model.SearchProductName,
-					PageIndex = command.Page - 1,
-					PageSize = command.PageSize,
 					ShowHidden = true,
 					ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
 				};
 
-				var products = _productService.SearchProducts(searchContext);
+				var query = _productService.PrepareProductSearchQuery(searchContext);
+				var products = new PagedList<Product>(query.OrderBy(x => x.Name), command.Page - 1, command.PageSize);
 
 				gridModel.Data = products.Select(x =>
 				{

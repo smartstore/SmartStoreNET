@@ -15,17 +15,10 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.ReturnRequest", "RequestedActionUpdatedOnUtc", c => c.DateTime());
             AddColumn("dbo.ReturnRequest", "AdminComment", c => c.String(maxLength: 4000));
             AddColumn("dbo.CheckoutAttribute", "IsActive", c => c.Boolean(nullable: false));
-
-			if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
-			{
-				this.SqlFileOrResource("LatestProductLoadAllPaged.sql");
-			}
         }
         
         public override void Down()
         {
-			// inverse of LatestProductLoadAllPaged.sql does not make sense to me
-
             DropColumn("dbo.CheckoutAttribute", "IsActive");
             DropColumn("dbo.ReturnRequest", "AdminComment");
             DropColumn("dbo.ReturnRequest", "RequestedActionUpdatedOnUtc");

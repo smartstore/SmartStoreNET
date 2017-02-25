@@ -11,11 +11,6 @@ namespace SmartStore.Data.Migrations
         public override void Up()
         {
             AddColumn("dbo.Product", "HomePageDisplayOrder", c => c.Int(nullable: false));
-
-			if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
-			{
-				this.SqlFileOrResource("LatestProductLoadAllPaged.sql");
-			}
         }
         
         public override void Down()

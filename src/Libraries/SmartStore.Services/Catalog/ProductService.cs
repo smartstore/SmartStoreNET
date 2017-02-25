@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
+using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Data.Entity;
 using SmartStore.Collections;
-using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
@@ -18,16 +15,12 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Data.Caching;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Product service
-    /// </summary>
-    public partial class ProductService : IProductService
+	public partial class ProductService : IProductService
 	{
 		private readonly IRepository<Product> _productRepository;
         private readonly IRepository<RelatedProduct> _relatedProductRepository;
@@ -43,12 +36,9 @@ namespace SmartStore.Services.Catalog
 		private readonly IRepository<ShoppingCartItem> _shoppingCartItemRepository;
 		private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
-        private readonly ILanguageService _languageService;
         private readonly IWorkflowMessageService _workflowMessageService;
-        private readonly IDataProvider _dataProvider;
         private readonly IDbContext _dbContext;
         private readonly LocalizationSettings _localizationSettings;
-        private readonly CommonSettings _commonSettings;
 		private readonly ICommonServices _services;
 
         public ProductService(
@@ -66,37 +56,31 @@ namespace SmartStore.Services.Catalog
 			IRepository<ShoppingCartItem> shoppingCartItemRepository,
 			IProductAttributeService productAttributeService,
             IProductAttributeParser productAttributeParser,
-            ILanguageService languageService,
             IWorkflowMessageService workflowMessageService,
-            IDataProvider dataProvider,
 			IDbContext dbContext,
             LocalizationSettings localizationSettings,
-			CommonSettings commonSettings,
 			ICommonServices services)
         {
-            this._productRepository = productRepository;
-            this._relatedProductRepository = relatedProductRepository;
-            this._crossSellProductRepository = crossSellProductRepository;
-            this._tierPriceRepository = tierPriceRepository;
-            this._productPictureRepository = productPictureRepository;
-            this._localizedPropertyRepository = localizedPropertyRepository;
-            this._aclRepository = aclRepository;
-			this._storeMappingRepository = storeMappingRepository;
-            this._productSpecificationAttributeRepository = productSpecificationAttributeRepository;
-            this._productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
-			this._productBundleItemRepository = productBundleItemRepository;
-			this._shoppingCartItemRepository = shoppingCartItemRepository;
-            this._productAttributeService = productAttributeService;
-            this._productAttributeParser = productAttributeParser;
-            this._languageService = languageService;
-            this._workflowMessageService = workflowMessageService;
-            this._dataProvider = dataProvider;
-            this._dbContext = dbContext;
-            this._localizationSettings = localizationSettings;
-            this._commonSettings = commonSettings;
-			this._services = services;
+            _productRepository = productRepository;
+            _relatedProductRepository = relatedProductRepository;
+            _crossSellProductRepository = crossSellProductRepository;
+            _tierPriceRepository = tierPriceRepository;
+            _productPictureRepository = productPictureRepository;
+            _localizedPropertyRepository = localizedPropertyRepository;
+            _aclRepository = aclRepository;
+			_storeMappingRepository = storeMappingRepository;
+            _productSpecificationAttributeRepository = productSpecificationAttributeRepository;
+            _productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
+			_productBundleItemRepository = productBundleItemRepository;
+			_shoppingCartItemRepository = shoppingCartItemRepository;
+            _productAttributeService = productAttributeService;
+            _productAttributeParser = productAttributeParser;
+            _workflowMessageService = workflowMessageService;
+            _dbContext = dbContext;
+            _localizationSettings = localizationSettings;
+			_services = services;
 
-			this.QuerySettings = DbQuerySettings.Default;
+			QuerySettings = DbQuerySettings.Default;
         }
 
 		public DbQuerySettings QuerySettings { get; set; }
@@ -353,427 +337,12 @@ namespace SmartStore.Services.Catalog
 			}
         }
 
-
         public virtual int CountProducts(ProductSearchContext ctx)
         {
             Guard.NotNull(ctx, nameof(ctx));
 
             var query = PrepareProductSearchQuery(ctx, p => p.Id);
             return query.Distinct().Count();
-        }
-
-        public virtual IPagedList<Product> SearchProducts(ProductSearchContext ctx)
-        {
-            ctx.LoadFilterableSpecificationAttributeOptionIds = false;
-
-            ctx.FilterableSpecificationAttributeOptionIds = new List<int>();
-
-			//search by keyword
-            bool searchLocalizedValue = false;
-            if (ctx.LanguageId > 0)
-            {
-                if (ctx.ShowHidden)
-                {
-                    searchLocalizedValue = true;
-                }
-                else
-                {
-                    //ensure that we have at least two published languages
-					var totalPublishedLanguages = _languageService.GetAllLanguages(storeId: ctx.StoreId).Count;
-                    searchLocalizedValue = totalPublishedLanguages >= 2;
-                }
-            }
-
-			//validate "categoryIds" parameter
-			if (ctx.CategoryIds != null && ctx.CategoryIds.Contains(0))
-				ctx.CategoryIds.Remove(0);
-
-            //Access control list. Allowed customer roles
-            var allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles
-                .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
-
-            if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduresSupported)
-            {
-                //stored procedures are enabled and supported by the database. 
-                //It's much faster than the LINQ implementation below 
-
-                #region Use stored procedure
-
-                //pass categry identifiers as comma-delimited string
-                string commaSeparatedCategoryIds = "";
-                if (ctx.CategoryIds != null && !(ctx.WithoutCategories ?? false))
-                {
-                    for (int i = 0; i < ctx.CategoryIds.Count; i++)
-                    {
-                        commaSeparatedCategoryIds += ctx.CategoryIds[i].ToString();
-                        if (i != ctx.CategoryIds.Count - 1)
-                        {
-                            commaSeparatedCategoryIds += ",";
-                        }
-                    }
-                }
-
-                //pass customer role identifiers as comma-delimited string
-                string commaSeparatedAllowedCustomerRoleIds = "";
-                for (int i = 0; i < allowedCustomerRolesIds.Count; i++)
-                {
-                    commaSeparatedAllowedCustomerRoleIds += allowedCustomerRolesIds[i].ToString();
-                    if (i != allowedCustomerRolesIds.Count - 1)
-                    {
-                        commaSeparatedAllowedCustomerRoleIds += ",";
-                    }
-                }
-
-                //pass specification identifiers as comma-delimited string
-                string commaSeparatedSpecIds = "";
-                if (ctx.FilteredSpecs != null)
-                {
-                    ((List<int>)ctx.FilteredSpecs).Sort();
-                    for (int i = 0; i < ctx.FilteredSpecs.Count; i++)
-                    {
-                        commaSeparatedSpecIds += ctx.FilteredSpecs[i].ToString();
-                        if (i != ctx.FilteredSpecs.Count - 1)
-                        {
-                            commaSeparatedSpecIds += ",";
-                        }
-                    }
-                }
-
-                //some databases don't support int.MaxValue
-                if (ctx.PageSize == int.MaxValue)
-                    ctx.PageSize = int.MaxValue - 1;
-
-                //prepare parameters
-                var pCategoryIds = _dataProvider.GetParameter();
-                pCategoryIds.ParameterName = "CategoryIds";
-                pCategoryIds.Value = commaSeparatedCategoryIds != null ? (object)commaSeparatedCategoryIds : DBNull.Value;
-                pCategoryIds.DbType = DbType.String;
-
-                var pManufacturerId = _dataProvider.GetParameter();
-                pManufacturerId.ParameterName = "ManufacturerId";
-				pManufacturerId.Value = (ctx.WithoutManufacturers ?? false) ? 0 : ctx.ManufacturerId;
-                pManufacturerId.DbType = DbType.Int32;
-
-				var pStoreId = _dataProvider.GetParameter();
-				pStoreId.ParameterName = "StoreId";
-				pStoreId.Value = QuerySettings.IgnoreMultiStore ? 0 : ctx.StoreId;
-				pStoreId.DbType = DbType.Int32;
-
-				var pParentGroupedProductId = _dataProvider.GetParameter();
-				pParentGroupedProductId.ParameterName = "ParentGroupedProductId";
-				pParentGroupedProductId.Value = ctx.ParentGroupedProductId;
-				pParentGroupedProductId.DbType = DbType.Int32;
-
-				var pProductTypeId = _dataProvider.GetParameter();
-				pProductTypeId.ParameterName = "ProductTypeId";
-				pProductTypeId.Value = ctx.ProductType.HasValue ? (object)ctx.ProductType.Value : DBNull.Value;
-				pProductTypeId.DbType = DbType.Int32;
-
-				var pVisibleIndividuallyOnly = _dataProvider.GetParameter();
-				pVisibleIndividuallyOnly.ParameterName = "VisibleIndividuallyOnly";
-				pVisibleIndividuallyOnly.Value = ctx.VisibleIndividuallyOnly;
-				pVisibleIndividuallyOnly.DbType = DbType.Int32;
-
-                var pProductTagId = _dataProvider.GetParameter();
-                pProductTagId.ParameterName = "ProductTagId";
-                pProductTagId.Value = ctx.ProductTagId;
-                pProductTagId.DbType = DbType.Int32;
-
-                var pFeaturedProducts = _dataProvider.GetParameter();
-                pFeaturedProducts.ParameterName = "FeaturedProducts";
-                pFeaturedProducts.Value = ctx.FeaturedProducts.HasValue ? (object)ctx.FeaturedProducts.Value : DBNull.Value;
-                pFeaturedProducts.DbType = DbType.Boolean;
-
-                var pPriceMin = _dataProvider.GetParameter();
-                pPriceMin.ParameterName = "PriceMin";
-                pPriceMin.Value = ctx.PriceMin.HasValue ? (object)ctx.PriceMin.Value : DBNull.Value;
-                pPriceMin.DbType = DbType.Decimal;
-
-                var pPriceMax = _dataProvider.GetParameter();
-                pPriceMax.ParameterName = "PriceMax";
-                pPriceMax.Value = ctx.PriceMax.HasValue ? (object)ctx.PriceMax.Value : DBNull.Value;
-                pPriceMax.DbType = DbType.Decimal;
-
-                var pKeywords = _dataProvider.GetParameter();
-                pKeywords.ParameterName = "Keywords";
-                pKeywords.Value = ctx.Keywords != null ? (object)ctx.Keywords : DBNull.Value;
-                pKeywords.DbType = DbType.String;
-
-                var pSearchDescriptions = _dataProvider.GetParameter();
-                pSearchDescriptions.ParameterName = "SearchDescriptions";
-                pSearchDescriptions.Value = ctx.SearchDescriptions;
-                pSearchDescriptions.DbType = DbType.Boolean;
-
-				var pSearchSku = _dataProvider.GetParameter();
-				pSearchSku.ParameterName = "SearchSku";
-				pSearchSku.Value = ctx.SearchSku;
-				pSearchSku.DbType = DbType.Boolean;
-
-                var pSearchProductTags = _dataProvider.GetParameter();
-                pSearchProductTags.ParameterName = "SearchProductTags";
-                pSearchProductTags.Value = ctx.SearchDescriptions;
-                pSearchProductTags.DbType = DbType.Boolean;
-
-                var pUseFullTextSearch = _dataProvider.GetParameter();
-                pUseFullTextSearch.ParameterName = "UseFullTextSearch";
-                pUseFullTextSearch.Value = _commonSettings.UseFullTextSearch;
-                pUseFullTextSearch.DbType = DbType.Boolean;
-
-                var pFullTextMode = _dataProvider.GetParameter();
-                pFullTextMode.ParameterName = "FullTextMode";
-                pFullTextMode.Value = (int)_commonSettings.FullTextMode;
-                pFullTextMode.DbType = DbType.Int32;
-
-                var pFilteredSpecs = _dataProvider.GetParameter();
-                pFilteredSpecs.ParameterName = "FilteredSpecs";
-                pFilteredSpecs.Value = commaSeparatedSpecIds != null ? (object)commaSeparatedSpecIds : DBNull.Value;
-                pFilteredSpecs.DbType = DbType.String;
-
-                var pLanguageId = _dataProvider.GetParameter();
-                pLanguageId.ParameterName = "LanguageId";
-                pLanguageId.Value = searchLocalizedValue ? ctx.LanguageId : 0;
-                pLanguageId.DbType = DbType.Int32;
-
-                var pOrderBy = _dataProvider.GetParameter();
-                pOrderBy.ParameterName = "OrderBy";
-                pOrderBy.Value = (int)ctx.OrderBy;
-                pOrderBy.DbType = DbType.Int32;
-
-				var pAllowedCustomerRoleIds = _dataProvider.GetParameter();
-				pAllowedCustomerRoleIds.ParameterName = "AllowedCustomerRoleIds";
-				pAllowedCustomerRoleIds.Value = commaSeparatedAllowedCustomerRoleIds;
-				pAllowedCustomerRoleIds.DbType = DbType.String;
-
-                var pPageIndex = _dataProvider.GetParameter();
-                pPageIndex.ParameterName = "PageIndex";
-                pPageIndex.Value = ctx.PageIndex;
-                pPageIndex.DbType = DbType.Int32;
-
-                var pPageSize = _dataProvider.GetParameter();
-                pPageSize.ParameterName = "PageSize";
-                pPageSize.Value = ctx.PageSize;
-                pPageSize.DbType = DbType.Int32;
-
-                var pShowHidden = _dataProvider.GetParameter();
-                pShowHidden.ParameterName = "ShowHidden";
-                pShowHidden.Value = ctx.ShowHidden;
-                pShowHidden.DbType = DbType.Boolean;
-
-                var pLoadFilterableSpecificationAttributeOptionIds = _dataProvider.GetParameter();
-                pLoadFilterableSpecificationAttributeOptionIds.ParameterName = "LoadFilterableSpecificationAttributeOptionIds";
-                pLoadFilterableSpecificationAttributeOptionIds.Value = ctx.LoadFilterableSpecificationAttributeOptionIds;
-                pLoadFilterableSpecificationAttributeOptionIds.DbType = DbType.Boolean;
-
-				var pWithoutCategories = _dataProvider.GetParameter();
-				pWithoutCategories.ParameterName = "WithoutCategories";
-				pWithoutCategories.Value = (ctx.WithoutCategories.HasValue ? (object)ctx.WithoutCategories.Value : DBNull.Value);
-				pWithoutCategories.DbType = DbType.Boolean;
-
-				var pWithoutManufacturers = _dataProvider.GetParameter();
-				pWithoutManufacturers.ParameterName = "WithoutManufacturers";
-				pWithoutManufacturers.Value = (ctx.WithoutManufacturers.HasValue ? (object)ctx.WithoutManufacturers.Value : DBNull.Value);
-				pWithoutManufacturers.DbType = DbType.Boolean;
-
-				var pIsPublished = _dataProvider.GetParameter();
-				pIsPublished.ParameterName = "IsPublished";
-				pIsPublished.Value = (ctx.IsPublished.HasValue ? (object)ctx.IsPublished.Value : DBNull.Value);
-				pIsPublished.DbType = DbType.Boolean;
-
-				var pHomePageProducts = _dataProvider.GetParameter();
-				pHomePageProducts.ParameterName = "HomePageProducts";
-				pHomePageProducts.Value = (ctx.HomePageProducts.HasValue ? (object)ctx.HomePageProducts.Value : DBNull.Value);
-				pHomePageProducts.DbType = DbType.Boolean;
-
-				var pIdMin = _dataProvider.GetParameter();
-				pIdMin.ParameterName = "IdMin";
-				pIdMin.Value = ctx.IdMin;
-				pIdMin.DbType = DbType.Int32;
-
-				var pIdMax = _dataProvider.GetParameter();
-				pIdMax.ParameterName = "IdMax";
-				pIdMax.Value = ctx.IdMin;
-				pIdMax.DbType = DbType.Int32;
-
-				var pAvailabilityMin = _dataProvider.GetParameter();
-				pAvailabilityMin.ParameterName = "AvailabilityMin";
-				pAvailabilityMin.Value = ctx.AvailabilityMinimum.HasValue ? (object)ctx.AvailabilityMinimum.Value : DBNull.Value;
-				pAvailabilityMin.DbType = DbType.Int32;
-
-				var pAvailabilityMax = _dataProvider.GetParameter();
-				pAvailabilityMax.ParameterName = "AvailabilityMax";
-				pAvailabilityMax.Value = ctx.AvailabilityMaximum.HasValue ? (object)ctx.AvailabilityMaximum.Value : DBNull.Value;
-				pAvailabilityMax.DbType = DbType.Int32;
-
-				var pCreatedFromUtc = _dataProvider.GetParameter();
-				pCreatedFromUtc.ParameterName = "CreatedFromUtc";
-				pCreatedFromUtc.Value = ctx.CreatedFromUtc.HasValue ? (object)ctx.CreatedFromUtc.Value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) : DBNull.Value;
-				pCreatedFromUtc.DbType = DbType.String;
-
-				var pCreatedToUtc = _dataProvider.GetParameter();
-				pCreatedToUtc.ParameterName = "CreatedToUtc";
-				pCreatedToUtc.Value = ctx.CreatedToUtc.HasValue ? (object)ctx.CreatedToUtc.Value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) : DBNull.Value;
-				pCreatedToUtc.DbType = DbType.String;
-
-
-                var pFilterableSpecificationAttributeOptionIds = _dataProvider.GetParameter();
-                pFilterableSpecificationAttributeOptionIds.ParameterName = "FilterableSpecificationAttributeOptionIds";
-                pFilterableSpecificationAttributeOptionIds.Direction = ParameterDirection.Output;
-                pFilterableSpecificationAttributeOptionIds.Size = int.MaxValue - 1;
-                pFilterableSpecificationAttributeOptionIds.DbType = DbType.String;
-
-                var pTotalRecords = _dataProvider.GetParameter();
-                pTotalRecords.ParameterName = "TotalRecords";
-                pTotalRecords.Direction = ParameterDirection.Output;
-                pTotalRecords.DbType = DbType.Int32;
-
-                //invoke stored procedure
-                var products = _dbContext.ExecuteStoredProcedureList<Product>(
-                    "ProductLoadAllPaged",
-                    pCategoryIds,
-                    pManufacturerId,
-					pStoreId,
-					pParentGroupedProductId,
-					pProductTypeId,
-					pVisibleIndividuallyOnly,
-                    pProductTagId,
-                    pFeaturedProducts,
-                    pPriceMin,
-                    pPriceMax,
-                    pKeywords,
-                    pSearchDescriptions,
-					pSearchSku,
-                    pSearchProductTags,
-                    pUseFullTextSearch,
-                    pFullTextMode,
-                    pFilteredSpecs,
-                    pLanguageId,
-                    pOrderBy,
-					pAllowedCustomerRoleIds,
-                    pPageIndex,
-                    pPageSize,
-                    pShowHidden,
-                    pLoadFilterableSpecificationAttributeOptionIds,
-					pWithoutCategories,
-					pWithoutManufacturers,
-					pIsPublished,
-					pHomePageProducts,
-					pIdMin,
-					pIdMax,
-					pAvailabilityMin,
-					pAvailabilityMax,
-					pCreatedFromUtc,
-					pCreatedToUtc,
-                    pFilterableSpecificationAttributeOptionIds,
-                    pTotalRecords);
-
-                // get filterable specification attribute option identifier
-                string filterableSpecificationAttributeOptionIdsStr = (pFilterableSpecificationAttributeOptionIds.Value != DBNull.Value) ? (string)pFilterableSpecificationAttributeOptionIds.Value : "";
-                if (ctx.LoadFilterableSpecificationAttributeOptionIds && !string.IsNullOrWhiteSpace(filterableSpecificationAttributeOptionIdsStr))
-                {
-                    ctx.FilterableSpecificationAttributeOptionIds.AddRange(filterableSpecificationAttributeOptionIdsStr
-                       .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                       .Select(x => Convert.ToInt32(x.Trim())));
-                }
-
-                // return products
-                int totalRecords = (pTotalRecords.Value != DBNull.Value) ? Convert.ToInt32(pTotalRecords.Value) : 0;
-                return new PagedList<Product>(products, ctx.PageIndex, ctx.PageSize, totalRecords);
-
-                #endregion
-            }
-            else
-            {
-                //stored procedures aren't supported. Use LINQ
-
-                #region Search products
-
-                var query = this.PrepareProductSearchQuery(ctx, allowedCustomerRolesIds, searchLocalizedValue);
-
-                // only distinct products (group by ID)
-                // if we use standard Distinct() method, then all fields will be compared (low performance)
-                // it'll not work in SQL Server Compact when searching products by a keyword)
-                query = from p in query
-                        group p by p.Id into pGroup
-						orderby pGroup.Key
-						select pGroup.FirstOrDefault();
-
-                //sort products
-                if (ctx.OrderBy == ProductSortingEnum.Relevance && ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
-                {
-                    //category position
-                    var firstCategoryId = ctx.CategoryIds[0];
-                    query = query.OrderBy(p => p.ProductCategories.Where(pc => pc.CategoryId == firstCategoryId).FirstOrDefault().DisplayOrder);
-                }
-                else if (ctx.OrderBy == ProductSortingEnum.Relevance && ctx.ManufacturerId > 0)
-                {
-                    //manufacturer position
-                    query = query.OrderBy(p => p.ProductManufacturers.Where(pm => pm.ManufacturerId == ctx.ManufacturerId).FirstOrDefault().DisplayOrder);
-                }
-				else if (ctx.OrderBy == ProductSortingEnum.Relevance && ctx.ParentGroupedProductId > 0)
-				{
-					//parent product specified (sort associated products)
-					query = query.OrderBy(p => p.DisplayOrder);
-				}
-                else if (ctx.OrderBy == ProductSortingEnum.Relevance)
-                {
-					//otherwise sort by name
-                    query = query.OrderBy(p => p.Name);
-                }
-                else if (ctx.OrderBy == ProductSortingEnum.NameAsc)
-                {
-                    //Name: A to Z
-                    query = query.OrderBy(p => p.Name);
-                }
-                else if (ctx.OrderBy == ProductSortingEnum.NameDesc)
-                {
-                    //Name: Z to A
-                    query = query.OrderByDescending(p => p.Name);
-                }
-                else if (ctx.OrderBy == ProductSortingEnum.PriceAsc)
-                {
-                    //Price: Low to High
-                    query = query.OrderBy(p => p.Price);
-                }
-                else if (ctx.OrderBy == ProductSortingEnum.PriceDesc)
-                {
-                    //Price: High to Low
-                    query = query.OrderByDescending(p => p.Price);
-                }
-                else if (ctx.OrderBy == ProductSortingEnum.CreatedOn)
-                {
-                    //creation date
-                    query = query.OrderByDescending(p => p.CreatedOnUtc);
-                }
-                else if (ctx.OrderBy == ProductSortingEnum.CreatedOnAsc)
-                {
-                    // creation date: old to new
-                    query = query.OrderBy(p => p.CreatedOnUtc);
-                }
-                else
-                {
-                    //actually this code is not reachable
-                    query = query.OrderBy(p => p.Name);
-                }
-
-                var products = new PagedList<Product>(query, ctx.PageIndex, ctx.PageSize);
-
-                //get filterable specification attribute option identifier
-                if (ctx.LoadFilterableSpecificationAttributeOptionIds)
-                {
-                    var querySpecs = from p in query
-                                     join psa in _productSpecificationAttributeRepository.Table on p.Id equals psa.ProductId
-                                     where psa.AllowFiltering
-                                     select psa.SpecificationAttributeOptionId;
-                    //only distinct attributes
-                    ctx.FilterableSpecificationAttributeOptionIds = querySpecs
-                        .Distinct()
-                        .ToList();
-                }
-
-                return products;
-
-                #endregion
-            }
         }
 
 		public virtual IQueryable<Product> PrepareProductSearchQuery(

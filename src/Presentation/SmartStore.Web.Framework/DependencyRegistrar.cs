@@ -53,7 +53,6 @@ using SmartStore.Services.Events;
 using SmartStore.Services.Filter;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
-using SmartStore.Services.Hooks;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
@@ -181,7 +180,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<AffiliateService>().As<IAffiliateService>().InstancePerRequest();
 			builder.RegisterType<AddressService>().As<IAddressService>().InstancePerRequest();
 			builder.RegisterType<GenericAttributeService>().As<IGenericAttributeService>().InstancePerRequest();
-			builder.RegisterType<FulltextService>().As<IFulltextService>().InstancePerRequest();
 			builder.RegisterType<MaintenanceService>().As<IMaintenanceService>().InstancePerRequest();
 
 			builder.RegisterType<CustomerContentService>().As<ICustomerContentService>().InstancePerRequest();

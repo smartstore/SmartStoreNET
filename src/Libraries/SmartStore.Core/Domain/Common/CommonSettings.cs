@@ -12,7 +12,6 @@ namespace SmartStore.Core.Domain.Common
 			SitemapIncludeManufacturers = true;
 			SitemapIncludeTopics = true;
 			SitemapIncludeProducts = false;
-			FullTextMode = FulltextSearchMode.ExactMatch;
 			AutoUpdateEnabled = true;
 			EntityPickerPageSize = 48;
 		}
@@ -33,16 +32,6 @@ namespace SmartStore.Core.Domain.Common
         /// Gets or sets a value indicating whether to display a warning if java-script is disabled
         /// </summary>
         public bool DisplayJavaScriptDisabledWarning { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to full-text search is supported
-        /// </summary>
-        public bool UseFullTextSearch { get; set; }
-
-        /// <summary>
-        /// Gets or sets a Full-Text search mode
-        /// </summary>
-        public FulltextSearchMode FullTextMode { get; set; }
 
 		public bool AutoUpdateEnabled { get; set; }
 

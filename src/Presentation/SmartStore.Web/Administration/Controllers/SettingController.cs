@@ -68,7 +68,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IThemeRegistry _themeRegistry;
 		private readonly ICustomerService _customerService;
 		private readonly ICustomerActivityService _customerActivityService;
-		private readonly IFulltextService _fulltextService;
 		private readonly IMaintenanceService _maintenanceService;
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly ILocalizedEntityService _localizedEntityService;
@@ -99,7 +98,6 @@ namespace SmartStore.Admin.Controllers
             IThemeRegistry themeRegistry,
 			ICustomerService customerService, 
             ICustomerActivityService customerActivityService,
-            IFulltextService fulltextService,
 			IMaintenanceService maintenanceService,
 			IGenericAttributeService genericAttributeService,
 			ILocalizedEntityService localizedEntityService,
@@ -122,7 +120,6 @@ namespace SmartStore.Admin.Controllers
             _themeRegistry = themeRegistry;
             _customerService = customerService;
             _customerActivityService = customerActivityService;
-            _fulltextService = fulltextService;
             _maintenanceService = maintenanceService;
 			_genericAttributeService = genericAttributeService;
 			_localizedEntityService = localizedEntityService;
@@ -147,6 +144,12 @@ namespace SmartStore.Admin.Controllers
 					_storeDependingSettings = new StoreDependingSettingHelper(this.ViewData);
 				return _storeDependingSettings;
 			}
+		}
+
+		private SelectListItem ResToSelectListItem(string resourceKey)
+		{
+			string value = _services.Localization.GetResource(resourceKey).EmptyNull();
+			return new SelectListItem() { Text = value, Value = value };
 		}
 
 		#endregion
@@ -1095,13 +1098,6 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.GetOverrideKeys(localizationSettings, model.LocalizationSettings, storeScope, _services.Settings, false);
 
-			//full-text support
-			var commonSettings = _services.Settings.LoadSetting<CommonSettings>(storeScope);
-			model.FullTextSettings.Supported = _fulltextService.IsFullTextSupported();
-			model.FullTextSettings.Enabled = commonSettings.UseFullTextSearch;
-			model.FullTextSettings.SearchMode = commonSettings.FullTextMode;
-			model.FullTextSettings.SearchModeValues = commonSettings.FullTextMode.ToSelectList();
-
 			//company information
 			var companySettings = _services.Settings.LoadSetting<CompanyInformationSettings>(storeScope);
 			model.CompanyInformationSettings.CompanyName = companySettings.CompanyName;
@@ -1184,12 +1180,6 @@ namespace SmartStore.Admin.Controllers
 			StoreDependingSettings.GetOverrideKeys(socialSettings, model.SocialSettings, storeScope, _services.Settings, false);
 
             return View(model);
-        }
-
-        private SelectListItem ResToSelectListItem(string resourceKey)
-        {
-            string value = _services.Localization.GetResource(resourceKey).EmptyNull();
-            return new SelectListItem() { Text = value, Value = value };
         }
 
         [HttpPost]
@@ -1301,12 +1291,6 @@ namespace SmartStore.Admin.Controllers
 				System.Web.Routing.RouteTable.Routes.ClearSeoFriendlyUrlsCachedValueForRoutes();	// clear cached values of routes
 			}
 
-			//full-text
-			var commonSettings = _services.Settings.LoadSetting<CommonSettings>(storeScope);
-			commonSettings.FullTextMode = model.FullTextSettings.SearchMode;
-
-			_services.Settings.SaveSetting(commonSettings);
-
 			//company information
 			var companySettings = _services.Settings.LoadSetting<CompanyInformationSettings>(storeScope);
 			companySettings.CompanyName = model.CompanyInformationSettings.CompanyName;
@@ -1373,6 +1357,7 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Updated"));
             return RedirectToAction("GeneralCommon");
         }
+
         [HttpPost, ActionName("GeneralCommon")]
         [FormValueRequired("changeencryptionkey")]
         public ActionResult ChangeEnryptionKey(GeneralCommonSettingsModel model)
@@ -1473,46 +1458,6 @@ namespace SmartStore.Admin.Controllers
                 securitySettings.EncryptionKey = newEncryptionPrivateKey;
                 _services.Settings.SaveSetting(securitySettings);
                 NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Settings.GeneralCommon.EncryptionKey.Changed"));
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-            }
-			return RedirectToAction("GeneralCommon");
-        }
-        [HttpPost, ActionName("GeneralCommon")]
-        [FormValueRequired("togglefulltext")]
-        public ActionResult ToggleFullText(GeneralCommonSettingsModel model)
-        {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageSettings))
-                return AccessDeniedView();
-
-			var storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
-			var commonSettings = _services.Settings.LoadSetting<CommonSettings>(storeScope);
-
-            try
-            {
-                if (! _fulltextService.IsFullTextSupported())
-                    throw new SmartException(_services.Localization.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.NotSupported"));
-
-                if (commonSettings.UseFullTextSearch)
-                {
-                    _fulltextService.DisableFullText();
-
-                    commonSettings.UseFullTextSearch = false;
-                    _services.Settings.SaveSetting(commonSettings, storeScope);
-
-                    NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Disabled"));
-                }
-                else
-                {
-                    _fulltextService.EnableFullText();
-
-                    commonSettings.UseFullTextSearch = true;
-                    _services.Settings.SaveSetting(commonSettings, storeScope);
-
-                    NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Enabled"));
-                }
             }
             catch (Exception exc)
             {

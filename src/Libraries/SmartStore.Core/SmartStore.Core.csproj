@@ -362,7 +362,6 @@
     <Compile Include="Domain\Catalog\SmartStoreProductVariantAttributeCombination.cs" />
     <Compile Include="Domain\Cms\WidgetSettings.cs" />
     <Compile Include="Domain\Common\AddressSettings.cs" />
-    <Compile Include="Domain\Common\FulltextSearchMode.cs" />
     <Compile Include="Domain\Common\GenericAttribute.cs" />
     <Compile Include="Domain\Orders\Events.cs" />
     <Compile Include="Domain\Security\AclRecord.cs" />

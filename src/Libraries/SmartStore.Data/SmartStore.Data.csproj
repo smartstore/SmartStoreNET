@@ -131,6 +131,7 @@
     <Compile Include="Caching\QueryRegistrar.cs" />
     <Compile Include="Caching\SingletonQueries.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
+    <Compile Include="Mapping\Catalog\ProductAttributeOptionMap.cs" />
     <Compile Include="Mapping\DataExchange\ImportProfileMap.cs" />
     <Compile Include="Mapping\DataExchange\SyncMappingMap.cs" />
     <Compile Include="Mapping\DataExchange\ExportDeploymentMap.cs" />
@@ -470,6 +471,10 @@
     <Compile Include="Migrations\201702202112266_VariantAttributeAllowFiltering.cs" />
     <Compile Include="Migrations\201702202112266_VariantAttributeAllowFiltering.Designer.cs">
       <DependentUpon>201702202112266_VariantAttributeAllowFiltering.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702271156594_ProductAttributeOption.cs" />
+    <Compile Include="Migrations\201702271156594_ProductAttributeOption.Designer.cs">
+      <DependentUpon>201702271156594_ProductAttributeOption.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -861,6 +866,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702202112266_VariantAttributeAllowFiltering.resx">
       <DependentUpon>201702202112266_VariantAttributeAllowFiltering.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702271156594_ProductAttributeOption.resx">
+      <DependentUpon>201702271156594_ProductAttributeOption.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

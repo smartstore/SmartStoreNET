@@ -33,6 +33,9 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Common.DisplayOrder")]
 		public int DisplayOrder { get; set; }
 
+		[SmartResourceDisplayName("Common.Options.Count")]
+		public int OptionCount { get; set; }
+
 		public IList<ProductAttributeLocalizedModel> Locales { get; set; }
 
     }

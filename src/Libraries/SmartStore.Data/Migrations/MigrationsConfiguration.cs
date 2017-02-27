@@ -575,6 +575,12 @@ namespace SmartStore.Data.Migrations
 				"Enums.SmartStore.Core.Domain.Common.FulltextSearchMode.And",
 				"Enums.SmartStore.Core.Domain.Common.FulltextSearchMode.Or"
 			);
+
+			builder.AddOrUpdate("Common.Options.Count", "Number options", "Anzahl Optionen");
+			builder.AddOrUpdate("Common.Options.Add", "Add option", "Option hinzufügen");
+			builder.AddOrUpdate("Common.Options.Edit", "Edit option", "Option bearbeiten");
+
+			builder.AddOrUpdate("Admin.Validation.RequiredField", "Please enter \"{0}\".", "Bitte \"{0}\" angeben.");
 		}
 	}
 }

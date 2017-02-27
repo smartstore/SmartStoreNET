@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using SmartStore.Collections;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Catalog
 {
-    /// <summary>
-    /// Product attribute service interface
-    /// </summary>
-    public partial interface IProductAttributeService
+	/// <summary>
+	/// Product attribute service interface
+	/// </summary>
+	public partial interface IProductAttributeService
     {
         #region Product attributes
 
@@ -43,15 +43,51 @@ namespace SmartStore.Services.Catalog
         /// <param name="productAttribute">Product attribute</param>
         void UpdateProductAttribute(ProductAttribute productAttribute);
 
-        #endregion
+		#endregion
 
-        #region Product variant attributes mappings (ProductVariantAttribute)
+		#region Product attribute options
 
-        /// <summary>
-        /// Deletes a product variant attribute mapping
-        /// </summary>
-        /// <param name="productVariantAttribute">Product variant attribute mapping</param>
-        void DeleteProductVariantAttribute(ProductVariantAttribute productVariantAttribute);
+		/// <summary>
+		/// Gets an attribute option by id
+		/// </summary>
+		/// <param name="id">Product attribute option identifier</param>
+		/// <returns>Product attribute option</returns>
+		ProductAttributeOption GetProductAttributeOptionById(int id);
+
+		/// <summary>
+		/// Gets all attribute options by attribute identifier
+		/// </summary>
+		/// <param name="productAttributeId">Product attribute identifier</param>
+		/// <returns>List of attribute options</returns>
+		IList<ProductAttributeOption> GetProductAttributeOptionByAttributeId(int productAttributeId);
+
+		/// <summary>
+		/// Deletes an attribute option
+		/// </summary>
+		/// <param name="productAttributeOption">Product attribute option</param>
+		void DeleteProductAttributeOption(ProductAttributeOption productAttributeOption);
+
+		/// <summary>
+		/// Inserts an attribute option
+		/// </summary>
+		/// <param name="productAttributeOption">Product attribute option</param>
+		void InsertProductAttributeOption(ProductAttributeOption productAttributeOption);
+
+		/// <summary>
+		/// Updates an attribute option
+		/// </summary>
+		/// <param name="productAttributeOption">Product attribute option</param>
+		void UpdateProductAttributeOption(ProductAttributeOption productAttributeOption);
+
+		#endregion
+
+		#region Product variant attributes mappings (ProductVariantAttribute)
+
+		/// <summary>
+		/// Deletes a product variant attribute mapping
+		/// </summary>
+		/// <param name="productVariantAttribute">Product variant attribute mapping</param>
+		void DeleteProductVariantAttribute(ProductVariantAttribute productVariantAttribute);
 
         /// <summary>
         /// Gets product variant attribute mappings by product identifier

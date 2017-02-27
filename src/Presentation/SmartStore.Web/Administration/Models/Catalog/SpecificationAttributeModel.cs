@@ -31,10 +31,10 @@ namespace SmartStore.Admin.Models.Catalog
 		public FacetSorting FacetSorting { get; set; }
 		public List<SelectListItem> AvailableFacetSortings { get; set; }
 
-		public IList<SpecificationAttributeLocalizedModel> Locales { get; set; }
-
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.OptionsCount")]
 		public int OptionCount { get; set; }
+
+		public IList<SpecificationAttributeLocalizedModel> Locales { get; set; }
     }
 
     public class SpecificationAttributeLocalizedModel : ILocalizedModelLocal

@@ -2,26 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Collections;
+using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Events;
-using SmartStore.Services.Media;
-using SmartStore.Core;
-using SmartStore.Data.Caching;
-using SmartStore.Services.Seo;
 using SmartStore.Core.Localization;
+using SmartStore.Data.Caching;
+using SmartStore.Services.Media;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Catalog
 {
-    public partial class ProductAttributeService : IProductAttributeService
+	public partial class ProductAttributeService : IProductAttributeService
     {
 		// 0 = ProductId, 1 = PageIndex, 2 = PageSize
 		private const string PRODUCTVARIANTATTRIBUTES_COMBINATIONS_BY_ID_KEY = "SmartStore.productvariantattribute.combinations.id-{0}-{1}-{2}";
 		private const string PRODUCTVARIANTATTRIBUTES_PATTERN_KEY = "SmartStore.productvariantattribute.";
 
 		private readonly IRepository<ProductAttribute> _productAttributeRepository;
-        private readonly IRepository<ProductVariantAttribute> _productVariantAttributeRepository;
+		private readonly IRepository<ProductAttributeOption> _productAttributeOptionRepository;
+		private readonly IRepository<ProductVariantAttribute> _productVariantAttributeRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
         private readonly IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepository;
 		private readonly IRepository<ProductBundleItemAttributeFilter> _productBundleItemAttributeFilterRepository;
@@ -31,7 +32,8 @@ namespace SmartStore.Services.Catalog
 
         public ProductAttributeService(IRequestCache requestCache,
             IRepository<ProductAttribute> productAttributeRepository,
-            IRepository<ProductVariantAttribute> productVariantAttributeRepository,
+			IRepository<ProductAttributeOption> productAttributeOptionRepository,
+			IRepository<ProductVariantAttribute> productVariantAttributeRepository,
             IRepository<ProductVariantAttributeCombination> pvacRepository,
             IRepository<ProductVariantAttributeValue> productVariantAttributeValueRepository,
 			IRepository<ProductBundleItemAttributeFilter> productBundleItemAttributeFilterRepository,
@@ -40,6 +42,7 @@ namespace SmartStore.Services.Catalog
         {
             _requestCache = requestCache;
             _productAttributeRepository = productAttributeRepository;
+			_productAttributeOptionRepository = productAttributeOptionRepository;
             _productVariantAttributeRepository = productVariantAttributeRepository;
             _pvacRepository = pvacRepository;
             _productVariantAttributeValueRepository = productVariantAttributeValueRepository;
@@ -148,11 +151,96 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityUpdated(productAttribute);
         }
 
-        #endregion
+		#endregion
 
-        #region Product variant attributes mappings (ProductVariantAttribute)
+		#region Product attribute options
 
-        public virtual void DeleteProductVariantAttribute(ProductVariantAttribute productVariantAttribute)
+		public virtual ProductAttributeOption GetProductAttributeOptionById(int id)
+		{
+			if (id == 0)
+				return null;
+
+			return _productAttributeOptionRepository.GetById(id);
+		}
+
+		public virtual IList<ProductAttributeOption> GetProductAttributeOptionByAttributeId(int productAttributeId)
+		{
+			if (productAttributeId == 0)
+				return new List<ProductAttributeOption>();
+
+			var query =
+				from x in _productAttributeOptionRepository.Table
+				orderby x.DisplayOrder, x.Name
+				where x.ProductAttributeId == productAttributeId
+				select x;
+
+			return query.ToList();
+		}
+
+		public virtual void DeleteProductAttributeOption(ProductAttributeOption productAttributeOption)
+		{
+			Guard.NotNull(productAttributeOption, nameof(productAttributeOption));
+
+			_productAttributeOptionRepository.Delete(productAttributeOption);
+
+			_eventPublisher.EntityDeleted(productAttributeOption);
+		}
+
+		public virtual void InsertProductAttributeOption(ProductAttributeOption productAttributeOption)
+		{
+			Guard.NotNull(productAttributeOption, nameof(productAttributeOption));
+
+			var existingValue = _productAttributeOptionRepository.TableUntracked.FirstOrDefault(
+				x => x.ProductAttributeId == productAttributeOption.ProductAttributeId && x.Name == productAttributeOption.Name);
+
+			if (existingValue != null)
+			{
+				throw new SmartException(T("Common.Error.OptionAlreadyExists", existingValue.Name.NaIfEmpty()));
+			}
+
+			var alias = SeoExtensions.GetSeName(productAttributeOption.Alias);
+			if (alias.HasValue() && _productAttributeOptionRepository.TableUntracked.Any(x => x.Alias == alias))
+			{
+				throw new SmartException(T("Common.Error.AliasAlreadyExists", alias));
+			}
+
+			productAttributeOption.Alias = alias;
+
+			_productAttributeOptionRepository.Insert(productAttributeOption);
+
+			_eventPublisher.EntityInserted(productAttributeOption);
+		}
+
+		public virtual void UpdateProductAttributeOption(ProductAttributeOption productAttributeOption)
+		{
+			Guard.NotNull(productAttributeOption, nameof(productAttributeOption));
+
+			var existingValue = _productAttributeOptionRepository.TableUntracked.FirstOrDefault(
+				x => x.ProductAttributeId == productAttributeOption.ProductAttributeId && x.Name == productAttributeOption.Name);
+
+			if (existingValue != null && existingValue.Id != productAttributeOption.Id)
+			{
+				throw new SmartException(T("Common.Error.OptionAlreadyExists", existingValue.Name.NaIfEmpty()));
+			}
+
+			var alias = SeoExtensions.GetSeName(productAttributeOption.Alias);
+			if (alias.HasValue() && _productVariantAttributeValueRepository.TableUntracked.Any(x => x.Alias == alias && x.Id != productAttributeOption.Id))
+			{
+				throw new SmartException(T("Common.Error.AliasAlreadyExists", alias));
+			}
+
+			productAttributeOption.Alias = alias;
+
+			_productAttributeOptionRepository.Update(productAttributeOption);
+
+			_eventPublisher.EntityUpdated(productAttributeOption);
+		}
+
+		#endregion
+
+		#region Product variant attributes mappings (ProductVariantAttribute)
+
+		public virtual void DeleteProductVariantAttribute(ProductVariantAttribute productVariantAttribute)
         {
             if (productVariantAttribute == null)
                 throw new ArgumentNullException("productVariantAttribute");

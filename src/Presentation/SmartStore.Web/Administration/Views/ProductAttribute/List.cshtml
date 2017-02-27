@@ -24,6 +24,9 @@
 							.Width(200)
 							.ClientTemplate(@Html.SymbolForBool("AllowFiltering"))
 							.Centered();
+						columns.Bound(x => x.OptionCount)
+							.Width(200)
+							.Centered();
 						columns.Bound(x => x.DisplayOrder)
 							.Width(200)
 							.Centered();

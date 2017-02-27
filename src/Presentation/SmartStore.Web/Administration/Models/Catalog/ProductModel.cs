@@ -638,6 +638,7 @@ namespace SmartStore.Admin.Models.Catalog
 			public string ProductVariantAttributeName { get; set; }
 		}
 
+		// TODO: DRY. see ProductAttributeOptionModelBase
 		[Validator(typeof(ProductVariantAttributeValueModelValidator))]
 		public class ProductVariantAttributeValueModel : EntityModelBase, ILocalizedModel<ProductVariantAttributeValueLocalizedModel>
 		{

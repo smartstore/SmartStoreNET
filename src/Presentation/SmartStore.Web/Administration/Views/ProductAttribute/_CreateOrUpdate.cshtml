@@ -3,108 +3,194 @@
 
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
-
-@if (Model.Id != 0)
+@Html.SmartStore().TabStrip().Name("productattribute-edit").Items(x =>
 {
+	x.Add().Text(T("Common.General").Text).Content(TabInfo()).Selected(true);
+	x.Add().Text(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values").Text).Content(TabOptions());
+
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "productattribute-edit", this.Html, this.Model));
+})
+
+@helper TabInfo()
+{
+	if (Model.Id != 0)
+	{
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Id)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(model => model.Id)
+					@Html.ValidationMessageFor(model => model.Id)
+				</td>
+			</tr>
+		</table>
+
+		<p></p>
+	}
+
+	@(Html.LocalizedEditor<ProductAttributeModel, ProductAttributeLocalizedModel>("productattribute-localized",
+		@<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Locales[item].Name)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => Model.Locales[item].Name)
+					@Html.ValidationMessageFor(model => model.Locales[item].Name)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Locales[item].Alias)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => Model.Locales[item].Alias)
+					@Html.ValidationMessageFor(model => model.Locales[item].Alias)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Locales[item].Description)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Locales[item].Description, Html.RichEditorFlavor())
+					@Html.ValidationMessageFor(model => model.Locales[item].Description)
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+				</td>
+			</tr>
+		</table>
+			,
+		@<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Name)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Name)
+					@Html.ValidationMessageFor(model => model.Name)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Alias)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Alias)
+					@Html.ValidationMessageFor(model => model.Alias)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Description)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.Description, Html.RichEditorFlavor())
+					@Html.ValidationMessageFor(model => model.Description)
+				</td>
+			</tr>
+		</table>
+	))
+
 	<table class="adminContent">
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.Id)
+				@Html.SmartLabelFor(model => model.DisplayOrder)
 			</td>
 			<td class="adminData">
-				@Html.DisplayFor(model => model.Id)
-				@Html.ValidationMessageFor(model => model.Id)
+				@Html.EditorFor(model => model.DisplayOrder)
+				@Html.ValidationMessageFor(model => model.DisplayOrder)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AllowFiltering)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.AllowFiltering)
+				@Html.ValidationMessageFor(model => model.AllowFiltering)
 			</td>
 		</tr>
 	</table>
-
-	<p></p>
 }
 
-@(Html.LocalizedEditor<ProductAttributeModel, ProductAttributeLocalizedModel>("productattribute-localized",
-    @<table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Locales[item].Name)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.Locales[item].Name)
-                @Html.ValidationMessageFor(model => model.Locales[item].Name)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Locales[item].Alias)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.Locales[item].Alias)
-                @Html.ValidationMessageFor(model => model.Locales[item].Alias)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Locales[item].Description)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Locales[item].Description, Html.RichEditorFlavor())
-                @Html.ValidationMessageFor(model => model.Locales[item].Description)
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                @Html.HiddenFor(model => model.Locales[item].LanguageId)
-            </td>
-        </tr>
-    </table>
-    ,
-    @<table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Name)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Name)
-                @Html.ValidationMessageFor(model => model.Name)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Alias)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Alias)
-                @Html.ValidationMessageFor(model => model.Alias)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Description)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.Description, Html.RichEditorFlavor())
-                @Html.ValidationMessageFor(model => model.Description)
-            </td>
-        </tr>
-    </table>
-))
-
-<table class="adminContent">
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.DisplayOrder)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(model => model.DisplayOrder)
-			@Html.ValidationMessageFor(model => model.DisplayOrder)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.AllowFiltering)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(model => model.AllowFiltering)
-			@Html.ValidationMessageFor(model => model.AllowFiltering)
-		</td>
-	</tr>
-</table>
+@helper TabOptions()
+{
+	if (Model.Id > 0)
+	{
+		<table class="adminContent">
+			<tr>
+				<td>
+					@(Html.Telerik().Grid<ProductAttributeOptionModel>()
+					.Name("productattributeoptions-grid")
+						.DataKeys(x =>
+						{
+							x.Add(y => y.Id).RouteKey("optionId");
+							x.Add(y => y.ProductAttributeId).RouteKey("productAttributeId");
+						})
+						.Columns(columns =>
+						{
+							columns.Bound(x => x.Name)
+								.ReadOnly()
+								.ClientTemplate(@Html.VariantAttributeValueName());
+							columns.Bound(x => x.Alias);
+							columns.Bound(x => x.LinkedProductName)
+								.ReadOnly()
+								.ClientTemplate(@Html.LabeledProductName("LinkedProductId", "LinkedProductName", "LinkedProductTypeName", "LinkedProductTypeLabelHint"));
+							columns.Bound(x => x.PriceAdjustmentString)
+								.Centered();
+							columns.Bound(x => x.WeightAdjustmentString)
+								.Centered();
+							columns.Bound(x => x.IsPreSelected)
+								.ClientTemplate(@Html.SymbolForBool("IsPreSelected"))
+								.Centered();
+							columns.Bound(x => x.DisplayOrder)
+								.Centered();
+							columns.Bound(x => x.Id)
+								.Width(120)
+								.Centered()
+								.Title("")
+								.ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:openPopup('" + @Url.Content("~/Admin/ProductAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=productattribute-form'); return false;\" class='btn' />");
+							columns.Command(commands =>
+							{
+								commands.Delete().Localize(T);
+							})
+							.Width(120);
+						})
+						.DataBinding(dataBinding => dataBinding.Ajax()
+							.Select("OptionList", "ProductAttribute", new { productAttributeId = Model.Id })
+							.Delete("OptionDelete", "ProductAttribute"))
+						.EnableCustomBinding(true))
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<button type="submit" id="btnAddNewOption" name="btnAddNewOption" class="btn btn-below"
+							onclick="javascript:openPopup('@(Url.Action("OptionCreatePopup", "ProductAttribute", new { productAttributeId = Model.Id, btnId = "btnRefresh", formId = "productattribute-form" }))'); return false;">
+						<i class="fa fa-plus"></i>&nbsp;@T("Common.Options.Add")
+					</button>
+					<input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />
+					<script type="text/javascript">
+                        $(document).ready(function () {
+                            $('#btnRefresh').click(function () {
+                                $("#productattributeoptions-grid").data('tGrid').ajaxRequest();
+                                return false;
+                            });
+                        });
+					</script>
+				</td>
+			</tr>
+		</table>
+	}
+	else
+	{
+		<div class="alert alert-warning">
+			@T("Admin.SaveBeforeEdit")
+		</div>
+	}
+}

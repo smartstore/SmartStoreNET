@@ -500,12 +500,29 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.PermissionRecords, mo => mo.Ignore())
 				/*.ForMember(dest => dest.TaxDisplayType, mo => mo.MapFrom((src) => src.TaxDisplayType))*/;
 
-            //product attributes
-            Mapper.CreateMap<ProductAttribute, ProductAttributeModel>()
-                .ForMember(dest => dest.Locales, mo => mo.Ignore());
-            Mapper.CreateMap<ProductAttributeModel, ProductAttribute>();
-            //specification attributes
-            Mapper.CreateMap<SpecificationAttribute, SpecificationAttributeModel>()
+			//product attributes
+			Mapper.CreateMap<ProductAttribute, ProductAttributeModel>()
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
+				.ForMember(dest => dest.OptionCount, mo => mo.Ignore());
+			Mapper.CreateMap<ProductAttributeModel, ProductAttribute>()
+				.ForMember(dest => dest.ProductAttributeOptions, mo => mo.Ignore());
+
+			Mapper.CreateMap<ProductAttributeOption, ProductAttributeOptionModel>()
+				.ForMember(dest => dest.PriceAdjustmentString, mo => mo.Ignore())
+				.ForMember(dest => dest.WeightAdjustmentString, mo => mo.Ignore())
+				.ForMember(dest => dest.TypeName, mo => mo.Ignore())
+				.ForMember(dest => dest.TypeNameClass, mo => mo.Ignore())
+				.ForMember(dest => dest.LinkedProductName, mo => mo.Ignore())
+				.ForMember(dest => dest.LinkedProductTypeName, mo => mo.Ignore())
+				.ForMember(dest => dest.LinkedProductTypeLabelHint, mo => mo.Ignore())
+				.ForMember(dest => dest.QuantityInfo, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore());
+			Mapper.CreateMap<ProductAttributeOptionModel, ProductAttributeOption>()
+				.ForMember(dest => dest.ValueType, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductAttribute, mo => mo.Ignore());
+
+			//specification attributes
+			Mapper.CreateMap<SpecificationAttribute, SpecificationAttributeModel>()
                 .ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.OptionCount, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableFacetSortings, mo => mo.Ignore());

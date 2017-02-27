@@ -234,6 +234,7 @@
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
     <Compile Include="Infrastructure\AutoMapperStartupTask.cs" />
     <Compile Include="Models\Catalog\CategoryTreeModel.cs" />
+    <Compile Include="Models\Catalog\ProductAttributeOptionModel.cs" />
     <Compile Include="Models\Catalog\ProductBundleItemModel.cs" />
     <Compile Include="Models\Catalog\ProductVariantAttributeCombinationModel.cs" />
     <Compile Include="Models\Catalog\BulkEditProductModel.cs" />
@@ -377,6 +378,7 @@
     <Compile Include="Validators\Catalog\CategoryValidator.cs" />
     <Compile Include="Validators\Catalog\ProductTagValidator.cs" />
     <Compile Include="Validators\Catalog\ManufacturerValidator.cs" />
+    <Compile Include="Validators\Catalog\ProductAttributeOptionModelValidator.cs" />
     <Compile Include="Validators\Common\AddressValidator.cs" />
     <Compile Include="Validators\Common\GenericAttributeValidator.cs" />
     <Compile Include="Validators\DataExchange\ExportDeplomentValidator.cs" />
@@ -814,6 +816,9 @@
     <Content Include="Views\Export\_ProfileList.cshtml" />
     <Content Include="Views\Setting\Search.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\TokenSelector.cshtml" />
+    <Content Include="Views\ProductAttribute\OptionCreatePopup.cshtml" />
+    <Content Include="Views\ProductAttribute\OptionEditPopup.cshtml" />
+    <Content Include="Views\ProductAttribute\_CreateOrUpdateOption.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

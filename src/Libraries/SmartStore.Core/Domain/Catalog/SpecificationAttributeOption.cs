@@ -35,10 +35,16 @@ namespace SmartStore.Core.Domain.Catalog
 		/// </summary>
 		[DataMember]
 		public int DisplayOrder { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the specification attribute
-        /// </summary>
+
+		/// <summary>
+		/// Gets or sets the identifier for range filtering
+		/// </summary>
+		[DataMember]
+		public int RangeFilterId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the specification attribute
+		/// </summary>
 		[DataMember]
 		public virtual SpecificationAttribute SpecificationAttribute { get; set; }
 

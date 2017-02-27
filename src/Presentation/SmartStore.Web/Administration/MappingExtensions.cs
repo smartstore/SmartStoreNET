@@ -128,12 +128,27 @@ namespace SmartStore.Admin
             return Mapper.Map(model, destination);
         }
 
-        #endregion
+		public static ProductAttributeOptionModel ToModel(this ProductAttributeOption entity)
+		{
+			return Mapper.Map<ProductAttributeOption, ProductAttributeOptionModel>(entity);
+		}
 
-        #region Specification attributes
+		public static ProductAttributeOption ToEntity(this ProductAttributeOptionModel model)
+		{
+			return Mapper.Map<ProductAttributeOptionModel, ProductAttributeOption>(model);
+		}
 
-        //attributes
-        public static SpecificationAttributeModel ToModel(this SpecificationAttribute entity)
+		public static ProductAttributeOption ToEntity(this ProductAttributeOptionModel model, ProductAttributeOption destination)
+		{
+			return Mapper.Map(model, destination);
+		}
+
+		#endregion
+
+		#region Specification attributes
+
+		//attributes
+		public static SpecificationAttributeModel ToModel(this SpecificationAttribute entity)
         {
             return Mapper.Map<SpecificationAttribute, SpecificationAttributeModel>(entity);
         }

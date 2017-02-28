@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SmartStore.Core.Domain.Localization;
 using System.Runtime.Serialization;
 using SmartStore.Core.Search.Facets;
+using SmartStore.Core.Search;
 
 namespace SmartStore.Core.Domain.Catalog
 {
@@ -9,8 +10,8 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a specification attribute
     /// </summary>
 	[DataContract]
-	public partial class SpecificationAttribute : BaseEntity, ILocalizedEntity
-    {
+	public partial class SpecificationAttribute : BaseEntity, ILocalizedEntity, ISearchAlias
+	{
         private ICollection<SpecificationAttributeOption> _specificationAttributeOptions;
 
         /// <summary>

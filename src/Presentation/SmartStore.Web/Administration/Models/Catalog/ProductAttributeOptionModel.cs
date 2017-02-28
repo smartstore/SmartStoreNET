@@ -13,13 +13,17 @@ namespace SmartStore.Admin.Models.Catalog
 	{
 		public ProductAttributeOptionModel()
 		{
+			IsListTypeAttribute = true;
 			Locales = new List<ProductAttributeOptionLocalizedModel>();
 		}
 
+		public int ProductId { get; set; }
+		public int ProductVariantAttributeId { get; set; }
 		public int ProductAttributeId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Name")]
 		public string Name { get; set; }
+		public string NameString { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Alias")]
 		public string Alias { get; set; }

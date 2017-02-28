@@ -3117,7 +3117,8 @@ namespace SmartStore.Admin.Controllers
 					{
 						Id = x.Id,
 						ProductVariantAttributeId = x.ProductVariantAttributeId,
-						Name = x.ColorSquaresRgb.IsEmpty() ? x.Name : string.Format("{0} - {1}", x.Name, x.ColorSquaresRgb),
+						Name = x.Name,
+						NameString = x.ColorSquaresRgb.IsEmpty() ? x.Name : string.Format("{0} - {1}", x.Name, x.ColorSquaresRgb),
 						Alias = x.Alias,
 						ColorSquaresRgb = x.ColorSquaresRgb,
                         PictureId = x.PictureId,
@@ -3216,18 +3217,25 @@ namespace SmartStore.Admin.Controllers
 				try
 				{
 					_productAttributeService.InsertProductVariantAttributeValue(pvav);
-
-					UpdateLocales(pvav, model);
 				}
 				catch (Exception exception)
 				{
 					ModelState.AddModelError("", exception.Message);
-					return ProductAttributeValueCreatePopup(model.ProductVariantAttributeId);
+					return View(model);
 				}
 
 				MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);
 
-                ViewBag.RefreshPage = true;
+				try
+				{
+					UpdateLocales(pvav, model);
+				}
+				catch (Exception)
+				{
+					// TODO: what?
+				}
+
+				ViewBag.RefreshPage = true;
 				ViewBag.btnId = btnId;
 				ViewBag.formId = formId;
 				return View(model);
@@ -3324,7 +3332,7 @@ namespace SmartStore.Admin.Controllers
 				catch (Exception exception)
 				{
 					ModelState.AddModelError("", exception.Message);
-					return ProductAttributeValueEditPopup(pvav.Id);
+					return View(model);
 				}
 
 				MediaHelper.UpdatePictureTransientStateFor(pvav, m => m.PictureId);

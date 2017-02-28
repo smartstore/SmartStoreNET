@@ -93,7 +93,7 @@
 				@Html.SmartLabelFor(model => model.FacetSorting)
 			</td>
 			<td class="adminData">
-				@Html.DropDownListFor(model => model.FacetSorting, Model.AvailableFacetSortings)
+				@Html.DropDownListFor(model => model.FacetSorting, Model.FacetSorting.ToSelectList().ToList())
 				@Html.ValidationMessageFor(model => model.FacetSorting)
 			</td>
 		</tr>

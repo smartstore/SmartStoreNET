@@ -5,7 +5,6 @@ using System.Web.Mvc.Html;
 using System.Web.WebPages;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Plugins;
-using SmartStore.Core;
 using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Admin.Extensions
@@ -18,9 +17,9 @@ namespace SmartStore.Admin.Extensions
 				"<i class='<#= TypeNameClass #>' title='<#= TypeName #>'></i>" +
 				"<# if(ColorSquaresRgb && ColorSquaresRgb.length > 0) {#>" +
 				"<span class=\"color-container\"><span class=\"color\" style=\"background:<#= ColorSquaresRgb #>\">&nbsp;</span></span>" +
-				"<span><#= Name #><#= QuantityInfo #></span>" +
+				"<span><#= NameString #><#= QuantityInfo #></span>" +
 				"<# } else { #>" +
-				"<span><#= Name #><#= QuantityInfo #></span>" +
+				"<span><#= NameString #><#= QuantityInfo #></span>" +
 				"<# } #>";
 
 			return result;
@@ -36,7 +35,7 @@ namespace SmartStore.Admin.Extensions
 			}
 
 			string result = "<i class='{0}' title='{1}'></i>{2}<span>{3}{4}</span>".FormatInvariant(
-				model.TypeNameClass, model.TypeName, colorSquares, helper.Encode(model.Name), model.QuantityInfo);
+				model.TypeNameClass, model.TypeName, colorSquares, helper.Encode(model.NameString), model.QuantityInfo);
 
 			return new HelperResult(writer => writer.Write(result));
 		}

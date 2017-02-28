@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Search;
 
 namespace SmartStore.Core.Domain.Catalog
 {
@@ -8,7 +9,7 @@ namespace SmartStore.Core.Domain.Catalog
 	/// Represents a product attribute option
 	/// </summary>
 	[DataContract]
-	public partial class ProductAttributeOption : BaseEntity, ILocalizedEntity, ICloneable<ProductVariantAttributeValue>
+	public partial class ProductAttributeOption : BaseEntity, ILocalizedEntity, ISearchAlias, ICloneable<ProductVariantAttributeValue>
 	{
 		/// <summary>
 		/// Gets or sets the product attribute identifier

@@ -9,13 +9,13 @@ using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Catalog
 {
-    [Validator(typeof(SpecificationAttributeValidator))]
+	[Validator(typeof(SpecificationAttributeValidator))]
     public class SpecificationAttributeModel : EntityModelBase, ILocalizedModel<SpecificationAttributeLocalizedModel>
     {
         public SpecificationAttributeModel()
         {
             Locales = new List<SpecificationAttributeLocalizedModel>();
-        }
+		}
 
         [SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.Name")]
         [AllowHtml]
@@ -29,7 +29,6 @@ namespace SmartStore.Admin.Models.Catalog
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetSorting")]
 		public FacetSorting FacetSorting { get; set; }
-		public List<SelectListItem> AvailableFacetSortings { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.OptionsCount")]
 		public int OptionCount { get; set; }

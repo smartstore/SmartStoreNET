@@ -93,7 +93,16 @@ namespace SmartStore.Admin.Controllers
 				try
 				{
 					_specificationAttributeService.InsertSpecificationAttributeOption(sao);
+				}
+				catch (Exception exception)
+				{
+					ModelState.AddModelError("", exception.Message);
+					return false;
+				}
 
+				try
+				{
+					// save localized properties
 					foreach (var localized in model.Locales.Where(l => l.Name.HasValue()))
 					{
 						var localizedValues = localized.Name.SplitSafe(";");
@@ -113,10 +122,9 @@ namespace SmartStore.Admin.Controllers
 						}
 					}
 				}
-				catch (Exception exception)
+				catch (Exception)
 				{
-					ModelState.AddModelError("", exception.Message);
-					return false;
+					// TODO: what?
 				}
 			}
 
@@ -184,7 +192,6 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new SpecificationAttributeModel();
-			model.AvailableFacetSortings = model.FacetSorting.ToSelectList().ToList();
 
 			AddLocales(_languageService, model.Locales);
 
@@ -204,17 +211,25 @@ namespace SmartStore.Admin.Controllers
 				try
 				{
 					_specificationAttributeService.InsertSpecificationAttribute(specificationAttribute);
-
-					UpdateAttributeLocales(specificationAttribute, model);
 				}
 				catch (Exception exception)
 				{
 					ModelState.AddModelError("", exception.Message);
-					return Create();
+					return View(model);
 				}
 
-                //activity log
-                _customerActivityService.InsertActivity("AddNewSpecAttribute", _localizationService.GetResource("ActivityLog.AddNewSpecAttribute"), specificationAttribute.Name);
+				try
+				{
+					UpdateAttributeLocales(specificationAttribute, model);
+				}
+				catch (Exception exception)
+				{
+					continueEditing = true;
+					NotifyError(exception.Message);
+				}
+
+				//activity log
+				_customerActivityService.InsertActivity("AddNewSpecAttribute", _localizationService.GetResource("ActivityLog.AddNewSpecAttribute"), specificationAttribute.Name);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Catalog.Attributes.SpecificationAttributes.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = specificationAttribute.Id }) : RedirectToAction("List");
@@ -234,7 +249,6 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var model = specificationAttribute.ToModel();
-			model.AvailableFacetSortings = specificationAttribute.FacetSorting.ToSelectList().ToList();
 
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
@@ -268,7 +282,7 @@ namespace SmartStore.Admin.Controllers
 				catch (Exception exception)
 				{
 					ModelState.AddModelError("", exception.Message);
-					return Edit(specificationAttribute.Id);
+					return View(model);
 				}
 
                 //activity log
@@ -391,7 +405,7 @@ namespace SmartStore.Admin.Controllers
 				if (model.Multiple)
 				{
 					if (!AddMultipleOptionNames(model))
-						return OptionCreatePopup(model.SpecificationAttributeId);
+						return View(model);
 				}
 				else
 				{
@@ -400,13 +414,20 @@ namespace SmartStore.Admin.Controllers
 					try
 					{
 						_specificationAttributeService.InsertSpecificationAttributeOption(sao);
-
-						UpdateOptionLocales(sao, model);
 					}
 					catch (Exception exception)
 					{
 						ModelState.AddModelError("", exception.Message);
-						return OptionCreatePopup(model.SpecificationAttributeId);
+						return View(model);
+					}
+
+					try
+					{
+						UpdateOptionLocales(sao, model);
+					}
+					catch (Exception)
+					{
+						// TODO: what?
 					}
 				}
 
@@ -463,7 +484,7 @@ namespace SmartStore.Admin.Controllers
 				catch (Exception exception)
 				{
 					ModelState.AddModelError("", exception.Message);
-					return OptionEditPopup(sao.Id);
+					return View(model);
 				}
 
                 ViewBag.RefreshPage = true;

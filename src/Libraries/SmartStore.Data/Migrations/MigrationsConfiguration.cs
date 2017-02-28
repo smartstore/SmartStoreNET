@@ -455,8 +455,8 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("PDFPackagingSlip.Gtin", "EAN", "Gtin");
 
 			builder.AddOrUpdate("Common.Error.AliasAlreadyExists",
-				"An alias \"{0}\" already exists. Please use a different value.",
-				"Ein Alias \"{0}\" existiert bereits. Bitte verwenden Sie einen anderen Wert.");
+				"An alias \"{0}\" already exists.",
+				"Ein Alias \"{0}\" existiert bereits.");
 
             builder.AddOrUpdate("Admin.Configuration.DeliveryTimes.Fields.IsDefault", 
                 "Is default",
@@ -550,6 +550,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Error.OptionAlreadyExists",
 				"The option \"{0}\" already exists.",
 				"Die Option \"{0}\" existiert bereits.");
+
+			builder.AddOrUpdate("Common.Error.ChooseDifferentValue",
+				"Please choose a different value.",
+				"Bitte wählen Sie einen anderen Wert.");
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.AllowFiltering",
 				"Allow filtering",

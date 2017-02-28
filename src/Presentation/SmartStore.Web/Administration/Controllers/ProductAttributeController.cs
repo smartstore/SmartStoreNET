@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
@@ -60,7 +61,7 @@ namespace SmartStore.Admin.Controllers
 			// TODO: DRY, similar code in ProductController (ProductAttributeValueList, ProductAttributeValueEditPopup...)
 			if (option != null)
 			{
-				model.Name = option.ColorSquaresRgb.IsEmpty() ? option.Name : $"{option.Name} - {option.ColorSquaresRgb}";
+				model.NameString = option.ColorSquaresRgb.IsEmpty() ? option.Name : $"{option.Name} - {option.ColorSquaresRgb}";
 				model.PriceAdjustmentString = (option.ValueType == ProductVariantAttributeValueType.Simple ? option.PriceAdjustment.ToString("G29") : "");
 				model.WeightAdjustmentString = (option.ValueType == ProductVariantAttributeValueType.Simple ? option.WeightAdjustment.ToString("G29") : "");
 				model.TypeName = option.ValueType.GetLocalizedEnum(Services.Localization, Services.WorkContext);
@@ -184,13 +185,20 @@ namespace SmartStore.Admin.Controllers
 				try
 				{
 					_productAttributeService.InsertProductAttribute(productAttribute);
-
-					UpdateLocales(productAttribute, model);
 				}
 				catch (Exception exception)
 				{
 					ModelState.AddModelError("", exception.Message);
-					return Create();
+					return View(model);
+				}
+
+				try
+				{
+					UpdateLocales(productAttribute, model);
+				}
+				catch (Exception)
+				{
+					// TODO: what?
 				}
 
 				// activity log
@@ -248,7 +256,7 @@ namespace SmartStore.Admin.Controllers
 				catch (Exception exception)
 				{
 					ModelState.AddModelError("", exception.Message);
-					return Edit(productAttribute.Id);
+					return View(model);
 				}
 
 				// activity log
@@ -320,8 +328,16 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			var model = new ProductAttributeOptionModel();
-			model.ProductAttributeId = productAttributeId;
+			var attribute = _productAttributeService.GetProductAttributeById(productAttributeId);
+			if (attribute == null)
+				return RedirectToAction("List");
+
+			var model = new ProductAttributeOptionModel
+			{
+				ProductAttributeId = productAttributeId,
+				ColorSquaresRgb = string.Empty,
+				Quantity = 1
+			};
 
 			PrepareProductAttributeOptionModel(model, null);
 			AddLocales(_languageService, model.Locales);
@@ -342,13 +358,22 @@ namespace SmartStore.Admin.Controllers
 				try
 				{
 					_productAttributeService.InsertProductAttributeOption(entity);
-
-					UpdateOptionLocales(entity, model);
 				}
 				catch (Exception exception)
 				{
 					ModelState.AddModelError("", exception.Message);
-					return OptionCreatePopup(model.ProductAttributeId);
+					return View(model);
+				}
+
+				MediaHelper.UpdatePictureTransientStateFor(entity, m => m.PictureId);
+
+				try
+				{
+					UpdateOptionLocales(entity, model);
+				}
+				catch (Exception)
+				{
+					// TODO: what?
 				}
 
 				ViewBag.RefreshPage = true;
@@ -380,25 +405,28 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			var option = _productAttributeService.GetProductAttributeOptionById(model.Id);
-			if (option == null)
+			var entity = _productAttributeService.GetProductAttributeOptionById(model.Id);
+			if (entity == null)
 				return RedirectToAction("List");
 
 			if (ModelState.IsValid)
 			{
-				option = model.ToEntity(option);
+				entity = model.ToEntity(entity);
+				entity.LinkedProductId = entity.ValueType == ProductVariantAttributeValueType.Simple ? 0 : model.LinkedProductId;
 
 				try
 				{
-					_productAttributeService.UpdateProductAttributeOption(option);
+					_productAttributeService.UpdateProductAttributeOption(entity);
 
-					UpdateOptionLocales(option, model);
+					UpdateOptionLocales(entity, model);
 				}
 				catch (Exception exception)
 				{
 					ModelState.AddModelError("", exception.Message);
-					return OptionEditPopup(option.Id);
+					return View(model);
 				}
+
+				MediaHelper.UpdatePictureTransientStateFor(entity, m => m.PictureId);
 
 				ViewBag.RefreshPage = true;
 				ViewBag.btnId = btnId;

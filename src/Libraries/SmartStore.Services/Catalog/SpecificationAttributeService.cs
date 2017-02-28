@@ -6,7 +6,6 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
 using SmartStore.Data.Caching;
-using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Catalog
 {
@@ -90,14 +89,6 @@ namespace SmartStore.Services.Catalog
             if (specificationAttribute == null)
                 throw new ArgumentNullException("specificationAttribute");
 
-			var alias = SeoExtensions.GetSeName(specificationAttribute.Alias);
-			if (alias.HasValue() && _specificationAttributeRepository.TableUntracked.Any(x => x.Alias == alias))
-			{
-				throw new SmartException(T("Common.Error.AliasAlreadyExists", alias));
-			}
-
-			specificationAttribute.Alias = alias;
-
 			_specificationAttributeRepository.Insert(specificationAttribute);
 
             //event notification
@@ -108,14 +99,6 @@ namespace SmartStore.Services.Catalog
         {
             if (specificationAttribute == null)
                 throw new ArgumentNullException("specificationAttribute");
-
-			var alias = SeoExtensions.GetSeName(specificationAttribute.Alias);
-			if (alias.HasValue() && _specificationAttributeRepository.TableUntracked.Any(x => x.Alias == alias && x.Id != specificationAttribute.Id))
-			{
-				throw new SmartException(T("Common.Error.AliasAlreadyExists", alias));
-			}
-
-			specificationAttribute.Alias = alias;
 
 			_specificationAttributeRepository.Update(specificationAttribute);
 
@@ -161,14 +144,6 @@ namespace SmartStore.Services.Catalog
             if (specificationAttributeOption == null)
                 throw new ArgumentNullException("specificationAttributeOption");
 
-			var alias = SeoExtensions.GetSeName(specificationAttributeOption.Alias);
-			if (alias.HasValue() && _specificationAttributeOptionRepository.TableUntracked.Any(x => x.Alias == alias))
-			{
-				throw new SmartException(T("Common.Error.AliasAlreadyExists", alias));
-			}
-
-			specificationAttributeOption.Alias = alias;
-
 			_specificationAttributeOptionRepository.Insert(specificationAttributeOption);
 
             //event notification
@@ -179,14 +154,6 @@ namespace SmartStore.Services.Catalog
         {
             if (specificationAttributeOption == null)
                 throw new ArgumentNullException("specificationAttributeOption");
-
-			var alias = SeoExtensions.GetSeName(specificationAttributeOption.Alias);
-			if (alias.HasValue() && _specificationAttributeOptionRepository.TableUntracked.Any(x => x.Alias == alias && x.Id != specificationAttributeOption.Id))
-			{
-				throw new SmartException(T("Common.Error.AliasAlreadyExists", alias));
-			}
-
-			specificationAttributeOption.Alias = alias;
 
 			_specificationAttributeOptionRepository.Update(specificationAttributeOption);
 
@@ -244,14 +211,6 @@ namespace SmartStore.Services.Catalog
             if (productSpecificationAttribute == null)
                 throw new ArgumentNullException("productSpecificationAttribute");
 
-			var existingAttribute = _productSpecificationAttributeRepository.TableUntracked.FirstOrDefault(
-				x => x.ProductId == productSpecificationAttribute.ProductId && x.SpecificationAttributeOptionId == productSpecificationAttribute.SpecificationAttributeOptionId);
-
-			if (existingAttribute != null)
-			{
-				throw new SmartException(T("Common.Error.OptionAlreadyExists", existingAttribute.SpecificationAttributeOption?.Name.NaIfEmpty()));
-			}
-
             _productSpecificationAttributeRepository.Insert(productSpecificationAttribute);
 
             //event notification
@@ -262,14 +221,6 @@ namespace SmartStore.Services.Catalog
         {
             if (productSpecificationAttribute == null)
                 throw new ArgumentNullException("productSpecificationAttribute");
-
-			var existingAttribute = _productSpecificationAttributeRepository.TableUntracked.FirstOrDefault(
-				x => x.ProductId == productSpecificationAttribute.ProductId && x.SpecificationAttributeOptionId == productSpecificationAttribute.SpecificationAttributeOptionId);
-
-			if (existingAttribute != null && existingAttribute.Id != productSpecificationAttribute.Id)
-			{
-				throw new SmartException(T("Common.Error.OptionAlreadyExists", existingAttribute.SpecificationAttributeOption?.Name.NaIfEmpty()));
-			}
 
 			_productSpecificationAttributeRepository.Update(productSpecificationAttribute);
 

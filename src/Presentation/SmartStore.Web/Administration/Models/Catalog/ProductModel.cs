@@ -656,6 +656,7 @@ namespace SmartStore.Admin.Models.Catalog
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Name")]
 			[AllowHtml]
 			public string Name { get; set; }
+			public string NameString { get; set; }
 
 			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.ColorSquaresRgb")]
 			[AllowHtml, UIHint("Color")]

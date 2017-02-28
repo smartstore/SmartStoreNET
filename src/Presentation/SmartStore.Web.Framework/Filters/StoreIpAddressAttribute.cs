@@ -8,7 +8,6 @@ namespace SmartStore.Web.Framework.Filters
 {
     public class StoreIpAddressAttribute : ActionFilterAttribute
     {
-
 		public Lazy<IWebHelper> WebHelper { get; set; }
 		public Lazy<IWorkContext> WorkContext { get; set; }
 		public Lazy<ICustomerService> CustomerService { get; set; }
@@ -21,17 +20,15 @@ namespace SmartStore.Web.Framework.Filters
             if (filterContext == null || filterContext.HttpContext == null || filterContext.HttpContext.Request == null)
                 return;
 
-            //don't apply filter to child methods
             if (filterContext.IsChildAction)
                 return;
 
-            //only GET requests
             if (!String.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
                 return;
 
             var webHelper = this.WebHelper.Value;
 
-            //update IP address
+            // Update IP address
             string currentIpAddress = webHelper.GetCurrentIpAddress();
             if (!String.IsNullOrEmpty(currentIpAddress))
             {

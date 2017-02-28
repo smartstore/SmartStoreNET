@@ -12,7 +12,7 @@ namespace SmartStore.Services.Authentication
     /// </summary>
     public partial class FormsAuthenticationService : IAuthenticationService
     {
-        private readonly HttpContextBase _httpContext;
+		private readonly HttpContextBase _httpContext;
         private readonly ICustomerService _customerService;
         private readonly CustomerSettings _customerSettings;
         private readonly TimeSpan _expirationTimeSpan;
@@ -32,7 +32,6 @@ namespace SmartStore.Services.Authentication
             this._customerSettings = customerSettings;
             this._expirationTimeSpan = FormsAuthentication.Timeout;
         }
-
 
         public virtual void SignIn(Customer customer, bool createPersistentCookie)
         {
@@ -95,6 +94,21 @@ namespace SmartStore.Services.Authentication
 
 			if (customer != null && customer.Active && !customer.Deleted && customer.IsRegistered())
 			{
+				if (customer.LastLoginDateUtc == null)
+				{
+					try
+					{
+						// This is most probably the very first "login" after registering. Delete the
+						// ASP.NET anonymous id cookie so that a new guest account can be created
+						// upon signing out.
+						System.Web.Security.AnonymousIdentificationModule.ClearAnonymousIdentifier();
+					}
+					finally
+					{
+						customer.LastLoginDateUtc = DateTime.UtcNow;
+						_customerService.UpdateCustomer(customer);
+					}
+				}
 				_cachedCustomer = customer;
 			}
 
@@ -117,5 +131,5 @@ namespace SmartStore.Services.Authentication
 
             return customer;
         }
-    }
+	}
 }

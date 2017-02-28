@@ -732,8 +732,8 @@ namespace SmartStore.Web.Controllers
                             }
                         case UserRegistrationType.Standard:
                             {
-                                // send customer welcome message
-                                _workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
+								// send customer welcome message
+								_workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
 
                                 var redirectUrl = Url.RouteUrl("RegisterResult", new { resultId = (int)UserRegistrationType.Standard });
                                 if (!String.IsNullOrEmpty(returnUrl))
@@ -915,8 +915,8 @@ namespace SmartStore.Web.Controllers
             _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AccountActivationToken, "");
             //send welcome message
             _workflowMessageService.SendCustomerWelcomeMessage(customer, _workContext.WorkingLanguage.Id);
-            
-            var model = new AccountActivationModel();
+
+			var model = new AccountActivationModel();
             model.Result = _localizationService.GetResource("Account.AccountActivation.Activated");
             return View(model);
         }

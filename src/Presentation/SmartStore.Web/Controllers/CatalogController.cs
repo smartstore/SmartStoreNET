@@ -133,10 +133,13 @@ namespace SmartStore.Web.Controllers
 				return HttpNotFound();            
 
             //'Continue shopping' URL
-			_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
-				SystemCustomerAttributeNames.LastContinueShoppingPage,
-				_services.WebHelper.GetThisPageUrl(false),
-				_services.StoreContext.CurrentStore.Id);
+			if (!_services.WorkContext.CurrentCustomer.IsSystemAccount)
+			{
+				_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
+					SystemCustomerAttributeNames.LastContinueShoppingPage,
+					_services.WebHelper.GetThisPageUrl(false),
+					_services.StoreContext.CurrentStore.Id);
+			}
 
             if (command.PageNumber <= 0)
                 command.PageNumber = 1;
@@ -440,11 +443,14 @@ namespace SmartStore.Web.Controllers
 			if (!_storeMappingService.Authorize(manufacturer))
 				return HttpNotFound();
 
-            //'Continue shopping' URL
-			_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
-				SystemCustomerAttributeNames.LastContinueShoppingPage,
-				_services.WebHelper.GetThisPageUrl(false),
-				_services.StoreContext.CurrentStore.Id);
+			//'Continue shopping' URL
+			if (!_services.WorkContext.CurrentCustomer.IsSystemAccount)
+			{
+				_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
+					SystemCustomerAttributeNames.LastContinueShoppingPage,
+					_services.WebHelper.GetThisPageUrl(false),
+					_services.StoreContext.CurrentStore.Id);
+			}
 
             if (command.PageNumber <= 0)
                 command.PageNumber = 1;
@@ -1086,13 +1092,15 @@ namespace SmartStore.Web.Controllers
 				model = new SearchModel();
 
 			// 'Continue shopping' URL
-			_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
-				SystemCustomerAttributeNames.LastContinueShoppingPage,
-				_services.WebHelper.GetThisPageUrl(false),
-				_services.StoreContext.CurrentStore.Id);
+			if (!_services.WorkContext.CurrentCustomer.IsSystemAccount)
+			{
+				_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
+					SystemCustomerAttributeNames.LastContinueShoppingPage,
+					_services.WebHelper.GetThisPageUrl(false),
+					_services.StoreContext.CurrentStore.Id);
+			}
 
 			if (command.PageSize <= 0)
-
 				command.PageSize = _catalogSettings.SearchPageProductsPerPage;
 			if (command.PageNumber <= 0)
 				command.PageNumber = 1;

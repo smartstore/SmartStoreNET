@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
-using System.Web.WebPages;
-using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Plugins;
 using SmartStore.Web.Framework.Plugins;
 
@@ -23,21 +21,6 @@ namespace SmartStore.Admin.Extensions
 				"<# } #>";
 
 			return result;
-		}
-
-		public static HelperResult VariantAttributeValueName<T>(this HtmlHelper<T> helper, ProductModel.ProductVariantAttributeValueModel model)
-		{
-			string colorSquares = "";
-
-			if (model.ColorSquaresRgb.HasValue())
-			{
-				colorSquares = "<span class=\"color-container\"><span class=\"color\" style=\"background:{0}\">&nbsp;</span></span>".FormatInvariant(model.ColorSquaresRgb);
-			}
-
-			string result = "<i class='{0}' title='{1}'></i>{2}<span>{3}{4}</span>".FormatInvariant(
-				model.TypeNameClass, model.TypeName, colorSquares, helper.Encode(model.NameString), model.QuantityInfo);
-
-			return new HelperResult(writer => writer.Write(result));
 		}
 
 		public static MvcHtmlString ProviderList<TModel>(this HtmlHelper<IEnumerable<TModel>> html, 

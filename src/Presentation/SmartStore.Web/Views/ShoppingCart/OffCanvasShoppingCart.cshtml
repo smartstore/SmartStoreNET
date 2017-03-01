@@ -53,7 +53,7 @@
 			@foreach (var item in Model.Items)
             {
 				<div class="offcanvas-cart-item">
-					<div class="row">
+					<div class="row sm-gutters">
 						@if (Model.ShowProductImages)
                         {
 							<div class="col-xs col-alpha">
@@ -103,7 +103,7 @@
 						</div>
 					</div>
 
-					<div class="row m-t-05">
+					<div class="row sm-gutters flex-wrap align-items-center m-t-05">
 						<div class="col-xs col-alpha">
                             @Html.EditorFor(x => item, "QtyInput", new { htmlAttributes = new {
                            data_update_url = Url.Action("UpdateOcCartItem", "ShoppingCart"), data_type = "cart", data_sci_id = item.Id } })
@@ -114,8 +114,7 @@
 							</span>
 						</div>
 
-						<div class="col-xs text-xs-right">
-
+						<div class="ml-auto text-nowrap">
                             <a class="btn btn-secondary btn-sm btn-icon ajax-cart-link" title='@T("ShoppingCart.MoveToWishlist")'
                                 href="#"
                                 rel="nofollow"
@@ -124,8 +123,7 @@
                                 data-type="cart"
                                 data-action="addfromcart">
                                 <i class="fa fa-heart-o"></i>
-                            </a>
-                            
+                            </a>   
 							<a class="btn btn-secondary btn-to-danger btn-sm btn-icon remove ajax-cart-link"
 							   href="#"
 							   rel="nofollow"
@@ -152,7 +150,7 @@
 
 <div class="offcanvas-cart-footer">
 	<div class="offcanvas-cart-footer-row">
-		<div class="offcanvas-cart-footer-col m-r-05">
+		<div class="offcanvas-cart-footer-col m-r-1">
 			<div>
 				<div class="sub-total-caption">
 					@T("ShoppingCart.Totals.SubTotal"):
@@ -162,24 +160,29 @@
 				</div>
 			</div>
 		</div>
-		<div class="offcanvas-cart-footer-col text-xs-right">
-
+		<div class="offcanvas-cart-footer-col row sm-gutters d-flex flex-wrap">
 			@if (Model.DisplayCheckoutButton)
             {
-				<a class="btn btn-success btn-flat btn-flat-light btn-action" href="@Url.RouteUrl("ShoppingCart")">
-					@T("ShoppingCart.Mini.ViewCart")
-				</a>
-                <a class="btn btn-clear btn-action" href="@checkoutUrl">
-                    <i class="fa fa-check"></i>
-                    <span>@T("Checkout.Button")</span>
-                </a>
+				<div class="col-xs">
+					<a class="btn btn-success btn-flat btn-flat-light btn-block btn-action" href="@Url.RouteUrl("ShoppingCart")">
+						@T("ShoppingCart.Mini.ViewCart")
+					</a>
+				</div>
+				<div class="col-xs">
+					<a class="btn btn-clear btn-block btn-action" href="@checkoutUrl">
+						<i class="fa fa-check"></i>
+						<span>@T("Checkout.Button")</span>
+					</a>
+				</div>
             }
             else
             {
-				<a class="btn btn-clear btn-action" href="@Url.RouteUrl("ShoppingCart")">
-					<i class="fa fa-check"></i>
-					<span>@T("ShoppingCart.Mini.ViewCart")</span>
-				</a>
+				<div class="col-xs">
+					<a class="btn btn-clear btn-block btn-action" href="@Url.RouteUrl("ShoppingCart")">
+						<i class="fa fa-check"></i>
+						<span>@T("ShoppingCart.Mini.ViewCart")</span>
+					</a>
+				</div>
             }
 		</div>
 	</div>

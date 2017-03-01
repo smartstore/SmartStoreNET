@@ -19,7 +19,7 @@
 		var displayStock = item.StockAvailability.HasValue();
 
 		<div class="pd-bundle-item card-block update-container" data-url="@updateUrl">
-			<div class="pd-bundle-item-top row no-space">
+			<div class="pd-bundle-item-top row no-gutters">
 				@if (item.DetailsPictureModel.DefaultPictureModel.ImageUrl.HasValue() && !item.BundleItem.HideThumbnail)
 				{
 					<div class="pd-bundle-item-image col-xs" style="min-width: @(item.ThumbDimensions)px; max-width: @(item.ThumbDimensions)px;">

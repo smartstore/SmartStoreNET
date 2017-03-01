@@ -161,19 +161,6 @@ code {
 }
 
 
-// Remove space from rows and cols
-// ==============================================================
-
-.row.no-space {
-    margin-right: 0;
-    margin-left: 0;
-}
-.row.no-space > [class*="col-"] {
-    padding-right: 0;
-    padding-left: 0; 
-}
-
-
 // Vertical aligns
 // ========================================================================
 .vertical-align {

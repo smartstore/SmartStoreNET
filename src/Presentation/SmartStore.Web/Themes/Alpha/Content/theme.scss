@@ -418,6 +418,41 @@ a.pretty-link {
 .align-items-stretch        { align-items: stretch; }
 
 
+.no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+    > .col, > [class*="col-"] {
+        padding-right: 0;
+        padding-left: 0;
+    }
+}
+
+
+//
+// Some layout utils
+// ------------------------------------------------------
+
+.sm-gutters {
+    $gw: 0.5rem;
+    margin-right: $gw * -1;
+    margin-left: $gw * -1;
+    > .col, > [class*="col-"] {
+        padding-right: $gw;
+        padding-left: $gw;
+    }
+}
+
+.xs-gutters {
+    $gw: 0.25rem;
+    margin-right: $gw * -1;
+    margin-left: $gw * -1;
+    > .col, > [class*="col-"] {
+        padding-right: $gw;
+        padding-left: $gw;
+    }
+}
+
+
 //
 // Some Flex utils
 // ------------------------------------------------------

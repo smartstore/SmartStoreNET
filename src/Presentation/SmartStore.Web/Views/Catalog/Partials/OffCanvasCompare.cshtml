@@ -24,7 +24,7 @@
             @foreach (var item in Model.Items)
             {
                 <div class="offcanvas-cart-item">
-                    <div class="row">
+                    <div class="row sm-gutters">
                         <div class="col-xs col-alpha">
                             @if (item.Picture.ImageUrl.HasValue())
                             {
@@ -40,14 +40,13 @@
                                 @Html.Raw(item.ShortDescription.Truncate(120, "..."))
                             </div>
 
-                            <div class="row m-t-05">
+                            <div class="row align-items-center sm-gutters m-t-05">
                                 <div class="col-xs">
                                     <span class="price unit-price">
                                         @item.Price.Price
                                     </span>
                                 </div>
-
-                                <div class="col-xs text-xs-right">
+                                <div class="ml-auto text-nowrap">
                                     <a class="btn btn-secondary btn-to-danger btn-sm btn-icon remove ajax-cart-link"
                                        href="#"
                                        rel="nofollow"

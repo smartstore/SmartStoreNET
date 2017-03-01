@@ -119,8 +119,9 @@
     &:last-child { border-width: 0; }
 
     .col-alpha {
-        width: 120px;
-        max-width: 120px;
+        width: 100px;
+        min-width: 100px;
+        max-width: 100px;
     }
 
     .col-data > * {
@@ -146,6 +147,10 @@
             text-decoration: none;
         }
     }
+
+        @media (max-width: 360px) {
+            .unit-price { font-size: 1rem; }
+        }
 }
 
 .offcanvas-cart-footer-row {
@@ -165,11 +170,6 @@
 
     .sub-total {
         font-size: 1.5rem;
-    }
-
-    @media (max-width: 480px) {
-        .btn-action { display: block; }
-        .btn-action + .btn-action { margin-top: 0.5rem; }
     }
 }
 

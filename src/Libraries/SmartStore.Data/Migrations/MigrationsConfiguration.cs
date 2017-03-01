@@ -602,6 +602,12 @@ namespace SmartStore.Data.Migrations
 				"Delete existing attribute values",
 				"Vorhandene Attributwerte löschen");
 
+			var aliasHintEn = "Specifies a SEO compliant alias for search filters.";
+			var aliasHintDe = "Legt einen SEO konformen Alias für Suchfilter fest.";
+			builder.AddOrUpdate("Admin.Catalog.Attributes.ProductAttributes.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
+			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
+			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
+			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
 		}
 	}
 }

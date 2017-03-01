@@ -34,6 +34,7 @@ namespace SmartStore.Core
         private bool? _isCurrentConnectionSecured;
 		private string _storeHost;
 		private string _storeHostSsl;
+		private string _ipAddress;
 		private bool? _appPathPossiblyAppended;
 		private bool? _appPathPossiblyAppendedSsl;
 
@@ -56,20 +57,74 @@ namespace SmartStore.Core
             return referrerUrl.EmptyNull();
         }
 
-        public virtual string GetCurrentIpAddress()
-        {
+		public virtual string GetClientIdent()
+ 		{
+ 			var ipAddress = this.GetCurrentIpAddress();
+ 			var userAgent = _httpContext.Request != null ? _httpContext.Request.UserAgent : string.Empty;
+ 
+ 			if (ipAddress.HasValue() && userAgent.HasValue())
+ 			{
+ 				return (ipAddress + userAgent).GetHashCode().ToString();
+ 			}
+ 
+ 			return null;
+ 		}
+
+		public virtual string GetCurrentIpAddress()
+		{
+			if (_ipAddress != null)
+			{
+				return _ipAddress;
+			}
+
+			if (_httpContext == null && _httpContext.Request == null)
+			{
+				return string.Empty;
+			}
+
+			var vars = _httpContext.Request.ServerVariables;
+
+			var keysToCheck = new string[]
+			{
+				"HTTP_CLIENT_IP",
+				"HTTP_X_FORWARDED_FOR",
+				"HTTP_X_FORWARDED",
+				"HTTP_X_CLUSTER_CLIENT_IP",
+				"HTTP_FORWARDED_FOR",
+				"HTTP_FORWARDED",
+				"REMOTE_ADDR",
+				"HTTP_CF_CONNECTING_IP"
+			};
+
 			string result = null;
 
-			if (_httpContext != null && _httpContext.Request != null)
-				result = _httpContext.Request.UserHostAddress;
+			foreach (var key in keysToCheck)
+			{
+				var ipString = vars[key];
+				if (ipString.HasValue())
+				{
+					var arrStrings = ipString.Split(',');
+					// Take the last entry
+					ipString = arrStrings[arrStrings.Length - 1].Trim();
+
+					IPAddress address;
+					if (IPAddress.TryParse(ipString, out address))
+					{
+						result = ipString;
+						break;
+					}
+				}
+			}
 
 			if (result == "::1")
+			{
 				result = "127.0.0.1";
+			}
 
-			return result.EmptyNull();
-        }
-        
-        public virtual string GetThisPageUrl(bool includeQueryString)
+			return (_ipAddress = result.EmptyNull());
+		}
+
+		public virtual string GetThisPageUrl(bool includeQueryString)
         {
             bool useSsl = IsCurrentConnectionSecured();
             return GetThisPageUrl(includeQueryString, useSsl);

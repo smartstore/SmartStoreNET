@@ -13,11 +13,21 @@ namespace SmartStore.Core
         /// <returns>URL referrer</returns>
         string GetUrlReferrer();
 
-        /// <summary>
-        /// Get context IP address
-        /// </summary>
-        /// <returns>URL referrer</returns>
-        string GetCurrentIpAddress();
+		/// <summary>
+		/// Gets a unique client identifier
+		/// </summary>
+		/// <returns>A unique identifier</returns>
+		/// <remarks>
+		/// The client identifier is a hashed combination of client ip address and user agent.
+		/// This method returns <c>null</c> if IP or user agent (or both) cannot be determined.
+		/// </remarks>
+		string GetClientIdent();
+
+		/// <summary>
+		/// Get context IP address
+		/// </summary>
+		/// <returns>URL referrer</returns>
+		string GetCurrentIpAddress();
 
         /// <summary>
         /// Gets this page name

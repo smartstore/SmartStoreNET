@@ -74,11 +74,11 @@ namespace SmartStore.Services.Authentication
 
         public virtual Customer GetAuthenticatedCustomer()
         {
-            if (_cachedCustomer != null)
-                return _cachedCustomer;
+			if (_cachedCustomer != null)
+				return _cachedCustomer;
 
-            if (_httpContext == null || _httpContext.Request == null || !_httpContext.Request.IsAuthenticated || _httpContext.User == null)
-                return null;
+			if (_httpContext == null || _httpContext.Request == null || !_httpContext.Request.IsAuthenticated || _httpContext.User == null)
+				return null;
 
 			Customer customer = null;
 			FormsIdentity formsIdentity = null;
@@ -95,11 +95,26 @@ namespace SmartStore.Services.Authentication
 
 			if (customer != null && customer.Active && !customer.Deleted && customer.IsRegistered())
 			{
+				if (customer.LastLoginDateUtc == null)
+				{
+					try
+					{
+						// This is most probably the very first "login" after registering. Delete the
+						// ASP.NET anonymous id cookie so that a new guest account can be created
+						// upon signing out.
+						System.Web.Security.AnonymousIdentificationModule.ClearAnonymousIdentifier();
+					}
+					finally
+					{
+						customer.LastLoginDateUtc = DateTime.UtcNow;
+						_customerService.UpdateCustomer(customer);
+					}
+				}
 				_cachedCustomer = customer;
 			}
 
-            return _cachedCustomer;
-        }
+			return _cachedCustomer;
+		}
 
         public virtual Customer GetAuthenticatedCustomerFromTicket(FormsAuthenticationTicket ticket)
         {

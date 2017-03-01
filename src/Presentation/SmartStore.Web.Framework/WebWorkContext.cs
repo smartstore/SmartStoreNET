@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -24,8 +25,6 @@ namespace SmartStore.Web.Framework
     /// </summary>
     public partial class WebWorkContext : IWorkContext
     {
-        private const string CustomerCookieName = "smartstore.customer";
-
         private readonly HttpContextBase _httpContext;
         private readonly ICustomerService _customerService;
 		private readonly IStoreContext _storeContext;
@@ -77,44 +76,6 @@ namespace SmartStore.Web.Framework
 			this._userAgent = userAgent;
         }
 
-        protected HttpCookie GetCustomerCookie()
-        {
-            if (_httpContext == null || _httpContext.Request == null)
-                return null;
-
-            return _httpContext.Request.Cookies[CustomerCookieName];
-        }
-
-        protected void SetCustomerCookie(Guid customerGuid)
-        {
-            if (_httpContext != null && _httpContext.Response != null)
-            {
-                var cookie = new HttpCookie(CustomerCookieName);
-                cookie.HttpOnly = true;
-                cookie.Value = customerGuid.ToString();
-                if (customerGuid == Guid.Empty)
-                {
-                    cookie.Expires = DateTime.Now.AddMonths(-1);
-                }
-                else
-                {
-                    int cookieExpires = 24 * 365; //TODO make configurable
-                    cookie.Expires = DateTime.Now.AddHours(cookieExpires);
-                }
-
-				try
-				{
-					if (_httpContext.Response.Cookies[CustomerCookieName] != null)
-						_httpContext.Response.Cookies.Remove(CustomerCookieName);
-				}
-				catch (Exception) { }
-
-                _httpContext.Response.Cookies.Add(cookie);
-            }
-        }
-
-        //public Lazy<ITaxService> TaxService { get; set; }
-
         /// <summary>
         /// Gets or sets the current customer
         /// </summary>
@@ -147,51 +108,24 @@ namespace SmartStore.Web.Framework
                         var impersonatedCustomer = _customerService.GetCustomerById(impersonatedCustomerId.Value);
                         if (impersonatedCustomer != null && !impersonatedCustomer.Deleted && impersonatedCustomer.Active)
                         {
-                            //set impersonated customer
+                            // set impersonated customer
                             _originalCustomerIfImpersonated = customer;
                             customer = impersonatedCustomer;
                         }
                     }
                 }
 
-                // load guest customer
-                if (customer == null || customer.Deleted || !customer.Active)
-                {
-                    var customerCookie = GetCustomerCookie();
-                    if (customerCookie != null && !String.IsNullOrEmpty(customerCookie.Value))
-                    {
-                        Guid customerGuid;
-                        if (Guid.TryParse(customerCookie.Value, out customerGuid))
-                        {
-                            var customerByCookie = _customerService.GetCustomerByGuid(customerGuid);
-                            if (customerByCookie != null && !customerByCookie.IsRegistered())
-                                customer = customerByCookie;
-                        }
-                    }
-                }
+				// Load guest customer
+				if (customer == null || customer.Deleted || !customer.Active)
+				{
+					customer = GetGuestCustomer();
+				}
 
-                // create guest if not exists
-                if (customer == null || customer.Deleted || !customer.Active)
-                {
-                    customer = _customerService.InsertGuestCustomer();
-                }
-
-
-                // validation
-                if (!customer.Deleted && customer.Active)
-                {
-                    SetCustomerCookie(customer.CustomerGuid);
-                    _cachedCustomer = customer;
-                }
-
-                return _cachedCustomer;
+				_cachedCustomer = customer;
+				return _cachedCustomer;
             }
             set
             {
-				if (!value.IsSystemAccount)
-				{
-					SetCustomerCookie(value.CustomerGuid);
-				}
                 _cachedCustomer = value;
             }
         }
@@ -227,10 +161,40 @@ namespace SmartStore.Web.Framework
 			return customer != null;
 		}
 
-        /// <summary>
-        /// Gets or sets the original customer (in case the current one is impersonated)
-        /// </summary>
-        public Customer OriginalCustomerIfImpersonated
+		protected virtual Customer GetGuestCustomer()
+		{
+			Customer customer = null;
+			Guid customerGuid = Guid.Empty;
+
+			var anonymousId = _httpContext.Request.AnonymousID;
+
+			if (anonymousId != null && anonymousId.HasValue())
+			{
+				Guid.TryParse(anonymousId, out customerGuid);
+			}
+
+			if (customerGuid == Guid.Empty)
+			{
+				_httpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+				_httpContext.Response.End();
+			}
+
+			// Try to load an existing record...
+			customer = _customerService.GetCustomerByGuid(customerGuid);
+
+			if (customer == null || customer.Deleted || !customer.Active || customer.IsRegistered())
+			{
+				// ...but no record yet. Create one.
+				customer = _customerService.InsertGuestCustomer(customerGuid);
+			}
+
+			return customer;
+		}
+
+		/// <summary>
+		/// Gets or sets the original customer (in case the current one is impersonated)
+		/// </summary>
+		public Customer OriginalCustomerIfImpersonated
         {
             get
             {

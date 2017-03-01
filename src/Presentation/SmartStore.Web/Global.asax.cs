@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using System.Web.Security;
 using System.Web.WebPages;
 using FluentValidation.Mvc;
 using JavaScriptEngineSwitcher.Core;
@@ -15,6 +15,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Bundling;
@@ -183,6 +184,21 @@ namespace SmartStore.Web
 			}
 
 			return base.GetVaryByCustomString(context, custom);
+		}
+
+		public void AnonymousIdentification_Creating(object sender, AnonymousIdentificationEventArgs args)
+		{
+			try
+			{
+				var customerService = EngineContext.Current.Resolve<ICustomerService>();
+				var customer = customerService.FindGuestCustomerByClientIdent(maxAgeSeconds: 180);
+				if (customer != null)
+				{
+					// We found our anonymous visitor: don't let ASP.NET create a new id.
+					args.AnonymousID = customer.CustomerGuid.ToString();
+				}
+			}
+			catch { }
 		}
 	}
 }

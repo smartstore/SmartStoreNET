@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Web;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -16,9 +17,11 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
+using SmartStore.Core.Fakes;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Customers
 {
@@ -29,40 +32,59 @@ namespace SmartStore.Services.Customers
         private readonly IRepository<GenericAttribute> _gaRepository;
 		private readonly IRepository<RewardPointsHistory> _rewardPointsHistoryRepository;
         private readonly IGenericAttributeService _genericAttributeService;
-        private readonly IRequestCache _requestCache;
-        private readonly IEventPublisher _eventPublisher;
 		private readonly RewardPointsSettings _rewardPointsSettings;
+		private readonly ICommonServices _services;
+		private readonly HttpContextBase _httpContext;
+		private readonly IUserAgent _userAgent;
 
-        public CustomerService(IRequestCache requestCache,
+		public CustomerService(
             IRepository<Customer> customerRepository,
             IRepository<CustomerRole> customerRoleRepository,
             IRepository<GenericAttribute> gaRepository,
 			IRepository<RewardPointsHistory> rewardPointsHistoryRepository,
             IGenericAttributeService genericAttributeService,
-            IEventPublisher eventPublisher,
-			RewardPointsSettings rewardPointsSettings)
+			RewardPointsSettings rewardPointsSettings,
+			ICommonServices services,
+			HttpContextBase httpContext,
+			IUserAgent userAgent)
         {
-            this._requestCache = requestCache;
             this._customerRepository = customerRepository;
             this._customerRoleRepository = customerRoleRepository;
             this._gaRepository = gaRepository;
 			this._rewardPointsHistoryRepository = rewardPointsHistoryRepository;
             this._genericAttributeService = genericAttributeService;
-            this._eventPublisher = eventPublisher;
 			this._rewardPointsSettings = rewardPointsSettings;
+			this._services = services;
+			this._httpContext = httpContext;
+			this._userAgent = userAgent;
 
 			T = NullLocalizer.Instance;
+			Logger = NullLogger.Instance;
         }
 
 		public Localizer T { get; set; }
 
-        #region Customers
-        
-        public virtual IPagedList<Customer> GetAllCustomers(DateTime? registrationFrom,
-            DateTime? registrationTo, int[] customerRoleIds, string email, string username,
-            string firstName, string lastName, int dayOfBirth, int monthOfBirth,
-            string company, string phone, string zipPostalCode,
-            bool loadOnlyWithShoppingCart, ShoppingCartType? sct, int pageIndex, int pageSize)
+		public ILogger Logger { get; set; }
+
+		#region Customers
+
+		public virtual IPagedList<Customer> GetAllCustomers(
+			DateTime? registrationFrom,
+            DateTime? registrationTo, 
+			int[] customerRoleIds, 
+			string email, 
+			string username,
+            string firstName, 
+			string lastName, 
+			int dayOfBirth, 
+			int monthOfBirth,
+            string company, 
+			string phone, 
+			string zipPostalCode,
+            bool loadOnlyWithShoppingCart, 
+			ShoppingCartType? sct, 
+			int pageIndex, 
+			int pageSize)
         {
             var query = _customerRepository.Table;
             if (registrationFrom.HasValue)
@@ -334,37 +356,75 @@ namespace SmartStore.Services.Customers
             return customer;
         }
 
-        public virtual Customer InsertGuestCustomer()
+        public virtual Customer InsertGuestCustomer(Guid? customerGuid = null)
         {
 			var customer = new Customer
             {
-                CustomerGuid = Guid.NewGuid(),
+                CustomerGuid = customerGuid ?? Guid.NewGuid(),
                 Active = true,
                 CreatedOnUtc = DateTime.UtcNow,
                 LastActivityDateUtc = DateTime.UtcNow,
             };
-
-            //add to 'Guests' role
+			
+            // Add to 'Guests' role
             var guestRole = GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests);
             if (guestRole == null)
                 throw new SmartException("'Guests' role could not be loaded");
 
             customer.CustomerRoles.Add(guestRole);
-
             _customerRepository.Insert(customer);
 
-            return customer;
+			var clientIdent = _services.WebHelper.GetClientIdent();
+			if (clientIdent.HasValue())
+			{
+				_genericAttributeService.SaveAttribute(customer, "ClientIdent", clientIdent);
+			}
+
+			Logger.DebugFormat("Guest account created for anonymous visitor. Id: {0}, ClientIdent: {1}", customer.CustomerGuid, clientIdent ?? "n/a");
+
+			return customer;
         }
-        
-        public virtual void InsertCustomer(Customer customer)
+
+		public virtual Customer FindGuestCustomerByClientIdent(string clientIdent = null, int maxAgeSeconds = 60)
+		{
+			if (_httpContext.IsFakeContext() || _userAgent.IsBot || _userAgent.IsPdfConverter)
+			{
+				return null;
+			}
+
+			using (_services.Chronometer.Step("FindGuestCustomerByClientIdent"))
+			{
+				clientIdent = clientIdent.NullEmpty() ?? _services.WebHelper.GetClientIdent();
+				if (clientIdent.IsEmpty())
+				{
+					return null;
+				}
+
+				var dateFrom = DateTime.UtcNow.AddSeconds(maxAgeSeconds * -1);
+
+				var query = from a in _gaRepository.TableUntracked
+							join c in _customerRepository.Table on a.EntityId equals c.Id into Customers
+							from c in Customers.DefaultIfEmpty()
+							where c.LastActivityDateUtc >= dateFrom
+								&& c.Username == null
+								&& c.Email == null
+								&& a.KeyGroup == "Customer"
+								&& a.Key == "ClientIdent"
+								&& a.Value == clientIdent
+							select c;
+
+				return query.FirstOrDefault();
+			}
+		}
+
+		public virtual void InsertCustomer(Customer customer)
         {
             if (customer == null)
                 throw new ArgumentNullException("customer");
 
             _customerRepository.Insert(customer);
 
-            //event notification
-            _eventPublisher.EntityInserted(customer);
+            _services.EventPublisher.EntityInserted(customer);
         }
         
         public virtual void UpdateCustomer(Customer customer)
@@ -374,8 +434,7 @@ namespace SmartStore.Services.Customers
 
             _customerRepository.Update(customer);
 
-            //event notification
-            _eventPublisher.EntityUpdated(customer);
+			_services.EventPublisher.EntityUpdated(customer);
         }
 
 		public virtual void ResetCheckoutData(Customer customer, int storeId,
@@ -557,8 +616,7 @@ namespace SmartStore.Services.Customers
 
             _customerRoleRepository.Delete(customerRole);
 
-            //event notification
-            _eventPublisher.EntityDeleted(customerRole);
+			_services.EventPublisher.EntityDeleted(customerRole);
         }
 
         public virtual CustomerRole GetCustomerRoleById(int customerRoleId)
@@ -601,8 +659,7 @@ namespace SmartStore.Services.Customers
 
             _customerRoleRepository.Insert(customerRole);
 
-            //event notification
-            _eventPublisher.EntityInserted(customerRole);
+			_services.EventPublisher.EntityInserted(customerRole);
         }
 
         public virtual void UpdateCustomerRole(CustomerRole customerRole)
@@ -612,8 +669,7 @@ namespace SmartStore.Services.Customers
 
             _customerRoleRepository.Update(customerRole);
 
-            //event notification
-            _eventPublisher.EntityUpdated(customerRole);
+			_services.EventPublisher.EntityUpdated(customerRole);
         }
 
         #endregion

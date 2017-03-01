@@ -476,6 +476,10 @@
     <Compile Include="Migrations\201702271156594_ProductAttributeOption.Designer.cs">
       <DependentUpon>201702271156594_ProductAttributeOption.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201703010002399_CustomerGenericAttributesIndexes.cs" />
+    <Compile Include="Migrations\201703010002399_CustomerGenericAttributesIndexes.Designer.cs">
+      <DependentUpon>201703010002399_CustomerGenericAttributesIndexes.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
@@ -869,6 +873,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702271156594_ProductAttributeOption.resx">
       <DependentUpon>201702271156594_ProductAttributeOption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703010002399_CustomerGenericAttributesIndexes.resx">
+      <DependentUpon>201703010002399_CustomerGenericAttributesIndexes.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

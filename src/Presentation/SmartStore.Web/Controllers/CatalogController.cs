@@ -125,13 +125,16 @@ namespace SmartStore.Web.Controllers
 
 			// Store mapping
 			if (!_storeMappingService.Authorize(category))
-				return HttpNotFound();            
+				return HttpNotFound();
 
-            // 'Continue shopping' URL
-			_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
-				SystemCustomerAttributeNames.LastContinueShoppingPage,
-				_services.WebHelper.GetThisPageUrl(false),
-				_services.StoreContext.CurrentStore.Id);
+			// 'Continue shopping' URL
+			if (!_services.WorkContext.CurrentCustomer.IsSystemAccount)
+			{
+				_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
+					SystemCustomerAttributeNames.LastContinueShoppingPage,
+					_services.WebHelper.GetThisPageUrl(false),
+					_services.StoreContext.CurrentStore.Id);
+			}
 
             var model = category.ToModel();
 
@@ -358,11 +361,14 @@ namespace SmartStore.Web.Controllers
 			if (!_storeMappingService.Authorize(manufacturer))
 				return HttpNotFound();
 
-            //'Continue shopping' URL
-			_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
-				SystemCustomerAttributeNames.LastContinueShoppingPage,
-				_services.WebHelper.GetThisPageUrl(false),
-				_services.StoreContext.CurrentStore.Id);
+			// 'Continue shopping' URL
+			if (!_services.WorkContext.CurrentCustomer.IsSystemAccount)
+			{
+				_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
+					SystemCustomerAttributeNames.LastContinueShoppingPage,
+					_services.WebHelper.GetThisPageUrl(false),
+					_services.StoreContext.CurrentStore.Id);
+			}
 
             var model = manufacturer.ToModel();
 

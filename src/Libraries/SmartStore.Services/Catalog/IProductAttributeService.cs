@@ -131,15 +131,23 @@ namespace SmartStore.Services.Catalog
         /// <param name="productVariantAttribute">The product variant attribute mapping</param>
         void UpdateProductVariantAttribute(ProductVariantAttribute productVariantAttribute);
 
-        #endregion
+		/// <summary>
+		/// Copies attribute options (if any) to product variant attribute values. Existing values are ignored (identified by name field).
+		/// </summary>
+		/// <param name="productVariantAttribute">The product variant attribute mapping</param>
+		/// <param name="deleteExistingValues">Indicates whether to delete all existing product variant attribute values</param>
+		/// <returns>Number of inserted product variant attribute values</returns>
+		int CopyAttributeOptions(ProductVariantAttribute productVariantAttribute, bool deleteExistingValues);
 
-        #region Product variant attribute values (ProductVariantAttributeValue)
+		#endregion
 
-        /// <summary>
-        /// Deletes a product variant attribute value
-        /// </summary>
-        /// <param name="productVariantAttributeValue">Product variant attribute value</param>
-        void DeleteProductVariantAttributeValue(ProductVariantAttributeValue productVariantAttributeValue);
+		#region Product variant attribute values (ProductVariantAttributeValue)
+
+		/// <summary>
+		/// Deletes a product variant attribute value
+		/// </summary>
+		/// <param name="productVariantAttributeValue">Product variant attribute value</param>
+		void DeleteProductVariantAttributeValue(ProductVariantAttributeValue productVariantAttributeValue);
 
         /// <summary>
         /// Gets product variant attribute values by product identifier

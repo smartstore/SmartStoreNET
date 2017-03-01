@@ -636,6 +636,8 @@ namespace SmartStore.Admin.Models.Catalog
 			public int ProductVariantAttributeId { get; set; }
 
 			public string ProductVariantAttributeName { get; set; }
+
+			public int ValueCount { get; set; }
 		}
 
 		// TODO: DRY. see ProductAttributeOptionModelBase

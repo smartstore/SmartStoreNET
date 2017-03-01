@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 3.0
 
@@ -37,6 +37,7 @@
 	* Added endpoint "Infos" for order and order item entity for additional information like aggregated data.
 * Added setting to specify whether the product manufacturer should be displayed in product detail
 * #271 Implemented support for attribute images/icons
+* #330 Implement 'attribute option sets'
 
 
 ### Improvements

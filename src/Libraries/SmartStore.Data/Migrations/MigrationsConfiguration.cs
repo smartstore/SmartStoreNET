@@ -585,6 +585,23 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Options.Edit", "Edit option", "Option bearbeiten");
 
 			builder.AddOrUpdate("Admin.Validation.RequiredField", "Please enter \"{0}\".", "Bitte \"{0}\" angeben.");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.NumberOfCopiedOptions",
+				"{0} option(s) have been copied.",
+				"Es wurden {0} Option(en) kopiert.");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.CopyOptions",
+				"Copy attribute options",
+				"Attributoptionen kopieren");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.CopyOptionsHint",
+				"Would you like to copy the options stored for product attribute \"{0}\"? Existing attribute values are not changed.",
+				"Möchten Sie die für das Produktattribut \"{0}\" hinterlegten Optionen übernehmen? Vorhandene Attributwerte werden dabei nicht verändert.");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.DeleteExistingValues",
+				"Delete existing attribute values",
+				"Vorhandene Attributwerte löschen");
+
 		}
 	}
 }

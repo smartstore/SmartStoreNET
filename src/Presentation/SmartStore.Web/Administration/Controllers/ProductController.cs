@@ -3093,6 +3093,7 @@ namespace SmartStore.Admin.Controllers
 				ProductId = pva.ProductId,
 				ProductVariantAttributeName = pva.ProductAttribute.Name,
 				ProductVariantAttributeId = pva.Id,
+				ValueCount = pva.ProductVariantAttributeValues.Count
 			};
 
 			return View(model);
@@ -3358,6 +3359,28 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			return ProductAttributeValueList(productVariantAttributeId, command);
+		}
+
+		[HttpPost]
+		public ActionResult CopyAttributeOptions(int productVariantAttributeId, bool deleteExistingValues)
+		{
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var pva = _productAttributeService.GetProductVariantAttributeById(productVariantAttributeId);
+				if (pva == null)
+					throw new ArgumentException(T("Products.Variants.NotFound", productVariantAttributeId));
+
+				var numberOfCopiedOptions = _productAttributeService.CopyAttributeOptions(pva, deleteExistingValues);
+
+				NotifySuccess(string.Concat(T("Admin.Common.TaskSuccessfullyProcessed"), " ",
+					T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.NumberOfCopiedOptions", numberOfCopiedOptions)));
+			}
+			else
+			{
+				NotifyAccessDenied();
+			}
+
+			return new JsonResult { Data = string.Empty };
 		}
 
 		#endregion

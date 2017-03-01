@@ -324,7 +324,11 @@ namespace SmartStore.Services.Catalog
 
 			if (deleteExistingValues)
 			{
-				productVariantAttribute.ProductVariantAttributeValues.ToList().Each(x => DeleteProductVariantAttributeValue(x));
+				var existingValues = productVariantAttribute.ProductVariantAttributeValues.ToList();
+				if (!existingValues.Any())
+					existingValues = GetProductVariantAttributeValues(productVariantAttribute.Id).ToList();
+
+				existingValues.Each(x => DeleteProductVariantAttributeValue(x));
 			}
 
 			var result = 0;

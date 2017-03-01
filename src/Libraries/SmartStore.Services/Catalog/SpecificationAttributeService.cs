@@ -74,10 +74,6 @@ namespace SmartStore.Services.Catalog
             if (specificationAttribute == null)
                 throw new ArgumentNullException("specificationAttribute");
 
-			// (delete localized properties of options)
-			var options = GetSpecificationAttributeOptionsBySpecificationAttribute(specificationAttribute.Id);
-			options.Each(x => DeleteSpecificationAttributeOption(x));
-
             _specificationAttributeRepository.Delete(specificationAttribute);
 
             //event notification

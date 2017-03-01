@@ -119,7 +119,7 @@
 			<p>@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.CopyOptionsHint", Model.ProductVariantAttributeName)</p>
 
 			<div class="clearfix">
-				<label for="deleteExistingValues" class="checkbox pull-left@(Model.ValueCount == 0 ? " hide" : "")">
+				<label for="deleteExistingValues" class="checkbox pull-left">
 					@Html.CheckBox("deleteExistingValues", false)
 					@T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.DeleteExistingValues")
 				</label>

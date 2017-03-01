@@ -3092,8 +3092,7 @@ namespace SmartStore.Admin.Controllers
 				ProductName = product.Name,
 				ProductId = pva.ProductId,
 				ProductVariantAttributeName = pva.ProductAttribute.Name,
-				ProductVariantAttributeId = pva.Id,
-				ValueCount = pva.ProductVariantAttributeValues.Count
+				ProductVariantAttributeId = pva.Id
 			};
 
 			return View(model);

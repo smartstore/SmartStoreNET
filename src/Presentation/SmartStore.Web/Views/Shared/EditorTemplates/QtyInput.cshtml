@@ -38,8 +38,8 @@
         if (Model.AllowedQuantities != null && Model.AllowedQuantities.Count > 0)
         {
 			<div class="mf-dropdown" style="display: block">
-				<button class="btn btn-warning btn-labeled icon-right btn-block@(large ? " btn-lg" : "")" title="TBD">
-					<span class="mf-dropdown-value">@Model.EnteredQuantity</span>
+				<button class="btn btn-warning btn-labeled icon-right btn-block@(large ? " btn-lg" : "")">
+					<span data-bind="value">@Model.EnteredQuantity</span>
 					<b><i class="fa fa-caret-down"></i></b>
 				</button>
 				@Html.DropDownListFor(model => Model.EnteredQuantity, Model.AllowedQuantities, new { @class = "form-control qty-dropdown noskin" })

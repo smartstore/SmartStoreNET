@@ -375,7 +375,8 @@
 			}
 			else if (e.type == "change") {
 				btn.removeClass('focus active');
-				btn.find('.mf-dropdown-value').text($(this).val());
+				var elLabel = btn.find('[data-bind]');
+				elLabel.text(elLabel.data('bind') == 'value' ? $(this).val() : $('option:selected', this).text());
 			}
 		});
 

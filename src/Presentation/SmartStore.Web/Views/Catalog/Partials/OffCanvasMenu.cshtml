@@ -7,14 +7,15 @@
     <div class="offcanvas-menu-header">
         <div class="text-xs-right">
             <button class="btn btn-secondary btn-flat btn-to-danger btn-lg btn-icon offcanvas-closer fs-h2" style="border-radius: 0">
-                &#215;
+				<i class="lnr lnr-cross"></i>
             </button>
         </div>
 
-        <ul class="nav nav-tabs nav-tabs-line row no-space flex-nowrap" role="tablist">
+        <ul class="nav nav-tabs nav-tabs-line row no-gutters flex-nowrap" role="tablist">
             <li class="nav-item col-xs">
                 <a id="category-tab" class="nav-link" data-toggle="tab" href="#ocm-categories" role="tab" data-url="@Url.Action("OffCanvasMenuCategories", "Catalog")">
-                    <span class="title">@T("Offcanvas.Menu.Categories")</span>
+                    <span class="title hidden-xs-up">@T("Offcanvas.Menu.Categories")</span>
+					<span class="title">Sortiment</span> <!-- Englisch: Categories -->
                 </a>
             </li>
             <li class="nav-item col-xs">
@@ -38,24 +39,21 @@
         <div class="tab-pane fade" id="ocm-help" role="tabpanel"></div>
     </div>
 
-    <div class="offcanvas-menu-footer container">
-
-        <div class="row sm-gutters">
-
-            <div class="col-xs">
+    <div class="offcanvas-menu-footer">
+        <div class="row xs-gutters justify-content-around">
+            <div class="col-xs-6">
                 <div id="ocm-currency-selector" class="mf-dropdown">
-                    <button class="btn btn-secondary btn-labeled icon-right btn-block">
-                        <span></span>
+                    <button class="btn btn-secondary btn-labeled icon-right btn-block text-xs-left">
+                        <span data-bind="name"></span>
                         <b><i class="fa fa-caret-down"></i></b>
                     </button>
-                    <select class="form-control noskin" data-qname="o" title="test"></select>
+                    <select class="form-control noskin"></select>
                 </div>
             </div>
-
-            <div class="col-xs">
+            <div class="col-xs-6">
                 <div id="ocm-language-selector" class="mf-dropdown">
-                    <button class="btn btn-secondary btn-labeled icon-right btn-block">
-                        <span></span>
+                    <button class="btn btn-secondary btn-labeled icon-right btn-block text-xs-left">
+                        <span data-bind="name"></span>
                         <b><i class="fa fa-caret-down"></i></b>
                     </button>
                     <select class="form-control noskin"></select>

@@ -62,4 +62,22 @@
     }
 }
 
+@mixin linearicon($content, $size: 20px) {
+    display: inline-block;
+    font: normal normal normal #{$font-size-root}/1 'Linearicons-Free';
+    font-size: $size;
+    speak: none;
+    text-transform: none;
+    content: $content;
+}
+
+@mixin fontawesome($content, $size: inherit) {
+    display: inline-block;
+    font: normal normal normal #{$font-size-root}/1 'FontAwesome';
+    font-size: $size;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    content: $content;
+}
+
 

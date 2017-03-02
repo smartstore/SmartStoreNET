@@ -21,10 +21,15 @@
 // =================================
 
 #offcanvas-cart {
+    .offcanvas-content {
+        display: flex;
+        flex-direction: column;
+    }
+
     .tab-content {
         position: absolute;
         left: 0;
-        top: 6.1rem;
+        top: 0;
         right: 0;
         bottom: 0;
     }
@@ -54,7 +59,7 @@
 .offcanvas-cart-header {
     position: relative;
     background: $gray-lightest;
-    height: 6.2rem;
+    flex-grow: 0;
 
     .offcanvas-closer {
         border-radius: 0;
@@ -75,6 +80,8 @@
         .nav-link {
             background: transparent !important;
             max-width: 100%;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
 
             .label {
                 position: relative;
@@ -91,6 +98,11 @@
             }
         }
     }
+}
+
+.offcanvas-cart-content {
+    position: relative;
+    flex-grow: 1;
 }
 
 .offcanvas-cart-body {

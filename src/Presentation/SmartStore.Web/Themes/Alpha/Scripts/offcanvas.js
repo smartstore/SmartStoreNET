@@ -52,7 +52,7 @@
         var onRight = el.hasClass('offcanvas-right'),
 			canPan = el.hasClass('offcanvas-overlay');
 
-        el.hammer({}).on('panstart panend panleft panright', function (e) {
+        el.hammer({}).on('panstart panleft panright panend', function (e) {
         	var delta = onRight
 				? Math.max(0, e.gesture.deltaX)
 				: Math.min(0, e.gesture.deltaX);

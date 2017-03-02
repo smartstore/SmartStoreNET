@@ -7,12 +7,6 @@
 }
 
 <div class="offcanvas-cart-header">
-    <div class="text-xs-right">
-        <button class="btn btn-secondary btn-flat btn-to-danger btn-lg btn-icon offcanvas-closer fs-h2">
-			&#215;
-        </button>
-    </div>
-
     <ul class="nav nav-tabs nav-tabs-line row no-gutters flex-nowrap" role="tablist">
         @if (Model.ShoppingCartEnabled) 
         {
@@ -46,19 +40,21 @@
     </ul>
 </div>
 
-<div class="tab-content">
-    @if (Model.ShoppingCartEnabled)
-    {
-        <div class="tab-pane fade" id="occ-cart" role="tabpanel"></div>
-    }
+<div class="offcanvas-cart-content">
+	<div class="tab-content">
+		@if (Model.ShoppingCartEnabled)
+		{
+			<div class="tab-pane fade" id="occ-cart" role="tabpanel"></div>
+		}
 
-    @if (Model.WishlistEnabled)
-    {
-        <div class="tab-pane fade" id="occ-wishlist" role="tabpanel"></div>
-    }
+		@if (Model.WishlistEnabled)
+		{
+			<div class="tab-pane fade" id="occ-wishlist" role="tabpanel"></div>
+		}
 
-    @if (Model.CompareProductsEnabled)
-    {
-        <div class="tab-pane fade" id="occ-compare" role="tabpanel"></div>
-    }
+		@if (Model.CompareProductsEnabled)
+		{
+			<div class="tab-pane fade" id="occ-compare" role="tabpanel"></div>
+		}
+	</div>
 </div>

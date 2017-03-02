@@ -36,6 +36,8 @@
 			tabContent.appendTo(offcanvas.children().first());
 			el.data('tab-content', tabContent).data('offcanvas', offcanvas).addClass('collapsed');
 
+			tabContent.find('.tab-pane').addClass('offcanvas-scrollable');
+
 			el.find('.nav .nav-item')
 		        .attr('data-toggle', 'offcanvas')
 		        .attr('data-placement', 'right')
@@ -49,9 +51,11 @@
 
 			// move .tab-content back to its origin
 			var offcanvas = el.data('offcanvas');
-			el.data('tab-content').appendTo(el);
+			var tabContent = el.data('tab-content');
+			tabContent.appendTo(el);
 			offcanvas.remove();
 
+			tabContent.find('.tab-pane').removeClass('offcanvas-scrollable');
 			el.removeClass('collapsed').removeData('tab-content').removeData('offcanvas');
 
 			el.find('.nav .nav-item')

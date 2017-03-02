@@ -1,0 +1,8 @@
+﻿@model ProductDetailsModel
+
+@using SmartStore.Web.Models.Catalog;
+
+<div class="form-group">
+	@Html.LabelFor(model => Model.AddToCart.CustomerEnteredPrice)
+	@Html.TextBox("CustomerEnteredPrice", Convert.ToInt32(Math.Ceiling(Model.AddToCart.CustomerEnteredPrice)), new { @class = "form-control" })
+</div>

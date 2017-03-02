@@ -1935,6 +1935,7 @@
     <Content Include="Themes\Alpha\Content\_menu.scss" />
     <Content Include="Views\Catalog\Partials\OffCanvasMenuCategories.cshtml" />
     <Content Include="Views\Catalog\Partials\OffCanvasMenu.cshtml" />
+    <Content Include="Views\Product\Partials\Product.CustomerPrice.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

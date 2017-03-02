@@ -7,9 +7,16 @@
 <div class="pd-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 	@if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
 	{
-		<div class="pd-offer-price-container" data-partial="Price">
-			@{ Html.RenderPartial("Product.Offer.Price", Model); }
-		</div>
+		if (Model.AddToCart.CustomerEntersPrice)
+		{
+			var dataDictCustomerPrice = new ViewDataDictionary();
+			dataDictCustomerPrice.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
+			Html.RenderPartial("Product.CustomerPrice", Model, dataDictCustomerPrice);
+		}
+		else
+		{
+			Html.RenderPartial("Product.Offer.Price", Model);
+		}
 	}
 
 	<div class="pd-stock-info-container" data-partial="Stock">

@@ -46,8 +46,6 @@ else
 				</p>
 
 				<div class="review-vote" data-review-id="@(helpfulness.ProductReviewId)" data-href='@(Url.Action("SetReviewHelpfulness"))'>
-					@*@{ Html.RenderPartial("_ReviewHelpfulness", review.Helpfulness, new ViewDataDictionary()); }*@
-
 					<span class="review-vote-label">@T("Reviews.Helpfulness.WasHelpful?")</span>
 					<a class="review-vote-link review-vote-link-yes" href="#" title="@T("Common.Yes")" data-toggle="tooltip" rel="nofollow">
 						<i class="fa fa-thumbs-up"></i>

@@ -7,7 +7,7 @@
 <div class="pd-bundle-items">
 	@foreach (var item in Model)
 	{
-		string updateUrl = Url.Action("UpdateProductDetails3", "Product", new
+		string updateUrl = Url.Action("UpdateProductDetails", "Product", new
 		{
 			productId = item.Id,
 			bundleItemId = item.BundleItem.Id,

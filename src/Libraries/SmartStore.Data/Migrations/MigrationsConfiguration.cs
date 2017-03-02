@@ -37,16 +37,28 @@ namespace SmartStore.Data.Migrations
             if (record != null)
 			{
 				permissionRecords.Remove(record);
-			}         
+			}
 
-			// Set new product template as default
+			// Add new product template...
+			context.Set<ProductTemplate>().AddOrUpdate(x => x.ViewPath, new ProductTemplate
+			{
+				Name = "Default Product Template",
+				ViewPath = "Product",
+				DisplayOrder = 10
+			});
+
+			// ...and set it as default where applicable
 			var newProductTemplate = context.Set<ProductTemplate>().FirstOrDefault(x => x.Name == "Default Product Template") ?? context.Set<ProductTemplate>().LastOrDefault();
 			if (newProductTemplate != null)
 			{
 				context.ExecuteSqlCommand("Update [Product] Set [ProductTemplateId] = {0}", true, null, newProductTemplate.Id);
 			}
 
-            context.SaveChanges();
+			// ...finally delete old ones
+			var oldProductTemples = context.Set<ProductTemplate>().Where(x => x.ViewPath == "ProductTemplate.Simple" || x.ViewPath == "ProductTemplate.Grouped").ToList();
+			context.Set<ProductTemplate>().RemoveRange(oldProductTemples);
+
+			context.SaveChanges();
         }
 
 		public void MigrateSettings(SmartObjectContext context)
@@ -91,15 +103,6 @@ namespace SmartStore.Data.Migrations
 			{
 				setting.Value = "70";
 			}
-
-			// Add new product template
-			// TODO: (mc) refactor depending code to reflect this change (ProductTemplate.Simple/Grouped are obsolete now)
-			context.Set<ProductTemplate>().AddOrUpdate(x => x.ViewPath, new ProductTemplate
-			{
-				Name = "Default Product Template",
-				ViewPath = "Product",
-				DisplayOrder = 10
-			});
 
 			// Change CatalogSettings.PageShareCode (16px > 32px)
 			setting = context.Set<Setting>().FirstOrDefault(x => x.Name == "CatalogSettings.PageShareCode");

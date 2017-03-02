@@ -601,6 +601,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.DeleteExistingValues",
 				"Delete existing attribute values",
 				"Vorhandene Attributwerte löschen");
+            
+            builder.AddOrUpdate("Offcanvas.Menu.Categories", "Categories", "Warengruppen");
+            builder.AddOrUpdate("Offcanvas.Menu.Brands", "Brands", "Marken");
+            builder.AddOrUpdate("Offcanvas.Menu.Help", "Help", "Hilfe");
 
 			var aliasHintEn = "Seo-compliant URL alias for search filters. If empty, the attribute's ID is used in page URLs.";
 			var aliasHintDe = "SEO-konformer URL-Alias für Suchfilter. Wenn leer, wird die Attribut-ID in Seiten-URLs verwendet.";

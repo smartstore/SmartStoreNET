@@ -1933,7 +1933,8 @@
     <Content Include="Views\Product\Partials\Product.Offer.Actions.Misc.cshtml" />
     <Content Include="Views\Common\Partials\ShopBar.Tools.cshtml" />
     <Content Include="Themes\Alpha\Content\_menu.scss" />
-    <Content Include="Views\Catalog\ChildCategories.cshtml" />
+    <Content Include="Views\Catalog\Partials\OffCanvasMenuCategories.cshtml" />
+    <Content Include="Views\Catalog\Partials\OffCanvasMenu.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

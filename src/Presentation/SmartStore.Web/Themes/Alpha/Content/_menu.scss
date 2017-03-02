@@ -1,60 +1,83 @@
 ﻿/// <reference path="bs4/scss/bootstrap.scss" />
 
 $ocm-border-color:                      rgba(#000, 0.15);
+$ocm-horizontal-padding:                1.6rem;
 
 #offcanvas-menu {
-    .menubar {
-        text-align: left;
-        border-bottom: 1px solid $ocm-border-color;
-    }
-    .menubar-group {
-        display: block;
-        white-space: nowrap;
-    }
-    .language-selector,
-    .currency-selector {
-        border-bottom: 1px solid $ocm-border-color;
-        width: 50%;
-        display: inline-block;
+
+    .tab-pane {
+        padding: 0;
     }
 
-    .navbar-nav .nav-item {
-        margin: 0.2rem 1.6rem;
-        float: none;
-        border-bottom: 1px solid $ocm-border-color;
-        display: block;
-        font-size: 1rem;
+    .ocm-home-layer {
+        padding: 0;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
 
-        .nav-link {
-            display: inline-block;
-            color: $body-color;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        > * { width: 100%; z-index: 1; }
+    }
+
+    .tab-content {
+        flex-grow: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .offcanvas-menu-subcat-header {
+        background: $gray-lightest;
+        .offcanvas-closer {
+            border-radius: 0;
         }
     }
 
-    .category-container {
-        .category-info {
-            padding-left: 1.6rem;    
-        }
-        .navbar-nav .nav-item {
+    .offcanvas-menu-footer {
+        background: $gray-lightest;
+        border-top: 1px solid $ocm-border-color;
+        padding: 1rem;
+
+        .mf-dropdown {
+            display: block;
             
-            .nav-link {
-                padding-left: 0.625rem;    
-                padding-right: 2rem;    
+            .btn-labeled > b {
+                background: #fff;
             }
+        }
+    }
+
+    .navbar-nav {
+        padding: 0 $ocm-horizontal-padding;
+    
+        .nav-item {
+            margin: 0;
+            float: none;
+            border-bottom: 1px solid $ocm-border-color;
+            display: block;
+            font-size: 1rem;
+
+            .nav-link {
+                display: block;
+                color: $body-color;
+                padding: 0.625rem 2rem 0.625rem 0.625rem;    
+            }
+        
             .fa {
                 color: $body-color;
             }
             .fa-chevron-right {
                 position: absolute;
                 right: 1rem;
-                top: .925rem;
+                top: 1.125rem;
             }
             .fa-chevron-left {
                 margin-right: .2rem;
             }
-        }
-        .navbar-nav { 
-
         }
     }
 
@@ -68,18 +91,17 @@ $ocm-border-color:                      rgba(#000, 0.15);
 
     .button-bar {
         background: $gray-lightest;
-        padding: 1rem 1.6rem;    
+        padding: 1rem $ocm-horizontal-padding;    
         span {
             margin-right: 1rem;
         }
     }
     .category-info {
+        padding: 0 $ocm-horizontal-padding;
+
         .category-name {
             font-size: 1.5rem;
             padding-top: 1rem;
-        }
-        .category-desc {
-            font-size: 0.925rem;
         }
     }
 }
@@ -89,19 +111,33 @@ $ocm-border-color:                      rgba(#000, 0.15);
 #offcanvas-menu-catalog {
     position: relative;
 }
-.category-container {
-    transition: margin-left 0.12s ease-in-out;
+.ocm-home-layer,
+.ocm-nav-layer {
+    transition: transform 0.4s ease-in-out !important;
+    background: #fff;
 }
-.category-container-slide-in {
+.ocm-nav-layer {
     position: absolute;
     top: 0;
-    transition-delay: 0.3s;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: translateX(100%);
+    z-index: 0;
 }
-.category-container-slide-in--from-left {
-    left: 1024px;   // TODO: Find out why i need this :-/
-    transition: left 0.3s ease-in-out;
+.ocm-nav-layer.out,
+.ocm-home-layer.out {
+    transform: translateX(-30%);
+    z-index: 1;
 }
-.category-container-slide-in--from-right {
-    right: 1024px;   // TODO: Find out why i need this :-/
-    transition: right 0.3s ease-in-out;
+.ocm-home-layer.in,
+.ocm-nav-layer.in {
+    transform: translateX(0);
+    z-index: 2;
+}
+.slide-in-from-right {
+    transform: translateX(-100%);
+}
+.ocm-nav-layer.out.to-right {
+    transform: translateX(100%);
 }

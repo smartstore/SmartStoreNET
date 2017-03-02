@@ -446,6 +446,8 @@ namespace SmartStore.Web.Controllers
         public ActionResult ManufacturerAll()
         {
             var model = new List<ManufacturerModel>();
+
+            // TODO: result isn't cached, DO IT!
             var manufacturers = _manufacturerService.GetAllManufacturers(null, _services.StoreContext.CurrentStore.Id);
             foreach (var manufacturer in manufacturers)
             {
@@ -461,6 +463,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
+        // TODO: remove, won't be needed anymore???
         [ChildActionOnly]
         public ActionResult ManufacturerNavigation(int currentManufacturerId)
         {
@@ -942,7 +945,7 @@ namespace SmartStore.Web.Controllers
 
         // ajax
         [HttpPost]
-        public ActionResult ChildCategories(int categoryId)
+        public ActionResult OffCanvasMenuCategories(int categoryId)
         {
             var model = new AjaxCategoryModel();
 
@@ -1003,6 +1006,43 @@ namespace SmartStore.Web.Controllers
             model.HasChildren = model.SubCategories.Count > 0;
             
             return PartialView(model);
+        }
+
+        // ajax
+        [HttpPost]
+        public ActionResult OffCanvasMenuManufacturer()
+        {
+            // TODO: settings berücksichtigen
+            //if (_catalogSettings.ManufacturersBlockItemsToDisplay == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
+            //    return Content("");
+
+            // TODO: caching berücksichtigen
+
+            var model = new AjaxCategoryModel();
+            var manufacturers = _manufacturerService.GetAllManufacturers(null, _services.StoreContext.CurrentStore.Id)
+                .Take(_catalogSettings.ManufacturersBlockItemsToDisplay);
+
+            foreach (var manufacturer in manufacturers)
+            {
+                var manuName = manufacturer.GetLocalized(x => x.Name);
+                var modelMan = new AjaxCategoryModel {
+                    Id = manufacturer.Id,
+                    Name = manuName,
+                    SeName = manufacturer.GetSeName(),
+                    HasChildren = false
+                };
+
+                model.SubCategories.Add(modelMan);
+            }
+
+            return PartialView("OffCanvasMenuCategories", model);
+        }
+
+        [HttpPost]
+        public ActionResult OffCanvasMenu()
+        {
+
+            return PartialView();
         }
         
         #endregion

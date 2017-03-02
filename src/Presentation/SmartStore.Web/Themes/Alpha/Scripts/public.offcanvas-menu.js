@@ -9,6 +9,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
     var isInitialised = false;
     var viewport = ResponsiveBootstrapToolkit;
     var selectedMenuItemId = 0;
+    var menu = $("#offcanvas-menu #menu-container");
 
     $(function () {
 
@@ -27,11 +28,11 @@ var AjaxMenu = (function ($, window, document, undefined) {
         );
 
         // listen to clicks inside of #offcanvas-menu
-        $("#offcanvas-menu").on('click', '.nav-item', function (e) {
+        menu.on('click', '.nav-item', function (e) {
             
             var item = $(this);
-            var entityId = item.data("entity-id");
-            var isAjaxNavigation = item.data("is-ajax-navigation");
+            var entityId = item.data("id");
+            var isAjaxNavigation = item.data("ajax");
 
             if (isAjaxNavigation == false) {
                 // let event bubble up, so normal navigation via href attribute takes effect
@@ -40,61 +41,86 @@ var AjaxMenu = (function ($, window, document, undefined) {
             
             e.preventDefault();
 
-            navigateToMenuItem(entityId, item.hasClass("back-to-parent-cat") ? "right" : "left");
+            if (item.find(".nav-link").is("#manufacturer-tab")) {
+                navigateToManufacturer();
+            }
+            else if (item.find(".nav-link").is("#help-tab")) {
+                navigateToHelp();
+            }
+            else {
+                navigateToMenuItem(entityId ? entityId : 0, item.hasClass("back-to-parent-cat") ? "right" : "left");
+            }
 
             // for stopping event propagation
             return false;
         });
 	});
 
-	function navigateToMenuItem(entityId, direction) {
+    function navigateToMenuItem(entityId, direction) {
+
+        // TODO: show throbber while elements are being loaded
+
 	    $.ajax({
 	        cache: false,
-	        //url: '@(Url.Action("ChildCategories", "Catalog"))',
-	        url: 'Catalog/ChildCategories',
+	        url: menu.data("url-item"),
 	        data: { "categoryId": entityId },
 	        type: 'POST',
 	        success: function (response) {
 
-	            // replace current cat container content with response
-
-	            var categoryContainer = $(".category-container:first");
+	            // replace current menu content with response 
+	            var categoryContainer = $(".category-container");
 	            var firstCall = categoryContainer.length == 0;
-	            
+	            var categoryTab = entityId != 0 ? menu : $("#ocm-categories");
+
+                
 	            if (firstCall) {
-	                $("#offcanvas-menu-catalog").append(response);
+	                categoryTab.append(response);
 	            }
 	            else {
+                  
+	                var responseHtml = "";
+	                var categoryContainerSlideIn;
 
-	                var responseHtml = response.replace("category-container", "category-container category-container-slide-in category-container-slide-in--from-" + direction);
-	                
-	                $("#offcanvas-menu-catalog").append(responseHtml);
-	                
-	                var menuWidth = $("#offcanvas-menu-catalog").width();
-	                var categoryContainerSlideIn = $(".category-container-slide-in");
+	                if (entityId != 0)
+	                {
+                        
+	                    responseHtml += '<div class="ocm-nav-layer slide-in-from-' + direction + '">';
+	                    responseHtml += '   <div class="offcanvas-menu-subcat-header text-xs-right">';
+	                    responseHtml += '       <button class="btn btn-secondary btn-flat btn-to-danger btn-lg btn-icon offcanvas-closer fs-h2">&#215;</button>';
+	                    responseHtml += '   </div>';
+	                    responseHtml +=     response;
+	                    responseHtml += '</div>';
 
-	                categoryContainerSlideIn.css("width", menuWidth + "px");
+	                    categoryContainerSlideIn = $(responseHtml).appendTo(categoryTab);
+	                }
+	                else
+	                {
+	                    // TODO: get rid of this call
+	                    categoryContainer.remove();
+	                    navigateToHomeLayer();
+	                    return;
+	                }
+	                
+	                var categoryContainerSlideOut = $(".ocm-home-layer").length != 0 ? $(".ocm-home-layer") : $(".ocm-nav-layer:first");
+
+	                _.delay(function () {
+	                    categoryContainerSlideIn.addClass("in");
+	                    categoryContainerSlideOut
+                            .removeClass("in")
+                            .addClass("out to-" + direction);
+	                }, 100);
 
 	                if (direction == "left") {
-	                    categoryContainerSlideIn.css("left", menuWidth + "px");
-	                    categoryContainer.css("margin-left", "-" + menuWidth + "px");
-	                    categoryContainerSlideIn.css("left", "0px");
+                        
 	                }
 	                else {
-	                    //categoryContainerSlideIn.css("right", "-" + menuWidth + "px");
-	                    categoryContainer.css("margin-left", menuWidth + "px");
-	                    categoryContainerSlideIn.css("right", "0px");
+	                    
 	                }
 
 	                // remove slid container after transition
-	                _.delay(function () {
-
-	                    categoryContainer.remove();
-
-	                    // finaly remove temporary class
-	                    categoryContainerSlideIn.removeClass("category-container-slide-in");
-
-	                }, 600);
+	                categoryContainerSlideIn.one(Prefixer.event.transitionEnd, function (e) {
+	                    categoryContainerSlideOut.remove();
+	                });
 	            }
 	        },
 	        error: function (jqXHR, textStatus, errorThrown) {
@@ -104,46 +130,149 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	    });
 	}
 
+    function navigateToHomeLayer() {
+
+	    $.ajax({
+	        cache: false,
+	        url: menu.data("url-home"),
+	        type: 'POST',
+	        success: function (response) {
+	            var ocMenu = $("#menu-container");
+	            ocMenu.html(response);
+
+	            $('#offcanvas-menu #category-tab').tab('show');
+
+	            // navigate to home
+	            navigateToMenuItem(0);
+
+	            AjaxMenu.initFooter();
+	        },
+	        error: function (jqXHR, textStatus, errorThrown) {
+	            console.log(errorThrown);
+	        },
+	        complete: function () { }
+	    });
+	}
+
+    // TODO: mit home layer zusammenlegen
+    function navigateToManufacturer() {
+
+        $.ajax({
+            cache: false,
+            url: menu.data("url-manufacturer"),
+            type: 'POST',
+            success: function (response) {
+
+                var manuTab = $("#ocm-manufacturers");
+                manuTab.html(response);
+
+                $('#offcanvas-menu #manufacturer-tab').tab('show');
+
+                // TODO: set initialized var and don't do requests twice
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+            },
+            complete: function () { }
+        });
+    }
+
+    function navigateToHelp() {
+
+        var menuContent = $(".menubar-section .menubar");
+        var tabContent = menu.find("#help-tab");
+        var helpTab = $("#ocm-help");
+        var isInitialized = tabContent.data("initialized");
+        var response = '';
+
+        if (isInitialized) {
+            tabContent.tab('show');
+            return;
+        }
+        
+        // TODO: do it for every .dropdown & .menubar-link (if .menubar-link isn't within .dropdown)
+
+        // dropdown service-links open
+        var tempHelp = $(".service-links", menuContent);
+        var menuTitle = tempHelp.find(".menubar-link > span").text();
+
+        // menu title
+        response += '<div class="category-info"><div class="category-name">' + menuTitle + '</div></div>';
+
+        response += '<ul class="nav navbar-nav">';
+
+        // foreach .dropdown 
+        tempHelp.find(".dropdown-item").each(function (index) {
+            var navItem = $(this).clone();
+
+            navItem.removeClass("dropdown-item");
+            navItem.addClass("nav-link");
+
+            response += '<li class="sub-cat nav-item" data-ajax="false">' + navItem.outerHtml() + '</li>';
+        });
+
+        response += "</ul>";
+
+        helpTab.html(response);
+        tabContent.data("initialized", true);
+        tabContent.tab('show');
+    }
+
 	return {
 
 	    initMenu: function () {
-	        //var offcanvasMenu = $('<aside id="offcanvas-menu" class="offcanvas x-offcanvas-lg offcanvas-overlay offcanvas-shadow" data-overlay="true" data-noscroll="true" data-blocker="true"><div class="offcanvas-content"></div></aside>')
-            //    .appendTo('body');
 
 	        var offcanvasMenu = $('#offcanvas-menu');
-
 	        var menuContent = $(".menubar-section .menubar");
-	        menuContent.clone().appendTo(offcanvasMenu.children().first());
+	        var selectedMenuItemId = $(".megamenu .navbar-nav").data("selected-menu-item");
 
-            // cosmetics: remove classes and restructure given HTML of header menu
-	        offcanvasMenu.find(".menubar-group").removeClass("pull-left");
-
-	        var ownMenu = '<div class="button-bar">';
-	        ownMenu += '<a class="back-to-home m-r-05" href="@Url.RouteUrl("HomePage")"><i class="fa fa-home"></i>Home</a>';
-	        ownMenu += '<a class="close-offcanvas-menu offcanvas-closer"><i class="fa fa-times"></i>Schließen</a>';
-	        ownMenu += '</div>';
-
-	        /*
-            var categories = $(".megamenu .navbar-nav");
-	        categories
-                .clone()
-                .appendTo(offcanvasMenu.children().first());
-
-	        $(".navbar-nav", offcanvasMenu).wrap("<div id='offcanvas-menu-catalog'></div>")
-            */
-
-	        offcanvasMenu.children().first().append("<div id='offcanvas-menu-catalog'><ul class='navbar-nav'></ul></div>");
-
-	        //$("#shopbar-menu").click(function () {
-	        //    offcanvasMenu.offcanvas('show');
-	        //});
-
-	        //selectedMenuItemId = categories.data("selected-menu-item");
-	        selectedMenuItemId = $(".megamenu .navbar-nav").data("selected-menu-item");
-	        navigateToMenuItem(selectedMenuItemId);
+	        if (selectedMenuItemId == 0)
+	        {
+	            navigateToHomeLayer();
+	        }
+	        else {
+	            navigateToMenuItem(selectedMenuItemId);
+	        }
 
 	        isInitialised = true;
-		}
-	}
+	        return;
+	    },
 
+	    initFooter: function () {
+
+	        // TODO: don't forget to adapt elems or even blend them out when there's just one or no elem
+
+	        var footer = $(".offcanvas-menu-footer");
+	        var languageSelector = $(".menubar-section .language-selector");
+	        var currencySelector = $(".menubar-section .currency-selector");
+	        var ocmLanguageSelector = $("#ocm-language-selector", footer);
+	        var ocmCurrencySelector = $("#ocm-currency-selector", footer);
+	        var selectTitleLanguage = $(".menubar-link > span", languageSelector).text();
+	        var selectTitleCurrency = $(".menubar-link > span", currencySelector).text();
+	        var languageOptions = "";
+	        var currencyOptions = "";
+
+	        $(languageSelector).find(".dropdown-item").each(function () {
+	            var link = $(this);
+	            languageOptions += '<option value="' + link.attr("href") + '">' + link.text() + '</option>';
+	        });
+
+	        $(currencySelector).find(".dropdown-item").each(function () {
+	            var link = $(this);
+	            currencyOptions += '<option value="' + link.attr("href") + '">' + link.text() + '</option>';
+	        });
+
+	        $("span", ocmLanguageSelector).text(selectTitleLanguage);
+	        $("span", ocmCurrencySelector).text(selectTitleCurrency);
+
+	        $(".form-control", ocmLanguageSelector).append(languageOptions);
+	        $(".form-control", ocmCurrencySelector).append(currencyOptions);
+
+            // on change navigate to value 
+	        $(footer).find(".form-control").on("change", function (e) {
+	            var select = $(this);
+	            window.setLocation(select.val());
+	        });
+	    }
+	}
 })(jQuery, this, document);

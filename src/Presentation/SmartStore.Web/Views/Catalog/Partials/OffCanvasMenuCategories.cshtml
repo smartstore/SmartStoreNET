@@ -9,23 +9,21 @@
 <div class="category-container">
 
     <div class="category-info">
-        <div class="category-name">
-            @(Model.Id != 0 ? Model.Name : T("Warengruppen").Text)
-        </div>
+        <div class="category-name">@Model.Name</div>
     </div>
 
     <ul class="nav navbar-nav">
 
         @if (Model.Id != 0)
         {
-            <li class="back-to-parent-cat nav-item" data-entity-id="@Model.ParentCategory.Id">
+            <li class="back-to-parent-cat nav-item" data-id="@Model.ParentCategory.Id">
                 <a href="@Url.RouteUrl("Category", new { SeName = Model.ParentCategory.SeName })" class="nav-link">
                     <i class="fa fa-chevron-left"></i>
                     @T("Zurück")
                 </a>
             </li>
 
-            <li class="go-to-current-cat nav-item" data-entity-id="@Model.Id" data-is-ajax-navigation="false">
+            <li class="go-to-current-cat nav-item" data-id="@Model.Id" data-ajax="false">
                 <a href="@Url.RouteUrl("Category", new { SeName = Model.SeName })" class="nav-link">
                     @Model.Name @T("Anzeigen")
                 </a>
@@ -34,7 +32,7 @@
 
         @foreach (var cat in Model.SubCategories)
         {
-            <li class="sub-cat nav-item" data-entity-id="@cat.Id" data-is-ajax-navigation="@(cat.HasChildren ? "true" : "false")">
+            <li class="sub-cat nav-item" data-id="@cat.Id" data-ajax="@(cat.HasChildren ? "true" : "false")">
                 <a href="@Url.RouteUrl("Category", new { SeName = cat.SeName })" class="nav-link">
                     @cat.Name
                 </a>
@@ -43,7 +41,6 @@
                 {
                     <i class="fa fa-chevron-right"></i>
                 }
-
             </li>
         }
     </ul>

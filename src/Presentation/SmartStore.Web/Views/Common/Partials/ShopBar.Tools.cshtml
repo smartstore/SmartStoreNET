@@ -98,10 +98,16 @@
 
 @using (Html.BeginZoneContent("end", key: "offcanvas-menu"))
 {
-	<aside id="offcanvas-menu" class="offcanvas offcanvas-overlay offcanvas-left offcanvas-shadow" data-blocker="true" data-overlay="true" data-placement="left">
-		<div class="offcanvas-content offcanvas-scrollable">
-			<!-- AJAX -->
-		</div>
+	<aside id="offcanvas-menu" class="offcanvas offcanvas-lg offcanvas-overlay offcanvas-left offcanvas-shadow" data-lg="true" data-blocker="true" data-overlay="true" xdata-placement="left">
+        <div class="offcanvas-content">
+            <div id="menu-container" class="offcanvas-scrollable" 
+                 data-url-home="@(Url.Action("OffCanvasMenu", "Catalog"))" 
+                 data-url-item="@(Url.Action("OffCanvasMenuCategories", "Catalog"))"
+                 data-url-manufacturer="@(Url.Action("OffCanvasMenuManufacturer", "Catalog"))">
+                <!-- AJAX -->
+
+            </div>
+        </div>
 	</aside>
 }
 

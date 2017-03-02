@@ -1854,7 +1854,6 @@
     <Content Include="Themes\Alpha\Content\_misc.scss" />
     <Content Include="Themes\Alpha\Content\_blog.scss" />
     <Content Include="Themes\Alpha\Content\_forum.scss" />
-    <Content Include="Themes\Alpha\Content\_product_old.scss" />
     <Content Include="Themes\Alpha\Content\_pages.scss" />
     <Content Include="Themes\Alpha\Content\_rating.scss" />
     <Content Include="Views\Common\Partials\ServiceMenu.cshtml" />

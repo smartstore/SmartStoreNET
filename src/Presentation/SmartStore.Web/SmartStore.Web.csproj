@@ -697,23 +697,6 @@
     <Content Include="Content\fonts\fontawesome-webfont.woff2" />
     <Content Include="Content\fonts\FontAwesome.otf" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
-    <Content Include="Content\image-gallery\css\blueimp-gallery-custom.css" />
-    <Content Include="Content\image-gallery\css\blueimp-gallery-indicator.css" />
-    <Content Include="Content\image-gallery\css\blueimp-gallery-video.css" />
-    <Content Include="Content\image-gallery\css\blueimp-gallery.css" />
-    <Content Include="Content\image-gallery\img\error.png" />
-    <Content Include="Content\image-gallery\img\error.svg" />
-    <Content Include="Content\image-gallery\img\loading.gif" />
-    <Content Include="Content\image-gallery\img\play-pause.png" />
-    <Content Include="Content\image-gallery\img\play-pause.svg" />
-    <Content Include="Content\image-gallery\img\video-play.png" />
-    <Content Include="Content\image-gallery\img\video-play.svg" />
-    <Content Include="Content\image-gallery\js\blueimp-gallery-fullscreen.js" />
-    <Content Include="Content\image-gallery\js\blueimp-gallery-indicator.js" />
-    <Content Include="Content\image-gallery\js\blueimp-gallery-video.js" />
-    <Content Include="Content\image-gallery\js\blueimp-gallery-vimeo.js" />
-    <Content Include="Content\image-gallery\js\blueimp-gallery-youtube.js" />
-    <Content Include="Content\image-gallery\js\blueimp-gallery.js" />
     <Content Include="Content\Images\default-image-alt.png" />
     <Content Include="Content\Images\default-image.png" />
     <Content Include="Content\Images\grippy.png" />
@@ -970,7 +953,6 @@
     <Content Include="Scripts\smartstore.instantsearch.js" />
     <Content Include="Scripts\smartstore.common.js" />
     <Content Include="Scripts\smartstore.globalize.adapter.js" />
-    <Content Include="Scripts\jquery.elevatezoom.js" />
     <Content Include="Scripts\jquery.menu-aim.js" />
     <Content Include="Scripts\smartstore.placeholder.js" />
     <Content Include="Scripts\public.voting.js" />
@@ -1396,7 +1378,6 @@
     <Content Include="Content\jquery.pnotify.default.css" />
     <Content Include="Content\jquery.pnotify.default.icons.css" />
     <Content Include="Content\bootstrap\custom\scrollbutton.less" />
-    <Content Include="Content\smartstore.smartgallery.css" />
     <Content Include="Scripts\jquery.pnotify.js" />
     <Content Include="Scripts\public.product-detail.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
@@ -1406,9 +1387,7 @@
     <Content Include="Scripts\public.shopbar.js" />
     <Content Include="Scripts\select2.min.js" />
     <Content Include="Scripts\smartstore.eventbroker.js" />
-    <Content Include="Scripts\smartstore.scrollbutton.js" />
     <Content Include="Scripts\smartstore.selectwrapper.js" />
-    <Content Include="Scripts\smartstore.smartgallery.js" />
     <Content Include="Scripts\smartstore.thumbzoomer.js" />
     <Content Include="Scripts\underscore.mixins.js" />
     <Content Include="Scripts\underscore.string.js" />
@@ -1483,7 +1462,6 @@
     <Content Include="Themes\Alpha\Scripts\smartstore.keynav.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.selectwrapper.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.gallery.js" />
-    <Content Include="Themes\Alpha\Scripts\smartstore.smartgallery.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.system.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.throbber.js" />
     <Content Include="Themes\Alpha\Scripts\smartstore.thumbzoomer.js" />

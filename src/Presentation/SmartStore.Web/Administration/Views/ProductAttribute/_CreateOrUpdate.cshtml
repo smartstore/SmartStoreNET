@@ -6,7 +6,7 @@
 @Html.SmartStore().TabStrip().Name("productattribute-edit").Items(x =>
 {
 	x.Add().Text(T("Common.General").Text).Content(TabInfo()).Selected(true);
-	x.Add().Text(T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values").Text).Content(TabOptions());
+	x.Add().Text(T("Admin.Catalog.Attributes.OptionsSets").Text).Content(TabOptionsSets());
 
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "productattribute-edit", this.Html, this.Model));
 })
@@ -119,12 +119,82 @@
 	</table>
 }
 
-@helper TabOptions()
+@helper TabOptionsSets()
 {
 	if (Model.Id > 0)
 	{
 		<table class="adminContent">
 			<tr>
+				<td>
+					@(Html.Telerik().Grid<ProductAttributeOptionsSetModel>()
+						.Name("productattributeoptionsset-grid")
+						.DataKeys(keys =>
+						{
+							keys.Add(x => x.Id);
+							keys.Add(x => x.ProductAttributeId).RouteKey("productAttributeId");
+						})
+						.ToolBar(commands => commands.Insert())
+						.Columns(columns =>
+						{
+							columns.Bound(x => x.Name);
+							columns.Command(commands =>
+							{
+								commands.Edit().Localize(T);
+								commands.Delete().Localize(T);
+							})
+							.Width(120);
+						})
+						.DataBinding(dataBinding => dataBinding.Ajax()
+							.Select("OptionsSetList", "ProductAttribute", new { productAttributeId = Model.Id })
+							.Insert("OptionsSetInsert", "ProductAttribute", new { productAttributeId = Model.Id })
+							.Update("OptionsSetUpdate", "ProductAttribute")
+							.Delete("OptionsSetDelete", "ProductAttribute")
+						)
+						.EnableCustomBinding(true)
+						.DetailView(details => details.ClientTemplate(
+							Html.Telerik().Grid<ProductAttributeOptionModel>()
+								.Name("productattributeoptions-<#= Id #>-grid")
+								.DataKeys(keys =>
+								{
+									keys.Add(x => x.Id);
+									keys.Add(x => x.ProductAttributeOptionsSetId).RouteKey("optionsSetId");
+								})
+								.Columns(columns =>
+								{
+									columns.Bound(x => x.Name)
+										.ClientTemplate(@Html.VariantAttributeValueName());
+									columns.Bound(x => x.Alias);
+									columns.Bound(x => x.LinkedProductName)
+										.ClientTemplate(@Html.LabeledProductName("LinkedProductId", "LinkedProductName", "LinkedProductTypeName", "LinkedProductTypeLabelHint"));
+									columns.Bound(x => x.PriceAdjustmentString)
+										.Centered();
+									columns.Bound(x => x.WeightAdjustmentString)
+										.Centered();
+									columns.Bound(x => x.IsPreSelected)
+										.ClientTemplate(@Html.SymbolForBool("IsPreSelected"))
+										.Centered();
+									columns.Bound(x => x.DisplayOrder)
+										.Centered();
+									columns.Bound(x => x.Id)
+										.Width(120)
+										.Centered()
+										.Title("")
+										.ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:openPopup('" + @Url.Content("~/Admin/ProductAttribute/OptionEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=productattributeoptionsset-grid'); return false;\" class='btn' />");
+									columns.Command(commands =>
+									{
+										commands.Delete().Localize(T);
+									})
+									.Width(120);
+								})
+								.DataBinding(dataBinding => dataBinding.Ajax()
+									.Select("OptionsSetListDetails", "ProductAttribute", new { optionsSetId = "<#= Id #>" })
+									.Delete("OptionDelete", "ProductAttribute"))
+								.ToHtmlString()
+						)))
+				</td>
+			</tr>
+
+			@*<tr>
 				<td>
 					@(Html.Telerik().Grid<ProductAttributeOptionModel>()
 					.Name("productattributeoptions-grid")
@@ -184,7 +254,7 @@
                         });
 					</script>
 				</td>
-			</tr>
+			</tr>*@
 		</table>
 	}
 	else

@@ -11,11 +11,10 @@ namespace SmartStore.Core.Domain.Catalog
 	[DataContract]
 	public partial class ProductAttribute : BaseEntity, ILocalizedEntity, ISearchAlias
 	{
-		private ICollection<ProductAttributeOption> _productAttributeOptions;
+		private ICollection<ProductAttributeOptionsSet> _productAttributeOptionsSets;
 
         /// <summary>
         /// Gets or sets the product attribute alias 
-        /// (an optional key for advanced customization)
         /// </summary>
 		[DataMember]
         public string Alias { get; set; }
@@ -45,13 +44,13 @@ namespace SmartStore.Core.Domain.Catalog
 		public int DisplayOrder { get; set; }
 
 		/// <summary>
-		/// Gets or sets the prooduct attribute options
+		/// Gets or sets the prooduct attribute option sets
 		/// </summary>
 		[DataMember]
-		public virtual ICollection<ProductAttributeOption> ProductAttributeOptions
+		public virtual ICollection<ProductAttributeOptionsSet> ProductAttributeOptionsSets
 		{
-			get { return _productAttributeOptions ?? (_productAttributeOptions = new HashSet<ProductAttributeOption>()); }
-			protected set { _productAttributeOptions = value; }
+			get { return _productAttributeOptionsSets ?? (_productAttributeOptionsSets = new HashSet<ProductAttributeOptionsSet>()); }
+			protected set { _productAttributeOptionsSets = value; }
 		}
 	}
 }

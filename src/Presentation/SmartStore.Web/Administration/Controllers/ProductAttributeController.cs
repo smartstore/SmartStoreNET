@@ -138,7 +138,7 @@ namespace SmartStore.Admin.Controllers
 					.Select(x =>
 					{
 						var model = x.ToModel();
-						model.OptionCount = x.ProductAttributeOptions.Count;
+						//model.OptionCount = x.ProductAttributeOptions.Count;
 
 						return model;
 					})
@@ -291,16 +291,49 @@ namespace SmartStore.Admin.Controllers
 
 		#endregion
 
-		#region Product attribute options
+		#region Product attribute options sets
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult OptionList(int productAttributeId, GridCommand command)
+		public ActionResult OptionsSetList(int productAttributeId, GridCommand command)
+		{
+			var gridModel = new GridModel<ProductAttributeOptionsSetModel>();
+
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var optionsSets = _productAttributeService.GetProductAttributeOptionsSetsByAttributeId(productAttributeId);
+
+				gridModel.Total = optionsSets.Count();
+				gridModel.Data = optionsSets.Select(x =>
+				{
+					return new ProductAttributeOptionsSetModel
+					{
+						Id = x.Id,
+						ProductAttributeId = productAttributeId,
+						Name = x.Name
+					};
+				});
+			}
+			else
+			{
+				gridModel.Data = Enumerable.Empty<ProductAttributeOptionsSetModel>();
+
+				NotifyAccessDenied();
+			}
+
+			return new JsonResult
+			{
+				Data = gridModel
+			};
+		}
+
+		[HttpPost, GridAction(EnableCustomBinding = true)]
+		public ActionResult OptionsSetListDetails(int optionsSetId)
 		{
 			var gridModel = new GridModel<ProductAttributeOptionModel>();
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var options = _productAttributeService.GetProductAttributeOptionByAttributeId(productAttributeId);
+				var options = _productAttributeService.GetProductAttributeOptionsByOptionsSetId(optionsSetId);
 
 				gridModel.Total = options.Count();
 				gridModel.Data = options.Select(x =>
@@ -323,26 +356,83 @@ namespace SmartStore.Admin.Controllers
 			};
 		}
 
+		[GridAction(EnableCustomBinding = true)]
+		public ActionResult OptionsSetInsert(ProductAttributeOptionsSetModel model, GridCommand command)
+		{
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var entity = new ProductAttributeOptionsSet
+				{
+					Name = model.Name,
+					ProductAttributeId = model.ProductAttributeId
+				};
+
+				_productAttributeService.InsertProductAttributeOptionsSet(entity);
+			}
+			else
+			{
+				NotifyAccessDenied();
+			}
+
+			return OptionsSetList(model.ProductAttributeId, command);
+		}
+
+		[GridAction(EnableCustomBinding = true)]
+		public ActionResult OptionsSetUpdate(ProductAttributeOptionsSetModel model, GridCommand command)
+		{
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var entity = _productAttributeService.GetProductAttributeOptionsSetById(model.Id);
+				entity.Name = model.Name;
+
+				_productAttributeService.UpdateProductAttributeOptionsSet(entity);
+			}
+			else
+			{
+				NotifyAccessDenied();
+			}
+
+			return OptionsSetList(model.ProductAttributeId, command);
+		}
+
+		[GridAction(EnableCustomBinding = true)]
+		public ActionResult OptionsSetDelete(int id, int productAttributeId, GridCommand command)
+		{
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var entity = _productAttributeService.GetProductAttributeOptionsSetById(id);
+
+				_productAttributeService.DeleteProductAttributeOptionsSet(entity);
+			}
+
+			return OptionsSetList(productAttributeId, command);
+		}
+
+		#endregion
+
+		#region Product attribute options
+
 		public ActionResult OptionCreatePopup(int productAttributeId)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			var attribute = _productAttributeService.GetProductAttributeById(productAttributeId);
-			if (attribute == null)
-				return RedirectToAction("List");
+			//var attribute = _productAttributeService.GetProductAttributeById(productAttributeId);
+			//if (attribute == null)
+			//	return RedirectToAction("List");
 
-			var model = new ProductAttributeOptionModel
-			{
-				ProductAttributeId = productAttributeId,
-				ColorSquaresRgb = string.Empty,
-				Quantity = 1
-			};
+			//var model = new ProductAttributeOptionModel
+			//{
+			//	ProductAttributeId = productAttributeId,
+			//	ColorSquaresRgb = string.Empty,
+			//	Quantity = 1
+			//};
 
-			PrepareProductAttributeOptionModel(model, null);
-			AddLocales(_languageService, model.Locales);
+			//PrepareProductAttributeOptionModel(model, null);
+			//AddLocales(_languageService, model.Locales);
 
-			return View(model);
+			//return View(model);
+			return new EmptyResult();
 		}
 
 		[HttpPost]
@@ -446,7 +536,7 @@ namespace SmartStore.Admin.Controllers
 				_productAttributeService.DeleteProductAttributeOption(entity);
 			}
 
-			return OptionList(productAttributeId, command);
+			return OptionsSetList(productAttributeId, command);
 		}
 
 		#endregion

@@ -18,9 +18,9 @@ namespace SmartStore.Data.Mapping.Catalog
 
 			Ignore(x => x.ValueType);
 
-			HasRequired(x => x.ProductAttribute)
+			HasRequired(x => x.ProductAttributeOptionsSet)
 				.WithMany(x => x.ProductAttributeOptions)
-				.HasForeignKey(x => x.ProductAttributeId);
+				.HasForeignKey(x => x.ProductAttributeOptionsSetId);
 		}
 	}
 }

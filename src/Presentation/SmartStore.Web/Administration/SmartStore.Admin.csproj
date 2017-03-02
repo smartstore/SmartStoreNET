@@ -235,6 +235,7 @@
     <Compile Include="Infrastructure\AutoMapperStartupTask.cs" />
     <Compile Include="Models\Catalog\CategoryTreeModel.cs" />
     <Compile Include="Models\Catalog\ProductAttributeOptionModel.cs" />
+    <Compile Include="Models\Catalog\ProductAttributeOptionsSetModel.cs" />
     <Compile Include="Models\Catalog\ProductBundleItemModel.cs" />
     <Compile Include="Models\Catalog\ProductVariantAttributeCombinationModel.cs" />
     <Compile Include="Models\Catalog\BulkEditProductModel.cs" />

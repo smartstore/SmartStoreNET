@@ -55,11 +55,11 @@ namespace SmartStore.Services.Catalog
 		ProductAttributeOption GetProductAttributeOptionById(int id);
 
 		/// <summary>
-		/// Gets all attribute options by attribute identifier
+		/// Gets all attribute options by options set identifier
 		/// </summary>
-		/// <param name="productAttributeId">Product attribute identifier</param>
+		/// <param name="optionsSetId">Attribute options set identifier</param>
 		/// <returns>List of attribute options</returns>
-		IList<ProductAttributeOption> GetProductAttributeOptionByAttributeId(int productAttributeId);
+		IList<ProductAttributeOption> GetProductAttributeOptionsByOptionsSetId(int optionsSetId);
 
 		/// <summary>
 		/// Deletes an attribute option
@@ -78,6 +78,42 @@ namespace SmartStore.Services.Catalog
 		/// </summary>
 		/// <param name="productAttributeOption">Product attribute option</param>
 		void UpdateProductAttributeOption(ProductAttributeOption productAttributeOption);
+
+		#endregion
+
+		#region Product attribute options sets
+
+		/// <summary>
+		/// Gets an attribute options set by id
+		/// </summary>
+		/// <param name="id">Product attribute options set identifier</param>
+		/// <returns>Product attribute options set</returns>
+		ProductAttributeOptionsSet GetProductAttributeOptionsSetById(int id);
+
+		/// <summary>
+		/// Gets all attribute options sets by attribute identifier
+		/// </summary>
+		/// <param name="productAttributeId"></param>
+		/// <returns></returns>
+		IList<ProductAttributeOptionsSet> GetProductAttributeOptionsSetsByAttributeId(int productAttributeId);
+
+		/// <summary>
+		/// Deletes an attribute options set
+		/// </summary>
+		/// <param name="productAttributeOptionsSet">Product attribute options set</param>
+		void DeleteProductAttributeOptionsSet(ProductAttributeOptionsSet productAttributeOptionsSet);
+
+		/// <summary>
+		/// Inserts an attribute options set
+		/// </summary>
+		/// <param name="productAttributeOptionsSet">Product attribute options set</param>
+		void InsertProductAttributeOptionsSet(ProductAttributeOptionsSet productAttributeOptionsSet);
+
+		/// <summary>
+		/// Updates an attribute options set
+		/// </summary>
+		/// <param name="productAttributeOptionsSet">Product attribute options set</param>
+		void UpdateProductAttributeOptionsSet(ProductAttributeOptionsSet productAttributeOptionsSet);
 
 		#endregion
 

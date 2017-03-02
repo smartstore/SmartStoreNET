@@ -7,13 +7,13 @@ namespace SmartStore.Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class CustomerGenericAttributesIndexes : IMigrationMetadata
+    public sealed partial class ProductAttributeOptionsSet : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(CustomerGenericAttributesIndexes));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ProductAttributeOptionsSet));
         
         string IMigrationMetadata.Id
         {
-            get { return "201703010002399_CustomerGenericAttributesIndexes"; }
+            get { return "201703021146527_ProductAttributeOptionsSet"; }
         }
         
         string IMigrationMetadata.Source

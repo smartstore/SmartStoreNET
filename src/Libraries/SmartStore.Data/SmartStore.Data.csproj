@@ -132,6 +132,7 @@
     <Compile Include="Caching\SingletonQueries.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Mapping\Catalog\ProductAttributeOptionMap.cs" />
+    <Compile Include="Mapping\Catalog\ProductAttributeOptionsSetMap.cs" />
     <Compile Include="Mapping\DataExchange\ImportProfileMap.cs" />
     <Compile Include="Mapping\DataExchange\SyncMappingMap.cs" />
     <Compile Include="Mapping\DataExchange\ExportDeploymentMap.cs" />
@@ -472,13 +473,9 @@
     <Compile Include="Migrations\201702202112266_VariantAttributeAllowFiltering.Designer.cs">
       <DependentUpon>201702202112266_VariantAttributeAllowFiltering.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201702271156594_ProductAttributeOption.cs" />
-    <Compile Include="Migrations\201702271156594_ProductAttributeOption.Designer.cs">
-      <DependentUpon>201702271156594_ProductAttributeOption.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201703010002399_CustomerGenericAttributesIndexes.cs" />
-    <Compile Include="Migrations\201703010002399_CustomerGenericAttributesIndexes.Designer.cs">
-      <DependentUpon>201703010002399_CustomerGenericAttributesIndexes.cs</DependentUpon>
+    <Compile Include="Migrations\201703021146527_ProductAttributeOptionsSet.cs" />
+    <Compile Include="Migrations\201703021146527_ProductAttributeOptionsSet.Designer.cs">
+      <DependentUpon>201703021146527_ProductAttributeOptionsSet.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectContextBase.SaveChanges.cs" />
     <Compile Include="Setup\Builder\ActivityLogTypeMigrator.cs" />
@@ -871,11 +868,8 @@
     <EmbeddedResource Include="Migrations\201702202112266_VariantAttributeAllowFiltering.resx">
       <DependentUpon>201702202112266_VariantAttributeAllowFiltering.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201702271156594_ProductAttributeOption.resx">
-      <DependentUpon>201702271156594_ProductAttributeOption.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201703010002399_CustomerGenericAttributesIndexes.resx">
-      <DependentUpon>201703010002399_CustomerGenericAttributesIndexes.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201703021146527_ProductAttributeOptionsSet.resx">
+      <DependentUpon>201703021146527_ProductAttributeOptionsSet.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

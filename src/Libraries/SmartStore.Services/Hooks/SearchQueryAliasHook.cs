@@ -216,18 +216,18 @@ namespace SmartStore.Services.Hooks
 				if (IsPropertyModified(entry, "Alias"))
 					_catalogSearchQueryAliasMapper.Value.ClearVariantCache();
 			}
-			else if (type == typeof(ProductAttributeOption))
-			{
-				var entity = (ProductAttributeOption)baseEntity;
+			//else if (type == typeof(ProductAttributeOption))
+			//{
+			//	var entity = (ProductAttributeOption)baseEntity;
 
-				if (HasEntityDuplicate<ProductAttributeOption>(entry, baseEntity, x => x.Name, 
-					x => x.ProductAttributeId == entity.ProductAttributeId && x.Name == entity.Name))
-					return;
+			//	if (HasEntityDuplicate<ProductAttributeOption>(entry, baseEntity, x => x.Name, 
+			//		x => x.ProductAttributeId == entity.ProductAttributeId && x.Name == entity.Name))
+			//		return;
 
-				// ClearVariantCache() not necessary
-				if (HasAliasDuplicate<ProductAttributeOption>(entry, baseEntity))
-					return;
-			}
+			//	// ClearVariantCache() not necessary
+			//	if (HasAliasDuplicate<ProductAttributeOption>(entry, baseEntity))
+			//		return;
+			//}
 			else if (type == typeof(ProductVariantAttribute))
 			{
 				var entity = (ProductVariantAttribute)baseEntity;

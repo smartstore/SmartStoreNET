@@ -41,15 +41,15 @@ namespace SmartStore.Services.Hooks
 
 				attributeOptions.ForEach(x => _toDelete.AddRange(_localizedEntityService.Value.GetLocalizedProperties(x.Id, "ProductVariantAttributeValue")));
 			}
-			else if (entityType.Name.IsCaseInsensitiveEqual("ProductAttribute"))
-			{
-				var attribute = (ProductAttribute)entry.Entity;
-				var attributeOptions = attribute.ProductAttributeOptions.ToList();
-				if (!attributeOptions.Any())
-					attributeOptions = _productAttributeService.Value.GetProductAttributeOptionByAttributeId(attribute.Id).ToList();
+			//else if (entityType.Name.IsCaseInsensitiveEqual("ProductAttribute"))
+			//{
+			//	var attribute = (ProductAttribute)entry.Entity;
+			//	var attributeOptions = attribute.ProductAttributeOptions.ToList();
+			//	if (!attributeOptions.Any())
+			//		attributeOptions = _productAttributeService.Value.GetProductAttributeOptionByAttributeId(attribute.Id).ToList();
 
-				attributeOptions.ForEach(x => _toDelete.AddRange(_localizedEntityService.Value.GetLocalizedProperties(x.Id, "ProductAttributeOption")));
-			}
+			//	attributeOptions.ForEach(x => _toDelete.AddRange(_localizedEntityService.Value.GetLocalizedProperties(x.Id, "ProductAttributeOption")));
+			//}
 			else if (entityType.Name.IsCaseInsensitiveEqual("SpecificationAttribute"))
 			{
 				var attribute = (SpecificationAttribute)entry.Entity;

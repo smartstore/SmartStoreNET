@@ -22,6 +22,7 @@ namespace SmartStore.Services.Catalog
 
 		private readonly IRepository<ProductAttribute> _productAttributeRepository;
 		private readonly IRepository<ProductAttributeOption> _productAttributeOptionRepository;
+		private readonly IRepository<ProductAttributeOptionsSet> _productAttributeOptionsSetRepository;
 		private readonly IRepository<ProductVariantAttribute> _productVariantAttributeRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
         private readonly IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepository;
@@ -31,9 +32,11 @@ namespace SmartStore.Services.Catalog
         private readonly IRequestCache _requestCache;
 		private readonly IPictureService _pictureService;
 
-        public ProductAttributeService(IRequestCache requestCache,
+        public ProductAttributeService(
+			IRequestCache requestCache,
             IRepository<ProductAttribute> productAttributeRepository,
 			IRepository<ProductAttributeOption> productAttributeOptionRepository,
+			IRepository<ProductAttributeOptionsSet> productAttributeOptionsSetRepository,
 			IRepository<ProductVariantAttribute> productVariantAttributeRepository,
             IRepository<ProductVariantAttributeCombination> pvacRepository,
             IRepository<ProductVariantAttributeValue> productVariantAttributeValueRepository,
@@ -45,6 +48,7 @@ namespace SmartStore.Services.Catalog
             _requestCache = requestCache;
             _productAttributeRepository = productAttributeRepository;
 			_productAttributeOptionRepository = productAttributeOptionRepository;
+			_productAttributeOptionsSetRepository = productAttributeOptionsSetRepository;
             _productVariantAttributeRepository = productVariantAttributeRepository;
             _pvacRepository = pvacRepository;
             _productVariantAttributeValueRepository = productVariantAttributeValueRepository;
@@ -150,18 +154,18 @@ namespace SmartStore.Services.Catalog
 			return _productAttributeOptionRepository.GetById(id);
 		}
 
-		public virtual IList<ProductAttributeOption> GetProductAttributeOptionByAttributeId(int productAttributeId)
+		public virtual IList<ProductAttributeOption> GetProductAttributeOptionsByOptionsSetId(int optionsSetId)
 		{
-			if (productAttributeId == 0)
+			if (optionsSetId == 0)
 				return new List<ProductAttributeOption>();
 
-			var query =
-				from x in _productAttributeOptionRepository.Table
-				orderby x.DisplayOrder, x.Name
-				where x.ProductAttributeId == productAttributeId
-				select x;
+			var entities = _productAttributeOptionRepository.Table
+				.Where(x => x.ProductAttributeOptionsSetId == optionsSetId)
+				.OrderBy(x => x.DisplayOrder)
+				.ThenBy(x => x.Name)
+				.ToList();
 
-			return query.ToList();
+			return entities;
 		}
 
 		public virtual void DeleteProductAttributeOption(ProductAttributeOption productAttributeOption)
@@ -189,6 +193,58 @@ namespace SmartStore.Services.Catalog
 			_productAttributeOptionRepository.Update(productAttributeOption);
 
 			_eventPublisher.EntityUpdated(productAttributeOption);
+		}
+
+		#endregion
+
+		#region Product attribute options sets
+
+		public virtual ProductAttributeOptionsSet GetProductAttributeOptionsSetById(int id)
+		{
+			if (id == 0)
+				return null;
+
+			return _productAttributeOptionsSetRepository.GetById(id);
+		}
+
+		public virtual IList<ProductAttributeOptionsSet> GetProductAttributeOptionsSetsByAttributeId(int productAttributeId)
+		{
+			if (productAttributeId == 0)
+				return new List<ProductAttributeOptionsSet>();
+
+			var entities = _productAttributeOptionsSetRepository.Table
+				.Where(x => x.ProductAttributeId == productAttributeId)
+				.OrderBy(x => x.Name)
+				.ToList();
+
+			return entities;
+		}
+
+		public virtual void DeleteProductAttributeOptionsSet(ProductAttributeOptionsSet productAttributeOptionsSet)
+		{
+			Guard.NotNull(productAttributeOptionsSet, nameof(productAttributeOptionsSet));
+
+			_productAttributeOptionsSetRepository.Delete(productAttributeOptionsSet);
+
+			_eventPublisher.EntityDeleted(productAttributeOptionsSet);
+		}
+
+		public virtual void InsertProductAttributeOptionsSet(ProductAttributeOptionsSet productAttributeOptionsSet)
+		{
+			Guard.NotNull(productAttributeOptionsSet, nameof(productAttributeOptionsSet));
+
+			_productAttributeOptionsSetRepository.Insert(productAttributeOptionsSet);
+
+			_eventPublisher.EntityInserted(productAttributeOptionsSet);
+		}
+
+		public virtual void UpdateProductAttributeOptionsSet(ProductAttributeOptionsSet productAttributeOptionsSet)
+		{
+			Guard.NotNull(productAttributeOptionsSet, nameof(productAttributeOptionsSet));
+
+			_productAttributeOptionsSetRepository.Update(productAttributeOptionsSet);
+
+			_eventPublisher.EntityUpdated(productAttributeOptionsSet);
 		}
 
 		#endregion
@@ -320,70 +376,71 @@ namespace SmartStore.Services.Catalog
 		public virtual int CopyAttributeOptions(ProductVariantAttribute productVariantAttribute, bool deleteExistingValues)
 		{
 			Guard.NotNull(productVariantAttribute, nameof(productVariantAttribute));
-			Guard.NotZero(productVariantAttribute.Id, nameof(productVariantAttribute.Id));			
+			Guard.NotZero(productVariantAttribute.Id, nameof(productVariantAttribute.Id));
 
-			if (deleteExistingValues)
-			{
-				var existingValues = productVariantAttribute.ProductVariantAttributeValues.ToList();
-				if (!existingValues.Any())
-					existingValues = GetProductVariantAttributeValues(productVariantAttribute.Id).ToList();
+			//if (deleteExistingValues)
+			//{
+			//	var existingValues = productVariantAttribute.ProductVariantAttributeValues.ToList();
+			//	if (!existingValues.Any())
+			//		existingValues = GetProductVariantAttributeValues(productVariantAttribute.Id).ToList();
 
-				existingValues.Each(x => DeleteProductVariantAttributeValue(x));
-			}
+			//	existingValues.Each(x => DeleteProductVariantAttributeValue(x));
+			//}
 
-			var result = 0;
-			var attributeOptions = _productAttributeOptionRepository.TableUntracked
-				.Where(x => x.ProductAttributeId == productVariantAttribute.ProductAttributeId)
-				.ToList();
+			//var result = 0;
+			//var attributeOptions = _productAttributeOptionRepository.TableUntracked
+			//	.Where(x => x.ProductAttributeId == productVariantAttribute.ProductAttributeId)
+			//	.ToList();
 
-			if (!attributeOptions.Any())
-				return result;
+			//if (!attributeOptions.Any())
+			//	return result;
 
-			// Do not insert already existing values (identified by name field).
-			var existingValueNames = new HashSet<string>(_productVariantAttributeValueRepository.TableUntracked
-				.Where(x => x.ProductVariantAttributeId == productVariantAttribute.Id)
-				.Select(x => x.Name)
-				.ToList());
+			//// Do not insert already existing values (identified by name field).
+			//var existingValueNames = new HashSet<string>(_productVariantAttributeValueRepository.TableUntracked
+			//	.Where(x => x.ProductVariantAttributeId == productVariantAttribute.Id)
+			//	.Select(x => x.Name)
+			//	.ToList());
 
-			ProductVariantAttributeValue productVariantAttributeValue = null;
+			//ProductVariantAttributeValue productVariantAttributeValue = null;
 
-			foreach (var option in attributeOptions)
-			{
-				if (existingValueNames.Contains(option.Name))
-					continue;
+			//foreach (var option in attributeOptions)
+			//{
+			//	if (existingValueNames.Contains(option.Name))
+			//		continue;
 
-				productVariantAttributeValue = option.Clone();
-				productVariantAttributeValue.ProductVariantAttributeId = productVariantAttribute.Id;
+			//	productVariantAttributeValue = option.Clone();
+			//	productVariantAttributeValue.ProductVariantAttributeId = productVariantAttribute.Id;
 
-				// No scope commit, we need new entity id.
-				_productVariantAttributeValueRepository.Insert(productVariantAttributeValue);
-				++result;
+			//	// No scope commit, we need new entity id.
+			//	_productVariantAttributeValueRepository.Insert(productVariantAttributeValue);
+			//	++result;
 
-				// Copy localized properties too.
-				var optionProperties = _localizedPropertyRepository.TableUntracked
-					.Where(x => x.LocaleKeyGroup == "ProductAttributeOption" && x.EntityId == option.Id)
-					.ToList();
+			//	// Copy localized properties too.
+			//	var optionProperties = _localizedPropertyRepository.TableUntracked
+			//		.Where(x => x.LocaleKeyGroup == "ProductAttributeOption" && x.EntityId == option.Id)
+			//		.ToList();
 
-				var newLocalizedProperties = optionProperties
-					.Select(x => new LocalizedProperty
-					{
-						EntityId = productVariantAttributeValue.Id,
-						LocaleKeyGroup = "ProductVariantAttributeValue",
-						LocaleKey = x.LocaleKey,
-						LocaleValue = x.LocaleValue,
-						LanguageId = x.LanguageId
-					})
-					.ToList();
+			//	var newLocalizedProperties = optionProperties
+			//		.Select(x => new LocalizedProperty
+			//		{
+			//			EntityId = productVariantAttributeValue.Id,
+			//			LocaleKeyGroup = "ProductVariantAttributeValue",
+			//			LocaleKey = x.LocaleKey,
+			//			LocaleValue = x.LocaleValue,
+			//			LanguageId = x.LanguageId
+			//		})
+			//		.ToList();
 
-				_localizedPropertyRepository.InsertRange(newLocalizedProperties, 0);
-			}
+			//	_localizedPropertyRepository.InsertRange(newLocalizedProperties, 0);
+			//}
 
-			if (productVariantAttributeValue != null)
-			{
-				_eventPublisher.EntityInserted(productVariantAttributeValue);
-			}
+			//if (productVariantAttributeValue != null)
+			//{
+			//	_eventPublisher.EntityInserted(productVariantAttributeValue);
+			//}
 
-			return result;
+			//return result;
+			return 0;
 		}
 
 		#endregion

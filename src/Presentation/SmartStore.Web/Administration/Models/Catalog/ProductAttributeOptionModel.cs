@@ -19,7 +19,7 @@ namespace SmartStore.Admin.Models.Catalog
 
 		public int ProductId { get; set; }
 		public int ProductVariantAttributeId { get; set; }
-		public int ProductAttributeId { get; set; }
+		public int ProductAttributeOptionsSetId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Name")]
 		public string Name { get; set; }

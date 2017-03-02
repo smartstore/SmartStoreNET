@@ -12,10 +12,10 @@ namespace SmartStore.Core.Domain.Catalog
 	public partial class ProductAttributeOption : BaseEntity, ILocalizedEntity, ISearchAlias, ICloneable<ProductVariantAttributeValue>
 	{
 		/// <summary>
-		/// Gets or sets the product attribute identifier
+		/// Gets or sets the product attribute options set identifier
 		/// </summary>
 		[DataMember]
-		public int ProductAttributeId { get; set; }
+		public int ProductAttributeOptionsSetId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the product variant attribute alias
@@ -84,10 +84,10 @@ namespace SmartStore.Core.Domain.Catalog
 		public int Quantity { get; set; }
 
 		/// <summary>
-		/// Gets the product attribute
+		/// Gets the product attribute options set
 		/// </summary>
 		[DataMember]
-		public virtual ProductAttribute ProductAttribute { get; set; }
+		public virtual ProductAttributeOptionsSet ProductAttributeOptionsSet { get; set; }
 
 		/// <summary>
 		/// Gets or sets the product attribute value type

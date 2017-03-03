@@ -327,13 +327,13 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult OptionsSetListDetails(int optionsSetId)
+		public ActionResult OptionsSetListDetails(int id)
 		{
 			var gridModel = new GridModel<ProductAttributeOptionModel>();
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var options = _productAttributeService.GetProductAttributeOptionsByOptionsSetId(optionsSetId);
+				var options = _productAttributeService.GetProductAttributeOptionsByOptionsSetId(id);
 
 				gridModel.Total = options.Count();
 				gridModel.Data = options.Select(x =>
@@ -412,27 +412,26 @@ namespace SmartStore.Admin.Controllers
 
 		#region Product attribute options
 
-		public ActionResult OptionCreatePopup(int productAttributeId)
+		public ActionResult OptionCreatePopup(int id)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			//var attribute = _productAttributeService.GetProductAttributeById(productAttributeId);
-			//if (attribute == null)
-			//	return RedirectToAction("List");
+			var optionsSet = _productAttributeService.GetProductAttributeOptionsSetById(id);
+			if (optionsSet == null)
+				return RedirectToAction("List");
 
-			//var model = new ProductAttributeOptionModel
-			//{
-			//	ProductAttributeId = productAttributeId,
-			//	ColorSquaresRgb = string.Empty,
-			//	Quantity = 1
-			//};
+			var model = new ProductAttributeOptionModel
+			{
+				ProductAttributeOptionsSetId = id,
+				ColorSquaresRgb = string.Empty,
+				Quantity = 1
+			};
 
-			//PrepareProductAttributeOptionModel(model, null);
-			//AddLocales(_languageService, model.Locales);
+			PrepareProductAttributeOptionModel(model, null);
+			AddLocales(_languageService, model.Locales);
 
-			//return View(model);
-			return new EmptyResult();
+			return View(model);
 		}
 
 		[HttpPost]
@@ -526,17 +525,17 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[GridAction(EnableCustomBinding = true)]
-		public ActionResult OptionDelete(int optionId, int productAttributeId, GridCommand command)
+		[HttpPost]
+		public ActionResult OptionDelete(int id)
 		{
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var entity = _productAttributeService.GetProductAttributeOptionById(optionId);
+				var entity = _productAttributeService.GetProductAttributeOptionById(id);
 
 				_productAttributeService.DeleteProductAttributeOption(entity);
 			}
 
-			return OptionsSetList(productAttributeId, command);
+			return new EmptyResult();
 		}
 
 		#endregion

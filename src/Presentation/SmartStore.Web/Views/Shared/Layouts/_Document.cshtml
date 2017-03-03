@@ -35,9 +35,6 @@
 		"~/Scripts/jquery-ui/effect-transfer.js",
 		"~/Scripts/jquery-ui/effect-shake.js",
 		"~/Scripts/jquery-ui/position.js",
-		// Touch events
-		jsRoot + "hammer.js",
-		jsRoot + "jquery.hammer.js",
 		// jQuery Validation
 		"~/Scripts/jquery.unobtrusive-ajax.js",
 		"~/Scripts/jquery.validate.js",
@@ -48,6 +45,7 @@
 		"~/Scripts/underscore.js",
 		"~/Scripts/underscore.string.js",
 		"~/Scripts/underscore.mixins.js",
+		jsRoot + "smartstore.touchevents.js",
 		jsRoot + "smartstore.jquery.utils.js",
 		jsRoot + "jquery.ba-outside-events.js",
 		jsRoot + "jquery.transit.js",
@@ -92,7 +90,7 @@
 <head>
     <title itemprop="name">@Html.SmartTitle(true)</title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="@(Html.SmartMetaDescription())" />
     <meta name="keywords" content="@(Html.SmartMetaKeywords())" />
     <meta name="generator" content="SmartStore.NET @SmartStoreVersion.CurrentFullVersion" />

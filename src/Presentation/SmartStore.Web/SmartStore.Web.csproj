@@ -948,6 +948,7 @@
     <Content Include="Themes\Flex\Scripts\jquery.hammer.js" />
     <Content Include="Themes\Flex\Scripts\public.offcanvas-menu.js" />
     <Content Include="Themes\Flex\Scripts\public.product.js" />
+    <Content Include="Themes\Flex\Scripts\smartstore.touchevents.js" />
     <Content Include="Themes\Flex\Scripts\smartstore.responsiveNav.js" />
     <Content Include="Scripts\smartstore.entityPicker.js" />
     <Content Include="Scripts\smartstore.instantsearch.js" />

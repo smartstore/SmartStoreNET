@@ -49,27 +49,29 @@
         }
 
     	// Close on pan[left|right]
-        var onRight = el.hasClass('offcanvas-right'),
+    	var onRight = el.hasClass('offcanvas-right'),
 			canPan = el.hasClass('offcanvas-overlay');
 
-        el.hammer({}).on('panstart panleft panright panend', function (e) {
-        	var delta = onRight
-				? Math.max(0, e.gesture.deltaX)
-				: Math.min(0, e.gesture.deltaX);
+    	el.on('tapstart tapend', function (e, gesture) {
+        	function getDelta(g) {
+        		return onRight
+					? Math.max(0, g.delta.x)
+					: Math.min(0, g.delta.x);
+        	}
 
-        	if (e.type.toLowerCase() === 'panstart') {
+        	if (e.type.toLowerCase() === 'tapstart') {
         		el.css(Prefixer.css('transition'), 'none');
+        		el.on('tapmove.offcanvas', function (e, g) {
+        			if (canPan) {
+        				$(e.currentTarget).css(Prefixer.css('transform'), 'translate3d(' + getDelta(g) + 'px, 0, 0)');
+        			}
+        		});
         	}
-        	else if (e.type.toLowerCase() === 'panend') {
+        	else if (e.type.toLowerCase() === 'tapend') {
+        		el.off('tapmove.offcanvas');
         		el.css(Prefixer.css('transform'), '').css(Prefixer.css('transition'), '');
-        		if (Math.abs(delta) >= 100) {
+        		if (Math.abs(getDelta(gesture)) >= 100) {
         			self.hide();
-        		}
-        	}
-        	else {
-        		// panleft or panright
-        		if (canPan) {
-        			el.css(Prefixer.css('transform'), 'translate3d(' + delta + 'px, 0, 0)');
         		}
         	}
         });

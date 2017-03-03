@@ -275,32 +275,23 @@
                     }
 
                     //oh, oh, oh, oh, can't touch this ;-/
-                    var hammertime = new Hammer(megamenu[0]);
-                    hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
+                    //var hammertime = new Hammer(megamenu[0]);
+                    //hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
 
-                    if (isSimple) {
-                        hammertime.on('panstart', function (ev) {
-                            closeNow($(".nav-item.active .nav-link"));
+                    //if (isSimple) {
+                    //    hammertime.on('panstart', function (ev) {
+                    //    	closeNow($(".nav-item.active .nav-link"));
+                    //    });
+                    //}
 
-                            /*
-                            var link = $(".nav-item.active .nav-link");
+                    //hammertime.on('panend', function (ev) {
+                    //	console.log("panend");
+                    //    getCurrentNavigationElements();
+                    //    closeNow($(".nav-item.active .nav-link"));
 
-                            $(link.data("target")).removeClass("open");
-
-                            if (link.hasClass("dropdown-toggle")) {
-                                link.closest("li").removeClass("active");
-                            }
-                            */
-                        });
-                    }
-
-                    hammertime.on('panend', function (ev) {
-                        getCurrentNavigationElements();
-                        closeNow($(".nav-item.active .nav-link"));
-
-                        if (ev.direction == Hammer.DIRECTION_LEFT) {megamenu.addClass("megamenu-blend--prev");}
-                        if (ev.direction == Hammer.DIRECTION_RIGHT) {megamenu.addClass("megamenu-blend--next");}
-                    });
+                    //    if (ev.direction == Hammer.DIRECTION_LEFT) {megamenu.addClass("megamenu-blend--prev");}
+                    //    if (ev.direction == Hammer.DIRECTION_RIGHT) {megamenu.addClass("megamenu-blend--next");}
+                    //});
 
                     function onPageResized() {
                     	updateNavState();

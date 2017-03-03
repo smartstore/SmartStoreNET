@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
 using SmartStore.Core.Domain.Catalog;
@@ -14,7 +15,7 @@ namespace SmartStore.Services.Hooks
 	/// Deletes localized properties of entities that were deleted by referential integrity.
 	/// Otherwise these localized properties would remain in the database.
 	/// </summary>
-	public class LocalizedEntityRelationHook : DbSaveHook<ILocalizedEntityRelation>
+	public class LocalizedEntityRelationHook : DbSaveHook<BaseEntity>
 	{
 		private readonly Lazy<IRepository<ProductAttribute>> _productAttributeRepository;
 		private readonly Lazy<ILocalizedEntityService> _localizedEntityService;
@@ -22,6 +23,14 @@ namespace SmartStore.Services.Hooks
 		private readonly Lazy<ISpecificationAttributeService> _specificationAttributeService;
 
 		private readonly HashSet<LocalizedProperty> _toDelete = new HashSet<LocalizedProperty>();
+
+		private static readonly HashSet<Type> _candidateTypes = new HashSet<Type>(new Type[]
+		{
+			typeof(SpecificationAttribute),
+			typeof(ProductVariantAttribute),
+			typeof(ProductAttribute),
+			typeof(ProductAttributeOptionsSet)
+		});
 
 		public LocalizedEntityRelationHook(
 			Lazy<IRepository<ProductAttribute>> productAttributeRepository,
@@ -35,11 +44,14 @@ namespace SmartStore.Services.Hooks
 			_specificationAttributeService = specificationAttributeService;
 		}
 
-		protected override void OnDeleting(ILocalizedEntityRelation entity, HookedEntity entry)
+		protected override void OnDeleting(BaseEntity entity, HookedEntity entry)
 		{
-			var entityType = entry.Entity.GetUnproxiedType();
+			var type = entry.Entity.GetUnproxiedType();
 
-			if (entityType.Name.IsCaseInsensitiveEqual("SpecificationAttribute"))
+			if (!_candidateTypes.Contains(type))
+				return;
+
+			if (type == typeof(SpecificationAttribute))
 			{
 				var attribute = (SpecificationAttribute)entry.Entity;
 				var attributeOptions = attribute.SpecificationAttributeOptions.ToList();
@@ -48,7 +60,7 @@ namespace SmartStore.Services.Hooks
 
 				attributeOptions.ForEach(x => _toDelete.AddRange(_localizedEntityService.Value.GetLocalizedProperties(x.Id, "SpecificationAttributeOption")));
 			}
-			else if (entityType.Name.IsCaseInsensitiveEqual("ProductVariantAttribute"))
+			else if (type == typeof(ProductVariantAttribute))
 			{
 				var attribute = (ProductVariantAttribute)entry.Entity;
 				var attributeOptions = attribute.ProductVariantAttributeValues.ToList();
@@ -57,7 +69,7 @@ namespace SmartStore.Services.Hooks
 
 				attributeOptions.ForEach(x => _toDelete.AddRange(_localizedEntityService.Value.GetLocalizedProperties(x.Id, "ProductVariantAttributeValue")));
 			}
-			else if (entityType.Name.IsCaseInsensitiveEqual("ProductAttribute"))
+			else if (type == typeof(ProductAttribute))
 			{
 				var optionIds = (
 					from a in _productAttributeRepository.Value.TableUntracked
@@ -68,7 +80,7 @@ namespace SmartStore.Services.Hooks
 
 				optionIds.ForEach(x => _toDelete.AddRange(_localizedEntityService.Value.GetLocalizedProperties(x, "ProductAttributeOption")));
 			}
-			else if (entityType.Name.IsCaseInsensitiveEqual("ProductAttributeOptionsSet"))
+			else if (type == typeof(ProductAttributeOptionsSet))
 			{
 				var set = (ProductAttributeOptionsSet)entry.Entity;
 				var attributeOptions = set.ProductAttributeOptions.ToList();

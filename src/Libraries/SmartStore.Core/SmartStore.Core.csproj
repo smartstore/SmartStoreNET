@@ -220,7 +220,6 @@
     <Compile Include="Domain\DataExchange\ExportEnums.cs" />
     <Compile Include="Domain\DataExchange\ExportFilter.cs" />
     <Compile Include="Domain\DataExchange\ExportProfile.cs" />
-    <Compile Include="Domain\Localization\ILocalizedEntityRelation.cs" />
     <Compile Include="Domain\Media\MediaStorage.cs" />
     <Compile Include="Domain\Media\IHasMedia.cs" />
     <Compile Include="Domain\Messages\EmailAttachmentStorageLocation.cs" />

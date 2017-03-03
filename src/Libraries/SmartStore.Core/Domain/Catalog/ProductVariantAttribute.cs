@@ -9,7 +9,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a product variant attribute mapping
     /// </summary>
     [DataContract]
-	public partial class ProductVariantAttribute : BaseEntity, ILocalizedEntity, ILocalizedEntityRelation
+	public partial class ProductVariantAttribute : BaseEntity, ILocalizedEntity
 	{
         private ICollection<ProductVariantAttributeValue> _productVariantAttributeValues;
 

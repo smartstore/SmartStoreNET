@@ -10,7 +10,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a specification attribute
     /// </summary>
 	[DataContract]
-	public partial class SpecificationAttribute : BaseEntity, ILocalizedEntity, ISearchAlias, ILocalizedEntityRelation
+	public partial class SpecificationAttribute : BaseEntity, ILocalizedEntity, ISearchAlias
 	{
         private ICollection<SpecificationAttributeOption> _specificationAttributeOptions;
 

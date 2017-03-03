@@ -171,9 +171,10 @@ namespace SmartStore.Services.Catalog
 		/// Copies attribute options (if any) to product variant attribute values. Existing values are ignored (identified by name field).
 		/// </summary>
 		/// <param name="productVariantAttribute">The product variant attribute mapping</param>
+		/// <param name="productAttributeOptionsSetId">Product attribute options set identifier</param>
 		/// <param name="deleteExistingValues">Indicates whether to delete all existing product variant attribute values</param>
 		/// <returns>Number of inserted product variant attribute values</returns>
-		int CopyAttributeOptions(ProductVariantAttribute productVariantAttribute, bool deleteExistingValues);
+		int CopyAttributeOptions(ProductVariantAttribute productVariantAttribute, int productAttributeOptionsSetId, bool deleteExistingValues);
 
 		#endregion
 

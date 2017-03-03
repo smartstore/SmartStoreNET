@@ -625,6 +625,7 @@ namespace SmartStore.Admin.Models.Catalog
 
 			public string ViewEditUrl { get; set; }
 			public string ViewEditText { get; set; }
+			public string OptionsSets { get; set; }
 		}
 
 		public class ProductVariantAttributeValueListModel : ModelBase

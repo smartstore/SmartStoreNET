@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -2949,8 +2950,17 @@ namespace SmartStore.Admin.Controllers
 						if (x.ShouldHaveValues())
 						{
 							pvaModel.ViewEditUrl = Url.Action("EditAttributeValues", "Product", new { productVariantAttributeId = x.Id });
-							pvaModel.ViewEditText = string.Format(_localizationService.GetResource("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.ViewLink"), x.ProductVariantAttributeValues != null ? x.ProductVariantAttributeValues.Count : 0);
+							pvaModel.ViewEditText = T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.ViewLink",
+								x.ProductVariantAttributeValues != null ? x.ProductVariantAttributeValues.Count : 0);
+
+							if (x.ProductAttribute.ProductAttributeOptionsSets.Any())
+							{
+								var optionsSets = new StringBuilder($"<option>{T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.CopyOptions")}</option>");
+								x.ProductAttribute.ProductAttributeOptionsSets.Each(set => optionsSets.Append($"<option value=\"{set.Id}\">{set.Name}</option>"));
+								pvaModel.OptionsSets = optionsSets.ToString();
+							}
 						}
+
 						return pvaModel;
 					})
 					.ToList();
@@ -3068,6 +3078,28 @@ namespace SmartStore.Admin.Controllers
 				};
 
 			return new JsonResult { Data = query.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+		}
+
+		[HttpPost]
+		public ActionResult CopyAttributeOptions(int productVariantAttributeId, int optionsSetId, bool deleteExistingValues)
+		{
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var pva = _productAttributeService.GetProductVariantAttributeById(productVariantAttributeId);
+				if (pva == null)
+					throw new ArgumentException(T("Products.Variants.NotFound", productVariantAttributeId));
+
+				var numberOfCopiedOptions = _productAttributeService.CopyAttributeOptions(pva, optionsSetId, deleteExistingValues);
+
+				NotifySuccess(string.Concat(T("Admin.Common.TaskSuccessfullyProcessed"), " ",
+					T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.NumberOfCopiedOptions", numberOfCopiedOptions)));
+			}
+			else
+			{
+				NotifyAccessDenied();
+			}
+
+			return new JsonResult { Data = string.Empty };
 		}
 
 		#endregion
@@ -3358,28 +3390,6 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			return ProductAttributeValueList(productVariantAttributeId, command);
-		}
-
-		[HttpPost]
-		public ActionResult CopyAttributeOptions(int productVariantAttributeId, bool deleteExistingValues)
-		{
-			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-			{
-				var pva = _productAttributeService.GetProductVariantAttributeById(productVariantAttributeId);
-				if (pva == null)
-					throw new ArgumentException(T("Products.Variants.NotFound", productVariantAttributeId));
-
-				var numberOfCopiedOptions = _productAttributeService.CopyAttributeOptions(pva, deleteExistingValues);
-
-				NotifySuccess(string.Concat(T("Admin.Common.TaskSuccessfullyProcessed"), " ",
-					T("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.NumberOfCopiedOptions", numberOfCopiedOptions)));
-			}
-			else
-			{
-				NotifyAccessDenied();
-			}
-
-			return new JsonResult { Data = string.Empty };
 		}
 
 		#endregion

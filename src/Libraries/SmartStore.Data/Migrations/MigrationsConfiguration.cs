@@ -601,16 +601,24 @@ namespace SmartStore.Data.Migrations
 				"Es wurden {0} Option(en) kopiert.");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.CopyOptions",
-				"Copy attribute options",
-				"Attributoptionen kopieren");
+				"Copy set options",
+				"Set Optionen übernehmen");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.CopyOptionsHint",
-				"Would you like to copy the options stored for product attribute \"{0}\"? Existing attribute values are not changed.",
-				"Möchten Sie die für das Produktattribut \"{0}\" hinterlegten Optionen übernehmen? Vorhandene Attributwerte werden dabei nicht verändert.");
+				"Would you like to copy the options of set \"{0}\"?",
+				"Möchten Sie die Optionen von Set \"{0}\" übernehmen?");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.AskExistingValues",
+				"What should be done with the existing options?",
+				"Was soll mit den vorhandenen Optionen geschehen?");
+
+			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.MergeExistingValues",
+				"Merge all options",
+				"Alle Optionen zusammenführen");
 
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.DeleteExistingValues",
-				"Delete existing attribute values",
-				"Vorhandene Attributwerte löschen");
+				"Delete existing options",
+				"Vorhandene Optionen löschen");
             
             builder.AddOrUpdate("Offcanvas.Menu.Categories", "Categories", "Warengruppen");
             builder.AddOrUpdate("Offcanvas.Menu.Brands", "Brands", "Marken");
@@ -623,9 +631,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Options.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.Fields.Alias.Hint", aliasHintEn, aliasHintDe);
 
-			builder.AddOrUpdate("Admin.Catalog.Attributes.OptionsSets",
-				"Options sets",
-				"Optionen Sets");
+			builder.AddOrUpdate("Admin.Catalog.Attributes.OptionsSets", "Options sets", "Optionen Sets");
+
 		}
 	}
 }

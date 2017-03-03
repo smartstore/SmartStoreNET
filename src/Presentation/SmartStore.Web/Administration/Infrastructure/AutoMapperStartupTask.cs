@@ -504,8 +504,8 @@ namespace SmartStore.Admin.Infrastructure
 			Mapper.CreateMap<ProductAttribute, ProductAttributeModel>()
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.OptionCount, mo => mo.Ignore());
-			Mapper.CreateMap<ProductAttributeModel, ProductAttribute>();
-				//.ForMember(dest => dest.ProductAttributeOptions, mo => mo.Ignore());
+			Mapper.CreateMap<ProductAttributeModel, ProductAttribute>()
+				.ForMember(dest => dest.ProductAttributeOptionsSets, mo => mo.Ignore());
 
 			Mapper.CreateMap<ProductAttributeOption, ProductAttributeOptionModel>()
 				.ForMember(dest => dest.ProductVariantAttributeId, mo => mo.Ignore())
@@ -522,8 +522,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.QuantityInfo, mo => mo.Ignore())
 				.ForMember(dest => dest.Locales, mo => mo.Ignore());
 			Mapper.CreateMap<ProductAttributeOptionModel, ProductAttributeOption>()
-				.ForMember(dest => dest.ValueType, mo => mo.Ignore());
-				//.ForMember(dest => dest.ProductAttribute, mo => mo.Ignore());
+				.ForMember(dest => dest.ValueType, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductAttributeOptionsSet, mo => mo.Ignore());
 
 			//specification attributes
 			Mapper.CreateMap<SpecificationAttribute, SpecificationAttributeModel>()

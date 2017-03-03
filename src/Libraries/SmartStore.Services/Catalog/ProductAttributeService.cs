@@ -352,8 +352,6 @@ namespace SmartStore.Services.Catalog
 
 			_productVariantAttributeRepository.Insert(productVariantAttribute);
 
-			CopyAttributeOptions(productVariantAttribute, false);
-
 			_requestCache.RemoveByPattern(PRODUCTVARIANTATTRIBUTES_PATTERN_KEY);
 
 			//event notification
@@ -373,74 +371,74 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityUpdated(productVariantAttribute);
         }
 
-		public virtual int CopyAttributeOptions(ProductVariantAttribute productVariantAttribute, bool deleteExistingValues)
+		public virtual int CopyAttributeOptions(ProductVariantAttribute productVariantAttribute, int productAttributeOptionsSetId, bool deleteExistingValues)
 		{
 			Guard.NotNull(productVariantAttribute, nameof(productVariantAttribute));
 			Guard.NotZero(productVariantAttribute.Id, nameof(productVariantAttribute.Id));
+			Guard.NotZero(productAttributeOptionsSetId, nameof(productAttributeOptionsSetId));
 
-			//if (deleteExistingValues)
-			//{
-			//	var existingValues = productVariantAttribute.ProductVariantAttributeValues.ToList();
-			//	if (!existingValues.Any())
-			//		existingValues = GetProductVariantAttributeValues(productVariantAttribute.Id).ToList();
+			if (deleteExistingValues)
+			{
+				var existingValues = productVariantAttribute.ProductVariantAttributeValues.ToList();
+				if (!existingValues.Any())
+					existingValues = GetProductVariantAttributeValues(productVariantAttribute.Id).ToList();
 
-			//	existingValues.Each(x => DeleteProductVariantAttributeValue(x));
-			//}
+				existingValues.Each(x => DeleteProductVariantAttributeValue(x));
+			}
 
-			//var result = 0;
-			//var attributeOptions = _productAttributeOptionRepository.TableUntracked
-			//	.Where(x => x.ProductAttributeId == productVariantAttribute.ProductAttributeId)
-			//	.ToList();
+			var result = 0;
+			var attributeOptions = _productAttributeOptionRepository.TableUntracked
+				.Where(x => x.ProductAttributeOptionsSetId == productAttributeOptionsSetId)
+				.ToList();
 
-			//if (!attributeOptions.Any())
-			//	return result;
+			if (!attributeOptions.Any())
+				return result;
 
-			//// Do not insert already existing values (identified by name field).
-			//var existingValueNames = new HashSet<string>(_productVariantAttributeValueRepository.TableUntracked
-			//	.Where(x => x.ProductVariantAttributeId == productVariantAttribute.Id)
-			//	.Select(x => x.Name)
-			//	.ToList());
+			// Do not insert already existing values (identified by name field).
+			var existingValueNames = new HashSet<string>(_productVariantAttributeValueRepository.TableUntracked
+				.Where(x => x.ProductVariantAttributeId == productVariantAttribute.Id)
+				.Select(x => x.Name)
+				.ToList());
 
-			//ProductVariantAttributeValue productVariantAttributeValue = null;
+			ProductVariantAttributeValue productVariantAttributeValue = null;
 
-			//foreach (var option in attributeOptions)
-			//{
-			//	if (existingValueNames.Contains(option.Name))
-			//		continue;
+			foreach (var option in attributeOptions)
+			{
+				if (existingValueNames.Contains(option.Name))
+					continue;
 
-			//	productVariantAttributeValue = option.Clone();
-			//	productVariantAttributeValue.ProductVariantAttributeId = productVariantAttribute.Id;
+				productVariantAttributeValue = option.Clone();
+				productVariantAttributeValue.ProductVariantAttributeId = productVariantAttribute.Id;
 
-			//	// No scope commit, we need new entity id.
-			//	_productVariantAttributeValueRepository.Insert(productVariantAttributeValue);
-			//	++result;
+				// No scope commit, we need new entity id.
+				_productVariantAttributeValueRepository.Insert(productVariantAttributeValue);
+				++result;
 
-			//	// Copy localized properties too.
-			//	var optionProperties = _localizedPropertyRepository.TableUntracked
-			//		.Where(x => x.LocaleKeyGroup == "ProductAttributeOption" && x.EntityId == option.Id)
-			//		.ToList();
+				// Copy localized properties too.
+				var optionProperties = _localizedPropertyRepository.TableUntracked
+					.Where(x => x.LocaleKeyGroup == "ProductAttributeOption" && x.EntityId == option.Id)
+					.ToList();
 
-			//	var newLocalizedProperties = optionProperties
-			//		.Select(x => new LocalizedProperty
-			//		{
-			//			EntityId = productVariantAttributeValue.Id,
-			//			LocaleKeyGroup = "ProductVariantAttributeValue",
-			//			LocaleKey = x.LocaleKey,
-			//			LocaleValue = x.LocaleValue,
-			//			LanguageId = x.LanguageId
-			//		})
-			//		.ToList();
+				var newLocalizedProperties = optionProperties
+					.Select(x => new LocalizedProperty
+					{
+						EntityId = productVariantAttributeValue.Id,
+						LocaleKeyGroup = "ProductVariantAttributeValue",
+						LocaleKey = x.LocaleKey,
+						LocaleValue = x.LocaleValue,
+						LanguageId = x.LanguageId
+					})
+					.ToList();
 
-			//	_localizedPropertyRepository.InsertRange(newLocalizedProperties, 0);
-			//}
+				_localizedPropertyRepository.InsertRange(newLocalizedProperties, 0);
+			}
 
-			//if (productVariantAttributeValue != null)
-			//{
-			//	_eventPublisher.EntityInserted(productVariantAttributeValue);
-			//}
+			if (productVariantAttributeValue != null)
+			{
+				_eventPublisher.EntityInserted(productVariantAttributeValue);
+			}
 
-			//return result;
-			return 0;
+			return result;
 		}
 
 		#endregion

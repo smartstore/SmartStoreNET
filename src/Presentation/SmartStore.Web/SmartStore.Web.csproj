@@ -1431,7 +1431,6 @@
     <Content Include="Themes\AlphaOld\preview.png" />
     <Content Include="Themes\Flex\Content\drift\Drift.min.js" />
     <Content Include="Themes\Flex\Content\drift\Drift.js" />
-    <Content Include="Themes\Flex\Scripts\hammer.js" />
     <Content Include="Themes\Flex\Scripts\jquery.addeasing.js" />
     <Content Include="Themes\Flex\Scripts\jquery.ba-outside-events.js" />
     <Content Include="Themes\Flex\Scripts\jquery.ba-outside-events.min.js" />

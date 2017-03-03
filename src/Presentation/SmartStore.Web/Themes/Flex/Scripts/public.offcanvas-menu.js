@@ -47,7 +47,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
             else if (item.find(".nav-link").is("#help-tab")) {
                 navigateToHelp();
             }
-            else {
+            else if (item.find(".nav-link").is("#category-tab")) {
                 navigateToMenuItem(entityId ? entityId : 0, item.hasClass("back-to-parent-cat") ? "right" : "left");
             }
 
@@ -179,43 +179,24 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
     function navigateToHelp() {
 
-        var menuContent = $(".menubar-section .menubar");
+        var menuContent = $(".menubar-section .menubar").clone();
         var tabContent = menu.find("#help-tab");
         var helpTab = $("#ocm-help");
         var isInitialized = tabContent.data("initialized");
-        var response = '';
-
+        
         if (isInitialized) {
             tabContent.tab('show');
             return;
         }
-        
-        // TODO: do it for every .dropdown & .menubar-link (if .menubar-link isn't within .dropdown)
 
-        // dropdown service-links open
-        var tempHelp = $(".service-links", menuContent);
-        var menuTitle = tempHelp.find(".menubar-link > span").text();
+        // hide currency & language selectors 
+        menuContent.find(".currency-selector, .language-selector").addClass("hidden-xs-up");
 
-        // menu title
-        response += '<div class="category-info"><div class="category-name">' + menuTitle + '</div></div>';
-
-        response += '<ul class="nav navbar-nav">';
-
-        // foreach .dropdown 
-        tempHelp.find(".dropdown-item").each(function (index) {
-            var navItem = $(this).clone();
-
-            navItem.removeClass("dropdown-item");
-            navItem.addClass("nav-link");
-
-            response += '<li class="sub-cat nav-item" data-ajax="false">' + navItem.outerHtml() + '</li>';
-        });
-
-        response += "</ul>";
-
-        helpTab.html(response);
+        helpTab.html(menuContent.clone());
         tabContent.data("initialized", true);
         tabContent.tab('show');
+
+        return;
     }
 
 	return {
@@ -254,12 +235,14 @@ var AjaxMenu = (function ($, window, document, undefined) {
 
 	        $(languageSelector).find(".dropdown-item").each(function () {
 	            var link = $(this);
-	            languageOptions += '<option value="' + link.attr("href") + '">' + link.text() + '</option>';
+	            var selected = link.data("selected") ? ' selected="selected" ' : '';
+	            languageOptions += '<option value="' + link.attr("href") + '"' + selected + '>' + link.text() + '</option>';
 	        });
 
 	        $(currencySelector).find(".dropdown-item").each(function () {
 	            var link = $(this);
-	            currencyOptions += '<option value="' + link.attr("href") + '">' + link.text() + '</option>';
+	            var selected = link.data("selected") ? ' selected="selected" ' : '';
+	            currencyOptions += '<option value="' + link.attr("href") + '"' + selected + '>' + link.text() + '</option>';
 	        });
 
 	        $("span", ocmLanguageSelector).text(selectTitleLanguage);

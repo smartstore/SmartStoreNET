@@ -51,34 +51,34 @@ $ocm-horizontal-padding:                1.6rem;
         }
     }
 
-    .navbar-nav {
-        .nav-item {
-            margin: 0;
-            float: none;
-            border-bottom: 1px solid $ocm-border-color;
+    .menubar-link,
+    .nav-item {
+        margin: 0;
+        float: none;
+        border-bottom: 1px solid $ocm-border-color;
+        display: block;
+        font-size: 1rem;
+
+        .nav-link {
             display: block;
-            font-size: 1rem;
-
-            .nav-link {
-                display: block;
-                color: $body-color;
-                line-height: 1.3;
-                padding: 1rem 2rem;
+            color: $body-color;
+            line-height: 1.3;
+            padding: 1rem 2rem;
                 
-                &:active { background-color: rgba(#000, 0.05); }   
-            }
+            &:active { background-color: rgba(#000, 0.05); }   
+        }
             
-            &.has-children:after {
-                position: absolute;
-                right: 1rem;
-                top: 50%;
-                transform: translateY(-50%);
+        &.has-children:after {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
 
-                @include linearicon('\e876');
-                //@include fontawesome('\f054');
-            }
+            @include linearicon('\e876');
+            //@include fontawesome('\f054');
         }
     }
+    
 
     .navbar-nav .back-to-parent-cat {
         padding-left: 0;
@@ -140,3 +140,41 @@ $ocm-horizontal-padding:                1.6rem;
 .ocm-nav-layer.out.to-right {
     transform: translateX(100%);
 }
+
+
+// help menu 
+#ocm-help {
+
+    .menubar-group {
+        display: block;
+        margin-left: 0;
+        text-align: left;
+        .menubar-link {
+            text-transform: initial;
+            padding: 1rem 2rem;
+        }
+    }
+
+    .dropdown-menu {
+        position: relative;
+        float: initial;
+        min-width: initial;
+        padding: initial;
+        margin: initial;
+        border: none;
+        border-bottom: 1px solid $ocm-border-color;
+        border-radius: initial;
+        box-shadow: initial;
+    }
+    .fa:not(.fa-caret-down) {
+        display: none;
+    }
+    .menubar-link span {
+        padding-left: 0;
+    }
+    .dropdown-item {
+        padding-left: 2rem;
+    }
+}
+
+

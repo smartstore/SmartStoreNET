@@ -9,28 +9,6 @@
     var webHelper = EngineContext.Current.Resolve<IWebHelper>();
     var activeLang = Model.AvailableLanguages.Where(x => x.Id == Model.CurrentLanguageId).FirstOrDefault();
 
-    @*<div id="language-selector" class="regional-selector">
-		<ul class="list-unstyled clearfix">
-			@foreach (var lang in Model.AvailableLanguages)
-			{
-				<li class="list-inline-item@(Model.CurrentLanguageId == lang.Id ? " selected" : "")">
-					<a title="@lang.NativeName" data-toggle="tooltip" rel="nofollow" class='language @(Model.UseImages ? "flag" : "regional-label")'
-						href="@webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + Url.Encode(Model.ReturnUrls[lang.SeoCode]), null)">
-						@if (Model.UseImages)
-						{
-							<img title='@lang.Name' alt='@lang.Name' @(lang.Id == Model.CurrentLanguageId ? " class=selected" : null)
-								 src="@Url.Content("~/Content/Images/flags/" + @lang.FlagImageFileName)" width="16" height="11" />
-						}
-						else
-						{
-							@lang.ISOCode.ToUpper().Substring(0, 2)
-						}
-					</a>
-				</li>
-			}
-		</ul>
-	</div>*@
-
     <div class="dropdown language-selector">
         <a class="menubar-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
 			<span>@activeLang.Name</span>
@@ -41,7 +19,7 @@
             @foreach (var lang in Model.AvailableLanguages)
             {
                 var href = webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + Url.Encode(Model.ReturnUrls[lang.SeoCode]), null);
-                <a href="@href" title="@lang.NativeName" data-toggle="tooltip" rel="nofollow" class="dropdown-item">
+                <a href="@href" title="@lang.NativeName" data-toggle="tooltip" rel="nofollow" class="dropdown-item" data-selected="@(lang.Equals(activeLang) ? "true" : "false")">
                     @lang.Name
                 </a>
             }

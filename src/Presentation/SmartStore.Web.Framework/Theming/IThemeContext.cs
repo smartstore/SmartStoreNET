@@ -8,7 +8,7 @@ namespace SmartStore.Web.Framework.Theming
     public interface IThemeContext
     {
         /// <summary>
-        /// Gets or sets the name of the current theme (e.g. Alpha)
+        /// Gets or sets the name of the current theme (e.g. Flex)
         /// </summary>
         string WorkingThemeName { get; set; }
 

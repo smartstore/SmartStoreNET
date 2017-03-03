@@ -7,7 +7,7 @@ namespace SmartStore.Core.Domain.Themes
     {
 		public ThemeSettings()
 		{
-			DefaultTheme = "Alpha";
+			DefaultTheme = "Flex";
 			AllowCustomerToSelectTheme = true;
 		}
 

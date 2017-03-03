@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Catalog
 {
 	[DataContract]
-	public partial class ProductAttributeOptionsSet : BaseEntity
+	public partial class ProductAttributeOptionsSet : BaseEntity, ILocalizedEntityRelation
 	{
 		private ICollection<ProductAttributeOption> _productAttributeOptions;
 

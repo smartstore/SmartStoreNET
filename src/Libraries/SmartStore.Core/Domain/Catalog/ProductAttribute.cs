@@ -9,7 +9,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a product attribute
     /// </summary>
 	[DataContract]
-	public partial class ProductAttribute : BaseEntity, ILocalizedEntity, ISearchAlias
+	public partial class ProductAttribute : BaseEntity, ILocalizedEntity, ISearchAlias, ILocalizedEntityRelation
 	{
 		private ICollection<ProductAttributeOptionsSet> _productAttributeOptionsSets;
 

@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Services.Search;
 using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Media;
+using SmartStore.Web.Models.Search;
 
 namespace SmartStore.Web.Models.Catalog
 {
-    public partial class CategoryModel : EntityModelBase
+    public partial class CategoryModel : EntityModelBase, ISearchResultModel
     {
         public CategoryModel()
         {
@@ -15,7 +17,13 @@ namespace SmartStore.Web.Models.Catalog
             CategoryBreadcrumb = new List<MenuItem>();
         }
 
-        public string Name { get; set; }
+		public CatalogSearchResult SearchResult
+		{
+			get;
+			set;
+		}
+
+		public string Name { get; set; }
 		public string FullName { get; set; }
         public string Description { get; set; }
 		public string BottomDescription { get; set; }

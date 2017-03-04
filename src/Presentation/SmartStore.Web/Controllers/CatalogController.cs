@@ -140,7 +140,7 @@ namespace SmartStore.Web.Controllers
 
 			_services.DisplayControl.Announce(category);
 
-            //category breadcrumb
+            // category breadcrumb
             model.DisplayCategoryBreadcrumb = _catalogSettings.CategoryBreadcrumbEnabled;
             if (model.DisplayCategoryBreadcrumb)
             {
@@ -236,10 +236,11 @@ namespace SmartStore.Web.Controllers
 
 			query.WithCategoryIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false, catIds);
 
-			var productsResult = _catalogSearchService.Search(query);
+			var searchResult = _catalogSearchService.Search(query);
+			model.SearchResult = searchResult;
 
 			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
-			model.Products = _helper.MapProductSummaryModel(productsResult.Hits, mappingSettings);
+			model.Products = _helper.MapProductSummaryModel(searchResult.Hits, mappingSettings);
 
 			// Prepare paging/sorting/mode stuff
 			_helper.MapListActions(model.Products, category, _catalogSettings.DefaultPageSizeOptions);
@@ -416,10 +417,11 @@ namespace SmartStore.Web.Controllers
 			// Products
 			query.WithManufacturerIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false, new int[] { manufacturerId });
 
-			var productsResult = _catalogSearchService.Search(query);
+			var searchResult = _catalogSearchService.Search(query);
+			model.SearchResult = searchResult;
 
 			var mappingSettings = _helper.GetBestFitProductSummaryMappingSettings(query.GetViewMode());
-			model.Products = _helper.MapProductSummaryModel(productsResult.Hits, mappingSettings);
+			model.Products = _helper.MapProductSummaryModel(searchResult.Hits, mappingSettings);
 
 			// Prepare paging/sorting/mode stuff
 			_helper.MapListActions(model.Products, manufacturer, _catalogSettings.DefaultPageSizeOptions);

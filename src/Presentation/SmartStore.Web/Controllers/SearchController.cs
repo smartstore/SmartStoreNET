@@ -183,6 +183,65 @@ namespace SmartStore.Web.Controllers
 			return View(model);
 		}
 
+		[ChildActionOnly]
+		public ActionResult Filter(string[] excludedFacets = null)
+		{
+			var searchResultModel = this.ControllerContext.GetMasterControllerContext().Controller.ViewData.Model as ISearchResultModel;
+
+			if (searchResultModel == null)
+			{
+				return Content("");
+			}
+			
+			if (excludedFacets != null && excludedFacets.Length > 0)
+			{
+				foreach (var exclude in excludedFacets.Where(x => x.HasValue()))
+				{
+					var facets = searchResultModel.SearchResult.Facets;
+					if (facets.ContainsKey(exclude))
+					{
+						facets.Remove(exclude);
+					}
+				} 
+			}
+
+			return PartialView(searchResultModel);
+		}
+
+		// TODO: (mc) what about this stuff ?!
+		//private SearchPageFilterModel CreateSearchPageFilterModel(CatalogSearchResult searchResult)
+		//{
+		//	var model = new SearchPageFilterModel(searchResult);
+		//	FacetGroup group;
+
+		//	if (searchResult.Facets.TryGetValue("price", out group))
+		//	{
+		//		// format prices for price facet labels
+		//		// TODO: formatting without decimals would be nice
+		//		var priceLabelTemplate = T("Search.Facet.PriceLabelTemplate").Text;
+
+		//		foreach (var facet in group.Facets.Where(x => x.Value.UpperValue != null))
+		//		{
+		//			var price = _priceFormatter.FormatPrice(Convert.ToDecimal((double)facet.Value.UpperValue), true, false);
+		//			facet.Value.Label = priceLabelTemplate.FormatInvariant(price);
+		//		}
+
+		//		// handle individual price filter
+		//		var individualPrice = group.Facets.FirstOrDefault(x => x.HitCount == 0);
+		//		if (individualPrice != null)
+		//		{
+		//			var value = individualPrice.Value;
+		//			if (value.IncludesLower && value != null)
+		//				model.IndividualPriceFrom = ((double)value.Value).ToString("F0", CultureInfo.InvariantCulture);
+
+		//			if (value.IncludesUpper && value.UpperValue != null)
+		//				model.IndividualPriceTo = ((double)value.UpperValue).ToString("F0", CultureInfo.InvariantCulture);
+		//		}
+		//	}
+
+		//	return model;
+		//}
+
 		private void AddSpellCheckerSuggestionsToModel(string[] suggestions, SearchResultModel model)
 		{
 			if (suggestions.Length == 0)

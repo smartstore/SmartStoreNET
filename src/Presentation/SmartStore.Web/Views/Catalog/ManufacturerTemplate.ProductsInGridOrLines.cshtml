@@ -1,4 +1,9 @@
-﻿@model ManufacturerModel
+﻿@using SmartStore.Core.Domain.Seo;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web.Framework.UI;
+
+@model ManufacturerModel
 @{
     Layout = "_ColumnsTwo";
     Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
@@ -13,10 +18,9 @@
     }
 }
 
-@using SmartStore.Core.Domain.Seo;
-@using SmartStore.Core.Infrastructure;
-@using SmartStore.Web.Models.Catalog;
-@using SmartStore.Web.Framework.UI;
+@section left {
+	@{ Html.RenderAction("Filter", "Search"); }
+}
 
 <div class="page manufacturer-page">
     <div class="page-title">

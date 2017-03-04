@@ -364,6 +364,7 @@
     <Compile Include="Models\Checkout\CheckoutCompletedModel.cs" />
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
     <Compile Include="Models\Common\EntityPickerModel.cs" />
+    <Compile Include="Models\Search\ISearchResultModel.cs" />
     <Compile Include="Models\Search\SearchResultModel.cs" />
     <Compile Include="Models\ShoppingCart\ButtonPaymentMethodModel.cs" />
     <Compile Include="Models\ShoppingCart\OffCanvasCartModel.cs" />
@@ -1443,8 +1444,6 @@
     <Content Include="Themes\Flex\Scripts\offcanvas.js" />
     <Content Include="Themes\Flex\Scripts\prettify.js" />
     <Content Include="Themes\Flex\Scripts\public.common.js" />
-    <Content Include="Themes\Flex\Scripts\public.product-detail.js" />
-    <Content Include="Themes\Flex\Scripts\public.product-filter.js" />
     <Content Include="Themes\Flex\Scripts\public.reviews.js" />
     <Content Include="Themes\Flex\Scripts\public.offcanvas-cart.js" />
     <Content Include="Themes\Flex\Scripts\public.voting.js" />
@@ -1456,7 +1455,7 @@
     <Content Include="Themes\Flex\Scripts\smartstore.eventbroker.js" />
     <Content Include="Themes\Flex\Scripts\smartstore.globalize.adapter.js" />
     <Content Include="Themes\Flex\Scripts\smartstore.hacks.js" />
-    <Content Include="Themes\Flex\Scripts\smartstore.instantsearch.js" />
+    <Content Include="Themes\Flex\Scripts\public.search.js" />
     <Content Include="Themes\Flex\Scripts\smartstore.jquery.utils.js" />
     <Content Include="Themes\Flex\Scripts\smartstore.megamenu.js" />
     <Content Include="Themes\Flex\Scripts\smartstore.keynav.js" />
@@ -1712,9 +1711,7 @@
     <Content Include="Views\Catalog\RecentlyViewedProducts.cshtml" />
     <Content Include="Views\Catalog\Partials\RecentlyViewedProductsBlock.cshtml" />
     <Content Include="Views\Search\Search.cshtml" />
-    <Content Include="Views\Search\SearchBox.cshtml" />
-    <Content Include="Views\Catalog\Partials\_FilterPriceBox.cshtml" />
-    <Content Include="Views\Catalog\Partials\_FilterSpecsBox.cshtml" />
+    <Content Include="Views\Search\Partials\SearchBox.cshtml" />
     <Content Include="Views\Checkout\BillingAddress.cshtml" />
     <Content Include="Views\Checkout\CheckoutProgress.cshtml" />
     <Content Include="Views\Checkout\Completed.cshtml" />
@@ -1842,9 +1839,9 @@
     <Content Include="Views\Catalog\Partials\OffCanvasCompare.cshtml" />
     <Content Include="Views\Common\Partials\Logo.cshtml" />
     <Content Include="Themes\Flex\Content\_search.scss" />
-    <Content Include="Views\Search\InstantSearch.cshtml" />
-    <Content Include="Views\Search\InstantSearch.HitGroup.cshtml" />
-    <Content Include="Views\Search\InstantSearch.TopProducts.cshtml" />
+    <Content Include="Views\Search\Partials\InstantSearch.cshtml" />
+    <Content Include="Views\Search\Partials\InstantSearch.HitGroup.cshtml" />
+    <Content Include="Views\Search\Partials\InstantSearch.TopProducts.cshtml" />
     <Content Include="Themes\Flex\Content\_artlist.scss" />
     <Content Include="Views\Shared\Partials\Product.List.Item.cshtml" />
     <Content Include="Views\Shared\Partials\Product.List.cshtml" />
@@ -1898,6 +1895,7 @@
     <Content Include="Views\Catalog\Partials\OffCanvasMenuCategories.cshtml" />
     <Content Include="Views\Catalog\Partials\OffCanvasMenu.cshtml" />
     <Content Include="Views\Product\Partials\Product.CustomerPrice.cshtml" />
+    <Content Include="Views\Search\Partials\Filter.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

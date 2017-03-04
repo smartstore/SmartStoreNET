@@ -158,3 +158,74 @@ $searchbox-hit-tag-color:           darken($brand-warning, 10%);
 .search-hitcount {
     color: $text-muted;
 }
+
+
+//
+// Facettes
+// --------------------------------------------------
+
+.offcanvas .nav-filter {
+    font-size: 1rem;
+}
+
+.facet-group {
+	position: relative;
+	border-bottom: 1px solid rgba(0,0,0, 0.12);
+    /*&:last-child {
+	    border-bottom: none;
+    }*/
+}
+
+.facet-toggle {
+	position: relative;
+	display: block;
+	padding: 0.7rem 1rem;
+	font-weight: 600;
+	color: #333 !important;
+	text-decoration: none !important;
+	transition: background-color 0.1s linear;
+    
+    &:after {
+	    display: block;
+	    position: absolute;
+	    font-family: FontAwesome;
+	    font-size: 1.2rem;
+	    line-height: 1;
+	    content: "\f106";
+	    //content: "\f077";
+	    right: 1rem;
+	    top: 50%;
+	    margin-top: -9px;
+	    transition: transform 0.3s ease-in-out;
+    }
+
+    &.collapsed:after {
+	    transform: rotate(180deg);
+    }
+
+    &:hover {
+	    background-color: rgba(0,0,0, 0.02);
+    }
+    &:active {
+	    background-color: rgba(0,0,0, 0.05);
+    }
+}
+
+.facet-values {
+	padding: 0.6rem 1rem;
+}
+
+.facet-values-inner {
+	line-height: 1.3;
+	max-height: 200px;
+	overflow-y: hidden;
+}
+
+.facet-values.in .facet-values-inner {
+	overflow-y: auto;
+}
+
+.facet-hit-count {
+	color: #999;
+	padding-left: 0.2rem;
+}

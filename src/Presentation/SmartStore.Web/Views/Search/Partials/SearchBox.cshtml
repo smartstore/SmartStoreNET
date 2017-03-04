@@ -1,12 +1,6 @@
-﻿@model SearchBoxModel
-@using SmartStore.Web.Models.Catalog;
+﻿@using SmartStore.Web.Models.Catalog;
 
-@{
-	if (Model.InstantSearchEnabled)
-	{
-		Html.AddScriptParts("~/Themes/Flex/Scripts/smartstore.instantsearch.js");
-	}
-}
+@model SearchBoxModel
 
 @using (Html.BeginRouteForm("Search", FormMethod.Get, new { @class = "instasearch-form" }))
 {
@@ -16,6 +10,7 @@
 			name="q"
 			value="@Model.CurrentQuery"
 			placeholder="@T("Search.SearchBox.Tooltip")"
+		    data-instasearch="@(Model.InstantSearchEnabled ? "true" : "false")"
 			data-minlength="@(Model.SearchTermMinimumLength.ToString())"
 			data-showthumbs="@(Model.ShowProductImagesInInstantSearch.ToString().ToLower())"
 			data-url="@Url.RouteUrl("InstantSearch")"

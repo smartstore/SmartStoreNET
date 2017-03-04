@@ -24,6 +24,10 @@
     }
 }
 
+@section left {
+	@{ Html.RenderAction("Filter", "Search"); }
+}
+
 <div class="page product-tag-page">
     <div class="page-title">
         <h1 class="h3">@T("Products.Tags.ProductsTaggedWith", "<small class='search-term'>" + Model.TagName + "</small>")</h1>	

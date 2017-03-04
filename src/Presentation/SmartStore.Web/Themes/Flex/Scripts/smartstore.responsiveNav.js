@@ -16,10 +16,6 @@
 		var el = this.el = $(element);
 		var opts = this.options = $.extend({}, options);
 
-		function isOffCanvas() {
-			return el.hasClass('offcanvas');
-		}
-
 		function collapseNav() {
 			if (el.data('offcanvas')) return;
 
@@ -27,7 +23,7 @@
 			var offcanvas = $('<aside class="offcanvas offcanvas-right offcanvas-overlay offcanvas-fullscreen" data-overlay="true"><div class="offcanvas-content"></div></aside>').appendTo('body');
 
 			// handle .offcanvas-closer click
-			offcanvas.on('click', '.offcanvas-closer', function (e) {
+			offcanvas.one('click', '.offcanvas-closer', function (e) {
 				offcanvas.offcanvas('hide');
 			});
 

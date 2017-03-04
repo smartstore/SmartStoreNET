@@ -1,7 +1,12 @@
 ﻿(function ($, window, document, undefined) {
+
+	//
+	// Instant Search
+	// ==========================================================
+
 	$(function () {
 		var box = $('#instasearch');
-		if (box.length == 0)
+		if (box.length == 0 || box.data('instasearch') === false)
 			return;
 
 		var drop = $('#instasearch-drop'),
@@ -167,5 +172,75 @@
 			return true;
 		});
 	});
+
+
+	//
+	// Facets
+	// ==========================================================
+
+	$(function () {
+		var widget = $('#faceted-search');
+		if (widget.length === 0)
+			return;
+
+		var btn = $('.btn-toggle-filter-widget');
+		if (btn.length === 0)
+			return;
+
+		var viewport = ResponsiveBootstrapToolkit;
+
+		function collapseWidget() {
+			if (btn.data('offcanvas')) return;
+
+			// create offcanvas wrapper
+			var offcanvas = $('<aside class="offcanvas offcanvas-left offcanvas-overlay" data-overlay="true"><div class="offcanvas-content offcanvas-scrollable"></div></aside>').appendTo('body');
+
+			// handle .offcanvas-closer click
+			offcanvas.one('click', '.offcanvas-closer', function (e) {
+				offcanvas.offcanvas('hide');
+			});
+
+			// put widget into offcanvas wrapper
+			widget.appendTo(offcanvas.children().first());
+			btn.data('offcanvas', offcanvas);
+
+			btn.attr('data-toggle', 'offcanvas')
+		       .attr('data-placement', 'left')
+		       .attr('data-disablescrolling', 'true')
+               .data('target', offcanvas);
+		}
+
+		function restoreWidget() {
+			if (!btn.data('offcanvas')) return;
+
+			// move widget back to its origin
+			var offcanvas = btn.data('offcanvas');
+			widget.appendTo($('.faceted-search-container'));
+			offcanvas.remove();
+
+			btn.removeData('offcanvas')
+		       .removeAttr('data-toggle')
+		       .removeAttr('data-placement')
+		       .removeAttr('data-disablescrolling')
+		       .removeData('target');
+		}
+
+		function toggleOffCanvas() {
+			var breakpoint = '<lg';
+			if (viewport.is(breakpoint)) {
+				collapseWidget();
+			}
+			else {
+				restoreWidget();
+			}
+		}
+
+		EventBroker.subscribe("page.resized", function (msg, viewport) {
+			toggleOffCanvas();
+		});
+
+		_.delay(toggleOffCanvas, 10);
+	});
+
 })(jQuery, this, document);
 

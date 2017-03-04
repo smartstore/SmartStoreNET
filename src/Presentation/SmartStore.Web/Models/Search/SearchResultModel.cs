@@ -6,7 +6,7 @@ using SmartStore.Web.Models.Catalog;
 
 namespace SmartStore.Web.Models.Search
 {
-	public class SearchResultModel : ModelBase
+	public class SearchResultModel : ModelBase, ISearchResultModel
 	{
 		public SearchResultModel(CatalogSearchQuery query)
 		{

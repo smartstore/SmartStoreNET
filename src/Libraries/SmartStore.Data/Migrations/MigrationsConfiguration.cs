@@ -48,7 +48,9 @@ namespace SmartStore.Data.Migrations
 			});
 
 			// ...and set it as default where applicable
-			var newProductTemplate = context.Set<ProductTemplate>().FirstOrDefault(x => x.Name == "Default Product Template") ?? context.Set<ProductTemplate>().LastOrDefault();
+			var newProductTemplate = context.Set<ProductTemplate>().FirstOrDefault(x => x.Name == "Default Product Template") 
+				?? context.Set<ProductTemplate>().OrderByDescending(x => x.Id).FirstOrDefault();
+
 			if (newProductTemplate != null)
 			{
 				context.ExecuteSqlCommand("Update [Product] Set [ProductTemplateId] = {0}", true, null, newProductTemplate.Id);

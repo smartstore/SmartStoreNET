@@ -24,7 +24,7 @@
 						@(group.Value.Label ?? group.Key)
 					</a>
 					<div id="facet-values-@(group.Key)" class="facet-values collapse@(i <= 3 || hasSelection ? " in" : "")" aria-expanded="true">
-						<div class="facet-values-inner">
+						<div class="facet-values-inner offcanvas-scrollable">
 							@foreach (var facet in group.Value.Facets)
 							{
 								if (group.Key == "categoryid" || group.Key == "notfeaturedcategoryid")

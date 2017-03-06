@@ -48,33 +48,8 @@
             this.toggle();
         }
 
-    	// Close on pan[left|right]
-    	var onRight = el.hasClass('offcanvas-right'),
-			canPan = el.hasClass('offcanvas-overlay');
-
-    	el.on('tapstart tapend', function (e, gesture) {
-        	function getDelta(g) {
-        		return onRight
-					? Math.max(0, g.delta.x)
-					: Math.min(0, g.delta.x);
-        	}
-
-        	if (e.type.toLowerCase() === 'tapstart') {
-        		el.css(Prefixer.css('transition'), 'none');
-        		el.on('tapmove.offcanvas', function (e, g) {
-        			if (canPan) {
-        				$(e.currentTarget).css(Prefixer.css('transform'), 'translate3d(' + getDelta(g) + 'px, 0, 0)');
-        			}
-        		});
-        	}
-        	else if (e.type.toLowerCase() === 'tapend') {
-        		el.off('tapmove.offcanvas');
-        		el.css(Prefixer.css('transform'), '').css(Prefixer.css('transition'), '');
-        		if (Math.abs(getDelta(gesture)) >= 100) {
-        			self.hide();
-        		}
-        	}
-        });
+		// set up events to properly handle (touch) gestures
+        this._makeTouchy();
     }
 
 
@@ -90,6 +65,80 @@
         autohide: true,
         disableScrolling: false,
         blocker: true
+    }
+
+
+	// OFFCANVAS Internal
+	// ======================================================
+
+    OffCanvas.prototype._makeTouchy = function (fn) {
+    	var el = this.el;
+
+    	function getDelta(g) {
+    		return onRight
+				? Math.max(0, g.delta.x)
+				: Math.min(0, g.delta.x);
+    	}
+
+    	function isScrolling(e, g) {
+    		if (nodeScrollable == null || nodeScrollable.length == 0)
+    			return false;
+
+    		var initialScrollTop = nodeScrollable.data('initial-scroll-top');
+    		if (!_.isNumber(initialScrollTop))
+    			return false;
+
+    		return nodeScrollable.scrollTop() != initialScrollTop;
+    	}
+
+    	function handleMove(e, g) {
+			// when scrolling started, do NOT attempt to pan left/right.
+    		if (scrolling || (scrolling = isScrolling(e, g)))
+    			return;
+
+    		var delta = getDelta(g);
+    		panning = !scrolling && delta != 0;
+
+    		if (panning) {
+    			// prevent scrolling during panning
+    			e.preventDefault();
+
+    			$(e.currentTarget).css(Prefixer.css('transform'), 'translate3d(' + delta + 'px, 0, 0)');
+    		}
+    	}
+
+    	// Move offcanvas on pan[left|right] and close on swipe
+    	var onRight = el.hasClass('offcanvas-right'),
+			canPan = el.hasClass('offcanvas-overlay'),
+			panning = false,
+			scrolling = false,
+			nodeScrollable = null;
+
+    	el.on('tapstart', function (e, gesture) {
+    		if (canPan) {
+    			nodeScrollable = $(e.target).closest('.offcanvas-scrollable');
+    			if (nodeScrollable.length > 0) {
+    				nodeScrollable.data('initial-scroll-top', nodeScrollable.scrollTop());
+    			}
+
+    			el.css(Prefixer.css('transition'), 'none');
+    			el.on('tapmove.offcanvas', handleMove);
+    		}
+    	});
+
+    	el.on('tapend', function (e, gesture) {
+    		el.off('tapmove.offcanvas')
+				.css(Prefixer.css('transform'), '')
+				.css(Prefixer.css('transition'), '');
+
+    		if (!scrolling && Math.abs(getDelta(gesture)) >= 100) {
+    			self.hide();
+    		}
+
+    		nodeScrollable = null;
+    		panning = false;
+    		scrolling = false;
+    	});
     }
 
 

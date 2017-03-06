@@ -354,12 +354,6 @@
     <Compile Include="Events\EventPublisher.cs" />
     <Compile Include="Events\DefaultConsumerFactory.cs" />
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
-    <Compile Include="Filter\FilterCriteria.cs" />
-    <Compile Include="Filter\FilterExtensions.cs" />
-    <Compile Include="Filter\FilterMisc.cs" />
-    <Compile Include="Filter\FilterOperator.cs" />
-    <Compile Include="Filter\FilterService.cs" />
-    <Compile Include="Filter\IFilterService.cs" />
     <Compile Include="Forums\ForumExtensions.cs" />
     <Compile Include="ICommonServices.cs" />
     <Compile Include="Hooks\LocalizedEntityHook.cs" />

@@ -93,7 +93,6 @@ namespace SmartStore.Admin.Models.Settings
 
 		#region Navigation
 
-		//filter
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductsFromSubcategories")]
         public bool ShowProductsFromSubcategories { get; set; }
 
@@ -108,18 +107,6 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.CategoryBreadcrumbEnabled")]
         public bool CategoryBreadcrumbEnabled { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.FilterEnabled")]
-        public bool FilterEnabled { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.MaxFilterItemsToDisplay")]
-        public int MaxFilterItemsToDisplay { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ExpandAllFilterCriteria")]
-        public bool ExpandAllFilterCriteria { get; set; }
-
-		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SortFilterResultsByMatches")]
-		public bool SortFilterResultsByMatches { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SubCategoryDisplayType")]
 		public SubCategoryDisplayType SubCategoryDisplayType { get; set; }

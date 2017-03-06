@@ -28,10 +28,6 @@
             $("#@Html.FieldIdFor(model => model.EnableHtmlTextCollapser)").click(toggleHtmlTextCollapsedHeight);
             $("#@Html.FieldIdFor(model => model.ShowManufacturerInProductDetail)").click(toggleManufacturerPictures);
 
-        	$("#@Html.FieldIdFor(model => model.FilterEnabled)").change(function () {
-        		$('#ProductFilterTable').find('.product-filter-option').toggle($(this).is(':checked'));
-        	}).trigger('change');
-
             toggleShowCategoryProductNumberIncludingSubcategories();
             toggleEmailAFriend();
             toggleRecentlyViewedProducts();
@@ -440,52 +436,6 @@
 				@Html.SettingOverrideCheckbox(model => Model.SubCategoryDisplayType)
 				@Html.DropDownListFor(model => model.SubCategoryDisplayType, Model.AvailableSubCategoryDisplayTypes)
 				@Html.ValidationMessageFor(model => model.SubCategoryDisplayType)
-			</td>
-		</tr>
-	</table>
-
-	<table id="ProductFilterTable" class="adminContent">
-		<tr>
-			<td colspan="2">
-				<div class="admin-config-group">
-					<div class="title">@T("Filtering.FilterResults")</div>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.FilterEnabled)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.FilterEnabled)
-				@Html.ValidationMessageFor(model => model.FilterEnabled)
-			</td>
-		</tr>
-		<tr class="product-filter-option">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.MaxFilterItemsToDisplay)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.MaxFilterItemsToDisplay)
-				@Html.ValidationMessageFor(model => model.MaxFilterItemsToDisplay)
-			</td>
-		</tr>
-		<tr class="product-filter-option">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.ExpandAllFilterCriteria)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.ExpandAllFilterCriteria)
-				@Html.ValidationMessageFor(model => model.ExpandAllFilterCriteria)
-			</td>
-		</tr>
-		<tr class="product-filter-option">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SortFilterResultsByMatches)
-			</td>
-			<td class="adminData">
-				@Html.SettingEditorFor(model => model.SortFilterResultsByMatches)
-				@Html.ValidationMessageFor(model => model.SortFilterResultsByMatches)
 			</td>
 		</tr>
 	</table>

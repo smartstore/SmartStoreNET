@@ -236,35 +236,6 @@ fieldset legend {
     }
 }
 
-//filter
-.product-filter-block .filter-group {
-    clear: initial;
-    float: left;
-    min-width: 120px;
-}
-.product-filter-block .filter-group:hover {
-    background: transparent;
-}
-.product-filter-block .block-title {
-    font-size: 1.5rem;
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 1rem;
-    
-}
-.filter-group {
-    margin-right: 5px;
-    .name span {
-        font-weight: bold;
-    }
-}
-.product-filter-block .listbox {
-    background-color: transparent !important;
-}
-.applied-filter {
-    display: inline-block;
-}
-
-
 
 /* Sitemap
 ================================================ */

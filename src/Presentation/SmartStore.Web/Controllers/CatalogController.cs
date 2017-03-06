@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
@@ -12,7 +11,6 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Filter;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
@@ -52,7 +50,6 @@ namespace SmartStore.Web.Controllers
 		private readonly ICatalogSearchService _catalogSearchService;
 		private readonly MediaSettings _mediaSettings;
         private readonly CatalogSettings _catalogSettings;
-        private readonly IFilterService _filterService;
 		private readonly ICompareProductsService _compareProductsService;
 		private readonly CatalogHelper _helper;
 
@@ -77,7 +74,6 @@ namespace SmartStore.Web.Controllers
 			ICatalogSearchService catalogSearchService,
 			MediaSettings mediaSettings, 
 			CatalogSettings catalogSettings,
-			IFilterService filterService,
  			CatalogHelper helper)
         {
 			_services = services;
@@ -98,7 +94,6 @@ namespace SmartStore.Web.Controllers
             _aclService = aclService;
 			_storeMappingService = storeMappingService;
 			_catalogSearchService = catalogSearchService;
-            _filterService = filterService;
             _mediaSettings = mediaSettings;
             _catalogSettings = catalogSettings;
 
@@ -147,7 +142,6 @@ namespace SmartStore.Web.Controllers
 				model.CategoryBreadcrumb = _helper.GetCategoryBreadCrumb(category.Id, 0);
             }
 
-			model.DisplayFilter = _catalogSettings.FilterEnabled;
 			model.SubCategoryDisplayType = _catalogSettings.SubCategoryDisplayType;
 
 			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();

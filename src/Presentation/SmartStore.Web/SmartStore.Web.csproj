@@ -269,7 +269,6 @@
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
-    <Compile Include="Controllers\FilterController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ReturnRequestController.cs" />
     <Compile Include="Controllers\ExternalAuthenticationController.cs" />
@@ -386,7 +385,6 @@
     <Compile Include="Models\Customer\CustomerReturnRequestsModel.cs" />
     <Compile Include="Models\Customer\ForumSubscriptionModel.cs" />
     <Compile Include="Models\Customer\ExternalAuthenticationMethodModel.cs" />
-    <Compile Include="Models\Filter\ProductFilterModel.cs" />
     <Compile Include="Models\Install\InstallModel.cs" />
     <Compile Include="Models\News\AddNewsCommentModel.cs" />
     <Compile Include="Models\News\HomePageNewsItemsModel.cs" />
@@ -959,7 +957,6 @@
     <Content Include="Scripts\smartstore.placeholder.js" />
     <Content Include="Scripts\public.voting.js" />
     <Content Include="Scripts\public.reviews.js" />
-    <Content Include="Scripts\public.product-filter.js" />
     <Content Include="Scripts\smartstore.shrinkmenu.js" />
     <Content Include="Scripts\smartstore.column-equalizer.js" />
     <Content Include="Scripts\public.product-list-scroller.js" />
@@ -1501,7 +1498,6 @@
     <Content Include="Themes\AlphaOld\Content\pages.less" />
     <Content Include="Themes\AlphaOld\Content\paginator.less" />
     <Content Include="Themes\AlphaOld\Content\product.less" />
-    <Content Include="Themes\AlphaOld\Content\productfilter.less" />
     <Content Include="Themes\AlphaOld\Content\profile.less" />
     <Content Include="Themes\AlphaOld\Content\rating.less" />
     <Content Include="Themes\AlphaOld\Content\shopbar.less" />
@@ -1760,8 +1756,6 @@
     <Content Include="Views\Customer\_CheckUsernameAvailability.cshtml" />
     <Content Include="Views\Customer\_ExternalAuthentication.AssociateMessage.cshtml" />
     <Content Include="Views\ExternalAuthentication\ExternalMethods.cshtml" />
-    <Content Include="Views\Filter\Products.cshtml" />
-    <Content Include="Views\Filter\ProductsMultiSelect.cshtml" />
     <Content Include="Views\Home\ContactUs.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Sitemap.cshtml" />

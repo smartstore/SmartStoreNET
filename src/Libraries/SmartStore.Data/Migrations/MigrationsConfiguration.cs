@@ -635,6 +635,24 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Catalog.Attributes.OptionsSets", "Options sets", "Optionen Sets");
 
+			builder.Delete(
+				"Products.Filter.Remove",
+				"Products.Filter.ShowAll",
+				"Products.Filter.SelectMultiple",
+				"Products.Filter.NoneFound",
+				"Products.Filter.Contains",
+				"Products.Filter.StartsWith",
+				"Products.Filter.EndsWith",
+				"Filtering.FilterResults",
+				"Admin.Configuration.Settings.Catalog.FilterEnabled",
+				"Admin.Configuration.Settings.Catalog.FilterEnabled.Hint",
+				"Admin.Configuration.Settings.Catalog.MaxFilterItemsToDisplay",
+				"Admin.Configuration.Settings.Catalog.MaxFilterItemsToDisplay.Hint",
+				"Admin.Configuration.Settings.Catalog.ExpandAllFilterCriteria",
+				"Admin.Configuration.Settings.Catalog.ExpandAllFilterCriteria.Hint",
+				"Admin.Configuration.Settings.Catalog.SortFilterResultsByMatches",
+				"Admin.Configuration.Settings.Catalog.SortFilterResultsByMatches.Hint"
+			);
 		}
 	}
 }

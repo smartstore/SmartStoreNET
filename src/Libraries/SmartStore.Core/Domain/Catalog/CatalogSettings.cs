@@ -40,9 +40,6 @@ namespace SmartStore.Core.Domain.Catalog
 			RecentlyAddedProductsNumber = 12;
 			RecentlyAddedProductsEnabled = true;
 			CompareProductsEnabled = true;
-            FilterEnabled = true;
-            MaxFilterItemsToDisplay = 4;
-			SortFilterResultsByMatches = true;
 			SubCategoryDisplayType = SubCategoryDisplayType.AboveProductList;
 			NumberOfBestsellersOnHomepage = 12;
             ShowManufacturersOnHomepage = true;
@@ -173,27 +170,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether category breadcrumb is enabled
         /// </summary>
         public bool CategoryBreadcrumbEnabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether filter is enabled
-        /// </summary>
-        public bool FilterEnabled { get; set; }
         
-        /// <summary>
-        /// Gets or sets a value which determines the maximum number of displayed filter items
-        /// </summary>
-        public int MaxFilterItemsToDisplay { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether all filter criterias should be expanded
-        /// </summary>
-        public bool ExpandAllFilterCriteria { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether filter results should be sorted by matches
-		/// </summary>
-		public bool SortFilterResultsByMatches { get; set; }
-
 		/// <summary>
 		/// Gets or sets a value indicating whether and where to display a list of subcategories
 		/// </summary>

@@ -99,7 +99,6 @@
     <Var name="WellBackground" type="Color">#fafafa</Var>
     <Var name="ItemBoxBoxShadowColor" type="Color">#f89406</Var>
     <Var name="SimpleBoxHeaderColor" type="Color">#ddd</Var>
-    <Var name="ProductFilterBackgroundColor" type="Color">#f4f8f9</Var>
     <Var name="CheckoutProgressBackgroundColor" type="Color">#f5f5f5</Var>
     <Var name="AlternateListItemBackgroundColor" type="Color">#f5f5f5</Var>
     <Var name="ProductListsPriceColor" type="Color">#468847</Var>

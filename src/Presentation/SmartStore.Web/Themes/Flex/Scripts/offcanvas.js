@@ -72,6 +72,7 @@
 	// ======================================================
 
     OffCanvas.prototype._makeTouchy = function (fn) {
+        var self = this;
     	var el = this.el;
 
     	function getDelta(g) {

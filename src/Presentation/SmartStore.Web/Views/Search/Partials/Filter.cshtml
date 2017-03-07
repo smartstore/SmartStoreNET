@@ -64,11 +64,12 @@
 
 @helper FacetCheckbox(Facet facet)
 {
-	<div class="checkbox">
+	<div class="facet-check">
 		@if (facet.IsChoice)
 		{
 			<label>
-				<input type="checkbox" value="@facet.Value.ToString()" data-parentid="@facet.Value.ParentId" class="search-filter" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
+				<input class="facet-control-native search-filter" type="checkbox" value="@facet.Value.ToString()" data-parentid="@facet.Value.ParentId" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
+				<span class="facet-control-ui"></span>
 				@FacetLabel(facet)
 			</label>
 		}
@@ -85,9 +86,10 @@
 {
 	if (facet.HitCount > 0 || !facet.IsChoice)
 	{
-		<div class="radio">
+		<div class="facet-radio">
 			<label>
-				<input type="radio" name="optradio" value="@facet.Value.ToString()" data-parentid="@facet.Value.ParentId" class="search-filter" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
+				<input class="facet-control-native search-filter" type="radio" name="optradio" value="@facet.Value.ToString()" data-parentid="@facet.Value.ParentId" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
+				<span class="facet-control-ui"></span>
 				@FacetLabel(facet)
 			</label>
 		</div>
@@ -110,11 +112,7 @@
 
 @helper FacetLabel(Facet facet)
 {
-	<span class="facet-value">@(facet.Value.Label ?? facet.Value.ToString())</span>
-	if (facet.HitCount > 0)
-	{
-		<span class="facet-hit-count">(@facet.HitCount)</span>
-	}
+	<span class="facet-label" @Html.Attr("data-count", facet.HitCount.ToString("N0"), facet.HitCount > 0)>@(facet.Value.Label ?? facet.Value.ToString())</span>
 }
 
 <script type="text/javascript">

@@ -47,7 +47,8 @@ var AjaxMenu = (function ($, window, document, undefined) {
             else if (item.find(".nav-link").is("#help-tab")) {
                 navigateToHelp();
             }
-            else if (item.find(".nav-link").is("#category-tab")) {
+            else if (item.parents(".tab-pane").is("#ocm-categories") || item.parents('.category-container').length) {
+                
                 navigateToMenuItem(entityId ? entityId : 0, item.hasClass("back-to-parent-cat") ? "right" : "left");
             }
 
@@ -72,26 +73,20 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	            var firstCall = categoryContainer.length == 0;
 	            var categoryTab = entityId != 0 ? menu : $("#ocm-categories");
 
-                
 	            if (firstCall) {
-	                categoryTab.append(response);
+
+	                if (entityId != 0)
+	                    categoryTab.append(wrapAjaxResponse(response, direction, " in"));
+                    else 
+	                    categoryTab.append(response);
 	            }
 	            else {
-                  
-	                var responseHtml = "";
+
 	                var categoryContainerSlideIn;
 
 	                if (entityId != 0)
-	                {
-                        
-	                    responseHtml += '<div class="ocm-nav-layer slide-in-from-' + direction + '">';
-	                    responseHtml += '   <div class="offcanvas-menu-subcat-header text-xs-right">';
-	                    responseHtml += '       <button class="btn btn-secondary btn-flat btn-to-danger btn-lg btn-icon offcanvas-closer fs-h2">&#215;</button>';
-	                    responseHtml += '   </div>';
-	                    responseHtml +=     response;
-	                    responseHtml += '</div>';
-
-	                    categoryContainerSlideIn = $(responseHtml).appendTo(categoryTab);
+	                {   
+	                    categoryContainerSlideIn = $(wrapAjaxResponse(response, direction, "")).appendTo(categoryTab);
 	                }
 	                else
 	                {
@@ -100,6 +95,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	                    navigateToHomeLayer();
 	                    return;
 	                }
+	                
 	                
 	                var categoryContainerSlideOut = $(".ocm-home-layer").length != 0 ? $(".ocm-home-layer") : $(".ocm-nav-layer:first");
 
@@ -153,6 +149,19 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	        complete: function () { }
 	    });
 	}
+
+    function wrapAjaxResponse(response, direction, first) {
+        var responseHtml = "";
+
+        responseHtml += '<div class="ocm-nav-layer slide-in-from-' + direction + first + '">';
+        responseHtml += '   <div class="offcanvas-menu-subcat-header text-xs-right">';
+        responseHtml += '       <button class="btn btn-secondary btn-flat btn-to-danger btn-lg btn-icon offcanvas-closer fs-h2">&#215;</button>';
+        responseHtml += '   </div>';
+        responseHtml += response;
+        responseHtml += '</div>';
+
+        return responseHtml;
+    }
 
     // TODO: mit home layer zusammenlegen
     function navigateToManufacturer() {

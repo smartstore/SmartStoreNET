@@ -10,7 +10,6 @@ using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
@@ -23,6 +22,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
+using SmartStore.Core.Search;
 using SmartStore.Core.Themes;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
@@ -33,7 +33,9 @@ using SmartStore.Services.Forums;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Search;
 using SmartStore.Services.Security;
+using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
@@ -43,12 +45,10 @@ using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Common;
-using SmartStore.Services.Seo;
-using SmartStore.Core.Search;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class CommonController : PublicControllerBase
+	public partial class CommonController : PublicControllerBase
     {
 		private readonly static string[] s_hints = new string[] { "Shopsystem", "Onlineshop Software", "Shopsoftware", "E-Commerce Solution" };
 
@@ -62,6 +62,7 @@ namespace SmartStore.Web.Controllers
         private readonly Lazy<IGenericAttributeService> _genericAttributeService;
 		private readonly Lazy<ICompareProductsService> _compareProductsService;
 		private readonly Lazy<IUrlRecordService> _urlRecordService;
+		private readonly Lazy<ICatalogSearchService> _catalogSearchService;
 
 		private readonly StoreInformationSettings _storeInfoSettings;
 		private readonly CustomerSettings _customerSettings;
@@ -100,6 +101,7 @@ namespace SmartStore.Web.Controllers
 			Lazy<IMobileDeviceHelper> mobileDeviceHelper,
 			Lazy<ICompareProductsService> compareProductsService,
 			Lazy<IUrlRecordService> urlRecordService,
+			Lazy<ICatalogSearchService> catalogSearchService,
 			StoreInformationSettings storeInfoSettings,
             CustomerSettings customerSettings, 
             TaxSettings taxSettings, 
@@ -125,42 +127,43 @@ namespace SmartStore.Web.Controllers
 			Lazy<IProductService> productService,
             Lazy<IShoppingCartService> shoppingCartService)
         {
-			this._services = services;
-			this._topicService = topicService;
-            this._languageService = languageService;
-            this._currencyService = currencyService;
-            this._themeContext = themeContext;
-            this._themeRegistry = themeRegistry;
-            this._forumservice = forumService;
-            this._genericAttributeService = genericAttributeService;
-			this._compareProductsService = compareProductsService;
-			this._urlRecordService = urlRecordService;
+			_services = services;
+			_topicService = topicService;
+            _languageService = languageService;
+            _currencyService = currencyService;
+            _themeContext = themeContext;
+            _themeRegistry = themeRegistry;
+            _forumservice = forumService;
+            _genericAttributeService = genericAttributeService;
+			_compareProductsService = compareProductsService;
+			_urlRecordService = urlRecordService;
+			_catalogSearchService = catalogSearchService;
 
-			this._storeInfoSettings = storeInfoSettings;
-			this._customerSettings = customerSettings;
-            this._taxSettings = taxSettings;
-            this._catalogSettings = catalogSettings;
-            this._shoppingCartSettings = shoppingCartSettings;
-            this._commonSettings = commonSettings;
-			this._newsSettings = newsSettings;
-            this._blogSettings = blogSettings;
-            this._forumSettings = forumSettings;
-            this._localizationSettings = localizationSettings;
-			this._securitySettings = securitySettings;
-			this._socialSettings = socialSettings;
-			this._mediaSettings = mediaSettings;
-			this._searchSettings = searchSettings;
+			_storeInfoSettings = storeInfoSettings;
+			_customerSettings = customerSettings;
+            _taxSettings = taxSettings;
+            _catalogSettings = catalogSettings;
+            _shoppingCartSettings = shoppingCartSettings;
+            _commonSettings = commonSettings;
+			_newsSettings = newsSettings;
+            _blogSettings = blogSettings;
+            _forumSettings = forumSettings;
+            _localizationSettings = localizationSettings;
+			_securitySettings = securitySettings;
+			_socialSettings = socialSettings;
+			_mediaSettings = mediaSettings;
+			_searchSettings = searchSettings;
 
-            this._orderTotalCalculationService = orderTotalCalculationService;
-            this._priceFormatter = priceFormatter;
+            _orderTotalCalculationService = orderTotalCalculationService;
+            _priceFormatter = priceFormatter;
 
-            this._themeSettings = themeSettings;
-			this._pageAssetsBuilder = pageAssetsBuilder;
-			this._pictureService = pictureService;
-			this._manufacturerService = manufacturerService;
-			this._categoryService = categoryService;
-			this._productService = productService;
-            this._shoppingCartService = shoppingCartService;
+            _themeSettings = themeSettings;
+			_pageAssetsBuilder = pageAssetsBuilder;
+			_pictureService = pictureService;
+			_manufacturerService = manufacturerService;
+			_categoryService = categoryService;
+			_productService = productService;
+            _shoppingCartService = shoppingCartService;
         }
 
         #region Utilities
@@ -1026,25 +1029,38 @@ namespace SmartStore.Web.Controllers
 						var labelTextBundled = T("Admin.Catalog.Products.ProductType.BundledProduct.Label").Text;
 						var sku = T("Products.Sku").Text;
 
-						var searchContext = new ProductSearchContext
-						{
-							CategoryIds = (model.CategoryId == 0 ? null : new List<int> { model.CategoryId }),
-							ManufacturerId = model.ManufacturerId,
-							StoreId = model.StoreId,
-							Keywords = model.SearchTerm,
-							ProductType = model.ProductTypeId > 0 ? (ProductType?)model.ProductTypeId : null,
-							SearchSku = _searchSettings.Value.SearchFields.Contains("sku"),
-							ShowHidden = hasPermission
-						};
+						var fields = new List<string> { "name" };
+						if (_searchSettings.Value.SearchFields.Contains("sku"))
+							fields.Add("sku");
+						if (_searchSettings.Value.SearchFields.Contains("shortdescription"))
+							fields.Add("shortdescription");
 
-						var query = _productService.Value.PrepareProductSearchQuery(searchContext, x => new { x.Id, x.Sku, x.Name, x.Published, x.ProductTypeId });
+						var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchTerm)
+							.HasStoreId(model.StoreId);
 
-						query = from x in query
-								group x by x.Id into grp
-								orderby grp.Key
-								select grp.FirstOrDefault();
+						if (!hasPermission)
+							searchQuery = searchQuery.VisibleOnly(_services.WorkContext.CurrentCustomer);
+
+						if (model.ProductTypeId > 0)
+							searchQuery = searchQuery.IsProductType((ProductType)model.ProductTypeId);
+
+						if (model.ManufacturerId != 0)
+							searchQuery = searchQuery.WithManufacturerIds(null, model.ManufacturerId);
+
+						if (model.CategoryId != 0)
+							searchQuery = searchQuery.WithCategoryIds(null, model.CategoryId);
+
+						var query = _catalogSearchService.Value.PrepareQuery(searchQuery);
 
 						var products = query
+							.Select(x => new
+							{
+								x.Id,
+								x.Sku,
+								x.Name,
+								x.Published,
+								x.ProductTypeId
+							})
 							.OrderBy(x => x.Name)
 							.Skip(model.PageIndex * model.PageSize)
 							.Take(model.PageSize)

@@ -1,28 +1,25 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
-using System.Globalization;
-using System.Text;
-using System.Collections.Generic;
 using System.Xml.Linq;
 using SmartStore.Core;
-using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Logging;
-using SmartStore.Core.Caching;
-using SmartStore.Services.Catalog;
-using SmartStore.Services.Topics;
-using SmartStore.Services.Seo;
-using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Data;
-using SmartStore.Services.Localization;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Services.Customers;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Logging;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.Customers;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Search;
+using SmartStore.Services.Topics;
 
 namespace SmartStore.Services.Seo
 {
-    public partial class XmlSitemapGenerator : IXmlSitemapGenerator
+	public partial class XmlSitemapGenerator : IXmlSitemapGenerator
     {
 		/// <summary>
 		/// Key for seo sitemap
@@ -61,6 +58,7 @@ namespace SmartStore.Services.Seo
         private readonly ITopicService _topicService;
 		private readonly ILanguageService _languageService;
 		private readonly ICustomerService _customerService;
+		private readonly ICatalogSearchService _catalogSearchService;
 		private readonly SeoSettings _seoSettings;
 		private readonly SecuritySettings _securitySettings;
 		private readonly ICommonServices _services;
@@ -73,21 +71,23 @@ namespace SmartStore.Services.Seo
             ITopicService topicService,
 			ILanguageService languageService,
 			ICustomerService customerService,
+			ICatalogSearchService catalogSearchService,
 			SeoSettings commonSettings, 
 			SecuritySettings securitySettings,
 			ICommonServices services,
 			UrlHelper urlHelper)
         {
-            this._categoryService = categoryService;
-            this._productService = productService;
-            this._manufacturerService = manufacturerService;
-            this._topicService = topicService;
-			this._languageService = languageService;
-			this._customerService = customerService;
-            this._seoSettings = commonSettings;
-			this._securitySettings = securitySettings;
-			this._services = services;
-			this._urlHelper = urlHelper;
+            _categoryService = categoryService;
+            _productService = productService;
+            _manufacturerService = manufacturerService;
+            _topicService = topicService;
+			_languageService = languageService;
+			_customerService = customerService;
+			_catalogSearchService = catalogSearchService;
+            _seoSettings = commonSettings;
+			_securitySettings = securitySettings;
+			_services = services;
+			_urlHelper = urlHelper;
 
 			Logger = NullLogger.Instance;
         }
@@ -424,14 +424,13 @@ namespace SmartStore.Services.Seo
 		{
 			var nodes = new List<XmlSitemapNode>();
 
-			var ctx = new ProductSearchContext
-			{
-				StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode,
-				VisibleIndividuallyOnly = true
-			};
+			var searchQuery = new CatalogSearchQuery()
+				.VisibleOnly()
+				.VisibleIndividuallyOnly(true)
+				.HasStoreId(_services.StoreContext.CurrentStoreIdIfMultiStoreMode);
 
-			var query = _productService.PrepareProductSearchQuery(ctx);
-			query = query.OrderByDescending(p => p.CreatedOnUtc);
+			var query = _catalogSearchService.PrepareQuery(searchQuery);
+			query = query.OrderByDescending(x => x.CreatedOnUtc);
 
 			for (var pageIndex = 0; pageIndex < 9999999; ++pageIndex)
 			{

@@ -6,6 +6,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Search;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 
@@ -31,33 +32,42 @@ namespace SmartStore.Services.Catalog
         private readonly IUrlRecordService _urlRecordService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly ILocalizationService _localizationService;
+		private readonly ICatalogSearchService _catalogSearchService;
 
-        #endregion
+		#endregion
 
-        #region Ctor
+		#region Ctor
 
-        public CopyProductService(IProductService productService,
-            IProductAttributeService productAttributeService, ILanguageService languageService,
-            ILocalizedEntityService localizedEntityService, IPictureService pictureService,
-            ICategoryService categoryService, IManufacturerService manufacturerService,
-            ISpecificationAttributeService specificationAttributeService, IDownloadService downloadService,
-            IProductAttributeParser productAttributeParser, IUrlRecordService urlRecordService,
+		public CopyProductService(
+			IProductService productService,
+            IProductAttributeService productAttributeService,
+			ILanguageService languageService,
+            ILocalizedEntityService localizedEntityService,
+			IPictureService pictureService,
+            ICategoryService categoryService,
+			IManufacturerService manufacturerService,
+            ISpecificationAttributeService specificationAttributeService,
+			IDownloadService downloadService,
+            IProductAttributeParser productAttributeParser,
+			IUrlRecordService urlRecordService,
 			IStoreMappingService storeMappingService,
-			ILocalizationService localizationService)
+			ILocalizationService localizationService,
+			ICatalogSearchService catalogSearchService)
         {
-            this._productService = productService;
-            this._productAttributeService = productAttributeService;
-            this._languageService = languageService;
-            this._localizedEntityService = localizedEntityService;
-            this._pictureService = pictureService;
-            this._categoryService = categoryService;
-            this._manufacturerService = manufacturerService;
-            this._specificationAttributeService = specificationAttributeService;
-            this._downloadService = downloadService;
-            this._productAttributeParser = productAttributeParser;
-			this._urlRecordService = urlRecordService;
-			this._storeMappingService = storeMappingService;
-			this._localizationService = localizationService;
+            _productService = productService;
+            _productAttributeService = productAttributeService;
+            _languageService = languageService;
+            _localizedEntityService = localizedEntityService;
+            _pictureService = pictureService;
+            _categoryService = categoryService;
+            _manufacturerService = manufacturerService;
+            _specificationAttributeService = specificationAttributeService;
+            _downloadService = downloadService;
+            _productAttributeParser = productAttributeParser;
+			_urlRecordService = urlRecordService;
+			_storeMappingService = storeMappingService;
+			_localizationService = localizationService;
+			_catalogSearchService = catalogSearchService;
         }
 
         #endregion
@@ -527,13 +537,10 @@ namespace SmartStore.Services.Catalog
 			if (copyAssociatedProducts && product.ProductType != ProductType.BundledProduct)
 			{
 				var copyOf = _localizationService.GetResource("Admin.Common.CopyOf");
-				var associatedSearchContext = new ProductSearchContext
-				{
-					ParentGroupedProductId = product.Id,
-					ShowHidden = true
-				};
+				var searchQuery = new CatalogSearchQuery()
+					.HasParentGroupedProductId(product.Id);
 
-				var query = _productService.PrepareProductSearchQuery(associatedSearchContext);
+				var query = _catalogSearchService.PrepareQuery(searchQuery);
 				var associatedProducts = query.OrderBy(p => p.DisplayOrder).ToList();
 
 				foreach (var associatedProduct in associatedProducts)

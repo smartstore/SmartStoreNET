@@ -34,6 +34,7 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
@@ -93,6 +94,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICommonServices _services;
 		private readonly ICountryService _countryService;
+		private readonly ICatalogSearchService _catalogSearchService;
 		private readonly SeoSettings _seoSettings;
 		private readonly MediaSettings _mediaSettings;
 		private readonly SearchSettings _searchSettings;
@@ -143,54 +145,56 @@ namespace SmartStore.Admin.Controllers
 			IGenericAttributeService genericAttributeService,
             ICommonServices services,
 			ICountryService countryService,
+			ICatalogSearchService catalogSearchService,
 			SeoSettings seoSettings,
 			MediaSettings mediaSettings,
 			SearchSettings searchSettings)
 		{
-            this._productService = productService;
-            this._productTemplateService = productTemplateService;
-            this._categoryService = categoryService;
-            this._manufacturerService = manufacturerService;
-            this._customerService = customerService;
-            this._urlRecordService = urlRecordService;
-            this._workContext = workContext;
-            this._languageService = languageService;
-            this._localizationService = localizationService;
-            this._localizedEntityService = localizedEntityService;
-            this._specificationAttributeService = specificationAttributeService;
-            this._pictureService = pictureService;
-            this._taxCategoryService = taxCategoryService;
-            this._productTagService = productTagService;
-            this._copyProductService = copyProductService;
-            this._customerActivityService = customerActivityService;
-            this._permissionService = permissionService;
-            this._aclService = aclService;
-			this._storeService = storeService;
-			this._storeMappingService = storeMappingService;
-            this._adminAreaSettings = adminAreaSettings;
-			this._dateTimeHelper = dateTimeHelper;
-			this._discountService = discountService;
-			this._productAttributeService = productAttributeService;
-			this._pvacRepository = pvacRepository;
-			this._backInStockSubscriptionService = backInStockSubscriptionService;
-			this._shoppingCartService = shoppingCartService;
-			this._productAttributeFormatter = productAttributeFormatter;
-			this._productAttributeParser = productAttributeParser;
-			this._catalogSettings = catalogSettings;
-			this._downloadService = downloadService;
-			this._deliveryTimesService = deliveryTimesService;
-            this._quantityUnitService = quantityUnitService;
-			this._measureService = measureService;
-			this._measureSettings = measureSettings;
-			this._priceFormatter = priceFormatter;
-			this._dbContext = dbContext;
-			this._eventPublisher = eventPublisher;
-			this._genericAttributeService = genericAttributeService;
-            this._services = services;
-			this._countryService = countryService;
-			this._seoSettings = seoSettings;
-			this._mediaSettings = mediaSettings;
-			this._searchSettings = searchSettings;
+            _productService = productService;
+            _productTemplateService = productTemplateService;
+            _categoryService = categoryService;
+            _manufacturerService = manufacturerService;
+            _customerService = customerService;
+            _urlRecordService = urlRecordService;
+            _workContext = workContext;
+            _languageService = languageService;
+            _localizationService = localizationService;
+            _localizedEntityService = localizedEntityService;
+            _specificationAttributeService = specificationAttributeService;
+            _pictureService = pictureService;
+            _taxCategoryService = taxCategoryService;
+            _productTagService = productTagService;
+            _copyProductService = copyProductService;
+            _customerActivityService = customerActivityService;
+            _permissionService = permissionService;
+            _aclService = aclService;
+			_storeService = storeService;
+			_storeMappingService = storeMappingService;
+            _adminAreaSettings = adminAreaSettings;
+			_dateTimeHelper = dateTimeHelper;
+			_discountService = discountService;
+			_productAttributeService = productAttributeService;
+			_pvacRepository = pvacRepository;
+			_backInStockSubscriptionService = backInStockSubscriptionService;
+			_shoppingCartService = shoppingCartService;
+			_productAttributeFormatter = productAttributeFormatter;
+			_productAttributeParser = productAttributeParser;
+			_catalogSettings = catalogSettings;
+			_downloadService = downloadService;
+			_deliveryTimesService = deliveryTimesService;
+            _quantityUnitService = quantityUnitService;
+			_measureService = measureService;
+			_measureSettings = measureSettings;
+			_priceFormatter = priceFormatter;
+			_dbContext = dbContext;
+			_eventPublisher = eventPublisher;
+			_genericAttributeService = genericAttributeService;
+            _services = services;
+			_countryService = countryService;
+			_catalogSearchService = catalogSearchService;
+			_seoSettings = seoSettings;
+			_mediaSettings = mediaSettings;
+			_searchSettings = searchSettings;
 		}
 
         #endregion
@@ -952,27 +956,36 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var searchContext = new ProductSearchContext
-				{
-					ManufacturerId = model.SearchManufacturerId,
-					StoreId = model.SearchStoreId,
-					Keywords = model.SearchProductName,
-					SearchSku = _searchSettings.SearchFields.Contains("sku"),
-					LanguageId = _workContext.WorkingLanguage.Id,
-					ShowHidden = true,
-					ProductType = (model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null),
-					WithoutCategories = model.SearchWithoutCategories,
-					WithoutManufacturers = model.SearchWithoutManufacturers,
-					IsPublished = model.SearchIsPublished,
-					HomePageProducts = model.SearchHomePageProducts
-				};
+				var fields = new List<string> { "name" };
+				if (_searchSettings.SearchFields.Contains("sku"))
+					fields.Add("sku");
+				if (_searchSettings.SearchFields.Contains("shortdescription"))
+					fields.Add("shortdescription");
 
-				if (model.SearchCategoryId > 0)
-				{
-					searchContext.CategoryIds.Add(model.SearchCategoryId);
-				}
+				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName)
+					.HasStoreId(model.SearchStoreId)
+					.WithLanguage(_workContext.WorkingLanguage);
 
-				var query = _productService.PrepareProductSearchQuery(searchContext);
+				if (model.SearchIsPublished.HasValue)
+					searchQuery = searchQuery.PublishedOnly(model.SearchIsPublished.Value);
+
+				if (model.SearchHomePageProducts.HasValue)
+					searchQuery = searchQuery.HomePageProductsOnly(model.SearchHomePageProducts.Value);
+
+				if (model.SearchProductTypeId > 0)
+					searchQuery = searchQuery.IsProductType((ProductType)model.SearchProductTypeId);
+
+				if (model.SearchWithoutManufacturers.HasValue)
+					searchQuery = searchQuery.HasAnyManufacturer(!model.SearchWithoutManufacturers.Value);
+				else if (model.SearchManufacturerId != 0)
+					searchQuery = searchQuery.WithManufacturerIds(null, model.SearchManufacturerId);
+
+				if (model.SearchWithoutCategories.HasValue)
+					searchQuery = searchQuery.HasAnyCategory(!model.SearchWithoutCategories.Value);
+				else if (model.SearchCategoryId != 0)
+					searchQuery = searchQuery.WithCategoryIds(null, model.SearchCategoryId);
+
+				var query = _catalogSearchService.PrepareQuery(searchQuery);
 
 				// order
 				if (command.SortDescriptors != null && command.SortDescriptors.Count > 0)
@@ -1881,13 +1894,10 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var associatedSearchContext = new ProductSearchContext
-				{
-					ParentGroupedProductId = productId,
-					ShowHidden = true
-				};
+				var searchQuery = new CatalogSearchQuery()
+					.HasParentGroupedProductId(productId);
 
-				var query = _productService.PrepareProductSearchQuery(associatedSearchContext);
+				var query = _catalogSearchService.PrepareQuery(searchQuery);
 				var associatedProducts = query.OrderBy(p => p.DisplayOrder).ToList();
 
 				var associatedProductsModel = associatedProducts.Select(x =>
@@ -1955,13 +1965,12 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var searchContext = new ProductSearchContext
-				{
-					ParentGroupedProductId = productId,
-					ShowHidden = true
-				};
+				var searchQuery = new CatalogSearchQuery()
+					.HasParentGroupedProductId(productId);
 
-				var maxDisplayOrder = _productService.PrepareProductSearchQuery(searchContext, x => x.DisplayOrder)
+				var query = _catalogSearchService.PrepareQuery(searchQuery);
+				var maxDisplayOrder = query
+					.Select(x => x.DisplayOrder)
 					.OrderByDescending(x => x)
 					.FirstOrDefault();
 
@@ -2683,22 +2692,26 @@ namespace SmartStore.Admin.Controllers
 
 			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 			{
-				var searchContext = new ProductSearchContext
-				{
-					StoreId = model.SearchStoreId,
-					ManufacturerId = model.SearchManufacturerId,
-					Keywords = model.SearchProductName,
-					SearchSku = _searchSettings.SearchFields.Contains("sku"),
-					ShowHidden = true,
-					ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
-				};
+				var fields = new List<string> { "name" };
+				if (_searchSettings.SearchFields.Contains("sku"))
+					fields.Add("sku");
+				if (_searchSettings.SearchFields.Contains("shortdescription"))
+					fields.Add("shortdescription");
 
-				if (model.SearchCategoryId > 0)
-				{
-					searchContext.CategoryIds.Add(model.SearchCategoryId);
-				}
+				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName)
+					.HasStoreId(model.SearchStoreId);
 
-				var query = _productService.PrepareProductSearchQuery(searchContext);
+				if (model.SearchProductTypeId > 0)
+					searchQuery = searchQuery.IsProductType((ProductType)model.SearchProductTypeId);
+
+				if (model.SearchManufacturerId != 0)
+					searchQuery = searchQuery.WithManufacturerIds(null, model.SearchManufacturerId);
+
+				if (model.SearchCategoryId != 0)
+					searchQuery = searchQuery.WithCategoryIds(null, model.SearchCategoryId);
+
+
+				var query = _catalogSearchService.PrepareQuery(searchQuery);
 				var products = new PagedList<Product>(query.OrderBy(x => x.Name), command.Page - 1, command.PageSize);
 
 				gridModel.Data = products.Select(x =>

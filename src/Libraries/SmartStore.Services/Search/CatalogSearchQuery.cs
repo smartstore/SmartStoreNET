@@ -109,7 +109,7 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery PublishedOnly(bool value)
 		{
-			return WithFilter(SearchFilter.ByField("published", true).Mandatory().ExactMatch().NotAnalyzed());
+			return WithFilter(SearchFilter.ByField("published", value).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
 		public CatalogSearchQuery VisibleIndividuallyOnly(bool value)
@@ -131,10 +131,19 @@ namespace SmartStore.Services.Search
 		{
 			base.HasStoreId(id);
 
-			return WithFilter(SearchFilter.Combined(
-				SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed(),
-				SearchFilter.ByField("storeid", id).ExactMatch().NotAnalyzed())
-			);
+			if (id == 0)
+			{
+				WithFilter(SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed());
+			}
+			else
+			{
+				WithFilter(SearchFilter.Combined(
+					SearchFilter.ByField("storeid", 0).ExactMatch().NotAnalyzed(),
+					SearchFilter.ByField("storeid", id).ExactMatch().NotAnalyzed())
+				);
+			}
+
+			return this;
 		}
 
 		public CatalogSearchQuery IsProductType(ProductType type)
@@ -144,11 +153,21 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithProductIds(params int[] ids)
 		{
+			if (ids.Length == 0)
+			{
+				return this;
+			}
+
 			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField("id", x).ExactMatch().NotAnalyzed()).ToArray()));
 		}
 
 		public CatalogSearchQuery WithProductId(int? fromId, int? toId)
 		{
+			if (fromId == null && toId == null)
+			{
+				return this;
+			}
+
 			return WithFilter(SearchFilter.ByRange("id", fromId, toId, fromId.HasValue, toId.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
@@ -193,6 +212,11 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithManufacturerIds(bool? featuredOnly, params int[] ids)
 		{
+			if (ids.Length == 0)
+			{
+				return this;
+			}
+
 			string fieldName = null;
 
 			if (featuredOnly.HasValue)
@@ -218,16 +242,31 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithProductTagIds(params int[] ids)
 		{
+			if (ids.Length == 0)
+			{
+				return this;
+			}
+
 			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField("tagid", x).ExactMatch().NotAnalyzed()).ToArray()));
 		}
 
 		public CatalogSearchQuery WithStockQuantity(int? fromQuantity, int? toQuantity)
 		{
+			if (fromQuantity == null && toQuantity == null)
+			{
+				return this;
+			}
+
 			return WithFilter(SearchFilter.ByRange("stockquantity", fromQuantity, toQuantity, fromQuantity.HasValue, toQuantity.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
 		public CatalogSearchQuery PriceBetween(decimal? fromPrice, decimal? toPrice)
 		{
+			if (fromPrice == null && toPrice == null)
+			{
+				return this;
+			}
+
 			Guard.NotEmpty(CurrencyCode, nameof(CurrencyCode));
 
 			var fieldName = "price_c-" + CurrencyCode.EmptyNull().ToLower();
@@ -242,11 +281,20 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery CreatedBetween(DateTime? fromUtc, DateTime? toUtc)
 		{
+			if (fromUtc == null && toUtc == null)
+			{
+				return this;
+			}
+
 			return WithFilter(SearchFilter.ByRange("createdon", fromUtc, toUtc, fromUtc.HasValue, toUtc.HasValue).Mandatory().ExactMatch().NotAnalyzed());
 		}
 
 		public CatalogSearchQuery WithRating(double? fromRate, double? toRate)
 		{
+			if (fromRate == null && toRate == null)
+			{
+				return this;
+			}
 			if (fromRate.HasValue)
 			{
 				Guard.InRange(fromRate.Value, 0.0, 5.0, nameof(fromRate.Value));
@@ -261,6 +309,11 @@ namespace SmartStore.Services.Search
 
 		public CatalogSearchQuery WithDeliveryTimeIds(params int[] ids)
 		{
+			if (ids.Length == 0)
+			{
+				return this;
+			}
+
 			return WithFilter(SearchFilter.Combined(ids.Select(x => SearchFilter.ByField("deliveryid", x).ExactMatch().NotAnalyzed()).ToArray()));
 		}
 

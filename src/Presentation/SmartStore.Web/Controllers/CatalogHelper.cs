@@ -1256,10 +1256,13 @@ namespace SmartStore.Web.Controllers
 										categoryIds.Add(node.Value.EntityId);
 									}
 
-									var ctx = new ProductSearchContext();
-									ctx.CategoryIds = categoryIds;
-									ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
-									node.Value.ElementsCount = _productService.CountProducts(ctx);
+									var context = new CatalogSearchQuery()
+										.VisibleOnly()
+										.WithCategoryIds(null, categoryIds.ToArray())
+										.HasStoreId(_services.StoreContext.CurrentStoreIdIfMultiStoreMode);
+
+									var query = _catalogSearchService.PrepareQuery(context);
+									node.Value.ElementsCount = query.Distinct().Count();
 								}
 							}
 						}

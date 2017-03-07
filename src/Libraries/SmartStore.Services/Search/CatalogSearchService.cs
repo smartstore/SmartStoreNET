@@ -46,7 +46,8 @@ namespace SmartStore.Services.Search
 		{
 			// fallback to linq search
 			var linqCatalogSearchService = _ctx.ResolveNamed<ICatalogSearchService>("linq");
-			return linqCatalogSearchService.Search(searchQuery, loadFlags);
+
+			return linqCatalogSearchService.Search(searchQuery, loadFlags, true);
 		}
 
 		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None, bool direct = false)
@@ -121,7 +122,7 @@ namespace SmartStore.Services.Search
 							searchEngine,
 							searchQuery,
 							totalCount,
-							hitsFactory, 
+							hitsFactory,
 							spellCheckerSuggestions,
 							facets);
 
@@ -133,6 +134,13 @@ namespace SmartStore.Services.Search
 			}
 
 			return SearchDirect(searchQuery);
+		}
+
+		public IQueryable<Product> PrepareQuery(CatalogSearchQuery searchQuery, IQueryable<Product> baseQuery = null)
+		{
+			var linqCatalogSearchService = _ctx.ResolveNamed<ICatalogSearchService>("linq");
+
+			return linqCatalogSearchService.PrepareQuery(searchQuery, baseQuery);
 		}
 	}
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
-using System.Linq.Expressions;
 using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -11,8 +10,6 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Security;
-using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Messages;
@@ -26,9 +23,6 @@ namespace SmartStore.Services.Catalog
         private readonly IRepository<RelatedProduct> _relatedProductRepository;
         private readonly IRepository<CrossSellProduct> _crossSellProductRepository;
         private readonly IRepository<TierPrice> _tierPriceRepository;
-        private readonly IRepository<LocalizedProperty> _localizedPropertyRepository;
-        private readonly IRepository<AclRecord> _aclRepository;
-		private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IRepository<ProductPicture> _productPictureRepository;
         private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository;
@@ -47,9 +41,6 @@ namespace SmartStore.Services.Catalog
             IRepository<CrossSellProduct> crossSellProductRepository,
             IRepository<TierPrice> tierPriceRepository,
             IRepository<ProductPicture> productPictureRepository,
-            IRepository<LocalizedProperty> localizedPropertyRepository,
-            IRepository<AclRecord> aclRepository,
-			IRepository<StoreMapping> storeMappingRepository,
             IRepository<ProductSpecificationAttribute> productSpecificationAttributeRepository,
             IRepository<ProductVariantAttributeCombination> productVariantAttributeCombinationRepository,
 			IRepository<ProductBundleItem> productBundleItemRepository,
@@ -66,9 +57,6 @@ namespace SmartStore.Services.Catalog
             _crossSellProductRepository = crossSellProductRepository;
             _tierPriceRepository = tierPriceRepository;
             _productPictureRepository = productPictureRepository;
-            _localizedPropertyRepository = localizedPropertyRepository;
-            _aclRepository = aclRepository;
-			_storeMappingRepository = storeMappingRepository;
             _productSpecificationAttributeRepository = productSpecificationAttributeRepository;
             _productVariantAttributeCombinationRepository = productVariantAttributeCombinationRepository;
 			_productBundleItemRepository = productBundleItemRepository;
@@ -79,11 +67,7 @@ namespace SmartStore.Services.Catalog
             _dbContext = dbContext;
             _localizationSettings = localizationSettings;
 			_services = services;
-
-			QuerySettings = DbQuerySettings.Default;
         }
-
-		public DbQuerySettings QuerySettings { get; set; }
 
 		#region Utilities
 
@@ -336,274 +320,6 @@ namespace SmartStore.Services.Catalog
 				_services.EventPublisher.EntityUpdated(product);
 			}
         }
-
-        public virtual int CountProducts(ProductSearchContext ctx)
-        {
-            Guard.NotNull(ctx, nameof(ctx));
-
-            var query = PrepareProductSearchQuery(ctx, p => p.Id);
-            return query.Distinct().Count();
-        }
-
-		public virtual IQueryable<Product> PrepareProductSearchQuery(
-			ProductSearchContext ctx,
-			IEnumerable<int> allowedCustomerRolesIds = null,
-			bool searchLocalizedValue = false)
-		{
-			return PrepareProductSearchQuery<Product>(ctx, x => x, allowedCustomerRolesIds, searchLocalizedValue);
-		}
-
-		public virtual IQueryable<TResult> PrepareProductSearchQuery<TResult>(
-			ProductSearchContext ctx,
-			Expression<Func<Product, TResult>> selector,
-			IEnumerable<int> allowedCustomerRolesIds = null,
-			bool searchLocalizedValue = false)
-		{
-			Guard.NotNull(ctx, nameof(ctx));
-			Guard.NotNull(selector, nameof(selector));
-
-			if (allowedCustomerRolesIds == null)
-			{
-				allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
-			}
-			
-			// products
-			var query = ctx.Query ?? _productRepository.Table;
-			query = query.Where(p => !p.Deleted);
-
-			if (!ctx.IsPublished.HasValue)
-			{
-				if (!ctx.ShowHidden)
-					query = query.Where(p => p.Published);
-			}
-			else
-			{
-				query = query.Where(p => p.Published == ctx.IsPublished.Value);
-			}
-
-			if (ctx.ParentGroupedProductId > 0)
-			{
-				query = query.Where(p => p.ParentGroupedProductId == ctx.ParentGroupedProductId);
-			}
-
-			if (ctx.VisibleIndividuallyOnly)
-			{
-				query = query.Where(p => p.VisibleIndividually);
-			}
-
-			if (ctx.HomePageProducts.HasValue)
-			{
-				query = query.Where(p => p.ShowOnHomePage == ctx.HomePageProducts.Value);
-			}
-
-			if (ctx.ProductType.HasValue)
-			{
-				int productTypeId = (int)ctx.ProductType.Value;
-				query = query.Where(p => p.ProductTypeId == productTypeId);
-			}
-
-			if (ctx.ProductIds != null && ctx.ProductIds.Count > 0)
-			{
-				query = query.Where(x => ctx.ProductIds.Contains(x.Id));
-			}
-			else
-			{
-				if (ctx.IdMin != 0)
-					query = query.Where(x => x.Id >= ctx.IdMin);
-
-				if (ctx.IdMax != 0)
-					query = query.Where(x => x.Id <= ctx.IdMax);
-			}
-
-			if (ctx.AvailabilityMinimum.HasValue)
-			{
-				query = query.Where(x => x.StockQuantity >= ctx.AvailabilityMinimum.Value);
-			}
-
-			if (ctx.AvailabilityMaximum.HasValue)
-			{
-				query = query.Where(x => x.StockQuantity <= ctx.AvailabilityMaximum.Value);
-			}
-
-			if (ctx.CreatedFromUtc.HasValue)
-			{
-				query = query.Where(x => x.CreatedOnUtc >= ctx.CreatedFromUtc.Value);
-			}
-
-			if (ctx.CreatedToUtc.HasValue)
-			{
-				query = query.Where(x => x.CreatedOnUtc <= ctx.CreatedToUtc.Value);
-			}
-
-			//The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 
-			//That's why we pass the date value
-			var nowUtc = DateTime.UtcNow;
-
-			if (ctx.PriceMin.HasValue)
-			{
-				//min price
-				query = query.Where(p =>
-					//special price (specified price and valid date range)
-										((p.SpecialPrice.HasValue &&
-										  ((!p.SpecialPriceStartDateTimeUtc.HasValue ||
-											p.SpecialPriceStartDateTimeUtc.Value < nowUtc) &&
-										   (!p.SpecialPriceEndDateTimeUtc.HasValue ||
-											p.SpecialPriceEndDateTimeUtc.Value > nowUtc))) &&
-										 (p.SpecialPrice >= ctx.PriceMin.Value))
-										||
-											//regular price (price isn't specified or date range isn't valid)
-										((!p.SpecialPrice.HasValue ||
-										  ((p.SpecialPriceStartDateTimeUtc.HasValue &&
-											p.SpecialPriceStartDateTimeUtc.Value > nowUtc) ||
-										   (p.SpecialPriceEndDateTimeUtc.HasValue &&
-											p.SpecialPriceEndDateTimeUtc.Value < nowUtc))) &&
-										 (p.Price >= ctx.PriceMin.Value)));
-			}
-			if (ctx.PriceMax.HasValue)
-			{
-				//max price
-				query = query.Where(p =>
-					//special price (specified price and valid date range)
-									((p.SpecialPrice.HasValue &&
-									  ((!p.SpecialPriceStartDateTimeUtc.HasValue ||
-										p.SpecialPriceStartDateTimeUtc.Value < nowUtc) &&
-									   (!p.SpecialPriceEndDateTimeUtc.HasValue ||
-										p.SpecialPriceEndDateTimeUtc.Value > nowUtc))) &&
-									 (p.SpecialPrice <= ctx.PriceMax.Value))
-									||
-										//regular price (price isn't specified or date range isn't valid)
-									((!p.SpecialPrice.HasValue ||
-									  ((p.SpecialPriceStartDateTimeUtc.HasValue &&
-										p.SpecialPriceStartDateTimeUtc.Value > nowUtc) ||
-									   (p.SpecialPriceEndDateTimeUtc.HasValue &&
-										p.SpecialPriceEndDateTimeUtc.Value < nowUtc))) &&
-									 (p.Price <= ctx.PriceMax.Value)));
-			}
-			if (!ctx.ShowHidden)
-			{
-				//available dates
-				query = query.Where(p =>
-					(!p.AvailableStartDateTimeUtc.HasValue || p.AvailableStartDateTimeUtc.Value < nowUtc) &&
-					(!p.AvailableEndDateTimeUtc.HasValue || p.AvailableEndDateTimeUtc.Value > nowUtc));
-			}
-
-			// searching by keyword
-			if (!String.IsNullOrWhiteSpace(ctx.Keywords))
-			{
-				query = from p in query
-						join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into p_lp
-						from lp in p_lp.DefaultIfEmpty()
-						from pt in p.ProductTags.DefaultIfEmpty()
-						where (p.Name.Contains(ctx.Keywords)) ||
-							  (ctx.SearchDescriptions && p.ShortDescription.Contains(ctx.Keywords)) ||
-							  (ctx.SearchDescriptions && p.FullDescription.Contains(ctx.Keywords)) ||
-							  (ctx.SearchSku && p.Sku.Contains(ctx.Keywords)) ||
-							  (ctx.SearchProductTags && pt.Name.Contains(ctx.Keywords)) ||
-							//localized values
-							  (searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(ctx.Keywords)) ||
-							  (ctx.SearchDescriptions && searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(ctx.Keywords)) ||
-							  (ctx.SearchDescriptions && searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "FullDescription" && lp.LocaleValue.Contains(ctx.Keywords))
-						//UNDONE search localized values in associated product tags
-						select p;
-			}
-
-			if (!ctx.ShowHidden && !QuerySettings.IgnoreAcl)
-			{
-				query =
-					from p in query
-					join acl in _aclRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = acl.EntityId, pname = acl.EntityName } into pacl
-					from acl in pacl.DefaultIfEmpty()
-					where !p.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
-					select p;
-			}
-
-			if (ctx.StoreId > 0 && !QuerySettings.IgnoreMultiStore)
-			{
-				query =
-					from p in query
-					join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
-					from sm in psm.DefaultIfEmpty()
-					where !p.LimitedToStores || ctx.StoreId == sm.StoreId
-					select p;
-			}
-
-			// search by specs
-			if (ctx.FilteredSpecs != null && ctx.FilteredSpecs.Count > 0)
-			{
-				query =
-					from p in query
-					where !ctx.FilteredSpecs.Except
-					(
-						p.ProductSpecificationAttributes
-							.Where(psa => psa.AllowFiltering)
-							.Select(psa => psa.SpecificationAttributeOptionId)
-					).Any()
-					select p;
-			}
-
-			// category filtering
-			if (ctx.WithoutCategories.HasValue)
-			{
-				if (ctx.WithoutCategories.Value)
-					query = query.Where(x => x.ProductCategories.Count == 0);
-				else
-					query = query.Where(x => x.ProductCategories.Count > 0);
-			}
-			else if (ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
-			{
-				//search in subcategories
-				if (ctx.MatchAllcategories)
-				{
-					query = from p in query
-							where ctx.CategoryIds.All(i => p.ProductCategories.Any(p2 => p2.CategoryId == i))
-							from pc in p.ProductCategories
-							where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
-							select p;
-				}
-				else
-				{
-					query = from p in query
-							from pc in p.ProductCategories.Where(pc => ctx.CategoryIds.Contains(pc.CategoryId))
-							where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
-							select p;
-				}
-			}
-
-			// manufacturer filtering
-			if (ctx.WithoutManufacturers.HasValue)
-			{
-				if (ctx.WithoutManufacturers.Value)
-					query = query.Where(x => x.ProductManufacturers.Count == 0);
-				else
-					query = query.Where(x => x.ProductManufacturers.Count > 0);
-			}
-			else if (ctx.ManufacturerId > 0)
-			{
-				query = from p in query
-						from pm in p.ProductManufacturers.Where(pm => pm.ManufacturerId == ctx.ManufacturerId)
-						where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pm.IsFeaturedProduct)
-						select p;
-			}
-
-			// related products filtering
-			//if (relatedToProductId > 0)
-			//{
-			//    query = from p in query
-			//            join rp in _relatedProductRepository.Table on p.Id equals rp.ProductId2
-			//            where (relatedToProductId == rp.ProductId1)
-			//            select p;
-			//}
-
-			// tag filtering
-			if (ctx.ProductTagId > 0)
-			{
-				query = from p in query
-						from pt in p.ProductTags.Where(pt => pt.Id == ctx.ProductTagId)
-						select p;
-			}
-
-			return query.Select(selector);
-		}
 
         public virtual void UpdateProductReviewTotals(Product product)
         {

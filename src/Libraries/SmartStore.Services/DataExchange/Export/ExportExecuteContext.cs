@@ -53,7 +53,12 @@ namespace SmartStore.Services.DataExchange.Export
 		public dynamic Language { get; internal set; }
 
 		/// <summary>
-		/// Projection data
+		/// Filter settings
+		/// </summary>
+		public ExportFilter Filter { get; internal set; }
+
+		/// <summary>
+		/// Projection settings
 		/// </summary>
 		public ExportProjection Projection { get; internal set; }
 

@@ -110,7 +110,7 @@ namespace SmartStore.Core.Search
 
 		public virtual TQuery HasStoreId(int id)
 		{
-			Guard.IsPositive(id, nameof(id));
+			Guard.NotNegative(id, nameof(id));
 
 			StoreId = id;
 

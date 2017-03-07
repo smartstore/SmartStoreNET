@@ -199,13 +199,13 @@ namespace SmartStore.Services.Search
 			return query;
 		}
 
-		protected virtual IQueryable<Product> GetProductQuery(CatalogSearchQuery searchQuery)
+		protected virtual IQueryable<Product> GetProductQuery(CatalogSearchQuery searchQuery, IQueryable<Product> baseQuery)
 		{
 			var ordered = false;
 			var utcNow = DateTime.UtcNow;
+			var query = baseQuery ?? _productRepository.Table;
 
-			var query = _productRepository.Table.Where(x => !x.Deleted);
-
+			query = query.Where(x => !x.Deleted);
 			query = ApplySearchTerm(query, searchQuery);
 
 			#region Filters
@@ -820,7 +820,7 @@ namespace SmartStore.Services.Search
 
 			if (searchQuery.Take > 0)
 			{
-				var query = GetProductQuery(searchQuery);
+				var query = GetProductQuery(searchQuery, null);
 
 				totalCount = query.Count();
 
@@ -848,6 +848,11 @@ namespace SmartStore.Services.Search
 			_eventPublisher.Publish(new CatalogSearchedEvent(searchQuery, result));
 
 			return result;
+		}
+
+		public IQueryable<Product> PrepareQuery(CatalogSearchQuery searchQuery, IQueryable<Product> baseQuery = null)
+		{
+			return GetProductQuery(searchQuery, baseQuery);
 		}
 	}
 }

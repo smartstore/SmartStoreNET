@@ -12,6 +12,7 @@ using SmartStore.Core.Events;
 using SmartStore.Data.Caching;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 
@@ -41,8 +42,8 @@ namespace SmartStore.Services.Catalog
 		private readonly IAclService _aclService;
         private readonly Lazy<IEnumerable<ICategoryNavigationFilter>> _navigationFilters;
         private readonly ICustomerService _customerService;
-        private readonly IProductService _productService;
         private readonly IStoreService _storeService;
+		private readonly ICatalogSearchService _catalogSearchService;
 
 		public CategoryService(IRequestCache requestCache,
             IRepository<Category> categoryRepository,
@@ -57,26 +58,26 @@ namespace SmartStore.Services.Catalog
 			IAclService aclService,
             Lazy<IEnumerable<ICategoryNavigationFilter>> navigationFilters,
             ICustomerService customerService,
-            IProductService productService,
-            IStoreService storeService)
+            IStoreService storeService,
+			ICatalogSearchService catalogSearchService)
         {
-            this._requestCache = requestCache;
-            this._categoryRepository = categoryRepository;
-            this._productCategoryRepository = productCategoryRepository;
-            this._productRepository = productRepository;
-            this._aclRepository = aclRepository;
-			this._storeMappingRepository = storeMappingRepository;
-            this._workContext = workContext;
-			this._storeContext = storeContext;
-            this._eventPublisher = eventPublisher;
-			this._storeMappingService = storeMappingService;
-			this._aclService = aclService;
-            this._navigationFilters = navigationFilters;
-            this._customerService = customerService;
-            this._productService = productService;
-            this._storeService = storeService;
+            _requestCache = requestCache;
+            _categoryRepository = categoryRepository;
+            _productCategoryRepository = productCategoryRepository;
+            _productRepository = productRepository;
+            _aclRepository = aclRepository;
+			_storeMappingRepository = storeMappingRepository;
+            _workContext = workContext;
+			_storeContext = storeContext;
+            _eventPublisher = eventPublisher;
+			_storeMappingService = storeMappingService;
+			_aclService = aclService;
+            _navigationFilters = navigationFilters;
+            _customerService = customerService;
+            _storeService = storeService;
+			_catalogSearchService = catalogSearchService;
 
-			this.QuerySettings = DbQuerySettings.Default;
+			QuerySettings = DbQuerySettings.Default;
         }
 
 		public DbQuerySettings QuerySettings { get; set; }
@@ -108,14 +109,13 @@ namespace SmartStore.Services.Catalog
 			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
 			var categoryCustomerRoles = _aclService.GetCustomerRoleIdsWithAccess(category);
 
-			var searchContext = new ProductSearchContext
-			{
-				ShowHidden = true
-			};
-            searchContext.CategoryIds.AddRange(subcategories.Select(x => x.Id));
-            searchContext.CategoryIds.Add(categoryId);
+			var categoryIds = new HashSet<int>(subcategories.Select(x => x.Id));
+			categoryIds.Add(categoryId);
 
-			var query = _productService.PrepareProductSearchQuery(searchContext);
+			var searchQuery = new CatalogSearchQuery()
+				.WithCategoryIds(null, categoryIds.ToArray());
+
+			var query = _catalogSearchService.PrepareQuery(searchQuery);
 			var products = query.OrderBy(p => p.Id).ToList();
 
 			using (var scope = new DbContextScope(ctx: _aclRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
@@ -199,14 +199,13 @@ namespace SmartStore.Services.Catalog
 			var allStores = _storeService.GetAllStores();
 			var categoryStoreMappings = _storeMappingService.GetStoresIdsWithAccess(category);
 
-			var searchContext = new ProductSearchContext
-			{
-				ShowHidden = true
-			};
-            searchContext.CategoryIds.AddRange(subcategories.Select(x => x.Id));
-            searchContext.CategoryIds.Add(categoryId);
+			var categoryIds = new HashSet<int>(subcategories.Select(x => x.Id));
+			categoryIds.Add(categoryId);
 
-			var query = _productService.PrepareProductSearchQuery(searchContext);
+			var searchQuery = new CatalogSearchQuery()
+				.WithCategoryIds(null, categoryIds.ToArray());
+
+			var query = _catalogSearchService.PrepareQuery(searchQuery);
 			var products = query.OrderBy(p => p.Id).ToList();
 
             using (var scope = new DbContextScope(ctx: _storeMappingRepository.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))

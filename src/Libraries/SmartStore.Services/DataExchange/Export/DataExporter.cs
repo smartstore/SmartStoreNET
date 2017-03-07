@@ -30,6 +30,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Search;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
@@ -75,6 +76,7 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<IEmailSender> _emailSender;
 		private readonly Lazy<IDeliveryTimeService> _deliveryTimeService;
 		private readonly Lazy<IQuantityUnitService> _quantityUnitService;
+		private readonly Lazy<ICatalogSearchService> _catalogSearchService;
 
 		private readonly Lazy<IRepository<Customer>>_customerRepository;
 		private readonly Lazy<IRepository<NewsLetterSubscription>> _subscriptionRepository;
@@ -116,7 +118,8 @@ namespace SmartStore.Services.DataExchange.Export
             Lazy<IEmailSender> emailSender,
 			Lazy<IDeliveryTimeService> deliveryTimeService,
 			Lazy<IQuantityUnitService> quantityUnitService,
-            Lazy<IRepository<Customer>> customerRepository,
+			Lazy<ICatalogSearchService> catalogSearchService,
+			Lazy<IRepository<Customer>> customerRepository,
 			Lazy<IRepository<NewsLetterSubscription>> subscriptionRepository,
 			Lazy<IRepository<Order>> orderRepository,
 			Lazy<MediaSettings> mediaSettings,
@@ -154,6 +157,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_emailSender = emailSender;
 			_deliveryTimeService = deliveryTimeService;
 			_quantityUnitService = quantityUnitService;
+			_catalogSearchService = catalogSearchService;
 
 			_customerRepository = customerRepository;
 			_subscriptionRepository = subscriptionRepository;
@@ -627,40 +631,42 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (ctx.Request.ProductQuery == null)
 			{
-				var searchContext = new ProductSearchContext
-				{
-					ProductIds = ctx.Request.EntitiesToExport,
-					StoreId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
-					VisibleIndividuallyOnly = true,
-					PriceMin = ctx.Filter.PriceMinimum,
-					PriceMax = ctx.Filter.PriceMaximum,
-					IsPublished = ctx.Filter.IsPublished,
-					WithoutCategories = ctx.Filter.WithoutCategories,
-					WithoutManufacturers = ctx.Filter.WithoutManufacturers,
-					ManufacturerId = ctx.Filter.ManufacturerId ?? 0,
-					FeaturedProducts = ctx.Filter.FeaturedProducts,
-					ProductType = ctx.Filter.ProductType,
-					ProductTagId = ctx.Filter.ProductTagId ?? 0,
-					IdMin = ctx.Filter.IdMinimum ?? 0,
-					IdMax = ctx.Filter.IdMaximum ?? 0,
-					AvailabilityMinimum = ctx.Filter.AvailabilityMinimum,
-					AvailabilityMaximum = ctx.Filter.AvailabilityMaximum
-				};
+				var f = ctx.Filter;
+				var createdFrom = f.CreatedFrom.HasValue ? (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(f.CreatedFrom.Value, _dateTimeHelper.Value.CurrentTimeZone) : null;
+				var createdTo = f.CreatedTo.HasValue ? (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(f.CreatedTo.Value, _dateTimeHelper.Value.CurrentTimeZone) : null;
 
-				if (!ctx.Filter.IsPublished.HasValue)
-					searchContext.ShowHidden = true;
+				var searchQuery = new CatalogSearchQuery()
+					.HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : f.StoreId)
+					.VisibleIndividuallyOnly(true)
+					.PriceBetween(f.PriceMinimum, f.PriceMaximum)
+					.WithStockQuantity(f.AvailabilityMinimum, f.AvailabilityMaximum)
+					.CreatedBetween(createdFrom, createdTo);
 
-				if (ctx.Filter.CategoryIds != null && ctx.Filter.CategoryIds.Length > 0)
-					searchContext.CategoryIds = ctx.Filter.CategoryIds.ToList();
+				if (f.IsPublished.HasValue)
+					searchQuery = searchQuery.PublishedOnly(f.IsPublished.Value);
 
-				if (ctx.Filter.CreatedFrom.HasValue)
-					searchContext.CreatedFromUtc = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				if (f.ProductType.HasValue)
+					searchQuery = searchQuery.IsProductType(f.ProductType.Value);
 
-				if (ctx.Filter.CreatedTo.HasValue)
-					searchContext.CreatedToUtc = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				if (f.ProductTagId.HasValue)
+					searchQuery = searchQuery.WithProductTagIds(f.ProductTagId.Value);
 
-				query = _productService.Value.PrepareProductSearchQuery(searchContext);
+				if (f.WithoutManufacturers.HasValue)
+					searchQuery = searchQuery.HasAnyManufacturer(!f.WithoutManufacturers.Value);
+				else if (f.ManufacturerId.HasValue)
+					searchQuery = searchQuery.WithManufacturerIds(f.FeaturedProducts, f.ManufacturerId.Value);
 
+				if (f.WithoutCategories.HasValue)
+					searchQuery = searchQuery.HasAnyCategory(!f.WithoutCategories.Value);
+				else if (f.CategoryIds != null && f.CategoryIds.Length > 0)
+					searchQuery = searchQuery.WithCategoryIds(f.FeaturedProducts, f.CategoryIds);
+
+				if (ctx.Request.EntitiesToExport.Count > 0)
+					searchQuery = searchQuery.WithProductIds(ctx.Request.EntitiesToExport.ToArray());
+				else
+					searchQuery = searchQuery.WithProductId(f.IdMinimum, f.IdMaximum);
+
+				query = _catalogSearchService.Value.PrepareQuery(searchQuery);
 				query = query.OrderByDescending(x => x.CreatedOnUtc);
 			}
 			else
@@ -699,14 +705,15 @@ namespace SmartStore.Services.DataExchange.Export
 				{
 					if (ctx.Projection.NoGroupedProducts && !ctx.IsPreview)
 					{
-						var associatedSearchContext = new ProductSearchContext
-						{
-							StoreId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
-							VisibleIndividuallyOnly = ctx.Projection.OnlyIndividuallyVisibleAssociated,
-							ParentGroupedProductId = product.Id
-						};
+						var searchQuery = new CatalogSearchQuery()
+							.VisibleIndividuallyOnly(ctx.Projection.OnlyIndividuallyVisibleAssociated)
+							.HasParentGroupedProductId(product.Id)
+							.HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
 
-						var query = _productService.Value.PrepareProductSearchQuery(associatedSearchContext);
+						if (ctx.Filter.IsPublished.HasValue)
+							searchQuery = searchQuery.PublishedOnly(ctx.Filter.IsPublished.Value);
+
+						var query = _catalogSearchService.Value.PrepareQuery(searchQuery);
 						var associatedProducts = query.OrderBy(p => p.DisplayOrder).ToList();
 
 						foreach (var associatedProduct in associatedProducts)

@@ -509,8 +509,9 @@ namespace SmartStore.Web.Controllers
 				priceModel.AvailableForPreOrder = false;
 
 				var searchQuery = new CatalogSearchQuery()
-					.HasStoreId(ctx.Store.Id)
+					.VisibleOnly(ctx.Customer)
 					.VisibleIndividuallyOnly(false)
+					.HasStoreId(ctx.Store.Id)
 					.HasParentGroupedProductId(product.Id);
 
 				var associatedProducts = _catalogSearchService.Search(searchQuery).Hits;

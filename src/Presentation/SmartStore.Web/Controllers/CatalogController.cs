@@ -195,8 +195,9 @@ namespace SmartStore.Web.Controllers
 				var hasFeaturedProductsCache = _services.Cache.Get<bool?>(cacheKey);
 
 				var featuredProductsQuery = new CatalogSearchQuery()
-					.WithCategoryIds(true, new int[] { categoryId })
+					.VisibleOnly(_services.WorkContext.CurrentCustomer)
 					.VisibleIndividuallyOnly(true)
+					.WithCategoryIds(true, categoryId)
 					.HasStoreId(_services.StoreContext.CurrentStore.Id)
 					.WithLanguage(_services.WorkContext.WorkingLanguage)
 					.WithCurrency(_services.WorkContext.WorkingCurrency);
@@ -382,8 +383,9 @@ namespace SmartStore.Web.Controllers
 				var hasFeaturedProductsCache = _services.Cache.Get<bool?>(cacheKey);
 
 				var featuredProductsQuery = new CatalogSearchQuery()
-					.WithManufacturerIds(true, new int[] { manufacturerId })
+					.VisibleOnly(_services.WorkContext.CurrentCustomer)
 					.VisibleIndividuallyOnly(true)
+					.WithManufacturerIds(true, manufacturerId)
 					.HasStoreId(_services.StoreContext.CurrentStore.Id)
 					.WithLanguage(_services.WorkContext.WorkingLanguage)
 					.WithCurrency(_services.WorkContext.WorkingCurrency);
@@ -409,7 +411,7 @@ namespace SmartStore.Web.Controllers
 			}
 
 			// Products
-			query.WithManufacturerIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false, new int[] { manufacturerId });
+			query.WithManufacturerIds(_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false, manufacturerId);
 
 			var searchResult = _catalogSearchService.Search(query);
 			model.SearchResult = searchResult;

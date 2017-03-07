@@ -1708,7 +1708,7 @@ namespace SmartStore.Admin.Controllers
 				var fields = new List<string> { "name" };
 				if (_searchSettings.SearchFields.Contains("sku"))
 					fields.Add("sku");
-				if (_searchSettings.Value.SearchFields.Contains("shortdescription"))
+				if (_searchSettings.SearchFields.Contains("shortdescription"))
 					fields.Add("shortdescription");
 
 				var searchQuery = new CatalogSearchQuery(fields.ToArray(), model.SearchProductName);

@@ -274,24 +274,14 @@
                         }
                     }
 
-                    //oh, oh, oh, oh, can't touch this ;-/
-                    //var hammertime = new Hammer(megamenu[0]);
-                    //hammertime.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
-
-                    //if (isSimple) {
-                    //    hammertime.on('panstart', function (ev) {
-                    //    	closeNow($(".nav-item.active .nav-link"));
-                    //    });
-                    //}
-
-                    //hammertime.on('panend', function (ev) {
-                    //	console.log("panend");
-                    //    getCurrentNavigationElements();
-                    //    closeNow($(".nav-item.active .nav-link"));
-
-                    //    if (ev.direction == Hammer.DIRECTION_LEFT) {megamenu.addClass("megamenu-blend--prev");}
-                    //    if (ev.direction == Hammer.DIRECTION_RIGHT) {megamenu.addClass("megamenu-blend--next");}
-                    //});
+                    // on touch
+                    if (!Modernizr.touchevents) {
+                        megamenu.tapstart(function () {
+                            closeNow($(".nav-item.active .nav-link"));
+                        }).tapend(function () {
+                            getCurrentNavigationElements();
+                        });
+                    }
 
                     function onPageResized() {
                     	updateNavState();

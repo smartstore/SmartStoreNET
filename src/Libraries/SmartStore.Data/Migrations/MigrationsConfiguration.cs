@@ -442,8 +442,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Fields.FacetSorting",
 				"Sorting of search filters",
 				"Sortierung der Suchfilter",
-				"Specifies the sorting of the search filters. This setting is only effective in accordance with the Mega-Search-Plus plugin. Changes will take effect after a renewal of the search index.",
-				"Legt die Sortierung der Suchfilter fest. Diese Einstellung ist nur in Zusammenhang mit dem Mega-Search-Plus Plugin wirksam. Änderungen werden erst nach einer Erneuerung des Suchindex wirksam.");
+				"Specifies the sorting of the search filters. This setting is only effective by using the Mega-Search-Plus plugin. Changes will take effect after a renewal of the search index.",
+				"Legt die Sortierung der Suchfilter fest. Diese Einstellung ist nur unter Verwendung mit des Mega-Search-Plus Plugins wirksam. Änderungen werden erst nach einer Erneuerung des Suchindex wirksam.");
 
 			builder.AddOrUpdate("Search.Facet.Category", "Category", "Kategorie");
 			builder.AddOrUpdate("Search.Facet.Manufacturer", "Brand", "Marke");

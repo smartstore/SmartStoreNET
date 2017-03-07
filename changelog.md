@@ -88,6 +88,7 @@
 * #1071 NewsLetterSubscription.ActivationUrl not working if the store if SSL secured
 * #1086 Gift cards can be earned in one store and applied in another
 * Whishlist: Products with minimum order amount greater then 1 can be added to the whishlist without any warning
+* #1102: Discounts not transmitted when the total amount is zero
 
 ## SmartStore.NET 2.6
 

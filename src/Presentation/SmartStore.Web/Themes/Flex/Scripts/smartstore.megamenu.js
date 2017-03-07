@@ -65,10 +65,9 @@
                     }
                 }
 
-                if ($("html").hasClass("touchevents")) {
+                if (Modernizr.touchevents) {
 
                     // Handle opening events for touch devices
-
                     megamenuContainer.on('clickoutside', function (e) {
                         closeNow($(".nav-item.active .nav-link"));
                     });
@@ -135,7 +134,7 @@
                 // correct dropdown position
                 if (isSimple) {
 
-                    var event = $("html").hasClass("touchevents") ? "click" : "mouseenter";
+                    var event = Modernizr.touchevents ? "click" : "mouseenter";
 
                     navElems.on(event, function (e) {
                         var navItem = $(this);
@@ -169,15 +168,18 @@
                     var navSlider = $('.megamenu .nav-slider');
                     updateNavState();
 
-                    megamenuNext.click(function (e) {
-                        e.preventDefault();
-                        scrollToNextInvisibleNavItem(false);
-                    });
+                    if (!Modernizr.touchevents) {
 
-                    megamenuPrev.click(function (e) {
-                        e.preventDefault();
-                        scrollToNextInvisibleNavItem(true);
-                    });
+                        megamenuNext.click(function (e) {
+                            e.preventDefault();
+                            scrollToNextInvisibleNavItem(false);
+                        });
+
+                        megamenuPrev.click(function (e) {
+                            e.preventDefault();
+                            scrollToNextInvisibleNavItem(true);
+                        });
+                    }
 
                     function scrollToNextInvisibleNavItem(backwards) {
                         // determine the first completely visible nav item (either from left or right side, depending on 'backwards')
@@ -275,7 +277,7 @@
                     }
 
                     // on touch
-                    if (!Modernizr.touchevents) {
+                    if (Modernizr.touchevents) {
                         megamenu.tapstart(function () {
                             closeNow($(".nav-item.active .nav-link"));
                         }).tapend(function () {
@@ -315,6 +317,8 @@
 
                     function getCurrentNavigationElements() {
                         firstVisibleElem = null;
+                        isLastItemVisible = false;
+
                         var p = $(".nav-slider", megamenuContainer);
 
                         navElems.each(function (i, val) {
@@ -331,7 +335,7 @@
                             }
 
                             // if visible
-                            if (el.offset().left + el.width() > p.offset().left + p.width()) {
+                            if (parseInt(el.offset().left) + parseInt(el.width()) == parseInt(p.offset().left) + parseInt(p.width())) {
 
                                 lastVisibleElem = el;
 

@@ -944,7 +944,6 @@
     <Content Include="Themes\Flex\Content\pnotify\js\pnotify.buttons.js" />
     <Content Include="Themes\Flex\Content\pnotify\js\pnotify.js" />
     <Content Include="Themes\Flex\Content\pnotify\js\pnotify.mobile.js" />
-    <Content Include="Themes\Flex\Scripts\jquery.hammer.js" />
     <Content Include="Themes\Flex\Scripts\public.offcanvas-menu.js" />
     <Content Include="Themes\Flex\Scripts\public.product.js" />
     <Content Include="Themes\Flex\Scripts\smartstore.touchevents.js" />

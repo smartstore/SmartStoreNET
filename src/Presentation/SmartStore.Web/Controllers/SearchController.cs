@@ -184,28 +184,40 @@ namespace SmartStore.Web.Controllers
 		}
 
 		[ChildActionOnly]
-		public ActionResult Filter(string[] excludedFacets = null)
+		public ActionResult Filters(ISearchResultModel model)
 		{
-			var searchResultModel = this.ControllerContext.GetMasterControllerContext().Controller.ViewData.Model as ISearchResultModel;
-
-			if (searchResultModel == null)
+			if (model == null)
 			{
 				return Content("");
 			}
-			
-			if (excludedFacets != null && excludedFacets.Length > 0)
+
+			#region Obsolete
+			//// TODO: (mc) really necessary?
+			//if (excludedFacets != null && excludedFacets.Length > 0)
+			//{
+			//	foreach (var exclude in excludedFacets.Where(x => x.HasValue()))
+			//	{
+			//		var facets = searchResultModel.SearchResult.Facets;
+			//		if (facets.ContainsKey(exclude))
+			//		{
+			//			facets.Remove(exclude);
+			//		}
+			//	} 
+			//}
+			#endregion
+
+			return PartialView(model);
+		}
+
+		[ChildActionOnly]
+		public ActionResult ActiveFilters(ISearchResultModel model)
+		{
+			if (model == null)
 			{
-				foreach (var exclude in excludedFacets.Where(x => x.HasValue()))
-				{
-					var facets = searchResultModel.SearchResult.Facets;
-					if (facets.ContainsKey(exclude))
-					{
-						facets.Remove(exclude);
-					}
-				} 
+				return Content("");
 			}
 
-			return PartialView(searchResultModel);
+			return PartialView("Filters.Active", model);
 		}
 
 		// TODO: (mc) what about this stuff ?!

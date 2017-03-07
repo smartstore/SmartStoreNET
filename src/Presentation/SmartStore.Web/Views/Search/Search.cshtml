@@ -22,11 +22,12 @@
 		firstItemIndex = Model.SearchResult.Hits.FirstItemIndex;
 		lastItemIndex = Model.SearchResult.Hits.LastItemIndex;
 		suggestions = Model.SearchResult.SpellCheckerSuggestions;
+		
 	}
 }
 
 @section left {
-	@{ Html.RenderAction("Filter"); }
+	@{ Html.RenderAction("Filters", new { model = Model }); }
 }
 
 <div class="page search-page">

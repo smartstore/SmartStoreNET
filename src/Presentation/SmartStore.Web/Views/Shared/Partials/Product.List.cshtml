@@ -72,7 +72,7 @@
 			<div class="artlist-action-group artlist-action-group--filtersort">
 				@{ Html.RenderPartial("Product.List.FilterSort", Model); }
 			</div>
-		}
+					}
 
 		@if (pagerHtml.HasValue() || Model.AllowViewModeChanging)
 		{
@@ -92,6 +92,8 @@
 		}
 	</div>
 }
+
+@{ Html.RenderAction("ActiveFilters", "Search"); }
 
 <div id="@id" class='@String.Join(" ", listCssClasses)'>
 	@foreach (var product in Model.Items)

@@ -1888,7 +1888,8 @@
     <Content Include="Views\Catalog\Partials\OffCanvasMenuCategories.cshtml" />
     <Content Include="Views\Catalog\Partials\OffCanvasMenu.cshtml" />
     <Content Include="Views\Product\Partials\Product.CustomerPrice.cshtml" />
-    <Content Include="Views\Search\Partials\Filter.cshtml" />
+    <Content Include="Views\Search\Partials\Filters.cshtml" />
+    <Content Include="Views\Search\Partials\Filters.Active.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

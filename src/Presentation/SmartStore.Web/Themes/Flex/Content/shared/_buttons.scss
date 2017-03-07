@@ -55,10 +55,12 @@ $btn-size-sm:           $input-height-sm;*/
 // btn-grey
 // --------------------------------------------------
 
-$btn-grey-bg: #f2f2f2;
+$btn-grey-bg:       $gray-lightest;
+$btn-grey-border:   rgba(0,0,0, 0.15);
 
 .btn-grey {
-    @include button-variant($btn-secondary-color, $btn-grey-bg, $btn-secondary-border);
+    @include button-variant($btn-secondary-color, $btn-grey-bg, $btn-grey-border);
+    box-shadow: none;
 }
 
 .btn-grey:hover,

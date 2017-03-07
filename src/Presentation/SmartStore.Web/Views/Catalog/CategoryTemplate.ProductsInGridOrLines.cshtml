@@ -75,7 +75,7 @@
 }
 
 @section left {
-	@{ Html.RenderAction("Filter", "Search"); }
+	@{ Html.RenderAction("Filters", "Search", new { model = Model }); }
 }
 
 <div class="page category-page">

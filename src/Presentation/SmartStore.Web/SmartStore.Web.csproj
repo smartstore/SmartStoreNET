@@ -333,6 +333,7 @@
     <Compile Include="Models\Boards\LastPostModel.cs" />
     <Compile Include="Models\Boards\SearchModel.cs" />
     <Compile Include="Models\Boards\TopicMoveModel.cs" />
+    <Compile Include="Models\Catalog\OffCanvasMenuModel.cs" />
     <Compile Include="Models\Catalog\BackInStockSubscribeModel.cs" />
     <Compile Include="Models\Catalog\CategoryModel.cs" />
     <Compile Include="Models\Catalog\IQuantityInput.cs" />

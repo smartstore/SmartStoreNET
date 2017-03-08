@@ -153,7 +153,7 @@ var AjaxMenu = (function ($, window, document, undefined) {
     function wrapAjaxResponse(response, direction, first) {
         var responseHtml = "";
 
-        responseHtml += '<div class="ocm-nav-layer slide-in-from-' + direction + first + '">';
+        responseHtml += '<div class="ocm-nav-layer offcanvas-scrollable slide-in-from-' + direction + first + '">';
         responseHtml += '   <div class="offcanvas-menu-subcat-header text-xs-right">';
         responseHtml += '       <button class="btn btn-secondary btn-flat btn-to-danger btn-lg btn-icon offcanvas-closer fs-h2">&#215;</button>';
         responseHtml += '   </div>';
@@ -201,7 +201,9 @@ var AjaxMenu = (function ($, window, document, undefined) {
         // hide currency & language selectors 
         menuContent.find(".currency-selector, .language-selector").addClass("hidden-xs-up");
 
-        helpTab.html(menuContent.clone());
+        menuContent.addClass("offcanvas-scrollable");
+
+        helpTab.html(menuContent);
         tabContent.data("initialized", true);
         tabContent.tab('show');
 

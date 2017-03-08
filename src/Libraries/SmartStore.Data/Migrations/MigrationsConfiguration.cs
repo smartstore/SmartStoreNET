@@ -622,7 +622,7 @@ namespace SmartStore.Data.Migrations
 				"Delete existing options",
 				"Vorhandene Optionen löschen");
             
-            builder.AddOrUpdate("Offcanvas.Menu.Categories", "Categories", "Warengruppen");
+            builder.AddOrUpdate("Offcanvas.Menu.Categories", "Categories", "Sortiment");
             builder.AddOrUpdate("Offcanvas.Menu.Brands", "Brands", "Marken");
             builder.AddOrUpdate("Offcanvas.Menu.Help", "Help", "Hilfe");
 

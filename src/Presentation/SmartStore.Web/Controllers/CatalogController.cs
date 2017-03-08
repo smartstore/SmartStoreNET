@@ -26,6 +26,7 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
+using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Controllers
 {
@@ -51,7 +52,8 @@ namespace SmartStore.Web.Controllers
 		private readonly MediaSettings _mediaSettings;
         private readonly CatalogSettings _catalogSettings;
 		private readonly ICompareProductsService _compareProductsService;
-		private readonly CatalogHelper _helper;
+        private readonly Lazy<ILanguageService> _languageService;
+        private readonly CatalogHelper _helper;
 
         public CatalogController(
 			ICommonServices services,
@@ -74,7 +76,8 @@ namespace SmartStore.Web.Controllers
 			ICatalogSearchService catalogSearchService,
 			MediaSettings mediaSettings, 
 			CatalogSettings catalogSettings,
- 			CatalogHelper helper)
+            Lazy<ILanguageService> languageService,
+             CatalogHelper helper)
         {
 			_services = services;
 			_categoryService = categoryService;
@@ -96,8 +99,8 @@ namespace SmartStore.Web.Controllers
 			_catalogSearchService = catalogSearchService;
             _mediaSettings = mediaSettings;
             _catalogSettings = catalogSettings;
-
-			_helper = helper;
+            _languageService = languageService;
+            _helper = helper;
         }
 
         #region Categories
@@ -1039,8 +1042,28 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public ActionResult OffCanvasMenu()
         {
+            var model = new OffCanvasMenuModel();
 
-            return PartialView();
+            var availableCurrencies = _services.Cache.Get(string.Format(ModelCacheEventConsumer.AVAILABLE_CURRENCIES_MODEL_KEY, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id), () =>
+            {
+                return _currencyService
+                    .GetAllCurrencies(storeId: _services.StoreContext.CurrentStore.Id)
+                    .Select(x => new CurrencyModel())
+                    .ToList();
+            });
+
+            var availableLanguages = _services.Cache.Get(string.Format(ModelCacheEventConsumer.AVAILABLE_LANGUAGES_MODEL_KEY, _services.StoreContext.CurrentStore.Id), () =>
+            {
+                return _languageService.Value
+                    .GetAllLanguages(storeId: _services.StoreContext.CurrentStore.Id)
+                    .Select(x => new LanguageModel())
+                    .ToList();
+            });
+            
+            model.DisplayCurrencySelector = availableCurrencies.Count > 1;
+            model.DisplayLanguageSelector = availableLanguages.Count > 1;
+            
+            return PartialView(model);
         }
         
         #endregion

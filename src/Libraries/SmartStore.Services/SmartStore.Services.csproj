@@ -489,11 +489,13 @@
     <Compile Include="Hooks\AclEntityHook.cs" />
     <Compile Include="ScopedServiceBase.cs" />
     <Compile Include="Search\CatalogSearchQuery.cs" />
+    <Compile Include="Search\Extensions\UrlHelperExtensions.cs" />
     <Compile Include="Search\Modelling\CatalogSearchQueryAliasMapper.cs" />
     <Compile Include="Search\Modelling\CatalogSearchQueryFactory.cs" />
     <Compile Include="Search\CatalogSearchResult.cs" />
     <Compile Include="Search\CatalogSearchService.cs" />
     <Compile Include="Search\Modelling\CatalogSearchQueryModelBinder.cs" />
+    <Compile Include="Search\Extensions\FacetUrlHelper.cs" />
     <Compile Include="Search\Modelling\ICatalogSearchQueryAliasMapper.cs" />
     <Compile Include="Search\Modelling\ICatalogSearchQueryFactory.cs" />
     <Compile Include="Search\ICatalogSearchService.cs" />

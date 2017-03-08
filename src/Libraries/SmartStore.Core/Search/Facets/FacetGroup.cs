@@ -3,9 +3,22 @@ using System.Collections.Generic;
 
 namespace SmartStore.Core.Search.Facets
 {
+	public enum FacetGroupKind
+	{
+		Unknown = -1,
+		Category,
+		Brand,
+		Price,
+		Rating,
+		DeliveryTime,
+		Attribute,
+		Variant
+	}
+
 	public class FacetGroup
 	{
 		private readonly Dictionary<string, Facet> _facets;
+		private FacetGroupKind? _kind;
 
 		public FacetGroup(
 			string key,
@@ -77,6 +90,50 @@ namespace SmartStore.Core.Search.Facets
 			Guard.NotEmpty(key, nameof(key));
 
 			return _facets.Get(key);
+		}
+
+		public FacetGroupKind Kind
+		{
+			get
+			{
+				if (_kind == null)
+				{
+					if (Key.StartsWith("attrid"))
+					{
+						_kind = FacetGroupKind.Attribute;
+					}
+					else if (Key.StartsWith("variantid"))
+					{
+						_kind = FacetGroupKind.Variant;
+					}
+					else if (Key == "categoryid" || Key == "notfeaturedcategoryid")
+					{
+						_kind = FacetGroupKind.Category;
+					}
+					else if (Key == "manufacturerid")
+					{
+						_kind = FacetGroupKind.Brand;
+					}
+					else if (Key == "price")
+					{
+						_kind = FacetGroupKind.Price;
+					}
+					else if (Key == "rate")
+					{
+						_kind = FacetGroupKind.Rating;
+					}
+					else if (Key == "deliveryid")
+					{
+						_kind = FacetGroupKind.DeliveryTime;
+					}
+					else
+					{
+						_kind = FacetGroupKind.Unknown;
+					}
+				}
+
+				return _kind.Value;
+			}
 		}
 	}
 }

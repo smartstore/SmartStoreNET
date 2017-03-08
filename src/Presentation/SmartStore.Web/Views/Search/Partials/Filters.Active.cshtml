@@ -1,5 +1,6 @@
 ﻿@using SmartStore.Core.Search.Facets
 @using SmartStore.Web.Models.Search
+@using SmartStore.Services.Search.Extensions;
 
 @model ISearchResultModel
 
@@ -7,9 +8,9 @@
 	Layout = "";
 
 	var result = Model.SearchResult;
-	var activeFilters = result.Facets.SelectMany(x => x.Value.Facets).Where(x => x.Value.IsSelected).ToList();
+	var activeFilters = result.Facets.SelectMany(x => x.Value.Facets).Where(x => x.Value.IsSelected).ToArray();
 
-	if (activeFilters.Count == 0)
+	if (activeFilters.Length == 0)
 	{
 		return;
 	}
@@ -20,13 +21,13 @@
 		@foreach (var filter in activeFilters)
 		{
 			<li class="active-filter-item" data-key="@filter.Key" data-group="@filter.FacetGroup.Key">
-				<a class="btn btn-grey btn-sm active-filter-link" href="javascript:void(0);" title="Filter aufheben: @filter.FacetGroup.Label &gt; @filter.Value.Label">
+				<a class="btn btn-grey btn-sm active-filter-link" href='@Url.FacetRemove(filter)' title="Filter aufheben: @filter.FacetGroup.Label &gt; @filter.Value.Label">
 					<span class="active-filter-label">@filter.Value.Label</span>
 				</a>
 			</li>
 		}
 		<li class="active-filter-item active-filter-item-clear">
-			<a class="btn btn-secondary btn-to-danger btn-flat btn-sm active-filter-link" href="javascript:void(0);">
+			<a class="btn btn-secondary btn-to-danger btn-flat btn-sm active-filter-link" href='@Url.FacetRemove(activeFilters)'>
 				<span class="active-filter-label fw-600">Alle Filter aufheben</span>
 			</a>
 		</li>

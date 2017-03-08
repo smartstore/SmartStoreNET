@@ -1,5 +1,6 @@
 ﻿@using SmartStore.Core.Search.Facets
 @using SmartStore.Web.Models.Search
+@using SmartStore.Services.Search.Extensions;
 
 @model ISearchResultModel
 
@@ -64,7 +65,7 @@
 
 @helper FacetCheckbox(Facet facet)
 {
-	<div class="facet-check">
+	<div class="facet-check" data-href="@Url.FacetToggle(facet)">
 		@if (facet.IsChoice)
 		{
 			<label>
@@ -86,7 +87,7 @@
 {
 	if (facet.HitCount > 0 || !facet.IsChoice)
 	{
-		<div class="facet-radio">
+		<div class="facet-radio" data-href="@Url.FacetToggle(facet)">
 			<label>
 				<input class="facet-control-native search-filter" type="radio" name="optradio" value="@facet.Value.ToString()" data-parentid="@facet.Value.ParentId" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
 				<span class="facet-control-ui"></span>
@@ -120,8 +121,14 @@
 
 		// quick & dirty for testing
 		$(':input.search-filter').change(function () {
+			var href = $(this).closest('[data-href]').data('href');
+			if (href) {
+				setLocation(href);
+				return;
+			}
+
 			var val = $(this).val(),
-				key = $(this).closest('.facet-group').attr('data-key'),
+				key = $(this).closest('.facet-group').data('key'),
 				queryParams = getQueryParams();
 
 			if (key === 'manufacturerid') {
@@ -134,11 +141,11 @@
 				queryParams['c'] = update(queryParams['c'], val, $(this).is(':checked')).join();
 			}
 			else if (key.startsWith('attrid')) {
-				var attrKey = 'attr' + $(this).attr('data-parentid');
+				var attrKey = 'attr' + $(this).data('parentid');
 				queryParams[attrKey] = update(queryParams[attrKey], 'opt' + val, $(this).is(':checked')).join();
 			}
 			else if (key.startsWith('variantid')) {
-				var variKey = 'vari' + $(this).attr('data-parentid');
+				var variKey = 'vari' + $(this).data('parentid');
 				queryParams[variKey] = update(queryParams[variKey], 'opt' + val, $(this).is(':checked')).join();
 			}
 			else if (key === 'rate') {

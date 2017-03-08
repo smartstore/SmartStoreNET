@@ -119,6 +119,7 @@ $mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //
     transition: opacity .5s ease-in-out .1s;
     opacity: 0;
     z-index: 1001;
+    display: none;
 
     &.megamenu-nav--prev a { padding-right: 10px; }
     &.megamenu-nav--next {
@@ -155,6 +156,7 @@ $mm-dark-hover-color:                   scale-color($mm-bg, $lightness: 15%); //
 .megamenu.megamenu-blend--next .megamenu-nav--next,
 .megamenu.megamenu-blend--prev .megamenu-nav--prev {
     opacity: 1;
+    display: block;
 }
 .megamenu .megamenu-nav--prev .megamenu-nav-btn {
     background-image: linear-gradient(to left, rgba($mm-bg, 0), $mm-bg 40%, $mm-bg 100%);

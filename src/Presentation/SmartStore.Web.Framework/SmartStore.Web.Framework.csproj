@@ -289,7 +289,6 @@
     <Compile Include="UI\HtmlAttributeExtensions.cs" />
     <Compile Include="Localization\LanguageSeoCodeAttribute.cs" />
     <Compile Include="Localization\IText.cs" />
-    <Compile Include="Localization\LocalizedUrlHelper.cs" />
     <Compile Include="Localization\Text.cs" />
     <Compile Include="Bundling\BundlePublisher.cs" />
     <Compile Include="Bundling\IBundleProvider.cs" />

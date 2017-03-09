@@ -609,7 +609,28 @@ namespace SmartStore.Services.DataExchange.Export
 			dynObject._AttributeCombination = null;
 			dynObject._AttributeCombinationValues = null;
 			dynObject._AttributeCombinationId = (combination == null ? 0 : combination.Id);
-			dynObject._DetailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)dynObject.SeName;
+			dynObject._DetailUrl = null;
+
+			if (_httpContext != null && _httpContext.Request != null)
+			{
+				var urlHelper = new LocalizedUrlHelper(_httpContext.Request.ApplicationPath, (string)dynObject.SeName, false);
+
+				if (_localizationSettings.Value.SeoFriendlyUrlsForLanguagesEnabled)
+				{
+					var defaultSeoCode = _languageService.Value.GetDefaultLanguageSeoCode(ctx.Store.Id);
+
+					if (ctx.ContextLanguage.UniqueSeoCode == defaultSeoCode && _localizationSettings.Value.DefaultLanguageRedirectBehaviour > 0)
+					{
+						urlHelper.StripSeoCode();
+					}
+					else
+					{
+						urlHelper.PrependSeoCode(ctx.ContextLanguage.UniqueSeoCode, true);
+					}
+				}
+
+				dynObject._DetailUrl = ctx.Store.Url.TrimEnd('/') + urlHelper.GetAbsolutePath();
+			}
 
 			if (combination == null)
 				dynObject._UniqueId = product.Id.ToString();

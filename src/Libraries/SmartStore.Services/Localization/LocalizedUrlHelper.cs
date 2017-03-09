@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Threading.Tasks;
+﻿using System.Web;
 using SmartStore.Core.Localization;
 
-namespace SmartStore.Web.Framework.Localization
+namespace SmartStore.Services.Localization
 {
-    public class LocalizedUrlHelper
+	public class LocalizedUrlHelper
     {
         public LocalizedUrlHelper(HttpRequestBase httpRequest, bool rawUrl = false) 
             : this(httpRequest.ApplicationPath, rawUrl ? httpRequest.RawUrl : httpRequest.AppRelativeCurrentExecutionFilePath, rawUrl)

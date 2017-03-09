@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
@@ -25,7 +26,6 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.Export.Deployment;
 using SmartStore.Services.DataExchange.Export.Internal;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
@@ -48,8 +48,8 @@ namespace SmartStore.Services.DataExchange.Export
 
 		private readonly ICommonServices _services;
 		private readonly IDbContext _dbContext;
+		private readonly HttpContextBase _httpContext;
 		private readonly Lazy<IPriceFormatter> _priceFormatter;
-		private readonly Lazy<IDateTimeHelper> _dateTimeHelper;
 		private readonly Lazy<IExportProfileService> _exportProfileService;
         private readonly Lazy<ILocalizedEntityService> _localizedEntityService;
 		private readonly Lazy<ILanguageService> _languageService;
@@ -86,12 +86,13 @@ namespace SmartStore.Services.DataExchange.Export
 		private readonly Lazy<ContactDataSettings> _contactDataSettings;
 		private readonly Lazy<CustomerSettings> _customerSettings;
 		private readonly Lazy<CatalogSettings> _catalogSettings;
+		private readonly Lazy<LocalizationSettings> _localizationSettings;
 
 		public DataExporter(
 			ICommonServices services,
 			IDbContext dbContext,
-            Lazy<IPriceFormatter> priceFormatter,
-			Lazy<IDateTimeHelper> dateTimeHelper,
+			HttpContextBase httpContext,
+			Lazy<IPriceFormatter> priceFormatter,
 			Lazy<IExportProfileService> exportProfileService,
 			Lazy<ILocalizedEntityService> localizedEntityService,
 			Lazy<ILanguageService> languageService,
@@ -125,12 +126,13 @@ namespace SmartStore.Services.DataExchange.Export
 			Lazy<MediaSettings> mediaSettings,
 			Lazy<ContactDataSettings> contactDataSettings,
 			Lazy<CustomerSettings> customerSettings,
-			Lazy<CatalogSettings> catalogSettings)
+			Lazy<CatalogSettings> catalogSettings,
+			Lazy<LocalizationSettings> localizationSettings)
 		{
 			_services = services;
 			_dbContext = dbContext;
+			_httpContext = httpContext;
 			_priceFormatter = priceFormatter;
-			_dateTimeHelper = dateTimeHelper;
 			_exportProfileService = exportProfileService;
 			_localizedEntityService = localizedEntityService;
 			_languageService = languageService;
@@ -167,6 +169,7 @@ namespace SmartStore.Services.DataExchange.Export
 			_contactDataSettings = contactDataSettings;
 			_customerSettings = customerSettings;
 			_catalogSettings = catalogSettings;
+			_localizationSettings = localizationSettings;
 
 			T = NullLocalizer.Instance;
 		}
@@ -632,8 +635,8 @@ namespace SmartStore.Services.DataExchange.Export
 			if (ctx.Request.ProductQuery == null)
 			{
 				var f = ctx.Filter;
-				var createdFrom = f.CreatedFrom.HasValue ? (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(f.CreatedFrom.Value, _dateTimeHelper.Value.CurrentTimeZone) : null;
-				var createdTo = f.CreatedTo.HasValue ? (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(f.CreatedTo.Value, _dateTimeHelper.Value.CurrentTimeZone) : null;
+				var createdFrom = f.CreatedFrom.HasValue ? (DateTime?)_services.DateTimeHelper.ConvertToUtcTime(f.CreatedFrom.Value, _services.DateTimeHelper.CurrentTimeZone) : null;
+				var createdTo = f.CreatedTo.HasValue ? (DateTime?)_services.DateTimeHelper.ConvertToUtcTime(f.CreatedTo.Value, _services.DateTimeHelper.CurrentTimeZone) : null;
 
 				var searchQuery = new CatalogSearchQuery()
 					.HasStoreId(ctx.Request.Profile.PerStore ? ctx.Store.Id : f.StoreId)
@@ -746,8 +749,8 @@ namespace SmartStore.Services.DataExchange.Export
 			var query = _orderService.Value.GetOrders(
 				ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId,
 				ctx.Projection.CustomerId ?? 0,
-				ctx.Filter.CreatedFrom.HasValue ? (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _dateTimeHelper.Value.CurrentTimeZone) : null,
-				ctx.Filter.CreatedTo.HasValue ? (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _dateTimeHelper.Value.CurrentTimeZone) : null,
+				ctx.Filter.CreatedFrom.HasValue ? (DateTime?)_services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _services.DateTimeHelper.CurrentTimeZone) : null,
+				ctx.Filter.CreatedTo.HasValue ? (DateTime?)_services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _services.DateTimeHelper.CurrentTimeZone) : null,
 				ctx.Filter.OrderStatusIds,
 				ctx.Filter.PaymentStatusIds,
 				ctx.Filter.ShippingStatusIds,
@@ -872,13 +875,13 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (ctx.Filter.LastActivityFrom.HasValue)
 			{
-				var activityFrom = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.LastActivityFrom.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				var activityFrom = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.LastActivityFrom.Value, _services.DateTimeHelper.CurrentTimeZone);
 				query = query.Where(x => activityFrom <= x.LastActivityDateUtc);
 			}
 
 			if (ctx.Filter.LastActivityTo.HasValue)
 			{
-				var activityTo = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.LastActivityTo.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				var activityTo = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.LastActivityTo.Value, _services.DateTimeHelper.CurrentTimeZone);
 				query = query.Where(x => activityTo >= x.LastActivityDateUtc);
 			}
 
@@ -947,13 +950,13 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (ctx.Filter.CreatedFrom.HasValue)
 			{
-				var createdFrom = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				var createdFrom = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _services.DateTimeHelper.CurrentTimeZone);
 				query = query.Where(x => createdFrom <= x.CreatedOnUtc);
 			}
 
 			if (ctx.Filter.CreatedTo.HasValue)
 			{
-				var createdTo = _dateTimeHelper.Value.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				var createdTo = _services.DateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _services.DateTimeHelper.CurrentTimeZone);
 				query = query.Where(x => createdTo >= x.CreatedOnUtc);
 			}
 

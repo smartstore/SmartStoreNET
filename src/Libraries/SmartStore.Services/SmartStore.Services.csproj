@@ -247,6 +247,7 @@
     <Compile Include="Hooks\AuditableHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityHook.cs" />
     <Compile Include="IScopedService.cs" />
+    <Compile Include="Localization\LocalizedUrlHelper.cs" />
     <Compile Include="Logging\DbLogService.cs" />
     <Compile Include="Logging\ILogService.cs" />
     <Compile Include="Media\MediaFileSystem.cs" />

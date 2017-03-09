@@ -884,9 +884,6 @@ namespace SmartStore.Services.DataExchange.Export
 			_writer.Write("CustomerGuid", entity.CustomerGuid.ToString());
 			_writer.Write("Username", entity.Username);
 			_writer.Write("Email", entity.Email);
-			_writer.Write("Password", entity.Password);
-			_writer.Write("PasswordFormatId", entity.PasswordFormatId.ToString());
-			_writer.Write("PasswordSalt", entity.PasswordSalt);
 			_writer.Write("AdminComment", entity.AdminComment);
 			_writer.Write("IsTaxExempt", entity.IsTaxExempt.ToString());
 			_writer.Write("AffiliateId", entity.AffiliateId.ToString());

@@ -5,53 +5,49 @@
   <LocaleResource Name="AdminInstruction">
     <Value>
       <![CDATA[
-        <p>To receive an SMS notification when an order is placed from your store you need
-        to follow a few simple steps, which are shown below:</p>
+        <p>To receive an SMS notification when an order is placed from your store, you need to follow the following steps:</p>
         <ul>
-            <li><a href="https://www.clickatell.com" target='_blank'>Register for a Clickatell account here</a></li>
-            <li>Clickatell works with all countries and includes 10 free messages so you can test SMS notifications</li>
-            <li>Fill in the form below with your Clickatell account details, including the number you want the notification messages to be sent to</li>
-            <li>Click 'Save' button</li>
-            <li>Now when you receive a new order, an SMS text message will be sent to the number you enter below automatically</li>
+            <li><a href="https://www.clickatell.com/" target='_blank'>Register for a Clickatell account here</a>.</li>
+            <li>Create a new integration through <b>SMS integretation</b>.</li>
+            <li>Fill in the form below with the created API Key, including the number you want the notification messages to be sent to.</li>
+            <li>Click <b>Save</b>.</li>
+            <li>Now when you receive a new order, an SMS text message will be sent to the phone number you entered below.</li>
         </ul>
       ]]>
     </Value>
   </LocaleResource>
+  <LocaleResource Name="EnterMessage">
+    <Value>Please enter a message.</Value>
+  </LocaleResource>
+  <LocaleResource Name="OrderPlacedMessage">
+    <Value>New order with number {0} has been placed.</Value>
+  </LocaleResource>
+  <LocaleResource Name="SmsSentNote">
+    <Value>A SMS about the new order has been sent.</Value>
+  </LocaleResource>
   <LocaleResource Name="TestFailed">
-    <Value>Test message sending failed</Value>
+    <Value>Test message sending failed.</Value>
   </LocaleResource>
   <LocaleResource Name="TestSuccess">
-    <Value>Test message was sent</Value>
+    <Value>Test message was sent.</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.Enabled">
     <Value>Enabled</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.Enabled.Hint">
-    <Value>Check the box to enable SMS provider</Value>
+    <Value>Specifies whether to send an SMS when a new order has been placed.</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.ApiId">
-    <Value>API ID</Value>
+    <Value>API Key</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.ApiId.Hint">
-    <Value>Clickatell API ID</Value>
-  </LocaleResource>
-  <LocaleResource Name="Fields.Password">
-    <Value>Password</Value>
-  </LocaleResource>
-  <LocaleResource Name="Fields.Password.Hint">
-    <Value>Clickatell password</Value>
+    <Value>Clickatell API Key</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.PhoneNumber">
     <Value>Phone number</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.PhoneNumber.Hint">
-    <Value>Your phone number</Value>
-  </LocaleResource>
-  <LocaleResource Name="Fields.Username">
-    <Value>Username</Value>
-  </LocaleResource>
-  <LocaleResource Name="Fields.Username.Hint">
-    <Value>Clickatell username</Value>
+    <Value>The phone number where to send the SMS. You can enter multiple numbers separated by semicolon. Use the international format like +49231987654.</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.TestMessage">
     <Value>Message text</Value>

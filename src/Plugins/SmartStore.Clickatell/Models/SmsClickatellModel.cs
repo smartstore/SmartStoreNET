@@ -1,9 +1,9 @@
 ﻿using SmartStore.Web.Framework;
-using System.ComponentModel.DataAnnotations;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Clickatell.Models
 {
-    public class SmsClickatellModel
+	public class SmsClickatellModel : ModelBase
     {
         [SmartResourceDisplayName("Plugins.Sms.Clickatell.Fields.Enabled")]
         public bool Enabled { get; set; } 
@@ -14,16 +14,11 @@ namespace SmartStore.Clickatell.Models
         [SmartResourceDisplayName("Plugins.Sms.Clickatell.Fields.ApiId")]
         public string ApiId { get; set; }
 
-        [SmartResourceDisplayName("Plugins.Sms.Clickatell.Fields.Username")]
-        public string Username { get; set; }
-
-        [SmartResourceDisplayName("Plugins.Sms.Clickatell.Fields.Password")]
-		[DataType(DataType.Password)]
-        public string Password { get; set; }
-
-
         [SmartResourceDisplayName("Plugins.Sms.Clickatell.Fields.TestMessage")]
         public string TestMessage { get; set; }
-        public string TestSmsResult { get; set; }
-    }
+
+		public bool TestSucceeded { get; set; }
+		public string TestSmsResult { get; set; }
+		public string TestSmsDetailResult { get; set; }
+	}
 }

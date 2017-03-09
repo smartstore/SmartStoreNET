@@ -4,10 +4,23 @@
 	Layout = "";
 }
 
-<div class="alert alert-info">
-	<button class="close" data-dismiss="alert">×</button>
-	@Html.Raw(@T("Plugins.Sms.Clickatell.AdminInstruction"))
+<div class="plugin-configuration">
+	<div>
+		<div class="alert alert-info">
+			<button class="close" data-dismiss="alert">×</button>
+			@Html.Raw(@T("Plugins.Sms.Clickatell.AdminInstruction"))
+		</div>
+	</div>
+	<div>
+		<a href="https://www.clickatell.com/" target="_blank">
+			<img src="@Url.Content("~/Plugins/SmartStore.Clickatell/Content/branding.png")" alt="Clickatell" />
+		</a>
+	</div>
 </div>
+
+@{ Html.RenderAction("StoreScopeConfiguration", "Setting", new { area = "Admin" }); }
+
+@Html.ValidationSummary(false)
 
 @using (Html.BeginForm())
 {
@@ -22,7 +35,7 @@
                 @Html.SmartLabelFor(model => model.Enabled)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Enabled)
+                @Html.SettingEditorFor(model => model.Enabled)
                 @Html.ValidationMessageFor(model => model.Enabled)
             </td>
         </tr>
@@ -31,7 +44,7 @@
                 @Html.SmartLabelFor(model => model.PhoneNumber)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.PhoneNumber)
+                @Html.SettingEditorFor(model => model.PhoneNumber)
                 @Html.ValidationMessageFor(model => model.PhoneNumber)
             </td>
         </tr>
@@ -40,26 +53,8 @@
                 @Html.SmartLabelFor(model => model.ApiId)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ApiId)
+                @Html.SettingEditorFor(model => model.ApiId)
                 @Html.ValidationMessageFor(model => model.ApiId)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Username)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Username)
-                @Html.ValidationMessageFor(model => model.Username)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Password)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.Password)
-                @Html.ValidationMessageFor(model => model.Password)
             </td>
         </tr>
         <tr>
@@ -88,13 +83,13 @@
                 </button>
             </td>
         </tr>
-    </table>
-    
-    if (!String.IsNullOrEmpty(Model.TestSmsResult))
-    {
-		<div class="alert alert-info">
-			<button class="close" data-dismiss="alert">×</button>
-			@Model.TestSmsResult
-        </div>
-    }
+    </table>    
+}
+
+@if (Model.TestSmsResult.HasValue())
+{
+	<div class="alert @(Model.TestSucceeded ? "alert-info" : "alert-error")">
+		<button class="close" data-dismiss="alert">×</button>
+		@Model.TestSmsResult @Model.TestSmsDetailResult
+    </div>
 }

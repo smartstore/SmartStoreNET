@@ -91,6 +91,7 @@
 * Whishlist: Products with minimum order amount greater then 1 can be added to the whishlist without any warning
 * #1102: Discounts not transmitted when the total amount is zero
 * #1104 Export: Language projection ignored when creating product details URL
+* #1101 Clickatell: Sending SMS not working anymore
 
 ## SmartStore.NET 2.6
 

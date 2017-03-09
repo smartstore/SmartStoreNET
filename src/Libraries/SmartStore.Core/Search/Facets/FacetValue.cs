@@ -180,28 +180,23 @@ namespace SmartStore.Core.Search.Facets
 		public override string ToString()
 		{
 			var result = string.Empty;
-			var valueString = Value != null ? Value.ToString().EmptyNull() : string.Empty;
+			var valueStr = Value?.ToString() ?? string.Empty;
 
 			if (IsRange)
 			{
-				var upperValueString = UpperValue != null ? UpperValue.ToString().EmptyNull() : string.Empty;
+				var upperValueStr = UpperValue?.ToString() ?? string.Empty;
 
-				if (IncludesLower && IncludesUpper)
+				string expr = valueStr;
+				if (upperValueStr.HasValue())
 				{
-					result = $"[{valueString} - {upperValueString}]";
+					expr += "-" + upperValueStr.ToString();
 				}
-				else if (IncludesUpper)
-				{
-					result = upperValueString;
-				}
-				else
-				{
-					result = valueString;
-				}
+
+				result = expr;
 			}
 			else
 			{
-				result = valueString;
+				result = valueStr;
 			}
 
 			return result;

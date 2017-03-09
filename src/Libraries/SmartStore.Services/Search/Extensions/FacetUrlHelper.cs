@@ -21,6 +21,16 @@ namespace SmartStore.Services.Search.Extensions
 		private readonly string _url;
 		private readonly QueryString _initialQuery;
 
+		private readonly static IDictionary<FacetGroupKind, string> _queryNames = new Dictionary<FacetGroupKind, string>
+		{
+			{ FacetGroupKind.Brand, "m" },
+			{ FacetGroupKind.Category, "c" },
+			{ FacetGroupKind.DeliveryTime, "d" },
+			{ FacetGroupKind.Stock, "sq" },
+			{ FacetGroupKind.Price, "p" },
+			{ FacetGroupKind.Rating, "r" }
+		};
+
 		public FacetUrlHelper(
 			ICatalogSearchQueryAliasMapper mapper,
 			IWorkContext workContext,
@@ -108,47 +118,34 @@ namespace SmartStore.Services.Search.Extensions
 
 			var result = new NameValueCollection(2);
 
-			if (group.Kind == FacetGroupKind.Attribute)
+			switch (group.Kind)
 			{
-				// TODO: (mc) > (mh) Handle range type attributes also!
-				entityId = val.Value.Convert<int>();
-				name = _mapper.GetAttributeAliasById(val.ParentId, _languageId) ?? "attr" + val.ParentId;
-				value = _mapper.GetAttributeOptionAliasById(entityId, _languageId) ?? "opt" + entityId;
-				result.Add(name, value);
-			}
-			else if (group.Kind == FacetGroupKind.Variant)
-			{
-				entityId = val.Value.Convert<int>();
-				name = _mapper.GetVariantAliasById(val.ParentId, _languageId) ?? "vari" + val.ParentId;
-				value = _mapper.GetVariantOptionAliasById(entityId, _languageId) ?? "opt" + entityId;
-				result.Add(name, value);
-			}
-			else if (group.Kind == FacetGroupKind.Category)
-			{
-				result.Add("c", val.Value.ToString());
-			}
-			else if (group.Kind == FacetGroupKind.Brand)
-			{
-				result.Add("m", val.Value.ToString());
-			}
-			else if (group.Kind == FacetGroupKind.Rating)
-			{
-				result.Add("r", val.Value.ToString());
-			}
-			else if (group.Kind == FacetGroupKind.DeliveryTime)
-			{
-				result.Add("d", val.Value.ToString());
-			}
-			else if (group.Kind == FacetGroupKind.Price)
-			{
-				if (val.Value != null)
-				{
-					result.Add("pf", val.Value.ToString());
-				}
-				if (val.UpperValue != null)
-				{
-					result.Add("pt", val.UpperValue.ToString());
-				}
+				case FacetGroupKind.Attribute:
+					// TODO: (mc) > (mh) Handle range type attributes also!
+					entityId = val.Value.Convert<int>();
+					name = _mapper.GetAttributeAliasById(val.ParentId, _languageId) ?? "attr" + val.ParentId;
+					value = _mapper.GetAttributeOptionAliasById(entityId, _languageId) ?? "opt" + entityId;
+					result.Add(name, value);
+					break;
+				case FacetGroupKind.Variant:
+					entityId = val.Value.Convert<int>();
+					name = _mapper.GetVariantAliasById(val.ParentId, _languageId) ?? "vari" + val.ParentId;
+					value = _mapper.GetVariantOptionAliasById(entityId, _languageId) ?? "opt" + entityId;
+					result.Add(name, value);
+					break;
+				case FacetGroupKind.Category:
+				case FacetGroupKind.Brand:
+				case FacetGroupKind.Rating:
+				case FacetGroupKind.DeliveryTime:
+				case FacetGroupKind.Stock:
+				case FacetGroupKind.Price:
+					value = val.ToString();
+					if (value.HasValue())
+					{
+						result.Add(_queryNames[group.Kind], value);
+					}
+
+					break;
 			}
 
 			return result;

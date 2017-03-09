@@ -183,6 +183,33 @@
 		if (widget.length === 0)
 			return;
 
+		// Handle facet widget events
+		(function () {
+			// Handle checkboxes
+			$('.faceted-search').on('change', ':input[type=checkbox].facet-control-native', facetControlClickHandler);
+
+			// Handle radio buttons
+			$('.faceted-search').on('click', ':input[type=radio].facet-control-native', facetControlClickHandler);
+
+			function facetControlClickHandler(e) {
+				var href = $(this).closest('[data-href]').data('href');
+				if (href) {
+					setLocation(href);
+				}
+			}
+
+			// Custom price range
+			$('#btn-custom-price-range').click(function () {
+				var minVal = $('#price-range-from').val(),
+					maxVal = $('#price-range-to').val();
+
+				var expr = minVal.replace(/[^\d\.\-]/g, '') + '-' + maxVal.replace(/[^\d\.\-]/g, '');
+
+				var url = modifyUrl(null, 'p', expr.length > 1 ? expr : null);
+				setLocation(url);
+			});
+		})();
+
 		var btn = $('.btn-toggle-filter-widget');
 		if (btn.length === 0)
 			return;

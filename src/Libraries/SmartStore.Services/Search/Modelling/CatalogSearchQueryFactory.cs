@@ -13,6 +13,7 @@ using SmartStore.Core.Search.Facets;
 using SmartStore.Core.Search.Filter;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Search.Modelling
 {
@@ -23,8 +24,7 @@ namespace SmartStore.Services.Search.Modelling
 		i	-	Page index
 		s	-	Page size
 		o	-	Order by
-		pf	-	Price from
-		pt	-	Price to
+		p	-   Price range (from-to || from(-) || -to)
 		c	-	Categories
 		m	-	Manufacturers
 		r	-	Min Rating
@@ -32,12 +32,12 @@ namespace SmartStore.Services.Search.Modelling
 		d	-	Delivery Time
 		v	-	View Mode
 		
-		*	-	Variants 
+		*	-	Variants & attributes
 	*/
 
 	public class CatalogSearchQueryFactory : ICatalogSearchQueryFactory
 	{
-		protected static readonly string[] _tokens = new string[] { "q", "i", "s", "o", "pf", "pt", "c", "m", "r", "sq", "d", "v" };
+		protected static readonly string[] _tokens = new string[] { "q", "i", "s", "o", "p", "c", "m", "r", "sq", "d", "v" };
 		protected readonly HttpContextBase _httpContext;
 		protected readonly CatalogSettings _catalogSettings;
 		protected readonly SearchSettings _searchSettings;
@@ -345,30 +345,34 @@ namespace SmartStore.Services.Search.Modelling
 
 		protected virtual void ConvertPrice(CatalogSearchQuery query, RouteData routeData, string origin)
 		{
-			var currency = _services.WorkContext.WorkingCurrency;
-			var minPrice = GetValueFor<decimal?>("pf");
-			var maxPrice = GetValueFor<decimal?>("pt");
+			decimal? minPrice;
+			decimal? maxPrice;
 
-			if (minPrice.HasValue)
+			if (TryParsePriceRange(GetValueFor<string>("p"), out minPrice, out maxPrice))
 			{
-				minPrice = _currencyService.ConvertToPrimaryStoreCurrency(minPrice.Value, currency);
-			}
+				var currency = _services.WorkContext.WorkingCurrency;
 
-			if (maxPrice.HasValue)
-			{
-				maxPrice = _currencyService.ConvertToPrimaryStoreCurrency(maxPrice.Value, currency);
-			}
+				if (minPrice.HasValue)
+				{
+					minPrice = _currencyService.ConvertToPrimaryStoreCurrency(minPrice.Value, currency);
+				}
 
-			if (minPrice.HasValue && maxPrice.HasValue && minPrice > maxPrice)
-			{
-				var tmp = minPrice;
-				minPrice = maxPrice;
-				maxPrice = tmp;
-			}
+				if (maxPrice.HasValue)
+				{
+					maxPrice = _currencyService.ConvertToPrimaryStoreCurrency(maxPrice.Value, currency);
+				}
 
-			if (minPrice.HasValue || maxPrice.HasValue)
-			{
-				query.PriceBetween(minPrice, maxPrice);
+				if (minPrice.HasValue && maxPrice.HasValue && minPrice > maxPrice)
+				{
+					var tmp = minPrice;
+					minPrice = maxPrice;
+					maxPrice = tmp;
+				}
+
+				if (minPrice.HasValue || maxPrice.HasValue)
+				{
+					query.PriceBetween(minPrice, maxPrice);
+				}
 			}
 
 			AddFacet(query, "price", false, FacetSorting.DisplayOrder, descriptor =>
@@ -386,6 +390,28 @@ namespace SmartStore.Services.Search.Modelling
 					});
 				}
 			});
+		}
+
+		private bool TryParsePriceRange(string price, out decimal? minPrice, out decimal? maxPrice)
+		{
+			minPrice = null;
+			maxPrice = null;
+
+			if (price.IsEmpty())
+			{
+				return false;
+			}
+
+			// Format: from-to || from[-] || -to
+			var arr = price.Split('-').Select(x => x.Trim()).Take(2).ToArray();
+
+			CommonHelper.TryConvert(arr[0], out minPrice);
+			if (arr.Length == 2)
+			{
+				CommonHelper.TryConvert(arr[1], out maxPrice);
+			}
+
+			return minPrice != null || maxPrice != null;
 		}
 
 		protected virtual void ConvertRating(CatalogSearchQuery query, RouteData routeData, string origin)

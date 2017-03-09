@@ -12,6 +12,7 @@ namespace SmartStore.Core.Search.Facets
 		Price,
 		Rating,
 		DeliveryTime,
+		Stock,
 		Attribute,
 		Variant
 	}

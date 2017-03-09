@@ -1045,28 +1045,7 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public ActionResult OffCanvasMenu()
         {
-            var model = new OffCanvasMenuModel();
-
-            var availableCurrencies = _services.Cache.Get(string.Format(ModelCacheEventConsumer.AVAILABLE_CURRENCIES_MODEL_KEY, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id), () =>
-            {
-                return _currencyService
-                    .GetAllCurrencies(storeId: _services.StoreContext.CurrentStore.Id)
-                    .Select(x => new CurrencyModel())
-                    .ToList();
-            });
-
-            var availableLanguages = _services.Cache.Get(string.Format(ModelCacheEventConsumer.AVAILABLE_LANGUAGES_MODEL_KEY, _services.StoreContext.CurrentStore.Id), () =>
-            {
-                return _languageService.Value
-                    .GetAllLanguages(storeId: _services.StoreContext.CurrentStore.Id)
-                    .Select(x => new LanguageModel())
-                    .ToList();
-            });
-            
-            model.DisplayCurrencySelector = availableCurrencies.Count > 1;
-            model.DisplayLanguageSelector = availableLanguages.Count > 1;
-            
-            return PartialView(model);
+            return PartialView();
         }
         
         #endregion

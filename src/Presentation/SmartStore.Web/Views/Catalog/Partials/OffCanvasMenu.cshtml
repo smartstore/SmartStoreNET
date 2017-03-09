@@ -1,6 +1,4 @@
-﻿@using SmartStore.Web.Models.Catalog;
-@model OffCanvasMenuModel
-@{ 
+﻿@{ 
 	var labelStyle = GetThemeVariable<string>("shopbar-label", "warning");
 }
 
@@ -32,37 +30,27 @@
         <div class="tab-pane fade" id="ocm-service" role="tabpanel"></div>
     </div>
 
-    @if (Model.DisplayCurrencySelector || Model.DisplayLanguageSelector)
-    {
-        <div class="offcanvas-menu-footer">
-            <div class="row xs-gutters justify-content-around flex-nowrap">
-                @if (Model.DisplayCurrencySelector)
-                {
-                    <div class="col-xs">
-                        <div id="ocm-currency-selector" class="mf-dropdown">
-                            <button class="btn btn-grey btn-labeled icon-right btn-block text-xs-left">
-                                <span data-bind="name"></span>
-                                <b><i class="fa fa-caret-down"></i></b>
-                            </button>
-                            <select class="form-control noskin"></select>
-                        </div>
-                    </div>
-                }
+    <div class="offcanvas-menu-footer hidden-xs-up">
+        <div class="row xs-gutters justify-content-around flex-nowrap">
+            <div class="col-xs hidden-xs-up">
+                <div id="ocm-currency-selector" class="mf-dropdown">
+                    <button class="btn btn-grey btn-labeled icon-right btn-block text-xs-left">
+                        <span data-bind="name"></span>
+                        <b><i class="fa fa-caret-down"></i></b>
+                    </button>
+                    <select class="form-control noskin"></select>
+                </div>
+            </div>
                 
-                @if (Model.DisplayLanguageSelector)
-                {
-                    <div class="col-xs">
-                        <div id="ocm-language-selector" class="mf-dropdown">
-                            <button class="btn btn-grey btn-labeled icon-right btn-block text-xs-left">
-                                <span data-bind="name"></span>
-                                <b><i class="fa fa-caret-down"></i></b>
-                            </button>
-                            <select class="form-control noskin"></select>
-                        </div>
-                    </div>
-                }
+            <div class="col-xs hidden-xs-up">
+                <div id="ocm-language-selector" class="mf-dropdown">
+                    <button class="btn btn-grey btn-labeled icon-right btn-block text-xs-left">
+                        <span data-bind="name"></span>
+                        <b><i class="fa fa-caret-down"></i></b>
+                    </button>
+                    <select class="form-control noskin"></select>
+                </div>
             </div>
         </div>
-    }
-
+    </div>
 </div>

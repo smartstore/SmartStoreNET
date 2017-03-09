@@ -242,26 +242,41 @@ var AjaxMenu = (function ($, window, document, undefined) {
 	        var ocmCurrencySelector = $("#ocm-currency-selector", footer);
 	        var selectTitleLanguage = $(".menubar-link > span", languageSelector).text();
 	        var selectTitleCurrency = $(".menubar-link > span", currencySelector).text();
+	        var displayCurrencySelector = currencySelector.length > 0;
+	        var displayLanguageSelector = languageSelector.length > 0;
 	        var languageOptions = "";
 	        var currencyOptions = "";
 
-	        $(languageSelector).find(".dropdown-item").each(function () {
-	            var link = $(this);
-	            var selected = link.data("selected") ? ' selected="selected" ' : '';
-	            languageOptions += '<option value="' + link.attr("href") + '"' + selected + '>' + link.text() + '</option>';
-	        });
+	        if (!displayCurrencySelector && !displayCurrencySelector)
+	            return;
+	        else
+	            footer.removeClass("hidden-xs-up");
+	        
+	        if (displayCurrencySelector) {
+	            ocmCurrencySelector.parent().removeClass("hidden-xs-up");
 
-	        $(currencySelector).find(".dropdown-item").each(function () {
-	            var link = $(this);
-	            var selected = link.data("selected") ? ' selected="selected" ' : '';
-	            currencyOptions += '<option value="' + link.attr("href") + '"' + selected + '>' + link.text() + '</option>';
-	        });
+	            $(currencySelector).find(".dropdown-item").each(function () {
+	                var link = $(this);
+	                var selected = link.data("selected") ? ' selected="selected" ' : '';
+	                currencyOptions += '<option value="' + link.attr("href") + '"' + selected + '>' + link.text() + '</option>';
+	            });
 
-	        $("span", ocmLanguageSelector).text(selectTitleLanguage);
-	        $("span", ocmCurrencySelector).text(selectTitleCurrency);
+	            $("span", ocmCurrencySelector).text(selectTitleCurrency);
+	            $(".form-control", ocmCurrencySelector).append(currencyOptions);
+	        }
 
-	        $(".form-control", ocmLanguageSelector).append(languageOptions);
-	        $(".form-control", ocmCurrencySelector).append(currencyOptions);
+	        if (displayLanguageSelector) {
+	            ocmLanguageSelector.parent().removeClass("hidden-xs-up");
+
+	            $(languageSelector).find(".dropdown-item").each(function () {
+	                var link = $(this);
+	                var selected = link.data("selected") ? ' selected="selected" ' : '';
+	                languageOptions += '<option value="' + link.attr("href") + '"' + selected + '>' + link.text() + '</option>';
+	            });
+
+	            $("span", ocmLanguageSelector).text(selectTitleLanguage);
+	            $(".form-control", ocmLanguageSelector).append(languageOptions);
+	        }
 
             // on change navigate to value 
 	        $(footer).find(".form-control").on("change", function (e) {

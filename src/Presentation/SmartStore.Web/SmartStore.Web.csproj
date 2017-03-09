@@ -1622,7 +1622,6 @@
     <Content Include="Themes\Flex\Content\shared\_modal-flex.scss" />
     <Content Include="Themes\Flex\Content\shared\_throbber.scss" />
     <Content Include="Themes\Flex\Content\shared\_spinner.scss" />
-    <Content Include="Themes\Flex\Content\shared\_scrollbutton.scss" />
     <Content Include="Themes\Flex\Content\shared\_star-rating.scss" />
     <Content Include="Themes\Flex\Content\shared\_sortable-grip.scss" />
     <Content Include="Themes\Flex\Content\_shopbar.scss" />

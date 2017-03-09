@@ -1061,6 +1061,7 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 			model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions = securitySettings.HideAdminMenuItemsBasedOnPermissions;
+			model.SecuritySettings.ForceSslForAllPages = securitySettings.ForceSslForAllPages;
 
 			var captchaSettings = _services.Settings.LoadSetting<CaptchaSettings>(storeScope);
 			model.CaptchaSettings.Enabled = captchaSettings.Enabled;
@@ -1237,6 +1238,7 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 			securitySettings.HideAdminMenuItemsBasedOnPermissions = model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions;
+			securitySettings.ForceSslForAllPages = model.SecuritySettings.ForceSslForAllPages;
 			_services.Settings.SaveSetting(securitySettings);
 
 			var captchaSettings = _services.Settings.LoadSetting<CaptchaSettings>(storeScope);

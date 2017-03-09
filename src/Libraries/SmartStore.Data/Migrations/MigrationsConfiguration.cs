@@ -658,6 +658,12 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Search.Facet.PriceBetween", "{0} - {1}", "{0} - {1}");
 
 			builder.AddOrUpdate("Search.Facet.FindPlaceholder", "Find {0}...", "{0} suchen...");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.ForceSslForAllPages",
+				"Always use SSL",
+				"Immer SSL verwenden",
+				"Specifies whether to SSL secure all request.",
+				"Legt fest, dass alle Anfragen SSL gesichert werden sollen.");
 		}
 	}
 }

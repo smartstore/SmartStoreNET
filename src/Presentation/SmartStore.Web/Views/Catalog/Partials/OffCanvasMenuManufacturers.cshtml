@@ -1,0 +1,32 @@
+﻿@model ManufacturerNavigationModel
+@using SmartStore.Web.Models.Catalog;
+@{
+    Layout = "";
+}
+
+<div class="category-container">
+    <ul class="nav navbar-nav">
+
+        @foreach (var manufacturer in Model.Manufacturers)
+        {
+            <li class="nav-item" data-ajax="false">
+                <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" class="nav-link">
+
+                    @if (manufacturer.PictureUrl.HasValue())
+                    {
+                        <img src="@manufacturer.PictureUrl" alt="@manufacturer.Name" title="@manufacturer.Name" />
+                    }
+
+                    @manufacturer.Name
+                </a>
+            </li>
+        }
+
+        @if (Model.DisplayAllManufacturersLink)
+        {
+            <li class="show-all-manufacturers nav-item" data-ajax="false">
+                <a href="@Url.RouteUrl("ManufacturerList")" class="btn btn-block btn-warning">@T("Manufacturers.ViewAll")</a>
+            </li>
+        }
+    </ul>
+</div>

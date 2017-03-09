@@ -1434,5 +1434,43 @@ namespace SmartStore.Web.Controllers
             return model;
         }
 
-	}
+        public ManufacturerNavigationModel PreprareManufacturerNavigationModel(int currentManufacturerId)
+        {
+            var cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY,
+                currentManufacturerId,
+                !_catalogSettings.HideManufacturerDefaultPictures,
+                _services.WorkContext.WorkingLanguage.Id,
+                _services.StoreContext.CurrentStore.Id);
+
+            var cacheModel = _services.Cache.Get(cacheKey, () =>
+            {
+                var currentManufacturer = _manufacturerService.GetManufacturerById(currentManufacturerId);
+                var manufacturers = _manufacturerService.GetAllManufacturers(null, 0, _catalogSettings.ManufacturersBlockItemsToDisplay + 1, _services.StoreContext.CurrentStore.Id);
+
+                var model = new ManufacturerNavigationModel
+                {
+                    DisplayManufacturers = _catalogSettings.ShowManufacturersOnHomepage,
+                    DisplayImages = _catalogSettings.ShowManufacturerPictures,
+                    DisplayAllManufacturersLink = manufacturers.Count > _catalogSettings.ManufacturersBlockItemsToDisplay
+                };
+
+                foreach (var manufacturer in manufacturers.Take(_catalogSettings.ManufacturersBlockItemsToDisplay))
+                {
+                    var modelMan = new ManufacturerBriefInfoModel
+                    {
+                        Id = manufacturer.Id,
+                        Name = manufacturer.GetLocalized(x => x.Name),
+                        SeName = manufacturer.GetSeName(),
+                        PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
+                        IsActive = currentManufacturer != null && currentManufacturer.Id == manufacturer.Id,
+                    };
+                    model.Manufacturers.Add(modelMan);
+                }
+                
+                return model;
+            }, TimeSpan.FromHours(6));
+
+            return cacheModel;
+        }
+    }
 }

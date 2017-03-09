@@ -1897,6 +1897,7 @@
     <Content Include="Views\Search\FacetTemplates\Rating.cshtml" />
     <Content Include="Views\Search\FacetTemplates\Category.cshtml" />
     <Content Include="Views\Search\FacetTemplates\Box.cshtml" />
+    <Content Include="Views\Catalog\Partials\OffCanvasMenuManufacturers.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

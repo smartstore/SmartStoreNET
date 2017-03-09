@@ -471,44 +471,12 @@ namespace SmartStore.Web.Controllers
 			if (_catalogSettings.ManufacturersBlockItemsToDisplay == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
 				return Content("");
 
-			var cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY,
-				currentManufacturerId,
-				!_catalogSettings.HideManufacturerDefaultPictures,
-				_services.WorkContext.WorkingLanguage.Id,
-				_services.StoreContext.CurrentStore.Id);
+            var model = _helper.PreprareManufacturerNavigationModel(currentManufacturerId);
 
-            var cacheModel = _services.Cache.Get(cacheKey, () =>
-            {
-                var currentManufacturer = _manufacturerService.GetManufacturerById(currentManufacturerId);
-
-                var manufacturers = _manufacturerService.GetAllManufacturers(null, _services.StoreContext.CurrentStore.Id);
-
-                var model = new ManufacturerNavigationModel
-                {
-                    TotalManufacturers = manufacturers.Count,
-                    DisplayManufacturers = _catalogSettings.ShowManufacturersOnHomepage,
-                    DisplayImages = _catalogSettings.ShowManufacturerPictures
-                };
-
-                foreach (var manufacturer in manufacturers.Take(_catalogSettings.ManufacturersBlockItemsToDisplay))
-                {
-                    var modelMan = new ManufacturerBriefInfoModel
-                    {
-                        Id = manufacturer.Id,
-                        Name = manufacturer.GetLocalized(x => x.Name),
-                        SeName = manufacturer.GetSeName(),
-                        PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize, !_catalogSettings.HideManufacturerDefaultPictures),
-                        IsActive = currentManufacturer != null && currentManufacturer.Id == manufacturer.Id,
-                    };
-                    model.Manufacturers.Add(modelMan);
-                }
-                return model;
-            }, TimeSpan.FromHours(6));
-
-			if (cacheModel.Manufacturers.Count == 0)
+            if (model.Manufacturers.Count == 0)
 				return Content("");
 
-            return PartialView(cacheModel);
+            return PartialView(model);
         }
 
         #endregion
@@ -1011,35 +979,14 @@ namespace SmartStore.Web.Controllers
 
         // ajax
         [HttpPost]
-        public ActionResult OffCanvasMenuManufacturer()
+        public ActionResult OffCanvasMenuManufacturers()
         {
-            // TODO: settings berücksichtigen
-            //if (_catalogSettings.ManufacturersBlockItemsToDisplay == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
-            //    return Content("");
+            // TODO: setting berücksichtigen
+            // _catalogSettings.ShowManufacturersOnHomepage
+            
+            var model = _helper.PreprareManufacturerNavigationModel(0);
 
-            // TODO: caching berücksichtigen
-
-            var model = new AjaxMenuItemModel();
-            model.IsManufacturerTab = true;
-
-            var manufacturers = _manufacturerService.GetAllManufacturers(null, _services.StoreContext.CurrentStore.Id)
-                .Take(_catalogSettings.ManufacturersBlockItemsToDisplay);
-
-            foreach (var manufacturer in manufacturers)
-            {
-                var manuName = manufacturer.GetLocalized(x => x.Name);
-                var modelMan = new AjaxMenuItemModel {
-                    Id = manufacturer.Id,
-                    Name = manuName,
-                    SeName = manufacturer.GetSeName(),
-                    HasChildren = false,
-                    PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize, true)
-                };
-
-                model.SubCategories.Add(modelMan);
-            }
-
-            return PartialView("OffCanvasMenuCategories", model);
+            return PartialView("OffCanvasMenuManufacturers", model);
         }
 
         [HttpPost]

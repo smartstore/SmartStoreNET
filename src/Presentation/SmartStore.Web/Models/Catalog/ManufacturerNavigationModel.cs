@@ -11,8 +11,8 @@ namespace SmartStore.Web.Models.Catalog
         }
 
         public IList<ManufacturerBriefInfoModel> Manufacturers { get; set; }
-
-        public int TotalManufacturers { get; set; }
+        
+        public bool DisplayAllManufacturersLink { get; set; }
 
         public bool DisplayManufacturers { get; set; }
 

@@ -18,11 +18,7 @@ namespace SmartStore.Web.Models.Catalog
         public string SeName { get; set; }
 
         public bool HasChildren { get; set; }
-
-        public string PictureUrl { get; set; }
-
-        public bool IsManufacturerTab { get; set; }
-
+        
         public IList<AjaxMenuItemModel> SubCategories { get; set; }
 
         public AjaxParentCategoryModel ParentCategory { get; set; }

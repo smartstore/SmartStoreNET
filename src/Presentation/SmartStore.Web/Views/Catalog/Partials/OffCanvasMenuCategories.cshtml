@@ -33,25 +33,11 @@
 
         @foreach (var cat in Model.SubCategories)
         {
-            <li class="sub-cat nav-item@(cat.HasChildren ? " has-children" : "")" data-id="@cat.Id" data-ajax="@(cat.HasChildren ? "true" : "false")">
+            <li class="nav-item@(cat.HasChildren ? " has-children" : "")" data-id="@cat.Id" data-ajax="@(cat.HasChildren ? "true" : "false")">
                 <a href="@Url.RouteUrl("Category", new { SeName = cat.SeName })" class="nav-link">
-
-                    @if (cat.PictureUrl.HasValue())
-                    {
-                        <img src="@cat.PictureUrl" />
-                    }
-
                     @cat.Name
                 </a>
             </li>
         }
-
-        @if (Model.IsManufacturerTab)
-        {
-            <li class="show-all-manufacturers nav-item" data-ajax="false">
-                <a href="@Url.RouteUrl("ManufacturerList")" class="btn btn-block btn-warning">@T("Manufacturers.ViewAll")</a>
-            </li>
-        }
-        
     </ul>
 </div>

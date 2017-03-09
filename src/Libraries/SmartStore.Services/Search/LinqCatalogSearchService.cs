@@ -733,18 +733,19 @@ namespace SmartStore.Services.Search
 						facets.RemoveFacet(10.0, true);
 					}
 
-					// add facet for individual price filter
-					if (descriptor.Values.Any() && !facets.Any(x => x.Value.IsSelected))
-					{
-						var individualPrice = descriptor.Values.First();
+					// Add facet for custome price range
+					var hasActivePredefinedFacet = facets.Any(x => x.Value.IsSelected);
+					var priceDescriptorValue = descriptor.Values.FirstOrDefault();
 
-						// check if price facet already exists otherwise insert it
-						var priceExists = (!individualPrice.IncludesLower && individualPrice.IncludesUpper && facets.Any(x => x.Value.Equals(individualPrice)));
-						if (!priceExists)
-						{
-							facets.Insert(0, new Facet(new FacetValue(individualPrice)));
-						}
-					}
+					var customPriceFacetValue = new FacetValue(
+						priceDescriptorValue != null && !hasActivePredefinedFacet ? priceDescriptorValue.Value : null,
+						priceDescriptorValue != null && !hasActivePredefinedFacet ? priceDescriptorValue.UpperValue : null,
+						IndexTypeCode.Double,
+						true,
+						true);
+					customPriceFacetValue.IsSelected = customPriceFacetValue.Value != null || customPriceFacetValue.UpperValue != null;
+
+					facets.Insert(0, new Facet("custom", customPriceFacetValue));
 
 					#endregion
 				}
@@ -831,7 +832,7 @@ namespace SmartStore.Services.Search
 				var ids = query.Select(x => x.Id).ToArray();
 				hitsFactory = () => _productService.GetProductsByIds(ids, loadFlags);
 
-				if (totalCount > 0 && searchQuery.FacetDescriptors.Any())
+				if (totalCount > 0 && searchQuery.BuildFacets && searchQuery.FacetDescriptors.Any())
 				{
 					facets = GetFacets(searchQuery);
 				}

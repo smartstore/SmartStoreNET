@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SmartStore.Core.Search.Facets
 {
+	[DebuggerDisplay("Key: {Key}, IsChoice: {IsChoice}, HitCount: {HitCount}, Value: {Value}")]
 	public class Facet
 	{
 		public Facet(FacetValue value)

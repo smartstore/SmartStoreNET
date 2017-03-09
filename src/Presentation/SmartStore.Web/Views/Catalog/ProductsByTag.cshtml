@@ -9,23 +9,26 @@
 @using SmartStore.Core.Domain.Seo;
 
 @{
-    Layout = "_ColumnsTwo";
+	//title
+	Html.AddTitleParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
+	Html.AddMetaDescriptionParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
 
-    //title
-    Html.AddTitleParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
-    Html.AddMetaDescriptionParts(string.Format(T("PageTitle.ProductsByTag").Text, Model.TagName));
+	//canonical URL
+	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+	if (canonicalUrlsEnabled)
+	{
+		var byTagUrl = Url.RouteUrl("ProductsByTag", new { productTagId = Model.Id, SeName = Model.TagName }, this.Request.Url.Scheme);
+		Html.AddCanonicalUrlParts(byTagUrl);
+	}
 
-    //canonical URL
-    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
-    if (canonicalUrlsEnabled)
-    {
-        var byTagUrl = Url.RouteUrl("ProductsByTag", new { productTagId = Model.Id, SeName = Model.TagName }, this.Request.Url.Scheme);
-        Html.AddCanonicalUrlParts(byTagUrl);
-    }
+	Layout = Model.SearchResult.Facets.Count > 0 ? "_ColumnsTwo" : "_ColumnsOne";
 }
 
-@section left {
-	@{ Html.RenderAction("Filters", "Search", new { model = Model }); }
+@if (Model.SearchResult.Facets.Count > 0)
+{
+	@section left {
+		@{ Html.RenderAction("Filters", "Search", new { model = Model }); }
+	}
 }
 
 <div class="page product-tag-page">

@@ -20,21 +20,21 @@
 // Font Sizes
 // ==============================================================
 
-.fs-h1          { font-size: $font-size-h1; }
-.fs-h2          { font-size: $font-size-h2; }
-.fs-h3          { font-size: $font-size-h3; }
-.fs-h4          { font-size: $font-size-h4; }
-.fs-h5          { font-size: $font-size-h5; }
-.fs-h6          { font-size: $font-size-h6; }
+.fs-h1          { font-size: $font-size-h1 !important; }
+.fs-h2          { font-size: $font-size-h2 !important; }
+.fs-h3          { font-size: $font-size-h3 !important; }
+.fs-h4          { font-size: $font-size-h4 !important; }
+.fs-h5          { font-size: $font-size-h5 !important; }
+.fs-h6          { font-size: $font-size-h6 !important; }
 
 .fs-lead        { font-size: $lead-font-size; }
 
-.fs-display-1   { font-size: $display1-size; }
-.fs-display-2   { font-size: $display2-size; }
-.fs-display-3   { font-size: $display3-size; }
-.fs-display-4   { font-size: $display4-size; }
+.fs-display-1   { font-size: $display1-size !important; }
+.fs-display-2   { font-size: $display2-size !important; }
+.fs-display-3   { font-size: $display3-size !important; }
+.fs-display-4   { font-size: $display4-size !important; }
 
-.fs-small       { font-size: 0.85rem; }
+.fs-small       { font-size: 0.85rem !important; }
 
 
 // Responsive Heights (e.g. .height-400-md)

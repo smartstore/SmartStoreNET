@@ -66,6 +66,7 @@ using SmartStore.Services.Polls;
 using SmartStore.Services.Search;
 using SmartStore.Services.Search.Extensions;
 using SmartStore.Services.Search.Modelling;
+using SmartStore.Services.Search.Rendering;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
@@ -101,6 +102,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new CoreModule(typeFinder));
 			builder.RegisterModule(new DbModule(typeFinder));
 			builder.RegisterModule(new CachingModule());
+			builder.RegisterModule(new SearchModule());
 			builder.RegisterModule(new LocalizationModule());
 			builder.RegisterModule(new EventModule(typeFinder, pluginFinder));
 			builder.RegisterModule(new MessagingModule());
@@ -259,14 +261,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<OpenAuthenticationService>().As<IOpenAuthenticationService>().InstancePerRequest();
 
 			builder.RegisterType<CommonServices>().As<ICommonServices>().InstancePerRequest();
-
-			// Search
-			builder.RegisterType<DefaultIndexManager>().As<IIndexManager>().InstancePerRequest();
-			builder.RegisterType<CatalogSearchService>().As<ICatalogSearchService>().InstancePerRequest();
-			builder.RegisterType<LinqCatalogSearchService>().Named<ICatalogSearchService>("linq").InstancePerRequest();
-			builder.RegisterType<CatalogSearchQueryFactory>().As<ICatalogSearchQueryFactory>().InstancePerRequest();
-			builder.RegisterType<CatalogSearchQueryAliasMapper>().As<ICatalogSearchQueryAliasMapper>().InstancePerRequest();
-			builder.RegisterType<FacetUrlHelper>().InstancePerRequest();
 		}
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
@@ -513,6 +507,20 @@ namespace SmartStore.Web.Framework
 			// Register MemoryCacheManager twice, this time explicitly named.
 			// We may need this later in decorator classes as a kind of fallback.
 			builder.RegisterType<MemoryCacheManager>().Named<ICacheManager>("memory").SingleInstance();
+		}
+	}
+
+	public class SearchModule : Module
+	{
+		protected override void Load(ContainerBuilder builder)
+		{
+			builder.RegisterType<DefaultIndexManager>().As<IIndexManager>().InstancePerRequest();
+			builder.RegisterType<CatalogSearchService>().As<ICatalogSearchService>().InstancePerRequest();
+			builder.RegisterType<LinqCatalogSearchService>().Named<ICatalogSearchService>("linq").InstancePerRequest();
+			builder.RegisterType<CatalogSearchQueryFactory>().As<ICatalogSearchQueryFactory>().InstancePerRequest();
+			builder.RegisterType<CatalogSearchQueryAliasMapper>().As<ICatalogSearchQueryAliasMapper>().InstancePerRequest();
+			builder.RegisterType<FacetUrlHelper>().InstancePerRequest();
+			builder.RegisterType<FacetTemplateProvider>().As<IFacetTemplateProvider>().InstancePerRequest();
 		}
 	}
 

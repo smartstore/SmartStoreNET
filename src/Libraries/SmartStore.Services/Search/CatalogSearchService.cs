@@ -4,6 +4,7 @@ using System.Linq;
 using Autofac;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Events;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Search;
 using SmartStore.Core.Search.Facets;
@@ -19,6 +20,7 @@ namespace SmartStore.Services.Search
 		private readonly Lazy<IProductService> _productService;
 		private readonly IChronometer _chronometer;
 		private readonly IEventPublisher _eventPublisher;
+		private readonly IPriceFormatter _priceFormatter;
 
 		public CatalogSearchService(
 			IComponentContext ctx,
@@ -26,7 +28,8 @@ namespace SmartStore.Services.Search
 			IIndexManager indexManager,
 			Lazy<IProductService> productService,
 			IChronometer chronometer,
-			IEventPublisher eventPublisher)
+			IEventPublisher eventPublisher,
+			IPriceFormatter priceFormatter)
 		{
 			_ctx = ctx;
 			_logger = logger;
@@ -34,7 +37,12 @@ namespace SmartStore.Services.Search
 			_productService = productService;
 			_chronometer = chronometer;
 			_eventPublisher = eventPublisher;
+			_priceFormatter = priceFormatter;
+
+			T = NullLocalizer.Instance;
 		}
+
+		public Localizer T { get; set; }
 
 		/// <summary>
 		/// Bypasses the index provider and directly searches in the database
@@ -47,7 +55,10 @@ namespace SmartStore.Services.Search
 			// fallback to linq search
 			var linqCatalogSearchService = _ctx.ResolveNamed<ICatalogSearchService>("linq");
 
-			return linqCatalogSearchService.Search(searchQuery, loadFlags, true);
+			var result = linqCatalogSearchService.Search(searchQuery, loadFlags, true);
+			ApplyFacetLabels(result.Facets);
+
+			return result;
 		}
 
 		public CatalogSearchResult Search(CatalogSearchQuery searchQuery, ProductLoadFlags loadFlags = ProductLoadFlags.None, bool direct = false)
@@ -92,16 +103,20 @@ namespace SmartStore.Services.Search
 								hitsFactory = () => _productService.Value.GetProductsByIds(productIds, loadFlags);
 							}
 
-							try
+							if (searchQuery.BuildFacets)
 							{
-								using (_chronometer.Step("Get facets"))
+								try
 								{
-									facets = searchEngine.GetFacetMap();
+									using (_chronometer.Step("Get facets"))
+									{
+										facets = searchEngine.GetFacetMap();
+										ApplyFacetLabels(facets);
+									}
 								}
-							}
-							catch (Exception exception)
-							{
-								_logger.Error(exception);
+								catch (Exception exception)
+								{
+									_logger.Error(exception);
+								}
 							}
 						}
 
@@ -139,8 +154,65 @@ namespace SmartStore.Services.Search
 		public IQueryable<Product> PrepareQuery(CatalogSearchQuery searchQuery, IQueryable<Product> baseQuery = null)
 		{
 			var linqCatalogSearchService = _ctx.ResolveNamed<ICatalogSearchService>("linq");
-
 			return linqCatalogSearchService.PrepareQuery(searchQuery, baseQuery);
+		}
+
+		protected virtual void ApplyFacetLabels(IDictionary<string, FacetGroup> facets)
+		{
+			if (facets == null | facets.Count == 0)
+			{
+				return;
+			}
+
+			// TODO: (mc) > (mg) Apply labels to all other range attributes
+
+			// Apply "price" labels
+			FacetGroup group;
+			string labelTemplate;
+
+			if (facets.TryGetValue("price", out group))
+			{
+				// Format prices for price facet labels
+				// TODO: formatting without decimals would be nice
+				labelTemplate = T("Search.Facet.PriceMax").Text;
+
+				foreach (var facet in group.Facets)
+				{
+					var val = facet.Value;
+
+					if (val.Value == null && val.UpperValue != null)
+					{
+						facet.Value.Label = T("Search.Facet.PriceMax", FormatPrice(val.UpperValue.Convert<decimal>()));
+					}
+					else if (val.Value != null && val.UpperValue == null)
+					{
+						facet.Value.Label = T("Search.Facet.PriceMin", FormatPrice(val.Value.Convert<decimal>()));
+					}
+					else if (val.Value != null && val.UpperValue != null)
+					{
+						facet.Value.Label = T("Search.Facet.PriceBetween", 
+							FormatPrice(val.Value.Convert<decimal>()),
+							FormatPrice(val.UpperValue.Convert<decimal>()));
+					}
+				}
+
+				//// handle individual price filter
+				//var individualPrice = group.Facets.FirstOrDefault(x => x.HitCount == 0);
+				//if (individualPrice != null)
+				//{
+				//	var value = individualPrice.Value;
+				//	if (value.IncludesLower && value != null)
+				//		model.IndividualPriceFrom = ((double)value.Value).ToString("F0", CultureInfo.InvariantCulture);
+
+				//	if (value.IncludesUpper && value.UpperValue != null)
+				//		model.IndividualPriceTo = ((double)value.UpperValue).ToString("F0", CultureInfo.InvariantCulture);
+				//}
+			}
+		}
+
+		private string FormatPrice(decimal price)
+		{
+			return _priceFormatter.FormatPrice(price, true, false);
 		}
 	}
 }

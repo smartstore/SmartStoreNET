@@ -6,9 +6,11 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Search;
+using SmartStore.Core.Search.Facets;
 using SmartStore.Services.Common;
 using SmartStore.Services.Search;
 using SmartStore.Services.Search.Modelling;
+using SmartStore.Services.Search.Rendering;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Catalog;
@@ -25,6 +27,7 @@ namespace SmartStore.Web.Controllers
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly CatalogHelper _catalogHelper;
 		private readonly ICatalogSearchQueryFactory _queryFactory;
+		private readonly Lazy<IFacetTemplateProvider> _templateProvider;
 
 		public SearchController(
 			ICatalogSearchQueryFactory queryFactory,
@@ -33,7 +36,8 @@ namespace SmartStore.Web.Controllers
 			MediaSettings mediaSettings,
 			SearchSettings searchSettings,
 			IGenericAttributeService genericAttributeService,
-			CatalogHelper catalogHelper)
+			CatalogHelper catalogHelper,
+			Lazy<IFacetTemplateProvider> templateProvider)
 		{
 			_queryFactory = queryFactory;
 			_catalogSearchService = catalogSearchService;
@@ -42,6 +46,7 @@ namespace SmartStore.Web.Controllers
 			_searchSettings = searchSettings;
 			_genericAttributeService = genericAttributeService;
 			_catalogHelper = catalogHelper;
+			_templateProvider = templateProvider;
 		}
 
 		[ChildActionOnly]
@@ -206,6 +211,8 @@ namespace SmartStore.Web.Controllers
 			//}
 			#endregion
 
+			ViewBag.TemplateProvider = _templateProvider.Value;
+
 			return PartialView(model);
 		}
 
@@ -220,6 +227,13 @@ namespace SmartStore.Web.Controllers
 			return PartialView("Filters.Active", model);
 		}
 
+		[ChildActionOnly]
+		public ActionResult FacetGroup(FacetGroup facetGroup, string templateName)
+		{
+			// Just a "proxy" for our "StandardFacetTemplateSelector"
+			return PartialView(templateName, facetGroup);
+		}
+
 		// TODO: (mc) what about this stuff ?!
 		//private SearchPageFilterModel CreateSearchPageFilterModel(CatalogSearchResult searchResult)
 		//{
@@ -230,7 +244,7 @@ namespace SmartStore.Web.Controllers
 		//	{
 		//		// format prices for price facet labels
 		//		// TODO: formatting without decimals would be nice
-		//		var priceLabelTemplate = T("Search.Facet.PriceLabelTemplate").Text;
+		//		var priceLabelTemplate = T("Search.Facet.PriceMax").Text;
 
 		//		foreach (var facet in group.Facets.Where(x => x.Value.UpperValue != null))
 		//		{

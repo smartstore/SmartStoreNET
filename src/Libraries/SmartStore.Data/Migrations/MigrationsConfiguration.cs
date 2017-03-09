@@ -445,12 +445,6 @@ namespace SmartStore.Data.Migrations
 				"Specifies the sorting of the search filters. This setting is only effective by using the Mega-Search-Plus plugin. Changes will take effect after a renewal of the search index.",
 				"Legt die Sortierung der Suchfilter fest. Diese Einstellung ist nur unter Verwendung mit des Mega-Search-Plus Plugins wirksam. Änderungen werden erst nach einer Erneuerung des Suchindex wirksam.");
 
-			builder.AddOrUpdate("Search.Facet.Category", "Category", "Kategorie");
-			builder.AddOrUpdate("Search.Facet.Manufacturer", "Brand", "Marke");
-			builder.AddOrUpdate("Search.Facet.Price", "Price", "Preis");
-			builder.AddOrUpdate("Search.Facet.Rating", "Rating", "Bewertung");
-			builder.AddOrUpdate("Search.Facet.DeliveryTime", "Delivery Time", "Lieferzeit");
-
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values.ViewLink",
 				"Edit Options (Total: {0})",
 				"Optionen bearbeiten (Anzahl: {0})");
@@ -460,7 +454,6 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Values", "Options", "Optionen");
 			builder.AddOrUpdate("Admin.Catalog.Attributes.CheckoutAttributes.Values", "Options", "Optionen");
 
-			builder.AddOrUpdate("Search.Facet.PriceLabelTemplate", "up to {0}", "bis {0}");
 
 			builder.AddOrUpdate("Common.CopyToClipboard.Failed", "Failed to copy.", "Kopieren ist fehlgeschlagen.");
 
@@ -653,6 +646,18 @@ namespace SmartStore.Data.Migrations
 				"Admin.Configuration.Settings.Catalog.SortFilterResultsByMatches",
 				"Admin.Configuration.Settings.Catalog.SortFilterResultsByMatches.Hint"
 			);
+
+			builder.AddOrUpdate("Search.Facet.Category", "Category", "Kategorie");
+			builder.AddOrUpdate("Search.Facet.Manufacturer", "Brand", "Marke");
+			builder.AddOrUpdate("Search.Facet.Price", "Price", "Preis");
+			builder.AddOrUpdate("Search.Facet.Rating", "Rating", "Bewertung");
+			builder.AddOrUpdate("Search.Facet.DeliveryTime", "Delivery Time", "Lieferzeit");
+
+			builder.AddOrUpdate("Search.Facet.PriceMin", "from {0}", "ab {0}");
+			builder.AddOrUpdate("Search.Facet.PriceMax", "up to {0}", "bis {0}");
+			builder.AddOrUpdate("Search.Facet.PriceBetween", "{0} - {1}", "{0} - {1}");
+
+			builder.AddOrUpdate("Search.Facet.FindPlaceholder", "Find {0}...", "{0} suchen...");
 		}
 	}
 }

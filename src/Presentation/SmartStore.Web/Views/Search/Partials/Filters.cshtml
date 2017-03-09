@@ -1,5 +1,6 @@
 ﻿@using SmartStore.Core.Search.Facets
 @using SmartStore.Web.Models.Search
+@using SmartStore.Services.Search.Rendering;
 @using SmartStore.Services.Search.Extensions;
 
 @model ISearchResultModel
@@ -7,117 +8,40 @@
 @{
 	Layout = "";
 
+	var templateProvider = ViewBag.TemplateProvider as IFacetTemplateProvider;
+	var facetGroups = Model.SearchResult.Facets.Select(x => x.Value).OrderBy(x => x.DisplayOrder);
+
 	int i = 0;
 }
 
-<div class="x-block x-block-bordered mega-search-filter x-card m-b-1">
-	<div class="card-header hidden-xs-up">
-		FACET TEST
-	</div>
-	<div class="x-block-body x-listbox faceted-search-container">
-		<nav class="nav-filter" id="faceted-search">
-			@foreach (var group in Model.SearchResult.Facets.OrderBy(x => x.Value.DisplayOrder))
+<div class="faceted-search-container">
+	<div class="faceted-search" id="faceted-search">
+		@foreach (var group in facetGroups)
+		{
+			var templateRoute = templateProvider.GetTemplateRoute(group);
+			if (templateRoute == null)
 			{
-				i++;
-				var hasSelection = group.Value.Facets.Any(x => x.Value.IsSelected);
-				<div class="facet-group" data-key="@group.Key">
-					<a class="facet-toggle@(i > 3 && !hasSelection ? " collapsed" : "")" data-toggle="collapse" href="#facet-values-@(group.Key)" aria-expanded="true" aria-controls="facet-values-@(group.Key)">
-						@(group.Value.Label ?? group.Key)
-					</a>
-					<div id="facet-values-@(group.Key)" class="facet-values collapse@(i <= 3 || hasSelection ? " in" : "")" aria-expanded="true">
-						<div class="facet-values-inner offcanvas-scrollable">
-							@foreach (var facet in group.Value.Facets)
-							{
-								if (group.Key == "categoryid" || group.Key == "notfeaturedcategoryid")
-								{
-									@CategoryFacet(facet, 0)
-								}
-								else if (group.Value.IsMultiSelect)
-								{
-									@FacetCheckbox(facet)
-								}
-								else
-								{
-									@FacetRadio(facet)
-								}
-							}
-							@if (group.Key == "price")
-							{
-								@*<div class="radio">
-									<label>
-										<input type="radio" name="optradio" id="PriceRangeFilter" @Html.Attr("checked", "checked", Model.IndividualPriceFrom.HasValue() || Model.IndividualPriceTo.HasValue())>
-										<input type="number" maxlength="5" class="input-mini" id="PriceRangeFilterFrom" placeholder="@T("Search.PriceRange.From")" value="@Model.IndividualPriceFrom" />
-										-
-										<input type="number" maxlength="5" class="input-mini" id="PriceRangeFilterTo" placeholder="@T("Search.PriceRange.To")" value="@Model.IndividualPriceTo" />
-										<button type="button" class="btn btn-small" id="PriceRangeFilterButton">
-											<i class="fa fa-play-circle-o"></i> Go
-										</button>
-									</label>
-								</div>*@
-							}
-						</div>
-					</div>
-				</div>
+				continue;
 			}
-		</nav>
-	</div>
-</div>
 
-@helper FacetCheckbox(Facet facet)
-{
-	<div class="facet-check" data-href="@Url.FacetToggle(facet)">
-		@if (facet.IsChoice)
-		{
-			<label>
-				<input class="facet-control-native search-filter" type="checkbox" value="@facet.Value.ToString()" data-parentid="@facet.Value.ParentId" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
-				<span class="facet-control-ui"></span>
-				@FacetLabel(facet)
-			</label>
-		}
-		else
-		{
-			<div>
-				@FacetLabel(facet)
+			i++;
+			var hasSelection = group.Facets.Any(x => x.Value.IsSelected);
+			var expanded = i <= 3 || hasSelection;
+
+			<div class="facet-group" data-key="@group.Key">
+				<a class="facet-toggle@(!expanded ? " collapsed" : "")" data-toggle="collapse" href="#facet-body-@(group.Key)" aria-expanded="@expanded" aria-controls="facet-body-@(group.Key)">
+					@(group.Label ?? group.Key)
+				</a>
+				<div id="facet-body-@(group.Key)" class="facet-body collapse@(expanded ? " in" : "")" aria-expanded="@expanded">
+					@{ Html.RenderAction(templateRoute.Action, templateRoute.Controller, templateRoute.RouteValues); }
+				</div>
 			</div>
 		}
 	</div>
-}
-
-@helper FacetRadio(Facet facet)
-{
-	if (facet.HitCount > 0 || !facet.IsChoice)
-	{
-		<div class="facet-radio" data-href="@Url.FacetToggle(facet)">
-			<label>
-				<input class="facet-control-native search-filter" type="radio" name="optradio" value="@facet.Value.ToString()" data-parentid="@facet.Value.ParentId" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
-				<span class="facet-control-ui"></span>
-				@FacetLabel(facet)
-			</label>
-		</div>
-	}
-}
-
-@helper CategoryFacet(Facet facet, int margin)
-{
-	@FacetCheckbox(facet)
-	if (facet.Children.Any())
-	{
-		<div style="margin-left: @(margin + 20)px;">
-			@foreach (var child in facet.Children)
-			{
-				@CategoryFacet(child, margin)
-			}
-		</div>
-	}
-}
-
-@helper FacetLabel(Facet facet)
-{
-	<span class="facet-label" @Html.Attr("data-count", facet.HitCount.ToString("N0"), facet.HitCount > 0)>@(facet.Value.Label ?? facet.Value.ToString())</span>
-}
+</div>
 
 <script type="text/javascript">
-	jQuery(document).ready(function () {
+	$(function () {
 
 		// quick & dirty for testing
 		$(':input.search-filter').change(function () {
@@ -159,9 +83,9 @@
 		});
 
 		// individual price filter
-		$('#PriceRangeFilterButton').click(function () {
-			var pfVal = $('#PriceRangeFilterFrom').val(),
-				ptVal = $('#PriceRangeFilterTo').val(),
+		$('#btn-custom-price-range').click(function () {
+			var pfVal = $('#price-range-from').val(),
+				ptVal = $('#price-range-to').val(),
 				queryParams = getQueryParams();
 
 			queryParams['pf'] = pfVal.replace(/[^\d\.\-]/g, '');

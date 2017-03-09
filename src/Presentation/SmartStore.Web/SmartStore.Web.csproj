@@ -311,6 +311,7 @@
     <Compile Include="Infrastructure\Installation\InstallDataSeeder.cs" />
     <Compile Include="Infrastructure\Routes\1_StoreRoutes.cs" />
     <Compile Include="Infrastructure\Routes\MapLegacyRoutesAttribute.cs" />
+    <Compile Include="Infrastructure\StandardFacetTemplateSelector.cs" />
     <Compile Include="Models\Blogs\BlogPostListModel.cs" />
     <Compile Include="Models\Blogs\BlogPagingFilteringModel.cs" />
     <Compile Include="Models\Blogs\BlogPostTagModel.cs" />
@@ -419,7 +420,6 @@
     <Compile Include="Models\Common\HeaderLinksModel.cs" />
     <Compile Include="Models\Common\LanguageModel.cs" />
     <Compile Include="Models\Common\StoreThemeSelectorModel.cs" />
-    <Compile Include="Models\Catalog\CatalogPagingFilteringModel.Obsolete.cs" />
     <Compile Include="Models\Media\PictureModel.cs" />
     <Compile Include="Models\Order\ShipmentDetailsModel.cs" />
     <Compile Include="Models\Order\SubmitReturnRequestModel.cs" />
@@ -1891,6 +1891,13 @@
     <Content Include="Views\Product\Partials\Product.CustomerPrice.cshtml" />
     <Content Include="Views\Search\Partials\Filters.cshtml" />
     <Content Include="Views\Search\Partials\Filters.Active.cshtml" />
+    <Content Include="Views\Search\Partials\Filters.OLD.cshtml" />
+    <Content Include="Views\Search\FacetTemplates\MultiSelect.cshtml" />
+    <Content Include="Views\Search\FacetTemplates\SingleSelect.cshtml" />
+    <Content Include="Views\Search\FacetTemplates\Price.cshtml" />
+    <Content Include="Views\Search\FacetTemplates\Rating.cshtml" />
+    <Content Include="Views\Search\FacetTemplates\Category.cshtml" />
+    <Content Include="Views\Search\FacetTemplates\Box.cshtml" />
     <None Include="Web.EFMigrations.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SmartStore.Core.Search.Facets
 {
@@ -15,6 +16,7 @@ namespace SmartStore.Core.Search.Facets
 		Variant
 	}
 
+	[DebuggerDisplay("Key: {Key}, Label: {Label}, Kind: {Kind}")]
 	public class FacetGroup
 	{
 		private readonly Dictionary<string, Facet> _facets;

@@ -169,19 +169,16 @@ $searchbox-hit-tag-color:           darken($brand-warning, 10%);
 	position: relative;
 	border-bottom: 1px solid rgba(0,0,0, 0.12);
     font-size: 14px;
-    /*&:last-child {
-	    border-bottom: none;
-    }*/
 }
 
 .facet-toggle {
 	position: relative;
 	display: block;
-	padding: 0.7rem 1rem;
+    padding: 0.75rem 0;
+    font-size: 16px;
 	font-weight: 600;
-	color: #333 !important;
+	color: $body-color !important;
 	text-decoration: none !important;
-	transition: background-color 0.1s linear;
     
     &:after {
 	    display: block;
@@ -191,7 +188,7 @@ $searchbox-hit-tag-color:           darken($brand-warning, 10%);
 	    line-height: 1;
 	    content: "\f106";
 	    //content: "\f077";
-	    right: 1rem;
+        right: 0;
 	    top: 50%;
 	    margin-top: -9px;
 	    transition: transform 0.3s ease-in-out;
@@ -200,28 +197,20 @@ $searchbox-hit-tag-color:           darken($brand-warning, 10%);
     &.collapsed:after {
 	    transform: rotate(180deg);
     }
-
-    &:hover {
-	    background-color: rgba(0,0,0, 0.02);
-    }
-    &:active {
-	    background-color: rgba(0,0,0, 0.05);
-    }
 }
 
-.facet-values {
-	padding: 0.6rem 1rem;
+.facet-body {
+    padding-bottom: 1rem;
 }
 
-.facet-values-inner {
+.facet-body-inner {
 	line-height: 1.3;
-	//max-height: 200px;
-	//overflow-y: hidden;
-    padding: 4px 0;
-}
+    padding: 4px 0; // padding ensures that check/radio animations do not get cropped
 
-.facet-values.in .facet-values-inner {
-	//overflow-y: auto;
+    &.scrollable {
+	    max-height: 215px;
+	    overflow-y: auto;
+    }
 }
 
 
@@ -325,9 +314,10 @@ $facet-control-size:        20px;
 
 .facet-label {
     position: relative;
-    display: inline-block;
+    display: block;
     padding-left: $facet-control-size + ($facet-control-size / 1.5);
     padding-top: 1px;
+    padding-right: 8px;
 
     &[data-count]:after {
         content: "(" attr(data-count) ")";
@@ -386,4 +376,31 @@ $facet-control-size:        20px;
 .active-filter-label {
     display: block;
     @include text-truncate();
+}
+
+
+//
+// Offcanvas Facet Widget (overrides)
+// --------------------------------------------------
+
+.offcanvas {
+    .facet-toggle,
+    .facet-body {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .facet-toggle:after {
+        right: 1rem;
+    }
+
+    .facet-body-inner {
+        // On touch devices, having multiple scrollable areas is rather unintuitive
+    	max-height: none !important;
+	    overflow-y: visible !important;
+    }
+
+    .facet-label {
+        padding-right: 0;
+    }
 }

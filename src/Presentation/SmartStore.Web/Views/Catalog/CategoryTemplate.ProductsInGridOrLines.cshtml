@@ -1,17 +1,18 @@
 ﻿@model CategoryModel
 
 @{
-    Layout = "_ColumnsTwo";
-    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
-    Html.AddMetaDescriptionParts(Model.MetaDescription);
-    Html.AddMetaKeywordParts(Model.MetaKeywords);
+	Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+	Html.AddMetaDescriptionParts(Model.MetaDescription);
+	Html.AddMetaKeywordParts(Model.MetaKeywords);
 
-    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
-    if (canonicalUrlsEnabled)
-    {
-        var categoryUrl = Url.RouteUrl("Category", new { SeName = Model.SeName }, this.Request.Url.Scheme);
-        Html.AddCanonicalUrlParts(categoryUrl);
-    }
+	var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+	if (canonicalUrlsEnabled)
+	{
+		var categoryUrl = Url.RouteUrl("Category", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+		Html.AddCanonicalUrlParts(categoryUrl);
+	}
+
+	Layout = Model.SearchResult.Facets.Count > 0 ? "_ColumnsTwo" : "_ColumnsOne";
 }
 
 @using SmartStore.Core.Domain.Catalog;
@@ -74,8 +75,11 @@
     }
 }
 
-@section left {
-	@{ Html.RenderAction("Filters", "Search", new { model = Model }); }
+@if (Model.SearchResult.Facets.Count > 0)
+{
+	@section left {
+		@{ Html.RenderAction("Filters", "Search", new { model = Model }); }
+	}
 }
 
 <div class="page category-page">

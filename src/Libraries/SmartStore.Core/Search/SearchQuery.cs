@@ -68,6 +68,7 @@ namespace SmartStore.Core.Search
 		public ICollection<ISearchFilter> Filters { get; }
 
 		// Facets
+		public bool BuildFacets { get; protected set; }
 		public IReadOnlyDictionary<string, FacetDescriptor> FacetDescriptors
 		{
 			get { return _facetDescriptors; }
@@ -176,6 +177,13 @@ namespace SmartStore.Core.Search
 			Guard.NotNull(sort, nameof(sort));
 
 			Sorting.Add(sort);
+
+			return (this as TQuery);
+		}
+
+		public TQuery BuildFacetMap(bool build)
+		{
+			BuildFacets = build;
 
 			return (this as TQuery);
 		}

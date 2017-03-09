@@ -34,6 +34,9 @@ namespace SmartStore.Services.Search.Extensions
 			_url = _httpRequest.CurrentExecutionFilePath;
 			//_initialQuery = new QueryString().FillFromString(_httpRequest.QueryString.ToString(), false);
 			_initialQuery = QueryString.Current;
+
+			// Remove page index (i) from query string
+			_initialQuery.Remove("i");
 		}
 
 		public string Toggle(Facet facet)
@@ -73,7 +76,7 @@ namespace SmartStore.Services.Search.Extensions
 				var parts = GetQueryParts(facet);
 				foreach (var name in parts.AllKeys)
 				{
-					var currentValues = qs.Get(name).Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray();
+					var currentValues = qs.Get(name)?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray();
 					qs.Remove(name);
 
 					if (currentValues != null)
@@ -101,43 +104,51 @@ namespace SmartStore.Services.Search.Extensions
 			string value = null;
 			int entityId;
 
+			var val = facet.Value;
+
 			var result = new NameValueCollection(2);
 
 			if (group.Kind == FacetGroupKind.Attribute)
 			{
 				// TODO: (mc) > (mh) Handle range type attributes also!
-				entityId = facet.Value.Value.Convert<int>();
-				name = _mapper.GetAttributeAliasById(facet.Value.ParentId, _languageId) ?? "attr" + facet.Value.ParentId;
+				entityId = val.Value.Convert<int>();
+				name = _mapper.GetAttributeAliasById(val.ParentId, _languageId) ?? "attr" + val.ParentId;
 				value = _mapper.GetAttributeOptionAliasById(entityId, _languageId) ?? "opt" + entityId;
 				result.Add(name, value);
 			}
 			else if (group.Kind == FacetGroupKind.Variant)
 			{
-				entityId = facet.Value.Value.Convert<int>();
-				name = _mapper.GetVariantAliasById(facet.Value.ParentId, _languageId) ?? "vari" + facet.Value.ParentId;
+				entityId = val.Value.Convert<int>();
+				name = _mapper.GetVariantAliasById(val.ParentId, _languageId) ?? "vari" + val.ParentId;
 				value = _mapper.GetVariantOptionAliasById(entityId, _languageId) ?? "opt" + entityId;
 				result.Add(name, value);
 			}
 			else if (group.Kind == FacetGroupKind.Category)
 			{
-				result.Add("c", facet.Value.Value.ToString());
+				result.Add("c", val.Value.ToString());
 			}
 			else if (group.Kind == FacetGroupKind.Brand)
 			{
-				result.Add("m", facet.Value.Value.ToString());
+				result.Add("m", val.Value.ToString());
 			}
 			else if (group.Kind == FacetGroupKind.Rating)
 			{
-				result.Add("r", facet.Value.Value.ToString());
+				result.Add("r", val.Value.ToString());
 			}
 			else if (group.Kind == FacetGroupKind.DeliveryTime)
 			{
-				result.Add("d", facet.Value.Value.ToString());
+				result.Add("d", val.Value.ToString());
 			}
 			else if (group.Kind == FacetGroupKind.Price)
 			{
-				// TODO: (mc) handle price properly
-				result.Add("pt", facet.Value.UpperValue.ToString());
+				if (val.Value != null)
+				{
+					result.Add("pf", val.Value.ToString());
+				}
+				if (val.UpperValue != null)
+				{
+					result.Add("pt", val.UpperValue.ToString());
+				}
 			}
 
 			return result;

@@ -86,6 +86,7 @@ namespace SmartStore.Web.Controllers
 			query.Fields = searchFields.ToArray();
 
 			query
+				.BuildFacetMap(false)
 				.Slice(0, Math.Min(16, _searchSettings.InstantSearchNumberOfProducts))
 				.SortBy(ProductSortingEnum.Relevance);
 

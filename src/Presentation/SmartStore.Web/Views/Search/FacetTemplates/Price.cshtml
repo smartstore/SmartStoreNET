@@ -14,7 +14,7 @@
 		{
 			<div class="facet-radio" data-href="@Url.FacetToggle(facet)">
 				<label>
-					<input class="facet-control-native search-filter" type="radio" name="optradio" value="@facet.Value.ToString()" data-parentid="@facet.Value.ParentId" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
+					<input class="facet-control-native" type="radio" name="optradio" value="@facet.Value.ToString()" data-parentid="@facet.Value.ParentId" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
 					<span class="facet-control-ui"></span>
 					<span class="facet-label" @Html.Attr("data-count", facet.HitCount.ToString("N0"), facet.HitCount > 0)>@(facet.Value.Label ?? facet.Value.ToString())</span>
 				</label>
@@ -27,7 +27,7 @@
 		string value = customRangeFacet.Value.Value != null ? customRangeFacet.Value.Value.ToString() : "";
 		string upperValue = customRangeFacet.Value.UpperValue != null ? customRangeFacet.Value.UpperValue.ToString() : "";
 
-		<div class="d-flex flex-nowrap align-items-center m-t-1">
+		<div class="d-flex flex-nowrap align-items-center m-t-05">
 			<div class="flex-grow-1 p-r-05">
 				<input type="number" maxlength="7" id="price-range-from" class="form-control form-control-sm" value="@value" placeholder="@T("Search.PriceRange.From")" />
 			</div>

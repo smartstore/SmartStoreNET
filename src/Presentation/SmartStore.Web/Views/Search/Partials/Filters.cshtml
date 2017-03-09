@@ -44,43 +44,19 @@
 	$(function () {
 
 		// quick & dirty for testing
-		$(':input.search-filter').change(function () {
+
+		// Handle checkboxes
+		$('.faceted-search').on('change', ':input[type=checkbox].facet-control-native', facetControlClickHandler);
+
+		// Handle radio buttons
+		$('.faceted-search').on('click', ':input[type=radio].facet-control-native', facetControlClickHandler);
+
+		function facetControlClickHandler(e) {
 			var href = $(this).closest('[data-href]').data('href');
 			if (href) {
 				setLocation(href);
-				return;
 			}
-
-			var val = $(this).val(),
-				key = $(this).closest('.facet-group').data('key'),
-				queryParams = getQueryParams();
-
-			if (key === 'manufacturerid') {
-				queryParams['m'] = update(queryParams['m'], val, $(this).is(':checked')).join();
-			}
-			else if (key === 'deliveryid') {
-				queryParams['d'] = update(queryParams['d'], val, $(this).is(':checked')).join();
-			}
-			else if (key === 'categoryid' || key === 'notfeaturedcategoryid') {
-				queryParams['c'] = update(queryParams['c'], val, $(this).is(':checked')).join();
-			}
-			else if (key.startsWith('attrid')) {
-				var attrKey = 'attr' + $(this).data('parentid');
-				queryParams[attrKey] = update(queryParams[attrKey], 'opt' + val, $(this).is(':checked')).join();
-			}
-			else if (key.startsWith('variantid')) {
-				var variKey = 'vari' + $(this).data('parentid');
-				queryParams[variKey] = update(queryParams[variKey], 'opt' + val, $(this).is(':checked')).join();
-			}
-			else if (key === 'rate') {
-				queryParams['r'] = val;
-			}
-			else if (key.startsWith('price')) {
-				queryParams['pt'] = val;
-			}
-
-			location.search = $.param(queryParams);
-		});
+		}
 
 		// individual price filter
 		$('#btn-custom-price-range').click(function () {

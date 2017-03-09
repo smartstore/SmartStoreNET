@@ -18,7 +18,7 @@
 	{
 		<div class="facet-check" data-href="@Url.FacetToggle(facet)">
 			<label>
-				<input class="facet-control-native search-filter" type="checkbox" value="@facet.Value.ToString()" data-parentid="@facet.Value.ParentId" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
+				<input class="facet-control-native" type="checkbox" value="@facet.Value.ToString()" data-parentid="@facet.Value.ParentId" @Html.Attr("checked", "checked", facet.Value.IsSelected)>
 				<span class="facet-control-ui"></span>
 				<span class="facet-label" @Html.Attr("data-count", facet.HitCount.ToString("N0"), facet.HitCount > 0)>@(facet.Value.Label ?? facet.Value.ToString())</span>
 			</label>

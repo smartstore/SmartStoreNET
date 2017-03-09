@@ -8,7 +8,7 @@ using SmartStore.Services.Search.Rendering;
 
 namespace SmartStore.Web.Infrastructure
 {
-	public class StandardFacetTemplateSelector : IFacetTemplateSelector
+	public class DefaultFacetTemplateSelector : IFacetTemplateSelector
 	{
 		public RouteInfo GetTemplateRoute(FacetGroup facetGroup)
 		{
@@ -32,20 +32,15 @@ namespace SmartStore.Web.Infrastructure
 
 		private string GetTemplateName(FacetGroup group)
 		{
-			// TODO: (mc) > (mg) handle attribute numeric range types 
-			// TODO: (mc) > (mg) handle variant boxes
-
 			var prefix = "FacetTemplates/";
 
 			switch (group.Kind)
 			{
-				case FacetGroupKind.Variant:
-				case FacetGroupKind.Attribute:
 				case FacetGroupKind.DeliveryTime:
 				case FacetGroupKind.Brand:
 					return prefix + (group.IsMultiSelect ? "MultiSelect" : "SingleSelect");
 				case FacetGroupKind.Category:
-					return prefix + "MultiSelect";
+					return prefix + "MultiSelect"; // TODO: (mc) change this
 				case FacetGroupKind.Price:
 					return prefix + "Price";
 				case FacetGroupKind.Rating:

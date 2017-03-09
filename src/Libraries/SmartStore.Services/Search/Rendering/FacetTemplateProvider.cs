@@ -19,7 +19,7 @@ namespace SmartStore.Services.Search.Rendering
 			var route = _selectors
 				.OrderByDescending(x => x.Ordinal)
 				.Select(x => x.GetTemplateRoute(facetGroup))
-				.FirstOrDefault();
+				.FirstOrDefault(x => x != null);
 
 			return route;
 		}
